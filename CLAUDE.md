@@ -15,6 +15,7 @@
 - `apps/platform-operations-portal`
 - `apps/mobile/merchant-app`
 - `services/api-gateway`
+- `services/mobile-bff`
 - `services/webhook-service`
 - `services/queue-workers`
 - `apps/mobile/shopper-app` (reserved, not implemented)

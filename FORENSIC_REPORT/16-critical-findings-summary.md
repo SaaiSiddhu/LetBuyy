@@ -1,116 +1,114 @@
 # Critical Findings Summary
 
-**Investigation date:** 2026-06-05
-**Purpose:** A single reconciled, severity-ranked register of the most significant findings across all 14 domain reports. Severities were normalized across reports (individual agents used independent scales); where reports disagreed, the rating here reflects blast radius × evidence strength, and the originating report is cited. This document records facts and their observed impact only — it proposes no remediation.
+**Investigation date:** 2026-06-05 (second pass, post-remediation; HEAD `127a850e` on `develop`)
+**Purpose:** A single reconciled, severity-ranked register of the most significant findings across all 14 domain reports, now carrying a **resolution status** for every first-pass finding plus the **new findings introduced by the remediation work**. Severities were normalized across reports; where reports disagreed, the rating reflects blast radius × evidence strength. This document records facts and observed impact only — it proposes no remediation.
 
-**Method:** Findings were collected from reports `01`–`14`, de-duplicated, and cross-checked. The 14 Critical/High items most likely to appear in a headline were independently re-verified against source by a separate fact-checking pass; verdicts are logged in [`17-evidence-appendix.md`](17-evidence-appendix.md) and marked ✅ below.
+**What changed since the first pass:** 68 commits / 292 files / +21,140 −8,527 landed (`63053d18..HEAD`): a Codex Foundation-Hardening run (mission phases **F0 truth/topology + F1 backend integrity**, commits `0c4a775e..86e65460`) plus five merged workstreams (WS1 design-system, WS5 operations-portal, WS7 hardening, WS9 settings hub, WS10 developer-portal) and an app-marketplace integrity batch. The governance suite grew **128 → 129 validators** (the new one is `single-writer-ownership-validator.mjs`) and still passes (exit 0). **The remediation closed the "governance honesty" and "backend ownership" layers; it did not touch the product-facing Critical set (app platform, theme extensibility, cart, observability, testing), and it introduced a small number of new issues — one of them on the payment path.**
+
+**Verification:** The 10 highest-stakes second-pass claims (resolved and new) were independently re-derived from source by a separate fact-checking pass — **8 CONFIRMED, 2 PARTIALLY-CONFIRMED, 0 REFUTED**; log in [`17-evidence-appendix.md`](17-evidence-appendix.md). Items confirmed there are marked ✅.
 
 ---
 
-## Severity tally
+## Resolution scoreboard (first-pass Critical/High set)
 
-| Severity | Count | Definition used |
+| Status | Count | IDs |
 |---|---|---|
-| **Critical** | 14 | Platform-level: breaks a core promise (host apps, extend themes, move money, run reliably) or misrepresents the system to any reader. |
-| **High** | 17 | Domain-level: a major subsystem is broken, dual-owned, untested, or unsafe, but the platform still runs. |
-| **Medium** | (see source reports) | Localized correctness/consistency defects. |
-| **Low** | (see source reports) | Cosmetic, stale-doc, or environment-conditional issues. |
+| **RESOLVED** (verified in code + usually validator-locked) | 6 | C‑2, C‑12, C‑13, H‑1, H‑10, H‑12 |
+| **PARTIALLY RESOLVED / IMPROVED** | 3 | C‑11 (testing 12/12→10/12 no‑op), H‑9 (god‑file split started, file still grew), H‑13 (now self‑documented, still no backend) |
+| **SKIPPED — NEEDS HUMAN** (correctly recorded, not faked) | 1 | H‑11 (payout rail) |
+| **STILL OPEN** | 21 | C‑1, C‑3, C‑4, C‑5, C‑6, C‑7, C‑8, C‑9, C‑10, C‑14, H‑2, H‑3, H‑4, H‑5, H‑6, H‑7, H‑8, H‑14, H‑15, H‑16, H‑17 |
+| **NEW (introduced by remediation)** | 6 tracked | N‑1 … N‑6 below |
 
-Full Medium/Low registers live in their source reports ([08](08-error-misconfiguration.md), [11](11-architecture-violations.md), [13](13-technical-debt.md), [14](14-risk-assessment.md)).
-
----
-
-## CRITICAL findings
-
-### C-1 — The entire backend is one Cloudflare Worker (single point of failure)
-All commerce, authentication, themes, apps, payments, media, analytics, and the legacy portfolio/resume surface execute inside `services/api-gateway`. `src/index.ts` mounts 30+ routers; route handlers total ~20,340 lines, with `routes/storefront.ts` alone ≈4,900 lines (4,993 at final measurement ✅). The six sibling "services" that would distribute this load are code-free.
-**Impact:** No process, fault, or scaling isolation between subsystems; one bad deploy or hot path degrades everything. **Source:** [03](03-application-investigation.md), [11](11-architecture-violations.md), [14](14-risk-assessment.md).
-
-### C-2 — Six declared runtime services do not exist
-`checkout-runtime`, `search-service`, `media-service`, `notification-service`, `event-bus`, and `analytics-pipeline` each contain exactly two files (`AGENTS.md` + `runtime.manifest.json`) — no `package.json`, no `src/` ✅. Their manifests assert domain ownership the code does not honor.
-**Impact:** The published runtime topology overstates the architecture; any reader (or acquirer) of the runtime map is misled about isolation, ownership, and failure domains. **Source:** [03](03-application-investigation.md), verified [17](17-evidence-appendix.md).
-
-### C-3 — The app platform cannot host a real third-party app
-App-scoped OAuth tokens are accepted at exactly **one** call site — a GET-only proxy (`app-store.ts:1253`) ✅; the general `authMiddleware` never accepts app JWTs. There is no app write API, no refresh token, and no client secret / PKCE at `/oauth/token` (the authorization code is the sole credential).
-**Impact:** A partner can complete OAuth and still do nothing but read five resource prefixes for one hour. The advertised developer platform is non-functional for its stated purpose. **Source:** [06](06-apps-ecosystem.md), verified [17](17-evidence-appendix.md).
-
-### C-4 — Mandatory compliance webhooks are subscribed but never published
-`customers/data_request`, `customers/redact`, and `shop/redact` are force-subscribed at every app install (`app-engine/src/index.ts:151-153`) but have **zero emit sites** anywhere in the repository ✅.
-**Impact:** The platform advertises Shopify-parity GDPR/CCPA data-handling webhooks it structurally cannot deliver — a compliance representation the code contradicts. **Source:** [06](06-apps-ecosystem.md), verified [17](17-evidence-appendix.md).
-
-### C-5 — App billing moves no money
-Charge "approval" fabricates a fake provider reference (`rzp_route_test_…`, `app-store.ts:1541`) and merely flips a status; the payout ledger hard-codes `payout_provider_mode: 'test'` and leaves entries `pending` (`queue-workers …:664`) ✅. No PSP charge or payout-release call exists; `payout.released/failed` events have contracts but no emitters.
-**Impact:** The entire app-monetization surface (revenue share, GST math, payouts) is a schema-and-UI shell that never settles funds. **Source:** [06](06-apps-ecosystem.md), [07](07-integration.md), verified [17](17-evidence-appendix.md).
-
-### C-6 — The web theme editor's live preview is unwired; merchants publish blind
-The iframe + postMessage preview component (`CenterPanel.tsx`) has **zero importers** in `merchant-control-plane` ✅; the active editor page renders a hardcoded mock (`PREVIEW_PRODUCTS`, editor `page.tsx:174`). The built preview-session bridge (gateway + storefront `/preview`) exists but only the Flutter app wires it.
-**Impact:** On web, a merchant never sees real rendered output before a one-step publish to live (see C-8). **Source:** [04](04-theme-system.md), [05](05-storefront-runtime.md), verified [17](17-evidence-appendix.md).
-
-### C-7 — Theme section vocabulary is compiled into the storefront
-JSON-contract sections are rendered by React components statically imported in `storefront-runtime` (`renderer-registry.tsx`, ~20 renderers); unknown section types render `null`.
-**Impact:** No new section type can exist without a platform code deploy — the opposite of Shopify's open section model. The Liquid path is the only escape hatch, and it is itself constrained (C-9). **Source:** [04](04-theme-system.md), [05](05-storefront-runtime.md), [12](12-shopify-compatibility.md).
-
-### C-8 — Web theme publish is one-step to live, last-write-wins
-The web editor `PUT` saves a draft then immediately `publish({make_store_live:true})` (`editor/route.ts`); the web save path omits `base_version`, so concurrent sessions overwrite each other despite server-side conflict support existing.
-**Impact:** No preview/publish separation on web; concurrent edits silently clobber. **Source:** [04](04-theme-system.md).
-
-### C-9 — No app embeds, and Liquid themes have no commerce object model
-App embeds are **not found in the repository** — `content_for_header`/`content_for_footer` are hardwired to empty strings (`theme-renderer.ts:246-249`) and scripts are structurally blocked. The Liquid runtime exposes only `shop/request/settings/routes/section/block` scope with no product/cart/customer objects and no Shopify filters (under `strictFilters:true`, `money`/`image_url` etc. would throw).
-**Impact:** Two of Shopify's core extensibility surfaces (App Embeds = 0/10; Theme Runtime commerce model ≈ absent) cannot be reached by any theme or app today. **Source:** [12](12-shopify-compatibility.md), [04](04-theme-system.md).
-
-### C-10 — No server-side cart
-The active cart persists only in `localStorage['lb_cart']` (`cart-context.tsx:28/43`) ✅. A `public.carts` table exists in the baseline migration but is unwired (no route reads or writes it).
-**Impact:** No cart tokens, no cross-device cart, no abandoned-cart recovery, and apps cannot mutate a cart server-side. **Source:** [05](05-storefront-runtime.md), [12](12-shopify-compatibility.md), verified (PARTIAL — vestigial table) [17](17-evidence-appendix.md).
-
-### C-11 — Testing and "certification" are document-shaped, not behavior-shaped
-0 package unit tests; all 12 deployable workspaces' `test` scripts are `echo 'No tests yet' && exit 0` ✅. The passing 128-validator suite and ~149 governance tests assert manifest consistency and source string fragments; load/chaos suites default to plan mode and self-label `governance-contract-not-live-evidence`.
-**Impact:** "Production certification passing" is not evidence that production behavior was tested. Regression safety net is effectively absent in deployable code. **Source:** [14](14-risk-assessment.md).
-
-### C-12 — The declared source of truth describes a database that no longer exists
-`AGENTS.md` (the repo's stated top authority) claims 65 migrations / 228 tables and cites migration `065`; reality is ~10 squashed migration files with sequence gaps, and the cited migration is relocated out of `migrations/`.
-**Impact:** The canonical engineering document cannot be trusted for schema topology — it actively misdescribes the live database. **Source:** [11](11-architecture-violations.md), [13](13-technical-debt.md).
-
-### C-13 — Three governance sources disagree on the runtime inventory
-`CLAUDE.md` lists 13 runtimes; `docs/governance/runtime-boundaries.md` adds `developer-portal` and 7 reserved services; the disk holds 10 apps + 9 services (6 of them 2-file scaffolds). `developer-portal` ships but is omitted from the CLAUDE.md canonical map; `queue-workers` is implemented but its manifest labels it `reserved-service`.
-**Impact:** There is no single readable document that correctly states what the platform is — the topology is unresolvable by reading the governance docs. **Source:** [01](01-repository-inventory.md), [03](03-application-investigation.md), [11](11-architecture-violations.md).
-
-### C-14 — Observability is a contract with no producer
-Prometheus rules, Grafana dashboards, and SLOs reference metrics (`http_requests_total`, `letbuyy_queue_dead_letter_total`, `letbuyy_replay_lag_seconds`) that **no runtime emits**; there is no OTel/prom-client dependency and `writeDataPoint` is never called.
-**Impact:** Production failures are human/log-detected only; the alerting stack cannot fire because nothing feeds it. **Source:** [14](14-risk-assessment.md).
+**Headline:** every Critical that was about *the platform lying about itself* (C‑2 phantom services, C‑12 dead DB doc, C‑13 disagreeing inventories) is now fixed and validator‑guarded. Every Critical that was about *a missing product capability* (C‑3 app API, C‑4 compliance webhooks, C‑5 billing, C‑6 editor preview, C‑7 sections, C‑8 publish, C‑9 embeds/Liquid, C‑10 cart, C‑14 observability) remains open. Net Critical count: **14 → 11 open** (3 resolved), **+0 new Critical** but **+1 new High on the payment path**.
 
 ---
 
-## HIGH findings (condensed register)
+## RESOLVED (verified)
 
-| ID | Finding | Evidence | Source |
+### C‑2 — Six phantom services now declare themselves honestly ✅
+The six code‑free services (`checkout-runtime`, `search-service`, `media-service`, `notification-service`, `event-bus`, `analytics-pipeline`) now carry `implementationStatus.status: "reserved-not-implemented"` + `currentActiveOwner` in their manifests, enforced by `runtime-manifest-validator.mjs`; `queue-workers` was recategorized `reserved-service` → `cloudflare-worker`. They were not built (correct per the mission's modular‑monolith default). **Source:** [03](03-application-investigation.md), [01](01-repository-inventory.md). Residue: ~50 legacy `*Ownership` prose fields per manifest are unchanged.
+
+### C‑12 — `AGENTS.md` database section corrected ✅ (with residue)
+The "65 migrations / 228 tables / migration 065" claim was hand‑corrected to the real topology (`000_baseline.sql` + `073…089`, contiguous; 233 baseline tables). **New residue (Medium, AV‑M8):** `AGENTS.md` was hand‑patched, not regenerated — it carries a false provenance header, stale `console.log/any` counts, a package list still missing `payments`/`app-engine`/`extension-host`, and line 85 still lists only 8 web apps (omits `developer-portal`). **Source:** [11](11-architecture-violations.md), [13](13-technical-debt.md).
+
+### C‑13 — Three runtime inventories reconciled + validator‑locked ✅
+`CLAUDE.md`, `docs/governance/runtime-boundaries.md`, and `repository-topology.md` now agree (21 roots incl. `developer-portal`), cross‑checked by `runtime-topology-validator.mjs`. **Source:** [01](01-repository-inventory.md), [11](11-architecture-violations.md).
+
+### H‑1 — Single‑writer ownership enforced ✅
+`webhook-service` and `queue-workers` no longer write `orders`/`products`/`subscriptions`/`sites`/`billing_history`/`outbox_events` directly; all mutations route through new gateway internal endpoints (`/v1/internal/billing/*`, `/v1/internal/events/domain`, `/v1/storefront/internal/payments/*`) over the Cloudflare service binding. `webhook-service`'s only remaining direct write is its own `payment_webhook_events`. Locked by `single-writer-ownership-validator.mjs` (107 files) + a regression test. **Caveat:** `queue-workers` still writes `notifications`/`search_documents`/`analytics_event_stream`/`partner_payout_ledger_entries`, which the validator deliberately excludes (these are not dual‑owned). **Source:** [07](07-integration.md), [11](11-architecture-violations.md).
+
+### H‑10 — Queue producers wired ✅
+`execution/cloudflare-queue-triggers.ts` now plans triggers for all five queue bindings on scheduled dispatch (a first‑pass dangling‑consumer set). **Nuance:** EVENT/RUNTIME trigger messages map to no platform drain in `queue-workers` (telemetry‑only). **Source:** [07](07-integration.md).
+
+### H‑12 — Theme events contracted ✅
+`theme.purchase.*` and `theme.draft.*` are now registered in `packages/event-core` (24 → 27 event types) with payload schemas + consumers + a contract test. **Source:** [07](07-integration.md).
+
+### H‑11 — Payout events correctly gated (not faked) ✅
+`payout.released`/`payout.failed` are marked `implementationStatus: "reserved-human-gated"` with a reason; still no emitter — the honest outcome, since there is no payout rail. **Source:** [06](06-apps-ecosystem.md), [07](07-integration.md).
+
+---
+
+## NEW findings introduced by the remediation
+
+### N‑1 — Internal payment routes FAIL OPEN outside production ✅ **[High]**
+`routes/storefront/internal-payment-routes.ts:71‑76` returns `true` (authorized) when `INTERNAL_API_SECRET` is unset **and** `ENVIRONMENT !== 'production'` — guarding all five new internal payment endpoints (payable read, reference, **confirm**, **failure**, event). Its siblings `internal-billing.ts:49‑53` and `internal-events.ts:20‑24` fail **closed**. Base `wrangler.toml` defaults `ENVIRONMENT = "staging"`, and `INTERNAL_API_SECRET` is a dashboard secret (in no `[vars]`), so any staging/preview deploy without that secret accepts **unauthenticated order‑payment‑confirm calls**. This is the single most consequential new finding: the H‑1 single‑writer refactor moved real payment‑state transitions behind an endpoint that is fail‑open by default off‑prod. **Source:** [08](08-error-misconfiguration.md), [14](14-risk-assessment.md), verified [17](17-evidence-appendix.md).
+
+### N‑2 — Plaintext app secrets persisted for replay ✅ **[High]**
+Keyed app installs store the full install response — including the app `access_token` and the "show‑once" webhook `signing_secret` — in `idempotency_keys.response_body` for ~24h replay (`app-store.ts:2143‑2158`, idempotency adapter `:69/:151‑156`). Ironically the install path is careful to store only `access_token_hash` in `app_installations.config`, then keeps both secrets in plaintext in the idempotency table. **Source:** [06](06-apps-ecosystem.md), verified [17](17-evidence-appendix.md).
+
+### N‑3 — Orphaned security test that would have caught N‑1 ✅ **[High]**
+The two new contract tests `tests/contracts/storefront-internal-payment-routes.test.ts` and `domain-event-contracts.test.ts` are wired into **no runner** — root globs match only `tests/*/*.test.mjs`, no workflow invokes `tsx`, and the test‑coverage validator lists only `.mjs`. The internal‑payment test asserts only the production fail‑closed branch, so even if it ran it would not catch N‑1. **Source:** [08](08-error-misconfiguration.md), [14](14-risk-assessment.md), verified [17](17-evidence-appendix.md).
+
+### N‑4 — Uncontracted `payment.*` events through the new internal-event ingress **[Medium]**
+`/v1/internal/events/domain` accepts any `eventType` ≤160 chars and skips payload validation for uncontracted types; `webhook-service` emits `payment.captured/failed`, `refund.created`, `payment.subscription.activated` through it with payloads stored raw (`event-execution.adapter.ts:54‑56`). **Source:** [06](06-apps-ecosystem.md), [07](07-integration.md).
+
+### N‑5 — `gateway-events.ts` duplicated across two services ✅ **[Medium]**
+`webhook-service/src/gateway-events.ts` and `queue-workers/src/gateway-events.ts` are functionally identical (differ only in formatting + inline‑vs‑imported binding type); the same internal‑fetch boilerplate is repeated across four client modules, with no shared package. **Source:** [10](10-duplication.md), verified [17](17-evidence-appendix.md).
+
+### N‑6 — Agent‑ledger residue inside source trees + dead queue jobs **[Medium/Low]**
+`CODEX_WS9_LEDGER.md` sits inside a Next.js route segment (`apps/merchant-control-plane/src/app/[store]/settings/`), WS10/WS1 ledgers inside their workspaces, 8 `CODEX_*.md` remain at root (2 byte‑identical to archived copies). Separately, the centralize‑outbox change now upserts `platform_queue_jobs` rows with `queue_name='webhook-deliveries'` that no consumer ever claims → permanent `queued` accumulation. **Source:** [09](09-dead-code.md), [13](13-technical-debt.md), verified [17](17-evidence-appendix.md).
+
+---
+
+## STILL-OPEN Criticals (product-facing — untouched by F0/F1)
+
+| ID | Finding | Status detail | Source |
 |---|---|---|---|
-| H-1 | **Dual write-ownership of core tables.** Both `api-gateway` and `webhook-service` insert/update `orders` and `products` (webhook-service via a `patchRows()` REST helper, setting `payment_status`/`status` inline ✅). Correctness rests only on RPC row-locking. | `webhook-service/src/index.ts:412/430/468/503/1010` | [07](07-integration.md), [11](11-architecture-violations.md) |
-| H-2 | **Legacy product still live.** Portfolio/resume/ATS pages, gateway `/portfolio` + `/resume` routers, and 5+ schema tables ship in the commerce admin. | `[store]/{experience,education,…}/page.tsx`; `index.ts:215-216` | [09](09-dead-code.md), [13](13-technical-debt.md) |
-| H-3 | **`apps/mobile/operator-app` is the unmodified Flutter counter demo** (single `main.dart`, "Flutter Demo", `_counter`) ✅, yet is governed as a real runtime. | `operator-app/lib/main.dart:15,57,107` | [03](03-application-investigation.md) |
-| H-4 | **`theme-marketplace` checkout is a non-functional link.** "Pay" is `<Link href="/checkout/success…">` firing only a toast; no payment intent ✅. | `theme-marketplace/.../checkout/page.tsx:206-217` | [03](03-application-investigation.md) |
-| H-5 | **Wasm app functions: `memory_limit_kb` stored but never enforced** ✅; synchronous CPU loops can stall the public checkout path (only a ms-scale timeout + 64 KB output cap apply). | `app-functions-runtime.ts:203 (instantiate(module,{}))` | [06](06-apps-ecosystem.md) |
-| H-6 | **No client authentication at `/oauth/token`** — code + client_id + redirect_uri only; no client_secret, no PKCE. | `app-store.ts` OAuth flow | [06](06-apps-ecosystem.md) |
-| H-7 | **Merchant password verification runs in the Next app**, with `password_hash` shipped over HTTP from the gateway each login; two bcrypt cost factors (12 vs 10) and no shared hashing impl. | identity-platform vs api-gateway | [01](01-repository-inventory.md), [11](11-architecture-violations.md) |
-| H-8 | **`@letbuyy/utils` is a dead dependency edge** — declared by 8 apps, imported by 0 source files ✅; it also exports a service-role admin DB client into those apps' graphs. | 8 `package.json` vs 0 imports | [09](09-dead-code.md), [11](11-architecture-violations.md) |
-| H-9 | **God file `storefront.ts`** — ≈4,900 lines / 60 handlers holding the entire shopper surface incl. inline customer auth. | `api-gateway/src/routes/storefront.ts` | [11](11-architecture-violations.md) |
-| H-10 | **Cloudflare queues with consumers but no producers** (`NOTIFICATION_QUEUE`, `SEARCH_QUEUE`, `RUNTIME_QUEUE`); only ANALYTICS + EVENT are produced. | wrangler config vs send sites | [07](07-integration.md) |
-| H-11 | **`payout.released`/`payout.failed` have contracts + templates but no emitter** → dead consumer code. | event registry vs emit sites | [07](07-integration.md) |
-| H-12 | **Theme/payout events emitted with no registered domain-event contract** (`theme.purchase.*`, `theme.draft.*`) → skip validation, never reach webhook-service. | gateway emit sites | [07](07-integration.md) |
-| H-13 | **No theme/app developer tooling** — no CLI, theme-check, scaffold, SDK key issuance, or manifest upload; ecosystem growth depends on manual JSON/DB edits. | absence across `packages/`,`scripts/` | [06](06-apps-ecosystem.md), [12](12-shopify-compatibility.md) |
-| H-14 | **Demo store "Urban Kicks" hardcoded** into storefront runtime, short-circuiting the tenant/theme pipeline before any network call. | `lib/demo/urban-kicks-demo.ts`; `store-service.ts:54-57` | [04](04-theme-system.md), [05](05-storefront-runtime.md) |
-| H-15 | **Two production deploy workflows both fire on push to `main`** with different concurrency groups → racing same-target deploys; `deploy-production.yml` has no migration job/staging gate and `echo "SKIP"`s on missing creds. | `.github/workflows/*` | [14](14-risk-assessment.md) |
-| H-16 | **Static shared bearer token is the sole auth for the super-admin/ops API plane** — no per-operator identity, no rotation; audit actor self-asserted. | ops/admin auth path | [14](14-risk-assessment.md) |
-| H-17 | **Storefront customer login lacks rate limiting / bot protection** that identity-platform has; internal storefront endpoints trust requests with no secret when `ENVIRONMENT !== 'production'`. | `routes/storefront.ts:1693` | [08](08-error-misconfiguration.md), [14](14-risk-assessment.md) |
+| C‑1 | Single‑worker monolith / SPOF | OPEN; modularization only began — `storefront.ts` **grew** 4,826 → 4,833 after a 233‑line extraction; 11 files >1,500 lines | [11](11-architecture-violations.md) |
+| C‑3 | App tokens hit one GET‑only proxy; no app write API | OPEN; `verifyAppScopedAccessToken` single call site (`app-store.ts:1263`); `authMiddleware` still no app‑JWT branch | [06](06-apps-ecosystem.md) |
+| C‑4 | Compliance webhooks never published | OPEN; zero emit sites — and WS10 now *advertises* the topics to developers without a producer behind them | [06](06-apps-ecosystem.md) |
+| C‑5 | App billing moves no money | OPEN; `rzp_route_test_` fabrication (`:1551`), test/pending ledger; payout events honestly reserved | [06](06-apps-ecosystem.md) |
+| C‑6 | Web editor preview unwired | OPEN; rewritten 2,244‑line editor still renders `PREVIEW_PRODUCTS` mock; `CenterPanel.tsx` still 0 importers | [04](04-theme-system.md) |
+| C‑7 | Section vocabulary compiled into storefront | OPEN; `renderer-registry.tsx` unchanged; unknown → null | [05](05-storefront-runtime.md) |
+| C‑8 | One‑step publish, last‑write‑wins | OPEN; web `PUT` still save‑then‑publish, still omits `base_version` | [04](04-theme-system.md) |
+| C‑9 | No app embeds; Liquid lacks commerce objects | OPEN; `content_for_header/footer` still `''`; Liquid scope unchanged | [12](12-shopify-compatibility.md), [04](04-theme-system.md) |
+| C‑10 | No server‑side cart | OPEN; cart still localStorage‑only; `public.carts` still 0 readers/writers — now **fail‑loud** (`graphql/storefront.ts` throws `CART_NOT_SUPPORTED`) | [05](05-storefront-runtime.md) |
+| C‑14 | Observability has no metric producer | OPEN; `writeDataPoint` still never called; no OTel/prom‑client; `infrastructure/` untouched | [14](14-risk-assessment.md) |
+
+## STILL-OPEN Highs (selected) + one promoted
+
+| ID | Finding | Status | Source |
+|---|---|---|---|
+| H‑4 | Theme‑marketplace checkout is a fake success link | OPEN (rated **Critical** by the app report) — "Pay" still `<Link href="/checkout/success…">`, no payment intent ✅ | [03](03-application-investigation.md), [12](12-shopify-compatibility.md) |
+| H‑2 | Legacy portfolio/resume surface live | OPEN; unchanged | [09](09-dead-code.md) |
+| H‑3 | operator‑app counter demo / shopper‑app empty | OPEN; unchanged | [03](03-application-investigation.md) |
+| H‑5 | Wasm `memory_limit_kb` unenforced | OPEN; `app-functions-runtime.ts` byte‑unchanged | [06](06-apps-ecosystem.md) |
+| H‑6 | No client auth at `/oauth/token` | OPEN; no client_secret/PKCE/refresh | [06](06-apps-ecosystem.md) |
+| H‑7 | Merchant password verify in Next app | OPEN; now *whitelisted* by `domain-boundary-validator.mjs:215` | [11](11-architecture-violations.md) |
+| H‑8 | `@letbuyy/utils` dead service‑role edge | OPEN; 8 declared / 0 imported, package untouched | [09](09-dead-code.md), [11](11-architecture-violations.md) |
+| H‑13 | No dev CLI/SDK/keys | IMPROVED → still open; WS10 is a documentation shell that exhaustively self‑declares `[SKIP — NEEDS BACKEND/SDK]` | [06](06-apps-ecosystem.md) |
+| H‑15 | Racing prod deploys, no migration gate | OPEN; both workflows still race on push‑to‑main; an ops test now asserts the legacy workflow stays in sync | [14](14-risk-assessment.md) |
+| H‑16 | Static bearer ops plane | OPEN; plain `!==` (not timing‑safe) at `internal-console.ts:56` | [14](14-risk-assessment.md) |
+| H‑17 | Storefront login unprotected; internal endpoints trust no‑secret off‑prod | OPEN, and now intersects N‑1 (payment routes carry the same off‑prod fail‑open) | [08](08-error-misconfiguration.md), [14](14-risk-assessment.md) |
 
 ---
 
-## Cross-cutting positives (verified present)
+## Cross-cutting assessment
 
-These were independently confirmed and counter several stale alarms in the repo's own older audit ledgers:
+The remediation did exactly what its mission scoped (**F0 truth/topology + F1 backend integrity**) and did it well: verified single‑writer ownership, reconciled and validator‑locked the runtime inventory, honest service manifests, contracted events, and an app‑marketplace integrity batch (idempotent installs, server‑side webhook secrets, verified‑install reviews, honest outage states) — most of it federation‑test‑locked. Shopify parity ticked **41/90 → 43/90 (≈4.8/10)** on Theme Editor (+1, real multi‑template editing via migration 087) and App Marketplace (+1).
 
-- **No committed live secrets** — no `sk_live_`, `rzp_live_`, `service_role` JWTs, or PEM keys in tracked source ✅. ([14](14-risk-assessment.md), [17](17-evidence-appendix.md))
-- **Timing-safe webhook signature verification for all four payment providers** (Razorpay/Stripe/PayPal/Cashfree). ([14](14-risk-assessment.md))
-- **Clean application-layer boundaries** — no app→app imports, no direct Supabase access from any web app (0 `.from()`), no deprecated-alias references in code. ([01](01-repository-inventory.md), [11](11-architecture-violations.md))
-- **The repo's own governance suite passes all 128 validators (exit 0).** Every Critical/High finding above is therefore something the validators do not measure, a cross-authority disagreement, or a prose-only rule — not a gate the platform is failing. ([17](17-evidence-appendix.md))
+But three things a reader of the ledger should weigh:
 
-> The distinction in that last bullet is the central theme of this investigation: **the code that runs is mostly clean; the danger is in the distance between what the platform documents/validates about itself and what it actually does.**
+1. **The hard product Criticals are all still open** — app platform, theme extensibility, cart, observability — because the mission's F2–F8 phases never ran. The platform is *more honest* and *structurally cleaner*, not *more capable*.
+2. **The single‑writer refactor introduced a payment‑path auth regression (N‑1)** that is fail‑open by default off‑production, and the one test that touches that surface isn't wired into any runner (N‑3). This is the kind of issue the very "testing reality" phase (C‑11/F5) that was skipped would have caught.
+3. **The governance suite is green at 129/129 and now genuinely means more than it did** (single‑writer is real, enforced) — but it still does not measure the open Criticals, N‑1's off‑prod branch, or runtime behavior. The first‑pass caution stands: a green suite certifies structure and ownership, not capability or safety.

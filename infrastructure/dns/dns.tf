@@ -125,3 +125,51 @@ resource "cloudflare_record" "storefront_wildcard" {
   proxied = false
   comment = "Wildcard — *.letbuyy.store (user storefronts)"
 }
+
+# ────────────────────────────────────────────────────────────
+# WAF — block vulnerability-scanner traffic at the edge
+# ────────────────────────────────────────────────────────────
+# LetBuyy runs on Cloudflare Workers (no PHP, no WordPress), so every
+# wp-*, *.php, /.env and /.git probe is pure noise. Blocking these at the
+# edge stops bot scans before they ever invoke a Worker or touch KV —
+# protecting the free-tier budget. (These scans were the Netherlands
+# traffic hammering api-staging.letbuyy.store in the observability logs.)
+#
+# NOTE: the API token must also carry Zone WAF / Firewall Services edit
+#       permission (the DNS-only token is not sufficient). A zone holds at
+#       most ONE custom-rules ruleset per phase — if you have already added
+#       custom rules in the dashboard, import them before applying this.
+
+locals {
+  waf_scanner_paths = [
+    "wp-includes",
+    "wp-admin",
+    "wp-login",
+    "wlwmanifest",
+    "/wp-content/",
+    "/wordpress/",
+    "/.env",
+    "/.git/",
+  ]
+
+  waf_scanner_expression = join(" or ", concat(
+    [for path in local.waf_scanner_paths : "(lower(http.request.uri.path) contains \"${path}\")"],
+    ["(ends_with(lower(http.request.uri.path), \".php\"))"],
+  ))
+}
+
+resource "cloudflare_ruleset" "waf_block_scanners" {
+  zone_id     = var.cloudflare_zone_id
+  name        = "LetBuyy block vulnerability scanners"
+  description = "Edge-block WordPress/PHP/secret-file scanner probes (LetBuyy serves no PHP/WP)."
+  kind        = "zone"
+  phase       = "http_request_firewall_custom"
+
+  rules {
+    ref         = "block_vuln_scanners"
+    action      = "block"
+    expression  = local.waf_scanner_expression
+    description = "Block wp-*, *.php, /.env, /.git scanner traffic"
+    enabled     = true
+  }
+}

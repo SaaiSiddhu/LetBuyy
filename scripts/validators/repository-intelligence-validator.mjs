@@ -29,7 +29,7 @@ for (const expected of [
   "`@letbuyy/shared-types` is the canonical cross-runtime domain contract",
   "apps/developer-portal`, `apps/theme-marketplace`",
   "Mobile runtimes: active `apps/mobile/merchant-app`; reserved/not-implemented mobile roots `apps/mobile/shopper-app` and `apps/mobile/operator-app`",
-  "implemented `services/api-gateway`, `services/webhook-service`, and `services/queue-workers`",
+  "implemented `services/api-gateway`, `services/mobile-bff`, `services/webhook-service`, and `services/queue-workers`",
   "reserved/not-implemented service roots `services/checkout-runtime`, `services/search-service`, `services/media-service`, `services/notification-service`, `services/event-bus`, and `services/analytics-pipeline`",
   "Active replay chain: `000_baseline.sql` plus additive forward migrations `073_*.sql` through `089_*.sql`",
   "Baseline public tables detected: 233 `CREATE TABLE public.*` statements in `000_baseline.sql`",

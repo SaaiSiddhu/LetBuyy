@@ -93,6 +93,7 @@ export const forbiddenRuntimeSubtrees = [
 
 export const canonicalServiceRoots = [
   "services/api-gateway",
+  "services/mobile-bff",
   "services/checkout-runtime",
   "services/webhook-service",
   "services/queue-workers",

@@ -23,6 +23,7 @@ These roots are reserved but not implemented. Each contains only `AGENTS.md` and
 ## Service Boundaries
 
 - `services/api-gateway`: versioned Hono API, auth middleware, tenant context, service orchestration.
+- `services/mobile-bff`: Cloudflare worker bridge that accepts mobile merchant `lb_session` credentials, signs gateway internal session headers, and proxies allow-listed `/v1` mobile traffic without owning business logic.
 - `services/webhook-service`: payment/provider webhook callback runtime.
 - `services/queue-workers`: implemented Cloudflare Queue worker runtime for event, notification, search, analytics, outbox, and dead-letter consumers declared in `services/queue-workers/wrangler.toml`.
 

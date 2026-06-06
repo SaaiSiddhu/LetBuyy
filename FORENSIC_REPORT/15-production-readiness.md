@@ -1,94 +1,72 @@
 # Production Readiness Assessment
 
-**Investigation date:** 2026-06-05
-**Nature of this document:** A factual, evidence-cited assessment of the platform's *current* readiness state across the dimensions a production-operations review would examine. It documents what exists and what is absent. It does **not** prescribe fixes, sequencing, or target architectures — those are out of scope for this forensic investigation. "Readiness state" labels below describe observed maturity, not a recommendation to ship or not ship.
+**Investigation date:** 2026-06-05 (second pass, post-remediation; HEAD `127a850e`)
+**Nature:** A factual, evidence‑cited assessment of the platform's *current* readiness across the dimensions a production‑operations review examines, now carrying a **delta vs. the first pass** for each dimension. Documents what exists and what is absent; prescribes nothing.
 
-**Readiness scale (descriptive):**
-- **Operational** — implemented, wired, and exercised by code paths that run.
-- **Partial** — implemented but with material gaps, unwired pieces, or no exercise evidence.
-- **Contract-only** — declared in manifests/docs/schema with no executing implementation.
-- **Absent** — not found in the repository.
+**Readiness scale:** **Operational** (implemented, wired, exercised) · **Partial** (gaps / unwired pieces / no exercise evidence) · **Contract‑only** (declared, no executing implementation) · **Absent**.
 
-Synthesized primarily from [14 Risk Assessment](14-risk-assessment.md), [08 Error & Misconfiguration](08-error-misconfiguration.md), [11 Architecture Violations](11-architecture-violations.md), and [07 Integration](07-integration.md).
+Synthesized from [14 Risk](14-risk-assessment.md), [08 Error & Misconfiguration](08-error-misconfiguration.md), [11 Architecture](11-architecture-violations.md), [07 Integration](07-integration.md).
 
 ---
 
-## Readiness scorecard
+## Readiness scorecard (with first→second-pass delta)
 
-| Dimension | State | One-line basis |
-|---|---|---|
-| Deployment & environments | **Partial** | Staging/prod separation cleanly encoded; two prod deploy workflows race; no migration gate in `deploy-production.yml`. |
-| Database & migrations | **Partial** | Real squashed baseline + RLS; two diverging migration roots (PG 15 vs 17); sequence gaps; `db push --include-all` against live DB. |
-| Automated testing | **Contract-only** | 0 package unit tests; all 12 deployable workspaces' `test` = `echo 'No tests yet'`; governance tests assert manifests, not behavior. |
-| Observability (metrics/alerts) | **Contract-only** | Prometheus/Grafana/SLO definitions reference metrics no runtime emits; no OTel/prom-client dep. |
-| Logging | **Partial** | Structured logging present in places; no central aggregation/dashboard evidence; failures are log-detected. |
-| Error tracking | **Absent** | No Sentry/equivalent dependency or DSN wiring found in deployable code. |
-| Secret management | **Operational** | No live secrets in tracked source; `.gitignore` blocks env files; CVE pins via `pnpm.overrides`. |
-| AuthN/AuthZ (platform) | **Partial** | Real Supabase auth + RLS + store-ownership checks; ops plane uses a single static bearer token; split merchant credential authority. |
-| Payments | **Partial** | 4 providers with timing-safe signature verification + server-side recompute/idempotency; INR-centric; app-billing payouts are test-mode only. |
-| Scaling & resilience | **Partial** | Outbox/queue/lease machinery exists; single gateway + single Supabase + single Redis SPOFs; `FAILOVER_REGION` is a status string. |
-| Rate limiting / abuse | **Partial** | identity-platform has rate-limit + Turnstile; storefront customer login does not; no per-app API quotas. |
-| Build reliability | **Partial** | Turbo/pnpm workspace builds; `pnpm install` did not complete cleanly in this environment; one app typecheck fails. |
-| Backup / restore / DR | **Contract-only** | DR/failover described in governance docs; no executing backup/restore or failover code found in repo. |
-| Monitoring of background jobs | **Partial** | Cron-driven outbox dispatch is wired; hot-table partition lifecycle has no scheduler/caller in-repo. |
+| Dimension | 1st pass | 2nd pass | Basis for change |
+|---|---|---|---|
+| Deployment & environments | Partial | **Partial** (unchanged) | Two prod workflows still race on push‑to‑main; `deploy-production.yml` still no migration gate; an ops test now asserts the two stay in sync |
+| Database & migrations | Partial | **Partial** (doc improved) | Migration history now contiguous `000`+`073…089`; AGENTS.md citation fixed; two roots (PG15 vs PG17) + gateless `db push` persist |
+| Backend ownership integrity | — | **Operational** (NEW, improved) | Single‑writer enforced + validator + regression test; the clearest readiness gain of the cycle |
+| Automated testing | Contract‑only | **Partial** | 12/12 no‑op → **10/12**; webhook‑service (12 tests) + queue‑workers (2) real; 5 new federation suites pass; **but** 2 new `.ts` contract tests run in no runner (incl. the internal‑payment auth test) |
+| Observability (metrics/alerts) | Contract‑only | **Contract‑only** (unchanged) | `writeDataPoint` still never called; no OTel/prom‑client; `infrastructure/` untouched |
+| Logging | Partial | **Partial** | app‑marketplace gained a structured logger + `no-console`; no central aggregation |
+| Error tracking | Absent | **Absent** | no Sentry/equivalent found |
+| Secret management | Operational | **Partial ↓** | still no committed live secrets, **but** N‑2: app `access_token` + show‑once webhook secret now persisted plaintext in `idempotency_keys` ~24h |
+| AuthN/AuthZ (platform) | Partial | **Partial ↓ on one path** | merchant credential split unchanged (H‑7); ops plane still static bearer with non‑timing‑safe compare; **N‑1**: internal payment routes fail open off‑prod |
+| Payments | Partial | **Partial** | 4 PSPs with signature verify intact; webhook→order finalization now *depends on the gateway* via service binding (new coupling); app billing still test‑mode |
+| Scaling & resilience | Partial | **Partial ↓** | SPOFs unchanged (one gateway/Supabase/Redis); gateway chokepoint grew (37 routers; `storefront.ts` 4,833) |
+| Rate limiting / abuse | Partial | **Partial** | storefront customer login still unprotected |
+| Build reliability | Partial | **Partial (claim‑only)** | remediation ledger claims `turbo typecheck` 60/60 + lint pass; only governance 129/129 independently reproduced here (no `node_modules`/pnpm in this env) |
+| Backup / restore / DR | Contract‑only | **Contract‑only** | unchanged |
+| Background‑job monitoring | Partial | **Partial ↓** | hot‑table partition lifecycle still has no scheduler; NEW: dead `webhook-deliveries` queue jobs accumulate forever (N‑6) |
+
+**Net:** one dimension clearly improved (backend ownership), one improved partially (testing), two regressed on a specific path (secret management, auth), the rest unchanged. No dimension reached "Operational" that wasn't already, except the new ownership‑integrity row.
 
 ---
 
-## 1. Deployment & environment posture
+## 1. Deployment & environments — Partial (unchanged)
+Two production deploy workflows still trigger on push to `main` with different concurrency groups (race); `deploy-production.yml` still has no migration job and no staging gate, and `echo "SKIP"`s on missing creds. The only delta is `developer-portal` being added to both 9‑app matrices and an operations test that now asserts the "legacy" workflow stays in sync — codifying the duplication rather than removing it. Staging/prod separation remains cleanly encoded; Worker rollback remains lineage‑gated. ([14](14-risk-assessment.md))
 
-Staging and production are cleanly separated in configuration, and Worker rollback is disciplined through a lineage-gated wrapper ([14](14-risk-assessment.md)). However, the investigation found **two production deploy workflows that both trigger on push to `main`** with *different* concurrency groups, allowing concurrent deploys to the same target to race ([14](14-risk-assessment.md), H-15 in [16](16-critical-findings-summary.md)). `deploy-production.yml` contains **no database-migration job and no staging gate**, and `echo "SKIP"`s steps when credentials are absent — meaning a green production run can deploy nothing, or can deploy application code ahead of the schema it expects.
+## 2. Database & migrations — Partial (documentation improved)
+Migration history is now contiguous (`000_baseline.sql` + `073…089`, 18 files) and `AGENTS.md`'s citation was corrected — closing first‑pass C‑12. Still open: two diverging roots (`supabase/` PG15 vs `database/supabase/` PG17), production `db push --include-all` with no in‑repo approval gate, and the hot‑table partition lifecycle (migration 079) with no scheduler/caller. Migration `087` added template‑scoped theme drafts (an `ALTER` on `theme_editor_drafts`, despite its `theme_template_drafts` filename). ([01](01-repository-inventory.md), [14](14-risk-assessment.md))
 
-Default API/account base URLs across web apps point at **staging** (`api.staging.letbuyy.store`), with production reliant on environment overrides; marketing-site CTAs hardcode `accounts.staging.letbuyy.store` as literal link hrefs ([03](03-application-investigation.md)). Vercel/Cloudflare deploy targets exist (`vercel.json`, `infrastructure/`, wrangler configs), but eight `VERCEL_PROJECT_ID_*` env vars are defined-but-unused, superseded by a CI matrix-secret scheme ([09](09-dead-code.md)).
+## 3. Backend ownership integrity — Operational (new, the cycle's biggest gain)
+Previously every core table was writable from multiple runtimes. Now `webhook-service` and `queue-workers` route all mutations to `orders`/`products`/`subscriptions`/`sites`/`billing_history`/`outbox_events` through gateway internal endpoints, `webhook-service` keeps only its own `payment_webhook_events`, and `single-writer-ownership-validator.mjs` (107 files) + a source regression test lock it. This is real, enforced, and verified. The trade‑off is a new bidirectional gateway↔webhook service‑binding cycle (noted in [11](11-architecture-violations.md)) and the N‑1 auth regression on the new payment endpoints (below). ([07](07-integration.md), [11](11-architecture-violations.md))
 
-## 2. Database & migration discipline
+## 4. Testing — Partial (improved from contract‑only, with a sharp caveat)
+12/12 no‑op test scripts → **10/12**: `webhook-service` (12 passing behavior tests) and `queue-workers` (2) are now wired, and five new federation suites pass (marketplace error handling, install store‑ownership, review verified‑install, plus the event‑contract suite). **Caveat that matters for readiness:** the two new TypeScript contract tests — `tests/contracts/storefront-internal-payment-routes.test.ts` and `domain-event-contracts.test.ts` — are matched by **no runner** (root globs are `.mjs`‑only, no workflow calls `tsx`), and the internal‑payment test asserts only the production fail‑closed branch. So the test that exists for the most sensitive new surface neither runs nor covers the dangerous case. `api-gateway` itself still ships `echo 'No tests yet'` despite 7 real `__tests__` files. ([14](14-risk-assessment.md), [08](08-error-misconfiguration.md), [17](17-evidence-appendix.md))
 
-The database is real and non-trivial: a squashed baseline (`database/.../000_baseline.sql`) defining ~233 tables with 350+ RLS policies (≈98.7% table coverage) ([01](01-repository-inventory.md)). Readiness gaps are in *process*, not structure:
+## 5. Security hygiene — Partial, with two new regressions on sensitive paths
+Positives intact: no committed live secrets; timing‑safe webhook signature verification for all four PSPs; current dependency stack with CVE pins. Regressions introduced this cycle:
 
-- **Two diverging migration roots** — `supabase/` (Postgres major 15) and `database/supabase/` (major 17) ([14](14-risk-assessment.md)).
-- **Discontinuous history** — baseline `000` then `073`–`089` with archived gaps; `AGENTS.md` still cites a relocated migration `065` ([01](01-repository-inventory.md), [13](13-technical-debt.md)).
-- **Live-DB push** — production schema applied via `db push --include-all` with the diff only archived afterward; no in-repo approval gate ([14](14-risk-assessment.md)).
-- **Partition lifecycle has no driver** — migration 079's `ensure/detach…hot_table_partitions` requires an external caller that does not exist in-repo, creating partition-exhaustion exposure ([14](14-risk-assessment.md)).
+- **N‑1 (auth):** `routes/storefront/internal-payment-routes.ts:71‑76` fails **open** when `INTERNAL_API_SECRET` is unset and `ENVIRONMENT≠production` (base default `staging`), guarding payment confirm/failure endpoints — while sibling internal routers fail closed. ✅ verified.
+- **N‑2 (secrets):** app `access_token` + show‑once webhook `signing_secret` persisted plaintext in `idempotency_keys.response_body` for ~24h. ✅ verified.
 
-## 3. Testing reality
+Unchanged operational‑security items: merchant password verification still runs in the Next app with the hash over HTTP (H‑7, now validator‑whitelisted); ops plane still a single static bearer with a non‑timing‑safe `!==` compare; credentialed wildcard‑subdomain CORS; 122 raw `error.message` sites behind a 3‑code denylist; dev MFA bypass + OTP echo unchanged (NODE_ENV‑guarded). ([08](08-error-misconfiguration.md), [11](11-architecture-violations.md), [14](14-risk-assessment.md))
 
-This is the single most overstated readiness dimension. Independently verified: **every one of the 12 deployable workspaces (9 apps + api-gateway/webhook-service/queue-workers) has `"test": "echo 'No tests yet' && exit 0"`** ([17](17-evidence-appendix.md)). The 30 workspace packages have **no test script at all**. Real tests exist only in three spots — api-gateway `__tests__` (~6 files incl. `tenant-isolation`, `security`, `payments`), identity-platform (~2), and merchant-app (~1) — but the package `test` scripts do not run them.
+## 6. Observability — Contract‑only (unchanged)
+The Prometheus/Grafana/SLO stack still references metrics no runtime emits; `writeDataPoint` is still never called; there is still no OTel/prom‑client dependency and no error tracking. The remediation did not touch `infrastructure/`. Production incidents remain human/log‑detected. ([14](14-risk-assessment.md))
 
-What *does* run in CI is ~149 `tests/**/*.test.mjs` governance files plus the 128-validator suite. These assert that JSON manifests are internally consistent and that source files contain expected string fragments (e.g. checking `source.includes("compileConvergenceProof")`). Load and chaos suites default to plan mode (print commands, record nothing) and self-label `mode: "governance-contract-not-live-evidence"` ([14](14-risk-assessment.md)). **No CI test calls a running system.** Consequently there is effectively no automated regression protection on deployable behavior.
+## 7. Scaling & resilience — Partial (slightly worse at the chokepoint)
+SPOFs unchanged (one gateway, one Supabase, one Redis; `FAILOVER_REGION` string‑only). The gateway monolith grew — 37 mounted routers, `storefront.ts` 4,833 lines — and webhook payment finalization now *depends* on the gateway through the service binding, so the gateway is a slightly larger single point of failure than before. ([11](11-architecture-violations.md), [14](14-risk-assessment.md))
 
-## 4. Observability, logging, error tracking
-
-The platform ships a complete-looking monitoring *contract* — Prometheus rules, Grafana dashboards, and SLO definitions — but they reference metrics (`http_requests_total`, `letbuyy_queue_dead_letter_total`, `letbuyy_replay_lag_seconds`) that **no runtime emits**; there is no OpenTelemetry or prom-client dependency, and the Analytics-Engine `writeDataPoint` is never called ([14](14-risk-assessment.md), C-14 in [16](16-critical-findings-summary.md)). No Sentry or equivalent error-tracking integration was found in deployable code. Net effect: production incidents are **human- and log-detected**; the alerting stack cannot fire because nothing feeds it.
-
-## 5. Security hygiene (operational)
-
-Stronger than the rest of the readiness profile, and it corrects several stale alarms in the repo's own older ledgers:
-
-- **No live secrets in tracked source** — scans for `sk_live_`, `rzp_live_`, `service_role` JWTs, and PEM private keys all came back empty ([17](17-evidence-appendix.md)); `.gitignore` blocks env files; `all.env` was never tracked.
-- **Webhook signatures verified timing-safe for all four PSPs** ([14](14-risk-assessment.md)).
-- **Dependency stack is current** (Next 16.1.6, wrangler 4.94, supabase-js 2.95.3) with active `pnpm.overrides` CVE pinning ([14](14-risk-assessment.md)).
-
-Open operational-security items: a **single static bearer token** is the only credential for the super-admin/ops API plane (no per-operator identity or rotation; audit actor self-asserted — H-16); **credentialed CORS** (`credentials:true`) is allowed for every wildcard tenant subdomain on the central API ([11](11-architecture-violations.md)); merchant password verification runs in the Next app with the hash shipped over HTTP each login (H-7); and 121 route sites can return raw DB `error.message`, guarded only by a 3-code denylist sanitizer with at least one known miss ([11](11-architecture-violations.md)). A development MFA-bypass code and dev-only OTP echo exist but are `NODE_ENV`-guarded ([03](03-application-investigation.md)).
-
-## 6. Scaling, resilience & SPOFs
-
-The repository contains sophisticated distributed-systems scaffolding (outbox, queues, leases, replay, CQRS) but the *operational* posture is single-instance: **one api-gateway Worker, one Supabase, one Redis**, with `FAILOVER_REGION` present only as a status string and no failover code ([14](14-risk-assessment.md)). The gateway monolith — including the ≈4,900-line `storefront.ts` — is the shared chokepoint for all external traffic ([11](11-architecture-violations.md)). Redis-backed rate limiting treats Redis as optional in code while the gateway `Env` marks it required, an inconsistency that affects degraded-mode behavior ([03](03-application-investigation.md)). Three Cloudflare queues have provisioned consumers but no producers ([07](07-integration.md)).
-
-## 7. Build & developer-experience reliability
-
-Workspace builds are Turbo/pnpm-orchestrated, but in this environment `pnpm install` could not complete cleanly (corepack EACCES, partial `node_modules`) and at least one app (`identity-platform`) fails typecheck; a prior in-repo audit corroborates typecheck/governance friction on developer machines ([14](14-risk-assessment.md)). Standalone `tsc --noEmit` for `webhook-service` and `queue-workers` fails due to tsconfig `paths` asymmetry versus api-gateway ([08](08-error-misconfiguration.md)). The repo's own stale-artifact validator exits non-zero on dev machines due to local build output and tracked root `.md` residue ([11](11-architecture-violations.md)).
-
-## 8. The governance-vs-reality gap (the defining readiness risk)
-
-The repository's self-assessment tooling reports health: **`node scripts/validate-governance.mjs` passes all 128 validators (exit 0)**, confirmed this investigation ([17](17-evidence-appendix.md)). That result is genuine for what it measures — manifest consistency, import boundaries, RLS coverage, secret hygiene, naming/topology rules. But it does **not** measure runtime behavior, test coverage, live telemetry, money movement, or end-to-end extensibility. Every Critical finding in [16](16-critical-findings-summary.md) coexists with a fully green governance run. For a readiness review, the operative caution is therefore:
-
-> A passing governance/"production-certification" suite in this repository certifies *documents and structure*, not a *running, tested, observable production system*. The two should not be conflated.
+## 8. The governance-vs-reality gap — narrower, still real
+The suite is now **129/129** and the new validator means the green result genuinely covers single‑writer ownership and the reconciled runtime map — it certifies *more* than it did. It still does not measure: the open product Criticals, N‑1's off‑prod fail‑open branch, runtime behavior, live telemetry, or whether the unwired `.ts` tests pass. The first‑pass caution narrows but holds: **a green governance run now certifies structure *and ownership*, not capability or path‑level safety.** ([17](17-evidence-appendix.md))
 
 ---
 
 ### Evidence Index (this report)
-- Deploy workflows, SLO/metric absence, SPOFs, migration push, partition lifecycle, secret/PSP positives — `FORENSIC_REPORT/14-risk-assessment.md`
-- Service code-presence, test-script strings, base-URL defaults, MFA/OTP dev paths — `FORENSIC_REPORT/03-application-investigation.md`, `FORENSIC_REPORT/17-evidence-appendix.md`
-- Gateway monolith size, CORS, error-message leakage, `@letbuyy/utils` admin client — `FORENSIC_REPORT/11-architecture-violations.md`
-- Queue producer/consumer asymmetry, tsc paths asymmetry, internal-endpoint secret gap — `FORENSIC_REPORT/07-integration.md`, `FORENSIC_REPORT/08-error-misconfiguration.md`
-- Table/RLS counts, migration sequence — `FORENSIC_REPORT/01-repository-inventory.md`
-- `validate-governance.mjs` output (128 validators, exit 0) — captured live this investigation, logged in `FORENSIC_REPORT/17-evidence-appendix.md`
+- Single‑writer enforcement, validator, regression test — `FORENSIC_REPORT/07-integration.md`, `11-architecture-violations.md`
+- N‑1 fail‑open, N‑2 plaintext secrets, N‑3 unwired tests — `FORENSIC_REPORT/08-error-misconfiguration.md`, `14-risk-assessment.md`, `17-evidence-appendix.md`
+- Deploy workflows, observability, SPOFs, partition lifecycle, base‑URL defaults — `FORENSIC_REPORT/14-risk-assessment.md`
+- Test‑script states, governance 129/129 — `FORENSIC_REPORT/03-application-investigation.md`, `17-evidence-appendix.md`
+- Migration topology, validator count — `FORENSIC_REPORT/01-repository-inventory.md`

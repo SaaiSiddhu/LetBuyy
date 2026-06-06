@@ -16,8 +16,10 @@ enabled = true
 head_sampling_rate = 0.1
 invocation_logs = true
 
+# Beta free-tier: top-level/default deploy is staging-flavored — keep it idle.
+# Scheduled dispatch runs only on production (every 15m). See env.production.triggers.
 [triggers]
-crons = ["*/5 * * * *"]
+crons = []
 
 [[migrations]]
 tag = "v1-runtime-coordinator"
@@ -100,7 +102,8 @@ head_sampling_rate = 0.1
 invocation_logs = true
 
 [env.staging.triggers]
-crons = ["*/5 * * * *"]
+# Beta free-tier: staging fully idled (no scheduled self-dispatch). Re-enable when actively testing staging.
+crons = []
 
 [env.staging.vars]
 ENVIRONMENT = "staging"
@@ -204,7 +207,8 @@ head_sampling_rate = 0.1
 invocation_logs = true
 
 [env.production.triggers]
-crons = ["*/1 * * * *"]
+# Beta free-tier: was */1 (1,440 fires/day, the main queue/invocation drain). 15m = 96 fires/day.
+crons = ["*/15 * * * *"]
 
 [env.production.vars]
 ENVIRONMENT = "production"

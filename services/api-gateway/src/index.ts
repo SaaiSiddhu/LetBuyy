@@ -133,6 +133,9 @@ export interface Env {
     // Future: Upstash Redis for distributed rate limiting
     UPSTASH_REDIS_REST_URL: string;
     UPSTASH_REDIS_REST_TOKEN: string;
+    // Beta free-tier: when unset/off, non-production rate limiting uses in-memory (no KV writes).
+    // Set to "on" only to restore the Cloudflare KV fallback for staging/dev.
+    RATE_LIMIT_KV_FALLBACK?: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -710,6 +713,13 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
         }
         const queueResult = await queue.consumeQueues(workerId, queueNames, 50);
         const hadWork = scheduledDispatchHadWork(outboxResult, queueResult, webhookResult);
+        // Beta free-tier: only emit Cloudflare queue-trigger messages on genuine forward progress
+        // (real outbox/queue/webhook work), not on failure-only churn. Poison rows that keep failing
+        // no longer cost a queue write every cron tick — this breaks the perpetual idle drain.
+        const hadForwardProgress = numberField(outboxResult, 'processed') > 0
+            || numberField(outboxResult, 'queued_jobs') > 0
+            || numberField(outboxResult, 'webhook_deliveries') > 0
+            || sumScheduledQueueResult(queueResult, 'succeeded') > 0;
         const completedDispatchTriggerInput = {
             status: 'completed',
             event_type: 'runtime.scheduled_dispatch.completed',
@@ -727,7 +737,7 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
             event_type: 'runtime.scheduled_dispatch.completed';
         };
         let cloudflareQueueTriggers: CloudflareQueueTriggerResult = [];
-        if (hadWork) {
+        if (hadForwardProgress) {
             cloudflareQueueTriggers = await enqueueScheduledDispatchTriggers(env, completedDispatchTriggerInput);
         }
 
@@ -755,41 +765,14 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
             worker_id: workerId,
             outbox_result: outboxResult,
             queue_result: queueResult,
-            completion_event_enqueued: hadWork,
+            completion_event_enqueued: hadForwardProgress,
             cloudflare_queue_triggers: cloudflareQueueTriggers,
             preflight: pending,
         }));
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : 'Scheduled outbox dispatch failed';
-        const failedDispatchTriggerInput = {
-            status: 'failed',
-            event_type: 'runtime.scheduled_dispatch.failed',
-            dispatcherId,
-            workerId,
-            eventId: crypto.randomUUID(),
-            environment: env.ENVIRONMENT,
-            deploymentEnv: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
-            telemetryEnv: env.TELEMETRY_ENV || env.ENVIRONMENT,
-            error: message,
-        } satisfies ScheduledDispatchQueueTriggerInput & {
-            event_type: 'runtime.scheduled_dispatch.failed';
-        };
-        const cloudflareQueueTriggers = await enqueueScheduledDispatchTriggers(env, failedDispatchTriggerInput);
-
-        if (cloudflareQueueTriggers.some((trigger) => trigger.status === 'failed')) {
-            console.error(JSON.stringify({
-                level: 'error',
-                service: 'letbuyy-api',
-                route: 'scheduled.outbox_dispatch.failure_event',
-                method: 'CRON',
-                status_code: 500,
-                latency_ms: 0,
-                dispatcher_id: dispatcherId,
-                error: message,
-                failed_triggers: cloudflareQueueTriggers.filter((trigger) => trigger.status === 'failed'),
-            }));
-        }
-
+        // Beta free-tier: do NOT enqueue a Cloudflare queue message on every failure. A poison row that
+        // fails each tick would otherwise cost a queue write per cron run. Failures stay observable via logs.
         console.error(JSON.stringify({
             level: 'error',
             service: 'letbuyy-api',
@@ -799,7 +782,6 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
             latency_ms: 0,
             dispatcher_id: dispatcherId,
             error: message,
-            cloudflare_queue_triggers: cloudflareQueueTriggers,
         }));
     }
 }

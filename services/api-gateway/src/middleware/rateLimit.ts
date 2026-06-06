@@ -64,6 +64,14 @@ function isProductionRuntime(env: RuntimeEnvironmentFlags): boolean {
     return env.NODE_ENV?.toLowerCase() === 'production';
 }
 
+// Beta free-tier: non-production rate limiting uses in-memory by default (zero KV writes).
+// Set RATE_LIMIT_KV_FALLBACK=on to restore the Cloudflare KV fallback for staging/dev.
+function kvRateLimitFallbackEnabled(env: Pick<Env, 'RATE_LIMIT_KV_FALLBACK'>): boolean {
+    return ['1', 'true', 'yes', 'on'].includes(
+        String(env.RATE_LIMIT_KV_FALLBACK || '').trim().toLowerCase(),
+    );
+}
+
 function cleanupExpiredEntries(now: number) {
     if (now - lastCleanupAt < 60_000) return;
 
@@ -707,7 +715,7 @@ async function checkRedisQueryCostLimit(
 }
 
 export async function checkRateLimitKey(
-    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE'>,
+    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE' | 'RATE_LIMIT_KV_FALLBACK'>,
     options: DirectRateLimitOptions
 ): Promise<RateLimitResult> {
     const [result] = await checkRateLimitKeys(env, [options]);
@@ -715,7 +723,7 @@ export async function checkRateLimitKey(
 }
 
 async function checkRateLimitKeys(
-    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE'>,
+    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE' | 'RATE_LIMIT_KV_FALLBACK'>,
     checks: DirectRateLimitCheckOptions[],
 ): Promise<RateLimitBatchResult[]> {
     const {
@@ -743,7 +751,7 @@ async function checkRateLimitKeys(
         }));
     }
 
-    if (env.CACHE) {
+    if (env.CACHE && kvRateLimitFallbackEnabled(env)) {
         return Promise.all(checks.map(async (check) => {
             const fullKey = `${check.prefix || prefix}:${check.key}`;
             const result = await checkKvRateLimit(env.CACHE as KVNamespace, fullKey, check.windowMs || windowMs, check.max || 60);
@@ -768,7 +776,7 @@ async function checkRateLimitKeys(
 }
 
 export async function checkQueryCostRateLimitKey(
-    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE'>,
+    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE' | 'RATE_LIMIT_KV_FALLBACK'>,
     options: DirectQueryCostRateLimitOptions
 ): Promise<QueryCostRateLimitResult> {
     const {
@@ -797,7 +805,7 @@ export async function checkQueryCostRateLimitKey(
         };
     }
 
-    if (!useRedis && env.CACHE) {
+    if (!useRedis && env.CACHE && kvRateLimitFallbackEnabled(env)) {
         return checkKvQueryCostLimit(env.CACHE, fullKey, cost, pointsPerSecond, capacity);
     }
 

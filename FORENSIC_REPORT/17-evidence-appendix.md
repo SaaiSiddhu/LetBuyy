@@ -1,97 +1,83 @@
 # Evidence Appendix
 
-**Investigation date:** 2026-06-05
-**Purpose:** Consolidated proof layer for the forensic report set: (a) the independent fact-check log for the highest-stakes claims, (b) reproducible commands and their captured output, and (c) corrections/refinements made during verification. Per-finding evidence lives in each domain report's own "Evidence Index"; this appendix records the *cross-checking* done on top of those reports.
+**Investigation date:** 2026-06-05 (second pass, post-remediation; HEAD `127a850e` on `develop`)
+**Purpose:** Consolidated proof layer for the report set: (A) the second‑pass fact‑check log re‑verifying resolved and newly‑introduced findings, (B) the first‑pass fact‑check log (retained), (C) reproducible commands, (D) corrections and investigation conditions. Per‑finding evidence lives in each domain report's own "Evidence Index"; this appendix records the *cross‑checking*.
 
-**Verification method:** A separate fact-checking pass re-derived each claim below from source (file reads + greps) without relying on the originating report. Verdicts: **CONFIRMED**, **PARTIALLY-CONFIRMED**, **REFUTED**, **CANNOT-VERIFY**. All paths are relative to the repository root (`/Users/saai_sidd/Git/Letbuyy_Store`).
+**Method:** A separate fact‑checking pass re‑derived each claim from source (reads + greps) without relying on the originating report. Verdicts: **CONFIRMED / PARTIALLY‑CONFIRMED / REFUTED / CANNOT‑VERIFY**. Paths relative to repo root `/Users/saai_sidd/Git/Letbuyy_Store`.
 
 ---
 
-## A. Independent fact-check log (14 high-stakes claims)
+## A. Second-pass fact-check log (10 highest-stakes claims)
 
-| # | Claim (abbreviated) | Verdict | Evidence found |
+| # | Claim (abbreviated) | Verdict | Evidence |
 |---|---|---|---|
-| 1 | Web theme editor live preview is unwired; editor previews a hardcoded mock | **CONFIRMED** | `components/theme-editor/CenterPanel.tsx` (iframe + postMessage, L44-50) has **0 importers** in merchant-control-plane; active editor `themes/[themeId]/editor/page.tsx:174` `const PREVIEW_PRODUCTS = [`, used in `PreviewCanvas` (L1665, L1903/1927); no `/preview-session` caller in that app. |
-| 2 | App-scoped tokens accepted at exactly one GET-only endpoint | **CONFIRMED** | `verifyAppScopedAccessToken` single call site `services/api-gateway/src/routes/app-store.ts:1253`; general `authMiddleware` (`middleware/auth.ts:164-202`) accepts only Supabase Bearer/internal session — no app-JWT branch. |
-| 3 | Compliance webhooks subscribed but never published | **CONFIRMED** | `customers/data_request|redact`, `shop/redact` defined once `packages/app-engine/src/index.ts:151-153`, injected into subscription insert (L1428-1434); **zero emit sites** repo-wide (only def + `developer-portal/src/lib/reference.ts:215-217` docs). |
-| 4 | App billing moves no real money | **CONFIRMED** | Fake ref `rzp_route_test_${…}` `app-store.ts:1541`, status flip only (L1543-1545), no PSP call; payout ledger `payout_provider_mode:'test'`, `status:'pending'` `queue-workers/src/platform-queue-consumer.ts:657-664`; only `'released'` ref is a read-side aggregation (`app-store.ts:2527`). |
-| 5 | No server-side cart (localStorage only) | **PARTIALLY-CONFIRMED** | `context/cart-context.tsx:28/43` `localStorage.getItem/setItem('lb_cart')`; no `/cart` persistence route. **Refinement:** a `public.carts` table exists (`database/supabase/migrations/000_baseline.sql:8633`) but is **unwired** — no route reads/writes it. Active cart is client-only as claimed. |
-| 6 | `operator-app` is the unmodified Flutter counter demo | **CONFIRMED** | `apps/mobile/operator-app/lib/` = one file `main.dart`; L15 `title:'Flutter Demo'`, L57 `int _counter = 0`, L107 `'You have pushed the button this many times:'`, L115 `FloatingActionButton`. |
-| 7 | theme-marketplace checkout "Pay" is a non-functional link | **CONFIRMED** | `apps/theme-marketplace/src/app/checkout/page.tsx:206-217` "Pay" = `<Link href={\`/checkout/success?theme=${theme.slug}\`}>` with only a toast `onClick`; no payment intent; `paymentMethod` state cosmetic. |
-| 8 | 6 of 9 services are manifest-only (stronger: no package.json) | **CONFIRMED** | Implemented: `api-gateway` (93 .ts + pkg), `queue-workers`, `webhook-service`. The other 6 (`analytics-pipeline`, `checkout-runtime`, `event-bus`, `media-service`, `notification-service`, `search-service`) hold only `AGENTS.md` + `runtime.manifest.json` — no `src/`, no `package.json`. |
-| 9 | Dual write-ownership of `orders`/`products` by api-gateway + webhook-service | **CONFIRMED** (grep-method corrected) | api-gateway: `product-execution.adapter.ts:147/182/234/295`, `order-execution.adapter.ts:328/444`. webhook-service writes via REST helper not `.from()`: `src/index.ts:412` `patchRows(env,"products",…)`, L430/468/503/1010 `patchRows(env,"orders",…)` setting `payment_status:"paid"`,`status:"confirmed"`. A `.from('orders')` grep misses these. |
-| 10 | All deployable workspaces' `test` script is a no-op | **CONFIRMED** (exact string) | All 12 (9 apps + api-gateway/queue-workers/webhook-service) `package.json` `test` = `echo 'No tests yet' && exit 0` (note trailing `&& exit 0`). |
-| 11 | `storefront.ts` is a ~4,800+ line god file | **CONFIRMED** | `wc -l services/api-gateway/src/routes/storefront.ts` → **4,993** at final measurement (was reported 4,320/4,826 earlier in the audit window — the file was being edited concurrently; see §C). |
-| 12 | `@letbuyy/utils` declared by apps, imported by zero source files | **CONFIRMED** (count nuance) | `@letbuyy/utils` in 9 `package.json` (one is its own self-definition at `packages/typescript/utils`), → **8 consumer apps**; source imports across repo = **0**. |
-| 13 | No live secrets in tracked source | **CONFIRMED** | No `sk_live_`, `rzp_live_`, `service_role` + `eyJ…` JWT literals, or `-----BEGIN … PRIVATE KEY-----` in apps/services/packages/scripts/config/database/supabase/infrastructure/tests. `@letbuyy/utils` strings in manifests are dependency names, not secrets. |
-| 14 | Wasm function `memory_limit_kb` stored but not enforced | **CONFIRMED** | `services/api-gateway/src/extensions/app-functions-runtime.ts`: `memory_limit_kb` typed (L42) + SELECTed (L233) but `WebAssembly.instantiate(module, {})` (L203) passes empty imports; no `WebAssembly.Memory({maximum})` built; only `timeout_ms` (L200/204) + 64 KB output cap (L188) enforced. |
+| 1 | Internal payment routes FAIL OPEN off‑prod; siblings fail closed | **CONFIRMED** | `routes/storefront/internal-payment-routes.ts:71‑76` `if (!configuredSecret && c.env.ENVIRONMENT !== 'production') return true;` guards all 5 endpoints (109/129/154/185/212). `internal-billing.ts:49‑53` & `internal-events.ts:20‑24` `if (!secret) return false;`. `wrangler.toml:27` `ENVIRONMENT = "staging"`; `INTERNAL_API_SECRET` in no `[vars]`. Prod fails closed (`:210`). |
+| 2 | App access_token + show‑once signing_secret persisted plaintext ~24h | **CONFIRMED** | `app-store.ts:2146` `access_token: accessToken`, `:2154` `signing_secret: defaultSigningSecret`, `:2158` `idempotency.complete({ responseBody: installResponse })`; adapter `idempotency-execution.adapter.ts:151‑156` writes `response_body`, `:69` TTL `24*60*60`, `:112‑118` returns it on replay. DB `app_installations.config` stores only `access_token_hash` (`:2051`). |
+| 3 | `gateway-events.ts` duplicated webhook‑service ↔ queue‑workers | **CONFIRMED** (nuance) | Both files exist (1541 B / 1490 B); `diff` differs only in indentation/quotes + binding import‑vs‑inline; logic line‑identical. `"API_GATEWAY_SERVICE binding is required"` in **8 files** (4 source + 4 tests). |
+| 4 | theme‑marketplace checkout "Pay" still a fake success `<Link>` | **CONFIRMED** | `apps/theme-marketplace/src/app/checkout/page.tsx:206‑217` `<Link href={\`/checkout/success?theme=${theme.slug}\`}>` with toast‑only onClick; only `fetch` is `:89` (loads theme); PSP buttons `:143‑163` set local state only. |
+| 5 | `CODEX_WS9_LEDGER.md` inside a Next route segment; ~8 CODEX_*.md at root | **CONFIRMED** | `apps/merchant-control-plane/src/app/[store]/settings/CODEX_WS9_LEDGER.md` exists; root has exactly 8 `CODEX_*.md`; strays also at `packages/typescript/ui/` and `apps/developer-portal/`. |
+| 6 | Governance "(129 validators)"; single‑writer validator exists with that table list | **CONFIRMED** | `node scripts/validate-governance.mjs` → exit 0, `Governance validation passed (129 validators).` + `Single-writer ownership validator passed (107 source files checked)`. Validator `:23‑27` lists orders/products/subscriptions/sites/billing_history/outbox_events. |
+| 7 | Crypto helpers re‑declared in `storefront.ts`, byte‑similar to `lib/crypto.ts` | **PARTIALLY‑CONFIRMED** | `storefront.ts:1791/1804/1819` re‑declare `timingSafeEqualHex`/`hmacSha256Hex`/`sha256Hex`; first two char‑identical to `lib/crypto.ts:10‑21/23‑36` (minus `export`); storefront imports nothing from `lib/crypto`. **Correction:** `lib/crypto.ts` has NO `sha256Hex` (only the two), so the third duplicates *other* inline copies (e.g. idempotency adapter), not crypto.ts. |
+| 8 | The two new `.ts` contract tests run in no runner | **CONFIRMED** | Root `package.json` `test`=`node --test tests/*/*.test.mjs` (`.mjs` only); `api-gateway` `test`=`echo 'No tests yet'`; `.github/workflows/*` run `pnpm turbo test` / `pnpm run test` (no `tsx`); `test-coverage-governance-validator.mjs:67‑76` lists only `.mjs`. Zero `tsx` in any package.json. |
+| 9 | Editor preview still mock; CenterPanel.tsx orphan | **CONFIRMED** | `…/editor/page.tsx:191‑200` `const PREVIEW_PRODUCTS = [...]`; `PreviewCanvas` invoked `:1401`, defined `:1842` (React divs, no iframe); `components/theme-editor/CenterPanel.tsx` grep across merchant‑control‑plane src (excl. itself) = 0 importers. |
+| 10 | AGENTS.md line ~85 lists only 8 web apps (omits developer‑portal) | **PARTIALLY‑CONFIRMED** | `AGENTS.md:85` lists 8 web apps, no `developer-portal`, while CLAUDE.md includes it. **But** AGENTS.md `:22` does mention `Developer Portal: apps/developer-portal` — so it's an internal AGENTS.md inconsistency (line 22 vs 85) + an AGENTS.md↔CLAUDE.md mismatch, not a total omission. |
 
-**Score:** 13 CONFIRMED, 1 PARTIALLY-CONFIRMED, 0 REFUTED. No headline claim was overturned; refinements strengthen the findings.
+**Second‑pass score:** 8 CONFIRMED, 2 PARTIALLY‑CONFIRMED, 0 REFUTED. No claim overturned; the two refinements are citation‑level.
 
-## B. Reproducible commands & captured output
+## B. First-pass fact-check log (retained — 14 claims)
 
-These commands were run read-only during the investigation. Results are reproducible from a clean checkout.
+13 CONFIRMED, 1 PARTIALLY‑CONFIRMED (vestigial unused `carts` table), 0 REFUTED. Key items (all still valid at second pass unless a §A row supersedes): single‑gateway monolith; 6 manifest‑only services; app token one call site; compliance topics never published; app billing fabricated refs; editor preview mock; operator‑app counter demo; theme‑marketplace fake checkout; all‑12 no‑op test scripts; `storefront.ts` god file; `@letbuyy/utils` 8/0 dead edge; no committed secrets; Wasm memory limit unenforced. Full table in the first‑pass git history of this file.
 
-**B-1. Governance suite — passes all gates.**
+## C. Reproducible commands & captured output
+
+**C‑1. Governance — passes at the new count.**
 ```
-$ node scripts/validate-governance.mjs   # (run from repo root)
+$ node scripts/validate-governance.mjs
 …
-Domain boundary validator passed (13 domain packages and 17 schema facades checked).
-Environment validator passed (2934 tracked files scanned).
-Generated artifact validator passed (2934 tracked files scanned).
-Stale artifact validator passed (10 untracked non-ignored files and 2539 workspace files scanned).
-Tooling governance validator passed (9 canonical tooling directories checked).
-Governance validation passed (128 validators).
+Single-writer ownership validator passed (107 source files checked).
+…
+Governance validation passed (129 validators).
 EXIT: 0
 ```
-This is the central evidentiary fact for the "governance-vs-reality gap": the suite is green while every Critical finding stands. It validates manifests, boundaries, RLS coverage, secret hygiene, and topology rules — not runtime behavior, tests, or telemetry.
+The new validator (#129) is `single-writer-ownership-validator.mjs`. The green result now genuinely covers single‑writer ownership and the reconciled runtime map — it certifies more than the first‑pass 128 did, but still not runtime behavior, N‑1's off‑prod branch, or the open product Criticals.
 
-**B-2. Service code presence (monolith proof).**
+**C‑2. Single‑writer proof.**
 ```
-services/api-gateway        → src/ (90+ .ts), package.json, wrangler  [IMPLEMENTED]
-services/webhook-service     → src/, package.json, wrangler           [IMPLEMENTED]
-services/queue-workers       → src/, package.json, wrangler           [IMPLEMENTED]
-services/analytics-pipeline  → AGENTS.md + runtime.manifest.json only [CONTRACT-ONLY]
-services/checkout-runtime    → AGENTS.md + runtime.manifest.json only [CONTRACT-ONLY]
-services/event-bus           → AGENTS.md + runtime.manifest.json only [CONTRACT-ONLY]
-services/media-service       → AGENTS.md + runtime.manifest.json only [CONTRACT-ONLY]
-services/notification-service→ AGENTS.md + runtime.manifest.json only [CONTRACT-ONLY]
-services/search-service      → AGENTS.md + runtime.manifest.json only [CONTRACT-ONLY]
+$ grep -RnE "\.(insert|update|upsert|delete)\(|patchRows\((env, ?)?\"(orders|products|subscriptions|sites|billing_history|outbox_events)\"" services/webhook-service/src services/queue-workers/src
+# → only payment_webhook_events writes remain in webhook-service; gateway-owned tables: 0
 ```
 
-**B-3. Test-script reality.**
+**C‑3. New surface map (edges added since first pass).**
 ```
-$ grep -h '"test"' apps/*/package.json apps/mobile/*/package.json services/*/package.json
-"test": "echo 'No tests yet' && exit 0"   # × all 12 deployable workspaces
-```
-
-**B-4. God-file size.**
-```
-$ wc -l services/api-gateway/src/routes/storefront.ts
-4993 services/api-gateway/src/routes/storefront.ts
+/v1/internal/billing/subscriptions/{activate,sync,invoice}     routes/internal-billing.ts      (fail-closed)
+/v1/internal/events/domain                                     routes/internal-events.ts       (fail-closed, Zod)
+/v1/storefront/internal/payments/{confirm,failure,event,reference} + /internal/orders/:id/payable
+                                                               routes/storefront/internal-payment-routes.ts (FAIL-OPEN off-prod — N-1)
 ```
 
-**B-5. Dead dependency edge.**
+**C‑4. Test‑script reality.**
 ```
-$ grep -rl "@letbuyy/utils" --include=package.json .    →  9 files (1 self-definition + 8 consumers)
-$ grep -rl "from ['\"]@letbuyy/utils" --include=*.ts --include=*.tsx apps services packages  →  0 files
+$ grep -h '"test"' apps/*/package.json services/*/package.json
+# webhook-service, queue-workers → real `node --test …`; the other 10 → "echo 'No tests yet' && exit 0"
 ```
 
-## C. Corrections, caveats & investigation conditions
+**C‑5. God‑file size after the split.**
+```
+$ wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/routes/storefront/internal-payment-routes.ts
+4833  storefront.ts        # was ~4,826 first pass — net grew despite the extraction
+ 233  internal-payment-routes.ts
+```
 
-1. **The repository was being edited during the audit.** Multiple files (notably `services/api-gateway/src/routes/analytics.ts`, `storefront.ts`) changed mtime mid-investigation, and `validate-governance.mjs` produced a transient FAILURE on an execution-authority check before passing on re-run ([07](07-integration.md), [08](08-error-misconfiguration.md)). Line numbers for the largest gateway files are therefore accurate as of capture but may drift by a few lines. The governance suite's final state at the close of investigation was **PASS (exit 0)**.
+## D. Corrections, caveats & investigation conditions
 
-2. **Workspace/bash backend was intermittently unavailable**; affected agents cross-executed via the Read/Grep/Glob file tools, so all cited counts are independently file-tool-verified, not bash-only.
-
-3. **`pnpm install` could not complete cleanly** in this environment (corepack EACCES, partial `node_modules`), so standalone per-workspace `tsc --noEmit` could not be run for every workspace; import-integrity claims rely on path/grep analysis where typecheck was infeasible ([08](08-error-misconfiguration.md), [14](14-risk-assessment.md)).
-
-4. **Severity normalization.** Source reports used independent severity scales; [16](16-critical-findings-summary.md) re-rates findings by blast radius × evidence strength, which in a few cases promotes or demotes an item relative to its originating report. Both the normalized rating and the source are shown there.
-
-5. **Stale prior-run files retained.** Eight short report stubs dated earlier the same day (e.g. `03-application-reports.md`, `08-dead-code.md`, `09-duplication.md`, `10-architecture-violations.md`, `11-shopify-gap-analysis.md`, `12-technical-debt.md`, `13-risk-assessment.md`, `14-evidence-appendix.md`) are from an earlier partial pass and were **left untouched** at the user's instruction (delete was declined). They are **superseded** by the canonical numbered set in [README.md](README.md) and should be disregarded; their content was not used as evidence here.
-
-6. **Prior-doc corrections surfaced during verification.** Several claims in the repo's *own* older audit ledgers were independently disproven and should not be carried forward: outbox dispatch *is* now cron-wired; the search consumer and magic-link paths *are* wired; and `tasks/todo.md` / `memory/lessons.md` (both dated 2026-03-01) still list ≥5 already-resolved CRITICAL security items as open ([07](07-integration.md), [13](13-technical-debt.md), [14](14-risk-assessment.md)).
+1. **Commit window.** `63053d18..HEAD` = `127a850e`; 68 commits, 292 files, +21,140 −8,527; all dated 2026‑06‑05 IST. Two reports' agents independently measured the window (68 commits) consistently.
+2. **Repo edited during BOTH passes.** During this second pass, several `FORENSIC_REPORT/*` files were modified concurrently by the parallel report agents; **no source file under apps/services/packages changed mid‑pass** (verified). Only untracked file: `.claude/settings.local.json`.
+3. **`pnpm`/`node_modules` unavailable in this environment** — standalone per‑workspace `tsc`/`pnpm turbo` could not be reproduced; the remediation ledger's "typecheck 60/60 + lint pass" is recorded as a **claim**, while governance 129/129 was independently reproduced. Import‑integrity relied on path/grep analysis.
+4. **Numbering note.** `FORENSIC_REPORT/` contains the canonical `00`–`17` set plus residual earlier‑run stub files (`03-application-reports.md`, `08-dead-code.md`, `09-duplication.md`, `10-architecture-violations.md`, `11-shopify-gap-analysis.md`, `12-technical-debt.md`, `13-risk-assessment.md`, `14-evidence-appendix.md`) left in place at the user's instruction. The canonical set is listed in [README.md](README.md); the stubs are superseded. A separate `FORENSIC_REPORT_OPERATIONS/` (16 files) was produced by another process and is outside this investigation.
+5. **Citation drift.** Several line anchors moved between passes (e.g. `verifyAppScopedAccessToken` call 1253→1263; app install 1943→1953; fabricated ref 1541→1551). Domain reports carry current anchors; this appendix uses second‑pass numbers.
+6. **Two refinements (not reversals).** §A‑7: `sha256Hex` duplicates inline copies, not `lib/crypto.ts` (which lacks it). §A‑10: `developer-portal` does appear at `AGENTS.md:22`, just not in the line‑85 canonical list.
 
 ---
 
-### How to reproduce the full investigation
-Each domain report (`01`–`14`) contains a "Method" section listing its commands and an "Evidence Index" listing every cited path. This appendix records only the cross-cutting verification performed on top of them. No command in this investigation modified, created, deleted, moved, or renamed any file in the platform under investigation; the only writes were the report files in `FORENSIC_REPORT/`.
+### Provenance
+Each domain report (`01`–`14`) has its own "Method" + "Evidence Index" with current anchors and a "Changes since first pass" section. This appendix records only the cross‑cutting verification. No command modified, created, deleted, moved, or renamed any platform file; the only writes were the report files in `FORENSIC_REPORT/`.
