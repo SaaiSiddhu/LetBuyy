@@ -6,11 +6,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
+import 'package:letbuyy_store/models/store_model.dart';
 import 'package:letbuyy_store/services/analytics_service.dart';
 import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/cms_service.dart';
 import 'package:letbuyy_store/services/coupon_service.dart';
 import 'package:letbuyy_store/services/customer_service.dart';
+import 'package:letbuyy_store/services/domain_service.dart';
 import 'package:letbuyy_store/services/inventory_service.dart';
 import 'package:letbuyy_store/services/media_service.dart';
 import 'package:letbuyy_store/services/notification_settings_service.dart';
@@ -37,6 +39,7 @@ import 'package:letbuyy_store/screens/discounts/coupons_screen.dart';
 import 'package:letbuyy_store/screens/inventory/inventory_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
 import 'package:letbuyy_store/screens/settings/notifications_screen.dart';
+import 'package:letbuyy_store/screens/settings/domain_settings_screen.dart';
 import 'package:letbuyy_store/screens/settings/shipping_screen.dart';
 import 'package:letbuyy_store/screens/settings/taxes_screen.dart';
 import 'package:provider/provider.dart';
@@ -475,6 +478,44 @@ void main() {
       expect(api.paths, contains('/shipping-tax/taxes'));
       expect(api.paths, contains('/shipping-tax/taxes/tax_1'));
     });
+
+    test(
+      'DomainService saves custom domains and skips missing lifecycle',
+      () async {
+        final api = _FakeApiClient(
+          json: {
+            '/stores/store_1': _storeJson(
+              customDomain: 'shop.example.com',
+              customDomainStatus: 'pending',
+              dnsConfig: {'CNAME': DomainService.cnameTarget},
+            ),
+          },
+        );
+        final service = DomainService(api: api);
+        final store = StoreModel.fromJson(_storeJson());
+
+        final updated = await service.saveCustomDomain(
+          store,
+          'https://Shop.Example.com/path',
+        );
+        final snapshot = service.snapshotForStore(updated);
+
+        expect(updated.customDomain, 'shop.example.com');
+        expect(snapshot.records.single.type, 'CNAME');
+        expect(snapshot.records.single.value, DomainService.cnameTarget);
+        expect(api.paths, contains('/stores/store_1'));
+        await expectLater(
+          service.checkAvailability('shop.example.com'),
+          throwsA(
+            isA<SkipNeedsBackendException>().having(
+              (error) => error.id,
+              'id',
+              DomainService.missingLifecycleRouteId,
+            ),
+          ),
+        );
+      },
+    );
 
     test('NotificationSettingsService persists preferences', () async {
       final api = _FakeApiClient(
@@ -1150,6 +1191,43 @@ void main() {
     expect(find.text('New tax'), findsOneWidget);
   });
 
+  testWidgets('DomainSettingsScreen renders DNS guidance', (tester) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [
+          _storeJson(
+            customDomain: 'shop.example.com',
+            customDomainStatus: 'pending',
+            sslActive: false,
+            dnsConfig: {'CNAME': DomainService.cnameTarget},
+          ),
+        ],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => DomainService(api: api)),
+        ],
+        child: const MaterialApp(home: DomainSettingsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Domain settings'), findsOneWidget);
+    expect(find.text('demo.letbuyy.store'), findsOneWidget);
+    expect(find.text('shop.example.com'), findsWidgets);
+    expect(find.text('Save domain'), findsOneWidget);
+    await tester.drag(find.byType(ListView), const Offset(0, -500));
+    await tester.pumpAndSettle();
+
+    expect(find.text('CNAME'), findsOneWidget);
+    expect(find.text(DomainService.cnameTarget), findsOneWidget);
+    expect(find.text('Email DNS records'), findsOneWidget);
+  });
+
   testWidgets('ThemeVersionsScreen renders releases for rollback', (
     tester,
   ) async {
@@ -1238,7 +1316,13 @@ class _FakeApiClient extends ApiClient {
   }
 }
 
-Map<String, dynamic> _storeJson({bool taxInclusive = false}) => {
+Map<String, dynamic> _storeJson({
+  bool taxInclusive = false,
+  String? customDomain,
+  String? customDomainStatus,
+  bool sslActive = false,
+  Map<String, dynamic>? dnsConfig,
+}) => {
   'id': 'store_1',
   'seller_id': 'seller_1',
   'name': 'Demo Store',
@@ -1247,6 +1331,10 @@ Map<String, dynamic> _storeJson({bool taxInclusive = false}) => {
   'store_url': 'https://demo.letbuyy.store',
   'theme_id': 'modern',
   'tax_inclusive': taxInclusive,
+  'custom_domain': customDomain,
+  'custom_domain_status': customDomainStatus,
+  'ssl_active': sslActive,
+  'dns_config': dnsConfig ?? const {},
   'created_at': '2026-06-01T00:00:00.000Z',
   'updated_at': '2026-06-01T00:00:00.000Z',
 };
