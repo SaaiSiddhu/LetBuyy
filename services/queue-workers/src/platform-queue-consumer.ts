@@ -16,6 +16,10 @@ import {
   type SupabaseServiceEnv,
 } from '@letbuyy/infrastructure/supabase-adapter';
 import { emitGatewayDomainEvent, type GatewayServiceBinding } from '@letbuyy/infrastructure/gateway-events-adapter';
+import {
+  dispatchPushNotificationToDevices,
+  type PushProviderEnv,
+} from './push-dispatcher';
 
 type JsonObject = Record<string, unknown>;
 export type PlatformQueueName = 'analytics-events' | 'search-indexing' | 'payment-events';
@@ -135,7 +139,7 @@ export interface PlatformQueueConsumeResult {
   error?: string;
 }
 
-export interface PlatformQueueConsumerEnv extends SupabaseServiceEnv {
+export interface PlatformQueueConsumerEnv extends SupabaseServiceEnv, PushProviderEnv {
   API_GATEWAY_SERVICE?: GatewayServiceBinding;
   INTERNAL_API_SECRET?: string;
   PLATFORM_QUEUE_CLAIM_LIMIT?: string;
@@ -543,6 +547,17 @@ class PlatformQueueConsumer {
     });
 
     if (error) throw new Error(`Notification dispatch write failed: ${error.message}`);
+
+    await dispatchPushNotificationToDevices(this.db, this.env, {
+      userId,
+      title: planned.title,
+      message: planned.message,
+      data: {
+        ...planned.data,
+        notification_type: planned.type,
+      },
+      actionUrl: planned.action_url || null,
+    });
   }
 
   private async resolveNotificationUserId(siteId: string | null, payload: JsonObject): Promise<string | null> {

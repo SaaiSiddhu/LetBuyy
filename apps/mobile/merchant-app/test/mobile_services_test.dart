@@ -12,6 +12,8 @@ import 'package:letbuyy_store/services/inventory_service.dart';
 import 'package:letbuyy_store/services/notification_settings_service.dart';
 import 'package:letbuyy_store/services/order_service.dart';
 import 'package:letbuyy_store/services/product_service.dart';
+import 'package:letbuyy_store/services/push_service.dart';
+import 'package:letbuyy_store/services/skip_needs_backend_exception.dart';
 import 'package:letbuyy_store/services/store_auth_service.dart';
 import 'package:letbuyy_store/services/store_service.dart';
 import 'package:letbuyy_store/services/subscription_service.dart';
@@ -207,6 +209,34 @@ void main() {
       expect(updated.lowStock, isTrue);
       expect(api.paths, contains('/notifications/preferences'));
     });
+
+    test(
+      'PushService fails closed until device token backend exists',
+      () async {
+        final service = PushService(api: _FakeApiClient(json: const {}));
+
+        await expectLater(
+          service.registerDeviceToken(
+            token: 'device-token',
+            platform: PushDevicePlatform.android,
+            deviceName: 'Pixel test device',
+          ),
+          throwsA(
+            isA<SkipNeedsBackendException>().having(
+              (error) => error.id,
+              'id',
+              PushService.missingRegistrationRouteId,
+            ),
+          ),
+        );
+
+        expect(service.lastAttempt?.toJson(), {
+          'token': 'device-token',
+          'platform': 'android',
+          'device_name': 'Pixel test device',
+        });
+      },
+    );
 
     test('AnalyticsService assembles dashboard metrics', () async {
       final api = _FakeApiClient(

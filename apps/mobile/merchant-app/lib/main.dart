@@ -14,6 +14,7 @@ import 'services/customer_service.dart';
 import 'services/inventory_service.dart';
 import 'services/coupon_service.dart';
 import 'services/notification_settings_service.dart';
+import 'services/push_service.dart';
 import 'services/analytics_service.dart';
 import 'services/theme_service.dart';
 import 'services/theme_provider.dart';
@@ -77,6 +78,9 @@ void main() async {
         ),
         ChangeNotifierProvider<NotificationSettingsService>(
           create: (_) => NotificationSettingsService(api: apiClient),
+        ),
+        ChangeNotifierProvider<PushService>(
+          create: (_) => PushService(api: apiClient),
         ),
         ChangeNotifierProvider<AnalyticsService>(
           create: (_) => AnalyticsService(api: apiClient),

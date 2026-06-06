@@ -4,6 +4,7 @@ import {
   type RuntimeTelemetryDatasetBinding,
 } from '@letbuyy/infrastructure/runtime-telemetry-adapter';
 import { consumePlatformQueuesForCloudflareQueue } from './platform-queue-consumer';
+import type { PushProviderEnv } from './push-dispatcher';
 
 type QueuePayload = {
   messageId?: string;
@@ -27,7 +28,7 @@ interface NormalizedQueueDelivery {
   lagMilliseconds: number;
 }
 
-export interface Env extends SupabaseServiceEnv {
+export interface Env extends SupabaseServiceEnv, PushProviderEnv {
   ENVIRONMENT: 'development' | 'staging' | 'production';
   APP_ENV?: string;
   NODE_ENV?: string;
