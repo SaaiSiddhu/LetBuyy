@@ -21,6 +21,7 @@ import '../screens/settings/help_screen.dart';
 import '../screens/analytics/analytics_screen.dart';
 import '../screens/customers/customer_detail_screen.dart';
 import '../screens/customers/customers_screen.dart';
+import '../screens/inventory/inventory_screen.dart';
 import '../screens/orders/order_detail_screen.dart';
 import '../screens/orders/orders_screen.dart';
 import '../screens/subscription/pricing_screen.dart';
@@ -61,6 +62,7 @@ class AppRoutes {
   static const String analytics = '/analytics';
   static const String customers = '/customers';
   static const String customerDetail = '/customers/detail';
+  static const String inventory = '/inventory';
   static const String orders = '/orders';
   static const String orderDetail = '/orders/detail';
   static const String pricing = '/pricing';
@@ -73,6 +75,9 @@ class AppRoutes {
     }
     if (settings.name == '/features/customers') {
       return _buildRoute(const CustomersScreen(), settings);
+    }
+    if (settings.name == '/features/inventory') {
+      return _buildRoute(const InventoryScreen(), settings);
     }
 
     final feature = MerchantFeatureDefinitions.byRoute[settings.name];
@@ -177,6 +182,9 @@ class AppRoutes {
           ),
           settings,
         );
+
+      case inventory:
+        return _buildRoute(const InventoryScreen(), settings);
 
       case orders:
         return _buildRoute(const OrdersScreen(), settings);

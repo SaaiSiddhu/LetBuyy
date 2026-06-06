@@ -2,8 +2,8 @@
 
 - Branch: `stream/letbuyy-foundation-v2`
 - Start HEAD: `62b2915218daa716b075b02d909c08e053bfce25`
-- Current HEAD: `5dd288b0c7bb216f9499fa5cab2d9660d286bec0`
-- Status timestamp: `2026-06-06T13:27:54+05:30`
+- Current HEAD: `8cb31d24b872ee1eb9a0e47d190d435f981e506c`
+- Status timestamp: `2026-06-06T13:33:00+05:30`
 
 ## Feature Checklist
 
@@ -22,8 +22,8 @@
 | P0 | CI workflow/docs refresh | DONE | `.github/workflows/ci.yml`, `docs/mobile/README.md`, `docs/design-system/README.md` from prior V1 foundation work |
 | P1 | Order detail + refunds | DONE | `lib/screens/orders/order_detail_screen.dart`, `lib/screens/orders/orders_screen.dart`, `lib/services/order_service.dart`, `packages/dart/api_client/lib/src/api_client.dart`; list tap opens typed detail screen, renders line items/customer/totals/timeline, calls `/orders/:id/refund` and `/orders/:id/refund/complete`; covered by `test/mobile_services_test.dart` service + widget tests |
 | P1 | Customers + detail + addresses | DONE | `lib/services/customer_service.dart`, `lib/screens/customers/customers_screen.dart`, `lib/screens/customers/customer_detail_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/customers` opens the real customer list, detail loads `/customers/:email`, address CRUD uses `/customers/:email/addresses*`, and recent orders link to the order detail screen; covered by `test/mobile_services_test.dart` service + widget tests |
-| P1 | Inventory adjust | TODO | Next resume point |
-| P1 | Coupons CRUD | TODO | Not started |
+| P1 | Inventory adjust | DONE | `lib/services/inventory_service.dart`, `lib/screens/inventory/inventory_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/inventory` opens the real inventory screen, low-stock filter is available, and stock adjustments post signed `delta` + reason to `/inventory/adjust`; covered by `test/mobile_services_test.dart` service + widget tests |
+| P1 | Coupons CRUD | TODO | Next resume point |
 | P1 | Notifications settings | TODO | Not started |
 | P1 | Push notifications | TODO | Not started |
 | P2 | Theme/CMS/media/shipping/taxes/domains/collections/variants/WMS | TODO | Not started |
@@ -47,6 +47,9 @@
 - P1 `Customers + detail + addresses` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 4.1s)`.
 - P1 `Customers + detail + addresses` feature check: `flutter test` PASS. Output: `00:01 +15: All tests passed!`.
 - P1 `Customers + detail + addresses` feature governance: `node scripts/validate-governance.mjs` PASS. Output: `Governance validation passed (157 validators)`.
+- P1 `Inventory adjust` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 3.4s)`.
+- P1 `Inventory adjust` feature check: `flutter test` PASS. Output: `00:01 +17: All tests passed!`.
+- P1 `Inventory adjust` feature governance: `node scripts/validate-governance.mjs` PASS. Output: `Governance validation passed (157 validators)`.
 
 ## Notes
 
@@ -55,6 +58,6 @@
 
 ## RESUME HINT
 
-Next feature: P1 `Inventory adjust`.
+Next feature: P1 `Coupons CRUD`.
 
-Start with `packages/dart/api_client/lib/src/api_client.dart`, create `apps/mobile/merchant-app/lib/services/inventory_service.dart`, and add `apps/mobile/merchant-app/lib/screens/inventory/inventory_screen.dart`. Route `/features/inventory` to the real screen and keep traffic through gateway `/v1/inventory/levels` and `/v1/inventory/adjust`.
+Start with `packages/dart/api_client/lib/src/api_client.dart`, create `apps/mobile/merchant-app/lib/services/coupon_service.dart`, `apps/mobile/merchant-app/lib/screens/discounts/coupons_screen.dart`, and `apps/mobile/merchant-app/lib/screens/discounts/coupon_form_screen.dart`. Route `/features/coupons` to the real screen and keep traffic through gateway `/v1/coupons*` plus `/v1/coupons/validate`.

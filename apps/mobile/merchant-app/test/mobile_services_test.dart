@@ -7,6 +7,7 @@ import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
 import 'package:letbuyy_store/services/analytics_service.dart';
 import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/customer_service.dart';
+import 'package:letbuyy_store/services/inventory_service.dart';
 import 'package:letbuyy_store/services/order_service.dart';
 import 'package:letbuyy_store/services/product_service.dart';
 import 'package:letbuyy_store/services/store_auth_service.dart';
@@ -15,6 +16,7 @@ import 'package:letbuyy_store/services/subscription_service.dart';
 import 'package:letbuyy_store/services/theme_service.dart';
 import 'package:letbuyy_store/screens/customers/customer_detail_screen.dart';
 import 'package:letbuyy_store/screens/customers/customers_screen.dart';
+import 'package:letbuyy_store/screens/inventory/inventory_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -128,6 +130,29 @@ void main() {
         api.paths,
         contains('/customers/meera%40example.com/addresses/address_1'),
       );
+    });
+
+    test('InventoryService lists and adjusts stock levels', () async {
+      final api = _FakeApiClient(
+        paginated: {
+          '/inventory/levels': [_inventoryJson()],
+        },
+        json: {'/inventory/adjust': _inventoryJson(available: 15)},
+      );
+      final service = InventoryService(api: api);
+
+      final levels = await service.fetchLevels('store_1');
+      final adjusted = await service.adjustStock(
+        storeId: 'store_1',
+        level: levels.single,
+        delta: 5,
+        reason: 'stock_count',
+      );
+
+      expect(levels.single.sku, 'TEE-001');
+      expect(adjusted.available, 15);
+      expect(api.paths, contains('/inventory/levels'));
+      expect(api.paths, contains('/inventory/adjust'));
     });
 
     test('AnalyticsService assembles dashboard metrics', () async {
@@ -402,6 +427,33 @@ void main() {
     expect(find.text('Recent orders'), findsOneWidget);
     expect(find.text('order_1'), findsOneWidget);
   });
+
+  testWidgets('InventoryScreen renders stock levels and low-stock filter', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+        '/inventory/levels': [_inventoryJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => InventoryService(api: api)),
+        ],
+        child: const MaterialApp(home: InventoryScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Inventory'), findsOneWidget);
+    expect(find.text('Cotton Tee'), findsOneWidget);
+    expect(find.text('TEE-001'), findsOneWidget);
+    expect(find.text('Adjust'), findsOneWidget);
+  });
 }
 
 class _FakeApiClient extends ApiClient {
@@ -515,6 +567,20 @@ Map<String, dynamic> _addressJson() => {
   'country': 'IN',
   'label': 'Home',
   'is_default': true,
+};
+
+Map<String, dynamic> _inventoryJson({int available = 10}) => {
+  'id': 'inventory_1',
+  'store_id': 'store_1',
+  'product_id': 'prod_1',
+  'variant_id': 'variant_1',
+  'sku': 'TEE-001',
+  'product_name': 'Cotton Tee',
+  'location_id': 'main',
+  'available': available,
+  'reserved': 1,
+  'committed': 2,
+  'on_hand': available + 3,
 };
 
 Map<String, dynamic> _orderJson({
