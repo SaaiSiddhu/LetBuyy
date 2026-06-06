@@ -39,6 +39,7 @@ import 'package:letbuyy_store/screens/discounts/coupons_screen.dart';
 import 'package:letbuyy_store/screens/inventory/inventory_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
 import 'package:letbuyy_store/screens/products/collections_screen.dart';
+import 'package:letbuyy_store/screens/products/product_form_screen.dart';
 import 'package:letbuyy_store/screens/settings/notifications_screen.dart';
 import 'package:letbuyy_store/screens/settings/domain_settings_screen.dart';
 import 'package:letbuyy_store/screens/settings/shipping_screen.dart';
@@ -74,6 +75,37 @@ void main() {
       expect(products.single['store_id'], 'store_1');
       expect(products.single.containsKey('salePrice'), isFalse);
     });
+
+    test(
+      'ProductService sends variant matrix rows in create payload',
+      () async {
+        final api = _FakeApiClient(
+          json: {
+            '/products': _productJson(variants: [_variantJson()]),
+          },
+        );
+        final service = ProductService(api: api);
+
+        await service.createProduct(
+          storeId: 'store_1',
+          name: 'Cotton Tee',
+          description: 'Variant test',
+          price: 499,
+          sku: 'TEE-BASE',
+          stock: 10,
+          images: ['https://cdn.test/products/tee.jpg'],
+          variants: [_variantJson()],
+        );
+
+        final body = api.bodies['/products'] as Map<String, dynamic>;
+        final variants = body['variants'] as List<Map<String, dynamic>>;
+        expect(body['sku'], 'TEE-BASE');
+        expect(variants.single['sku'], 'TEE-XL');
+        expect(variants.single['price'], 599);
+        expect(variants.single['stock'], 4);
+        expect(variants.single['options'], {'Size': 'XL'});
+      },
+    );
 
     test(
       'ProductService lists and creates collections, then skips missing mutations',
@@ -1013,6 +1045,22 @@ void main() {
     expect(find.text('New collection'), findsOneWidget);
   });
 
+  testWidgets('ProductFormScreen exposes variant matrix controls', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: ProductFormScreen()));
+
+    expect(find.text('Add Product'), findsOneWidget);
+    for (var i = 0; i < 3; i++) {
+      await tester.tap(find.text('Continue').first, warnIfMissed: false);
+      await tester.pumpAndSettle();
+    }
+
+    expect(find.text('Variant matrix'), findsOneWidget);
+    expect(find.text('Base SKU'), findsOneWidget);
+    expect(find.text('Add variant'), findsOneWidget);
+  });
+
   testWidgets('CouponFormScreen renders create form', (tester) async {
     final api = _FakeApiClient(json: {'/coupons': _couponJson()});
 
@@ -1352,16 +1400,19 @@ class _FakeApiClient extends ApiClient {
   final Map<String, dynamic> _raw;
   final Map<String, List<Map<String, dynamic>>> _paginated;
   final List<String> paths = [];
+  final Map<String, Object?> bodies = {};
 
   @override
   Future<dynamic> request(String path, {ApiRequestOptions? options}) async {
     paths.add(path);
+    _captureBody(path, options);
     return _raw[path] ?? {'success': true, 'data': _json[path] ?? {}};
   }
 
   @override
   Future<JsonMap> requestJson(String path, {ApiRequestOptions? options}) async {
     paths.add(path);
+    _captureBody(path, options);
     final value = _json[path] ?? {};
     if (value is List && value.isNotEmpty) {
       return Map<String, dynamic>.from(value.first as Map);
@@ -1376,6 +1427,7 @@ class _FakeApiClient extends ApiClient {
     required JsonDecoder<T> decoder,
   }) async {
     paths.add(path);
+    _captureBody(path, options);
     return decoder(_json[path]);
   }
 
@@ -1385,6 +1437,7 @@ class _FakeApiClient extends ApiClient {
     ApiRequestOptions? options,
   }) async {
     paths.add(path);
+    _captureBody(path, options);
     final rows = _paginated[path] ?? const <Map<String, dynamic>>[];
     return PaginatedResponse<JsonMap>(
       data: rows,
@@ -1393,6 +1446,10 @@ class _FakeApiClient extends ApiClient {
       limit: rows.length,
       hasMore: false,
     );
+  }
+
+  void _captureBody(String path, ApiRequestOptions? options) {
+    if (options?.body != null) bodies[path] = options!.body;
   }
 }
 
@@ -1419,7 +1476,7 @@ Map<String, dynamic> _storeJson({
   'updated_at': '2026-06-01T00:00:00.000Z',
 };
 
-Map<String, dynamic> _productJson() => {
+Map<String, dynamic> _productJson({List<Map<String, dynamic>>? variants}) => {
   'id': 'prod_1',
   'store_id': 'store_1',
   'name': 'Cotton Tee',
@@ -1428,6 +1485,17 @@ Map<String, dynamic> _productJson() => {
   'currency': 'INR',
   'stock': 8,
   'is_active': true,
+  'variants': variants ?? const [],
+};
+
+Map<String, dynamic> _variantJson() => {
+  'title': 'XL',
+  'sku': 'TEE-XL',
+  'price': 599,
+  'compare_price': 699,
+  'stock': 4,
+  'inventory_quantity': 4,
+  'options': {'Size': 'XL'},
 };
 
 Map<String, dynamic> _collectionJson({

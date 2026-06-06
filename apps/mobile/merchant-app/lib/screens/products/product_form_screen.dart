@@ -5,6 +5,7 @@ import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import '../../services/product_service.dart';
 import '../../services/store_service.dart';
+import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
 
 /// Product Form Screen for Store Builder
 /// Simplified product creation with essential fields
@@ -18,6 +19,8 @@ class ProductFormScreen extends StatefulWidget {
 }
 
 class _ProductFormScreenState extends State<ProductFormScreen> {
+  static const _lastStepIndex = 4;
+
   final _formKey = GlobalKey<FormState>();
   int _currentStep = 0;
   bool _isLoading = false;
@@ -32,6 +35,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
   // Form Data
   List<String> _images = [];
+  List<_ProductVariantDraft> _variants = [];
   String _categoryId = '';
   Map<String, String> _specifications = {};
   bool _isFeatured = false;
@@ -56,7 +60,11 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       _salePriceController.text = p.price.toString();
       _originalPriceController.text = p.comparePrice?.toString() ?? '';
       _stockController.text = p.stock.toString();
+      _skuController.text = p.sku ?? '';
       _images = List.from(p.images);
+      _variants = p.variants
+          .map(_ProductVariantDraft.fromContract)
+          .toList(growable: true);
       _categoryId = p.category ?? '';
       final specifications = p.metadata['specifications'];
       _specifications = specifications is Map
@@ -127,7 +135,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             padding: const EdgeInsets.only(top: 16),
             child: Row(
               children: [
-                if (_currentStep < 3)
+                if (_currentStep < _lastStepIndex)
                   ElevatedButton(
                     onPressed: details.onStepContinue,
                     style: ElevatedButton.styleFrom(
@@ -184,9 +192,18 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
             // Step 4: Details
             Step(
+              title: const Text('Variants'),
+              subtitle: Text('${_variants.length} rows'),
+              isActive: _currentStep >= 3,
+              state: _currentStep > 3 ? StepState.complete : StepState.indexed,
+              content: _buildVariantsStep(),
+            ),
+
+            // Step 5: Details
+            Step(
               title: const Text('Details'),
               subtitle: Text('${_specifications.length} specs'),
-              isActive: _currentStep >= 3,
+              isActive: _currentStep >= 4,
               state: StepState.indexed,
               content: _buildDetailsStep(),
             ),
@@ -460,6 +477,157 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     );
   }
 
+  Widget _buildVariantsStep() {
+    final basePrice = double.tryParse(_salePriceController.text) ?? 0;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Variant matrix',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: mobile_tokens.LetbuyyColorTokens.slate900,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Set SKU, price, and quantity per size, color, or option value.',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: mobile_tokens.LetbuyyColorTokens.slate600,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: _skuController,
+                decoration: InputDecoration(
+                  labelText: 'Base SKU',
+                  hintText: 'TEE-BASE',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            ElevatedButton.icon(
+              onPressed: _showAddVariantSheet,
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Add variant'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                foregroundColor: mobile_tokens.LetbuyyColorTokens.white,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        if (_variants.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: mobile_tokens.LetbuyyColorTokens.slate100,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: mobile_tokens.LetbuyyColorTokens.slate200,
+              ),
+            ),
+            child: const Text(
+              'No variants yet. The product will use the base price and stock.',
+              textAlign: TextAlign.center,
+            ),
+          )
+        else
+          ..._variants.asMap().entries.map((entry) {
+            final index = entry.key;
+            final variant = entry.value;
+            return _buildVariantRow(index, variant, basePrice);
+          }),
+      ],
+    );
+  }
+
+  Widget _buildVariantRow(
+    int index,
+    _ProductVariantDraft variant,
+    double basePrice,
+  ) {
+    final price = variant.price ?? basePrice;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: mobile_tokens.LetbuyyColorTokens.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: mobile_tokens.LetbuyyColorTokens.slate200),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  variant.title,
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  [
+                    if (variant.sku.isNotEmpty) variant.sku,
+                    '₹${price.toStringAsFixed(price.truncateToDouble() == price ? 0 : 2)}',
+                    '${variant.stock} qty',
+                  ].join(' · '),
+                  style: TextStyle(
+                    color: mobile_tokens.LetbuyyColorTokens.slate600,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            tooltip: 'Edit variant',
+            onPressed: () => _showEditVariantSheet(index, variant),
+            icon: const Icon(Icons.edit_outlined),
+          ),
+          IconButton(
+            tooltip: 'Delete variant',
+            onPressed: () => setState(() => _variants.removeAt(index)),
+            icon: const Icon(Icons.delete_outline),
+            color: mobile_tokens.LetbuyyColorTokens.error,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showAddVariantSheet() async {
+    final draft = await showModalBottomSheet<_ProductVariantDraft>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => const _VariantDraftSheet(),
+    );
+    if (draft == null) return;
+    setState(() => _variants.add(draft));
+  }
+
+  Future<void> _showEditVariantSheet(
+    int index,
+    _ProductVariantDraft variant,
+  ) async {
+    final draft = await showModalBottomSheet<_ProductVariantDraft>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _VariantDraftSheet(variant: variant),
+    );
+    if (draft == null) return;
+    setState(() => _variants[index] = draft);
+  }
+
   Widget _buildDetailsStep() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -601,7 +769,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   }
 
   void _nextStep() {
-    if (_currentStep < 3) {
+    if (_currentStep < _lastStepIndex) {
       setState(() => _currentStep++);
     }
   }
@@ -647,9 +815,13 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               ? double.parse(_originalPriceController.text)
               : null,
           'stock': int.parse(_stockController.text),
+          'sku': _skuController.text.trim().isEmpty
+              ? null
+              : _skuController.text.trim(),
           'category': _categoryId,
           'images': _images,
           'is_featured': _isFeatured,
+          'variants': _variantPayloads(),
         });
       } else {
         // Create new
@@ -663,8 +835,12 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               : null,
           stock: int.parse(_stockController.text),
           category: _categoryId.isNotEmpty ? _categoryId : 'other',
+          sku: _skuController.text.trim().isEmpty
+              ? null
+              : _skuController.text.trim(),
           images: _images,
           isFeatured: _isFeatured,
+          variants: _variants.isEmpty ? null : _variantPayloads(),
         );
       }
 
@@ -685,5 +861,248 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  List<Map<String, dynamic>> _variantPayloads() {
+    return _variants.map((variant) => variant.toJson()).toList(growable: false);
+  }
+}
+
+class _ProductVariantDraft {
+  const _ProductVariantDraft({
+    required this.title,
+    required this.sku,
+    required this.price,
+    required this.comparePrice,
+    required this.stock,
+    required this.optionName,
+    required this.optionValue,
+  });
+
+  factory _ProductVariantDraft.fromContract(ProductVariantContract contract) {
+    String optionName = 'Option';
+    String optionValue = contract.title;
+    if (contract.options.isNotEmpty) {
+      final first = contract.options.entries.first;
+      optionName = first.key;
+      optionValue = '${first.value}';
+    }
+    final stock = contract.stock > 0
+        ? contract.stock
+        : contract.inventoryQuantity;
+    return _ProductVariantDraft(
+      title: contract.title,
+      sku: contract.sku ?? '',
+      price: contract.price,
+      comparePrice: contract['compare_price'] is num
+          ? (contract['compare_price'] as num).toDouble()
+          : null,
+      stock: stock,
+      optionName: optionName,
+      optionValue: optionValue,
+    );
+  }
+
+  final String title;
+  final String sku;
+  final double? price;
+  final double? comparePrice;
+  final int stock;
+  final String optionName;
+  final String optionValue;
+
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    if (sku.isNotEmpty) 'sku': sku,
+    if (price != null) 'price': price,
+    if (comparePrice != null) 'compare_price': comparePrice,
+    'stock': stock,
+    'options': {
+      if (optionName.isNotEmpty && optionValue.isNotEmpty)
+        optionName: optionValue,
+    },
+  };
+}
+
+class _VariantDraftSheet extends StatefulWidget {
+  const _VariantDraftSheet({this.variant});
+
+  final _ProductVariantDraft? variant;
+
+  @override
+  State<_VariantDraftSheet> createState() => _VariantDraftSheetState();
+}
+
+class _VariantDraftSheetState extends State<_VariantDraftSheet> {
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _skuController = TextEditingController();
+  final _priceController = TextEditingController();
+  final _comparePriceController = TextEditingController();
+  final _stockController = TextEditingController();
+  final _optionNameController = TextEditingController();
+  final _optionValueController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final variant = widget.variant;
+    _titleController.text = variant?.title ?? '';
+    _skuController.text = variant?.sku ?? '';
+    _priceController.text = variant?.price?.toString() ?? '';
+    _comparePriceController.text = variant?.comparePrice?.toString() ?? '';
+    _stockController.text = variant?.stock.toString() ?? '0';
+    _optionNameController.text = variant?.optionName ?? 'Size';
+    _optionValueController.text = variant?.optionValue ?? '';
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _skuController.dispose();
+    _priceController.dispose();
+    _comparePriceController.dispose();
+    _stockController.dispose();
+    _optionNameController.dispose();
+    _optionValueController.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    if (!_formKey.currentState!.validate()) return;
+    final title = _titleController.text.trim().isEmpty
+        ? _optionValueController.text.trim()
+        : _titleController.text.trim();
+    Navigator.of(context).pop(
+      _ProductVariantDraft(
+        title: title,
+        sku: _skuController.text.trim(),
+        price: double.tryParse(_priceController.text),
+        comparePrice: double.tryParse(_comparePriceController.text),
+        stock: int.tryParse(_stockController.text) ?? 0,
+        optionName: _optionNameController.text.trim(),
+        optionValue: _optionValueController.text.trim(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isEdit = widget.variant != null;
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 20,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+      ),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              isEdit ? 'Edit variant' : 'Add variant',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _optionNameController,
+                    decoration: const InputDecoration(labelText: 'Option'),
+                    validator: (value) =>
+                        value?.trim().isEmpty == true ? 'Required' : null,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _optionValueController,
+                    decoration: const InputDecoration(labelText: 'Value'),
+                    validator: (value) =>
+                        value?.trim().isEmpty == true ? 'Required' : null,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _titleController,
+              decoration: const InputDecoration(
+                labelText: 'Variant title',
+                hintText: 'Blue / XL',
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _skuController,
+              decoration: const InputDecoration(labelText: 'SKU'),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _priceController,
+                    decoration: const InputDecoration(
+                      labelText: 'Price',
+                      prefixText: '₹ ',
+                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                    ],
+                    validator: (value) =>
+                        value?.trim().isEmpty == true ? 'Required' : null,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _stockController,
+                    decoration: const InputDecoration(labelText: 'Quantity'),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    validator: (value) =>
+                        value?.trim().isEmpty == true ? 'Required' : null,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _comparePriceController,
+              decoration: const InputDecoration(
+                labelText: 'Compare price',
+                prefixText: '₹ ',
+              ),
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _save,
+                icon: const Icon(Icons.check_rounded),
+                label: Text(isEdit ? 'Save variant' : 'Add variant'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                  foregroundColor: mobile_tokens.LetbuyyColorTokens.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
