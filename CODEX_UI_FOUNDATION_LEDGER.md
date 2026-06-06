@@ -31,8 +31,8 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 21 | no Drawer | U3.1 | DONE | Added focus-trapped `Drawer` with side/size variants and dismiss behavior; RTL + axe coverage in `pnpm --filter @letbuyy/ui test` PASS: 20 tests. |
 | 22 | no Dropdown/Menu | U3.1 | DONE | Added keyboard-roving `Dropdown` and `DropdownMenu` menu primitives; root `Menu` stays the existing icon export for back-compat; `pnpm turbo typecheck` PASS after collision check. |
 | 23 | no Popover | U3.1 | DONE | Added anchored `Popover` with trigger render prop, Escape/outside dismiss, and axe-clean coverage; `pnpm --filter @letbuyy/ui test` PASS. |
-| 24 | surface prop inert | U6.1 | TODO |  |
-| 25 | no brand override API | U6.2 | TODO |  |
+| 24 | surface prop inert | U6.1 | DONE | `letbuyySurfaceTokens` and `[data-letbuyy-surface="..."]` selectors now emit identity-default hooks for every surface; RTL test asserts identity defaults and CSS selectors; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
+| 25 | no brand override API | U6.2 | DONE | `DesignSystemRoot brand` and `createLetbuyyBrandVariables()` now override primary/focus/CTA CSS variables with default behavior unchanged; RTL test asserts live root variables; brand identity decision recorded as human-gated. |
 | 26 | raw button bypass | U8.1 | TODO |  |
 | 27 | raw input bypass | U8.1 | TODO |  |
 | 28 | hardcoded hex bypass | U8.1 | TODO |  |
@@ -44,9 +44,9 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 34 | SaveBar raw buttons | U5.1 | DONE | SaveBar save/discard controls now compose `Button` with unchanged classes and callbacks; RTL/axe test PASS; visual regression PASS with 306 baselines. |
 | 35 | IndexTable raw controls | U5.1 | DONE | IndexTable saved-view, bulk, sort, select-all, row-select, and mobile Open controls now compose `Button`/`Checkbox`; RTL test covers selection, bulk action, and Open; visual regression PASS with 306 baselines. |
 | 36 | Pagination/DensityToggle/mobile Open raw buttons | U5.1 | DONE | Pagination and IndexTable mobile Open now compose `Button`; DensityToggle delegates through SegmentedControl whose options compose `Button`; RTL test covers pagination and visual regression PASS with 306 baselines. |
-| 37 | cx lacks tailwind-merge | U6.3 | TODO |  |
+| 37 | cx lacks tailwind-merge | U6.3 | DONE | `cx()` now delegates conflict resolution to `tailwind-merge` with the same signature; RTL unit test proves `px-*` and `text-*` overrides resolve; `pnpm --filter @letbuyy/ui test` PASS. |
 | 38 | Button lacks as/asChild | U3/U5 | DONE | Added additive `Button` `as` and `asChild` support while preserving default button rendering; RTL tests cover anchor and cloned-child paths; `pnpm --filter @letbuyy/ui test` PASS. |
-| 39 | token CSS injected per root | U6.4 | TODO |  |
+| 39 | token CSS injected per root | U6.4 | DONE | `DesignSystemRoot` now routes token injection through a server-safe client boundary that dedupes nested roots; test asserts one token `<style>` for nested roots; repo `pnpm turbo build` PASS after fixing RSC context compatibility. |
 | 40 | no deprecation policy | U8.3 | TODO |  |
 | 41 | no codemods | U8.2 | TODO |  |
 | 42 | no CODEOWNERS guidance | U8.4 | TODO |  |
@@ -79,7 +79,7 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 69 | PageHeader reimplements breadcrumbs | U5.1 | DONE | Breadcrumbs moved to a standalone module and PageHeader now composes it with slash/current-tone compatibility props; RTL test covers PageHeader breadcrumb links; visual regression PASS with 306 baselines. |
 | 70 | Pagination minimal | U7.2 | TODO |  |
 | 71 | formatting exports subpath-only | U7 | TODO |  |
-| 72 | three theme selectors | U6 | TODO |  |
+| 72 | three theme selectors | U6 | DONE | Token CSS now emits compatible selectors for `data-letbuyy-theme`, `data-theme`, and surface-scoped descendants while preserving explicit light/dark and auto behavior; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
 | 73 | SpaceScale under-typed | U2/U7 | DONE | Exported `SpaceScale` from layout and extended it to include `8`; `pnpm --filter @letbuyy/ui typecheck` PASS. |
 | 74 | hover lift not reduced-motion gated | U7.1 | TODO |  |
 | 75 | IndexTable lacks aria-selected | U7.1 | TODO |  |
@@ -117,6 +117,8 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - [SKIP — NEEDS HUMAN] Issue #22 optional root `Menu` component alias: `Menu` is already a public icon export and is consumed by apps through `@letbuyy/ui`. This stream shipped the menu primitive as `Dropdown`/`DropdownMenu`; exposing a root component named `Menu` requires coordinated icon rename/import migration first. Exact handoff: choose the public symbol strategy, run a codemod for existing `Menu` icon imports if needed, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Issues #19, #20, #59, #60, #61, #62, #63, #85 follow-up: remove deprecated duplicate/alias surfaces only after U8 codemods are authored and app/service migrations are coordinated. Exact handoff: run the table, text, badge, and page-alias codemods across consumers, remove deprecated exports in `packages/typescript/ui`, refresh the API snapshot, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Issue #48 follow-up: remove loose arbitrary `MaterialIconName` strings only after auditing unknown icon names. Exact handoff: replace user-provided strings with `isMaterialIconName()` guards or strict `materialIconName()` calls, remove `LooseMaterialIconName`, refresh the API snapshot, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Issue #24 follow-up: choose non-identity per-surface palettes for admin, marketplace, storefront, identity, and operations. This stream added the surface hooks with identity defaults only. Exact handoff: update `letbuyySurfaceTokens` in `packages/typescript/ui/src/tokens.ts`, refresh token/visual snapshots, then run `pnpm --filter @letbuyy/ui validate:ui`, `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Issue #25 follow-up: decide the LetBuyy brand identity ramp and light CTA contrast policy before making non-default brand values canonical. This stream added runtime brand plumbing without changing default purple. Exact handoff: pass the approved `brand` override or change token defaults, verify brand contrast, refresh snapshots, then run `pnpm --filter @letbuyy/ui validate:ui`, `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 
 ## NEW PUBLIC API
 
@@ -136,6 +138,9 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - New additive `Button` prop: `unstyled` for look-preserving internal composition.
 - New additive `Checkbox` prop: `unstyled` for look-preserving internal checkbox composition.
 - New additive `Breadcrumbs` props: `separator`, `currentTone`.
+- New exports: `letbuyySurfaceTokens`, `createLetbuyyBrandVariables`.
+- New exported types: `LetbuyySurface`, `LetbuyyBrandInput`, `LetbuyyBrandOverrides`.
+- New additive `DesignSystemRoot` props: `brand`, `style`; `surface` is now typed through `LetbuyySurface` while retaining the same accepted values.
 
 ## DEPRECATIONS
 
@@ -158,6 +163,7 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - U4 baseline expansion: `table.stories.tsx` added 6 table screenshots; `pnpm --filter @letbuyy/ui test:visual:update` captured 306 baselines total.
 - Verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines checked.
 - U5 verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines checked and no baseline updates, proving the internal composition refactor is visually unchanged.
+- U6 verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines checked and no baseline updates, proving surface/brand/style-dedupe changes preserve default visuals.
 
 ## VALIDATOR LEDGER
 

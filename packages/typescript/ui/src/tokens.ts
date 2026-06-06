@@ -2,8 +2,24 @@ import { letbuyyFontStacks } from './fonts';
 
 export type LetbuyyTheme = 'light' | 'dark';
 export type LetbuyyDensity = 'compact' | 'comfortable' | 'spacious';
+export type LetbuyySurface = 'admin' | 'marketplace' | 'storefront' | 'identity' | 'operations';
 
 type CssVariableMap = Record<`--${string}`, string>;
+
+export interface LetbuyyBrandOverrides {
+    primary: string;
+    primaryText?: string;
+    primaryHover?: string;
+    primaryActive?: string;
+    primarySubtle?: string;
+    primaryCta?: string;
+    primaryCtaHover?: string;
+    primaryCtaActive?: string;
+    primaryCtaText?: string;
+    focusRing?: string;
+}
+
+export type LetbuyyBrandInput = string | LetbuyyBrandOverrides;
 
 export const letbuyyPrimitiveTokens = {
     color: {
@@ -974,6 +990,122 @@ function colorVariables(theme: LetbuyyTheme): CssVariableMap {
     return variables;
 }
 
+function surfaceVariables(theme: LetbuyyTheme): CssVariableMap {
+    const colors = letbuyyTokens.color[theme];
+    const component = letbuyyTokens.component[theme];
+
+    return {
+        '--lb-color-bg': colors.bg,
+        '--lb-color-background': colors.bg,
+        '--lb-color-surface': colors.surface,
+        '--lb-color-surface-raised': colors.surfaceRaised,
+        '--lb-color-surface-subdued': colors.surfaceSubdued,
+        '--lb-color-card': colors.card,
+        '--lb-card-bg': colors.card,
+        '--lb-content-bg': colors.bg,
+        '--lb-color-sidebar': colors.sidebar,
+        '--lb-sidebar-bg': colors.sidebar,
+        '--lb-color-header': colors.header,
+        '--lb-color-border': colors.border,
+        '--lb-color-border-subtle': colors.borderSubtle,
+        '--lb-color-border-default': colors.borderDefault,
+        '--lb-color-text': colors.text,
+        '--lb-color-text-primary': colors.text,
+        '--lb-color-text-subdued': colors.textSubdued,
+        '--lb-color-text-secondary': colors.textSecondary,
+        '--lb-color-primary': colors.primary,
+        '--lb-color-primary-text': colors.primaryText,
+        '--lb-color-primary-hover': colors.primaryHover,
+        '--lb-color-primary-active': colors.primaryActive,
+        '--lb-color-primary-subtle': colors.primarySubtle,
+        '--lb-color-primary-soft': colors.primarySoft,
+        '--lb-color-primary-cta': colors.primaryCta,
+        '--lb-color-primary-cta-hover': colors.primaryCtaHover,
+        '--lb-color-primary-cta-active': colors.primaryCtaActive,
+        '--lb-color-primary-cta-text': colors.primaryCtaText,
+        '--lb-color-secondary-action': colors.secondaryAction,
+        '--lb-color-secondary-action-hover': colors.secondaryActionHover,
+        '--lb-color-secondary-action-subtle': colors.secondaryActionSubtle,
+        '--lb-color-focus-ring': colors.focusRing,
+        '--lb-component-card-bg': component.card.bg,
+        '--lb-component-card-text': component.card.text,
+        '--lb-component-card-border': component.card.border,
+        '--lb-component-button-primary-bg': component.button.primary.bg,
+        '--lb-component-button-primary-hover': component.button.primary.hover,
+        '--lb-component-button-primary-active': component.button.primary.active,
+        '--lb-component-button-primary-text': component.button.primary.text,
+        '--lb-component-button-primary-border': component.button.primary.border,
+        '--lb-component-input-bg': component.input.bg,
+        '--lb-component-input-text': component.input.text,
+        '--lb-component-input-border': component.input.border,
+        '--lb-component-input-focus-border': component.input.focusBorder,
+        '--lb-component-input-focus-ring': component.input.focusRing,
+    };
+}
+
+const letbuyySurfaceNames = ['admin', 'marketplace', 'storefront', 'identity', 'operations'] as const satisfies readonly LetbuyySurface[];
+
+export const letbuyySurfaceTokens = Object.fromEntries(
+    letbuyySurfaceNames.map((surface) => [
+        surface,
+        {
+            light: surfaceVariables('light'),
+            dark: surfaceVariables('dark'),
+        },
+    ]),
+) as Record<LetbuyySurface, Record<LetbuyyTheme, CssVariableMap>>;
+
+export function createLetbuyyBrandVariables(brand?: LetbuyyBrandInput): CssVariableMap {
+    if (!brand) return {};
+
+    const primary = typeof brand === 'string' ? brand : brand.primary;
+    const primaryText = typeof brand === 'string' ? brand : brand.primaryText ?? primary;
+    const primaryHover = typeof brand === 'string' ? primary : brand.primaryHover ?? primary;
+    const primaryActive = typeof brand === 'string' ? primaryHover : brand.primaryActive ?? primaryHover;
+    const primarySubtle = typeof brand === 'string'
+        ? `color-mix(in srgb, ${primary} 12%, transparent)`
+        : brand.primarySubtle ?? `color-mix(in srgb, ${primary} 12%, transparent)`;
+    const primaryCta = typeof brand === 'string' ? primary : brand.primaryCta ?? primary;
+    const primaryCtaHover = typeof brand === 'string' ? primaryHover : brand.primaryCtaHover ?? primaryHover;
+    const primaryCtaActive = typeof brand === 'string' ? primaryActive : brand.primaryCtaActive ?? primaryActive;
+    const primaryCtaText = typeof brand === 'string' ? primitive.color.white : brand.primaryCtaText ?? primitive.color.white;
+    const focusRing = typeof brand === 'string' ? primary : brand.focusRing ?? primary;
+
+    return {
+        '--lb-color-primary': primary,
+        '--lb-color-primary-text': primaryText,
+        '--lb-color-primary-hover': primaryHover,
+        '--lb-color-primary-active': primaryActive,
+        '--lb-color-primary-subtle': primarySubtle,
+        '--lb-color-primary-soft': primarySubtle,
+        '--lb-color-secondary-action': primary,
+        '--lb-color-secondary-action-hover': primaryHover,
+        '--lb-color-secondary-action-subtle': primarySubtle,
+        '--lb-color-focus-ring': focusRing,
+        '--lb-color-primary-cta': primaryCta,
+        '--lb-color-primary-cta-hover': primaryCtaHover,
+        '--lb-color-primary-cta-active': primaryCtaActive,
+        '--lb-color-primary-cta-text': primaryCtaText,
+        '--lb-semantic-accent-brand': primary,
+        '--lb-semantic-accent-text': primaryText,
+        '--lb-semantic-accent-hover': primaryHover,
+        '--lb-semantic-accent-active': primaryActive,
+        '--lb-semantic-accent-subtle': primarySubtle,
+        '--lb-component-button-primary-bg': primaryCta,
+        '--lb-component-button-primary-hover': primaryCtaHover,
+        '--lb-component-button-primary-active': primaryCtaActive,
+        '--lb-component-button-primary-text': primaryCtaText,
+        '--lb-component-button-primary-border': primaryCta,
+        '--lb-component-input-focus-border': primary,
+        '--lb-component-input-focus-ring': primarySubtle,
+        '--lb-component-badge-accent-bg': primarySubtle,
+        '--lb-component-badge-accent-text': primaryText,
+        '--lb-component-badge-accent-border': primary,
+        '--lb-component-empty-state-illustration-bg': primarySubtle,
+        '--lb-component-empty-state-illustration-ink': primary,
+    };
+}
+
 export const letbuyyTokenCssVariables = {
     light: {
         ...sharedCssVariables,
@@ -991,24 +1123,52 @@ function serializeVariables(variables: CssVariableMap, indent = '  ') {
         .join('\n');
 }
 
+function surfaceSelector(surface: LetbuyySurface, themes: Array<LetbuyyTheme | 'auto'>) {
+    return themes
+        .flatMap((theme) => [
+            `[data-letbuyy-surface="${surface}"][data-letbuyy-theme="${theme}"]`,
+            `[data-letbuyy-surface="${surface}"][data-theme="${theme}"]`,
+            `[data-letbuyy-theme="${theme}"] [data-letbuyy-surface="${surface}"]`,
+            `[data-theme="${theme}"] [data-letbuyy-surface="${surface}"]`,
+        ])
+        .join(', ');
+}
+
+function surfaceThemeCss(theme: LetbuyyTheme, themes: Array<LetbuyyTheme | 'auto'>, indent = '  ') {
+    return letbuyySurfaceNames
+        .flatMap((surface) => [
+            `${surfaceSelector(surface, themes)} {`,
+            serializeVariables(letbuyySurfaceTokens[surface][theme], indent),
+            '}',
+        ])
+        .join('\n\n');
+}
+
 export const letbuyyTokenCss = [
     ':root, [data-theme="light"], [data-letbuyy-theme="light"] {',
     serializeVariables(letbuyyTokenCssVariables.light),
     '}',
     '',
+    surfaceThemeCss('light', ['light']),
+    '',
     '[data-theme="auto"], [data-letbuyy-theme="auto"] {',
     serializeVariables(letbuyyTokenCssVariables.light),
     '}',
+    '',
+    surfaceThemeCss('light', ['auto']),
     '',
     '@media (prefers-color-scheme: dark) {',
     '  :root, [data-theme="auto"], [data-letbuyy-theme="auto"] {',
     serializeVariables(letbuyyTokenCssVariables.dark, '    '),
     '  }',
+    surfaceThemeCss('dark', ['auto'], '    '),
     '}',
     '',
     '[data-theme="dark"], [data-letbuyy-theme="dark"], .dark {',
     serializeVariables(letbuyyTokenCssVariables.dark),
     '}',
+    '',
+    surfaceThemeCss('dark', ['dark']),
     '',
     '[data-density="compact"], [data-letbuyy-density="compact"] {',
     serializeVariables(letbuyyDensityCssVariables.compact),

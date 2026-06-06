@@ -167,14 +167,16 @@ export {
     letbuyyPrimitiveTokens,
     letbuyySemanticTokens,
     letbuyyShadowTokens,
+    letbuyySurfaceTokens,
     letbuyyTailwindPreset,
     letbuyyTailwindScreens,
     letbuyyTokenCss,
     letbuyyTokenCssVariables,
     letbuyyTokens,
     letbuyyZIndexTokens,
+    createLetbuyyBrandVariables,
 } from './tokens';
-export type { LetbuyyDensity, LetbuyyTheme } from './tokens';
+export type { LetbuyyBrandInput, LetbuyyBrandOverrides, LetbuyyDensity, LetbuyySurface, LetbuyyTheme } from './tokens';
 
 export { letbuyyFontCssVariables, letbuyyFontStacks } from './fonts';
 

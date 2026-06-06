@@ -1,13 +1,18 @@
 import React from 'react';
-import { letbuyyTokenCss, type LetbuyyDensity, type LetbuyyTheme } from './tokens';
+import { createLetbuyyBrandVariables, letbuyyTokenCss, type LetbuyyBrandInput, type LetbuyyDensity, type LetbuyySurface, type LetbuyyTheme } from './tokens';
+import { TokenStyleBoundary } from './token-style-boundary';
+
+type LetbuyyRootStyle = React.CSSProperties & Record<`--${string}`, string | number | undefined>;
 
 export interface DesignSystemRootProps {
     children: React.ReactNode;
-    surface?: 'admin' | 'marketplace' | 'storefront' | 'identity' | 'operations';
+    surface?: LetbuyySurface;
     theme?: LetbuyyTheme | 'auto';
     density?: LetbuyyDensity;
+    brand?: LetbuyyBrandInput;
     className?: string;
     includeTokenStyles?: boolean;
+    style?: React.CSSProperties;
 }
 
 export function DesignSystemRoot({
@@ -15,26 +20,27 @@ export function DesignSystemRoot({
     surface = 'admin',
     theme = 'auto',
     density = 'compact',
+    brand,
     className = '',
     includeTokenStyles = true,
+    style,
 }: DesignSystemRootProps) {
+    const brandVariables = createLetbuyyBrandVariables(brand) as LetbuyyRootStyle;
+    const hasBrandVariables = Object.keys(brandVariables).length > 0;
+    const rootStyle = hasBrandVariables ? { ...brandVariables, ...style } : style;
+
     return (
-        <>
-            {includeTokenStyles && (
-                <style
-                    data-letbuyy-token-source="true"
-                    dangerouslySetInnerHTML={{ __html: letbuyyTokenCss }}
-                />
-            )}
+        <TokenStyleBoundary includeTokenStyles={includeTokenStyles} tokenCss={letbuyyTokenCss}>
             <div
                 className={className}
                 data-letbuyy-design-system="true"
                 data-letbuyy-surface={surface}
                 data-letbuyy-theme={theme}
                 data-letbuyy-density={density}
+                style={rootStyle}
             >
                 {children}
             </div>
-        </>
+        </TokenStyleBoundary>
     );
 }

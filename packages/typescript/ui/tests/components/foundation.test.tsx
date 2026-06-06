@@ -44,13 +44,16 @@ import {
     TextStyle,
     Textarea,
     isMaterialIconName,
+    createLetbuyyBrandVariables,
     letbuyyBreakpointTokens,
     letbuyyShadowTokens,
+    letbuyySurfaceTokens,
     letbuyyTailwindScreens,
     letbuyyTokenCss,
     letbuyyTokenCssVariables,
     materialIconName,
 } from '../../src';
+import { cx } from '../../src/utils';
 
 function renderInSystem(ui: React.ReactElement) {
     return render(
@@ -678,5 +681,58 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         for (const [textToken, bgToken] of statusPairs) {
             expect(contrastRatio(light[textToken], light[bgToken])).toBeGreaterThanOrEqual(4.5);
         }
+    });
+
+    it('merges Tailwind class conflicts through cx', () => {
+        const merged = cx('px-2 py-1 text-red-500', false, null, 'px-4 text-blue-500');
+
+        expect(merged).toContain('px-4');
+        expect(merged).toContain('py-1');
+        expect(merged).toContain('text-blue-500');
+        expect(merged).not.toContain('px-2');
+        expect(merged).not.toContain('text-red-500');
+    });
+
+    it('emits surface hooks with identity defaults and supports brand overrides', async () => {
+        const brand = {
+            primary: '#0055FF',
+            primaryText: '#003399',
+            primaryCta: '#111827',
+            primaryCtaHover: '#0F172A',
+            primaryCtaText: '#FFFFFF',
+            focusRing: '#FF5500',
+        };
+        const brandVariables = createLetbuyyBrandVariables(brand);
+        const { container } = render(
+            <DesignSystemRoot surface="identity" brand={brand}>
+                <Button>Brand action</Button>
+            </DesignSystemRoot>,
+        );
+        const root = container.querySelector('[data-letbuyy-design-system="true"]') as HTMLElement;
+
+        expect(letbuyySurfaceTokens.identity.light['--lb-color-bg']).toBe(letbuyyTokenCssVariables.light['--lb-color-bg']);
+        expect(letbuyySurfaceTokens.storefront.dark['--lb-color-bg']).toBe(letbuyyTokenCssVariables.dark['--lb-color-bg']);
+        expect(letbuyyTokenCss).toContain('[data-letbuyy-surface="identity"][data-letbuyy-theme="light"]');
+        expect(letbuyyTokenCss).toContain('[data-letbuyy-surface="storefront"][data-letbuyy-theme="auto"]');
+        expect(brandVariables['--lb-color-primary']).toBe('#0055FF');
+        expect(brandVariables['--lb-component-button-primary-bg']).toBe('#111827');
+        expect(brandVariables['--lb-color-focus-ring']).toBe('#FF5500');
+        expect(root.getAttribute('data-letbuyy-surface')).toBe('identity');
+        expect(root.style.getPropertyValue('--lb-color-primary')).toBe('#0055FF');
+        expect(root.style.getPropertyValue('--lb-component-button-primary-bg')).toBe('#111827');
+        await expectAxeClean(container);
+    });
+
+    it('dedupes token style injection for nested DesignSystemRoot trees', () => {
+        const { container } = render(
+            <DesignSystemRoot>
+                <DesignSystemRoot surface="storefront">
+                    <Button>Nested action</Button>
+                </DesignSystemRoot>
+            </DesignSystemRoot>,
+        );
+
+        expect(container.querySelectorAll('style[data-letbuyy-token-source="true"]')).toHaveLength(1);
+        expect(container.querySelectorAll('[data-letbuyy-design-system="true"]')).toHaveLength(2);
     });
 });

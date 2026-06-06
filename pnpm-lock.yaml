@@ -1015,6 +1015,9 @@ importers:
       lucide-react:
         specifier: ^0.562.0
         version: 0.562.0(react@19.2.7)
+      tailwind-merge:
+        specifier: ^3.4.0
+        version: 3.4.1
     devDependencies:
       '@playwright/test':
         specifier: 1.60.0

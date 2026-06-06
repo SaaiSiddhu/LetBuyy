@@ -19,6 +19,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - U3 missing primitives are implemented additively.
 - U4 consolidation shims are implemented additively.
 - U5 internal composition refactor is implemented with zero visual diffs.
+- U6 theming reach is implemented additively.
 - Required ledger and deprecation register have been created.
 - `@letbuyy/ui` now has a Vitest + React Testing Library + jest-axe suite covering the load-bearing components: Card, Section, Button, Badge, Input, Banner, Skeleton, EmptyState, Select, Checkbox, Radio, Combobox, and Tabs.
 - Storybook visual regression is wired through `packages/typescript/ui/tests/visual/storybook-visual-regression.mjs`; 276 baselines were captured across light/dark and compact/comfortable/spacious density modes.
@@ -42,6 +43,8 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - `Badge variant="danger"` remains accepted and normalized, with `critical` documented as the canonical vocabulary.
 - Strict material icon helpers now exist through `StrictMaterialIconName`, `materialIconNames`, `isMaterialIconName()`, and `materialIconName()` while the loose `MaterialIconName` path stays compiling.
 - PageHeader, SaveBar, IndexTable, Pagination, and DensityToggle/SegmentedControl now compose `Button`, `Checkbox`, and `Breadcrumbs` internally while preserving public props and rendered visuals.
+- `DesignSystemRoot` now emits surface-scoped variable hooks through `data-letbuyy-surface` with identity defaults, supports runtime `brand` CSS-variable overrides, and dedupes nested token `<style>` output through a server-safe client boundary.
+- `cx()` now uses `tailwind-merge` while keeping the same call signature.
 
 ## Human-Gated Remainders
 
@@ -51,6 +54,8 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - [SKIP — NEEDS HUMAN] Optional root `Menu` component alias requires a public symbol decision because `Menu` is already an icon export used by current consumers. This stream ships the primitive as `Dropdown`/`DropdownMenu`. Exact follow-up: decide whether to rename the icon export or keep the primitive name, run a consumer codemod if a rename is chosen, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Deprecated table/text/page-alias/badge surfaces cannot be removed in this stream. Exact follow-up after U8 codemods are available: run the table, text, badge, and alias codemods across app/service consumers, remove deprecated UI exports, refresh snapshots, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Arbitrary loose `MaterialIconName` strings cannot be removed until unknown icon names are audited. Exact follow-up: guard user-provided strings with `isMaterialIconName()` or replace known names with `materialIconName()`, remove `LooseMaterialIconName`, refresh the API snapshot, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Per-surface palettes need product/design approval. This stream added `data-letbuyy-surface` hooks with identity defaults only, so no default visuals changed. Exact follow-up: update `letbuyySurfaceTokens`, refresh snapshots, then run `pnpm --filter @letbuyy/ui validate:ui`, `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Canonical brand identity and light CTA contrast policy need approval. This stream added the `brand` plumbing path while keeping default purple unchanged. Exact follow-up: apply the approved brand ramp through `DesignSystemRoot brand` or token defaults, verify contrast, refresh snapshots, then run `pnpm --filter @letbuyy/ui validate:ui`, `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 
 ## Behavior Changes To Re-Check
 
@@ -62,6 +67,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - U3 primitive additions are additive. Existing consumers keep the current `Menu` icon export; use `Dropdown` or `DropdownMenu` for the new menu primitive.
 - U4 consolidation is additive. Existing `DataTable`, `IndexTable`, `TextStyle`, `PageShell`, `PageActions`, `TableFilterBar`, `Badge variant="danger"`, and loose `MaterialIconName` usages still compile and render.
 - U5 composition is intended to be visually and behaviorally unchanged. Additive `Button.unstyled`, `Checkbox.unstyled`, and `Breadcrumbs` separator/current-tone props exist only to preserve legacy internal visuals while routing through design-system primitives.
+- U6 theming changes are additive and default-identity. Existing `surface` values now have real variable hooks, `brand` overrides are opt-in, nested `DesignSystemRoot` token styles dedupe automatically, and `cx()` now resolves Tailwind class conflicts in favor of later classes.
 
 ## Verification Evidence
 
@@ -148,3 +154,22 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - `pnpm turbo build` PASS after U5 under escalated Turbopack permission: 60 successful tasks.
 - Generated build/install artifacts from U5 verification were removed with a depth that includes `packages/typescript/ui/dist`.
 - `node scripts/validate-governance.mjs` PASS after U5 cleanup; final line: `Governance validation passed (129 validators).`
+- `CI=true pnpm install --frozen-lockfile` PASS before U6 verification after adding the `tailwind-merge` dependency to `@letbuyy/ui`.
+- `pnpm --filter @letbuyy/ui typecheck` PASS after U6 source changes.
+- `pnpm --filter @letbuyy/ui test` PASS after U6: 1 file, 27 tests. Added coverage for `cx` conflict merging, surface/brand variable plumbing, and nested token style dedupe.
+- `pnpm --filter @letbuyy/ui snapshot:api:update` PASS after U6: 326 public exports captured.
+- `pnpm --filter @letbuyy/ui build` PASS after U6.
+- `pnpm --filter @letbuyy/ui validate:ui` PASS after U6: 27 tests, API snapshot, token snapshot, alias snapshot.
+- `pnpm --filter @letbuyy/ui test:visual` PASS after U6 under escalated browser permission: 306 baselines checked with no baseline updates and no visual diffs.
+- Initial `pnpm turbo build` after U6 caught a server-component incompatibility: `DesignSystemRoot` used React context directly and Next failed page-data collection with `createContext is not a function`. The style-dedupe context was moved into `token-style-boundary.tsx` with `'use client'`, keeping `DesignSystemRoot` server-importable.
+- `pnpm --filter @letbuyy/ui typecheck` PASS after the server-safe style boundary fix.
+- `pnpm --filter @letbuyy/ui test` PASS after the server-safe style boundary fix: 27 tests.
+- `pnpm --filter @letbuyy/ui build` PASS after the server-safe style boundary fix.
+- `pnpm --filter @letbuyy/ui validate:ui` PASS after the server-safe style boundary fix.
+- `pnpm --filter @letbuyy/ui test:visual` PASS after the server-safe style boundary fix: 306 baselines checked.
+- `pnpm turbo test` PASS after U6: 61 successful tasks.
+- `pnpm turbo typecheck` PASS after U6: 60 successful tasks.
+- `pnpm lint` PASS after U6: repo lint completed with existing warnings outside UI scope and 0 errors.
+- `pnpm turbo build` PASS after the server-safe style boundary fix under escalated Turbopack permission: 60 successful tasks.
+- Generated build/install artifacts from U6 verification were removed with a depth that includes `packages/typescript/ui/dist`.
+- `node scripts/validate-governance.mjs` PASS after U6 cleanup; final line: `Governance validation passed (129 validators).`
