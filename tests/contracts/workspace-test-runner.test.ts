@@ -39,7 +39,22 @@ test('deployable workspaces run real test commands instead of no-op placeholders
 
 test('root and governance runners include workspace and TypeScript contract tests', () => {
     const rootPackageJson = readPackageJson('.');
+    assert.match(rootPackageJson.scripts?.test || '', /node --test tests\/\*\/\*\.test\.mjs/);
     assert.match(rootPackageJson.scripts?.test || '', /test:contracts/);
+    assert.equal(rootPackageJson.scripts?.['test:behavioral'], 'node --test tests/*/*.test.mjs');
     assert.match(rootPackageJson.scripts?.['test:workspaces'] || '', /turbo test/);
     assert.equal(rootPackageJson.scripts?.['test:contracts'], 'tsx --test tests/contracts/*.test.ts');
+});
+
+test('main CI runs the behavioral gate before filtered workspace tests', () => {
+    const workflow = readFileSync(join(repoRoot, '.github/workflows/ci.yml'), 'utf8');
+    const behavioralIndex = workflow.indexOf('pnpm run test:behavioral');
+    const filteredWorkspaceIndex = workflow.indexOf('pnpm turbo test --filter="...[HEAD^1]"');
+
+    assert.notEqual(behavioralIndex, -1, 'CI must run the root behavioral gate');
+    assert.notEqual(filteredWorkspaceIndex, -1, 'CI must run filtered workspace tests');
+    assert.ok(
+        behavioralIndex < filteredWorkspaceIndex,
+        'behavioral gate must run before filtered workspace tests so root tests are not skipped by workspace filters',
+    );
 });

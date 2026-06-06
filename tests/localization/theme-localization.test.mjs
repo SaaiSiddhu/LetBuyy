@@ -3,13 +3,13 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const THEME_BUNDLE_SOURCE = 'packages/theme-engine/src/theme-bundle.ts';
 const ADMIN_LOCALES_SOURCE = 'apps/merchant-control-plane/src/lib/i18n/admin-locales.ts';
 const STOREFRONT_STORE_SERVICE_SOURCE = 'apps/storefront-runtime/src/lib/store-service.ts';
 const ADMIN_SETTINGS_PAGE_SOURCE = 'apps/merchant-control-plane/src/app/[store]/settings/general/page.tsx';
 const STORES_ROUTE_SOURCE = 'services/api-gateway/src/routes/stores.ts';
-const STOREFRONT_ROUTE_SOURCE = 'services/api-gateway/src/routes/storefront.ts';
 
 function createSchema(parseFn = (value) => ({ success: true, data: value })) {
   const schema = function schema() {};
@@ -192,7 +192,7 @@ test('theme localization falls back by language and then English', () => {
 
 test('storefront render path selects locale and localizes bundle config', () => {
   const storeService = readFileSync(STOREFRONT_STORE_SERVICE_SOURCE, 'utf8');
-  const storefrontRoute = readFileSync(STOREFRONT_ROUTE_SOURCE, 'utf8');
+  const storefrontRoute = readStorefrontRouteSource();
 
   assert.match(storeService, /localizeThemeTemplateConfig\(resolvedTemplateConfig, storeLocale\)/);
   assert.match(storeService, /locale: storeLocale/);
@@ -218,4 +218,3 @@ test('merchant admin exposes India locale scaffold and persists store locale', (
   assert.match(settingsPage, /locale: data\.locale/);
   assert.match(storesRoute, /'site_settings', 'logo_url', 'custom_domain', 'currency', 'locale'/);
 });
-

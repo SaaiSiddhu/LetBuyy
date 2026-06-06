@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
+import { readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
 
@@ -42,7 +43,7 @@ test('gateway readers hydrate orders and products from relational tables behind 
   const wrangler = read('services/api-gateway/wrangler.toml');
   const orders = read('services/api-gateway/src/routes/orders.ts');
   const products = read('services/api-gateway/src/routes/products.ts');
-  const storefront = read('services/api-gateway/src/routes/storefront.ts');
+  const storefront = readStorefrontRouteSource();
 
   assert.match(env, /ORDER_ITEMS_RELATIONAL_READS\?: string/);
   assert.match(env, /PRODUCT_VARIANTS_RELATIONAL_READS\?: string/);
@@ -60,7 +61,7 @@ test('gateway readers hydrate orders and products from relational tables behind 
 });
 
 test('storefront product and order routes avoid JSONB reads when relational flags are on', () => {
-  const storefront = read('services/api-gateway/src/routes/storefront.ts');
+  const storefront = readStorefrontRouteSource();
   const productDetailBlock = storefront.slice(
     storefront.indexOf("router.get('/:subdomain/products/:slug'"),
     storefront.indexOf("// GET /storefront/:subdomain/coupons/validate"),

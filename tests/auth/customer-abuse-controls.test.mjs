@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
-const storefrontRouteSource = readFileSync('services/api-gateway/src/routes/storefront.ts', 'utf8');
+const storefrontRouteSource = readStorefrontRouteSource();
 const rateLimitSource = readFileSync('services/api-gateway/src/middleware/rateLimit.ts', 'utf8');
 const securitySource = readFileSync('services/api-gateway/src/middleware/security.ts', 'utf8');
 const commerceCoreSource = readFileSync('packages/commerce-core/src/index.ts', 'utf8');

@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const analyticsRoute = readFileSync('services/api-gateway/src/routes/analytics.ts', 'utf8');
-const storefrontRoute = readFileSync('services/api-gateway/src/routes/storefront.ts', 'utf8');
+const storefrontRoute = readStorefrontRouteSource();
 const queueWorker = readFileSync('services/queue-workers/src/platform-queue-consumer.ts', 'utf8');
 const gatewayQueueConsumer = readFileSync('services/api-gateway/src/execution/queue-execution.adapter.ts', 'utf8');
 const runtimeComposition = readFileSync('packages/runtime-composition/src/search-projection-runtime.ts', 'utf8');

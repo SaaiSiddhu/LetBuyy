@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const cacheHelperSource = readFileSync('services/api-gateway/src/lib/storefront-cache.ts', 'utf8');
-const storefrontRouteSource = readFileSync('services/api-gateway/src/routes/storefront.ts', 'utf8');
+const storefrontRouteSource = readStorefrontRouteSource();
 const themesRouteSource = readFileSync('services/api-gateway/src/routes/themes.ts', 'utf8');
 const gatewayIndexSource = readFileSync('services/api-gateway/src/index.ts', 'utf8');
 const wranglerSource = readFileSync('services/api-gateway/wrangler.toml', 'utf8');
