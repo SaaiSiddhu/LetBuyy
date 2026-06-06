@@ -40,12 +40,28 @@ const memoryStore = new Map<string, RateLimitEntry>();
 const queryCostMemoryStore = new Map<string, QueryCostLimitEntry>();
 let lastCleanupAt = 0;
 
-function isLocalRuntime(env: Pick<Env, 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV'>): boolean {
-    const values = [env.ENVIRONMENT, env.APP_ENV, env.NODE_ENV]
+type RuntimeEnvironmentFlags = Pick<Env, 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV'>;
+
+function runtimeFlagValues(env: RuntimeEnvironmentFlags): string[] {
+    return [env.ENVIRONMENT, env.APP_ENV, env.NODE_ENV]
+        .filter((value): value is string => typeof value === 'string')
+        .map((value) => value.toLowerCase());
+}
+
+function isLocalRuntime(env: RuntimeEnvironmentFlags): boolean {
+    const values = runtimeFlagValues(env);
+    return values.includes('local') || values.includes('development');
+}
+
+function isProductionRuntime(env: RuntimeEnvironmentFlags): boolean {
+    const explicitValues = [env.ENVIRONMENT, env.APP_ENV]
         .filter((value): value is string => typeof value === 'string')
         .map((value) => value.toLowerCase());
 
-    return values.includes('local') || values.includes('development');
+    if (explicitValues.includes('production')) return true;
+    if (explicitValues.length > 0) return false;
+
+    return env.NODE_ENV?.toLowerCase() === 'production';
 }
 
 function cleanupExpiredEntries(now: number) {
@@ -397,7 +413,7 @@ export async function enforceCustomerAuthRateLimit(
         tightestRemaining = Math.min(tightestRemaining, result.remaining);
         latestResetAt = Math.max(latestResetAt, result.resetAt);
 
-        if (result.unavailable && c.env.ENVIRONMENT === 'production') {
+        if (result.unavailable && isProductionRuntime(c.env)) {
             c.header('X-RateLimit-Limit', result.max.toString());
             c.header('X-RateLimit-Remaining', '0');
             c.header('X-RateLimit-Reset', Math.ceil(result.resetAt / 1000).toString());
@@ -691,7 +707,7 @@ async function checkRedisQueryCostLimit(
 }
 
 export async function checkRateLimitKey(
-    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'CACHE'>,
+    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE'>,
     options: DirectRateLimitOptions
 ): Promise<RateLimitResult> {
     const [result] = await checkRateLimitKeys(env, [options]);
@@ -699,7 +715,7 @@ export async function checkRateLimitKey(
 }
 
 async function checkRateLimitKeys(
-    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'CACHE'>,
+    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE'>,
     checks: DirectRateLimitCheckOptions[],
 ): Promise<RateLimitBatchResult[]> {
     const {
@@ -709,7 +725,7 @@ async function checkRateLimitKeys(
     const redisUrl = env.UPSTASH_REDIS_REST_URL;
     const redisToken = env.UPSTASH_REDIS_REST_TOKEN;
     const useRedis = Boolean(redisUrl && redisToken);
-    const isProduction = env.ENVIRONMENT === 'production';
+    const isProduction = isProductionRuntime(env);
 
     if (useRedis) {
         return checkRedisRateLimitBatch(redisUrl, redisToken, checks);
@@ -752,7 +768,7 @@ async function checkRateLimitKeys(
 }
 
 export async function checkQueryCostRateLimitKey(
-    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'CACHE'>,
+    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE'>,
     options: DirectQueryCostRateLimitOptions
 ): Promise<QueryCostRateLimitResult> {
     const {
@@ -766,7 +782,7 @@ export async function checkQueryCostRateLimitKey(
     const redisUrl = env.UPSTASH_REDIS_REST_URL;
     const redisToken = env.UPSTASH_REDIS_REST_TOKEN;
     const useRedis = Boolean(redisUrl && redisToken);
-    const isProduction = env.ENVIRONMENT === 'production';
+    const isProduction = isProductionRuntime(env);
 
     if (isProduction && !useRedis) {
         return {
@@ -822,7 +838,7 @@ export function rateLimit(options: RateLimitOptions = {}) {
         }
 
         const clientKey = keyGenerator(c);
-        const isProduction = c.env.ENVIRONMENT === 'production';
+        const isProduction = isProductionRuntime(c.env);
 
         const result = await checkRateLimitKey(c.env, {
             key: clientKey,
@@ -919,7 +935,7 @@ export function queryCostRateLimit(options: QueryCostRateLimitOptions = {}) {
             capacity,
             prefix,
         });
-        const isProduction = c.env.ENVIRONMENT === 'production';
+        const isProduction = isProductionRuntime(c.env);
 
         c.header('X-RateLimit-Limit', result.limit.toString());
         c.header('X-RateLimit-Remaining', result.remaining.toString());

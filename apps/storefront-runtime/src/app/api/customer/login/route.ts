@@ -1,5 +1,6 @@
 // POST /api/customer/login — Authenticate with email/password
 import { NextRequest, NextResponse } from 'next/server';
+import { LetbuyyApiError } from '@letbuyy/api-client';
 import { createStorefrontApiClient } from '@/lib/api/client';
 import { createSession } from '@/lib/session';
 
@@ -60,6 +61,19 @@ export async function POST(request: NextRequest) {
             },
         });
     } catch (error: unknown) {
+        if (
+            error instanceof LetbuyyApiError &&
+            (error.status === 403 || error.status === 429 || error.status === 503)
+        ) {
+            const code = error.code;
+            const message = code === 'CUSTOMER_AUTH_RATE_LIMITED'
+                ? 'Too many login attempts. Please try again later.'
+                : code === 'TURNSTILE_REQUIRED'
+                    ? 'Bot verification failed'
+                    : error.message || 'Login temporarily unavailable';
+            return NextResponse.json({ error: message, code }, { status: error.status });
+        }
+
         if (error instanceof Error && error.message.includes('disabled')) {
             return NextResponse.json({ error: error.message }, { status: 403 });
         }

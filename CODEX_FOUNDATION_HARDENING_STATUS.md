@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F4.2 ops-plane timing-safe compares complete locally; continue F4.3 storefront login abuse controls.
-- Findings resolved: 22/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials and `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening.
-- Current governance gate state: green after F4.2 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F4.3 storefront login abuse controls complete locally; continue F4.4 scoped credentialed CORS.
+- Findings resolved: 23/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials and `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening.
+- Current governance gate state: green after F4.3 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -411,6 +411,23 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 - SKIPPED -- NEEDS HUMAN: ops SSO/IdP or a security decision to share and validate platform-console session tokens inside the gateway worker, plus a token rotation/runbook, is required for true per-operator gateway-side ops identity. F4.2 hardens the current static-token compare but does not create a new identity authority.
 
+## F4.3 storefront login abuse-control evidence
+
+- Gateway customer login calls `enforceCustomerAuthRateLimit` with `operation: 'customer-login'` before Turnstile verification, DB lookup, and password comparison.
+- `services/api-gateway/src/middleware/rateLimit.ts` now treats explicit `ENVIRONMENT`/`APP_ENV=production` as production and uses `NODE_ENV=production` only as a fail-closed fallback when no explicit runtime env is set.
+- Storefront account login renders `TurnstileWidget`, passes the token through `customer-auth-context`, and `/api/customer/login` forwards `turnstile_token` to the gateway.
+- The storefront login API now preserves gateway `LetbuyyApiError` 403/429/503 abuse-control responses for `TURNSTILE_REQUIRED`, `CUSTOMER_AUTH_RATE_LIMITED`, and rate-limit-unavailable states instead of converting them to a generic 500.
+- Pre-change `pnpm run test:contracts`: FAIL - 84/87, with new F4.3 assertions failing on production rate-limit env detection, abuse-control status propagation, and an overly literal internal-secret contract assertion.
+- `pnpm run test:contracts`: PASS - 87/87.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm install --frozen-lockfile --force`: PASS - restored workspace links after generated-artifact cleanup.
+- `pnpm --filter @letbuyy/storefront-runtime typecheck`: PASS.
+- `pnpm --filter @letbuyy/storefront-runtime lint`: PASS - existing warnings only.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -443,5 +460,5 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Continue to F4.3 storefront login abuse controls.
+- Continue to F4.4 scoped credentialed CORS.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.
