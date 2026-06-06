@@ -15,7 +15,6 @@
     "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/theme-engine": "workspace:*",
     "@letbuyy/ui": "workspace:*",
-    "@letbuyy/utils": "workspace:*",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.26",
     "lucide-react": "^0.562.0",

@@ -134,7 +134,6 @@ export const workspacePackageRoots = [
   "packages/typescript/api-client",
   "packages/typescript/api-types",
   "packages/typescript/ui",
-  "packages/typescript/utils",
   "packages/dart/core",
   "packages/dart/models",
   "packages/dart/services",

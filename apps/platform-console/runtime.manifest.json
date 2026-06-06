@@ -33,8 +33,7 @@
     "workspacePackages": [
       "@letbuyy/api-client",
       "@letbuyy/auth-core",
-      "@letbuyy/ui",
-      "@letbuyy/utils"
+      "@letbuyy/ui"
     ],
     "runtimeImports": []
   },

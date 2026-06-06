@@ -14,7 +14,6 @@
     "@letbuyy/auth-core": "workspace:*",
     "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/ui": "workspace:*",
-    "@letbuyy/utils": "workspace:*",
     "lucide-react": "^0.562.0",
     "next": "16.1.6",
     "react": "19.2.3",

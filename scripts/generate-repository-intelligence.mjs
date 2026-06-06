@@ -233,7 +233,6 @@ const packageTargets = [
   { output: "packages/runtime-composition/AGENTS.md", name: "Runtime Composition", actual: "packages/runtime-composition", purpose: "Read orchestration, query aggregation, projection assembly, cache policy, hydration, and runtime response shaping contracts." },
   { output: "packages/infrastructure/AGENTS.md", name: "Infrastructure", actual: "packages/infrastructure", purpose: "Provider SDKs, external APIs, storage, queue, cache, analytics, search, payment, provider resilience, retries, and adapter normalization contracts." },
   { output: "packages/typescript/ui/AGENTS.md", name: "TypeScript UI", actual: "packages/typescript/ui", purpose: "Shared Button, Input, DataTable package and design-system extraction point." },
-  { output: "packages/typescript/utils/AGENTS.md", name: "TypeScript Utils", actual: "packages/typescript/utils", purpose: "Shared Supabase, API and auth utility package." },
   { output: "packages/typescript/api-client/AGENTS.md", name: "API Client", actual: "packages/typescript/api-client", purpose: "Shared typed Commerce API client package." },
   { output: "packages/typescript/api-types/AGENTS.md", name: "API Types", actual: "packages/typescript/api-types", purpose: "Shared TypeScript domain and API contract package." },
   { output: "packages/dart/core/AGENTS.md", name: "Dart Core", actual: "packages/dart/core", purpose: "Dart constants, config, responsive helpers and platform utility package." },
@@ -371,7 +370,6 @@ function classifyArea(file) {
   if (file.startsWith("database/supabase")) return "supabase database";
   if (file.startsWith("legacy/firebase")) return "firebase legacy";
   if (file.startsWith("packages/typescript/ui")) return "shared web ui package";
-  if (file.startsWith("packages/typescript/utils")) return "shared web utils package";
   if (file.startsWith("packages/typescript/api-client")) return "shared commerce api client package";
   if (file.startsWith("packages/typescript/api-types")) return "shared api types package";
   if (file.startsWith("packages/shared-types")) return "shared types package";
@@ -429,7 +427,6 @@ function appRootForFile(file) {
     "services/api-gateway",
     "services/webhook-service",
     "packages/typescript/ui",
-    "packages/typescript/utils",
     "packages/typescript/api-client",
     "packages/typescript/api-types",
     "packages/shared-types",
