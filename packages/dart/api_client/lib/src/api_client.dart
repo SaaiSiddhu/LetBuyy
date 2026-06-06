@@ -1178,6 +1178,27 @@ class CouponsApi {
         '/coupons/validate',
         options: _mergeOptions(options, method: HttpMethod.post, body: input),
       );
+
+  Future<JsonMap> create(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/coupons',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> update(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/coupons/${_encodePathSegment(id)}',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
+
+  Future<JsonMap> remove(String id, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/coupons/${_encodePathSegment(id)}',
+        options: _mergeOptions(options, method: HttpMethod.delete),
+      );
 }
 
 ApiRequestOptions _mergeOptions(

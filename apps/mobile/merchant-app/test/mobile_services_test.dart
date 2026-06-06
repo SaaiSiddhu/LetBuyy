@@ -6,6 +6,7 @@ import 'package:http/testing.dart';
 import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
 import 'package:letbuyy_store/services/analytics_service.dart';
 import 'package:letbuyy_store/services/api_client.dart';
+import 'package:letbuyy_store/services/coupon_service.dart';
 import 'package:letbuyy_store/services/customer_service.dart';
 import 'package:letbuyy_store/services/inventory_service.dart';
 import 'package:letbuyy_store/services/order_service.dart';
@@ -16,6 +17,8 @@ import 'package:letbuyy_store/services/subscription_service.dart';
 import 'package:letbuyy_store/services/theme_service.dart';
 import 'package:letbuyy_store/screens/customers/customer_detail_screen.dart';
 import 'package:letbuyy_store/screens/customers/customers_screen.dart';
+import 'package:letbuyy_store/screens/discounts/coupon_form_screen.dart';
+import 'package:letbuyy_store/screens/discounts/coupons_screen.dart';
 import 'package:letbuyy_store/screens/inventory/inventory_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
 import 'package:provider/provider.dart';
@@ -153,6 +156,38 @@ void main() {
       expect(adjusted.available, 15);
       expect(api.paths, contains('/inventory/levels'));
       expect(api.paths, contains('/inventory/adjust'));
+    });
+
+    test('CouponService handles coupon CRUD and validation', () async {
+      final api = _FakeApiClient(
+        paginated: {
+          '/coupons': [_couponJson()],
+        },
+        json: {
+          '/coupons': _couponJson(id: 'coupon_2', code: 'WELCOME'),
+          '/coupons/coupon_1': _couponJson(isActive: false),
+          '/coupons/validate': {'message': 'Coupon is valid'},
+        },
+      );
+      final service = CouponService(api: api);
+
+      final coupons = await service.fetchCoupons('store_1');
+      final created = await service.createCoupon(_couponJson(code: 'WELCOME'));
+      final toggled = await service.toggleCoupon(coupons.single);
+      await service.deleteCoupon('coupon_1');
+      final validation = await service.validateCoupon(
+        storeId: 'store_1',
+        code: 'SAVE10',
+        subtotal: 1000,
+      );
+
+      expect(coupons.single.code, 'SAVE10');
+      expect(created.code, 'WELCOME');
+      expect(toggled.isActive, isFalse);
+      expect(validation['message'], 'Coupon is valid');
+      expect(api.paths, contains('/coupons'));
+      expect(api.paths, contains('/coupons/coupon_1'));
+      expect(api.paths, contains('/coupons/validate'));
     });
 
     test('AnalyticsService assembles dashboard metrics', () async {
@@ -454,6 +489,45 @@ void main() {
     expect(find.text('TEE-001'), findsOneWidget);
     expect(find.text('Adjust'), findsOneWidget);
   });
+
+  testWidgets('CouponsScreen renders coupon list and actions', (tester) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+        '/coupons': [_couponJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => CouponService(api: api)),
+        ],
+        child: const MaterialApp(home: CouponsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Coupons'), findsWidgets);
+    expect(find.text('SAVE10'), findsOneWidget);
+    expect(find.text('Active'), findsWidgets);
+  });
+
+  testWidgets('CouponFormScreen renders create form', (tester) async {
+    final api = _FakeApiClient(json: {'/coupons': _couponJson()});
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider(
+        create: (_) => CouponService(api: api),
+        child: const MaterialApp(home: CouponFormScreen(storeId: 'store_1')),
+      ),
+    );
+
+    expect(find.text('New coupon'), findsOneWidget);
+    expect(find.text('Create coupon'), findsOneWidget);
+    expect(find.text('Code'), findsOneWidget);
+  });
 }
 
 class _FakeApiClient extends ApiClient {
@@ -581,6 +655,27 @@ Map<String, dynamic> _inventoryJson({int available = 10}) => {
   'reserved': 1,
   'committed': 2,
   'on_hand': available + 3,
+};
+
+Map<String, dynamic> _couponJson({
+  String id = 'coupon_1',
+  String code = 'SAVE10',
+  bool isActive = true,
+}) => {
+  'id': id,
+  'store_id': 'store_1',
+  'code': code,
+  'description': 'Launch campaign',
+  'type': 'percentage',
+  'value': 10,
+  'currency': 'INR',
+  'minimum_order_amount': 500,
+  'maximum_discount': 200,
+  'usage_limit': 100,
+  'used_count': 3,
+  'per_customer_limit': 1,
+  'expires_at': '2026-12-31T23:59:59.000Z',
+  'is_active': isActive,
 };
 
 Map<String, dynamic> _orderJson({

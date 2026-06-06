@@ -21,6 +21,8 @@ import '../screens/settings/help_screen.dart';
 import '../screens/analytics/analytics_screen.dart';
 import '../screens/customers/customer_detail_screen.dart';
 import '../screens/customers/customers_screen.dart';
+import '../screens/discounts/coupon_form_screen.dart';
+import '../screens/discounts/coupons_screen.dart';
 import '../screens/inventory/inventory_screen.dart';
 import '../screens/orders/order_detail_screen.dart';
 import '../screens/orders/orders_screen.dart';
@@ -62,6 +64,8 @@ class AppRoutes {
   static const String analytics = '/analytics';
   static const String customers = '/customers';
   static const String customerDetail = '/customers/detail';
+  static const String coupons = '/coupons';
+  static const String couponForm = '/coupons/form';
   static const String inventory = '/inventory';
   static const String orders = '/orders';
   static const String orderDetail = '/orders/detail';
@@ -78,6 +82,9 @@ class AppRoutes {
     }
     if (settings.name == '/features/inventory') {
       return _buildRoute(const InventoryScreen(), settings);
+    }
+    if (settings.name == '/features/coupons') {
+      return _buildRoute(const CouponsScreen(), settings);
     }
 
     final feature = MerchantFeatureDefinitions.byRoute[settings.name];
@@ -179,6 +186,20 @@ class AppRoutes {
           CustomerDetailScreen(
             email: args['email'] as String? ?? '',
             initialCustomer: customer is CustomerContract ? customer : null,
+          ),
+          settings,
+        );
+
+      case coupons:
+        return _buildRoute(const CouponsScreen(), settings);
+
+      case couponForm:
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        final coupon = args['coupon'];
+        return _buildRoute(
+          CouponFormScreen(
+            storeId: args['storeId'] as String? ?? '',
+            coupon: coupon is CouponContract ? coupon : null,
           ),
           settings,
         );
