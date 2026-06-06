@@ -2,8 +2,8 @@
 
 - Branch: `stream/letbuyy-foundation-v2`
 - Start HEAD: `62b2915218daa716b075b02d909c08e053bfce25`
-- Current HEAD: `e5b557ffb47ad1a7fe72db82a9325c2d387539a6`
-- Status timestamp: `2026-06-06T15:25:52+05:30`
+- Current HEAD: `3e020c855e8abd7ebaab502887262f7e987d6db4`
+- Status timestamp: `2026-06-06T15:35:27+05:30`
 
 ## Feature Checklist
 
@@ -34,7 +34,7 @@
 | P2 | Shipping | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/shipping_tax_service.dart`, `lib/screens/settings/shipping_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/shipping` opens the real shipping settings screen, lists `/shipping-tax/shipping/zones` and `/shipping-tax/shipping`, creates/edits/deletes zones and rates, supports active rates, delivery estimates, and order-range fields; covered by service + widget tests |
 | P2 | Taxes | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `packages/dart/models/lib/src/merchant_app/store_model.dart`, `lib/services/shipping_tax_service.dart`, `lib/screens/settings/taxes_screen.dart`, `lib/app/routes.dart`; `/features/taxes` opens the real taxes screen, lists/creates/edits/deletes `/shipping-tax/taxes` rates, supports country/state/HSN/applies-to/compound/shipping/priority/active fields, and persists `tax_inclusive` through `/stores/:id`; covered by service + widget tests |
 | P2 | Domains lifecycle | DONE-WITH-SKIP | `lib/services/domain_service.dart`, `lib/screens/settings/domain_settings_screen.dart`, `lib/main.dart`, `test/mobile_services_test.dart`; custom domain save uses `/stores/:id`, DNS copy/share guidance is implemented, and availability/verify/SSL polling are typed skips pending missing gateway domain lifecycle routes (ledger S-011); covered by service + widget tests |
-| P2 | Collections CRUD | TODO | Not started |
+| P2 | Collections CRUD | DONE-WITH-SKIP | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/product_service.dart`, `lib/screens/products/collections_screen.dart`, `lib/app/routes.dart`, `lib/screens/parity/merchant_feature_definitions.dart`, `test/mobile_services_test.dart`; `/features/collections` opens the real collection screen, lists and creates `/products/collections` rows, and edit/delete/toggle actions are typed skips pending missing gateway PATCH/DELETE collection routes (ledger S-012); covered by service + widget tests |
 | P2 | Product variant matrix | TODO | Not started |
 | P2 | Inventory WMS | TODO | Not started |
 | P3 | Staff/billing/reviews/leads/gift cards/SEO/apps/AI | TODO | Not started |
@@ -107,6 +107,10 @@
 - P2 `Domains lifecycle` feature check: `flutter test` PASS. Output: `00:12 +41: All tests passed!`.
 - P2 `Domains lifecycle` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
 - P2 `Domains lifecycle` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_INTERNAL_OPERATING_SYSTEM_FOUNDATION_MISSION.md must be archived; CODEX_MERCHANT_PARTNER_VERTICAL_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
+- P2 `Collections CRUD` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 4.5s)`.
+- P2 `Collections CRUD` feature check: `flutter test` PASS. Output: `00:02 +43: All tests passed!`.
+- P2 `Collections CRUD` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
+- P2 `Collections CRUD` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_INTERNAL_OPERATING_SYSTEM_FOUNDATION_MISSION.md must be archived; CODEX_MERCHANT_PARTNER_VERTICAL_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
 
 ## Notes
 
@@ -115,6 +119,6 @@
 
 ## RESUME HINT
 
-Next feature: P2 `Collections CRUD`.
+Next feature: P2 `Product variant matrix`.
 
-Build `apps/mobile/merchant-app/lib/screens/products/collections_screen.dart` over `/v1/products/collections`, add typed service/client support if missing, route the real screen from `/features/collections`, and cover it with service + widget tests before committing.
+Extend `apps/mobile/merchant-app/lib/screens/products/product_form_screen.dart` with a per-variant SKU/price/quantity matrix that posts `variants` through `/v1/products`, preserving the existing product form flow and covering the service/form behavior with tests before committing.

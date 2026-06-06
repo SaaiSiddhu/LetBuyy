@@ -493,6 +493,14 @@ class ProductsApi {
     return data;
   }
 
+  Future<JsonMap> createCollection(
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/products/collections',
+    options: _mergeOptions(options, method: HttpMethod.post, body: input),
+  );
+
   Future<List<JsonMap>> giftCards({
     required String storeId,
     ApiRequestOptions? options,

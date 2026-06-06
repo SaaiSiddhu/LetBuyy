@@ -38,6 +38,7 @@ import 'package:letbuyy_store/screens/discounts/coupon_form_screen.dart';
 import 'package:letbuyy_store/screens/discounts/coupons_screen.dart';
 import 'package:letbuyy_store/screens/inventory/inventory_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
+import 'package:letbuyy_store/screens/products/collections_screen.dart';
 import 'package:letbuyy_store/screens/settings/notifications_screen.dart';
 import 'package:letbuyy_store/screens/settings/domain_settings_screen.dart';
 import 'package:letbuyy_store/screens/settings/shipping_screen.dart';
@@ -73,6 +74,54 @@ void main() {
       expect(products.single['store_id'], 'store_1');
       expect(products.single.containsKey('salePrice'), isFalse);
     });
+
+    test(
+      'ProductService lists and creates collections, then skips missing mutations',
+      () async {
+        final api = _FakeApiClient(
+          json: {
+            '/products/collections': [_collectionJson()],
+          },
+        );
+        final service = ProductService(api: api);
+
+        final collections = await service.fetchCollections('store_1');
+        final created = await service.createCollection(
+          const ProductCollectionInput(
+            storeId: 'store_1',
+            title: 'Summer picks',
+            description: 'Seasonal merchandising',
+          ),
+        );
+
+        expect(collections.single.title, 'Summer picks');
+        expect(created.handle, 'summer-picks');
+        expect(api.paths, contains('/products/collections'));
+        await expectLater(
+          service.updateCollection(
+            'collection_1',
+            const ProductCollectionInput(storeId: 'store_1', title: 'Updated'),
+          ),
+          throwsA(
+            isA<SkipNeedsBackendException>().having(
+              (error) => error.id,
+              'id',
+              ProductService.missingCollectionMutationRouteId,
+            ),
+          ),
+        );
+        await expectLater(
+          service.deleteCollection('collection_1'),
+          throwsA(
+            isA<SkipNeedsBackendException>().having(
+              (error) => error.id,
+              'id',
+              ProductService.missingCollectionMutationRouteId,
+            ),
+          ),
+        );
+      },
+    );
 
     test('OrderService fetches typed orders and status counts', () async {
       final api = _FakeApiClient(
@@ -933,6 +982,37 @@ void main() {
     expect(find.text('Active'), findsWidgets);
   });
 
+  testWidgets('CollectionsScreen renders collection merchandising rows', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+      },
+      json: {
+        '/products/collections': [_collectionJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => ProductService(api: api)),
+        ],
+        child: const MaterialApp(home: CollectionsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Collections'), findsOneWidget);
+    expect(find.text('Summer picks'), findsOneWidget);
+    expect(find.text('Seasonal merchandising'), findsOneWidget);
+    expect(find.text('6 products'), findsOneWidget);
+    expect(find.text('/collections/summer-picks'), findsOneWidget);
+    expect(find.text('New collection'), findsOneWidget);
+  });
+
   testWidgets('CouponFormScreen renders create form', (tester) async {
     final api = _FakeApiClient(json: {'/coupons': _couponJson()});
 
@@ -1348,6 +1428,23 @@ Map<String, dynamic> _productJson() => {
   'currency': 'INR',
   'stock': 8,
   'is_active': true,
+};
+
+Map<String, dynamic> _collectionJson({
+  String id = 'collection_1',
+  String title = 'Summer picks',
+  bool isActive = true,
+}) => {
+  'id': id,
+  'store_id': 'store_1',
+  'title': title,
+  'description': 'Seasonal merchandising',
+  'image_url': null,
+  'handle': 'summer-picks',
+  'is_active': isActive,
+  'product_count': 6,
+  'created_at': '2026-06-01T10:00:00.000Z',
+  'updated_at': '2026-06-01T10:30:00.000Z',
 };
 
 Map<String, dynamic> _customerJson() => {

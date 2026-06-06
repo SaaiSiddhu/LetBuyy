@@ -33,6 +33,7 @@ import '../screens/content/pages_screen.dart';
 import '../screens/inventory/inventory_screen.dart';
 import '../screens/orders/order_detail_screen.dart';
 import '../screens/orders/orders_screen.dart';
+import '../screens/products/collections_screen.dart';
 import '../screens/subscription/pricing_screen.dart';
 import '../screens/subscription/connect_razorpay_screen.dart';
 import '../screens/parity/merchant_feature_definitions.dart';
@@ -81,6 +82,7 @@ class AppRoutes {
   static const String navigation = '/navigation';
   static const String media = '/media';
   static const String inventory = '/inventory';
+  static const String collections = '/collections';
   static const String orders = '/orders';
   static const String orderDetail = '/orders/detail';
   static const String pricing = '/pricing';
@@ -99,6 +101,9 @@ class AppRoutes {
     }
     if (settings.name == '/features/coupons') {
       return _buildRoute(const CouponsScreen(), settings);
+    }
+    if (settings.name == '/features/collections') {
+      return _buildRoute(const CollectionsScreen(), settings);
     }
     if (settings.name == '/features/pages') {
       return _buildRoute(const PagesScreen(), settings);
@@ -262,6 +267,9 @@ class AppRoutes {
 
       case inventory:
         return _buildRoute(const InventoryScreen(), settings);
+
+      case collections:
+        return _buildRoute(const CollectionsScreen(), settings);
 
       case orders:
         return _buildRoute(const OrdersScreen(), settings);

@@ -96,8 +96,9 @@ class MerchantFeatureDefinitions {
     title: 'Collections',
     summary: 'Product collections and category merchandising.',
     icon: Icons.category_outlined,
-    endpoint: 'categories',
-    backendRequirement: 'Requires /v1/categories rows for the active store.',
+    endpoint: 'products/collections',
+    backendRequirement:
+        'Requires /v1/products/collections rows for the active store.',
   );
 
   static const inventory = MerchantFeatureDefinition(

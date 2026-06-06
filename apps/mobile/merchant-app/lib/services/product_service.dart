@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 
 import 'api_client.dart';
+import 'skip_needs_backend_exception.dart';
 
 /// Service for managing products via the LetBuyy API.
 ///
@@ -12,6 +13,9 @@ class ProductService extends ChangeNotifier {
   final ApiClient _api;
 
   ProductService({required ApiClient api}) : _api = api;
+
+  static const missingCollectionMutationRouteId =
+      'MOBILE_COLLECTION_UPDATE_DELETE';
 
   // ── Cached state ─────────────────────────────────────────
 
@@ -161,4 +165,129 @@ class ProductService extends ChangeNotifier {
   Future<String> uploadProductImage(File file) async {
     return _api.uploadFile(file, folder: 'products');
   }
+
+  // ── Collections ──────────────────────────────────────────
+
+  Future<List<ProductCollectionContract>> fetchCollections(
+    String storeId,
+  ) async {
+    final rows = await _api.products.collections(storeId: storeId);
+    return rows.map(ProductCollectionContract.fromJson).toList(growable: false);
+  }
+
+  Future<ProductCollectionContract> createCollection(
+    ProductCollectionInput input,
+  ) async {
+    final row = await _api.products.createCollection(input.toJson());
+    return ProductCollectionContract.fromJson(row);
+  }
+
+  Future<ProductCollectionContract> updateCollection(
+    String id,
+    ProductCollectionInput input,
+  ) async {
+    // [SKIP-NEEDS-BACKEND: MOBILE_COLLECTION_UPDATE_DELETE]
+    throw const SkipNeedsBackendException(
+      missingCollectionMutationRouteId,
+      'Gateway exposes GET/POST /v1/products/collections but no PATCH route for updating collections.',
+    );
+  }
+
+  Future<void> deleteCollection(String id) async {
+    // [SKIP-NEEDS-BACKEND: MOBILE_COLLECTION_UPDATE_DELETE]
+    throw const SkipNeedsBackendException(
+      missingCollectionMutationRouteId,
+      'Gateway exposes GET/POST /v1/products/collections but no DELETE route for archiving collections.',
+    );
+  }
+}
+
+class ProductCollectionContract {
+  const ProductCollectionContract({
+    required this.id,
+    required this.storeId,
+    required this.title,
+    this.description,
+    this.imageUrl,
+    this.handle,
+    this.isActive = true,
+    this.productCount = 0,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory ProductCollectionContract.fromJson(Map<String, dynamic> data) {
+    final name = data['title'] ?? data['name'];
+    return ProductCollectionContract(
+      id: '${data['id'] ?? ''}',
+      storeId: '${data['store_id'] ?? data['storeId'] ?? ''}',
+      title: name == null ? '' : '$name',
+      description: data['description'] as String?,
+      imageUrl: data['image_url'] as String? ?? data['imageUrl'] as String?,
+      handle: data['handle'] as String? ?? data['slug'] as String?,
+      isActive: data['is_active'] as bool? ?? data['isActive'] as bool? ?? true,
+      productCount:
+          ((data['product_count'] ?? data['products_count'] ?? 0) as num)
+              .toInt(),
+      createdAt: data['created_at'] as String? ?? data['createdAt'] as String?,
+      updatedAt: data['updated_at'] as String? ?? data['updatedAt'] as String?,
+    );
+  }
+
+  final String id;
+  final String storeId;
+  final String title;
+  final String? description;
+  final String? imageUrl;
+  final String? handle;
+  final bool isActive;
+  final int productCount;
+  final String? createdAt;
+  final String? updatedAt;
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'store_id': storeId,
+    'title': title,
+    'description': description,
+    'image_url': imageUrl,
+    'handle': handle,
+    'is_active': isActive,
+    'product_count': productCount,
+    'created_at': createdAt,
+    'updated_at': updatedAt,
+  };
+}
+
+class ProductCollectionInput {
+  const ProductCollectionInput({
+    required this.storeId,
+    required this.title,
+    this.description,
+    this.imageUrl,
+  });
+
+  factory ProductCollectionInput.fromContract(
+    ProductCollectionContract collection,
+  ) {
+    return ProductCollectionInput(
+      storeId: collection.storeId,
+      title: collection.title,
+      description: collection.description,
+      imageUrl: collection.imageUrl,
+    );
+  }
+
+  final String storeId;
+  final String title;
+  final String? description;
+  final String? imageUrl;
+
+  Map<String, dynamic> toJson() => {
+    'store_id': storeId,
+    'title': title,
+    if (description != null && description!.trim().isNotEmpty)
+      'description': description,
+    if (imageUrl != null && imageUrl!.trim().isNotEmpty) 'image_url': imageUrl,
+  };
 }
