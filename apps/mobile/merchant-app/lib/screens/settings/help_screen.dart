@@ -25,25 +25,18 @@ class HelpScreen extends StatelessWidget {
           // FAQs
           const Text(
             'Frequently Asked Questions',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
           ),
           const SizedBox(height: 12),
-          ..._faqs.map((faq) => _FaqTile(
-            question: faq['q']!,
-            answer: faq['a']!,
-          )),
+          ..._faqs.map(
+            (faq) => _FaqTile(question: faq['q']!, answer: faq['a']!),
+          ),
           const SizedBox(height: 24),
 
           // Links
           const Text(
             'Resources',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
           ),
           const SizedBox(height: 12),
           _buildLinkTile(
@@ -51,7 +44,7 @@ class HelpScreen extends StatelessWidget {
             icon: Icons.menu_book_rounded,
             title: 'Documentation',
             subtitle: 'Learn how to use LetBuyy Store',
-            url: 'https://docs.letbuyy.com',
+            url: 'https://docs.letbuyy.store',
           ),
           _buildLinkTile(
             context,
@@ -65,14 +58,14 @@ class HelpScreen extends StatelessWidget {
             icon: Icons.policy_rounded,
             title: 'Terms of Service',
             subtitle: 'Read our terms and conditions',
-            url: 'https://letbuyy.com/terms',
+            url: 'https://letbuyy.store/terms',
           ),
           _buildLinkTile(
             context,
             icon: Icons.privacy_tip_rounded,
             title: 'Privacy Policy',
             subtitle: 'How we handle your data',
-            url: 'https://letbuyy.com/privacy',
+            url: 'https://letbuyy.store/privacy',
           ),
         ],
       ),
@@ -84,10 +77,7 @@ class HelpScreen extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            AppColors.primary,
-            AppColors.primaryLight,
-          ],
+          colors: [AppColors.primary, AppColors.primaryLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -113,10 +103,7 @@ class HelpScreen extends StatelessWidget {
           const SizedBox(height: 8),
           const Text(
             'Our support team is available 24/7 to help you',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 13,
-            ),
+            style: TextStyle(color: Colors.white70, fontSize: 13),
           ),
           const SizedBox(height: 16),
           Row(
@@ -199,14 +186,18 @@ class HelpScreen extends StatelessWidget {
   }
 
   Future<void> _launchWhatsApp(BuildContext context) async {
-    final uri = Uri.parse('https://wa.me/919876543210?text=Hi, I need help with LetBuyy Store');
+    final uri = Uri.parse(
+      'https://wa.me/919876543210?text=Hi, I need help with LetBuyy Store',
+    );
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 
   Future<void> _launchEmail(BuildContext context) async {
-    final uri = Uri.parse('mailto:support@letbuyy.com?subject=LetBuyy Store Support');
+    final uri = Uri.parse(
+      'mailto:support@letbuyy.store?subject=LetBuyy Store Support',
+    );
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     }
@@ -215,23 +206,28 @@ class HelpScreen extends StatelessWidget {
   static const _faqs = [
     {
       'q': 'How do I publish my store?',
-      'a': 'Go to the Home tab and toggle the Publish switch. Your store will be live at your subdomain within seconds.',
+      'a':
+          'Go to the Home tab and toggle the Publish switch. Your store will be live at your subdomain within seconds.',
     },
     {
       'q': 'How do I add products to my store?',
-      'a': 'Go to the Products tab, search for your products, and tap to select which ones to show on your store.',
+      'a':
+          'Go to the Products tab, search for your products, and tap to select which ones to show on your store.',
     },
     {
       'q': 'Can I use my own domain?',
-      'a': 'Yes! Premium users can connect a custom domain. Go to Settings > Domain Settings to set it up.',
+      'a':
+          'Yes! Premium users can connect a custom domain. Go to Settings > Domain Settings to set it up.',
     },
     {
       'q': 'How do I customize my store theme?',
-      'a': 'Go to the Theme tab to choose a preset theme or customize colors and fonts.',
+      'a':
+          'Go to the Theme tab to choose a preset theme or customize colors and fonts.',
     },
     {
       'q': 'How do I add sections to my store?',
-      'a': 'Go to the Editor tab and tap "Add Section" to choose from 13 different section types.',
+      'a':
+          'Go to the Editor tab and tap "Add Section" to choose from 13 different section types.',
     },
   ];
 }
@@ -240,10 +236,7 @@ class _FaqTile extends StatefulWidget {
   final String question;
   final String answer;
 
-  const _FaqTile({
-    required this.question,
-    required this.answer,
-  });
+  const _FaqTile({required this.question, required this.answer});
 
   @override
   State<_FaqTile> createState() => _FaqTileState();
@@ -265,10 +258,7 @@ class _FaqTileState extends State<_FaqTile> {
         child: ExpansionTile(
           title: Text(
             widget.question,
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
           ),
           trailing: Icon(
             _isExpanded
@@ -284,10 +274,7 @@ class _FaqTileState extends State<_FaqTile> {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Text(
                 widget.answer,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 13, color: Colors.grey[600]),
               ),
             ),
           ],

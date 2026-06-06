@@ -20,8 +20,11 @@ test('queue worker persists a Cloudflare batch with batched DB writes', () => {
   assert.match(queueWorkerSource, /async function persistQueueBatch/);
   assert.match(queueWorkerSource, /deliveries\.map\(\(delivery\) => \(/);
   assert.match(queueWorkerSource, /async function recordQueueBatchMetric/);
-  assert.match(queueWorkerSource, /metric_name: 'cloudflare\.queue\.delivery\.batch'/);
-  assert.match(queueWorkerSource, /lag_p95_ms: percentile/);
+  assert.match(queueWorkerSource, /metric_name: 'letbuyy\.queue\.delivery\.batch'/);
+  assert.match(queueWorkerSource, /metric_name: 'letbuyy\.queue\.dead_letter\.total'/);
+  assert.match(queueWorkerSource, /writeRuntimeTelemetryDataPoint\(env\.RUNTIME_TELEMETRY/);
+  assert.match(queueWorkerSource, /const lagP95Ms = percentile/);
+  assert.match(queueWorkerSource, /lag_p95_ms: lagP95Ms/);
 
   assert.equal(
     countMatches(queueWorkerSource, /upsertSupabaseRows\(env, 'distributed_queue_messages'/g),

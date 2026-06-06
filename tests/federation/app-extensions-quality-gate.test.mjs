@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const APP_ENGINE_SOURCE = readFileSync('packages/app-engine/src/index.ts', 'utf8');
-const STOREFRONT_ROUTE_SOURCE = readFileSync('services/api-gateway/src/routes/storefront.ts', 'utf8');
+const STOREFRONT_ROUTE_SOURCE = readStorefrontRouteSource();
 const STORE_SERVICE_SOURCE = readFileSync('apps/storefront-runtime/src/lib/store-service.ts', 'utf8');
 const APP_BLOCK_SLOT_SOURCE = readFileSync('apps/storefront-runtime/src/components/sections/app-block-slot.tsx', 'utf8');
 const RENDERER_REGISTRY_SOURCE = readFileSync('apps/storefront-runtime/src/lib/theme-engine/renderer-registry.tsx', 'utf8');

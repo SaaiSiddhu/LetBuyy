@@ -96,6 +96,10 @@ export const DOMAIN_EVENT_TYPES = [
   'theme.purchase.completed',
   'theme.draft.saved',
   'theme.draft.discarded',
+  'payment.captured',
+  'payment.failed',
+  'refund.created',
+  'payment.subscription.activated',
   'payout.ledger_entry.created',
   'payout.released',
   'payout.failed',
@@ -126,7 +130,7 @@ export interface DomainEventContract {
   schemaVersion: 1;
   producer: DomainEventProducer;
   consumers: readonly DomainEventConsumer[];
-  aggregateType: 'store' | 'product' | 'order' | 'app' | 'app_charge' | 'theme' | 'theme_purchase' | 'theme_draft' | 'payout';
+  aggregateType: 'store' | 'product' | 'order' | 'app' | 'app_charge' | 'theme' | 'theme_purchase' | 'theme_draft' | 'subscription' | 'payout';
   payloadSchema: z.ZodType<unknown>;
   implementationStatus?: 'active' | 'reserved-human-gated';
   reservedReason?: string;
@@ -177,6 +181,8 @@ const AppChargePayloadSchema = z.object({
   billing_mode: z.enum(['recurring', 'usage']),
   amount: InrMinorUnitsSchema,
   payout_rail: z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']).default('razorpay_route'),
+  provider_reference: z.string().trim().min(1).max(200).optional(),
+  provider_mode: z.enum(['test', 'live']).default('test'),
   revenue_share_bps: z.number().int().min(0).max(10000).default(8000),
   partner_gst_bps: z.number().int().min(0).max(10000).default(1800),
   partner_gst_minor: z.number().int().nonnegative().default(0),
@@ -224,6 +230,37 @@ const ThemeDraftPayloadSchema = z.object({
   theme_package_version_id: UuidSchema.nullable().optional(),
   theme_instance_draft_id: UuidSchema.nullable().optional(),
   client: z.string().trim().min(1).max(80).optional(),
+});
+
+const PaymentProviderSchema = z.enum(['razorpay', 'stripe', 'paypal', 'cashfree']);
+
+const PaymentOrderPayloadSchema = z.object({
+  provider: PaymentProviderSchema,
+  provider_event_id: z.string().trim().min(1).max(240),
+  provider_event_type: z.string().trim().min(1).max(240).optional(),
+  order_id: UuidSchema,
+  payment_id: z.string().trim().min(1).max(240).nullable().optional(),
+  payment_status: z.enum(['paid', 'failed']).optional(),
+  reason: z.string().trim().max(500).nullable().optional(),
+});
+
+const RefundPayloadSchema = z.object({
+  provider: PaymentProviderSchema,
+  provider_event_id: z.string().trim().min(1).max(240),
+  provider_event_type: z.string().trim().min(1).max(240).optional(),
+  order_id: UuidSchema,
+  payment_status: z.literal('refunded').default('refunded'),
+});
+
+const PaymentSubscriptionActivatedPayloadSchema = z.object({
+  provider: PaymentProviderSchema,
+  provider_event_id: z.string().trim().min(1).max(240),
+  provider_event_type: z.string().trim().min(1).max(240).optional(),
+  store_id: UuidSchema,
+  subscription_id: UuidSchema.nullable().optional(),
+  plan_slug: z.string().trim().min(1).max(120),
+  billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
+  payment_id: z.string().trim().min(1).max(240).nullable().optional(),
 });
 
 const PayoutPayloadSchema = z.object({
@@ -426,6 +463,38 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
     consumers: ['analytics', 'webhook-service'],
     aggregateType: 'theme_draft',
     payloadSchema: ThemeDraftPayloadSchema,
+  },
+  'payment.captured': {
+    eventType: 'payment.captured',
+    schemaVersion: 1,
+    producer: 'webhook-service',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
+    aggregateType: 'order',
+    payloadSchema: PaymentOrderPayloadSchema,
+  },
+  'payment.failed': {
+    eventType: 'payment.failed',
+    schemaVersion: 1,
+    producer: 'webhook-service',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
+    aggregateType: 'order',
+    payloadSchema: PaymentOrderPayloadSchema,
+  },
+  'refund.created': {
+    eventType: 'refund.created',
+    schemaVersion: 1,
+    producer: 'webhook-service',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
+    aggregateType: 'order',
+    payloadSchema: RefundPayloadSchema,
+  },
+  'payment.subscription.activated': {
+    eventType: 'payment.subscription.activated',
+    schemaVersion: 1,
+    producer: 'webhook-service',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
+    aggregateType: 'subscription',
+    payloadSchema: PaymentSubscriptionActivatedPayloadSchema,
   },
   'payout.ledger_entry.created': {
     eventType: 'payout.ledger_entry.created',

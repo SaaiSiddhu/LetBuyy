@@ -4,13 +4,12 @@ description: LetBuyy Monorepo - E-commerce Platform for Marketplace, Seller, and
 publish_to: none
 
 environment:
-  sdk: '^3.10.0'
+  sdk: '^3.11.0'
 
 # ✅ MELOS 7.x: Workspace definition (replaces melos.yaml packages)
 # New structure: apps/mobile/*, packages/dart/*
 workspace:
   - apps/mobile/merchant-app
-  - apps/mobile/operator-app
   - packages/dart/core
   - packages/dart/api_client
   - packages/dart/models

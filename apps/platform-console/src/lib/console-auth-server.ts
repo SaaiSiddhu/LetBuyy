@@ -135,11 +135,23 @@ function hotp(secret: Uint8Array, counter: number) {
     return code.toString().padStart(6, '0');
 }
 
+function isProductionConsoleRuntime() {
+    return process.env.NODE_ENV === 'production'
+        || process.env.APP_ENV === 'production'
+        || process.env.VERCEL_ENV === 'production';
+}
+
+function canUseConsoleDevMfaBypass() {
+    return !isProductionConsoleRuntime()
+        && process.env.NODE_ENV === 'development'
+        && process.env.LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true';
+}
+
 export function verifyConsoleTotp(code: string) {
     const normalizedCode = code.trim();
     const devCode = process.env.PLATFORM_CONSOLE_DEV_MFA_CODE;
 
-    if (process.env.NODE_ENV !== 'production' && devCode && normalizedCode === devCode) {
+    if (canUseConsoleDevMfaBypass() && devCode && normalizedCode === devCode) {
         return true;
     }
 

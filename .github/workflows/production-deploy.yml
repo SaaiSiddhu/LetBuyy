@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: production-deploy
+  group: production-release-production
   cancel-in-progress: false
 
 env:
@@ -105,9 +105,45 @@ jobs:
             exit 1
           fi
 
+  migration-preflight:
+    name: Migration gate
+    needs: release-preflight
+    runs-on: ubuntu-latest
+    environment: production-migrations
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate migration safety
+        run: pnpm run validate:migrations
+
+      - name: Generate production migration diff
+        run: pnpm dlx supabase@latest db diff --db-url "${{ secrets.PRODUCTION_DB_CONNECTION_STRING }}" --schema public > supabase-production-migration-diff.sql
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Upload production migration diff
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-migration-diff
+          path: supabase-production-migration-diff.sql
+          retention-days: 30
+
   staging-e2e:
     name: E2E tests on staging (production gate)
-    needs: release-preflight
+    needs: migration-preflight
     runs-on: ubuntu-latest
     environment: staging
     steps:
@@ -180,19 +216,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
-
-      - name: Generate production migration diff
-        run: pnpm dlx supabase@latest db diff --db-url "${{ secrets.PRODUCTION_DB_CONNECTION_STRING }}" --schema public > supabase-production-migration-diff.sql
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-
-      - name: Upload production migration diff
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: production-migration-diff
-          path: supabase-production-migration-diff.sql
-          retention-days: 30
 
       - name: Capture encrypted production logical backup
         run: |
@@ -367,6 +390,7 @@ jobs:
     name: Verify required release jobs succeeded
     needs:
       - release-preflight
+      - migration-preflight
       - staging-e2e
       - migrate-production
       - deploy-workers-production
@@ -377,6 +401,7 @@ jobs:
       - name: Fail when a required release job failed or skipped
         env:
           PREFLIGHT_RESULT: ${{ needs.release-preflight.result }}
+          MIGRATION_PREFLIGHT_RESULT: ${{ needs.migration-preflight.result }}
           STAGING_E2E_RESULT: ${{ needs.staging-e2e.result }}
           MIGRATE_RESULT: ${{ needs.migrate-production.result }}
           WORKERS_RESULT: ${{ needs.deploy-workers-production.result }}
@@ -384,6 +409,7 @@ jobs:
         run: |
           failed=()
           [[ "${PREFLIGHT_RESULT}" == "success" ]] || failed+=("release-preflight=${PREFLIGHT_RESULT}")
+          [[ "${MIGRATION_PREFLIGHT_RESULT}" == "success" ]] || failed+=("migration-preflight=${MIGRATION_PREFLIGHT_RESULT}")
           [[ "${STAGING_E2E_RESULT}" == "success" ]] || failed+=("staging-e2e=${STAGING_E2E_RESULT}")
           [[ "${MIGRATE_RESULT}" == "success" ]] || failed+=("migrate-production=${MIGRATE_RESULT}")
           [[ "${WORKERS_RESULT}" == "success" ]] || failed+=("deploy-workers-production=${WORKERS_RESULT}")

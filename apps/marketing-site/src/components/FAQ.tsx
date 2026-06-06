@@ -11,11 +11,7 @@ const faqs = [
     },
     {
         question: 'Can I use a custom domain?',
-        answer: 'Absolutely! You can connect your own domain to your LetBuyy site. Free plans get a yoursite.letbuyy.com subdomain, while paid plans support custom domains like yourbrand.com.',
-    },
-    {
-        question: 'Is LetBuyy good for building resumes?',
-        answer: 'Yes! LetBuyy includes professional resume templates that are ATS-friendly. You can export your resume as a PDF, share it online, and even track who views it.',
+        answer: 'Absolutely! You can connect your own domain to your LetBuyy site. Free plans get a yoursite.letbuyy.store subdomain, while paid plans support custom domains like yourbrand.com.',
     },
     {
         question: 'Do you take transaction fees?',

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
-import '../../services/api_client.dart';
 import '../../services/subscription_service.dart';
-import '../../services/store_service.dart';
+import 'razorpay_checkout_screen.dart';
 
 import '../../models/store_model.dart';
 import '../../theme/app_theme_colors.dart';
@@ -34,8 +34,7 @@ class _PricingScreenState extends State<PricingScreen> {
 
   Future<void> _loadStore() async {
     try {
-      final storeService = context.read<StoreService>();
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       setState(() {
         _store = store;
         _selectedPlan = store?.subscriptionPlan ?? SubscriptionPlan.trial;
@@ -53,10 +52,8 @@ class _PricingScreenState extends State<PricingScreen> {
     HapticFeedback.mediumImpact();
 
     try {
-      final subscriptionService = SubscriptionService(api: context.read<ApiClient>());
-      
-      // For paid plans, would integrate with Razorpay here
-      // For now, just show confirmation for trial
+      final subscriptionService = context.read<SubscriptionService>();
+
       if (plan == SubscriptionPlan.trial) {
         await subscriptionService.createSubscription(
           storeId: _store!.id,
@@ -116,7 +113,7 @@ class _PricingScreenState extends State<PricingScreen> {
 
   void _showPaymentModal(SubscriptionPlan plan) {
     final planInfo = SubscriptionService.getPlanInfo(plan);
-    
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -168,10 +165,7 @@ class _PricingScreenState extends State<PricingScreen> {
                 ),
                 Text(
                   planInfo['period'] as String,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: colors.textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 16, color: colors.textSecondary),
                 ),
               ],
             ),
@@ -181,21 +175,25 @@ class _PricingScreenState extends State<PricingScreen> {
               child: Column(
                 children: (planInfo['features'] as List<String>)
                     .take(4)
-                    .map((f) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Row(
-                            children: [
-                              Icon(Icons.check_circle,
-                                  color: Color(planInfo['color'] as int),
-                                  size: 18),
-                              const SizedBox(width: 12),
-                              Text(f,
-                                  style: TextStyle(
-                                    color: colors.textPrimary,
-                                  )),
-                            ],
-                          ),
-                        ))
+                    .map(
+                      (f) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              color: Color(planInfo['color'] as int),
+                              size: 18,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              f,
+                              style: TextStyle(color: colors.textPrimary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
                     .toList(),
               ),
             ),
@@ -231,10 +229,7 @@ class _PricingScreenState extends State<PricingScreen> {
                   const SizedBox(height: 12),
                   Text(
                     'Cancel anytime • Secure payment via Razorpay',
-                    style: TextStyle(
-                      color: colors.textSecondary,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: colors.textSecondary, fontSize: 12),
                   ),
                 ],
               ),
@@ -245,16 +240,44 @@ class _PricingScreenState extends State<PricingScreen> {
     );
   }
 
-  void _initiatePayment(SubscriptionPlan plan) {
-    // TODO: Integrate with Razorpay subscription
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Razorpay payment integration coming soon'),
-        backgroundColor: colors.card,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-    );
+  Future<void> _initiatePayment(SubscriptionPlan plan) async {
+    if (_store == null || _isProcessing) return;
+
+    setState(() => _isProcessing = true);
+    try {
+      final subscriptionService = context.read<SubscriptionService>();
+      final checkout = await subscriptionService.createSubscriptionOrder(
+        storeId: _store!.id,
+        plan: plan,
+      );
+
+      if (checkout['activated'] == true) {
+        _showSuccessDialog(plan);
+        return;
+      }
+
+      final verified = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (_) => RazorpayCheckoutScreen(
+            storeId: _store!.id,
+            plan: plan,
+            checkout: checkout,
+          ),
+        ),
+      );
+
+      if (!mounted) return;
+      if (verified == true) {
+        _showSuccessDialog(plan);
+      } else if (verified == false) {
+        _showError('Razorpay checkout did not complete.');
+      }
+    } catch (e) {
+      _showError(e.toString());
+    } finally {
+      setState(() => _isProcessing = false);
+    }
   }
 
   void _showError(String message) {
@@ -292,10 +315,12 @@ class _PricingScreenState extends State<PricingScreen> {
           const SizedBox(height: 24),
           _buildCurrentPlanBanner(),
           const SizedBox(height: 24),
-          ...SubscriptionPlan.values.map((plan) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: _buildPlanCard(plan),
-              )),
+          ...SubscriptionPlan.values.map(
+            (plan) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: _buildPlanCard(plan),
+            ),
+          ),
           const SizedBox(height: 24),
           _buildFAQ(),
           const SizedBox(height: 40),
@@ -313,8 +338,7 @@ class _PricingScreenState extends State<PricingScreen> {
             children: [
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back_ios,
-                    color: colors.textPrimary),
+                icon: Icon(Icons.arrow_back_ios, color: colors.textPrimary),
               ),
               const Spacer(),
               Text(
@@ -332,10 +356,7 @@ class _PricingScreenState extends State<PricingScreen> {
           const SizedBox(height: 16),
           Text(
             'Scale your business with the right plan',
-            style: TextStyle(
-              fontSize: 14,
-              color: colors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 14, color: colors.textSecondary),
           ),
         ],
       ).animate().fadeIn(duration: 300.ms),
@@ -366,7 +387,10 @@ class _PricingScreenState extends State<PricingScreen> {
       ),
       child: Row(
         children: [
-          Text(planInfo['badge'] as String, style: const TextStyle(fontSize: 28)),
+          Text(
+            planInfo['badge'] as String,
+            style: const TextStyle(fontSize: 28),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -429,8 +453,8 @@ class _PricingScreenState extends State<PricingScreen> {
             color: isCurrentPlan
                 ? color
                 : isPopular
-                    ? color.withValues(alpha: 0.5)
-                    : colors.glassMediumBorder,
+                ? color.withValues(alpha: 0.5)
+                : colors.glassMediumBorder,
             width: isCurrentPlan || isPopular ? 2 : 1,
           ),
         ),
@@ -439,8 +463,10 @@ class _PricingScreenState extends State<PricingScreen> {
           children: [
             Row(
               children: [
-                Text(planInfo['badge'] as String,
-                    style: const TextStyle(fontSize: 24)),
+                Text(
+                  planInfo['badge'] as String,
+                  style: const TextStyle(fontSize: 24),
+                ),
                 const SizedBox(width: 12),
                 Text(
                   planInfo['name'] as String,
@@ -453,8 +479,10 @@ class _PricingScreenState extends State<PricingScreen> {
                 const Spacer(),
                 if (isPopular)
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: color,
                       borderRadius: BorderRadius.circular(12),
@@ -470,8 +498,10 @@ class _PricingScreenState extends State<PricingScreen> {
                   ),
                 if (isCurrentPlan)
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
@@ -502,10 +532,7 @@ class _PricingScreenState extends State<PricingScreen> {
                 ),
                 Text(
                   planInfo['period'] as String,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: colors.textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 14, color: colors.textSecondary),
                 ),
                 const Spacer(),
                 Column(
@@ -538,21 +565,22 @@ class _PricingScreenState extends State<PricingScreen> {
               runSpacing: 8,
               children: (planInfo['features'] as List<String>)
                   .take(3)
-                  .map((f) => Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: color.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          f,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: color,
-                          ),
-                        ),
-                      ))
+                  .map(
+                    (f) => Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        f,
+                        style: TextStyle(fontSize: 11, color: color),
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
           ],
@@ -614,10 +642,7 @@ class _PricingScreenState extends State<PricingScreen> {
           const SizedBox(height: 8),
           Text(
             answer,
-            style: TextStyle(
-              fontSize: 13,
-              color: colors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 13, color: colors.textSecondary),
           ),
         ],
       ),

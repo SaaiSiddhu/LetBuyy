@@ -64,8 +64,11 @@ export const canonicalAppRoots = [
   "apps/marketing-site",
   "apps/platform-console",
   "apps/platform-operations-portal",
-  "apps/mobile/shopper-app",
   "apps/mobile/merchant-app",
+];
+
+export const reservedMobileRuntimeRoots = [
+  "apps/mobile/shopper-app",
   "apps/mobile/operator-app",
 ];
 
@@ -90,6 +93,7 @@ export const forbiddenRuntimeSubtrees = [
 
 export const canonicalServiceRoots = [
   "services/api-gateway",
+  "services/mobile-bff",
   "services/checkout-runtime",
   "services/webhook-service",
   "services/queue-workers",
@@ -134,7 +138,6 @@ export const workspacePackageRoots = [
   "packages/typescript/api-client",
   "packages/typescript/api-types",
   "packages/typescript/ui",
-  "packages/typescript/utils",
   "packages/dart/core",
   "packages/dart/models",
   "packages/dart/services",

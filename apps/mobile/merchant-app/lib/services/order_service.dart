@@ -2,14 +2,18 @@ import 'package:flutter/foundation.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 
 import 'api_client.dart';
+import 'cache_service.dart';
 
 /// Service for managing orders via the LetBuyy API.
 ///
 /// Replaces legacy real-time streams with API-backed polling.
 class OrderService extends ChangeNotifier {
   final ApiClient _api;
+  final CacheService? _cache;
 
-  OrderService({required ApiClient api}) : _api = api;
+  OrderService({required ApiClient api, CacheService? cache})
+    : _api = api,
+      _cache = cache;
 
   // ── Cached state ─────────────────────────────────────────
 
@@ -25,10 +29,22 @@ class OrderService extends ChangeNotifier {
   Future<List<OrderContract>> fetchOrders(
     String storeId, {
     String? status,
+    String? customerEmail,
     int page = 1,
     int limit = 20,
   }) async {
     _isLoading = true;
+    final cacheKey = CacheService.ordersKey(
+      storeId,
+      status: status,
+      customerEmail: customerEmail,
+      page: page,
+      limit: limit,
+    );
+    final cachedRows = _cache?.readJsonList(cacheKey) ?? [];
+    if (cachedRows.isNotEmpty) {
+      _orders = cachedRows.map(OrderContract.fromJson).toList(growable: false);
+    }
     notifyListeners();
 
     try {
@@ -38,14 +54,21 @@ class OrderService extends ChangeNotifier {
           'page': page,
           'limit': limit,
           if (status != null) 'status': status,
+          if (customerEmail != null && customerEmail.trim().isNotEmpty)
+            'customer_email': customerEmail.trim(),
         },
       );
       _orders = pageResult.data
           .map(OrderContract.fromJson)
           .toList(growable: false);
+      await _cache?.writeJson(
+        cacheKey,
+        _orders.map((order) => order.toJson()).toList(growable: false),
+      );
       return _orders;
     } catch (e) {
       debugPrint('❌ fetchOrders error: $e');
+      if (_orders.isNotEmpty) return _orders;
       rethrow;
     } finally {
       _isLoading = false;
@@ -105,9 +128,43 @@ class OrderService extends ChangeNotifier {
   // ── Refund / Cancel ──────────────────────────────────────
 
   /// Cancel and refund an order.
-  Future<OrderContract> refundOrder(String id, {String? reason}) async {
+  Future<OrderContract> refundOrder(
+    String id, {
+    String? reason,
+    double? amount,
+    String? idempotencyKey,
+  }) async {
+    final refundIdempotencyKey =
+        idempotencyKey ??
+        'mobile-refund-$id-${DateTime.now().microsecondsSinceEpoch}';
     final updated = OrderContract.fromJson(
-      await _api.orders.refund(id, {if (reason != null) 'reason': reason}),
+      await _api.orders.refund(id, {
+        if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
+        if (amount != null) 'amount': amount,
+        if (amount != null) 'amount_minor': (amount * 100).round(),
+      }, options: ApiRequestOptions(idempotencyKey: refundIdempotencyKey)),
+    );
+    final idx = _orders.indexWhere((o) => o.id == id);
+    if (idx != -1) _orders[idx] = updated;
+    notifyListeners();
+    return updated;
+  }
+
+  /// Complete a provider-side refund after the gateway marks it ready.
+  Future<OrderContract> completeRefund(
+    String id, {
+    String? refundId,
+    String? providerRefundId,
+    String? notes,
+  }) async {
+    final updated = OrderContract.fromJson(
+      await _api.orders.completeRefund(id, {
+        if (refundId != null && refundId.trim().isNotEmpty)
+          'refund_id': refundId.trim(),
+        if (providerRefundId != null && providerRefundId.trim().isNotEmpty)
+          'provider_refund_id': providerRefundId.trim(),
+        if (notes != null && notes.trim().isNotEmpty) 'notes': notes.trim(),
+      }),
     );
     final idx = _orders.indexWhere((o) => o.id == id);
     if (idx != -1) _orders[idx] = updated;

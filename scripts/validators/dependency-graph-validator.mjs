@@ -102,8 +102,7 @@ function validateDirection(fromRoot, toRoot, reason) {
       "packages/tenant-core",
       "packages/theme-engine",
     ],
-    "packages/typescript/ui": ["packages/typescript/api-types", "packages/typescript/utils"],
-    "packages/typescript/utils": ["packages/infrastructure", "packages/typescript/api-types"],
+    "packages/typescript/ui": ["packages/typescript/api-types"],
     "packages/application-services": [
       "packages/app-engine",
       "packages/auth-core",

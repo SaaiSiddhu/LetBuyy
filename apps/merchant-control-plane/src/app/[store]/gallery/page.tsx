@@ -21,6 +21,7 @@ import {
     Upload,
     useToast,
 } from '@letbuyy/ui'
+import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 
 interface MediaItem {
     id: string
@@ -72,10 +73,6 @@ function formatSize(bytes: number) {
     if (bytes < 1024) return `${bytes} B`
     if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`
     return `${(bytes / 1048576).toFixed(1)} MB`
-}
-
-function formatDate(value: string) {
-    return new Date(value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function isImageType(type: string) {

@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { readAppStoreRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const BASELINE_SCHEMA = 'database/supabase/migrations/000_baseline.sql';
 const REVIEW_HELPER = 'services/api-gateway/src/lib/marketplace-review-records.ts';
-const APP_STORE_ROUTE = 'services/api-gateway/src/routes/app-store.ts';
 const THEMES_ROUTE = 'services/api-gateway/src/routes/themes.ts';
 const EVENT_CORE = 'packages/event-core/src/index.ts';
 const SHARED_TYPES = 'packages/shared-types/src/index.ts';
@@ -47,7 +47,7 @@ test('shared types and API client expose marketplace review records', () => {
 
 test('app submissions create a review record and app.submitted event', () => {
   const helper = read(REVIEW_HELPER);
-  const route = read(APP_STORE_ROUTE);
+  const route = readAppStoreRouteSource();
   const eventCore = read(EVENT_CORE);
 
   assert.match(helper, /export async function createMarketplaceReviewRecord/);
@@ -66,7 +66,9 @@ test('app submissions create a review record and app.submitted event', () => {
   assert.match(route, /review_records: reviewRecords \|\| \[\]/);
   assert.match(route, /eventType: 'app\.submitted'/);
   assert.match(route, /review_id: reviewRecord\.id/);
-  assert.match(route, /success\(\{ app, review_record: reviewRecord \}\)/);
+  assert.match(route, /review_record: reviewRecord/);
+  assert.match(route, /credentials: \{/);
+  assert.match(route, /manifest: manifestPlan\?\.ok/);
 });
 
 test('theme uploads create a review record and include it in theme.submitted payloads', () => {

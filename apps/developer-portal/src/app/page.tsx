@@ -55,10 +55,10 @@ export default function HomePage() {
           </article>
           <article className="developer-card">
             <div className="developer-icon-line">
-              <Badge label="Partial" variant="warning" />
+              <Badge label="Live contract" variant="success" />
               <h3>Storefront GraphQL cart</h3>
             </div>
-            <p>Storefront GraphQL is mounted, but `cart` returns `CART_NOT_SUPPORTED` until server-side cart persistence exists. Cart clients should use REST storefront checkout flows for now.</p>
+            <p>Storefront GraphQL `cart` reads use a persisted cart token backed by the storefront cart REST contract. Cart mutations stay on REST so clients share the same server-side cart before checkout.</p>
           </article>
           <article className="developer-card">
             <div className="developer-icon-line">

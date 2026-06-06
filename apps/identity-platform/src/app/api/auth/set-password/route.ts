@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { identityApiRequest } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
-import { hashPassword, validatePasswordStrength } from '@/lib/auth/password'
+import { validatePasswordStrength } from '@/lib/auth/password'
 import { createSession } from '@/lib/auth/session'
 import {
     addAccount,
@@ -62,14 +62,12 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Email verification session expired. Please verify your email again.' }, { status: 403 })
         }
 
-        // Hash and store password
-        const passwordHash = await hashPassword(password)
         const passwordResponse = await identityApiRequest('/auth/custom/users/set-password', {
             method: 'POST',
             body: JSON.stringify({
                 user_id: intent.user_id,
                 email: intent.email,
-                password_hash: passwordHash,
+                password,
             }),
         })
         const passwordPayload = await passwordResponse.json().catch(() => null) as {

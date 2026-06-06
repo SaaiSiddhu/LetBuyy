@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const gatewayIndex = readFileSync('services/api-gateway/src/index.ts', 'utf8');
 const featureFlags = readFileSync('services/api-gateway/src/middleware/featureFlags.ts', 'utf8');
-const storefrontRoute = readFileSync('services/api-gateway/src/routes/storefront.ts', 'utf8');
+const storefrontRoute = readStorefrontRouteSource();
 const wrangler = readFileSync('services/api-gateway/wrangler.toml', 'utf8');
 
 test('gateway feature flags fail closed in production by default', () => {

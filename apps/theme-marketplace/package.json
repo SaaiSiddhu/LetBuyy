@@ -7,7 +7,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "echo 'No tests yet' && exit 0"
+    "test": "cd ../.. && node --test tests/federation/theme-marketplace-thin-client.test.mjs tests/auth/sso-redirects.test.mjs tests/federation/theme-store-install-lifecycle.test.mjs"
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",
@@ -15,7 +15,6 @@
     "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/theme-engine": "workspace:*",
     "@letbuyy/ui": "workspace:*",
-    "@letbuyy/utils": "workspace:*",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.26",
     "lucide-react": "^0.562.0",

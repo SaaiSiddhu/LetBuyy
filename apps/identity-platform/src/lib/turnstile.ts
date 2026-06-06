@@ -1,17 +1,18 @@
+import { canUseIdentityDevAuthBypass } from './dev-auth-bypass'
+
 /**
  * Server-side Cloudflare Turnstile token verification.
  * Call this in API routes before processing form submissions.
  */
 export async function verifyTurnstileToken(token: string, ip?: string): Promise<boolean> {
-    // Bypass only when the widget explicitly emitted a configuration fallback token.
     if (token === 'dev-bypass-token') {
-        return true
+        return canUseIdentityDevAuthBypass(process.env)
     }
 
     const secretKey = process.env.TURNSTILE_SECRET_KEY
     if (!secretKey) {
-        console.warn('TURNSTILE_SECRET_KEY not set — skipping bot verification')
-        return true
+        console.warn('TURNSTILE_SECRET_KEY not set — bot verification failed closed')
+        return false
     }
 
     try {

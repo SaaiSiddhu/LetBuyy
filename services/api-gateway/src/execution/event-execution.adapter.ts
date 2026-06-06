@@ -47,13 +47,15 @@ export class EventExecutionAdapter {
 
     async emitDomainEvent(input: DomainEventInput) {
         const contract = getDomainEventContract(input.eventType);
-        if (contract && input.aggregateType !== contract.aggregateType) {
+        if (!contract) {
+            throw new Error(`Uncontracted domain event type: ${input.eventType}`);
+        }
+
+        if (input.aggregateType !== contract.aggregateType) {
             throw new Error(`Event ${input.eventType} must use aggregate type ${contract.aggregateType}`);
         }
 
-        const payload = contract
-            ? parseDomainEventPayload(contract.eventType, input.payload || {})
-            : input.payload || {};
+        const payload = parseDomainEventPayload(contract.eventType, input.payload || {});
 
         const { data, error } = await this.db
             .from('outbox_events')

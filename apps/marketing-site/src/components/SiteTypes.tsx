@@ -13,26 +13,37 @@ const features = [
         visual: 'ecommerce',
     },
     {
-        id: 'portfolio',
-        title: 'Portfolio',
-        description: 'Showcase your work with stunning project galleries and testimonials.',
-        benefits: ['Project galleries', 'Skills & testimonials', 'Contact forms'],
-        visual: 'portfolio',
-    },
-    {
-        id: 'resume',
-        title: 'Resume Website',
-        description: 'Professional resume online with instant PDF export.',
-        benefits: ['PDF export', 'Multiple themes', 'Work history & skills'],
-        visual: 'resume',
-    },
-    {
         id: 'landing',
         title: 'Landing Pages',
         description: 'High-conversion pages that turn visitors into customers.',
         benefits: ['Lead capture forms', 'A/B testing', 'Analytics & domains'],
         visual: 'landing',
     },
+    {
+        id: 'blog',
+        title: 'Blogs',
+        description: 'Publish articles, guides, and announcements from the same workspace.',
+        benefits: ['Posts & categories', 'SEO-ready pages', 'Analytics & domains'],
+        visual: 'landing',
+    },
+    ...(process.env.NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES === 'true'
+        ? [
+            {
+                id: 'portfolio',
+                title: 'Portfolio',
+                description: 'Legacy portfolio sites for existing cohorts.',
+                benefits: ['Project galleries', 'Skills & testimonials', 'Contact forms'],
+                visual: 'portfolio',
+            },
+            {
+                id: 'resume',
+                title: 'Resume Website',
+                description: 'Legacy resume sites for existing cohorts.',
+                benefits: ['PDF export', 'Multiple themes', 'Work history & skills'],
+                visual: 'resume',
+            },
+        ]
+        : []),
 ]
 
 // CSS-based visual mockups for each feature type
@@ -152,7 +163,7 @@ export default function SiteTypes() {
                     <span className="section-label">WHAT YOU CAN BUILD</span>
                     <h2 className="section-title">One platform. Endless possibilities.</h2>
                     <p className="section-subtitle">
-                        From stores to portfolios — build anything with LetBuyy.
+                        From stores to campaigns and blogs — launch with one governed workspace.
                     </p>
                 </motion.div>
 

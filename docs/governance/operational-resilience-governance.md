@@ -15,5 +15,5 @@ Operational resilience is proven by measured recovery, not by planned runbooks.
 - `config/runtime/survivability-execution.json` defines required stages and forbidden fake-evidence states.
 - `scripts/validators/survivability-governance-validator.mjs` hard-fails missing contracts and unsafe live-drill evidence.
 - `infrastructure/scripts/operations/run-survivability-suite.mjs` runs plan mode without mutation and fails closed in execute mode until all capabilities are present.
-- `infrastructure/scripts/operations/run-local-operational-proof.mjs` provides real local runtime/replay/queue stress evidence while explicitly setting `scope: local-only` and `certification: false`.
-- `load/` and `chaos/` define executable proof surfaces for real load and failure drills; their runners fail closed without credentials, required tools, and explicit approval, and they never mark evidence as certified.
+- `infrastructure/scripts/operations/run-operational-certification.mjs --mode=plan` prints the staging certification plan without recording evidence or claiming certification; staging executable mode still marks `certification: false`.
+- `load/` and `chaos/` define executable proof surfaces for real load and failure drills; their plan runners record no evidence, their execute runners fail closed without credentials, required tools, and explicit approval, and they never mark evidence as certified.

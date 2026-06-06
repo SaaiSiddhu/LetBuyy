@@ -104,6 +104,14 @@ for (const file of requiredTestFiles) {
 
 const packageJson = readJson("package.json");
 reporter.assert(packageJson?.scripts?.test?.includes("node --test"), "Root package.json must define node --test based governance test runner");
+reporter.assert(packageJson?.scripts?.test?.includes("test:contracts"), "Root test runner must invoke TypeScript contract tests");
+reporter.assert(packageJson?.scripts?.["test:contracts"] === "tsx --test tests/contracts/*.test.ts", "Root package.json must run tests/contracts/*.test.ts with tsx");
 reporter.assert(Boolean(packageJson?.scripts?.["validate:tests"]), "Root package.json must define validate:tests");
+
+const apiGatewayPackageJson = readJson("services/api-gateway/package.json");
+reporter.assert(
+  apiGatewayPackageJson?.scripts?.test?.includes("../../tests/contracts/*.test.ts"),
+  "API gateway workspace test script must execute root TypeScript contract tests under pnpm turbo test",
+);
 
 reporter.finish(`${requiredTestFiles.length} required enterprise test proof files checked`);

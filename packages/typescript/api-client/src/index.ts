@@ -119,6 +119,108 @@ export interface LetbuyyRequestOptions {
   versioned?: boolean;
 }
 
+export const LETBUYY_DEFAULT_API_VERSION_PATH = '/v1';
+export const LETBUYY_PRODUCTION_API_BASE_URL = 'https://api.letbuyy.store/v1';
+
+export interface LetbuyyApiBaseUrlOptions {
+  apiVersionPath?: string;
+  includeVersionPath?: boolean;
+}
+
+export interface ResolveLetbuyyApiBaseUrlOptions extends LetbuyyApiBaseUrlOptions {
+  fallback?: string;
+  requireConfigured?: boolean;
+  errorMessage?: string;
+}
+
+export function normalizeLetbuyyApiBaseUrl(
+  input: string,
+  options: LetbuyyApiBaseUrlOptions = {},
+): string {
+  const apiVersionPath = normalizePath(options.apiVersionPath ?? LETBUYY_DEFAULT_API_VERSION_PATH);
+  const includeVersionPath = options.includeVersionPath ?? true;
+  const configuredUrl = trimTrailingSlash(input.trim());
+
+  if (!configuredUrl) {
+    throw new Error('LetBuyy API base URL is not configured.');
+  }
+
+  try {
+    const url = new URL(configuredUrl);
+    const path = trimTrailingSlash(url.pathname);
+
+    if (includeVersionPath) {
+      if (!path || path === '/') {
+        url.pathname = apiVersionPath;
+      } else if (!path.endsWith(apiVersionPath)) {
+        url.pathname = `${path}${apiVersionPath}`;
+      } else {
+        url.pathname = path;
+      }
+
+      return trimTrailingSlash(url.toString());
+    }
+
+    if (path.endsWith(apiVersionPath)) {
+      url.pathname = path.slice(0, -apiVersionPath.length) || '/';
+    } else {
+      url.pathname = path || '/';
+    }
+
+    return trimTrailingSlash(url.toString());
+  } catch {
+    if (includeVersionPath) {
+      return configuredUrl.endsWith(apiVersionPath)
+        ? configuredUrl
+        : `${configuredUrl}${apiVersionPath}`;
+    }
+
+    return configuredUrl.endsWith(apiVersionPath)
+      ? trimTrailingSlash(configuredUrl.slice(0, -apiVersionPath.length))
+      : configuredUrl;
+  }
+}
+
+export function resolveLetbuyyApiBaseUrl(
+  candidates: readonly (string | null | undefined)[],
+  options: ResolveLetbuyyApiBaseUrlOptions = {},
+): string {
+  const configuredUrl = candidates.find((candidate): candidate is string => Boolean(candidate?.trim()));
+
+  if (!configuredUrl) {
+    if (options.requireConfigured) {
+      throw new Error(options.errorMessage || 'LetBuyy API base URL is not configured.');
+    }
+
+    if (!options.fallback) {
+      throw new Error(options.errorMessage || 'LetBuyy API base URL is not configured.');
+    }
+
+    return normalizeLetbuyyApiBaseUrl(options.fallback, options);
+  }
+
+  return normalizeLetbuyyApiBaseUrl(configuredUrl, options);
+}
+
+export function apiClientInputToLetbuyyApiPath(
+  input: RequestInfo | URL,
+  versionedBaseUrl: string,
+  options: Pick<LetbuyyApiBaseUrlOptions, 'apiVersionPath'> = {},
+): string {
+  const rawUrl = input instanceof Request ? input.url : input.toString();
+  const url = new URL(rawUrl);
+  const base = new URL(normalizeLetbuyyApiBaseUrl(versionedBaseUrl, {
+    apiVersionPath: options.apiVersionPath,
+    includeVersionPath: true,
+  }));
+  const basePath = trimTrailingSlash(base.pathname);
+  const pathname = basePath && url.pathname.startsWith(basePath)
+    ? url.pathname.slice(basePath.length) || '/'
+    : url.pathname;
+
+  return `${pathname}${url.search}`;
+}
+
 export interface GatewayPaginationMeta {
   page: number;
   per_page: number;
@@ -194,14 +296,24 @@ export interface AppInstallInput extends JsonRecord {
 }
 export interface AppOAuthAuthorizeInput extends AppInstallInput {
   redirect_uri: string;
+  code_challenge: string;
+  code_challenge_method?: 'S256';
   state?: string | null;
 }
-export interface AppOAuthTokenInput extends JsonRecord {
+export interface AppOAuthAuthorizationCodeTokenInput extends JsonRecord {
   grant_type: 'authorization_code';
   code: string;
   client_id: string;
   redirect_uri: string;
+  code_verifier: string;
 }
+export interface AppOAuthRefreshTokenInput extends JsonRecord {
+  grant_type: 'refresh_token';
+  refresh_token: string;
+  client_id: string;
+  scopes?: string[];
+}
+export type AppOAuthTokenInput = AppOAuthAuthorizationCodeTokenInput | AppOAuthRefreshTokenInput;
 export interface AppOAuthTokenExchangeInput extends JsonRecord {
   installation_id: string;
   store_id?: string;
@@ -211,6 +323,18 @@ export interface AppBridgeFetchInput extends JsonRecord {
   method?: 'GET';
   path: string;
   store_id?: string;
+}
+export type AppApiProductListQuery = Omit<ProductListQuery, 'store_id'>;
+export type AppApiOrderListQuery = Omit<OrderListQuery, 'store_id' | 'customer_id'>;
+export interface AppApiInstallationMetadataInput extends JsonRecord {
+  metadata: JsonRecord;
+}
+export interface AppApiInstallationMetadataResult extends JsonRecord {
+  installation_id: string;
+  app_id: string;
+  store_id: string;
+  metadata: JsonRecord;
+  updated_at: string;
 }
 export type AppBillingChargeCreateInput = AppBillingChargeCreate;
 export type AppBillingChargeApproveInput = AppBillingChargeApprove;
@@ -235,6 +359,31 @@ export interface AppSubmissionInput extends JsonRecord {
   pricing_model: string;
   price_monthly?: number | string | null;
   save_as_draft?: boolean;
+  manifest?: JsonRecord;
+  oauth_redirect_uris?: string[];
+}
+export interface AppManifestValidationInput extends JsonRecord {
+  manifest: JsonRecord;
+}
+export interface AppManifestValidationResult extends JsonRecord {
+  valid: true;
+  schema_version: string;
+  manifest: JsonRecord;
+  extension_records: JsonRecord[];
+  function_records: JsonRecord[];
+  counts: {
+    extensions: number;
+    functions: number;
+  };
+}
+export interface AppDeveloperCredentialsResult extends JsonRecord {
+  oauth_client_id: string;
+  client_secret?: string;
+  api_key?: string;
+  api_key_prefix: string;
+  issued_at: string;
+  persisted: 'hash_only';
+  show_once: true;
 }
 export interface AppDeveloperProfileResult extends JsonRecord {
   developer: MarketplaceAppDeveloper | null;
@@ -247,6 +396,8 @@ export interface AppDeveloperAppsResult extends JsonRecord {
 export interface AppSubmissionResult extends JsonRecord {
   app: JsonRecord;
   review_record?: MarketplaceReviewRecord | null;
+  manifest?: JsonRecord | null;
+  credentials?: AppDeveloperCredentialsResult;
 }
 export type MarketplaceReviewDecision = Extract<MarketplaceReviewStatus, 'approved' | 'rejected' | 'changes_requested'>;
 export interface MarketplaceReviewListQuery extends QueryParams {
@@ -677,6 +828,34 @@ export type ThemeInstallResult = {
   theme: Pick<Theme, 'id' | 'slug' | 'name'>;
   release: JsonRecord;
 };
+export type ThemePurchaseOrderInput = {
+  currency?: 'INR';
+  idempotency_key?: string;
+};
+export type ThemePurchaseOrderResult = {
+  purchase_id: string;
+  theme: string;
+  status: string;
+  already_purchased?: boolean;
+  payment_required?: boolean;
+  provider?: 'razorpay' | 'free' | string;
+  razorpay_order_id?: string;
+  amount?: number;
+  currency?: string;
+  key_id?: string;
+  idempotent_replay?: boolean;
+};
+export type ThemePurchaseVerifyInput = {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+};
+export type ThemePurchaseVerifyResult = {
+  purchase_id: string;
+  theme: string;
+  status: string;
+  provider_payment_id?: string | null;
+};
 export type ThemePackageUploadInput = {
   bundle: JsonRecord;
   submission_mode?: 'marketplace' | 'private_install';
@@ -716,6 +895,7 @@ export type PublishThemeInput = {
 };
 export type ThemePreviewSessionInput = {
   store_id: string;
+  template_key?: string;
   ttl_seconds?: number;
 };
 export type RollbackThemeReleaseInput = {
@@ -970,12 +1150,28 @@ export class LetbuyyApiClient {
       this.requestData<AppDeveloperProfileResult>('/app-store/developers/register', { ...options, method: 'POST', body: input }),
     developerApps: (options?: LetbuyyRequestOptions) =>
       this.requestData<AppDeveloperAppsResult>('/app-store/developers/apps', options),
+    validateDeveloperAppManifest: (input: AppManifestValidationInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppManifestValidationResult>('/app-store/developers/apps/manifest/validate', { ...options, method: 'POST', body: input }),
     submitDeveloperApp: (input: AppSubmissionInput, options?: LetbuyyRequestOptions) =>
       this.requestData<AppSubmissionResult>('/app-store/developers/apps', { ...options, method: 'POST', body: input }),
+    rotateDeveloperAppKey: (appId: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppDeveloperCredentialsResult>(
+        `/app-store/developers/apps/${encodePathSegment(appId)}/api-key`,
+        { ...options, method: 'POST' },
+      ),
     partnerDashboard: (options?: LetbuyyRequestOptions) =>
       this.requestData<PartnerDashboard>('/app-store/partners/dashboard', options),
     collaboratorCode: (options?: LetbuyyRequestOptions) =>
       this.requestData<PartnerDashboard['collaborator_access']>('/app-store/partners/collaborator-code', { ...options, method: 'POST' }),
+  };
+
+  readonly appApi = {
+    products: (query?: AppApiProductListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<Product>('/app/products', { ...options, query }),
+    orders: (query?: AppApiOrderListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<Order>('/app/orders', { ...options, query }),
+    updateInstallationMetadata: (input: AppApiInstallationMetadataInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppApiInstallationMetadataResult>('/app/installation/metadata', { ...options, method: 'PATCH', body: input }),
   };
 
   readonly operations = {
@@ -1277,6 +1473,10 @@ export class LetbuyyApiClient {
       this.requestData<JsonRecord[]>('/themes/installations/list', options),
     install: (slug: string, input: ThemeInstallInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemeInstallResult>(`/themes/${encodePathSegment(slug)}/install`, { ...options, method: 'POST', body: input }),
+    purchase: (slug: string, input: ThemePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ThemePurchaseOrderResult>(`/themes/${encodePathSegment(slug)}/purchase`, { ...options, method: 'POST', body: input }),
+    verifyPurchase: (slug: string, input: ThemePurchaseVerifyInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ThemePurchaseVerifyResult>(`/themes/${encodePathSegment(slug)}/purchase/verify`, { ...options, method: 'POST', body: input }),
     uploadPackage: (input: ThemePackageUploadInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemePackageUploadResult>('/themes/packages/upload', { ...options, method: 'POST', body: input }),
     editor: (slug: string, storeId: string, options?: LetbuyyRequestOptions) =>
@@ -1511,6 +1711,29 @@ export class LetbuyyApiClient {
 
 export function createLetbuyyApiClient(options: LetbuyyApiClientOptions): LetbuyyApiClient {
   return new LetbuyyApiClient(options);
+}
+
+export interface LetbuyyAppSdkOptions extends Omit<LetbuyyApiClientOptions, 'token'> {
+  accessToken: string;
+}
+
+export interface LetbuyyAppSdk {
+  products: LetbuyyApiClient['appApi']['products'];
+  orders: LetbuyyApiClient['appApi']['orders'];
+  updateInstallationMetadata: LetbuyyApiClient['appApi']['updateInstallationMetadata'];
+}
+
+export function createLetbuyyAppSdk(options: LetbuyyAppSdkOptions): LetbuyyAppSdk {
+  const client = createLetbuyyApiClient({
+    ...options,
+    token: options.accessToken,
+  });
+
+  return {
+    products: client.appApi.products,
+    orders: client.appApi.orders,
+    updateInstallationMetadata: client.appApi.updateInstallationMetadata,
+  };
 }
 
 export * from './graphql';

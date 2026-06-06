@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui';
@@ -46,7 +47,7 @@ class _HeroStoreCardState extends State<HeroStoreCard>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    
+
     _shimmerController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 4),
@@ -117,7 +118,9 @@ class _HeroStoreCardState extends State<HeroStoreCard>
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF8B5CF6).withValues(alpha: 0.35),
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                  alpha: 0.35,
+                ),
                 blurRadius: 24,
                 offset: const Offset(0, 10),
               ),
@@ -127,7 +130,7 @@ class _HeroStoreCardState extends State<HeroStoreCard>
             children: [
               // Animated shimmer overlay
               _buildShimmerOverlay(),
-              
+
               // Content
               Padding(
                 padding: const EdgeInsets.all(16),
@@ -143,9 +146,9 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                         _buildStatusBadge(),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Row 2: Action Buttons + Quick Actions
                     Row(
                       children: [
@@ -158,16 +161,20 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                                 child: _CompactActionButton(
                                   icon: Icons.open_in_new_rounded,
                                   label: 'Visit',
-                                  onTap: () => launchUrl(Uri.parse(widget.store.publicUrl)),
+                                  onTap: () => launchUrl(
+                                    Uri.parse(widget.store.publicUrl),
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: _CompactActionButton(
-                                  icon: widget.store.isPublished 
-                                      ? Icons.cloud_off_outlined 
+                                  icon: widget.store.isPublished
+                                      ? Icons.cloud_off_outlined
                                       : Icons.rocket_launch_rounded,
-                                  label: widget.store.isPublished ? 'Unpublish' : 'Go Live',
+                                  label: widget.store.isPublished
+                                      ? 'Unpublish'
+                                      : 'Go Live',
                                   onTap: widget.onPublishToggle,
                                   isLoading: widget.isPublishing,
                                   isPrimary: !widget.store.isPublished,
@@ -180,14 +187,20 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                         // Quick action icons
                         _buildQuickActionIcon(Icons.share_rounded, _shareStore),
                         const SizedBox(width: 6),
-                        _buildQuickActionIcon(Icons.qr_code_2_rounded, _showQRCode),
+                        _buildQuickActionIcon(
+                          Icons.qr_code_2_rounded,
+                          _showQRCode,
+                        ),
                         const SizedBox(width: 6),
-                        _buildQuickActionIcon(Icons.settings_outlined, widget.onSettingsTap ?? () {}),
+                        _buildQuickActionIcon(
+                          Icons.settings_outlined,
+                          widget.onSettingsTap ?? () {},
+                        ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 14),
-                    
+
                     // Subscription Row
                     _buildSubscriptionRow(),
                   ],
@@ -256,7 +269,11 @@ class _HeroStoreCardState extends State<HeroStoreCard>
           ? Center(
               child: ShaderMask(
                 shaderCallback: (bounds) => const LinearGradient(
-                  colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED), Color(0xFF6D28D9)],
+                  colors: [
+                    mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                    Color(0xFF7C3AED),
+                    Color(0xFF6D28D9),
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ).createShader(bounds),
@@ -293,7 +310,11 @@ class _HeroStoreCardState extends State<HeroStoreCard>
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.link_rounded, size: 11, color: Colors.white.withValues(alpha: 0.7)),
+              Icon(
+                Icons.link_rounded,
+                size: 11,
+                color: Colors.white.withValues(alpha: 0.7),
+              ),
               const SizedBox(width: 4),
               Flexible(
                 child: Text(
@@ -307,7 +328,11 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                 ),
               ),
               const SizedBox(width: 4),
-              Icon(Icons.copy_rounded, size: 10, color: Colors.white.withValues(alpha: 0.5)),
+              Icon(
+                Icons.copy_rounded,
+                size: 10,
+                color: Colors.white.withValues(alpha: 0.5),
+              ),
             ],
           ),
         ),
@@ -324,7 +349,9 @@ class _HeroStoreCardState extends State<HeroStoreCard>
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             color: isLive
-                ? colors.success.withValues(alpha: 0.15 + 0.1 * _pulseController.value)
+                ? colors.success.withValues(
+                    alpha: 0.15 + 0.1 * _pulseController.value,
+                  )
                 : colors.warning.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
@@ -343,13 +370,17 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                 decoration: BoxDecoration(
                   color: isLive ? colors.success : colors.warning,
                   shape: BoxShape.circle,
-                  boxShadow: isLive ? [
-                    BoxShadow(
-                      color: colors.success.withValues(alpha: 0.5 * _pulseController.value),
-                      blurRadius: 6,
-                      spreadRadius: 1,
-                    ),
-                  ] : null,
+                  boxShadow: isLive
+                      ? [
+                          BoxShadow(
+                            color: colors.success.withValues(
+                              alpha: 0.5 * _pulseController.value,
+                            ),
+                            blurRadius: 6,
+                            spreadRadius: 1,
+                          ),
+                        ]
+                      : null,
                 ),
               ),
               const SizedBox(width: 5),
@@ -378,11 +409,23 @@ class _HeroStoreCardState extends State<HeroStoreCard>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildStatItem(Icons.shopping_bag_outlined, widget.store.totalOrders.toString(), 'Orders'),
+          _buildStatItem(
+            Icons.shopping_bag_outlined,
+            widget.store.totalOrders.toString(),
+            'Orders',
+          ),
           _buildStatDivider(),
-          _buildStatItem(Icons.inventory_2_outlined, widget.store.productCount.toString(), 'Products'),
+          _buildStatItem(
+            Icons.inventory_2_outlined,
+            widget.store.productCount.toString(),
+            'Products',
+          ),
           _buildStatDivider(),
-          _buildStatItem(Icons.visibility_outlined, _formatNumber(widget.store.viewCount), 'Views'),
+          _buildStatItem(
+            Icons.visibility_outlined,
+            _formatNumber(widget.store.viewCount),
+            'Views',
+          ),
         ],
       ),
     );
@@ -398,8 +441,21 @@ class _HeroStoreCardState extends State<HeroStoreCard>
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(value, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
-            Text(label, style: TextStyle(fontSize: 8, color: Colors.white.withValues(alpha: 0.5))),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 8,
+                color: Colors.white.withValues(alpha: 0.5),
+              ),
+            ),
           ],
         ),
       ],
@@ -407,7 +463,11 @@ class _HeroStoreCardState extends State<HeroStoreCard>
   }
 
   Widget _buildStatDivider() {
-    return Container(height: 24, width: 1, color: Colors.white.withValues(alpha: 0.1));
+    return Container(
+      height: 24,
+      width: 1,
+      color: Colors.white.withValues(alpha: 0.1),
+    );
   }
 
   String _formatNumber(int n) {
@@ -430,7 +490,11 @@ class _HeroStoreCardState extends State<HeroStoreCard>
           shape: BoxShape.circle,
           border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
         ),
-        child: Icon(icon, color: Colors.white.withValues(alpha: 0.85), size: 16),
+        child: Icon(
+          icon,
+          color: Colors.white.withValues(alpha: 0.85),
+          size: 16,
+        ),
       ),
     );
   }
@@ -465,7 +529,7 @@ class _HeroStoreCardState extends State<HeroStoreCard>
       case SubscriptionPlan.professional:
         planEmoji = '👑';
         planName = 'Pro';
-        planColor = const Color(0xFF8B5CF6);
+        planColor = mobile_tokens.LetbuyyColorTokens.brandPrimary;
     }
 
     Color progressColor;
@@ -512,9 +576,9 @@ class _HeroStoreCardState extends State<HeroStoreCard>
               ],
             ),
           ),
-          
+
           const SizedBox(width: 10),
-          
+
           // Product Usage
           Expanded(
             child: Column(
@@ -554,9 +618,9 @@ class _HeroStoreCardState extends State<HeroStoreCard>
               ],
             ),
           ),
-          
+
           const SizedBox(width: 10),
-          
+
           // Commission Fee
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
@@ -573,9 +637,9 @@ class _HeroStoreCardState extends State<HeroStoreCard>
               ),
             ),
           ),
-          
+
           const SizedBox(width: 8),
-          
+
           // Upgrade Button (hide for Pro users)
           if (!isPro)
             GestureDetector(
@@ -584,7 +648,10 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                 Navigator.pushNamed(context, AppRoutes.pricing);
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF10B981), Color(0xFF059669)],
@@ -601,7 +668,11 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.arrow_upward_rounded, size: 12, color: Colors.white),
+                    const Icon(
+                      Icons.arrow_upward_rounded,
+                      size: 12,
+                      color: Colors.white,
+                    ),
                     const SizedBox(width: 3),
                     Text(
                       'Upgrade',
@@ -663,13 +734,19 @@ class _CompactActionButtonState extends State<_CompactActionButton> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            gradient: widget.isPrimary 
-                ? const LinearGradient(colors: [Colors.white, Color(0xFFF5F5F5)])
+            gradient: widget.isPrimary
+                ? const LinearGradient(
+                    colors: [Colors.white, Color(0xFFF5F5F5)],
+                  )
                 : null,
-            color: widget.isPrimary ? null : Colors.white.withValues(alpha: 0.12),
+            color: widget.isPrimary
+                ? null
+                : Colors.white.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: widget.isPrimary ? Colors.transparent : Colors.white.withValues(alpha: 0.2),
+              color: widget.isPrimary
+                  ? Colors.transparent
+                  : Colors.white.withValues(alpha: 0.2),
             ),
           ),
           child: Row(
@@ -681,14 +758,18 @@ class _CompactActionButtonState extends State<_CompactActionButton> {
                   height: 14,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: widget.isPrimary ? const Color(0xFF8B5CF6) : Colors.white,
+                    color: widget.isPrimary
+                        ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                        : Colors.white,
                   ),
                 )
               else
                 Icon(
                   widget.icon,
                   size: 14,
-                  color: widget.isPrimary ? const Color(0xFF8B5CF6) : Colors.white,
+                  color: widget.isPrimary
+                      ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                      : Colors.white,
                 ),
               const SizedBox(width: 5),
               Text(
@@ -696,7 +777,9 @@ class _CompactActionButtonState extends State<_CompactActionButton> {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: widget.isPrimary ? const Color(0xFF8B5CF6) : Colors.white,
+                  color: widget.isPrimary
+                      ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                      : Colors.white,
                 ),
               ),
             ],
@@ -732,23 +815,24 @@ class _QRCodeBottomSheetState extends State<_QRCodeBottomSheet> {
   Future<void> _shareQRAsImage() async {
     setState(() => _isSharing = true);
     HapticFeedback.mediumImpact();
-    
+
     try {
       // Capture the QR card as image
-      final boundary = _qrKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      final boundary =
+          _qrKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
       if (boundary == null) return;
-      
+
       final image = await boundary.toImage(pixelRatio: 3.0);
       final byteData = await image.toByteData(format: ImageByteFormat.png);
       if (byteData == null) return;
-      
+
       final bytes = byteData.buffer.asUint8List();
-      
+
       // Save to temp file and share
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/${widget.subdomain}_qr.png');
       await file.writeAsBytes(bytes);
-      
+
       await Share.shareXFiles(
         [XFile(file.path)],
         text: '🏪 Scan to visit ${widget.storeName}!\n${widget.storeUrl}',
@@ -767,10 +851,7 @@ class _QRCodeBottomSheetState extends State<_QRCodeBottomSheet> {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            colors.card,
-            colors.bgEnd,
-          ],
+          colors: [colors.card, colors.bgEnd],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -791,165 +872,193 @@ class _QRCodeBottomSheetState extends State<_QRCodeBottomSheet> {
               ),
             ),
           ),
-          
+
           // Branded QR Card (capturable) - Edge to Edge
-            RepaintBoundary(
-              key: _qrKey,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED), Color(0xFF6D28D9)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // QR Code Container
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: QrImageView(
-                        data: widget.storeUrl,
-                        version: QrVersions.auto,
-                        size: 180,
-                        errorCorrectionLevel: QrErrorCorrectLevel.H, // High error correction for logo overlay
-                        eyeStyle: const QrEyeStyle(
-                          eyeShape: QrEyeShape.square,
-                          color: Color(0xFF1E1B4B),
-                        ),
-                        dataModuleStyle: const QrDataModuleStyle(
-                          dataModuleShape: QrDataModuleShape.square,
-                          color: Color(0xFF1E1B4B),
-                        ),
-                        embeddedImage: const AssetImage('assets/icons/app_icon.png'),
-                        embeddedImageStyle: const QrEmbeddedImageStyle(
-                          size: Size(40, 40),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                    
-                    // Store Name
-                    Text(
-                      widget.storeName,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 6),
-                    
-                    // URL Chip
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.link_rounded, size: 12, color: Colors.white.withValues(alpha: 0.9)),
-                          const SizedBox(width: 6),
-                          Text(
-                            '${widget.subdomain}.letbuyy.store',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white.withValues(alpha: 0.95),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    
-                    // Scan instruction
-                    Text(
-                      'Scan to visit store',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.white.withValues(alpha: 0.7),
-                      ),
-                    ),
+          RepaintBoundary(
+            key: _qrKey,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                    Color(0xFF7C3AED),
+                    Color(0xFF6D28D9),
                   ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            
-            // Action buttons
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: widget.storeUrl));
-                        HapticFeedback.lightImpact();
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Row(
-                              children: [
-                                Icon(Icons.check_circle, color: Colors.white, size: 16),
-                                SizedBox(width: 8),
-                                Text('URL copied!'),
-                              ],
-                            ),
-                            backgroundColor: colors.success,
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.copy_rounded, size: 16),
-                      label: Text('Copy Link'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: colors.textPrimary,
-                        side: BorderSide(color: colors.divider),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  // QR Code Container
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: QrImageView(
+                      data: widget.storeUrl,
+                      version: QrVersions.auto,
+                      size: 180,
+                      errorCorrectionLevel: QrErrorCorrectLevel
+                          .H, // High error correction for logo overlay
+                      eyeStyle: const QrEyeStyle(
+                        eyeShape: QrEyeShape.square,
+                        color: Color(0xFF1E1B4B),
+                      ),
+                      dataModuleStyle: const QrDataModuleStyle(
+                        dataModuleShape: QrDataModuleShape.square,
+                        color: Color(0xFF1E1B4B),
+                      ),
+                      embeddedImage: const AssetImage(
+                        'assets/icons/app_icon.png',
+                      ),
+                      embeddedImageStyle: const QrEmbeddedImageStyle(
+                        size: Size(40, 40),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: _isSharing ? null : _shareQRAsImage,
-                      icon: _isSharing
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                            )
-                          : const Icon(Icons.share_rounded, size: 16),
-                      label: Text(_isSharing ? 'Sharing...' : 'Share QR'),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: const Color(0xFF8B5CF6),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                      ),
+                  const SizedBox(height: 18),
+
+                  // Store Name
+                  Text(
+                    widget.storeName,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 6),
+
+                  // URL Chip
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.link_rounded,
+                          size: 12,
+                          color: Colors.white.withValues(alpha: 0.9),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '${widget.subdomain}.letbuyy.store',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white.withValues(alpha: 0.95),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Scan instruction
+                  Text(
+                    'Scan to visit store',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
-          ],
-        ),
+          ),
+          const SizedBox(height: 24),
+
+          // Action buttons
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: widget.storeUrl));
+                      HapticFeedback.lightImpact();
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Row(
+                            children: [
+                              Icon(
+                                Icons.check_circle,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                              SizedBox(width: 8),
+                              Text('URL copied!'),
+                            ],
+                          ),
+                          backgroundColor: colors.success,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.copy_rounded, size: 16),
+                    label: Text('Copy Link'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: colors.textPrimary,
+                      side: BorderSide(color: colors.divider),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: _isSharing ? null : _shareQRAsImage,
+                    icon: _isSharing
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.share_rounded, size: 16),
+                    label: Text(_isSharing ? 'Sharing...' : 'Share QR'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor:
+                          mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
+        ],
+      ),
     );
   }
 }

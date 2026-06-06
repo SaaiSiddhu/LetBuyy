@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { getMarketingSiteUrl } from '@/lib/public-urls'
 
 export default function robots(): MetadataRoute.Robots {
     return {
@@ -9,6 +10,6 @@ export default function robots(): MetadataRoute.Robots {
                 disallow: ['/signup'],
             },
         ],
-        sitemap: 'https://letbuyy.com/sitemap.xml',
+        sitemap: getMarketingSiteUrl('/sitemap.xml'),
     }
 }

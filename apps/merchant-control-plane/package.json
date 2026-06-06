@@ -7,16 +7,16 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "echo 'No tests yet' && exit 0"
+    "test": "cd ../.. && node --test tests/federation/web-app-contract-boundary.test.mjs tests/localization/theme-localization.test.mjs tests/app-platform/app-bridge.test.mjs"
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",
     "@letbuyy/auth-core": "workspace:*",
+    "@letbuyy/cms-core": "workspace:*",
     "@letbuyy/extension-host": "workspace:*",
     "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/theme-engine": "workspace:*",
     "@letbuyy/ui": "workspace:*",
-    "@letbuyy/utils": "workspace:*",
     "lucide-react": "^0.562.0",
     "next": "16.1.6",
     "react": "19.2.3",

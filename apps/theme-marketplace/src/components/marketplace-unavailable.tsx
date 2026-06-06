@@ -1,5 +1,6 @@
 'use client';
 
+import { MarketplaceUnavailable as SharedMarketplaceUnavailable } from '@letbuyy/ui/marketplace';
 import { useRouter } from 'next/navigation';
 
 /**
@@ -16,12 +17,15 @@ export default function MarketplaceUnavailable({
 }) {
     const router = useRouter();
     return (
-        <div role="alert" aria-live="polite" className="text-center py-16">
-            <h3 className="text-lg font-bold text-text-heading mb-2">{title}</h3>
-            <p className="text-sm text-text-muted mb-4 max-w-md mx-auto">{body}</p>
-            <button type="button" onClick={() => router.refresh()} className="btn-primary text-sm py-2.5 px-6">
-                Try again
-            </button>
-        </div>
+        <SharedMarketplaceUnavailable
+            title={title}
+            body={body}
+            buttonLabel="Try again"
+            onRetry={() => router.refresh()}
+            className="text-center py-16"
+            headingClassName="text-lg font-bold text-text-heading mb-2"
+            bodyClassName="text-sm text-text-muted mb-4 max-w-md mx-auto"
+            buttonClassName="btn-primary text-sm py-2.5 px-6"
+        />
     );
 }

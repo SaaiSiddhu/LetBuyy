@@ -7,7 +7,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "echo 'No tests yet' && exit 0"
+    "test": "cd ../.. && node --test tests/federation/web-app-contract-boundary.test.mjs tests/theme-engine/storefront-liquid-runtime.test.mjs tests/theme-engine/liquid-hydration-islands.test.mjs tests/localization/theme-localization.test.mjs"
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",
@@ -22,7 +22,6 @@
     "@letbuyy/tenant-core": "workspace:*",
     "@letbuyy/theme-engine": "workspace:*",
     "@letbuyy/ui": "workspace:*",
-    "@letbuyy/utils": "workspace:*",
     "@vercel/speed-insights": "^1.3.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.26",

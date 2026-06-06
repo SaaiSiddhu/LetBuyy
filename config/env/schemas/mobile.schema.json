@@ -7,6 +7,9 @@
     "SUPABASE_URL": { "type": "string", "format": "uri" },
     "SUPABASE_ANON_KEY": { "type": "string" },
     "API_BASE_URL": { "type": "string", "format": "uri" },
+    "GEMINI_API_KEY": { "type": "string" },
+    "GEMINI_BASE_URL": { "type": "string", "format": "uri" },
+    "GEMINI_MODEL": { "type": "string" },
     "RAZORPAY_KEY_ID": { "type": "string" },
     "ENVIRONMENT": { "enum": ["staging", "production"] }
   }

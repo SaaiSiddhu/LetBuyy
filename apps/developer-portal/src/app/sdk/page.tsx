@@ -7,7 +7,7 @@ export default function SdkPage() {
       <SectionHeading
         kicker="Theme SDK and App SDK"
         title="Quick-starts for the contracts that exist now"
-        description="Theme packages use the theme-engine JSON-contract bundle with LiquidJS rendering support. Apps use app-engine registration, app extension, app block, checkout-function, OAuth scope, and webhook contracts. CLI and package SDKs are marked planned until they exist in the active workspace."
+        description="Theme packages use the theme-engine JSON-contract bundle with LiquidJS rendering support. Apps use app-engine registration, app extension, app block, checkout-function, OAuth scope, webhook contracts, and the minimal createLetbuyyAppSdk wrapper in @letbuyy/api-client. CLI and full browser bridge SDKs remain planned."
       />
 
       <section className="developer-two-column">
@@ -34,7 +34,7 @@ export default function SdkPage() {
         <SectionHeading
           kicker="Build your first integration"
           title="The current manual path"
-          description="Until a real CLI ships, the safe path is to author JSON against the package-owned schemas, submit through the versioned gateway, and verify install OAuth against the app-store routes."
+          description="Until a real CLI ships, the safe path is to author JSON against the package-owned schemas, validate the app manifest through the versioned gateway, submit it for review, and verify install OAuth against the app-store routes."
         />
         <div className="developer-grid three">
           <article className="developer-card">
@@ -43,7 +43,7 @@ export default function SdkPage() {
           </article>
           <article className="developer-card">
             <h3>2. App</h3>
-            <p>Register a developer profile, submit a marketplace app with scopes and extension config, then install through app OAuth authorization code flow. Checkout Functions can advise coupons, shipping, payment method availability, and validation only.</p>
+            <p>Register a developer profile, validate and submit a marketplace app manifest, copy the show-once credentials, then install through app OAuth authorization code flow. Checkout Functions can advise coupons, shipping, payment method availability, and validation only.</p>
           </article>
           <article className="developer-card">
             <h3>3. Webhooks</h3>

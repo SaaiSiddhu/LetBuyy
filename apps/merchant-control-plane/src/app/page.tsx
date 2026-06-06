@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getSessionUser, getUserStores } from '@/lib/auth/session'
+import { getAccountsUrl } from '@/lib/public-urls'
 
 /**
  * Root page — checks for session and redirects accordingly.
@@ -12,9 +13,7 @@ export default async function AdminRootPage() {
   const user = await getSessionUser()
 
   if (!user) {
-    const accountsUrl =
-      process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store'
-    redirect(`${accountsUrl}/lookup`)
+    redirect(getAccountsUrl('/lookup'))
   }
 
   // Fetch all user stores
@@ -22,9 +21,7 @@ export default async function AdminRootPage() {
 
   if (stores.length === 0) {
     // No stores → onboarding
-    const accountsUrl =
-      process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store'
-    redirect(`${accountsUrl}/onboarding`)
+    redirect(getAccountsUrl('/onboarding'))
   }
 
   if (stores.length === 1) {

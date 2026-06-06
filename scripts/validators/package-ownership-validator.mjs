@@ -12,8 +12,9 @@ import {
 const reporter = createReporter("Package ownership validator");
 const trackedFiles = getTrackedFiles();
 
-const packageManifests = trackedFiles.filter((file) => file.endsWith("/package.json") || file === "package.json");
-const pubspecManifests = trackedFiles.filter((file) => file.endsWith("/pubspec.yaml") || file === "pubspec.yaml");
+const activeTrackedFiles = trackedFiles.filter((file) => !file.startsWith("docs/archive/"));
+const packageManifests = activeTrackedFiles.filter((file) => file.endsWith("/package.json") || file === "package.json");
+const pubspecManifests = activeTrackedFiles.filter((file) => file.endsWith("/pubspec.yaml") || file === "pubspec.yaml");
 const packageOwnershipRoots = new Set(domainPackageRoots);
 
 function assertPackageOwnershipContract(root) {

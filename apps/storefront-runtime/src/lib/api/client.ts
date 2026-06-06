@@ -1,7 +1,10 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 import {
+    LETBUYY_PRODUCTION_API_BASE_URL,
+    apiClientInputToLetbuyyApiPath,
     createLetbuyyApiClient,
+    resolveLetbuyyApiBaseUrl,
     type LetbuyyApiClient,
 } from '@letbuyy/api-client';
 import {
@@ -9,8 +12,6 @@ import {
     hmacSha256Hex,
     LETBUYY_CUSTOMER_SESSION_COOKIE,
 } from '@letbuyy/auth-core';
-
-const DEFAULT_API_BASE_URL = 'https://api.letbuyy.store/v1';
 
 type StorefrontApiFetchInit = RequestInit & {
     next?: {
@@ -28,33 +29,13 @@ export function storefrontReadInit(revalidate: number, tags: string[] = []): Sto
     };
 }
 
-function getApiBaseUrl() {
-    const configuredUrl = (
+function storefrontApiBaseUrl() {
+    return resolveLetbuyyApiBaseUrl([
         process.env.LETBUYY_API_BASE_URL ||
-        process.env.NEXT_PUBLIC_API_BASE_URL ||
-        DEFAULT_API_BASE_URL
-    ).replace(/\/$/, '');
-
-    try {
-        const url = new URL(configuredUrl);
-        const path = url.pathname.replace(/\/$/, '');
-
-        if (path === '' || path === '/') {
-            url.pathname = '/v1';
-            return url.toString().replace(/\/$/, '');
-        }
-
-        if (!path.endsWith('/v1')) {
-            url.pathname = `${path}/v1`;
-            return url.toString().replace(/\/$/, '');
-        }
-    } catch {
-        if (!configuredUrl.endsWith('/v1')) {
-            return `${configuredUrl}/v1`;
-        }
-    }
-
-    return configuredUrl;
+        process.env.NEXT_PUBLIC_API_BASE_URL,
+    ], {
+        fallback: LETBUYY_PRODUCTION_API_BASE_URL,
+    });
 }
 
 export async function storefrontApiFetch(path: string, init: StorefrontApiFetchInit = {}) {
@@ -84,7 +65,7 @@ export async function storefrontApiFetch(path: string, init: StorefrontApiFetchI
         requestInit.cache = 'no-store';
     }
 
-    return fetch(`${getApiBaseUrl()}${cleanPath}`, requestInit);
+    return fetch(`${storefrontApiBaseUrl()}${cleanPath}`, requestInit);
 }
 
 function isStorefrontInternalOnlyPath(path: string): boolean {
@@ -116,11 +97,11 @@ async function signStorefrontInternalRequest(headers: Headers): Promise<void> {
 }
 
 export function createStorefrontApiClient(defaultInit: StorefrontApiFetchInit = {}): LetbuyyApiClient {
-    const baseUrl = getApiBaseUrl();
+    const baseUrl = storefrontApiBaseUrl();
 
     return createLetbuyyApiClient({
         baseUrl,
-        fetch: async (input, init) => storefrontApiFetch(apiClientInputToStorefrontApiPath(input, baseUrl), {
+        fetch: async (input, init) => storefrontApiFetch(apiClientInputToLetbuyyApiPath(input, baseUrl), {
             ...defaultInit,
             ...init,
             headers: mergeHeaders(defaultInit.headers, init?.headers),
@@ -175,16 +156,4 @@ function mergeHeaders(base: HeadersInit | undefined, override: HeadersInit | und
     }
 
     return headers;
-}
-
-function apiClientInputToStorefrontApiPath(input: RequestInfo | URL, baseUrl: string): string {
-    const rawUrl = input instanceof Request ? input.url : input.toString();
-    const url = new URL(rawUrl);
-    const base = new URL(baseUrl);
-    const basePath = base.pathname.replace(/\/$/, '');
-    const pathname = basePath && url.pathname.startsWith(basePath)
-        ? url.pathname.slice(basePath.length) || '/'
-        : url.pathname;
-
-    return `${pathname}${url.search}`;
 }

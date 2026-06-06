@@ -1,6 +1,7 @@
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../app/routes.dart';
 
 /// Upgrade to Premium Screen
 class UpgradeScreen extends StatelessWidget {
@@ -41,30 +42,24 @@ class UpgradeScreen extends StatelessWidget {
               begin: const Offset(0.8, 0.8),
               duration: 400.ms,
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             const Text(
               'Upgrade to Premium',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ).animate(delay: 100.ms).fadeIn().slideY(begin: 0.3),
-            
+
             const SizedBox(height: 8),
-            
+
             Text(
               'Unlock all features and grow your business',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 16,
-              ),
+              style: TextStyle(color: Colors.grey[600], fontSize: 16),
               textAlign: TextAlign.center,
             ).animate(delay: 200.ms).fadeIn().slideY(begin: 0.3),
-            
+
             const SizedBox(height: 32),
-            
+
             // Plans
             _buildPlanCard(
               context,
@@ -73,9 +68,9 @@ class UpgradeScreen extends StatelessWidget {
               period: '/month',
               isPopular: false,
             ).animate(delay: 300.ms).fadeIn().slideX(begin: -0.2),
-            
+
             const SizedBox(height: 16),
-            
+
             _buildPlanCard(
               context,
               title: 'Yearly',
@@ -84,20 +79,17 @@ class UpgradeScreen extends StatelessWidget {
               savings: 'Save ₹989',
               isPopular: true,
             ).animate(delay: 400.ms).fadeIn().slideX(begin: 0.2),
-            
+
             const SizedBox(height: 32),
-            
+
             // Features
             const Text(
               'Premium Features',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ).animate(delay: 500.ms).fadeIn(),
-            
+
             const SizedBox(height: 16),
-            
+
             _buildFeatureItem(Icons.store, 'Up to 5 stores'),
             _buildFeatureItem(Icons.palette, 'All premium themes'),
             _buildFeatureItem(Icons.language, 'Custom domain support'),
@@ -106,9 +98,9 @@ class UpgradeScreen extends StatelessWidget {
             _buildFeatureItem(Icons.support_agent, 'Priority support'),
             _buildFeatureItem(Icons.font_download, 'Custom font upload'),
             _buildFeatureItem(Icons.search, 'SEO tools'),
-            
+
             const SizedBox(height: 32),
-            
+
             // CTA Button
             SizedBox(
               width: double.infinity,
@@ -127,9 +119,9 @@ class UpgradeScreen extends StatelessWidget {
                 ),
               ),
             ).animate(delay: 600.ms).fadeIn().slideY(begin: 0.3),
-            
+
             const SizedBox(height: 16),
-            
+
             Text(
               'Cancel anytime. No questions asked.',
               style: TextStyle(color: Colors.grey[500], fontSize: 12),
@@ -151,7 +143,9 @@ class UpgradeScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isPopular ? AppColors.primary.withValues(alpha: 0.1) : Colors.grey[50],
+        color: isPopular
+            ? AppColors.primary.withValues(alpha: 0.1)
+            : Colors.grey[50],
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isPopular ? AppColors.primary : Colors.grey[200]!,
@@ -224,10 +218,7 @@ class UpgradeScreen extends StatelessWidget {
               ),
               Text(
                 period,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: Colors.grey[600], fontSize: 14),
               ),
             ],
           ),
@@ -255,19 +246,12 @@ class UpgradeScreen extends StatelessWidget {
               color: Colors.green[50],
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              Icons.check,
-              size: 16,
-              color: Colors.green[600],
-            ),
+            child: Icon(Icons.check, size: 16, color: Colors.green[600]),
           ),
           const SizedBox(width: 12),
           Icon(icon, size: 20, color: Colors.grey[600]),
           const SizedBox(width: 8),
-          Text(
-            text,
-            style: const TextStyle(fontSize: 15),
-          ),
+          Text(text, style: const TextStyle(fontSize: 15)),
         ],
       ),
     );
@@ -277,7 +261,7 @@ class UpgradeScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Payment'),
+        title: const Text('Choose a plan'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -289,23 +273,16 @@ class UpgradeScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  Icon(
-                    Icons.payment,
-                    size: 48,
-                    color: Colors.grey[400],
-                  ),
+                  Icon(Icons.payment, size: 48, color: Colors.grey[400]),
                   const SizedBox(height: 12),
                   const Text(
-                    'Razorpay Integration',
+                    'Secure Razorpay checkout',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Payment gateway will be connected here',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
+                    'Continue to the governed subscription checkout.',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -321,12 +298,7 @@ class UpgradeScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              // TODO: Integrate Razorpay
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Razorpay integration coming soon!'),
-                ),
-              );
+              Navigator.pushNamed(context, AppRoutes.pricing);
             },
             child: const Text('Proceed'),
           ),

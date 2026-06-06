@@ -8,7 +8,7 @@ import {
     hasRenderableThemeTemplate,
     localizeThemeTemplateConfig,
 } from '@letbuyy/theme-engine';
-import { getUrbanKicksDemoStore, isUrbanKicksDemoSubdomain } from './demo/urban-kicks-demo';
+import { getUrbanKicksDemoStore as buildUrbanKicksDemoStore } from './demo/urban-kicks-demo';
 
 interface ThemeReleaseRow {
     id: string;
@@ -51,11 +51,11 @@ type WorkerNavigationPayload = {
 const STOREFRONT_REVALIDATE_SECONDS = 60;
 
 export const StoreService = {
-    async getStoreBySubdomain(subdomain: string): Promise<StoreModel | null> {
-        if (isUrbanKicksDemoSubdomain(subdomain)) {
-            return getUrbanKicksDemoStore();
-        }
+    getUrbanKicksDemoStore(): StoreModel {
+        return buildUrbanKicksDemoStore();
+    },
 
+    async getStoreBySubdomain(subdomain: string): Promise<StoreModel | null> {
         try {
             const [data, navigation] = await Promise.all([
                 fetchWorkerStore(subdomain, false),
@@ -70,10 +70,6 @@ export const StoreService = {
     },
 
     async getPreviewStoreBySubdomain(subdomain: string, previewToken: string): Promise<StoreModel | null> {
-        if (isUrbanKicksDemoSubdomain(subdomain)) {
-            return getUrbanKicksDemoStore();
-        }
-
         if (!previewToken || previewToken.length > 200) return null;
 
         try {
@@ -89,10 +85,6 @@ export const StoreService = {
     },
 
     async getStoreBySubdomainAnyStatus(subdomain: string): Promise<StoreModel | null> {
-        if (isUrbanKicksDemoSubdomain(subdomain)) {
-            return getUrbanKicksDemoStore();
-        }
-
         try {
             const data = await fetchWorkerStore(subdomain, true);
             if (!data) return null;
@@ -113,10 +105,6 @@ export const StoreService = {
     },
 
     async getStoreById(storeId: string): Promise<StoreModel | null> {
-        if (storeId === 'demo-urban-kicks-store') {
-            return getUrbanKicksDemoStore();
-        }
-
         try {
             const data = await createStorefrontApiClient(
                 storefrontReadInit(STOREFRONT_REVALIDATE_SECONDS, [`storefront:store:${storeId}`]),

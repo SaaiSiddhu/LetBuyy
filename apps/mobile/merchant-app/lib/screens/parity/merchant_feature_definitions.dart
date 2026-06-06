@@ -39,6 +39,10 @@ class MerchantFeatureDefinitions {
     customers,
     collections,
     inventory,
+    inventoryLocations,
+    inventorySuppliers,
+    purchaseOrders,
+    inventoryTransfers,
     coupons,
     giftCards,
     reviews,
@@ -63,7 +67,20 @@ class MerchantFeatureDefinitions {
     security,
   ];
 
-  static const other = [formSubmissions, analytics];
+  static const other = [formSubmissions, analytics, aiStudio];
+
+  static const platformBlocked = [
+    payoutsSettlement,
+    wallet,
+    commission,
+    kyc,
+    returns,
+    twoFactor,
+    businessDetails,
+    localizationMarkets,
+    customData,
+    embeddedAppBridgeRuntime,
+  ];
 
   static const all = [
     ...commerce,
@@ -71,6 +88,7 @@ class MerchantFeatureDefinitions {
     ...apps,
     ...settingsHub,
     ...other,
+    ...platformBlocked,
   ];
 
   static final byRoute = {for (final feature in all) feature.route: feature};
@@ -96,8 +114,9 @@ class MerchantFeatureDefinitions {
     title: 'Collections',
     summary: 'Product collections and category merchandising.',
     icon: Icons.category_outlined,
-    endpoint: 'categories',
-    backendRequirement: 'Requires /v1/categories rows for the active store.',
+    endpoint: 'products/collections',
+    backendRequirement:
+        'Requires /v1/products/collections rows for the active store.',
   );
 
   static const inventory = MerchantFeatureDefinition(
@@ -112,6 +131,62 @@ class MerchantFeatureDefinitions {
         'Requires /v1/inventory/levels data for the active store.',
     titleKeys: ['sku', 'product_name', 'variant_id', 'id'],
     subtitleKeys: ['available', 'reserved', 'location_id'],
+  );
+
+  static const inventoryLocations = MerchantFeatureDefinition(
+    id: 'inventory-locations',
+    route: '/features/inventory-locations',
+    group: 'Commerce',
+    title: 'Inventory Locations',
+    summary: 'Warehouses, stores, and fulfillment points.',
+    icon: Icons.warehouse_outlined,
+    endpoint: 'inventory/locations',
+    backendRequirement:
+        'Requires /v1/inventory/locations data for the active store.',
+    titleKeys: ['name', 'id'],
+    subtitleKeys: ['city', 'state', 'status'],
+  );
+
+  static const inventorySuppliers = MerchantFeatureDefinition(
+    id: 'inventory-suppliers',
+    route: '/features/inventory-suppliers',
+    group: 'Commerce',
+    title: 'Suppliers',
+    summary: 'Vendor contacts used for replenishment workflows.',
+    icon: Icons.handshake_outlined,
+    endpoint: 'inventory/suppliers',
+    backendRequirement:
+        'Requires /v1/inventory/suppliers data for the active store.',
+    titleKeys: ['name', 'contact_name', 'id'],
+    subtitleKeys: ['email', 'phone', 'created_at'],
+  );
+
+  static const purchaseOrders = MerchantFeatureDefinition(
+    id: 'purchase-orders',
+    route: '/features/purchase-orders',
+    group: 'Commerce',
+    title: 'Purchase Orders',
+    summary: 'Inbound supplier orders and receiving workflow.',
+    icon: Icons.add_box_outlined,
+    endpoint: 'inventory/purchase-orders',
+    backendRequirement:
+        'Requires /v1/inventory/purchase-orders data for the active store.',
+    titleKeys: ['id', 'status', 'supplier_id'],
+    subtitleKeys: ['status', 'location_id', 'expected_at'],
+  );
+
+  static const inventoryTransfers = MerchantFeatureDefinition(
+    id: 'inventory-transfers',
+    route: '/features/inventory-transfers',
+    group: 'Commerce',
+    title: 'Transfers',
+    summary: 'Move stock between inventory locations.',
+    icon: Icons.swap_horiz_outlined,
+    endpoint: 'inventory/transfers',
+    backendRequirement:
+        'Requires /v1/inventory/transfers data for the active store.',
+    titleKeys: ['id', 'status'],
+    subtitleKeys: ['source_location_id', 'destination_location_id', 'status'],
   );
 
   static const coupons = MerchantFeatureDefinition(
@@ -134,7 +209,11 @@ class MerchantFeatureDefinitions {
     title: 'Gift Cards',
     summary: 'Gift card balances, issuance, redemption, and expiry.',
     icon: Icons.card_giftcard_outlined,
-    backendRequirement: 'No governed /v1 gift-card endpoint is present yet.',
+    endpoint: 'products/gift-cards',
+    backendRequirement:
+        'Requires /v1/products/gift-cards rows for the active store.',
+    titleKeys: ['code', 'id'],
+    subtitleKeys: ['balance', 'status', 'expires_at'],
   );
 
   static const reviews = MerchantFeatureDefinition(
@@ -338,7 +417,7 @@ class MerchantFeatureDefinitions {
     icon: Icons.credit_card_outlined,
     endpoint: 'payments/subscription/history',
     backendRequirement:
-        'Requires /v1/billing or full payment billing history contracts for mobile parity.',
+        'Requires /v1/payments/subscription/history for the active store.',
   );
 
   static const business = MerchantFeatureDefinition(
@@ -376,6 +455,116 @@ class MerchantFeatureDefinitions {
         'No merchant 2FA/passkey/session inventory endpoint exists for mobile yet.',
   );
 
+  static const payoutsSettlement = MerchantFeatureDefinition(
+    id: 'payouts-settlement',
+    route: '/features/payouts-settlement',
+    group: 'Platform Blocked',
+    title: 'Payouts & Settlement',
+    summary: 'Settlement batches, provider payout status, UTRs, and exports.',
+    icon: Icons.account_balance_wallet_outlined,
+    backendRequirement:
+        'No tenant-safe merchant payout, settlement, or UTR gateway contract exists.',
+  );
+
+  static const wallet = MerchantFeatureDefinition(
+    id: 'wallet',
+    route: '/features/wallet',
+    group: 'Platform Blocked',
+    title: 'Wallet',
+    summary: 'Merchant wallet balance, credits, debits, holds, and top-ups.',
+    icon: Icons.wallet_outlined,
+    backendRequirement:
+        'No merchant wallet ledger or balance gateway contract exists.',
+  );
+
+  static const commission = MerchantFeatureDefinition(
+    id: 'commission',
+    route: '/features/commission',
+    group: 'Platform Blocked',
+    title: 'Commission',
+    summary: 'Commission rules, order-level fees, and reconciliation.',
+    icon: Icons.percent_outlined,
+    backendRequirement:
+        'No merchant-facing commission schedule or reconciliation gateway contract exists.',
+  );
+
+  static const kyc = MerchantFeatureDefinition(
+    id: 'kyc',
+    route: '/features/kyc',
+    group: 'Platform Blocked',
+    title: 'KYC',
+    summary: 'Business verification, documents, bank proof, and approval.',
+    icon: Icons.verified_user_outlined,
+    backendRequirement:
+        'No mobile-safe KYC document, verification, or provider status gateway contract exists.',
+  );
+
+  static const returns = MerchantFeatureDefinition(
+    id: 'returns',
+    route: '/features/returns',
+    group: 'Platform Blocked',
+    title: 'Returns',
+    summary: 'Return requests, RMAs, labels, inspections, and restocking.',
+    icon: Icons.assignment_return_outlined,
+    backendRequirement:
+        'No merchant return/RMA lifecycle gateway contract exists.',
+  );
+
+  static const twoFactor = MerchantFeatureDefinition(
+    id: 'two-factor',
+    route: '/features/two-factor',
+    group: 'Platform Blocked',
+    title: 'Two-factor Authentication',
+    summary: 'TOTP setup, recovery codes, enforced roles, and sessions.',
+    icon: Icons.phonelink_lock_outlined,
+    backendRequirement:
+        'No merchant 2FA/passkey/session inventory gateway contract exists for mobile.',
+  );
+
+  static const businessDetails = MerchantFeatureDefinition(
+    id: 'business-details',
+    route: '/features/business-details',
+    group: 'Platform Blocked',
+    title: 'Business Details',
+    summary: 'Legal entity, GSTIN, invoice profile, and billing address.',
+    icon: Icons.business_center_outlined,
+    backendRequirement:
+        'Store PATCH does not expose a full business profile and invoice-address contract.',
+  );
+
+  static const localizationMarkets = MerchantFeatureDefinition(
+    id: 'localization-markets',
+    route: '/features/localization-markets',
+    group: 'Platform Blocked',
+    title: 'Localization & Markets',
+    summary: 'Markets, locales, currencies, and storefront translations.',
+    icon: Icons.public_outlined,
+    backendRequirement:
+        'No storefront markets, locale publishing, or translation gateway contract exists.',
+  );
+
+  static const customData = MerchantFeatureDefinition(
+    id: 'custom-data',
+    route: '/features/custom-data',
+    group: 'Platform Blocked',
+    title: 'Custom Data',
+    summary: 'Metafields, definitions, namespaces, and validation rules.',
+    icon: Icons.data_object_outlined,
+    backendRequirement:
+        'No merchant-safe metafield definition/value gateway contract exists.',
+  );
+
+  static const embeddedAppBridgeRuntime = MerchantFeatureDefinition(
+    id: 'embedded-app-bridge-runtime',
+    route: '/features/embedded-app-bridge',
+    group: 'Platform Blocked',
+    title: 'Embedded App Bridge Runtime',
+    summary: 'Native app-extension host, signed sessions, and UI rendering.',
+    icon: Icons.integration_instructions_outlined,
+    backendRequirement:
+        'Mobile App Bridge runtime needs a signed native extension-host gateway contract.',
+  );
+
   static const formSubmissions = MerchantFeatureDefinition(
     id: 'form-submissions',
     route: '/features/form-submissions',
@@ -398,5 +587,17 @@ class MerchantFeatureDefinitions {
     endpoint: 'analytics/dashboard',
     backendRequirement:
         'Requires protected /v1/analytics dashboard access for the active store.',
+  );
+
+  static const aiStudio = MerchantFeatureDefinition(
+    id: 'ai-studio',
+    route: '/features/ai',
+    group: 'Other',
+    title: 'AI Studio',
+    summary: 'AI credits, content tools, usage history, and ratings.',
+    icon: Icons.auto_awesome_outlined,
+    endpoint: 'ai/credits',
+    backendRequirement:
+        'Requires /v1/ai/credits and /v1/ai/usage rows; generation and credit purchase provider execution are ledgered until configured.',
   );
 }

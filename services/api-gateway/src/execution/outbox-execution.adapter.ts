@@ -124,11 +124,7 @@ export class OutboxExecutionAdapter {
         const queueJobs = await this.enqueuePlatformJobs(event, envelope);
         const webhookDeliveries = await this.createWebhookDeliveries(event, envelope);
 
-        if (webhookDeliveries > 0) {
-            await this.enqueueWebhookDeliveryJob(event, envelope);
-        }
-
-        return { queueJobs: queueJobs + (webhookDeliveries > 0 ? 1 : 0), webhookDeliveries };
+        return { queueJobs, webhookDeliveries };
     }
 
     private async enqueuePlatformJobs(event: OutboxEventClaim, envelope: JsonObject): Promise<number> {
@@ -160,32 +156,6 @@ export class OutboxExecutionAdapter {
         }
 
         return Array.isArray(data) ? data.length : 0;
-    }
-
-    private async enqueueWebhookDeliveryJob(event: OutboxEventClaim, envelope: JsonObject): Promise<void> {
-        const { error } = await this.db
-            .from('platform_queue_jobs')
-            .upsert(
-                {
-                    site_id: event.site_id,
-                    outbox_event_id: event.id,
-                    event_id: event.event_id,
-                    queue_name: 'webhook-deliveries',
-                    job_type: 'webhook.deliver',
-                    payload: envelope,
-                    request_id: event.request_id,
-                    trace_id: event.trace_id,
-                    idempotency_key: `${event.idempotency_key}:webhook-deliveries`,
-                    schema_version: event.schema_version,
-                    created_by: event.actor_id,
-                    updated_by: event.actor_id,
-                },
-                { onConflict: 'queue_name,idempotency_key', ignoreDuplicates: true }
-            );
-
-        if (error) {
-            throw new Error(`Webhook queue fanout failed: ${error.message}`);
-        }
     }
 
     private async createWebhookDeliveries(event: OutboxEventClaim, envelope: JsonObject): Promise<number> {

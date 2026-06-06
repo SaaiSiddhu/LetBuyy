@@ -34,8 +34,7 @@
       "@letbuyy/api-client",
       "@letbuyy/auth-core",
       "@letbuyy/shared-types",
-      "@letbuyy/ui",
-      "@letbuyy/utils"
+      "@letbuyy/ui"
     ],
     "runtimeImports": []
   },

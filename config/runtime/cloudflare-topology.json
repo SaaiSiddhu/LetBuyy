@@ -33,11 +33,13 @@
       "walStorage": "letbuyy-staging-wal",
       "workers": {
         "apiGateway": "letbuyy-api-staging",
+        "mobileBff": "letbuyy-mobile-bff-staging",
         "webhookService": "letbuyy-webhook-staging",
         "queueWorkers": "letbuyy-queue-workers-staging"
       },
       "routes": {
         "apiGateway": "api-staging.letbuyy.store",
+        "mobileBff": "bff-staging.letbuyy.store",
         "webhookService": "webhooks-staging.letbuyy.store"
       }
     },
@@ -57,11 +59,13 @@
       "walStorage": "letbuyy-production-wal",
       "workers": {
         "apiGateway": "letbuyy-api",
+        "mobileBff": "letbuyy-mobile-bff",
         "webhookService": "letbuyy-webhook",
         "queueWorkers": "letbuyy-queue-workers"
       },
       "routes": {
         "apiGateway": "api.letbuyy.store",
+        "mobileBff": "bff.letbuyy.store",
         "webhookService": "webhooks.letbuyy.store"
       }
     }
@@ -78,6 +82,14 @@
       "runtimeQueueProducerBinding": "RUNTIME_QUEUE",
       "serviceBindings": [
         "WEBHOOK_SERVICE"
+      ],
+      "telemetryBinding": "RUNTIME_TELEMETRY"
+    },
+    "mobileBff": {
+      "runtimeRoot": "services/mobile-bff",
+      "config": "services/mobile-bff/wrangler.toml",
+      "serviceBindings": [
+        "API_GATEWAY_SERVICE"
       ],
       "telemetryBinding": "RUNTIME_TELEMETRY"
     },

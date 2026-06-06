@@ -60,8 +60,8 @@
       "orderingKey": "siteId+aggregateId+streamPosition",
       "retry": {
         "maxRetries": {
-          "staging": 10,
-          "production": 10
+          "staging": 3,
+          "production": 3
         },
         "retryDelaySeconds": 30,
         "backoff": "provider-fixed-delay"

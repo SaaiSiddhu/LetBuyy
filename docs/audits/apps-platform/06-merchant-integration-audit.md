@@ -8,7 +8,7 @@ Scope: merchant-control-plane (174 files), identity-platform (51), developer-por
 
 | Surface | Path | State |
 |---|---|---|
-| Installed apps list / app settings | `apps/merchant-control-plane/src/app/[store]/settings/apps/page.tsx` + `AppsSettingsContent.tsx` | UI present; backed by `GET /v1/app-store/installations` |
+| Installed apps list / app settings | `apps/merchant-control-plane/src/app/[store]/settings/apps/page.tsx` + `AppsSettingsClient.tsx` | UI present; backed by `GET /v1/app-store/installations` |
 | App store browsing | delegated to `apps/app-marketplace` (separate origin `apps.letbuyy.store`) | Cross-app handoff; no embedded store-in-admin |
 | Install consent (scopes) screen | **not found** in admin scans | Install POST carries scopes but no rendered consent artifact |
 | Embedded app viewport | **Exists**: `src/components/apps/EmbeddedAppBridgeClient.tsx` (267 lines; extension-host import, iframe + postMessage bridge, bearer-token injection at :141) mounted at `[store]/apps/[installationId]/page.tsx`; gateway endpoints embed-session/token-exchange/bridge-fetch back it | Functional host; gaps = no app-developer SDK, undocumented protocol, no e2e test |

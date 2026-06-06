@@ -32,6 +32,7 @@ import {
     Star,
     Tag,
 } from '@letbuyy/ui';
+import { formatIndiaDate, formatInrCurrency } from '@letbuyy/ui/formatting';
 import type { MarketplaceApp } from '@letbuyy/shared-types';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -61,14 +62,6 @@ export async function generateMetadata({ params }: AppDetailPageProps) {
     };
 }
 
-function formatDate(value: string | null | undefined): string {
-    return new Date(value || '1970-01-01T00:00:00.000Z').toLocaleDateString('en-IN', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    });
-}
-
 function renderDescription(description: string | null | undefined) {
     const lines = (description || 'No description has been provided for this app yet.').split('\n');
     return lines.map((line, index) => {
@@ -89,11 +82,6 @@ function getInitials(name: string): string {
         .join('');
 }
 
-function formatCurrency(value: number | null | undefined, suffix = ''): string | null {
-    if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return null;
-    return `₹${value.toLocaleString('en-IN')}${suffix}`;
-}
-
 function formatPricingModel(model: string | null | undefined): string {
     if (!model) return 'Free';
     return model
@@ -102,9 +90,23 @@ function formatPricingModel(model: string | null | undefined): string {
 }
 
 function getPricingRows(app: MarketplaceApp, price: ReturnType<typeof getAppPriceDisplay>): PricingRow[] {
-    const monthly = formatCurrency(app.price_monthly, '/mo');
-    const yearly = formatCurrency(app.price_yearly, '/yr');
-    const oneTime = formatCurrency(app.price_inr);
+    const monthly = formatInrCurrency(app.price_monthly, {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+        requirePositive: true,
+        suffix: '/mo',
+    });
+    const yearly = formatInrCurrency(app.price_yearly, {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+        requirePositive: true,
+        suffix: '/yr',
+    });
+    const oneTime = formatInrCurrency(app.price_inr, {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+        requirePositive: true,
+    });
     const trialDays = typeof app.trial_days === 'number' && app.trial_days > 0 ? app.trial_days : null;
 
     const rows: PricingRow[] = [
@@ -358,7 +360,7 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                                                     <div className="review-author">{review.user_name || 'Anonymous'}</div>
                                                     <StarRating rating={review.rating} size={12} showValue={false} />
                                                 </div>
-                                                <span className="review-date">{formatDate(review.created_at)}</span>
+                                                <span className="review-date">{formatIndiaDate(review.created_at || '1970-01-01T00:00:00.000Z')}</span>
                                             </div>
                                             <p className="review-body">
                                                 <strong>{review.title}</strong>
@@ -422,7 +424,7 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                                 </div>
                                 <div className="app-sidebar-info-row">
                                     <span className="app-sidebar-info-label">Updated</span>
-                                    <span className="app-sidebar-info-value">{formatDate(app.updated_at || app.created_at)}</span>
+                                    <span className="app-sidebar-info-value">{formatIndiaDate(app.updated_at || app.created_at || '1970-01-01T00:00:00.000Z')}</span>
                                 </div>
                                 <div className="app-sidebar-info-row">
                                     <span className="app-sidebar-info-label">Pricing</span>

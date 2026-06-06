@@ -11,6 +11,7 @@ export * from '../resend-adapter/index';
 export * from '../storage-adapter/index';
 export * from '../queue-adapter/index';
 export * from '../analytics-adapter/index';
+export * from '../runtime-telemetry-adapter/index';
 export * from '../cache-adapter/index';
 export * from '../pooled-sql-adapter/index';
 export * from '../search-provider-adapter/index';

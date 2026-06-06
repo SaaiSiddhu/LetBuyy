@@ -142,51 +142,61 @@ class StoreMainScreenState extends State<StoreMainScreen> {
     final isSelected = _currentIndex == index;
     final item = _navItems[index];
 
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        switchToTab(index);
-      },
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-        padding: EdgeInsets.symmetric(
-          horizontal: isSelected ? 16 : 12,
-          vertical: 10,
-        ),
-        decoration: BoxDecoration(
-          color: isSelected ? colors.bottomNavSelectedBg : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              isSelected ? item.activeIcon : item.icon,
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: '${item.label} tab',
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          switchToTab(index);
+        },
+        behavior: HitTestBehavior.opaque,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+            padding: EdgeInsets.symmetric(
+              horizontal: isSelected ? 16 : 12,
+              vertical: 10,
+            ),
+            decoration: BoxDecoration(
               color: isSelected
-                  ? colors.bottomNavSelected
-                  : colors.bottomNavUnselected,
-              size: 24,
+                  ? colors.bottomNavSelectedBg
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(16),
             ),
-            AnimatedSize(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeInOut,
-              child: isSelected
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Text(
-                        item.label,
-                        style: TextStyle(
-                          color: colors.bottomNavSelected,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isSelected ? item.activeIcon : item.icon,
+                  color: isSelected
+                      ? colors.bottomNavSelected
+                      : colors.bottomNavUnselected,
+                  size: 24,
+                ),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  child: isSelected
+                      ? Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Text(
+                            item.label,
+                            style: TextStyle(
+                              color: colors.bottomNavSelected,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

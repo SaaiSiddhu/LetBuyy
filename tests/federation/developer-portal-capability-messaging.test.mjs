@@ -12,8 +12,8 @@ const sdkPage = read('apps/developer-portal/src/app/sdk/page.tsx');
 const appEngine = read('packages/app-engine/src/index.ts');
 const themeRenderer = read('packages/theme-engine/src/theme-renderer.ts');
 const storefrontGraphQL = read('services/api-gateway/src/graphql/storefront.ts');
-const ws12Ledger = read('CODEX_WS12_LEDGER.md');
-const masterLedger = read('CODEX_MASTER_EXECUTION_LEDGER.md');
+const ws12Ledger = read('docs/archive/root-residue/2026-06-06-foundation-v2/CODEX_WS12_LEDGER.md');
+const masterLedger = read('docs/archive/root-residue/2026-06-06-foundation-v2/CODEX_MASTER_EXECUTION_LEDGER.md');
 const ctoReport = read('docs/LETBUYY_CTO_WAR_ROOM_REPORT.md');
 const deepAuditReport = read('docs/LETBUYY_DEEP_AUDIT_REPORT.md');
 
@@ -55,20 +55,20 @@ test('developer portal limits checkout functions to advisory operations', () => 
   assert.doesNotMatch(reference, /can override payment amounts/i);
 });
 
-test('GraphQL cart messaging points to CART_NOT_SUPPORTED instead of silent null', () => {
-  assert.match(storefrontGraphQL, /CART_NOT_SUPPORTED/);
+test('GraphQL cart messaging points to the persisted cart-token contract', () => {
+  assert.match(storefrontGraphQL, /cartTokenFromVariables/);
+  assert.match(storefrontGraphQL, /\/cart\/\$\{encodeURIComponent\(cartToken\)\}/);
+  assert.doesNotMatch(storefrontGraphQL, /CART_NOT_SUPPORTED/);
   assert.doesNotMatch(storefrontGraphQL, /data\.cart\s*=\s*null/);
 
   for (const marker of [
-    'StorefrontQuery.cart -> CART_NOT_SUPPORTED',
-    'no longer return silent null data',
+    'StorefrontQuery.cart -> persisted cart token',
+    'GET|POST|PATCH|DELETE /v1/storefront/:subdomain/cart',
   ]) {
     assert.ok(reference.includes(marker), `developer reference is missing ${marker}`);
   }
 
-  assert.ok(homePage.includes('`cart` returns `CART_NOT_SUPPORTED`'));
-  assert.ok(ws12Ledger.includes('fails loudly with `CART_NOT_SUPPORTED`'));
-  assert.ok(masterLedger.includes('fails loudly with `CART_NOT_SUPPORTED`'));
+  assert.ok(homePage.includes('persisted cart token'));
   assert.doesNotMatch(ws12Ledger, /returns `cart: null`/);
   assert.doesNotMatch(masterLedger, /returns `cart: null`/);
 });

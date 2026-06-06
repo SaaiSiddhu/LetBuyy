@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { LETBUYY_MERCHANT_SESSION_COOKIE } from '@letbuyy/auth-core'
+import { getAccountsUrl, getAdminUrl } from '@/lib/public-urls'
 
 /**
  * POST /api/auth/logout
@@ -14,15 +15,14 @@ export async function POST() {
     try {
         const cookieStore = await cookies()
         const sessionToken = cookieStore.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value
-        const accountsUrl =
-            process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store'
+        const accountsUrl = getAccountsUrl()
 
         if (sessionToken) {
             await fetch(`${accountsUrl}/api/auth/logout`, {
                 method: 'POST',
                 headers: {
                     Cookie: `${LETBUYY_MERCHANT_SESSION_COOKIE}=${encodeURIComponent(sessionToken)}`,
-                    Origin: process.env.NEXT_PUBLIC_ADMIN_URL || 'https://merchant.staging.letbuyy.store',
+                    Origin: getAdminUrl(),
                 },
                 cache: 'no-store',
             }).catch(() => null)
@@ -46,16 +46,14 @@ export async function POST() {
 
         return NextResponse.json({
             success: true,
-            redirectTo: `${accountsUrl}/lookup`,
+            redirectTo: getAccountsUrl('/lookup'),
         })
     } catch (error) {
         console.error('Logout error:', error)
         // Even if DB delete fails, still redirect
-        const accountsUrl =
-            process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store'
         return NextResponse.json({
             success: true,
-            redirectTo: `${accountsUrl}/lookup`,
+            redirectTo: getAccountsUrl('/lookup'),
         })
     }
 }

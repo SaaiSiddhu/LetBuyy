@@ -32,9 +32,9 @@
   },
   "allowedDependencies": {
     "workspacePackages": [
+      "@letbuyy/api-client",
       "@letbuyy/api-types",
-      "@letbuyy/ui",
-      "@letbuyy/utils"
+      "@letbuyy/ui"
     ],
     "runtimeImports": []
   },

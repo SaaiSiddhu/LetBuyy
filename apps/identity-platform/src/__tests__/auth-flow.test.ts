@@ -62,5 +62,6 @@ test('create-store uses the shared api client facade with a required session', (
     assert.match(source, /site_type:\s*siteType/)
     assert.match(source, /subdomain:\s*normalizedSubdomain/)
     assert.match(apiClientSource, /createLetbuyyApiClient/)
-    assert.match(apiClientSource, /path\.endsWith\('\/v1'\)/)
+    assert.match(apiClientSource, /resolveLetbuyyApiBaseUrl/)
+    assert.match(apiClientSource, /LETBUYY_PRODUCTION_API_BASE_URL/)
 })

@@ -37,6 +37,8 @@ As of 2026-06-02, active Supabase replay authority is the verified baseline at
 `database/supabase/migrations/000_baseline.sql` plus additive forward
 migrations `073_*.sql` and newer.
 
+The canonical Supabase CLI config is `database/supabase/config.toml`. The previous root-level `supabase/config.toml` was a duplicate PG15 local config and is archived under `docs/archive/supabase-root-config/`; root-level `supabase/migrations` is forbidden.
+
 - Historical migrations `001_initial_schema.sql` through
   `072_marketplace_review_records.sql` are archived under
   `docs/archive/migrations-history/` for auditability only.

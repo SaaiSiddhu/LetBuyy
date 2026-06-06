@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import type { Customer as SharedCustomer } from '@letbuyy/shared-types'
+import { formatIndiaDate as formatDate, formatInrCurrency } from '@letbuyy/ui/formatting'
 import {
     Avatar,
     Badge,
@@ -86,20 +87,6 @@ function titleize(value: string | null | undefined) {
         .filter(Boolean)
         .map(part => part.charAt(0).toUpperCase() + part.slice(1))
         .join(' ')
-}
-
-function formatDate(value: string | null) {
-    if (!value) return '-'
-    const date = new Date(value)
-    return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('en-IN', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-    })
-}
-
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount)
 }
 
 function isNewCustomer(customer: CustomerRow) {
@@ -320,7 +307,7 @@ export default function CustomersPage() {
             key: 'total_spent',
             header: 'Spent',
             sortable: true,
-            render: (customer) => formatCurrency(Number(customer.total_spent || 0)),
+            render: (customer) => formatInrCurrency(Number(customer.total_spent || 0)) || '-',
         },
         {
             key: 'last_order_at',

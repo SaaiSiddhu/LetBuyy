@@ -76,6 +76,7 @@ class StoreModel {
   // Payment Settings
   final bool codEnabled;
   final bool onlinePaymentEnabled;
+  final bool taxInclusive;
 
   // Timestamps
   final DateTime createdAt;
@@ -123,12 +124,13 @@ class StoreModel {
     this.customDomainHeader,
     this.codEnabled = true,
     this.onlinePaymentEnabled = true,
+    this.taxInclusive = false,
     required this.createdAt,
     required this.updatedAt,
     this.publishedAt,
   });
 
-  /// Generate store URL from subdomain (new format: subdomain.letbuyy.com)
+  /// Generate store URL from subdomain (new format: subdomain.letbuyy.store)
   static String generateStoreUrl(String subdomain) {
     return 'https://$subdomain.letbuyy.store';
   }
@@ -223,6 +225,7 @@ class StoreModel {
           data['onlinePaymentEnabled'] ??
           data['online_payment_enabled'] ??
           true,
+      taxInclusive: data['taxInclusive'] ?? data['tax_inclusive'] ?? false,
       createdAt:
           _parseTimestamp(data['createdAt'] ?? data['created_at']) ??
           DateTime.now(),
@@ -282,6 +285,7 @@ class StoreModel {
       'custom_domain_header': customDomainHeader,
       'cod_enabled': codEnabled,
       'online_payment_enabled': onlinePaymentEnabled,
+      'tax_inclusive': taxInclusive,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'published_at': publishedAt?.toIso8601String(),
@@ -330,6 +334,7 @@ class StoreModel {
     String? customDomainHeader,
     bool? codEnabled,
     bool? onlinePaymentEnabled,
+    bool? taxInclusive,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? publishedAt,
@@ -375,6 +380,7 @@ class StoreModel {
       customDomainHeader: customDomainHeader ?? this.customDomainHeader,
       codEnabled: codEnabled ?? this.codEnabled,
       onlinePaymentEnabled: onlinePaymentEnabled ?? this.onlinePaymentEnabled,
+      taxInclusive: taxInclusive ?? this.taxInclusive,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       publishedAt: publishedAt ?? this.publishedAt,

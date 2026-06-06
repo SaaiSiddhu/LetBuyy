@@ -6,6 +6,7 @@ import {
 } from '@letbuyy/application-services';
 import { canonicalizeExecutionPayload } from '@letbuyy/orchestration';
 import { ConflictError, ValidationError } from '../lib/errors';
+import { redactReplayableSecrets } from '../lib/replayable-secret-redaction';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 
@@ -147,12 +148,13 @@ export class IdempotencyExecutionAdapter {
         resourceType?: string;
         resourceId?: string;
     }) {
-        const responseHash = await sha256Hex(canonicalizeExecutionPayload(params.responseBody));
+        const persistedResponseBody = redactReplayableSecrets(params.responseBody);
+        const responseHash = await sha256Hex(canonicalizeExecutionPayload(persistedResponseBody));
         const { error } = await this.db
             .from('idempotency_keys')
             .update({
                 status: 'completed',
-                response_body: params.responseBody,
+                response_body: persistedResponseBody,
                 response_hash: responseHash,
                 status_code: params.statusCode,
                 resource_type: params.resourceType || null,

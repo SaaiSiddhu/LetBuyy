@@ -5,6 +5,7 @@ import { verifyTurnstileToken } from '@/lib/turnstile'
 import { createOTPToken } from '@/lib/auth/tokens'
 import { sendOTPEmail } from '@/lib/email/resend'
 import { validateCsrf } from '@/lib/auth/csrf'
+import { canUseIdentityDevAuthBypass } from '@/lib/dev-auth-bypass'
 
 function verificationPayload(otp: string) {
     const payload: {
@@ -18,7 +19,7 @@ function verificationPayload(otp: string) {
         message: 'Verification code sent to your email',
     }
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (canUseIdentityDevAuthBypass(process.env)) {
         payload.devOtp = otp
     }
 

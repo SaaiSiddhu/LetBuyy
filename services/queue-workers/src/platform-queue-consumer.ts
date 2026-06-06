@@ -15,7 +15,11 @@ import {
   type SupabaseClient,
   type SupabaseServiceEnv,
 } from '@letbuyy/infrastructure/supabase-adapter';
-import { emitGatewayDomainEvent, type GatewayServiceBinding } from './gateway-events';
+import { emitGatewayDomainEvent, type GatewayServiceBinding } from '@letbuyy/infrastructure/gateway-events-adapter';
+import {
+  dispatchPushNotificationToDevices,
+  type PushProviderEnv,
+} from './push-dispatcher';
 
 type JsonObject = Record<string, unknown>;
 export type PlatformQueueName = 'analytics-events' | 'search-indexing' | 'payment-events';
@@ -103,6 +107,8 @@ interface AppChargeEventPayload {
     currency?: 'INR';
   };
   payout_rail?: 'razorpay_route' | 'razorpayx' | 'upi' | 'manual';
+  provider_reference?: string;
+  provider_mode?: 'test' | 'live';
   revenue_share_bps?: number;
   partner_gst_bps?: number;
   partner_gst_minor?: number;
@@ -133,7 +139,7 @@ export interface PlatformQueueConsumeResult {
   error?: string;
 }
 
-export interface PlatformQueueConsumerEnv extends SupabaseServiceEnv {
+export interface PlatformQueueConsumerEnv extends SupabaseServiceEnv, PushProviderEnv {
   API_GATEWAY_SERVICE?: GatewayServiceBinding;
   INTERNAL_API_SECRET?: string;
   PLATFORM_QUEUE_CLAIM_LIMIT?: string;
@@ -541,6 +547,17 @@ class PlatformQueueConsumer {
     });
 
     if (error) throw new Error(`Notification dispatch write failed: ${error.message}`);
+
+    await dispatchPushNotificationToDevices(this.db, this.env, {
+      userId,
+      title: planned.title,
+      message: planned.message,
+      data: {
+        ...planned.data,
+        notification_type: planned.type,
+      },
+      actionUrl: planned.action_url || null,
+    });
   }
 
   private async resolveNotificationUserId(siteId: string | null, payload: JsonObject): Promise<string | null> {
@@ -664,7 +681,8 @@ class PlatformQueueConsumer {
             queue_job_id: job.id,
             partner_gst_bps: partnerGstBps,
             partner_gst_minor: partnerGstMinor,
-            payout_provider_mode: 'test',
+            provider_reference: payload.provider_reference || null,
+            payout_provider_mode: payload.provider_mode === 'live' ? 'live' : 'test',
             consumer_runtime: 'services/queue-workers',
           },
         },

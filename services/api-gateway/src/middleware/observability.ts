@@ -4,6 +4,7 @@ import type { Env } from '../index';
 import { getSupabaseAdmin } from '../lib/supabase';
 import { ObservabilityExecutionAdapter } from '../execution/observability-execution.adapter';
 import { LETBUYY_INTERNAL_SUBREQUEST_HEADER, isGraphQLRestShimSubrequest } from '../graphql/rest-shim';
+import { writeRuntimeTelemetryDataPoint } from '@letbuyy/infrastructure/runtime-telemetry-adapter';
 
 type AppContext = Context<{ Bindings: Env }>;
 
@@ -123,6 +124,63 @@ function isPublicStorefrontRead(input: RequestLogSamplingInput): boolean {
     return input.path.startsWith('/v1/storefront/') || input.path.startsWith('/storefront/');
 }
 
+function statusClass(statusCode: number): string {
+    if (statusCode >= 500) return '5xx';
+    if (statusCode >= 400) return '4xx';
+    if (statusCode >= 300) return '3xx';
+    if (statusCode >= 200) return '2xx';
+    return 'other';
+}
+
+function runtimeName(c: AppContext): string {
+    return c.env.RUNTIME_NAME || 'api-gateway';
+}
+
+function recordRequestAnalyticsEnginePoint(
+    c: AppContext,
+    input: {
+        siteId: string | null;
+        requestId: string;
+        traceId: string;
+        latencyMs: number;
+        userId: string | null;
+        authSource: string | null;
+        errorCode: string | null;
+    },
+): void {
+    const responseStatus = c.res.status;
+    const responseStatusClass = statusClass(responseStatus);
+
+    writeRuntimeTelemetryDataPoint(c.env.RUNTIME_TELEMETRY, {
+        metricName: 'letbuyy.runtime.request',
+        runtimeName: runtimeName(c),
+        environment: c.env.ENVIRONMENT,
+        deploymentEnv: c.env.DEPLOYMENT_ENV || c.env.ENVIRONMENT,
+        telemetryEnv: c.env.TELEMETRY_ENV || c.env.ENVIRONMENT,
+        siteId: input.siteId,
+        requestId: input.requestId,
+        traceId: input.traceId,
+        index: input.siteId || `${runtimeName(c)}:${c.env.ENVIRONMENT || 'unknown'}`,
+        blobs: [
+            c.req.path,
+            c.req.method,
+            responseStatusClass,
+            input.authSource || (input.userId ? 'authenticated' : 'anonymous'),
+            input.errorCode || '',
+            c.req.header('CF-IPCountry') || '',
+            c.req.header('CF-Ray') || '',
+        ],
+        doubles: [
+            1,
+            input.latencyMs,
+            responseStatus,
+            responseStatus >= 500 ? 1 : 0,
+            responseStatus >= 400 && responseStatus < 500 ? 1 : 0,
+            responseStatus < 400 ? 1 : 0,
+        ],
+    });
+}
+
 export function shouldRecordRequestLog(input: RequestLogSamplingInput): RequestLogSamplingDecision {
     const sampleRate = normalizeRequestLogSampleRate(input.sampleRate);
     const method = input.method.toUpperCase();
@@ -176,6 +234,54 @@ export const observability = createMiddleware<{ Bindings: Env }>(async (c, next)
     };
 
     writeStructuredRuntimeLog(fields);
+    recordRequestAnalyticsEnginePoint(c, {
+        siteId,
+        requestId,
+        traceId,
+        latencyMs,
+        userId,
+        authSource,
+        errorCode,
+    });
+
+    const db = getSupabaseAdmin(c);
+    const service = new ObservabilityExecutionAdapter(db);
+
+    c.executionCtx.waitUntil(
+        service.recordRuntimeMetric({
+            metricName: 'letbuyy.runtime.request',
+            metricValue: 1,
+            unit: 'count',
+            runtimeName: runtimeName(c),
+            siteId,
+            requestId,
+            correlationId: requestId,
+            traceId,
+            dimensions: {
+                route: c.req.path,
+                method: c.req.method,
+                status_code: c.res.status,
+                status_class: statusClass(c.res.status),
+                latency_ms: latencyMs,
+                server_error_count: c.res.status >= 500 ? 1 : 0,
+                client_error_count: c.res.status >= 400 && c.res.status < 500 ? 1 : 0,
+                success_count: c.res.status < 400 ? 1 : 0,
+                auth_source: authSource,
+                country: c.req.header('CF-IPCountry') || null,
+                colo: c.req.header('CF-Ray') || null,
+            },
+        }).catch((error: unknown) => {
+            writeStructuredRuntimeLog({
+                request_id: requestId,
+                trace_id: traceId,
+                route: c.req.path,
+                method: 'OBSERVABILITY_METRIC',
+                status_code: 500,
+                latency_ms: 0,
+                error: error instanceof Error ? error.message : 'Runtime metric recording failed',
+            });
+        })
+    );
 
     const sampling = shouldRecordRequestLog({
         method: c.req.method,
@@ -187,9 +293,6 @@ export const observability = createMiddleware<{ Bindings: Env }>(async (c, next)
         sampleRate: c.env.REQUEST_LOG_SAMPLE_RATE,
     });
     if (!sampling.record) return;
-
-    const db = getSupabaseAdmin(c);
-    const service = new ObservabilityExecutionAdapter(db);
 
     c.executionCtx.waitUntil(
         service.recordRequestLog({

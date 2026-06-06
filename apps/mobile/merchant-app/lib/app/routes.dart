@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_models/letbuyy_models.dart';
 
 // All other screens are imported but Flutter's tree-shaking
 // will handle optimization at build time
 
 import '../screens/splash/splash_screen.dart';
 import '../screens/auth/login_screen.dart';
+import '../screens/auth/otp_screen.dart';
 import '../screens/auth/error_screen.dart';
+import '../screens/auth/turnstile_challenge_screen.dart';
 import '../screens/wizard/create_store_wizard.dart';
 import '../screens/wizard/store_published_screen.dart';
 import '../screens/main/store_main_screen.dart';
@@ -13,14 +16,41 @@ import '../screens/premium/upgrade_screen.dart';
 import '../screens/preview/live_preview_screen.dart';
 import '../screens/settings/domain_settings_screen.dart';
 import '../screens/settings/seo_settings_screen.dart';
+import '../screens/settings/shipping_screen.dart';
 import '../screens/settings/store_details_screen.dart';
+import '../screens/settings/taxes_screen.dart';
+import '../screens/settings/notifications_screen.dart';
+import '../screens/settings/staff_screen.dart';
+import '../screens/settings/billing_screen.dart';
+import '../screens/marketing/reviews_screen.dart';
+import '../screens/marketing/leads_screen.dart';
+import '../screens/apps/apps_screen.dart';
+import '../screens/ai/ai_screen.dart';
 import '../screens/settings/help_screen.dart';
 import '../screens/analytics/analytics_screen.dart';
+import '../screens/customers/customer_detail_screen.dart';
+import '../screens/customers/customers_screen.dart';
+import '../screens/discounts/coupon_form_screen.dart';
+import '../screens/discounts/coupons_screen.dart';
+import '../screens/discounts/gift_cards_screen.dart';
+import '../screens/content/blog_screen.dart';
+import '../screens/content/media_library_screen.dart';
+import '../screens/content/navigation_screen.dart';
+import '../screens/content/pages_screen.dart';
+import '../screens/inventory/inventory_screen.dart';
+import '../screens/inventory/locations_screen.dart';
+import '../screens/inventory/purchase_orders_screen.dart';
+import '../screens/inventory/suppliers_screen.dart';
+import '../screens/inventory/transfers_screen.dart';
+import '../screens/orders/order_detail_screen.dart';
 import '../screens/orders/orders_screen.dart';
+import '../screens/platform/platform_blocked_screen.dart';
+import '../screens/products/collections_screen.dart';
 import '../screens/subscription/pricing_screen.dart';
 import '../screens/subscription/connect_razorpay_screen.dart';
 import '../screens/parity/merchant_feature_definitions.dart';
 import '../screens/parity/merchant_feature_screen.dart';
+import '../services/platform_blocked_service.dart';
 import 'auth_wrapper.dart';
 
 /// App route definitions
@@ -29,6 +59,8 @@ class AppRoutes {
   static const String auth = '/'; // Auth wrapper is root route for mobile
   static const String splash = '/splash';
   static const String login = '/login';
+  static const String otp = '/otp';
+  static const String turnstileChallenge = '/turnstile-challenge';
   static const String error = '/error';
 
   // Wizard routes
@@ -49,14 +81,118 @@ class AppRoutes {
   static const String domainSettings = '/domain-settings';
   static const String seoSettings = '/seo-settings';
   static const String storeDetails = '/store-details';
+  static const String notifications = '/notifications';
+  static const String staff = '/staff';
+  static const String billing = '/billing';
+  static const String reviews = '/reviews';
+  static const String leads = '/leads';
+  static const String apps = '/apps';
+  static const String ai = '/ai';
+  static const String shipping = '/shipping';
+  static const String taxes = '/taxes';
   static const String help = '/help';
   static const String analytics = '/analytics';
+  static const String customers = '/customers';
+  static const String customerDetail = '/customers/detail';
+  static const String coupons = '/coupons';
+  static const String couponForm = '/coupons/form';
+  static const String giftCards = '/gift-cards';
+  static const String pages = '/pages';
+  static const String blog = '/blog';
+  static const String navigation = '/navigation';
+  static const String media = '/media';
+  static const String inventory = '/inventory';
+  static const String inventoryLocations = '/inventory/locations';
+  static const String inventorySuppliers = '/inventory/suppliers';
+  static const String purchaseOrders = '/inventory/purchase-orders';
+  static const String inventoryTransfers = '/inventory/transfers';
+  static const String collections = '/collections';
   static const String orders = '/orders';
+  static const String orderDetail = '/orders/detail';
   static const String pricing = '/pricing';
   static const String connectRazorpay = '/connect-razorpay';
 
   /// Generate routes with optimized page transitions
   static Route<dynamic> generateRoute(RouteSettings settings) {
+    if (settings.name == '/features/order-detail') {
+      return _buildRoute(const OrdersScreen(), settings);
+    }
+    if (settings.name == '/features/customers') {
+      return _buildRoute(const CustomersScreen(), settings);
+    }
+    if (settings.name == '/features/inventory') {
+      return _buildRoute(const InventoryScreen(), settings);
+    }
+    if (settings.name == '/features/inventory-locations') {
+      return _buildRoute(const InventoryLocationsScreen(), settings);
+    }
+    if (settings.name == '/features/inventory-suppliers') {
+      return _buildRoute(const InventorySuppliersScreen(), settings);
+    }
+    if (settings.name == '/features/purchase-orders') {
+      return _buildRoute(const PurchaseOrdersScreen(), settings);
+    }
+    if (settings.name == '/features/inventory-transfers') {
+      return _buildRoute(const InventoryTransfersScreen(), settings);
+    }
+    if (settings.name == '/features/coupons') {
+      return _buildRoute(const CouponsScreen(), settings);
+    }
+    if (settings.name == '/features/gift-cards') {
+      return _buildRoute(const GiftCardsScreen(), settings);
+    }
+    if (settings.name == '/features/collections') {
+      return _buildRoute(const CollectionsScreen(), settings);
+    }
+    if (settings.name == '/features/pages') {
+      return _buildRoute(const PagesScreen(), settings);
+    }
+    if (settings.name == '/features/blog') {
+      return _buildRoute(const BlogScreen(), settings);
+    }
+    if (settings.name == '/features/navigation') {
+      return _buildRoute(const NavigationScreen(), settings);
+    }
+    if (settings.name == '/features/media') {
+      return _buildRoute(const MediaLibraryScreen(), settings);
+    }
+    if (settings.name == '/features/notifications') {
+      return _buildRoute(const NotificationsScreen(), settings);
+    }
+    if (settings.name == '/features/users') {
+      return _buildRoute(const StaffScreen(), settings);
+    }
+    if (settings.name == '/features/billing') {
+      return _buildRoute(const BillingScreen(), settings);
+    }
+    if (settings.name == '/features/reviews') {
+      return _buildRoute(const ReviewsScreen(), settings);
+    }
+    if (settings.name == '/features/form-submissions') {
+      return _buildRoute(const LeadsScreen(), settings);
+    }
+    if (settings.name == '/features/app-marketplace') {
+      return _buildRoute(const AppsScreen(), settings);
+    }
+    if (settings.name == '/features/ai') {
+      return _buildRoute(const AiScreen(), settings);
+    }
+    if (settings.name == '/features/shipping') {
+      return _buildRoute(const ShippingScreen(), settings);
+    }
+    if (settings.name == '/features/taxes') {
+      return _buildRoute(const TaxesScreen(), settings);
+    }
+    final blockedFeature = PlatformBlockedService.featureForRoute(
+      settings.name,
+    );
+    if (blockedFeature != null) {
+      return _buildRoute(
+        PlatformBlockedScreen(feature: blockedFeature),
+        settings,
+      );
+    }
+
     final feature = MerchantFeatureDefinitions.byRoute[settings.name];
     if (feature != null) {
       return _buildRoute(MerchantFeatureScreen(feature: feature), settings);
@@ -72,6 +208,20 @@ class AppRoutes {
 
       case login:
         return _buildRoute(const LoginScreen(), settings);
+
+      case otp:
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        return _buildRoute(
+          OtpScreen(
+            email: args['email'] as String? ?? '',
+            password: args['password'] as String? ?? '',
+            name: args['name'] as String?,
+          ),
+          settings,
+        );
+
+      case turnstileChallenge:
+        return _buildRoute(const TurnstileChallengeScreen(), settings);
 
       case error:
         final args = settings.arguments as Map<String, dynamic>?;
@@ -126,14 +276,113 @@ class AppRoutes {
       case storeDetails:
         return _buildRoute(const StoreDetailsScreen(), settings);
 
+      case notifications:
+        return _buildRoute(const NotificationsScreen(), settings);
+
+      case staff:
+        return _buildRoute(const StaffScreen(), settings);
+
+      case billing:
+        return _buildRoute(const BillingScreen(), settings);
+
+      case reviews:
+        return _buildRoute(const ReviewsScreen(), settings);
+
+      case leads:
+        return _buildRoute(const LeadsScreen(), settings);
+
+      case apps:
+        return _buildRoute(const AppsScreen(), settings);
+
+      case ai:
+        return _buildRoute(const AiScreen(), settings);
+
+      case shipping:
+        return _buildRoute(const ShippingScreen(), settings);
+
+      case taxes:
+        return _buildRoute(const TaxesScreen(), settings);
+
       case help:
         return _buildRoute(const HelpScreen(), settings);
 
       case analytics:
         return _buildRoute(const AnalyticsScreen(), settings);
 
+      case customers:
+        return _buildRoute(const CustomersScreen(), settings);
+
+      case customerDetail:
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        final customer = args['customer'];
+        return _buildRoute(
+          CustomerDetailScreen(
+            email: args['email'] as String? ?? '',
+            initialCustomer: customer is CustomerContract ? customer : null,
+          ),
+          settings,
+        );
+
+      case coupons:
+        return _buildRoute(const CouponsScreen(), settings);
+
+      case couponForm:
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        final coupon = args['coupon'];
+        return _buildRoute(
+          CouponFormScreen(
+            storeId: args['storeId'] as String? ?? '',
+            coupon: coupon is CouponContract ? coupon : null,
+          ),
+          settings,
+        );
+
+      case giftCards:
+        return _buildRoute(const GiftCardsScreen(), settings);
+
+      case pages:
+        return _buildRoute(const PagesScreen(), settings);
+
+      case blog:
+        return _buildRoute(const BlogScreen(), settings);
+
+      case navigation:
+        return _buildRoute(const NavigationScreen(), settings);
+
+      case media:
+        return _buildRoute(const MediaLibraryScreen(), settings);
+
+      case inventory:
+        return _buildRoute(const InventoryScreen(), settings);
+
+      case inventoryLocations:
+        return _buildRoute(const InventoryLocationsScreen(), settings);
+
+      case inventorySuppliers:
+        return _buildRoute(const InventorySuppliersScreen(), settings);
+
+      case purchaseOrders:
+        return _buildRoute(const PurchaseOrdersScreen(), settings);
+
+      case inventoryTransfers:
+        return _buildRoute(const InventoryTransfersScreen(), settings);
+
+      case collections:
+        return _buildRoute(const CollectionsScreen(), settings);
+
       case orders:
         return _buildRoute(const OrdersScreen(), settings);
+
+      case orderDetail:
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        final order = args['order'];
+        return _buildRoute(
+          OrderDetailScreen(
+            orderId: args['orderId'] as String? ?? '',
+            initialOrder: order is OrderContract ? order : null,
+          ),
+          settings,
+        );
 
       case pricing:
         return _buildRoute(const PricingScreen(), settings);

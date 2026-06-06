@@ -4,16 +4,8 @@
 
 import { createMiddleware } from 'hono/factory';
 import type { Env } from '../index';
-
-type ErrorResponsePayload = {
-    success?: boolean;
-    error?: {
-        code?: unknown;
-        message?: unknown;
-        [key: string]: unknown;
-    };
-    [key: string]: unknown;
-};
+import { timingSafeEqualText } from '../lib/crypto';
+import { sanitizePublicErrorPayload } from '../lib/public-errors';
 
 // ── Security Headers ────────────────────────────────────────
 // Adds standard security headers to every response
@@ -95,38 +87,6 @@ export function sanitizeObject<T>(obj: T): T {
 // ── Error Response Sanitization ─────────────────────────────
 // Normalizes known internal/provider error envelopes before they leave the worker.
 
-const SANITIZED_ERROR_MESSAGES: Record<string, string> = {
-    DB_ERROR: 'Database operation failed',
-    INTERNAL_ERROR: 'An internal error occurred',
-    PAYMENT_PROVIDER_ERROR: 'Payment provider request failed',
-};
-
-function sanitizeErrorPayload(payload: unknown): { payload: ErrorResponsePayload; changed: boolean; code: string | null } {
-    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
-        return { payload: {} as ErrorResponsePayload, changed: false, code: null };
-    }
-
-    const body = payload as ErrorResponsePayload;
-    const code = typeof body.error?.code === 'string' ? body.error.code : null;
-    if (!code || !body.error) {
-        return { payload: body, changed: false, code: null };
-    }
-
-    const sanitizedMessage = SANITIZED_ERROR_MESSAGES[code];
-    if (!sanitizedMessage) {
-        return { payload: body, changed: false, code };
-    }
-
-    const changed = body.error.message !== sanitizedMessage;
-    body.success = body.success === false ? false : body.success;
-    body.error = {
-        ...body.error,
-        message: sanitizedMessage,
-    };
-
-    return { payload: body, changed, code };
-}
-
 export const errorResponseSanitizer = createMiddleware<{ Bindings: Env }>(
     async (c, next) => {
         await next();
@@ -137,7 +97,7 @@ export const errorResponseSanitizer = createMiddleware<{ Bindings: Env }>(
 
         try {
             const payload = await c.res.clone().json();
-            const sanitized = sanitizeErrorPayload(payload);
+            const sanitized = sanitizePublicErrorPayload(payload);
 
             if (sanitized.code) {
                 c.header('X-Error-Code', sanitized.code);
@@ -228,17 +188,6 @@ function parseCookie(header: string | undefined, name: string): string | null {
     }
 
     return null;
-}
-
-function timingSafeEqualText(left: string, right: string): boolean {
-    if (left.length !== right.length) return false;
-
-    let mismatch = 0;
-    for (let index = 0; index < left.length; index += 1) {
-        mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index);
-    }
-
-    return mismatch === 0;
 }
 
 type TurnstileEnv = Pick<Env, 'TURNSTILE_SECRET_KEY' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV'>;

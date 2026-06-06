@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
+import { readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '../..');
@@ -12,7 +13,6 @@ const storefrontGraphQLPath = path.join(repoRoot, 'services/api-gateway/src/grap
 const productsRoutePath = path.join(repoRoot, 'services/api-gateway/src/routes/products.ts');
 const ordersRoutePath = path.join(repoRoot, 'services/api-gateway/src/routes/orders.ts');
 const pagesRoutePath = path.join(repoRoot, 'services/api-gateway/src/routes/pages.ts');
-const storefrontRoutePath = path.join(repoRoot, 'services/api-gateway/src/routes/storefront.ts');
 
 const restShimSource = readFileSync(restShimPath, 'utf8');
 const adminGraphQLSource = readFileSync(adminGraphQLPath, 'utf8');
@@ -20,7 +20,7 @@ const storefrontGraphQLSource = readFileSync(storefrontGraphQLPath, 'utf8');
 const productsRouteSource = readFileSync(productsRoutePath, 'utf8');
 const ordersRouteSource = readFileSync(ordersRoutePath, 'utf8');
 const pagesRouteSource = readFileSync(pagesRoutePath, 'utf8');
-const storefrontRouteSource = readFileSync(storefrontRoutePath, 'utf8');
+const storefrontRouteSource = readStorefrontRouteSource();
 
 function assertIncludesAll(source, needles, context) {
   for (const needle of needles) {

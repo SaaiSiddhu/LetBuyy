@@ -22,6 +22,7 @@ import {
     X,
     useToast,
 } from '@letbuyy/ui'
+import { formatIndiaDateWithTime as formatDate } from '@letbuyy/ui/formatting'
 
 interface Submission {
     id: string
@@ -47,16 +48,6 @@ function getErrorMessage(payload: unknown, fallback: string) {
     }
 
     return fallback
-}
-
-function formatDate(value: string) {
-    return new Date(value).toLocaleDateString('en-IN', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    })
 }
 
 function statusVariant(status: string) {

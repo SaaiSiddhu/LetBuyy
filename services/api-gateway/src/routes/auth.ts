@@ -11,6 +11,7 @@ import { dbErrorBody, errorBody, getSupabaseAdmin } from '../lib/supabase';
 import { authMiddleware } from '../middleware/auth';
 import { checkRateLimitKey } from '../middleware/rateLimit';
 import { validate } from '../middleware/validation';
+import { hashMerchantPassword, verifyMerchantPassword } from '../lib/merchant-password';
 import {
     AUTH_OTP_EXPIRY_MS,
     AUTH_SESSION_DURATION_MS,
@@ -31,6 +32,7 @@ import {
 import { validateSubdomainFormat } from '@letbuyy/tenant-core';
 
 const auth = new Hono<{ Bindings: import('../index').Env }>();
+const MERCHANT_PASSWORD_HASH_COLUMN = 'password_hash';
 const AUTH_RATE_LIMITS = {
     lookup: { limit: 10, windowMs: 15 * 60_000, prefix: 'rl:lookup' },
     signup: { limit: 3, windowMs: 60 * 60_000, prefix: 'rl:signup' },
@@ -153,7 +155,7 @@ auth.post('/custom/users/by-email', async (c) => {
     const db = getSupabaseAdmin(c);
     const { data, error } = await db
         .from('users_custom')
-        .select('id, email, password_hash, email_verified, full_name, avatar_url')
+        .select(`id, email, ${MERCHANT_PASSWORD_HASH_COLUMN}, email_verified, full_name, avatar_url`)
         .eq('email', email)
         .maybeSingle();
 
@@ -161,7 +163,77 @@ auth.post('/custom/users/by-email', async (c) => {
         return c.json(dbErrorBody(), 500);
     }
 
-    return c.json({ data: data || null });
+    if (!data) {
+        return c.json({ data: null });
+    }
+
+    const user = data as {
+        id: string;
+        email: string;
+        email_verified: boolean | null;
+        full_name: string | null;
+        avatar_url: string | null;
+        [MERCHANT_PASSWORD_HASH_COLUMN]?: string | null;
+    };
+
+    return c.json({
+        data: {
+            id: user.id,
+            email: user.email,
+            email_verified: Boolean(user.email_verified),
+            full_name: user.full_name,
+            avatar_url: user.avatar_url,
+            has_password: Boolean(user[MERCHANT_PASSWORD_HASH_COLUMN]),
+        },
+    });
+});
+
+auth.post('/custom/users/authenticate', async (c) => {
+    const unauthorized = await requireAccountsInternal(c);
+    if (unauthorized) return unauthorized;
+
+    const rawBody = await c.req.json();
+    const email = normalizeAuthEmail(rawBody.email);
+    const password = typeof rawBody.password === 'string' ? rawBody.password : '';
+    const parsed = SignInSchema.safeParse({ email, password });
+
+    if (!parsed.success) {
+        return c.json({ error: { code: 'VALIDATION', message: 'valid email and password are required' } }, 400);
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data: user, error } = await db
+        .from('users_custom')
+        .select('id, email, password_hash, email_verified, full_name, avatar_url')
+        .eq('email', parsed.data.email)
+        .maybeSingle();
+
+    if (error) {
+        return c.json(dbErrorBody(), 500);
+    }
+
+    if (!user?.password_hash) {
+        return c.json({ error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' } }, 401);
+    }
+
+    const passwordMatches = await verifyMerchantPassword(password, String(user.password_hash));
+    if (!passwordMatches) {
+        return c.json({ error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' } }, 401);
+    }
+
+    if (!user.email_verified) {
+        return c.json({ error: { code: 'EMAIL_NOT_VERIFIED', message: 'Please verify your email first' } }, 403);
+    }
+
+    return c.json({
+        data: {
+            id: user.id,
+            email: user.email,
+            email_verified: Boolean(user.email_verified),
+            full_name: user.full_name,
+            avatar_url: user.avatar_url,
+        },
+    });
 });
 
 auth.post('/custom/rate-limit/check', async (c) => {
@@ -510,10 +582,11 @@ auth.post('/custom/users/set-password', async (c) => {
     const body = await c.req.json();
     const userId = String(body.user_id || '');
     const email = normalizeAuthEmail(body.email);
-    const passwordHash = String(body.password_hash || '');
+    const password = typeof body.password === 'string' ? body.password : '';
+    const parsed = PasswordUpdateSchema.safeParse({ password });
 
-    if (!userId || !email || !passwordHash) {
-        return c.json({ error: { code: 'VALIDATION', message: 'user_id, email, and password_hash are required' } }, 400);
+    if (!userId || !email || !parsed.success) {
+        return c.json({ error: { code: 'VALIDATION', message: 'user_id, email, and valid password are required' } }, 400);
     }
 
     const db = getSupabaseAdmin(c);
@@ -532,9 +605,10 @@ auth.post('/custom/users/set-password', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Email not verified' } }, 403);
     }
 
+    const passwordHash = await hashMerchantPassword(password);
     const { data, error } = await db
         .from('users_custom')
-        .update({ password_hash: passwordHash, updated_at: new Date().toISOString() })
+        .update({ [MERCHANT_PASSWORD_HASH_COLUMN]: passwordHash, updated_at: new Date().toISOString() })
         .eq('id', userId)
         .select('id, email, full_name, avatar_url')
         .single();

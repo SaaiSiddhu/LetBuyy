@@ -28,6 +28,11 @@ type ChargeApprovalResult = { charge: { id: string; status: string }; payout: { 
 type StorefrontPayload = { app_blocks?: unknown[] };
 type PartnerDashboard = { payouts?: { entries?: unknown[] }; analytics?: Record<string, unknown> };
 
+async function pkceS256Challenge(verifier: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
+  return Buffer.from(digest).toString('base64url');
+}
+
 test.describe('J2 App Store lifecycle federation', () => {
   test('partner submits an app, ops approves, merchant installs through OAuth, bridge reads gateway data, billing activates payout ledger path, and app block reaches storefront', async ({ page, request }, testInfo) => {
     await requireRealStack(request);
@@ -76,6 +81,8 @@ test.describe('J2 App Store lifecycle federation', () => {
     const approval = await expectApiSuccess<ReviewDecisionResult>(approvalResponse, 'ops app approval');
     expect(approval.review_record.status).toBe('approved');
 
+    const codeVerifier = `f8_app_lifecycle_pkce_verifier_${uniqueSlug(testInfo)}_1234567890`;
+    const codeChallenge = await pkceS256Challenge(codeVerifier);
     const authorizeResponse = await request.post(`${federationUrls.gateway}/v1/app-store/apps/${demo.seededAppId}/oauth/authorize`, {
       failOnStatusCode: false,
       headers: await internalHeaders('merchant'),
@@ -83,6 +90,8 @@ test.describe('J2 App Store lifecycle federation', () => {
         store_id: demo.storeId,
         scopes: ['read_products', 'write_orders'],
         redirect_uri: demo.seededAppRedirectUri,
+        code_challenge: codeChallenge,
+        code_challenge_method: 'S256',
         state: 'f8-app-lifecycle',
         webhook_url: 'https://api.staging.letbuyy.store/app-webhook-receiver',
         webhook_secret: 'staging-webhook-f8',
@@ -99,6 +108,7 @@ test.describe('J2 App Store lifecycle federation', () => {
         code: authorization.authorization.code,
         client_id: demo.seededAppClientId,
         redirect_uri: authorization.authorization.redirect_uri,
+        code_verifier: codeVerifier,
       },
     });
     const oauthToken = await expectApiSuccess<OAuthTokenResult>(tokenResponse, 'app OAuth token exchange');

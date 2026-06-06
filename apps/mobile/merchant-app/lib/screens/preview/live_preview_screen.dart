@@ -71,9 +71,21 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
               setState(() => _currentDevice = device);
             },
             itemBuilder: (context) => [
-              _buildDeviceMenuItem('mobile', Icons.phone_iphone_rounded, 'Mobile'),
-              _buildDeviceMenuItem('tablet', Icons.tablet_mac_rounded, 'Tablet'),
-              _buildDeviceMenuItem('desktop', Icons.computer_rounded, 'Desktop'),
+              _buildDeviceMenuItem(
+                'mobile',
+                Icons.phone_iphone_rounded,
+                'Mobile',
+              ),
+              _buildDeviceMenuItem(
+                'tablet',
+                Icons.tablet_mac_rounded,
+                'Tablet',
+              ),
+              _buildDeviceMenuItem(
+                'desktop',
+                Icons.computer_rounded,
+                'Desktop',
+              ),
             ],
           ),
           // Refresh
@@ -110,9 +122,7 @@ class _LivePreviewScreenState extends State<LivePreviewScreen> {
               clipBehavior: Clip.antiAlias,
               child: widget.storeUrl.isNotEmpty
                   ? WebViewWidget(controller: _controller)
-                  : const Center(
-                      child: Text('Store URL not available'),
-                    ),
+                  : const Center(child: Text('Store URL not available')),
             ),
           ),
           if (_isLoading)

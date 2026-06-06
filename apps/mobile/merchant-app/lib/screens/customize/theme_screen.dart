@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 
 import '../../models/store_model.dart';
 import '../../models/theme_editor_models.dart';
-import '../../services/store_service.dart';
 import '../../services/theme_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../main/store_main_screen.dart';
 import '../preview/live_preview_screen.dart';
+import 'theme_versions_screen.dart';
 
 class ThemeScreen extends StatefulWidget {
   const ThemeScreen({super.key});
@@ -33,6 +34,13 @@ class _ThemeScreenState extends State<ThemeScreen> {
       _store?.themeId ??
       'minimal_modern';
 
+  String get _activeThemeName {
+    final matches = (_catalog?.themes ?? const <ThemeCatalogItem>[]).where(
+      (theme) => theme.slug == _activeThemeSlug || theme.active,
+    );
+    return matches.isEmpty ? _activeThemeSlug : matches.first.name;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -42,9 +50,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
   Future<void> _loadThemes() async {
     setState(() => _isLoading = true);
     try {
-      final storeService = context.read<StoreService>();
       final themeService = context.read<ThemeService>();
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       if (store == null) {
         if (mounted) setState(() => _store = null);
         return;
@@ -184,6 +191,21 @@ class _ThemeScreenState extends State<ThemeScreen> {
     );
   }
 
+  Future<void> _openVersions() async {
+    if (_store == null || _isBusy) return;
+    final changed = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ThemeVersionsScreen(
+          storeId: _store!.id,
+          themeSlug: _activeThemeSlug,
+          themeName: _activeThemeName,
+        ),
+      ),
+    );
+    if (changed == true) await _loadThemes();
+  }
+
   void _openEditor() {
     StoreMainScreen.navigateToEditor();
   }
@@ -305,7 +327,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
               ),
               _StatusPill(
                 text: hasDraft ? 'Draft' : 'Live',
-                color: hasDraft ? const Color(0xFFF59E0B) : colors.success,
+                color: hasDraft ? colors.warning : colors.success,
               ),
             ],
           ),
@@ -324,6 +346,12 @@ class _ThemeScreenState extends State<ThemeScreen> {
                 label: 'Preview',
                 icon: Icons.visibility_outlined,
                 onTap: _previewTheme,
+                enabled: !_isBusy,
+              ),
+              _ActionChipButton(
+                label: 'Versions',
+                icon: Icons.history_rounded,
+                onTap: _openVersions,
                 enabled: !_isBusy,
               ),
               _ActionChipButton(
@@ -417,10 +445,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     else if (theme.installed)
                       _StatusPill(text: 'Installed', color: colors.success)
                     else if (theme.isPremium)
-                      const _StatusPill(
-                        text: 'Premium',
-                        color: Color(0xFFF59E0B),
-                      ),
+                      _StatusPill(text: 'Premium', color: colors.warning),
                   ],
                 ),
                 if (theme.description != null &&

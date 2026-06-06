@@ -14,13 +14,12 @@ import {
     supabaseServiceHeaders,
     upsertSupabaseRows,
 } from "@letbuyy/infrastructure/supabase-adapter";
+import { emitGatewayDomainEvent, type GatewayServiceBinding } from "@letbuyy/infrastructure/gateway-events-adapter";
 import { dispatchLetBuyyWebhook } from "./app-lifecycle-dispatch";
-import { emitGatewayDomainEvent } from "./gateway-events";
 import {
     confirmGatewayOrderPayment,
     recordGatewayOrderPaymentEvent,
     recordGatewayOrderPaymentFailure,
-    type GatewayServiceBinding,
 } from "./gateway-order-transitions";
 import {
     activateGatewayStoreSubscription,
@@ -118,6 +117,7 @@ function razorpayProviderEventId(
 }
 
 type PaymentProvider = "razorpay" | "stripe" | "paypal" | "cashfree";
+type PaymentDomainEventType = "payment.captured" | "payment.failed" | "refund.created" | "payment.subscription.activated";
 type JsonObject = Record<string, unknown>;
 
 interface WebhookOrderRow {
@@ -273,18 +273,34 @@ async function emitPaymentDomainEvent(
         payload?: JsonObject;
     }
 ): Promise<void> {
+    const domainEventType = normalizePaymentDomainEventType(params.aggregateType, params.eventType);
     await emitGatewayDomainEvent(env, {
         storeId: params.storeId || null,
         aggregateType: params.aggregateType,
         aggregateId: params.aggregateId,
-        eventType: params.eventType,
+        eventType: domainEventType,
         payload: {
             provider: params.provider,
             provider_event_id: params.providerEventId,
+            provider_event_type: params.eventType,
             ...(params.payload || {}),
         },
-        idempotencyKey: `payment-webhook:${params.provider}:${params.providerEventId}:${params.eventType}`,
+        idempotencyKey: `payment-webhook:${params.provider}:${params.providerEventId}:${domainEventType}`,
     });
+}
+
+function normalizePaymentDomainEventType(
+    aggregateType: "order" | "subscription",
+    providerEventType: string
+): PaymentDomainEventType {
+    if (aggregateType === "subscription") return "payment.subscription.activated";
+
+    const normalized = providerEventType.trim().toLowerCase();
+    if (normalized.includes("refund")) return "refund.created";
+    if (normalized.includes("fail") || normalized.includes("denied") || normalized.includes("declined")) {
+        return "payment.failed";
+    }
+    return "payment.captured";
 }
 
 async function findOrderByPaymentCandidates(

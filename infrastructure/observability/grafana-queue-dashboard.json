@@ -9,17 +9,17 @@
     {
       "type": "timeseries",
       "title": "Cloudflare Queue Delivery Lag",
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
       "targets": [
-        { "expr": "histogram_quantile(0.95, sum(rate(cloudflare_queue_lag_milliseconds_bucket[5m])) by (le, queue_name))", "legendFormat": "{{queue_name}} p95" }
+        { "rawSql": "select date_trunc('minute', recorded_at) as time, dimensions->>'cloudflare_queue_name' as metric, max((dimensions->>'lag_p95_ms')::numeric) as value from runtime_telemetry_metrics where metric_name = 'letbuyy.queue.delivery.batch' and deleted_at is null group by 1, 2 order by 1", "legendFormat": "{{metric}} p95" }
       ]
     },
     {
       "type": "timeseries",
       "title": "Dead Letter Growth",
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
       "targets": [
-        { "expr": "increase(letbuyy_queue_dead_letter_total[15m])", "legendFormat": "{{queue_name}}" }
+        { "rawSql": "select date_trunc('minute', recorded_at) as time, dimensions->>'cloudflare_queue_name' as metric, sum(metric_value) as value from runtime_telemetry_metrics where metric_name = 'letbuyy.queue.dead_letter.total' and deleted_at is null group by 1, 2 order by 1", "legendFormat": "{{metric}}" }
       ]
     },
     {

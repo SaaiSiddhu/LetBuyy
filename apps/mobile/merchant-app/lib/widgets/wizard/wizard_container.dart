@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../theme/store_admin_colors.dart';
@@ -60,10 +61,10 @@ class WizardContainer extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 28),
                       child: _buildProgressIndicator(isDark),
                     ),
-                  
+
                   // Card
                   _buildStackedCard(child, isDark),
-                  
+
                   // Skip link
                   if (onSkip != null)
                     Padding(
@@ -73,7 +74,9 @@ class WizardContainer extends StatelessWidget {
                         child: Text(
                           skipText ?? langService.skipStep,
                           style: TextStyle(
-                            color: isDark ? Colors.white.withValues(alpha: 0.5) : Colors.black54,
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.5)
+                                : Colors.black54,
                             fontSize: 14,
                           ),
                         ),
@@ -82,7 +85,7 @@ class WizardContainer extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Top bar with back button + theme/language toggles
             Positioned(
               top: 12,
@@ -107,7 +110,7 @@ class WizardContainer extends StatelessWidget {
                     )
                   else
                     const SizedBox(width: 40),
-                  
+
                   // Right side: Language + Theme
                   Row(
                     mainAxisSize: MainAxisSize.min,
@@ -126,15 +129,25 @@ class WizardContainer extends StatelessWidget {
     );
   }
 
-  Widget _buildGlassButton({required VoidCallback onTap, required Widget child, required bool isDark}) {
+  Widget _buildGlassButton({
+    required VoidCallback onTap,
+    required Widget child,
+    required bool isDark,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.7),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.white.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05)),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.black.withValues(alpha: 0.05),
+          ),
         ),
         child: child,
       ),
@@ -150,32 +163,77 @@ class WizardContainer extends StatelessWidget {
       color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
       elevation: 6,
       itemBuilder: (context) => [
-        _buildLanguageItem(AppLanguage.english, 'English', '🇬🇧', langService, isDark),
-        _buildLanguageItem(AppLanguage.tamil, 'தமிழ்', '🇮🇳', langService, isDark),
-        _buildLanguageItem(AppLanguage.hindi, 'हिंदी', '🇮🇳', langService, isDark),
+        _buildLanguageItem(
+          AppLanguage.english,
+          'English',
+          '🇬🇧',
+          langService,
+          isDark,
+        ),
+        _buildLanguageItem(
+          AppLanguage.tamil,
+          'தமிழ்',
+          '🇮🇳',
+          langService,
+          isDark,
+        ),
+        _buildLanguageItem(
+          AppLanguage.hindi,
+          'हिंदी',
+          '🇮🇳',
+          langService,
+          isDark,
+        ),
       ],
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.7),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.white.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05)),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.black.withValues(alpha: 0.05),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.public_rounded, size: 16, color: isDark ? Colors.white70 : Colors.black87),
+            Icon(
+              Icons.public_rounded,
+              size: 16,
+              color: isDark ? Colors.white70 : Colors.black87,
+            ),
             const SizedBox(width: 6),
-            Text(langService.languageName, style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontSize: 12, fontWeight: FontWeight.w600)),
+            Text(
+              langService.languageName,
+              style: TextStyle(
+                color: isDark ? Colors.white : Colors.black87,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             const SizedBox(width: 4),
-            Icon(Icons.expand_more_rounded, size: 16, color: isDark ? Colors.white54 : Colors.black54),
+            Icon(
+              Icons.expand_more_rounded,
+              size: 16,
+              color: isDark ? Colors.white54 : Colors.black54,
+            ),
           ],
         ),
       ),
     );
   }
 
-  PopupMenuItem<AppLanguage> _buildLanguageItem(AppLanguage lang, String name, String flag, LanguageService langService, bool isDark) {
+  PopupMenuItem<AppLanguage> _buildLanguageItem(
+    AppLanguage lang,
+    String name,
+    String flag,
+    LanguageService langService,
+    bool isDark,
+  ) {
     final isSelected = langService.currentLanguage == lang;
     return PopupMenuItem(
       value: lang,
@@ -185,8 +243,22 @@ class WizardContainer extends StatelessWidget {
         children: [
           Text(flag, style: const TextStyle(fontSize: 16)),
           const SizedBox(width: 10),
-          Text(name, style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400, fontSize: 13)),
-          if (isSelected) ...[const SizedBox(width: 12), const Icon(Icons.check_rounded, size: 16, color: Color(0xFF8B5CF6))],
+          Text(
+            name,
+            style: TextStyle(
+              color: isDark ? Colors.white : Colors.black87,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              fontSize: 13,
+            ),
+          ),
+          if (isSelected) ...[
+            const SizedBox(width: 12),
+            const Icon(
+              Icons.check_rounded,
+              size: 16,
+              color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+            ),
+          ],
         ],
       ),
     );
@@ -194,18 +266,29 @@ class WizardContainer extends StatelessWidget {
 
   Widget _buildThemeToggle(ThemeProvider themeProvider, bool isDark) {
     return GestureDetector(
-      onTap: () { HapticFeedback.lightImpact(); themeProvider.toggleTheme(); },
+      onTap: () {
+        HapticFeedback.lightImpact();
+        themeProvider.toggleTheme();
+      },
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.7),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.white.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05)),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.black.withValues(alpha: 0.05),
+          ),
         ),
         child: Icon(
           isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
           size: 18,
-          color: isDark ? const Color(0xFFFBBF24) : const Color(0xFF8B5CF6),
+          color: isDark
+              ? const Color(0xFFFBBF24)
+              : mobile_tokens.LetbuyyColorTokens.brandPrimary,
         ),
       ),
     );
@@ -217,14 +300,14 @@ class WizardContainer extends StatelessWidget {
       children: List.generate(totalSteps, (index) {
         final isActive = index < currentStep;
         final isCurrent = index == currentStep - 1;
-        
+
         return Container(
           width: isCurrent ? 24 : 8,
           height: 8,
           margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
-            color: isActive 
-                ? StoreAdminColors.primary 
+            color: isActive
+                ? StoreAdminColors.primary
                 : (isDark ? StoreAdminColors.slate700 : Colors.grey.shade300),
             borderRadius: BorderRadius.circular(4),
           ),
@@ -240,15 +323,25 @@ class WizardContainer extends StatelessWidget {
       constraints: const BoxConstraints(maxWidth: 440),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white.withValues(alpha: 0.85),
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.06)
+            : Colors.white.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.06),
           width: 1,
         ),
-        boxShadow: isDark ? [] : [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 40, offset: const Offset(0, 20)),
-        ],
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 40,
+                  offset: const Offset(0, 20),
+                ),
+              ],
       ),
       child: content,
     );
@@ -278,7 +371,7 @@ class WizardOptionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
     final isDark = themeProvider.isDarkMode(context);
-    
+
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -287,14 +380,22 @@ class WizardOptionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected 
-              ? (isDark ? Colors.white.withValues(alpha: 0.1) : const Color(0xFF8B5CF6).withValues(alpha: 0.1))
-              : (isDark ? Colors.white.withValues(alpha: 0.04) : Colors.grey.withValues(alpha: 0.05)),
+          color: isSelected
+              ? (isDark
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                        alpha: 0.1,
+                      ))
+              : (isDark
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : Colors.grey.withValues(alpha: 0.05)),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isSelected
                 ? StoreAdminColors.primary
-                : (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.grey.withValues(alpha: 0.2)),
+                : (isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.grey.withValues(alpha: 0.2)),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -310,9 +411,15 @@ class WizardOptionCard extends StatelessWidget {
                   end: Alignment.bottomRight,
                   colors: isSelected
                       ? [StoreAdminColors.primary, StoreAdminColors.accent]
-                      : (isDark 
-                          ? [Colors.white.withValues(alpha: 0.15), Colors.white.withValues(alpha: 0.08)]
-                          : [Colors.grey.withValues(alpha: 0.15), Colors.grey.withValues(alpha: 0.08)]),
+                      : (isDark
+                            ? [
+                                Colors.white.withValues(alpha: 0.15),
+                                Colors.white.withValues(alpha: 0.08),
+                              ]
+                            : [
+                                Colors.grey.withValues(alpha: 0.15),
+                                Colors.grey.withValues(alpha: 0.08),
+                              ]),
                 ),
                 shape: BoxShape.circle,
               ),
@@ -322,7 +429,9 @@ class WizardOptionCard extends StatelessWidget {
                     : Icon(
                         icon ?? Icons.store,
                         size: 18,
-                        color: isDark ? Colors.white : (isSelected ? Colors.white : Colors.black87),
+                        color: isDark
+                            ? Colors.white
+                            : (isSelected ? Colors.white : Colors.black87),
                       ),
               ),
             ),
@@ -347,7 +456,9 @@ class WizardOptionCard extends StatelessWidget {
                       subtitle!,
                       style: TextStyle(
                         fontSize: 12,
-                        color: isDark ? Colors.white.withValues(alpha: 0.6) : Colors.black54,
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.6)
+                            : Colors.black54,
                       ),
                     ),
                   ],
@@ -358,7 +469,9 @@ class WizardOptionCard extends StatelessWidget {
             Icon(
               Icons.chevron_right_rounded,
               size: 18,
-              color: isDark ? Colors.white.withValues(alpha: 0.5) : Colors.black38,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.5)
+                  : Colors.black38,
             ),
           ],
         ),
@@ -384,7 +497,7 @@ class WizardPrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
     final isDark = themeProvider.isDarkMode(context);
-    
+
     return SizedBox(
       width: double.infinity,
       height: 52,
@@ -397,12 +510,14 @@ class WizardPrimaryButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          disabledBackgroundColor: isDark 
+          disabledBackgroundColor: isDark
               ? Colors.white.withValues(alpha: 0.1) // Dark mode: subtle dark bg
-              : StoreAdminColors.slate300,           // Light mode: light grey
-          disabledForegroundColor: isDark 
-              ? Colors.white.withValues(alpha: 0.4)  // Dark mode: semi-transparent white
-              : Colors.grey,                          // Light mode: grey text
+              : StoreAdminColors.slate300, // Light mode: light grey
+          disabledForegroundColor: isDark
+              ? Colors.white.withValues(
+                  alpha: 0.4,
+                ) // Dark mode: semi-transparent white
+              : Colors.grey, // Light mode: grey text
         ),
         child: isLoading
             ? const SizedBox(
@@ -450,7 +565,7 @@ class WizardTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
     final isDark = themeProvider.isDarkMode(context);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -490,15 +605,26 @@ class WizardTextField extends StatelessWidget {
             fillColor: isDark ? StoreAdminColors.slate50 : Colors.grey.shade100,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: isDark ? StoreAdminColors.slate200 : Colors.grey.shade300),
+              borderSide: BorderSide(
+                color: isDark
+                    ? StoreAdminColors.slate200
+                    : Colors.grey.shade300,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: isDark ? StoreAdminColors.slate200 : Colors.grey.shade300),
+              borderSide: BorderSide(
+                color: isDark
+                    ? StoreAdminColors.slate200
+                    : Colors.grey.shade300,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: StoreAdminColors.primary, width: 2),
+              borderSide: const BorderSide(
+                color: StoreAdminColors.primary,
+                width: 2,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),

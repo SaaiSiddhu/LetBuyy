@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -70,7 +71,7 @@ class WebsitePreview extends StatelessWidget {
               bottom: 12,
               child: FloatingActionButton.small(
                 onPressed: onAddSection,
-                backgroundColor: const Color(0xFF8B5CF6),
+                backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
                 foregroundColor: Colors.white,
                 child: const Icon(Icons.add_rounded),
               ),
@@ -198,7 +199,7 @@ class _SelectedSectionOverlay extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         decoration: BoxDecoration(
-          color: const Color(0xFF8B5CF6),
+          color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(

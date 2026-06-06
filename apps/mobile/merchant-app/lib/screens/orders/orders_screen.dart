@@ -4,12 +4,14 @@
 // ============================================================
 
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
+import '../../app/routes.dart';
 import '../../services/order_service.dart';
-import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
 import 'package:intl/intl.dart';
 
@@ -65,7 +67,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     try {
       // Lazily resolve store context.
       if (_storeId == null) {
-        final store = await context.read<StoreService>().getFirstStore();
+        final store = await context.read<StoreContext>().ensureSelectedStore();
         _storeId = store?.id;
       }
 
@@ -691,7 +693,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             _buildStatChip(
               'Shipped',
               '$_shippedCount',
-              const Color(0xFF8B5CF6),
+              mobile_tokens.LetbuyyColorTokens.brandPrimary,
             ),
             const SizedBox(width: 8),
             _buildStatChip(
@@ -984,7 +986,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
         if (_isSelectionMode) {
           _toggleOrderSelection(order.id);
         } else {
-          // TODO: Navigate to order details
+          Navigator.pushNamed(
+            context,
+            AppRoutes.orderDetail,
+            arguments: {'orderId': order.id, 'order': order},
+          ).then((_) => _loadOrders());
         }
       },
       onLongPress: () {
@@ -1301,7 +1307,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       case 'confirmed':
         return const Color(0xFF3B82F6);
       case 'shipped':
-        return const Color(0xFF8B5CF6);
+        return mobile_tokens.LetbuyyColorTokens.brandPrimary;
       case 'delivered':
         return const Color(0xFF22C55E);
       case 'cancelled':
@@ -1408,7 +1414,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             Icons.local_shipping_outlined,
             'Ship',
             () => _bulkUpdateStatus('shipped'),
-            color: const Color(0xFF8B5CF6),
+            color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
           ),
           const SizedBox(width: 8),
           _buildBulkButton(Icons.more_horiz, 'More', () {

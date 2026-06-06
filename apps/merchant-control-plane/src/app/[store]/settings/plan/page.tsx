@@ -22,6 +22,7 @@ import {
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { formatUsLongDate } from '@letbuyy/ui/formatting'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface SubscriptionData {
@@ -139,17 +140,6 @@ function formatMoney(amount: number) {
         currency: 'INR',
         minimumFractionDigits: 0,
     }).format(amount / 100)
-}
-
-function formatDate(value: string) {
-    const date = parseDate(value)
-    if (!date) return 'Not scheduled'
-
-    return date.toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-    })
 }
 
 function parseDate(value: string) {
@@ -451,19 +441,19 @@ export default function PlanSettingsPage() {
                                 variant={isTrialExpired ? 'critical' : 'info'}
                                 title={isTrialExpired ? 'Trial ended' : 'Trial active'}
                             >
-                                Trial {isTrialExpired ? 'ended' : 'ends'} on <strong>{formatDate(trialData.trial_ends_at)}</strong>.
+                                Trial {isTrialExpired ? 'ended' : 'ends'} on <strong>{formatUsLongDate(parseDate(trialData.trial_ends_at), { emptyValue: 'Not scheduled' })}</strong>.
                             </Banner>
                         )}
 
                         {hasSubscription && subscription?.current_period_end && (
                             <Banner variant="info" title="Renewal schedule">
-                                Your plan renews on <strong>{formatDate(subscription.current_period_end)}</strong>.
+                                Your plan renews on <strong>{formatUsLongDate(parseDate(subscription.current_period_end), { emptyValue: 'Not scheduled' })}</strong>.
                             </Banner>
                         )}
 
                         {subscription?.promo_ends_at && (
                             <Banner variant="success" title="Promotional pricing active">
-                                Promotional pricing remains active until <strong>{formatDate(subscription.promo_ends_at)}</strong>.
+                                Promotional pricing remains active until <strong>{formatUsLongDate(parseDate(subscription.promo_ends_at), { emptyValue: 'Not scheduled' })}</strong>.
                             </Banner>
                         )}
                     </Section>
@@ -528,7 +518,7 @@ export default function PlanSettingsPage() {
                         <PlanMetric
                             icon={<Clock className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             label="Trial timing"
-                            value={trialEnds ? formatDate(trialData.trial_ends_at) : 'Not scheduled'}
+                            value={trialEnds ? formatUsLongDate(parseDate(trialData.trial_ends_at), { emptyValue: 'Not scheduled' }) : 'Not scheduled'}
                         />
                     </div>
                 </Section>

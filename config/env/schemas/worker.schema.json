@@ -65,6 +65,17 @@
     "RUNTIME_NAME": {
       "type": "string"
     },
+    "LETBUYY_ENABLE_LEGACY_SITE_TYPES": {
+      "enum": [
+        "true",
+        "false"
+      ],
+      "description": "Defaults to false. Enables new portfolio/resume site creation only for explicitly approved legacy cohorts."
+    },
+    "CORS_CREDENTIAL_ORIGINS": {
+      "type": "string",
+      "description": "Comma-separated exact HTTPS origins that may receive credentialed API CORS. Tenant storefront and custom-domain origins must be listed explicitly; wildcard subdomain reflection is forbidden."
+    },
     "PRIMARY_REGION": {
       "type": "string"
     },

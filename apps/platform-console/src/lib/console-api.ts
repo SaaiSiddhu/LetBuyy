@@ -1,9 +1,12 @@
 import {
+    LETBUYY_PRODUCTION_API_BASE_URL,
     createLetbuyyApiClient,
     LetbuyyApiError,
+    resolveLetbuyyApiBaseUrl,
     type HttpMethod,
     type QueryValue,
 } from '@letbuyy/api-client';
+export { formatIndiaDateTime as formatDateTime } from '@letbuyy/ui/formatting';
 
 export type ConsolePagination = {
     page: number;
@@ -37,14 +40,13 @@ type ConsoleApiRequest = {
 };
 
 export function consoleApiBaseUrl(): string {
-    const configured =
+    return resolveLetbuyyApiBaseUrl([
         process.env.PLATFORM_CONSOLE_API_BASE_URL ||
         process.env.LETBUYY_API_URL ||
-        process.env.NEXT_PUBLIC_API_URL ||
-        'https://api.letbuyy.store';
-    const trimmed = configured.replace(/\/+$/, '');
-
-    return trimmed.endsWith('/v1') ? trimmed : `${trimmed}/v1`;
+        process.env.NEXT_PUBLIC_API_URL,
+    ], {
+        fallback: LETBUYY_PRODUCTION_API_BASE_URL,
+    });
 }
 
 export async function fetchConsoleApi<T>(
@@ -100,19 +102,6 @@ export function readSearchParam(
 export function readPageParam(params: Record<string, string | string[] | undefined> | undefined): number {
     const value = Number(readSearchParam(params, 'page') || 1);
     return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1;
-}
-
-export function formatDateTime(value: string | null | undefined): string {
-    if (!value) return '-';
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return value;
-
-    return date.toLocaleString('en-IN', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-        timeZone: 'Asia/Kolkata',
-    });
 }
 
 export function formatMoneyFromPaise(value: number | string | null | undefined, currency = 'INR'): string {

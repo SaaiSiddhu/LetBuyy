@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
         })
         const payload = await response.json().catch(() => null) as {
             data?: {
-                password_hash?: string | null
+                has_password?: boolean | null
                 email_verified?: boolean | null
             } | null
             error?: {
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             exists: true,
-            hasPassword: !!user.password_hash,
+            hasPassword: !!user.has_password,
             emailVerified: user.email_verified,
         })
     } catch (error) {

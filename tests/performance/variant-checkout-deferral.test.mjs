@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
+import { readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
 
@@ -49,7 +50,7 @@ test('runtime flags expose variant diff and checkout post-commit rollback switch
 
 test('storefront checkout defers post-commit usage and GST work', () => {
   const orderAdapter = read('services/api-gateway/src/execution/order-execution.adapter.ts');
-  const storefront = read('services/api-gateway/src/routes/storefront.ts');
+  const storefront = readStorefrontRouteSource();
   const adminOrders = read('services/api-gateway/src/routes/orders.ts');
 
   assert.match(orderAdapter, /interface CreateOrderOptions/);

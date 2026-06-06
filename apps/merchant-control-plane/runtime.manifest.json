@@ -34,11 +34,11 @@
     "workspacePackages": [
       "@letbuyy/api-client",
       "@letbuyy/auth-core",
+      "@letbuyy/cms-core",
       "@letbuyy/extension-host",
       "@letbuyy/shared-types",
       "@letbuyy/theme-engine",
-      "@letbuyy/ui",
-      "@letbuyy/utils"
+      "@letbuyy/ui"
     ],
     "runtimeImports": []
   },

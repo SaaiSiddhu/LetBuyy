@@ -8,247 +8,647 @@
       "runtimeRoot": "database/supabase",
       "deploymentKind": "database",
       "platform": "supabase",
-      "regions": ["ap-south-1"],
+      "regions": [
+        "ap-south-1"
+      ],
       "startupOrder": 0,
-      "scaling": { "minInstances": 1, "maxInstances": 1, "concurrency": 500, "scaleMetric": "manual" },
-      "health": { "checkName": "supabase.sql.health", "timeoutMs": 2000, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 1,
+        "concurrency": 500,
+        "scaleMetric": "manual"
+      },
+      "health": {
+        "checkName": "supabase.sql.health",
+        "timeoutMs": 2000,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Event Bus",
       "runtimeRoot": "services/event-bus",
       "deploymentKind": "reserved-service",
       "platform": "reserved",
-      "regions": ["ap-south-1", "global-edge"],
+      "regions": [
+        "ap-south-1",
+        "global-edge"
+      ],
       "startupOrder": 1,
-      "scaling": { "minInstances": 1, "maxInstances": 20, "concurrency": 100, "scaleMetric": "replay-lag" },
-      "health": { "checkName": "event-bus.replay.health", "timeoutMs": 2000, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 20,
+        "concurrency": 100,
+        "scaleMetric": "replay-lag"
+      },
+      "health": {
+        "checkName": "event-bus.replay.health",
+        "timeoutMs": 2000,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Queue Workers",
       "runtimeRoot": "services/queue-workers",
       "deploymentKind": "queue-worker",
       "platform": "cloudflare-workers",
-      "regions": ["ap-south-1", "global-edge"],
+      "regions": [
+        "ap-south-1",
+        "global-edge"
+      ],
       "startupOrder": 2,
-      "scaling": { "minInstances": 1, "maxInstances": 100, "concurrency": 50, "scaleMetric": "queue-depth" },
-      "health": { "checkName": "queue-workers.consumer.health", "timeoutMs": 2000, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 100,
+        "concurrency": 50,
+        "scaleMetric": "queue-depth"
+      },
+      "health": {
+        "checkName": "queue-workers.consumer.health",
+        "timeoutMs": 2000,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "API Gateway",
       "runtimeRoot": "services/api-gateway",
       "deploymentKind": "cloudflare-worker",
       "platform": "cloudflare-workers",
-      "regions": ["global-edge", "ap-south-1"],
+      "regions": [
+        "global-edge",
+        "ap-south-1"
+      ],
       "startupOrder": 3,
-      "scaling": { "minInstances": 1, "maxInstances": 200, "concurrency": 100, "scaleMetric": "request-rate" },
-      "health": { "path": "/v1/health", "checkName": "api-gateway.http.health", "timeoutMs": 1500, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 200,
+        "concurrency": 100,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "path": "/v1/health",
+        "checkName": "api-gateway.http.health",
+        "timeoutMs": 1500,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
+    },
+    {
+      "runtimeName": "Mobile BFF",
+      "runtimeRoot": "services/mobile-bff",
+      "deploymentKind": "cloudflare-worker",
+      "platform": "cloudflare-workers",
+      "regions": [
+        "global-edge",
+        "ap-south-1"
+      ],
+      "startupOrder": 4,
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 100,
+        "concurrency": 100,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "path": "/health",
+        "checkName": "mobile-bff.http.health",
+        "timeoutMs": 1500,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Webhook Service",
       "runtimeRoot": "services/webhook-service",
       "deploymentKind": "cloudflare-worker",
       "platform": "cloudflare-workers",
-      "regions": ["global-edge", "ap-south-1"],
+      "regions": [
+        "global-edge",
+        "ap-south-1"
+      ],
       "startupOrder": 3,
-      "scaling": { "minInstances": 1, "maxInstances": 50, "concurrency": 50, "scaleMetric": "request-rate" },
-      "health": { "path": "/health", "checkName": "webhook-service.http.health", "timeoutMs": 1500, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 50,
+        "concurrency": 50,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "path": "/health",
+        "checkName": "webhook-service.http.health",
+        "timeoutMs": 1500,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Analytics Pipeline",
       "runtimeRoot": "services/analytics-pipeline",
       "deploymentKind": "scheduler",
       "platform": "reserved",
-      "regions": ["ap-south-1"],
+      "regions": [
+        "ap-south-1"
+      ],
       "startupOrder": 4,
-      "scaling": { "minInstances": 0, "maxInstances": 20, "concurrency": 25, "scaleMetric": "queue-depth" },
-      "health": { "checkName": "analytics-pipeline.rollup.health", "timeoutMs": 3000, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 0,
+        "maxInstances": 20,
+        "concurrency": 25,
+        "scaleMetric": "queue-depth"
+      },
+      "health": {
+        "checkName": "analytics-pipeline.rollup.health",
+        "timeoutMs": 3000,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Checkout Runtime",
       "runtimeRoot": "services/checkout-runtime",
       "deploymentKind": "reserved-service",
       "platform": "reserved",
-      "regions": ["ap-south-1", "global-edge"],
+      "regions": [
+        "ap-south-1",
+        "global-edge"
+      ],
       "startupOrder": 4,
-      "scaling": { "minInstances": 1, "maxInstances": 50, "concurrency": 50, "scaleMetric": "request-rate" },
-      "health": { "checkName": "checkout-runtime.provider.health", "timeoutMs": 2000, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 50,
+        "concurrency": 50,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "checkName": "checkout-runtime.provider.health",
+        "timeoutMs": 2000,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Media Service",
       "runtimeRoot": "services/media-service",
       "deploymentKind": "reserved-service",
       "platform": "reserved",
-      "regions": ["ap-south-1", "global-edge"],
+      "regions": [
+        "ap-south-1",
+        "global-edge"
+      ],
       "startupOrder": 4,
-      "scaling": { "minInstances": 0, "maxInstances": 50, "concurrency": 50, "scaleMetric": "request-rate" },
-      "health": { "checkName": "media-service.storage.health", "timeoutMs": 2000, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 0,
+        "maxInstances": 50,
+        "concurrency": 50,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "checkName": "media-service.storage.health",
+        "timeoutMs": 2000,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Notification Service",
       "runtimeRoot": "services/notification-service",
       "deploymentKind": "reserved-service",
       "platform": "reserved",
-      "regions": ["ap-south-1", "global-edge"],
+      "regions": [
+        "ap-south-1",
+        "global-edge"
+      ],
       "startupOrder": 4,
-      "scaling": { "minInstances": 0, "maxInstances": 50, "concurrency": 50, "scaleMetric": "queue-depth" },
-      "health": { "checkName": "notification-service.delivery.health", "timeoutMs": 2000, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 0,
+        "maxInstances": 50,
+        "concurrency": 50,
+        "scaleMetric": "queue-depth"
+      },
+      "health": {
+        "checkName": "notification-service.delivery.health",
+        "timeoutMs": 2000,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Search Service",
       "runtimeRoot": "services/search-service",
       "deploymentKind": "reserved-service",
       "platform": "reserved",
-      "regions": ["ap-south-1", "global-edge"],
+      "regions": [
+        "ap-south-1",
+        "global-edge"
+      ],
       "startupOrder": 4,
-      "scaling": { "minInstances": 0, "maxInstances": 50, "concurrency": 50, "scaleMetric": "queue-depth" },
-      "health": { "checkName": "search-service.index.health", "timeoutMs": 2000, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 0,
+        "maxInstances": 50,
+        "concurrency": 50,
+        "scaleMetric": "queue-depth"
+      },
+      "health": {
+        "checkName": "search-service.index.health",
+        "timeoutMs": 2000,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Identity Platform",
       "runtimeRoot": "apps/identity-platform",
       "deploymentKind": "next-app",
       "platform": "vercel",
-      "regions": ["global-edge"],
+      "regions": [
+        "global-edge"
+      ],
       "startupOrder": 5,
-      "scaling": { "minInstances": 1, "maxInstances": 100, "concurrency": 100, "scaleMetric": "request-rate" },
-      "health": { "path": "/", "checkName": "identity-platform.http.health", "timeoutMs": 1500, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 100,
+        "concurrency": 100,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "path": "/",
+        "checkName": "identity-platform.http.health",
+        "timeoutMs": 1500,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Merchant Control Plane",
       "runtimeRoot": "apps/merchant-control-plane",
       "deploymentKind": "next-app",
       "platform": "vercel",
-      "regions": ["global-edge"],
+      "regions": [
+        "global-edge"
+      ],
       "startupOrder": 5,
-      "scaling": { "minInstances": 1, "maxInstances": 100, "concurrency": 100, "scaleMetric": "request-rate" },
-      "health": { "path": "/", "checkName": "merchant-control-plane.http.health", "timeoutMs": 1500, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 100,
+        "concurrency": 100,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "path": "/",
+        "checkName": "merchant-control-plane.http.health",
+        "timeoutMs": 1500,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Storefront Runtime",
       "runtimeRoot": "apps/storefront-runtime",
       "deploymentKind": "next-app",
       "platform": "vercel",
-      "regions": ["global-edge"],
+      "regions": [
+        "global-edge"
+      ],
       "startupOrder": 5,
-      "scaling": { "minInstances": 1, "maxInstances": 300, "concurrency": 150, "scaleMetric": "request-rate" },
-      "health": { "path": "/", "checkName": "storefront-runtime.http.health", "timeoutMs": 1500, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 300,
+        "concurrency": 150,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "path": "/",
+        "checkName": "storefront-runtime.http.health",
+        "timeoutMs": 1500,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Marketing Site",
       "runtimeRoot": "apps/marketing-site",
       "deploymentKind": "next-app",
       "platform": "vercel",
-      "regions": ["global-edge"],
+      "regions": [
+        "global-edge"
+      ],
       "startupOrder": 5,
-      "scaling": { "minInstances": 1, "maxInstances": 50, "concurrency": 100, "scaleMetric": "request-rate" },
-      "health": { "path": "/", "checkName": "marketing-site.http.health", "timeoutMs": 1500, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 50,
+        "concurrency": 100,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "path": "/",
+        "checkName": "marketing-site.http.health",
+        "timeoutMs": 1500,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "App Marketplace",
       "runtimeRoot": "apps/app-marketplace",
       "deploymentKind": "next-app",
       "platform": "vercel",
-      "regions": ["global-edge"],
+      "regions": [
+        "global-edge"
+      ],
       "startupOrder": 5,
-      "scaling": { "minInstances": 1, "maxInstances": 50, "concurrency": 100, "scaleMetric": "request-rate" },
-      "health": { "path": "/", "checkName": "app-marketplace.http.health", "timeoutMs": 1500, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 50,
+        "concurrency": 100,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "path": "/",
+        "checkName": "app-marketplace.http.health",
+        "timeoutMs": 1500,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Developer Portal",
       "runtimeRoot": "apps/developer-portal",
       "deploymentKind": "next-app",
       "platform": "vercel",
-      "regions": ["global-edge"],
+      "regions": [
+        "global-edge"
+      ],
       "startupOrder": 5,
-      "scaling": { "minInstances": 1, "maxInstances": 50, "concurrency": 100, "scaleMetric": "request-rate" },
-      "health": { "path": "/", "checkName": "developer-portal.http.health", "timeoutMs": 1500, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 50,
+        "concurrency": 100,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "path": "/",
+        "checkName": "developer-portal.http.health",
+        "timeoutMs": 1500,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Theme Marketplace",
       "runtimeRoot": "apps/theme-marketplace",
       "deploymentKind": "next-app",
       "platform": "vercel",
-      "regions": ["global-edge"],
+      "regions": [
+        "global-edge"
+      ],
       "startupOrder": 5,
-      "scaling": { "minInstances": 1, "maxInstances": 50, "concurrency": 100, "scaleMetric": "request-rate" },
-      "health": { "path": "/", "checkName": "theme-marketplace.http.health", "timeoutMs": 1500, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 50,
+        "concurrency": 100,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "path": "/",
+        "checkName": "theme-marketplace.http.health",
+        "timeoutMs": 1500,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Platform Console",
       "runtimeRoot": "apps/platform-console",
       "deploymentKind": "next-app",
       "platform": "vercel",
-      "regions": ["global-edge"],
+      "regions": [
+        "global-edge"
+      ],
       "startupOrder": 5,
-      "scaling": { "minInstances": 1, "maxInstances": 20, "concurrency": 50, "scaleMetric": "request-rate" },
-      "health": { "path": "/", "checkName": "platform-console.http.health", "timeoutMs": 1500, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 20,
+        "concurrency": 50,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "path": "/",
+        "checkName": "platform-console.http.health",
+        "timeoutMs": 1500,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Platform Operations Portal",
       "runtimeRoot": "apps/platform-operations-portal",
       "deploymentKind": "next-app",
       "platform": "vercel",
-      "regions": ["global-edge"],
+      "regions": [
+        "global-edge"
+      ],
       "startupOrder": 5,
-      "scaling": { "minInstances": 1, "maxInstances": 20, "concurrency": 50, "scaleMetric": "request-rate" },
-      "health": { "path": "/", "checkName": "platform-operations-portal.http.health", "timeoutMs": 1500, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
-    },
-    {
-      "runtimeName": "Mobile Shopper App",
-      "runtimeRoot": "apps/mobile/shopper-app",
-      "deploymentKind": "reserved-service",
-      "platform": "mobile",
-      "regions": ["global-edge"],
-      "startupOrder": 6,
-      "scaling": { "minInstances": 0, "maxInstances": 0, "concurrency": 1, "scaleMetric": "manual" },
-      "health": { "checkName": "mobile-shopper.release.health", "timeoutMs": 3000, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 20,
+        "concurrency": 50,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "path": "/",
+        "checkName": "platform-operations-portal.http.health",
+        "timeoutMs": 1500,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     },
     {
       "runtimeName": "Mobile Merchant App",
       "runtimeRoot": "apps/mobile/merchant-app",
       "deploymentKind": "reserved-service",
       "platform": "mobile",
-      "regions": ["global-edge"],
+      "regions": [
+        "global-edge"
+      ],
       "startupOrder": 6,
-      "scaling": { "minInstances": 0, "maxInstances": 0, "concurrency": 1, "scaleMetric": "manual" },
-      "health": { "checkName": "mobile-merchant.release.health", "timeoutMs": 3000, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
-    },
-    {
-      "runtimeName": "Mobile Operator App",
-      "runtimeRoot": "apps/mobile/operator-app",
-      "deploymentKind": "reserved-service",
-      "platform": "mobile",
-      "regions": ["global-edge"],
-      "startupOrder": 6,
-      "scaling": { "minInstances": 0, "maxInstances": 0, "concurrency": 1, "scaleMetric": "manual" },
-      "health": { "checkName": "mobile-operator.release.health", "timeoutMs": 3000, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+      "scaling": {
+        "minInstances": 0,
+        "maxInstances": 0,
+        "concurrency": 1,
+        "scaleMetric": "manual"
+      },
+      "health": {
+        "checkName": "mobile-merchant.release.health",
+        "timeoutMs": 3000,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
     }
   ],
   "dependencies": [
-    { "fromRuntime": "Event Bus", "toRuntime": "Supabase Database", "dependencyType": "database", "requiredForStartup": true, "healthCheckName": "event-bus.database" },
-    { "fromRuntime": "Queue Workers", "toRuntime": "Supabase Database", "dependencyType": "database", "requiredForStartup": true, "healthCheckName": "queue-workers.database" },
-    { "fromRuntime": "Queue Workers", "toRuntime": "Event Bus", "dependencyType": "event-stream", "requiredForStartup": true, "healthCheckName": "queue-workers.event-bus" },
-    { "fromRuntime": "API Gateway", "toRuntime": "Supabase Database", "dependencyType": "database", "requiredForStartup": true, "healthCheckName": "api-gateway.database" },
-    { "fromRuntime": "API Gateway", "toRuntime": "Event Bus", "dependencyType": "event-stream", "requiredForStartup": true, "healthCheckName": "api-gateway.event-bus" },
-    { "fromRuntime": "API Gateway", "toRuntime": "Queue Workers", "dependencyType": "queue", "requiredForStartup": false, "healthCheckName": "api-gateway.queue-workers" },
-    { "fromRuntime": "Webhook Service", "toRuntime": "Supabase Database", "dependencyType": "database", "requiredForStartup": true, "healthCheckName": "webhook-service.database" },
-    { "fromRuntime": "Webhook Service", "toRuntime": "Event Bus", "dependencyType": "event-stream", "requiredForStartup": true, "healthCheckName": "webhook-service.event-bus" },
-    { "fromRuntime": "Analytics Pipeline", "toRuntime": "Queue Workers", "dependencyType": "queue", "requiredForStartup": true, "healthCheckName": "analytics-pipeline.queue-workers" },
-    { "fromRuntime": "Checkout Runtime", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "checkout-runtime.api-gateway" },
-    { "fromRuntime": "Media Service", "toRuntime": "Supabase Database", "dependencyType": "database", "requiredForStartup": true, "healthCheckName": "media-service.database" },
-    { "fromRuntime": "Notification Service", "toRuntime": "Queue Workers", "dependencyType": "queue", "requiredForStartup": true, "healthCheckName": "notification-service.queue-workers" },
-    { "fromRuntime": "Search Service", "toRuntime": "Queue Workers", "dependencyType": "queue", "requiredForStartup": true, "healthCheckName": "search-service.queue-workers" },
-    { "fromRuntime": "Identity Platform", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "identity-platform.api-gateway" },
-    { "fromRuntime": "Merchant Control Plane", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "merchant-control-plane.api-gateway" },
-    { "fromRuntime": "Storefront Runtime", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "storefront-runtime.api-gateway" },
-    { "fromRuntime": "App Marketplace", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "app-marketplace.api-gateway" },
-    { "fromRuntime": "Developer Portal", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "developer-portal.api-gateway" },
-    { "fromRuntime": "Theme Marketplace", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "theme-marketplace.api-gateway" },
-    { "fromRuntime": "Platform Console", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "platform-console.api-gateway" },
-    { "fromRuntime": "Platform Operations Portal", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "platform-operations-portal.api-gateway" },
-    { "fromRuntime": "Mobile Shopper App", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "mobile-shopper.api-gateway" },
-    { "fromRuntime": "Mobile Merchant App", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "mobile-merchant.api-gateway" },
-    { "fromRuntime": "Mobile Operator App", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "mobile-operator.api-gateway" }
+    {
+      "fromRuntime": "Event Bus",
+      "toRuntime": "Supabase Database",
+      "dependencyType": "database",
+      "requiredForStartup": true,
+      "healthCheckName": "event-bus.database"
+    },
+    {
+      "fromRuntime": "Queue Workers",
+      "toRuntime": "Supabase Database",
+      "dependencyType": "database",
+      "requiredForStartup": true,
+      "healthCheckName": "queue-workers.database"
+    },
+    {
+      "fromRuntime": "Queue Workers",
+      "toRuntime": "Event Bus",
+      "dependencyType": "event-stream",
+      "requiredForStartup": true,
+      "healthCheckName": "queue-workers.event-bus"
+    },
+    {
+      "fromRuntime": "API Gateway",
+      "toRuntime": "Supabase Database",
+      "dependencyType": "database",
+      "requiredForStartup": true,
+      "healthCheckName": "api-gateway.database"
+    },
+    {
+      "fromRuntime": "API Gateway",
+      "toRuntime": "Event Bus",
+      "dependencyType": "event-stream",
+      "requiredForStartup": true,
+      "healthCheckName": "api-gateway.event-bus"
+    },
+    {
+      "fromRuntime": "API Gateway",
+      "toRuntime": "Queue Workers",
+      "dependencyType": "queue",
+      "requiredForStartup": false,
+      "healthCheckName": "api-gateway.queue-workers"
+    },
+    {
+      "fromRuntime": "Mobile BFF",
+      "toRuntime": "API Gateway",
+      "dependencyType": "api",
+      "requiredForStartup": true,
+      "healthCheckName": "mobile-bff.api-gateway"
+    },
+    {
+      "fromRuntime": "Webhook Service",
+      "toRuntime": "Supabase Database",
+      "dependencyType": "database",
+      "requiredForStartup": true,
+      "healthCheckName": "webhook-service.database"
+    },
+    {
+      "fromRuntime": "Webhook Service",
+      "toRuntime": "Event Bus",
+      "dependencyType": "event-stream",
+      "requiredForStartup": true,
+      "healthCheckName": "webhook-service.event-bus"
+    },
+    {
+      "fromRuntime": "Analytics Pipeline",
+      "toRuntime": "Queue Workers",
+      "dependencyType": "queue",
+      "requiredForStartup": true,
+      "healthCheckName": "analytics-pipeline.queue-workers"
+    },
+    {
+      "fromRuntime": "Checkout Runtime",
+      "toRuntime": "API Gateway",
+      "dependencyType": "api",
+      "requiredForStartup": true,
+      "healthCheckName": "checkout-runtime.api-gateway"
+    },
+    {
+      "fromRuntime": "Media Service",
+      "toRuntime": "Supabase Database",
+      "dependencyType": "database",
+      "requiredForStartup": true,
+      "healthCheckName": "media-service.database"
+    },
+    {
+      "fromRuntime": "Notification Service",
+      "toRuntime": "Queue Workers",
+      "dependencyType": "queue",
+      "requiredForStartup": true,
+      "healthCheckName": "notification-service.queue-workers"
+    },
+    {
+      "fromRuntime": "Search Service",
+      "toRuntime": "Queue Workers",
+      "dependencyType": "queue",
+      "requiredForStartup": true,
+      "healthCheckName": "search-service.queue-workers"
+    },
+    {
+      "fromRuntime": "Identity Platform",
+      "toRuntime": "API Gateway",
+      "dependencyType": "api",
+      "requiredForStartup": true,
+      "healthCheckName": "identity-platform.api-gateway"
+    },
+    {
+      "fromRuntime": "Merchant Control Plane",
+      "toRuntime": "API Gateway",
+      "dependencyType": "api",
+      "requiredForStartup": true,
+      "healthCheckName": "merchant-control-plane.api-gateway"
+    },
+    {
+      "fromRuntime": "Storefront Runtime",
+      "toRuntime": "API Gateway",
+      "dependencyType": "api",
+      "requiredForStartup": true,
+      "healthCheckName": "storefront-runtime.api-gateway"
+    },
+    {
+      "fromRuntime": "App Marketplace",
+      "toRuntime": "API Gateway",
+      "dependencyType": "api",
+      "requiredForStartup": true,
+      "healthCheckName": "app-marketplace.api-gateway"
+    },
+    {
+      "fromRuntime": "Developer Portal",
+      "toRuntime": "API Gateway",
+      "dependencyType": "api",
+      "requiredForStartup": true,
+      "healthCheckName": "developer-portal.api-gateway"
+    },
+    {
+      "fromRuntime": "Theme Marketplace",
+      "toRuntime": "API Gateway",
+      "dependencyType": "api",
+      "requiredForStartup": true,
+      "healthCheckName": "theme-marketplace.api-gateway"
+    },
+    {
+      "fromRuntime": "Platform Console",
+      "toRuntime": "API Gateway",
+      "dependencyType": "api",
+      "requiredForStartup": true,
+      "healthCheckName": "platform-console.api-gateway"
+    },
+    {
+      "fromRuntime": "Platform Operations Portal",
+      "toRuntime": "API Gateway",
+      "dependencyType": "api",
+      "requiredForStartup": true,
+      "healthCheckName": "platform-operations-portal.api-gateway"
+    },
+    {
+      "fromRuntime": "Mobile Merchant App",
+      "toRuntime": "Mobile BFF",
+      "dependencyType": "api",
+      "requiredForStartup": true,
+      "healthCheckName": "mobile-merchant.mobile-bff"
+    }
   ],
   "telemetry": {
     "tracePropagationHeader": "traceparent",

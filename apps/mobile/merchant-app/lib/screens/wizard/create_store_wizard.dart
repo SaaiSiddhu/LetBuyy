@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import '../../widgets/wizard/wizard_container.dart';
 import '../../services/store_service.dart';
 import '../../services/store_auth_service.dart';
@@ -78,10 +80,13 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
   // Theme helpers for content
   bool get _isDark => context.watch<ThemeProvider>().isDarkMode(context);
   Color get _textPrimary => _isDark ? Colors.white : Colors.black87;
-  Color get _textSecondary => _isDark ? Colors.white.withValues(alpha: 0.6) : Colors.black54;
-  Color get _borderColor => _isDark ? Colors.white.withValues(alpha: 0.15) : Colors.grey.shade300;
-  Color get _inputBg => _isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade100;
-  
+  Color get _textSecondary =>
+      _isDark ? Colors.white.withValues(alpha: 0.6) : Colors.black54;
+  Color get _borderColor =>
+      _isDark ? Colors.white.withValues(alpha: 0.15) : Colors.grey.shade300;
+  Color get _inputBg =>
+      _isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade100;
+
   // Language helper
   LanguageService get _lang => context.watch<LanguageService>();
 
@@ -91,15 +96,15 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
       if (_currentStep == 4) {
         _saveOnboardingData();
       }
-      
+
       final nextStep = _currentStep + 1;
       setState(() => _currentStep = nextStep);
-      
+
       _pageController.nextPage(
         duration: const Duration(milliseconds: 350),
         curve: Curves.easeOutCubic,
       );
-      
+
       // Auto-focus text fields after page animation completes
       if (nextStep == 5) {
         Future.delayed(const Duration(milliseconds: 400), () {
@@ -119,7 +124,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
       _showLogoutConfirmation();
       return;
     }
-    
+
     // Go back normally
     final prevStep = _currentStep - 1;
     setState(() => _currentStep = prevStep);
@@ -127,7 +132,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
       duration: const Duration(milliseconds: 350),
       curve: Curves.easeOutCubic,
     );
-    
+
     // Auto-focus text fields when going back to Steps 5 or 6
     if (prevStep == 5) {
       Future.delayed(const Duration(milliseconds: 400), () {
@@ -153,7 +158,9 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
             color: _isDark ? const Color(0xFF1E293B) : Colors.white,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: _isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1),
+              color: _isDark
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : Colors.grey.withValues(alpha: 0.1),
             ),
             boxShadow: [
               BoxShadow(
@@ -181,7 +188,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                 ),
               ),
               const SizedBox(height: 20),
-              
+
               // Title
               Text(
                 _lang.logoutTitle,
@@ -193,18 +200,15 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              
+
               // Message
               Text(
                 _lang.logoutMessage,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: _textSecondary,
-                ),
+                style: TextStyle(fontSize: 14, color: _textSecondary),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
-              
+
               // Buttons
               Row(
                 children: [
@@ -215,7 +219,9 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(
-                          color: _isDark ? Colors.white.withValues(alpha: 0.08) : Colors.grey.withValues(alpha: 0.1),
+                          color: _isDark
+                              ? Colors.white.withValues(alpha: 0.08)
+                              : Colors.grey.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -260,7 +266,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
         ),
       ),
     );
-    
+
     if (result == true && mounted) {
       final authService = context.read<StoreAuthService>();
       await authService.signOut();
@@ -275,11 +281,13 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
       final authService = context.read<StoreAuthService>();
       final userId = authService.currentUser?.id;
       if (userId == null) return;
-      
+
       // TODO: Wire up onboarding data save via API when endpoint is ready
-      debugPrint('Onboarding data ready for user $userId: '
-          'businessType=$_businessType, channels=$_selectedChannels, '
-          'productType=$_productType, category=$_category');
+      debugPrint(
+        'Onboarding data ready for user $userId: '
+        'businessType=$_businessType, channels=$_selectedChannels, '
+        'productType=$_productType, category=$_category',
+      );
     } catch (e) {
       debugPrint('Error saving onboarding: $e');
     }
@@ -339,8 +347,8 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
         themeId: _selectedThemeId,
       );
 
-      // Publish store - triggers domain provisioning
-      await storeService.publishStore(store.id);
+      final publishedStore = await storeService.publishStore(store.id);
+      await context.read<StoreContext>().adoptCreatedStore(publishedStore);
 
       if (!mounted) return;
 
@@ -375,7 +383,9 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
         decoration: colors.backgroundGradient,
         child: Center(
           child: CircularProgressIndicator(
-            color: isDark ? const Color(0xFF8B5CF6) : colors.accent,
+            color: isDark
+                ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                : colors.accent,
           ),
         ),
       );
@@ -433,13 +443,10 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
           const SizedBox(height: 6),
           Text(
             _lang.wizardNewOrExisting,
-            style: TextStyle(
-              fontSize: 14,
-              color: _textSecondary,
-            ),
+            style: TextStyle(fontSize: 14, color: _textSecondary),
           ),
           const SizedBox(height: 20),
-          
+
           WizardOptionCard(
             icon: Icons.rocket_launch_rounded,
             title: _lang.wizardNewBusiness,
@@ -471,11 +478,31 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
   // ============================================
   Widget _buildStep2SalesChannels() {
     final channels = [
-      {'id': 'online', 'title': _lang.onlineStore, 'icon': Icons.public_rounded},
-      {'id': 'retail', 'title': _lang.retailStore, 'icon': Icons.point_of_sale_rounded},
-      {'id': 'social', 'title': _lang.socialMedia, 'icon': Icons.chat_bubble_rounded},
-      {'id': 'marketplace', 'title': _lang.marketplaces, 'icon': Icons.grid_view_rounded},
-      {'id': 'events', 'title': _lang.eventsPopups, 'icon': Icons.location_on_rounded},
+      {
+        'id': 'online',
+        'title': _lang.onlineStore,
+        'icon': Icons.public_rounded,
+      },
+      {
+        'id': 'retail',
+        'title': _lang.retailStore,
+        'icon': Icons.point_of_sale_rounded,
+      },
+      {
+        'id': 'social',
+        'title': _lang.socialMedia,
+        'icon': Icons.chat_bubble_rounded,
+      },
+      {
+        'id': 'marketplace',
+        'title': _lang.marketplaces,
+        'icon': Icons.grid_view_rounded,
+      },
+      {
+        'id': 'events',
+        'title': _lang.eventsPopups,
+        'icon': Icons.location_on_rounded,
+      },
     ];
 
     return WizardContainer(
@@ -500,31 +527,30 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
           const SizedBox(height: 6),
           Text(
             _lang.wizardWhereToSellSubtitle,
-            style: TextStyle(
-              fontSize: 14,
-              color: _textSecondary,
-            ),
+            style: TextStyle(fontSize: 14, color: _textSecondary),
           ),
           const SizedBox(height: 20),
-          
-          ...channels.map((channel) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: WizardOptionCard(
-              icon: channel['icon'] as IconData,
-              title: channel['title'] as String,
-              isSelected: _selectedChannels.contains(channel['id']),
-              onTap: () {
-                setState(() {
-                  if (_selectedChannels.contains(channel['id'])) {
-                    _selectedChannels.remove(channel['id']);
-                  } else {
-                    _selectedChannels.add(channel['id'] as String);
-                  }
-                });
-              },
+
+          ...channels.map(
+            (channel) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: WizardOptionCard(
+                icon: channel['icon'] as IconData,
+                title: channel['title'] as String,
+                isSelected: _selectedChannels.contains(channel['id']),
+                onTap: () {
+                  setState(() {
+                    if (_selectedChannels.contains(channel['id'])) {
+                      _selectedChannels.remove(channel['id']);
+                    } else {
+                      _selectedChannels.add(channel['id'] as String);
+                    }
+                  });
+                },
+              ),
             ),
-          )),
-          
+          ),
+
           const SizedBox(height: 16),
           WizardPrimaryButton(
             text: _lang.next,
@@ -540,12 +566,42 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
   // ============================================
   Widget _buildStep3ProductType() {
     final productTypes = [
-      {'id': 'physical', 'title': _lang.physicalProducts, 'subtitle': _lang.physicalProductsSubtitle, 'icon': Icons.inventory_2_rounded},
-      {'id': 'digital', 'title': _lang.digitalProducts, 'subtitle': _lang.digitalProductsSubtitle, 'icon': Icons.cloud_download_rounded},
-      {'id': 'dropship', 'title': _lang.dropshipping, 'subtitle': _lang.dropshippingSubtitle, 'icon': Icons.local_shipping_rounded},
-      {'id': 'services', 'title': _lang.services, 'subtitle': _lang.servicesSubtitle, 'icon': Icons.build_circle_rounded},
-      {'id': 'pod', 'title': _lang.printOnDemand, 'subtitle': _lang.printOnDemandSubtitle, 'icon': Icons.print_rounded},
-      {'id': 'later', 'title': _lang.decideLater, 'subtitle': _lang.decideLaterSubtitle, 'icon': Icons.schedule_rounded},
+      {
+        'id': 'physical',
+        'title': _lang.physicalProducts,
+        'subtitle': _lang.physicalProductsSubtitle,
+        'icon': Icons.inventory_2_rounded,
+      },
+      {
+        'id': 'digital',
+        'title': _lang.digitalProducts,
+        'subtitle': _lang.digitalProductsSubtitle,
+        'icon': Icons.cloud_download_rounded,
+      },
+      {
+        'id': 'dropship',
+        'title': _lang.dropshipping,
+        'subtitle': _lang.dropshippingSubtitle,
+        'icon': Icons.local_shipping_rounded,
+      },
+      {
+        'id': 'services',
+        'title': _lang.services,
+        'subtitle': _lang.servicesSubtitle,
+        'icon': Icons.build_circle_rounded,
+      },
+      {
+        'id': 'pod',
+        'title': _lang.printOnDemand,
+        'subtitle': _lang.printOnDemandSubtitle,
+        'icon': Icons.print_rounded,
+      },
+      {
+        'id': 'later',
+        'title': _lang.decideLater,
+        'subtitle': _lang.decideLaterSubtitle,
+        'icon': Icons.schedule_rounded,
+      },
     ];
 
     return WizardContainer(
@@ -568,26 +624,25 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
           const SizedBox(height: 6),
           Text(
             _lang.wizardWhatToSellSubtitle,
-            style: TextStyle(
-              fontSize: 14,
-              color: _textSecondary,
-            ),
+            style: TextStyle(fontSize: 14, color: _textSecondary),
           ),
           const SizedBox(height: 20),
-          
-          ...productTypes.map((type) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: WizardOptionCard(
-              icon: type['icon'] as IconData,
-              title: type['title'] as String,
-              subtitle: type['subtitle'] as String?,
-              isSelected: _productType == type['id'],
-              onTap: () {
-                setState(() => _productType = type['id'] as String);
-                Future.delayed(const Duration(milliseconds: 200), _nextStep);
-              },
+
+          ...productTypes.map(
+            (type) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: WizardOptionCard(
+                icon: type['icon'] as IconData,
+                title: type['title'] as String,
+                subtitle: type['subtitle'] as String?,
+                isSelected: _productType == type['id'],
+                onTap: () {
+                  setState(() => _productType = type['id'] as String);
+                  Future.delayed(const Duration(milliseconds: 200), _nextStep);
+                },
+              ),
             ),
-          )),
+          ),
         ],
       ),
     );
@@ -598,13 +653,37 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
   // ============================================
   Widget _buildStep4Category() {
     final categories = [
-      {'id': 'fashion', 'title': _lang.fashionApparel, 'icon': Icons.checkroom_rounded},
-      {'id': 'electronics', 'title': _lang.electronics, 'icon': Icons.devices_rounded},
-      {'id': 'beauty', 'title': _lang.beautyCosmetics, 'icon': Icons.spa_rounded},
+      {
+        'id': 'fashion',
+        'title': _lang.fashionApparel,
+        'icon': Icons.checkroom_rounded,
+      },
+      {
+        'id': 'electronics',
+        'title': _lang.electronics,
+        'icon': Icons.devices_rounded,
+      },
+      {
+        'id': 'beauty',
+        'title': _lang.beautyCosmetics,
+        'icon': Icons.spa_rounded,
+      },
       {'id': 'home', 'title': _lang.homeDecor, 'icon': Icons.home_rounded},
-      {'id': 'food', 'title': _lang.foodBeverages, 'icon': Icons.restaurant_rounded},
-      {'id': 'sports', 'title': _lang.sportsFitness, 'icon': Icons.fitness_center_rounded},
-      {'id': 'books', 'title': _lang.booksStationery, 'icon': Icons.menu_book_rounded},
+      {
+        'id': 'food',
+        'title': _lang.foodBeverages,
+        'icon': Icons.restaurant_rounded,
+      },
+      {
+        'id': 'sports',
+        'title': _lang.sportsFitness,
+        'icon': Icons.fitness_center_rounded,
+      },
+      {
+        'id': 'books',
+        'title': _lang.booksStationery,
+        'icon': Icons.menu_book_rounded,
+      },
       {'id': 'other', 'title': _lang.other, 'icon': Icons.category_rounded},
     ];
 
@@ -628,13 +707,10 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
           const SizedBox(height: 6),
           Text(
             _lang.wizardCategorySubtitle,
-            style: TextStyle(
-              fontSize: 14,
-              color: _textSecondary,
-            ),
+            style: TextStyle(fontSize: 14, color: _textSecondary),
           ),
           const SizedBox(height: 20),
-          
+
           // 2-column grid layout
           for (int i = 0; i < categories.length; i += 2) ...[
             IntrinsicHeight(
@@ -650,13 +726,13 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: i + 1 < categories.length 
-                      ? _buildCompactCategoryChip(
-                          id: categories[i + 1]['id'] as String,
-                          title: categories[i + 1]['title'] as String,
-                          icon: categories[i + 1]['icon'] as IconData,
-                        )
-                      : const SizedBox(),
+                    child: i + 1 < categories.length
+                        ? _buildCompactCategoryChip(
+                            id: categories[i + 1]['id'] as String,
+                            title: categories[i + 1]['title'] as String,
+                            icon: categories[i + 1]['icon'] as IconData,
+                          )
+                        : const SizedBox(),
                   ),
                 ],
               ),
@@ -667,11 +743,15 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
       ),
     );
   }
-  
+
   // Compact chip for 2-column category grid
-  Widget _buildCompactCategoryChip({required String id, required String title, required IconData icon}) {
+  Widget _buildCompactCategoryChip({
+    required String id,
+    required String title,
+    required IconData icon,
+  }) {
     final isSelected = _category == id;
-    
+
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -681,14 +761,22 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected 
-              ? (_isDark ? Colors.white.withValues(alpha: 0.1) : const Color(0xFF8B5CF6).withValues(alpha: 0.1))
-              : (_isDark ? Colors.white.withValues(alpha: 0.04) : Colors.grey.withValues(alpha: 0.05)),
+          color: isSelected
+              ? (_isDark
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                        alpha: 0.1,
+                      ))
+              : (_isDark
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : Colors.grey.withValues(alpha: 0.05)),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isSelected
                 ? StoreAdminColors.primary
-                : (_isDark ? Colors.white.withValues(alpha: 0.08) : Colors.grey.withValues(alpha: 0.2)),
+                : (_isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.grey.withValues(alpha: 0.2)),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -705,9 +793,15 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                   end: Alignment.bottomRight,
                   colors: isSelected
                       ? [StoreAdminColors.primary, StoreAdminColors.accent]
-                      : (_isDark 
-                          ? [Colors.white.withValues(alpha: 0.12), Colors.white.withValues(alpha: 0.06)]
-                          : [Colors.grey.withValues(alpha: 0.12), Colors.grey.withValues(alpha: 0.06)]),
+                      : (_isDark
+                            ? [
+                                Colors.white.withValues(alpha: 0.12),
+                                Colors.white.withValues(alpha: 0.06),
+                              ]
+                            : [
+                                Colors.grey.withValues(alpha: 0.12),
+                                Colors.grey.withValues(alpha: 0.06),
+                              ]),
                 ),
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -734,8 +828,6 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
     );
   }
 
-
-
   // ============================================
   // STEP 5: Store Name
   // ============================================
@@ -760,13 +852,10 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
           const SizedBox(height: 6),
           Text(
             _lang.wizardStoreNameSubtitle,
-            style: TextStyle(
-              fontSize: 14,
-              color: _textSecondary,
-            ),
+            style: TextStyle(fontSize: 14, color: _textSecondary),
           ),
           const SizedBox(height: 20),
-          
+
           // Animated text input container with focus tracking
           Focus(
             onFocusChange: (hasFocus) => setState(() {}),
@@ -776,17 +865,19 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                 final text = _nameController.text.trim();
                 final isValid = text.length >= 4;
                 final showError = text.isNotEmpty && !isValid;
-                
+
                 return Container(
                   decoration: BoxDecoration(
                     color: _inputBg,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: showError 
+                      color: showError
                           ? StoreAdminColors.error
-                          : (isValid 
-                              ? StoreAdminColors.success
-                              : (hasFocus ? StoreAdminColors.primary : _borderColor)),
+                          : (isValid
+                                ? StoreAdminColors.success
+                                : (hasFocus
+                                      ? StoreAdminColors.primary
+                                      : _borderColor)),
                       width: hasFocus || text.isNotEmpty ? 1.5 : 1,
                     ),
                   ),
@@ -801,16 +892,16 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                     ),
                     decoration: InputDecoration(
                       hintText: _lang.wizardEnterStoreName,
-                      hintStyle: TextStyle(
-                        color: _textSecondary,
-                        fontSize: 16,
-                      ),
+                      hintStyle: TextStyle(color: _textSecondary, fontSize: 16),
                       filled: true,
                       fillColor: Colors.transparent,
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                     ),
                     onChanged: (value) => setState(() {}),
                   ),
@@ -818,14 +909,19 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
               },
             ),
           ),
-          
+
           // Validation helper text
-          if (_nameController.text.isNotEmpty && _nameController.text.trim().length < 4)
+          if (_nameController.text.isNotEmpty &&
+              _nameController.text.trim().length < 4)
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline_rounded, size: 14, color: StoreAdminColors.error),
+                  Icon(
+                    Icons.info_outline_rounded,
+                    size: 14,
+                    color: StoreAdminColors.error,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     'Minimum 4 characters required',
@@ -842,7 +938,11 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
               padding: const EdgeInsets.only(top: 8),
               child: Row(
                 children: [
-                  Icon(Icons.check_circle_rounded, size: 14, color: StoreAdminColors.success),
+                  Icon(
+                    Icons.check_circle_rounded,
+                    size: 14,
+                    color: StoreAdminColors.success,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     'Great store name!',
@@ -854,15 +954,18 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                 ],
               ),
             ),
-          
+
           const SizedBox(height: 20),
-          
+
           Row(
             children: [
               GestureDetector(
                 onTap: _previousStep,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 8,
+                  ),
                   child: Text(
                     _lang.back,
                     style: TextStyle(color: _textSecondary),
@@ -874,7 +977,9 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                 width: 120,
                 child: WizardPrimaryButton(
                   text: _lang.next,
-                  onPressed: _nameController.text.trim().length >= 4 ? _nextStep : null,
+                  onPressed: _nameController.text.trim().length >= 4
+                      ? _nextStep
+                      : null,
                 ),
               ),
             ],
@@ -908,13 +1013,10 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
           const SizedBox(height: 6),
           Text(
             _lang.wizardSubdomainSubtitle,
-            style: TextStyle(
-              fontSize: 14,
-              color: _textSecondary,
-            ),
+            style: TextStyle(fontSize: 14, color: _textSecondary),
           ),
           const SizedBox(height: 20),
-          
+
           // Clean subdomain input
           Focus(
             onFocusChange: (hasFocus) => setState(() {}),
@@ -926,11 +1028,13 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                     color: _inputBg,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: _isSubdomainAvailable 
-                          ? StoreAdminColors.success 
-                          : (_subdomainError != null 
-                              ? StoreAdminColors.error 
-                              : (hasFocus ? StoreAdminColors.primary : _borderColor)),
+                      color: _isSubdomainAvailable
+                          ? StoreAdminColors.success
+                          : (_subdomainError != null
+                                ? StoreAdminColors.error
+                                : (hasFocus
+                                      ? StoreAdminColors.primary
+                                      : _borderColor)),
                       width: hasFocus || _isSubdomainAvailable ? 1.5 : 1,
                     ),
                   ),
@@ -958,11 +1062,16 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                             border: InputBorder.none,
                             enabledBorder: InputBorder.none,
                             focusedBorder: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
                           ),
                           onChanged: (value) {
                             if (value.length >= 3) {
-                              _checkSubdomainAvailability(value.toLowerCase().trim());
+                              _checkSubdomainAvailability(
+                                value.toLowerCase().trim(),
+                              );
                             } else {
                               setState(() {
                                 _isSubdomainAvailable = false;
@@ -974,10 +1083,17 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                       ),
                       // Simple suffix
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 14,
+                        ),
                         decoration: BoxDecoration(
-                          color: _isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.withValues(alpha: 0.08),
-                          borderRadius: const BorderRadius.horizontal(right: Radius.circular(13)),
+                          color: _isDark
+                              ? Colors.white.withValues(alpha: 0.05)
+                              : Colors.grey.withValues(alpha: 0.08),
+                          borderRadius: const BorderRadius.horizontal(
+                            right: Radius.circular(13),
+                          ),
                         ),
                         child: Text(
                           '.letbuyy.store',
@@ -994,7 +1110,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
               },
             ),
           ),
-          
+
           // Status indicator
           if (_isCheckingSubdomain)
             Padding(
@@ -1006,7 +1122,9 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                     height: 16,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(StoreAdminColors.primary),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        StoreAdminColors.primary,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -1017,7 +1135,8 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                 ],
               ),
             )
-          else if (_isSubdomainAvailable && _subdomainController.text.length >= 3)
+          else if (_isSubdomainAvailable &&
+              _subdomainController.text.length >= 3)
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: Container(
@@ -1031,7 +1150,11 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.check_circle_rounded, color: StoreAdminColors.success, size: 20),
+                    Icon(
+                      Icons.check_circle_rounded,
+                      color: StoreAdminColors.success,
+                      size: 20,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -1047,7 +1170,8 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                 ),
               ),
             )
-          else if (_subdomainError != null && _subdomainController.text.length >= 3)
+          else if (_subdomainError != null &&
+              _subdomainController.text.length >= 3)
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: Container(
@@ -1061,7 +1185,11 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.error_rounded, color: StoreAdminColors.error, size: 20),
+                    Icon(
+                      Icons.error_rounded,
+                      color: StoreAdminColors.error,
+                      size: 20,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -1077,15 +1205,18 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                 ),
               ),
             ),
-          
+
           const SizedBox(height: 24),
-          
+
           Row(
             children: [
               GestureDetector(
                 onTap: _previousStep,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 8,
+                  ),
                   child: Text(
                     _lang.back,
                     style: TextStyle(color: _textSecondary),
@@ -1142,13 +1273,10 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
           const SizedBox(height: 4),
           Text(
             _lang.wizardThemeSubtitle,
-            style: TextStyle(
-              fontSize: 13,
-              color: _textSecondary,
-            ),
+            style: TextStyle(fontSize: 13, color: _textSecondary),
           ),
           const SizedBox(height: 16),
-          
+
           // 2-column grid of theme cards (same as before but 6 themes)
           GridView.builder(
             shrinkWrap: true,
@@ -1163,12 +1291,15 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
             itemBuilder: (context, index) {
               final theme = themes[index];
               final isRecommended = theme.id == 'vibrant_bold';
-              return _buildEnhancedThemeCard(theme, isRecommended: isRecommended);
+              return _buildEnhancedThemeCard(
+                theme,
+                isRecommended: isRecommended,
+              );
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           WizardPrimaryButton(
             text: _lang.createStore,
             isLoading: _isLoading,
@@ -1178,13 +1309,13 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
       ),
     );
   }
-  
+
   Widget _buildCompactThemeCard(StoreThemeModel theme, bool isRecommended) {
     final isSelected = _selectedThemeId == theme.id;
     final primary = theme.primaryColorValue;
     final secondary = theme.secondaryColorValue;
     final accent = theme.accentColorValue;
-    
+
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -1223,7 +1354,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                   ),
                 ),
               ),
-              
+
               // Glass effect overlay
               Positioned.fill(
                 child: Container(
@@ -1240,14 +1371,17 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                   ),
                 ),
               ),
-              
+
               // Recommended badge
               if (isRecommended)
                 Positioned(
                   top: 4,
                   left: 4,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(4),
@@ -1268,14 +1402,17 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                     ),
                   ),
                 ),
-              
+
               // Theme name at bottom
               Positioned(
                 bottom: 0,
                 left: 0,
                 right: 0,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -1295,7 +1432,9 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
                             fontSize: 9,
-                            shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
+                            shadows: [
+                              Shadow(color: Colors.black54, blurRadius: 4),
+                            ],
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -1309,7 +1448,11 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                             color: Colors.white,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.check_rounded, size: 10, color: Colors.black),
+                          child: const Icon(
+                            Icons.check_rounded,
+                            size: 10,
+                            color: Colors.black,
+                          ),
                         ),
                     ],
                   ),
@@ -1321,13 +1464,16 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
       ),
     );
   }
-  
-  Widget _buildEnhancedThemeCard(StoreThemeModel theme, {bool isRecommended = false}) {
+
+  Widget _buildEnhancedThemeCard(
+    StoreThemeModel theme, {
+    bool isRecommended = false,
+  }) {
     final isSelected = _selectedThemeId == theme.id;
     final primary = theme.primaryColorValue;
     final secondary = theme.secondaryColorValue;
     final accent = theme.accentColorValue;
-    
+
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -1365,7 +1511,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                   ),
                 ),
               ),
-              
+
               // Glass effect overlay
               Positioned.fill(
                 child: Container(
@@ -1382,14 +1528,17 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                   ),
                 ),
               ),
-              
+
               // Recommended badge
               if (isRecommended)
                 Positioned(
                   top: 6,
                   left: 6,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(6),
@@ -1417,7 +1566,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                     ),
                   ),
                 ),
-              
+
               // Theme name and selection indicator
               Positioned(
                 bottom: 0,
@@ -1442,9 +1591,16 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                           theme.name,
                           style: TextStyle(
                             color: _textPrimary,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.w600,
                             fontSize: 12,
-                            shadows: [const Shadow(color: Colors.black54, blurRadius: 4)],
+                            shadows: [
+                              const Shadow(
+                                color: Colors.black54,
+                                blurRadius: 4,
+                              ),
+                            ],
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -1464,13 +1620,17 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                               ),
                             ],
                           ),
-                          child: const Icon(Icons.check_rounded, size: 14, color: Colors.black),
+                          child: const Icon(
+                            Icons.check_rounded,
+                            size: 14,
+                            color: Colors.black,
+                          ),
                         ),
                     ],
                   ),
                 ),
               ),
-              
+
               // Color palette preview dots
               Positioned(
                 top: 10,
@@ -1491,7 +1651,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
       ),
     );
   }
-  
+
   Widget _buildColorDot(Color color) {
     return Container(
       width: 12,
@@ -1499,22 +1659,24 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
-        border: Border.all(color: _isDark ? Colors.white.withValues(alpha: 0.5) : Colors.black.withValues(alpha: 0.15), width: 1),
+        border: Border.all(
+          color: _isDark
+              ? Colors.white.withValues(alpha: 0.5)
+              : Colors.black.withValues(alpha: 0.15),
+          width: 1,
+        ),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 2,
-          ),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 2),
         ],
       ),
     );
   }
-  
+
   Widget _buildThemePreviewCard(StoreThemeModel theme) {
     final isSelected = _selectedThemeId == theme.id;
     final primary = theme.primaryColorValue;
     final secondary = theme.secondaryColorValue;
-    
+
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -1575,9 +1737,13 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
     );
   }
 
-  Widget _buildThemeCard({required String id, required String name, required Color color}) {
+  Widget _buildThemeCard({
+    required String id,
+    required String name,
+    required Color color,
+  }) {
     final isSelected = _selectedThemeId == id;
-    
+
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -1587,7 +1753,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected 
+          color: isSelected
               ? color.withValues(alpha: 0.08)
               : StoreAdminColors.slate50,
           borderRadius: BorderRadius.circular(12),
@@ -1621,10 +1787,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
               Container(
                 width: 24,
                 height: 24,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                ),
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
                 child: const Icon(Icons.check, size: 16, color: Colors.white),
               ),
           ],

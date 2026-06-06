@@ -57,7 +57,7 @@ locals {
       name            = "letbuyy-events-production"
       batch_size      = 50
       max_concurrency = 25
-      max_retries     = 10
+      max_retries     = 3
       wait_ms         = 10000
       retry_delay     = 30
     }
@@ -92,7 +92,7 @@ locals {
       name            = "letbuyy-events-staging"
       batch_size      = 50
       max_concurrency = 10
-      max_retries     = 10
+      max_retries     = 3
       wait_ms         = 10000
       retry_delay     = 30
     }

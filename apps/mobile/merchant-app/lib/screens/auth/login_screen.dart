@@ -7,13 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 import '../../services/store_auth_service.dart';
-import '../../services/store_service.dart';
 import '../../services/language_service.dart';
 import '../../services/theme_provider.dart';
 import '../../theme/app_theme_colors.dart';
+import '../../config/app_config.dart';
 import '../../app/routes.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -129,21 +130,34 @@ class _LoginScreenState extends State<LoginScreen>
 
     try {
       final authService = context.read<StoreAuthService>();
+      final turnstileToken = await _resolveTurnstileToken();
+      if (turnstileToken == null) {
+        throw Exception('Please complete the security check to continue.');
+      }
 
       if (_isSignUpMode) {
-        // Sign up
-        final user = await authService.signUp(email, password);
-        if (user == null) throw Exception('Sign-up failed');
+        await authService.requestSignUpOtp(
+          email,
+          turnstileToken: turnstileToken,
+        );
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('store_user_email', email);
 
         if (!mounted) return;
-        Navigator.pushReplacementNamed(context, AppRoutes.wizard);
+        Navigator.pushNamed(
+          context,
+          AppRoutes.otp,
+          arguments: {'email': email, 'password': password},
+        );
       } else {
         // Sign in
         try {
-          final user = await authService.signInWithPassword(email, password);
+          final user = await authService.signInWithPassword(
+            email,
+            password,
+            turnstileToken: turnstileToken,
+          );
           if (user == null) throw Exception('Sign-in failed');
 
           final prefs = await SharedPreferences.getInstance();
@@ -184,11 +198,17 @@ class _LoginScreenState extends State<LoginScreen>
     }
   }
 
-  Future<void> _navigateAfterAuth() async {
-    final storeService = context.read<StoreService>();
+  Future<String?> _resolveTurnstileToken() async {
+    final configured = AppConfig.turnstileToken.trim();
+    if (configured.isNotEmpty && !configured.startsWith('SKIP_NEEDS_HUMAN_')) {
+      return configured;
+    }
+    return Navigator.pushNamed<String>(context, AppRoutes.turnstileChallenge);
+  }
 
+  Future<void> _navigateAfterAuth() async {
     try {
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       if (!mounted) return;
 
       if (store != null) {

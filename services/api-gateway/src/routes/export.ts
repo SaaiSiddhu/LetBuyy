@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
+import { timingSafeEqualText } from '../lib/crypto';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../execution/product-execution.adapter';
 
@@ -198,15 +199,6 @@ async function signDownloadToken(c: ExportContext, job: ExportJobRecord): Promis
     );
     const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(material));
     return base64Url(new Uint8Array(signature));
-}
-
-function safeEqual(left: string, right: string): boolean {
-    if (left.length !== right.length) return false;
-    let diff = 0;
-    for (let index = 0; index < left.length; index++) {
-        diff |= left.charCodeAt(index) ^ right.charCodeAt(index);
-    }
-    return diff === 0;
 }
 
 async function signedDownloadUrl(c: ExportContext, job: ExportJobRecord): Promise<string> {
@@ -582,7 +574,7 @@ router.get('/jobs/:id/download', async (c) => {
 
     const token = c.req.query('token') || '';
     const expected = await signDownloadToken(c, job);
-    if (!safeEqual(token, expected)) {
+    if (!timingSafeEqualText(token, expected)) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Invalid export download token' } }, 403);
     }
 

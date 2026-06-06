@@ -1,0 +1,114 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Mobile BFF",
+  "runtimeRoot": "services/mobile-bff",
+  "actorType": [
+    "service",
+    "merchant"
+  ],
+  "runtimeCategory": "cloudflare-worker",
+  "runtimeClassification": "mobile-auth-transport-boundary",
+  "ownership": {
+    "sourceAuthority": "services/mobile-bff",
+    "businessAuthority": "Mobile merchant session bridge that re-signs identity lb_session tokens into gateway-accepted internal session headers without owning commerce business logic.",
+    "governanceDocs": [
+      "docs/governance/runtime-boundaries.md",
+      "docs/governance/mobile-governance.md",
+      "docs/governance/security-operations-governance.md",
+      "docs/governance/deployment-governance.md",
+      "docs/governance/observability-governance.md"
+    ]
+  },
+  "allowedDependencies": {
+    "workspacePackages": [
+      "@letbuyy/auth-core"
+    ],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": [
+    "apps/*",
+    "services/*",
+    "legacy/*",
+    "infrastructure/*",
+    "generated-artifacts"
+  ],
+  "deploymentAuthority": {
+    "platform": "Cloudflare Workers",
+    "config": [
+      "services/mobile-bff/wrangler.toml"
+    ]
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/worker.schema.json",
+    "template": "config/env/templates/worker.env.example",
+    "secretStore": "Cloudflare Worker secrets"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted worker logs",
+    "audit": "gateway-owned merchant mutations emit canonical audit events"
+  },
+  "executionAuthority": {
+    "executionRole": "Execution container for mobile auth transport and gateway proxying only.",
+    "orchestrationRole": "No business orchestration; delegates all route behavior to services/api-gateway and package-owned contracts.",
+    "infrastructureOwnership": "May wire Cloudflare service binding and internal auth secret; no provider SDK ownership.",
+    "eventOwnership": "No durable event ownership; forwards correlation metadata to the gateway.",
+    "queryOwnership": "No read-model ownership; forwards gateway responses only.",
+    "compositionOwnership": "Composes transport headers and response streaming only."
+  },
+  "orchestrationAuthority": "Transport and gateway invocation only; business orchestration delegates to services/api-gateway and packages/application-services.",
+  "eventAuthority": "No durable event authority; event persistence and dispatch remain in services/api-gateway, services/queue-workers, and package contracts.",
+  "workflowAuthority": "No workflow authority; workflows, use cases, sequencing, and cross-domain coordination are owned by packages/application-services.",
+  "queryAuthority": "No query assembly authority; service-side reads delegate to services/api-gateway and runtime-composition contracts.",
+  "compositionAuthority": "Owns mobile transport composition only: session extraction, internal header signing, and gateway proxy response forwarding.",
+  "executionOwnership": "Execution container for mobile BFF APIs, runtime bootstrapping, transport signing, and gateway service binding only.",
+  "distributedExecutionOwnership": "No durable distributed execution ownership; durable queues, checkpoints, replay, and coordination delegate to services/api-gateway, services/queue-workers, and packages/distributed-runtime.",
+  "queueOwnership": "No queue execution ownership; queue production and consumption delegate to services/api-gateway and services/queue-workers.",
+  "providerOwnership": "None; provider execution must go through services/api-gateway or packages/infrastructure adapters behind service API boundaries.",
+  "executionBoundaries": "Execution-container boundary: mobile session transport, header signing, gateway proxying, health, and runtime bootstrapping only.",
+  "asyncExecutionOwnership": "No durable async ownership; async workflows, queues, replay, and retries delegate to services and orchestration runtimes.",
+  "observabilityOwnership": "Propagates request, correlation, and trace metadata across the BFF to gateway boundary.",
+  "telemetryOwnership": "Owns execution-container telemetry emission for BFF requests while durable telemetry pipelines delegate to service runtimes.",
+  "workflowRecoveryOwnership": "No workflow recovery ownership; recovery policy delegates to packages/application-services and packages/orchestration through service APIs.",
+  "recoveryOwnership": "No runtime recovery ownership beyond deploy rollback; workflow, replay, queue, and projection recovery delegate to service runtimes.",
+  "replayOwnership": "No replay ownership; replay lifecycle delegates to service execution containers and packages/orchestration.",
+  "checkpointOwnership": "No checkpoint ownership; checkpoints delegate to service runtimes using packages/distributed-runtime and projection-runtime.",
+  "projectionOwnership": "No local projection policy ownership; projections and read models use services/api-gateway and packages/runtime-composition.",
+  "cqrsOwnership": "No CQRS command or projection persistence ownership; command sequencing delegates to services/api-gateway and application-services.",
+  "cacheOwnership": "No durable cache coordination ownership; cache policy delegates to runtime-composition, projection-runtime, and service runtimes.",
+  "coordinationOwnership": "No distributed coordination ownership; leases, locks, fencing tokens, heartbeats, and leader election delegate to service runtimes using packages/distributed-runtime.",
+  "resilienceOwnership": "Owns only BFF transport fail-closed behavior; provider retries, circuit breakers, and fallback execution delegate to service runtimes.",
+  "regionalOwnership": "Owns Cloudflare edge deployment metadata for mobile BFF transport while global routing contracts delegate to packages/distributed-runtime.",
+  "tenantScalingOwnership": "No tenant workload governance ownership; quotas, partitioning, noisy-neighbor protection, and runtime metrics delegate to service execution containers.",
+  "auditOwnership": "No business audit ownership; privileged actions and durable audit trails are emitted by services/api-gateway.",
+  "operationalOwnership": "Owns BFF health, diagnostics, deployment topology participation, and operational readiness for the mobile auth bridge.",
+  "telemetryExecutionOwnership": "Owns BFF request telemetry emission for traces, metrics, structured logs, and correlation propagation.",
+  "replayExecutionOwnership": "No replay execution ownership; replay scheduling, authorization, dry-runs, and rollback coordination delegate to service execution containers.",
+  "queueExecutionOwnership": "No queue execution ownership; queue inspection, recovery, redrive, retry, and dead-letter operations delegate to queue worker and API service runtimes.",
+  "resilienceExecutionOwnership": "Owns fail-closed transport checks for missing signing secrets; broader resilience execution delegates to service runtimes.",
+  "regionalExecutionOwnership": "Owns region-aware Cloudflare deployment metadata for BFF transport; tenant affinity and failover execution delegate to service runtimes.",
+  "auditExecutionOwnership": "No audit execution ownership; runtime audit persistence and operational security telemetry delegate to backend service runtimes.",
+  "cacheExecutionOwnership": "No cache execution ownership; cache invalidation and lifecycle metrics delegate to runtime-composition, projection-runtime, and service runtimes.",
+  "coordinationExecutionOwnership": "No distributed coordination execution ownership; worker leases, fencing tokens, leader election, and ownership transfer delegate to service runtimes.",
+  "diagnosticsOwnership": "Owns user-safe BFF health diagnostics only; runtime diagnostics persistence and incident metadata delegate to operational service runtimes.",
+  "operationalControlPlaneOwnership": "No operational control-plane ownership; replay, workflow, queue, resilience, telemetry, tenant, and recovery commands delegate to platform service runtimes.",
+  "deploymentOwnership": "Owns production deployment wiring for Mobile BFF; provider manifests are declared in runtime topology and service deployment config.",
+  "observabilityInfrastructureOwnership": "Emits correlated runtime telemetry to the OpenTelemetry, Prometheus, Tempo, Loki, and Grafana stack declared in infrastructure/observability.",
+  "queueProviderOwnership": "Delegates production queue provider execution to services/api-gateway producers and services/queue-workers consumers.",
+  "eventStoreOwnership": "Delegates event persistence to packages/distributed-runtime contracts backed by Supabase Postgres append-only event store.",
+  "failoverOwnership": "Participates in active/passive failover through Cloudflare deployment topology and service-owned runtime fallback.",
+  "incidentOwnership": "Participates in incident metadata, diagnostics, alert routing, and audit records through production incident governance.",
+  "deploymentTopologyOwnership": "Must match config/runtime/deployment-topology.json and config/runtime/production-topology.json; topology drift is a hard validation failure.",
+  "securityOwnership": "Owns mobile BFF secret binding, fail-closed internal session signing, and no-secret client boundary enforcement.",
+  "chaosOwnership": "Participates in approved chaos experiments recorded in chaos_experiment_runs with guardrails and rollback commands.",
+  "loadTestingOwnership": "Participates in k6/Gatling/Locust production-readiness benchmarks recorded in load_test_runs.",
+  "controlPlaneOwnership": "Uses operator UI/API surfaces for control-plane visibility and delegates execution to service runtimes.",
+  "regionalRoutingOwnership": "Uses Cloudflare global-edge routing and delegates stateful regional execution to service and data runtimes.",
+  "productionOwnership": "Owns production execution-container readiness, deployment health, runtime diagnostics, and operational recovery for the mobile auth bridge.",
+  "deploymentPipelineOwnership": "Owns deployment pipeline gates through infrastructure/deployment, production-rollout workflow, health gates, rollback runbooks, and production topology validation.",
+  "telemetryInfrastructureOwnership": "Owns telemetry infrastructure integration through OpenTelemetry, runtime telemetry tables, Prometheus alerts, and dashboard projections.",
+  "dashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local mock data.",
+  "operationalDashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local mock data.",
+  "sreOwnership": "Owns SRE participation for mobile BFF SLOs, error budgets, escalation paths, readiness scoring, and incident runbook participation.",
+  "replayOperationsOwnership": "Delegates replay execution, authorization, checkpointing, and recovery to services/event-bus, services/api-gateway, and distributed-runtime packages."
+}

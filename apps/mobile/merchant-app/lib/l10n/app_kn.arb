@@ -1,0 +1,11 @@
+{
+  "@@locale": "kn",
+  "appTitle": "LetBuyy ಅಂಗಡಿ ಬಿಲ್ಡರ್",
+  "selectStore": "ಅಂಗಡಿ ಆಯ್ಕೆಮಾಡಿ",
+  "switchStore": "ಅಂಗಡಿ ಬದಲಿಸಿ",
+  "storeSwitcherLabel": "ಆಯ್ದ ಅಂಗಡಿ ಸ್ವಿಚರ್",
+  "noStoreSelected": "ಯಾವುದೇ ಅಂಗಡಿ ಆಯ್ಕೆಯಾಗಿಲ್ಲ",
+  "offlineMode": "ಆಫ್‌ಲೈನ್ ಮೋಡ್",
+  "cachedDataNotice": "ನೆಟ್‌ವರ್ಕ್ ಇಲ್ಲ, ಕ್ಯಾಶ್ ಡೇಟಾ ತೋರಿಸಲಾಗುತ್ತಿದೆ.",
+  "deepLinkUnsupported": "ಈ ಲಿಂಕ್ ಇನ್ನೂ ಮೊಬೈಲ್‌ನಲ್ಲಿ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ."
+}

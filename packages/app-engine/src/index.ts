@@ -104,6 +104,10 @@ export interface MarketplaceAppSubmissionInsert {
   install_count: 0;
   rating_avg: 0;
   review_count: 0;
+  oauth_client_id?: string;
+  oauth_redirect_uris?: string[];
+  api_scopes?: string[];
+  version?: string;
 }
 
 export interface MarketplaceAppLifecycleRecord {
@@ -1741,6 +1745,11 @@ export function planMarketplaceAppSubmission(
   const priceMonthly = Number(body.price_monthly || 0);
   const priceInr = Number.isFinite(priceMonthly) ? Math.max(Math.round(priceMonthly * 100) / 100, 0) : 0;
   const qualityGateInput = parseAppStoreJsonRecord(body.quality_gate || body.built_for_letbuyy || body.builtForLetBuyy);
+  const manifestInput = body.manifest || body.app_manifest || body.appManifest || parseAppStoreJsonRecord(body.config).manifest;
+  const manifest = manifestInput ? normalizeLetbuyyAppManifest(manifestInput) : null;
+  if (manifest && !manifest.ok) {
+    return { ok: false, message: manifest.message };
+  }
   if (Object.keys(qualityGateInput).length > 0 && body.save_as_draft !== true) {
     const gate = evaluateBuiltForLetBuyyQualityGate({
       ...qualityGateInput,
@@ -1754,6 +1763,10 @@ export function planMarketplaceAppSubmission(
       const failed = gate.checks.filter((check) => !check.passed).map((check) => check.key).join(', ');
       return { ok: false, message: `Built-for-LetBuyy quality gate failed: ${failed}` };
     }
+  }
+
+  if (manifest?.ok && manifest.value.app.slug !== slug) {
+    return { ok: false, message: 'manifest app.slug must match the submitted app slug' };
   }
 
   return {
@@ -1773,6 +1786,10 @@ export function planMarketplaceAppSubmission(
       install_count: 0,
       rating_avg: 0,
       review_count: 0,
+      ...(manifest?.ok ? {
+        api_scopes: manifest.value.scopes,
+        version: manifest.value.app.version,
+      } : {}),
     },
   };
 }

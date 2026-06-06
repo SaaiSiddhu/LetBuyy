@@ -7,6 +7,7 @@ import { CreateStoreSchema, PaymentConfigSchema, UpdateStoreSchema } from '../sc
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { getRequestId } from '../lib/tenant-context';
 import { verifyRazorpayCredentials as verifyRazorpayCredentialsWithAdapter } from '@letbuyy/infrastructure/razorpay-adapter';
+import { isLegacySiteType, legacySiteTypeCreationEnabled } from '@letbuyy/tenant-core';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -124,6 +125,19 @@ function defaultPaymentConfig(storeId: string) {
         cod_enabled: true,
         payment_settings: sanitizePaymentSettings(null),
         schema_ready: false,
+    };
+}
+
+function legacySiteTypeCreationAllowed(env: Env): boolean {
+    return legacySiteTypeCreationEnabled(env.LETBUYY_ENABLE_LEGACY_SITE_TYPES);
+}
+
+function legacySiteTypeCreationResponse(siteType: string) {
+    return {
+        error: {
+            code: 'LEGACY_SITE_TYPE_DISABLED',
+            message: `${siteType} site creation is legacy-gated. Existing sites remain supported, but new portfolio/resume acquisition requires LETBUYY_ENABLE_LEGACY_SITE_TYPES=true.`,
+        },
     };
 }
 
@@ -470,6 +484,10 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
 
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    if (isLegacySiteType(body.site_type) && !legacySiteTypeCreationAllowed(c.env)) {
+        return c.json(legacySiteTypeCreationResponse(body.site_type), 403);
     }
 
     // Check subdomain uniqueness

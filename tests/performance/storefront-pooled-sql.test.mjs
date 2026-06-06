@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const adapterSource = readFileSync('packages/infrastructure/pooled-sql-adapter/index.ts', 'utf8');
 const infrastructurePackage = JSON.parse(readFileSync('packages/infrastructure/package.json', 'utf8'));
 const infrastructureIndexSource = readFileSync('packages/infrastructure/src/index.ts', 'utf8');
 const gatewayIndexSource = readFileSync('services/api-gateway/src/index.ts', 'utf8');
-const storefrontRouteSource = readFileSync('services/api-gateway/src/routes/storefront.ts', 'utf8');
+const storefrontRouteSource = readStorefrontRouteSource();
 const wranglerSource = readFileSync('services/api-gateway/wrangler.toml', 'utf8');
 const lockfileSource = readFileSync('pnpm-lock.yaml', 'utf8');
 

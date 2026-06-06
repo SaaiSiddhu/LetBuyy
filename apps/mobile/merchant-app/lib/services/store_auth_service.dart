@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 
 import 'api_client.dart';
 
+typedef TurnstileTokenProvider = FutureOr<String> Function();
+
 enum AuthChangeEvent { initialSession, signedIn, signedOut, tokenRefreshed }
 
 class AuthState {
@@ -69,14 +71,28 @@ class MerchantSession {
   };
 }
 
+class PendingMerchantSignUp {
+  const PendingMerchantSignUp({
+    required this.email,
+    required this.message,
+    this.needsVerification = true,
+  });
+
+  final String email;
+  final String message;
+  final bool needsVerification;
+}
+
 class StoreAuthService extends ChangeNotifier {
   StoreAuthService({
     required ApiClient api,
     required String identityBaseUrl,
+    TurnstileTokenProvider? turnstileTokenProvider,
     FlutterSecureStorage? secureStorage,
     http.Client? httpClient,
   }) : _api = api,
        _identityBaseUrl = _trimTrailingSlash(identityBaseUrl),
+       _turnstileTokenProvider = turnstileTokenProvider,
        _secureStorage = secureStorage ?? const FlutterSecureStorage(),
        _http = httpClient ?? http.Client();
 
@@ -88,8 +104,10 @@ class StoreAuthService extends ChangeNotifier {
 
   final ApiClient _api;
   final String _identityBaseUrl;
+  final TurnstileTokenProvider? _turnstileTokenProvider;
   final FlutterSecureStorage _secureStorage;
   final http.Client _http;
+  final Map<String, String> _identityCookies = <String, String>{};
   final StreamController<AuthState> _authEvents =
       StreamController<AuthState>.broadcast();
 
@@ -128,8 +146,9 @@ class StoreAuthService extends ChangeNotifier {
 
   Future<MerchantSessionUser?> signInWithPassword(
     String email,
-    String password,
-  ) async {
+    String password, {
+    String? turnstileToken,
+  }) async {
     final normalizedEmail = email.trim().toLowerCase();
     final csrf = await _fetchCsrfCookie();
     final response = await _postIdentityJson(
@@ -138,7 +157,7 @@ class StoreAuthService extends ChangeNotifier {
       body: {
         'email': normalizedEmail,
         'password': password,
-        'turnstileToken': 'dev-bypass-token',
+        'turnstileToken': await _requireTurnstileToken(turnstileToken),
       },
     );
 
@@ -168,13 +187,41 @@ class StoreAuthService extends ChangeNotifier {
     String email,
     String password, {
     String? name,
+    String? otp,
+    String? turnstileToken,
+  }) async {
+    final normalizedEmail = email.trim().toLowerCase();
+    if (otp == null || otp.trim().isEmpty) {
+      await requestSignUpOtp(normalizedEmail, turnstileToken: turnstileToken);
+      return null;
+    }
+
+    await verifySignUpOtp(normalizedEmail, otp.trim());
+    final session = await _setVerifiedPassword(
+      normalizedEmail,
+      password,
+      name: name,
+    );
+    await _persistSession(session);
+    _session = session;
+    _emit(AuthChangeEvent.signedIn);
+    notifyListeners();
+    return session.user;
+  }
+
+  Future<PendingMerchantSignUp> requestSignUpOtp(
+    String email, {
+    String? turnstileToken,
   }) async {
     final normalizedEmail = email.trim().toLowerCase();
     final csrf = await _fetchCsrfCookie();
     final signupResponse = await _postIdentityJson(
       '/api/auth/signup',
       csrf: csrf,
-      body: {'email': normalizedEmail, 'turnstileToken': 'dev-bypass-token'},
+      body: {
+        'email': normalizedEmail,
+        'turnstileToken': await _requireTurnstileToken(turnstileToken),
+      },
     );
 
     if (signupResponse.statusCode < 200 || signupResponse.statusCode >= 300) {
@@ -183,61 +230,56 @@ class StoreAuthService extends ChangeNotifier {
       );
     }
 
-    final signupBody = _decodeBody(signupResponse);
-    final devOtp = _nullableString(signupBody['devOtp']);
-    if (devOtp == null) {
-      throw Exception(
-        'Verification code sent. Complete the OTP step in the web identity platform until the mobile OTP endpoint is available.',
-      );
-    }
+    final body = _decodeBody(signupResponse);
+    return PendingMerchantSignUp(
+      email: normalizedEmail,
+      message:
+          _nullableString(body['message']) ??
+          'Verification code sent to your email',
+      needsVerification: body['needsVerification'] != false,
+    );
+  }
 
-    final verifyResponse = await _postIdentityJson(
+  Future<void> verifySignUpOtp(String email, String otp) async {
+    final normalizedEmail = email.trim().toLowerCase();
+    final csrf = _csrfFromJar() ?? await _fetchCsrfCookie();
+    final response = await _postIdentityJson(
       '/api/auth/verify-otp',
       csrf: csrf,
-      body: {'email': normalizedEmail, 'otp': devOtp},
+      body: {'email': normalizedEmail, 'otp': otp.trim()},
     );
-    if (verifyResponse.statusCode < 200 || verifyResponse.statusCode >= 300) {
-      throw Exception(_errorMessage(verifyResponse, 'OTP verification failed'));
-    }
 
-    final verifyBody = _decodeBody(verifyResponse);
-    final userId = _nullableString(verifyBody['userId']);
-    if (userId == null) {
-      throw Exception('Identity platform did not return a verified user id');
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(_errorMessage(response, 'Invalid verification code'));
     }
+  }
 
-    final passwordResponse = await _postIdentityJson(
+  Future<MerchantSession> _setVerifiedPassword(
+    String email,
+    String password, {
+    String? name,
+  }) async {
+    final csrf = _csrfFromJar() ?? await _fetchCsrfCookie();
+    final response = await _postIdentityJson(
       '/api/auth/set-password',
       csrf: csrf,
-      body: {'email': normalizedEmail, 'userId': userId, 'password': password},
+      body: {'password': password, if (name != null) 'name': name},
     );
-    if (passwordResponse.statusCode < 200 ||
-        passwordResponse.statusCode >= 300) {
-      throw Exception(
-        _errorMessage(passwordResponse, 'Unable to set password'),
-      );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(_errorMessage(response, 'Unable to set password'));
     }
 
-    final token = _extractCookie(passwordResponse, _sessionCookieName);
+    final token = _extractCookie(response, _sessionCookieName);
     if (token == null || token.isEmpty) {
       throw Exception('Identity platform did not return lb_session');
     }
 
-    final session =
-        await _validateIdentitySession(token) ??
+    return await _validateIdentitySession(token) ??
         MerchantSession(
           token: token,
-          user: MerchantSessionUser(
-            id: userId,
-            email: normalizedEmail,
-            fullName: name,
-          ),
+          user: MerchantSessionUser(id: '', email: email),
         );
-    await _persistSession(session);
-    _session = session;
-    _emit(AuthChangeEvent.signedIn);
-    notifyListeners();
-    return session.user;
   }
 
   Future<void> resetPassword(String email) async {
@@ -278,19 +320,22 @@ class StoreAuthService extends ChangeNotifier {
 
   Future<void> refreshSession() => restoreSession();
 
-  Future<Map<String, dynamic>?> getFirstStore() async {
-    try {
-      final res = await _api.get('stores', query: {'limit': '1'});
-      final items = res['data'] as List? ?? [];
-      return items.isNotEmpty ? items.first as Map<String, dynamic> : null;
-    } catch (error) {
-      debugPrint('Error fetching stores: $error');
-      return null;
+  Future<String> _requireTurnstileToken([String? override]) async {
+    final token =
+        override?.trim() ?? (await _turnstileTokenProvider?.call())?.trim();
+    if (token == null ||
+        token.isEmpty ||
+        token.startsWith('SKIP_NEEDS_HUMAN_')) {
+      throw Exception(
+        'SKIP_NEEDS_HUMAN_MOBILE_TURNSTILE_TOKEN: mobile Turnstile challenge token is not configured.',
+      );
     }
+    return token;
   }
 
   Future<String> _fetchCsrfCookie() async {
     final response = await _http.get(_identityUri('/login'));
+    _storeResponseCookies(response);
     final csrf = _extractCookie(response, _csrfCookieName);
     if (csrf == null || csrf.isEmpty) {
       throw Exception('Identity platform did not return CSRF cookie');
@@ -302,16 +347,18 @@ class StoreAuthService extends ChangeNotifier {
     String path, {
     required String csrf,
     required Map<String, Object?> body,
-  }) {
-    return _http.post(
+  }) async {
+    final response = await _http.post(
       _identityUri(path),
       headers: {
         'Content-Type': 'application/json',
         'X-CSRF-Token': csrf,
-        'Cookie': '$_csrfCookieName=$csrf',
+        'Cookie': _cookieHeader(extra: {_csrfCookieName: csrf}),
       },
       body: jsonEncode(body),
     );
+    _storeResponseCookies(response);
+    return response;
   }
 
   Future<MerchantSession?> _validateIdentitySession(String token) async {
@@ -334,6 +381,32 @@ class StoreAuthService extends ChangeNotifier {
     } catch (error) {
       debugPrint('Identity session validation failed: $error');
       return null;
+    }
+  }
+
+  String? _csrfFromJar() => _identityCookies[_csrfCookieName];
+
+  String _cookieHeader({Map<String, String> extra = const {}}) {
+    final cookies = <String, String>{..._identityCookies, ...extra};
+    return cookies.entries
+        .where((entry) => entry.value.isNotEmpty)
+        .map((entry) => '${entry.key}=${entry.value}')
+        .join('; ');
+  }
+
+  void _storeResponseCookies(http.Response response) {
+    final header = response.headers['set-cookie'];
+    if (header == null || header.isEmpty) return;
+
+    final matches = RegExp(
+      r'(^|,\s*)([A-Za-z0-9_.-]+)=([^;,]+)',
+    ).allMatches(header);
+    for (final match in matches) {
+      final name = match.group(2);
+      final value = match.group(3);
+      if (name != null && value != null) {
+        _identityCookies[name] = value;
+      }
     }
   }
 

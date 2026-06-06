@@ -1,7 +1,39 @@
 import 'package:flutter/foundation.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 
+import '../theme/letbuyy_color_tokens.dart';
 import 'api_client.dart';
+
+class BillingHistoryEntry {
+  const BillingHistoryEntry({
+    required this.id,
+    required this.amountPaid,
+    required this.status,
+    required this.billingPeriod,
+    required this.createdAt,
+  });
+
+  factory BillingHistoryEntry.fromJson(Map<String, dynamic> json) {
+    return BillingHistoryEntry(
+      id: _stringValue(json['id']),
+      amountPaid: _numValue(json['amount_paid']),
+      status: _stringValue(json['status'], fallback: 'unknown'),
+      billingPeriod: _stringValue(json['billing_period'], fallback: 'monthly'),
+      createdAt: _stringValue(json['created_at']),
+    );
+  }
+
+  final String id;
+  final num amountPaid;
+  final String status;
+  final String billingPeriod;
+  final String createdAt;
+
+  String get amountLabel {
+    final rupees = amountPaid > 9999 ? amountPaid / 100 : amountPaid;
+    return 'INR ${rupees.toStringAsFixed(2)}';
+  }
+}
 
 /// Service for managing store subscriptions via the API.
 ///
@@ -158,6 +190,16 @@ class SubscriptionService {
     }
   }
 
+  Future<List<BillingHistoryEntry>> fetchBillingHistory(String storeId) async {
+    try {
+      final rows = await _api.payments.subscription.history(storeId);
+      return rows.map(BillingHistoryEntry.fromJson).toList(growable: false);
+    } catch (e) {
+      debugPrint('Error getting subscription history: $e');
+      rethrow;
+    }
+  }
+
   // ============================================================
   // CONNECT OWN RAZORPAY
   // ============================================================
@@ -229,7 +271,7 @@ class SubscriptionService {
           'productLimit': 50,
           'commission': 3.0,
           'badge': '🎁',
-          'color': 0xFF8B5CF6,
+          'color': LetbuyyColorTokens.brandPrimary.toARGB32(),
           'features': [
             '50 products',
             '3% commission',
@@ -263,7 +305,7 @@ class SubscriptionService {
           'productLimit': 30,
           'commission': 3.0,
           'badge': '⭐',
-          'color': 0xFF8B5CF6,
+          'color': LetbuyyColorTokens.brandPrimary.toARGB32(),
           'isPopular': true,
           'features': [
             '30 products',
@@ -363,4 +405,14 @@ class SubscriptionService {
     if (status == 'past_due') return 'pastDue';
     return status ?? 'active';
   }
+}
+
+String _stringValue(Object? value, {String fallback = ''}) {
+  final text = value?.toString().trim();
+  return text == null || text.isEmpty ? fallback : text;
+}
+
+num _numValue(Object? value, {num fallback = 0}) {
+  if (value is num) return value;
+  return num.tryParse(value?.toString() ?? '') ?? fallback;
 }

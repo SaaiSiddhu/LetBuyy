@@ -22,9 +22,9 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _navigateAfterDelay() async {
     // Show splash animation for 2 seconds, then go to auth wrapper
     await Future.delayed(const Duration(milliseconds: 2000));
-    
+
     if (!mounted) return;
-    
+
     // AuthWrapper handles all routing logic (KYC, login, wizard, main)
     Navigator.pushReplacementNamed(context, AppRoutes.auth);
   }
@@ -82,33 +82,33 @@ class _SplashScreenState extends State<SplashScreen> {
               children: [
                 // App Logo with Glow & Shadow
                 Container(
-                  width: 120,
-                  height: 120,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.15),
-                        blurRadius: 40,
-                        offset: const Offset(0, 15),
+                      width: 120,
+                      height: 120,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.15),
+                            blurRadius: 40,
+                            offset: const Offset(0, 15),
+                          ),
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.2),
+                            blurRadius: 20,
+                            spreadRadius: 5,
+                          ),
+                        ],
                       ),
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.2),
-                        blurRadius: 20,
-                        spreadRadius: 5,
+                      child: Image.asset(
+                        'assets/icons/app_icon.png',
+                        fit: BoxFit.contain,
                       ),
-                    ],
-                  ),
-                  child: Image.asset(
-                    'assets/icons/app_icon.png',
-                    fit: BoxFit.contain,
-                  ),
-                )
+                    )
                     .animate()
                     .scale(
-                      duration: 800.ms, 
+                      duration: 800.ms,
                       curve: Curves.easeOutBack,
                       begin: const Offset(0.5, 0.5),
                     )
@@ -118,15 +118,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
                 // Brand Title
                 const Text(
-                  'LetBuyy',
-                  style: TextStyle(
-                    fontSize: 42,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                    letterSpacing: -1.0,
-                    height: 1.0,
-                  ),
-                )
+                      'LetBuyy',
+                      style: TextStyle(
+                        fontSize: 42,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        letterSpacing: -1.0,
+                        height: 1.0,
+                      ),
+                    )
                     .animate(delay: 300.ms)
                     .fadeIn(duration: 600.ms)
                     .slideY(begin: 0.2, end: 0, curve: Curves.easeOutQuad),
@@ -135,7 +135,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
                 // Subtitle / Tagline
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -152,10 +155,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       letterSpacing: 0.5,
                     ),
                   ),
-                )
-                    .animate(delay: 500.ms)
-                    .fadeIn()
-                    .slideY(begin: 0.2, end: 0),
+                ).animate(delay: 500.ms).fadeIn().slideY(begin: 0.2, end: 0),
 
                 const SizedBox(height: 60),
 
@@ -181,13 +181,11 @@ class _SplashScreenState extends State<SplashScreen> {
                       ),
                     ],
                   ),
-                )
-                    .animate(delay: 800.ms)
-                    .fadeIn(),
+                ).animate(delay: 800.ms).fadeIn(),
               ],
             ),
           ),
-          
+
           // 4. Version or footer text (optional)
           Positioned(
             bottom: 40,

@@ -3,6 +3,7 @@ import type { Context } from 'hono';
 import type { Env } from '../../index';
 import { getSupabaseAdmin, success } from '../../lib/supabase';
 import { PaymentExecutionAdapter } from '../../execution/payment-execution.adapter';
+import { isInternalApiSecretRequest } from '../../lib/internal-secret';
 
 type AppContext = Context<{ Bindings: Env }>;
 type StorefrontRouter = Hono<{ Bindings: Env }>;
@@ -69,10 +70,7 @@ type InternalPaymentRouteDeps = {
 };
 
 function isInternalRequest(c: AppContext): boolean {
-    const configuredSecret = c.env.INTERNAL_API_SECRET;
-    if (!configuredSecret && c.env.ENVIRONMENT !== 'production') return true;
-    if (!configuredSecret) return false;
-    return c.req.header('X-Internal-API-Secret') === configuredSecret;
+    return isInternalApiSecretRequest(c.env, c.req);
 }
 
 function assertProvider(value: unknown): value is 'razorpay' | 'stripe' | 'paypal' | 'cashfree' {

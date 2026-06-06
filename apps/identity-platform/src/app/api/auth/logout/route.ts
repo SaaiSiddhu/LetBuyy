@@ -1,19 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { destroySession } from '@/lib/auth/session'
 import { getSessionCookie, clearSessionCookie } from '@/lib/auth/cookies'
+import { getAccountsUrl, getAdminUrl } from '@/lib/config/urls'
 
-const ALLOWED_ORIGINS = [
-    'https://admin.letbuyy.store',
-    'https://accounts.letbuyy.store',
-    'https://staging.letbuyy.store',
-    'https://accounts.staging.letbuyy.store',
-    'https://merchant.staging.letbuyy.store',
-]
+function getAllowedOrigins(): Set<string> {
+    return new Set(
+        [
+            getAdminUrl(),
+            getAccountsUrl(),
+            process.env.ADMIN_ORIGIN,
+            process.env.NEXT_PUBLIC_ADMIN_URL,
+            process.env.NEXT_PUBLIC_ACCOUNTS_URL,
+        ].filter((origin): origin is string => Boolean(origin))
+    )
+}
 
 function corsHeaders(request: NextRequest) {
     const origin = request.headers.get('origin') || ''
     const headers: Record<string, string> = {}
-    if (ALLOWED_ORIGINS.includes(origin)) {
+    if (getAllowedOrigins().has(origin)) {
         headers['Access-Control-Allow-Origin'] = origin
         headers['Access-Control-Allow-Credentials'] = 'true'
     }
@@ -57,7 +62,7 @@ export async function OPTIONS(request: NextRequest) {
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
     }
-    if (ALLOWED_ORIGINS.includes(origin)) {
+    if (getAllowedOrigins().has(origin)) {
         headers['Access-Control-Allow-Origin'] = origin
         headers['Access-Control-Allow-Credentials'] = 'true'
     }

@@ -3,6 +3,7 @@ import 'server-only';
 import {
     LetbuyyApiError,
     createLetbuyyApiClient,
+    resolveLetbuyyApiBaseUrl,
     type LetbuyyApiClient,
 } from '@letbuyy/api-client';
 import {
@@ -17,17 +18,16 @@ interface AppMarketplaceApiOptions {
     requireSession?: boolean;
 }
 
-function getApiBaseUrl(): string {
-    const base =
+function appMarketplaceApiBaseUrl(): string {
+    return resolveLetbuyyApiBaseUrl([
         process.env.LETBUYY_API_URL ||
         process.env.NEXT_PUBLIC_API_URL ||
-        process.env.API_URL;
-    if (!base) {
-        throw new Error(
-            'Marketplace API base URL is not configured. Set LETBUYY_API_URL (or NEXT_PUBLIC_API_URL / API_URL); refusing to fall back to a hardcoded staging host.',
-        );
-    }
-    return base.replace(/\/v1\/?$/, '').replace(/\/$/, '');
+        process.env.API_URL,
+    ], {
+        includeVersionPath: false,
+        requireConfigured: true,
+        errorMessage: 'Marketplace API base URL is not configured. Set LETBUYY_API_URL (or NEXT_PUBLIC_API_URL / API_URL); refusing to fall back to a hardcoded staging host.',
+    });
 }
 
 export async function createAppMarketplaceApiClient(
@@ -66,7 +66,7 @@ export async function createAppMarketplaceApiClient(
     }
 
     return createLetbuyyApiClient({
-        baseUrl: getApiBaseUrl(),
+        baseUrl: appMarketplaceApiBaseUrl(),
         apiVersionPath: '/v1',
         headers,
     });

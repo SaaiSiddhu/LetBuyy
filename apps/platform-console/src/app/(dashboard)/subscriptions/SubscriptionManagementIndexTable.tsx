@@ -6,6 +6,7 @@ import {
     IndexTable,
     type IndexTableColumn,
 } from '@letbuyy/ui';
+import { formatIndiaDateTime as formatDateTime } from '@letbuyy/ui/formatting';
 
 export type ConsoleSubscription = {
     id: string;
@@ -121,19 +122,6 @@ function formatStatus(value: string): string {
     return value
         .replace(/_/g, ' ')
         .replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
-
-function formatDateTime(value: string | null | undefined): string {
-    if (!value) return '-';
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return value;
-
-    return date.toLocaleString('en-IN', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-        timeZone: 'Asia/Kolkata',
-    });
 }
 
 function formatMoneyFromPaise(value: number | string | null | undefined, currency = 'INR'): string {

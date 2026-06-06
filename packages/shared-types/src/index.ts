@@ -1249,6 +1249,7 @@ export const ThemePreviewSessionResultSchema = z.object({
   preview_token: z.string().min(1),
   expires_at: z.string().datetime(),
   draft_version: z.number().int().positive(),
+  template_key: z.string().min(1).max(80).default('index'),
 });
 
 export const ThemeReleaseSchema = z.object({
@@ -1619,6 +1620,8 @@ export const AppBillingChargeApproveSchema = z.object({
   charge_id: UuidSchema,
   idempotency_key: z.string().trim().min(8).max(200),
   provider_reference: z.string().trim().min(1).max(200).optional(),
+  provider_payment_id: z.string().trim().min(1).max(200).optional(),
+  provider_signature: z.string().trim().min(1).max(500).optional(),
   provider_mode: AppBillingChargeProviderModeSchema.default('test'),
 }).strict();
 
@@ -1715,8 +1718,10 @@ export const AppOAuthAuthorizationResultSchema = z.object({
 
 export const AppOAuthTokenResultSchema = z.object({
   access_token: z.string().min(1),
+  refresh_token: z.string().min(1).optional(),
   token_type: z.literal('Bearer'),
   expires_at: z.string().datetime(),
+  refresh_expires_at: z.string().datetime().optional(),
   scope: z.string().default(''),
   scopes: z.array(z.string().min(1)).default([]),
   installation_id: z.string().min(1),

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { AlertCircle, Check, Minus } from '@letbuyy/ui'
+import { getAccountsUrl } from '@/lib/public-urls'
 
 type PlanKey = 'free' | 'basic' | 'pro' | 'enterprise'
 
@@ -30,7 +31,7 @@ const plans: PricingPlan[] = [
         price: '₹0',
         priceNote: 'Final free-tier limits need approval',
         cta: 'Start free',
-        href: 'https://accounts.letbuyy.com/signup',
+        href: getAccountsUrl('/signup'),
         highlights: ['Site builder access', 'LetBuyy subdomain', 'Basic launch checklist'],
     },
     {
@@ -72,7 +73,7 @@ const matrixRows: MatrixRow[] = [
         values: { free: true, basic: true, pro: true, enterprise: true },
     },
     {
-        feature: 'Store, portfolio, resume and blog sites',
+        feature: 'Store, blog and landing-page sites',
         values: { free: true, basic: true, pro: true, enterprise: true },
     },
     {

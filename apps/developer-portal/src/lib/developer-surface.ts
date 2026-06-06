@@ -8,7 +8,7 @@ export interface EvidenceSource {
 export interface EndpointDoc {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   path: string;
-  auth: "public" | "merchant session" | "app bearer" | "internal" | "HMAC signature";
+  auth: "public" | "merchant session" | `app bearer${string}` | "internal" | "HMAC signature";
   status: CapabilityStatus;
   summary: string;
   source: string;
@@ -427,17 +427,17 @@ export const gatewayRouteGroups: GatewayRouteGroup[] = [
   {
     surface: "Portfolio",
     mount: "/v1/portfolio",
-    access: "Protected merchant session + CSRF",
+    access: "Protected merchant session + CSRF; legacy site types only",
     routeCount: 4,
-    scope: "Portfolio page content and merchant portfolio operations.",
+    scope: "Legacy portfolio content for existing sites. New portfolio acquisition is gated by LETBUYY_ENABLE_LEGACY_SITE_TYPES.",
     source: "services/api-gateway/src/index.ts:196 + routes/portfolio.ts"
   },
   {
     surface: "Resume",
     mount: "/v1/resume",
-    access: "Protected merchant session + CSRF",
+    access: "Protected merchant session + CSRF; legacy site types only",
     routeCount: 10,
-    scope: "Resume profile, experience, education, skills, projects, and related page data.",
+    scope: "Legacy resume profile, experience, education, skills, projects, and related page data for existing sites. New resume acquisition is gated by LETBUYY_ENABLE_LEGACY_SITE_TYPES.",
     source: "services/api-gateway/src/index.ts:197 + routes/resume.ts"
   },
   {
@@ -692,8 +692,9 @@ export const contractCards: ContractCard[] = [
     status: "available",
     source: "services/api-gateway/src/routes/app-store.ts:1225",
     points: [
-      "Authorization codes expire after 15 minutes and are stored only as hashes in app_installations.config.",
-      "POST /v1/app-store/oauth/token blocks replay by marking authorization_code.redeemed_at.",
+      "Authorization codes expire after 15 minutes and are stored only as hashes in app_installations.config with the PKCE S256 code challenge.",
+      "POST /v1/app-store/oauth/token requires code_verifier, blocks replay by marking authorization_code.redeemed_at, and stores only token hashes.",
+      "POST /v1/app-store/oauth/token with grant_type=refresh_token rotates the stored refresh_token_hash and returns a new app Bearer token.",
       "POST /v1/app-store/oauth/token-exchange mints a 15-minute embedded app token from a merchant session and installation_id.",
       "Direct install currently returns a Bearer app token with a one-hour expires_at value."
     ]
@@ -707,6 +708,17 @@ export const contractCards: ContractCard[] = [
       "Absolute URLs, parent path traversal, double slashes, and mismatched store_id values are rejected.",
       "Allowed first path segments are products, orders, customers, themes, and storefront.",
       "Required scopes map to read_products, read_orders, read_customers, read_themes, and read_storefront."
+    ]
+  },
+  {
+    title: "Scoped app API",
+    status: "available",
+    source: "services/api-gateway/src/routes/app-api.ts:1",
+    points: [
+      "App bearer tokens are accepted only on /v1/app routes and do not satisfy merchant dashboard auth middleware.",
+      "GET /v1/app/products requires read_products and is pinned to the token installation store.",
+      "GET /v1/app/orders requires read_orders and is pinned to the token installation store.",
+      "PATCH /v1/app/installation/metadata requires write_app_metadata and can update non-secret app-owned metadata only."
     ]
   },
   {
@@ -760,7 +772,7 @@ export const appStoreEndpoints: EndpointDoc[] = [
     path: "/v1/app-store/oauth/token",
     auth: "public",
     status: "available",
-    summary: "Exchanges grant_type=authorization_code, code, client_id, and redirect_uri for a scoped Bearer token.",
+    summary: "Exchanges grant_type=authorization_code with PKCE code_verifier, or grant_type=refresh_token with a rotated refresh token, for a scoped Bearer token.",
     source: "services/api-gateway/src/routes/app-store.ts:1312"
   },
   {
@@ -786,6 +798,30 @@ export const appStoreEndpoints: EndpointDoc[] = [
     status: "partial",
     summary: "Proxies scoped GET reads for embedded apps. Allowed first segments map to read_products, read_orders, read_customers, read_themes, and read_storefront.",
     source: "services/api-gateway/src/routes/app-store.ts:781"
+  },
+  {
+    method: "GET",
+    path: "/v1/app/products",
+    auth: "app bearer: read_products",
+    status: "available",
+    summary: "Lists products for the installed app token's store. A mismatched store_id is rejected instead of broadening access.",
+    source: "services/api-gateway/src/routes/app-api.ts:152"
+  },
+  {
+    method: "GET",
+    path: "/v1/app/orders",
+    auth: "app bearer: read_orders",
+    status: "available",
+    summary: "Lists orders for the installed app token's store. A mismatched store_id is rejected instead of broadening access.",
+    source: "services/api-gateway/src/routes/app-api.ts:209"
+  },
+  {
+    method: "PATCH",
+    path: "/v1/app/installation/metadata",
+    auth: "app bearer: write_app_metadata",
+    status: "available",
+    summary: "Updates non-secret metadata owned by the active app installation without mutating merchant product, order, customer, or theme records.",
+    source: "services/api-gateway/src/routes/app-api.ts:271"
   },
   {
     method: "POST",
@@ -829,11 +865,27 @@ export const appStoreEndpoints: EndpointDoc[] = [
   },
   {
     method: "POST",
+    path: "/v1/app-store/developers/apps/manifest/validate",
+    auth: "merchant session",
+    status: "available",
+    summary: "Validates a LetBuyy app manifest against app-engine, returning normalized extension and function registration plans without creating an app.",
+    source: "services/api-gateway/src/routes/app-store/developer-routes.ts"
+  },
+  {
+    method: "POST",
     path: "/v1/app-store/developers/apps",
     auth: "merchant session",
     status: "available",
-    summary: "Submits a marketplace app for review after developer registration and optional Built-for-LetBuyy quality gate checks.",
+    summary: "Submits a marketplace app for review after developer registration, optional Built-for-LetBuyy quality gate checks, optional manifest persistence, and show-once hash-only credential issuance.",
     source: "services/api-gateway/src/routes/app-store.ts:2085"
+  },
+  {
+    method: "POST",
+    path: "/v1/app-store/developers/apps/:id/api-key",
+    auth: "merchant session",
+    status: "available",
+    summary: "Rotates a show-once developer API key for an app owned by the current developer profile; plaintext is returned once and only hashes are persisted.",
+    source: "services/api-gateway/src/routes/app-store/developer-routes.ts"
   }
 ];
 
@@ -1204,42 +1256,52 @@ export const webhookEndpoints: EndpointDoc[] = [
 export const oauthSteps: GuideStep[] = [
   {
     title: "1. Merchant authorizes the app",
-    body: "Call POST /v1/app-store/apps/:id/oauth/authorize with a merchant session. The gateway verifies store ownership, checks requested scopes against the app's api_scopes, validates redirect_uri, activates the installation, creates webhook subscriptions, and returns an authorization code.",
+    body: "Call POST /v1/app-store/apps/:id/oauth/authorize with a merchant session and a PKCE S256 code_challenge. The gateway verifies store ownership, checks requested scopes against the app's api_scopes, validates redirect_uri, activates the installation, creates webhook subscriptions, and returns an authorization code.",
     source: "services/api-gateway/src/routes/app-store.ts:1140"
   },
   {
     title: "2. Authorization code is short-lived",
-    body: "The code is stored as a hash in app_installations.config.oauth.authorization_code and expires after 15 minutes.",
+    body: "The code is stored as a hash with the PKCE challenge in app_installations.config.oauth.authorization_code and expires after 15 minutes.",
     source: "services/api-gateway/src/routes/app-store.ts:1225"
   },
   {
     title: "3. App exchanges the code",
-    body: "Call POST /v1/app-store/oauth/token with grant_type=authorization_code, code, client_id, and redirect_uri. The gateway verifies the signed code, checks client and redirect match, blocks replay, and returns a scoped Bearer token.",
+    body: "Call POST /v1/app-store/oauth/token with grant_type=authorization_code, code, client_id, redirect_uri, and code_verifier. The gateway verifies the signed code, checks client and redirect match, verifies PKCE, blocks replay, and returns a scoped Bearer token plus refresh token.",
     source: "services/api-gateway/src/routes/app-store.ts:1312"
   },
   {
-    title: "4. Embedded apps can exchange a merchant session",
+    title: "4. Refresh tokens rotate",
+    body: "Call POST /v1/app-store/oauth/token with grant_type=refresh_token, refresh_token, and client_id to rotate the refresh token and receive a fresh scoped app token. The gateway stores only refresh_token_hash.",
+    source: "services/api-gateway/src/routes/app-store.ts:1312"
+  },
+  {
+    title: "5. Embedded apps can exchange a merchant session",
     body: "Call POST /v1/app-store/oauth/token-exchange with a merchant session and installation_id. The returned token lasts 15 minutes and is intended for embedded admin app surfaces.",
     source: "services/api-gateway/src/routes/app-store.ts:1400"
   },
   {
-    title: "5. App bridge reads are scoped and GET-only",
+    title: "6. App bridge reads are scoped and GET-only",
     body: "POST /v1/app-store/bridge/fetch accepts a Bearer app token and only proxies GET reads to approved first segments. Mutating bridge calls are not implemented.",
     source: "services/api-gateway/src/routes/app-store.ts:781"
+  },
+  {
+    title: "7. Server-to-server app API calls are scoped",
+    body: "Call /v1/app/products or /v1/app/orders with the app Bearer token for direct scoped reads. Metadata writes are limited to PATCH /v1/app/installation/metadata and require write_app_metadata.",
+    source: "services/api-gateway/src/routes/app-api.ts:152"
   }
 ];
 
 export const oauthTokenLifecycle: OAuthTokenLifecycleDoc[] = [
   {
     surface: "Authorization code issuance",
-    currentContract: "POST /v1/app-store/apps/:id/oauth/authorize validates merchant ownership, requested scopes, and redirect_uri, then stores only a code hash under config.oauth.authorization_code with a 15-minute expires_at.",
-    developerAction: "Treat the returned code as one-time, short-lived material and redirect with the exact redirect_uri and state returned by the gateway.",
+    currentContract: "POST /v1/app-store/apps/:id/oauth/authorize validates merchant ownership, requested scopes, redirect_uri, and PKCE S256 code_challenge, then stores only a code hash plus challenge under config.oauth.authorization_code with a 15-minute expires_at.",
+    developerAction: "Treat the returned code as one-time, short-lived material and keep the original PKCE code_verifier for token exchange.",
     source: "services/api-gateway/src/routes/app-store.ts:1139 + :1225 + :1244"
   },
   {
     surface: "Authorization code exchange",
-    currentContract: "POST /v1/app-store/oauth/token accepts only grant_type=authorization_code and requires code, client_id, and redirect_uri; the signed code payload must match client_id and redirect_uri.",
-    developerAction: "Send the exact redirect URI used during authorize and handle INVALID_GRANT for expired, malformed, or mismatched codes.",
+    currentContract: "POST /v1/app-store/oauth/token accepts grant_type=authorization_code and requires code, client_id, redirect_uri, and code_verifier; the signed code payload must match client_id and redirect_uri, and the verifier must match the stored S256 challenge.",
+    developerAction: "Send the exact redirect URI and PKCE verifier used during authorize, and handle INVALID_GRANT for expired, malformed, mismatched, or replayed codes.",
     source: "services/api-gateway/src/routes/app-store.ts:1311 + :1316 + :1322 + :1327"
   },
   {
@@ -1250,8 +1312,8 @@ export const oauthTokenLifecycle: OAuthTokenLifecycleDoc[] = [
   },
   {
     surface: "Scoped app token",
-    currentContract: "mintAppOAuthAccessToken defaults to a 3600-second TTL, returns Bearer access_token, expires_at, scope, scopes, installation_id, app_id, and store_id, and stores only access_token_hash.",
-    developerAction: "Use the token as a one-hour scoped bearer token and store expiry separately in the partner app.",
+    currentContract: "mintAppOAuthAccessToken defaults to a 3600-second TTL, returns Bearer access_token, expires_at, scope, scopes, installation_id, app_id, and store_id, and stores only access_token_hash. Authorization-code and refresh-token flows also return a refresh_token while storing only refresh_token_hash.",
+    developerAction: "Use the token as a one-hour scoped bearer token, store expiry separately in the partner app, and replace the refresh token after every refresh response.",
     source: "services/api-gateway/src/routes/app-store.ts:213 + :227 + :241"
   },
   {
@@ -1280,8 +1342,8 @@ export const oauthTokenLifecycle: OAuthTokenLifecycleDoc[] = [
   },
   {
     surface: "Refresh tokens and rotation",
-    currentContract: "[SKIP — NEEDS BACKEND/SDK] AppOAuthGrantType only accepts authorization_code and the token response interface has no refresh_token or public credential rotation contract.",
-    developerAction: "Do not document refresh-token or app-secret rotation workflows until real gateway routes or SDK tooling land.",
+    currentContract: "POST /v1/app-store/oauth/token accepts grant_type=refresh_token, looks up the hashed refresh token in active installation config, checks client_id and expiry, issues a fresh access token, and rotates refresh_token_hash.",
+    developerAction: "Persist the newest refresh token returned by the gateway and discard the previous token immediately after a successful refresh.",
     source: "services/api-gateway/src/routes/app-store.ts:48 + :53 + :1316"
   }
 ];
@@ -1298,6 +1360,8 @@ Content-Type: application/json
   "store_id": "site_id",
   "scopes": ["read_products", "read_orders"],
   "redirect_uri": "https://partner.example/oauth/callback",
+  "code_challenge": "base64url_sha256_of_pkce_verifier",
+  "code_challenge_method": "S256",
   "state": "partner_csrf_state",
   "webhook_secret": "partner_shared_signing_secret",
   "config": {
@@ -1333,8 +1397,10 @@ Content-Type: application/json
     code: `{
   "data": {
     "access_token": "letbuyy_app_token",
+    "refresh_token": "lbapp_refresh_token",
     "token_type": "Bearer",
     "expires_at": "2026-06-03T04:15:00.000Z",
+    "refresh_expires_at": "2026-07-03T04:00:00.000Z",
     "scopes": ["read_products", "read_orders"],
     "installation_id": "installation_id",
     "app_id": "app_id",
@@ -1503,6 +1569,8 @@ export const webhookFacts = [
   "The HMAC header is X-LetBuyy-Hmac-SHA256 and the value is versioned as v1=<hex>.",
   "X-LetBuyy-Signature is sent as a legacy alias with the same versioned value.",
   "Mandatory compliance topics are always added to app webhook subscriptions: customers/data_request, customers/redact, and shop/redact.",
+  "Merchant/customer compliance producers emit through POST /v1/app-store/compliance/customers/data-request, POST /v1/app-store/compliance/customers/redact, and POST /v1/app-store/compliance/shop/redact.",
+  "App uninstall emits shop/redact before app webhook subscriptions are disabled, then emits app.uninstalled.",
   "Queued delivery retries use exponential backoff from 120 seconds and cap at one hour."
 ];
 
@@ -1524,23 +1592,23 @@ export const webhookTopics: WebhookTopicDoc[] = [
   {
     topic: "customers/data_request",
     category: "mandatory compliance",
-    deliveryRule: "App webhook subscriptions always include this topic in event_types.",
+    deliveryRule: "App webhook subscriptions always include this topic in event_types; POST /v1/app-store/compliance/customers/data-request emits it to active app-platform subscriptions for the store.",
     partnerAction: "Respond to the merchant/customer data export request through the partner app's compliance workflow.",
-    source: "packages/app-engine/src/index.ts:150 + :459"
+    source: "services/api-gateway/src/routes/app-store/compliance-routes.ts:129 + packages/app-engine/src/index.ts:150"
   },
   {
     topic: "customers/redact",
     category: "mandatory compliance",
-    deliveryRule: "App webhook subscriptions always include this topic in event_types.",
+    deliveryRule: "App webhook subscriptions always include this topic in event_types; POST /v1/app-store/compliance/customers/redact emits it to active app-platform subscriptions for the store.",
     partnerAction: "Delete or anonymize customer personal data held by the partner app.",
-    source: "packages/app-engine/src/index.ts:150 + :459"
+    source: "services/api-gateway/src/routes/app-store/compliance-routes.ts:131 + packages/app-engine/src/index.ts:150"
   },
   {
     topic: "shop/redact",
     category: "mandatory compliance",
-    deliveryRule: "App webhook subscriptions always include this topic in event_types.",
+    deliveryRule: "App webhook subscriptions always include this topic in event_types; POST /v1/app-store/compliance/shop/redact emits it explicitly and app uninstall emits shop/redact before app webhook subscriptions are disabled.",
     partnerAction: "Delete or anonymize store-level data held by the partner app after store/app lifecycle cleanup.",
-    source: "packages/app-engine/src/index.ts:150 + :459"
+    source: "services/api-gateway/src/routes/app-store/compliance-routes.ts:133 + services/api-gateway/src/routes/app-store/install-lifecycle-routes.ts:335"
   }
 ];
 
@@ -1589,9 +1657,15 @@ export const webhookDeliveryRules: WebhookDeliveryRuleDoc[] = [
   },
   {
     rule: "Subscription event filter",
-    currentBehavior: "Lifecycle dispatch sends only to subscriptions whose event_types include the current event. Planned app subscriptions append mandatory compliance topics to every configured webhook.",
-    developerAction: "Register the lifecycle topics your app needs and implement the mandatory compliance topics added by the platform.",
-    source: "services/api-gateway/src/routes/app-store.ts:447 + packages/app-engine/src/index.ts:459"
+    currentBehavior: "Lifecycle and compliance dispatch sends only to subscriptions whose event_types include the current event. Planned app subscriptions append mandatory compliance topics to every configured webhook.",
+    developerAction: "Register the lifecycle topics your app needs and implement the mandatory compliance topics emitted by the platform.",
+    source: "services/api-gateway/src/routes/app-store/shared.ts:484 + packages/app-engine/src/index.ts:1430"
+  },
+  {
+    rule: "Compliance producer routes",
+    currentBehavior: "POST /v1/app-store/compliance/customers/data-request, /customers/redact, and /shop/redact require merchant auth, store ownership, an idempotency key, and app webhook delivery configuration when active app subscriptions exist.",
+    developerAction: "Use these routes from merchant/customer compliance workflows and dedupe events by X-LetBuyy-Event-ID on the partner callback.",
+    source: "services/api-gateway/src/routes/app-store/compliance-routes.ts:129"
   }
 ];
 
@@ -1981,9 +2055,9 @@ export const sdkToolingGaps: ToolingGapDoc[] = [
   },
   {
     capability: "Published App SDK package",
-    currentStatus: "[SKIP — NEEDS BACKEND/SDK] App bridge contracts exist in @letbuyy/app-engine, but no dedicated @letbuyy/app-sdk package or browser client exists.",
+    currentStatus: "PARTIAL: @letbuyy/api-client exports createLetbuyyAppSdk for scoped app API reads and app-owned metadata writes; no dedicated @letbuyy/app-sdk browser bridge package exists yet.",
     blockedUntil: "A package-owned SDK exports bridge fetch, session, toast, resize, and navigation helpers.",
-    source: "packages/app-engine/src/index.ts:190 + apps/developer-portal/CODEX_WS10_LEDGER.md"
+    source: "packages/typescript/api-client/src/index.ts"
   },
   {
     capability: "Theme CLI scaffolder",
@@ -1999,9 +2073,9 @@ export const sdkToolingGaps: ToolingGapDoc[] = [
   },
   {
     capability: "Credential rotation console",
-    currentStatus: "[SKIP — NEEDS BACKEND/SDK] OAuth and app tokens exist, but no public credential rotation or API key console route exists for developers in this branch.",
-    blockedUntil: "Backend exposes credential create/list/revoke flows and the dashboard shell receives an authenticated adapter.",
-    source: "services/api-gateway/src/routes/app-store.ts:1311 + apps/developer-portal/CODEX_WS10_LEDGER.md"
+    currentStatus: "PARTIAL: backend app submission and API-key rotation routes exist with show-once credentials and hash-only persistence; dashboard inventory/revoke UI is not present.",
+    blockedUntil: "The dashboard shell receives an authenticated adapter for list/revoke and key history views.",
+    source: "services/api-gateway/src/routes/app-store/developer-routes.ts"
   },
   {
     capability: "Write-capable app bridge",
@@ -2014,7 +2088,7 @@ export const sdkToolingGaps: ToolingGapDoc[] = [
 export const skipItems: SkipItem[] = [
   {
     title: "Published JavaScript App SDK package",
-    reason: "[SKIP — NEEDS BACKEND/SDK] No dedicated @letbuyy/app-sdk package or browser bridge client exists in this branch."
+    reason: "[SKIP — NEEDS SDK/CLI] A minimal createLetbuyyAppSdk wrapper exists in @letbuyy/api-client, but no dedicated @letbuyy/app-sdk browser bridge package exists in this branch."
   },
   {
     title: "Theme CLI scaffolder",
@@ -2110,22 +2184,22 @@ export const dashboardSurfaces: DashboardSurfaceDoc[] = [
     auth: "merchant session",
     status: "available",
     currentPayload: "Creates a merchant-approved app charge with idempotency, INR currency, payout plan, and approval URL.",
-    source: "services/api-gateway/src/routes/app-store.ts:880 + packages/billing-core/src/index.ts:80"
+    source: "services/api-gateway/src/routes/app-store/billing-oauth-routes.ts + packages/billing-core/src/index.ts"
   },
   {
     label: "App charge approval",
     route: "POST /v1/app-store/charges/:id/approve",
     auth: "merchant session",
     status: "available",
-    currentPayload: "Approves or activates pending app charges and emits the app.charge.activated ledger event.",
-    source: "services/api-gateway/src/routes/app-store.ts:1026 + packages/billing-core/src/index.ts:92"
+    currentPayload: "Approves pending app charges, creates or returns a Razorpay payment order when configured, and emits app.charge.activated only after provider proof verifies.",
+    source: "services/api-gateway/src/routes/app-store/billing-oauth-routes.ts + packages/billing-core/src/index.ts"
   },
   {
     label: "Credential management UI",
     route: "Portal control",
     auth: "planned",
     status: "skip",
-    currentPayload: "[SKIP — NEEDS BACKEND/SDK] No public credential rotation or API key console exists in this branch.",
-    source: "apps/developer-portal/CODEX_WS10_LEDGER.md"
+    currentPayload: "[SKIP — NEEDS UI] Backend show-once app credential issuance and API-key rotation exist, but no authenticated portal inventory/revoke UI exists in this branch.",
+    source: "services/api-gateway/src/routes/app-store/developer-routes.ts"
   }
 ];

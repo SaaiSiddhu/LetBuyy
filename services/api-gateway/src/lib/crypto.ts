@@ -7,8 +7,21 @@ function hexToBytes(hex: string): Uint8Array {
     return bytes;
 }
 
-export function timingSafeEqualHex(leftHex: string, rightHex: string): boolean {
+export function timingSafeEqualText(left: string | null | undefined, right: string | null | undefined): boolean {
+    if (typeof left !== 'string' || typeof right !== 'string') return false;
+    if (!left || !right || left.length !== right.length) return false;
+
+    let diff = 0;
+    for (let index = 0; index < left.length; index += 1) {
+        diff |= left.charCodeAt(index) ^ right.charCodeAt(index);
+    }
+    return diff === 0;
+}
+
+export function timingSafeEqualHex(leftHex: string | null | undefined, rightHex: string | null | undefined): boolean {
+    if (!leftHex || !rightHex) return false;
     if (leftHex.length !== rightHex.length) return false;
+    if (leftHex.length % 2 !== 0) return false;
     if (!/^[a-f0-9]+$/i.test(leftHex) || !/^[a-f0-9]+$/i.test(rightHex)) return false;
 
     const left = hexToBytes(leftHex);
@@ -31,6 +44,13 @@ export async function hmacSha256Hex(secret: string, payload: string): Promise<st
     );
     const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
     return Array.from(new Uint8Array(signatureBuffer))
+        .map((byte) => byte.toString(16).padStart(2, '0'))
+        .join('');
+}
+
+export async function sha256Hex(input: string): Promise<string> {
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
+    return Array.from(new Uint8Array(digest))
         .map((byte) => byte.toString(16).padStart(2, '0'))
         .join('');
 }

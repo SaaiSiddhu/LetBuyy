@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { readAppStoreRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const SHARED_TYPES = 'packages/shared-types/src/index.ts';
 const API_CLIENT = 'packages/typescript/api-client/src/index.ts';
-const APP_STORE_ROUTE = 'services/api-gateway/src/routes/app-store.ts';
 const APP_MARKETPLACE_PACKAGE = 'apps/app-marketplace/package.json';
 const APP_MARKETPLACE_MANIFEST = 'apps/app-marketplace/runtime.manifest.json';
 const APP_MARKETPLACE_API_CLIENT = 'apps/app-marketplace/src/lib/api/client.ts';
@@ -41,9 +41,9 @@ test('typed API client exposes the Partner API dashboard and collaborator code e
 });
 
 test('gateway Partner API is RBAC gated and aggregates listings, payouts, stores, and analytics', () => {
-  const source = read(APP_STORE_ROUTE);
+  const source = readAppStoreRouteSource();
 
-  assert.match(source, /import \{ requireRoleCategory \} from '\.\.\/middleware\/rbac'/);
+  assert.match(source, /import \{ requireRoleCategory \} from '.*middleware\/rbac'/);
   assert.match(source, /router\.get\('\/partners\/dashboard', authMiddleware, requireRoleCategory\('partner'\)/);
   assert.match(source, /router\.post\('\/partners\/collaborator-code', authMiddleware, requireRoleCategory\('partner'\)/);
   assert.match(source, /from\('app_developers'\)/);

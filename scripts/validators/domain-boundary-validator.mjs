@@ -81,11 +81,8 @@ for (const [root, contract] of Object.entries(domainPackages)) {
 }
 
 const extractedSchemaFacades = {
-  "services/api-gateway/src/schemas/common.schema.ts": "@letbuyy/shared-types",
-  "services/api-gateway/src/schemas/product.schema.ts": "@letbuyy/commerce-core",
   "services/api-gateway/src/schemas/customer.schema.ts": "@letbuyy/commerce-core",
   "services/api-gateway/src/schemas/order.schema.ts": "@letbuyy/checkout-core",
-  "services/api-gateway/src/schemas/shipping.schema.ts": "@letbuyy/checkout-core",
   "services/api-gateway/src/schemas/coupon.schema.ts": "@letbuyy/checkout-core",
   "services/api-gateway/src/schemas/store.schema.ts": "@letbuyy/tenant-core",
   "services/api-gateway/src/schemas/onboarding.schema.ts": "@letbuyy/tenant-core",
@@ -100,11 +97,22 @@ const extractedSchemaFacades = {
   "services/api-gateway/src/schemas/operations.schema.ts": "@letbuyy/event-core",
 };
 
+const archivedSchemaFacades = {
+  "services/api-gateway/src/schemas/common.schema.ts": "docs/archive/dead-code/api-gateway/schemas/common.schema.ts",
+  "services/api-gateway/src/schemas/product.schema.ts": "docs/archive/dead-code/api-gateway/schemas/product.schema.ts",
+  "services/api-gateway/src/schemas/shipping.schema.ts": "docs/archive/dead-code/api-gateway/schemas/shipping.schema.ts",
+};
+
 for (const [file, packageName] of Object.entries(extractedSchemaFacades)) {
   const content = readFile(file);
   reporter.assert(content.includes(`from '${packageName}'`) || content.includes(`from "${packageName}"`), `Extracted schema facade must re-export from ${packageName}: ${file}`);
   reporter.assert(!/\bz\.object\b|\bz\.enum\b|\binterface\s+\w+|\btype\s+\w+\s*=/.test(content), `Extracted schema facade must not define domain contracts locally: ${file}`);
   reporter.assert(!content.includes("./common.schema"), `Extracted schema facade must not rebuild contracts from service-local common schema: ${file}`);
+}
+
+for (const [activeFile, archiveFile] of Object.entries(archivedSchemaFacades)) {
+  reporter.assert(!exists(activeFile), `Dead schema facade must stay archived outside active source: ${activeFile}`);
+  reporter.assert(exists(archiveFile), `Archived schema facade must preserve forensic provenance: ${archiveFile}`);
 }
 
 reporter.assert(!exists("apps/storefront-runtime/src/types/store.ts"), "Storefront runtime must not keep a local domain type facade");
@@ -237,7 +245,7 @@ for (const file of appApiAndLibFiles) {
   const content = readFile(file);
   reporter.assert(!directDbOrProviderMutationPattern.test(content), `App-local API/lib file must not access databases or provider mutation SDKs directly: ${file}`);
   reporter.assert(!appLocalCommerceLogicPattern.test(content), `App-local API/lib file must not own commerce/payment/customer mutation logic: ${file}`);
-  reporter.assert(!appLocalCredentialStoragePattern.test(content) || isAuthOwnedLocalFile(file), `App-local API/lib file must not handle password hashes outside auth-owned routes: ${file}`);
+  reporter.assert(!appLocalCredentialStoragePattern.test(content), `App-local API/lib file must not handle password hashes in app-local API/lib files: ${file}`);
   reporter.assert(!appLocalProviderSignaturePattern.test(content) || isAuthOwnedLocalFile(file), `App-local API/lib file must not verify provider signatures outside auth-owned routes: ${file}`);
 }
 
@@ -275,4 +283,4 @@ for (const file of mobileMerchantModelFacades) {
   reporter.assert(!/\b(class|enum)\s+\w+/.test(content), `Mobile merchant app must not define shared model classes locally: ${file}`);
 }
 
-reporter.finish(`${Object.keys(domainPackages).length} domain packages, ${Object.keys(extractedSchemaFacades).length} schema facades, and ${appApiRoutes.length} app API route ownership records checked`);
+reporter.finish(`${Object.keys(domainPackages).length} domain packages, ${Object.keys(extractedSchemaFacades).length} active schema facades, ${Object.keys(archivedSchemaFacades).length} archived schema facades, and ${appApiRoutes.length} app API route ownership records checked`);

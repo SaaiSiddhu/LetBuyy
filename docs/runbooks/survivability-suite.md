@@ -27,15 +27,15 @@ Fresh operations records are necessary but not sufficient. Certification only pa
 
 ## Local Operational Proof
 
-When provider credentials or load tools are unavailable, run the local-only proof harness:
+When provider credentials or load tools are unavailable, run the plan-only proof surfaces:
 
 ```bash
-pnpm run proof:local
+pnpm run load:plan
+pnpm run chaos:plan
+pnpm run survivability:plan
 ```
 
-This executes the local replay runtime, local HTTP load, replay determinism stress, and queue recovery stress. It writes ignored evidence to `artifacts/local-operational-proof/report.json`.
-
-The report has `scope: "local-only"` and `certification: false`. It is useful execution evidence for local runtime behavior, but it is not production or internet-scale certification.
+These commands print executable plans and validate contracts. They do not record evidence and do not claim production or internet-scale certification.
 
 ## Load and Chaos Proof Surfaces
 

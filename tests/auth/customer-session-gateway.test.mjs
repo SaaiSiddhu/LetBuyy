@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const authCoreSessionSource = readFileSync('packages/auth-core/src/customer-session.ts', 'utf8');
 const gatewaySessionMiddleware = readFileSync('services/api-gateway/src/middleware/customer-session.ts', 'utf8');
-const storefrontRouteSource = readFileSync('services/api-gateway/src/routes/storefront.ts', 'utf8');
+const storefrontRouteSource = readStorefrontRouteSource();
 const storefrontGraphQLSource = readFileSync('services/api-gateway/src/graphql/storefront.ts', 'utf8');
 const storefrontApiClientSource = readFileSync('apps/storefront-runtime/src/lib/api/client.ts', 'utf8');
 const storefrontSetPasswordRouteSource = readFileSync('apps/storefront-runtime/src/app/api/customer/set-password/route.ts', 'utf8');

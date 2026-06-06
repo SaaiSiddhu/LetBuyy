@@ -29,14 +29,14 @@ const fontVariables = `${letbuyySans.variable} ${letbuyyDisplay.variable} ${letb
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_ACCOUNTS_URL || "https://accounts.letbuyy.store"),
   title: "LetBuyy - Create Your Online Store",
-  description: "Build beautiful online stores, portfolios, resumes, and landing pages with LetBuyy Store Builder",
+  description: "Build beautiful online stores, blogs, and landing pages with LetBuyy Store Builder",
   icons: {
     icon: "/icons/app_icon.png",
     apple: "/icons/app_icon.png",
   },
   openGraph: {
     title: "LetBuyy - Create Your Online Store",
-    description: "Build beautiful online stores, portfolios, resumes, and landing pages",
+    description: "Build beautiful online stores, blogs, and landing pages",
     images: ["/icons/app_icon.png"],
   },
 };

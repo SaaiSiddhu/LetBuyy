@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button, EmptyState, MaterialIcon, Plus, Store } from '@letbuyy/ui'
+import { getAccountsUrl } from '@/lib/public-urls'
 
 interface UserStore {
     id: string
@@ -59,7 +60,7 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
     const [tab, setTab] = useState<'active' | 'inactive'>('active')
     const [isDark, setIsDark] = useState(false)
 
-    const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store'
+    const accountsUrl = getAccountsUrl()
 
     useEffect(() => {
         const theme = localStorage.getItem('letbuyy_theme')

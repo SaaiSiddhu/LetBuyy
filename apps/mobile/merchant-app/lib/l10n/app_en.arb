@@ -1,0 +1,11 @@
+{
+  "@@locale": "en",
+  "appTitle": "LetBuyy Store Builder",
+  "selectStore": "Select store",
+  "switchStore": "Switch store",
+  "storeSwitcherLabel": "Selected store switcher",
+  "noStoreSelected": "No store selected",
+  "offlineMode": "Offline mode",
+  "cachedDataNotice": "Showing cached data while the network is unavailable.",
+  "deepLinkUnsupported": "This link is not supported on mobile yet."
+}

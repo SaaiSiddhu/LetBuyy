@@ -31,6 +31,22 @@ export interface LiquidAppBlockRenderSource {
   settings?: Record<string, unknown>;
 }
 
+export interface LiquidAppEmbeds {
+  header?: Array<string | LiquidAppBlockRenderSource>;
+  footer?: Array<string | LiquidAppBlockRenderSource>;
+}
+
+export interface LiquidCommerceDrops {
+  shop?: Record<string, unknown>;
+  request?: Record<string, unknown>;
+  settings?: Record<string, unknown>;
+  product?: unknown;
+  collection?: unknown;
+  collections?: unknown;
+  cart?: unknown;
+  customer?: unknown;
+}
+
 export interface LiquidRenderedBlock {
   id: string;
   type: string;
@@ -59,8 +75,9 @@ export interface ThemeRendererInput extends StorefrontCompositionInput {
   injections?: RuntimeSectionInjection[];
   liquidBundle?: LiquidThemePackageBundle;
   liquidTemplateKey?: string;
-  liquidContext?: Record<string, unknown>;
+  liquidContext?: LiquidCommerceDrops;
   liquidAppBlocks?: Record<string, string | LiquidAppBlockRenderSource>;
+  liquidAppEmbeds?: LiquidAppEmbeds;
 }
 
 export interface ThemeRendererResult {
@@ -129,7 +146,9 @@ export class LiquidRenderer implements ThemeRenderer {
       };
     }
 
-    const engine = createLiquidEngine(bundle);
+    const contentForHeader = renderLiquidEmbedRegion(input.liquidAppEmbeds?.header);
+    const contentForFooter = renderLiquidEmbedRegion(input.liquidAppEmbeds?.footer);
+    const engine = createLiquidEngine(bundle, { contentForHeader, contentForFooter });
     const renderedSections: LiquidRenderedSection[] = [];
     const sectionOrder = orderedKeys(template.sections, template.order);
 
@@ -187,8 +206,8 @@ export class LiquidRenderer implements ThemeRenderer {
       bundle.layout.theme.source,
       buildLiquidScope(input, bundle, {
         content_for_layout: contentForLayout,
-        content_for_header: '',
-        content_for_footer: '',
+        content_for_header: contentForHeader,
+        content_for_footer: contentForFooter,
       }),
       liquidRenderOptions,
     );
@@ -227,8 +246,13 @@ const liquidRenderOptions = {
   memoryLimit: 2_000_000,
 } as const;
 
-function createLiquidEngine(bundle: LiquidThemePackageBundle): Liquid {
-  return new Liquid({
+function createLiquidEngine(
+  bundle: LiquidThemePackageBundle,
+  globals: { contentForHeader?: string; contentForFooter?: string } = {},
+): Liquid {
+  const contentForHeader = globals.contentForHeader || '';
+  const contentForFooter = globals.contentForFooter || '';
+  const engine = new Liquid({
     cache: false,
     dynamicPartials: false,
     strictFilters: true,
@@ -244,10 +268,13 @@ function createLiquidEngine(bundle: LiquidThemePackageBundle): Liquid {
       ...Object.values(bundle.blocks).map((block) => [block.path, block.source]),
     ]),
     globals: {
-      content_for_header: '',
-      content_for_footer: '',
+      content_for_header: contentForHeader,
+      content_for_footer: contentForFooter,
     },
   });
+
+  registerLetbuyyLiquidFilters(engine);
+  return engine;
 }
 
 function resolveLiquidTemplateKey(input: ThemeRendererInput, bundle: LiquidThemePackageBundle): string {
@@ -334,6 +361,8 @@ function buildLiquidScope(
   bundle: LiquidThemePackageBundle,
   extra: Record<string, unknown>,
 ): Record<string, unknown> {
+  const commerceDrops = buildLiquidCommerceDrops(input.liquidContext);
+
   return {
     shop: {
       id: input.context.storeId,
@@ -357,6 +386,11 @@ function buildLiquidScope(
       cart_url: '/cart',
       search_url: '/search',
     },
+    product: commerceDrops.product,
+    collection: commerceDrops.collection,
+    collections: commerceDrops.collections,
+    cart: commerceDrops.cart,
+    customer: commerceDrops.customer,
     ...extra,
   };
 }
@@ -365,6 +399,107 @@ function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
     : {};
+}
+
+const MAX_LIQUID_DROP_DEPTH = 4;
+const MAX_LIQUID_DROP_KEYS = 80;
+const MAX_LIQUID_DROP_ARRAY_ITEMS = 100;
+const BLOCKED_DROP_KEYS = new Set(['__proto__', 'constructor', 'prototype', 'password', 'password_hash', 'access_token', 'refresh_token', 'signing_secret', 'client_secret']);
+
+function buildLiquidCommerceDrops(context?: LiquidCommerceDrops): {
+  product: unknown;
+  collection: unknown;
+  collections: unknown[];
+  cart: Record<string, unknown>;
+  customer: unknown;
+} {
+  const collections = Array.isArray(context?.collections)
+    ? toLiquidDrop(context.collections)
+    : [];
+
+  return {
+    product: toLiquidDrop(context?.product) || null,
+    collection: toLiquidDrop(context?.collection) || null,
+    collections: Array.isArray(collections) ? collections : [],
+    cart: asDropRecord(context?.cart) || {
+      item_count: 0,
+      items: [],
+      total_price: 0,
+      currency: 'INR',
+    },
+    customer: toLiquidDrop(context?.customer) || null,
+  };
+}
+
+function asDropRecord(value: unknown): Record<string, unknown> | null {
+  const drop = toLiquidDrop(value);
+  return drop && typeof drop === 'object' && !Array.isArray(drop)
+    ? drop as Record<string, unknown>
+    : null;
+}
+
+function toLiquidDrop(value: unknown, depth = 0): unknown {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return value;
+  if (value instanceof Date) return value.toISOString();
+  if (depth >= MAX_LIQUID_DROP_DEPTH) return undefined;
+
+  if (Array.isArray(value)) {
+    return value
+      .slice(0, MAX_LIQUID_DROP_ARRAY_ITEMS)
+      .map((item) => toLiquidDrop(item, depth + 1))
+      .filter((item) => item !== undefined);
+  }
+
+  if (typeof value !== 'object') return undefined;
+
+  const output: Record<string, unknown> = {};
+  for (const [key, raw] of Object.entries(value as Record<string, unknown>).slice(0, MAX_LIQUID_DROP_KEYS)) {
+    if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(key) || BLOCKED_DROP_KEYS.has(key)) continue;
+    const next = toLiquidDrop(raw, depth + 1);
+    if (next !== undefined) output[key] = next;
+  }
+
+  return output;
+}
+
+function renderLiquidEmbedRegion(embeds?: Array<string | LiquidAppBlockRenderSource>): string {
+  if (!embeds || embeds.length === 0) return '';
+
+  return embeds
+    .map((embed) => typeof embed === 'string' ? embed : embed.html)
+    .filter((html): html is string => typeof html === 'string' && html.trim().length > 0)
+    .map((html) => sanitizeRenderedHtml(html))
+    .join('\n');
+}
+
+function registerLetbuyyLiquidFilters(engine: Liquid): void {
+  engine.registerFilter('money', (value: unknown) => formatLiquidMoney(value));
+  engine.registerFilter('money_with_currency', (value: unknown, currency?: unknown) => formatLiquidMoney(value, currency));
+  engine.registerFilter('json', (value: unknown) => JSON.stringify(toLiquidDrop(value) ?? null).replace(/</g, '\\u003c'));
+  engine.registerFilter('asset_url', (value: unknown) => safeLiquidUrl(value));
+  engine.registerFilter('image_url', (value: unknown) => safeLiquidUrl(value));
+}
+
+function formatLiquidMoney(value: unknown, currency: unknown = 'INR'): string {
+  const numeric = Number(value);
+  const amount = Number.isFinite(numeric) ? numeric / 100 : 0;
+  const currencyCode = typeof currency === 'string' && /^[A-Z]{3}$/.test(currency) ? currency : 'INR';
+  const formatted = amount.toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  return `${currencyCode} ${formatted}`;
+}
+
+function safeLiquidUrl(value: unknown): string {
+  const url = String(value || '').trim();
+  if (!url) return '';
+  if (/^(?:https?:)?\/\//i.test(url)) return url;
+  if (url.startsWith('/')) return url;
+  if (/^[a-z0-9/_.,-]+$/i.test(url)) return `/assets/${url.replace(/^\/+/, '')}`;
+  return '';
 }
 
 function resolveLiquidAppBlockHtml(

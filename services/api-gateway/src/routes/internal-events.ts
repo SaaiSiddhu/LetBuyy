@@ -3,6 +3,7 @@ import { z } from 'zod';
 import type { Env } from '../index';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { getSupabaseAdmin } from '../lib/supabase';
+import { isInternalApiSecretRequest } from '../lib/internal-secret';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -18,9 +19,7 @@ const DomainEventEmitSchema = z.object({
 });
 
 function isInternalRequest(c: { env: Env; req: { header(name: string): string | undefined } }): boolean {
-    const secret = c.env.INTERNAL_API_SECRET;
-    if (!secret) return false;
-    return c.req.header('X-Internal-API-Secret') === secret;
+    return isInternalApiSecretRequest(c.env, c.req);
 }
 
 router.post('/domain', async (c) => {

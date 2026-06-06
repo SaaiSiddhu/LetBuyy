@@ -10,6 +10,8 @@ Security operations cover secrets, RBAC, audit, deployment signing, scanning, an
 - Security events must be audit logged through `execution_audit_trail`, `runtime_control_commands`, or `security_enforcement_events`.
 - Cookie-backed mutating worker requests require CSRF double-submit validation.
 - Provider webhooks must persist signature verification evidence before side effects.
+- Credentialed CORS may reflect only fixed platform origins or exact HTTPS origins listed in `CORS_CREDENTIAL_ORIGINS`; wildcard tenant subdomain reflection is forbidden.
+- Development auth bypasses, including identity `devOtp`, Turnstile `dev-bypass-token`, and platform-console `PLATFORM_CONSOLE_DEV_MFA_CODE`, require `LETBUYY_ENABLE_DEV_AUTH_BYPASS=true` in a `NODE_ENV=development` build and must fail closed in production/staging runtime flags.
 
 ## Scanning
 

@@ -8,6 +8,7 @@ import { featureGate } from './middleware/featureFlags';
 import { observability } from './middleware/observability';
 import { AppError, formatAppError } from './lib/errors';
 import { getSupabaseAdminFromEnv } from './lib/supabase';
+import { resolveCredentialedCorsOrigin } from './lib/cors';
 import storesRouter from './routes/stores';
 import productsRouter from './routes/products';
 import ordersRouter from './routes/orders';
@@ -24,6 +25,7 @@ import customersRouter from './routes/customers';
 import notificationsRouter from './routes/notifications';
 import mediaRouter from './routes/media';
 import aiRouter from './routes/ai';
+import appApiRouter from './routes/app-api';
 import appStoreRouter from './routes/app-store';
 import themesRouter from './routes/themes';
 import exportRouter from './routes/export';
@@ -46,12 +48,14 @@ import { createStorefrontGraphQLRouter } from './graphql/storefront';
 import { LETBUYY_INTERNAL_SUBREQUEST_HEADER, isGraphQLRestShimSubrequest } from './graphql/rest-shim';
 import { OutboxExecutionAdapter } from './execution/outbox-execution.adapter';
 import { QueueExecutionAdapter } from './execution/queue-execution.adapter';
+import { ObservabilityExecutionAdapter } from './execution/observability-execution.adapter';
 import {
     planScheduledDispatchQueueTriggers,
     type CloudflareQueueTriggerPlan,
     type ScheduledDispatchQueueTriggerInput,
 } from './execution/cloudflare-queue-triggers';
 import { createCloudflareQueueProducer } from '@letbuyy/infrastructure/queue-adapter';
+import { writeRuntimeTelemetryDataPoint } from '@letbuyy/infrastructure/runtime-telemetry-adapter';
 export { LetbuyyRuntimeDurableObject } from './durable/runtime-coordinator';
 
 // Environment bindings
@@ -103,9 +107,11 @@ export interface Env {
     NODE_ENV?: string;
     DEPLOYMENT_ENV?: string;
     TELEMETRY_ENV?: string;
+    CORS_CREDENTIAL_ORIGINS?: string;
     FEATURE_GRAPHQL?: string;
     FEATURE_EXTENSIONS?: string;
     FEATURE_LIQUID?: string;
+    LETBUYY_ENABLE_LEGACY_SITE_TYPES?: string;
     STOREFRONT_CACHE?: string;
     STOREFRONT_POOLED_SQL?: string;
     STOREFRONT_VIEW_SAMPLE_RATE?: string;
@@ -127,6 +133,9 @@ export interface Env {
     // Future: Upstash Redis for distributed rate limiting
     UPSTASH_REDIS_REST_URL: string;
     UPSTASH_REDIS_REST_TOKEN: string;
+    // Beta free-tier: when unset/off, non-production rate limiting uses in-memory (no KV writes).
+    // Set to "on" only to restore the Cloudflare KV fallback for staging/dev.
+    RATE_LIMIT_KV_FALLBACK?: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -216,10 +225,32 @@ type CloudflareQueueTriggerResult = Array<{
     error?: string;
 }>;
 
+interface ReplayLagSnapshot {
+    maxLagSeconds: number;
+    activeReplays: number;
+    ownerRuntime: string;
+    replayId: string | null;
+    status: string;
+}
+
 function numberField(value: unknown, key: string): number {
     return value && typeof value === 'object' && typeof (value as Record<string, unknown>)[key] === 'number'
         ? (value as Record<string, number>)[key]
         : 0;
+}
+
+function stringField(value: unknown, key: string): string | null {
+    const candidate = value && typeof value === 'object'
+        ? (value as Record<string, unknown>)[key]
+        : null;
+    return typeof candidate === 'string' && candidate.trim().length > 0 ? candidate.trim() : null;
+}
+
+function secondsSince(value: string | null, nowMs: number): number {
+    if (!value) return 0;
+    const timestamp = Date.parse(value);
+    if (!Number.isFinite(timestamp)) return 0;
+    return Math.max(0, Math.floor((nowMs - timestamp) / 1000));
 }
 
 function hasCount(result: { count?: number | null; error?: { message?: string } | null }, label: string): boolean {
@@ -354,6 +385,94 @@ async function enqueueScheduledDispatchTriggers(
     return enqueueCloudflareQueueTriggers(env, planScheduledDispatchQueueTriggers(input));
 }
 
+async function readReplayLagSnapshot(db: ReturnType<typeof getSupabaseAdminFromEnv>): Promise<ReplayLagSnapshot> {
+    const { data, error } = await db
+        .from('replay_operation_schedules')
+        .select('replay_id, owner_runtime, status, created_at, updated_at')
+        .in('status', ['planned', 'authorized', 'running', 'paused'])
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true })
+        .limit(100);
+
+    if (error) throw new Error(`Replay lag snapshot failed: ${error.message}`);
+
+    const nowMs = Date.now();
+    const rows = Array.isArray(data) ? data : [];
+    let snapshot: ReplayLagSnapshot = {
+        maxLagSeconds: 0,
+        activeReplays: rows.length,
+        ownerRuntime: 'none',
+        replayId: null,
+        status: 'idle',
+    };
+
+    for (const row of rows) {
+        const lagSeconds = secondsSince(stringField(row, 'created_at'), nowMs);
+        if (lagSeconds >= snapshot.maxLagSeconds) {
+            snapshot = {
+                maxLagSeconds: lagSeconds,
+                activeReplays: rows.length,
+                ownerRuntime: stringField(row, 'owner_runtime') || 'unknown',
+                replayId: stringField(row, 'replay_id'),
+                status: stringField(row, 'status') || 'unknown',
+            };
+        }
+    }
+
+    return snapshot;
+}
+
+async function recordScheduledReplayLagMetric(
+    env: Env,
+    db: ReturnType<typeof getSupabaseAdminFromEnv>,
+    dispatcherId: string,
+): Promise<void> {
+    const snapshot = await readReplayLagSnapshot(db);
+    const runtimeName = env.RUNTIME_NAME || 'api-gateway';
+    const deploymentEnv = env.DEPLOYMENT_ENV || env.ENVIRONMENT;
+    const telemetryEnv = env.TELEMETRY_ENV || env.ENVIRONMENT;
+
+    writeRuntimeTelemetryDataPoint(env.RUNTIME_TELEMETRY, {
+        metricName: 'letbuyy.replay.lag.seconds',
+        runtimeName,
+        environment: env.ENVIRONMENT,
+        deploymentEnv,
+        telemetryEnv,
+        requestId: dispatcherId,
+        traceId: dispatcherId,
+        index: snapshot.ownerRuntime === 'none' ? `${runtimeName}:${env.ENVIRONMENT}` : snapshot.ownerRuntime,
+        blobs: [
+            snapshot.ownerRuntime,
+            snapshot.status,
+            snapshot.replayId || '',
+            'scheduled-dispatch',
+        ],
+        doubles: [
+            snapshot.maxLagSeconds,
+            snapshot.activeReplays,
+        ],
+    });
+
+    await new ObservabilityExecutionAdapter(db).recordRuntimeMetric({
+        metricName: 'letbuyy.replay.lag.seconds',
+        metricValue: snapshot.maxLagSeconds,
+        unit: 'seconds',
+        runtimeName,
+        requestId: dispatcherId,
+        correlationId: dispatcherId,
+        traceId: dispatcherId,
+        dimensions: {
+            owner_runtime: snapshot.ownerRuntime,
+            replay_id: snapshot.replayId,
+            status: snapshot.status,
+            active_replays: snapshot.activeReplays,
+            deployment_env: deploymentEnv,
+            telemetry_env: telemetryEnv,
+            source: 'api-gateway.scheduled_dispatch',
+        },
+    });
+}
+
 // Global middleware
 app.use('*', securityHeaders);
 app.use('*', requestId);
@@ -369,34 +488,14 @@ app.use('*', observability);
 
 app.use(
     '*',
-    cors({
-        origin: (origin) => {
-            if (!origin) return 'https://letbuyy.store';
-            const allowed = [
-                'https://letbuyy.store',
-                'https://admin.letbuyy.store',
-                'https://accounts.letbuyy.store',
-                'https://console.letbuyy.store',
-                'https://team.letbuyy.store',
-                'https://accounts.staging.letbuyy.store',
-                'https://merchant.staging.letbuyy.store',
-                'https://storefront.staging.letbuyy.store',
-                'https://apps.staging.letbuyy.store',
-                'https://themes.staging.letbuyy.store',
-                'https://console.staging.letbuyy.store',
-                'https://operations.staging.letbuyy.store',
-            ];
-            if (allowed.includes(origin)) return origin;
-            // Allow all *.letbuyy.store subdomains (storefronts)
-            if (/^https:\/\/[a-z0-9-]+\.letbuyy\.store$/.test(origin)) return origin;
-            return 'https://letbuyy.store';
-        },
+    (c, next) => cors({
+        origin: (origin) => resolveCredentialedCorsOrigin(origin, c.env),
         allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowHeaders: ['Content-Type', 'Authorization', 'X-Store-ID', 'X-Request-ID', 'X-Trace-ID', 'X-Idempotency-Key', 'X-Platform-Console-Token', 'X-LetBuyy-API-Version', 'LetBuyy-API-Version'],
         exposeHeaders: ['X-Request-ID', 'X-Trace-ID', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset', 'X-RateLimit-Cost', 'X-RateLimit-Policy', 'X-LetBuyy-API-Version', 'X-Response-Time'],
         maxAge: 86400,
         credentials: true,
-    })
+    })(c, next)
 );
 
 // Health check
@@ -455,6 +554,7 @@ api.route('/graphql/storefront', storefrontGraphQLRouter);
 api.route('/storefront', storefrontRouter);
 api.route('/themes', themesRouter);
 api.route('/app-store', appStoreRouter);
+api.route('/app', appApiRouter);
 api.route('/internal/console', internalConsoleRouter);
 api.route('/internal/billing', internalBillingRouter);
 api.route('/internal/events', internalEventsRouter);
@@ -558,6 +658,21 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
             Boolean(env.WEBHOOK_SERVICE && env.INTERNAL_API_SECRET),
         );
 
+        try {
+            await recordScheduledReplayLagMetric(env, db, dispatcherId);
+        } catch (error) {
+            console.error(JSON.stringify({
+                level: 'error',
+                service: 'letbuyy-api',
+                route: 'scheduled.replay_lag_metric',
+                method: 'CRON',
+                status_code: 500,
+                latency_ms: 0,
+                dispatcher_id: dispatcherId,
+                error: error instanceof Error ? error.message : 'Replay lag metric recording failed',
+            }));
+        }
+
         if (!pending.hasWork) {
             console.info(JSON.stringify({
                 level: 'info',
@@ -598,6 +713,13 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
         }
         const queueResult = await queue.consumeQueues(workerId, queueNames, 50);
         const hadWork = scheduledDispatchHadWork(outboxResult, queueResult, webhookResult);
+        // Beta free-tier: only emit Cloudflare queue-trigger messages on genuine forward progress
+        // (real outbox/queue/webhook work), not on failure-only churn. Poison rows that keep failing
+        // no longer cost a queue write every cron tick — this breaks the perpetual idle drain.
+        const hadForwardProgress = numberField(outboxResult, 'processed') > 0
+            || numberField(outboxResult, 'queued_jobs') > 0
+            || numberField(outboxResult, 'webhook_deliveries') > 0
+            || sumScheduledQueueResult(queueResult, 'succeeded') > 0;
         const completedDispatchTriggerInput = {
             status: 'completed',
             event_type: 'runtime.scheduled_dispatch.completed',
@@ -615,7 +737,7 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
             event_type: 'runtime.scheduled_dispatch.completed';
         };
         let cloudflareQueueTriggers: CloudflareQueueTriggerResult = [];
-        if (hadWork) {
+        if (hadForwardProgress) {
             cloudflareQueueTriggers = await enqueueScheduledDispatchTriggers(env, completedDispatchTriggerInput);
         }
 
@@ -643,41 +765,14 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
             worker_id: workerId,
             outbox_result: outboxResult,
             queue_result: queueResult,
-            completion_event_enqueued: hadWork,
+            completion_event_enqueued: hadForwardProgress,
             cloudflare_queue_triggers: cloudflareQueueTriggers,
             preflight: pending,
         }));
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : 'Scheduled outbox dispatch failed';
-        const failedDispatchTriggerInput = {
-            status: 'failed',
-            event_type: 'runtime.scheduled_dispatch.failed',
-            dispatcherId,
-            workerId,
-            eventId: crypto.randomUUID(),
-            environment: env.ENVIRONMENT,
-            deploymentEnv: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
-            telemetryEnv: env.TELEMETRY_ENV || env.ENVIRONMENT,
-            error: message,
-        } satisfies ScheduledDispatchQueueTriggerInput & {
-            event_type: 'runtime.scheduled_dispatch.failed';
-        };
-        const cloudflareQueueTriggers = await enqueueScheduledDispatchTriggers(env, failedDispatchTriggerInput);
-
-        if (cloudflareQueueTriggers.some((trigger) => trigger.status === 'failed')) {
-            console.error(JSON.stringify({
-                level: 'error',
-                service: 'letbuyy-api',
-                route: 'scheduled.outbox_dispatch.failure_event',
-                method: 'CRON',
-                status_code: 500,
-                latency_ms: 0,
-                dispatcher_id: dispatcherId,
-                error: message,
-                failed_triggers: cloudflareQueueTriggers.filter((trigger) => trigger.status === 'failed'),
-            }));
-        }
-
+        // Beta free-tier: do NOT enqueue a Cloudflare queue message on every failure. A poison row that
+        // fails each tick would otherwise cost a queue write per cron run. Failures stay observable via logs.
         console.error(JSON.stringify({
             level: 'error',
             service: 'letbuyy-api',
@@ -687,7 +782,6 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
             latency_ms: 0,
             dispatcher_id: dispatcherId,
             error: message,
-            cloudflare_queue_triggers: cloudflareQueueTriggers,
         }));
     }
 }

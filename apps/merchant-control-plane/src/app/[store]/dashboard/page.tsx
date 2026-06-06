@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
 import { createMerchantApiClient } from '@/lib/api/client'
+import { formatInrCurrency } from '@letbuyy/ui/formatting'
 import DashboardClient from './DashboardClient'
 import type {
     AnalyticsDashboard,
@@ -240,7 +241,7 @@ function emptyDashboardHomeData(): DashboardHomeData {
 
 function orderActivity(order: Order): DashboardActivity {
     const customer = order.customer_name || order.customer_email || order.customer_phone || 'Customer'
-    const amount = formatCurrency(order.total || 0)
+    const amount = formatInrCurrency(order.total || 0, { maximumFractionDigits: 0 }) || '₹0'
     const orderId = order.id || crypto.randomUUID()
     const orderNumber = order.order_number || orderId.slice(0, 8)
 
@@ -297,12 +298,4 @@ function titleize(value: string) {
         .filter(Boolean)
         .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
         .join(' ')
-}
-
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0,
-    }).format(amount)
 }

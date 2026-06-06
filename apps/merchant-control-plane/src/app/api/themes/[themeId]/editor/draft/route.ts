@@ -8,6 +8,14 @@ function readTemplateKey(value: unknown): string {
         : 'index'
 }
 
+function readPositiveInt(value: unknown): number | undefined {
+    const numeric = typeof value === 'number'
+        ? value
+        : typeof value === 'string' ? Number(value) : Number.NaN
+
+    return Number.isInteger(numeric) && numeric > 0 ? numeric : undefined
+}
+
 /**
  * POST /api/themes/[themeId]/editor/draft?store_name=xxx&template=product
  *
@@ -34,6 +42,7 @@ export async function POST(
         const body = await request.json()
         const { draftConfig } = body
         const templateKey = readTemplateKey(body?.templateKey || body?.template_key || queryTemplateKey)
+        const baseVersion = readPositiveInt(body?.baseVersion || body?.base_version)
 
         if (!draftConfig) {
             return NextResponse.json(
@@ -49,6 +58,7 @@ export async function POST(
             store_id: resolved.storeId,
             template_key: templateKey,
             template_config: draftConfig,
+            base_version: baseVersion,
             client: 'admin-web',
         })
 

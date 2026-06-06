@@ -2,11 +2,13 @@
 
 LetBuyy mobile surfaces are Flutter runtimes backed by shared Dart packages. Mobile apps must not duplicate business logic that belongs in shared packages or backend services.
 
-## Canonical Mobile Runtimes
+## Mobile Runtime Status
 
-- `apps/mobile/shopper-app`: reserved shopper/customer runtime.
 - `apps/mobile/merchant-app`: active merchant runtime for dashboard, builder, products, themes, preview, and store management.
-- `apps/mobile/operator-app`: active platform operator scaffold.
+- `apps/mobile/shopper-app`: reserved/not-implemented shopper/customer root; manifest-and-AGENTS only.
+- `apps/mobile/operator-app`: reserved/not-implemented platform-operator companion root; manifest-and-AGENTS only.
+
+Reserved mobile roots are not deployable runtimes, do not participate in deployment or production topology, and must not contain starter demos, package manifests, platform build folders, tests, or app source until a human-approved mobile build scope adds real gateway-wired source, tests, deployment config, and governance approval.
 
 `apps/mobile/operator-team-app` is retired and must not be recreated.
 
@@ -42,6 +44,7 @@ New mobile DTOs that cross more than one screen, service, or runtime must be add
 ## Enforcement
 
 - `runtime-manifest-validator` requires mobile runtime manifests.
+- `mobile-topology-honesty-validator` requires reserved mobile roots to stay manifest-and-AGENTS-only and absent from deployment/production topology.
 - `dependency-graph-validator` enforces Dart package layering and circular dependency prevention.
 - `stale-artifact-validator` detects local Flutter build pollution under app/package roots.
 - `generated-artifact-validator` blocks tracked Flutter artifacts.

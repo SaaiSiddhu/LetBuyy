@@ -47,7 +47,7 @@ export default function DynamicFooter({ store, settings, blocks = [] }: DynamicF
     const youtubeUrl = settings?.youtubeUrl || '';
 
     // Contact email
-    const contactEmail = settings?.contactEmail || 'help@letbuyy.com';
+    const contactEmail = settings?.contactEmail || 'help@letbuyy.store';
 
     const footerBlockLinks = blocks
         .filter((block) => block.type === 'footerLink' && block.isVisible !== false)

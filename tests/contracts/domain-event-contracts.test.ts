@@ -66,3 +66,35 @@ test('payout release events are explicit human-gated reserved contracts', () => 
   assert.equal(failed?.implementationStatus, 'reserved-human-gated');
   assert.match(failed?.reservedReason || '', /payout credentials/);
 });
+
+test('webhook payment events are contracted and validate provider payloads', () => {
+  const captured = getDomainEventContract('payment.captured');
+  const failed = getDomainEventContract('payment.failed');
+  const refund = getDomainEventContract('refund.created');
+  const subscription = getDomainEventContract('payment.subscription.activated');
+
+  assert.equal(captured?.aggregateType, 'order');
+  assert.equal(failed?.aggregateType, 'order');
+  assert.equal(refund?.aggregateType, 'order');
+  assert.equal(subscription?.aggregateType, 'subscription');
+
+  const payload = parseDomainEventPayload('payment.captured', {
+    provider: 'razorpay',
+    provider_event_id: 'evt_1',
+    provider_event_type: 'payment.captured',
+    order_id: storeId,
+    payment_id: 'pay_1',
+    payment_status: 'paid',
+  });
+
+  assert.equal(payload.provider, 'razorpay');
+
+  assert.throws(
+    () => parseDomainEventPayload('payment.failed', {
+      provider: 'unknown',
+      provider_event_id: 'evt_2',
+      order_id: storeId,
+    }),
+    /Invalid option/,
+  );
+});

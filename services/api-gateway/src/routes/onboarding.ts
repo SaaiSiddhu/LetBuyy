@@ -14,8 +14,23 @@ import {
     CheckSubdomainSchema,
     STEP_SCHEMAS,
 } from '../schemas/onboarding.schema';
+import { isLegacySiteType, legacySiteTypeCreationEnabled } from '@letbuyy/tenant-core';
 
 const router = new Hono<{ Bindings: Env }>();
+
+function legacySiteTypeCreationAllowed(env: Env): boolean {
+    return legacySiteTypeCreationEnabled(env.LETBUYY_ENABLE_LEGACY_SITE_TYPES);
+}
+
+function legacySiteTypeCreationResponse(siteType: string) {
+    return {
+        success: false,
+        error: {
+            code: 'LEGACY_SITE_TYPE_DISABLED',
+            message: `${siteType} site creation is legacy-gated. Existing sites remain supported, but new portfolio/resume acquisition requires LETBUYY_ENABLE_LEGACY_SITE_TYPES=true.`,
+        },
+    };
+}
 
 async function emitStoreCreatedEvent(
     db: ReturnType<typeof getSupabaseAdmin>,
@@ -52,6 +67,10 @@ router.post('/start', validate('json', StartOnboardingSchema), async (c) => {
 
     if (!customUser) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    if (isLegacySiteType(body.site_type) && !legacySiteTypeCreationAllowed(c.env)) {
+        return c.json(legacySiteTypeCreationResponse(body.site_type), 403);
     }
 
     // Check if user already has an in-progress attempt
@@ -186,7 +205,13 @@ router.put('/:attemptId/step/:step', async (c) => {
     };
 
     // Merge step-specific fields into the attempt
-    if (stepNum === 1) updates.site_type = stepData.site_type;
+    if (stepNum === 1) {
+        const nextSiteType = String(stepData.site_type || '');
+        if (isLegacySiteType(nextSiteType) && !legacySiteTypeCreationAllowed(c.env)) {
+            return c.json(legacySiteTypeCreationResponse(nextSiteType), 403);
+        }
+        updates.site_type = nextSiteType;
+    }
     if (stepNum === 2) {
         updates.store_name = stepData.store_name;
         updates.subdomain = stepData.subdomain;
@@ -236,6 +261,11 @@ router.post('/:attemptId/complete', async (c) => {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Attempt not found' } }, 404);
     }
 
+    const attemptSiteType = String(attempt.site_type || 'store');
+    if (isLegacySiteType(attemptSiteType) && !legacySiteTypeCreationAllowed(c.env)) {
+        return c.json(legacySiteTypeCreationResponse(attemptSiteType), 403);
+    }
+
     // Create the store
     const { data: store, error: storeError } = await db
         .from('sites')
@@ -244,7 +274,7 @@ router.post('/:attemptId/complete', async (c) => {
             custom_user_id: customUser.id,
             store_name: attempt.store_name || 'My Store',
             subdomain: attempt.subdomain || `store-${Date.now()}`,
-            site_type: attempt.site_type || 'store',
+            site_type: attemptSiteType,
             status: 'draft',
             trial_status: 'active',
             trial_started_at: new Date().toISOString(),
@@ -313,6 +343,10 @@ router.post('/check-subdomain', validate('json', CheckSubdomainSchema), async (c
 router.get('/templates', async (c) => {
     const siteType = c.req.query('site_type') || 'store';
     const db = getSupabaseAdmin(c);
+
+    if (isLegacySiteType(siteType) && !legacySiteTypeCreationAllowed(c.env)) {
+        return c.json(success([]));
+    }
 
     const { data, error } = await db
         .from('themes')

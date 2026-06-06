@@ -1,11 +1,20 @@
-const STAGING_ADMIN_URL = 'https://merchant.staging.letbuyy.store'
 const PRODUCTION_ADMIN_URL = 'https://admin.letbuyy.store'
+const PRODUCTION_ACCOUNTS_URL = 'https://accounts.letbuyy.store'
+
+function trimTrailingSlash(value: string): string {
+    return value.replace(/\/+$/, '')
+}
+
+function appendPath(baseUrl: string, path = ''): string {
+    if (!path) return baseUrl
+    return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`
+}
 
 export function getAdminUrl() {
     const configuredUrl = process.env.NEXT_PUBLIC_ADMIN_URL?.replace(/\/$/, '')
 
     if (!configuredUrl) {
-        return process.env.NODE_ENV === 'production' ? PRODUCTION_ADMIN_URL : STAGING_ADMIN_URL
+        return PRODUCTION_ADMIN_URL
     }
 
     return configuredUrl
@@ -13,4 +22,9 @@ export function getAdminUrl() {
 
 export function getAdminDashboardUrl(subdomain: string) {
     return `${getAdminUrl()}/${subdomain}/dashboard`
+}
+
+export function getAccountsUrl(path = '') {
+    const baseUrl = trimTrailingSlash(process.env.NEXT_PUBLIC_ACCOUNTS_URL || PRODUCTION_ACCOUNTS_URL)
+    return appendPath(baseUrl, path)
 }

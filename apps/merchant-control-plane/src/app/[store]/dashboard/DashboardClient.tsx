@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { formatInrCurrency } from '@letbuyy/ui/formatting'
 import type {
     DashboardActivity,
     DashboardHomeData,
@@ -286,7 +287,7 @@ function HomeMetrics({ homeData }: { homeData: DashboardHomeData }) {
             <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2 xl:grid-cols-4">
                 <MetricCard
                     label="Revenue"
-                    value={formatCurrency(homeData.totalRevenue)}
+                    value={formatInrCurrency(homeData.totalRevenue, { maximumFractionDigits: 0 }) || '₹0'}
                     delta={formatPercentChange(homeData.revenueChangePct, 'last 30 days')}
                     deltaTone={toneFromChange(homeData.revenueChangePct)}
                 />
@@ -452,14 +453,6 @@ function buildSetupChecklist({
             detail: card.showDomain ? currentDomain : undefined,
         })),
     ].slice(0, 5)
-}
-
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0,
-    }).format(amount)
 }
 
 function formatNumber(value: number) {

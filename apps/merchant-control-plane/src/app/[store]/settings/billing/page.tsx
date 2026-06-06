@@ -17,6 +17,7 @@ import {
     type IndexTableColumn,
     useToast,
 } from '@letbuyy/ui'
+import { formatUsLongDate, formatUsShortDate } from '@letbuyy/ui/formatting'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface Invoice {
@@ -125,30 +126,6 @@ function formatMoney(amount: number, currency: string) {
     }).format(amount / 100)
 }
 
-function formatDate(value: string) {
-    if (!value) return 'Not scheduled'
-    const date = new Date(value)
-    if (Number.isNaN(date.getTime())) return 'Not scheduled'
-
-    return date.toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-    })
-}
-
-function formatShortDate(value: string) {
-    if (!value) return 'Recently'
-    const date = new Date(value)
-    if (Number.isNaN(date.getTime())) return 'Recently'
-
-    return date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    })
-}
-
 function statusVariant(status: string) {
     return status === 'active' || status === 'paid' || status === 'succeeded' ? 'success' : 'warning'
 }
@@ -168,7 +145,7 @@ export default function BillingSettingsPage() {
         {
             key: 'created_at',
             header: 'Date',
-            render: (invoice) => formatShortDate(invoice.created_at),
+            render: (invoice) => formatUsShortDate(invoice.created_at, { emptyValue: 'Recently' }),
         },
         {
             key: 'billing_period',
@@ -323,7 +300,7 @@ export default function BillingSettingsPage() {
                                     {subscription.plan} plan
                                 </h3>
                                 <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
-                                    Next billing: {formatDate(subscription.current_period_end)}
+                                    Next billing: {formatUsLongDate(subscription.current_period_end, { emptyValue: 'Not scheduled' })}
                                 </p>
                             </div>
                             <Badge label={subscription.status || 'Active'} variant={statusVariant(subscription.status)} />

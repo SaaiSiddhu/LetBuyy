@@ -5,6 +5,19 @@ import { validateCsrf } from '@/lib/auth/csrf'
 import { identityApiRequest } from '@/lib/api/client'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
 
+const ACTIVE_SITE_TYPES = ['store', 'landing', 'blog'] as const
+const LEGACY_SITE_TYPES = ['portfolio', 'resume'] as const
+
+function legacySiteTypesEnabled(): boolean {
+    return process.env.LETBUYY_ENABLE_LEGACY_SITE_TYPES === 'true'
+}
+
+function isSupportedSiteType(siteType: string): boolean {
+    return [...ACTIVE_SITE_TYPES, ...(legacySiteTypesEnabled() ? LEGACY_SITE_TYPES : [])].includes(
+        siteType as (typeof ACTIVE_SITE_TYPES[number] | typeof LEGACY_SITE_TYPES[number])
+    )
+}
+
 /**
  * POST /api/auth/create-store
  * Create a new store/site during onboarding.
@@ -46,10 +59,9 @@ export async function POST(request: NextRequest) {
         }
 
         // Validate site type
-        const validSiteTypes = ['store', 'portfolio', 'resume', 'landing', 'blog']
-        if (!validSiteTypes.includes(siteType)) {
+        if (!isSupportedSiteType(siteType)) {
             return NextResponse.json(
-                { error: 'Invalid site type' },
+                { error: 'This site type is not available for new stores.' },
                 { status: 400 }
             )
         }

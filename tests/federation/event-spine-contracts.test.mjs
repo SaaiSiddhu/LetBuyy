@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { readAppStoreRouteSource, readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const EVENT_CORE = 'packages/event-core/src/index.ts';
 const ORCHESTRATION_EVENTS = 'packages/orchestration/src/event-runtime.ts';
@@ -15,7 +16,6 @@ const PAYMENTS_ROUTE = 'services/api-gateway/src/routes/payments.ts';
 const ONBOARDING_ROUTE = 'services/api-gateway/src/routes/onboarding.ts';
 const STORES_ROUTE = 'services/api-gateway/src/routes/stores.ts';
 const STOREFRONT_ROUTE = 'services/api-gateway/src/routes/storefront.ts';
-const APP_STORE_ROUTE = 'services/api-gateway/src/routes/app-store.ts';
 const THEMES_ROUTE = 'services/api-gateway/src/routes/themes.ts';
 const THEME_EXECUTION_ADAPTER = 'services/api-gateway/src/execution/theme-execution.adapter.ts';
 const BASELINE_SCHEMA = 'database/supabase/migrations/000_baseline.sql';
@@ -184,7 +184,7 @@ test('order gateway mutations emit registered order lifecycle events', () => {
 });
 
 test('public storefront checkout emits order.created through the gateway outbox', () => {
-  const source = read(STOREFRONT_ROUTE);
+  const source = readStorefrontRouteSource();
 
   assert.match(source, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
   assert.match(source, /eventType: 'order\.created'/);
@@ -196,7 +196,7 @@ test('public storefront checkout emits order.created through the gateway outbox'
 
 test('payment confirmations emit registered order.paid events', () => {
   const paymentsSource = read(PAYMENTS_ROUTE);
-  const storefrontSource = read(STOREFRONT_ROUTE);
+  const storefrontSource = readStorefrontRouteSource();
 
   assert.match(paymentsSource, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
   assert.match(paymentsSource, /eventType: 'order\.paid'/);
@@ -213,7 +213,7 @@ test('payment confirmations emit registered order.paid events', () => {
 });
 
 test('app install and uninstall producers use registered app lifecycle contracts', () => {
-  const source = read(APP_STORE_ROUTE);
+  const source = readAppStoreRouteSource();
 
   assert.match(source, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
   assert.match(source, /eventType: input\.eventType/);
@@ -226,7 +226,7 @@ test('app install and uninstall producers use registered app lifecycle contracts
 });
 
 test('app submissions emit registered app.submitted review events', () => {
-  const source = read(APP_STORE_ROUTE);
+  const source = readAppStoreRouteSource();
 
   assert.match(source, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
   assert.match(source, /eventType: 'app\.submitted'/);

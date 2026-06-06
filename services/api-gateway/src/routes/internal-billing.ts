@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import { getSupabaseAdmin, success } from '../lib/supabase';
+import { isInternalApiSecretRequest } from '../lib/internal-secret';
 import { SubscriptionExecutionAdapter, type SubscriptionStatus } from '../execution/subscription-execution.adapter';
 import {
     applyStorePlanTierDefaults,
@@ -47,9 +48,7 @@ function subscriptionStatusValue(value: unknown): SubscriptionStatus {
 }
 
 function isInternalRequest(c: AppContext): boolean {
-    const secret = c.env.INTERNAL_API_SECRET;
-    if (!secret) return false;
-    return c.req.header('X-Internal-API-Secret') === secret;
+    return isInternalApiSecretRequest(c.env, c.req);
 }
 
 async function requireStoreAndPlan(c: AppContext, body: Record<string, unknown>) {

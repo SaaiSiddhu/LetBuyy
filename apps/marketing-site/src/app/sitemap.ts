@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
+import { getMarketingSiteUrl } from '@/lib/public-urls'
 
-const baseUrl = 'https://letbuyy.com'
+const baseUrl = getMarketingSiteUrl()
 const lastModified = new Date('2026-06-04T00:00:00.000Z')
 
 export default function sitemap(): MetadataRoute.Sitemap {

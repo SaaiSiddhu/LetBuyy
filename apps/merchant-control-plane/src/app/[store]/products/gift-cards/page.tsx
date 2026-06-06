@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { formatInrCurrency } from '@letbuyy/ui/formatting'
 import {
     Badge,
     Banner,
@@ -59,14 +60,6 @@ function normalizeGiftCard(row: Record<string, unknown>): GiftCard {
         expires_at: typeof row.expires_at === 'string' ? row.expires_at : null,
         created_at: typeof row.created_at === 'string' ? row.created_at : '',
     }
-}
-
-function formatCurrency(value: number) {
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0,
-    }).format(value)
 }
 
 function maskCode(code: string) {
@@ -166,7 +159,7 @@ export default function GiftCardsPage() {
             setNewValue(emptyValue)
             notify({
                 title: 'Gift card issued',
-                description: `${formatCurrency(value)} gift card is ready to share.`,
+                description: `${formatInrCurrency(value, { maximumFractionDigits: 0 }) || '₹0'} gift card is ready to share.`,
                 variant: 'success',
             })
             await loadGiftCards()
@@ -195,12 +188,12 @@ export default function GiftCardsPage() {
         {
             key: 'initial_value',
             header: 'Initial value',
-            render: (row: GiftCard) => formatCurrency(row.initial_value),
+            render: (row: GiftCard) => formatInrCurrency(row.initial_value, { maximumFractionDigits: 0 }) || '₹0',
         },
         {
             key: 'balance',
             header: 'Balance',
-            render: (row: GiftCard) => formatCurrency(row.balance),
+            render: (row: GiftCard) => formatInrCurrency(row.balance, { maximumFractionDigits: 0 }) || '₹0',
         },
         {
             key: 'status',

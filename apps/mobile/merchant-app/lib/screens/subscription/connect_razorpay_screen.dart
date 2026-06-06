@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
-import '../../services/api_client.dart';
 import '../../services/subscription_service.dart';
-import '../../services/store_service.dart';
 
 import '../../models/store_model.dart';
 import '../../theme/app_theme_colors.dart';
@@ -50,12 +49,9 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final storeService = context.read<StoreService>();
-      final subscriptionService = SubscriptionService(
-        api: context.read<ApiClient>(),
-      );
+      final subscriptionService = context.read<SubscriptionService>();
 
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       if (store != null) {
         final config = await subscriptionService.getPaymentConfigModel(
           store.id,
@@ -81,9 +77,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
     HapticFeedback.mediumImpact();
 
     try {
-      final subscriptionService = SubscriptionService(
-        api: context.read<ApiClient>(),
-      );
+      final subscriptionService = context.read<SubscriptionService>();
       final response = await subscriptionService.connectOwnRazorpay(
         storeId: _store!.id,
         keyId: _keyIdController.text.trim(),

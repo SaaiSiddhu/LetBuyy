@@ -1,5 +1,10 @@
 import { insertSupabaseRows, upsertSupabaseRows, type SupabaseServiceEnv } from '@letbuyy/infrastructure/supabase-adapter';
+import {
+  writeRuntimeTelemetryDataPoint,
+  type RuntimeTelemetryDatasetBinding,
+} from '@letbuyy/infrastructure/runtime-telemetry-adapter';
 import { consumePlatformQueuesForCloudflareQueue } from './platform-queue-consumer';
+import type { PushProviderEnv } from './push-dispatcher';
 
 type QueuePayload = {
   messageId?: string;
@@ -23,7 +28,7 @@ interface NormalizedQueueDelivery {
   lagMilliseconds: number;
 }
 
-export interface Env extends SupabaseServiceEnv {
+export interface Env extends SupabaseServiceEnv, PushProviderEnv {
   ENVIRONMENT: 'development' | 'staging' | 'production';
   APP_ENV?: string;
   NODE_ENV?: string;
@@ -32,6 +37,7 @@ export interface Env extends SupabaseServiceEnv {
   RUNTIME_NAME?: string;
   PRIMARY_REGION?: string;
   FAILOVER_REGION?: string;
+  RUNTIME_TELEMETRY?: RuntimeTelemetryDatasetBinding;
   PLATFORM_QUEUE_CLAIM_LIMIT?: string;
   PLATFORM_QUEUE_DRAIN_BUDGET_PER_BATCH?: string;
   PLATFORM_QUEUE_CIRCUIT_FAILURE_THRESHOLD?: string;
@@ -151,29 +157,97 @@ async function recordQueueBatchMetric(env: Env, batch: MessageBatch<QueuePayload
   const completed = deliveries.filter((delivery) => delivery.status === 'completed').length;
   const deadLettered = deliveries.length - completed;
   const lagValues = deliveries.map((delivery) => delivery.lagMilliseconds);
+  const lagP95Ms = percentile(lagValues, 95);
+  const lagMaxMs = Math.max(...lagValues);
+  const runtimeName = env.RUNTIME_NAME || 'Queue Workers';
+  const deploymentEnv = env.DEPLOYMENT_ENV || env.ENVIRONMENT;
+  const telemetryEnv = env.TELEMETRY_ENV || env.ENVIRONMENT;
+  const queueNames = [...new Set(deliveries.map((delivery) => delivery.input.queueName))];
+  const jobTypes = [...new Set(deliveries.map((delivery) => delivery.input.jobType))];
+  const firstDelivery = deliveries[0]?.input;
 
-  await insertSupabaseRows(env, 'runtime_telemetry_metrics', {
-    metric_name: 'cloudflare.queue.delivery.batch',
-    metric_value: deliveries.length,
-    unit: 'count',
-    runtime_name: env.RUNTIME_NAME || 'Queue Workers',
-    site_id: null,
-    dimensions: {
-      cloudflare_queue_name: batch.queue,
-      queue_names: [...new Set(deliveries.map((delivery) => delivery.input.queueName))],
-      job_types: [...new Set(deliveries.map((delivery) => delivery.input.jobType))],
-      completed,
-      dead_lettered: deadLettered,
-      lag_p95_ms: percentile(lagValues, 95),
-      lag_max_ms: Math.max(...lagValues),
-      provider: 'cloudflare-queues',
-      region: env.PRIMARY_REGION || 'global-edge',
-      deployment_env: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
-      telemetry_env: env.TELEMETRY_ENV || env.ENVIRONMENT,
+  const sharedDimensions = {
+    cloudflare_queue_name: batch.queue,
+    queue_names: queueNames,
+    job_types: jobTypes,
+    completed,
+    dead_lettered: deadLettered,
+    lag_p95_ms: lagP95Ms,
+    lag_max_ms: lagMaxMs,
+    provider: 'cloudflare-queues',
+    region: env.PRIMARY_REGION || 'global-edge',
+    deployment_env: deploymentEnv,
+    telemetry_env: telemetryEnv,
+  };
+
+  await insertSupabaseRows(env, 'runtime_telemetry_metrics', [
+    {
+      metric_name: 'letbuyy.queue.delivery.batch',
+      metric_value: deliveries.length,
+      unit: 'count',
+      runtime_name: runtimeName,
+      site_id: null,
+      dimensions: sharedDimensions,
+      request_id: firstDelivery?.requestId,
+      correlation_id: firstDelivery?.correlationId,
+      trace_id: firstDelivery?.traceId,
     },
-    request_id: deliveries[0]?.input.requestId,
-    correlation_id: deliveries[0]?.input.correlationId,
-    trace_id: deliveries[0]?.input.traceId,
+    {
+      metric_name: 'letbuyy.queue.dead_letter.total',
+      metric_value: deadLettered,
+      unit: 'count',
+      runtime_name: runtimeName,
+      site_id: null,
+      dimensions: sharedDimensions,
+      request_id: firstDelivery?.requestId,
+      correlation_id: firstDelivery?.correlationId,
+      trace_id: firstDelivery?.traceId,
+    },
+  ]);
+
+  writeRuntimeTelemetryDataPoint(env.RUNTIME_TELEMETRY, {
+    metricName: 'letbuyy.queue.delivery.batch',
+    runtimeName,
+    environment: env.ENVIRONMENT,
+    deploymentEnv,
+    telemetryEnv,
+    requestId: firstDelivery?.requestId,
+    traceId: firstDelivery?.traceId,
+    index: batch.queue,
+    blobs: [
+      batch.queue,
+      queueNames.join(','),
+      jobTypes.join(','),
+      env.PRIMARY_REGION || 'global-edge',
+    ],
+    doubles: [
+      deliveries.length,
+      completed,
+      deadLettered,
+      lagP95Ms,
+      lagMaxMs,
+    ],
+  });
+
+  writeRuntimeTelemetryDataPoint(env.RUNTIME_TELEMETRY, {
+    metricName: 'letbuyy.queue.dead_letter.total',
+    runtimeName,
+    environment: env.ENVIRONMENT,
+    deploymentEnv,
+    telemetryEnv,
+    requestId: firstDelivery?.requestId,
+    traceId: firstDelivery?.traceId,
+    index: batch.queue,
+    blobs: [
+      batch.queue,
+      queueNames.join(','),
+      jobTypes.join(','),
+      env.PRIMARY_REGION || 'global-edge',
+    ],
+    doubles: [
+      deadLettered,
+      deliveries.length,
+    ],
   });
 }
 

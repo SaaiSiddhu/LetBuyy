@@ -1,67 +1,81 @@
 # LetBuyy Platform — Forensic Investigation: Executive Summary
 
-**Investigation date:** 2026-06-05
+**Investigation date:** 2026-06-05 (second pass, post-remediation; HEAD `127a850e` on `develop`)
 **Scope:** Entire LetBuyy monorepo — merchant admin, theme system, storefront runtime, apps ecosystem, OAuth/billing/permissions, database, APIs, events, workers, queues, CI/CD, infrastructure.
-**Role:** Forensic documentation of the *current state only*. No code was written, modified, deleted, moved, or renamed in the platform under investigation. Every finding in this report set is supported by file-level evidence. This document recommends nothing; it documents what exists.
+**Role:** Forensic documentation of *current state only*. No codebase file was written, modified, deleted, moved, or renamed; the only writes were the report files in `FORENSIC_REPORT/`. Every finding cites file‑level evidence.
 
-This summary sits on top of 17 detailed reports (`01`–`17`). Where a claim is repeated here it has been independently re-verified against source; the spot-check log is in [`17-evidence-appendix.md`](17-evidence-appendix.md).
+This is the **second pass**. A first investigation (same date, AM) produced reports `01`–`17`; a Codex remediation run + five merged workstreams then landed **68 commits / 292 files / +21,140 −8,527** (`63053d18..HEAD`). This pass re‑verified every prior finding against current source, marked each **RESOLVED / PARTIAL / STILL‑OPEN**, and documents **new issues the remediation itself introduced**. The 10 highest‑stakes claims were independently re‑checked (8 confirmed, 2 partially, 0 refuted; log in [`17-evidence-appendix.md`](17-evidence-appendix.md)).
 
 ---
 
-## 1. What LetBuyy is, in one paragraph
+## 1. The one-paragraph verdict
 
-LetBuyy is a multi-tenant, Shopify-style commerce platform built as a pnpm + Turborepo monorepo. It comprises **9 Next.js 16 web applications**, **3 Flutter mobile apps** (only one of which is real), **3 deployed Cloudflare Workers**, **30 workspace packages** (25 TypeScript + 5 Dart), and a **Supabase/Postgres database of ~233 tables** (baseline migration) governed by 350+ row-level-security policies. A single Cloudflare Worker — `services/api-gateway` (90 source files; route handlers alone total ~20,340 lines) — is effectively the entire backend. Every web and mobile app is a thin client of it through one shared client factory (`@letbuyy/api-client`). There is a genuinely working commerce core underneath: subdomain-based multi-tenancy, a versioned theme pipeline with drafts/releases/rollback, checkout and orders with signature-verified payment webhooks (Razorpay/Stripe/PayPal/Cashfree, INR-centric), and an OAuth-capable app platform with HMAC-signed webhooks and an app-billing schema. That core is wrapped in an unusually large layer of self-referential governance machinery — 128 validator scripts and ~149 governance test files that overwhelmingly assert manifests are internally consistent rather than that the running system behaves correctly.
+The remediation did exactly what it scoped and did it well — but it was a *foundation‑honesty* pass, not a *capability* pass. Everything that was a lie the platform told about itself is now fixed and validator‑locked: the three disagreeing runtime inventories agree, the six phantom "services" admit they're unimplemented, the constitution's dead database section is corrected, and — most substantively — **core tables now have a single writer**, enforced by a new validator and a regression test. The governance suite grew 128 → 129 validators and still passes. **But the hard product Criticals are all still open** (no real app API, compliance webhooks still never fire, app billing still moves no money, the theme editor still previews a mock, no server‑side cart, observability still emits nothing), and the single‑writer refactor **introduced a new payment‑path auth hole that is fail‑open by default off‑production** — with the one test that touches it wired into no runner. The platform is meaningfully *more honest and structurally cleaner*; it is not yet *more capable*, and it is in one specific way slightly less safe than before.
 
-## 2. Headline numbers (measured this investigation)
+## 2. What the remediation resolved (verified)
 
-| Dimension | Measured value | Source |
+| Finding | Status | Evidence |
 |---|---|---|
-| Files in scope (excl. node_modules/.git/build) | ~2,831 | [01](01-repository-inventory.md) |
-| Git-tracked files (per validator) | 2,934 | `validate-governance.mjs` |
-| Largest language by LOC | **Markdown 380,185** (exceeds all code) | [01](01-repository-inventory.md) |
-| Code LOC | TS 103,816 · TSX 71,541 · Dart 54,006 · SQL 53,874 | [01](01-repository-inventory.md) |
-| Web apps | 9 (all Next 16.1.6 / React 19.2.3) | [03](03-application-investigation.md) |
-| Mobile apps | 3 (1 real: `merchant-app` ~35k LOC; `operator-app` = counter demo; `shopper-app` = empty) | [03](03-application-investigation.md) |
-| Services | 9 roots — **3 implemented, 6 manifest-only** | [03](03-application-investigation.md) |
-| Workspace packages | 30 (25 TS, 5 Dart) | [01](01-repository-inventory.md) |
-| api-gateway route handlers | ~20,340 LOC; `storefront.ts` alone ≈4,900 lines | [03](03-application-investigation.md), [17](17-evidence-appendix.md) |
-| Database tables (baseline) | ~233; ~70 with no code reference | [01](01-repository-inventory.md), [09](09-dead-code.md) |
-| Governance validators | 128 passing (exit 0) | `validate-governance.mjs` |
-| Package unit tests | **0** | [14](14-risk-assessment.md) |
-| Deployable workspaces with a real `test` script | **0 of 12** (`echo 'No tests yet' && exit 0`) | [14](14-risk-assessment.md), [17](17-evidence-appendix.md) |
-| Root-level process-ledger `.md` files | 73 (~1.4 MB; largest 270 KB) | [09](09-dead-code.md) |
+| C‑13 three runtime inventories disagree | **RESOLVED** + validator‑locked | `runtime-topology-validator.mjs` cross‑checks CLAUDE.md ↔ runtime‑boundaries.md (21 roots) |
+| C‑2 six declared services don't exist | **RESOLVED** (honest manifests) | all 6 carry `reserved-not-implemented`; `queue-workers` recategorized `cloudflare-worker` |
+| C‑12 AGENTS.md describes a dead DB | **RESOLVED** (with residue) | DB section corrected to `000_baseline.sql` + `073…089`; hand‑patch left stale counts (AV‑M8) |
+| H‑1 dual write‑ownership of core tables | **RESOLVED** + validator + test | webhook‑service/queue‑workers route all writes through gateway internal endpoints; `single-writer-ownership-validator.mjs` |
+| H‑10 queues with consumers, no producers | **RESOLVED** | `cloudflare-queue-triggers.ts` produces to all 5 bindings |
+| H‑12 uncontracted theme events | **RESOLVED** | `theme.purchase.*`/`theme.draft.*` contracted in `event-core` (24→27) |
+| H‑11 payout events no emitter | **Correctly SKIPPED** (honest) | marked `reserved-human-gated`, not faked |
+| App‑marketplace integrity batch | **RESOLVED** (test‑locked) | idempotent install/uninstall, server‑side show‑once webhook secrets, review‑requires‑install, honest outage states, fail‑fast base URL |
+| Theme Editor multi‑template editing | **NEW capability** | migration `087` + 6‑template switcher + scoped drafts/publish + test |
 
-## 3. Five defining facts
+Shopify parity moved **41/90 → 43/90 (≈4.8/10)**: Theme Editor +1, App Marketplace +1.
 
-**(1) The backend is a monolith dressed as microservices.** Of nine `services/*` roots, only three contain code (`api-gateway`, `webhook-service`, `queue-workers`). The other six — `checkout-runtime`, `search-service`, `media-service`, `notification-service`, `event-bus`, `analytics-pipeline` — contain exactly two files each (`AGENTS.md` + `runtime.manifest.json`) and **no `package.json` or `src/`**. Their manifests nonetheless assert domain ownership ("Reserved search and indexing authority…"). The capabilities they claim execute inside the api-gateway Worker. Evidence: [03](03-application-investigation.md), [11](11-architecture-violations.md), verified in [17](17-evidence-appendix.md).
+## 3. What the remediation did NOT touch (still open)
 
-**(2) The verification system verifies documents, not systems.** 128 validator scripts and ~149 `tests/**/*.test.mjs` files largely assert that JSON manifests are internally consistent and that source files contain expected string fragments. Load/chaos suites default to plan mode (print commands, record nothing); manifests self-label `mode: "governance-contract-not-live-evidence"`. The 30 workspace packages have **zero unit tests**, and no CI test calls a running system. To the platform's credit this is self-aware and fails closed — but "validate:production-certification passing" does **not** mean production was certified. Evidence: [14](14-risk-assessment.md).
+The mission's later phases (app platform, theme/storefront extensibility, security, testing, observability, legacy, mobile) never ran, so every product‑facing Critical remains, verified unchanged in code:
 
-**(3) The codebase is a pivot, and the previous product is still live inside it.** LetBuyy was a portfolio/resume-site builder before it was a commerce platform. The merchant admin still ships fully implemented Experience, Education, Certifications, Skills, Projects, and Testimonials pages (~470–510 LOC each); the gateway still mounts `/portfolio` and `/resume` routers; the baseline schema retains `portfolio_projects`, `resume_versions`, `education`, `work_experience`, `skills` tables. Evidence: [09](09-dead-code.md), [13](13-technical-debt.md).
+- **C‑3** app OAuth tokens still reach exactly one GET‑only proxy; no app write API.
+- **C‑4** GDPR compliance webhooks still force‑subscribed at install with **zero emit sites** (now also advertised to developers).
+- **C‑5** app billing still fabricates `rzp_route_test_` refs; no money moves.
+- **C‑6** web theme editor still previews a hardcoded `PREVIEW_PRODUCTS` mock; `CenterPanel.tsx` still 0 importers; merchants still publish blind.
+- **C‑7** section types still compiled into the storefront; unknown → `null`.
+- **C‑8** web publish still one‑step‑to‑live, still last‑write‑wins (no `base_version`).
+- **C‑9** app embeds still absent; Liquid still has no product/cart/customer objects.
+- **C‑10** cart still localStorage‑only; `public.carts` still unwired (now fail‑loud: GraphQL throws `CART_NOT_SUPPORTED`).
+- **C‑14** observability stack still has no metric producer; `writeDataPoint` never called.
+- **H‑4** theme‑marketplace "Pay" is still a `<Link>` to `/checkout/success` (rated Critical by the app report).
+- **H‑2/H‑3/H‑5/H‑6/H‑7/H‑8/H‑15/H‑16/H‑17** all verified unchanged.
 
-**(4) Distributed-systems ambition far exceeds operational reality.** ~10,700 LOC across `distributed-runtime`, `orchestration`, and `projection-runtime` implement event sourcing, outbox, CQRS, replay, leases, Lamport/vector clocks, and CRDT merge — consumed mainly by the same single Worker. Roughly 60–70 of the ~233 tables are runtime/observability bookkeeping. Evidence: [01](01-repository-inventory.md), [13](13-technical-debt.md).
+## 4. What the remediation introduced (new findings)
 
-**(5) The application layer itself is comparatively clean.** Independently confirmed: no app→app imports, no direct Supabase access from any web app (0 `.from()` hits across `apps/*/src`), no deprecated-alias references in code, **no committed live secrets**, a single API-client factory, consistent Next.js/React versions, store-ownership checks on sampled merchant routes, timing-safe webhook signature verification for all four payment providers, and the repo's own governance suite passing all 128 gates. Evidence: [11](11-architecture-violations.md), [14](14-risk-assessment.md), [17](17-evidence-appendix.md).
-
-## 4. The four Critical findings, distilled
-
-The full Critical register (14 items, reconciled across reports) is in [`16-critical-findings-summary.md`](16-critical-findings-summary.md). The four with the broadest blast radius:
-
-| ID | Finding | One-line evidence |
+| ID | New issue | Severity |
 |---|---|---|
-| **C-1** | **Single-worker backend is the entire platform and a single point of failure.** All commerce, auth, themes, apps, payments, media, analytics, and legacy portfolio logic run in one Cloudflare Worker. | `api-gateway/src/index.ts` mounts 30+ routers; 6 sibling services are code-free |
-| **C-2** | **The app platform cannot actually host third-party apps.** App-scoped OAuth tokens are accepted at exactly **one** GET-only proxy endpoint; there is no app write API, no token refresh, no client secret/PKCE, and the mandatory GDPR compliance webhooks are subscribed at install but **never published**. | `verifyAppScopedAccessToken` single call site `app-store.ts:1253`; compliance topics defined `app-engine/src/index.ts:151-153`, zero emit sites |
-| **C-3** | **Theme extensibility is closed.** Section types are React components compiled into the storefront (unknown types render `null`); the web theme editor's live preview is **unwired** (merchants edit against a hardcoded mock and publish blind); there are **no app embeds** and the Liquid runtime exposes no product/cart/customer objects. | `renderer-registry.tsx` static imports; `CenterPanel.tsx` has zero importers; `theme-renderer.ts:246-249` hardwires embeds empty |
-| **C-4** | **Testing and "certification" are document-shaped, not behavior-shaped.** 0 package unit tests; every deployable workspace's `test` script is a no-op; the passing governance suite checks manifests and string fragments, not a running system. | All 12 `package.json` test scripts = `echo 'No tests yet' && exit 0` |
+| **N‑1** | Internal payment routes **fail open** when `INTERNAL_API_SECRET` unset & `ENVIRONMENT≠production`; siblings fail closed; base env defaults `staging`. The H‑1 refactor put real payment‑state transitions behind a default‑off‑prod‑open guard. | **High** |
+| **N‑2** | App `access_token` + show‑once webhook `signing_secret` persisted **in plaintext** in `idempotency_keys.response_body` for ~24h replay. | **High** |
+| **N‑3** | The two new `.ts` contract tests (incl. the internal‑payment auth test) are wired into **no runner** and the payment test only asserts the prod branch — so N‑1 is uncovered. | **High** |
+| **N‑4** | `/v1/internal/events/domain` accepts uncontracted `payment.*` events with payloads stored raw. | Medium |
+| **N‑5** | `gateway-events.ts` duplicated across webhook‑service and queue‑workers (4 copies of the internal‑fetch boilerplate, no shared package). | Medium |
+| **N‑6** | Agent‑ledger residue inside source trees (`CODEX_WS9_LEDGER.md` in a Next route segment), 8 CODEX files back at root, and dead `webhook-deliveries` queue jobs that accumulate forever. | Medium/Low |
 
-## 5. Shopify parity, at a glance
+## 5. The numbers (second pass)
 
-Measured subsystem-by-subsystem in [`12-shopify-compatibility.md`](12-shopify-compatibility.md): **overall parity ≈ 4.6 / 10**. The contract and persistence *spine* is built (theme drafts/releases, app OAuth/scopes/webhooks, payment providers, customer accounts); the *experience* layers are absent or unwired. Lowest-scoring subsystems: App Embeds (0/10 — not found in repository), Theme Runtime commerce-object model (effectively absent), and the in-editor app-block experience (no merchant UI). Highest: Theme Marketplace and App Marketplace spines (6/10 each).
+| Dimension | First pass | Second pass |
+|---|---|---|
+| Files in scope | ~2,831 | ~2,951 |
+| Root `.md` files | 73 | **11** (72 archived; 8 CODEX residue remains) |
+| Governance validators | 128 | **129** (added single‑writer) — passes, exit 0 |
+| Deployable workspaces with a real `test` script | 0 / 12 | **2 / 12** (webhook‑service, queue‑workers) |
+| Package unit tests | 0 | a handful (event‑core, the two service clients) |
+| `storefront.ts` god file | ~4,826 lines | **4,833** (extraction of 233 lines, net grew) |
+| Open Criticals (of 14) | 14 | **11** (C‑2, C‑12, C‑13 resolved) |
+| Shopify parity | 41/90 (4.6) | **43/90 (4.8)** |
+| Architecture violations | 19 (2C/5H/7M/5L) | **18** (0C/3H/9M/6L) — 4 resolved + 1 downgrade, 4 new |
 
 ## 6. Bottom line for diligence
 
-What works: a coherent single-gateway commerce platform with real multi-tenancy, a real theme pipeline with drafts/releases/rollback, a real app-platform *skeleton* (OAuth, scopes, HMAC webhooks, billing schema, extension registry), strong secret hygiene, and disciplined import boundaries enforced by working validators.
+The remediation is real, careful work: small green commits, the Green Law held at 129/129 throughout, the Honesty Law was followed (payouts marked SKIP, not faked), and the highest‑value structural fix — single‑writer ownership — is genuinely enforced. A reader can now *trust the runtime map and the ownership model*, which was not true a day ago.
 
-What does not exist despite appearances: microservices, live certification/load/chaos evidence, meaningful automated testing, theme/app developer tooling (no CLI/SDK), shopper-facing mobile, money-moving app billing, and any second backend. **The largest diligence risk is not broken code — it is the gap between the documented, validator-"certified" architecture and the much smaller system that actually runs.**
+Two cautions remain the story:
 
-> Reading order: this summary → [16 Critical Findings](16-critical-findings-summary.md) → [15 Production Readiness](15-production-readiness.md) → domain reports `03`–`14` → [17 Evidence Appendix](17-evidence-appendix.md). Index: [README.md](README.md).
+1. **Capability gap is unchanged.** Microservices, a usable app platform, theme/app extensibility, a server cart, live telemetry, and meaningful test coverage still do not exist. The foundation is honest; the building above it is the same height.
+2. **One regression on the most sensitive path.** The single‑writer refactor created a payment‑confirm endpoint that is unauthenticated by default off‑production (N‑1), and the test that would catch it isn't run (N‑3) — precisely the failure mode the skipped "testing reality" phase exists to prevent.
+
+> Reading order: this summary → [16 Critical Findings (with resolution status)](16-critical-findings-summary.md) → [15 Production Readiness](15-production-readiness.md) → domain reports `03`–`14` → [17 Evidence Appendix](17-evidence-appendix.md). Index: [README.md](README.md).

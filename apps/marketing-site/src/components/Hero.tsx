@@ -20,7 +20,7 @@ export default function Hero() {
                         Build the next online brand.
                     </h1>
                     <p className="hero-subtitle">
-                        Launch stores, portfolios, blogs and landing pages from one workspace. Commerce, checkout and operations are already connected.
+                        Launch stores, blogs and landing pages from one workspace. Commerce, checkout and operations are already connected.
                     </p>
 
                     <div className="hero-cta" aria-label="Primary actions">

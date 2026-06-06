@@ -30,12 +30,32 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
     with TickerProviderStateMixin {
   // 6 Provisioning stages with icons
   static const List<Map<String, dynamic>> _stages = [
-    {'id': 'store_created', 'label': 'Creating your store', 'icon': Icons.store_rounded},
+    {
+      'id': 'store_created',
+      'label': 'Creating your store',
+      'icon': Icons.store_rounded,
+    },
     {'id': 'dns_record', 'label': 'Setting up DNS', 'icon': Icons.dns_rounded},
-    {'id': 'domain_mapping', 'label': 'Mapping domain', 'icon': Icons.language_rounded},
-    {'id': 'ssl_certificate', 'label': 'Securing with SSL', 'icon': Icons.lock_rounded},
-    {'id': 'verification', 'label': 'Verifying setup', 'icon': Icons.verified_rounded},
-    {'id': 'going_live', 'label': 'Going live!', 'icon': Icons.rocket_launch_rounded},
+    {
+      'id': 'domain_mapping',
+      'label': 'Mapping domain',
+      'icon': Icons.language_rounded,
+    },
+    {
+      'id': 'ssl_certificate',
+      'label': 'Securing with SSL',
+      'icon': Icons.lock_rounded,
+    },
+    {
+      'id': 'verification',
+      'label': 'Verifying setup',
+      'icon': Icons.verified_rounded,
+    },
+    {
+      'id': 'going_live',
+      'label': 'Going live!',
+      'icon': Icons.rocket_launch_rounded,
+    },
   ];
 
   int _currentStageIndex = 0;
@@ -44,7 +64,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
   String? _errorMessage;
   late AnimationController _pulseController;
   late AnimationController _progressController;
-  
+
   @override
   void initState() {
     super.initState();
@@ -52,15 +72,15 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
-    
+
     _progressController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2000),
     );
-    
+
     // Start the animated progression
     _startProgressAnimation();
-    
+
     // Poll the API for real status updates
     _pollStoreStatus();
   }
@@ -69,14 +89,14 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
     // Animate through 6 stages, each taking 2 seconds minimum
     for (int i = 0; i < _stages.length; i++) {
       if (!mounted || _hasError) break;
-      
+
       setState(() => _currentStageIndex = i);
       _progressController.forward(from: 0);
-      
+
       // Wait 2 seconds for each stage
       await Future.delayed(const Duration(milliseconds: 2000));
     }
-    
+
     // After all stages, mark as complete
     if (mounted && !_hasError) {
       setState(() => _isComplete = true);
@@ -85,22 +105,23 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
 
   void _pollStoreStatus() async {
     if (widget.storeId.isEmpty) return;
-    
+
     final storeService = context.read<StoreService>();
-    
+
     // Poll every 3 seconds until complete or error
     while (mounted && !_isComplete && !_hasError) {
       await Future.delayed(const Duration(seconds: 3));
       if (!mounted) break;
-      
+
       try {
         final store = await storeService.fetchStore(widget.storeId);
         final storeData = store.toJson();
-        
-        final status = storeData['provisioning_status'] as Map<String, dynamic>?;
+
+        final status =
+            storeData['provisioning_status'] as Map<String, dynamic>?;
         final stage = status?['stage'] ?? storeData['domain_status'];
         final error = status?['error'] ?? storeData['domain_error'];
-        
+
         // If there's an error, show it
         if (stage == 'error' && error != null) {
           if (mounted) {
@@ -129,17 +150,17 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
     if (_hasError) {
       return _buildErrorScreen(_errorMessage ?? 'Unknown error');
     }
-    
+
     if (_isComplete) {
       return _buildSuccessScreen();
     }
-    
+
     return _buildProgressScreen();
   }
 
   Widget _buildProgressScreen() {
     final progress = ((_currentStageIndex + 1) / _stages.length * 100).round();
-    
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -162,9 +183,9 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                 children: [
                   // Compact progress ring
                   _buildProgressRing(progress),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Title - bright white
                   const Text(
                     'Setting up your store',
@@ -175,9 +196,9 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                       letterSpacing: -0.3,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // Current stage message - brighter color
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
@@ -191,14 +212,14 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 28),
-                  
+
                   // Stage list - compact
                   _buildStageList(),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Bottom info - more visible
                   Text(
                     'This usually takes about 12 seconds',
@@ -218,74 +239,77 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
 
   Widget _buildProgressRing(int progress) {
     return Stack(
-      alignment: Alignment.center,
-      children: [
-        // Outer glow
-        Container(
-          width: 150,
-          height: 150,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: StoreAdminColors.primary.withValues(alpha: 0.25),
-                blurRadius: 40,
-                spreadRadius: 10,
-              ),
-            ],
-          ),
-        ),
-        
-        // Progress track (background)
-        SizedBox(
-          width: 130,
-          height: 130,
-          child: CircularProgressIndicator(
-            value: 1,
-            strokeWidth: 6,
-            backgroundColor: Colors.transparent,
-            valueColor: AlwaysStoppedAnimation(Colors.white.withValues(alpha: 0.08)),
-          ),
-        ),
-        
-        // Progress indicator
-        SizedBox(
-          width: 130,
-          height: 130,
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: progress / 100),
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeOutCubic,
-            builder: (context, value, _) => CircularProgressIndicator(
-              value: value,
-              strokeWidth: 6,
-              strokeCap: StrokeCap.round,
-              backgroundColor: Colors.transparent,
-              valueColor: const AlwaysStoppedAnimation(StoreAdminColors.primary),
-            ),
-          ),
-        ),
-        
-        // Center content
-        Column(
-          mainAxisSize: MainAxisSize.min,
+          alignment: Alignment.center,
           children: [
-            Text(
-              '$progress%',
-              style: const TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                letterSpacing: -1,
+            // Outer glow
+            Container(
+              width: 150,
+              height: 150,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: StoreAdminColors.primary.withValues(alpha: 0.25),
+                    blurRadius: 40,
+                    spreadRadius: 10,
+                  ),
+                ],
               ),
+            ),
+
+            // Progress track (background)
+            SizedBox(
+              width: 130,
+              height: 130,
+              child: CircularProgressIndicator(
+                value: 1,
+                strokeWidth: 6,
+                backgroundColor: Colors.transparent,
+                valueColor: AlwaysStoppedAnimation(
+                  Colors.white.withValues(alpha: 0.08),
+                ),
+              ),
+            ),
+
+            // Progress indicator
+            SizedBox(
+              width: 130,
+              height: 130,
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0, end: progress / 100),
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, _) => CircularProgressIndicator(
+                  value: value,
+                  strokeWidth: 6,
+                  strokeCap: StrokeCap.round,
+                  backgroundColor: Colors.transparent,
+                  valueColor: const AlwaysStoppedAnimation(
+                    StoreAdminColors.primary,
+                  ),
+                ),
+              ),
+            ),
+
+            // Center content
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '$progress%',
+                  style: const TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: -1,
+                  ),
+                ),
+              ],
             ),
           ],
-        ),
-      ],
-    ).animate(controller: _pulseController).scale(
-          begin: const Offset(0.98, 0.98),
-          end: const Offset(1.02, 1.02),
-        );
+        )
+        .animate(controller: _pulseController)
+        .scale(begin: const Offset(0.98, 0.98), end: const Offset(1.02, 1.02));
   }
 
   Widget _buildStageList() {
@@ -302,7 +326,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
           final isCompleted = index < _currentStageIndex;
           final isActive = index == _currentStageIndex;
           final isPending = index > _currentStageIndex;
-          
+
           return _buildStageRow(
             icon: stage['icon'],
             label: stage['label'],
@@ -338,15 +362,22 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                 decoration: BoxDecoration(
                   gradient: isCompleted || isActive
                       ? LinearGradient(
-                          colors: [StoreAdminColors.primary, StoreAdminColors.accent],
+                          colors: [
+                            StoreAdminColors.primary,
+                            StoreAdminColors.accent,
+                          ],
                         )
                       : null,
-                  color: isPending ? Colors.white.withValues(alpha: 0.08) : null,
+                  color: isPending
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : null,
                   shape: BoxShape.circle,
                   boxShadow: isActive
                       ? [
                           BoxShadow(
-                            color: StoreAdminColors.primary.withValues(alpha: 0.4),
+                            color: StoreAdminColors.primary.withValues(
+                              alpha: 0.4,
+                            ),
                             blurRadius: 12,
                             spreadRadius: 2,
                           ),
@@ -354,25 +385,31 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                       : null,
                 ),
                 child: isCompleted
-                    ? const Icon(Icons.check_rounded, color: Colors.white, size: 18)
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: Colors.white,
+                        size: 18,
+                      )
                     : isActive
-                        ? SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: const AlwaysStoppedAnimation(Colors.white),
-                            ),
-                          )
-                        : Icon(
-                            icon,
-                            size: 16,
-                            color: Colors.white.withValues(alpha: 0.3),
+                    ? SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: const AlwaysStoppedAnimation(
+                            Colors.white,
                           ),
+                        ),
+                      )
+                    : Icon(
+                        icon,
+                        size: 16,
+                        color: Colors.white.withValues(alpha: 0.3),
+                      ),
               ),
-              
+
               const SizedBox(width: 14),
-              
+
               // Label
               Expanded(
                 child: Text(
@@ -386,11 +423,14 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                   ),
                 ),
               ),
-              
+
               // Status indicator
               if (isCompleted)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: StoreAdminColors.success.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(6),
@@ -405,10 +445,10 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                   ),
                 )
               else if (isActive)
-                Text(
-                  '...',
-                  style: TextStyle(color: StoreAdminColors.primary),
-                ).animate(onPlay: (c) => c.repeat()).fadeIn().fadeOut(duration: 500.ms),
+                Text('...', style: TextStyle(color: StoreAdminColors.primary))
+                    .animate(onPlay: (c) => c.repeat())
+                    .fadeIn()
+                    .fadeOut(duration: 500.ms),
             ],
           ),
         ),
@@ -430,7 +470,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
 
   Widget _buildSuccessScreen() {
     final storeUrl = 'https://${widget.subdomain}.letbuyy.store';
-    
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -453,46 +493,51 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                 children: [
                   // Success icon with glow
                   Container(
-                    width: 110,
-                    height: 110,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          StoreAdminColors.success,
-                          StoreAdminColors.success.withValues(alpha: 0.8),
-                        ],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: StoreAdminColors.success.withValues(alpha: 0.4),
-                          blurRadius: 40,
-                          spreadRadius: 10,
+                        width: 110,
+                        height: 110,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              StoreAdminColors.success,
+                              StoreAdminColors.success.withValues(alpha: 0.8),
+                            ],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: StoreAdminColors.success.withValues(
+                                alpha: 0.4,
+                              ),
+                              blurRadius: 40,
+                              spreadRadius: 10,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.check_rounded,
-                      size: 56,
-                      color: Colors.white,
-                    ),
-                  )
+                        child: const Icon(
+                          Icons.check_rounded,
+                          size: 56,
+                          color: Colors.white,
+                        ),
+                      )
                       .animate()
                       .fadeIn(duration: 400.ms)
-                      .scale(begin: const Offset(0.5, 0.5), curve: Curves.elasticOut),
-                  
+                      .scale(
+                        begin: const Offset(0.5, 0.5),
+                        curve: Curves.elasticOut,
+                      ),
+
                   const SizedBox(height: 36),
-                  
+
                   // Celebration emoji
-                  const Text('🎉', style: TextStyle(fontSize: 44))
-                      .animate(delay: 200.ms)
-                      .fadeIn()
-                      .scale(),
-                  
+                  const Text(
+                    '🎉',
+                    style: TextStyle(fontSize: 44),
+                  ).animate(delay: 200.ms).fadeIn().scale(),
+
                   const SizedBox(height: 20),
-                  
+
                   // Title
                   const Text(
                     'Your store is live!',
@@ -503,9 +548,9 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                       letterSpacing: -0.5,
                     ),
                   ).animate(delay: 300.ms).fadeIn().slideY(begin: 0.2),
-                  
+
                   const SizedBox(height: 10),
-                  
+
                   Text(
                     '"${widget.storeName}" is now online',
                     textAlign: TextAlign.center,
@@ -514,9 +559,9 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                       color: Colors.white.withValues(alpha: 0.7),
                     ),
                   ).animate(delay: 400.ms).fadeIn(),
-                  
+
                   const SizedBox(height: 36),
-                  
+
                   // URL Card
                   Container(
                     padding: const EdgeInsets.all(20),
@@ -536,10 +581,16 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                             Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
-                                color: StoreAdminColors.success.withValues(alpha: 0.2),
+                                color: StoreAdminColors.success.withValues(
+                                  alpha: 0.2,
+                                ),
                                 borderRadius: BorderRadius.circular(6),
                               ),
-                              child: const Icon(Icons.verified_rounded, color: StoreAdminColors.success, size: 16),
+                              child: const Icon(
+                                Icons.verified_rounded,
+                                color: StoreAdminColors.success,
+                                size: 16,
+                              ),
                             ),
                             const SizedBox(width: 10),
                             Text(
@@ -564,9 +615,9 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                       ],
                     ),
                   ).animate(delay: 500.ms).fadeIn().slideY(begin: 0.2),
-                  
+
                   const SizedBox(height: 28),
-                  
+
                   // Action buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -590,9 +641,9 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                       ),
                     ],
                   ).animate(delay: 600.ms).fadeIn(),
-                  
+
                   const SizedBox(height: 48),
-                  
+
                   // Go to Dashboard button
                   SizedBox(
                     width: double.infinity,
@@ -661,9 +712,9 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                       color: StoreAdminColors.error,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 28),
-                  
+
                   const Text(
                     'Something went wrong',
                     style: TextStyle(
@@ -672,9 +723,9 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                       color: Colors.white,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 14),
-                  
+
                   Text(
                     error,
                     textAlign: TextAlign.center,
@@ -683,9 +734,9 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                       color: Colors.white.withValues(alpha: 0.6),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pushReplacementNamed(context, AppRoutes.main);
@@ -693,7 +744,10 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: StoreAdminColors.error,
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 14,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
