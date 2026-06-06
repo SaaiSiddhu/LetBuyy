@@ -7,6 +7,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./formatting": "./src/formatting.ts",
+    "./logging": "./src/logging.ts",
+    "./marketplace": "./src/marketplace.tsx",
     "./tokens": "./src/tokens.ts"
   },
   "scripts": {

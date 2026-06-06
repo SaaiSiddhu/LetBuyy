@@ -142,6 +142,7 @@ const validators = [
   "cms-slugify-validator.mjs",
   "inr-currency-format-validator.mjs",
   "date-format-validator.mjs",
+  "marketplace-single-source-validator.mjs",
   "settings-apps-dead-twin-validator.mjs",
   "raw-error-message-validator.mjs",
   "dev-auth-bypass-validator.mjs",
