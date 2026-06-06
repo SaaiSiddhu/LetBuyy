@@ -21,6 +21,7 @@ import 'package:letbuyy_store/services/product_service.dart';
 import 'package:letbuyy_store/services/push_service.dart';
 import 'package:letbuyy_store/services/shipping_tax_service.dart';
 import 'package:letbuyy_store/services/skip_needs_backend_exception.dart';
+import 'package:letbuyy_store/services/staff_service.dart';
 import 'package:letbuyy_store/services/store_auth_service.dart';
 import 'package:letbuyy_store/services/store_service.dart';
 import 'package:letbuyy_store/services/subscription_service.dart';
@@ -47,6 +48,7 @@ import 'package:letbuyy_store/screens/products/product_form_screen.dart';
 import 'package:letbuyy_store/screens/settings/notifications_screen.dart';
 import 'package:letbuyy_store/screens/settings/domain_settings_screen.dart';
 import 'package:letbuyy_store/screens/settings/shipping_screen.dart';
+import 'package:letbuyy_store/screens/settings/staff_screen.dart';
 import 'package:letbuyy_store/screens/settings/taxes_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -764,6 +766,45 @@ void main() {
       expect(api.paths, contains('/notifications/preferences'));
     });
 
+    test('StaffService manages staff, invites, roles, and removal', () async {
+      final api = _FakeApiClient(
+        json: {
+          '/employees': [_staffJson()],
+          '/employees/invite': _staffInviteJson(),
+          '/employees/staff_1': _staffJson(role: 'manager'),
+        },
+      );
+      final service = StaffService(api: api);
+
+      final staff = await service.fetchStaff('store_1');
+      final created = await service.createStaff(
+        const StaffInviteInput(
+          storeId: 'store_1',
+          email: 'riya@example.com',
+          role: 'editor',
+        ),
+      );
+      final invite = await service.inviteStaff(
+        const StaffInviteInput(
+          storeId: 'store_1',
+          email: 'arjun@example.com',
+          role: 'support',
+        ),
+      );
+      final updated = await service.updateRole(staff.single, 'manager');
+      await service.removeStaff(updated);
+
+      expect(staff.single.email, 'riya@example.com');
+      expect(created.role, 'editor');
+      expect(invite.status, 'pending');
+      expect(updated.role, 'manager');
+      expect(api.paths, contains('/employees'));
+      expect(api.paths, contains('/employees/invite'));
+      expect(api.paths, contains('/employees/staff_1'));
+      expect(api.bodies['/employees'], containsPair('role', 'editor'));
+      expect(api.bodies['/employees/staff_1'], containsPair('role', 'manager'));
+    });
+
     test(
       'PushService fails closed until device token backend exists',
       () async {
@@ -1362,6 +1403,36 @@ void main() {
     expect(find.text('Channels'), findsOneWidget);
     expect(find.text('New orders'), findsOneWidget);
     expect(find.text('Low stock'), findsOneWidget);
+  });
+
+  testWidgets('StaffScreen renders staff roles and access gates', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+      },
+      json: {
+        '/employees': [_staffJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => StaffService(api: api)),
+        ],
+        child: const MaterialApp(home: StaffScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Users & Permissions'), findsOneWidget);
+    expect(find.text('riya@example.com'), findsWidgets);
+    expect(find.text('Editor'), findsWidgets);
+    expect(find.text('Catalog'), findsOneWidget);
+    expect(find.text('Invite staff'), findsOneWidget);
   });
 
   testWidgets('PagesScreen renders CMS pages from gateway service', (
@@ -2089,6 +2160,32 @@ Map<String, dynamic> _taxRateJson({
   'is_active': true,
   'created_at': '2026-06-01T11:00:00.000Z',
   'updated_at': '2026-06-01T11:00:00.000Z',
+};
+
+Map<String, dynamic> _staffJson({
+  String id = 'staff_1',
+  String email = 'riya@example.com',
+  String role = 'editor',
+  String status = 'active',
+}) => {
+  'id': id,
+  'store_id': 'store_1',
+  'email': email,
+  'full_name': 'Riya Staff',
+  'role': role,
+  'status': status,
+  'is_active': status != 'removed',
+  'created_at': '2026-06-01T11:00:00.000Z',
+};
+
+Map<String, dynamic> _staffInviteJson() => {
+  'id': 'invite_1',
+  'store_id': 'store_1',
+  'email': 'arjun@example.com',
+  'role': 'support',
+  'status': 'pending',
+  'token': 'invite-token',
+  'expires_at': '2026-06-08T11:00:00.000Z',
 };
 
 Map<String, dynamic> _themeReleaseJson() => {

@@ -84,6 +84,7 @@ class ApiClient {
   late final TaxesApi taxes = TaxesApi(this);
   late final CouponsApi coupons = CouponsApi(this);
   late final NotificationsApi notifications = NotificationsApi(this);
+  late final EmployeesApi employees = EmployeesApi(this);
   late final GraphQLClient graphql = GraphQLClient(
     (path, {options}) => request(path, options: options),
   );
@@ -1624,6 +1625,49 @@ class NotificationsApi {
     '/notifications/preferences',
     options: _mergeOptions(options, method: HttpMethod.put, body: input),
   );
+}
+
+class EmployeesApi {
+  const EmployeesApi(this._client);
+
+  final ApiClient _client;
+
+  Future<List<JsonMap>> list({
+    required String storeId,
+    ApiRequestOptions? options,
+  }) => _client.requestData(
+    '/employees',
+    options: _mergeOptions(options, query: {'store_id': storeId}),
+    decoder: (value) =>
+        asJsonList(value).map(asJsonMap).toList(growable: false),
+  );
+
+  Future<JsonMap> create(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/employees',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> invite(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/employees/invite',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> update(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/employees/${_encodePathSegment(id)}',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
+
+  Future<JsonMap> remove(String id, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/employees/${_encodePathSegment(id)}',
+        options: _mergeOptions(options, method: HttpMethod.delete),
+      );
 }
 
 ApiRequestOptions _mergeOptions(

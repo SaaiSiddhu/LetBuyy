@@ -20,6 +20,7 @@ import '../screens/settings/shipping_screen.dart';
 import '../screens/settings/store_details_screen.dart';
 import '../screens/settings/taxes_screen.dart';
 import '../screens/settings/notifications_screen.dart';
+import '../screens/settings/staff_screen.dart';
 import '../screens/settings/help_screen.dart';
 import '../screens/analytics/analytics_screen.dart';
 import '../screens/customers/customer_detail_screen.dart';
@@ -73,6 +74,7 @@ class AppRoutes {
   static const String seoSettings = '/seo-settings';
   static const String storeDetails = '/store-details';
   static const String notifications = '/notifications';
+  static const String staff = '/staff';
   static const String shipping = '/shipping';
   static const String taxes = '/taxes';
   static const String help = '/help';
@@ -139,6 +141,9 @@ class AppRoutes {
     }
     if (settings.name == '/features/notifications') {
       return _buildRoute(const NotificationsScreen(), settings);
+    }
+    if (settings.name == '/features/users') {
+      return _buildRoute(const StaffScreen(), settings);
     }
     if (settings.name == '/features/shipping') {
       return _buildRoute(const ShippingScreen(), settings);
@@ -232,6 +237,9 @@ class AppRoutes {
 
       case notifications:
         return _buildRoute(const NotificationsScreen(), settings);
+
+      case staff:
+        return _buildRoute(const StaffScreen(), settings);
 
       case shipping:
         return _buildRoute(const ShippingScreen(), settings);

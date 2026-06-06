@@ -18,6 +18,7 @@ import 'services/domain_service.dart';
 import 'services/media_service.dart';
 import 'services/notification_settings_service.dart';
 import 'services/shipping_tax_service.dart';
+import 'services/staff_service.dart';
 import 'services/push_service.dart';
 import 'services/analytics_service.dart';
 import 'services/theme_service.dart';
@@ -91,6 +92,9 @@ void main() async {
         ),
         ChangeNotifierProvider<ShippingTaxService>(
           create: (_) => ShippingTaxService(api: apiClient),
+        ),
+        ChangeNotifierProvider<StaffService>(
+          create: (_) => StaffService(api: apiClient),
         ),
         ChangeNotifierProvider<NotificationSettingsService>(
           create: (_) => NotificationSettingsService(api: apiClient),

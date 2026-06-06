@@ -2,8 +2,8 @@
 
 - Branch: `stream/letbuyy-foundation-v2`
 - Start HEAD: `62b2915218daa716b075b02d909c08e053bfce25`
-- Current HEAD: `b768d0f7f7c98fdd74ca119caef7b6bff27fc7de`
-- Status timestamp: `2026-06-06T16:03:05+05:30`
+- Current HEAD: `09cead74956863a313b07da2c22f8c7f9d4d0298`
+- Status timestamp: `2026-06-06T16:11:45+05:30`
 
 ## Feature Checklist
 
@@ -37,7 +37,14 @@
 | P2 | Collections CRUD | DONE-WITH-SKIP | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/product_service.dart`, `lib/screens/products/collections_screen.dart`, `lib/app/routes.dart`, `lib/screens/parity/merchant_feature_definitions.dart`, `test/mobile_services_test.dart`; `/features/collections` opens the real collection screen, lists and creates `/products/collections` rows, and edit/delete/toggle actions are typed skips pending missing gateway PATCH/DELETE collection routes (ledger S-012); covered by service + widget tests |
 | P2 | Product variant matrix | DONE | `lib/screens/products/product_form_screen.dart`, `lib/services/product_service.dart`, `test/mobile_services_test.dart`; product create/update now carries base SKU plus a per-variant matrix of title/SKU/price/compare price/quantity/options through the existing `/products` payload `variants`; covered by service payload assertion + widget test |
 | P2 | Inventory WMS | DONE-WITH-SKIP | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/inventory_service.dart`, `lib/screens/inventory/locations_screen.dart`, `lib/screens/inventory/suppliers_screen.dart`, `lib/screens/inventory/purchase_orders_screen.dart`, `lib/screens/inventory/transfers_screen.dart`, `lib/screens/inventory/inventory_screen.dart`, `lib/app/routes.dart`, `lib/screens/parity/merchant_feature_definitions.dart`, `test/mobile_services_test.dart`; `/features/inventory-*`, `/inventory/locations`, `/inventory/suppliers`, `/inventory/purchase-orders`, and `/inventory/transfers` now expose real location/supplier/create PO/receive/transfer/ship/receive flows through `/v1/inventory/*`; native barcode scan is a typed human-gated seam pending `mobile_scanner` declaration in the governed app dependency graph (ledger S-013); covered by service + widget tests |
-| P3 | Staff/billing/reviews/leads/gift cards/SEO/apps/AI | TODO | Not started |
+| P3 | Staff & RBAC | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/app/role_gate.dart`, `lib/services/staff_service.dart`, `lib/screens/settings/staff_screen.dart`, `lib/main.dart`, `lib/app/routes.dart`, `test/mobile_services_test.dart`; `/features/users` opens the real Users & Permissions screen, lists `/employees`, creates invite records through `/employees/invite`, supports role changes through `PATCH /employees/:id`, soft-removes staff through `DELETE /employees/:id`, and exposes client-side role gates for Staff/Catalog/Orders/Analytics access chips; covered by service + widget tests |
+| P3 | Billing / invoices | TODO | Not started |
+| P3 | Reviews | TODO | Not started |
+| P3 | Form submissions / leads | TODO | Not started |
+| P3 | Gift cards | TODO | Not started |
+| P3 | SEO | TODO | Not started |
+| P3 | App marketplace browse | TODO | Not started |
+| P3 | AI Studio | TODO | Not started |
 | P4 | Multi-store/offline/deep-links/a11y/i18n | TODO | Not started |
 | P5 | Platform-blocked seams | TODO | Not started |
 
@@ -121,6 +128,10 @@
 - P2 `Inventory WMS` iOS build: `flutter build ios --no-codesign --dart-define-from-file=dart-defines/staging.json` PASS. Output: `Built build/ios/iphoneos/Runner.app (27.3MB)`.
 - P2 `Inventory WMS` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
 - P2 `Inventory WMS` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_INTERNAL_OPERATING_SYSTEM_FOUNDATION_MISSION.md must be archived; CODEX_MERCHANT_PARTNER_VERTICAL_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
+- P3 `Staff & RBAC` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 15.3s)`.
+- P3 `Staff & RBAC` feature check: `flutter test` PASS. Output: `00:12 +55: All tests passed!`.
+- P3 `Staff & RBAC` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
+- P3 `Staff & RBAC` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_INTERNAL_OPERATING_SYSTEM_FOUNDATION_MISSION.md must be archived; CODEX_MERCHANT_PARTNER_VERTICAL_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
 
 ## Notes
 
@@ -129,6 +140,6 @@
 
 ## RESUME HINT
 
-Next feature: P3 `Staff & RBAC`.
+Next feature: P3 `Billing / invoices`.
 
-Start P3 by creating `lib/services/staff_service.dart`, `lib/screens/settings/staff_screen.dart`, and a client-side role-gating helper over `/v1/employees*`; then continue the P3 matrix in order.
+Build `lib/screens/settings/billing_screen.dart` over `/v1/payments/subscription/history`, wire `/features/billing` to the real screen, add service/widget coverage, then continue the P3 matrix in order.
