@@ -24,6 +24,7 @@ import 'package:letbuyy_store/services/inventory_service.dart';
 import 'package:letbuyy_store/services/media_service.dart';
 import 'package:letbuyy_store/services/notification_settings_service.dart';
 import 'package:letbuyy_store/services/order_service.dart';
+import 'package:letbuyy_store/services/platform_blocked_service.dart';
 import 'package:letbuyy_store/services/product_service.dart';
 import 'package:letbuyy_store/services/push_service.dart';
 import 'package:letbuyy_store/services/review_service.dart';
@@ -54,6 +55,7 @@ import 'package:letbuyy_store/screens/inventory/transfers_screen.dart';
 import 'package:letbuyy_store/screens/marketing/leads_screen.dart';
 import 'package:letbuyy_store/screens/marketing/reviews_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
+import 'package:letbuyy_store/screens/platform/platform_blocked_screen.dart';
 import 'package:letbuyy_store/screens/products/collections_screen.dart';
 import 'package:letbuyy_store/screens/products/product_form_screen.dart';
 import 'package:letbuyy_store/screens/ai/ai_screen.dart';
@@ -1131,6 +1133,31 @@ void main() {
         'স্টোর নির্বাচন করুন',
       );
     });
+
+    test(
+      'PlatformBlockedService maps every P5 feature to a loud backend skip',
+      () async {
+        final service = PlatformBlockedService();
+
+        expect(PlatformBlockedService.features, hasLength(10));
+        for (final feature in PlatformBlockedService.features) {
+          expect(
+            PlatformBlockedService.featureForRoute(feature.route)?.id,
+            feature.id,
+          );
+          await expectLater(
+            service.requireBackend(feature),
+            throwsA(
+              isA<SkipNeedsBackendException>().having(
+                (error) => error.id,
+                'id',
+                feature.id,
+              ),
+            ),
+          );
+        }
+      },
+    );
 
     test(
       'PushService fails closed until device token backend exists',
@@ -2317,6 +2344,29 @@ void main() {
     expect(find.text('Version 3'), findsOneWidget);
     expect(find.text('Published'), findsOneWidget);
     expect(find.text('Roll back'), findsOneWidget);
+  });
+
+  testWidgets('PlatformBlockedScreen renders flagged backend seam', (
+    tester,
+  ) async {
+    final feature = PlatformBlockedService.features.first;
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider(
+        create: (_) => PlatformBlockedService(),
+        child: MaterialApp(home: PlatformBlockedScreen(feature: feature)),
+      ),
+    );
+
+    expect(find.text(feature.title), findsWidgets);
+    expect(find.text('Feature flag'), findsOneWidget);
+    expect(find.text('Missing backend contract'), findsOneWidget);
+    expect(find.text('Check backend contract'), findsOneWidget);
+
+    await tester.tap(find.text('Check backend contract'));
+    await tester.pump();
+
+    expect(find.textContaining('SKIP-NEEDS-BACKEND'), findsOneWidget);
   });
 }
 

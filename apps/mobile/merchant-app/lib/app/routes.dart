@@ -44,11 +44,13 @@ import '../screens/inventory/suppliers_screen.dart';
 import '../screens/inventory/transfers_screen.dart';
 import '../screens/orders/order_detail_screen.dart';
 import '../screens/orders/orders_screen.dart';
+import '../screens/platform/platform_blocked_screen.dart';
 import '../screens/products/collections_screen.dart';
 import '../screens/subscription/pricing_screen.dart';
 import '../screens/subscription/connect_razorpay_screen.dart';
 import '../screens/parity/merchant_feature_definitions.dart';
 import '../screens/parity/merchant_feature_screen.dart';
+import '../services/platform_blocked_service.dart';
 import 'auth_wrapper.dart';
 
 /// App route definitions
@@ -180,6 +182,15 @@ class AppRoutes {
     }
     if (settings.name == '/features/taxes') {
       return _buildRoute(const TaxesScreen(), settings);
+    }
+    final blockedFeature = PlatformBlockedService.featureForRoute(
+      settings.name,
+    );
+    if (blockedFeature != null) {
+      return _buildRoute(
+        PlatformBlockedScreen(feature: blockedFeature),
+        settings,
+      );
     }
 
     final feature = MerchantFeatureDefinitions.byRoute[settings.name];

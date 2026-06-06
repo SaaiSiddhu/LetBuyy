@@ -69,12 +69,26 @@ class MerchantFeatureDefinitions {
 
   static const other = [formSubmissions, analytics, aiStudio];
 
+  static const platformBlocked = [
+    payoutsSettlement,
+    wallet,
+    commission,
+    kyc,
+    returns,
+    twoFactor,
+    businessDetails,
+    localizationMarkets,
+    customData,
+    embeddedAppBridgeRuntime,
+  ];
+
   static const all = [
     ...commerce,
     ...onlineStore,
     ...apps,
     ...settingsHub,
     ...other,
+    ...platformBlocked,
   ];
 
   static final byRoute = {for (final feature in all) feature.route: feature};
@@ -439,6 +453,116 @@ class MerchantFeatureDefinitions {
     icon: Icons.security_outlined,
     backendRequirement:
         'No merchant 2FA/passkey/session inventory endpoint exists for mobile yet.',
+  );
+
+  static const payoutsSettlement = MerchantFeatureDefinition(
+    id: 'payouts-settlement',
+    route: '/features/payouts-settlement',
+    group: 'Platform Blocked',
+    title: 'Payouts & Settlement',
+    summary: 'Settlement batches, provider payout status, UTRs, and exports.',
+    icon: Icons.account_balance_wallet_outlined,
+    backendRequirement:
+        'No tenant-safe merchant payout, settlement, or UTR gateway contract exists.',
+  );
+
+  static const wallet = MerchantFeatureDefinition(
+    id: 'wallet',
+    route: '/features/wallet',
+    group: 'Platform Blocked',
+    title: 'Wallet',
+    summary: 'Merchant wallet balance, credits, debits, holds, and top-ups.',
+    icon: Icons.wallet_outlined,
+    backendRequirement:
+        'No merchant wallet ledger or balance gateway contract exists.',
+  );
+
+  static const commission = MerchantFeatureDefinition(
+    id: 'commission',
+    route: '/features/commission',
+    group: 'Platform Blocked',
+    title: 'Commission',
+    summary: 'Commission rules, order-level fees, and reconciliation.',
+    icon: Icons.percent_outlined,
+    backendRequirement:
+        'No merchant-facing commission schedule or reconciliation gateway contract exists.',
+  );
+
+  static const kyc = MerchantFeatureDefinition(
+    id: 'kyc',
+    route: '/features/kyc',
+    group: 'Platform Blocked',
+    title: 'KYC',
+    summary: 'Business verification, documents, bank proof, and approval.',
+    icon: Icons.verified_user_outlined,
+    backendRequirement:
+        'No mobile-safe KYC document, verification, or provider status gateway contract exists.',
+  );
+
+  static const returns = MerchantFeatureDefinition(
+    id: 'returns',
+    route: '/features/returns',
+    group: 'Platform Blocked',
+    title: 'Returns',
+    summary: 'Return requests, RMAs, labels, inspections, and restocking.',
+    icon: Icons.assignment_return_outlined,
+    backendRequirement:
+        'No merchant return/RMA lifecycle gateway contract exists.',
+  );
+
+  static const twoFactor = MerchantFeatureDefinition(
+    id: 'two-factor',
+    route: '/features/two-factor',
+    group: 'Platform Blocked',
+    title: 'Two-factor Authentication',
+    summary: 'TOTP setup, recovery codes, enforced roles, and sessions.',
+    icon: Icons.phonelink_lock_outlined,
+    backendRequirement:
+        'No merchant 2FA/passkey/session inventory gateway contract exists for mobile.',
+  );
+
+  static const businessDetails = MerchantFeatureDefinition(
+    id: 'business-details',
+    route: '/features/business-details',
+    group: 'Platform Blocked',
+    title: 'Business Details',
+    summary: 'Legal entity, GSTIN, invoice profile, and billing address.',
+    icon: Icons.business_center_outlined,
+    backendRequirement:
+        'Store PATCH does not expose a full business profile and invoice-address contract.',
+  );
+
+  static const localizationMarkets = MerchantFeatureDefinition(
+    id: 'localization-markets',
+    route: '/features/localization-markets',
+    group: 'Platform Blocked',
+    title: 'Localization & Markets',
+    summary: 'Markets, locales, currencies, and storefront translations.',
+    icon: Icons.public_outlined,
+    backendRequirement:
+        'No storefront markets, locale publishing, or translation gateway contract exists.',
+  );
+
+  static const customData = MerchantFeatureDefinition(
+    id: 'custom-data',
+    route: '/features/custom-data',
+    group: 'Platform Blocked',
+    title: 'Custom Data',
+    summary: 'Metafields, definitions, namespaces, and validation rules.',
+    icon: Icons.data_object_outlined,
+    backendRequirement:
+        'No merchant-safe metafield definition/value gateway contract exists.',
+  );
+
+  static const embeddedAppBridgeRuntime = MerchantFeatureDefinition(
+    id: 'embedded-app-bridge-runtime',
+    route: '/features/embedded-app-bridge',
+    group: 'Platform Blocked',
+    title: 'Embedded App Bridge Runtime',
+    summary: 'Native app-extension host, signed sessions, and UI rendering.',
+    icon: Icons.integration_instructions_outlined,
+    backendRequirement:
+        'Mobile App Bridge runtime needs a signed native extension-host gateway contract.',
   );
 
   static const formSubmissions = MerchantFeatureDefinition(

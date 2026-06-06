@@ -205,6 +205,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     features: MerchantFeatureDefinitions.other,
                   ),
 
+                  _buildFeatureSection(
+                    title: 'Platform-blocked seams',
+                    features: MerchantFeatureDefinitions.platformBlocked,
+                  ),
+
                   // Payment Options Section
                   SettingsSection(
                     title: 'Payment Options',
