@@ -8,6 +8,7 @@ import { featureGate } from './middleware/featureFlags';
 import { observability } from './middleware/observability';
 import { AppError, formatAppError } from './lib/errors';
 import { getSupabaseAdminFromEnv } from './lib/supabase';
+import { resolveCredentialedCorsOrigin } from './lib/cors';
 import storesRouter from './routes/stores';
 import productsRouter from './routes/products';
 import ordersRouter from './routes/orders';
@@ -104,6 +105,7 @@ export interface Env {
     NODE_ENV?: string;
     DEPLOYMENT_ENV?: string;
     TELEMETRY_ENV?: string;
+    CORS_CREDENTIAL_ORIGINS?: string;
     FEATURE_GRAPHQL?: string;
     FEATURE_EXTENSIONS?: string;
     FEATURE_LIQUID?: string;
@@ -370,34 +372,14 @@ app.use('*', observability);
 
 app.use(
     '*',
-    cors({
-        origin: (origin) => {
-            if (!origin) return 'https://letbuyy.store';
-            const allowed = [
-                'https://letbuyy.store',
-                'https://admin.letbuyy.store',
-                'https://accounts.letbuyy.store',
-                'https://console.letbuyy.store',
-                'https://team.letbuyy.store',
-                'https://accounts.staging.letbuyy.store',
-                'https://merchant.staging.letbuyy.store',
-                'https://storefront.staging.letbuyy.store',
-                'https://apps.staging.letbuyy.store',
-                'https://themes.staging.letbuyy.store',
-                'https://console.staging.letbuyy.store',
-                'https://operations.staging.letbuyy.store',
-            ];
-            if (allowed.includes(origin)) return origin;
-            // Allow all *.letbuyy.store subdomains (storefronts)
-            if (/^https:\/\/[a-z0-9-]+\.letbuyy\.store$/.test(origin)) return origin;
-            return 'https://letbuyy.store';
-        },
+    (c, next) => cors({
+        origin: (origin) => resolveCredentialedCorsOrigin(origin, c.env),
         allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowHeaders: ['Content-Type', 'Authorization', 'X-Store-ID', 'X-Request-ID', 'X-Trace-ID', 'X-Idempotency-Key', 'X-Platform-Console-Token', 'X-LetBuyy-API-Version', 'LetBuyy-API-Version'],
         exposeHeaders: ['X-Request-ID', 'X-Trace-ID', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset', 'X-RateLimit-Cost', 'X-RateLimit-Policy', 'X-LetBuyy-API-Version', 'X-Response-Time'],
         maxAge: 86400,
         credentials: true,
-    })
+    })(c, next)
 );
 
 // Health check

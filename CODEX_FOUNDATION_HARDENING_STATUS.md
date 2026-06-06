@@ -428,6 +428,19 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 
+## F4.4 scoped credentialed CORS evidence
+
+- `services/api-gateway/src/lib/cors.ts` now owns credentialed CORS origin resolution, reflects only fixed platform origins or exact HTTPS origins configured in `CORS_CREDENTIAL_ORIGINS`, and rejects wildcard-style, path-bearing, non-HTTPS, query, hash, or credentialed origins.
+- `services/api-gateway/src/index.ts` delegates CORS origin reflection through `resolveCredentialedCorsOrigin(origin, c.env)` and no longer has a wildcard `*.letbuyy.store` reflection branch.
+- `config/env/templates/worker.env.example`, `config/env/schemas/worker.schema.json`, and `docs/governance/security-operations-governance.md` document the exact-origin credentialed CORS contract.
+- Pre-change `pnpm run test:contracts`: FAIL - 87/88 because the new resolver module did not exist and the gateway still had wildcard tenant reflection.
+- `pnpm run test:contracts`: PASS - 90/90.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -458,7 +471,5 @@ Started: 2026-06-05T13:54:14Z
 - H-4 staging proof that theme-marketplace checkout creates a real Razorpay test order and succeeds only after provider verification requires staging merchant session, gateway Razorpay test credentials, a purchasable staging theme with INR pricing, and browser access to Razorpay checkout. Exact proof path once supplied: authenticate to staging theme marketplace, open `/checkout?theme=<slug>`, start checkout, verify the gateway returns a Razorpay order from `POST /v1/themes/<slug>/purchase`, complete test payment in Razorpay Checkout, verify `/v1/themes/<slug>/purchase/verify` records the purchase, and confirm the success page is reached only after verification.
 - H-16 per-operator gateway-side ops identity requires ops SSO/IdP or a security decision to share and validate platform-console session tokens inside the gateway worker, plus a rotation/runbook for `PLATFORM_CONSOLE_API_TOKEN`. Current static-token auth is timing-safe hardened but remains a human-gated identity architecture decision.
 
-## Next work
-
-- Continue to F4.4 scoped credentialed CORS.
+- Continue to F4.5 raw-error sanitizer.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

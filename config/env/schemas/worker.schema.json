@@ -65,6 +65,10 @@
     "RUNTIME_NAME": {
       "type": "string"
     },
+    "CORS_CREDENTIAL_ORIGINS": {
+      "type": "string",
+      "description": "Comma-separated exact HTTPS origins that may receive credentialed API CORS. Tenant storefront and custom-domain origins must be listed explicitly; wildcard subdomain reflection is forbidden."
+    },
     "PRIMARY_REGION": {
       "type": "string"
     },
