@@ -5,7 +5,7 @@ import '../../app/store_context.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../models/store_model.dart';
-import '../../services/domain_service.dart';
+import '../../services/custom_domains.dart';
 import '../../services/skip_needs_backend_exception.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart';

@@ -16,7 +16,7 @@ import 'services/customer_service.dart';
 import 'services/inventory_service.dart';
 import 'services/coupon_service.dart';
 import 'services/cms_service.dart';
-import 'services/domain_service.dart';
+import 'services/custom_domains.dart';
 import 'services/media_service.dart';
 import 'services/notification_settings_service.dart';
 import 'services/platform_blocked_service.dart';

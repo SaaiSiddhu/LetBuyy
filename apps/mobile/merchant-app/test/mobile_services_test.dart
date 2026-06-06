@@ -18,7 +18,7 @@ import 'package:letbuyy_store/services/cache_service.dart';
 import 'package:letbuyy_store/services/cms_service.dart';
 import 'package:letbuyy_store/services/coupon_service.dart';
 import 'package:letbuyy_store/services/customer_service.dart';
-import 'package:letbuyy_store/services/domain_service.dart';
+import 'package:letbuyy_store/services/custom_domains.dart';
 import 'package:letbuyy_store/services/form_submission_service.dart';
 import 'package:letbuyy_store/services/inventory_service.dart';
 import 'package:letbuyy_store/services/media_service.dart';

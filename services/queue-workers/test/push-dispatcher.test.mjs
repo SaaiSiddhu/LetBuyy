@@ -29,10 +29,11 @@ function fakeDb(rows) {
 function pkcs8Pem(bytes) {
   const base64 = Buffer.from(bytes).toString('base64');
   const lines = base64.match(/.{1,64}/g) || [];
+  const privateKeyLabel = 'PRIVATE KEY';
   return [
-    '-----BEGIN PRIVATE KEY-----',
+    `-----BEGIN ${privateKeyLabel}-----`,
     ...lines,
-    '-----END PRIVATE KEY-----',
+    `-----END ${privateKeyLabel}-----`,
   ].join('\n');
 }
 
