@@ -27,6 +27,7 @@ import {
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { formatUsShortDate } from '@letbuyy/ui/formatting'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 
 type PageStatus = 'draft' | 'published' | 'archived'
@@ -117,15 +118,6 @@ async function parsePayload<T>(response: Response): Promise<JsonPayload<T>> {
         throw new Error(message)
     }
     return payload
-}
-
-function formatDate(iso?: string) {
-    if (!iso) return 'Not saved'
-    return new Date(iso).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    })
 }
 
 function statusVariant(status: PageStatus) {
@@ -498,7 +490,7 @@ export default function PagesPage() {
         {
             key: 'updated_at',
             header: 'Last updated',
-            render: (item: PageItem) => formatDate(item.updated_at),
+            render: (item: PageItem) => formatUsShortDate(item.updated_at, { emptyValue: 'Not saved' }),
         },
         {
             key: 'actions',
@@ -556,7 +548,7 @@ export default function PagesPage() {
         {
             key: 'updated_at',
             header: 'Last updated',
-            render: (item: PolicyItem) => formatDate(item.updated_at),
+            render: (item: PolicyItem) => formatUsShortDate(item.updated_at, { emptyValue: 'Not saved' }),
         },
         {
             key: 'actions',

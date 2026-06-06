@@ -141,6 +141,7 @@ const validators = [
   "single-source-crypto-validator.mjs",
   "cms-slugify-validator.mjs",
   "inr-currency-format-validator.mjs",
+  "date-format-validator.mjs",
   "settings-apps-dead-twin-validator.mjs",
   "raw-error-message-validator.mjs",
   "dev-auth-bypass-validator.mjs",

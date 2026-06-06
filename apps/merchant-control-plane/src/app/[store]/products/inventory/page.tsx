@@ -22,6 +22,7 @@ import {
     Skeleton,
     useToast,
 } from '@letbuyy/ui'
+import { formatDisplayDate } from '@letbuyy/ui/formatting'
 import type { InventoryLevel } from '@letbuyy/shared-types'
 
 type InventoryItem = InventoryLevel
@@ -60,11 +61,6 @@ function normalizeInventoryItem(row: Record<string, unknown>): InventoryItem {
         track_inventory: row.track_inventory !== false,
         updated_at: typeof row.updated_at === 'string' ? row.updated_at : null,
     }
-}
-
-function formatDate(value?: string | null) {
-    if (!value) return 'Not synced'
-    return new Date(value).toLocaleDateString('en-IN')
 }
 
 export default function InventoryPage() {
@@ -283,7 +279,7 @@ export default function InventoryPage() {
         {
             key: 'updated_at',
             header: 'Updated',
-            render: (row: InventoryItem) => formatDate(row.updated_at),
+            render: (row: InventoryItem) => formatDisplayDate(row.updated_at, { emptyValue: 'Not synced', options: {} }),
         },
         {
             key: 'actions',

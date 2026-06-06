@@ -26,6 +26,7 @@ import {
     type Column,
     useToast,
 } from '@letbuyy/ui'
+import { formatIndiaDayMonthTime as formatDate } from '@letbuyy/ui/formatting'
 
 interface AiUsage {
     id: string
@@ -94,15 +95,6 @@ function getErrorMessage(payload: unknown, fallback: string) {
     }
 
     return fallback
-}
-
-function formatDate(value: string) {
-    return new Date(value).toLocaleDateString('en-IN', {
-        day: 'numeric',
-        month: 'short',
-        hour: '2-digit',
-        minute: '2-digit',
-    })
 }
 
 function formatFeature(value: string) {

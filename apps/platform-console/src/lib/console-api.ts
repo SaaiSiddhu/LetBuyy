@@ -4,6 +4,7 @@ import {
     type HttpMethod,
     type QueryValue,
 } from '@letbuyy/api-client';
+export { formatIndiaDateTime as formatDateTime } from '@letbuyy/ui/formatting';
 
 export type ConsolePagination = {
     page: number;
@@ -100,19 +101,6 @@ export function readSearchParam(
 export function readPageParam(params: Record<string, string | string[] | undefined> | undefined): number {
     const value = Number(readSearchParam(params, 'page') || 1);
     return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1;
-}
-
-export function formatDateTime(value: string | null | undefined): string {
-    if (!value) return '-';
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return value;
-
-    return date.toLocaleString('en-IN', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-        timeZone: 'Asia/Kolkata',
-    });
 }
 
 export function formatMoneyFromPaise(value: number | string | null | undefined, currency = 'INR'): string {

@@ -24,6 +24,7 @@ import {
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { formatIndiaDate } from '@letbuyy/ui/formatting'
 
 type CouponDiscountKind = SharedCoupon['type'] | 'fixed_amount'
 type SaveState = 'saved' | 'unsaved' | 'saving'
@@ -74,12 +75,6 @@ function getErrorMessage(payload: unknown, fallback: string) {
     }
 
     return fallback
-}
-
-function formatDate(date: string | null) {
-    return date
-        ? new Date(date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-        : 'No expiry'
 }
 
 function formatDiscount(coupon: CouponRow) {
@@ -532,7 +527,7 @@ export default function CouponsPage() {
                                             <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text)]">
                                                 {coupon.used_count || 0}{coupon.max_uses ? `/${coupon.max_uses}` : ''}
                                             </td>
-                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text-subdued)]">{formatDate(coupon.expires_at)}</td>
+                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text-subdued)]">{formatIndiaDate(coupon.expires_at, { emptyValue: 'No expiry' })}</td>
                                             <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">
                                                 <Button
                                                     variant="ghost"

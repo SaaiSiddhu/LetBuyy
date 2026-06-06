@@ -22,6 +22,7 @@ import {
     Section,
     Select,
 } from '@letbuyy/ui';
+import { formatDisplayDate } from '@letbuyy/ui/formatting';
 import { createPlatformOperationsApiClient } from '../../../../lib/api/client';
 import { OnboardingQueueIndexTable } from './OnboardingQueueIndexTable';
 
@@ -444,7 +445,14 @@ function formatLastActivity(attempt: Record<string, unknown> | null, detail: Sto
         detail?.updated_at ||
         detail?.created_at;
 
-    return value ? formatDateTime(value) : 'No activity timestamp';
+    return formatDisplayDate(value, {
+        emptyValue: 'No activity timestamp',
+        invalidValue: 'at an unavailable time',
+        options: {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+        },
+    });
 }
 
 function formatPaymentLabel(payment: StorePaymentConfig | null): string {
@@ -469,16 +477,6 @@ function formatLabel(value: string): string {
     return value
         .replace(/[-_]+/g, ' ')
         .replace(/\b\w/g, (match) => match.toUpperCase());
-}
-
-function formatDateTime(value: string): string {
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return 'at an unavailable time';
-
-    return new Intl.DateTimeFormat('en-IN', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-    }).format(date);
 }
 
 function readString(source: Record<string, unknown>, keys: string[]): string | null {

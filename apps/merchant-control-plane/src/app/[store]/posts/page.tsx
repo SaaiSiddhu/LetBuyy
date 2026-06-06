@@ -27,6 +27,7 @@ import {
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { formatIndiaDate } from '@letbuyy/ui/formatting'
 import type { Column } from '@letbuyy/ui'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 
@@ -87,12 +88,6 @@ function getErrorMessage(payload: unknown, fallback: string) {
     }
 
     return fallback
-}
-
-function formatDate(value: string | null) {
-    return value
-        ? new Date(value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-        : 'Not published'
 }
 
 function statusVariant(status: PostStatus) {
@@ -321,7 +316,7 @@ export default function PostsPage() {
             header: 'Date',
             render: (_, post) => (
                 <span className="text-[var(--lb-color-text-subdued)]">
-                    {formatDate(post.published_at || post.created_at)}
+                    {formatIndiaDate(post.published_at || post.created_at, { emptyValue: 'Not published' })}
                 </span>
             ),
         },

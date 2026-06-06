@@ -32,7 +32,7 @@ import {
     Star,
     Tag,
 } from '@letbuyy/ui';
-import { formatInrCurrency } from '@letbuyy/ui/formatting';
+import { formatIndiaDate, formatInrCurrency } from '@letbuyy/ui/formatting';
 import type { MarketplaceApp } from '@letbuyy/shared-types';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -60,14 +60,6 @@ export async function generateMetadata({ params }: AppDetailPageProps) {
         title: `${app.name} - LetBuyy App Store`,
         description: app.tagline as string,
     };
-}
-
-function formatDate(value: string | null | undefined): string {
-    return new Date(value || '1970-01-01T00:00:00.000Z').toLocaleDateString('en-IN', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    });
 }
 
 function renderDescription(description: string | null | undefined) {
@@ -368,7 +360,7 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                                                     <div className="review-author">{review.user_name || 'Anonymous'}</div>
                                                     <StarRating rating={review.rating} size={12} showValue={false} />
                                                 </div>
-                                                <span className="review-date">{formatDate(review.created_at)}</span>
+                                                <span className="review-date">{formatIndiaDate(review.created_at || '1970-01-01T00:00:00.000Z')}</span>
                                             </div>
                                             <p className="review-body">
                                                 <strong>{review.title}</strong>
@@ -432,7 +424,7 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                                 </div>
                                 <div className="app-sidebar-info-row">
                                     <span className="app-sidebar-info-label">Updated</span>
-                                    <span className="app-sidebar-info-value">{formatDate(app.updated_at || app.created_at)}</span>
+                                    <span className="app-sidebar-info-value">{formatIndiaDate(app.updated_at || app.created_at || '1970-01-01T00:00:00.000Z')}</span>
                                 </div>
                                 <div className="app-sidebar-info-row">
                                     <span className="app-sidebar-info-label">Pricing</span>

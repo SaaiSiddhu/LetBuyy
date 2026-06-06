@@ -15,6 +15,7 @@ import {
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { formatIndiaDate } from '@letbuyy/ui/formatting'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface AppsSettingsClientProps {
@@ -36,18 +37,6 @@ function readString(value: unknown, fallback = '') {
 function readOptionalString(value: unknown) {
     const text = readString(value).trim()
     return text || null
-}
-
-function formatDate(value?: string | null) {
-    if (!value) return 'Recently installed'
-    const date = new Date(value)
-    if (Number.isNaN(date.getTime())) return 'Recently installed'
-
-    return date.toLocaleDateString('en-IN', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    })
 }
 
 function appName(app: InstalledApp) {
@@ -229,7 +218,7 @@ export function AppsSettingsClient({ store, installedApps, onUninstall }: AppsSe
                                                 )}
                                             </div>
                                             <p className="m-0 max-w-[var(--lb-size-content-measure)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                                {app.marketplace_apps?.tagline || `Installed ${formatDate(app.installed_at)}`}
+                                                {app.marketplace_apps?.tagline || `Installed ${formatIndiaDate(app.installed_at, { emptyValue: 'Recently installed' })}`}
                                             </p>
                                             <div className="flex flex-wrap gap-[var(--lb-space-2)]">
                                                 {appScopes(app).slice(0, 5).map((scope) => (

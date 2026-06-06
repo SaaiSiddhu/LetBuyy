@@ -23,6 +23,7 @@ import {
     type IndexTableColumn,
     useToast,
 } from '@letbuyy/ui'
+import { formatUsShortDate } from '@letbuyy/ui/formatting'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface Employee {
@@ -97,18 +98,6 @@ function getRoleLabel(role: string) {
 
 function formatStatus(status: string) {
     return status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Invited'
-}
-
-function formatDate(value: string) {
-    if (!value) return 'Recently'
-    const date = new Date(value)
-    if (Number.isNaN(date.getTime())) return 'Recently'
-
-    return date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    })
 }
 
 export default function UsersSettingsPage() {
@@ -310,7 +299,7 @@ export default function UsersSettingsPage() {
                             {employee.email}
                         </p>
                         <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                            Added {formatDate(employee.created_at)}
+                            Added {formatUsShortDate(employee.created_at, { emptyValue: 'Recently' })}
                         </p>
                     </div>
                 </div>

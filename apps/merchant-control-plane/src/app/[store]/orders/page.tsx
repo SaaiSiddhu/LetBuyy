@@ -23,6 +23,7 @@ import {
     type IndexTableColumn,
     type IndexTableBulkAction,
 } from '@letbuyy/ui'
+import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 
 type OrderItemRow = Pick<
     SharedLineItem,
@@ -115,15 +116,6 @@ function titleize(value: string | null | undefined) {
         .filter(Boolean)
         .map(part => part.charAt(0).toUpperCase() + part.slice(1))
         .join(' ')
-}
-
-function formatDate(value: string) {
-    const date = new Date(value)
-    return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('en-IN', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-    })
 }
 
 function currency(amount: number) {

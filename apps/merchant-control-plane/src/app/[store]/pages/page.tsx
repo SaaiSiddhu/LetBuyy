@@ -25,6 +25,7 @@ import {
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 
 type PageStatus = 'draft' | 'published' | 'archived'
@@ -63,10 +64,6 @@ function getErrorMessage(payload: unknown, fallback: string) {
     }
 
     return fallback
-}
-
-function formatDate(value: string) {
-    return new Date(value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function statusVariant(status: string) {
