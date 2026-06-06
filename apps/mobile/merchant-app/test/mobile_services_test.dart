@@ -194,7 +194,7 @@ void main() {
 
     test('NotificationSettingsService persists preferences', () async {
       final api = _FakeApiClient(
-        json: {'/notifications': _notificationSettingsJson()},
+        json: {'/notifications/preferences': _notificationPreferenceRows()},
       );
       final service = NotificationSettingsService(api: api);
 
@@ -205,7 +205,7 @@ void main() {
 
       expect(settings.emailEnabled, isTrue);
       expect(updated.lowStock, isTrue);
-      expect(api.paths, contains('/notifications'));
+      expect(api.paths, contains('/notifications/preferences'));
     });
 
     test('AnalyticsService assembles dashboard metrics', () async {
@@ -552,7 +552,7 @@ void main() {
       paginated: {
         '/stores': [_storeJson()],
       },
-      json: {'/notifications': _notificationSettingsJson()},
+      json: {'/notifications/preferences': _notificationPreferenceRows()},
     );
 
     await tester.pumpWidget(
@@ -723,18 +723,38 @@ Map<String, dynamic> _couponJson({
   'is_active': isActive,
 };
 
-Map<String, dynamic> _notificationSettingsJson() => {
-  'store_id': 'store_1',
-  'channels': {'email': true, 'sms': false, 'push': true},
-  'events': {
-    'order_created': true,
-    'order_paid': true,
-    'low_stock': true,
-    'refunds': true,
-    'customer_signup': true,
-    'marketing': false,
+List<Map<String, dynamic>> _notificationPreferenceRows() => [
+  {
+    'store_id': 'store_1',
+    'channel': 'email',
+    'category': 'system',
+    'enabled': true,
   },
-};
+  {
+    'store_id': 'store_1',
+    'channel': 'sms',
+    'category': 'system',
+    'enabled': false,
+  },
+  {
+    'store_id': 'store_1',
+    'channel': 'push',
+    'category': 'system',
+    'enabled': true,
+  },
+  {
+    'store_id': 'store_1',
+    'channel': 'push',
+    'category': 'order_created',
+    'enabled': true,
+  },
+  {
+    'store_id': 'store_1',
+    'channel': 'push',
+    'category': 'low_stock',
+    'enabled': true,
+  },
+];
 
 Map<String, dynamic> _orderJson({
   String id = 'order_1',

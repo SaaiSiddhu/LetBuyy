@@ -51,6 +51,43 @@ class NotificationSettings {
     );
   }
 
+  factory NotificationSettings.fromPreferenceRows({
+    required String storeId,
+    required List<Map<String, dynamic>> rows,
+  }) {
+    var settings = NotificationSettings.defaults(storeId);
+    for (final row in rows) {
+      final channel = _stringValue(row['channel']);
+      final category = _stringValue(row['category']);
+      final enabled = _boolValue(row['enabled'], fallback: true);
+
+      if (category == 'system') {
+        if (channel == 'email') {
+          settings = settings.copyWith(emailEnabled: enabled);
+        } else if (channel == 'sms') {
+          settings = settings.copyWith(smsEnabled: enabled);
+        } else if (channel == 'push') {
+          settings = settings.copyWith(pushEnabled: enabled);
+        }
+        continue;
+      }
+
+      if (channel != 'push') continue;
+      settings = switch (category) {
+        'order_created' ||
+        'new_order' => settings.copyWith(orderCreated: enabled),
+        'order_paid' || 'payment' => settings.copyWith(orderPaid: enabled),
+        'low_stock' => settings.copyWith(lowStock: enabled),
+        'refunds' || 'refund' => settings.copyWith(refunds: enabled),
+        'customer_signup' ||
+        'new_contact' => settings.copyWith(customerSignup: enabled),
+        'marketing' => settings.copyWith(marketing: enabled),
+        _ => settings,
+      };
+    }
+    return settings;
+  }
+
   factory NotificationSettings.defaults(String storeId) {
     return NotificationSettings(
       storeId: storeId,
@@ -89,6 +126,63 @@ class NotificationSettings {
       'marketing': marketing,
     },
   };
+
+  List<Map<String, dynamic>> toPreferenceRows() => [
+    {
+      'store_id': storeId,
+      'channel': 'email',
+      'category': 'system',
+      'enabled': emailEnabled,
+    },
+    {
+      'store_id': storeId,
+      'channel': 'sms',
+      'category': 'system',
+      'enabled': smsEnabled,
+    },
+    {
+      'store_id': storeId,
+      'channel': 'push',
+      'category': 'system',
+      'enabled': pushEnabled,
+    },
+    {
+      'store_id': storeId,
+      'channel': 'push',
+      'category': 'order_created',
+      'enabled': orderCreated,
+    },
+    {
+      'store_id': storeId,
+      'channel': 'push',
+      'category': 'order_paid',
+      'enabled': orderPaid,
+    },
+    {
+      'store_id': storeId,
+      'channel': 'push',
+      'category': 'low_stock',
+      'enabled': lowStock,
+    },
+    {
+      'store_id': storeId,
+      'channel': 'push',
+      'category': 'refunds',
+      'enabled': refunds,
+    },
+    {
+      'store_id': storeId,
+      'channel': 'push',
+      'category': 'customer_signup',
+      'enabled': customerSignup,
+    },
+    {
+      'store_id': storeId,
+      'channel': 'push',
+      'category': 'marketing',
+      'enabled': marketing,
+    },
+  ];
 
   NotificationSettings copyWith({
     bool? emailEnabled,
@@ -146,10 +240,13 @@ class NotificationSettingsService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final json = await _api.notifications.getPreferences(storeId);
-      _settings = json.isEmpty
+      final rows = await _api.notifications.getPreferences(storeId);
+      _settings = rows.isEmpty
           ? NotificationSettings.defaults(storeId)
-          : NotificationSettings.fromJson({'store_id': storeId, ...json});
+          : NotificationSettings.fromPreferenceRows(
+              storeId: storeId,
+              rows: rows,
+            );
       return _settings!;
     } finally {
       _isLoading = false;
@@ -160,10 +257,10 @@ class NotificationSettingsService extends ChangeNotifier {
   Future<NotificationSettings> updateSettings(
     NotificationSettings settings,
   ) async {
-    final json = await _api.notifications.updatePreferences(settings.toJson());
-    _settings = json.isEmpty
-        ? settings
-        : NotificationSettings.fromJson({...settings.toJson(), ...json});
+    for (final row in settings.toPreferenceRows()) {
+      await _api.notifications.upsertPreference(row);
+    }
+    _settings = settings;
     notifyListeners();
     return _settings!;
   }

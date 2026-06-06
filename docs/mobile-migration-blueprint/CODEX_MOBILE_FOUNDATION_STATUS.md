@@ -2,8 +2,8 @@
 
 - Branch: `stream/letbuyy-foundation-v2`
 - Start HEAD: `62b2915218daa716b075b02d909c08e053bfce25`
-- Current HEAD: `efccd5750ef177037016c494c380302dee43dc22`
-- Status timestamp: `2026-06-06T13:48:34+05:30`
+- Current HEAD: `5304cf43f0fe26a785708a2644eedf88a700b11c`
+- Status timestamp: `2026-06-06T13:53:17+05:30`
 
 ## Feature Checklist
 
@@ -24,7 +24,7 @@
 | P1 | Customers + detail + addresses | DONE | `lib/services/customer_service.dart`, `lib/screens/customers/customers_screen.dart`, `lib/screens/customers/customer_detail_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/customers` opens the real customer list, detail loads `/customers/:email`, address CRUD uses `/customers/:email/addresses*`, and recent orders link to the order detail screen; covered by `test/mobile_services_test.dart` service + widget tests |
 | P1 | Inventory adjust | DONE | `lib/services/inventory_service.dart`, `lib/screens/inventory/inventory_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/inventory` opens the real inventory screen, low-stock filter is available, and stock adjustments post signed `delta` + reason to `/inventory/adjust`; covered by `test/mobile_services_test.dart` service + widget tests |
 | P1 | Coupons CRUD | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/coupon_service.dart`, `lib/screens/discounts/coupons_screen.dart`, `lib/screens/discounts/coupon_form_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/coupons` opens the real coupon list, create/edit/toggle/delete use `/coupons*`, and validation posts to `/coupons/validate`; covered by `test/mobile_services_test.dart` service + widget tests |
-| P1 | Notifications settings | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/notification_settings_service.dart`, `lib/screens/settings/notifications_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/notifications` opens the real settings screen, store-scoped preferences load from `/notifications`, and channel/event toggles persist through PATCH `/notifications`; covered by `test/mobile_services_test.dart` service + widget tests |
+| P1 | Notifications settings | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/notification_settings_service.dart`, `lib/screens/settings/notifications_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/notifications` opens the real settings screen, store-scoped preferences load from `/notifications/preferences`, and channel/event toggles persist through PUT `/notifications/preferences`; covered by `test/mobile_services_test.dart` service + widget tests |
 | P1 | Push notifications | TODO | Not started |
 | P2 | Theme/CMS/media/shipping/taxes/domains/collections/variants/WMS | TODO | Not started |
 | P3 | Staff/billing/reviews/leads/gift cards/SEO/apps/AI | TODO | Not started |
@@ -56,6 +56,7 @@
 - P1 `Notifications settings` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 54.9s)`.
 - P1 `Notifications settings` feature check: `flutter test` PASS. Output: `00:02 +22: All tests passed!`.
 - P1 `Notifications settings` feature governance: `node scripts/validate-governance.mjs` PASS. Output: `Governance validation passed (157 validators)`.
+- P1 `Notifications settings` gateway contract correction: `flutter analyze` PASS (`No issues found! (ran in 3.7s)`), `flutter test` PASS (`00:01 +22: All tests passed!`), and `node scripts/validate-governance.mjs` PASS (`Governance validation passed (157 validators)`).
 
 ## Notes
 

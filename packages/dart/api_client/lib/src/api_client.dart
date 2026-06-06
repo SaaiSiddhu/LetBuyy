@@ -1207,20 +1207,21 @@ class NotificationsApi {
 
   final ApiClient _client;
 
-  Future<JsonMap> getPreferences(
+  Future<List<JsonMap>> getPreferences(
     String storeId, {
     ApiRequestOptions? options,
-  }) => _client.requestJson(
-    '/notifications',
+  }) => _client.requestData(
+    '/notifications/preferences',
     options: _mergeOptions(options, query: {'store_id': storeId}),
+    decoder: (value) => asJsonList(value).map(asJsonMap).toList(),
   );
 
-  Future<JsonMap> updatePreferences(
+  Future<JsonMap> upsertPreference(
     JsonMap input, {
     ApiRequestOptions? options,
   }) => _client.requestJson(
-    '/notifications',
-    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+    '/notifications/preferences',
+    options: _mergeOptions(options, method: HttpMethod.put, body: input),
   );
 }
 
