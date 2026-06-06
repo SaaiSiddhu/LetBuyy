@@ -218,7 +218,7 @@ None yet.
 
 | ID | issue / capability | stream | status | evidence |
 |---|---|---|---|---|
-| V2-A1 | Brand purple primary CTA, AA contrast, visual diff | A | TODO | |
+| V2-A1 | Brand purple primary CTA, AA contrast, visual diff | A | DONE | `pnpm --filter @letbuyy/ui test` PASS (36 tests); `pnpm --filter @letbuyy/ui validate:ui` PASS (340 exports, 349 vars, 109 alias groups); `pnpm --filter @letbuyy/ui build` PASS; `pnpm --filter @letbuyy/ui test:visual:update` PASS (312 real baselines captured after HTTP harness fix); `pnpm --filter @letbuyy/ui test:visual` PASS (312 baselines checked); contact sheet: `packages/typescript/ui/storybook-screenshots/v2-a1-primary-button-before-after.png`; white text contrast after A1: normal `#6D28D9` = 7.10:1, hover `#5B21B6` = 8.98:1, active `#4C1D95` = 10.95:1. |
 | V2-A2 | Run V1 codemods across all consumers | A | TODO | |
 | V2-A3 | Enable UI eslint fence and migrate raw element / hardcoded hex bypass | A | TODO | |
 | V2-A4 | Wrap marketing-site in `DesignSystemRoot` | A | TODO | |
@@ -237,3 +237,10 @@ None yet.
 - `stream/letbuyy-foundation-v2` was merged and pushed to `develop` before UI V1.
 - `stream/letbuyy-ui-foundation` was merged and pushed to `develop` with `formatting.ts`, `index.ts`, and package subpath exports unioned.
 - `pnpm --filter @letbuyy/ui validate:ui`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs` passed after the UI merge.
+
+### V2 Visual Evidence
+
+- V2-A1 fixed the Storybook visual harness to serve the static build over local HTTP instead of `file://`; the previous file URL silently CORS-blocked Storybook modules and produced blank baselines.
+- V2-A1 added animation-disabling, font readiness, pixel-based comparison tolerance, and Storybook error-page detection to the visual harness.
+- V2-A1 corrected `foundation-primitives.stories.tsx` so the app-shell story renders a supported `Badge` variant instead of Storybook's error page.
+- V2-A1 contact sheet: `packages/typescript/ui/storybook-screenshots/v2-a1-primary-button-before-after.png`.

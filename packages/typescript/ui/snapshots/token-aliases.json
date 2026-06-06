@@ -5,26 +5,6 @@
   "themes": {
     "light": [
       {
-        "value": "#000000",
-        "variables": [
-          "--lb-color-primary-cta-active",
-          "--lb-component-button-primary-active",
-          "--lb-primitive-color-black",
-          "--lb-semantic-button-primary-active"
-        ]
-      },
-      {
-        "value": "#0F172A",
-        "variables": [
-          "--lb-color-primary-cta",
-          "--lb-component-button-primary-bg",
-          "--lb-component-button-primary-border",
-          "--lb-primitive-color-slate-900",
-          "--lb-semantic-button-primary-bg",
-          "--lb-semantic-button-primary-border"
-        ]
-      },
-      {
         "value": "#111827",
         "variables": [
           "--lb-color-background-dark",
@@ -61,15 +41,6 @@
         ]
       },
       {
-        "value": "#1E293B",
-        "variables": [
-          "--lb-color-primary-cta-hover",
-          "--lb-component-button-primary-hover",
-          "--lb-primitive-color-slate-800",
-          "--lb-semantic-button-primary-hover"
-        ]
-      },
-      {
         "value": "#22C55E",
         "variables": [
           "--lb-color-success",
@@ -97,9 +68,20 @@
         ]
       },
       {
+        "value": "#4C1D95",
+        "variables": [
+          "--lb-color-primary-cta-active",
+          "--lb-component-button-primary-active",
+          "--lb-semantic-button-primary-active"
+        ]
+      },
+      {
         "value": "#5B21B6",
         "variables": [
           "--lb-color-focus-ring",
+          "--lb-color-primary-cta-hover",
+          "--lb-component-button-primary-hover",
+          "--lb-semantic-button-primary-hover",
           "--lb-semantic-focus-ring"
         ]
       },
@@ -123,11 +105,16 @@
         "value": "#6D28D9",
         "variables": [
           "--lb-color-primary-active",
+          "--lb-color-primary-cta",
           "--lb-color-primary-text",
           "--lb-component-badge-accent-text",
+          "--lb-component-button-primary-bg",
+          "--lb-component-button-primary-border",
           "--lb-primitive-color-purple-700",
           "--lb-semantic-accent-active",
-          "--lb-semantic-accent-text"
+          "--lb-semantic-accent-text",
+          "--lb-semantic-button-primary-bg",
+          "--lb-semantic-button-primary-border"
         ]
       },
       {
@@ -702,6 +689,22 @@
         ]
       },
       {
+        "value": "#4C1D95",
+        "variables": [
+          "--lb-color-primary-cta-active",
+          "--lb-component-button-primary-active",
+          "--lb-semantic-button-primary-active"
+        ]
+      },
+      {
+        "value": "#5B21B6",
+        "variables": [
+          "--lb-color-primary-cta-hover",
+          "--lb-component-button-primary-hover",
+          "--lb-semantic-button-primary-hover"
+        ]
+      },
+      {
         "value": "#6B7280",
         "variables": [
           "--lb-color-text-muted",
@@ -714,23 +717,22 @@
         "value": "#6D28D9",
         "variables": [
           "--lb-color-primary-active",
-          "--lb-color-primary-cta-active",
-          "--lb-component-button-primary-active",
+          "--lb-color-primary-cta",
+          "--lb-component-button-primary-bg",
+          "--lb-component-button-primary-border",
           "--lb-primitive-color-purple-700",
           "--lb-semantic-accent-active",
-          "--lb-semantic-button-primary-active"
+          "--lb-semantic-button-primary-bg",
+          "--lb-semantic-button-primary-border"
         ]
       },
       {
         "value": "#7C3AED",
         "variables": [
-          "--lb-color-primary-cta-hover",
           "--lb-color-primary-hover",
           "--lb-color-secondary-action-hover",
-          "--lb-component-button-primary-hover",
           "--lb-primitive-color-purple-600",
-          "--lb-semantic-accent-hover",
-          "--lb-semantic-button-primary-hover"
+          "--lb-semantic-accent-hover"
         ]
       },
       {
@@ -746,17 +748,12 @@
           "--lb-color-brand-purple",
           "--lb-color-focus-ring",
           "--lb-color-primary",
-          "--lb-color-primary-cta",
           "--lb-color-secondary-action",
           "--lb-component-badge-accent-border",
-          "--lb-component-button-primary-bg",
-          "--lb-component-button-primary-border",
           "--lb-component-empty-state-illustration-ink",
           "--lb-component-input-focus-border",
           "--lb-primitive-color-purple-500",
           "--lb-semantic-accent-brand",
-          "--lb-semantic-button-primary-bg",
-          "--lb-semantic-button-primary-border",
           "--lb-semantic-focus-ring"
         ]
       },

@@ -237,4 +237,8 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - Preconditions: broad `stream/letbuyy-foundation-v2` and UI V1 `stream/letbuyy-ui-foundation` were merged to `develop` and pushed before this branch was created.
 - Merge reconciliation: UI formatter exports were unioned so `formatIndiaDate`, `formatInrCurrency`, `formatUsShortDate`, and related broad-stream app imports still compile while UI V1's `formatCurrency`, `formatDate`, and `formatNumber` remain exported.
 - Baseline: `node scripts/validate-governance.mjs` PASS on 2026-06-06 with `Governance validation passed (157 validators)`.
-- Current work: Stream A starts with V2-A1, the authorized purple primary CTA brand change.
+- V2-A1 DONE: light and dark primary CTA variables now use the AA-safe purple ramp (`#6D28D9`, `#5B21B6`, `#4C1D95`) with white text; `#8B5CF6` remains the brand accent/fill token, not the CTA background.
+- V2-A1 contrast evidence: white text on normal `#6D28D9` = 7.10:1, hover `#5B21B6` = 8.98:1, active `#4C1D95` = 10.95:1.
+- V2-A1 visual evidence: `packages/typescript/ui/storybook-screenshots/v2-a1-primary-button-before-after.png`; `pnpm --filter @letbuyy/ui test:visual:update` PASS with 312 real baselines, and `pnpm --filter @letbuyy/ui test:visual` PASS with 312 checked baselines.
+- V2-A1 harness note: the Storybook visual harness was corrected from `file://` to a local HTTP server because Chromium CORS-blocked Storybook modules and blank baselines were previously possible; the harness now also disables animations, waits for fonts, compares decoded pixels, and fails on Storybook error pages.
+- Current work: Stream A moves next to V2-A2, running V1 codemods across consumers.

@@ -32,7 +32,7 @@ const primitiveTokenSpecs = [
     { label: 'Purple 700', variable: '--lb-primitive-color-purple-700', role: 'Brand active' },
     { label: 'Gray 100', variable: '--lb-primitive-color-gray-100', role: 'Light page background' },
     { label: 'Gray 200', variable: '--lb-primitive-color-gray-200', role: 'Light border' },
-    { label: 'Slate 900', variable: '--lb-primitive-color-slate-900', role: 'Light primary CTA' },
+    { label: 'Purple 700', variable: '--lb-primitive-color-purple-700', role: 'AA primary CTA' },
 ] as const satisfies readonly TokenSpec[];
 
 const brandTokenSpecs = [
@@ -257,7 +257,7 @@ export function LightTheme() {
             <PageHeader
                 eyebrow="Light mode"
                 title="Light Theme"
-                description="Soft grey page canvas, white cards, dark primary actions, and purple brand accents."
+                description="Soft grey page canvas, white cards, purple primary actions, and purple brand accents."
                 primaryAction={{ label: 'Create' }}
                 secondaryActions={[{ label: 'Export' }]}
             />
@@ -484,7 +484,7 @@ export function SurfaceHierarchy() {
 function ButtonHierarchyContent() {
     return (
         <Card>
-            <Section title="Button Hierarchy" description="Primary buttons use component tokens. Light mode is dark navy; dark mode is purple. Text remains white.">
+            <Section title="Button Hierarchy" description="Primary buttons use component tokens. Light and dark modes use the AA-safe purple brand ramp. Text remains white.">
                 <div className="flex flex-wrap items-center gap-[var(--lb-space-3)]">
                     <Button>Add product</Button>
                     <Button>Save</Button>

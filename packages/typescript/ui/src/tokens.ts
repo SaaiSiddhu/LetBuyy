@@ -163,11 +163,11 @@ export const letbuyySemanticTokens = {
         },
         button: {
             primary: {
-                bg: primitive.color.slate[900],
-                hover: primitive.color.slate[800],
-                active: primitive.color.black,
+                bg: primitive.color.purple[700],
+                hover: '#5B21B6',
+                active: '#4C1D95',
                 text: primitive.color.white,
-                border: primitive.color.slate[900],
+                border: primitive.color.purple[700],
             },
             secondary: {
                 bg: 'transparent',
@@ -227,11 +227,11 @@ export const letbuyySemanticTokens = {
         },
         button: {
             primary: {
-                bg: letbuyyColorTokens.primary,
-                hover: letbuyyColorTokens.primaryHover,
-                active: letbuyyColorTokens.primaryActive,
+                bg: primitive.color.purple[700],
+                hover: '#5B21B6',
+                active: '#4C1D95',
                 text: primitive.color.white,
-                border: letbuyyColorTokens.primary,
+                border: primitive.color.purple[700],
             },
             secondary: {
                 bg: letbuyyColorTokens.surfaceDark,

@@ -851,6 +851,20 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         }
     });
 
+    it('uses the AA-safe purple ramp for primary CTA buttons in light and dark themes', () => {
+        const themes = [letbuyyTokenCssVariables.light, letbuyyTokenCssVariables.dark] as const;
+
+        for (const variables of themes) {
+            expect(variables['--lb-component-button-primary-bg']).toBe('#6D28D9');
+            expect(variables['--lb-component-button-primary-hover']).toBe('#5B21B6');
+            expect(variables['--lb-component-button-primary-active']).toBe('#4C1D95');
+            expect(variables['--lb-component-button-primary-text']).toBe('#FFFFFF');
+            expect(contrastRatio(variables['--lb-component-button-primary-text'], variables['--lb-component-button-primary-bg'])).toBeGreaterThanOrEqual(4.5);
+            expect(contrastRatio(variables['--lb-component-button-primary-text'], variables['--lb-component-button-primary-hover'])).toBeGreaterThanOrEqual(4.5);
+            expect(contrastRatio(variables['--lb-component-button-primary-text'], variables['--lb-component-button-primary-active'])).toBeGreaterThanOrEqual(4.5);
+        }
+    });
+
     it('merges Tailwind class conflicts through cx', () => {
         const merged = cx('px-2 py-1 text-red-500', false, null, 'px-4 text-blue-500');
 
