@@ -441,6 +441,20 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 
+## F4.5 raw-error sanitizer evidence
+
+- `services/api-gateway/src/lib/public-errors.ts` is the centralized public error allowlist, with fixed public messages for DB/auth/provider/server/export/import failures, preserved client-actionable validation-style codes, and debug-field stripping for sanitized codes.
+- `services/api-gateway/src/middleware/security.ts` now routes outbound JSON error payloads through `sanitizePublicErrorPayload` instead of a local three-code map.
+- `scripts/validators/raw-error-message-validator.mjs` is wired into `scripts/validate-governance.mjs`; it checks raw error-object `.message` responses and requires their codes to be covered by the public sanitizer.
+- Pre-change `pnpm run test:contracts`: FAIL - 90/91 because the centralized sanitizer and validator were absent.
+- `pnpm run test:contracts`: PASS - 93/93.
+- `node scripts/validators/raw-error-message-validator.mjs`: PASS - 26 files with raw `error.message` responses checked.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 137/137 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -471,5 +485,5 @@ Started: 2026-06-05T13:54:14Z
 - H-4 staging proof that theme-marketplace checkout creates a real Razorpay test order and succeeds only after provider verification requires staging merchant session, gateway Razorpay test credentials, a purchasable staging theme with INR pricing, and browser access to Razorpay checkout. Exact proof path once supplied: authenticate to staging theme marketplace, open `/checkout?theme=<slug>`, start checkout, verify the gateway returns a Razorpay order from `POST /v1/themes/<slug>/purchase`, complete test payment in Razorpay Checkout, verify `/v1/themes/<slug>/purchase/verify` records the purchase, and confirm the success page is reached only after verification.
 - H-16 per-operator gateway-side ops identity requires ops SSO/IdP or a security decision to share and validate platform-console session tokens inside the gateway worker, plus a rotation/runbook for `PLATFORM_CONSOLE_API_TOKEN`. Current static-token auth is timing-safe hardened but remains a human-gated identity architecture decision.
 
-- Continue to F4.5 raw-error sanitizer.
+- Continue to F4.6 production-impossible dev bypasses.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.
