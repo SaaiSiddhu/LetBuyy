@@ -1,11 +1,6 @@
 'use client';
 
-import {
-    Badge,
-    EmptyState,
-    IndexTable,
-    type IndexTableColumn,
-} from '@letbuyy/ui';
+import { Badge, EmptyState, Table, type TableColumn } from '@letbuyy/ui';
 import { formatIndiaDateTime as formatDateTime } from '@letbuyy/ui/formatting';
 
 export type ConsoleStore = {
@@ -37,7 +32,7 @@ type StoreDirectoryIndexTableProps = {
     filterChipLabels: string[];
 };
 
-const columns: Array<IndexTableColumn<ConsoleStore>> = [
+const columns: Array<TableColumn<ConsoleStore>> = [
     {
         key: 'store',
         header: 'Store',
@@ -116,7 +111,7 @@ const columns: Array<IndexTableColumn<ConsoleStore>> = [
 
 export function StoreDirectoryIndexTable({ rows, filterChipLabels }: StoreDirectoryIndexTableProps) {
     return (
-        <IndexTable
+        <Table
             columns={columns}
             rows={rows}
             emptyState={(

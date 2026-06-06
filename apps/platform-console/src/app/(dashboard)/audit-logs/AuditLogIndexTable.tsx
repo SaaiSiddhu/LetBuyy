@@ -1,11 +1,6 @@
 'use client';
 
-import {
-    Badge,
-    EmptyState,
-    IndexTable,
-    type IndexTableColumn,
-} from '@letbuyy/ui';
+import { Badge, EmptyState, Table, type TableColumn } from '@letbuyy/ui';
 import { formatIndiaDateTime as formatDateTime } from '@letbuyy/ui/formatting';
 
 export type ConsoleAuditLog = {
@@ -26,7 +21,7 @@ type AuditLogIndexTableProps = {
     filterChipLabels: string[];
 };
 
-const columns: Array<IndexTableColumn<ConsoleAuditLog>> = [
+const columns: Array<TableColumn<ConsoleAuditLog>> = [
     {
         key: 'actor',
         header: 'Actor',
@@ -92,7 +87,7 @@ const columns: Array<IndexTableColumn<ConsoleAuditLog>> = [
 
 export function AuditLogIndexTable({ rows, filterChipLabels }: AuditLogIndexTableProps) {
     return (
-        <IndexTable
+        <Table
             columns={columns}
             rows={rows}
             emptyState={(
