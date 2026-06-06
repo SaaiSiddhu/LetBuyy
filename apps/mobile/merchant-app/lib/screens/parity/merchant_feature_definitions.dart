@@ -399,7 +399,7 @@ class MerchantFeatureDefinitions {
     icon: Icons.credit_card_outlined,
     endpoint: 'payments/subscription/history',
     backendRequirement:
-        'Requires /v1/billing or full payment billing history contracts for mobile parity.',
+        'Requires /v1/payments/subscription/history for the active store.',
   );
 
   static const business = MerchantFeatureDefinition(

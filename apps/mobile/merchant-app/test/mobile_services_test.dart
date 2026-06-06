@@ -46,6 +46,7 @@ import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
 import 'package:letbuyy_store/screens/products/collections_screen.dart';
 import 'package:letbuyy_store/screens/products/product_form_screen.dart';
 import 'package:letbuyy_store/screens/settings/notifications_screen.dart';
+import 'package:letbuyy_store/screens/settings/billing_screen.dart';
 import 'package:letbuyy_store/screens/settings/domain_settings_screen.dart';
 import 'package:letbuyy_store/screens/settings/shipping_screen.dart';
 import 'package:letbuyy_store/screens/settings/staff_screen.dart';
@@ -971,6 +972,22 @@ void main() {
         expect(api.paths, contains('payments/subscription/verify'));
       },
     );
+
+    test('SubscriptionService reads billing history invoices', () async {
+      final api = _FakeApiClient(
+        json: {
+          '/payments/subscription/history': [_billingHistoryJson()],
+        },
+      );
+      final service = SubscriptionService(api: api);
+
+      final history = await service.fetchBillingHistory('store_1');
+
+      expect(history.single.status, 'active');
+      expect(history.single.billingPeriod, 'monthly');
+      expect(history.single.amountLabel, 'INR 399.00');
+      expect(api.paths, contains('/payments/subscription/history'));
+    });
   });
 
   group('StoreAuthService', () {
@@ -1433,6 +1450,49 @@ void main() {
     expect(find.text('Editor'), findsWidgets);
     expect(find.text('Catalog'), findsOneWidget);
     expect(find.text('Invite staff'), findsOneWidget);
+  });
+
+  testWidgets('BillingScreen renders subscription and invoices', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+      },
+      json: {
+        'payments/subscription': {
+          'store': {'id': 'store_1', 'trial_status': 'active'},
+          'subscription': {
+            'id': 'sub_1',
+            'plan': 'business',
+            'status': 'active',
+            'billing_period': 'monthly',
+            'current_period_end': '2026-07-01T00:00:00.000Z',
+            'amount_paid': 39900,
+          },
+        },
+        '/payments/subscription/history': [_billingHistoryJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          Provider<SubscriptionService>(
+            create: (_) => SubscriptionService(api: api),
+          ),
+        ],
+        child: const MaterialApp(home: BillingScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Billing'), findsOneWidget);
+    expect(find.text('Business'), findsOneWidget);
+    expect(find.text('Invoices'), findsOneWidget);
+    expect(find.text('INR 399.00'), findsWidgets);
+    expect(find.text('Manage plan'), findsOneWidget);
   });
 
   testWidgets('PagesScreen renders CMS pages from gateway service', (
@@ -2186,6 +2246,14 @@ Map<String, dynamic> _staffInviteJson() => {
   'status': 'pending',
   'token': 'invite-token',
   'expires_at': '2026-06-08T11:00:00.000Z',
+};
+
+Map<String, dynamic> _billingHistoryJson() => {
+  'id': 'sub_1',
+  'amount_paid': 39900,
+  'status': 'active',
+  'billing_period': 'monthly',
+  'created_at': '2026-06-01T11:00:00.000Z',
 };
 
 Map<String, dynamic> _themeReleaseJson() => {

@@ -2,8 +2,8 @@
 
 - Branch: `stream/letbuyy-foundation-v2`
 - Start HEAD: `62b2915218daa716b075b02d909c08e053bfce25`
-- Current HEAD: `09cead74956863a313b07da2c22f8c7f9d4d0298`
-- Status timestamp: `2026-06-06T16:11:45+05:30`
+- Current HEAD: `2136c7c41c296acb740df98e3d42de71660d2f05`
+- Status timestamp: `2026-06-06T16:18:14+05:30`
 
 ## Feature Checklist
 
@@ -38,7 +38,7 @@
 | P2 | Product variant matrix | DONE | `lib/screens/products/product_form_screen.dart`, `lib/services/product_service.dart`, `test/mobile_services_test.dart`; product create/update now carries base SKU plus a per-variant matrix of title/SKU/price/compare price/quantity/options through the existing `/products` payload `variants`; covered by service payload assertion + widget test |
 | P2 | Inventory WMS | DONE-WITH-SKIP | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/inventory_service.dart`, `lib/screens/inventory/locations_screen.dart`, `lib/screens/inventory/suppliers_screen.dart`, `lib/screens/inventory/purchase_orders_screen.dart`, `lib/screens/inventory/transfers_screen.dart`, `lib/screens/inventory/inventory_screen.dart`, `lib/app/routes.dart`, `lib/screens/parity/merchant_feature_definitions.dart`, `test/mobile_services_test.dart`; `/features/inventory-*`, `/inventory/locations`, `/inventory/suppliers`, `/inventory/purchase-orders`, and `/inventory/transfers` now expose real location/supplier/create PO/receive/transfer/ship/receive flows through `/v1/inventory/*`; native barcode scan is a typed human-gated seam pending `mobile_scanner` declaration in the governed app dependency graph (ledger S-013); covered by service + widget tests |
 | P3 | Staff & RBAC | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/app/role_gate.dart`, `lib/services/staff_service.dart`, `lib/screens/settings/staff_screen.dart`, `lib/main.dart`, `lib/app/routes.dart`, `test/mobile_services_test.dart`; `/features/users` opens the real Users & Permissions screen, lists `/employees`, creates invite records through `/employees/invite`, supports role changes through `PATCH /employees/:id`, soft-removes staff through `DELETE /employees/:id`, and exposes client-side role gates for Staff/Catalog/Orders/Analytics access chips; covered by service + widget tests |
-| P3 | Billing / invoices | TODO | Not started |
+| P3 | Billing / invoices | DONE | `lib/services/subscription_service.dart`, `lib/screens/settings/billing_screen.dart`, `lib/app/routes.dart`, `lib/screens/parity/merchant_feature_definitions.dart`, `test/mobile_services_test.dart`; `/features/billing` opens the real billing screen, reads current subscription state through `/payments/subscription`, lists invoice/history rows through `/payments/subscription/history`, and links plan management to the existing pricing flow; covered by service + widget tests |
 | P3 | Reviews | TODO | Not started |
 | P3 | Form submissions / leads | TODO | Not started |
 | P3 | Gift cards | TODO | Not started |
@@ -132,6 +132,10 @@
 - P3 `Staff & RBAC` feature check: `flutter test` PASS. Output: `00:12 +55: All tests passed!`.
 - P3 `Staff & RBAC` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
 - P3 `Staff & RBAC` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_INTERNAL_OPERATING_SYSTEM_FOUNDATION_MISSION.md must be archived; CODEX_MERCHANT_PARTNER_VERTICAL_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
+- P3 `Billing / invoices` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 11.2s)`.
+- P3 `Billing / invoices` feature check: `flutter test` PASS. Output: `00:02 +57: All tests passed!`.
+- P3 `Billing / invoices` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
+- P3 `Billing / invoices` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_INTERNAL_OPERATING_SYSTEM_FOUNDATION_MISSION.md must be archived; CODEX_MERCHANT_PARTNER_VERTICAL_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
 
 ## Notes
 
@@ -140,6 +144,6 @@
 
 ## RESUME HINT
 
-Next feature: P3 `Billing / invoices`.
+Next feature: P3 `Reviews`.
 
-Build `lib/screens/settings/billing_screen.dart` over `/v1/payments/subscription/history`, wire `/features/billing` to the real screen, add service/widget coverage, then continue the P3 matrix in order.
+Build `lib/screens/marketing/reviews_screen.dart` over `/v1/reviews*`, wire `/features/reviews` to the real screen, add service/widget coverage, then continue the P3 matrix in order.
