@@ -2,6 +2,7 @@
 
 import React, { useId } from 'react';
 import { Button } from './button';
+import { warnDeprecated } from './deprecations';
 import { Calendar, Check, ChevronDown, Loader2, X } from './icons';
 import { Text, type TextProps } from './layout';
 import { type LetbuyyDensity } from './tokens';
@@ -651,6 +652,8 @@ export interface TextStyleProps extends React.HTMLAttributes<HTMLElement> {
  * @deprecated since 0.0.2. Use `Text` with `variant`, `tone`, and `weight` instead.
  */
 export function TextStyle({ children, as, variant = 'body', className = '', ...props }: TextStyleProps) {
+    warnDeprecated('TextStyle', 'Text');
+
     const textVariant = variant === 'body' ? 'body' : variant;
     const tone: TextProps['tone'] | undefined = variant === 'body' ? 'default' : undefined;
 

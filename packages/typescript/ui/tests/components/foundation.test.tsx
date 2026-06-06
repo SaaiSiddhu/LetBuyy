@@ -17,6 +17,7 @@ import {
     ConfirmDialog,
     Container,
     DatePicker,
+    DataTable,
     DesignSystemRoot,
     Disclosure,
     Drawer,
@@ -28,7 +29,9 @@ import {
     Modal,
     Navigation,
     NumberField,
+    PageActions,
     PageHeader,
+    PageShell,
     Pagination,
     Popover,
     Radio,
@@ -41,6 +44,7 @@ import {
     Switch,
     Tabs,
     Table,
+    TableFilterBar,
     ToastProvider,
     Tooltip,
     IndexTable,
@@ -59,7 +63,9 @@ import {
     letbuyyTokenCss,
     letbuyyTokenCssVariables,
     materialIconName,
+    resolvePageIdentity,
     useToast,
+    validateLetbuyyBrandContrast,
 } from '../../src';
 import { cx } from '../../src/utils';
 
@@ -636,6 +642,34 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         await expectAxeClean(container);
     });
 
+    it('emits one-time development warnings for deprecated compatibility shims', () => {
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+        renderInSystem(
+            <>
+                <DataTable columns={[{ key: 'name', header: 'Name' }]} data={[{ id: '1', name: 'Anika' }]} />
+                <PageShell title="Legacy page">
+                    <PageActions>Actions</PageActions>
+                    <TableFilterBar search={<span>Search</span>} />
+                </PageShell>
+                <IndexTable rows={[]} columns={[]} />
+                <TextStyle>Legacy text</TextStyle>
+                <Badge label="Legacy danger" variant="danger" />
+            </>,
+        );
+
+        const warnings = warnSpy.mock.calls.map((call) => String(call[0]));
+        expect(warnings.some((warning) => warning.includes('DataTable'))).toBe(true);
+        expect(warnings.some((warning) => warning.includes('PageShell'))).toBe(true);
+        expect(warnings.some((warning) => warning.includes('PageActions'))).toBe(true);
+        expect(warnings.some((warning) => warning.includes('TableFilterBar'))).toBe(true);
+        expect(warnings.some((warning) => warning.includes('IndexTable'))).toBe(true);
+        expect(warnings.some((warning) => warning.includes('TextStyle'))).toBe(true);
+        expect(warnings.some((warning) => warning.includes('Badge variant="danger"'))).toBe(true);
+
+        warnSpy.mockRestore();
+    });
+
     it('keeps TextStyle output compatible while Text covers its variants', async () => {
         const { container } = renderInSystem(
             <>
@@ -856,6 +890,28 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         expect(root.style.getPropertyValue('--lb-color-primary')).toBe('#0055FF');
         expect(root.style.getPropertyValue('--lb-component-button-primary-bg')).toBe('#111827');
         await expectAxeClean(container);
+    });
+
+    it('validates custom brand contrast and exposes stable page identity resolution', () => {
+        const failingChecks = validateLetbuyyBrandContrast({
+            primary: '#FFFFFF',
+            primaryText: '#FFFFFF',
+            primaryCta: '#FFFFFF',
+            primaryCtaText: '#FFFFFF',
+            focusRing: '#FFFFFF',
+        });
+        const passingChecks = validateLetbuyyBrandContrast({
+            primary: '#0055FF',
+            primaryText: '#003399',
+            primaryCta: '#111827',
+            primaryCtaText: '#FFFFFF',
+            focusRing: '#5B21B6',
+        });
+
+        expect(failingChecks.some((check) => !check.passes)).toBe(true);
+        expect(passingChecks.every((check) => check.passes)).toBe(true);
+        expect(resolvePageIdentity('Checkout settings')).toBe('settings');
+        expect(resolvePageIdentity('Custom domains')).toBe('domains');
     });
 
     it('dedupes token style injection for nested DesignSystemRoot trees', () => {

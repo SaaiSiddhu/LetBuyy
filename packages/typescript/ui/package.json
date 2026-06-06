@@ -1,17 +1,20 @@
 {
   "name": "@letbuyy/ui",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
     "./formatting": "./src/formatting.ts",
+    "./preview": "./src/preview.tsx",
     "./tokens": "./src/tokens.ts"
   },
   "scripts": {
     "build": "tsc -b && tsc -p tsconfig.dist.json",
     "test": "vitest run --config vitest.config.ts",
+    "test:codemods": "node codemods/dry-run.mjs",
+    "test:eslint-rules": "node eslint/rules.test.mjs",
     "test:visual": "node tests/visual/storybook-visual-regression.mjs",
     "test:visual:update": "node tests/visual/storybook-visual-regression.mjs --update",
     "test:watch": "vitest --config vitest.config.ts",
@@ -21,7 +24,7 @@
     "validate:aliases": "node tests/validators/ui-no-new-token-alias-validator.mjs",
     "validate:api": "node tests/validators/ui-public-api-snapshot-validator.mjs",
     "validate:tokens": "node tests/validators/ui-token-variable-snapshot-validator.mjs",
-    "validate:ui": "pnpm test && pnpm validate:api && pnpm validate:tokens && pnpm validate:aliases",
+    "validate:ui": "pnpm test && pnpm test:eslint-rules && pnpm test:codemods && pnpm validate:api && pnpm validate:tokens && pnpm validate:aliases",
     "typecheck": "tsc --noEmit",
     "storybook": "storybook dev --port 6006 --no-open",
     "build-storybook": "storybook build"

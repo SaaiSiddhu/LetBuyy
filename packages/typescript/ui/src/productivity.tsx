@@ -13,6 +13,7 @@ import {
 import { Badge, Skeleton } from './feedback';
 import { Button } from './button';
 import { Checkbox, Select } from './controls';
+import { warnDeprecated } from './deprecations';
 import { cx } from './utils';
 import { useDismiss, useFocusTrap } from './overlay-hooks';
 
@@ -275,7 +276,10 @@ export function FilterBar({
 /**
  * @deprecated since 0.0.2. Use `FilterBar` instead. This alias remains for backward compatibility.
  */
-export const TableFilterBar = FilterBar;
+export function TableFilterBar(props: FilterBarProps) {
+    warnDeprecated('TableFilterBar', 'FilterBar');
+    return <FilterBar {...props} />;
+}
 
 export interface IndexTableProps<T extends { id: string }> {
     columns: IndexTableColumn<T>[];
@@ -313,6 +317,8 @@ export function IndexTable<T extends { id: string }>({
     onRowClick,
     className = '',
 }: IndexTableProps<T>) {
+    warnDeprecated('IndexTable', 'Table');
+
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const selectedRows = rows.filter((row) => selectedIds.has(row.id));
     const allSelected = rows.length > 0 && selectedIds.size === rows.length;

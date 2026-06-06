@@ -21,6 +21,15 @@ export interface LetbuyyBrandOverrides {
 
 export type LetbuyyBrandInput = string | LetbuyyBrandOverrides;
 
+export interface LetbuyyBrandContrastCheck {
+    token: '--lb-color-primary-text' | '--lb-color-primary-cta-text' | '--lb-color-focus-ring';
+    foreground: string;
+    background: string;
+    ratio: number;
+    minimum: number;
+    passes: boolean;
+}
+
 export const letbuyyPrimitiveTokens = {
     color: {
         purple: {
@@ -1054,6 +1063,68 @@ export const letbuyySurfaceTokens = Object.fromEntries(
         },
     ]),
 ) as Record<LetbuyySurface, Record<LetbuyyTheme, CssVariableMap>>;
+
+function parseHexColor(color: string) {
+    const normalized = color.trim().replace('#', '');
+    if (!/^[0-9a-fA-F]{6}$/.test(normalized)) return undefined;
+    return {
+        r: Number.parseInt(normalized.slice(0, 2), 16),
+        g: Number.parseInt(normalized.slice(2, 4), 16),
+        b: Number.parseInt(normalized.slice(4, 6), 16),
+    };
+}
+
+function relativeLuminance(color: string) {
+    const rgb = parseHexColor(color);
+    if (!rgb) return undefined;
+    const channels = [rgb.r, rgb.g, rgb.b].map((channel) => {
+        const value = channel / 255;
+        return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    });
+    return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+}
+
+function contrastRatio(foreground: string, background: string) {
+    const foregroundLuminance = relativeLuminance(foreground);
+    const backgroundLuminance = relativeLuminance(background);
+    if (foregroundLuminance === undefined || backgroundLuminance === undefined) return undefined;
+    const lighter = Math.max(foregroundLuminance, backgroundLuminance);
+    const darker = Math.min(foregroundLuminance, backgroundLuminance);
+    return (lighter + 0.05) / (darker + 0.05);
+}
+
+export function validateLetbuyyBrandContrast(brand: LetbuyyBrandInput): LetbuyyBrandContrastCheck[] {
+    const variables = createLetbuyyBrandVariables(brand);
+    const checks: Array<Omit<LetbuyyBrandContrastCheck, 'ratio' | 'passes'>> = [
+        {
+            token: '--lb-color-primary-text',
+            foreground: variables['--lb-color-primary-text'] ?? variables['--lb-color-primary'],
+            background: primitive.color.white,
+            minimum: 4.5,
+        },
+        {
+            token: '--lb-color-primary-cta-text',
+            foreground: variables['--lb-color-primary-cta-text'] ?? primitive.color.white,
+            background: variables['--lb-color-primary-cta'] ?? variables['--lb-color-primary'],
+            minimum: 4.5,
+        },
+        {
+            token: '--lb-color-focus-ring',
+            foreground: variables['--lb-color-focus-ring'] ?? variables['--lb-color-primary'],
+            background: primitive.color.white,
+            minimum: 3,
+        },
+    ];
+
+    return checks.map((check) => {
+        const ratio = contrastRatio(check.foreground, check.background) ?? 0;
+        return {
+            ...check,
+            ratio,
+            passes: ratio >= check.minimum,
+        };
+    });
+}
 
 export function createLetbuyyBrandVariables(brand?: LetbuyyBrandInput): CssVariableMap {
     if (!brand) return {};

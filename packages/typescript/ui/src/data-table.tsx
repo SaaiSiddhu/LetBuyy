@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ArrowDown, ArrowUp, Loader2 } from './icons';
+import { warnDeprecated } from './deprecations';
 import { cx } from './utils';
 
 // ============= TYPES =============
@@ -42,6 +43,8 @@ export function DataTable<T extends Record<string, unknown>>({
     onSort,
     className = '',
 }: DataTableProps<T>) {
+    warnDeprecated('DataTable', 'Table');
+
     return (
         <div className={cx('overflow-auto rounded-[var(--lb-component-card-radius)] border border-[var(--lb-component-table-border)] bg-[var(--lb-component-table-bg)] shadow-[var(--lb-component-card-shadow)]', className)}>
             <table className="w-full text-[length:var(--lb-font-size-table)] leading-[var(--lb-line-height-table)]">

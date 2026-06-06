@@ -1,6 +1,7 @@
 import React from 'react';
 import { Breadcrumbs } from './breadcrumbs';
 import { Button } from './button';
+import { warnDeprecated } from './deprecations';
 import { MaterialIcon, type MaterialIconName } from './icons';
 import { cx } from './utils';
 
@@ -436,7 +437,13 @@ export type PageIdentity =
     | 'payments'
     | 'domains';
 
-const pageIconMap: Record<PageIdentity, MaterialIconName> = {
+export interface PageIdentityOption {
+    identity: PageIdentity;
+    iconName: MaterialIconName;
+    label: string;
+}
+
+export const letbuyyPageIdentityIcons: Record<PageIdentity, MaterialIconName> = {
     dashboard: 'home',
     products: 'inventory_2',
     orders: 'shopping_bag',
@@ -453,6 +460,30 @@ const pageIconMap: Record<PageIdentity, MaterialIconName> = {
     payments: 'payments',
     domains: 'domains',
 };
+
+const pageIdentityLabels: Record<PageIdentity, string> = {
+    dashboard: 'Dashboard',
+    products: 'Products',
+    orders: 'Orders',
+    collections: 'Collections',
+    inventory: 'Inventory',
+    customers: 'Customers',
+    analytics: 'Analytics',
+    marketing: 'Marketing',
+    discounts: 'Discounts',
+    content: 'Content',
+    settings: 'Settings',
+    apps: 'Apps',
+    themes: 'Themes',
+    payments: 'Payments',
+    domains: 'Domains',
+};
+
+export const letbuyyPageIdentityOptions: PageIdentityOption[] = Object.entries(letbuyyPageIdentityIcons).map(([identity, iconName]) => ({
+    identity: identity as PageIdentity,
+    iconName,
+    label: pageIdentityLabels[identity as PageIdentity],
+}));
 
 const titleIconMatchers: Array<[RegExp, PageIdentity]> = [
     [/dashboard|home/i, 'dashboard'],
@@ -471,10 +502,14 @@ const titleIconMatchers: Array<[RegExp, PageIdentity]> = [
     [/domain/i, 'domains'],
 ];
 
+export function resolvePageIdentity(title: string): PageIdentity | undefined {
+    return titleIconMatchers.find(([pattern]) => pattern.test(title))?.[1];
+}
+
 export function getPageIconName(title: string, identity?: PageIdentity): MaterialIconName {
-    if (identity) return pageIconMap[identity];
-    const match = titleIconMatchers.find(([pattern]) => pattern.test(title));
-    return match ? pageIconMap[match[1]] : 'page';
+    if (identity) return letbuyyPageIdentityIcons[identity];
+    const resolvedIdentity = resolvePageIdentity(title);
+    return resolvedIdentity ? letbuyyPageIdentityIcons[resolvedIdentity] : 'page';
 }
 
 export interface PageShellProps extends PageProps {}
@@ -483,6 +518,7 @@ export interface PageShellProps extends PageProps {}
  * @deprecated since 0.0.2. Use `Page` instead. This alias remains for backward compatibility.
  */
 export function PageShell(props: PageShellProps) {
+    warnDeprecated('PageShell', 'Page');
     return <Page {...props} />;
 }
 
@@ -546,7 +582,10 @@ export function PageHeaderActions({ children, className = '', ...props }: PageHe
 /**
  * @deprecated since 0.0.2. Use `PageHeaderActions` instead. This alias remains for backward compatibility.
  */
-export const PageActions = PageHeaderActions;
+export function PageActions(props: PageHeaderActionsProps) {
+    warnDeprecated('PageActions', 'PageHeaderActions');
+    return <PageHeaderActions {...props} />;
+}
 
 export function PageHeader({
     title,

@@ -23,12 +23,15 @@ export {
     Grid,
     InlineStack,
     letbuyyPageHeaderDefaults,
+    letbuyyPageIdentityIcons,
+    letbuyyPageIdentityOptions,
     Page,
     PageActions,
     PageContent,
     PageHeader,
     PageHeaderActions,
     PageShell,
+    resolvePageIdentity,
     Section,
     Text,
 } from './layout';
@@ -45,6 +48,7 @@ export type {
     PageHeaderActionsProps,
     PageHeaderProps,
     PageIdentity,
+    PageIdentityOption,
     PageProps,
     PageShellProps,
     SectionProps,
@@ -108,7 +112,13 @@ export type {
     PaginationProps,
 } from './productivity';
 
+/**
+ * @deprecated since 0.0.2. Use `@letbuyy/ui/preview` for Storybook/design-token preview helpers.
+ */
 export { ColorPreviewBlock, ColorPreviewButton, ColorPreviewSurface, ColorSwatch, RadiusPreview } from './visual';
+/**
+ * @deprecated since 0.0.2. Use `@letbuyy/ui/preview` for Storybook/design-token preview helper types.
+ */
 export type {
     ColorPreviewBlockProps,
     ColorPreviewButtonProps,
@@ -180,8 +190,9 @@ export {
     letbuyyTokens,
     letbuyyZIndexTokens,
     createLetbuyyBrandVariables,
+    validateLetbuyyBrandContrast,
 } from './tokens';
-export type { LetbuyyBrandInput, LetbuyyBrandOverrides, LetbuyyDensity, LetbuyySurface, LetbuyyTheme } from './tokens';
+export type { LetbuyyBrandContrastCheck, LetbuyyBrandInput, LetbuyyBrandOverrides, LetbuyyDensity, LetbuyySurface, LetbuyyTheme } from './tokens';
 
 export { letbuyyFontCssVariables, letbuyyFontStacks } from './fonts';
 

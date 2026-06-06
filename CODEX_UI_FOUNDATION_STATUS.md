@@ -21,6 +21,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - U5 internal composition refactor is implemented with zero visual diffs.
 - U6 theming reach is implemented additively.
 - U7 a11y and polish is implemented where non-breaking; larger prop grammar, native select replacement, chart-library replacement, and default-density policy are recorded as human-gated skips.
+- U8 governance artifacts and handoffs are implemented inside UI scope; app enablement, cross-app codemod execution, root CODEOWNERS, root intelligence regeneration, and app-directory cleanup are recorded as human-gated skips.
 - Required ledger and deprecation register have been created.
 - `@letbuyy/ui` now has a Vitest + React Testing Library + jest-axe suite covering the load-bearing components: Card, Section, Button, Badge, Input, Banner, Skeleton, EmptyState, Select, Checkbox, Radio, Combobox, and Tabs.
 - Storybook visual regression is wired through `packages/typescript/ui/tests/visual/storybook-visual-regression.mjs`; 276 baselines were captured across light/dark and compact/comfortable/spacious density modes.
@@ -49,6 +50,14 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - Tooltip triggers now receive `aria-describedby`, tooltips can reveal on touch/pointer activation, Modal backdrops are non-button `div`s, and ConfirmDialog accepts custom body copy.
 - Toasts now support additive duration and placement options; Pagination now supports additive page numbers and page-size controls.
 - Avatar image alt text, DesignSystemRoot `dir`, IndexTable `aria-selected`, ChoiceList overflow safety, reduced-motion CSS, stronger focus-ring contrast, EmptyState motif overrides, and INR-first formatting helpers are in place.
+- `@letbuyy/ui` is now versioned at `0.0.2` with a package-local changelog and finalized deprecation register.
+- Deprecated compatibility exports emit one-time development warnings while preserving runtime output and public props.
+- UI eslint plugin artifacts now exist for raw `<button>`, `<input>`, `<table>`, and hardcoded hex enforcement; enabling them in apps remains a human/app-stream handoff.
+- Codemods now exist and dry-run against fixtures for `DataTable`/`IndexTable` to `Table`, `TextStyle` to `Text`, `Badge danger` to `critical`, page aliases to canonical exports, and token aliases to canonical variables.
+- `@letbuyy/ui/preview` is now the canonical preview-helper subpath; root preview helper exports remain deprecated wrappers for compatibility.
+- Page identity now has exported stable maps/options plus `resolvePageIdentity()`; `getPageIconName()` remains back-compatible.
+- Custom brand contrast now has an exported `validateLetbuyyBrandContrast()` guardrail.
+- Storybook governance do/don't usage guidance is authored in-package and captured in the visual baseline matrix.
 
 ## Human-Gated Remainders
 
@@ -64,6 +73,11 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - [SKIP — NEEDS HUMAN] Native `Select` rich-option replacement needs a primitive strategy decision. Exact follow-up: decide whether rich options belong in `Combobox`, a new select primitive, or additive custom `Select` props, then run `pnpm --filter @letbuyy/ui test`, `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Chart replacement needs a proven charting-library and bundle policy decision. Exact follow-up: add the approved dependency to `@letbuyy/ui`, preserve the current `Chart` API through a shim or codemod, refresh visual snapshots, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Root/default density policy needs a visual design decision. Exact follow-up: choose whether `sharedCssVariables` should continue seeding compact or move to another default, refresh visual snapshots, then run `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] UI eslint plugin enablement is app/service lint-scope. Exact follow-up: configure `packages/typescript/ui/eslint` as the `@letbuyy/ui` plugin in app lint configs, enable `@letbuyy/ui/no-raw-elements` and `@letbuyy/ui/no-hardcoded-hex`, then run `pnpm lint`, `pnpm turbo typecheck`, `pnpm turbo build`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Cross-app codemod execution is outside this UI stream. Exact follow-up: run the needed transforms in `packages/typescript/ui/codemods` across consumers after parallel stream coordination, inspect diffs, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Root CODEOWNERS is outside this stream. Exact follow-up: add `packages/typescript/ui/** @letbuyy/design-system-maintainers` or the approved owner handle to root `CODEOWNERS`, then run governance validation.
+- [SKIP — NEEDS HUMAN] Storefront empty UI directory removal is app-scope. Exact follow-up: remove `apps/storefront-runtime/src/components/ui` if still empty, then run storefront typecheck/build, repo typecheck/build/lint, and governance validation.
+- [SKIP — NEEDS HUMAN] Repository intelligence regeneration is deferred because `scripts/generate-repository-intelligence.mjs` rewrites root docs, app AGENTS, service AGENTS, and non-UI package files. Exact follow-up after parallel streams merge: run `node scripts/generate-repository-intelligence.mjs`, review generated changes, then run `node scripts/validate-governance.mjs`.
 
 ## Behavior Changes To Re-Check
 
@@ -77,6 +91,9 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - U5 composition is intended to be visually and behaviorally unchanged. Additive `Button.unstyled`, `Checkbox.unstyled`, and `Breadcrumbs` separator/current-tone props exist only to preserve legacy internal visuals while routing through design-system primitives.
 - U6 theming changes are additive and default-identity. Existing `surface` values now have real variable hooks, `brand` overrides are opt-in, nested `DesignSystemRoot` token styles dedupe automatically, and `cx()` now resolves Tailwind class conflicts in favor of later classes.
 - U7 changes are additive except intentional correctness fixes: `--lb-color-focus-ring` is stronger in light mode, Modal backdrop semantics changed from a hidden full-screen button to a non-focusable backdrop `div`, Combobox option clicks no longer suppress `mousedown`, and reduced-motion preference now disables decorative motion.
+- U8 deprecation warnings are dev-only and one-time per deprecated symbol. Production behavior and markup remain unchanged.
+- U8 adds `@letbuyy/ui/preview`; root preview helpers still work but warn in development.
+- U8 adds a brand-contrast validator; it does not reject brand values automatically.
 
 ## Verification Evidence
 
@@ -197,3 +214,19 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - `pnpm --filter @letbuyy/ui validate:ui` PASS after the final PageHeader prop deprecation annotations.
 - Generated build/install artifacts from U7 verification were removed with a depth that includes `packages/typescript/ui/dist`.
 - `node scripts/validate-governance.mjs` PASS after U7 cleanup; final line: `Governance validation passed (129 validators).`
+- `pnpm --filter @letbuyy/ui test:eslint-rules` PASS after U8: raw-element and hardcoded-hex eslint rules self-tested.
+- `pnpm --filter @letbuyy/ui test:codemods` PASS after U8: 6 codemod fixtures dry-run.
+- `pnpm --filter @letbuyy/ui typecheck` PASS after U8 source changes.
+- `pnpm --filter @letbuyy/ui test` PASS after U8: 1 file, 35 tests.
+- `pnpm --filter @letbuyy/ui snapshot:api:update` PASS after U8: 340 public exports captured.
+- `pnpm --filter @letbuyy/ui build` PASS after U8.
+- `pnpm --filter @letbuyy/ui validate:ui` PASS after U8: 35 tests, eslint-rule self-test, codemod dry-run, API snapshot, token snapshot, alias snapshot.
+- `pnpm --filter @letbuyy/ui test:visual:update` PASS after U8 under escalated browser permission: 312 baselines captured.
+- `pnpm --filter @letbuyy/ui test:visual` PASS after U8 under escalated browser permission: 312 baselines checked.
+- `pnpm turbo test` PASS after U8: 61 successful tasks.
+- `pnpm turbo typecheck` PASS after U8: 60 successful tasks.
+- `pnpm lint` PASS after U8: repo lint completed with existing warnings outside UI scope and 0 errors.
+- `pnpm turbo build` PASS after U8 under escalated Turbopack permission: 60 successful tasks.
+- Generated build/install artifacts from U8 verification were removed with a depth that includes `packages/typescript/ui/dist`.
+- First U8 governance rerun caught a package AGENTS omission: missing explicit `Runtime Authority` section. Added the section and reran.
+- `node scripts/validate-governance.mjs` PASS after U8 cleanup; final line: `Governance validation passed (129 validators).`

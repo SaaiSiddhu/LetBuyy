@@ -24,6 +24,7 @@ import {
     X,
 } from './icons';
 import { Button } from './button';
+import { warnDeprecated } from './deprecations';
 import { cx } from './utils';
 
 export type StatusVariant = 'default' | 'info' | 'success' | 'warning' | 'critical';
@@ -71,6 +72,10 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 export function Badge({ label, variant = 'default', className = '', ...props }: BadgeProps) {
+    if (variant === 'danger') {
+        warnDeprecated('Badge variant="danger"', 'Badge variant="critical"');
+    }
+
     const normalizedVariant = variant === 'danger' ? 'critical' : variant;
     const style = statusStyles[normalizedVariant];
 

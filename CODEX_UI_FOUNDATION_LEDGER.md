@@ -25,7 +25,7 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 15 | CommandPalette no Arrow-key result nav | U1.2 | DONE | CommandPalette results use roving focus with ArrowUp/ArrowDown/Home/End; RTL keyboard test PASS. |
 | 16 | zero unit tests | U0 | DONE | `pnpm --filter @letbuyy/ui test` PASS: 10 RTL/jest-axe tests; `pnpm turbo test` PASS: 61 tasks. |
 | 17 | raw src distribution/no dist | U0.5 | DONE | `pnpm --filter @letbuyy/ui build` PASS; `dist/` emitted; `main` and `types` remain `./src/index.ts`. |
-| 18 | version 0.0.1/no semver/changelog | U8.3 | TODO |  |
+| 18 | version 0.0.1/no semver/changelog | U8.3 | DONE | `@letbuyy/ui` package version bumped to `0.0.2` and `packages/typescript/ui/CHANGELOG.md` added; `pnpm --filter @letbuyy/ui build` PASS. |
 | 19 | duplicate DataTable and IndexTable | U4.1 | DONE | Added new unified `Table` with selection, saved views, chips, bulk actions, sorting, and responsive cards; kept `DataTable`/`IndexTable` exported and deprecated; `pnpm --filter @letbuyy/ui test` PASS: 23 tests. |
 | 20 | DataTable desktop-only | U4.1 | DONE | New `Table` includes mobile card rendering plus desktop table rendering; Storybook visual baseline added; `pnpm --filter @letbuyy/ui test:visual` PASS: 306 baselines. |
 | 21 | no Drawer | U3.1 | DONE | Added focus-trapped `Drawer` with side/size variants and dismiss behavior; RTL + axe coverage in `pnpm --filter @letbuyy/ui test` PASS: 20 tests. |
@@ -33,9 +33,9 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 23 | no Popover | U3.1 | DONE | Added anchored `Popover` with trigger render prop, Escape/outside dismiss, and axe-clean coverage; `pnpm --filter @letbuyy/ui test` PASS. |
 | 24 | surface prop inert | U6.1 | DONE | `letbuyySurfaceTokens` and `[data-letbuyy-surface="..."]` selectors now emit identity-default hooks for every surface; RTL test asserts identity defaults and CSS selectors; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
 | 25 | no brand override API | U6.2 | DONE | `DesignSystemRoot brand` and `createLetbuyyBrandVariables()` now override primary/focus/CTA CSS variables with default behavior unchanged; RTL test asserts live root variables; brand identity decision recorded as human-gated. |
-| 26 | raw button bypass | U8.1 | TODO |  |
-| 27 | raw input bypass | U8.1 | TODO |  |
-| 28 | hardcoded hex bypass | U8.1 | TODO |  |
+| 26 | raw button bypass | U8.1 | DONE | Added `packages/typescript/ui/eslint` rule `no-raw-elements` reporting raw `<button>` with `Button` suggestion; `pnpm --filter @letbuyy/ui test:eslint-rules` PASS. |
+| 27 | raw input bypass | U8.1 | DONE | Added `no-raw-elements` coverage for raw `<input>` with `Input` suggestion; `pnpm --filter @letbuyy/ui test:eslint-rules` PASS. |
+| 28 | hardcoded hex bypass | U8.1 | DONE | Added `no-hardcoded-hex` rule for literals/templates/JSX text; `pnpm --filter @letbuyy/ui test:eslint-rules` PASS. |
 | 29 | no breakpoint tokens | U2.1 | DONE | Added `letbuyyBreakpointTokens`, `letbuyyTailwindScreens`, `letbuyyTailwindPreset`, and `--lb-bp-{sm,md,lg,xl}` with current 640/768/1024/1280 values; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
 | 30 | no z-index scale | U1.1 | DONE | `letbuyyZIndexTokens` and emitted `--lb-z-*` variables added; `pnpm --filter @letbuyy/ui validate:tokens` PASS with 338 vars. |
 | 31 | no Grid/Columns primitive | U3.2 | DONE | Added responsive `Grid` and `Columns` layout primitives with stable gap/column props; `pnpm --filter @letbuyy/ui typecheck` and `test` PASS. |
@@ -47,18 +47,18 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 37 | cx lacks tailwind-merge | U6.3 | DONE | `cx()` now delegates conflict resolution to `tailwind-merge` with the same signature; RTL unit test proves `px-*` and `text-*` overrides resolve; `pnpm --filter @letbuyy/ui test` PASS. |
 | 38 | Button lacks as/asChild | U3/U5 | DONE | Added additive `Button` `as` and `asChild` support while preserving default button rendering; RTL tests cover anchor and cloned-child paths; `pnpm --filter @letbuyy/ui test` PASS. |
 | 39 | token CSS injected per root | U6.4 | DONE | `DesignSystemRoot` now routes token injection through a server-safe client boundary that dedupes nested roots; test asserts one token `<style>` for nested roots; repo `pnpm turbo build` PASS after fixing RSC context compatibility. |
-| 40 | no deprecation policy | U8.3 | TODO |  |
-| 41 | no codemods | U8.2 | TODO |  |
-| 42 | no CODEOWNERS guidance | U8.4 | TODO |  |
-| 43 | no eslint rule enforcing DS usage | U8.1 | TODO |  |
+| 40 | no deprecation policy | U8.3 | DONE | `packages/typescript/ui/DEPRECATIONS.md` finalized and deprecated wrappers emit one-time dev warnings; RTL test asserts warnings; `pnpm --filter @letbuyy/ui test` PASS: 35 tests. |
+| 41 | no codemods | U8.2 | DONE | Added codemods for tables, text, badge danger, page aliases, and token aliases with fixture dry-run; `pnpm --filter @letbuyy/ui test:codemods` PASS: 6 fixtures. |
+| 42 | no CODEOWNERS guidance | U8.4 | DONE | Updated package `AGENTS.md` with UI CODEOWNERS guidance and exact suggested entry; root CODEOWNERS enablement recorded as human-gated. |
+| 43 | no eslint rule enforcing DS usage | U8.1 | DONE | Added UI eslint plugin with recommended config for raw elements and hardcoded hex; `pnpm --filter @letbuyy/ui test:eslint-rules` PASS. |
 | 44 | no Switch/Toggle | U3.2 | DONE | Added accessible `Switch` with controlled/uncontrolled behavior, role switch, and disabled state; `pnpm --filter @letbuyy/ui test` PASS. |
 | 45 | no NumberField | U3.2 | DONE | Added `NumberField` on top of the existing Input a11y contract; U3 form primitive test PASS. |
 | 46 | no CI cross-app build gate on UI change | U0 | DONE | Local repo-wide gates PASS: `pnpm turbo typecheck`, `pnpm turbo build`, and `pnpm turbo test`. |
 | 47 | Storybook screenshots not CI-gated | U0.3 | DONE | `pnpm --filter @letbuyy/ui test:visual:update` captured 276 baselines; `pnpm --filter @letbuyy/ui test:visual` PASS. |
 | 48 | MaterialIconName accepts any string | U4.5 | DONE | Added `StrictMaterialIconName`, `materialIconNames`, `isMaterialIconName()`, and `materialIconName()` while keeping loose `MaterialIconName` compatibility; `pnpm --filter @letbuyy/ui test` PASS. |
-| 49 | no theme contract docs | U4/U8 | TODO |  |
-| 50 | no contrast guardrail for custom brand | U4/U8 | TODO |  |
-| 51 | storefront-runtime empty ui dir | U8.4 | TODO |  |
+| 49 | no theme contract docs | U4/U8 | DONE | Package `AGENTS.md` now documents `DesignSystemRoot` theme/density/surface/brand/dir contract and public `--lb-*` compatibility rules. |
+| 50 | no contrast guardrail for custom brand | U4/U8 | DONE | Added `validateLetbuyyBrandContrast()` export and tests for failing/passing custom brand palettes; `pnpm --filter @letbuyy/ui test` PASS. |
+| 51 | storefront-runtime empty ui dir | U8.4 | SKIP | [SKIP — NEEDS HUMAN/app stream] Removing `apps/storefront-runtime/src/components/ui` is app-scope and outside this stream's write contract. |
 | 52 | exported TS token objects undocumented/internal | U0.4 | DONE | Public API snapshot protects current exports; `pnpm --filter @letbuyy/ui validate:api` PASS and self-test detects simulated export removal. |
 | 53 | no bundle-size/API snapshot guard | U0.4 | DONE | API snapshot and token-variable snapshot guards added; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
 | 54 | ConfirmDialog hardcoded body copy | U7 | DONE | `ConfirmDialog` now accepts additive `children` for custom body copy while preserving the default warning copy; RTL/axe test PASS in `pnpm --filter @letbuyy/ui test` with 33 tests. |
@@ -89,12 +89,12 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 79 | no DatePicker | U3.3 | DONE | Added single-date `DatePicker` with label/helper/error a11y wiring; `pnpm --filter @letbuyy/ui test` PASS. |
 | 80 | no Accordion/Disclosure | U3.3 | DONE | Added `Disclosure` and multi-item `Accordion` with button/region wiring; `pnpm --filter @letbuyy/ui test` PASS. |
 | 81 | statusSoft light values hardcoded | U2.2 | DONE | Added exact primitive soft-status colors and pointed light `statusSoft` to them with unchanged emitted soft values; `pnpm --filter @letbuyy/ui validate:tokens` PASS with 349 vars. |
-| 82 | visual preview helpers shipped in main bundle | U8.4 | TODO |  |
+| 82 | visual preview helpers shipped in main bundle | U8.4 | DONE | Added canonical `@letbuyy/ui/preview` subpath and moved implementations to preview helpers; root preview exports now deprecated wrappers for back-compat; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
 | 83 | Tooltip not associated to trigger | U7.1 | DONE | `Tooltip` now assigns an ID and clones valid triggers with merged `aria-describedby`; RTL/axe test PASS. |
 | 84 | Tooltip hover-only | U7.1 | DONE | `Tooltip` now toggles visibility for non-mouse pointer activation while retaining hover/focus behavior; RTL touch reveal test PASS. |
 | 85 | Badge provenance confusing | U4.4 | DONE | Canonical `Badge` remains sourced from `feedback`; `data-table` re-export preserved for back-compat and canonical vocabulary documented; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
-| 86 | PageIdentity parallels EmptyStateKind | U7/U8 | TODO |  |
-| 87 | getPageIconName brittle regex | U7/U8 | TODO |  |
+| 86 | PageIdentity parallels EmptyStateKind | U7/U8 | DONE | Added exported `letbuyyPageIdentityIcons`, `letbuyyPageIdentityOptions`, and `PageIdentityOption`; API snapshot updated to 340 exports. |
+| 87 | getPageIconName brittle regex | U7/U8 | DONE | Added exported `resolvePageIdentity()` so consumers can use stable identity resolution while `getPageIconName()` remains back-compatible; RTL unit test PASS. |
 | 88 | no RTL/dir consideration | U7.1 | DONE | `DesignSystemRoot` now accepts additive `dir` and forwards it to the root; RTL test asserts `dir="rtl"` propagation. |
 | 89 | focusRing contrast weak | U7.1 | DONE | Light `--lb-color-focus-ring` now uses `#5B21B6`; test asserts >=3:1 contrast on light surface; alias snapshot refreshed for the intentional focus-ring value change. |
 | 90 | Select native limits option content | U7/U8 | SKIP | [SKIP — NEEDS HUMAN] Replacing native `Select` with rich custom listbox is a larger a11y/API decision; current guidance remains to use `Combobox` for rich option content. |
@@ -102,7 +102,7 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 92 | no InlineError | U3.3 | DONE | Added `InlineError` with `role="alert"` and exported props; U3 form primitive test PASS. |
 | 93 | DensityToggle not general SegmentedControl | U3.2 | DONE | Added `SegmentedControl`; existing `DensityToggle` now delegates to it without public prop changes; RTL test PASS. |
 | 94 | Avatar alt always empty | U7.1 | DONE | `Avatar` now accepts optional `alt` for image avatars while preserving decorative image behavior by default; RTL/axe test PASS. |
-| 95 | no Storybook do/don't usage docs | U8.4 | TODO |  |
+| 95 | no Storybook do/don't usage docs | U8.4 | DONE | Added `governance.stories.tsx` with UI usage do/don't guidance; visual baseline updated and diff checked: 312 baselines PASS. |
 | 96 | Modal backdrop is full-screen button | U7.1 | DONE | Modal backdrop is now a non-focusable `div` with `aria-hidden`, while the labelled close button remains; RTL test asserts no `Close modal` backdrop button; axe PASS. |
 | 97 | Chart hand-rolled SVG | U7 | SKIP | [SKIP — NEEDS HUMAN] Replacing Chart with a proven charting library needs dependency/API/bundle decision; no new chart dependency added in this UI-only stream. |
 | 98 | EmptyState motifs hardcoded | U7.2 | DONE | `EmptyState`/`EmptyStateIllustration` now accept additive per-kind custom motif overrides behind the current default motif set; RTL/axe test PASS. |
@@ -123,6 +123,12 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - [SKIP — NEEDS HUMAN] Issue #90 follow-up: decide whether `Select` should remain native-only with `Combobox` for rich options, or gain a custom listbox implementation. Exact handoff: choose the primitive strategy, implement behind additive props or a new component, then run `pnpm --filter @letbuyy/ui test`, `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Issue #97 follow-up: choose a proven charting library and bundle policy before replacing the current SVG `Chart`. Exact handoff: add the approved dependency to `@letbuyy/ui`, preserve the current `Chart` API through a shim or codemod, refresh visual snapshots, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Issue #99 follow-up: changing root/default density from compact would change visual output for unwrapped consumers. Exact handoff: choose the default-density policy, update `sharedCssVariables`/density selectors, refresh visual snapshots, then run `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Issues #26, #27, #28, #43 follow-up: enable the UI eslint plugin in app/service lint configs after the parallel app stream lands. Exact handoff: add `packages/typescript/ui/eslint` as the configured `@letbuyy/ui` plugin, enable `@letbuyy/ui/no-raw-elements` and `@letbuyy/ui/no-hardcoded-hex`, then run `pnpm lint`, `pnpm turbo typecheck`, `pnpm turbo build`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Issue #41 follow-up: run codemods across `apps/**`, `services/**`, and non-UI packages only after coordination with the parallel stream. Exact handoff: run the needed transforms in `packages/typescript/ui/codemods`, inspect every diff, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Issues #18, #40 follow-up: cut `@letbuyy/ui` 1.0 only after deprecated exports have a human-approved removal plan and consumers are migrated. Exact handoff: update package version/entrypoints, remove migrated shims, refresh snapshots, then run all final gates.
+- [SKIP — NEEDS HUMAN] Issue #42 follow-up: add the package CODEOWNERS entry to the root `CODEOWNERS` file after parallel streams merge. Exact entry candidate: `packages/typescript/ui/** @letbuyy/design-system-maintainers`.
+- [SKIP — NEEDS HUMAN] Issue #51 follow-up: remove `apps/storefront-runtime/src/components/ui` in the app stream if it remains empty. Exact handoff: delete that app-scope directory, then run storefront typecheck/build, repo typecheck/build/lint, and governance validation.
+- [SKIP — NEEDS HUMAN] Repository intelligence follow-up: `scripts/generate-repository-intelligence.mjs` rewrites root docs, app AGENTS, service AGENTS, and non-UI package files, so this stream did not run it under the parallel isolation contract. Exact handoff after streams merge: run `node scripts/generate-repository-intelligence.mjs`, review generated root/docs/app/package changes, then run `node scripts/validate-governance.mjs`.
 
 ## NEW PUBLIC API
 
@@ -153,19 +159,25 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - New additive `ToastProvider` props: `duration`, `placement`; new additive `ToastMessage` fields: `duration`, `placement`.
 - New additive `Pagination` props: `showPageNumbers`, `maxPageButtons`, `pageSize`, `pageSizeOptions`, `onPageSizeChange`, `pageSizeLabel`.
 - New additive `Avatar` prop: `alt`; new additive `ConfirmDialog` prop: `children`; new additive `Tooltip` prop: `id`; new additive `EmptyState` prop: `illustrationMotifs`.
+- New exports: `letbuyyPageIdentityIcons`, `letbuyyPageIdentityOptions`, `resolvePageIdentity`, `validateLetbuyyBrandContrast`.
+- New exported types: `PageIdentityOption`, `LetbuyyBrandContrastCheck`.
+- New subpath export: `@letbuyy/ui/preview`.
+- New package scripts: `test:eslint-rules`, `test:codemods`.
+- New UI governance artifacts: `packages/typescript/ui/eslint`, `packages/typescript/ui/codemods`, `packages/typescript/ui/CHANGELOG.md`, `packages/typescript/ui/src/governance.stories.tsx`.
 
 ## DEPRECATIONS
 
 | Symbol | Since | Replacement | Codemod | Removal |
 |---|---|---|---|---|
-| `DataTable` | `0.0.2` | `Table` | `packages/typescript/ui/codemods/data-table-to-table.cjs` (U8) | SKIP - breaking, needs cross-app migration |
-| `IndexTable` | `0.0.2` | `Table` | `packages/typescript/ui/codemods/index-table-to-table.cjs` (U8) | SKIP - breaking, needs cross-app migration |
-| `TextStyle` | `0.0.2` | `Text` | `packages/typescript/ui/codemods/text-style-to-text.cjs` (U8) | SKIP - breaking, needs cross-app migration |
-| `PageShell` | `0.0.2` | `Page` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` (U8) | SKIP - breaking, needs cross-app migration |
-| `PageActions` | `0.0.2` | `PageHeaderActions` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` (U8) | SKIP - breaking, needs cross-app migration |
-| `TableFilterBar` | `0.0.2` | `FilterBar` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` (U8) | SKIP - breaking, needs cross-app migration |
-| `Badge variant="danger"` | `0.0.2` | `Badge variant="critical"` | `packages/typescript/ui/codemods/badge-danger-to-critical.cjs` (U8) | SKIP - breaking, needs cross-app migration |
+| `DataTable` | `0.0.2` | `Table` | `packages/typescript/ui/codemods/data-table-to-table.cjs` | SKIP - breaking, needs cross-app migration |
+| `IndexTable` | `0.0.2` | `Table` | `packages/typescript/ui/codemods/index-table-to-table.cjs` | SKIP - breaking, needs cross-app migration |
+| `TextStyle` | `0.0.2` | `Text` | `packages/typescript/ui/codemods/text-style-to-text.cjs` | SKIP - breaking, needs cross-app migration |
+| `PageShell` | `0.0.2` | `Page` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` | SKIP - breaking, needs cross-app migration |
+| `PageActions` | `0.0.2` | `PageHeaderActions` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` | SKIP - breaking, needs cross-app migration |
+| `TableFilterBar` | `0.0.2` | `FilterBar` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` | SKIP - breaking, needs cross-app migration |
+| `Badge variant="danger"` | `0.0.2` | `Badge variant="critical"` | `packages/typescript/ui/codemods/badge-danger-to-critical.cjs` | SKIP - breaking, needs cross-app migration |
 | `LooseMaterialIconName` / arbitrary icon-name strings | `0.0.2` | `StrictMaterialIconName`, `materialIconName()`, `isMaterialIconName()` | Not planned; human review needed for unknown icon names | SKIP - breaking, needs icon-name audit |
+| Root preview helpers (`ColorSwatch`, `ColorPreviewBlock`, `ColorPreviewSurface`, `ColorPreviewButton`, `RadiusPreview`) | `0.0.2` | `@letbuyy/ui/preview` | Not needed; import-source migration only | SKIP - breaking, needs cross-app migration |
 
 ## VISUAL-REGRESSION BASELINES
 
@@ -177,6 +189,8 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - U5 verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines checked and no baseline updates, proving the internal composition refactor is visually unchanged.
 - U6 verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines checked and no baseline updates, proving surface/brand/style-dedupe changes preserve default visuals.
 - U7 verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines checked and no baseline updates, proving default visual states remain stable after additive polish fixes.
+- U8 baseline expansion: `governance.stories.tsx` added 6 governance-doc screenshots; `pnpm --filter @letbuyy/ui test:visual:update` captured 312 baselines total.
+- U8 verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 312 baselines checked.
 
 ## VALIDATOR LEDGER
 
@@ -184,6 +198,8 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - `packages/typescript/ui/tests/validators/ui-token-variable-snapshot-validator.mjs`: snapshots all emitted `--lb-*` variables; `validate:tokens` PASS; `--self-test` PASS by detecting simulated removal of `--lb-card-bg`.
 - `packages/typescript/ui/tests/validators/ui-no-new-token-alias-validator.mjs`: snapshots current duplicate-value `--lb-*` alias groups and fails on new alias growth; `validate:aliases` PASS; `--self-test` PASS by detecting simulated `--lb-self-test-new-alias`.
 - U7 focus-ring correctness intentionally refreshed `token-aliases.json`; `validate:aliases` PASS with 109 protected duplicate-value groups and no removed public variables.
+- `packages/typescript/ui/eslint/index.cjs`: UI eslint plugin with `no-raw-elements` and `no-hardcoded-hex`; `pnpm --filter @letbuyy/ui test:eslint-rules` PASS.
+- `packages/typescript/ui/codemods/*.cjs`: migration codemods for table consolidation, text merge, badge vocabulary, page aliases, and token aliases; `pnpm --filter @letbuyy/ui test:codemods` PASS with 6 fixtures.
 
 ## BLOCKED
 
