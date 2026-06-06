@@ -9,6 +9,7 @@ import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/coupon_service.dart';
 import 'package:letbuyy_store/services/customer_service.dart';
 import 'package:letbuyy_store/services/inventory_service.dart';
+import 'package:letbuyy_store/services/notification_settings_service.dart';
 import 'package:letbuyy_store/services/order_service.dart';
 import 'package:letbuyy_store/services/product_service.dart';
 import 'package:letbuyy_store/services/store_auth_service.dart';
@@ -21,6 +22,7 @@ import 'package:letbuyy_store/screens/discounts/coupon_form_screen.dart';
 import 'package:letbuyy_store/screens/discounts/coupons_screen.dart';
 import 'package:letbuyy_store/screens/inventory/inventory_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
+import 'package:letbuyy_store/screens/settings/notifications_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -188,6 +190,22 @@ void main() {
       expect(api.paths, contains('/coupons'));
       expect(api.paths, contains('/coupons/coupon_1'));
       expect(api.paths, contains('/coupons/validate'));
+    });
+
+    test('NotificationSettingsService persists preferences', () async {
+      final api = _FakeApiClient(
+        json: {'/notifications': _notificationSettingsJson()},
+      );
+      final service = NotificationSettingsService(api: api);
+
+      final settings = await service.fetchSettings('store_1');
+      final updated = await service.updateSettings(
+        settings.copyWith(marketing: true),
+      );
+
+      expect(settings.emailEnabled, isTrue);
+      expect(updated.lowStock, isTrue);
+      expect(api.paths, contains('/notifications'));
     });
 
     test('AnalyticsService assembles dashboard metrics', () async {
@@ -528,6 +546,33 @@ void main() {
     expect(find.text('Create coupon'), findsOneWidget);
     expect(find.text('Code'), findsOneWidget);
   });
+
+  testWidgets('NotificationsScreen renders persisted toggles', (tester) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+      },
+      json: {'/notifications': _notificationSettingsJson()},
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(
+            create: (_) => NotificationSettingsService(api: api),
+          ),
+        ],
+        child: const MaterialApp(home: NotificationsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Notifications'), findsOneWidget);
+    expect(find.text('Channels'), findsOneWidget);
+    expect(find.text('New orders'), findsOneWidget);
+    expect(find.text('Low stock'), findsOneWidget);
+  });
 }
 
 class _FakeApiClient extends ApiClient {
@@ -676,6 +721,19 @@ Map<String, dynamic> _couponJson({
   'per_customer_limit': 1,
   'expires_at': '2026-12-31T23:59:59.000Z',
   'is_active': isActive,
+};
+
+Map<String, dynamic> _notificationSettingsJson() => {
+  'store_id': 'store_1',
+  'channels': {'email': true, 'sms': false, 'push': true},
+  'events': {
+    'order_created': true,
+    'order_paid': true,
+    'low_stock': true,
+    'refunds': true,
+    'customer_signup': true,
+    'marketing': false,
+  },
 };
 
 Map<String, dynamic> _orderJson({

@@ -78,6 +78,7 @@ class ApiClient {
   late final InventoryApi inventory = InventoryApi(this);
   late final PagesApi pages = PagesApi(this);
   late final CouponsApi coupons = CouponsApi(this);
+  late final NotificationsApi notifications = NotificationsApi(this);
   late final GraphQLClient graphql = GraphQLClient(
     (path, {options}) => request(path, options: options),
   );
@@ -1199,6 +1200,28 @@ class CouponsApi {
         '/coupons/${_encodePathSegment(id)}',
         options: _mergeOptions(options, method: HttpMethod.delete),
       );
+}
+
+class NotificationsApi {
+  const NotificationsApi(this._client);
+
+  final ApiClient _client;
+
+  Future<JsonMap> getPreferences(
+    String storeId, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/notifications',
+    options: _mergeOptions(options, query: {'store_id': storeId}),
+  );
+
+  Future<JsonMap> updatePreferences(
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/notifications',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
 }
 
 ApiRequestOptions _mergeOptions(

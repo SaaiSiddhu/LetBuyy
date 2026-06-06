@@ -13,6 +13,7 @@ import 'services/order_service.dart';
 import 'services/customer_service.dart';
 import 'services/inventory_service.dart';
 import 'services/coupon_service.dart';
+import 'services/notification_settings_service.dart';
 import 'services/analytics_service.dart';
 import 'services/theme_service.dart';
 import 'services/theme_provider.dart';
@@ -73,6 +74,9 @@ void main() async {
         ),
         ChangeNotifierProvider<CouponService>(
           create: (_) => CouponService(api: apiClient),
+        ),
+        ChangeNotifierProvider<NotificationSettingsService>(
+          create: (_) => NotificationSettingsService(api: apiClient),
         ),
         ChangeNotifierProvider<AnalyticsService>(
           create: (_) => AnalyticsService(api: apiClient),
