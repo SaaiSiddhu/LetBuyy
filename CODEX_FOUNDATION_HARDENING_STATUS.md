@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F7.4 env/dead-directory cleanup complete; continue F7.4 AGENTS regeneration.
+- Phase: F7.4 AGENTS/repository-intelligence regeneration complete; continue F8.1 mobile topology honesty.
 - Findings resolved: 28/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `C-14`, `H-1`, `H-2`, `H-4`, `H-5`, `H-6`, `H-7`, `H-8`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-15`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets, C-14 live observability rollout verification is SKIPPED -- NEEDS HUMAN pending deployed telemetry endpoints/credentials, H-15 live production deploy execution is SKIPPED -- NEEDS HUMAN pending protected environment approvals plus provider credentials, and legacy portfolio/resume reactivation is human-gated for named cohorts only.
-- Current governance gate state: green after F7.4 env/dead-directory cleanup increment (`pnpm run validate:governance` -> 155/155 PASS).
+- Current governance gate state: green after F7.4 AGENTS/repository-intelligence regeneration (`pnpm run validate:governance` -> 156/156 PASS).
 
 ## Baseline gates
 
@@ -860,6 +860,20 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 155/155 validators.
 
+## F7.4 AGENTS and repository intelligence regeneration evidence
+
+- Regenerated root/local `AGENTS.md` files and `docs/architecture/master-system-intelligence.md` from tracked source authority rather than untracked local drafts.
+- Updated `scripts/generate-repository-intelligence.mjs` so it scans `git ls-files`, includes `apps/developer-portal`, reports the implemented service roots separately from reserved service roots, reads the full baseline migration for table/index/RLS counts, and preserves current non-negotiable gateway/shared-types governance.
+- Added `scripts/validators/repository-intelligence-validator.mjs`, wired it into `scripts/validate-governance.mjs`, and added `tests/contracts/repository-intelligence-generation.test.ts`.
+- `node scripts/validators/repository-intelligence-validator.mjs`: PASS.
+- `npx tsx --test tests/contracts/repository-intelligence-generation.test.ts`: PASS - 4/4.
+- `pnpm run test:contracts`: failed once on TSX IPC sandbox permissions, then PASS - 153/153 with escalation.
+- `pnpm install --frozen-lockfile --force`: failed once on sandbox DNS after generated-artifact cleanup removed workspace links, then PASS with escalation.
+- Full `pnpm turbo typecheck --output-logs=errors-only --log-order=grouped`: PASS - 58/58.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 156/156 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -896,5 +910,5 @@ Started: 2026-06-05T13:54:14Z
 - F6.4 live environment value rollout requires Vercel project env access, Cloudflare Worker env/secret access, CDN/R2 public asset-domain decision, and provider-restricted mobile Gemini credentials. Exact proof path once supplied: configure `NEXT_PUBLIC_MARKETING_URL`, `NEXT_PUBLIC_ACCOUNTS_URL`, `NEXT_PUBLIC_ADMIN_URL`, `NEXT_PUBLIC_STOREFRONT_URL`, `NEXT_PUBLIC_THEME_MARKETPLACE_URL`, API base URLs, and `STOREFRONT_FRAME_ANCESTORS` in Vercel; configure `CORS_CREDENTIAL_ORIGINS` and `ASSET_PUBLIC_BASE_URL` in Cloudflare; configure mobile release builds with `--dart-define=GEMINI_API_KEY=... --dart-define=GEMINI_BASE_URL=... --dart-define=GEMINI_MODEL=...`; then run `pnpm run validate:governance`, affected deploy smoke tests, and mobile release smoke.
 - F7.1 portfolio/resume acquisition reactivation requires human product approval for a named legacy cohort plus matching gateway/public env rollout: `LETBUYY_ENABLE_LEGACY_SITE_TYPES=true` and `NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES=true`. Default acquisition remains off and validator-guarded.
 
-- Continue to F7.4 AGENTS.md regeneration.
+- Continue to F8.1 mobile topology honesty.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

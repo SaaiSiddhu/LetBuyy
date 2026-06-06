@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 
 const root = process.cwd();
 const now = new Date().toISOString();
@@ -176,6 +177,12 @@ const appTargets = [
     purpose: "Extension marketplace, developer app submission, app search, install routes and app review APIs.",
   },
   {
+    output: "apps/developer-portal/AGENTS.md",
+    name: "Developer Portal",
+    actual: "apps/developer-portal",
+    purpose: "Developer documentation, API reference, SDK quick-starts, and partner dashboard shell.",
+  },
+  {
     output: "apps/theme-marketplace/AGENTS.md",
     name: "Theme Marketplace",
     actual: "apps/theme-marketplace",
@@ -283,6 +290,18 @@ function walk(dir, results = []) {
   return results;
 }
 
+function listTrackedFiles() {
+  try {
+    return execFileSync("git", ["ls-files", "-z"], { cwd: root })
+      .toString("utf8")
+      .split("\0")
+      .filter(Boolean)
+      .sort();
+  } catch {
+    return walk(root).map(rel).sort();
+  }
+}
+
 function isGeneratedIntelligenceOutput(file) {
   if (file === "AGENTS.md") return true;
   if (file.endsWith("/AGENTS.md")) return true;
@@ -310,6 +329,15 @@ function readText(abs) {
   if (!isTextFile(abs)) return "";
   const stat = fs.statSync(abs);
   if (stat.size > 900_000) return "";
+  try {
+    return fs.readFileSync(abs, "utf8");
+  } catch {
+    return "";
+  }
+}
+
+function readTextUnbounded(abs) {
+  if (!isTextFile(abs)) return "";
   try {
     return fs.readFileSync(abs, "utf8");
   } catch {
@@ -594,8 +622,8 @@ function countBy(files, fn) {
   return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
 }
 
-const allAbsFiles = walk(root);
-const allFiles = allAbsFiles.map(rel).sort();
+const allFiles = listTrackedFiles();
+const allAbsFiles = allFiles.map((file) => path.join(root, file)).filter((file) => fs.existsSync(file));
 const textFiles = allFiles.filter((file) => isTextFile(path.join(root, file)) && !isGeneratedIntelligenceOutput(file) && !isLocalEnvironmentFile(file));
 const sourceFiles = textFiles.filter((file) => sourceExtensions.has(path.extname(file)) || sourceExtensions.has(path.basename(file)));
 
@@ -616,11 +644,14 @@ const appRoots = unique(fileSummaries.map((summary) => summary.appRoot).filter((
 const useClientCount = fileSummaries.filter((summary) => summary.flags.includes("client component")).length;
 const localStorageCount = fileSummaries.filter((summary) => summary.flags.includes("uses localStorage")).length;
 const inlineStyleCount = fileSummaries.filter((summary) => summary.flags.includes("inline React style")).length;
-const consoleLogCount = fileSummaries.filter((summary) => summary.flags.includes("console.log")).length;
-const anyCount = fileSummaries.filter((summary) => summary.flags.includes("TypeScript any")).length;
+const implementationSummaries = fileSummaries.filter((summary) => /^(apps|services|packages|database|infrastructure|scripts|config)\//.test(summary.file));
+const consoleLogCount = implementationSummaries.filter((summary) => summary.flags.includes("console.log")).length;
+const anyCount = implementationSummaries.filter((summary) => summary.flags.includes("TypeScript any")).length;
 const todoCount = fileSummaries.filter((summary) => summary.flags.includes("TODO/FIXME/HACK")).length;
 const serviceRoleFiles = fileSummaries.filter((summary) => summary.flags.includes("service role reference"));
-const hardcodedPaymentKeyFiles = fileSummaries.filter((summary) => summary.flags.includes("hardcoded payment key id"));
+const hardcodedPaymentKeyFiles = implementationSummaries.filter((summary) =>
+  summary.flags.includes("hardcoded payment key id") && !summary.file.startsWith("config/env/"),
+);
 
 const migrationsByNumber = new Map();
 for (const file of migrationFiles) {
@@ -633,13 +664,23 @@ const duplicateMigrationNumbers = [...migrationsByNumber.entries()].filter(([, f
 
 const sqlTotals = migrationFiles.reduce(
   (acc, file) => {
-    const sql = extractSqlObjects(readText(path.join(root, file)));
+    const sql = extractSqlObjects(readTextUnbounded(path.join(root, file)));
     for (const key of Object.keys(acc)) acc[key].push(...sql[key]);
     return acc;
   },
   { tables: [], alteredTables: [], indexes: [], policies: [], functions: [], triggers: [], rlsTables: [], references: [] }
 );
 for (const key of Object.keys(sqlTotals)) sqlTotals[key] = unique(sqlTotals[key]);
+
+const baselineMigrationPath = "database/supabase/migrations/000_baseline.sql";
+const baselineSqlTotals = extractSqlObjects(readTextUnbounded(path.join(root, baselineMigrationPath)));
+const additiveMigrationFiles = migrationFiles.filter((file) => file !== baselineMigrationPath);
+const additiveMigrationNumbers = additiveMigrationFiles
+  .map((file) => (path.basename(file).match(/^(\d{3})/) || [])[1])
+  .filter(Boolean);
+const additiveMigrationRange = additiveMigrationNumbers.length
+  ? `\`${additiveMigrationNumbers[0]}_*.sql\` through \`${additiveMigrationNumbers.at(-1)}_*.sql\``
+  : "no additive migrations";
 
 const envFiles = allFiles.filter((file) => !isLocalEnvironmentFile(file) && /(^|\/)\.env|\.env(\.|$)|all\.env/.test(file));
 const trackedGeneratedArtifacts = [];
@@ -776,6 +817,8 @@ function buildRootAgents() {
   lines.push("");
   lines.push("- Preserve tenant isolation. Every merchant-owned record must resolve through `site_id` or an explicit store ownership check.");
   lines.push("- Keep authentication centralized in the accounts app UI and API worker services. Landing must not host login/signup pages except redirects.");
+  lines.push("- `services/api-gateway` is the sole Commerce API backend. Apps must reach commerce, checkout, customer, theme, payment, and tenant behavior through versioned gateway contracts, not app-local business logic or direct database clients.");
+  lines.push("- `@letbuyy/shared-types` is the canonical cross-runtime domain contract for app and service boundaries. New hand-rolled app-local `Product`, `Order`, `Customer`, `Payment`, `Theme`, and related commerce DTOs are forbidden.");
   lines.push("- API routes must use `/v1` in the Hono worker and should use `/api/v1` at app boundaries when exposed through Next route handlers.");
   lines.push("- Use Zod schemas for inbound API payloads. Canonical shared schemas belong in domain packages; API gateway `src/schemas/*` files are compatibility facades for worker imports.");
   lines.push("- Never expose Supabase service role keys to client components. Current service-role references are server/worker files only and must remain so.");
@@ -797,9 +840,9 @@ function buildRootAgents() {
   lines.push("");
   lines.push("## Canonical Active Runtimes");
   lines.push("");
-  lines.push("- Web app runtimes: `apps/storefront-runtime`, `apps/merchant-control-plane`, `apps/identity-platform`, `apps/app-marketplace`, `apps/theme-marketplace`, `apps/marketing-site`, `apps/platform-console`, `apps/platform-operations-portal`.");
+  lines.push("- Web app runtimes: `apps/storefront-runtime`, `apps/merchant-control-plane`, `apps/identity-platform`, `apps/app-marketplace`, `apps/developer-portal`, `apps/theme-marketplace`, `apps/marketing-site`, `apps/platform-console`, `apps/platform-operations-portal`.");
   lines.push("- Mobile runtimes: `apps/mobile/shopper-app`, `apps/mobile/merchant-app`, `apps/mobile/operator-app`.");
-  lines.push("- Service runtimes: `services/api-gateway`, `services/webhook-service`, plus reserved service roots documented in `docs/governance/runtime-boundaries.md`.");
+  lines.push("- Service runtimes: implemented `services/api-gateway`, `services/webhook-service`, and `services/queue-workers`; reserved/not-implemented service roots `services/checkout-runtime`, `services/search-service`, `services/media-service`, `services/notification-service`, `services/event-bus`, and `services/analytics-pipeline`.");
   lines.push("- Every canonical runtime root must include `runtime.manifest.json`; manifests are machine-readable runtime authority and are enforced by `scripts/validators/runtime-manifest-validator.mjs`.");
   lines.push("- Deprecated app aliases are forbidden: `apps/admin`, `apps/auth`, `apps/checkout`, `apps/internal`, `apps/merchant`, `apps/storefront`, and `apps/analytics`.");
   lines.push("- `apps/mobile/operator-team-app` and `apps/storefront-runtime/consumer-storefront` are retired topology paths and must not be recreated.");
@@ -928,16 +971,22 @@ function buildRootAgents() {
   lines.push("## Dependency Governance");
   lines.push("");
   lines.push("- Dependency direction is `apps -> packages`, `apps -> services by API`, `services -> packages`, and `packages -> packages` only.");
+  lines.push("- pnpm dependency lifecycle is strict: `node-linker=isolated`, `shamefully-hoist=false`, `strict-peer-dependencies=true`, and `auto-install-peers=false`.");
+  lines.push("- Every imported external package must be declared by the owning app, service, or package manifest. Hidden transitive dependency access is forbidden.");
+  lines.push("- TypeScript packages must expose explicit `exports`; cross-package imports must use public package exports, not relative imports into another package root.");
   lines.push("- Database and infrastructure do not import runtime code.");
   lines.push("- Shared logic graduates into packages before reuse.");
   lines.push("- API contract aggregation through `@letbuyy/api-types` is backward compatibility only; new domain authority belongs in the domain package public export.");
-  lines.push("- `scripts/validators/dependency-graph-validator.mjs` enforces dependency direction, package layering, and circular dependency prevention.");
+  lines.push("- `scripts/validators/dependency-manifest-validator.mjs`, `scripts/validators/undeclared-import-validator.mjs`, `scripts/validators/package-export-validator.mjs`, `scripts/validators/dependency-graph-validator.mjs`, and `scripts/validators/circular-import-validator.mjs` enforce dependency declarations, package public exports, dependency direction, package layering, and circular dependency prevention.");
+  lines.push("- `scripts/validators/survivability-governance-validator.mjs` enforces plan-vs-execute survivability contracts, live evidence status rules, observability contracts, and multi-region runtime proof boundaries.");
   lines.push("");
   lines.push("## CI/CD Governance");
   lines.push("");
   lines.push("- CI must run `node scripts/validate-governance.mjs` for topology-sensitive changes.");
-  lines.push("- CI must fail on app-to-app imports, package-to-runtime imports, tracked generated artifacts, local artifact pollution, missing runtime manifests, invalid dependency direction, tracked env files, invalid runtime roots, and legacy leakage.");
+  lines.push("- CI must fail on app-to-app imports, package-to-runtime imports, undeclared dependency imports, non-exported package subpaths, circular package/runtime imports, npm/npx leakage in governed execution paths, tracked generated artifacts, local artifact pollution, missing runtime manifests, invalid dependency direction, unsafe migration history, tracked env files, invalid runtime roots, and legacy leakage.");
   lines.push("- Build, lint, typecheck, and test jobs should be added per runtime as blockers are retired.");
+  lines.push("- CI must run survivability governance before production rollout or live certification. Plan-mode proof is not live certification; execute-mode evidence must be fresh, measured, and stored through the operations control plane.");
+  lines.push("- CI must pass before any merge to main. Never merge with failing typecheck, lint, or tests.");
   lines.push("");
   lines.push("## Documentation Governance");
   lines.push("");
@@ -1023,9 +1072,10 @@ function buildRootAgents() {
   lines.push("## Database Governance");
   lines.push("");
   lines.push("- Migration root: `database/supabase/migrations`.");
-  lines.push("- Tables detected: " + sqlTotals.tables.length + ".");
-  lines.push("- Indexes detected: " + sqlTotals.indexes.length + ".");
-  lines.push("- RLS-enabled table statements detected: " + sqlTotals.rlsTables.length + ".");
+  lines.push(`- Active replay chain: \`${path.basename(baselineMigrationPath)}\` plus additive forward migrations ${additiveMigrationRange}.`);
+  lines.push("- Baseline public tables detected: " + baselineSqlTotals.tables.length + " `CREATE TABLE public.*` statements in `000_baseline.sql`.");
+  lines.push("- Indexes detected: " + baselineSqlTotals.indexes.length + ".");
+  lines.push("- RLS-enabled table statements detected: " + baselineSqlTotals.rlsTables.length + ".");
   lines.push("- Duplicate/non-standard migration numeric prefixes detected: " + (duplicateMigrationNumbers.length ? duplicateMigrationNumbers.map(([n, files]) => `${n} (${files.map((file) => path.basename(file)).join(", ")})`).join("; ") : "none") + ".");
   lines.push("- New migrations must be sequential, unique, reversible, and must not depend on generated application artifacts.");
   lines.push("");
@@ -1036,6 +1086,10 @@ function buildRootAgents() {
   lines.push("- Terraform DNS config lives in `infrastructure/dns/dns.tf` and includes service records for LetBuyy subdomains.");
   lines.push("- Wildcard tenant routing belongs to storefront middleware and Cloudflare DNS, not individual tenant Next routes.");
   lines.push("- Custom domains require ownership verification, CNAME/TXT validation, SSL issuance, tenant mapping, and takeover prevention before activation.");
+  lines.push("- Cloudflare agent setup authority lives at `https://developers.cloudflare.com/agent-setup/prompt.md`. Before installing, repairing, or documenting Cloudflare agent tooling, fetch and re-verify that official prompt instead of relying on stale local notes.");
+  lines.push("- Codex Cloudflare MCP setup should use the official remote servers: `cloudflare`, `cloudflare-docs`, `cloudflare-bindings`, `cloudflare-builds`, and `cloudflare-observability`. Authenticate with `codex mcp login cloudflare` when provider-backed tools are needed.");
+  lines.push("- Prefer Cloudflare MCP/docs tools or official Cloudflare documentation for current Workers, DNS, bindings, builds, and observability behavior. Do not treat archived repo docs as source of truth for Cloudflare platform syntax.");
+  lines.push("- Cloudflare OAuth, Wrangler state, MCP auth files, API tokens, account IDs, and DNS edit credentials must remain outside git. DNS mutations require a verified credential with Zone DNS Edit authority and must preserve Cloudflare/Vercel domain ownership boundaries.");
   lines.push("");
   lines.push("## Payment and Checkout Governance");
   lines.push("");
@@ -1064,7 +1118,7 @@ function buildRootAgents() {
   lines.push("");
   lines.push("- Enterprise SDLC authority lives in `config/runtime/environment-lifecycle.json`, `config/runtime/rollout-lifecycle.json`, and `config/runtime/operational-certification-policy.json`.");
   lines.push("- Staging development lifecycle authority lives in `scripts/staging/seed.mjs`, `config/env/staging.env.example`, and the staging entries in `config/runtime/environment-lifecycle.json`.");
-  lines.push("- Feature flag evaluation authority lives in `packages/shared-types/src/index.ts`; persisted operational control evidence lives in migration `065_enterprise_sdlc_lifecycle.sql`.");
+  lines.push("- Feature flag evaluation authority lives in `packages/shared-types/src/index.ts`; persisted operational control evidence lives in the active `database/supabase/migrations/000_baseline.sql` operational lifecycle tables.");
   lines.push("- Governance validation must run `scripts/validators/operational-lifecycle-validator.mjs`; stale live certification evidence is a hard failure.");
   lines.push("- Plan mode means executable workflows and evidence contracts only. Do not claim live deployment, live failover, live chaos, live load, or live certification until execute-mode provider evidence is recorded and fresh.");
   lines.push("");
@@ -1084,8 +1138,12 @@ function buildRootAgents() {
   lines.push(`| Next app route files | ${nextRoutes.length} | Includes pages, layouts, route handlers, loading/error files |`);
   lines.push(`| Next API route handlers | ${nextApiRoutes.length} | App-local API surface still exists |`);
   lines.push(`| Hono route modules | ${honoRouteFiles.length} | Worker route modules under services/api-gateway/src/routes |`);
-  lines.push(`| Supabase migrations | ${migrationFiles.length} | Numeric prefix conflicts: ${duplicateMigrationNumbers.length} |`);
+  lines.push(`| Supabase migrations | ${migrationFiles.length} | \`${path.basename(baselineMigrationPath)}\` plus additive ${additiveMigrationRange}; numeric prefix conflicts: ${duplicateMigrationNumbers.length} |`);
   lines.push(`| Environment variable names referenced | ${envNames.length} | Names only, no values printed |`);
+  lines.push("");
+  lines.push("## Security");
+  lines.push("");
+  lines.push("- The `/api/seed` route in storefront-runtime is guarded by `NODE_ENV` and `SEED_SECRET`. Never remove these guards.");
   lines.push("");
   return lines.join("\n");
 }
