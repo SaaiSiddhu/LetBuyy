@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,6 +12,7 @@ import 'package:letbuyy_store/services/cms_service.dart';
 import 'package:letbuyy_store/services/coupon_service.dart';
 import 'package:letbuyy_store/services/customer_service.dart';
 import 'package:letbuyy_store/services/inventory_service.dart';
+import 'package:letbuyy_store/services/media_service.dart';
 import 'package:letbuyy_store/services/notification_settings_service.dart';
 import 'package:letbuyy_store/services/order_service.dart';
 import 'package:letbuyy_store/services/product_service.dart';
@@ -20,6 +23,7 @@ import 'package:letbuyy_store/services/store_service.dart';
 import 'package:letbuyy_store/services/subscription_service.dart';
 import 'package:letbuyy_store/services/theme_service.dart';
 import 'package:letbuyy_store/screens/content/blog_screen.dart';
+import 'package:letbuyy_store/screens/content/media_library_screen.dart';
 import 'package:letbuyy_store/screens/content/navigation_screen.dart';
 import 'package:letbuyy_store/screens/content/page_editor_screen.dart';
 import 'package:letbuyy_store/screens/content/pages_screen.dart';
@@ -327,6 +331,44 @@ void main() {
       expect(saved.items.single.url, '/');
       expect(api.paths, contains('/pages/navigation'));
       expect(api.paths, contains('/pages/navigation/main'));
+    });
+
+    test('MediaService lists, uploads, updates, and deletes assets', () async {
+      final tempDir = Directory.systemTemp.createTempSync('letbuyy-media-test');
+      addTearDown(() => tempDir.deleteSync(recursive: true));
+      final file = File('${tempDir.path}/hero.png')..writeAsBytesSync([1, 2]);
+      final api = _FakeApiClient(
+        paginated: {
+          '/media': [_mediaJson()],
+        },
+        json: {
+          '/upload': _uploadJson(),
+          '/media': _mediaJson(id: 'media_2', filename: 'hero.png'),
+          '/media/media_1': _mediaJson(altText: 'Campaign hero'),
+        },
+      );
+      final service = MediaService(api: api);
+
+      final assets = await service.fetchMedia('store_1');
+      final uploaded = await service.uploadAndCreate(
+        storeId: 'store_1',
+        file: file,
+        folder: 'media',
+        altText: 'Hero',
+      );
+      final updated = await service.updateMedia(
+        'media_1',
+        const MediaUpdateInput(altText: 'Campaign hero', folder: 'media'),
+      );
+      await service.deleteMedia(assets.single, deleteObject: true);
+
+      expect(assets.single.displayName, 'Hero image');
+      expect(uploaded.id, 'media_2');
+      expect(updated.altText, 'Campaign hero');
+      expect(api.paths, contains('/media'));
+      expect(api.paths, contains('/upload'));
+      expect(api.paths, contains('/media/media_1'));
+      expect(api.paths, contains('/upload/media%2Fstore_1%2Fhero.png'));
     });
 
     test('NotificationSettingsService persists preferences', () async {
@@ -902,6 +944,41 @@ void main() {
     expect(find.byIcon(Icons.drag_indicator_rounded), findsOneWidget);
   });
 
+  testWidgets('MediaLibraryScreen renders media assets from gateway service', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+        '/media': [
+          _mediaJson(
+            filename: 'lookbook.pdf',
+            originalName: 'Lookbook.pdf',
+            mediaType: 'document',
+            mimeType: 'application/pdf',
+          ),
+        ],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => MediaService(api: api)),
+        ],
+        child: const MaterialApp(home: MediaLibraryScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Media library'), findsOneWidget);
+    expect(find.text('Lookbook.pdf'), findsOneWidget);
+    expect(find.text('Document • 2.0 KB'), findsOneWidget);
+    expect(find.text('Upload'), findsOneWidget);
+    expect(find.text('Search media'), findsOneWidget);
+  });
+
   testWidgets('ThemeVersionsScreen renders releases for rollback', (
     tester,
   ) async {
@@ -1164,6 +1241,43 @@ Map<String, dynamic> _navigationItemJson({
   'is_visible': true,
   'open_in_new_tab': false,
   'updated_at': '2026-06-01T11:00:00.000Z',
+};
+
+Map<String, dynamic> _mediaJson({
+  String id = 'media_1',
+  String filename = 'hero.jpg',
+  String originalName = 'Hero image',
+  String mediaType = 'image',
+  String mimeType = 'image/jpeg',
+  String? altText = 'Homepage hero',
+}) => {
+  'id': id,
+  'store_id': 'store_1',
+  'uploaded_by': 'user_1',
+  'filename': filename,
+  'original_name': originalName,
+  'url': 'https://cdn.test/media/store_1/$filename',
+  'thumbnail_url': null,
+  'mime_type': mimeType,
+  'size_bytes': 2048,
+  'width': mediaType == 'image' ? 1200 : null,
+  'height': mediaType == 'image' ? 800 : null,
+  'alt_text': altText,
+  'caption': 'Launch asset',
+  'folder': 'media',
+  'media_type': mediaType,
+  'tags': ['hero', 'launch'],
+  'usage_count': 1,
+  'storage_key': 'media/store_1/hero.png',
+  'created_at': '2026-06-01T11:00:00.000Z',
+  'updated_at': '2026-06-01T11:00:00.000Z',
+};
+
+Map<String, dynamic> _uploadJson() => {
+  'url': 'https://cdn.test/media/store_1/hero.png',
+  'key': 'media/store_1/hero.png',
+  'size': 2,
+  'content_type': 'image/png',
 };
 
 Map<String, dynamic> _themeReleaseJson() => {

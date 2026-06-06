@@ -78,6 +78,8 @@ class ApiClient {
   late final InventoryApi inventory = InventoryApi(this);
   late final PagesApi pages = PagesApi(this);
   late final BlogApi blog = BlogApi(this);
+  late final MediaApi media = MediaApi(this);
+  late final UploadApi upload = UploadApi(this);
   late final CouponsApi coupons = CouponsApi(this);
   late final NotificationsApi notifications = NotificationsApi(this);
   late final GraphQLClient graphql = GraphQLClient(
@@ -1276,6 +1278,69 @@ class BlogApi {
   Future<JsonMap> removeComment(String id, {ApiRequestOptions? options}) =>
       _client.requestJson(
         '/blog/comments/${_encodePathSegment(id)}',
+        options: _mergeOptions(options, method: HttpMethod.delete),
+      );
+}
+
+class MediaApi {
+  const MediaApi(this._client);
+
+  final ApiClient _client;
+
+  Future<PaginatedResponse<JsonMap>> list({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/media',
+    options: _mergeOptions(options, query: query),
+  );
+
+  Future<JsonMap> create(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/media',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> update(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/media/${_encodePathSegment(id)}',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
+
+  Future<JsonMap> remove(String id, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/media/${_encodePathSegment(id)}',
+        options: _mergeOptions(options, method: HttpMethod.delete),
+      );
+}
+
+class UploadApi {
+  const UploadApi(this._client);
+
+  final ApiClient _client;
+
+  Future<JsonMap> file(
+    File file, {
+    String folder = 'uploads',
+    ApiRequestOptions? options,
+  }) async {
+    final fileName = file.path.split(Platform.pathSeparator).last;
+    final formData = FormData.fromMap({
+      'folder': folder,
+      'file': await MultipartFile.fromFile(file.path, filename: fileName),
+    });
+    return _client.requestJson(
+      '/upload',
+      options: _mergeOptions(options, method: HttpMethod.post, body: formData),
+    );
+  }
+
+  Future<JsonMap> remove(String key, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/upload/${_encodePathSegment(key)}',
         options: _mergeOptions(options, method: HttpMethod.delete),
       );
 }

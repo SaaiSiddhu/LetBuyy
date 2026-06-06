@@ -14,6 +14,7 @@ import 'services/customer_service.dart';
 import 'services/inventory_service.dart';
 import 'services/coupon_service.dart';
 import 'services/cms_service.dart';
+import 'services/media_service.dart';
 import 'services/notification_settings_service.dart';
 import 'services/push_service.dart';
 import 'services/analytics_service.dart';
@@ -79,6 +80,9 @@ void main() async {
         ),
         ChangeNotifierProvider<CmsService>(
           create: (_) => CmsService(api: apiClient),
+        ),
+        ChangeNotifierProvider<MediaService>(
+          create: (_) => MediaService(api: apiClient),
         ),
         ChangeNotifierProvider<NotificationSettingsService>(
           create: (_) => NotificationSettingsService(api: apiClient),

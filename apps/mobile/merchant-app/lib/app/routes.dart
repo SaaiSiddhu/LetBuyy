@@ -25,6 +25,7 @@ import '../screens/customers/customers_screen.dart';
 import '../screens/discounts/coupon_form_screen.dart';
 import '../screens/discounts/coupons_screen.dart';
 import '../screens/content/blog_screen.dart';
+import '../screens/content/media_library_screen.dart';
 import '../screens/content/navigation_screen.dart';
 import '../screens/content/pages_screen.dart';
 import '../screens/inventory/inventory_screen.dart';
@@ -74,6 +75,7 @@ class AppRoutes {
   static const String pages = '/pages';
   static const String blog = '/blog';
   static const String navigation = '/navigation';
+  static const String media = '/media';
   static const String inventory = '/inventory';
   static const String orders = '/orders';
   static const String orderDetail = '/orders/detail';
@@ -102,6 +104,9 @@ class AppRoutes {
     }
     if (settings.name == '/features/navigation') {
       return _buildRoute(const NavigationScreen(), settings);
+    }
+    if (settings.name == '/features/media') {
+      return _buildRoute(const MediaLibraryScreen(), settings);
     }
     if (settings.name == '/features/notifications') {
       return _buildRoute(const NotificationsScreen(), settings);
@@ -235,6 +240,9 @@ class AppRoutes {
 
       case navigation:
         return _buildRoute(const NavigationScreen(), settings);
+
+      case media:
+        return _buildRoute(const MediaLibraryScreen(), settings);
 
       case inventory:
         return _buildRoute(const InventoryScreen(), settings);

@@ -2,8 +2,8 @@
 
 - Branch: `stream/letbuyy-foundation-v2`
 - Start HEAD: `62b2915218daa716b075b02d909c08e053bfce25`
-- Current HEAD: `a28fb062d2fd73fb720ca2657dcee548934fd00c`
-- Status timestamp: `2026-06-06T14:53:27+05:30`
+- Current HEAD: `8394d2205ae871c780b4cd0e3dbdc6802b82786e`
+- Status timestamp: `2026-06-06T15:01:01+05:30`
 
 ## Feature Checklist
 
@@ -30,7 +30,7 @@
 | P2 | CMS Pages | DONE | `lib/services/cms_service.dart`, `lib/screens/content/pages_screen.dart`, `lib/screens/content/page_editor_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/pages` opens the real CMS pages screen, lists store-scoped `/pages` rows, creates/edits body/slug/status/navigation/SEO fields, toggles published/draft state, and archives pages through `/pages/:id`; covered by service + widget tests |
 | P2 | Blog | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/cms_service.dart`, `lib/screens/content/blog_screen.dart`, `lib/screens/content/post_editor_screen.dart`, `lib/app/routes.dart`; `/features/blog` opens the real blog screen, lists and edits `/blog/posts*`, creates/updates post content/slug/excerpt/status/SEO/comment flags, archives posts, and moderates comments through `/blog/comments*`; covered by service + widget tests |
 | P2 | Navigation builder | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/cms_service.dart`, `lib/screens/content/navigation_screen.dart`, `lib/app/routes.dart`; `/features/navigation` opens the real builder, loads `/pages/navigation` by store/location, edits visible/new-tab URL/page/product/collection/blog targets, reorders items with `ReorderableListView`, and saves full ordered replacements through `/pages/navigation/:location`; covered by service + widget tests |
-| P2 | Media library | TODO | Not started |
+| P2 | Media library | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/media_service.dart`, `lib/screens/content/media_library_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/media` opens the real media library, lists/searches/filters `/media` assets, uploads image/video files through `/upload` then registers metadata through `/media`, edits alt/caption/folder/tags, deletes media records, and deletes R2 objects through `/upload/:key` when the key is available; covered by service + widget tests |
 | P2 | Shipping | TODO | Not started |
 | P2 | Taxes | TODO | Not started |
 | P2 | Domains lifecycle | TODO | Not started |
@@ -91,6 +91,10 @@
 - P2 `Navigation builder` feature check: `flutter test` PASS. Output: `00:06 +33: All tests passed!`.
 - P2 `Navigation builder` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
 - P2 `Navigation builder` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
+- P2 `Media library` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 5.3s)`.
+- P2 `Media library` feature check: `flutter test` PASS. Output: `00:03 +35: All tests passed!`.
+- P2 `Media library` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
+- P2 `Media library` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
 
 ## Notes
 
@@ -99,6 +103,6 @@
 
 ## RESUME HINT
 
-Next feature: P2 `Media library`.
+Next feature: P2 `Shipping`.
 
-Start by creating `apps/mobile/merchant-app/lib/services/media_service.dart` and `apps/mobile/merchant-app/lib/screens/content/media_library_screen.dart` over `/v1/media*`, `/v1/upload`, and `DELETE /v1/upload/:key`. Replace `/features/media` with the real screen, support browse/upload/delete seams through the shared `ApiClient`, and add service + widget tests before committing.
+Start by adding a shipping/tax service over `/v1/shipping-tax/shipping*`, then create `apps/mobile/merchant-app/lib/screens/settings/shipping_screen.dart`. Replace `/features/shipping` with the real screen, support zones/rates CRUD, and add service + widget tests before committing.
