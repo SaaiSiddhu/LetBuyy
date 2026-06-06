@@ -26,4 +26,6 @@ Retention lifecycle automation should call:
 - `public.ensure_next_hot_table_partitions(3)`
 - `public.detach_expired_hot_table_partitions()`
 
+The executable driver is `scripts/migration/run-hot-table-partition-maintenance.mjs`, scheduled by `.github/workflows/hot-table-partition-maintenance.yml` on the first day of each month at 02:15 UTC. Production execution requires the protected `production-migrations` environment and `PRODUCTION_DB_CONNECTION_STRING`; staging execution requires the staging environment and `STAGING_DB_CONNECTION_STRING`.
+
 Physical cleanup of detached partitions is an operations action, not an automatic replayable migration action. This keeps fresh database replay safe and avoids irreversible data loss from normal migration application.

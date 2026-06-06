@@ -1,4 +1,5 @@
-project_id = "letbuyy"
+# Archived duplicate root Supabase config.
+# Canonical active Supabase source root is database/supabase.
 
 [api]
 enabled = true

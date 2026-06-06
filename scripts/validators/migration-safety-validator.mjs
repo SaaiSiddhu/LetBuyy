@@ -1,5 +1,6 @@
 import {
   createReporter,
+  exists,
   getTrackedFiles,
   readFile,
 } from "./governance-common.mjs";
@@ -29,6 +30,46 @@ for (const file of getTrackedFiles().filter((candidate) => candidate.startsWith(
   for (const { pattern, message } of forbiddenPatterns) {
     reporter.assert(!pattern.test(sql), `${file}: ${message}`);
   }
+}
+
+reporter.assert(exists("database/supabase/config.toml"), "Canonical Supabase config must live under database/supabase/config.toml");
+reporter.assert(exists("database/supabase/migrations/000_baseline.sql"), "Canonical Supabase migration root must include database/supabase/migrations/000_baseline.sql");
+reporter.assert(!exists("supabase/config.toml"), "Root supabase/config.toml is retired; archive duplicate configs under docs/archive instead");
+reporter.assert(!exists("supabase/migrations"), "Root supabase/migrations is forbidden; migrations live under database/supabase/migrations");
+
+const partitionMigration = readFile("database/supabase/migrations/079_partition_worker_request_logs.sql");
+const partitionDriver = readFile("scripts/migration/run-hot-table-partition-maintenance.mjs");
+const partitionWorkflow = readFile(".github/workflows/hot-table-partition-maintenance.yml");
+
+for (const fragment of [
+  "public.ensure_next_hot_table_partitions",
+  "public.detach_expired_hot_table_partitions",
+  "configure the external scheduler",
+]) {
+  reporter.assert(partitionMigration.includes(fragment), `Partition lifecycle migration missing fragment: ${fragment}`);
+}
+
+for (const fragment of [
+  "ensure_next_hot_table_partitions(${monthsAhead})",
+  "detach_expired_hot_table_partitions()",
+  "spawnSync(",
+  "\"psql\"",
+  "PGPASSWORD",
+  "SUPABASE_DB_URL",
+  "PRODUCTION_DB_CONNECTION_STRING",
+]) {
+  reporter.assert(partitionDriver.includes(fragment), `Partition maintenance driver missing fragment: ${fragment}`);
+}
+
+for (const fragment of [
+  "cron: \"15 2 1 * *\"",
+  "production-migrations",
+  "STAGING_DB_CONNECTION_STRING",
+  "PRODUCTION_DB_CONNECTION_STRING",
+  "run-hot-table-partition-maintenance.mjs",
+  "--months-ahead=3",
+]) {
+  reporter.assert(partitionWorkflow.includes(fragment), `Partition maintenance workflow missing fragment: ${fragment}`);
 }
 
 const orchestration = readFile("infrastructure/deployment/migration-orchestration.yaml");

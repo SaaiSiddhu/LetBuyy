@@ -1,0 +1,59 @@
+name: Hot table partition maintenance
+
+on:
+  schedule:
+    - cron: "15 2 1 * *"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        required: true
+        default: production
+        type: choice
+        options:
+          - staging
+          - production
+      execute:
+        description: Execute maintenance instead of plan-only validation
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hot-table-partition-maintenance-${{ inputs.environment || 'production' }}
+  cancel-in-progress: false
+
+jobs:
+  maintain-partitions:
+    runs-on: ubuntu-latest
+    environment: ${{ (inputs.environment || 'production') == 'staging' && 'staging' || 'production-migrations' }}
+    env:
+      TARGET_ENVIRONMENT: ${{ inputs.environment || 'production' }}
+      EXECUTE_MAINTENANCE: ${{ github.event_name == 'schedule' || inputs.execute == true }}
+      SUPABASE_DB_URL: ${{ (inputs.environment || 'production') == 'staging' && secrets.STAGING_DB_CONNECTION_STRING || secrets.PRODUCTION_DB_CONNECTION_STRING }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Run hot-table partition maintenance
+        run: |
+          execute_flag=""
+          if [[ "${EXECUTE_MAINTENANCE}" == "true" ]]; then
+            execute_flag="--execute"
+          fi
+
+          node scripts/migration/run-hot-table-partition-maintenance.mjs \
+            --environment="${TARGET_ENVIRONMENT}" \
+            --months-ahead=3 \
+            ${execute_flag}
