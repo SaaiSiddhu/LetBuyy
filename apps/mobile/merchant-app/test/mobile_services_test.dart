@@ -19,6 +19,7 @@ import 'package:letbuyy_store/services/notification_settings_service.dart';
 import 'package:letbuyy_store/services/order_service.dart';
 import 'package:letbuyy_store/services/product_service.dart';
 import 'package:letbuyy_store/services/push_service.dart';
+import 'package:letbuyy_store/services/review_service.dart';
 import 'package:letbuyy_store/services/shipping_tax_service.dart';
 import 'package:letbuyy_store/services/skip_needs_backend_exception.dart';
 import 'package:letbuyy_store/services/staff_service.dart';
@@ -42,6 +43,7 @@ import 'package:letbuyy_store/screens/inventory/locations_screen.dart';
 import 'package:letbuyy_store/screens/inventory/purchase_orders_screen.dart';
 import 'package:letbuyy_store/screens/inventory/suppliers_screen.dart';
 import 'package:letbuyy_store/screens/inventory/transfers_screen.dart';
+import 'package:letbuyy_store/screens/marketing/reviews_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
 import 'package:letbuyy_store/screens/products/collections_screen.dart';
 import 'package:letbuyy_store/screens/products/product_form_screen.dart';
@@ -806,6 +808,45 @@ void main() {
       expect(api.bodies['/employees/staff_1'], containsPair('role', 'manager'));
     });
 
+    test('ReviewService moderates reviews and skips missing replies', () async {
+      final api = _FakeApiClient(
+        paginated: {
+          '/reviews': [_reviewJson()],
+        },
+        json: {'/reviews/review_1': _reviewJson(status: 'approved')},
+      );
+      final service = ReviewService(api: api);
+
+      final reviews = await service.fetchReviews('store_1', status: 'pending');
+      final approved = await service.moderateReview(reviews.single, 'approved');
+      await service.deleteReview(approved);
+
+      expect(reviews.single.productName, 'Cotton Tee');
+      expect(approved.status, 'approved');
+      expect(service.reviews, isEmpty);
+      expect(api.paths, contains('/reviews'));
+      expect(api.paths, contains('/reviews/review_1'));
+      expect(
+        api.bodies['/reviews/review_1'],
+        containsPair('status', 'approved'),
+      );
+      await expectLater(
+        service.replyToReview(
+          const ReviewReplyInput(
+            reviewId: 'review_1',
+            message: 'Thanks for your feedback.',
+          ),
+        ),
+        throwsA(
+          isA<SkipNeedsBackendException>().having(
+            (error) => error.id,
+            'id',
+            ReviewService.missingReplyRouteId,
+          ),
+        ),
+      );
+    });
+
     test(
       'PushService fails closed until device token backend exists',
       () async {
@@ -1493,6 +1534,36 @@ void main() {
     expect(find.text('Invoices'), findsOneWidget);
     expect(find.text('INR 399.00'), findsWidgets);
     expect(find.text('Manage plan'), findsOneWidget);
+  });
+
+  testWidgets('ReviewsScreen renders review moderation actions', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+        '/reviews': [_reviewJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => ReviewService(api: api)),
+        ],
+        child: const MaterialApp(home: ReviewsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Reviews'), findsOneWidget);
+    expect(find.text('Cotton Tee'), findsOneWidget);
+    expect(find.text('Meera Merchant - meera@example.com'), findsOneWidget);
+    expect(find.text('Great quality'), findsOneWidget);
+    expect(find.text('Approve'), findsOneWidget);
+    expect(find.text('Reply'), findsOneWidget);
+    expect(find.text('Delete'), findsOneWidget);
   });
 
   testWidgets('PagesScreen renders CMS pages from gateway service', (
@@ -2246,6 +2317,26 @@ Map<String, dynamic> _staffInviteJson() => {
   'status': 'pending',
   'token': 'invite-token',
   'expires_at': '2026-06-08T11:00:00.000Z',
+};
+
+Map<String, dynamic> _reviewJson({
+  String id = 'review_1',
+  String status = 'pending',
+}) => {
+  'id': id,
+  'store_id': 'store_1',
+  'product_id': 'prod_1',
+  'product_name': 'Cotton Tee',
+  'customer_name': 'Meera Merchant',
+  'customer_email': 'meera@example.com',
+  'rating': 5,
+  'title': 'Great quality',
+  'body': 'The fabric feels premium and shipped quickly.',
+  'status': status,
+  'is_approved': status == 'approved',
+  'is_verified': true,
+  'helpful_count': 2,
+  'created_at': '2026-06-01T11:00:00.000Z',
 };
 
 Map<String, dynamic> _billingHistoryJson() => {
