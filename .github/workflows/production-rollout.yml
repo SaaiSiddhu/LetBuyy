@@ -33,7 +33,7 @@ permissions:
   attestations: write
 
 concurrency:
-  group: production-rollout-${{ inputs.environment }}
+  group: production-release-${{ inputs.environment }}
   cancel-in-progress: false
 
 jobs:

@@ -48,7 +48,7 @@ The repository is prepared for isolated staging and production deployment automa
 
 - CI workflow prepared: `.github/workflows/ci.yml`.
 - Staging deployment workflow prepared: `.github/workflows/deploy-staging.yml`.
-- Production deployment workflow prepared: `.github/workflows/deploy-production.yml`.
+- Production deployment workflow prepared: `.github/workflows/production-deploy.yml`.
 - Repository setup script prepared: `scripts/github/setup-repo.mjs`.
 - Secret setup script prepared: `scripts/github/set-secrets.mjs`.
 - Live repo and secret setup: skipped because the active GitHub token is invalid and no replacement `GITHUB_TOKEN` is available.
@@ -95,7 +95,7 @@ The repository is prepared for isolated staging and production deployment automa
 ## Branch Deployment Model
 
 - `develop` deploys to staging through `.github/workflows/deploy-staging.yml`.
-- `main` deploys to production through `.github/workflows/deploy-production.yml`.
+- `main` deploys to production through `.github/workflows/production-deploy.yml`, which gates release credentials, migration diff review, staging E2E, production migration, runtime deploy, and production smoke in one concurrency group.
 
 ## Skipped Items
 

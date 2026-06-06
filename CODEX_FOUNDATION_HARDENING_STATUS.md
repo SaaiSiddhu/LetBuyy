@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F6.1 observability producer/reconciliation complete locally; continue F6.2 one gated production deploy path.
-- Findings resolved: 25/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `C-14`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets, and C-14 live observability rollout verification is SKIPPED -- NEEDS HUMAN pending deployed telemetry endpoints and credentials.
-- Current governance gate state: green after F6.1 (`pnpm run validate:governance` -> 140/140 PASS).
+- Phase: F6.2 one gated production deploy path complete locally; continue F6.3 migration root and partition driver.
+- Findings resolved: 26/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `C-14`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-15`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets, C-14 live observability rollout verification is SKIPPED -- NEEDS HUMAN pending deployed telemetry endpoints/credentials, and H-15 live production deploy execution is SKIPPED -- NEEDS HUMAN pending protected environment approvals plus provider credentials.
+- Current governance gate state: green after F6.2 (`pnpm run validate:governance` -> 140/140 PASS).
 
 ## Baseline gates
 
@@ -572,6 +572,21 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm run validate:governance`: PASS - 140/140 validators.
 - Live observability rollout proof remains SKIPPED -- NEEDS HUMAN until deployed Cloudflare Workers with `RUNTIME_TELEMETRY`, Supabase operations access, Prometheus/Grafana/OTel health endpoints, and provider credentials are available.
 
+## F6.2 production deploy path evidence
+
+- Removed the duplicate push-to-main `.github/workflows/deploy-production.yml` workflow.
+- `.github/workflows/production-deploy.yml` is the only push-to-main production deploy path and uses `production-release-production` as its concurrency group.
+- `.github/workflows/production-deploy.yml` now orders release credential preflight -> `migration-preflight` (`validate:migrations` plus production diff artifact) -> staging E2E -> production backup plus `supabase db push` -> Worker deploy -> app deploy -> required-job success gate -> production smoke.
+- `.github/workflows/production-rollout.yml` uses `production-release-${{ inputs.environment }}`, so manual production rollout shares the same `production-release-production` lock as push deploys.
+- `scripts/validators/deployment-safety-validator.mjs` now fails if the retired workflow returns, if another push-to-main production deploy workflow appears, if the shared lock changes, or if app deployment can run before production migration.
+- Active deployment setup docs now point to `.github/workflows/production-deploy.yml`, not the retired workflow.
+- `node --test tests/operations/production-deploy-workflow.test.mjs tests/operations/release-smoke-suite.test.mjs tests/operations/deployment-safety.test.mjs`: PASS - 13/13.
+- `node scripts/validators/deployment-safety-validator.mjs`: PASS.
+- `pnpm run validate:governance`: PASS - 140/140 validators.
+- `pnpm turbo typecheck --output-logs=errors-only --log-order=grouped`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Live production execution proof remains SKIPPED -- NEEDS HUMAN until protected GitHub environment approvals plus staging/production Supabase, Cloudflare, Vercel, Playwright, and backup credentials are available.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -603,6 +618,7 @@ Started: 2026-06-05T13:54:14Z
 - H-4 staging proof that theme-marketplace checkout creates a real Razorpay test order and succeeds only after provider verification requires staging merchant session, gateway Razorpay test credentials, a purchasable staging theme with INR pricing, and browser access to Razorpay checkout. Exact proof path once supplied: authenticate to staging theme marketplace, open `/checkout?theme=<slug>`, start checkout, verify the gateway returns a Razorpay order from `POST /v1/themes/<slug>/purchase`, complete test payment in Razorpay Checkout, verify `/v1/themes/<slug>/purchase/verify` records the purchase, and confirm the success page is reached only after verification.
 - H-16 per-operator gateway-side ops identity requires ops SSO/IdP or a security decision to share and validate platform-console session tokens inside the gateway worker, plus a rotation/runbook for `PLATFORM_CONSOLE_API_TOKEN`. Current static-token auth is timing-safe hardened but remains a human-gated identity architecture decision.
 - C-14 live observability rollout verification requires deployed staging/production Cloudflare Workers with `RUNTIME_TELEMETRY`, Supabase operations credentials, Prometheus/Grafana/OpenTelemetry health URLs, and provider tokens. Exact proof path once supplied: set `PROMETHEUS_URL`, `GRAFANA_URL`, `GRAFANA_TOKEN`, and `OTEL_COLLECTOR_HEALTH_URL`, then run `node infrastructure/scripts/observability/verify-observability-rollout.mjs --environment=staging --execute`; repeat for production only after deployment approval.
+- H-15 live production deploy proof requires protected GitHub environment approvals plus staging/production Supabase, Cloudflare, Vercel, Playwright, and backup credentials. Exact proof path once supplied: `gh workflow run production-deploy.yml --ref main`, approve `production-migrations`, `staging`, and `production`, then verify `migration-preflight`, `staging-e2e`, `migrate-production`, `deploy-workers-production`, `deploy-apps-production`, and `smoke-test-production` all succeed without skipped required jobs.
 
-- Continue to F6.2 one gated production deploy path.
+- Continue to F6.3 one migration root and partition driver.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.
