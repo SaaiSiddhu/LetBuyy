@@ -4,6 +4,7 @@
 
 import { createMiddleware } from 'hono/factory';
 import type { Env } from '../index';
+import { timingSafeEqualText } from '../lib/crypto';
 
 type ErrorResponsePayload = {
     success?: boolean;
@@ -228,17 +229,6 @@ function parseCookie(header: string | undefined, name: string): string | null {
     }
 
     return null;
-}
-
-function timingSafeEqualText(left: string, right: string): boolean {
-    if (left.length !== right.length) return false;
-
-    let mismatch = 0;
-    for (let index = 0; index < left.length; index += 1) {
-        mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index);
-    }
-
-    return mismatch === 0;
 }
 
 type TurnstileEnv = Pick<Env, 'TURNSTILE_SECRET_KEY' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV'>;

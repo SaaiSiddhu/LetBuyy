@@ -3,6 +3,7 @@ import type { Context } from 'hono';
 import {
     getLetbuyyInternalAuthSecret,
     sha256Hex,
+    timingSafeEqualHex,
     verifyAppScopedAccessToken,
     type LetbuyyAppAccessTokenPayload,
 } from '@letbuyy/auth-core';
@@ -93,8 +94,8 @@ export function authorizeVerifiedAppInstallation(input: {
     }
 
     const oauth = parseJsonRecord(parseJsonRecord(installation.config).oauth);
-    const isKnownToken = stringOrNull(oauth.access_token_hash) === input.tokenHash
-        || stringOrNull(oauth.bridge_token_hash) === input.tokenHash;
+    const isKnownToken = timingSafeEqualHex(stringOrNull(oauth.access_token_hash), input.tokenHash)
+        || timingSafeEqualHex(stringOrNull(oauth.bridge_token_hash), input.tokenHash);
     if (!isKnownToken) {
         return authorizationFailure(401, 'UNAUTHORIZED', 'App token has been revoked or replaced');
     }

@@ -7,6 +7,7 @@ import {
     createAppScopedAccessToken,
     createLetbuyyInternalIdentityHeaders,
     sha256Hex,
+    timingSafeEqualHex,
     verifyAppScopedAccessToken,
 } from '@letbuyy/auth-core';
 import {
@@ -445,8 +446,8 @@ export function registerAppStoreExtensionRoutes(router: Hono<{ Bindings: Env }>)
 
         const tokenHash = await sha256Hex(verification.token);
         const oauth = appOAuthConfig(installation.config);
-        const isKnownToken = stringOrNull(oauth.bridge_token_hash) === tokenHash
-            || stringOrNull(oauth.access_token_hash) === tokenHash;
+        const isKnownToken = timingSafeEqualHex(stringOrNull(oauth.bridge_token_hash), tokenHash)
+            || timingSafeEqualHex(stringOrNull(oauth.access_token_hash), tokenHash);
         if (!isKnownToken) {
             return c.json({ error: { code: 'UNAUTHORIZED', message: 'App bridge token has been revoked or replaced' } }, 401);
         }

@@ -18,6 +18,7 @@ import {
 import {
     createAppAuthorizationCode,
     sha256Hex,
+    timingSafeEqualHex,
     verifyAppAuthorizationCode,
 } from '@letbuyy/auth-core';
 import {
@@ -860,7 +861,7 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
         const codeHash = await sha256Hex(code);
         if (
             !expectedCodeHash ||
-            expectedCodeHash !== codeHash ||
+            !timingSafeEqualHex(expectedCodeHash, codeHash) ||
             stringOrNull(authorizationCodeConfig.redeemed_at)
         ) {
             return c.json({ error: { code: 'INVALID_GRANT', message: 'Authorization code has already been redeemed or is not recognized' } }, 400);

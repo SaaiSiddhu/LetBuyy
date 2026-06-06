@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../index';
+import { timingSafeEqualText } from '../lib/crypto';
 import { ValidationError } from '../lib/errors';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 
@@ -53,7 +54,7 @@ router.use('*', async (c, next) => {
         }, 503);
     }
 
-    if (!token || token !== expectedToken) {
+    if (!token || !timingSafeEqualText(token, expectedToken)) {
         return c.json({
             error: {
                 code: 'UNAUTHORIZED',

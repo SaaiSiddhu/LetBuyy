@@ -1,3 +1,5 @@
+import { timingSafeEqualText } from './crypto';
+
 type InternalSecretEnv = {
     INTERNAL_API_SECRET?: string;
 };
@@ -9,5 +11,5 @@ type HeaderReader = {
 export function isInternalApiSecretRequest(env: InternalSecretEnv, req: HeaderReader): boolean {
     const secret = env.INTERNAL_API_SECRET;
     if (!secret) return false;
-    return req.header('X-Internal-API-Secret') === secret;
+    return timingSafeEqualText(req.header('X-Internal-API-Secret'), secret);
 }

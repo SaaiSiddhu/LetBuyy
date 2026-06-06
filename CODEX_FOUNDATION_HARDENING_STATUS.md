@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F4.1 single merchant credential authority complete locally; continue F4.2 ops-plane identity and timing-safe compares.
-- Findings resolved: 22/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F4.1 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F4.2 ops-plane timing-safe compares complete locally; continue F4.3 storefront login abuse controls.
+- Findings resolved: 22/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials and `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening.
+- Current governance gate state: green after F4.2 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -395,6 +395,22 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 
+## F4.2 ops-plane timing-safe compare evidence
+
+- `services/api-gateway/src/lib/crypto.ts` now exports shared `timingSafeEqualText` and accepts nullable inputs for `timingSafeEqualHex`.
+- Platform-console bearer checks in `services/api-gateway/src/routes/internal-console.ts`, internal API secret checks in `services/api-gateway/src/lib/internal-secret.ts`, export download token checks in `services/api-gateway/src/routes/export.ts`, and CSRF token checks in `services/api-gateway/src/middleware/security.ts` use the shared timing-safe text comparer.
+- App OAuth access/bridge token-hash revocation checks in `services/api-gateway/src/middleware/app-auth.ts` and `services/api-gateway/src/routes/app-store/extension-routes.ts`, plus app authorization-code hash redemption checks in `services/api-gateway/src/routes/app-store/billing-oauth-routes.ts`, use `timingSafeEqualHex`.
+- `tests/contracts/ops-plane-auth-hardening.test.ts` locks the invariant and records H-16's identity remainder.
+- Pre-change `pnpm run test:contracts`: FAIL after rerun with host IPC - 80/83 pass, 3 new F4.2 assertions failed.
+- `pnpm run test:contracts`: PASS - 83/83.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- Source scan for removed direct-comparison patterns: PASS - only the contract test's negative assertion text remains.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+- SKIPPED -- NEEDS HUMAN: ops SSO/IdP or a security decision to share and validate platform-console session tokens inside the gateway worker, plus a token rotation/runbook, is required for true per-operator gateway-side ops identity. F4.2 hardens the current static-token compare but does not create a new identity authority.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -423,8 +439,9 @@ Started: 2026-06-05T13:54:14Z
 - C-8/B-6 staging proof that stale editor saves conflict and preview sessions are template-scoped requires staging merchant/session/store/theme credentials and staging gateway/storefront URLs. Exact proof path once supplied: open two editor sessions for the same theme/template, save one draft, verify the stale `base_version` save conflicts in the second, publish only the clean saved draft, and mint preview sessions for two templates to verify each returns the requested `template_key` and renders the matching draft.
 - C-10 staging proof that server-side cart persists across devices and checkout requires staging storefront/store/product/customer/gateway credentials. Exact proof path once supplied: add a product to cart in one browser, capture `lb_cart_token`, open the same store in a second browser/session with that token, verify `GET /v1/storefront/:subdomain/cart/:cartToken` returns the same lines/totals, then complete checkout using the synced cart items.
 - H-4 staging proof that theme-marketplace checkout creates a real Razorpay test order and succeeds only after provider verification requires staging merchant session, gateway Razorpay test credentials, a purchasable staging theme with INR pricing, and browser access to Razorpay checkout. Exact proof path once supplied: authenticate to staging theme marketplace, open `/checkout?theme=<slug>`, start checkout, verify the gateway returns a Razorpay order from `POST /v1/themes/<slug>/purchase`, complete test payment in Razorpay Checkout, verify `/v1/themes/<slug>/purchase/verify` records the purchase, and confirm the success page is reached only after verification.
+- H-16 per-operator gateway-side ops identity requires ops SSO/IdP or a security decision to share and validate platform-console session tokens inside the gateway worker, plus a rotation/runbook for `PLATFORM_CONSOLE_API_TOKEN`. Current static-token auth is timing-safe hardened but remains a human-gated identity architecture decision.
 
 ## Next work
 
-- Continue to F4.2 ops-plane identity and timing-safe compares.
+- Continue to F4.3 storefront login abuse controls.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.
