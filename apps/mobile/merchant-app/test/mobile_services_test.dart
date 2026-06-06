@@ -38,6 +38,7 @@ import 'package:letbuyy_store/screens/inventory/inventory_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
 import 'package:letbuyy_store/screens/settings/notifications_screen.dart';
 import 'package:letbuyy_store/screens/settings/shipping_screen.dart';
+import 'package:letbuyy_store/screens/settings/taxes_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -435,6 +436,44 @@ void main() {
       expect(api.paths, contains('/shipping-tax/shipping'));
       expect(api.paths, contains('/shipping-tax/shipping/zones/zone_1'));
       expect(api.paths, contains('/shipping-tax/shipping/rate_1'));
+    });
+
+    test('ShippingTaxService manages tax rates', () async {
+      final api = _FakeApiClient(
+        json: {
+          '/shipping-tax/taxes': [_taxRateJson()],
+          '/shipping-tax/taxes/tax_1': _taxRateJson(rate: 12),
+        },
+      );
+      final service = ShippingTaxService(api: api);
+
+      final taxes = await service.fetchTaxes('store_1');
+      final created = await service.createTaxRate(
+        const TaxRateInput(
+          storeId: 'store_1',
+          name: 'GST',
+          rate: 18,
+          country: 'IN',
+          appliesTo: 'all',
+        ),
+      );
+      final updated = await service.updateTaxRate(
+        'tax_1',
+        const TaxRateInput(
+          storeId: 'store_1',
+          name: 'Reduced GST',
+          rate: 12,
+          country: 'IN',
+          appliesTo: 'products',
+        ),
+      );
+      await service.deleteTaxRate('tax_1');
+
+      expect(taxes.single.name, 'GST');
+      expect(created.country, 'IN');
+      expect(updated.rate, 12);
+      expect(api.paths, contains('/shipping-tax/taxes'));
+      expect(api.paths, contains('/shipping-tax/taxes/tax_1'));
     });
 
     test('NotificationSettingsService persists preferences', () async {
@@ -1080,6 +1119,37 @@ void main() {
     expect(find.text('₹49'), findsOneWidget);
   });
 
+  testWidgets('TaxesScreen renders inclusive setting and tax rates', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson(taxInclusive: true)],
+      },
+      json: {
+        '/shipping-tax/taxes': [_taxRateJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => ShippingTaxService(api: api)),
+        ],
+        child: const MaterialApp(home: TaxesScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Taxes / GST'), findsOneWidget);
+    expect(find.text('All prices include tax'), findsOneWidget);
+    expect(find.text('GST'), findsOneWidget);
+    expect(find.text('18%'), findsOneWidget);
+    expect(find.text('HSN 6204'), findsOneWidget);
+    expect(find.text('New tax'), findsOneWidget);
+  });
+
   testWidgets('ThemeVersionsScreen renders releases for rollback', (
     tester,
   ) async {
@@ -1168,7 +1238,7 @@ class _FakeApiClient extends ApiClient {
   }
 }
 
-Map<String, dynamic> _storeJson() => {
+Map<String, dynamic> _storeJson({bool taxInclusive = false}) => {
   'id': 'store_1',
   'seller_id': 'seller_1',
   'name': 'Demo Store',
@@ -1176,6 +1246,7 @@ Map<String, dynamic> _storeJson() => {
   'subdomain': 'demo',
   'store_url': 'https://demo.letbuyy.store',
   'theme_id': 'modern',
+  'tax_inclusive': taxInclusive,
   'created_at': '2026-06-01T00:00:00.000Z',
   'updated_at': '2026-06-01T00:00:00.000Z',
 };
@@ -1409,6 +1480,27 @@ Map<String, dynamic> _shippingRateJson({
   'max_order_amount': null,
   'estimated_days_min': 2,
   'estimated_days_max': 5,
+  'is_active': true,
+  'created_at': '2026-06-01T11:00:00.000Z',
+  'updated_at': '2026-06-01T11:00:00.000Z',
+};
+
+Map<String, dynamic> _taxRateJson({
+  String id = 'tax_1',
+  String name = 'GST',
+  double rate = 18,
+}) => {
+  'id': id,
+  'store_id': 'store_1',
+  'name': name,
+  'rate': rate,
+  'country': 'IN',
+  'state': 'Karnataka',
+  'hsn_code': '6204',
+  'applies_to': 'all',
+  'is_compound': false,
+  'is_shipping': false,
+  'priority': 0,
   'is_active': true,
   'created_at': '2026-06-01T11:00:00.000Z',
   'updated_at': '2026-06-01T11:00:00.000Z',

@@ -14,6 +14,9 @@ class ShippingTaxService extends ChangeNotifier {
   List<ShippingRateContract> _rates = [];
   List<ShippingRateContract> get rates => List.unmodifiable(_rates);
 
+  List<TaxRateContract> _taxRates = [];
+  List<TaxRateContract> get taxRates => List.unmodifiable(_taxRates);
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -119,6 +122,51 @@ class ShippingTaxService extends ChangeNotifier {
   Future<void> deleteRate(String id) async {
     await _api.shipping.rates.remove(id);
     _rates = _rates.where((rate) => rate.id != id).toList();
+    notifyListeners();
+  }
+
+  Future<List<TaxRateContract>> fetchTaxes(String storeId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final rows = await _api.taxes.list(storeId);
+      _taxRates = rows.map(TaxRateContract.fromJson).toList(growable: false);
+      return _taxRates;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<TaxRateContract> createTaxRate(TaxRateInput input) async {
+    final created = TaxRateContract.fromJson(
+      await _api.taxes.create(input.toJson(includeStoreId: true)),
+    );
+    _taxRates = [..._taxRates, created];
+    notifyListeners();
+    return created;
+  }
+
+  Future<TaxRateContract> updateTaxRate(String id, TaxRateInput input) async {
+    final updated = TaxRateContract.fromJson(
+      await _api.taxes.update(id, input.toJson(includeStoreId: false)),
+    );
+    final index = _taxRates.indexWhere((rate) => rate.id == id);
+    if (index == -1) {
+      _taxRates = [..._taxRates, updated];
+    } else {
+      final next = List<TaxRateContract>.from(_taxRates);
+      next[index] = updated;
+      _taxRates = next;
+    }
+    notifyListeners();
+    return updated;
+  }
+
+  Future<void> deleteTaxRate(String id) async {
+    await _api.taxes.remove(id);
+    _taxRates = _taxRates.where((rate) => rate.id != id).toList();
     notifyListeners();
   }
 }
@@ -279,6 +327,99 @@ class ShippingRateInput {
       if (maxOrderAmount != null) 'max_order_amount': maxOrderAmount,
       if (estimatedDaysMin != null) 'estimated_days_min': estimatedDaysMin,
       if (estimatedDaysMax != null) 'estimated_days_max': estimatedDaysMax,
+      'is_active': isActive,
+    };
+  }
+}
+
+class TaxRateContract extends SharedTypeContract {
+  TaxRateContract(super.json);
+
+  factory TaxRateContract.fromJson(JsonMap json) => TaxRateContract(json);
+
+  String get id => _string('id');
+  String get storeId => _string('store_id');
+  String get name => _string('name', fallback: 'Tax rate');
+  double get rate => _number('rate');
+  String get country => _string('country', fallback: 'IN');
+  String? get state => _optionalString('state');
+  String? get hsnCode => _optionalString('hsn_code');
+  String get appliesTo => _string('applies_to', fallback: 'all');
+  bool get isCompound => _bool('is_compound');
+  bool get isShipping => _bool('is_shipping');
+  int get priority => _int('priority');
+  bool get isActive => _bool('is_active', fallback: true);
+  String? get createdAt => _optionalString('created_at');
+  String? get updatedAt => _optionalString('updated_at');
+
+  String _string(String key, {String fallback = ''}) {
+    return toJson()[key]?.toString() ?? fallback;
+  }
+
+  String? _optionalString(String key) {
+    final value = toJson()[key]?.toString();
+    return value == null || value.isEmpty ? null : value;
+  }
+
+  bool _bool(String key, {bool fallback = false}) {
+    final value = toJson()[key];
+    return value is bool ? value : fallback;
+  }
+
+  double _number(String key) {
+    final value = toJson()[key];
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  int _int(String key) {
+    final value = toJson()[key];
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+}
+
+class TaxRateInput {
+  const TaxRateInput({
+    required this.storeId,
+    required this.name,
+    required this.rate,
+    this.country = 'IN',
+    this.state,
+    this.hsnCode,
+    this.appliesTo = 'all',
+    this.isCompound = false,
+    this.isShipping = false,
+    this.priority = 0,
+    this.isActive = true,
+  });
+
+  final String storeId;
+  final String name;
+  final double rate;
+  final String country;
+  final String? state;
+  final String? hsnCode;
+  final String appliesTo;
+  final bool isCompound;
+  final bool isShipping;
+  final int priority;
+  final bool isActive;
+
+  Map<String, dynamic> toJson({required bool includeStoreId}) {
+    return {
+      if (includeStoreId) 'store_id': storeId,
+      'name': name.trim(),
+      'rate': rate,
+      'country': country.trim().isEmpty ? 'IN' : country.trim().toUpperCase(),
+      if (state != null && state!.trim().isNotEmpty) 'state': state!.trim(),
+      if (hsnCode != null && hsnCode!.trim().isNotEmpty)
+        'hsn_code': hsnCode!.trim(),
+      'applies_to': appliesTo.trim().isEmpty ? 'all' : appliesTo.trim(),
+      'is_compound': isCompound,
+      'is_shipping': isShipping,
+      'priority': priority,
       'is_active': isActive,
     };
   }

@@ -2,8 +2,8 @@
 
 - Branch: `stream/letbuyy-foundation-v2`
 - Start HEAD: `62b2915218daa716b075b02d909c08e053bfce25`
-- Current HEAD: `e2b77e864ebc1663801087df1c2c4126eabcef3b`
-- Status timestamp: `2026-06-06T15:08:13+05:30`
+- Current HEAD: `13a17757940b65f57154f53ca4a73955d3e8559b`
+- Status timestamp: `2026-06-06T15:14:56+05:30`
 
 ## Feature Checklist
 
@@ -32,7 +32,7 @@
 | P2 | Navigation builder | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/cms_service.dart`, `lib/screens/content/navigation_screen.dart`, `lib/app/routes.dart`; `/features/navigation` opens the real builder, loads `/pages/navigation` by store/location, edits visible/new-tab URL/page/product/collection/blog targets, reorders items with `ReorderableListView`, and saves full ordered replacements through `/pages/navigation/:location`; covered by service + widget tests |
 | P2 | Media library | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/media_service.dart`, `lib/screens/content/media_library_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/media` opens the real media library, lists/searches/filters `/media` assets, uploads image/video files through `/upload` then registers metadata through `/media`, edits alt/caption/folder/tags, deletes media records, and deletes R2 objects through `/upload/:key` when the key is available; covered by service + widget tests |
 | P2 | Shipping | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/shipping_tax_service.dart`, `lib/screens/settings/shipping_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/shipping` opens the real shipping settings screen, lists `/shipping-tax/shipping/zones` and `/shipping-tax/shipping`, creates/edits/deletes zones and rates, supports active rates, delivery estimates, and order-range fields; covered by service + widget tests |
-| P2 | Taxes | TODO | Not started |
+| P2 | Taxes | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `packages/dart/models/lib/src/merchant_app/store_model.dart`, `lib/services/shipping_tax_service.dart`, `lib/screens/settings/taxes_screen.dart`, `lib/app/routes.dart`; `/features/taxes` opens the real taxes screen, lists/creates/edits/deletes `/shipping-tax/taxes` rates, supports country/state/HSN/applies-to/compound/shipping/priority/active fields, and persists `tax_inclusive` through `/stores/:id`; covered by service + widget tests |
 | P2 | Domains lifecycle | TODO | Not started |
 | P2 | Collections CRUD | TODO | Not started |
 | P2 | Product variant matrix | TODO | Not started |
@@ -99,6 +99,10 @@
 - P2 `Shipping` feature check: `flutter test` PASS. Output: `00:03 +37: All tests passed!`.
 - P2 `Shipping` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
 - P2 `Shipping` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
+- P2 `Taxes` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 9.9s)`.
+- P2 `Taxes` feature check: `flutter test` PASS. Output: `00:02 +39: All tests passed!`.
+- P2 `Taxes` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
+- P2 `Taxes` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
 
 ## Notes
 
@@ -107,6 +111,6 @@
 
 ## RESUME HINT
 
-Next feature: P2 `Taxes`.
+Next feature: P2 `Domains lifecycle`.
 
-Extend `apps/mobile/merchant-app/lib/services/shipping_tax_service.dart` and `packages/dart/api_client/lib/src/api_client.dart` for `/v1/shipping-tax/taxes*`, then create `apps/mobile/merchant-app/lib/screens/settings/taxes_screen.dart`. Replace `/features/taxes` with the real screen, support rate CRUD plus active/shipping/inclusive settings where the gateway contract allows, and add service + widget tests before committing.
+Create `apps/mobile/merchant-app/lib/services/domain_service.dart` and enhance/replace `apps/mobile/merchant-app/lib/screens/settings/domain_settings_screen.dart` over `/v1/stores/:id/domain` and `/v1/domains/check`. Support availability checks, DNS record display/copy/share, verify action, SSL status refresh, and service + widget tests before committing.
