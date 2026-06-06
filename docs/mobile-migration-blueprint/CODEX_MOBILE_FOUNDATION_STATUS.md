@@ -2,8 +2,8 @@
 
 - Branch: `stream/letbuyy-foundation-v2`
 - Start HEAD: `62b2915218daa716b075b02d909c08e053bfce25`
-- Current HEAD: `c58237e1a833de9e25d25f4a0fd17f8a8154fe2b`
-- Status timestamp: `2026-06-06T14:29:20+05:30`
+- Current HEAD: `e8c687c8611f7ba820711d27ea5ff79d856a85d8`
+- Status timestamp: `2026-06-06T14:43:09+05:30`
 
 ## Feature Checklist
 
@@ -28,8 +28,8 @@
 | P1 | Push notifications | DONE-WITH-SKIP | `lib/services/push_service.dart`, `lib/services/skip_needs_backend_exception.dart`, `lib/main.dart`, `services/queue-workers/src/push-dispatcher.ts`, `services/queue-workers/src/platform-queue-consumer.ts`, `services/queue-workers/wrangler.toml`; mobile device-token registration is a typed `SKIP-NEEDS-BACKEND` seam because no gateway route exists, while queue-workers can dispatch existing `device_tokens` rows to FCM/APNs when human-owned provider credentials are configured; covered by Flutter service tests and queue-worker dispatch tests |
 | P2 | Theme switch/publish/versions | DONE | `lib/screens/customize/theme_screen.dart`, `lib/screens/customize/theme_versions_screen.dart`, `lib/services/theme_service.dart`, `packages/dart/api_client/lib/src/api_client.dart`; mobile theme screen opens authoritative WebView previews via storefront `/preview`, publishes drafts through `/themes/:slug/publish`, lists releases through `/themes/:slug/releases`, and rolls back through `/themes/:slug/releases/:releaseId/rollback`; covered by service + widget tests |
 | P2 | CMS Pages | DONE | `lib/services/cms_service.dart`, `lib/screens/content/pages_screen.dart`, `lib/screens/content/page_editor_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/pages` opens the real CMS pages screen, lists store-scoped `/pages` rows, creates/edits body/slug/status/navigation/SEO fields, toggles published/draft state, and archives pages through `/pages/:id`; covered by service + widget tests |
-| P2 | Blog | TODO | Next resume point |
-| P2 | Navigation builder | TODO | Not started |
+| P2 | Blog | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/cms_service.dart`, `lib/screens/content/blog_screen.dart`, `lib/screens/content/post_editor_screen.dart`, `lib/app/routes.dart`; `/features/blog` opens the real blog screen, lists and edits `/blog/posts*`, creates/updates post content/slug/excerpt/status/SEO/comment flags, archives posts, and moderates comments through `/blog/comments*`; covered by service + widget tests |
+| P2 | Navigation builder | TODO | Next resume point |
 | P2 | Media library | TODO | Not started |
 | P2 | Shipping | TODO | Not started |
 | P2 | Taxes | TODO | Not started |
@@ -83,6 +83,10 @@
 - P2 `CMS Pages` feature check: `flutter test` PASS. Output: `00:01 +28: All tests passed!`.
 - P2 `CMS Pages` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
 - P2 `CMS Pages` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
+- P2 `Blog` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 5.8s)`.
+- P2 `Blog` feature check: `flutter test` PASS. Output: `00:04 +31: All tests passed!`.
+- P2 `Blog` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
+- P2 `Blog` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
 
 ## Notes
 
@@ -91,6 +95,6 @@
 
 ## RESUME HINT
 
-Next feature: P2 `Blog`.
+Next feature: P2 `Navigation builder`.
 
-Start with `apps/mobile/merchant-app/lib/screens/content/blog_screen.dart`, `apps/mobile/merchant-app/lib/screens/content/post_editor_screen.dart`, and extend `apps/mobile/merchant-app/lib/services/cms_service.dart` for `/v1/blog/posts*` plus comment moderation if the live gateway contract supports it. Register `/features/blog` to the real screen and add service + widget tests.
+Start by extending `apps/mobile/merchant-app/lib/services/cms_service.dart` and `packages/dart/api_client/lib/src/api_client.dart` for `/v1/pages/navigation*`, then create `apps/mobile/merchant-app/lib/screens/content/navigation_screen.dart`. Replace `/features/navigation` with the real screen, support menu item ordering/editing, and add service + widget tests before committing.

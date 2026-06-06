@@ -19,8 +19,10 @@ import 'package:letbuyy_store/services/store_auth_service.dart';
 import 'package:letbuyy_store/services/store_service.dart';
 import 'package:letbuyy_store/services/subscription_service.dart';
 import 'package:letbuyy_store/services/theme_service.dart';
+import 'package:letbuyy_store/screens/content/blog_screen.dart';
 import 'package:letbuyy_store/screens/content/page_editor_screen.dart';
 import 'package:letbuyy_store/screens/content/pages_screen.dart';
+import 'package:letbuyy_store/screens/content/post_editor_screen.dart';
 import 'package:letbuyy_store/screens/customize/theme_versions_screen.dart';
 import 'package:letbuyy_store/screens/customers/customer_detail_screen.dart';
 import 'package:letbuyy_store/screens/customers/customers_screen.dart';
@@ -238,6 +240,58 @@ void main() {
       expect(updated.status, 'published');
       expect(api.paths, contains('/pages'));
       expect(api.paths, contains('/pages/page_1'));
+    });
+
+    test('CmsService manages blog posts and comment moderation', () async {
+      final api = _FakeApiClient(
+        paginated: {
+          '/blog/posts': [_blogPostJson()],
+          '/blog/comments': [_blogCommentJson()],
+        },
+        json: {
+          '/blog/posts': _blogPostJson(id: 'post_2', postTitle: 'Mobile tips'),
+          '/blog/posts/post_1': _blogPostJson(status: 'published'),
+          '/blog/comments/comment_1': _blogCommentJson(status: 'approved'),
+        },
+      );
+      final service = CmsService(api: api);
+
+      final posts = await service.fetchBlogPosts('store_1');
+      final created = await service.createBlogPost(
+        const BlogPostInput(
+          storeId: 'store_1',
+          title: 'Mobile tips',
+          content: 'Run your store from a phone.',
+          slug: 'mobile-tips',
+        ),
+      );
+      final updated = await service.updateBlogPost(
+        'post_1',
+        const BlogPostInput(
+          storeId: 'store_1',
+          title: 'Launch update',
+          content: 'Published from mobile.',
+          slug: 'launch-update',
+          status: 'published',
+        ),
+      );
+      await service.updateBlogPostStatus(posts.single, 'published');
+      await service.deleteBlogPost('post_1');
+      final comments = await service.fetchBlogComments('store_1');
+      final moderated = await service.moderateBlogComment(
+        comments.single,
+        'approved',
+      );
+      await service.deleteBlogComment('comment_1');
+
+      expect(posts.single.title, 'Launch update');
+      expect(created.id, 'post_2');
+      expect(updated.status, 'published');
+      expect(moderated.status, 'approved');
+      expect(api.paths, contains('/blog/posts'));
+      expect(api.paths, contains('/blog/posts/post_1'));
+      expect(api.paths, contains('/blog/comments'));
+      expect(api.paths, contains('/blog/comments/comment_1'));
     });
 
     test('NotificationSettingsService persists preferences', () async {
@@ -740,6 +794,46 @@ void main() {
     expect(find.byIcon(Icons.check_rounded), findsOneWidget);
   });
 
+  testWidgets('BlogScreen renders posts from gateway service', (tester) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+        '/blog/posts': [_blogPostJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => CmsService(api: api)),
+        ],
+        child: const MaterialApp(home: BlogScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Blog'), findsOneWidget);
+    expect(find.text('Launch update'), findsOneWidget);
+    expect(find.text('/blog/launch-update'), findsOneWidget);
+    expect(find.text('Published'), findsWidgets);
+    expect(find.text('New post'), findsOneWidget);
+  });
+
+  testWidgets('PostEditorScreen renders create form fields', (tester) async {
+    await tester.pumpWidget(
+      ChangeNotifierProvider(
+        create: (_) => CmsService(api: _FakeApiClient()),
+        child: const MaterialApp(home: PostEditorScreen(storeId: 'store_1')),
+      ),
+    );
+
+    expect(find.text('New post'), findsOneWidget);
+    expect(find.text('Title'), findsOneWidget);
+    expect(find.text('Content'), findsOneWidget);
+    expect(find.byIcon(Icons.check_rounded), findsOneWidget);
+  });
+
   testWidgets('ThemeVersionsScreen renders releases for rollback', (
     tester,
   ) async {
@@ -937,6 +1031,43 @@ Map<String, dynamic> _pageJson({
   'seo_description': 'Mobile storefront content',
   'published_at': '2026-06-01T10:00:00.000Z',
   'updated_at': '2026-06-01T10:30:00.000Z',
+};
+
+Map<String, dynamic> _blogPostJson({
+  String id = 'post_1',
+  String postTitle = 'Launch update',
+  String status = 'published',
+}) => {
+  'id': id,
+  'store_id': 'store_1',
+  'title': postTitle,
+  'slug': 'launch-update',
+  'excerpt': 'New mobile-first store operations.',
+  'content': 'Run your whole commerce workflow from a phone.',
+  'status': status,
+  'allow_comments': true,
+  'is_featured': true,
+  'is_pinned': false,
+  'reading_time_min': 3,
+  'seo_title': postTitle,
+  'seo_description': 'Mobile commerce update',
+  'published_at': '2026-06-01T10:00:00.000Z',
+  'updated_at': '2026-06-01T10:30:00.000Z',
+};
+
+Map<String, dynamic> _blogCommentJson({
+  String id = 'comment_1',
+  String status = 'pending',
+}) => {
+  'id': id,
+  'store_id': 'store_1',
+  'post_id': 'post_1',
+  'post_title': 'Launch update',
+  'author_name': 'Meera Merchant',
+  'email': 'meera@example.com',
+  'body': 'This update is useful.',
+  'status': status,
+  'created_at': '2026-06-01T11:00:00.000Z',
 };
 
 Map<String, dynamic> _themeReleaseJson() => {

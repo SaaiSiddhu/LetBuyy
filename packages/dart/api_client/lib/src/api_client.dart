@@ -77,6 +77,7 @@ class ApiClient {
   late final CatalogApi categories = CatalogApi(this, '/categories');
   late final InventoryApi inventory = InventoryApi(this);
   late final PagesApi pages = PagesApi(this);
+  late final BlogApi blog = BlogApi(this);
   late final CouponsApi coupons = CouponsApi(this);
   late final NotificationsApi notifications = NotificationsApi(this);
   late final GraphQLClient graphql = GraphQLClient(
@@ -1157,6 +1158,103 @@ class PagesApi {
   Future<JsonMap> remove(String id, {ApiRequestOptions? options}) =>
       _client.requestJson(
         '/pages/${_encodePathSegment(id)}',
+        options: _mergeOptions(options, method: HttpMethod.delete),
+      );
+}
+
+class BlogApi {
+  const BlogApi(this._client);
+
+  final ApiClient _client;
+
+  Future<PaginatedResponse<JsonMap>> posts({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/blog/posts',
+    options: _mergeOptions(options, query: query),
+  );
+
+  Future<JsonMap> post(String id, {ApiRequestOptions? options}) => _client
+      .requestJson('/blog/posts/${_encodePathSegment(id)}', options: options);
+
+  Future<JsonMap> createPost(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/blog/posts',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> updatePost(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/blog/posts/${_encodePathSegment(id)}',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
+
+  Future<JsonMap> removePost(String id, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/blog/posts/${_encodePathSegment(id)}',
+        options: _mergeOptions(options, method: HttpMethod.delete),
+      );
+
+  Future<List<JsonMap>> categories(
+    String storeId, {
+    ApiRequestOptions? options,
+  }) => _client.requestData(
+    '/blog/categories',
+    options: _mergeOptions(options, query: {'store_id': storeId}),
+    decoder: (value) =>
+        asJsonList(value).map(asJsonMap).toList(growable: false),
+  );
+
+  Future<JsonMap> createCategory(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/blog/categories',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> removeCategory(String id, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/blog/categories/${_encodePathSegment(id)}',
+        options: _mergeOptions(options, method: HttpMethod.delete),
+      );
+
+  Future<List<JsonMap>> tags(String storeId, {ApiRequestOptions? options}) =>
+      _client.requestData(
+        '/blog/tags',
+        options: _mergeOptions(options, query: {'store_id': storeId}),
+        decoder: (value) =>
+            asJsonList(value).map(asJsonMap).toList(growable: false),
+      );
+
+  Future<JsonMap> createTag(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/blog/tags',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<PaginatedResponse<JsonMap>> comments({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/blog/comments',
+    options: _mergeOptions(options, query: query),
+  );
+
+  Future<JsonMap> updateComment(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/blog/comments/${_encodePathSegment(id)}',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
+
+  Future<JsonMap> removeComment(String id, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/blog/comments/${_encodePathSegment(id)}',
         options: _mergeOptions(options, method: HttpMethod.delete),
       );
 }
