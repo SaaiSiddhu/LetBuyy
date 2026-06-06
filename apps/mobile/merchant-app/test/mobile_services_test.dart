@@ -37,6 +37,10 @@ import 'package:letbuyy_store/screens/customers/customers_screen.dart';
 import 'package:letbuyy_store/screens/discounts/coupon_form_screen.dart';
 import 'package:letbuyy_store/screens/discounts/coupons_screen.dart';
 import 'package:letbuyy_store/screens/inventory/inventory_screen.dart';
+import 'package:letbuyy_store/screens/inventory/locations_screen.dart';
+import 'package:letbuyy_store/screens/inventory/purchase_orders_screen.dart';
+import 'package:letbuyy_store/screens/inventory/suppliers_screen.dart';
+import 'package:letbuyy_store/screens/inventory/transfers_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
 import 'package:letbuyy_store/screens/products/collections_screen.dart';
 import 'package:letbuyy_store/screens/products/product_form_screen.dart';
@@ -258,7 +262,153 @@ void main() {
       expect(adjusted.available, 15);
       expect(api.paths, contains('/inventory/levels'));
       expect(api.paths, contains('/inventory/adjust'));
+      expect(api.bodies['/inventory/adjust'], containsPair('adjustment', 5));
     });
+
+    test('InventoryService manages WMS locations and suppliers', () async {
+      final api = _FakeApiClient(
+        json: {
+          '/inventory/locations': [_locationJson()],
+          '/inventory/suppliers': [_supplierJson()],
+        },
+      );
+      final service = InventoryService(api: api);
+
+      final locations = await service.fetchLocations('store_1');
+      final createdLocation = await service.createLocation(
+        const InventoryLocationInput(
+          storeId: 'store_1',
+          name: 'North warehouse',
+          city: 'Delhi',
+          state: 'Delhi',
+          isDefault: true,
+        ),
+      );
+      final suppliers = await service.fetchSuppliers('store_1');
+      final createdSupplier = await service.createSupplier(
+        const InventorySupplierInput(
+          storeId: 'store_1',
+          name: 'Acme Textiles',
+          contactName: 'Riya',
+          email: 'riya@example.com',
+          phone: '+911111111111',
+        ),
+      );
+
+      expect(locations.single.name, 'North warehouse');
+      expect(createdLocation.isDefault, isTrue);
+      expect(suppliers.single.name, 'Acme Textiles');
+      expect(createdSupplier.email, 'riya@example.com');
+      expect(api.paths, contains('/inventory/locations'));
+      expect(api.paths, contains('/inventory/suppliers'));
+    });
+
+    test('InventoryService creates and advances purchase orders', () async {
+      final api = _FakeApiClient(
+        json: {
+          '/inventory/purchase-orders': [_purchaseOrderJson()],
+          '/inventory/purchase-orders/po_1/receive': _purchaseOrderJson(
+            status: 'received',
+            receivedQuantity: 4,
+          ),
+        },
+      );
+      final service = InventoryService(api: api);
+
+      final orders = await service.fetchPurchaseOrders('store_1');
+      final created = await service.createPurchaseOrder(
+        const PurchaseOrderInput(
+          storeId: 'store_1',
+          supplierId: 'supplier_1',
+          locationId: 'loc_1',
+          idempotencyKey: 'po-create-123',
+          lines: [
+            InventoryLineInput(
+              productId: 'prod_1',
+              variantId: 'variant_1',
+              quantity: 4,
+              unitCost: 299,
+            ),
+          ],
+        ),
+      );
+      final received = await service.receivePurchaseOrder(
+        created,
+        idempotencyKey: 'po-receive-123',
+      );
+
+      expect(orders.single.totalQuantity, 4);
+      expect(created.supplierName, 'Acme Textiles');
+      expect(received.status, 'received');
+      expect(received.remainingQuantity, 0);
+      expect(api.paths, contains('/inventory/purchase-orders'));
+      expect(api.paths, contains('/inventory/purchase-orders/po_1/receive'));
+      expect(
+        api.bodies['/inventory/purchase-orders'],
+        containsPair('idempotency_key', 'po-create-123'),
+      );
+    });
+
+    test('InventoryService creates, ships, and receives transfers', () async {
+      final api = _FakeApiClient(
+        json: {
+          '/inventory/transfers': [_transferJson()],
+          '/inventory/transfers/transfer_1/ship': _transferJson(
+            status: 'shipped',
+          ),
+          '/inventory/transfers/transfer_1/receive': _transferJson(
+            status: 'received',
+            receivedQuantity: 3,
+          ),
+        },
+      );
+      final service = InventoryService(api: api);
+
+      final transfers = await service.fetchTransfers('store_1');
+      final created = await service.createTransfer(
+        const InventoryTransferInput(
+          storeId: 'store_1',
+          sourceLocationId: 'loc_1',
+          destinationLocationId: 'loc_2',
+          idempotencyKey: 'transfer-create-123',
+          lines: [InventoryLineInput(productId: 'prod_1', quantity: 3)],
+        ),
+      );
+      final shipped = await service.shipTransfer(
+        created,
+        idempotencyKey: 'transfer-ship-123',
+      );
+      final received = await service.receiveTransfer(
+        created,
+        idempotencyKey: 'transfer-receive-123',
+      );
+
+      expect(transfers.single.totalQuantity, 3);
+      expect(shipped.status, 'shipped');
+      expect(received.status, 'received');
+      expect(received.remainingQuantity, 0);
+      expect(api.paths, contains('/inventory/transfers'));
+      expect(api.paths, contains('/inventory/transfers/transfer_1/ship'));
+      expect(api.paths, contains('/inventory/transfers/transfer_1/receive'));
+    });
+
+    test(
+      'InventoryService scanner seam fails loudly until dependency is added',
+      () async {
+        final service = InventoryService(api: _FakeApiClient());
+
+        await expectLater(
+          service.scanBarcode(),
+          throwsA(
+            isA<SkipNeedsBackendException>().having(
+              (error) => error.id,
+              'id',
+              InventoryService.scannerDependencyId,
+            ),
+          ),
+        );
+      },
+    );
 
     test('CouponService handles coupon CRUD and validation', () async {
       final api = _FakeApiClient(
@@ -988,6 +1138,117 @@ void main() {
     expect(find.text('Cotton Tee'), findsOneWidget);
     expect(find.text('TEE-001'), findsOneWidget);
     expect(find.text('Adjust'), findsOneWidget);
+    expect(find.text('Locations'), findsOneWidget);
+    expect(find.text('Purchase orders'), findsOneWidget);
+  });
+
+  testWidgets('InventoryLocationsScreen renders WMS locations', (tester) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+      },
+      json: {
+        '/inventory/locations': [_locationJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => InventoryService(api: api)),
+        ],
+        child: const MaterialApp(home: InventoryLocationsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Locations'), findsOneWidget);
+    expect(find.text('North warehouse'), findsOneWidget);
+    expect(find.text('Default'), findsOneWidget);
+  });
+
+  testWidgets('InventorySuppliersScreen renders supplier contacts', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+      },
+      json: {
+        '/inventory/suppliers': [_supplierJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => InventoryService(api: api)),
+        ],
+        child: const MaterialApp(home: InventorySuppliersScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Suppliers'), findsOneWidget);
+    expect(find.text('Acme Textiles'), findsOneWidget);
+    expect(find.text('riya@example.com'), findsOneWidget);
+  });
+
+  testWidgets('PurchaseOrdersScreen renders receive workflow', (tester) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+      },
+      json: {
+        '/inventory/purchase-orders': [_purchaseOrderJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => InventoryService(api: api)),
+        ],
+        child: const MaterialApp(home: PurchaseOrdersScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Purchase orders'), findsOneWidget);
+    expect(find.text('Acme Textiles'), findsOneWidget);
+    expect(find.text('Receive'), findsOneWidget);
+  });
+
+  testWidgets('InventoryTransfersScreen renders transfer actions', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+      },
+      json: {
+        '/inventory/transfers': [_transferJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => InventoryService(api: api)),
+        ],
+        child: const MaterialApp(home: InventoryTransfersScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Transfers'), findsOneWidget);
+    expect(find.text('loc_1 -> loc_2'), findsOneWidget);
+    expect(find.text('Ship'), findsOneWidget);
+    expect(find.text('Receive'), findsOneWidget);
   });
 
   testWidgets('CouponsScreen renders coupon list and actions', (tester) async {
@@ -1559,6 +1820,77 @@ Map<String, dynamic> _inventoryJson({int available = 10}) => {
   'reserved': 1,
   'committed': 2,
   'on_hand': available + 3,
+};
+
+Map<String, dynamic> _locationJson() => {
+  'id': 'loc_1',
+  'store_id': 'store_1',
+  'name': 'North warehouse',
+  'address': '12 Industrial Road',
+  'city': 'Delhi',
+  'state': 'Delhi',
+  'country': 'IN',
+  'is_default': true,
+  'status': 'active',
+};
+
+Map<String, dynamic> _supplierJson() => {
+  'id': 'supplier_1',
+  'site_id': 'store_1',
+  'name': 'Acme Textiles',
+  'contact_name': 'Riya',
+  'email': 'riya@example.com',
+  'phone': '+911111111111',
+  'address': {'line1': 'Supplier lane'},
+};
+
+Map<String, dynamic> _purchaseOrderJson({
+  String status = 'ordered',
+  int receivedQuantity = 0,
+}) => {
+  'id': 'po_1',
+  'site_id': 'store_1',
+  'supplier_id': 'supplier_1',
+  'supplier': {'name': 'Acme Textiles'},
+  'location_id': 'loc_1',
+  'status': status,
+  'expected_at': '2026-06-15T10:00:00.000Z',
+  'notes': 'Restock cotton tee',
+  'lines': [
+    {
+      'id': 'po_line_1',
+      'product_id': 'prod_1',
+      'variant_id': 'variant_1',
+      'sku': 'TEE-001',
+      'product_name': 'Cotton Tee',
+      'quantity': 4,
+      'received_quantity': receivedQuantity,
+      'unit_cost': 299,
+    },
+  ],
+};
+
+Map<String, dynamic> _transferJson({
+  String status = 'reserved',
+  int receivedQuantity = 0,
+}) => {
+  'id': 'transfer_1',
+  'site_id': 'store_1',
+  'source_location_id': 'loc_1',
+  'destination_location_id': 'loc_2',
+  'status': status,
+  'notes': 'Balance stock',
+  'lines': [
+    {
+      'id': 'transfer_line_1',
+      'product_id': 'prod_1',
+      'variant_id': 'variant_1',
+      'sku': 'TEE-001',
+      'product_name': 'Cotton Tee',
+      'quantity': 3,
+      'received_quantity': receivedQuantity,
+    },
+  ],
 };
 
 Map<String, dynamic> _couponJson({

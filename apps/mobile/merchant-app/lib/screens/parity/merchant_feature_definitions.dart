@@ -39,6 +39,10 @@ class MerchantFeatureDefinitions {
     customers,
     collections,
     inventory,
+    inventoryLocations,
+    inventorySuppliers,
+    purchaseOrders,
+    inventoryTransfers,
     coupons,
     giftCards,
     reviews,
@@ -113,6 +117,62 @@ class MerchantFeatureDefinitions {
         'Requires /v1/inventory/levels data for the active store.',
     titleKeys: ['sku', 'product_name', 'variant_id', 'id'],
     subtitleKeys: ['available', 'reserved', 'location_id'],
+  );
+
+  static const inventoryLocations = MerchantFeatureDefinition(
+    id: 'inventory-locations',
+    route: '/features/inventory-locations',
+    group: 'Commerce',
+    title: 'Inventory Locations',
+    summary: 'Warehouses, stores, and fulfillment points.',
+    icon: Icons.warehouse_outlined,
+    endpoint: 'inventory/locations',
+    backendRequirement:
+        'Requires /v1/inventory/locations data for the active store.',
+    titleKeys: ['name', 'id'],
+    subtitleKeys: ['city', 'state', 'status'],
+  );
+
+  static const inventorySuppliers = MerchantFeatureDefinition(
+    id: 'inventory-suppliers',
+    route: '/features/inventory-suppliers',
+    group: 'Commerce',
+    title: 'Suppliers',
+    summary: 'Vendor contacts used for replenishment workflows.',
+    icon: Icons.handshake_outlined,
+    endpoint: 'inventory/suppliers',
+    backendRequirement:
+        'Requires /v1/inventory/suppliers data for the active store.',
+    titleKeys: ['name', 'contact_name', 'id'],
+    subtitleKeys: ['email', 'phone', 'created_at'],
+  );
+
+  static const purchaseOrders = MerchantFeatureDefinition(
+    id: 'purchase-orders',
+    route: '/features/purchase-orders',
+    group: 'Commerce',
+    title: 'Purchase Orders',
+    summary: 'Inbound supplier orders and receiving workflow.',
+    icon: Icons.add_box_outlined,
+    endpoint: 'inventory/purchase-orders',
+    backendRequirement:
+        'Requires /v1/inventory/purchase-orders data for the active store.',
+    titleKeys: ['id', 'status', 'supplier_id'],
+    subtitleKeys: ['status', 'location_id', 'expected_at'],
+  );
+
+  static const inventoryTransfers = MerchantFeatureDefinition(
+    id: 'inventory-transfers',
+    route: '/features/inventory-transfers',
+    group: 'Commerce',
+    title: 'Transfers',
+    summary: 'Move stock between inventory locations.',
+    icon: Icons.swap_horiz_outlined,
+    endpoint: 'inventory/transfers',
+    backendRequirement:
+        'Requires /v1/inventory/transfers data for the active store.',
+    titleKeys: ['id', 'status'],
+    subtitleKeys: ['source_location_id', 'destination_location_id', 'status'],
   );
 
   static const coupons = MerchantFeatureDefinition(

@@ -1124,6 +1124,99 @@ class InventoryApi {
 
   final ApiClient _client;
 
+  Future<List<JsonMap>> locations({
+    required String storeId,
+    ApiRequestOptions? options,
+  }) => _client.requestData(
+    '/inventory/locations',
+    options: _mergeOptions(options, query: {'store_id': storeId}),
+    decoder: (value) =>
+        asJsonList(value).map(asJsonMap).toList(growable: false),
+  );
+
+  Future<JsonMap> createLocation(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/inventory/locations',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<List<JsonMap>> suppliers({
+    required String storeId,
+    ApiRequestOptions? options,
+  }) => _client.requestData(
+    '/inventory/suppliers',
+    options: _mergeOptions(options, query: {'store_id': storeId}),
+    decoder: (value) =>
+        asJsonList(value).map(asJsonMap).toList(growable: false),
+  );
+
+  Future<JsonMap> createSupplier(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/inventory/suppliers',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<List<JsonMap>> purchaseOrders({
+    required String storeId,
+    ApiRequestOptions? options,
+  }) => _client.requestData(
+    '/inventory/purchase-orders',
+    options: _mergeOptions(options, query: {'store_id': storeId}),
+    decoder: (value) =>
+        asJsonList(value).map(asJsonMap).toList(growable: false),
+  );
+
+  Future<JsonMap> createPurchaseOrder(
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/inventory/purchase-orders',
+    options: _mergeOptions(options, method: HttpMethod.post, body: input),
+  );
+
+  Future<JsonMap> receivePurchaseOrder(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/inventory/purchase-orders/${_encodePathSegment(id)}/receive',
+    options: _mergeOptions(options, method: HttpMethod.post, body: input),
+  );
+
+  Future<List<JsonMap>> transfers({
+    required String storeId,
+    ApiRequestOptions? options,
+  }) => _client.requestData(
+    '/inventory/transfers',
+    options: _mergeOptions(options, query: {'store_id': storeId}),
+    decoder: (value) =>
+        asJsonList(value).map(asJsonMap).toList(growable: false),
+  );
+
+  Future<JsonMap> createTransfer(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/inventory/transfers',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> shipTransfer(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/inventory/transfers/${_encodePathSegment(id)}/ship',
+    options: _mergeOptions(options, method: HttpMethod.post, body: input),
+  );
+
+  Future<JsonMap> receiveTransfer(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/inventory/transfers/${_encodePathSegment(id)}/receive',
+    options: _mergeOptions(options, method: HttpMethod.post, body: input),
+  );
+
   Future<PaginatedResponse<JsonMap>> levels({
     QueryParams? query,
     ApiRequestOptions? options,

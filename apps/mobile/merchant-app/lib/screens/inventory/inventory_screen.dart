@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../app/routes.dart';
 import '../../services/inventory_service.dart';
 import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
@@ -110,6 +111,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             children: [
               _header(),
               _searchAndFilter(),
+              _wmsShortcuts(),
               _stats(),
               Expanded(child: _isLoading ? _loading() : _body()),
             ],
@@ -196,6 +198,55 @@ class _InventoryScreenState extends State<InventoryScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _wmsShortcuts() {
+    final items = [
+      _WmsShortcut(
+        label: 'Locations',
+        icon: Icons.warehouse_outlined,
+        route: AppRoutes.inventoryLocations,
+      ),
+      _WmsShortcut(
+        label: 'Suppliers',
+        icon: Icons.handshake_outlined,
+        route: AppRoutes.inventorySuppliers,
+      ),
+      _WmsShortcut(
+        label: 'Purchase orders',
+        icon: Icons.add_box_outlined,
+        route: AppRoutes.purchaseOrders,
+      ),
+      _WmsShortcut(
+        label: 'Transfers',
+        icon: Icons.swap_horiz_outlined,
+        route: AppRoutes.inventoryTransfers,
+      ),
+    ];
+
+    return SizedBox(
+      height: 48,
+      child: ListView.separated(
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index) {
+          final item = items[index];
+          return ActionChip(
+            avatar: Icon(item.icon, size: 18),
+            label: Text(item.label),
+            onPressed: () => Navigator.pushNamed(context, item.route),
+            backgroundColor: colors.card,
+            side: BorderSide(color: colors.cardBorder),
+            labelStyle: TextStyle(
+              color: colors.textPrimary,
+              fontWeight: FontWeight.w700,
+            ),
+          );
+        },
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemCount: items.length,
       ),
     );
   }
@@ -511,7 +562,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   Future<_InventoryAdjustment?> _adjustmentDialog(InventoryLevel level) {
     final deltaController = TextEditingController();
     final noteController = TextEditingController();
-    var reason = 'stock_count';
+    var reason = 'adjustment';
 
     return showDialog<_InventoryAdjustment>(
       context: context,
@@ -551,9 +602,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 ),
                 items: const [
                   DropdownMenuItem(
-                    value: 'stock_count',
-                    child: Text('Stock count'),
+                    value: 'adjustment',
+                    child: Text('Adjustment'),
                   ),
+                  DropdownMenuItem(value: 'recount', child: Text('Recount')),
+                  DropdownMenuItem(value: 'received', child: Text('Received')),
                   DropdownMenuItem(value: 'damaged', child: Text('Damaged')),
                   DropdownMenuItem(value: 'return', child: Text('Return')),
                   DropdownMenuItem(
@@ -640,6 +693,18 @@ class _InventoryAdjustment {
   final int delta;
   final String reason;
   final String note;
+}
+
+class _WmsShortcut {
+  const _WmsShortcut({
+    required this.label,
+    required this.icon,
+    required this.route,
+  });
+
+  final String label;
+  final IconData icon;
+  final String route;
 }
 
 extension on String {

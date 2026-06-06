@@ -31,6 +31,10 @@ import '../screens/content/media_library_screen.dart';
 import '../screens/content/navigation_screen.dart';
 import '../screens/content/pages_screen.dart';
 import '../screens/inventory/inventory_screen.dart';
+import '../screens/inventory/locations_screen.dart';
+import '../screens/inventory/purchase_orders_screen.dart';
+import '../screens/inventory/suppliers_screen.dart';
+import '../screens/inventory/transfers_screen.dart';
 import '../screens/orders/order_detail_screen.dart';
 import '../screens/orders/orders_screen.dart';
 import '../screens/products/collections_screen.dart';
@@ -82,6 +86,10 @@ class AppRoutes {
   static const String navigation = '/navigation';
   static const String media = '/media';
   static const String inventory = '/inventory';
+  static const String inventoryLocations = '/inventory/locations';
+  static const String inventorySuppliers = '/inventory/suppliers';
+  static const String purchaseOrders = '/inventory/purchase-orders';
+  static const String inventoryTransfers = '/inventory/transfers';
   static const String collections = '/collections';
   static const String orders = '/orders';
   static const String orderDetail = '/orders/detail';
@@ -98,6 +106,18 @@ class AppRoutes {
     }
     if (settings.name == '/features/inventory') {
       return _buildRoute(const InventoryScreen(), settings);
+    }
+    if (settings.name == '/features/inventory-locations') {
+      return _buildRoute(const InventoryLocationsScreen(), settings);
+    }
+    if (settings.name == '/features/inventory-suppliers') {
+      return _buildRoute(const InventorySuppliersScreen(), settings);
+    }
+    if (settings.name == '/features/purchase-orders') {
+      return _buildRoute(const PurchaseOrdersScreen(), settings);
+    }
+    if (settings.name == '/features/inventory-transfers') {
+      return _buildRoute(const InventoryTransfersScreen(), settings);
     }
     if (settings.name == '/features/coupons') {
       return _buildRoute(const CouponsScreen(), settings);
@@ -267,6 +287,18 @@ class AppRoutes {
 
       case inventory:
         return _buildRoute(const InventoryScreen(), settings);
+
+      case inventoryLocations:
+        return _buildRoute(const InventoryLocationsScreen(), settings);
+
+      case inventorySuppliers:
+        return _buildRoute(const InventorySuppliersScreen(), settings);
+
+      case purchaseOrders:
+        return _buildRoute(const PurchaseOrdersScreen(), settings);
+
+      case inventoryTransfers:
+        return _buildRoute(const InventoryTransfersScreen(), settings);
 
       case collections:
         return _buildRoute(const CollectionsScreen(), settings);
