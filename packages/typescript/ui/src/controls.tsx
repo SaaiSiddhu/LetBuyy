@@ -327,6 +327,89 @@ export function Radio({
     );
 }
 
+export interface SwitchProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
+    label?: React.ReactNode;
+    description?: React.ReactNode;
+    checked?: boolean;
+    defaultChecked?: boolean;
+    onCheckedChange?: (checked: boolean) => void;
+    wrapperClassName?: string;
+    labelClassName?: string;
+}
+
+export function Switch({
+    label,
+    description,
+    checked,
+    defaultChecked = false,
+    onCheckedChange,
+    wrapperClassName = '',
+    labelClassName = '',
+    className = '',
+    disabled,
+    id,
+    onClick,
+    ...props
+}: SwitchProps) {
+    const generatedId = useId();
+    const switchId = id ?? generatedId;
+    const labelId = label ? `${switchId}-label` : undefined;
+    const descriptionId = description ? `${switchId}-description` : undefined;
+    const [internalChecked, setInternalChecked] = useState(defaultChecked);
+    const actualChecked = checked ?? internalChecked;
+
+    const toggle = (event: React.MouseEvent<HTMLButtonElement>) => {
+        onClick?.(event);
+        if (event.defaultPrevented || disabled) return;
+        const nextChecked = !actualChecked;
+        setInternalChecked(nextChecked);
+        onCheckedChange?.(nextChecked);
+    };
+
+    return (
+        <div className={cx('flex items-start gap-[var(--lb-space-3)]', disabled && 'opacity-60', wrapperClassName)}>
+            <button
+                id={switchId}
+                type="button"
+                role="switch"
+                aria-checked={actualChecked}
+                aria-labelledby={labelId}
+                aria-describedby={descriptionId}
+                disabled={disabled}
+                className={cx(
+                    'relative mt-[2px] inline-flex h-[var(--lb-density-pill-height)] w-[calc(var(--lb-density-pill-height)*1.75)] shrink-0 rounded-[var(--lb-radius-full)] border border-transparent transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed',
+                    actualChecked ? 'bg-[var(--lb-color-primary)]' : 'bg-[var(--lb-color-border)]',
+                    className,
+                )}
+                onClick={toggle}
+                {...props}
+            >
+                <span
+                    className={cx(
+                        'absolute top-1/2 h-[calc(var(--lb-density-pill-height)-6px)] w-[calc(var(--lb-density-pill-height)-6px)] -translate-y-1/2 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-sm)] transition-transform duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)]',
+                        actualChecked ? 'translate-x-[calc(var(--lb-density-pill-height)*0.75)]' : 'translate-x-[3px]',
+                    )}
+                    aria-hidden="true"
+                />
+            </button>
+            {(label || description) && (
+                <label className={cx('grid min-w-0 gap-[var(--lb-space-1)]', disabled ? 'cursor-not-allowed' : 'cursor-pointer', labelClassName)} htmlFor={switchId}>
+                    {label && (
+                        <span id={labelId} className="text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                            {label}
+                        </span>
+                    )}
+                    {description && (
+                        <span id={descriptionId} className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                            {description}
+                        </span>
+                    )}
+                </label>
+            )}
+        </div>
+    );
+}
+
 export interface ChoiceListOption {
     label: React.ReactNode;
     value: string;

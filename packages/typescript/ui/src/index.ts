@@ -4,8 +4,8 @@
 export { Button } from './button';
 export type { ButtonProps } from './button';
 
-export { Input, Textarea } from './input';
-export type { InputProps, TextareaProps } from './input';
+export { InlineError, Input, NumberField, Textarea } from './input';
+export type { InlineErrorProps, InputProps, NumberFieldProps, TextareaProps } from './input';
 
 export { DataTable, Badge } from './data-table';
 export type { DataTableProps, Column, BadgeProps } from './data-table';
@@ -14,7 +14,10 @@ export {
     BlockStack,
     Box,
     Card,
+    Columns,
+    Container,
     getPageIconName,
+    Grid,
     InlineStack,
     letbuyyPageHeaderDefaults,
     Page,
@@ -30,6 +33,9 @@ export type {
     BlockStackProps,
     BoxProps,
     CardProps,
+    ColumnsProps,
+    ContainerProps,
+    GridProps,
     InlineStackProps,
     PageContentProps,
     PageHeaderAction,
@@ -39,6 +45,7 @@ export type {
     PageProps,
     PageShellProps,
     SectionProps,
+    SpaceScale,
     TextProps,
 } from './layout';
 
@@ -63,10 +70,10 @@ export type {
     ToastVariant,
 } from './feedback';
 
-export { ConfirmDialog, Modal, Tooltip } from './overlays';
-export type { ConfirmDialogProps, ModalProps, TooltipProps } from './overlays';
+export { ConfirmDialog, Drawer, Dropdown, DropdownMenu, Modal, Popover, Tooltip } from './overlays';
+export type { ConfirmDialogProps, DrawerProps, DropdownItem, DropdownProps, ModalProps, OverlayTrigger, OverlayTriggerProps, PopoverProps, TooltipProps } from './overlays';
 
-export { Checkbox, ChoiceList, Combobox, Radio, Select, Tabs } from './controls';
+export { Checkbox, ChoiceList, Combobox, Radio, Select, Switch, Tabs } from './controls';
 export type {
     CheckboxProps,
     ChoiceListOption,
@@ -75,9 +82,13 @@ export type {
     RadioProps,
     SelectOption,
     SelectProps,
+    SwitchProps,
     TabItem,
     TabsProps,
 } from './controls';
+
+export { AppFrame, Navigation, Sidebar } from './app-shell';
+export type { AppFrameProps, NavigationItem, NavigationProps, SidebarProps } from './app-shell';
 
 export { Avatar, CommandPalette, FilterBar, IndexTable, MetricCard, Pagination, TableFilterBar } from './productivity';
 export type {
@@ -104,29 +115,39 @@ export type {
 export {
     Breadcrumbs,
     Chart,
+    Accordion,
     DateRangePicker,
+    DatePicker,
     DensityToggle,
     DescriptionList,
+    Disclosure,
     Divider,
     FilterChips,
     ProgressBar,
+    SegmentedControl,
     Spinner,
     TextStyle,
 } from './primitives';
 export type {
+    AccordionItem,
+    AccordionProps,
     BreadcrumbItem,
     BreadcrumbsProps,
     ChartDatum,
     ChartProps,
     DateRangePickerProps,
     DateRangeValue,
+    DatePickerProps,
     DensityToggleProps,
     DescriptionListItem,
     DescriptionListProps,
+    DisclosureProps,
     DividerProps,
     FilterChip,
     FilterChipsProps,
     ProgressBarProps,
+    SegmentedControlOption,
+    SegmentedControlProps,
     SpinnerProps,
     TextStyleProps,
 } from './primitives';

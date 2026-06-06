@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useId } from 'react';
+import { AlertCircle } from './icons';
 import { cx } from './utils';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -117,5 +118,52 @@ export function Textarea({
             {error && <p id={errorId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-critical)]">{error}</p>}
             {helperText && !error && <p id={helperId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{helperText}</p>}
         </div>
+    );
+}
+
+export interface InlineErrorProps extends React.HTMLAttributes<HTMLParagraphElement> {
+    children: React.ReactNode;
+}
+
+export function InlineError({ children, className = '', ...props }: InlineErrorProps) {
+    return (
+        <p
+            className={cx('m-0 inline-flex items-start gap-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-critical)]', className)}
+            role="alert"
+            {...props}
+        >
+            <AlertCircle className="mt-[2px] h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)] shrink-0" aria-hidden="true" />
+            <span>{children}</span>
+        </p>
+    );
+}
+
+export interface NumberFieldProps extends Omit<InputProps, 'type' | 'value' | 'defaultValue' | 'onChange'> {
+    value?: number | string;
+    defaultValue?: number | string;
+    min?: number;
+    max?: number;
+    step?: number;
+    onValueChange?: (value: number | null, rawValue: string) => void;
+    onChange?: React.ChangeEventHandler<HTMLInputElement>;
+}
+
+export function NumberField({ value, defaultValue, min, max, step = 1, onValueChange, onChange, inputMode = 'decimal', ...props }: NumberFieldProps) {
+    return (
+        <Input
+            {...props}
+            type="number"
+            inputMode={inputMode}
+            value={value}
+            defaultValue={defaultValue}
+            min={min}
+            max={max}
+            step={step}
+            onChange={(event) => {
+                onChange?.(event);
+                const rawValue = event.currentTarget.value;
+                onValueChange?.(rawValue === '' ? null : Number(rawValue), rawValue);
+            }}
+        />
     );
 }

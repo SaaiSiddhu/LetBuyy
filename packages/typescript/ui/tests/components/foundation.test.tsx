@@ -8,16 +8,32 @@ import {
     Button,
     Card,
     Checkbox,
+    Accordion,
+    AppFrame,
+    Columns,
     Combobox,
     CommandPalette,
+    Container,
+    DatePicker,
     DesignSystemRoot,
+    Disclosure,
+    Drawer,
+    Dropdown,
     EmptyState,
+    Grid,
+    InlineError,
     Input,
     Modal,
+    Navigation,
+    NumberField,
+    Popover,
     Radio,
     Section,
     Select,
+    SegmentedControl,
+    Sidebar,
     Skeleton,
+    Switch,
     Tabs,
     Textarea,
     letbuyyBreakpointTokens,
@@ -91,6 +107,23 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
 
         expect(button.hasAttribute('disabled')).toBe(true);
         expect(onClick).not.toHaveBeenCalled();
+        await expectAxeClean(container);
+    });
+
+    it('renders Button as a link and as a slotted trigger', async () => {
+        const { container } = renderInSystem(
+            <>
+                <Button as="a" href="/products" variant="secondary">
+                    Products link
+                </Button>
+                <Button asChild variant="outline">
+                    <a href="/orders">Orders link</a>
+                </Button>
+            </>,
+        );
+
+        expect(screen.getByRole('link', { name: 'Products link' }).getAttribute('href')).toBe('/products');
+        expect(screen.getByRole('link', { name: 'Orders link' }).getAttribute('href')).toBe('/orders');
         await expectAxeClean(container);
     });
 
@@ -327,6 +360,149 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
 
         fireEvent.keyDown(document.activeElement ?? search, { key: 'Escape' });
         expect(onClose).toHaveBeenCalledTimes(1);
+        await expectAxeClean(container);
+    });
+
+    it('renders Drawer, Popover, and Dropdown with keyboard-safe dismissal', async () => {
+        const onDrawerClose = vi.fn();
+        const onDropdownSelect = vi.fn();
+
+        function OverlayHarness() {
+            const [drawerOpen, setDrawerOpen] = React.useState(true);
+            const [popoverOpen, setPopoverOpen] = React.useState(false);
+            const [dropdownOpen, setDropdownOpen] = React.useState(false);
+            return (
+                <>
+                    <button type="button">Background action</button>
+                    <Drawer
+                        open={drawerOpen}
+                        title="Edit filters"
+                        description="Drawer filter panel"
+                        onClose={() => {
+                            onDrawerClose();
+                            setDrawerOpen(false);
+                        }}
+                        footer={<Button>Apply</Button>}
+                    >
+                        <Input label="Filter name" />
+                    </Drawer>
+                    <Popover
+                        open={popoverOpen}
+                        onOpenChange={setPopoverOpen}
+                        trigger={<Button variant="secondary">Open popover</Button>}
+                        ariaLabel="Product tips"
+                    >
+                        <p>Use product tags to improve search.</p>
+                    </Popover>
+                    <Dropdown
+                        open={dropdownOpen}
+                        onOpenChange={setDropdownOpen}
+                        trigger={<Button variant="secondary">Actions</Button>}
+                        items={[
+                            { id: 'edit', label: 'Edit product', onSelect: onDropdownSelect },
+                            { id: 'archive', label: 'Archive product', destructive: true },
+                        ]}
+                    />
+                </>
+            );
+        }
+
+        const { container } = renderInSystem(<OverlayHarness />);
+        const closeButton = await screen.findByRole('button', { name: 'Close' });
+        await waitFor(() => expect(document.activeElement).toBe(closeButton));
+        fireEvent.keyDown(document, { key: 'Escape' });
+        expect(onDrawerClose).toHaveBeenCalledTimes(1);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Open popover' }));
+        expect(screen.getByRole('dialog', { name: 'Product tips' })).toBeTruthy();
+        fireEvent.keyDown(screen.getByRole('button', { name: 'Open popover' }), { key: 'Escape' });
+        expect(screen.queryByRole('dialog', { name: 'Product tips' })).toBeNull();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Actions' }));
+        const editItem = screen.getByRole('menuitem', { name: 'Edit product' });
+        expect(editItem).toBeTruthy();
+        fireEvent.keyDown(editItem, { key: 'ArrowDown' });
+        expect(document.activeElement).toBe(screen.getByRole('menuitem', { name: 'Archive product' }));
+        fireEvent.keyDown(document.activeElement ?? editItem, { key: 'ArrowUp' });
+        fireEvent.click(screen.getByRole('menuitem', { name: 'Edit product' }));
+        expect(onDropdownSelect).toHaveBeenCalledTimes(1);
+        await expectAxeClean(container);
+    });
+
+    it('renders additive layout and form primitives accessibly', async () => {
+        const onSwitchChange = vi.fn();
+        const onNumberChange = vi.fn();
+        const { container } = renderInSystem(
+            <Container width="measure">
+                <Grid columns={{ base: 1, md: 2 }} gap="3">
+                    <Card>
+                        <Columns columns={2} gap="2">
+                            <span>Revenue</span>
+                            <span>INR 24,000</span>
+                        </Columns>
+                    </Card>
+                    <Card>
+                        <Switch label="Publish product" description="Visible to shoppers" onCheckedChange={onSwitchChange} />
+                        <NumberField label="Inventory" defaultValue={8} min={0} onValueChange={onNumberChange} />
+                        <InlineError>Inventory cannot be negative.</InlineError>
+                    </Card>
+                </Grid>
+            </Container>,
+        );
+
+        fireEvent.click(screen.getByRole('switch', { name: 'Publish product' }));
+        fireEvent.change(screen.getByLabelText('Inventory'), { target: { value: '12' } });
+
+        expect(onSwitchChange).toHaveBeenCalledWith(true);
+        expect(onNumberChange).toHaveBeenCalledWith(12, '12');
+        expect(screen.getByRole('alert').textContent).toContain('Inventory cannot be negative.');
+        await expectAxeClean(container);
+    });
+
+    it('renders date, disclosure, segmented, and app-shell primitives accessibly', async () => {
+        const onSegmentChange = vi.fn();
+        const { container } = renderInSystem(
+            <AppFrame
+                sidebar={(
+                    <Sidebar header="LetBuyy">
+                        <Navigation
+                            items={[
+                                { id: 'dashboard', label: 'Dashboard', href: '/dashboard', active: true },
+                                { id: 'products', label: 'Products', href: '/products', badge: '12' },
+                            ]}
+                        />
+                    </Sidebar>
+                )}
+                topBar={<span>Storefront</span>}
+            >
+                <Section title="Publishing">
+                    <DatePicker label="Publish date" defaultValue="2026-06-06" />
+                    <Disclosure title="Publishing rules" defaultOpen>
+                        Rules are evaluated before publishing.
+                    </Disclosure>
+                    <Accordion
+                        items={[
+                            { id: 'seo', title: 'SEO', content: 'Search settings' },
+                            { id: 'inventory', title: 'Inventory', content: 'Stock settings' },
+                        ]}
+                    />
+                    <SegmentedControl
+                        ariaLabel="Mode"
+                        value="preview"
+                        onValueChange={onSegmentChange}
+                        options={[
+                            { value: 'preview', label: 'Preview' },
+                            { value: 'live', label: 'Live' },
+                        ]}
+                    />
+                </Section>
+            </AppFrame>,
+        );
+
+        expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toBeTruthy();
+        expect(screen.getByRole('button', { name: 'Publishing rules' }).getAttribute('aria-expanded')).toBe('true');
+        fireEvent.click(screen.getByRole('radio', { name: 'Live' }));
+        expect(onSegmentChange).toHaveBeenCalledWith('live');
         await expectAxeClean(container);
     });
 

@@ -16,6 +16,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - U0 safety net is implemented.
 - U1 P0 correctness is implemented except the app-scope marketing-site wrapper, which is recorded as a human/app-stream skip.
 - U2 token system completion is implemented additively.
+- U3 missing primitives are implemented additively.
 - Required ledger and deprecation register have been created.
 - `@letbuyy/ui` now has a Vitest + React Testing Library + jest-axe suite covering the load-bearing components: Card, Section, Button, Badge, Input, Banner, Skeleton, EmptyState, Select, Checkbox, Radio, Combobox, and Tabs.
 - Storybook visual regression is wired through `packages/typescript/ui/tests/visual/storybook-visual-regression.mjs`; 276 baselines were captured across light/dark and compact/comfortable/spacious density modes.
@@ -28,12 +29,18 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - Breakpoint tokens now exist as `letbuyyBreakpointTokens`, `letbuyyTailwindScreens`, `letbuyyTailwindPreset`, and emitted `--lb-bp-*` variables using the current 640/768/1024/1280 values.
 - Card shadow and light status-soft provenance now come from shared token authorities without changing the previous visual values.
 - Existing token aliases remain emitted, while `validate:aliases` now prevents new duplicate-value token aliases from being added accidentally.
+- Overlay primitives now include `Drawer`, `Popover`, `Dropdown`, and `DropdownMenu`, all sharing the same focus/dismiss foundation and z-index scale.
+- Form/layout primitives now include `Grid`, `Columns`, `Container`, `Switch`, `NumberField`, `InlineError`, `DatePicker`, `Disclosure`, `Accordion`, `SegmentedControl`, and app-shell `Navigation`/`Sidebar`/`AppFrame`.
+- `Button` now supports additive `as` and `asChild` rendering while default button rendering remains unchanged.
+- `DensityToggle` now delegates to `SegmentedControl` without changing its public props.
+- The bare root `Menu` symbol remains the existing icon export for consumer compatibility. The menu primitive is exported as `Dropdown`/`DropdownMenu`.
 
 ## Human-Gated Remainders
 
 - [SKIP — NEEDS HUMAN] Repoint `@letbuyy/ui` package entrypoints from `./src/index.ts` to `dist` after the parallel app/service stream lands and consumers have been rechecked. Unblocks full package distribution hardening for issue #17. Exact follow-up: update `packages/typescript/ui/package.json` `main` and `types`, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Marketing-site token root fix is app-scope. Exact follow-up for the app stream: wrap the marketing-site root layout with `DesignSystemRoot`, for example `<DesignSystemRoot surface="storefront" theme="auto">{children}</DesignSystemRoot>`, then run `pnpm --filter @letbuyy/marketing-site typecheck`, `pnpm --filter @letbuyy/marketing-site build`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Existing token alias collapse is breaking until coordinated with app/service codemods and visual verification. Exact follow-up after U8 codemods exist: run the token-alias codemod across consumers, remove deprecated aliases from `packages/typescript/ui/src/tokens.ts`, refresh UI snapshots, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Optional root `Menu` component alias requires a public symbol decision because `Menu` is already an icon export used by current consumers. This stream ships the primitive as `Dropdown`/`DropdownMenu`. Exact follow-up: decide whether to rename the icon export or keep the primitive name, run a consumer codemod if a rename is chosen, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 
 ## Behavior Changes To Re-Check
 
@@ -42,6 +49,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - Modal and CommandPalette now trap focus, inert background content while open, close on Escape/outside pointer, and restore focus to the opener.
 - Light-mode text contrast changed intentionally: `--lb-color-text-muted` is darker; `--lb-color-primary-text` is new for primary text; soft status text tokens now use AA-safe text values.
 - U2 token additions are additive and should not change rendered output. Existing spacing/type/color aliases still emit; the new alias validator only blocks new duplicate-value aliases.
+- U3 primitive additions are additive. Existing consumers keep the current `Menu` icon export; use `Dropdown` or `DropdownMenu` for the new menu primitive.
 
 ## Verification Evidence
 
@@ -88,3 +96,16 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - `pnpm lint` PASS after U2: repo lint completed with existing warnings outside UI scope and 0 errors.
 - Generated build/install artifacts from U2 verification were removed before governance.
 - `node scripts/validate-governance.mjs` PASS after U2 cleanup; final line: `Governance validation passed (129 validators).`
+- `pnpm --filter @letbuyy/ui typecheck` PASS after U3 primitives.
+- `pnpm --filter @letbuyy/ui test` PASS after U3: 1 file, 20 tests.
+- `pnpm --filter @letbuyy/ui build` PASS after U3.
+- `pnpm --filter @letbuyy/ui snapshot:api:update` PASS after U3: 310 public exports captured.
+- `pnpm --filter @letbuyy/ui validate:ui` PASS after U3: 20 tests, API snapshot, token snapshot, alias snapshot.
+- `pnpm --filter @letbuyy/ui test:visual:update` PASS after U3: 300 baselines captured.
+- `pnpm --filter @letbuyy/ui test:visual` PASS after U3: 300 baselines checked.
+- `pnpm turbo test` PASS after U3: 61 successful tasks.
+- `pnpm turbo typecheck` PASS after U3: 60 successful tasks. This explicitly caught and then verified the `Menu` public-symbol collision fix.
+- `pnpm turbo build` PASS after U3: 60 successful tasks.
+- `pnpm lint` PASS after U3: repo lint completed with existing warnings outside UI scope and 0 errors.
+- Generated build/install artifacts from U3 verification were removed before governance.
+- `node scripts/validate-governance.mjs` PASS after U3 cleanup; final line: `Governance validation passed (129 validators).`

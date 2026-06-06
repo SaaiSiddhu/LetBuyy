@@ -4,7 +4,7 @@ import { cx } from './utils';
 
 type LayoutElement = 'div' | 'section' | 'article' | 'aside' | 'header' | 'footer' | 'nav' | 'main' | 'span';
 type TextElement = 'p' | 'span' | 'div' | 'strong' | 'em' | 'h1' | 'h2' | 'h3' | 'h4';
-type SpaceScale = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7';
+export type SpaceScale = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8';
 
 const spaceStyles: Record<SpaceScale, string> = {
     0: 'gap-0',
@@ -15,6 +15,7 @@ const spaceStyles: Record<SpaceScale, string> = {
     5: 'gap-[var(--lb-space-5)]',
     6: 'gap-[var(--lb-space-6)]',
     7: 'gap-[var(--lb-space-7)]',
+    8: 'gap-[var(--lb-space-8)]',
 };
 
 const paddingStyles: Record<SpaceScale, string> = {
@@ -26,6 +27,7 @@ const paddingStyles: Record<SpaceScale, string> = {
     5: 'p-[var(--lb-space-5)]',
     6: 'p-[var(--lb-space-6)]',
     7: 'p-[var(--lb-space-7)]',
+    8: 'p-[var(--lb-space-8)]',
 };
 
 const paddingBlockStyles: Record<SpaceScale, string> = {
@@ -37,6 +39,7 @@ const paddingBlockStyles: Record<SpaceScale, string> = {
     5: 'py-[var(--lb-space-5)]',
     6: 'py-[var(--lb-space-6)]',
     7: 'py-[var(--lb-space-7)]',
+    8: 'py-[var(--lb-space-8)]',
 };
 
 const paddingInlineStyles: Record<SpaceScale, string> = {
@@ -48,6 +51,7 @@ const paddingInlineStyles: Record<SpaceScale, string> = {
     5: 'px-[var(--lb-space-5)]',
     6: 'px-[var(--lb-space-6)]',
     7: 'px-[var(--lb-space-7)]',
+    8: 'px-[var(--lb-space-8)]',
 };
 
 const stackAlignStyles = {
@@ -182,6 +186,124 @@ export function InlineStack({
         Element,
         {
             className: cx('flex min-w-0', wrap ? 'flex-wrap' : 'flex-nowrap', spaceStyles[gap], stackAlignStyles[align], stackJustifyStyles[justify], className),
+            ...props,
+        },
+        children,
+    );
+}
+
+type GridColumnCount = 1 | 2 | 3 | 4 | 5 | 6;
+type ResponsiveColumns = Partial<Record<'base' | 'sm' | 'md' | 'lg' | 'xl', GridColumnCount>>;
+
+const gridColumnStyles: Record<GridColumnCount, string> = {
+    1: 'grid-cols-1',
+    2: 'grid-cols-2',
+    3: 'grid-cols-3',
+    4: 'grid-cols-4',
+    5: 'grid-cols-5',
+    6: 'grid-cols-6',
+};
+
+const responsiveGridColumnStyles = {
+    sm: {
+        1: 'sm:grid-cols-1',
+        2: 'sm:grid-cols-2',
+        3: 'sm:grid-cols-3',
+        4: 'sm:grid-cols-4',
+        5: 'sm:grid-cols-5',
+        6: 'sm:grid-cols-6',
+    },
+    md: {
+        1: 'md:grid-cols-1',
+        2: 'md:grid-cols-2',
+        3: 'md:grid-cols-3',
+        4: 'md:grid-cols-4',
+        5: 'md:grid-cols-5',
+        6: 'md:grid-cols-6',
+    },
+    lg: {
+        1: 'lg:grid-cols-1',
+        2: 'lg:grid-cols-2',
+        3: 'lg:grid-cols-3',
+        4: 'lg:grid-cols-4',
+        5: 'lg:grid-cols-5',
+        6: 'lg:grid-cols-6',
+    },
+    xl: {
+        1: 'xl:grid-cols-1',
+        2: 'xl:grid-cols-2',
+        3: 'xl:grid-cols-3',
+        4: 'xl:grid-cols-4',
+        5: 'xl:grid-cols-5',
+        6: 'xl:grid-cols-6',
+    },
+} as const;
+
+function gridColumnsClass(columns: GridColumnCount | ResponsiveColumns) {
+    if (typeof columns === 'number') return gridColumnStyles[columns];
+    return cx(
+        gridColumnStyles[columns.base ?? 1],
+        columns.sm && responsiveGridColumnStyles.sm[columns.sm],
+        columns.md && responsiveGridColumnStyles.md[columns.md],
+        columns.lg && responsiveGridColumnStyles.lg[columns.lg],
+        columns.xl && responsiveGridColumnStyles.xl[columns.xl],
+    );
+}
+
+export interface GridProps extends React.HTMLAttributes<HTMLElement> {
+    as?: LayoutElement;
+    children: React.ReactNode;
+    columns?: GridColumnCount | ResponsiveColumns;
+    gap?: SpaceScale;
+    align?: 'start' | 'center' | 'end' | 'stretch';
+}
+
+const gridAlignStyles: Record<NonNullable<GridProps['align']>, string> = {
+    start: 'items-start',
+    center: 'items-center',
+    end: 'items-end',
+    stretch: 'items-stretch',
+};
+
+export function Grid({ as: Element = 'div', children, columns = 1, gap = '4', align = 'stretch', className = '', ...props }: GridProps) {
+    return React.createElement(
+        Element,
+        {
+            className: cx('grid min-w-0', gridColumnsClass(columns), spaceStyles[gap], gridAlignStyles[align], className),
+            ...props,
+        },
+        children,
+    );
+}
+
+export interface ColumnsProps extends GridProps {}
+
+export function Columns(props: ColumnsProps) {
+    return <Grid {...props} />;
+}
+
+export interface ContainerProps extends React.HTMLAttributes<HTMLElement> {
+    as?: LayoutElement;
+    children: React.ReactNode;
+    width?: 'sm' | 'md' | 'lg' | 'xl' | 'page' | 'measure' | 'full';
+    paddingInline?: SpaceScale;
+}
+
+const containerWidthStyles: Record<NonNullable<ContainerProps['width']>, string> = {
+    sm: 'max-w-screen-sm',
+    md: 'max-w-screen-md',
+    lg: 'max-w-screen-lg',
+    xl: 'max-w-screen-xl',
+    page: 'max-w-[var(--lb-size-page-max)]',
+    measure: 'max-w-[var(--lb-size-content-measure)]',
+    full: 'max-w-none',
+};
+
+export function Container({ as: Element = 'div', children, width = 'page', paddingInline = '4', className = '', ...props }: ContainerProps) {
+    return React.createElement(
+        Element,
+        {
+            className: cx('mx-auto w-full min-w-0', containerWidthStyles[width], paddingInlineStyles[paddingInline], className),
             ...props,
         },
         children,
