@@ -18,6 +18,9 @@ class CmsService extends ChangeNotifier {
   List<BlogCommentContract> get blogComments =>
       List.unmodifiable(_blogComments);
 
+  NavigationPayload? _navigationPayload;
+  NavigationPayload? get navigationPayload => _navigationPayload;
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -242,6 +245,49 @@ class CmsService extends ChangeNotifier {
     _blogComments = _blogComments.where((comment) => comment.id != id).toList();
     notifyListeners();
   }
+
+  Future<NavigationPayload> fetchNavigation(
+    String storeId, {
+    String location = 'main',
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final payload = NavigationPayload.fromJson(
+        await _api.pages.navigation(storeId: storeId, location: location),
+      );
+      _navigationPayload = payload;
+      return payload;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<NavigationPayload> replaceNavigation({
+    required String storeId,
+    required String location,
+    required String name,
+    required List<NavigationItemInput> items,
+  }) async {
+    await _api.pages.replaceNavigation(location, {
+      'store_id': storeId,
+      'location': location,
+      'name': name.trim().isEmpty ? _navigationName(location) : name.trim(),
+      'items': [
+        for (var index = 0; index < items.length; index += 1)
+          items[index].copyWith(sortOrder: index).toJson(),
+      ],
+    });
+    return fetchNavigation(storeId, location: location);
+  }
+
+  static String _navigationName(String location) {
+    final label = location.replaceAll('-', ' ').replaceAll('_', ' ').trim();
+    if (label.isEmpty) return 'Main menu';
+    return '${label[0].toUpperCase()}${label.substring(1)} menu';
+  }
 }
 
 class CmsPageInput {
@@ -424,6 +470,168 @@ class BlogPostInput {
       if (readingTimeMin != null) 'reading_time_min': readingTimeMin,
       'seo_title': _nullableTrim(seoTitle),
       'seo_description': _nullableTrim(seoDescription),
+    };
+  }
+
+  static String? _nullableTrim(String? value) {
+    final trimmed = value?.trim();
+    return trimmed == null || trimmed.isEmpty ? null : trimmed;
+  }
+}
+
+class NavigationPayload {
+  const NavigationPayload({required this.menu, required this.items});
+
+  factory NavigationPayload.fromJson(JsonMap json) {
+    final menuValue = json['menu'];
+    final itemValues = json['items'];
+    return NavigationPayload(
+      menu: menuValue is Map
+          ? NavigationMenuContract.fromJson(
+              Map<String, dynamic>.from(menuValue),
+            )
+          : null,
+      items: itemValues is List
+          ? itemValues
+                .whereType<Map>()
+                .map((item) {
+                  return NavigationItemContract.fromJson(
+                    Map<String, dynamic>.from(item),
+                  );
+                })
+                .toList(growable: false)
+          : const [],
+    );
+  }
+
+  final NavigationMenuContract? menu;
+  final List<NavigationItemContract> items;
+}
+
+class NavigationMenuContract extends SharedTypeContract {
+  NavigationMenuContract(super.json);
+
+  factory NavigationMenuContract.fromJson(JsonMap json) =>
+      NavigationMenuContract(json);
+
+  String get id => _string('id');
+  String get storeId => _string('store_id');
+  String get handle => _string('handle');
+  String get location => _string('location', fallback: handle);
+  String get name => _string('name', fallback: 'Storefront menu');
+
+  String _string(String key, {String fallback = ''}) {
+    return toJson()[key]?.toString() ?? fallback;
+  }
+}
+
+class NavigationItemContract extends SharedTypeContract {
+  NavigationItemContract(super.json);
+
+  factory NavigationItemContract.fromJson(JsonMap json) =>
+      NavigationItemContract(json);
+
+  String get id => _string('id');
+  String get menuId => _string('menu_id');
+  String get storeId => _string('store_id');
+  String? get parentItemId => _optionalString('parent_item_id');
+  String get label => _string('label', fallback: 'Menu item');
+  String get url => _string('url', fallback: '#');
+  String get targetType => _string('target_type', fallback: 'url');
+  String? get targetResourceId => _optionalString('target_resource_id');
+  int get sortOrder => _int('sort_order');
+  bool get isVisible => _bool('is_visible', fallback: true);
+  bool get openInNewTab => _bool('open_in_new_tab');
+  String? get updatedAt => _optionalString('updated_at');
+
+  String _string(String key, {String fallback = ''}) {
+    return toJson()[key]?.toString() ?? fallback;
+  }
+
+  String? _optionalString(String key) {
+    final value = toJson()[key]?.toString();
+    return value == null || value.isEmpty ? null : value;
+  }
+
+  bool _bool(String key, {bool fallback = false}) {
+    final value = toJson()[key];
+    return value is bool ? value : fallback;
+  }
+
+  int _int(String key) {
+    final value = toJson()[key];
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+}
+
+class NavigationItemInput {
+  const NavigationItemInput({
+    required this.label,
+    required this.url,
+    this.targetType = 'url',
+    this.targetResourceId,
+    this.parentItemId,
+    this.sortOrder = 0,
+    this.isVisible = true,
+    this.openInNewTab = false,
+  });
+
+  factory NavigationItemInput.fromContract(NavigationItemContract item) {
+    return NavigationItemInput(
+      label: item.label,
+      url: item.url,
+      targetType: item.targetType,
+      targetResourceId: item.targetResourceId,
+      parentItemId: item.parentItemId,
+      sortOrder: item.sortOrder,
+      isVisible: item.isVisible,
+      openInNewTab: item.openInNewTab,
+    );
+  }
+
+  final String label;
+  final String url;
+  final String targetType;
+  final String? targetResourceId;
+  final String? parentItemId;
+  final int sortOrder;
+  final bool isVisible;
+  final bool openInNewTab;
+
+  NavigationItemInput copyWith({
+    String? label,
+    String? url,
+    String? targetType,
+    String? targetResourceId,
+    String? parentItemId,
+    int? sortOrder,
+    bool? isVisible,
+    bool? openInNewTab,
+  }) {
+    return NavigationItemInput(
+      label: label ?? this.label,
+      url: url ?? this.url,
+      targetType: targetType ?? this.targetType,
+      targetResourceId: targetResourceId ?? this.targetResourceId,
+      parentItemId: parentItemId ?? this.parentItemId,
+      sortOrder: sortOrder ?? this.sortOrder,
+      isVisible: isVisible ?? this.isVisible,
+      openInNewTab: openInNewTab ?? this.openInNewTab,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'label': label.trim(),
+      'url': url.trim().isEmpty ? '#' : url.trim(),
+      'target_type': targetType.trim().isEmpty ? 'url' : targetType.trim(),
+      'target_resource_id': _nullableTrim(targetResourceId),
+      'parent_item_id': _nullableTrim(parentItemId),
+      'sort_order': sortOrder,
+      'is_visible': isVisible,
+      'open_in_new_tab': openInNewTab,
     };
   }
 

@@ -1160,6 +1160,27 @@ class PagesApi {
         '/pages/${_encodePathSegment(id)}',
         options: _mergeOptions(options, method: HttpMethod.delete),
       );
+
+  Future<JsonMap> navigation({
+    required String storeId,
+    String location = 'main',
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/pages/navigation',
+    options: _mergeOptions(
+      options,
+      query: {'store_id': storeId, 'location': location},
+    ),
+  );
+
+  Future<JsonMap> replaceNavigation(
+    String location,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/pages/navigation/${_encodePathSegment(location)}',
+    options: _mergeOptions(options, method: HttpMethod.put, body: input),
+  );
 }
 
 class BlogApi {

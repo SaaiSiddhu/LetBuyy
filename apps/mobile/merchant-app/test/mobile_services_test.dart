@@ -20,6 +20,7 @@ import 'package:letbuyy_store/services/store_service.dart';
 import 'package:letbuyy_store/services/subscription_service.dart';
 import 'package:letbuyy_store/services/theme_service.dart';
 import 'package:letbuyy_store/screens/content/blog_screen.dart';
+import 'package:letbuyy_store/screens/content/navigation_screen.dart';
 import 'package:letbuyy_store/screens/content/page_editor_screen.dart';
 import 'package:letbuyy_store/screens/content/pages_screen.dart';
 import 'package:letbuyy_store/screens/content/post_editor_screen.dart';
@@ -292,6 +293,40 @@ void main() {
       expect(api.paths, contains('/blog/posts/post_1'));
       expect(api.paths, contains('/blog/comments'));
       expect(api.paths, contains('/blog/comments/comment_1'));
+    });
+
+    test('CmsService loads and replaces storefront navigation', () async {
+      final api = _FakeApiClient(
+        json: {
+          '/pages/navigation': {
+            'menu': _navigationMenuJson(),
+            'items': [_navigationItemJson()],
+          },
+          '/pages/navigation/main': {'replaced': true, 'count': 1},
+        },
+      );
+      final service = CmsService(api: api);
+
+      final navigation = await service.fetchNavigation(
+        'store_1',
+        location: 'main',
+      );
+      final saved = await service.replaceNavigation(
+        storeId: 'store_1',
+        location: 'main',
+        name: 'Header menu',
+        items: [
+          NavigationItemInput.fromContract(
+            navigation.items.single,
+          ).copyWith(label: 'Catalog', url: '/collections/all'),
+        ],
+      );
+
+      expect(navigation.menu?.location, 'main');
+      expect(navigation.items.single.label, 'Home');
+      expect(saved.items.single.url, '/');
+      expect(api.paths, contains('/pages/navigation'));
+      expect(api.paths, contains('/pages/navigation/main'));
     });
 
     test('NotificationSettingsService persists preferences', () async {
@@ -834,6 +869,39 @@ void main() {
     expect(find.byIcon(Icons.check_rounded), findsOneWidget);
   });
 
+  testWidgets('NavigationScreen renders draggable menu items', (tester) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+      },
+      json: {
+        '/pages/navigation': {
+          'menu': _navigationMenuJson(),
+          'items': [_navigationItemJson()],
+        },
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => CmsService(api: api)),
+        ],
+        child: const MaterialApp(home: NavigationScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Navigation'), findsOneWidget);
+    expect(find.text('Header'), findsWidgets);
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.text('/'), findsOneWidget);
+    expect(find.text('Add item'), findsOneWidget);
+    expect(find.text('Save menu'), findsOneWidget);
+    expect(find.byIcon(Icons.drag_indicator_rounded), findsOneWidget);
+  });
+
   testWidgets('ThemeVersionsScreen renders releases for rollback', (
     tester,
   ) async {
@@ -1068,6 +1136,34 @@ Map<String, dynamic> _blogCommentJson({
   'body': 'This update is useful.',
   'status': status,
   'created_at': '2026-06-01T11:00:00.000Z',
+};
+
+Map<String, dynamic> _navigationMenuJson() => {
+  'id': 'menu_1',
+  'store_id': 'store_1',
+  'handle': 'main',
+  'location': 'main',
+  'name': 'Header menu',
+};
+
+Map<String, dynamic> _navigationItemJson({
+  String id = 'nav_1',
+  String label = 'Home',
+  String url = '/',
+  int sortOrder = 0,
+}) => {
+  'id': id,
+  'menu_id': 'menu_1',
+  'store_id': 'store_1',
+  'label': label,
+  'url': url,
+  'target_type': 'url',
+  'target_resource_id': null,
+  'parent_item_id': null,
+  'sort_order': sortOrder,
+  'is_visible': true,
+  'open_in_new_tab': false,
+  'updated_at': '2026-06-01T11:00:00.000Z',
 };
 
 Map<String, dynamic> _themeReleaseJson() => {

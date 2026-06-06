@@ -25,6 +25,7 @@ import '../screens/customers/customers_screen.dart';
 import '../screens/discounts/coupon_form_screen.dart';
 import '../screens/discounts/coupons_screen.dart';
 import '../screens/content/blog_screen.dart';
+import '../screens/content/navigation_screen.dart';
 import '../screens/content/pages_screen.dart';
 import '../screens/inventory/inventory_screen.dart';
 import '../screens/orders/order_detail_screen.dart';
@@ -72,6 +73,7 @@ class AppRoutes {
   static const String couponForm = '/coupons/form';
   static const String pages = '/pages';
   static const String blog = '/blog';
+  static const String navigation = '/navigation';
   static const String inventory = '/inventory';
   static const String orders = '/orders';
   static const String orderDetail = '/orders/detail';
@@ -97,6 +99,9 @@ class AppRoutes {
     }
     if (settings.name == '/features/blog') {
       return _buildRoute(const BlogScreen(), settings);
+    }
+    if (settings.name == '/features/navigation') {
+      return _buildRoute(const NavigationScreen(), settings);
     }
     if (settings.name == '/features/notifications') {
       return _buildRoute(const NotificationsScreen(), settings);
@@ -227,6 +232,9 @@ class AppRoutes {
 
       case blog:
         return _buildRoute(const BlogScreen(), settings);
+
+      case navigation:
+        return _buildRoute(const NavigationScreen(), settings);
 
       case inventory:
         return _buildRoute(const InventoryScreen(), settings);
