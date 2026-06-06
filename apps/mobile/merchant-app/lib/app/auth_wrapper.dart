@@ -127,7 +127,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                     height: 32,
                     child: CircularProgressIndicator(
                       strokeWidth: 3,
-                      color: isDark ? const Color(0xFF8B5CF6) : colors.accent,
+                      color: colors.accent,
                     ),
                   ),
                   const SizedBox(height: 20),

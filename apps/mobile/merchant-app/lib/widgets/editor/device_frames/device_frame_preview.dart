@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import '../../../theme/app_theme_colors.dart';
 import 'phone_frame.dart';
@@ -30,10 +31,10 @@ class DeviceFramePreview extends StatefulWidget {
 
 class _DeviceFramePreviewState extends State<DeviceFramePreview> {
   late AppThemeColors colors;
-  
+
   // Phone model selection
   String _phoneModel = 'iphone'; // 'iphone' or 'samsung'
-  
+
   @override
   Widget build(BuildContext context) {
     colors = AppThemeColors.of(context);
@@ -41,7 +42,7 @@ class _DeviceFramePreviewState extends State<DeviceFramePreview> {
       children: [
         // Toolbar
         _buildToolbar(),
-        
+
         // Device Frame (fixed size, centered)
         Expanded(
           child: Center(
@@ -53,7 +54,10 @@ class _DeviceFramePreviewState extends State<DeviceFramePreview> {
                 return FadeTransition(
                   opacity: animation,
                   child: ScaleTransition(
-                    scale: Tween<double>(begin: 0.95, end: 1.0).animate(animation),
+                    scale: Tween<double>(
+                      begin: 0.95,
+                      end: 1.0,
+                    ).animate(animation),
                     child: child,
                   ),
                 );
@@ -86,13 +90,13 @@ class _DeviceFramePreviewState extends State<DeviceFramePreview> {
               isActive: widget.deviceMode == 'phone',
               onTap: () => widget.onDeviceChange('phone'),
             ),
-            
+
             // Phone model dropdown (only visible when phone is selected)
             if (widget.deviceMode == 'phone') ...[
               const SizedBox(width: 4),
               _buildPhoneModelDropdown(),
             ],
-            
+
             _DeviceIconButton(
               icon: Icons.tablet_mac_rounded,
               isActive: widget.deviceMode == 'tablet',
@@ -103,18 +107,19 @@ class _DeviceFramePreviewState extends State<DeviceFramePreview> {
               isActive: widget.deviceMode == 'laptop',
               onTap: () => widget.onDeviceChange('laptop'),
             ),
-            
+
             const SizedBox(width: 16),
             Container(width: 1, height: 24, color: colors.divider),
             const SizedBox(width: 16),
-            
+
             // Zoom Controls
             // Internal: 0.35 = 50%, 0.7 = 100%, 1.05 = 150%
             _ZoomBtn(
               icon: Icons.remove,
               enabled: widget.zoomLevel > 0.35,
               onTap: () {
-                final newZoom = ((widget.zoomLevel * 100 - 7).round() / 100).clamp(0.35, 1.05);
+                final newZoom = ((widget.zoomLevel * 100 - 7).round() / 100)
+                    .clamp(0.35, 1.05);
                 widget.onZoomChange(newZoom);
               },
             ),
@@ -143,20 +148,18 @@ class _DeviceFramePreviewState extends State<DeviceFramePreview> {
               icon: Icons.add,
               enabled: widget.zoomLevel < 1.05,
               onTap: () {
-                final newZoom = ((widget.zoomLevel * 100 + 7).round() / 100).clamp(0.35, 1.05);
+                final newZoom = ((widget.zoomLevel * 100 + 7).round() / 100)
+                    .clamp(0.35, 1.05);
                 widget.onZoomChange(newZoom);
               },
             ),
-            
+
             const SizedBox(width: 16),
-            
+
             // Device info
             Text(
               _getDeviceLabel(),
-              style: TextStyle(
-                color: colors.textSecondary,
-                fontSize: 11,
-              ),
+              style: TextStyle(color: colors.textSecondary, fontSize: 11),
             ),
           ],
         ),
@@ -175,7 +178,11 @@ class _DeviceFramePreviewState extends State<DeviceFramePreview> {
         child: DropdownButton<String>(
           value: _phoneModel,
           isDense: true,
-          icon: Icon(Icons.arrow_drop_down, size: 16, color: colors.textSecondary),
+          icon: Icon(
+            Icons.arrow_drop_down,
+            size: 16,
+            color: colors.textSecondary,
+          ),
           style: TextStyle(
             color: colors.textSecondary,
             fontSize: 11,
@@ -200,30 +207,18 @@ class _DeviceFramePreviewState extends State<DeviceFramePreview> {
   Widget _buildDeviceFrame() {
     // Device frame stays FIXED - zoom is applied to content only (in WebsitePreview)
     Widget content = widget.child;
-    
+
     switch (widget.deviceMode) {
       case 'tablet':
-        return TabletFrame(
-          key: const ValueKey('tablet'),
-          child: content,
-        );
+        return TabletFrame(key: const ValueKey('tablet'), child: content);
       case 'laptop':
-        return LaptopFrame(
-          key: const ValueKey('laptop'),
-          child: content,
-        );
+        return LaptopFrame(key: const ValueKey('laptop'), child: content);
       default:
         // Phone mode - check which model
         if (_phoneModel == 'samsung') {
-          return SamsungFrame(
-            key: const ValueKey('samsung'),
-            child: content,
-          );
+          return SamsungFrame(key: const ValueKey('samsung'), child: content);
         }
-        return PhoneFrame(
-          key: const ValueKey('iphone'),
-          child: content,
-        );
+        return PhoneFrame(key: const ValueKey('iphone'), child: content);
     }
   }
 
@@ -264,7 +259,9 @@ class _DeviceIconButton extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         margin: const EdgeInsets.only(right: 4),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFF8B5CF6) : Colors.transparent,
+          color: isActive
+              ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
@@ -293,10 +290,12 @@ class _ZoomBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
     return GestureDetector(
-      onTap: enabled ? () {
-        HapticFeedback.lightImpact();
-        onTap();
-      } : null,
+      onTap: enabled
+          ? () {
+              HapticFeedback.lightImpact();
+              onTap();
+            }
+          : null,
       child: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(

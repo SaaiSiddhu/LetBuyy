@@ -44,7 +44,7 @@ class ProductService extends ChangeNotifier {
           .map(ProductContract.fromJson)
           .toList(growable: false);
       _products = _productContracts
-          .map(_toLegacyProductMap)
+          .map((product) => product.toJson())
           .toList(growable: false);
       return _products;
     } catch (e) {
@@ -59,7 +59,7 @@ class ProductService extends ChangeNotifier {
   /// Get a single product by ID.
   Future<Map<String, dynamic>> fetchProduct(String id) async {
     final product = ProductContract.fromJson(await _api.products.get(id));
-    return _toLegacyProductMap(product);
+    return product.toJson();
   }
 
   // ── Create ───────────────────────────────────────────────
@@ -95,7 +95,7 @@ class ProductService extends ChangeNotifier {
         if (variants != null) 'variants': variants,
       }),
     );
-    final product = _toLegacyProductMap(created);
+    final product = created.toJson();
     _productContracts = [..._productContracts, created];
     _products.add(product);
     notifyListeners();
@@ -112,7 +112,7 @@ class ProductService extends ChangeNotifier {
     final contract = ProductContract.fromJson(
       await _api.products.update(id, fields),
     );
-    final updated = _toLegacyProductMap(contract);
+    final updated = contract.toJson();
     final contractIdx = _productContracts.indexWhere((p) => p.id == id);
     if (contractIdx != -1) _productContracts[contractIdx] = contract;
     final idx = _products.indexWhere((p) => p['id'] == id);
@@ -160,41 +160,5 @@ class ProductService extends ChangeNotifier {
   /// Upload a product image and return the CDN URL.
   Future<String> uploadProductImage(File file) async {
     return _api.uploadFile(file, folder: 'products');
-  }
-
-  Map<String, dynamic> _toLegacyProductMap(ProductContract product) {
-    final json = product.toJson();
-    final comparePrice = product.comparePrice;
-    final metadata = product.metadata;
-    final specifications = metadata['specifications'];
-
-    return {
-      ...json,
-      'id': product.id,
-      'storeId': product.storeId,
-      'name': product.name,
-      'slug': product.slug,
-      'description': product.description,
-      'salePrice': product.price,
-      'price': product.price,
-      'originalPrice': comparePrice,
-      'comparePrice': comparePrice,
-      'currency': product.currency,
-      'sku': product.sku ?? '',
-      'stock': product.stock,
-      'category': product.category,
-      'categoryId': product.category ?? '',
-      'images': product.images,
-      'tags': product.tags,
-      'isActive': product.isActive,
-      'isFeatured': product.isFeatured,
-      'isTrending': product.boolValue('is_trending'),
-      'isNew': product.boolValue('is_new', fallback: true),
-      'createdAt': product.optionalString('created_at'),
-      'updatedAt': product.optionalString('updated_at'),
-      'specifications': specifications is Map
-          ? Map<String, dynamic>.from(specifications)
-          : const <String, dynamic>{},
-    };
   }
 }

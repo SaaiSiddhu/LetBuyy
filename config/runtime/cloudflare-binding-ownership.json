@@ -119,6 +119,72 @@
       }
     },
     {
+      "runtimeRoot": "services/mobile-bff",
+      "config": "services/mobile-bff/wrangler.toml",
+      "environments": {
+        "staging": {
+          "workerName": "letbuyy-mobile-bff-staging",
+          "vars": [
+            "ENVIRONMENT",
+            "APP_ENV",
+            "NODE_ENV",
+            "DEPLOYMENT_ENV",
+            "TELEMETRY_ENV",
+            "RUNTIME_NAME",
+            "PRIMARY_REGION",
+            "FAILOVER_REGION",
+            "INTERNAL_API_SECRET"
+          ],
+          "queueProducers": [],
+          "queueConsumers": [],
+          "kvNamespaces": [],
+          "r2Buckets": [],
+          "d1Databases": [],
+          "durableObjects": [],
+          "serviceBindings": [
+            "API_GATEWAY_SERVICE"
+          ],
+          "telemetry": [
+            "observability",
+            "observability.logs"
+          ],
+          "analyticsEngineDatasets": [
+            "RUNTIME_TELEMETRY"
+          ]
+        },
+        "production": {
+          "workerName": "letbuyy-mobile-bff",
+          "vars": [
+            "ENVIRONMENT",
+            "APP_ENV",
+            "NODE_ENV",
+            "DEPLOYMENT_ENV",
+            "TELEMETRY_ENV",
+            "RUNTIME_NAME",
+            "PRIMARY_REGION",
+            "FAILOVER_REGION",
+            "INTERNAL_API_SECRET"
+          ],
+          "queueProducers": [],
+          "queueConsumers": [],
+          "kvNamespaces": [],
+          "r2Buckets": [],
+          "d1Databases": [],
+          "durableObjects": [],
+          "serviceBindings": [
+            "API_GATEWAY_SERVICE"
+          ],
+          "telemetry": [
+            "observability",
+            "observability.logs"
+          ],
+          "analyticsEngineDatasets": [
+            "RUNTIME_TELEMETRY"
+          ]
+        }
+      }
+    },
+    {
       "runtimeRoot": "services/webhook-service",
       "config": "services/webhook-service/wrangler.toml",
       "environments": {

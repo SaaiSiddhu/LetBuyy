@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 
+import '../theme/letbuyy_color_tokens.dart';
 import 'api_client.dart';
 
 /// Service for managing store subscriptions via the API.
@@ -229,7 +230,7 @@ class SubscriptionService {
           'productLimit': 50,
           'commission': 3.0,
           'badge': '🎁',
-          'color': 0xFF8B5CF6,
+          'color': LetbuyyColorTokens.brandPrimary.toARGB32(),
           'features': [
             '50 products',
             '3% commission',
@@ -263,7 +264,7 @@ class SubscriptionService {
           'productLimit': 30,
           'commission': 3.0,
           'badge': '⭐',
-          'color': 0xFF8B5CF6,
+          'color': LetbuyyColorTokens.brandPrimary.toARGB32(),
           'isPopular': true,
           'features': [
             '30 products',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' hide LoadingOverlay;
@@ -26,20 +27,22 @@ class _ProductsScreenState extends State<ProductsScreen> {
   List<Map<String, dynamic>> _storeProducts = [];
   int _totalSellerProducts = 0;
   bool _isLoading = true;
-  
+
   // Search & Filter State
   String _searchQuery = '';
-  String _statusFilter = 'all'; // all, active, inactive, out_of_stock, low_stock
-  String _sortBy = 'newest'; // newest, oldest, name_asc, name_desc, price_asc, price_desc
-  
+  String _statusFilter =
+      'all'; // all, active, inactive, out_of_stock, low_stock
+  String _sortBy =
+      'newest'; // newest, oldest, name_asc, name_desc, price_asc, price_desc
+
   // Selection State
   bool _isSelectionMode = false;
   Set<String> _selectedProductIds = {};
-  
+
   // Controllers
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+
   late AppThemeColors colors;
 
   @override
@@ -60,14 +63,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
     try {
       final storeService = context.read<StoreService>();
       final productService = context.read<ProductService>();
-      
+
       // getFirstStore uses the auth token to identify the user
       final store = await storeService.getFirstStore();
-      
+
       if (store != null) {
         // Fetch products for this store via API
         final storeProducts = await productService.fetchProducts(store.id);
-        
+
         setState(() {
           _store = store;
           _storeProducts = storeProducts;
@@ -84,78 +87,110 @@ class _ProductsScreenState extends State<ProductsScreen> {
   // ============================================
   // COMPUTED PROPERTIES
   // ============================================
-  
+
   List<Map<String, dynamic>> get _filteredProducts {
     var products = List<Map<String, dynamic>>.from(_storeProducts);
-    
+
     // Apply status filter
     if (_statusFilter != 'all') {
       products = products.where((p) {
-        final isActive = p['isActive'] ?? true;
-        final stock = (p['stock'] as num?)?.toInt() ?? 0;
+        final isActive = _productIsActive(p);
+        final stock = _productStock(p);
         switch (_statusFilter) {
-          case 'active': return isActive && stock > 0;
-          case 'inactive': return !isActive;
-          case 'out_of_stock': return stock <= 0;
-          case 'low_stock': return stock > 0 && stock <= 5;
-          default: return true;
+          case 'active':
+            return isActive && stock > 0;
+          case 'inactive':
+            return !isActive;
+          case 'out_of_stock':
+            return stock <= 0;
+          case 'low_stock':
+            return stock > 0 && stock <= 5;
+          default:
+            return true;
         }
       }).toList();
     }
-    
+
     // Apply search
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
-      products = products.where((p) =>
-        (p['name'] as String? ?? '').toLowerCase().contains(query) ||
-        (p['sku'] as String? ?? '').toLowerCase().contains(query)
-      ).toList();
+      products = products
+          .where(
+            (p) =>
+                (p['name'] as String? ?? '').toLowerCase().contains(query) ||
+                (p['sku'] as String? ?? '').toLowerCase().contains(query),
+          )
+          .toList();
     }
-    
+
     // Apply sorting
     products.sort((a, b) {
       switch (_sortBy) {
         case 'newest':
-          final aDate = a['createdAt'];
-          final bDate = b['createdAt'];
+          final aDate = a['created_at'];
+          final bDate = b['created_at'];
           if (aDate == null && bDate == null) return 0;
           if (aDate == null) return 1;
           if (bDate == null) return -1;
           return bDate.toString().compareTo(aDate.toString());
         case 'oldest':
-          final aDate = a['createdAt'];
-          final bDate = b['createdAt'];
+          final aDate = a['created_at'];
+          final bDate = b['created_at'];
           if (aDate == null && bDate == null) return 0;
           if (aDate == null) return 1;
           if (bDate == null) return -1;
           return aDate.toString().compareTo(bDate.toString());
         case 'name_asc':
-          return (a['name'] ?? '').toString().compareTo((b['name'] ?? '').toString());
+          return (a['name'] ?? '').toString().compareTo(
+            (b['name'] ?? '').toString(),
+          );
         case 'name_desc':
-          return (b['name'] ?? '').toString().compareTo((a['name'] ?? '').toString());
+          return (b['name'] ?? '').toString().compareTo(
+            (a['name'] ?? '').toString(),
+          );
         case 'price_asc':
-          return ((a['salePrice'] as num?) ?? 0).compareTo((b['salePrice'] as num?) ?? 0);
+          return _productPrice(a).compareTo(_productPrice(b));
         case 'price_desc':
-          return ((b['salePrice'] as num?) ?? 0).compareTo((a['salePrice'] as num?) ?? 0);
+          return _productPrice(b).compareTo(_productPrice(a));
         default:
           return 0;
       }
     });
-    
+
     return products;
   }
 
-  int get _activeCount => _storeProducts.where((p) => 
-    (p['isActive'] ?? true) && ((p['stock'] as num?)?.toInt() ?? 0) > 0
-  ).length;
-  
-  int get _outOfStockCount => _storeProducts.where((p) => 
-    ((p['stock'] as num?)?.toInt() ?? 0) <= 0
-  ).length;
-  
-  int get _inactiveCount => _storeProducts.where((p) => 
-    !(p['isActive'] ?? true)
-  ).length;
+  int get _activeCount => _storeProducts
+      .where((p) => _productIsActive(p) && _productStock(p) > 0)
+      .length;
+
+  int get _outOfStockCount =>
+      _storeProducts.where((p) => _productStock(p) <= 0).length;
+
+  int get _inactiveCount =>
+      _storeProducts.where((p) => !_productIsActive(p)).length;
+
+  bool _productIsActive(Map<String, dynamic> product) {
+    return (product['is_active'] ?? product['isActive'] ?? true) == true;
+  }
+
+  int _productStock(Map<String, dynamic> product) {
+    return ((product['stock'] ?? product['stock_quantity']) as num?)?.toInt() ??
+        0;
+  }
+
+  double _productPrice(Map<String, dynamic> product) {
+    return ((product['price'] ?? product['salePrice']) as num?)?.toDouble() ??
+        0;
+  }
+
+  double? _productComparePrice(Map<String, dynamic> product) {
+    return ((product['compare_price'] ??
+                product['comparePrice'] ??
+                product['originalPrice'])
+            as num?)
+        ?.toDouble();
+  }
 
   // ============================================
   // ACTIONS
@@ -182,7 +217,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   void _selectAll() {
     setState(() {
-      _selectedProductIds = _filteredProducts.map((p) => p['id'] as String).toSet();
+      _selectedProductIds = _filteredProducts
+          .map((p) => p['id'] as String)
+          .toSet();
     });
   }
 
@@ -192,29 +229,34 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   Future<void> _removeSelectedProducts() async {
     if (_store == null || _selectedProductIds.isEmpty) return;
-    
+
     final confirm = await _showConfirmDialog(
       title: 'Remove ${_selectedProductIds.length} Products?',
-      message: 'These products will be removed from your store but will remain in your catalog.',
+      message:
+          'These products will be removed from your store but will remain in your catalog.',
       confirmText: 'Remove',
       confirmColor: Colors.redAccent,
     );
-    
+
     if (confirm != true) return;
-    
+
     try {
       final storeService = context.read<StoreService>();
       final currentIds = _store!.selectedProductIds;
-      final newIds = currentIds.where((id) => !_selectedProductIds.contains(id)).toList();
+      final newIds = currentIds
+          .where((id) => !_selectedProductIds.contains(id))
+          .toList();
       await storeService.updateSelectedProducts(_store!.id, newIds);
-      
+
       HapticFeedback.mediumImpact();
       _clearSelection();
       _toggleSelectionMode();
       _loadData();
-      
+
       if (mounted) {
-        _showSnackBar('${_selectedProductIds.length} products removed from store');
+        _showSnackBar(
+          '${_selectedProductIds.length} products removed from store',
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -233,7 +275,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   void _navigateToImport() async {
     if (_store == null) return;
-    
+
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
@@ -260,9 +302,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Export Products', style: TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: colors.textPrimary,
-            )),
+            Text(
+              'Export Products',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colors.textPrimary,
+              ),
+            ),
             const SizedBox(height: 16),
             _buildExportOption(
               icon: Icons.table_chart_rounded,
@@ -282,7 +329,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         ),
       ),
     );
-    
+
     if (format != null) {
       // TODO: Implement actual export
       _showSnackBar('Export to $format coming soon!');
@@ -320,12 +367,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(
-                    color: colors.textPrimary, fontWeight: FontWeight.w600,
-                  )),
-                  Text(subtitle, style: TextStyle(
-                    color: colors.textSecondary, fontSize: 12,
-                  )),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: colors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                  ),
                 ],
               ),
             ),
@@ -352,7 +404,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('Cancel', style: TextStyle(color: colors.textSecondary)),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: colors.textSecondary),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
@@ -420,13 +475,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Products', style: TextStyle(
-                  fontSize: 22, fontWeight: FontWeight.bold, color: colors.textPrimary,
-                )),
+                Text(
+                  'Products',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: colors.textPrimary,
+                  ),
+                ),
                 if (_store != null)
-                  Text(_store!.name, style: TextStyle(
-                    fontSize: 12, color: colors.textSecondary,
-                  )),
+                  Text(
+                    _store!.name,
+                    style: TextStyle(fontSize: 12, color: colors.textSecondary),
+                  ),
               ],
             ),
           ),
@@ -438,15 +499,27 @@ class _ProductsScreenState extends State<ProductsScreen> {
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert, color: colors.textSecondary),
             color: colors.card,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             itemBuilder: (context) => [
-              PopupMenuItem(value: 'settings', child: Row(
-                children: [
-                  Icon(Icons.settings_rounded, size: 20, color: colors.textSecondary),
-                  const SizedBox(width: 12),
-                  Text('Settings', style: TextStyle(color: colors.textPrimary)),
-                ],
-              )),
+              PopupMenuItem(
+                value: 'settings',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.settings_rounded,
+                      size: 20,
+                      color: colors.textSecondary,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Settings',
+                      style: TextStyle(color: colors.textPrimary),
+                    ),
+                  ],
+                ),
+              ),
             ],
             onSelected: (value) {
               // Handle menu selection
@@ -493,7 +566,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
           ),
           _buildToolbarDivider(),
           _buildToolbarButton(
-            icon: _isSelectionMode ? Icons.close_rounded : Icons.checklist_rounded,
+            icon: _isSelectionMode
+                ? Icons.close_rounded
+                : Icons.checklist_rounded,
             label: _isSelectionMode ? 'Cancel' : 'Select',
             onTap: _toggleSelectionMode,
             isActive: _isSelectionMode,
@@ -510,8 +585,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
     bool isPrimary = false,
     bool isActive = false,
   }) {
-    final color = isPrimary ? AppColors.lavender : 
-                  isActive ? AppColors.lavender : colors.textSecondary;
+    final color = isPrimary
+        ? AppColors.lavender
+        : isActive
+        ? AppColors.lavender
+        : colors.textSecondary;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
@@ -522,9 +600,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
           children: [
             Icon(icon, color: color, size: 22),
             const SizedBox(height: 4),
-            Text(label, style: TextStyle(
-              color: color, fontSize: 11, fontWeight: FontWeight.w500,
-            )),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
       ),
@@ -532,11 +615,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   Widget _buildToolbarDivider() {
-    return Container(
-      height: 30,
-      width: 1,
-      color: colors.divider,
-    );
+    return Container(height: 30, width: 1, color: colors.divider);
   }
 
   // ============================================
@@ -548,11 +627,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: Row(
         children: [
-          _buildStatChip('Total', '${_storeProducts.length}', AppColors.lavender),
+          _buildStatChip(
+            'Total',
+            '${_storeProducts.length}',
+            AppColors.lavender,
+          ),
           const SizedBox(width: 8),
           _buildStatChip('Active', '$_activeCount', const Color(0xFF22C55E)),
           const SizedBox(width: 8),
-          _buildStatChip('Out of Stock', '$_outOfStockCount', const Color(0xFFEF4444)),
+          _buildStatChip(
+            'Out of Stock',
+            '$_outOfStockCount',
+            const Color(0xFFEF4444),
+          ),
           if (_inactiveCount > 0) ...[
             const SizedBox(width: 8),
             _buildStatChip('Hidden', '$_inactiveCount', colors.textTertiary),
@@ -574,13 +661,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 6, height: 6,
+            width: 6,
+            height: 6,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 6),
-          Text('$value $label', style: TextStyle(
-            color: color, fontSize: 11, fontWeight: FontWeight.w600,
-          )),
+          Text(
+            '$value $label',
+            style: TextStyle(
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -616,7 +709,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
             children: [
               // Sort dropdown
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: colors.surfaceVariant,
                   borderRadius: BorderRadius.circular(8),
@@ -628,14 +724,30 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     isDense: true,
                     dropdownColor: colors.card,
                     style: TextStyle(color: colors.textPrimary, fontSize: 12),
-                    icon: Icon(Icons.keyboard_arrow_down, color: colors.textSecondary, size: 18),
+                    icon: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: colors.textSecondary,
+                      size: 18,
+                    ),
                     items: const [
                       DropdownMenuItem(value: 'newest', child: Text('Newest')),
                       DropdownMenuItem(value: 'oldest', child: Text('Oldest')),
-                      DropdownMenuItem(value: 'name_asc', child: Text('Name A-Z')),
-                      DropdownMenuItem(value: 'name_desc', child: Text('Name Z-A')),
-                      DropdownMenuItem(value: 'price_asc', child: Text('Price ↑')),
-                      DropdownMenuItem(value: 'price_desc', child: Text('Price ↓')),
+                      DropdownMenuItem(
+                        value: 'name_asc',
+                        child: Text('Name A-Z'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'name_desc',
+                        child: Text('Name Z-A'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'price_asc',
+                        child: Text('Price ↑'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'price_desc',
+                        child: Text('Price ↓'),
+                      ),
                     ],
                     onChanged: (value) {
                       if (value != null) setState(() => _sortBy = value);
@@ -659,11 +771,22 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     style: TextStyle(color: colors.textPrimary, fontSize: 13),
                     decoration: InputDecoration(
                       hintText: 'Search products...',
-                      hintStyle: TextStyle(color: colors.textTertiary, fontSize: 13),
-                      prefixIcon: Icon(Icons.search, color: colors.textTertiary, size: 18),
+                      hintStyle: TextStyle(
+                        color: colors.textTertiary,
+                        fontSize: 13,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: colors.textTertiary,
+                        size: 18,
+                      ),
                       suffixIcon: _searchQuery.isNotEmpty
                           ? IconButton(
-                              icon: Icon(Icons.close, color: colors.textTertiary, size: 16),
+                              icon: Icon(
+                                Icons.close,
+                                color: colors.textTertiary,
+                                size: 16,
+                              ),
                               onPressed: () {
                                 _searchController.clear();
                                 setState(() => _searchQuery = '');
@@ -700,11 +823,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
             color: isActive ? AppColors.lavender : colors.divider,
           ),
         ),
-        child: Text(label, style: TextStyle(
-          color: isActive ? Colors.white : colors.textSecondary,
-          fontSize: 12,
-          fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-        )),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isActive ? Colors.white : colors.textSecondary,
+            fontSize: 12,
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+          ),
+        ),
       ),
     );
   }
@@ -725,8 +851,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
           children: [
             Icon(Icons.search_off, size: 64, color: colors.textTertiary),
             const SizedBox(height: 16),
-            Text('No products match your filters', 
-              style: TextStyle(color: colors.textSecondary)),
+            Text(
+              'No products match your filters',
+              style: TextStyle(color: colors.textSecondary),
+            ),
             const SizedBox(height: 8),
             TextButton(
               onPressed: () => setState(() {
@@ -734,7 +862,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 _searchQuery = '';
                 _searchController.clear();
               }),
-              child: Text('Clear Filters', style: TextStyle(color: AppColors.lavender)),
+              child: Text(
+                'Clear Filters',
+                style: TextStyle(color: AppColors.lavender),
+              ),
             ),
           ],
         ),
@@ -761,15 +892,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget _buildProductCard(Map<String, dynamic> product) {
     final productId = product['id'] as String;
     final name = product['name'] as String? ?? 'Untitled';
-    final salePrice = (product['salePrice'] as num? ?? 0).toDouble();
-    final originalPrice = (product['originalPrice'] as num?)?.toDouble();
+    final salePrice = _productPrice(product);
+    final originalPrice = _productComparePrice(product);
     final images = product['images'] as List<dynamic>? ?? [];
     final imageUrl = images.isNotEmpty ? images.first as String : null;
-    final stock = (product['stock'] as num?)?.toInt() ?? 0;
-    final isActive = product['isActive'] ?? true;
+    final stock = _productStock(product);
+    final isActive = _productIsActive(product);
     final isOutOfStock = stock <= 0;
     final isSelected = _selectedProductIds.contains(productId);
-    
+
     // Determine status
     String statusText;
     Color statusColor;
@@ -786,10 +917,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
       statusText = 'Active';
       statusColor = const Color(0xFF22C55E);
     }
-    
+
     // Discount
     final hasDiscount = originalPrice != null && originalPrice > salePrice;
-    final discountPercent = hasDiscount ? ((originalPrice - salePrice) / originalPrice * 100).round() : 0;
+    final discountPercent = hasDiscount
+        ? ((originalPrice - salePrice) / originalPrice * 100).round()
+        : 0;
 
     return GestureDetector(
       onTap: () {
@@ -814,13 +947,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
             color: isSelected ? AppColors.lavender : colors.divider,
             width: isSelected ? 2 : 1,
           ),
-          boxShadow: isSelected ? [
-            BoxShadow(
-              color: AppColors.lavender.withValues(alpha: 0.2),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ] : null,
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.lavender.withValues(alpha: 0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
         ),
         child: Stack(
           children: [
@@ -829,29 +964,47 @@ class _ProductsScreenState extends State<ProductsScreen> {
               children: [
                 // Image
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(13)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(13),
+                  ),
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
                         imageUrl != null
-                            ? Image.network(imageUrl, fit: BoxFit.cover,
+                            ? Image.network(
+                                imageUrl,
+                                fit: BoxFit.cover,
                                 errorBuilder: (_, __, ___) => Container(
                                   color: colors.card,
-                                  child: Icon(Icons.image, size: 40, color: colors.textTertiary),
+                                  child: Icon(
+                                    Icons.image,
+                                    size: 40,
+                                    color: colors.textTertiary,
+                                  ),
                                 ),
                               )
                             : Container(
                                 color: colors.card,
-                                child: Icon(Icons.image, size: 40, color: colors.textTertiary),
+                                child: Icon(
+                                  Icons.image,
+                                  size: 40,
+                                  color: colors.textTertiary,
+                                ),
                               ),
                         if (isOutOfStock && !_isSelectionMode)
                           Container(
                             color: Colors.black54,
                             child: const Center(
-                              child: Text('OUT OF STOCK', 
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10)),
+                              child: Text(
+                                'OUT OF STOCK',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                ),
+                              ),
                             ),
                           ),
                         // Discount badge
@@ -860,20 +1013,29 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             top: 6,
                             left: 6,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFEF4444),
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              child: Text('$discountPercent% OFF',
-                                style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+                              child: Text(
+                                '$discountPercent% OFF',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                       ],
                     ),
                   ),
                 ),
-                
+
                 // Info
                 Expanded(
                   child: Padding(
@@ -881,7 +1043,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(name, maxLines: 2, overflow: TextOverflow.ellipsis,
+                        Text(
+                          name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: colors.textPrimary,
                             fontWeight: FontWeight.w500,
@@ -892,16 +1057,20 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         // Price
                         Row(
                           children: [
-                            Text('₹${salePrice.toStringAsFixed(0)}',
+                            Text(
+                              '₹${salePrice.toStringAsFixed(0)}',
                               style: const TextStyle(
-                                color: Color(0xFF8B5CF6),
+                                color: mobile_tokens
+                                    .LetbuyyColorTokens
+                                    .brandPrimary,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
                               ),
                             ),
                             if (hasDiscount) ...[
                               const SizedBox(width: 4),
-                              Text('₹${originalPrice!.toStringAsFixed(0)}',
+                              Text(
+                                '₹${originalPrice!.toStringAsFixed(0)}',
                                 style: TextStyle(
                                   color: colors.textTertiary,
                                   fontSize: 10,
@@ -916,18 +1085,30 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: statusColor.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              child: Text(statusText,
-                                style: TextStyle(color: statusColor, fontSize: 9, fontWeight: FontWeight.w600),
+                              child: Text(
+                                statusText,
+                                style: TextStyle(
+                                  color: statusColor,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                             const Spacer(),
-                            Text('Stock: $stock',
-                              style: TextStyle(color: colors.textTertiary, fontSize: 10),
+                            Text(
+                              'Stock: $stock',
+                              style: TextStyle(
+                                color: colors.textTertiary,
+                                fontSize: 10,
+                              ),
                             ),
                           ],
                         ),
@@ -937,7 +1118,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 ),
               ],
             ),
-            
+
             // Selection Checkbox
             if (_isSelectionMode)
               Positioned(
@@ -946,7 +1127,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 child: GestureDetector(
                   onTap: () => _toggleProductSelection(productId),
                   child: Container(
-                    width: 24, height: 24,
+                    width: 24,
+                    height: 24,
                     decoration: BoxDecoration(
                       color: isSelected ? AppColors.lavender : Colors.white,
                       borderRadius: BorderRadius.circular(6),
@@ -980,14 +1162,24 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 color: AppColors.lavender.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.inventory_2_outlined, size: 56, color: AppColors.lavender),
+              child: Icon(
+                Icons.inventory_2_outlined,
+                size: 56,
+                color: AppColors.lavender,
+              ),
             ),
             const SizedBox(height: 20),
-            Text('No Products Yet', style: TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: colors.textPrimary,
-            )),
+            Text(
+              'No Products Yet',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colors.textPrimary,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text('Add or import products to display them in your store',
+            Text(
+              'Add or import products to display them in your store',
               textAlign: TextAlign.center,
               style: TextStyle(color: colors.textSecondary, fontSize: 14),
             ),
@@ -1001,8 +1193,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.lavender,
                       side: BorderSide(color: AppColors.lavender),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                     icon: const Icon(Icons.download_rounded, size: 18),
                     label: const Text('Import'),
@@ -1014,8 +1211,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.lavender,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   icon: const Icon(Icons.add_rounded, size: 18),
                   label: const Text('Add Product'),
@@ -1035,7 +1237,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget _buildBulkActionsBar() {
     return Container(
       padding: EdgeInsets.only(
-        left: 20, right: 20, top: 16,
+        left: 20,
+        right: 20,
+        top: 16,
         bottom: MediaQuery.of(context).padding.bottom + 16,
       ),
       decoration: BoxDecoration(
@@ -1077,8 +1281,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
             _showSnackBar('Hide feature coming soon');
           }),
           const SizedBox(width: 8),
-          _buildBulkButton(Icons.delete_outline_rounded, 'Remove', 
-            _removeSelectedProducts, color: Colors.redAccent),
+          _buildBulkButton(
+            Icons.delete_outline_rounded,
+            'Remove',
+            _removeSelectedProducts,
+            color: Colors.redAccent,
+          ),
           const SizedBox(width: 8),
           _buildBulkButton(Icons.more_horiz, 'More', () {
             _showSnackBar('More actions coming soon');
@@ -1088,7 +1296,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
     );
   }
 
-  Widget _buildBulkButton(IconData icon, String label, VoidCallback onTap, {Color? color}) {
+  Widget _buildBulkButton(
+    IconData icon,
+    String label,
+    VoidCallback onTap, {
+    Color? color,
+  }) {
     final buttonColor = color ?? colors.textSecondary;
     return InkWell(
       onTap: onTap,
@@ -1104,9 +1317,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
           children: [
             Icon(icon, size: 18, color: buttonColor),
             const SizedBox(width: 4),
-            Text(label, style: TextStyle(
-              color: buttonColor, fontSize: 12, fontWeight: FontWeight.w500,
-            )),
+            Text(
+              label,
+              style: TextStyle(
+                color: buttonColor,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
       ),

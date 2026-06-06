@@ -96,6 +96,30 @@
       }
     },
     {
+      "runtimeName": "Mobile BFF",
+      "runtimeRoot": "services/mobile-bff",
+      "deploymentKind": "cloudflare-worker",
+      "platform": "cloudflare-workers",
+      "regions": [
+        "global-edge",
+        "ap-south-1"
+      ],
+      "startupOrder": 4,
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 100,
+        "concurrency": 100,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "path": "/health",
+        "checkName": "mobile-bff.http.health",
+        "timeoutMs": 1500,
+        "degradedAfterFailures": 2,
+        "unavailableAfterFailures": 5
+      }
+    },
+    {
       "runtimeName": "Webhook Service",
       "runtimeRoot": "services/webhook-service",
       "deploymentKind": "cloudflare-worker",
@@ -507,6 +531,13 @@
       "healthCheckName": "api-gateway.queue-workers"
     },
     {
+      "fromRuntime": "Mobile BFF",
+      "toRuntime": "API Gateway",
+      "dependencyType": "api",
+      "requiredForStartup": true,
+      "healthCheckName": "mobile-bff.api-gateway"
+    },
+    {
       "fromRuntime": "Webhook Service",
       "toRuntime": "Supabase Database",
       "dependencyType": "database",
@@ -613,10 +644,10 @@
     },
     {
       "fromRuntime": "Mobile Merchant App",
-      "toRuntime": "API Gateway",
+      "toRuntime": "Mobile BFF",
       "dependencyType": "api",
       "requiredForStartup": true,
-      "healthCheckName": "mobile-merchant.api-gateway"
+      "healthCheckName": "mobile-merchant.mobile-bff"
     }
   ],
   "telemetry": {

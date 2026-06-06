@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
@@ -35,7 +36,7 @@ class QuickActionsGrid extends StatelessWidget {
           icon: Icons.layers_outlined,
           label: 'Store Layout',
           subtitle: 'Manage sections',
-          color: const Color(0xFF8B5CF6), // Indigo
+          color: mobile_tokens.LetbuyyColorTokens.brandPrimary, // Indigo
           onTap: onEditSections,
         ),
         _ActionCard(
@@ -98,7 +99,7 @@ class _ActionCard extends StatelessWidget {
     return Material(
       color: Colors.white.withValues(alpha: 0.05), // Glass
       borderRadius: BorderRadius.circular(16),
-      elevation: 0, 
+      elevation: 0,
       child: InkWell(
         onTap: () {
           HapticFeedback.lightImpact();
@@ -175,7 +176,7 @@ class QuickActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final effectiveColor = color ?? AppColors.primary;
-    
+
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();

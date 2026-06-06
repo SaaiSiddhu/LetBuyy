@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import '../../theme/app_theme_colors.dart';
 import 'package:flutter/services.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
@@ -7,10 +8,7 @@ import 'package:letbuyy_models/letbuyy_models.dart';
 class AddSectionSheet extends StatelessWidget {
   final List<SectionType> existingSectionTypes;
 
-  const AddSectionSheet({
-    super.key,
-    this.existingSectionTypes = const [],
-  });
+  const AddSectionSheet({super.key, this.existingSectionTypes = const []});
 
   static Future<SectionType?> show(
     BuildContext context, {
@@ -20,9 +18,8 @@ class AddSectionSheet extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => AddSectionSheet(
-        existingSectionTypes: existingSectionTypes,
-      ),
+      builder: (context) =>
+          AddSectionSheet(existingSectionTypes: existingSectionTypes),
     );
   }
 
@@ -32,7 +29,8 @@ class AddSectionSheet extends StatelessWidget {
     // Available section types (excluding already added or restricted ones)
     final availableTypes = SectionType.values.where((type) {
       // Skip header and footer - they're always present
-      if (type == SectionType.header || type == SectionType.footer) return false;
+      if (type == SectionType.header || type == SectionType.footer)
+        return false;
       // Skip already added sections
       if (existingSectionTypes.contains(type)) return false;
       return true;
@@ -57,7 +55,7 @@ class AddSectionSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          
+
           // Header
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
@@ -67,12 +65,13 @@ class AddSectionSheet extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF8B5CF6).withValues(alpha: 0.2),
+                    color: mobile_tokens.LetbuyyColorTokens.brandPrimary
+                        .withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.add_box_rounded,
-                    color: Color(0xFF8B5CF6),
+                    color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -105,9 +104,9 @@ class AddSectionSheet extends StatelessWidget {
               ],
             ),
           ),
-          
+
           Divider(color: colors.divider, height: 1),
-          
+
           // Section grid
           Expanded(
             child: GridView.builder(
@@ -141,10 +140,7 @@ class _SectionTypeCard extends StatelessWidget {
   final SectionType type;
   final VoidCallback? onTap;
 
-  const _SectionTypeCard({
-    required this.type,
-    this.onTap,
-  });
+  const _SectionTypeCard({required this.type, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -164,12 +160,14 @@ class _SectionTypeCard extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: const Color(0xFF8B5CF6).withValues(alpha: 0.15),
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                  alpha: 0.15,
+                ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 type.icon,
-                color: const Color(0xFF8B5CF6),
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
                 size: 24,
               ),
             ),

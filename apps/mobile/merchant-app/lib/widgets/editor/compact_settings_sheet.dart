@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import '../../theme/app_theme_colors.dart';
 import 'package:flutter/services.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
@@ -73,9 +74,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
     // Height: 85% for both header and footer, accounting for keyboard
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     final availableHeight = MediaQuery.of(context).size.height - keyboardHeight;
-    final sheetHeight = (isHeader || isFooter)
-        ? availableHeight * 0.85
-        : null;
+    final sheetHeight = (isHeader || isFooter) ? availableHeight * 0.85 : null;
 
     return Container(
       height: sheetHeight,
@@ -115,12 +114,13 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF8B5CF6).withValues(alpha: 0.2),
+                    color: mobile_tokens.LetbuyyColorTokens.brandPrimary
+                        .withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
                     widget.section.type.icon,
-                    color: const Color(0xFF8B5CF6),
+                    color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
                     size: 20,
                   ),
                 ),
@@ -132,7 +132,11 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isHeader ? 'Header Settings' : isFooter ? 'Footer Settings' : widget.section.type.displayName,
+                        isHeader
+                            ? 'Header Settings'
+                            : isFooter
+                            ? 'Footer Settings'
+                            : widget.section.type.displayName,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -155,15 +159,21 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                 // Expand button only for non-unified sheets
                 if (!isUnifiedSheet)
                   IconButton(
-                    icon: Icon(Icons.open_in_full_rounded,
-                      color: colors.textSecondary, size: 20),
+                    icon: Icon(
+                      Icons.open_in_full_rounded,
+                      color: colors.textSecondary,
+                      size: 20,
+                    ),
                     onPressed: widget.onExpand,
                     tooltip: 'Expand',
                   ),
 
                 IconButton(
-                  icon: Icon(Icons.close_rounded,
-                    color: colors.textSecondary, size: 20),
+                  icon: Icon(
+                    Icons.close_rounded,
+                    color: colors.textSecondary,
+                    size: 20,
+                  ),
                   onPressed: widget.onClose,
                 ),
               ],
@@ -173,12 +183,10 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
           const Divider(color: Color(0xFF334155), height: 1),
 
           // Sticky Preview Bar for Header (above scrollable content)
-          if (isHeader)
-            _buildHeaderPreviewBar(),
+          if (isHeader) _buildHeaderPreviewBar(),
 
           // Sticky Preview Bar for Footer (25% screen with live preview)
-          if (isFooter)
-            _buildFooterPreviewBar(),
+          if (isFooter) _buildFooterPreviewBar(),
 
           // Content - scrollable for unified sheets, regular for others
           if (isHeader)
@@ -193,7 +201,12 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).viewInsets.bottom),
+                padding: EdgeInsets.fromLTRB(
+                  20,
+                  20,
+                  20,
+                  20 + MediaQuery.of(context).viewInsets.bottom,
+                ),
                 child: _buildFooterSettingsContent(),
               ),
             )
@@ -266,6 +279,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
       onChanged: (val) => _updateSetting('contactEmail', val),
     );
   }
+
   /// Sticky footer preview bar - exact match to device preview, fixed (no scroll)
   Widget _buildFooterPreviewBar() {
     final contactEmail = _settings['contactEmail']?.toString() ?? '';
@@ -279,17 +293,25 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
 
     // Collect active social links
     final activeSocials = <IconData>[];
-    if ((_settings['instagramUrl']?.toString() ?? '').isNotEmpty) activeSocials.add(FontAwesomeIcons.instagram);
-    if ((_settings['facebookUrl']?.toString() ?? '').isNotEmpty) activeSocials.add(FontAwesomeIcons.facebookF);
-    if ((_settings['twitterUrl']?.toString() ?? '').isNotEmpty) activeSocials.add(FontAwesomeIcons.xTwitter);
-    if ((_settings['whatsappUrl']?.toString() ?? '').isNotEmpty) activeSocials.add(FontAwesomeIcons.whatsapp);
-    if ((_settings['telegramUrl']?.toString() ?? '').isNotEmpty) activeSocials.add(FontAwesomeIcons.telegram);
-    if ((_settings['youtubeUrl']?.toString() ?? '').isNotEmpty) activeSocials.add(FontAwesomeIcons.youtube);
+    if ((_settings['instagramUrl']?.toString() ?? '').isNotEmpty)
+      activeSocials.add(FontAwesomeIcons.instagram);
+    if ((_settings['facebookUrl']?.toString() ?? '').isNotEmpty)
+      activeSocials.add(FontAwesomeIcons.facebookF);
+    if ((_settings['twitterUrl']?.toString() ?? '').isNotEmpty)
+      activeSocials.add(FontAwesomeIcons.xTwitter);
+    if ((_settings['whatsappUrl']?.toString() ?? '').isNotEmpty)
+      activeSocials.add(FontAwesomeIcons.whatsapp);
+    if ((_settings['telegramUrl']?.toString() ?? '').isNotEmpty)
+      activeSocials.add(FontAwesomeIcons.telegram);
+    if ((_settings['youtubeUrl']?.toString() ?? '').isNotEmpty)
+      activeSocials.add(FontAwesomeIcons.youtube);
 
     final hasSocials = showSocial && activeSocials.isNotEmpty;
 
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 180), // Fixed max height to prevent overflow
+      constraints: const BoxConstraints(
+        maxHeight: 180,
+      ), // Fixed max height to prevent overflow
       child: Container(
         decoration: const BoxDecoration(
           color: Color(0xFF0f172a),
@@ -303,7 +325,9 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
             Container(
               height: 3,
               decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [primaryColor, accentColor, primaryColor]),
+                gradient: LinearGradient(
+                  colors: [primaryColor, accentColor, primaryColor],
+                ),
               ),
             ),
 
@@ -314,140 +338,243 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                 physics: const ClampingScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Store Name
-                Text(
-                  storeName,
-                  style: TextStyle(
-                    color: primaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                // Social Icons Row (horizontal, below store name) - compact
-                if (hasSocials)
-                  Row(
-                    children: activeSocials.map((icon) => Container(
-                      width: 18,
-                      height: 18,
-                      margin: const EdgeInsets.only(right: 3),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1E293B),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Center(child: FaIcon(icon, size: 8, color: Colors.white)),
-                    )).toList(),
-                  ),
-
-                if (hasSocials) const SizedBox(height: 12),
-
-                // Two Column Layout: Quick Links + Policies
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Quick Links
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('QUICK LINKS', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w600)),
-                          const SizedBox(height: 4),
-                          ...['Home', 'Shop', 'Cart', 'Track Order'].map((t) => Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Text(t, style: TextStyle(color: Color(0xFF94A3B8), fontSize: 9)),
-                          )),
-                        ],
+                    // Store Name
+                    Text(
+                      storeName,
+                      style: TextStyle(
+                        color: primaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
                       ),
                     ),
 
-                    // Policies
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('POLICIES', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w600)),
-                          const SizedBox(height: 4),
-                          ...['Privacy Policy', 'Terms of Service', 'Shipping', 'Returns & Exchange'].map((t) => Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Text(t, style: TextStyle(color: Color(0xFF94A3B8), fontSize: 9), maxLines: 1, overflow: TextOverflow.ellipsis),
-                          )),
-                        ],
+                    const SizedBox(height: 8),
+
+                    // Social Icons Row (horizontal, below store name) - compact
+                    if (hasSocials)
+                      Row(
+                        children: activeSocials
+                            .map(
+                              (icon) => Container(
+                                width: 18,
+                                height: 18,
+                                margin: const EdgeInsets.only(right: 3),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF1E293B),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Center(
+                                  child: FaIcon(
+                                    icon,
+                                    size: 8,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
                       ),
-                    ),
-                  ],
-                ),
 
-                const SizedBox(height: 10),
+                    if (hasSocials) const SizedBox(height: 12),
 
-                // Contact Section
-                Text('CONTACT', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    FaIcon(FontAwesomeIcons.envelope, size: 10, color: primaryColor),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        contactEmail.isNotEmpty ? contactEmail : 'No email set',
-                        style: TextStyle(
-                          color: contactEmail.isNotEmpty ? const Color(0xFF94A3B8) : const Color(0xFF475569),
-                          fontSize: 9,
-                          fontStyle: contactEmail.isEmpty ? FontStyle.italic : FontStyle.normal,
+                    // Two Column Layout: Quick Links + Policies
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Quick Links
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'QUICK LINKS',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              ...['Home', 'Shop', 'Cart', 'Track Order'].map(
+                                (t) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 2),
+                                  child: Text(
+                                    t,
+                                    style: TextStyle(
+                                      color: Color(0xFF94A3B8),
+                                      fontSize: 9,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+
+                        // Policies
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'POLICIES',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              ...[
+                                'Privacy Policy',
+                                'Terms of Service',
+                                'Shipping',
+                                'Returns & Exchange',
+                              ].map(
+                                (t) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 2),
+                                  child: Text(
+                                    t,
+                                    style: TextStyle(
+                                      color: Color(0xFF94A3B8),
+                                      fontSize: 9,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    // Contact Section
+                    Text(
+                      'CONTACT',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w600,
                       ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        FaIcon(
+                          FontAwesomeIcons.envelope,
+                          size: 10,
+                          color: primaryColor,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            contactEmail.isNotEmpty
+                                ? contactEmail
+                                : 'No email set',
+                            style: TextStyle(
+                              color: contactEmail.isNotEmpty
+                                  ? const Color(0xFF94A3B8)
+                                  : const Color(0xFF475569),
+                              fontSize: 9,
+                              fontStyle: contactEmail.isEmpty
+                                  ? FontStyle.italic
+                                  : FontStyle.normal,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ), // Close Flexible
-
-        // Bottom bar - copyright (outside scrollable area)
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: const BoxDecoration(
-            border: Border(top: BorderSide(color: Color(0xFF1E293B))),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '© ${DateTime.now().year} $storeName',
-                style: TextStyle(color: Color(0xFF64748B), fontSize: 8),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
+            ), // Close Flexible
+            // Bottom bar - copyright (outside scrollable area)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: const BoxDecoration(
+                border: Border(top: BorderSide(color: Color(0xFF1E293B))),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Made with ', style: TextStyle(color: Color(0xFF64748B), fontSize: 8)),
-                  Icon(Icons.favorite, size: 8, color: primaryColor),
-                  Text(' LetBuyy', style: TextStyle(color: primaryColor, fontSize: 8, fontWeight: FontWeight.w600)),
+                  Text(
+                    '© ${DateTime.now().year} $storeName',
+                    style: TextStyle(color: Color(0xFF64748B), fontSize: 8),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Made with ',
+                        style: TextStyle(color: Color(0xFF64748B), fontSize: 8),
+                      ),
+                      Icon(Icons.favorite, size: 8, color: primaryColor),
+                      Text(
+                        ' LetBuyy',
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontSize: 8,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
-    ),
-  ),
-);
+      ),
+    );
   }
 
   /// Footer settings content (unified full sheet like header)
   Widget _buildFooterSettingsContent() {
     // Social platform definitions matching storefront keys
     final socialPlatforms = [
-      {'key': 'instagramUrl', 'label': 'Instagram', 'icon': FontAwesomeIcons.instagram, 'hint': 'instagram.com/yourstore'},
-      {'key': 'facebookUrl', 'label': 'Facebook', 'icon': FontAwesomeIcons.facebookF, 'hint': 'facebook.com/yourstore'},
-      {'key': 'twitterUrl', 'label': 'X (Twitter)', 'icon': FontAwesomeIcons.xTwitter, 'hint': 'twitter.com/yourstore'},
-      {'key': 'whatsappUrl', 'label': 'WhatsApp', 'icon': FontAwesomeIcons.whatsapp, 'hint': 'wa.me/919876543210'},
-      {'key': 'telegramUrl', 'label': 'Telegram', 'icon': FontAwesomeIcons.telegram, 'hint': 't.me/yourstore'},
-      {'key': 'youtubeUrl', 'label': 'YouTube', 'icon': FontAwesomeIcons.youtube, 'hint': 'youtube.com/@yourstore'},
+      {
+        'key': 'instagramUrl',
+        'label': 'Instagram',
+        'icon': FontAwesomeIcons.instagram,
+        'hint': 'instagram.com/yourstore',
+      },
+      {
+        'key': 'facebookUrl',
+        'label': 'Facebook',
+        'icon': FontAwesomeIcons.facebookF,
+        'hint': 'facebook.com/yourstore',
+      },
+      {
+        'key': 'twitterUrl',
+        'label': 'X (Twitter)',
+        'icon': FontAwesomeIcons.xTwitter,
+        'hint': 'twitter.com/yourstore',
+      },
+      {
+        'key': 'whatsappUrl',
+        'label': 'WhatsApp',
+        'icon': FontAwesomeIcons.whatsapp,
+        'hint': 'wa.me/919876543210',
+      },
+      {
+        'key': 'telegramUrl',
+        'label': 'Telegram',
+        'icon': FontAwesomeIcons.telegram,
+        'hint': 't.me/yourstore',
+      },
+      {
+        'key': 'youtubeUrl',
+        'label': 'YouTube',
+        'icon': FontAwesomeIcons.youtube,
+        'hint': 'youtube.com/@yourstore',
+      },
     ];
 
     return Column(
@@ -471,16 +598,15 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
             children: [
               Text(
                 'Show Social Links',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: colors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 14, color: colors.textSecondary),
               ),
               Switch(
                 value: _settings['showSocial'] != false,
-                onChanged: (value) => setState(() => _settings['showSocial'] = value),
+                onChanged: (value) =>
+                    setState(() => _settings['showSocial'] = value),
                 activeColor: const Color(0xFF818CF8),
-                activeTrackColor: const Color(0xFF8B5CF6).withValues(alpha: 0.3),
+                activeTrackColor: mobile_tokens.LetbuyyColorTokens.brandPrimary
+                    .withValues(alpha: 0.3),
                 inactiveThumbColor: colors.textTertiary,
                 inactiveTrackColor: colors.divider,
               ),
@@ -503,15 +629,17 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
         const SizedBox(height: 12),
 
         // Social Link Fields
-        ...socialPlatforms.map((p) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: _buildFooterTextField(
-            key: p['key'] as String,
-            label: p['label'] as String,
-            icon: p['icon'] as IconData,
-            hint: p['hint'] as String,
+        ...socialPlatforms.map(
+          (p) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _buildFooterTextField(
+              key: p['key'] as String,
+              label: p['label'] as String,
+              icon: p['icon'] as IconData,
+              hint: p['hint'] as String,
+            ),
           ),
-        )),
+        ),
 
         const SizedBox(height: 8),
 
@@ -525,7 +653,11 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
           ),
           child: Row(
             children: [
-              const Icon(Icons.info_outline, size: 16, color: Color(0xFF818CF8)),
+              const Icon(
+                Icons.info_outline,
+                size: 16,
+                color: Color(0xFF818CF8),
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -573,7 +705,10 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
               padding: const EdgeInsets.only(left: 14, right: 10),
               child: FaIcon(icon, size: 16, color: const Color(0xFF818CF8)),
             ),
-            prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+            prefixIconConstraints: const BoxConstraints(
+              minWidth: 0,
+              minHeight: 0,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
@@ -586,7 +721,10 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: Color(0xFF818CF8), width: 2),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
           onChanged: (value) => _updateSetting(key, value),
         ),
@@ -632,7 +770,12 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                   if (logoUrl != null)
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
-                      child: Image.network(logoUrl, height: 24, width: 24, fit: BoxFit.cover),
+                      child: Image.network(
+                        logoUrl,
+                        height: 24,
+                        width: 24,
+                        fit: BoxFit.cover,
+                      ),
                     )
                   else
                     Container(
@@ -642,7 +785,11 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                         color: Colors.grey.shade200,
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: const Icon(Icons.image, size: 14, color: Colors.grey),
+                      child: const Icon(
+                        Icons.image,
+                        size: 14,
+                        color: Colors.grey,
+                      ),
                     ),
                 if (displayMode == 'both') const SizedBox(width: 6),
                 if (displayMode == 'name' || displayMode == 'both')
@@ -665,10 +812,18 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
             if (_settings['showAccount'] == true)
               const Padding(
                 padding: EdgeInsets.only(right: 8),
-                child: Icon(Icons.person_outline, size: 18, color: Colors.black54),
+                child: Icon(
+                  Icons.person_outline,
+                  size: 18,
+                  color: Colors.black54,
+                ),
               ),
             if (_settings['showCart'] != false)
-              const Icon(Icons.shopping_bag_outlined, size: 18, color: Colors.black54),
+              const Icon(
+                Icons.shopping_bag_outlined,
+                size: 18,
+                color: Colors.black54,
+              ),
           ],
         ),
       ),
@@ -694,9 +849,24 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
           ),
           child: Column(
             children: [
-              _buildBehaviorOption('sticky', 'Sticky', 'Always visible at top', behavior),
-              _buildBehaviorOption('scroll', 'Scroll', 'Scrolls with page', behavior),
-              _buildBehaviorOption('hide-on-scroll', 'Smart Hide', 'Hides when scrolling down', behavior),
+              _buildBehaviorOption(
+                'sticky',
+                'Sticky',
+                'Always visible at top',
+                behavior,
+              ),
+              _buildBehaviorOption(
+                'scroll',
+                'Scroll',
+                'Scrolls with page',
+                behavior,
+              ),
+              _buildBehaviorOption(
+                'hide-on-scroll',
+                'Smart Hide',
+                'Hides when scrolling down',
+                behavior,
+              ),
             ],
           ),
         ),
@@ -707,19 +877,49 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
         _buildSectionLabel('Logo & Branding'),
         Row(
           children: [
-            _buildPlacementButton('left', 'Left', Icons.format_align_left, logoPlacement, 'logoPlacement'),
+            _buildPlacementButton(
+              'left',
+              'Left',
+              Icons.format_align_left,
+              logoPlacement,
+              'logoPlacement',
+            ),
             const SizedBox(width: 8),
-            _buildPlacementButton('center', 'Center', Icons.format_align_center, logoPlacement, 'logoPlacement'),
+            _buildPlacementButton(
+              'center',
+              'Center',
+              Icons.format_align_center,
+              logoPlacement,
+              'logoPlacement',
+            ),
           ],
         ),
         const SizedBox(height: 12),
         Row(
           children: [
-            _buildPlacementButton('logo', 'Logo Only', Icons.image_outlined, displayMode, 'displayMode'),
+            _buildPlacementButton(
+              'logo',
+              'Logo Only',
+              Icons.image_outlined,
+              displayMode,
+              'displayMode',
+            ),
             const SizedBox(width: 6),
-            _buildPlacementButton('name', 'Name Only', Icons.text_fields, displayMode, 'displayMode'),
+            _buildPlacementButton(
+              'name',
+              'Name Only',
+              Icons.text_fields,
+              displayMode,
+              'displayMode',
+            ),
             const SizedBox(width: 6),
-            _buildPlacementButton('both', 'Both', Icons.view_agenda_outlined, displayMode, 'displayMode'),
+            _buildPlacementButton(
+              'both',
+              'Both',
+              Icons.view_agenda_outlined,
+              displayMode,
+              'displayMode',
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -743,7 +943,10 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: colors.divider),
                   image: logoUrl != null
-                      ? DecorationImage(image: NetworkImage(logoUrl), fit: BoxFit.cover)
+                      ? DecorationImage(
+                          image: NetworkImage(logoUrl),
+                          fit: BoxFit.cover,
+                        )
                       : null,
                 ),
                 child: logoUrl == null
@@ -755,23 +958,34 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Header Logo', style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: colors.textPrimary,
-                    )),
-                    Text('PNG or JPG, max 512px', style: TextStyle(
-                      fontSize: 12,
-                      color: colors.textSecondary,
-                    )),
+                    Text(
+                      'Header Logo',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      'PNG or JPG, max 512px',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colors.textSecondary,
+                      ),
+                    ),
                   ],
                 ),
               ),
               OutlinedButton(
                 onPressed: widget.onExpand,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF8B5CF6),
-                  side: const BorderSide(color: Color(0xFF8B5CF6)),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  foregroundColor:
+                      mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                  side: const BorderSide(
+                    color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
                 child: Text('Upload'),
               ),
@@ -785,11 +999,26 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
         _buildSectionLabel('Header Icons'),
         Row(
           children: [
-            _buildIconToggle('showSearch', Icons.search, 'Search', _settings['showSearch'] ?? true),
+            _buildIconToggle(
+              'showSearch',
+              Icons.search,
+              'Search',
+              _settings['showSearch'] ?? true,
+            ),
             const SizedBox(width: 8),
-            _buildIconToggle('showCart', Icons.shopping_bag_outlined, 'Cart', _settings['showCart'] ?? true),
+            _buildIconToggle(
+              'showCart',
+              Icons.shopping_bag_outlined,
+              'Cart',
+              _settings['showCart'] ?? true,
+            ),
             const SizedBox(width: 8),
-            _buildIconToggle('showAccount', Icons.person_outline, 'Account', _settings['showAccount'] ?? false),
+            _buildIconToggle(
+              'showAccount',
+              Icons.person_outline,
+              'Account',
+              _settings['showAccount'] ?? false,
+            ),
           ],
         ),
 
@@ -801,11 +1030,21 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
         // Nav Placement
         Row(
           children: [
-            _buildPlacementButton('left', 'Left Side', Icons.format_indent_decrease,
-                _settings['navPlacement'] ?? 'right', 'navPlacement'),
+            _buildPlacementButton(
+              'left',
+              'Left Side',
+              Icons.format_indent_decrease,
+              _settings['navPlacement'] ?? 'right',
+              'navPlacement',
+            ),
             const SizedBox(width: 8),
-            _buildPlacementButton('right', 'Right Side', Icons.format_indent_increase,
-                _settings['navPlacement'] ?? 'right', 'navPlacement'),
+            _buildPlacementButton(
+              'right',
+              'Right Side',
+              Icons.format_indent_increase,
+              _settings['navPlacement'] ?? 'right',
+              'navPlacement',
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -820,16 +1059,46 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
 
   /// Default nav pages
   static final List<Map<String, dynamic>> _defaultNavPages = [
-    {'id': 'home', 'label': 'Home', 'href': '/', 'isDefault': true, 'isVisible': true},
-    {'id': 'shop', 'label': 'Shop', 'href': '/shop', 'isDefault': true, 'isVisible': true},
-    {'id': 'privacy', 'label': 'Privacy', 'href': '/privacy', 'isDefault': true, 'isVisible': true},
-    {'id': 'terms', 'label': 'Terms', 'href': '/terms', 'isDefault': true, 'isVisible': true},
-    {'id': 'shipping', 'label': 'Shipping', 'href': '/shipping', 'isDefault': true, 'isVisible': true},
+    {
+      'id': 'home',
+      'label': 'Home',
+      'href': '/',
+      'isDefault': true,
+      'isVisible': true,
+    },
+    {
+      'id': 'shop',
+      'label': 'Shop',
+      'href': '/shop',
+      'isDefault': true,
+      'isVisible': true,
+    },
+    {
+      'id': 'privacy',
+      'label': 'Privacy',
+      'href': '/privacy',
+      'isDefault': true,
+      'isVisible': true,
+    },
+    {
+      'id': 'terms',
+      'label': 'Terms',
+      'href': '/terms',
+      'isDefault': true,
+      'isVisible': true,
+    },
+    {
+      'id': 'shipping',
+      'label': 'Shipping',
+      'href': '/shipping',
+      'isDefault': true,
+      'isVisible': true,
+    },
   ];
 
   Widget _buildNavPagesEditor() {
     final pages = List<Map<String, dynamic>>.from(
-      (_settings['navPages'] as List?) ?? _defaultNavPages
+      (_settings['navPages'] as List?) ?? _defaultNavPages,
     );
 
     return Container(
@@ -851,7 +1120,11 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                     : null,
               ),
               child: ListTile(
-                leading: Icon(Icons.drag_handle, color: colors.textTertiary, size: 20),
+                leading: Icon(
+                  Icons.drag_handle,
+                  color: colors.textTertiary,
+                  size: 20,
+                ),
                 title: Text(
                   page['label'] ?? '',
                   style: TextStyle(color: colors.textPrimary, fontSize: 14),
@@ -862,18 +1135,28 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                 ),
                 trailing: page['isDefault'] == true
                     ? Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: colors.card,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           'Default',
-                          style: TextStyle(fontSize: 9, color: colors.textTertiary),
+                          style: TextStyle(
+                            fontSize: 9,
+                            color: colors.textTertiary,
+                          ),
                         ),
                       )
                     : IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Color(0xFFEF4444), size: 18),
+                        icon: const Icon(
+                          Icons.delete_outline,
+                          color: Color(0xFFEF4444),
+                          size: 18,
+                        ),
                         onPressed: () => _removePage(index),
                       ),
                 dense: true,
@@ -886,8 +1169,18 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
           Divider(height: 1, color: colors.divider),
           TextButton.icon(
             onPressed: _addCustomPage,
-            icon: const Icon(Icons.add, color: Color(0xFF8B5CF6), size: 18),
-            label: Text('Add Custom Page', style: TextStyle(color: Color(0xFF8B5CF6), fontSize: 13)),
+            icon: const Icon(
+              Icons.add,
+              color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+              size: 18,
+            ),
+            label: Text(
+              'Add Custom Page',
+              style: TextStyle(
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                fontSize: 13,
+              ),
+            ),
           ),
         ],
       ),
@@ -896,7 +1189,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
 
   void _removePage(int index) {
     final pages = List<Map<String, dynamic>>.from(
-      (_settings['navPages'] as List?) ?? _defaultNavPages
+      (_settings['navPages'] as List?) ?? _defaultNavPages,
     );
     if (pages[index]['isDefault'] != true) {
       pages.removeAt(index);
@@ -910,7 +1203,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
       builder: (ctx) => _AddPageDialog(
         onAdd: (label, href) {
           final pages = List<Map<String, dynamic>>.from(
-            (_settings['navPages'] as List?) ?? _defaultNavPages
+            (_settings['navPages'] as List?) ?? _defaultNavPages,
           );
           pages.add({
             'id': DateTime.now().millisecondsSinceEpoch.toString(),
@@ -928,15 +1221,23 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
   Widget _buildSectionLabel(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Text(title, style: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: colors.textPrimary,
-      )),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: colors.textPrimary,
+        ),
+      ),
     );
   }
 
-  Widget _buildBehaviorOption(String value, String title, String subtitle, String currentValue) {
+  Widget _buildBehaviorOption(
+    String value,
+    String title,
+    String subtitle,
+    String currentValue,
+  ) {
     final isSelected = currentValue == value;
     return GestureDetector(
       onTap: () {
@@ -946,14 +1247,20 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF8B5CF6).withValues(alpha: 0.15) : Colors.transparent,
+          color: isSelected
+              ? mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                  alpha: 0.15,
+                )
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
             Icon(
               isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: isSelected ? const Color(0xFF8B5CF6) : colors.textTertiary,
+              color: isSelected
+                  ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                  : colors.textTertiary,
               size: 18,
             ),
             const SizedBox(width: 10),
@@ -961,15 +1268,18 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: colors.textPrimary,
-                  )),
-                  Text(subtitle, style: TextStyle(
-                    fontSize: 11,
-                    color: colors.textSecondary,
-                  )),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: TextStyle(fontSize: 11, color: colors.textSecondary),
+                  ),
                 ],
               ),
             ),
@@ -979,7 +1289,13 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
     );
   }
 
-  Widget _buildPlacementButton(String value, String label, IconData icon, String currentValue, String key) {
+  Widget _buildPlacementButton(
+    String value,
+    String label,
+    IconData icon,
+    String currentValue,
+    String key,
+  ) {
     final isSelected = currentValue == value;
     return Expanded(
       child: GestureDetector(
@@ -990,21 +1306,38 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF8B5CF6).withValues(alpha: 0.15) : colors.surfaceVariant,
+            color: isSelected
+                ? mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                    alpha: 0.15,
+                  )
+                : colors.surfaceVariant,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isSelected ? const Color(0xFF8B5CF6) : colors.divider,
+              color: isSelected
+                  ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                  : colors.divider,
             ),
           ),
           child: Column(
             children: [
-              Icon(icon, color: isSelected ? const Color(0xFF8B5CF6) : colors.textSecondary, size: 18),
+              Icon(
+                icon,
+                color: isSelected
+                    ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                    : colors.textSecondary,
+                size: 18,
+              ),
               const SizedBox(height: 4),
-              Text(label, style: TextStyle(
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected ? const Color(0xFF8B5CF6) : colors.textSecondary,
-              )),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  color: isSelected
+                      ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                      : colors.textSecondary,
+                ),
+              ),
             ],
           ),
         ),
@@ -1012,7 +1345,12 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
     );
   }
 
-  Widget _buildIconToggle(String key, IconData icon, String label, bool isActive) {
+  Widget _buildIconToggle(
+    String key,
+    IconData icon,
+    String label,
+    bool isActive,
+  ) {
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -1022,21 +1360,38 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isActive ? const Color(0xFF8B5CF6).withValues(alpha: 0.15) : colors.surfaceVariant,
+            color: isActive
+                ? mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                    alpha: 0.15,
+                  )
+                : colors.surfaceVariant,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isActive ? const Color(0xFF8B5CF6) : colors.divider,
+              color: isActive
+                  ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                  : colors.divider,
             ),
           ),
           child: Column(
             children: [
-              Icon(icon, color: isActive ? const Color(0xFF8B5CF6) : colors.textSecondary, size: 18),
+              Icon(
+                icon,
+                color: isActive
+                    ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                    : colors.textSecondary,
+                size: 18,
+              ),
               const SizedBox(height: 4),
-              Text(label, style: TextStyle(
-                fontSize: 10,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                color: isActive ? const Color(0xFF8B5CF6) : colors.textSecondary,
-              )),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                  color: isActive
+                      ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                      : colors.textSecondary,
+                ),
+              ),
             ],
           ),
         ),
@@ -1078,7 +1433,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
 
   void _updateBannerField(String field, String value) {
     final banners = List<Map<String, dynamic>>.from(
-      (_settings['banners'] as List?) ?? []
+      (_settings['banners'] as List?) ?? [],
     );
 
     if (banners.isEmpty) {
@@ -1112,8 +1467,10 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
         const SizedBox(height: 16),
         Row(
           children: [
-            Text('Columns: ',
-              style: TextStyle(color: colors.textSecondary, fontSize: 14)),
+            Text(
+              'Columns: ',
+              style: TextStyle(color: colors.textSecondary, fontSize: 14),
+            ),
             const SizedBox(width: 12),
             _ColumnSelector(
               value: columns,
@@ -1216,21 +1573,24 @@ class _SettingsFieldState extends State<_SettingsField> {
         TextField(
           controller: _controller,
           maxLines: widget.maxLines,
-          style: TextStyle(
-            color: colors.textPrimary,
-            fontSize: 14,
-          ),
+          style: TextStyle(color: colors.textPrimary, fontSize: 14),
           decoration: InputDecoration(
             filled: true,
             fillColor: colors.surfaceVariant,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF8B5CF6), width: 2),
+              borderSide: const BorderSide(
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                width: 2,
+              ),
             ),
           ),
           onChanged: widget.onChanged,
@@ -1244,10 +1604,7 @@ class _ColumnSelector extends StatelessWidget {
   final int value;
   final ValueChanged<int> onChanged;
 
-  const _ColumnSelector({
-    required this.value,
-    required this.onChanged,
-  });
+  const _ColumnSelector({required this.value, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -1266,7 +1623,7 @@ class _ColumnSelector extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               color: isSelected
-                  ? const Color(0xFF8B5CF6)
+                  ? mobile_tokens.LetbuyyColorTokens.brandPrimary
                   : colors.surfaceVariant,
               borderRadius: BorderRadius.circular(10),
             ),
@@ -1319,9 +1676,7 @@ class _ActionButton extends StatelessWidget {
             Icon(
               icon,
               size: 18,
-              color: isDestructive
-                  ? colors.error
-                  : colors.textSecondary,
+              color: isDestructive ? colors.error : colors.textSecondary,
             ),
             const SizedBox(width: 8),
             Text(
@@ -1329,9 +1684,7 @@ class _ActionButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: isDestructive
-                    ? colors.error
-                    : colors.textSecondary,
+                color: isDestructive ? colors.error : colors.textSecondary,
               ),
             ),
           ],
@@ -1360,7 +1713,10 @@ class _AddPageDialogState extends State<_AddPageDialog> {
     final colors = AppThemeColors.of(context);
     return AlertDialog(
       backgroundColor: colors.card,
-      title: Text('Add Custom Page', style: TextStyle(color: colors.textPrimary)),
+      title: Text(
+        'Add Custom Page',
+        style: TextStyle(color: colors.textPrimary),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -1377,7 +1733,9 @@ class _AddPageDialogState extends State<_AddPageDialog> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFF8B5CF6)),
+                borderSide: const BorderSide(
+                  color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                ),
               ),
             ),
             style: TextStyle(color: colors.textPrimary),
@@ -1396,7 +1754,9 @@ class _AddPageDialogState extends State<_AddPageDialog> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFF8B5CF6)),
+                borderSide: const BorderSide(
+                  color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                ),
               ),
             ),
             style: TextStyle(color: colors.textPrimary),
@@ -1416,7 +1776,7 @@ class _AddPageDialogState extends State<_AddPageDialog> {
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF8B5CF6),
+            backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
             foregroundColor: Colors.white,
           ),
           child: Text('Add'),

@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
-import '../../services/api_client.dart';
 import '../../services/subscription_service.dart';
 import '../../services/store_service.dart';
 
@@ -51,9 +50,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
     setState(() => _isLoading = true);
     try {
       final storeService = context.read<StoreService>();
-      final subscriptionService = SubscriptionService(
-        api: context.read<ApiClient>(),
-      );
+      final subscriptionService = context.read<SubscriptionService>();
 
       final store = await storeService.getFirstStore();
       if (store != null) {
@@ -81,9 +78,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
     HapticFeedback.mediumImpact();
 
     try {
-      final subscriptionService = SubscriptionService(
-        api: context.read<ApiClient>(),
-      );
+      final subscriptionService = context.read<SubscriptionService>();
       final response = await subscriptionService.connectOwnRazorpay(
         storeId: _store!.id,
         keyId: _keyIdController.text.trim(),

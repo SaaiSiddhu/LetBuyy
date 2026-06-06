@@ -6,7 +6,7 @@ import 'api_client.dart';
 
 /// Storage service using the LetBuyy API (R2 backend).
 ///
-/// Replaces Firebase Storage with multipart uploads to the Hono worker.
+/// Uses multipart uploads to the governed API gateway/BFF transport.
 class StorageService {
   final ApiClient _api;
 

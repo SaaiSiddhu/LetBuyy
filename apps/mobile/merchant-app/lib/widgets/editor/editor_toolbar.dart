@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import '../../theme/app_theme_colors.dart';
 import 'package:flutter/services.dart';
 
@@ -31,9 +32,7 @@ class EditorToolbar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
         color: colors.card,
-        border: Border(
-          top: BorderSide(color: colors.cardBorder),
-        ),
+        border: Border(top: BorderSide(color: colors.cardBorder)),
       ),
       child: SafeArea(
         top: false,
@@ -69,10 +68,12 @@ class EditorToolbar extends StatelessWidget {
             _ToolbarIconButton(
               icon: Icons.undo_rounded,
               isEnabled: canUndo,
-              onTap: canUndo ? () {
-                HapticFeedback.lightImpact();
-                onUndo?.call();
-              } : null,
+              onTap: canUndo
+                  ? () {
+                      HapticFeedback.lightImpact();
+                      onUndo?.call();
+                    }
+                  : null,
             ),
 
             const SizedBox(width: 8),
@@ -81,10 +82,12 @@ class EditorToolbar extends StatelessWidget {
             _ToolbarIconButton(
               icon: Icons.redo_rounded,
               isEnabled: canRedo,
-              onTap: canRedo ? () {
-                HapticFeedback.lightImpact();
-                onRedo?.call();
-              } : null,
+              onTap: canRedo
+                  ? () {
+                      HapticFeedback.lightImpact();
+                      onRedo?.call();
+                    }
+                  : null,
             ),
 
             const SizedBox(width: 8),
@@ -126,7 +129,7 @@ class _ToolbarButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: isPrimary
-              ? const Color(0xFF8B5CF6)
+              ? mobile_tokens.LetbuyyColorTokens.brandPrimary
               : colors.surfaceVariant,
           borderRadius: BorderRadius.circular(12),
         ),
@@ -180,9 +183,7 @@ class _ToolbarIconButton extends StatelessWidget {
         child: Icon(
           icon,
           size: 20,
-          color: isEnabled
-              ? colors.textSecondary
-              : colors.textTertiary,
+          color: isEnabled ? colors.textSecondary : colors.textTertiary,
         ),
       ),
     );

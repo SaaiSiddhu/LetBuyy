@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
@@ -135,7 +136,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ? Icons.light_mode_outlined
                             : Icons.brightness_auto_outlined,
                         title: 'Theme',
-                        iconColor: const Color(0xFF8B5CF6),
+                        iconColor:
+                            mobile_tokens.LetbuyyColorTokens.brandPrimary,
                         trailing: _buildThemeSelector(themeProvider, colors),
                         showArrow: false,
                       ),
@@ -261,7 +263,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         icon: Icons.rocket_launch_outlined,
                         title: 'View All Plans',
                         subtitle: 'Compare features & upgrade',
-                        iconColor: const Color(0xFF8B5CF6),
+                        iconColor:
+                            mobile_tokens.LetbuyyColorTokens.brandPrimary,
                         onTap: () =>
                             Navigator.pushNamed(context, AppRoutes.pricing),
                       ),

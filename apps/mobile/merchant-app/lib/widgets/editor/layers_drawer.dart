@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import '../../theme/app_theme_colors.dart';
 import 'package:flutter/services.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
@@ -44,9 +45,7 @@ class LayersDrawer extends StatelessWidget {
       width: 280,
       decoration: BoxDecoration(
         color: colors.card,
-        border: Border(
-          left: BorderSide(color: colors.cardBorder),
-        ),
+        border: Border(left: BorderSide(color: colors.cardBorder)),
       ),
       child: Column(
         children: [
@@ -54,14 +53,15 @@ class LayersDrawer extends StatelessWidget {
           Container(
             padding: const EdgeInsets.fromLTRB(20, 16, 12, 16),
             decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: colors.cardBorder),
-              ),
+              border: Border(bottom: BorderSide(color: colors.cardBorder)),
             ),
             child: Row(
               children: [
-                Icon(Icons.layers_outlined,
-                  color: colors.textPrimary, size: 20),
+                Icon(
+                  Icons.layers_outlined,
+                  color: colors.textPrimary,
+                  size: 20,
+                ),
                 const SizedBox(width: 12),
                 Text(
                   'Layers',
@@ -73,8 +73,11 @@ class LayersDrawer extends StatelessWidget {
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: Icon(Icons.close_rounded,
-                    color: colors.textSecondary, size: 20),
+                  icon: Icon(
+                    Icons.close_rounded,
+                    color: colors.textSecondary,
+                    size: 20,
+                  ),
                   onPressed: onClose,
                 ),
               ],
@@ -93,17 +96,24 @@ class LayersDrawer extends StatelessWidget {
                     isSelected: headerSection.id == selectedSectionId,
                     isFixed: true,
                     onTap: () => onSectionTap?.call(headerSection!),
-                    onVisibilityToggle: () => onVisibilityToggle?.call(headerSection!),
+                    onVisibilityToggle: () =>
+                        onVisibilityToggle?.call(headerSection!),
                   ),
 
                 // Divider
                 if (headerSection != null && bodySections.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     child: Row(
                       children: [
-                        Icon(Icons.drag_indicator,
-                          size: 14, color: colors.textTertiary),
+                        Icon(
+                          Icons.drag_indicator,
+                          size: 14,
+                          color: colors.textTertiary,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'Drag to reorder',
@@ -142,7 +152,8 @@ class LayersDrawer extends StatelessWidget {
                       section: section,
                       isSelected: section.id == selectedSectionId,
                       onTap: () => onSectionTap?.call(section),
-                      onVisibilityToggle: () => onVisibilityToggle?.call(section),
+                      onVisibilityToggle: () =>
+                          onVisibilityToggle?.call(section),
                     );
                   },
                 ),
@@ -154,7 +165,8 @@ class LayersDrawer extends StatelessWidget {
                     isSelected: footerSection.id == selectedSectionId,
                     isFixed: true,
                     onTap: () => onSectionTap?.call(footerSection!),
-                    onVisibilityToggle: () => onVisibilityToggle?.call(footerSection!),
+                    onVisibilityToggle: () =>
+                        onVisibilityToggle?.call(footerSection!),
                   ),
               ],
             ),
@@ -194,12 +206,14 @@ class _LayerItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF8B5CF6).withValues(alpha: 0.15)
+              ? mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                  alpha: 0.15,
+                )
               : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF8B5CF6)
+                ? mobile_tokens.LetbuyyColorTokens.brandPrimary
                 : Colors.transparent,
           ),
         ),
@@ -207,11 +221,9 @@ class _LayerItem extends StatelessWidget {
           children: [
             // Drag handle or lock
             if (isFixed)
-              Icon(Icons.lock_outline,
-                size: 16, color: colors.textTertiary)
+              Icon(Icons.lock_outline, size: 16, color: colors.textTertiary)
             else
-              Icon(Icons.drag_indicator,
-                size: 16, color: colors.textTertiary),
+              Icon(Icons.drag_indicator, size: 16, color: colors.textTertiary),
 
             const SizedBox(width: 12),
 
@@ -220,7 +232,7 @@ class _LayerItem extends StatelessWidget {
               section.type.icon,
               size: 18,
               color: section.isVisible
-                  ? const Color(0xFF8B5CF6)
+                  ? mobile_tokens.LetbuyyColorTokens.brandPrimary
                   : colors.textTertiary,
             ),
 

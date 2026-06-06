@@ -34,7 +34,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       final store = await storeService.getFirstStore();
       final analytics = store == null
           ? null
-          : await context.read<AnalyticsService>().getStoreAnalytics(store.id);
+          : await context.read<AnalyticsService>().getStoreAnalytics(
+              store.id,
+              period: _selectedPeriod,
+            );
       setState(() {
         _store = store;
         _analytics = analytics;
@@ -63,12 +66,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             initialValue: _selectedPeriod,
             onSelected: (value) {
               setState(() => _selectedPeriod = value);
+              _loadStore();
             },
             itemBuilder: (context) => [
-              _buildPeriodMenuItem('24h', 'Last 24 hours'),
               _buildPeriodMenuItem('7d', 'Last 7 days'),
               _buildPeriodMenuItem('30d', 'Last 30 days'),
-              _buildPeriodMenuItem('all', 'All time'),
+              _buildPeriodMenuItem('90d', 'Last 90 days'),
+              _buildPeriodMenuItem('12m', 'Last 12 months'),
             ],
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -168,14 +172,14 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
   String _getPeriodLabel(String period) {
     switch (period) {
-      case '24h':
-        return 'Last 24h';
       case '7d':
         return 'Last 7 days';
       case '30d':
         return 'Last 30 days';
-      case 'all':
-        return 'All time';
+      case '90d':
+        return 'Last 90 days';
+      case '12m':
+        return 'Last 12 months';
       default:
         return 'Last 7 days';
     }

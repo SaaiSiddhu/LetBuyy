@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 
 import '../screens/splash/splash_screen.dart';
 import '../screens/auth/login_screen.dart';
+import '../screens/auth/otp_screen.dart';
 import '../screens/auth/error_screen.dart';
+import '../screens/auth/turnstile_challenge_screen.dart';
 import '../screens/wizard/create_store_wizard.dart';
 import '../screens/wizard/store_published_screen.dart';
 import '../screens/main/store_main_screen.dart';
@@ -29,6 +31,8 @@ class AppRoutes {
   static const String auth = '/'; // Auth wrapper is root route for mobile
   static const String splash = '/splash';
   static const String login = '/login';
+  static const String otp = '/otp';
+  static const String turnstileChallenge = '/turnstile-challenge';
   static const String error = '/error';
 
   // Wizard routes
@@ -72,6 +76,20 @@ class AppRoutes {
 
       case login:
         return _buildRoute(const LoginScreen(), settings);
+
+      case otp:
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        return _buildRoute(
+          OtpScreen(
+            email: args['email'] as String? ?? '',
+            password: args['password'] as String? ?? '',
+            name: args['name'] as String?,
+          ),
+          settings,
+        );
+
+      case turnstileChallenge:
+        return _buildRoute(const TurnstileChallengeScreen(), settings);
 
       case error:
         final args = settings.arguments as Map<String, dynamic>?;

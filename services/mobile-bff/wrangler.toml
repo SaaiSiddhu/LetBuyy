@@ -1,0 +1,111 @@
+name = "letbuyy-mobile-bff"
+main = "src/index.ts"
+compatibility_date = "2026-05-25"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+
+[build]
+command = "pnpm build"
+
+[observability]
+enabled = true
+head_sampling_rate = 0.1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 0.1
+invocation_logs = true
+
+[vars]
+ENVIRONMENT = "staging"
+APP_ENV = "staging"
+NODE_ENV = "production"
+NEXT_PUBLIC_ENV = "staging"
+WORKER_ENV = "staging"
+DEPLOYMENT_ENV = "staging"
+TELEMETRY_ENV = "staging"
+RUNTIME_NAME = "Mobile BFF"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+INTERNAL_API_SECRET = "SKIP_NEEDS_HUMAN_BFF_INTERNAL_API_SECRET"
+
+[env.staging]
+name = "letbuyy-mobile-bff-staging"
+workers_dev = false
+routes = [
+  { pattern = "bff-staging.letbuyy.store", custom_domain = true },
+  { pattern = "bff.staging.letbuyy.store", custom_domain = true }
+]
+
+[env.staging.observability]
+enabled = true
+head_sampling_rate = 0.1
+
+[env.staging.observability.logs]
+enabled = true
+head_sampling_rate = 0.1
+invocation_logs = true
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+APP_ENV = "staging"
+NODE_ENV = "production"
+NEXT_PUBLIC_ENV = "staging"
+WORKER_ENV = "staging"
+DEPLOYMENT_ENV = "staging"
+TELEMETRY_ENV = "staging"
+RUNTIME_NAME = "Mobile BFF"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+INTERNAL_API_SECRET = "SKIP_NEEDS_HUMAN_BFF_INTERNAL_API_SECRET"
+
+[[env.staging.services]]
+binding = "API_GATEWAY_SERVICE"
+service = "letbuyy-api-staging"
+
+[[env.staging.analytics_engine_datasets]]
+binding = "RUNTIME_TELEMETRY"
+dataset = "letbuyy-staging-telemetry"
+
+[env.staging.placement]
+mode = "smart"
+
+[env.production]
+name = "letbuyy-mobile-bff"
+workers_dev = false
+routes = [
+  { pattern = "bff.letbuyy.store", custom_domain = true }
+]
+
+[env.production.observability]
+enabled = true
+head_sampling_rate = 0.1
+
+[env.production.observability.logs]
+enabled = true
+head_sampling_rate = 0.1
+invocation_logs = true
+
+[env.production.vars]
+ENVIRONMENT = "production"
+APP_ENV = "production"
+NODE_ENV = "production"
+NEXT_PUBLIC_ENV = "production"
+WORKER_ENV = "production"
+DEPLOYMENT_ENV = "production"
+TELEMETRY_ENV = "production"
+RUNTIME_NAME = "Mobile BFF"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+INTERNAL_API_SECRET = "SKIP_NEEDS_HUMAN_BFF_INTERNAL_API_SECRET"
+
+[[env.production.services]]
+binding = "API_GATEWAY_SERVICE"
+service = "letbuyy-api"
+
+[[env.production.analytics_engine_datasets]]
+binding = "RUNTIME_TELEMETRY"
+dataset = "letbuyy-production-telemetry"
+
+[env.production.placement]
+mode = "smart"

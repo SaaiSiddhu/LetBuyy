@@ -8,6 +8,10 @@
       "staging": "letbuyy-api-staging",
       "production": "letbuyy-api"
     },
+    "mobile-bff": {
+      "staging": "letbuyy-mobile-bff-staging",
+      "production": "letbuyy-mobile-bff"
+    },
     "webhook-service": {
       "staging": "letbuyy-webhook-staging",
       "production": "letbuyy-webhook"
@@ -120,6 +124,7 @@
   "domains": {
     "staging": {
       "api": "api-staging.letbuyy.store",
+      "bff": "bff-staging.letbuyy.store",
       "webhooks": "webhooks-staging.letbuyy.store",
       "storefront": "store-staging.letbuyy.store",
       "accounts": "accounts-staging.letbuyy.store",
@@ -131,6 +136,7 @@
     },
     "production": {
       "api": "api.letbuyy.store",
+      "bff": "bff.letbuyy.store",
       "webhooks": "webhooks.letbuyy.store",
       "storefront": "store.letbuyy.store",
       "accounts": "accounts.letbuyy.store",

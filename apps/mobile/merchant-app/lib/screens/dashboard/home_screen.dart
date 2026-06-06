@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -48,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
         try {
           analytics = await context.read<AnalyticsService>().getStoreAnalytics(
             store.id,
+            period: _analyticsPeriod,
           );
         } catch (analyticsError) {
           debugPrint('Error loading dashboard analytics: $analyticsError');
@@ -61,6 +63,20 @@ class _HomeScreenState extends State<HomeScreen> {
       debugPrint('Error loading store: $e');
     } finally {
       setState(() => _isLoading = false);
+    }
+  }
+
+  String get _analyticsPeriod {
+    switch (_selectedPeriod) {
+      case '7 Days':
+        return '7d';
+      case '90 Days':
+        return '90d';
+      case '12 Months':
+        return '12m';
+      case '30 Days':
+      default:
+        return '30d';
     }
   }
 
@@ -284,7 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         label: 'Visitors',
                         value: _formatNumber(totalVisitors),
                         trend: totalVisitors > 0 ? 'Store' : 'Pending',
-                        color: const Color(0xFF8B5CF6),
+                        color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
                       ),
                       const SizedBox(height: 8),
                       _buildCompactStatCard(
@@ -494,7 +510,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showPeriodPicker(AppThemeColors colors) {
-    final periods = ['7 Days', '30 Days', '3 Months', '6 Months', '1 Year'];
+    final periods = ['7 Days', '30 Days', '90 Days', '12 Months'];
 
     showModalBottomSheet(
       context: context,
@@ -531,13 +547,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   setState(() => _selectedPeriod = period);
                   Navigator.pop(context);
+                  _loadStore();
                 },
                 leading: Icon(
                   _selectedPeriod == period
                       ? Icons.radio_button_checked_rounded
                       : Icons.radio_button_off_rounded,
                   color: _selectedPeriod == period
-                      ? const Color(0xFF8B5CF6)
+                      ? mobile_tokens.LetbuyyColorTokens.brandPrimary
                       : colors.textSecondary,
                   size: 20,
                 ),
@@ -556,7 +573,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 trailing: _selectedPeriod == period
                     ? const Icon(
                         Icons.check_rounded,
-                        color: Color(0xFF8B5CF6),
+                        color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
                         size: 18,
                       )
                     : null,

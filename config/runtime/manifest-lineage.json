@@ -32,7 +32,7 @@
       "path": "config/runtime/queue-lifecycle-manifest.json",
       "owner": "queue-runtime",
       "compatibility": "dead-letter-and-retry-compatible",
-      "checksum": "510951421a3fcf3108dcf6aab7b9d1c707f2856d16431b268893360a863e87d7"
+      "checksum": "22876944bafa7a40a9625bdbe18f7a947eef31378c16ad87b72103bf5467398f"
     },
     {
       "path": "config/runtime/deployment-lineage-manifest.json",
@@ -44,13 +44,13 @@
       "path": "config/runtime/cloudflare-binding-ownership.json",
       "owner": "cloudflare-runtime",
       "compatibility": "explicit-env-binding-compatible",
-      "checksum": "d421dd2555354d3cb13941b157c7d21a7df5f4f6a0befba02dae641306506c84"
+      "checksum": "79a90f2a15bbe0499c193dc4553eb3a04fa12ee6186fed4f871755f1cec12a8e"
     },
     {
       "path": "config/runtime/deployment-topology.json",
       "owner": "runtime-topology",
       "compatibility": "startup-order-compatible",
-      "checksum": "f630f113937e3ababded1fe3a6874e956879831a9ee9e3dc0dcf581222c9b0ba"
+      "checksum": "01ed5b68f14528edbddaf0abbe3d2762a4c0324f144a973d48be854a5e652e93"
     },
     {
       "path": "config/runtime/distributed-execution-contract.json",

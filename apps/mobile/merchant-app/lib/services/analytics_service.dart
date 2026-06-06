@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
 
 import 'api_client.dart';
 
@@ -95,17 +94,17 @@ class TopProduct {
       id: json['id'] as String,
       name: json['name'] as String? ?? '',
       views: json['views'] as int? ?? 0,
-      orders: json['orders'] as int? ?? 0,
+      orders:
+          (json['orders'] as int?) ??
+          (json['total_sold'] as int?) ??
+          (json['units_sold'] as int?) ??
+          0,
       revenue: (json['revenue'] as num?)?.toDouble() ?? 0,
     );
   }
 }
 
-/// Service for fetching and managing store analytics via API.
-///
-/// Replaces provider-local analytics with REST API calls.
-/// Some analytics data is computed from existing orders/products endpoints
-/// until dedicated analytics endpoints are added to the backend.
+/// Service for fetching store analytics from the gateway analytics contract.
 class AnalyticsService extends ChangeNotifier {
   final ApiClient _api;
 
@@ -117,74 +116,46 @@ class AnalyticsService extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  /// Fetch analytics for a store.
-  ///
-  /// Currently computes basic stats from orders + products endpoints.
-  /// Replace with a dedicated analytics endpoint when available.
-  Future<StoreAnalytics> getStoreAnalytics(String storeId) async {
+  /// Fetch analytics for a store from `/analytics/*` gateway endpoints.
+  Future<StoreAnalytics> getStoreAnalytics(
+    String storeId, {
+    String period = '30d',
+  }) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final ordersPage = await _api.orders.list(
-        query: {'store_id': storeId, 'limit': '100'},
+      final query = {'store_id': storeId, 'period': period};
+      final dashboard = await _api.analytics.dashboard(query);
+      final orderBreakdown = await _api.analytics.orders({'store_id': storeId});
+      final revenue = await _api.requestJson(
+        '/analytics/revenue',
+        options: ApiRequestOptions(query: query),
       );
-      final orders = ordersPage.data
-          .map(OrderContract.fromJson)
+      final topProductRows = await _api.requestData<List<Map<String, dynamic>>>(
+        '/analytics/top-products',
+        options: ApiRequestOptions(query: {'store_id': storeId, 'limit': 5}),
+        decoder: (value) => asJsonList(
+          value,
+        ).map((item) => asJsonMap(item)).toList(growable: false),
+      );
+
+      final summary = asJsonMap(dashboard['summary']);
+      final revenueMetric = asJsonMap(summary['revenue']);
+      final ordersMetric = asJsonMap(summary['orders']);
+      final ordersByStatus = _intMap(asJsonMap(orderBreakdown['breakdown']));
+      final dailyStats = asJsonList(revenue['chart'])
+          .map((item) => DailyStats.fromJson(asJsonMap(item)))
           .toList(growable: false);
 
-      final productsPage = await _api.products.list(
-        query: {'store_id': storeId, 'limit': '1'},
-      );
-      final totalProducts = productsPage.total;
-
-      // Compute stats from orders
-      double totalRevenue = 0;
-      final ordersByStatus = <String, int>{};
-      final topProductRows = <String, _TopProductAccumulator>{};
-
-      for (final order in orders) {
-        totalRevenue += order.total;
-        final status = order.status.isEmpty ? 'unknown' : order.status;
-        ordersByStatus[status] = (ordersByStatus[status] ?? 0) + 1;
-
-        for (final line in order.lineItems) {
-          final key = line.productId ?? line.name;
-          if (key.isEmpty) continue;
-          final row = topProductRows.putIfAbsent(
-            key,
-            () => _TopProductAccumulator(
-              id: line.productId ?? key,
-              name: line.name.isEmpty ? 'Untitled product' : line.name,
-            ),
-          );
-          row.orders += line.quantity;
-          row.revenue += line.total;
-        }
-      }
-
-      final totalOrders = orders.length;
-      final avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0.0;
-      final topProducts = topProductRows.values.toList()
-        ..sort((a, b) => b.revenue.compareTo(a.revenue));
-
       _analytics = StoreAnalytics(
-        totalRevenue: totalRevenue,
-        totalOrders: totalOrders,
-        totalProducts: totalProducts,
-        averageOrderValue: avgOrderValue,
+        totalRevenue: _number(revenueMetric['value']),
+        totalOrders: _integer(ordersMetric['value']),
+        totalProducts: _integer(summary['products']),
+        averageOrderValue: _number(summary['avg_order_value']),
         ordersByStatus: ordersByStatus,
-        topProducts: topProducts
-            .take(5)
-            .map(
-              (row) => TopProduct(
-                id: row.id,
-                name: row.name,
-                orders: row.orders,
-                revenue: row.revenue,
-              ),
-            )
-            .toList(growable: false),
+        dailyStats: dailyStats,
+        topProducts: topProductRows.map(TopProduct.fromJson).toList(),
       );
 
       return _analytics!;
@@ -196,13 +167,21 @@ class AnalyticsService extends ChangeNotifier {
       notifyListeners();
     }
   }
-}
 
-class _TopProductAccumulator {
-  _TopProductAccumulator({required this.id, required this.name});
+  Map<String, int> _intMap(Map<String, dynamic> json) {
+    return json.map((key, value) => MapEntry(key, _integer(value)));
+  }
 
-  final String id;
-  final String name;
-  int orders = 0;
-  double revenue = 0;
+  int _integer(Object? value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
+
+  double _number(Object? value) {
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0;
+    return 0;
+  }
 }

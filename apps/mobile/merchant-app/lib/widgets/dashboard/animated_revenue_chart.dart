@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math' as math;
@@ -119,7 +120,9 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
         color: colors.glassMedium,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFF8B5CF6).withValues(alpha: 0.2),
+          color: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+            alpha: 0.2,
+          ),
           width: 1,
         ),
       ),
@@ -134,7 +137,10 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF8B5CF6), Color(0xFFA78BFA)],
+                    colors: [
+                      mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                      Color(0xFFA78BFA),
+                    ],
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -165,7 +171,8 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF8B5CF6).withValues(alpha: 0.15),
+                        color: mobile_tokens.LetbuyyColorTokens.brandPrimary
+                            .withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(
@@ -173,7 +180,8 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
                         children: [
                           Icon(
                             Icons.payments_outlined,
-                            color: const Color(0xFF8B5CF6),
+                            color:
+                                mobile_tokens.LetbuyyColorTokens.brandPrimary,
                             size: 10,
                           ),
                           const SizedBox(width: 2),
@@ -182,7 +190,8 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
                             style: TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFF8B5CF6),
+                              color:
+                                  mobile_tokens.LetbuyyColorTokens.brandPrimary,
                             ),
                           ),
                         ],
@@ -264,7 +273,10 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF8B5CF6), Color(0xFFA78BFA)],
+                      colors: [
+                        mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                        Color(0xFFA78BFA),
+                      ],
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -315,13 +327,19 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                const Color(0xFF8B5CF6).withValues(alpha: 0.25),
-                const Color(0xFF8B5CF6).withValues(alpha: 0.1),
+                mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                  alpha: 0.25,
+                ),
+                mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                  alpha: 0.1,
+                ),
               ],
             ),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: const Color(0xFF8B5CF6).withValues(alpha: 0.4),
+              color: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                alpha: 0.4,
+              ),
             ),
           ),
           child: Row(
@@ -329,7 +347,7 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
             children: [
               Icon(
                 Icons.payments_outlined,
-                color: const Color(0xFF8B5CF6),
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
                 size: 12,
               ),
               const SizedBox(width: 4),
@@ -338,7 +356,7 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF8B5CF6),
+                  color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
                 ),
               ),
             ],
@@ -353,7 +371,11 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
         ),
         const Spacer(),
         if (high != null && low != null) ...[
-          _buildMiniStat('High', '$high', const Color(0xFF8B5CF6)),
+          _buildMiniStat(
+            'High',
+            '$high',
+            mobile_tokens.LetbuyyColorTokens.brandPrimary,
+          ),
           const SizedBox(width: 16),
           _buildMiniStat('Low', '$low', const Color(0xFFF59E0B)),
         ],
@@ -409,7 +431,10 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
               decoration: BoxDecoration(
                 gradient: isSelected
                     ? const LinearGradient(
-                        colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED)],
+                        colors: [
+                          mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                          Color(0xFF7C3AED),
+                        ],
                       )
                     : null,
                 borderRadius: BorderRadius.circular(8),
@@ -500,12 +525,18 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
           isCurved: true,
           curveSmoothness: 0.4,
           gradient: const LinearGradient(
-            colors: [Color(0xFF8B5CF6), Color(0xFFA78BFA), Color(0xFFC4B5FD)],
+            colors: [
+              mobile_tokens.LetbuyyColorTokens.brandPrimary,
+              Color(0xFFA78BFA),
+              Color(0xFFC4B5FD),
+            ],
           ),
           barWidth: 3,
           isStrokeCapRound: true,
           shadow: Shadow(
-            color: const Color(0xFF8B5CF6).withValues(alpha: 0.5),
+            color: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+              alpha: 0.5,
+            ),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -516,7 +547,7 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
               final isTouched = index == _touchedIndex;
               return FlDotCirclePainter(
                 radius: isLast || isTouched ? 5 : 0,
-                color: const Color(0xFF8B5CF6),
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
                 strokeWidth: 2,
                 strokeColor: Colors.white,
               );
@@ -528,9 +559,15 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                const Color(0xFF8B5CF6).withValues(alpha: 0.35),
-                const Color(0xFF8B5CF6).withValues(alpha: 0.1),
-                const Color(0xFF8B5CF6).withValues(alpha: 0.0),
+                mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                  alpha: 0.35,
+                ),
+                mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                  alpha: 0.1,
+                ),
+                mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                  alpha: 0.0,
+                ),
               ],
               stops: const [0.0, 0.5, 1.0],
             ),
@@ -617,14 +654,18 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         decoration: isSelected
             ? BoxDecoration(
-                color: const Color(0xFF8B5CF6).withValues(alpha: 0.2),
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                  alpha: 0.2,
+                ),
                 borderRadius: BorderRadius.circular(4),
               )
             : null,
         child: Text(
           labels[index],
           style: TextStyle(
-            color: isSelected ? const Color(0xFF8B5CF6) : colors.textSecondary,
+            color: isSelected
+                ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                : colors.textSecondary,
             fontSize: 9,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
           ),

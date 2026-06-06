@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'dart:ui';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_theme_colors.dart';
@@ -98,10 +99,7 @@ class ActivityTimeline extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             'Publish your store to start selling',
-            style: TextStyle(
-              fontSize: 12,
-              color: colors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 12, color: colors.textSecondary),
             textAlign: TextAlign.center,
           ),
         ],
@@ -126,68 +124,65 @@ class _ActivityTimelineItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Timeline indicator
-        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: activity.color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                activity.icon,
-                color: activity.color,
-                size: 16,
-              ),
-            ),
-            if (!isLast)
-              Container(
-                width: 2,
-                height: 32,
-                margin: const EdgeInsets.symmetric(vertical: 4),
-                decoration: BoxDecoration(
-                  color: colors.borderSubtle,
-                  borderRadius: BorderRadius.circular(1),
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(width: 12),
-        // Content
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(bottom: isLast ? 0 : 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            // Timeline indicator
+            Column(
               children: [
-                Text(
-                  activity.title,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textPrimary,
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: activity.color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  child: Icon(activity.icon, color: activity.color, size: 16),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  activity.subtitle,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: colors.textSecondary,
+                if (!isLast)
+                  Container(
+                    width: 2,
+                    height: 32,
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    decoration: BoxDecoration(
+                      color: colors.borderSubtle,
+                      borderRadius: BorderRadius.circular(1),
+                    ),
                   ),
-                ),
               ],
             ),
-          ),
-        ),
-      ],
-    ).animate(delay: Duration(milliseconds: 100 * index))
-      .fadeIn(duration: 300.ms)
-      .slideX(begin: 0.1, end: 0);
+            const SizedBox(width: 12),
+            // Content
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(bottom: isLast ? 0 : 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      activity.title,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      activity.subtitle,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        )
+        .animate(delay: Duration(milliseconds: 100 * index))
+        .fadeIn(duration: 300.ms)
+        .slideX(begin: 0.1, end: 0);
   }
 }
 
@@ -214,14 +209,14 @@ class ActivityItems {
   // Semantic colors that are consistent across light/dark themes
   static const _success = Color(0xFF22C55E);
   static const _warning = Color(0xFFF59E0B);
-  static const _accent = Color(0xFF8B5CF6);
+  static const _accent = mobile_tokens.LetbuyyColorTokens.brandPrimary;
   static const _accentBlue = Color(0xFF3B82F6);
 
   static ActivityItem storePublished(DateTime? publishedAt) => ActivityItem(
     icon: Icons.check_circle_rounded,
     title: 'Store is live',
-    subtitle: publishedAt != null 
-        ? 'Published ${_formatRelativeTime(publishedAt)}' 
+    subtitle: publishedAt != null
+        ? 'Published ${_formatRelativeTime(publishedAt)}'
         : 'Store is active',
     color: _success,
     timestamp: publishedAt,
@@ -258,7 +253,7 @@ class ActivityItems {
   static String _formatRelativeTime(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date);
-    
+
     if (diff.inDays == 0) return 'today';
     if (diff.inDays == 1) return 'yesterday';
     if (diff.inDays < 7) return '${diff.inDays} days ago';
@@ -266,4 +261,3 @@ class ActivityItems {
     return '${date.day}/${date.month}/${date.year}';
   }
 }
-

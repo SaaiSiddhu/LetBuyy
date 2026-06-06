@@ -13,6 +13,7 @@ import 'services/order_service.dart';
 import 'services/analytics_service.dart';
 import 'services/theme_service.dart';
 import 'services/theme_provider.dart';
+import 'services/subscription_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +33,7 @@ void main() async {
   authService = StoreAuthService(
     api: apiClient,
     identityBaseUrl: AppConfig.identityBaseUrl,
+    turnstileTokenProvider: () => AppConfig.turnstileToken,
   );
   await authService.restoreSession();
 
@@ -65,6 +67,9 @@ void main() async {
         ),
         ChangeNotifierProvider<ThemeService>(
           create: (_) => ThemeService(api: apiClient),
+        ),
+        Provider<SubscriptionService>(
+          create: (_) => SubscriptionService(api: apiClient),
         ),
 
         // Storage
