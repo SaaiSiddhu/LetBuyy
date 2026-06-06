@@ -2,8 +2,8 @@
 
 - Branch: `stream/letbuyy-foundation-v2`
 - Start HEAD: `62b2915218daa716b075b02d909c08e053bfce25`
-- Current HEAD: `0c890f60df936e4e1a73100ed82ee9ee803904f8`
-- Status timestamp: `2026-06-06T14:00:59+05:30`
+- Current HEAD: `1bd39ef45a5694bfe04749596187d829655b921a`
+- Status timestamp: `2026-06-06T14:18:44+05:30`
 
 ## Feature Checklist
 
@@ -26,7 +26,17 @@
 | P1 | Coupons CRUD | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/coupon_service.dart`, `lib/screens/discounts/coupons_screen.dart`, `lib/screens/discounts/coupon_form_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/coupons` opens the real coupon list, create/edit/toggle/delete use `/coupons*`, and validation posts to `/coupons/validate`; covered by `test/mobile_services_test.dart` service + widget tests |
 | P1 | Notifications settings | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/notification_settings_service.dart`, `lib/screens/settings/notifications_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/notifications` opens the real settings screen, store-scoped preferences load from `/notifications/preferences`, and channel/event toggles persist through PUT `/notifications/preferences`; covered by `test/mobile_services_test.dart` service + widget tests |
 | P1 | Push notifications | DONE-WITH-SKIP | `lib/services/push_service.dart`, `lib/services/skip_needs_backend_exception.dart`, `lib/main.dart`, `services/queue-workers/src/push-dispatcher.ts`, `services/queue-workers/src/platform-queue-consumer.ts`, `services/queue-workers/wrangler.toml`; mobile device-token registration is a typed `SKIP-NEEDS-BACKEND` seam because no gateway route exists, while queue-workers can dispatch existing `device_tokens` rows to FCM/APNs when human-owned provider credentials are configured; covered by Flutter service tests and queue-worker dispatch tests |
-| P2 | Theme/CMS/media/shipping/taxes/domains/collections/variants/WMS | TODO | Next resume point |
+| P2 | Theme switch/publish/versions | DONE | `lib/screens/customize/theme_screen.dart`, `lib/screens/customize/theme_versions_screen.dart`, `lib/services/theme_service.dart`, `packages/dart/api_client/lib/src/api_client.dart`; mobile theme screen opens authoritative WebView previews via storefront `/preview`, publishes drafts through `/themes/:slug/publish`, lists releases through `/themes/:slug/releases`, and rolls back through `/themes/:slug/releases/:releaseId/rollback`; covered by service + widget tests |
+| P2 | CMS Pages | TODO | Next resume point |
+| P2 | Blog | TODO | Not started |
+| P2 | Navigation builder | TODO | Not started |
+| P2 | Media library | TODO | Not started |
+| P2 | Shipping | TODO | Not started |
+| P2 | Taxes | TODO | Not started |
+| P2 | Domains lifecycle | TODO | Not started |
+| P2 | Collections CRUD | TODO | Not started |
+| P2 | Product variant matrix | TODO | Not started |
+| P2 | Inventory WMS | TODO | Not started |
 | P3 | Staff/billing/reviews/leads/gift cards/SEO/apps/AI | TODO | Not started |
 | P4 | Multi-store/offline/deep-links/a11y/i18n | TODO | Not started |
 | P5 | Platform-blocked seams | TODO | Not started |
@@ -65,6 +75,10 @@
 - P1 phase iOS build: `flutter build ios --debug --no-codesign --dart-define-from-file=dart-defines/staging.json` PASS. Output: `Built build/ios/iphoneos/Runner.app`.
 - P1 grep audit for removed provider artifacts/raw brand residue: PASS. Only the canonical `lib/theme/letbuyy_color_tokens.dart` definition remains for `0xFF8B5CF6`; no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
 - P1 governance: BLOCKED by unrelated operator-owned untracked root file `CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md`. Output: `Source ledger residue validator failed: CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
+- P2 `Theme switch/publish/versions` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 6.8s)`.
+- P2 `Theme switch/publish/versions` feature check: `flutter test` PASS. Output: `00:03 +25: All tests passed!`.
+- P2 `Theme switch/publish/versions` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
+- P2 `Theme switch/publish/versions` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
 
 ## Notes
 
@@ -73,6 +87,6 @@
 
 ## RESUME HINT
 
-Next feature: P2 `Theme switch/publish/versions`.
+Next feature: P2 `CMS Pages`.
 
-Start with `apps/mobile/merchant-app/lib/screens/customize/theme_screen.dart`, create `apps/mobile/merchant-app/lib/screens/customize/theme_versions_screen.dart`, and extend `packages/dart/api_client/lib/src/api_client.dart`/`lib/services/theme_service.dart` for publish, releases, rollback, and preview-session routes. Keep authoritative previews in WebView against live storefront `/preview`; native preview sections remain thumbnails only.
+Start with `apps/mobile/merchant-app/lib/services/cms_service.dart`, `apps/mobile/merchant-app/lib/screens/content/pages_screen.dart`, and `apps/mobile/merchant-app/lib/screens/content/page_editor_screen.dart`. Use the existing BFF/gateway `/v1/pages*` contract, register the service in DI, replace the matching parity registry entry with the real screen, and add service + widget tests before committing.

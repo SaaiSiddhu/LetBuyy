@@ -18,6 +18,7 @@ import 'package:letbuyy_store/services/store_auth_service.dart';
 import 'package:letbuyy_store/services/store_service.dart';
 import 'package:letbuyy_store/services/subscription_service.dart';
 import 'package:letbuyy_store/services/theme_service.dart';
+import 'package:letbuyy_store/screens/customize/theme_versions_screen.dart';
 import 'package:letbuyy_store/screens/customers/customer_detail_screen.dart';
 import 'package:letbuyy_store/screens/customers/customers_screen.dart';
 import 'package:letbuyy_store/screens/discounts/coupon_form_screen.dart';
@@ -291,6 +292,54 @@ void main() {
 
         expect(catalog.themes.single.slug, 'modern');
         expect(catalog.currentTheme, 'modern');
+      },
+    );
+
+    test(
+      'ThemeService manages preview sessions and release rollback',
+      () async {
+        final api = _FakeApiClient(
+          raw: {
+            '/themes': {
+              'data': [
+                {'id': 'theme_1', 'slug': 'modern', 'name': 'Modern'},
+              ],
+              'current_theme': 'modern',
+              'store_status': 'published',
+            },
+          },
+          json: {
+            '/themes/modern/preview-session': {
+              'preview_token': 'preview_token_123',
+            },
+            '/themes/modern/releases': [_themeReleaseJson()],
+            '/themes/modern/releases/release_1/rollback': {'ok': true},
+          },
+        );
+        final service = ThemeService(api: api);
+
+        final preview = await service.createPreviewSession(
+          storeId: 'store_1',
+          themeSlug: 'modern',
+        );
+        final releases = await service.fetchReleases(
+          storeId: 'store_1',
+          themeSlug: 'modern',
+        );
+        await service.rollbackRelease(
+          storeId: 'store_1',
+          themeSlug: 'modern',
+          releaseId: 'release_1',
+        );
+
+        expect(preview['preview_token'], 'preview_token_123');
+        expect(releases.single['release_version'], 3);
+        expect(api.paths, contains('/themes/modern/preview-session'));
+        expect(api.paths, contains('/themes/modern/releases'));
+        expect(
+          api.paths,
+          contains('/themes/modern/releases/release_1/rollback'),
+        );
       },
     );
 
@@ -603,6 +652,35 @@ void main() {
     expect(find.text('New orders'), findsOneWidget);
     expect(find.text('Low stock'), findsOneWidget);
   });
+
+  testWidgets('ThemeVersionsScreen renders releases for rollback', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      json: {
+        '/themes/modern/releases': [_themeReleaseJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider(
+        create: (_) => ThemeService(api: api),
+        child: const MaterialApp(
+          home: ThemeVersionsScreen(
+            storeId: 'store_1',
+            themeSlug: 'modern',
+            themeName: 'Modern',
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Theme versions'), findsOneWidget);
+    expect(find.text('Version 3'), findsOneWidget);
+    expect(find.text('Published'), findsOneWidget);
+    expect(find.text('Roll back'), findsOneWidget);
+  });
 }
 
 class _FakeApiClient extends ApiClient {
@@ -751,6 +829,14 @@ Map<String, dynamic> _couponJson({
   'per_customer_limit': 1,
   'expires_at': '2026-12-31T23:59:59.000Z',
   'is_active': isActive,
+};
+
+Map<String, dynamic> _themeReleaseJson() => {
+  'id': 'release_1',
+  'release_version': 3,
+  'release_status': 'published',
+  'published_at': '2026-06-01T10:00:00.000Z',
+  'release_manifest': {'message': 'Homepage and checkout polish'},
 };
 
 List<Map<String, dynamic>> _notificationPreferenceRows() => [
