@@ -22,6 +22,7 @@ import 'services/staff_service.dart';
 import 'services/review_service.dart';
 import 'services/form_submission_service.dart';
 import 'services/app_marketplace_service.dart';
+import 'services/ai_studio_service.dart';
 import 'services/push_service.dart';
 import 'services/analytics_service.dart';
 import 'services/theme_service.dart';
@@ -107,6 +108,9 @@ void main() async {
         ),
         ChangeNotifierProvider<AppMarketplaceService>(
           create: (_) => AppMarketplaceService(api: apiClient),
+        ),
+        ChangeNotifierProvider<AiStudioService>(
+          create: (_) => AiStudioService(api: apiClient),
         ),
         ChangeNotifierProvider<NotificationSettingsService>(
           create: (_) => NotificationSettingsService(api: apiClient),

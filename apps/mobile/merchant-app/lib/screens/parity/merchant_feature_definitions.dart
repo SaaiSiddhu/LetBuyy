@@ -67,7 +67,7 @@ class MerchantFeatureDefinitions {
     security,
   ];
 
-  static const other = [formSubmissions, analytics];
+  static const other = [formSubmissions, analytics, aiStudio];
 
   static const all = [
     ...commerce,
@@ -463,5 +463,17 @@ class MerchantFeatureDefinitions {
     endpoint: 'analytics/dashboard',
     backendRequirement:
         'Requires protected /v1/analytics dashboard access for the active store.',
+  );
+
+  static const aiStudio = MerchantFeatureDefinition(
+    id: 'ai-studio',
+    route: '/features/ai',
+    group: 'Other',
+    title: 'AI Studio',
+    summary: 'AI credits, content tools, usage history, and ratings.',
+    icon: Icons.auto_awesome_outlined,
+    endpoint: 'ai/credits',
+    backendRequirement:
+        'Requires /v1/ai/credits and /v1/ai/usage rows; generation and credit purchase provider execution are ledgered until configured.',
   );
 }

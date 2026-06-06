@@ -8,6 +8,7 @@ import 'package:http/testing.dart';
 import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
 import 'package:letbuyy_store/models/store_model.dart';
 import 'package:letbuyy_store/services/analytics_service.dart';
+import 'package:letbuyy_store/services/ai_studio_service.dart';
 import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/app_marketplace_service.dart';
 import 'package:letbuyy_store/services/cms_service.dart';
@@ -51,6 +52,7 @@ import 'package:letbuyy_store/screens/marketing/reviews_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
 import 'package:letbuyy_store/screens/products/collections_screen.dart';
 import 'package:letbuyy_store/screens/products/product_form_screen.dart';
+import 'package:letbuyy_store/screens/ai/ai_screen.dart';
 import 'package:letbuyy_store/screens/apps/apps_screen.dart';
 import 'package:letbuyy_store/screens/settings/notifications_screen.dart';
 import 'package:letbuyy_store/screens/settings/billing_screen.dart';
@@ -975,6 +977,61 @@ void main() {
         ),
       );
     });
+
+    test(
+      'AiStudioService reads credits, usage, ratings, and skips providers',
+      () async {
+        final api = _FakeApiClient(
+          paginated: {
+            '/ai/usage': [_aiUsageJson()],
+          },
+          json: {
+            '/ai/credits': _aiCreditsJson(),
+            '/ai/usage/usage_1/rate': _aiUsageJson(userRating: 5),
+          },
+        );
+        final service = AiStudioService(api: api);
+
+        final snapshot = await service.fetchStudio('store_1');
+        final rated = await service.rateUsage(
+          snapshot.usage.single,
+          rating: 5,
+          feedback: 'Useful',
+        );
+
+        expect(snapshot.credits.balance, 80);
+        expect(snapshot.usage.single.featureLabel, 'Product Description');
+        expect(rated.userRating, 5);
+        expect(api.paths, contains('/ai/credits'));
+        expect(api.paths, contains('/ai/usage'));
+        expect(api.paths, contains('/ai/usage/usage_1/rate'));
+        expect(api.bodies['/ai/usage/usage_1/rate'], containsPair('rating', 5));
+        await expectLater(
+          service.generateContent(
+            storeId: 'store_1',
+            feature: 'product_description',
+            prompt: 'Write copy',
+          ),
+          throwsA(
+            isA<SkipNeedsBackendException>().having(
+              (error) => error.id,
+              'id',
+              AiStudioService.generationSkipId,
+            ),
+          ),
+        );
+        await expectLater(
+          service.purchaseCredits(storeId: 'store_1', amount: 100),
+          throwsA(
+            isA<SkipNeedsBackendException>().having(
+              (error) => error.id,
+              'id',
+              AiStudioService.creditPurchaseSkipId,
+            ),
+          ),
+        );
+      },
+    );
 
     test(
       'PushService fails closed until device token backend exists',
@@ -2101,6 +2158,39 @@ void main() {
     expect(api.paths, contains('/app-store/installations'));
   });
 
+  testWidgets('AiScreen renders credits, tools, and usage history', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+        '/ai/usage': [_aiUsageJson()],
+      },
+      json: {'/ai/credits': _aiCreditsJson()},
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => AiStudioService(api: api)),
+        ],
+        child: const MaterialApp(home: AiScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('AI Studio'), findsOneWidget);
+    expect(find.text('Credits remaining'), findsOneWidget);
+    expect(find.text('Product descriptions'), findsOneWidget);
+    await tester.drag(find.byType(ListView), const Offset(0, -700));
+    await tester.pumpAndSettle();
+    expect(find.text('Product Description'), findsOneWidget);
+    expect(find.text('completed'), findsOneWidget);
+    expect(api.paths, contains('/ai/credits'));
+    expect(api.paths, contains('/ai/usage'));
+  });
+
   testWidgets('ThemeVersionsScreen renders releases for rollback', (
     tester,
   ) async {
@@ -2488,6 +2578,32 @@ Map<String, dynamic> _appBridgeSessionJson() => {
     'app_id': 'app_1',
     'scopes': ['products:read', 'orders:read'],
   },
+};
+
+Map<String, dynamic> _aiCreditsJson() => {
+  'store_id': 'store_1',
+  'balance': 80,
+  'plan_credits': 100,
+  'bonus_credits': 0,
+  'total_used': 20,
+  'total_purchased': 0,
+};
+
+Map<String, dynamic> _aiUsageJson({int? userRating}) => {
+  'id': 'usage_1',
+  'store_id': 'store_1',
+  'feature': 'product_description',
+  'prompt': 'Write a product description for a cotton tee.',
+  'output': 'Soft cotton tee for everyday wear.',
+  'tokens_input': 12,
+  'tokens_output': 24,
+  'credits_used': 2,
+  'model': 'test-model',
+  'provider': 'test',
+  'status': 'completed',
+  'user_rating': userRating,
+  'user_feedback': userRating == null ? null : 'Useful',
+  'created_at': '2026-06-01T12:00:00.000Z',
 };
 
 Map<String, dynamic> _pageJson({

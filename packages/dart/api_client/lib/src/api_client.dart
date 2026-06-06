@@ -74,6 +74,7 @@ class ApiClient {
   late final PaymentsApi payments = PaymentsApi(this);
   late final StorefrontApi storefront = StorefrontApi(this);
   late final AnalyticsApi analytics = AnalyticsApi(this);
+  late final AiApi ai = AiApi(this);
   late final CatalogApi categories = CatalogApi(this, '/categories');
   late final InventoryApi inventory = InventoryApi(this);
   late final PagesApi pages = PagesApi(this);
@@ -1086,6 +1087,60 @@ class AnalyticsApi {
         '/analytics/orders',
         options: _mergeOptions(options, query: query),
       );
+}
+
+class AiApi {
+  const AiApi(this._client);
+
+  final ApiClient _client;
+
+  Future<JsonMap> credits(String storeId, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/ai/credits',
+        options: _mergeOptions(options, query: {'store_id': storeId}),
+      );
+
+  Future<PaginatedResponse<JsonMap>> usage({
+    required String storeId,
+    String? feature,
+    int limit = 20,
+    int page = 1,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/ai/usage',
+    options: _mergeOptions(
+      options,
+      query: {
+        'store_id': storeId,
+        'limit': limit,
+        'page': page,
+        if (feature != null && feature.isNotEmpty) 'feature': feature,
+      },
+    ),
+  );
+
+  Future<JsonMap> generate(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/ai/generate',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> rateUsage(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/ai/usage/${_encodePathSegment(id)}/rate',
+    options: _mergeOptions(options, method: HttpMethod.post, body: input),
+  );
+
+  Future<JsonMap> purchaseCredits(
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/ai/credits/purchase',
+    options: _mergeOptions(options, method: HttpMethod.post, body: input),
+  );
 }
 
 class CatalogApi {
