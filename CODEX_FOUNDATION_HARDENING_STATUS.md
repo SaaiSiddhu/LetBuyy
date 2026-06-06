@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F7.3 CMS slugify duplication collapse complete; continue F7.3 remaining duplication collapse.
+- Phase: F7.3 INR currency formatting duplication collapse complete; continue F7.3 remaining duplication collapse.
 - Findings resolved: 28/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `C-14`, `H-1`, `H-2`, `H-4`, `H-5`, `H-6`, `H-7`, `H-8`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-15`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets, C-14 live observability rollout verification is SKIPPED -- NEEDS HUMAN pending deployed telemetry endpoints/credentials, H-15 live production deploy execution is SKIPPED -- NEEDS HUMAN pending protected environment approvals plus provider credentials, and legacy portfolio/resume reactivation is human-gated for named cohorts only.
-- Current governance gate state: green after F7.3 CMS slugify increment (`pnpm run validate:governance` -> 145/145 PASS).
+- Current governance gate state: green after F7.3 INR currency formatting increment (`pnpm run validate:governance` -> 146/146 PASS).
 
 ## Baseline gates
 
@@ -689,6 +689,24 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 145/145 validators.
+
+## F7.3 INR currency formatting single-source evidence
+
+- Added browser-safe `@letbuyy/ui/formatting` with canonical `formatInrCurrency()` for India-first INR display formatting.
+- Merchant customers, analytics, dashboard, dashboard client, gift-card surfaces, and app-marketplace app detail pricing now import `formatInrCurrency` instead of declaring app-local `formatCurrency` helpers.
+- Added `scripts/validators/inr-currency-format-validator.mjs`, wired it into governance, and added `tests/contracts/inr-currency-format-single-source.test.ts`.
+- `node scripts/validators/inr-currency-format-validator.mjs`: PASS.
+- `npx tsx --test tests/contracts/inr-currency-format-single-source.test.ts`: PASS - 3/3.
+- `node scripts/validators/package-export-validator.mjs`: PASS.
+- `node scripts/validators/dependency-manifest-validator.mjs`: PASS.
+- `pnpm --filter @letbuyy/ui typecheck`: PASS after restoring workspace dependency links.
+- `pnpm --filter @letbuyy/merchant-control-plane typecheck`: PASS after restoring workspace dependency links.
+- `pnpm --filter @letbuyy/app-marketplace typecheck`: PASS after restoring workspace dependency links.
+- `pnpm run test:contracts`: PASS - 120/120 after host IPC escalation for TSX.
+- Full `pnpm turbo typecheck --output-logs=errors-only --log-order=grouped`: PASS - 58/58.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 146/146 validators.
 
 ## V2 P-1 gate evidence
 

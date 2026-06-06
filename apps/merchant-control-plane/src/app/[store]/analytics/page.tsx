@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useParams } from 'next/navigation'
+import { formatInrCurrency } from '@letbuyy/ui/formatting'
 import {
     Badge,
     Banner,
@@ -82,9 +83,6 @@ export default function AnalyticsPage() {
         void loadAnalytics()
     }, [loadAnalytics])
 
-    const formatCurrency = (amount: number) =>
-        new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount)
-
     const totalStatusCount = useMemo(() => {
         if (!data) return 0
         return Object.values(data.ordersByStatus).reduce((sum, count) => sum + count, 0)
@@ -152,7 +150,7 @@ export default function AnalyticsPage() {
                     <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2 xl:grid-cols-4">
                         <MetricCard
                             label="Revenue"
-                            value={formatCurrency(data.totalRevenue)}
+                            value={formatInrCurrency(data.totalRevenue, { maximumFractionDigits: 0 }) || '₹0'}
                             delta={periodLabel(period)}
                             deltaTone="neutral"
                         />
@@ -164,7 +162,7 @@ export default function AnalyticsPage() {
                         />
                         <MetricCard
                             label="Average order value"
-                            value={formatCurrency(data.avgOrderValue)}
+                            value={formatInrCurrency(data.avgOrderValue, { maximumFractionDigits: 0 }) || '₹0'}
                             delta="Calculated from settled order data"
                             deltaTone="neutral"
                         />
@@ -235,7 +233,7 @@ export default function AnalyticsPage() {
                                                 </span>
                                             </div>
                                             <span className="text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">
-                                                {formatCurrency(month.revenue)}
+                                                {formatInrCurrency(month.revenue, { maximumFractionDigits: 0 }) || '₹0'}
                                             </span>
                                         </div>
                                     ))}

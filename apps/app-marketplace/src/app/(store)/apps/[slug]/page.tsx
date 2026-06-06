@@ -32,6 +32,7 @@ import {
     Star,
     Tag,
 } from '@letbuyy/ui';
+import { formatInrCurrency } from '@letbuyy/ui/formatting';
 import type { MarketplaceApp } from '@letbuyy/shared-types';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -89,11 +90,6 @@ function getInitials(name: string): string {
         .join('');
 }
 
-function formatCurrency(value: number | null | undefined, suffix = ''): string | null {
-    if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return null;
-    return `₹${value.toLocaleString('en-IN')}${suffix}`;
-}
-
 function formatPricingModel(model: string | null | undefined): string {
     if (!model) return 'Free';
     return model
@@ -102,9 +98,23 @@ function formatPricingModel(model: string | null | undefined): string {
 }
 
 function getPricingRows(app: MarketplaceApp, price: ReturnType<typeof getAppPriceDisplay>): PricingRow[] {
-    const monthly = formatCurrency(app.price_monthly, '/mo');
-    const yearly = formatCurrency(app.price_yearly, '/yr');
-    const oneTime = formatCurrency(app.price_inr);
+    const monthly = formatInrCurrency(app.price_monthly, {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+        requirePositive: true,
+        suffix: '/mo',
+    });
+    const yearly = formatInrCurrency(app.price_yearly, {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+        requirePositive: true,
+        suffix: '/yr',
+    });
+    const oneTime = formatInrCurrency(app.price_inr, {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+        requirePositive: true,
+    });
     const trialDays = typeof app.trial_days === 'number' && app.trial_days > 0 ? app.trial_days : null;
 
     const rows: PricingRow[] = [

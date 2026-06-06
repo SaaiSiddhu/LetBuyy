@@ -149,4 +149,7 @@ export type { LetbuyyDensity, LetbuyyTheme } from './tokens';
 
 export { letbuyyFontCssVariables, letbuyyFontStacks } from './fonts';
 
+export { formatInrCurrency } from './formatting';
+export type { FormatInrCurrencyOptions } from './formatting';
+
 export * from './icons';

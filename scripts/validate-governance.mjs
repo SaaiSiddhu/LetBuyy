@@ -140,6 +140,7 @@ const validators = [
   "route-line-count-validator.mjs",
   "single-source-crypto-validator.mjs",
   "cms-slugify-validator.mjs",
+  "inr-currency-format-validator.mjs",
   "raw-error-message-validator.mjs",
   "dev-auth-bypass-validator.mjs",
   "no-noop-test-script-validator.mjs",
