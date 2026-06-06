@@ -262,6 +262,9 @@ importers:
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core
+      '@letbuyy/cms-core':
+        specifier: workspace:*
+        version: link:../../packages/cms-core
       '@letbuyy/extension-host':
         specifier: workspace:*
         version: link:../../packages/extension-host

@@ -25,6 +25,7 @@ import {
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 
 type PageStatus = 'draft' | 'published' | 'archived'
 type SaveState = 'saved' | 'unsaved' | 'saving'
@@ -62,14 +63,6 @@ function getErrorMessage(payload: unknown, fallback: string) {
     }
 
     return fallback
-}
-
-function slugify(input: string) {
-    return input
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '')
 }
 
 function formatDate(value: string) {

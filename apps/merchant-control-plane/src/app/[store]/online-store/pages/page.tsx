@@ -27,6 +27,7 @@ import {
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 
 type PageStatus = 'draft' | 'published' | 'archived'
 type ActiveTab = 'pages' | 'policies' | 'navigation'
@@ -102,15 +103,6 @@ const policyTypeOptions = [
     { label: 'Contact', value: 'contact' },
     { label: 'Custom', value: 'custom' },
 ]
-
-function slugify(input: string) {
-    return input
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '')
-        .slice(0, 100)
-}
 
 function errorMessage(error: unknown, fallback: string) {
     if (error instanceof Error) return error.message
