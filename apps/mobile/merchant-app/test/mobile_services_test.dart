@@ -9,6 +9,7 @@ import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
 import 'package:letbuyy_store/models/store_model.dart';
 import 'package:letbuyy_store/services/analytics_service.dart';
 import 'package:letbuyy_store/services/api_client.dart';
+import 'package:letbuyy_store/services/app_marketplace_service.dart';
 import 'package:letbuyy_store/services/cms_service.dart';
 import 'package:letbuyy_store/services/coupon_service.dart';
 import 'package:letbuyy_store/services/customer_service.dart';
@@ -50,6 +51,7 @@ import 'package:letbuyy_store/screens/marketing/reviews_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
 import 'package:letbuyy_store/screens/products/collections_screen.dart';
 import 'package:letbuyy_store/screens/products/product_form_screen.dart';
+import 'package:letbuyy_store/screens/apps/apps_screen.dart';
 import 'package:letbuyy_store/screens/settings/notifications_screen.dart';
 import 'package:letbuyy_store/screens/settings/billing_screen.dart';
 import 'package:letbuyy_store/screens/settings/domain_settings_screen.dart';
@@ -916,6 +918,61 @@ void main() {
       expect(
         api.bodies['/form-submissions/submission_1'],
         containsPair('status', 'contacted'),
+      );
+    });
+
+    test('AppMarketplaceService lists, installs, and hands off apps', () async {
+      final api = _FakeApiClient(
+        paginated: {
+          '/app-store/apps': [_marketplaceAppJson()],
+        },
+        json: {
+          '/app-store/categories': [_appCategoryJson()],
+          '/app-store/installations': [_appInstallationJson()],
+          '/app-store/apps/app_1/install': {
+            'installation': _appInstallationJson(status: 'active'),
+          },
+          '/app-store/installations/install_1/embed-session':
+              _appBridgeSessionJson(),
+        },
+      );
+      final service = AppMarketplaceService(api: api);
+
+      await service.refresh(storeId: 'store_1');
+      final installed = await service.installApp(
+        app: service.apps.single,
+        storeId: 'store_1',
+      );
+      final handoff = await service.createDesktopBridgeHandoff(
+        installation: installed,
+      );
+      await service.uninstallApp(app: service.apps.single, storeId: 'store_1');
+
+      expect(service.categories.single.name, 'Marketing');
+      expect(service.apps.single.name, 'Campaign Booster');
+      expect(installed.app.name, 'Campaign Booster');
+      expect(handoff.url, 'https://apps.letbuyy.store/admin/campaign-booster');
+      expect(api.paths, contains('/app-store/apps'));
+      expect(api.paths, contains('/app-store/categories'));
+      expect(api.paths, contains('/app-store/installations'));
+      expect(api.paths, contains('/app-store/apps/app_1/install'));
+      expect(
+        api.paths,
+        contains('/app-store/installations/install_1/embed-session'),
+      );
+      expect(
+        api.bodies['/app-store/apps/app_1/install'],
+        containsPair('store_id', 'store_1'),
+      );
+      await expectLater(
+        service.openEmbeddedAppBridgeRuntime(installed),
+        throwsA(
+          isA<SkipNeedsBackendException>().having(
+            (error) => error.id,
+            'id',
+            'MOBILE_EMBEDDED_APP_BRIDGE_RUNTIME',
+          ),
+        ),
       );
     });
 
@@ -2009,6 +2066,41 @@ void main() {
     );
   });
 
+  testWidgets('AppsScreen renders marketplace apps and installed state', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+        '/app-store/apps': [_marketplaceAppJson()],
+      },
+      json: {
+        '/app-store/categories': [_appCategoryJson()],
+        '/app-store/installations': [_appInstallationJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(
+            create: (_) => AppMarketplaceService(api: api),
+          ),
+        ],
+        child: const MaterialApp(home: AppsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('App Marketplace'), findsOneWidget);
+    expect(find.text('Campaign Booster'), findsOneWidget);
+    expect(find.text('Installed'), findsWidgets);
+    expect(find.text('Marketing 4'), findsOneWidget);
+    expect(api.paths, contains('/app-store/apps'));
+    expect(api.paths, contains('/app-store/installations'));
+  });
+
   testWidgets('ThemeVersionsScreen renders releases for rollback', (
     tester,
   ) async {
@@ -2325,6 +2417,77 @@ Map<String, dynamic> _giftCardJson({
   'status': status,
   'expires_at': '2026-12-31T23:59:59.000Z',
   'created_at': '2026-06-01T11:00:00.000Z',
+};
+
+Map<String, dynamic> _appCategoryJson() => {
+  'slug': 'marketing',
+  'name': 'Marketing',
+  'icon': 'campaign',
+  'group': 'growth',
+  'count': 4,
+};
+
+Map<String, dynamic> _marketplaceAppJson({
+  String id = 'app_1',
+  String name = 'Campaign Booster',
+}) => {
+  'id': id,
+  'slug': 'campaign-booster',
+  'name': name,
+  'tagline': 'Automated campaigns for storefront growth.',
+  'description': 'Build lifecycle campaigns from LetBuyy events.',
+  'status': 'published',
+  'developer_name': 'LetBuyy Labs',
+  'pricing_model': 'free',
+  'price_inr': 0,
+  'install_count': 120,
+  'review_count': 8,
+  'rating_avg': 4.7,
+  'api_scopes': ['products:read', 'orders:read'],
+  'app_url': 'https://apps.letbuyy.store/campaign-booster',
+  'app_developers': {'company_name': 'LetBuyy Labs', 'verified': true},
+  'app_categories': _appCategoryJson(),
+};
+
+Map<String, dynamic> _appInstallationJson({
+  String id = 'install_1',
+  String status = 'active',
+}) => {
+  'id': id,
+  'app_id': 'app_1',
+  'store_id': 'store_1',
+  'status': status,
+  'scopes_granted': ['products:read', 'orders:read'],
+  'installed_at': '2026-06-01T11:00:00.000Z',
+  'marketplace_apps': {
+    'id': 'app_1',
+    'slug': 'campaign-booster',
+    'name': 'Campaign Booster',
+    'tagline': 'Automated campaigns for storefront growth.',
+    'pricing_model': 'free',
+    'app_url': 'https://apps.letbuyy.store/campaign-booster',
+  },
+};
+
+Map<String, dynamic> _appBridgeSessionJson() => {
+  'installation': _appInstallationJson(),
+  'embed': {
+    'title': 'Campaign Booster',
+    'label': 'Open app',
+    'url': 'https://apps.letbuyy.store/admin/campaign-booster',
+    'origin': 'https://apps.letbuyy.store',
+  },
+  'bridge': {
+    'version': '2026-06-01',
+    'token_type': 'Bearer',
+    'access_token': 'test-token',
+    'expires_at': '2026-06-01T11:15:00.000Z',
+    'api_base_url': 'https://gateway.test/v1',
+    'store_id': 'store_1',
+    'installation_id': 'install_1',
+    'app_id': 'app_1',
+    'scopes': ['products:read', 'orders:read'],
+  },
 };
 
 Map<String, dynamic> _pageJson({

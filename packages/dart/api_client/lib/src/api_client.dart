@@ -87,6 +87,7 @@ class ApiClient {
   late final EmployeesApi employees = EmployeesApi(this);
   late final ReviewsApi reviews = ReviewsApi(this);
   late final FormSubmissionsApi formSubmissions = FormSubmissionsApi(this);
+  late final AppStoreApi appStore = AppStoreApi(this);
   late final GraphQLClient graphql = GraphQLClient(
     (path, {options}) => request(path, options: options),
   );
@@ -1758,6 +1759,77 @@ class FormSubmissionsApi {
         '/form-submissions/${_encodePathSegment(id)}',
         options: _mergeOptions(options, method: HttpMethod.delete),
       );
+}
+
+class AppStoreApi {
+  const AppStoreApi(this._client);
+
+  final ApiClient _client;
+
+  Future<PaginatedResponse<JsonMap>> apps({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/app-store/apps',
+    options: _mergeOptions(options, query: query),
+  );
+
+  Future<JsonMap> app(String id, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/app-store/apps/${_encodePathSegment(id)}',
+        options: options,
+      );
+
+  Future<List<JsonMap>> categories({ApiRequestOptions? options}) =>
+      _client.requestData<List<JsonMap>>(
+        '/app-store/categories',
+        options: options,
+        decoder: (value) =>
+            asJsonList(value).map(asJsonMap).toList(growable: false),
+      );
+
+  Future<List<JsonMap>> installations({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestData<List<JsonMap>>(
+    '/app-store/installations',
+    options: _mergeOptions(options, query: query),
+    decoder: (value) =>
+        asJsonList(value).map(asJsonMap).toList(growable: false),
+  );
+
+  Future<JsonMap> install(
+    String appId,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/app-store/apps/${_encodePathSegment(appId)}/install',
+    options: _mergeOptions(
+      options,
+      method: HttpMethod.post,
+      body: input,
+      idempotencyKey:
+          options?.idempotencyKey ?? input['idempotency_key'] as String?,
+    ),
+  );
+
+  Future<JsonMap> uninstall(
+    String appId, {
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/app-store/apps/${_encodePathSegment(appId)}/install',
+    options: _mergeOptions(options, method: HttpMethod.delete, query: query),
+  );
+
+  Future<JsonMap> embedSession(
+    String installationId, {
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/app-store/installations/${_encodePathSegment(installationId)}/embed-session',
+    options: _mergeOptions(options, method: HttpMethod.post, query: query),
+  );
 }
 
 ApiRequestOptions _mergeOptions(
