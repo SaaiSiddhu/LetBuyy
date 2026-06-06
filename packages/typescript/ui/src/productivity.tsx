@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
     ArrowDown,
     ArrowUp,
@@ -11,7 +11,11 @@ import {
     Search,
 } from './icons';
 import { Badge, Skeleton } from './feedback';
+import { Button } from './button';
+import { Checkbox, Select } from './controls';
+import { warnDeprecated } from './deprecations';
 import { cx } from './utils';
+import { useDismiss, useFocusTrap } from './overlay-hooks';
 
 export interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {
     label: string;
@@ -78,6 +82,7 @@ export function MetricCard({ label, value, delta, deltaTone = 'neutral', sparkli
 export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
     name: string;
     imageUrl?: string;
+    alt?: string;
     size?: 'sm' | 'md' | 'lg';
 }
 
@@ -87,7 +92,7 @@ const avatarSizeClasses = {
     lg: 'h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] text-[length:var(--lb-font-size-heading)]',
 } as const;
 
-export function Avatar({ name, imageUrl, size = 'md', className = '', ...props }: AvatarProps) {
+export function Avatar({ name, imageUrl, alt, size = 'md', className = '', ...props }: AvatarProps) {
     const initials = name
         .split(/\s+/)
         .filter(Boolean)
@@ -98,14 +103,14 @@ export function Avatar({ name, imageUrl, size = 'md', className = '', ...props }
     return (
         <div
             className={cx(
-                'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-primary)]',
+                'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-primary-text)]',
                 avatarSizeClasses[size],
                 className,
             )}
             aria-label={name}
             {...props}
         >
-            {imageUrl ? <img src={imageUrl} alt="" className="h-full w-full object-cover" /> : initials}
+            {imageUrl ? <img src={imageUrl} alt={alt ?? ''} className="h-full w-full object-cover" /> : initials}
         </div>
     );
 }
@@ -114,13 +119,43 @@ export interface PaginationProps {
     page: number;
     totalPages: number;
     onPageChange: (page: number) => void;
+    showPageNumbers?: boolean;
+    maxPageButtons?: number;
+    pageSize?: number;
+    pageSizeOptions?: number[];
+    onPageSizeChange?: (pageSize: number) => void;
+    pageSizeLabel?: string;
     className?: string;
 }
 
-export function Pagination({ page, totalPages, onPageChange, className = '' }: PaginationProps) {
+function getPaginationPages(page: number, totalPages: number, maxPageButtons: number) {
+    const safeTotal = Math.max(totalPages, 1);
+    const safeMax = Math.max(maxPageButtons, 1);
+    const half = Math.floor(safeMax / 2);
+    const start = Math.max(Math.min(page - half, safeTotal - safeMax + 1), 1);
+    const end = Math.min(start + safeMax - 1, safeTotal);
+    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+}
+
+export function Pagination({
+    page,
+    totalPages,
+    onPageChange,
+    showPageNumbers = false,
+    maxPageButtons = 5,
+    pageSize,
+    pageSizeOptions = [],
+    onPageSizeChange,
+    pageSizeLabel = 'Rows per page',
+    className = '',
+}: PaginationProps) {
+    const pages = showPageNumbers ? getPaginationPages(page, totalPages, maxPageButtons) : [];
+    const showPageSize = typeof pageSize === 'number' && pageSizeOptions.length > 0 && Boolean(onPageSizeChange);
+
     return (
-        <nav className={cx('flex items-center justify-between gap-[var(--lb-space-2)]', className)} aria-label="Pagination">
-            <button
+        <nav className={cx('flex flex-wrap items-center justify-between gap-[var(--lb-space-2)]', className)} aria-label="Pagination">
+            <Button
+                unstyled
                 type="button"
                 className="inline-flex h-[var(--lb-density-button-height)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] disabled:opacity-50"
                 onClick={() => onPageChange(Math.max(page - 1, 1))}
@@ -128,11 +163,51 @@ export function Pagination({ page, totalPages, onPageChange, className = '' }: P
             >
                 <ChevronLeft className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                 Previous
-            </button>
-            <span className="text-[length:var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[color:var(--lb-color-text-subdued)]">
-                Page {page} of {totalPages}
-            </span>
-            <button
+            </Button>
+            <div className="flex min-w-0 flex-wrap items-center justify-center gap-[var(--lb-space-2)]">
+                {showPageSize && (
+                    <div className="w-[var(--lb-size-pagination-page-size-width,8rem)]">
+                        <Select
+                            hideLabel
+                            label={pageSizeLabel}
+                            controlSize="sm"
+                            value={String(pageSize)}
+                            options={pageSizeOptions.map((option) => ({ label: String(option), value: String(option) }))}
+                            onChange={(event) => onPageSizeChange?.(Number(event.currentTarget.value))}
+                        />
+                    </div>
+                )}
+                {pages.length > 0 ? (
+                    <div className="flex flex-wrap justify-center gap-[var(--lb-space-1)]" aria-label="Page numbers">
+                        {pages.map((pageNumber) => {
+                            const active = pageNumber === page;
+                            return (
+                                <Button
+                                    unstyled
+                                    key={pageNumber}
+                                    type="button"
+                                    className={cx(
+                                        'inline-flex h-[var(--lb-size-control-sm)] min-w-[var(--lb-size-control-sm)] items-center justify-center rounded-[var(--lb-radius-md)] border px-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
+                                        active
+                                            ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary-text)]'
+                                            : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)]',
+                                    )}
+                                    aria-current={active ? 'page' : undefined}
+                                    onClick={() => onPageChange(pageNumber)}
+                                >
+                                    {pageNumber}
+                                </Button>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <span className="text-[length:var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[color:var(--lb-color-text-subdued)]">
+                        Page {page} of {totalPages}
+                    </span>
+                )}
+            </div>
+            <Button
+                unstyled
                 type="button"
                 className="inline-flex h-[var(--lb-density-button-height)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] disabled:opacity-50"
                 onClick={() => onPageChange(Math.min(page + 1, totalPages))}
@@ -140,7 +215,7 @@ export function Pagination({ page, totalPages, onPageChange, className = '' }: P
             >
                 Next
                 <ChevronRight className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-            </button>
+            </Button>
         </nav>
     );
 }
@@ -198,7 +273,13 @@ export function FilterBar({
     );
 }
 
-export const TableFilterBar = FilterBar;
+/**
+ * @deprecated since 0.0.2. Use `FilterBar` instead. This alias remains for backward compatibility.
+ */
+export function TableFilterBar(props: FilterBarProps) {
+    warnDeprecated('TableFilterBar', 'FilterBar');
+    return <FilterBar {...props} />;
+}
 
 export interface IndexTableProps<T extends { id: string }> {
     columns: IndexTableColumn<T>[];
@@ -217,6 +298,9 @@ export interface IndexTableProps<T extends { id: string }> {
     className?: string;
 }
 
+/**
+ * @deprecated since 0.0.2. Use `Table` from `@letbuyy/ui` instead. This component remains for backward compatibility.
+ */
 export function IndexTable<T extends { id: string }>({
     columns,
     rows,
@@ -233,6 +317,8 @@ export function IndexTable<T extends { id: string }>({
     onRowClick,
     className = '',
 }: IndexTableProps<T>) {
+    warnDeprecated('IndexTable', 'Table');
+
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const selectedRows = rows.filter((row) => selectedIds.has(row.id));
     const allSelected = rows.length > 0 && selectedIds.size === rows.length;
@@ -260,20 +346,21 @@ export function IndexTable<T extends { id: string }>({
                             {savedViews.map((view) => {
                                 const active = view.value === activeView;
                                 return (
-                                    <button
+                                    <Button
+                                        unstyled
                                         key={view.value}
                                         type="button"
                                         className={cx(
                                             'inline-flex h-[var(--lb-density-pill-height)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-3)] text-[length:var(--lb-font-size-badge)] font-[var(--lb-font-weight-medium)]',
                                             active
-                                                ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]'
+                                                ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary-text)]'
                                                 : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)]',
                                         )}
                                         onClick={() => onViewChange?.(view.value)}
                                     >
                                         {view.label}
                                         {typeof view.count === 'number' && <span>{view.count}</span>}
-                                    </button>
+                                    </Button>
                                 );
                             })}
                         </div>
@@ -292,7 +379,8 @@ export function IndexTable<T extends { id: string }>({
                     <span className="text-[length:var(--lb-font-size-secondary)] text-[color:var(--lb-color-text)]">{selectedRows.length} selected</span>
                     <div className="flex flex-wrap gap-[var(--lb-space-2)]">
                         {bulkActions.map((action) => (
-                            <button
+                            <Button
+                                unstyled
                                 key={action.label}
                                 type="button"
                                 className={cx(
@@ -304,7 +392,7 @@ export function IndexTable<T extends { id: string }>({
                                 onClick={() => action.onAction(selectedRows)}
                             >
                                 {action.label}
-                            </button>
+                            </Button>
                         ))}
                     </div>
                 </div>
@@ -314,13 +402,14 @@ export function IndexTable<T extends { id: string }>({
                     {sortableColumns.map((column) => {
                         const active = sortKey === column.key;
                         return (
-                            <button
+                            <Button
+                                unstyled
                                 key={column.key}
                                 type="button"
                                 className={cx(
                                     'inline-flex h-[var(--lb-density-pill-height)] shrink-0 items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-3)] text-[length:var(--lb-font-size-badge)] font-[var(--lb-font-weight-medium)]',
                                     active
-                                        ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]'
+                                        ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary-text)]'
                                         : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)]',
                                 )}
                                 aria-pressed={active}
@@ -330,9 +419,9 @@ export function IndexTable<T extends { id: string }>({
                                 {active && (
                                     sortDirection === 'asc'
                                         ? <ArrowUp className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />
-                                        : <ArrowDown className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />
+                                    : <ArrowDown className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />
                                 )}
-                            </button>
+                            </Button>
                         );
                     })}
                 </div>
@@ -349,14 +438,15 @@ export function IndexTable<T extends { id: string }>({
                 ) : (
                     <div className="divide-y divide-[var(--lb-color-border)]">
                         <label className="flex items-center gap-[var(--lb-space-2)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
-                            <input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label="Select all rows" />
+                            <Checkbox unstyled label="Select all rows" checked={allSelected} onChange={toggleAll} aria-label="Select all rows" />
                             Select all visible rows
                         </label>
                         {rows.map((row, rowIndex) => (
                             <article key={row.id} className="grid gap-[var(--lb-space-3)] p-[var(--lb-space-3)]">
                                 <div className="flex items-start gap-[var(--lb-space-3)]">
-                                    <input
-                                        type="checkbox"
+                                    <Checkbox
+                                        unstyled
+                                        label={`Select row ${rowIndex + 1}`}
                                         className="mt-[var(--lb-space-1)]"
                                         checked={selectedIds.has(row.id)}
                                         onChange={() => toggleRow(row.id)}
@@ -382,13 +472,14 @@ export function IndexTable<T extends { id: string }>({
 
                                 {onRowClick && (
                                     <div className="flex justify-end">
-                                        <button
+                                        <Button
+                                            unstyled
                                             type="button"
                                             className="h-[var(--lb-density-icon-button-height)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-badge)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
                                             onClick={() => onRowClick(row)}
                                         >
                                             Open
-                                        </button>
+                                        </Button>
                                     </div>
                                 )}
                             </article>
@@ -401,11 +492,12 @@ export function IndexTable<T extends { id: string }>({
                     <thead className="bg-[var(--lb-component-table-header-bg)] text-[color:var(--lb-component-table-text-secondary)]">
                         <tr>
                             <th className="h-[var(--lb-density-table-header-height)] w-[var(--lb-density-button-height-large)] px-[var(--lb-space-3)] py-0 text-left">
-                                <input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label="Select all rows" />
+                                <Checkbox unstyled label="Select all rows" checked={allSelected} onChange={toggleAll} aria-label="Select all rows" />
                             </th>
                             {columns.map((column) => (
                                 <th key={column.key} className="h-[var(--lb-density-table-header-height)] px-[var(--lb-space-3)] py-0 text-left font-[var(--lb-font-weight-medium)]">
-                                    <button
+                                    <Button
+                                        unstyled
                                         type="button"
                                         className={cx(
                                             'inline-flex items-center gap-[var(--lb-space-1)] text-left',
@@ -417,9 +509,9 @@ export function IndexTable<T extends { id: string }>({
                                         {column.sortable && sortKey === column.key && (
                                             sortDirection === 'asc'
                                                 ? <ArrowUp className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />
-                                                : <ArrowDown className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />
+                                            : <ArrowDown className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />
                                         )}
-                                    </button>
+                                    </Button>
                                 </th>
                             ))}
                         </tr>
@@ -439,10 +531,11 @@ export function IndexTable<T extends { id: string }>({
                             </tr>
                         ) : (
                             rows.map((row, index) => (
-                                <tr key={row.id} className="hover:bg-[var(--lb-component-table-row-hover-bg)]">
+                                <tr key={row.id} aria-selected={selectedIds.has(row.id)} className="hover:bg-[var(--lb-component-table-row-hover-bg)]">
                                     <td className="h-[var(--lb-density-table-row-height)] px-[var(--lb-space-3)] py-0">
-                                        <input
-                                            type="checkbox"
+                                        <Checkbox
+                                            unstyled
+                                            label={`Select row ${index + 1}`}
                                             checked={selectedIds.has(row.id)}
                                             onChange={() => toggleRow(row.id)}
                                             aria-label={`Select row ${index + 1}`}
@@ -485,48 +578,107 @@ export interface CommandPaletteProps {
 
 export function CommandPalette({ open, actions, onClose, placeholder = 'Search commands' }: CommandPaletteProps) {
     const [query, setQuery] = useState('');
+    const [activeIndex, setActiveIndex] = useState(0);
+    const overlayRef = useRef<HTMLDivElement>(null);
+    const dialogRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const actionRefs = useRef<Array<HTMLButtonElement | null>>([]);
+    const inputId = useId();
+    const listboxId = `${inputId}-listbox`;
     const filteredActions = useMemo(() => {
         const normalizedQuery = query.trim().toLowerCase();
         if (!normalizedQuery) return actions;
         return actions.filter((action) => `${action.label} ${action.description ?? ''}`.toLowerCase().includes(normalizedQuery));
     }, [actions, query]);
 
+    useFocusTrap(overlayRef, { active: open, initialFocusRef: inputRef });
+    useDismiss(dialogRef, { active: open, onDismiss: onClose });
+
     useEffect(() => {
-        if (!open) return;
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') onClose();
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [onClose, open]);
+        setActiveIndex(filteredActions.length > 0 ? 0 : -1);
+    }, [filteredActions.length]);
+
+    const focusAction = (index: number) => {
+        if (filteredActions.length === 0) return;
+        const nextIndex = (index + filteredActions.length) % filteredActions.length;
+        setActiveIndex(nextIndex);
+        actionRefs.current[nextIndex]?.focus();
+    };
+
+    const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            focusAction(activeIndex >= 0 ? activeIndex : 0);
+        }
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            focusAction(activeIndex >= 0 ? activeIndex : filteredActions.length - 1);
+        }
+    };
+
+    const handleActionKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            focusAction(index + 1);
+        }
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            focusAction(index - 1);
+        }
+        if (event.key === 'Home') {
+            event.preventDefault();
+            focusAction(0);
+        }
+        if (event.key === 'End') {
+            event.preventDefault();
+            focusAction(filteredActions.length - 1);
+        }
+    };
 
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-[var(--lb-color-overlay)] px-[var(--lb-space-0)] pt-[var(--lb-space-0)] sm:items-start sm:px-[var(--lb-space-4)] sm:pt-[var(--lb-size-command-palette-offset)]">
-            <div role="dialog" aria-modal="true" aria-label="Command palette" className="flex h-full w-full flex-col overflow-hidden rounded-none border-0 bg-[var(--lb-component-card-bg)] shadow-[var(--lb-shadow-lg)] sm:h-auto sm:max-h-[calc(100vh-var(--lb-space-7))] sm:w-[min(var(--lb-size-command-palette-width),100%)] sm:rounded-[var(--lb-radius-lg)] sm:border sm:border-[var(--lb-component-card-border)]">
+        <div ref={overlayRef} className="fixed inset-0 z-[var(--lb-z-modal)] flex items-stretch justify-center bg-[var(--lb-color-overlay)] px-[var(--lb-space-0)] pt-[var(--lb-space-0)] sm:items-start sm:px-[var(--lb-space-4)] sm:pt-[var(--lb-size-command-palette-offset)]">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Command palette" className="flex h-full w-full flex-col overflow-hidden rounded-none border-0 bg-[var(--lb-component-card-bg)] shadow-[var(--lb-shadow-lg)] sm:h-auto sm:max-h-[calc(100vh-var(--lb-space-7))] sm:w-[min(var(--lb-size-command-palette-width),100%)] sm:rounded-[var(--lb-radius-lg)] sm:border sm:border-[var(--lb-component-card-border)]">
                 <div className="flex items-center gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] px-[var(--lb-space-4)]">
                     <Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
                     <input
+                        ref={inputRef}
+                        id={inputId}
                         className="h-[var(--lb-density-button-height-large)] flex-1 bg-transparent text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] outline-none placeholder:text-[color:var(--lb-color-text-subdued)]"
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
+                        onKeyDown={handleInputKeyDown}
                         placeholder={placeholder}
-                        autoFocus
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-controls={listboxId}
+                        aria-expanded="true"
+                        aria-activedescendant={activeIndex >= 0 ? `${listboxId}-action-${activeIndex}` : undefined}
+                        aria-label={placeholder}
                     />
                     <Command className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
                 </div>
-                <div className="max-h-none flex-1 overflow-auto p-[var(--lb-space-2)] sm:max-h-[var(--lb-size-command-palette-list-max-height)]">
+                <div id={listboxId} role="listbox" className="max-h-none flex-1 overflow-auto p-[var(--lb-space-2)] sm:max-h-[var(--lb-size-command-palette-list-max-height)]">
                     {filteredActions.length === 0 ? (
                         <p className="m-0 px-[var(--lb-space-3)] py-[var(--lb-space-4)] text-center text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
                             No commands found
                         </p>
                     ) : (
-                        filteredActions.map((action) => (
+                        filteredActions.map((action, index) => (
                             <button
                                 key={action.id}
+                                ref={(node) => {
+                                    actionRefs.current[index] = node;
+                                }}
+                                id={`${listboxId}-action-${index}`}
                                 type="button"
+                                role="option"
+                                tabIndex={index === activeIndex ? 0 : -1}
+                                aria-selected={index === activeIndex}
                                 className="flex w-full items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-md)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-left hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                onFocus={() => setActiveIndex(index)}
+                                onKeyDown={(event) => handleActionKeyDown(event, index)}
                                 onClick={() => {
                                     action.onSelect();
                                     onClose();

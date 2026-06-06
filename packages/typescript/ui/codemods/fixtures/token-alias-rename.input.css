@@ -1,0 +1,5 @@
+.legacy {
+    color: var(--lb-color-text-primary);
+    border-color: var(--lb-color-border-subtle);
+    outline-color: var(--lb-semantic-focus-ring);
+}

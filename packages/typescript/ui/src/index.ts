@@ -4,25 +4,34 @@
 export { Button } from './button';
 export type { ButtonProps } from './button';
 
-export { Input, Textarea } from './input';
-export type { InputProps, TextareaProps } from './input';
+export { InlineError, Input, NumberField, Textarea } from './input';
+export type { InlineErrorProps, InputProps, NumberFieldProps, TextareaProps } from './input';
 
 export { DataTable, Badge } from './data-table';
 export type { DataTableProps, Column, BadgeProps } from './data-table';
+
+export { Table } from './table';
+export type { TableBulkAction, TableColumn, TableFilterChip, TableProps, TableSavedView } from './table';
 
 export {
     BlockStack,
     Box,
     Card,
+    Columns,
+    Container,
     getPageIconName,
+    Grid,
     InlineStack,
     letbuyyPageHeaderDefaults,
+    letbuyyPageIdentityIcons,
+    letbuyyPageIdentityOptions,
     Page,
     PageActions,
     PageContent,
     PageHeader,
     PageHeaderActions,
     PageShell,
+    resolvePageIdentity,
     Section,
     Text,
 } from './layout';
@@ -30,15 +39,20 @@ export type {
     BlockStackProps,
     BoxProps,
     CardProps,
+    ColumnsProps,
+    ContainerProps,
+    GridProps,
     InlineStackProps,
     PageContentProps,
     PageHeaderAction,
     PageHeaderActionsProps,
     PageHeaderProps,
     PageIdentity,
+    PageIdentityOption,
     PageProps,
     PageShellProps,
     SectionProps,
+    SpaceScale,
     TextProps,
 } from './layout';
 
@@ -54,19 +68,21 @@ export {
 export type {
     BannerProps,
     EmptyStateKind,
+    EmptyStateIllustrationProps,
     EmptyStateProps,
     SaveBarProps,
     SkeletonProps,
     StatusVariant,
     ToastMessage,
+    ToastPlacement,
     ToastProviderProps,
     ToastVariant,
 } from './feedback';
 
-export { ConfirmDialog, Modal, Tooltip } from './overlays';
-export type { ConfirmDialogProps, ModalProps, TooltipProps } from './overlays';
+export { ConfirmDialog, Drawer, Dropdown, DropdownMenu, Modal, Popover, Tooltip } from './overlays';
+export type { ConfirmDialogProps, DrawerProps, DropdownItem, DropdownProps, ModalProps, OverlayTrigger, OverlayTriggerProps, PopoverProps, TooltipProps } from './overlays';
 
-export { Checkbox, ChoiceList, Combobox, Radio, Select, Tabs } from './controls';
+export { Checkbox, ChoiceList, Combobox, Radio, Select, Switch, Tabs } from './controls';
 export type {
     CheckboxProps,
     ChoiceListOption,
@@ -75,9 +91,13 @@ export type {
     RadioProps,
     SelectOption,
     SelectProps,
+    SwitchProps,
     TabItem,
     TabsProps,
 } from './controls';
+
+export { AppFrame, Navigation, Sidebar } from './app-shell';
+export type { AppFrameProps, NavigationItem, NavigationProps, SidebarProps } from './app-shell';
 
 export { Avatar, CommandPalette, FilterBar, IndexTable, MetricCard, Pagination, TableFilterBar } from './productivity';
 export type {
@@ -92,7 +112,13 @@ export type {
     PaginationProps,
 } from './productivity';
 
+/**
+ * @deprecated since 0.0.2. Use `@letbuyy/ui/preview` for Storybook/design-token preview helpers.
+ */
 export { ColorPreviewBlock, ColorPreviewButton, ColorPreviewSurface, ColorSwatch, RadiusPreview } from './visual';
+/**
+ * @deprecated since 0.0.2. Use `@letbuyy/ui/preview` for Storybook/design-token preview helper types.
+ */
 export type {
     ColorPreviewBlockProps,
     ColorPreviewButtonProps,
@@ -104,29 +130,39 @@ export type {
 export {
     Breadcrumbs,
     Chart,
+    Accordion,
     DateRangePicker,
+    DatePicker,
     DensityToggle,
     DescriptionList,
+    Disclosure,
     Divider,
     FilterChips,
     ProgressBar,
+    SegmentedControl,
     Spinner,
     TextStyle,
 } from './primitives';
 export type {
+    AccordionItem,
+    AccordionProps,
     BreadcrumbItem,
     BreadcrumbsProps,
     ChartDatum,
     ChartProps,
     DateRangePickerProps,
     DateRangeValue,
+    DatePickerProps,
     DensityToggleProps,
     DescriptionListItem,
     DescriptionListProps,
+    DisclosureProps,
     DividerProps,
     FilterChip,
     FilterChipsProps,
     ProgressBarProps,
+    SegmentedControlOption,
+    SegmentedControlProps,
     SpinnerProps,
     TextStyleProps,
 } from './primitives';
@@ -135,21 +171,47 @@ export { DesignSystemRoot } from './design-system-root';
 export type { DesignSystemRootProps } from './design-system-root';
 
 export {
+    formatInrCurrency,
+    formatDisplayDate,
+    formatIndiaDate,
+    formatIndiaDateTime,
+    formatIndiaDateWithTime,
+    formatIndiaDayMonthTime,
+    formatUsLongDate,
+    formatUsShortDate,
+    formatCurrency,
+    formatDate,
+    formatNumber,
+} from './formatting';
+export type {
+    FormatInrCurrencyOptions,
+    FormatDateOptions,
+    FormatCurrencyOptions,
+    FormatDateStyleOptions,
+    FormatNumberOptions,
+} from './formatting';
+
+export {
     letbuyyComponentTokens,
+    letbuyyBreakpointTokens,
     letbuyyColorTokens,
     letbuyyDensityCssVariables,
     letbuyyDensityTokens,
     letbuyyPrimitiveTokens,
     letbuyySemanticTokens,
+    letbuyyShadowTokens,
+    letbuyySurfaceTokens,
+    letbuyyTailwindPreset,
+    letbuyyTailwindScreens,
     letbuyyTokenCss,
     letbuyyTokenCssVariables,
     letbuyyTokens,
+    letbuyyZIndexTokens,
+    createLetbuyyBrandVariables,
+    validateLetbuyyBrandContrast,
 } from './tokens';
-export type { LetbuyyDensity, LetbuyyTheme } from './tokens';
+export type { LetbuyyBrandContrastCheck, LetbuyyBrandInput, LetbuyyBrandOverrides, LetbuyyDensity, LetbuyySurface, LetbuyyTheme } from './tokens';
 
 export { letbuyyFontCssVariables, letbuyyFontStacks } from './fonts';
-
-export { formatInrCurrency } from './formatting';
-export type { FormatInrCurrencyOptions } from './formatting';
 
 export * from './icons';

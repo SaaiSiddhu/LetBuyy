@@ -1,9 +1,15 @@
 'use client';
 
 import React, { useId } from 'react';
-import { Calendar, Check, ChevronRight, Loader2, X } from './icons';
+import { Button } from './button';
+import { warnDeprecated } from './deprecations';
+import { Calendar, Check, ChevronDown, Loader2, X } from './icons';
+import { Text, type TextProps } from './layout';
 import { type LetbuyyDensity } from './tokens';
 import { cx } from './utils';
+
+export { Breadcrumbs } from './breadcrumbs';
+export type { BreadcrumbItem, BreadcrumbsProps } from './breadcrumbs';
 
 export interface ChartDatum {
     label: string;
@@ -232,6 +238,128 @@ export function DateRangePicker({
     );
 }
 
+export interface DatePickerProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'onChange'> {
+    label?: string;
+    helperText?: string;
+    error?: string;
+    value?: string;
+    defaultValue?: string;
+    onChange?: React.ChangeEventHandler<HTMLInputElement>;
+    onValueChange?: (value: string) => void;
+}
+
+export function DatePicker({
+    label = 'Date',
+    helperText,
+    error,
+    value,
+    defaultValue,
+    onChange,
+    onValueChange,
+    className = '',
+    id,
+    'aria-describedby': ariaDescribedBy,
+    'aria-invalid': ariaInvalid,
+    ...props
+}: DatePickerProps) {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const errorId = error ? `${inputId}-error` : undefined;
+    const helperId = helperText && !error ? `${inputId}-helper` : undefined;
+    const describedBy = [ariaDescribedBy, errorId, helperId].filter(Boolean).join(' ') || undefined;
+
+    return (
+        <div className={cx('grid gap-[var(--lb-space-1)]', className)}>
+            {label && (
+                <label className="flex items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-small)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-small)] text-[color:var(--lb-color-text)]" htmlFor={inputId}>
+                    <Calendar className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)] text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
+                    {label}
+                </label>
+            )}
+            <input
+                id={inputId}
+                type="date"
+                value={value}
+                defaultValue={defaultValue}
+                aria-describedby={describedBy}
+                aria-invalid={error ? true : ariaInvalid}
+                className={cx(
+                    'h-[var(--lb-density-input-height)] rounded-[var(--lb-radius-lg)] border bg-[var(--lb-component-input-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-component-input-text)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:border-[var(--lb-component-input-focus-border)] focus-visible:ring-2 focus-visible:ring-[var(--lb-component-input-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50',
+                    error ? 'border-[var(--lb-color-critical)] focus-visible:ring-[var(--lb-color-critical)]' : 'border-[var(--lb-component-input-border)]',
+                )}
+                onChange={(event) => {
+                    onChange?.(event);
+                    onValueChange?.(event.currentTarget.value);
+                }}
+                {...props}
+            />
+            {error && <p id={errorId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-critical)]">{error}</p>}
+            {helperText && !error && <p id={helperId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{helperText}</p>}
+        </div>
+    );
+}
+
+export interface SegmentedControlOption<TValue extends string = string> {
+    value: TValue;
+    label: React.ReactNode;
+    icon?: React.ReactNode;
+    disabled?: boolean;
+}
+
+export interface SegmentedControlProps<TValue extends string = string> extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+    value: TValue;
+    options: Array<SegmentedControlOption<TValue>>;
+    onValueChange: (value: TValue) => void;
+    ariaLabel: string;
+    showCheck?: boolean;
+}
+
+export function SegmentedControl<TValue extends string = string>({
+    value,
+    options,
+    onValueChange,
+    ariaLabel,
+    showCheck = true,
+    className = '',
+    ...props
+}: SegmentedControlProps<TValue>) {
+    return (
+        <div
+            className={cx('inline-flex rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-1)]', className)}
+            role="radiogroup"
+            aria-label={ariaLabel}
+            {...props}
+        >
+            {options.map((option) => {
+                const active = option.value === value;
+                return (
+                    <Button
+                        unstyled
+                        key={option.value}
+                        type="button"
+                        role="radio"
+                        aria-checked={active}
+                        disabled={option.disabled}
+                        className={cx(
+                            'inline-flex h-[var(--lb-density-pill-height)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-md)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-badge)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-badge)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50',
+                            active
+                                ? 'bg-[var(--lb-component-card-bg)] text-[color:var(--lb-color-text)] shadow-[var(--lb-shadow-sm)]'
+                                : 'text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)]',
+                        )}
+                        onClick={() => {
+                            if (!option.disabled) onValueChange(option.value);
+                        }}
+                    >
+                        {active && showCheck && <Check className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />}
+                        {option.icon && <span className="inline-flex shrink-0" aria-hidden="true">{option.icon}</span>}
+                        {option.label}
+                    </Button>
+                );
+            })}
+        </div>
+    );
+}
+
 export interface DensityToggleProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
     value: LetbuyyDensity;
     onChange: (density: LetbuyyDensity) => void;
@@ -246,33 +374,14 @@ const densityLabels: Record<LetbuyyDensity, string> = {
 
 export function DensityToggle({ value, onChange, options = ['compact', 'comfortable', 'spacious'], className = '', ...props }: DensityToggleProps) {
     return (
-        <div
-            className={cx('inline-flex rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-1)]', className)}
-            role="group"
-            aria-label="Density"
+        <SegmentedControl
+            value={value}
+            options={options.map((density) => ({ value: density, label: densityLabels[density] }))}
+            onValueChange={onChange}
+            ariaLabel="Density"
+            className={className}
             {...props}
-        >
-            {options.map((density) => {
-                const active = density === value;
-                return (
-                    <button
-                        key={density}
-                        type="button"
-                        className={cx(
-                            'inline-flex h-[var(--lb-density-pill-height)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-md)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-badge)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-badge)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
-                            active
-                                ? 'bg-[var(--lb-component-card-bg)] text-[color:var(--lb-color-text)] shadow-[var(--lb-shadow-sm)]'
-                                : 'text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)]',
-                        )}
-                        aria-pressed={active}
-                        onClick={() => onChange(density)}
-                    >
-                        {active && <Check className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />}
-                        {densityLabels[density]}
-                    </button>
-                );
-            })}
-        </div>
+        />
     );
 }
 
@@ -361,45 +470,6 @@ export function ProgressBar({ value, max = 100, label, showValue = false, classN
     );
 }
 
-export interface BreadcrumbItem {
-    label: string;
-    href?: string;
-    onClick?: () => void;
-}
-
-export interface BreadcrumbsProps extends React.HTMLAttributes<HTMLElement> {
-    items: BreadcrumbItem[];
-}
-
-export function Breadcrumbs({ items, className = '', ...props }: BreadcrumbsProps) {
-    if (items.length === 0) return null;
-
-    return (
-        <nav aria-label="Breadcrumb" className={cx('text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]', className)} {...props}>
-            <ol className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
-                {items.map((item, index) => {
-                    const current = index === items.length - 1;
-                    return (
-                        <li key={`${item.label}-${index}`} className="flex items-center gap-[var(--lb-space-2)]">
-                            {item.href ? (
-                                <a className="rounded-[var(--lb-radius-sm)] hover:text-[color:var(--lb-color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]" href={item.href} aria-current={current ? 'page' : undefined}>
-                                    {item.label}
-                                </a>
-                            ) : item.onClick ? (
-                                <button type="button" className="rounded-[var(--lb-radius-sm)] hover:text-[color:var(--lb-color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]" onClick={item.onClick} aria-current={current ? 'page' : undefined}>
-                                    {item.label}
-                                </button>
-                            ) : (
-                                <span aria-current={current ? 'page' : undefined} className={current ? 'text-[color:var(--lb-color-text)]' : undefined}>{item.label}</span>
-                            )}
-                            {!current && <ChevronRight className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />}
-                        </li>
-                    );
-                })}
-            </ol>
-        </nav>
-    );
-}
 
 export interface DescriptionListItem {
     term: React.ReactNode;
@@ -453,6 +523,105 @@ export function Divider({ orientation = 'horizontal', className = '', ...props }
     return <hr className={cx('m-0 h-px w-full border-0 bg-[var(--lb-color-border)]', className)} {...props} />;
 }
 
+export interface DisclosureProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
+    title: React.ReactNode;
+    children: React.ReactNode;
+    open?: boolean;
+    defaultOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
+    disabled?: boolean;
+}
+
+export function Disclosure({ title, children, open, defaultOpen = false, onOpenChange, disabled = false, className = '', ...props }: DisclosureProps) {
+    const buttonId = useId();
+    const panelId = useId();
+    const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
+    const actualOpen = open ?? internalOpen;
+    const setOpen = (nextOpen: boolean) => {
+        if (disabled) return;
+        setInternalOpen(nextOpen);
+        onOpenChange?.(nextOpen);
+    };
+
+    return (
+        <div className={cx('rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)]', className)} {...props}>
+            <button
+                id={buttonId}
+                type="button"
+                className="flex w-full items-center justify-between gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50"
+                aria-expanded={actualOpen}
+                aria-controls={panelId}
+                disabled={disabled}
+                onClick={() => setOpen(!actualOpen)}
+            >
+                <span>{title}</span>
+                <ChevronDown className={cx('h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] transition-transform duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)]', actualOpen && 'rotate-180')} aria-hidden="true" />
+            </button>
+            {actualOpen && (
+                <div
+                    id={panelId}
+                    role="region"
+                    aria-labelledby={buttonId}
+                    className="border-t border-[var(--lb-color-border)] px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]"
+                >
+                    {children}
+                </div>
+            )}
+        </div>
+    );
+}
+
+export interface AccordionItem {
+    id: string;
+    title: React.ReactNode;
+    content: React.ReactNode;
+    disabled?: boolean;
+}
+
+export interface AccordionProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+    items: AccordionItem[];
+    value?: string | string[];
+    defaultValue?: string | string[];
+    onValueChange?: (value: string | string[]) => void;
+    multiple?: boolean;
+}
+
+function valueIncludes(value: string | string[] | undefined, id: string) {
+    return Array.isArray(value) ? value.includes(id) : value === id;
+}
+
+export function Accordion({ items, value, defaultValue, onValueChange, multiple = false, className = '', ...props }: AccordionProps) {
+    const fallbackValue = defaultValue ?? (multiple ? [] : '');
+    const [internalValue, setInternalValue] = React.useState<string | string[]>(fallbackValue);
+    const actualValue = value ?? internalValue;
+
+    const setItemOpen = (id: string, open: boolean) => {
+        const nextValue = multiple
+            ? open
+                ? Array.from(new Set([...(Array.isArray(actualValue) ? actualValue : []), id]))
+                : (Array.isArray(actualValue) ? actualValue : []).filter((itemId) => itemId !== id)
+            : open ? id : '';
+        setInternalValue(nextValue);
+        onValueChange?.(nextValue);
+    };
+
+    return (
+        <div className={cx('grid gap-[var(--lb-space-2)]', className)} {...props}>
+            {items.map((item) => (
+                <Disclosure
+                    key={item.id}
+                    title={item.title}
+                    open={valueIncludes(actualValue, item.id)}
+                    disabled={item.disabled}
+                    onOpenChange={(open) => setItemOpen(item.id, open)}
+                >
+                    {item.content}
+                </Disclosure>
+            ))}
+        </div>
+    );
+}
+
 export interface SpinnerProps extends React.HTMLAttributes<HTMLSpanElement> {
     label?: string;
     size?: 'sm' | 'md' | 'lg';
@@ -479,24 +648,25 @@ export interface TextStyleProps extends React.HTMLAttributes<HTMLElement> {
     variant?: 'body' | 'subdued' | 'strong' | 'positive' | 'negative' | 'code';
 }
 
-const textStyleClasses: Record<NonNullable<TextStyleProps['variant']>, string> = {
-    body: 'text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]',
-    subdued: 'text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]',
-    strong: 'font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]',
-    positive: 'font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-success)]',
-    negative: 'font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-critical)]',
-    code: 'rounded-[var(--lb-radius-sm)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-1)] py-[var(--lb-space-0)] font-mono text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text)]',
-};
-
+/**
+ * @deprecated since 0.0.2. Use `Text` with `variant`, `tone`, and `weight` instead.
+ */
 export function TextStyle({ children, as, variant = 'body', className = '', ...props }: TextStyleProps) {
-    const Element = as ?? (variant === 'code' ? 'code' : 'span');
+    warnDeprecated('TextStyle', 'Text');
 
-    return React.createElement(
-        Element,
-        {
-            className: cx(textStyleClasses[variant], className),
-            ...props,
-        },
-        children,
+    const textVariant = variant === 'body' ? 'body' : variant;
+    const tone: TextProps['tone'] | undefined = variant === 'body' ? 'default' : undefined;
+
+    return (
+        <Text
+            as={as ?? (variant === 'code' ? 'code' : 'span')}
+            variant={textVariant}
+            tone={tone}
+            reset={false}
+            className={className}
+            {...props}
+        >
+            {children}
+        </Text>
     );
 }

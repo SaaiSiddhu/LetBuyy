@@ -6,6 +6,7 @@
     "moduleResolution": "bundler",
     "declaration": true,
     "declarationMap": true,
+    "emitDeclarationOnly": true,
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
@@ -17,10 +18,16 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "composite": true,
-    "emitDeclarationOnly": true,
     "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo"
   },
   "include": [
     "src/**/*"
+  ],
+  "exclude": [
+    "src/**/*.stories.ts",
+    "src/**/*.stories.tsx",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/__tests__/**"
   ]
 }

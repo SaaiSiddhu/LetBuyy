@@ -23,6 +23,8 @@ import {
     Users,
     X,
 } from './icons';
+import { Button } from './button';
+import { warnDeprecated } from './deprecations';
 import { cx } from './utils';
 
 export type StatusVariant = 'default' | 'info' | 'success' | 'warning' | 'critical';
@@ -62,10 +64,18 @@ const statusStyles: Record<StatusVariant, { surface: string; text: string; borde
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
     label: string;
+    /**
+     * `critical` is the canonical danger/error vocabulary. `danger` remains accepted
+     * for compatibility with existing consumers and is normalized to `critical`.
+     */
     variant?: StatusVariant | 'danger';
 }
 
 export function Badge({ label, variant = 'default', className = '', ...props }: BadgeProps) {
+    if (variant === 'danger') {
+        warnDeprecated('Badge variant="danger"', 'Badge variant="critical"');
+    }
+
     const normalizedVariant = variant === 'danger' ? 'critical' : variant;
     const style = statusStyles[normalizedVariant];
 
@@ -126,12 +136,15 @@ export function Banner({ title, children, variant = 'info', action, className = 
 }
 
 export type ToastVariant = Exclude<StatusVariant, 'default'>;
+export type ToastPlacement = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center';
 
 export interface ToastMessage {
     id: string;
     title: string;
     description?: string;
     variant?: ToastVariant;
+    duration?: number | null;
+    placement?: ToastPlacement;
 }
 
 interface ToastContextValue {
@@ -143,9 +156,20 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 
 export interface ToastProviderProps {
     children: React.ReactNode;
+    duration?: number;
+    placement?: ToastPlacement;
 }
 
-export function ToastProvider({ children }: ToastProviderProps) {
+const toastPlacementStyles: Record<ToastPlacement, string> = {
+    'top-right': 'right-[var(--lb-space-5)] top-[calc(var(--lb-space-7)+var(--lb-space-4))]',
+    'top-left': 'left-[var(--lb-space-5)] top-[calc(var(--lb-space-7)+var(--lb-space-4))]',
+    'top-center': 'left-1/2 top-[calc(var(--lb-space-7)+var(--lb-space-4))] -translate-x-1/2',
+    'bottom-right': 'bottom-[var(--lb-space-5)] right-[var(--lb-space-5)]',
+    'bottom-left': 'bottom-[var(--lb-space-5)] left-[var(--lb-space-5)]',
+    'bottom-center': 'bottom-[var(--lb-space-5)] left-1/2 -translate-x-1/2',
+};
+
+export function ToastProvider({ children, duration = 5000, placement = 'top-right' }: ToastProviderProps) {
     const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
     const dismiss = useCallback((id: string) => {
@@ -155,57 +179,70 @@ export function ToastProvider({ children }: ToastProviderProps) {
     const notify = useCallback((toast: Omit<ToastMessage, 'id'>) => {
         const id = globalThis.crypto?.randomUUID?.() ?? `toast-${Date.now()}`;
         setToasts((current) => [...current, { ...toast, id }]);
-        window.setTimeout(() => dismiss(id), 5000);
+        const toastDuration = toast.duration ?? duration;
+        if (toastDuration !== null && toastDuration > 0) {
+            window.setTimeout(() => dismiss(id), toastDuration);
+        }
         return id;
-    }, [dismiss]);
+    }, [dismiss, duration]);
 
     const value = useMemo(() => ({ notify, dismiss }), [dismiss, notify]);
+    const activePlacements = Array.from(new Set(toasts.map((toast) => toast.placement ?? placement)));
 
     return (
         <ToastContext.Provider value={value}>
             {children}
-            <div
-                className="fixed right-[var(--lb-space-5)] top-[calc(var(--lb-space-7)+var(--lb-space-4))] z-50 flex w-[min(380px,calc(100vw-var(--lb-space-6)))] flex-col gap-[var(--lb-space-3)]"
-                aria-live="polite"
-                aria-relevant="additions removals"
-            >
-                {toasts.map((toast) => {
-                    const variant = toast.variant ?? 'info';
-                    const style = statusStyles[variant];
-                    return (
-                        <div
-                            key={toast.id}
-                            className={cx(
-                                'flex gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border bg-[var(--lb-color-surface-raised)] p-[var(--lb-density-card-padding)] shadow-[var(--lb-shadow-lg)]',
-                                style.border,
-                            )}
-                            role={variant === 'critical' ? 'alert' : 'status'}
-                        >
-                            <div className={cx('mt-[var(--lb-space-1)] text-[length:var(--lb-density-action-icon-size)]', style.text)}>
-                                {style.icon}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                                <p className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
-                                    {toast.title}
-                                </p>
-                                {toast.description && (
-                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                        {toast.description}
-                                    </p>
-                                )}
-                            </div>
-                            <button
-                                type="button"
-                                className="inline-flex h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] items-center justify-center rounded-[var(--lb-radius-md)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                onClick={() => dismiss(toast.id)}
-                                aria-label="Dismiss notification"
-                            >
-                                <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                            </button>
-                        </div>
-                    );
-                })}
-            </div>
+            {activePlacements.map((activePlacement) => (
+                <div
+                    key={activePlacement}
+                    className={cx(
+                        'fixed z-[var(--lb-z-toast)] flex w-[min(380px,calc(100vw-var(--lb-space-6)))] flex-col gap-[var(--lb-space-3)]',
+                        toastPlacementStyles[activePlacement],
+                    )}
+                    aria-live="polite"
+                    aria-relevant="additions removals"
+                >
+                    {toasts
+                        .filter((toast) => (toast.placement ?? placement) === activePlacement)
+                        .map((toast) => {
+                            const variant = toast.variant ?? 'info';
+                            const style = statusStyles[variant];
+                            return (
+                                <div
+                                    key={toast.id}
+                                    className={cx(
+                                        'flex gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border bg-[var(--lb-color-surface-raised)] p-[var(--lb-density-card-padding)] shadow-[var(--lb-shadow-lg)]',
+                                        style.border,
+                                    )}
+                                    role={variant === 'critical' ? 'alert' : 'status'}
+                                >
+                                    <div className={cx('mt-[var(--lb-space-1)] text-[length:var(--lb-density-action-icon-size)]', style.text)}>
+                                        {style.icon}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                                            {toast.title}
+                                        </p>
+                                        {toast.description && (
+                                            <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                                {toast.description}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <Button
+                                        unstyled
+                                        type="button"
+                                        className="inline-flex h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] items-center justify-center rounded-[var(--lb-radius-md)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                        onClick={() => dismiss(toast.id)}
+                                        aria-label="Dismiss notification"
+                                    >
+                                        <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                    </Button>
+                                </div>
+                            );
+                        })}
+                </div>
+            ))}
         </ToastContext.Provider>
     );
 }
@@ -262,6 +299,7 @@ export function Skeleton({ variant = 'text', lines = 3, className = '', ...props
 export interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
     icon?: React.ReactNode;
     illustration?: React.ReactNode;
+    illustrationMotifs?: Partial<Record<EmptyStateKind, React.ReactNode>>;
     kind?: EmptyStateKind;
     title: string;
     body?: string;
@@ -417,8 +455,15 @@ function renderEmptyStateMotif(kind: EmptyStateKind) {
     }
 }
 
-export function EmptyStateIllustration({ kind = 'generic', icon }: { kind?: EmptyStateKind; icon?: React.ReactNode }) {
+export interface EmptyStateIllustrationProps {
+    kind?: EmptyStateKind;
+    icon?: React.ReactNode;
+    motifs?: Partial<Record<EmptyStateKind, React.ReactNode>>;
+}
+
+export function EmptyStateIllustration({ kind = 'generic', icon, motifs }: EmptyStateIllustrationProps) {
     const Icon = emptyStateIconMap[kind];
+    const motif = motifs?.[kind] ?? renderEmptyStateMotif(kind);
 
     return (
         <div
@@ -430,7 +475,7 @@ export function EmptyStateIllustration({ kind = 'generic', icon }: { kind?: Empt
                 <rect x="34" y="32" width="124" height="64" rx="12" stroke="currentColor" strokeWidth="2" opacity="0.2" />
                 <path d="M40 102C56 90 74 90 96 102C118 114 142 114 162 96" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.22" />
                 <g data-lb-empty-float="primary">
-                    {renderEmptyStateMotif(kind)}
+                    {motif}
                 </g>
             </svg>
             <div className="absolute left-1/2 top-1/2 flex h-[var(--lb-density-button-height-large)] w-[var(--lb-density-button-height-large)] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[var(--lb-radius-xl)] border border-[var(--lb-component-empty-state-border)] bg-[var(--lb-component-empty-state-bg)] shadow-[var(--lb-component-card-shadow)]">
@@ -440,7 +485,7 @@ export function EmptyStateIllustration({ kind = 'generic', icon }: { kind?: Empt
     );
 }
 
-export function EmptyState({ icon, illustration, kind = 'generic', title, body, primaryAction, secondaryAction, className = '', ...props }: EmptyStateProps) {
+export function EmptyState({ icon, illustration, illustrationMotifs, kind = 'generic', title, body, primaryAction, secondaryAction, className = '', ...props }: EmptyStateProps) {
     return (
         <div
             className={cx(
@@ -449,7 +494,7 @@ export function EmptyState({ icon, illustration, kind = 'generic', title, body, 
             )}
             {...props}
         >
-            {illustration ?? <EmptyStateIllustration kind={kind} icon={icon} />}
+            {illustration ?? <EmptyStateIllustration kind={kind} icon={icon} motifs={illustrationMotifs} />}
             <div className="max-w-[var(--lb-size-empty-state-measure)] space-y-[var(--lb-space-2)]">
                 <h3 className="m-0 text-[length:var(--lb-font-size-card-title)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-card-title)] text-[color:var(--lb-component-empty-state-title)]">
                     {title}
@@ -492,7 +537,7 @@ export function SaveBar({
     return (
         <div
             className={cx(
-                'sticky bottom-[var(--lb-space-0)] z-40 mx-auto flex w-full flex-col items-stretch justify-between gap-[var(--lb-space-3)] rounded-none border border-x-0 border-[var(--lb-color-border)] bg-[var(--lb-color-surface-raised)] p-[var(--lb-space-3)] shadow-[var(--lb-shadow-lg)] sm:bottom-[var(--lb-space-4)] sm:w-[min(var(--lb-size-save-bar-width),calc(100vw-var(--lb-space-6)))] sm:flex-row sm:items-center sm:gap-[var(--lb-space-4)] sm:rounded-[var(--lb-radius-lg)] sm:border-x',
+                'sticky bottom-[var(--lb-space-0)] z-[var(--lb-z-sticky)] mx-auto flex w-full flex-col items-stretch justify-between gap-[var(--lb-space-3)] rounded-none border border-x-0 border-[var(--lb-color-border)] bg-[var(--lb-color-surface-raised)] p-[var(--lb-space-3)] shadow-[var(--lb-shadow-lg)] sm:bottom-[var(--lb-space-4)] sm:w-[min(var(--lb-size-save-bar-width),calc(100vw-var(--lb-space-6)))] sm:flex-row sm:items-center sm:gap-[var(--lb-space-4)] sm:rounded-[var(--lb-radius-lg)] sm:border-x',
                 isSaved ? 'opacity-0 pointer-events-none' : 'opacity-100',
                 className,
             )}
@@ -504,22 +549,24 @@ export function SaveBar({
                 {state === 'saving' ? 'Saving changes' : 'Unsaved changes'}
             </div>
             <div className="flex items-center gap-[var(--lb-space-2)] [&>button]:flex-1 sm:[&>button]:flex-none">
-                <button
+                <Button
+                    unstyled
                     type="button"
                     className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
                     onClick={onDiscard}
                     disabled={state === 'saving'}
                 >
                     {discardLabel}
-                </button>
-                <button
+                </Button>
+                <Button
+                    unstyled
                     type="button"
                     className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-component-button-primary-border)] bg-[var(--lb-component-button-primary-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-button-primary-text)] hover:bg-[var(--lb-component-button-primary-hover)] active:bg-[var(--lb-component-button-primary-active)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
                     onClick={onSave}
                     disabled={state === 'saving'}
                 >
                     {state === 'saving' ? 'Saving' : saveLabel}
-                </button>
+                </Button>
             </div>
         </div>
     );

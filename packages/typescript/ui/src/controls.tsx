@@ -29,13 +29,13 @@ const tabVariantStyles: Record<NonNullable<TabsProps['variant']>, { list: string
     underline: {
         list: 'gap-[var(--lb-space-2)] border-b border-[var(--lb-color-border)]',
         tab: 'border-b-2 px-[var(--lb-space-3)]',
-        active: 'border-[var(--lb-color-primary)] text-[color:var(--lb-color-primary)]',
+        active: 'border-[var(--lb-color-primary)] text-[color:var(--lb-color-primary-text)]',
         inactive: 'border-transparent text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)]',
     },
     pills: {
         list: 'gap-[var(--lb-space-2)]',
         tab: 'rounded-[var(--lb-radius-lg)] border px-[var(--lb-space-3)]',
-        active: 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]',
+        active: 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary-text)]',
         inactive: 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)] hover:text-[color:var(--lb-color-text)]',
     },
 };
@@ -183,6 +183,11 @@ export interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputE
     labelTextClassName?: string;
     wrapperClassName?: string;
     onCheckedChange?: (checked: boolean) => void;
+    /**
+     * Additive escape hatch for legacy internal composition where only the
+     * checkbox input should be rendered with existing visual classes.
+     */
+    unstyled?: boolean;
 }
 
 export function Checkbox({
@@ -195,6 +200,7 @@ export function Checkbox({
     labelTextClassName = '',
     wrapperClassName = '',
     onCheckedChange,
+    unstyled = false,
     className = '',
     id,
     onChange,
@@ -206,24 +212,37 @@ export function Checkbox({
     const helperId = helperText && !error ? `${inputId}-helper` : undefined;
     const errorId = error ? `${inputId}-error` : undefined;
     const describedBy = [descriptionId, helperId, errorId, props['aria-describedby']].filter(Boolean).join(' ') || undefined;
+    const inputProps = {
+        id: inputId,
+        type: 'checkbox',
+        'aria-describedby': describedBy,
+        'aria-invalid': error ? true : props['aria-invalid'],
+        onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+            onChange?.(event);
+            onCheckedChange?.(event.currentTarget.checked);
+        },
+        ...props,
+    } satisfies React.InputHTMLAttributes<HTMLInputElement>;
+
+    if (unstyled) {
+        return (
+            <input
+                {...inputProps}
+                className={cx(className, inputClassName)}
+                aria-label={props['aria-label'] ?? (typeof label === 'string' ? label : undefined)}
+            />
+        );
+    }
 
     return (
         <div className={cx('flex flex-col gap-[var(--lb-space-1)]', className, wrapperClassName)}>
             <label className={cx('flex items-start gap-[var(--lb-space-3)]', props.disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer', labelClassName)} htmlFor={inputId}>
                 <input
-                    id={inputId}
-                    type="checkbox"
+                    {...inputProps}
                     className={cx(
                         'mt-[var(--lb-space-1)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 rounded-[var(--lb-radius-sm)] border-[var(--lb-color-border)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed',
                         inputClassName,
                     )}
-                    aria-describedby={describedBy}
-                    aria-invalid={error ? true : props['aria-invalid']}
-                    onChange={(event) => {
-                        onChange?.(event);
-                        onCheckedChange?.(event.currentTarget.checked);
-                    }}
-                    {...props}
                 />
                 <span className="min-w-0">
                     <span className={cx('block text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]', labelTextClassName)}>
@@ -322,6 +341,89 @@ export function Radio({
                 <p id={errorId} className="m-0 pl-[calc(var(--lb-size-icon-inline)+var(--lb-space-3))] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-critical)]">
                     {error}
                 </p>
+            )}
+        </div>
+    );
+}
+
+export interface SwitchProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
+    label?: React.ReactNode;
+    description?: React.ReactNode;
+    checked?: boolean;
+    defaultChecked?: boolean;
+    onCheckedChange?: (checked: boolean) => void;
+    wrapperClassName?: string;
+    labelClassName?: string;
+}
+
+export function Switch({
+    label,
+    description,
+    checked,
+    defaultChecked = false,
+    onCheckedChange,
+    wrapperClassName = '',
+    labelClassName = '',
+    className = '',
+    disabled,
+    id,
+    onClick,
+    ...props
+}: SwitchProps) {
+    const generatedId = useId();
+    const switchId = id ?? generatedId;
+    const labelId = label ? `${switchId}-label` : undefined;
+    const descriptionId = description ? `${switchId}-description` : undefined;
+    const [internalChecked, setInternalChecked] = useState(defaultChecked);
+    const actualChecked = checked ?? internalChecked;
+
+    const toggle = (event: React.MouseEvent<HTMLButtonElement>) => {
+        onClick?.(event);
+        if (event.defaultPrevented || disabled) return;
+        const nextChecked = !actualChecked;
+        setInternalChecked(nextChecked);
+        onCheckedChange?.(nextChecked);
+    };
+
+    return (
+        <div className={cx('flex items-start gap-[var(--lb-space-3)]', disabled && 'opacity-60', wrapperClassName)}>
+            <button
+                id={switchId}
+                type="button"
+                role="switch"
+                aria-checked={actualChecked}
+                aria-labelledby={labelId}
+                aria-describedby={descriptionId}
+                disabled={disabled}
+                className={cx(
+                    'relative mt-[2px] inline-flex h-[var(--lb-density-pill-height)] w-[calc(var(--lb-density-pill-height)*1.75)] shrink-0 rounded-[var(--lb-radius-full)] border border-transparent transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed',
+                    actualChecked ? 'bg-[var(--lb-color-primary)]' : 'bg-[var(--lb-color-border)]',
+                    className,
+                )}
+                onClick={toggle}
+                {...props}
+            >
+                <span
+                    className={cx(
+                        'absolute top-1/2 h-[calc(var(--lb-density-pill-height)-6px)] w-[calc(var(--lb-density-pill-height)-6px)] -translate-y-1/2 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-sm)] transition-transform duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)]',
+                        actualChecked ? 'translate-x-[calc(var(--lb-density-pill-height)*0.75)]' : 'translate-x-[3px]',
+                    )}
+                    aria-hidden="true"
+                />
+            </button>
+            {(label || description) && (
+                <label className={cx('grid min-w-0 gap-[var(--lb-space-1)]', disabled ? 'cursor-not-allowed' : 'cursor-pointer', labelClassName)} htmlFor={switchId}>
+                    {label && (
+                        <span id={labelId} className="text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                            {label}
+                        </span>
+                    )}
+                    {description && (
+                        <span id={descriptionId} className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                            {description}
+                        </span>
+                    )}
+                </label>
             )}
         </div>
     );
@@ -430,7 +532,7 @@ export function ChoiceList({
                         <label
                             key={option.value}
                             className={cx(
-                                'flex min-w-[min(260px,100%)] items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)]',
+                                'flex min-w-0 max-w-full basis-[min(260px,100%)] items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)]',
                                 checked && 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)]',
                                 optionDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:bg-[var(--lb-color-surface-subdued)]',
                                 optionClassName,
@@ -532,7 +634,7 @@ export function Select({
             )}
             <div className="relative">
                 {prefixContent && (
-                    <span className="pointer-events-none absolute left-[var(--lb-space-3)] top-1/2 z-10 -translate-y-1/2 text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
+                    <span className="pointer-events-none absolute left-[var(--lb-space-3)] top-1/2 z-[var(--lb-z-base)] -translate-y-1/2 text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
                         {prefixContent}
                     </span>
                 )}
@@ -738,7 +840,7 @@ export function Combobox({
                 <div
                     id={listboxId}
                     role="listbox"
-                    className="absolute top-[calc(100%+var(--lb-space-2))] z-40 max-h-[var(--lb-size-combobox-menu-max-height)] w-full overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-1)] shadow-[var(--lb-shadow-lg)]"
+                    className="absolute top-[calc(100%+var(--lb-space-2))] z-[var(--lb-z-dropdown)] max-h-[var(--lb-size-combobox-menu-max-height)] w-full overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-1)] shadow-[var(--lb-shadow-lg)]"
                 >
                     {loading ? (
                         <div className="px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
@@ -761,7 +863,6 @@ export function Combobox({
                                     activeIndex === index && 'bg-[var(--lb-color-surface-subdued)]',
                                 )}
                                 disabled={option.disabled}
-                                onMouseDown={(event) => event.preventDefault()}
                                 onClick={() => selectOption(option)}
                             >
                                 <span className="flex min-w-0 items-start gap-[var(--lb-space-2)]">

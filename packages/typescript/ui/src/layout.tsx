@@ -1,10 +1,13 @@
 import React from 'react';
+import { Breadcrumbs } from './breadcrumbs';
+import { Button } from './button';
+import { warnDeprecated } from './deprecations';
 import { MaterialIcon, type MaterialIconName } from './icons';
 import { cx } from './utils';
 
 type LayoutElement = 'div' | 'section' | 'article' | 'aside' | 'header' | 'footer' | 'nav' | 'main' | 'span';
-type TextElement = 'p' | 'span' | 'div' | 'strong' | 'em' | 'h1' | 'h2' | 'h3' | 'h4';
-type SpaceScale = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7';
+type TextElement = 'p' | 'span' | 'div' | 'strong' | 'em' | 'code' | 'h1' | 'h2' | 'h3' | 'h4';
+export type SpaceScale = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8';
 
 const spaceStyles: Record<SpaceScale, string> = {
     0: 'gap-0',
@@ -15,6 +18,7 @@ const spaceStyles: Record<SpaceScale, string> = {
     5: 'gap-[var(--lb-space-5)]',
     6: 'gap-[var(--lb-space-6)]',
     7: 'gap-[var(--lb-space-7)]',
+    8: 'gap-[var(--lb-space-8)]',
 };
 
 const paddingStyles: Record<SpaceScale, string> = {
@@ -26,6 +30,7 @@ const paddingStyles: Record<SpaceScale, string> = {
     5: 'p-[var(--lb-space-5)]',
     6: 'p-[var(--lb-space-6)]',
     7: 'p-[var(--lb-space-7)]',
+    8: 'p-[var(--lb-space-8)]',
 };
 
 const paddingBlockStyles: Record<SpaceScale, string> = {
@@ -37,6 +42,7 @@ const paddingBlockStyles: Record<SpaceScale, string> = {
     5: 'py-[var(--lb-space-5)]',
     6: 'py-[var(--lb-space-6)]',
     7: 'py-[var(--lb-space-7)]',
+    8: 'py-[var(--lb-space-8)]',
 };
 
 const paddingInlineStyles: Record<SpaceScale, string> = {
@@ -48,6 +54,7 @@ const paddingInlineStyles: Record<SpaceScale, string> = {
     5: 'px-[var(--lb-space-5)]',
     6: 'px-[var(--lb-space-6)]',
     7: 'px-[var(--lb-space-7)]',
+    8: 'px-[var(--lb-space-8)]',
 };
 
 const stackAlignStyles = {
@@ -188,14 +195,133 @@ export function InlineStack({
     );
 }
 
+type GridColumnCount = 1 | 2 | 3 | 4 | 5 | 6;
+type ResponsiveColumns = Partial<Record<'base' | 'sm' | 'md' | 'lg' | 'xl', GridColumnCount>>;
+
+const gridColumnStyles: Record<GridColumnCount, string> = {
+    1: 'grid-cols-1',
+    2: 'grid-cols-2',
+    3: 'grid-cols-3',
+    4: 'grid-cols-4',
+    5: 'grid-cols-5',
+    6: 'grid-cols-6',
+};
+
+const responsiveGridColumnStyles = {
+    sm: {
+        1: 'sm:grid-cols-1',
+        2: 'sm:grid-cols-2',
+        3: 'sm:grid-cols-3',
+        4: 'sm:grid-cols-4',
+        5: 'sm:grid-cols-5',
+        6: 'sm:grid-cols-6',
+    },
+    md: {
+        1: 'md:grid-cols-1',
+        2: 'md:grid-cols-2',
+        3: 'md:grid-cols-3',
+        4: 'md:grid-cols-4',
+        5: 'md:grid-cols-5',
+        6: 'md:grid-cols-6',
+    },
+    lg: {
+        1: 'lg:grid-cols-1',
+        2: 'lg:grid-cols-2',
+        3: 'lg:grid-cols-3',
+        4: 'lg:grid-cols-4',
+        5: 'lg:grid-cols-5',
+        6: 'lg:grid-cols-6',
+    },
+    xl: {
+        1: 'xl:grid-cols-1',
+        2: 'xl:grid-cols-2',
+        3: 'xl:grid-cols-3',
+        4: 'xl:grid-cols-4',
+        5: 'xl:grid-cols-5',
+        6: 'xl:grid-cols-6',
+    },
+} as const;
+
+function gridColumnsClass(columns: GridColumnCount | ResponsiveColumns) {
+    if (typeof columns === 'number') return gridColumnStyles[columns];
+    return cx(
+        gridColumnStyles[columns.base ?? 1],
+        columns.sm && responsiveGridColumnStyles.sm[columns.sm],
+        columns.md && responsiveGridColumnStyles.md[columns.md],
+        columns.lg && responsiveGridColumnStyles.lg[columns.lg],
+        columns.xl && responsiveGridColumnStyles.xl[columns.xl],
+    );
+}
+
+export interface GridProps extends React.HTMLAttributes<HTMLElement> {
+    as?: LayoutElement;
+    children: React.ReactNode;
+    columns?: GridColumnCount | ResponsiveColumns;
+    gap?: SpaceScale;
+    align?: 'start' | 'center' | 'end' | 'stretch';
+}
+
+const gridAlignStyles: Record<NonNullable<GridProps['align']>, string> = {
+    start: 'items-start',
+    center: 'items-center',
+    end: 'items-end',
+    stretch: 'items-stretch',
+};
+
+export function Grid({ as: Element = 'div', children, columns = 1, gap = '4', align = 'stretch', className = '', ...props }: GridProps) {
+    return React.createElement(
+        Element,
+        {
+            className: cx('grid min-w-0', gridColumnsClass(columns), spaceStyles[gap], gridAlignStyles[align], className),
+            ...props,
+        },
+        children,
+    );
+}
+
+export interface ColumnsProps extends GridProps {}
+
+export function Columns(props: ColumnsProps) {
+    return <Grid {...props} />;
+}
+
+export interface ContainerProps extends React.HTMLAttributes<HTMLElement> {
+    as?: LayoutElement;
+    children: React.ReactNode;
+    width?: 'sm' | 'md' | 'lg' | 'xl' | 'page' | 'measure' | 'full';
+    paddingInline?: SpaceScale;
+}
+
+const containerWidthStyles: Record<NonNullable<ContainerProps['width']>, string> = {
+    sm: 'max-w-screen-sm',
+    md: 'max-w-screen-md',
+    lg: 'max-w-screen-lg',
+    xl: 'max-w-screen-xl',
+    page: 'max-w-[var(--lb-size-page-max)]',
+    measure: 'max-w-[var(--lb-size-content-measure)]',
+    full: 'max-w-none',
+};
+
+export function Container({ as: Element = 'div', children, width = 'page', paddingInline = '4', className = '', ...props }: ContainerProps) {
+    return React.createElement(
+        Element,
+        {
+            className: cx('mx-auto w-full min-w-0', containerWidthStyles[width], paddingInlineStyles[paddingInline], className),
+            ...props,
+        },
+        children,
+    );
+}
+
 export interface TextProps extends React.HTMLAttributes<HTMLElement> {
     as?: TextElement;
     children: React.ReactNode;
-    variant?: 'display' | 'heading' | 'body' | 'caption';
-    tone?: 'default' | 'subdued' | 'critical' | 'success' | 'warning' | 'info' | 'inverse';
+    variant?: 'display' | 'heading' | 'body' | 'caption' | 'subdued' | 'strong' | 'positive' | 'negative' | 'code';
+    tone?: 'default' | 'subdued' | 'critical' | 'success' | 'warning' | 'info' | 'inverse' | 'positive' | 'negative';
     weight?: 'regular' | 'medium' | 'semibold';
     align?: 'start' | 'center' | 'end';
     truncate?: boolean;
+    reset?: boolean;
 }
 
 const textVariantStyles: Record<NonNullable<TextProps['variant']>, string> = {
@@ -203,6 +329,11 @@ const textVariantStyles: Record<NonNullable<TextProps['variant']>, string> = {
     heading: 'text-[length:var(--lb-font-size-heading)] leading-[var(--lb-line-height-heading)]',
     body: 'text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]',
     caption: 'text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)]',
+    subdued: 'text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]',
+    strong: 'font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]',
+    positive: 'font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-success)]',
+    negative: 'font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-critical)]',
+    code: 'rounded-[var(--lb-radius-sm)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-1)] py-[var(--lb-space-0)] font-mono text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text)]',
 };
 
 const textToneStyles: Record<NonNullable<TextProps['tone']>, string> = {
@@ -213,6 +344,8 @@ const textToneStyles: Record<NonNullable<TextProps['tone']>, string> = {
     warning: 'text-[color:var(--lb-color-warning)]',
     info: 'text-[color:var(--lb-color-info)]',
     inverse: 'text-[color:var(--lb-color-text-inverse)]',
+    positive: 'text-[color:var(--lb-color-success)]',
+    negative: 'text-[color:var(--lb-color-critical)]',
 };
 
 const textWeightStyles: Record<NonNullable<TextProps['weight']>, string> = {
@@ -228,20 +361,35 @@ const textAlignStyles: Record<NonNullable<TextProps['align']>, string> = {
 };
 
 export function Text({
-    as: Element = 'p',
+    as,
     children,
     variant = 'body',
-    tone = 'default',
-    weight = 'regular',
-    align = 'start',
+    tone,
+    weight,
+    align,
     truncate = false,
+    reset = true,
     className = '',
     ...props
 }: TextProps) {
+    const textStyleVariant = variant === 'subdued' || variant === 'strong' || variant === 'positive' || variant === 'negative' || variant === 'code';
+    const Element = as ?? (variant === 'code' ? 'code' : 'p');
+    const effectiveTone = tone ?? (reset && !textStyleVariant ? 'default' : undefined);
+    const effectiveWeight = weight ?? (reset && !textStyleVariant ? 'regular' : undefined);
+    const effectiveAlign = align ?? (reset ? 'start' : undefined);
+
     return React.createElement(
         Element,
         {
-            className: cx('m-0 min-w-0', textVariantStyles[variant], textToneStyles[tone], textWeightStyles[weight], textAlignStyles[align], truncate && 'truncate', className),
+            className: cx(
+                reset && 'm-0 min-w-0',
+                textVariantStyles[variant],
+                effectiveTone && textToneStyles[effectiveTone],
+                effectiveWeight && textWeightStyles[effectiveWeight],
+                effectiveAlign && textAlignStyles[effectiveAlign],
+                truncate && 'truncate',
+                className,
+            ),
             ...props,
         },
         children,
@@ -289,7 +437,13 @@ export type PageIdentity =
     | 'payments'
     | 'domains';
 
-const pageIconMap: Record<PageIdentity, MaterialIconName> = {
+export interface PageIdentityOption {
+    identity: PageIdentity;
+    iconName: MaterialIconName;
+    label: string;
+}
+
+export const letbuyyPageIdentityIcons: Record<PageIdentity, MaterialIconName> = {
     dashboard: 'home',
     products: 'inventory_2',
     orders: 'shopping_bag',
@@ -306,6 +460,30 @@ const pageIconMap: Record<PageIdentity, MaterialIconName> = {
     payments: 'payments',
     domains: 'domains',
 };
+
+const pageIdentityLabels: Record<PageIdentity, string> = {
+    dashboard: 'Dashboard',
+    products: 'Products',
+    orders: 'Orders',
+    collections: 'Collections',
+    inventory: 'Inventory',
+    customers: 'Customers',
+    analytics: 'Analytics',
+    marketing: 'Marketing',
+    discounts: 'Discounts',
+    content: 'Content',
+    settings: 'Settings',
+    apps: 'Apps',
+    themes: 'Themes',
+    payments: 'Payments',
+    domains: 'Domains',
+};
+
+export const letbuyyPageIdentityOptions: PageIdentityOption[] = Object.entries(letbuyyPageIdentityIcons).map(([identity, iconName]) => ({
+    identity: identity as PageIdentity,
+    iconName,
+    label: pageIdentityLabels[identity as PageIdentity],
+}));
 
 const titleIconMatchers: Array<[RegExp, PageIdentity]> = [
     [/dashboard|home/i, 'dashboard'],
@@ -324,15 +502,23 @@ const titleIconMatchers: Array<[RegExp, PageIdentity]> = [
     [/domain/i, 'domains'],
 ];
 
+export function resolvePageIdentity(title: string): PageIdentity | undefined {
+    return titleIconMatchers.find(([pattern]) => pattern.test(title))?.[1];
+}
+
 export function getPageIconName(title: string, identity?: PageIdentity): MaterialIconName {
-    if (identity) return pageIconMap[identity];
-    const match = titleIconMatchers.find(([pattern]) => pattern.test(title));
-    return match ? pageIconMap[match[1]] : 'page';
+    if (identity) return letbuyyPageIdentityIcons[identity];
+    const resolvedIdentity = resolvePageIdentity(title);
+    return resolvedIdentity ? letbuyyPageIdentityIcons[resolvedIdentity] : 'page';
 }
 
 export interface PageShellProps extends PageProps {}
 
+/**
+ * @deprecated since 0.0.2. Use `Page` instead. This alias remains for backward compatibility.
+ */
 export function PageShell(props: PageShellProps) {
+    warnDeprecated('PageShell', 'Page');
     return <Page {...props} />;
 }
 
@@ -365,9 +551,15 @@ export interface PageHeaderProps extends React.HTMLAttributes<HTMLElement> {
     icon?: React.ReactNode;
     iconName?: MaterialIconName;
     showIcon?: boolean;
+    /**
+     * @deprecated since 0.0.2. Use `showBreadcrumbs` for the canonical plural prop.
+     */
     showBreadcrumb?: boolean;
     showBreadcrumbs?: boolean;
     showEyebrow?: boolean;
+    /**
+     * @deprecated since 0.0.2. Use `showEyebrow` for the canonical PageHeader label prop.
+     */
     showSectionLabel?: boolean;
     showDescription?: boolean;
     primaryAction?: PageHeaderAction;
@@ -387,7 +579,13 @@ export function PageHeaderActions({ children, className = '', ...props }: PageHe
     );
 }
 
-export const PageActions = PageHeaderActions;
+/**
+ * @deprecated since 0.0.2. Use `PageHeaderActions` instead. This alias remains for backward compatibility.
+ */
+export function PageActions(props: PageHeaderActionsProps) {
+    warnDeprecated('PageActions', 'PageHeaderActions');
+    return <PageHeaderActions {...props} />;
+}
 
 export function PageHeader({
     title,
@@ -425,16 +623,16 @@ export function PageHeader({
 
         if (action.href) {
             return (
-                <a key={action.label} className={buttonClassName} href={action.href} aria-disabled={action.disabled}>
+                <Button key={action.label} unstyled as="a" className={buttonClassName} href={action.href} disabled={action.disabled}>
                     {content}
-                </a>
+                </Button>
             );
         }
 
         return (
-            <button key={action.label} className={buttonClassName} type="button" onClick={action.onClick} disabled={action.disabled}>
+            <Button key={action.label} unstyled className={buttonClassName} type="button" onClick={action.onClick} disabled={action.disabled}>
                 {content}
-            </button>
+            </Button>
         );
     };
 
@@ -447,22 +645,7 @@ export function PageHeader({
     return (
         <header className={cx('flex flex-col gap-[var(--lb-space-2)]', className)} {...props}>
             {shouldShowBreadcrumbs && breadcrumbs.length > 0 && (
-                <nav aria-label="Breadcrumb" className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                    <ol className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
-                        {breadcrumbs.map((breadcrumb, index) => (
-                            <li key={`${breadcrumb.label}-${index}`} className="flex items-center gap-[var(--lb-space-2)]">
-                                {breadcrumb.href ? (
-                                    <a className="hover:text-[color:var(--lb-color-text)]" href={breadcrumb.href}>
-                                        {breadcrumb.label}
-                                    </a>
-                                ) : (
-                                    <span>{breadcrumb.label}</span>
-                                )}
-                                {index < breadcrumbs.length - 1 && <span aria-hidden="true">/</span>}
-                            </li>
-                        ))}
-                    </ol>
-                </nav>
+                <Breadcrumbs items={breadcrumbs} separator="slash" currentTone="inherit" />
             )}
             <div className="flex min-h-[var(--lb-density-header-height)] flex-col gap-[var(--lb-space-2)] md:flex-row md:items-center md:justify-between">
                 <div className="flex min-w-0 items-center gap-[var(--lb-space-2)]">
@@ -473,7 +656,7 @@ export function PageHeader({
                     )}
                     <div className="min-w-0 space-y-[var(--lb-space-1)]">
                         {shouldShowEyebrow && eyebrow && (
-                            <p className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-primary)]">
+                            <p className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-primary-text)]">
                                 {eyebrow}
                             </p>
                         )}
