@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@letbuyy/api-client": "workspace:*",
     "@letbuyy/api-types": "workspace:*",
     "@letbuyy/ui": "workspace:*",
     "framer-motion": "^12.33.0",

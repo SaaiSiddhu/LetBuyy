@@ -1,8 +1,11 @@
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import {
+    LETBUYY_PRODUCTION_API_BASE_URL,
     LetbuyyApiError,
+    apiClientInputToLetbuyyApiPath,
     createLetbuyyApiClient,
+    resolveLetbuyyApiBaseUrl,
     type LetbuyyApiClient,
 } from '@letbuyy/api-client'
 import {
@@ -10,8 +13,6 @@ import {
     createLetbuyyInternalSessionHeaders,
     getLetbuyyInternalAuthSecret,
 } from '@letbuyy/auth-core'
-
-const DEFAULT_API_BASE_URL = 'https://api.letbuyy.store/v1'
 
 interface MerchantApiFetchInit extends RequestInit {
     requireSession?: boolean
@@ -28,35 +29,15 @@ export class MerchantApiRequestError extends Error {
     }
 }
 
-function getApiBaseUrl() {
-    const configuredUrl = (
+function merchantApiBaseUrl() {
+    return resolveLetbuyyApiBaseUrl([
         process.env.LETBUYY_API_BASE_URL ||
         process.env.LETBUYY_API_URL ||
         process.env.NEXT_PUBLIC_API_BASE_URL ||
-        process.env.NEXT_PUBLIC_API_URL ||
-        DEFAULT_API_BASE_URL
-    ).replace(/\/$/, '')
-
-    try {
-        const url = new URL(configuredUrl)
-        const path = url.pathname.replace(/\/$/, '')
-
-        if (path === '' || path === '/') {
-            url.pathname = '/v1'
-            return url.toString().replace(/\/$/, '')
-        }
-
-        if (!path.endsWith('/v1')) {
-            url.pathname = `${path}/v1`
-            return url.toString().replace(/\/$/, '')
-        }
-    } catch {
-        if (!configuredUrl.endsWith('/v1')) {
-            return `${configuredUrl}/v1`
-        }
-    }
-
-    return configuredUrl
+        process.env.NEXT_PUBLIC_API_URL,
+    ], {
+        fallback: LETBUYY_PRODUCTION_API_BASE_URL,
+    })
 }
 
 export async function merchantApiFetch(path: string, init: MerchantApiFetchInit = {}) {
@@ -98,7 +79,7 @@ export async function merchantApiFetch(path: string, init: MerchantApiFetchInit 
         Object.entries(headerPlan.headers).forEach(([key, value]) => headers.set(key, value))
     }
 
-    return fetch(`${getApiBaseUrl()}${cleanPath}`, {
+    return fetch(`${merchantApiBaseUrl()}${cleanPath}`, {
         ...init,
         headers,
         cache: 'no-store',
@@ -106,11 +87,11 @@ export async function merchantApiFetch(path: string, init: MerchantApiFetchInit 
 }
 
 export function createMerchantApiClient(): LetbuyyApiClient {
-    const baseUrl = getApiBaseUrl()
+    const baseUrl = merchantApiBaseUrl()
 
     return createLetbuyyApiClient({
         baseUrl,
-        fetch: async (input, init) => merchantApiFetch(apiClientInputToMerchantApiPath(input, baseUrl), {
+        fetch: async (input, init) => merchantApiFetch(apiClientInputToLetbuyyApiPath(input, baseUrl), {
             ...init,
             requireSession: true,
         }),
@@ -155,16 +136,4 @@ export function merchantApiErrorResponse(error: unknown, fallbackMessage = 'Inte
         },
         { status: 500 }
     )
-}
-
-function apiClientInputToMerchantApiPath(input: RequestInfo | URL, baseUrl: string): string {
-    const rawUrl = input instanceof Request ? input.url : input.toString()
-    const url = new URL(rawUrl)
-    const base = new URL(baseUrl)
-    const basePath = base.pathname.replace(/\/$/, '')
-    const pathname = basePath && url.pathname.startsWith(basePath)
-        ? url.pathname.slice(basePath.length) || '/'
-        : url.pathname
-
-    return `${pathname}${url.search}`
 }

@@ -1,6 +1,8 @@
 import {
+    LETBUYY_PRODUCTION_API_BASE_URL,
     createLetbuyyApiClient,
     LetbuyyApiError,
+    resolveLetbuyyApiBaseUrl,
     type HttpMethod,
     type QueryValue,
 } from '@letbuyy/api-client';
@@ -38,14 +40,13 @@ type ConsoleApiRequest = {
 };
 
 export function consoleApiBaseUrl(): string {
-    const configured =
+    return resolveLetbuyyApiBaseUrl([
         process.env.PLATFORM_CONSOLE_API_BASE_URL ||
         process.env.LETBUYY_API_URL ||
-        process.env.NEXT_PUBLIC_API_URL ||
-        'https://api.letbuyy.store';
-    const trimmed = configured.replace(/\/+$/, '');
-
-    return trimmed.endsWith('/v1') ? trimmed : `${trimmed}/v1`;
+        process.env.NEXT_PUBLIC_API_URL,
+    ], {
+        fallback: LETBUYY_PRODUCTION_API_BASE_URL,
+    });
 }
 
 export async function fetchConsoleApi<T>(

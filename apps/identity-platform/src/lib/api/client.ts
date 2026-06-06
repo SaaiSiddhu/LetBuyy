@@ -1,6 +1,8 @@
 import {
+    LETBUYY_PRODUCTION_API_BASE_URL,
     createLetbuyyApiClient,
     LetbuyyApiError,
+    resolveLetbuyyApiBaseUrl,
     type HttpMethod,
     type LetbuyyRequestOptions,
 } from '@letbuyy/api-client'
@@ -10,8 +12,6 @@ import {
     hmacSha256Hex,
 } from '@letbuyy/auth-core'
 import { getSessionCookie } from '../auth/cookies'
-
-const DEFAULT_PRODUCTION_API_BASE_URL = 'https://api.letbuyy.store/v1'
 
 interface IdentityApiRequestInit extends RequestInit {
     requireSession?: boolean
@@ -71,7 +71,7 @@ export function getIdentityApiFailureMessage(payload: unknown, fallback: string)
     return fallback
 }
 
-function getApiBaseUrl(): string {
+function identityApiBaseUrl(): string {
     const configuredApiUrl =
         process.env.LETBUYY_API_URL ||
         process.env.NEXT_PUBLIC_API_URL ||
@@ -81,28 +81,9 @@ function getApiBaseUrl(): string {
         throw new Error('Identity API base URL is not configured. Set LETBUYY_API_URL or NEXT_PUBLIC_API_URL for this environment.')
     }
 
-    const configuredUrl = (configuredApiUrl || DEFAULT_PRODUCTION_API_BASE_URL).replace(/\/$/, '')
-
-    try {
-        const url = new URL(configuredUrl)
-        const path = url.pathname.replace(/\/$/, '')
-
-        if (path === '' || path === '/') {
-            url.pathname = '/v1'
-            return url.toString().replace(/\/$/, '')
-        }
-
-        if (!path.endsWith('/v1')) {
-            url.pathname = `${path}/v1`
-            return url.toString().replace(/\/$/, '')
-        }
-    } catch {
-        if (!configuredUrl.endsWith('/v1')) {
-            return `${configuredUrl}/v1`
-        }
-    }
-
-    return configuredUrl
+    return resolveLetbuyyApiBaseUrl([configuredApiUrl], {
+        fallback: LETBUYY_PRODUCTION_API_BASE_URL,
+    })
 }
 
 function parseRequestBody(body: BodyInit | null | undefined): unknown {
@@ -170,7 +151,7 @@ export async function identityApiRequest<T = unknown>(
     }
 
     const api = createLetbuyyApiClient({
-        baseUrl: getApiBaseUrl(),
+        baseUrl: identityApiBaseUrl(),
         headers,
     })
 

@@ -119,6 +119,108 @@ export interface LetbuyyRequestOptions {
   versioned?: boolean;
 }
 
+export const LETBUYY_DEFAULT_API_VERSION_PATH = '/v1';
+export const LETBUYY_PRODUCTION_API_BASE_URL = 'https://api.letbuyy.store/v1';
+
+export interface LetbuyyApiBaseUrlOptions {
+  apiVersionPath?: string;
+  includeVersionPath?: boolean;
+}
+
+export interface ResolveLetbuyyApiBaseUrlOptions extends LetbuyyApiBaseUrlOptions {
+  fallback?: string;
+  requireConfigured?: boolean;
+  errorMessage?: string;
+}
+
+export function normalizeLetbuyyApiBaseUrl(
+  input: string,
+  options: LetbuyyApiBaseUrlOptions = {},
+): string {
+  const apiVersionPath = normalizePath(options.apiVersionPath ?? LETBUYY_DEFAULT_API_VERSION_PATH);
+  const includeVersionPath = options.includeVersionPath ?? true;
+  const configuredUrl = trimTrailingSlash(input.trim());
+
+  if (!configuredUrl) {
+    throw new Error('LetBuyy API base URL is not configured.');
+  }
+
+  try {
+    const url = new URL(configuredUrl);
+    const path = trimTrailingSlash(url.pathname);
+
+    if (includeVersionPath) {
+      if (!path || path === '/') {
+        url.pathname = apiVersionPath;
+      } else if (!path.endsWith(apiVersionPath)) {
+        url.pathname = `${path}${apiVersionPath}`;
+      } else {
+        url.pathname = path;
+      }
+
+      return trimTrailingSlash(url.toString());
+    }
+
+    if (path.endsWith(apiVersionPath)) {
+      url.pathname = path.slice(0, -apiVersionPath.length) || '/';
+    } else {
+      url.pathname = path || '/';
+    }
+
+    return trimTrailingSlash(url.toString());
+  } catch {
+    if (includeVersionPath) {
+      return configuredUrl.endsWith(apiVersionPath)
+        ? configuredUrl
+        : `${configuredUrl}${apiVersionPath}`;
+    }
+
+    return configuredUrl.endsWith(apiVersionPath)
+      ? trimTrailingSlash(configuredUrl.slice(0, -apiVersionPath.length))
+      : configuredUrl;
+  }
+}
+
+export function resolveLetbuyyApiBaseUrl(
+  candidates: readonly (string | null | undefined)[],
+  options: ResolveLetbuyyApiBaseUrlOptions = {},
+): string {
+  const configuredUrl = candidates.find((candidate): candidate is string => Boolean(candidate?.trim()));
+
+  if (!configuredUrl) {
+    if (options.requireConfigured) {
+      throw new Error(options.errorMessage || 'LetBuyy API base URL is not configured.');
+    }
+
+    if (!options.fallback) {
+      throw new Error(options.errorMessage || 'LetBuyy API base URL is not configured.');
+    }
+
+    return normalizeLetbuyyApiBaseUrl(options.fallback, options);
+  }
+
+  return normalizeLetbuyyApiBaseUrl(configuredUrl, options);
+}
+
+export function apiClientInputToLetbuyyApiPath(
+  input: RequestInfo | URL,
+  versionedBaseUrl: string,
+  options: Pick<LetbuyyApiBaseUrlOptions, 'apiVersionPath'> = {},
+): string {
+  const rawUrl = input instanceof Request ? input.url : input.toString();
+  const url = new URL(rawUrl);
+  const base = new URL(normalizeLetbuyyApiBaseUrl(versionedBaseUrl, {
+    apiVersionPath: options.apiVersionPath,
+    includeVersionPath: true,
+  }));
+  const basePath = trimTrailingSlash(base.pathname);
+  const pathname = basePath && url.pathname.startsWith(basePath)
+    ? url.pathname.slice(basePath.length) || '/'
+    : url.pathname;
+
+  return `${pathname}${url.search}`;
+}
+
 export interface GatewayPaginationMeta {
   page: number;
   per_page: number;

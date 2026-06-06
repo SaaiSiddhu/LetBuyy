@@ -1,4 +1,4 @@
-const DEFAULT_API_BASE_URL = 'https://api.letbuyy.store/v1';
+import { LETBUYY_PRODUCTION_API_BASE_URL, resolveLetbuyyApiBaseUrl } from '@letbuyy/api-client';
 
 export type StorefrontApiJsonEnvelope<TData> = {
     success?: boolean;
@@ -10,32 +10,13 @@ export type StorefrontApiJsonEnvelope<TData> = {
     message?: string;
 };
 
-function getPublicApiBaseUrl() {
-    const configuredUrl = (
+function storefrontPublicApiBaseUrl() {
+    return resolveLetbuyyApiBaseUrl([
         process.env.NEXT_PUBLIC_API_BASE_URL ||
-        DEFAULT_API_BASE_URL
-    ).replace(/\/$/, '');
-
-    try {
-        const url = new URL(configuredUrl);
-        const path = url.pathname.replace(/\/$/, '');
-
-        if (path === '' || path === '/') {
-            url.pathname = '/v1';
-            return url.toString().replace(/\/$/, '');
-        }
-
-        if (!path.endsWith('/v1')) {
-            url.pathname = `${path}/v1`;
-            return url.toString().replace(/\/$/, '');
-        }
-    } catch {
-        if (!configuredUrl.endsWith('/v1')) {
-            return `${configuredUrl}/v1`;
-        }
-    }
-
-    return configuredUrl;
+        process.env.NEXT_PUBLIC_API_URL,
+    ], {
+        fallback: LETBUYY_PRODUCTION_API_BASE_URL,
+    });
 }
 
 export function storefrontApiErrorMessage(
@@ -61,7 +42,7 @@ export async function storefrontBrowserApiFetch(
     headers.set('X-Request-ID', headers.get('X-Request-ID') || crypto.randomUUID());
 
     return fetch(
-        `${getPublicApiBaseUrl()}/storefront/${encodeURIComponent(subdomain)}${cleanPath}`,
+        `${storefrontPublicApiBaseUrl()}/storefront/${encodeURIComponent(subdomain)}${cleanPath}`,
         {
             ...init,
             headers,

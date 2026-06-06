@@ -5,23 +5,22 @@ import {
     createLetbuyyInternalSessionHeaders,
     getLetbuyyInternalAuthSecret,
 } from '@letbuyy/auth-core';
-import { createLetbuyyApiClient, type LetbuyyApiClient } from '@letbuyy/api-client';
+import { createLetbuyyApiClient, resolveLetbuyyApiBaseUrl, type LetbuyyApiClient } from '@letbuyy/api-client';
 
 export interface ThemeMarketplaceApiClientOptions {
     requireSession?: boolean;
 }
 
-function getApiBaseUrl(): string {
-    const base =
+function themeMarketplaceApiBaseUrl(): string {
+    return resolveLetbuyyApiBaseUrl([
         process.env.LETBUYY_API_URL ||
         process.env.NEXT_PUBLIC_API_URL ||
-        process.env.API_URL;
-    if (!base) {
-        throw new Error(
-            'Marketplace API base URL is not configured. Set LETBUYY_API_URL (or NEXT_PUBLIC_API_URL / API_URL); refusing to fall back to a hardcoded staging host.',
-        );
-    }
-    return base.replace(/\/$/, '');
+        process.env.API_URL,
+    ], {
+        includeVersionPath: false,
+        requireConfigured: true,
+        errorMessage: 'Marketplace API base URL is not configured. Set LETBUYY_API_URL (or NEXT_PUBLIC_API_URL / API_URL); refusing to fall back to a hardcoded staging host.',
+    });
 }
 
 export async function createThemeMarketplaceApiClient(
@@ -52,7 +51,7 @@ export async function createThemeMarketplaceApiClient(
     }
 
     return createLetbuyyApiClient({
-        baseUrl: getApiBaseUrl(),
+        baseUrl: themeMarketplaceApiBaseUrl(),
         apiVersionPath: '/v1',
         headers,
     });

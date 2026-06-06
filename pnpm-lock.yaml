@@ -204,6 +204,9 @@ importers:
       '@gsap/react':
         specifier: ^2.1.2
         version: 2.1.2(gsap@3.14.2)(react@19.2.3)
+      '@letbuyy/api-client':
+        specifier: workspace:*
+        version: link:../../packages/typescript/api-client
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
