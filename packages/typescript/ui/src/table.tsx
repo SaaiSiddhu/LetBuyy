@@ -33,7 +33,7 @@ export interface TableFilterChip {
     onRemove?: () => void;
 }
 
-export interface TableProps<T extends Record<string, unknown>> {
+export interface TableProps<T extends object> {
     columns: TableColumn<T>[];
     rows: T[];
     loading?: boolean;
@@ -55,13 +55,13 @@ export interface TableProps<T extends Record<string, unknown>> {
     className?: string;
 }
 
-function defaultRowId<T extends Record<string, unknown>>(row: T, index: number) {
-    const id = row.id;
+function defaultRowId<T extends object>(row: T, index: number) {
+    const id = (row as { id?: unknown }).id;
     return typeof id === 'string' || typeof id === 'number' ? String(id) : String(index);
 }
 
-function cellValue<T extends Record<string, unknown>>(row: T, key: string) {
-    const value = row[key];
+function cellValue<T extends object>(row: T, key: string) {
+    const value = (row as Record<string, unknown>)[key];
     if (value == null) return '';
     return String(value);
 }
@@ -73,7 +73,7 @@ function SortIcon({ active, direction }: { active: boolean; direction?: 'asc' | 
         : <ArrowDown className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />;
 }
 
-export function Table<T extends Record<string, unknown>>({
+export function Table<T extends object>({
     columns,
     rows,
     loading = false,
