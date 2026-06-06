@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import { test } from 'node:test';
+import { fileURLToPath } from 'node:url';
+
+const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 
 const reservedMobileRoots = [
   'apps/mobile/shopper-app',
@@ -9,17 +13,17 @@ const reservedMobileRoots = [
 ];
 
 function readJson(path: string) {
-  return JSON.parse(readFileSync(path, 'utf8'));
+  return JSON.parse(readFileSync(resolve(repoRoot, path), 'utf8'));
 }
 
 function trackedFiles(prefix: string) {
-  return execFileSync('git', ['ls-files', prefix], { encoding: 'utf8' })
+  return execFileSync('git', ['ls-files', prefix], { cwd: repoRoot, encoding: 'utf8' })
     .split('\n')
     .filter(Boolean);
 }
 
 test('shopper and operator mobile roots are reserved rather than active canonical app runtimes', () => {
-  const source = readFileSync('scripts/validators/governance-common.mjs', 'utf8');
+  const source = readFileSync(resolve(repoRoot, 'scripts/validators/governance-common.mjs'), 'utf8');
 
   assert.match(source, /export const reservedMobileRuntimeRoots = \[/);
   assert.match(source, /"apps\/mobile\/shopper-app"/);
@@ -47,8 +51,8 @@ test('reserved mobile roots contain only AGENTS and runtime manifest files', () 
 });
 
 test('operator Flutter counter starter is archived outside active mobile source', () => {
-  const archivedMain = readFileSync('docs/archive/mobile-topology/operator-app-starter/lib/main.dart', 'utf8');
-  const archivedTest = readFileSync('docs/archive/mobile-topology/operator-app-starter/test/widget_test.dart', 'utf8');
+  const archivedMain = readFileSync(resolve(repoRoot, 'docs/archive/mobile-topology/operator-app-starter/lib/main.dart'), 'utf8');
+  const archivedTest = readFileSync(resolve(repoRoot, 'docs/archive/mobile-topology/operator-app-starter/test/widget_test.dart'), 'utf8');
 
   assert.match(archivedMain, /Flutter Demo/);
   assert.match(archivedMain, /_counter/);

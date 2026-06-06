@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F8.1 mobile topology honesty complete; continue final gate sweep.
+- Phase: V2 final gate complete; human-gated remainders recorded.
 - Findings resolved: 29/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `C-14`, `H-1`, `H-2`, `H-3`, `H-4`, `H-5`, `H-6`, `H-7`, `H-8`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-15`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets, C-14 live observability rollout verification is SKIPPED -- NEEDS HUMAN pending deployed telemetry endpoints/credentials, H-15 live production deploy execution is SKIPPED -- NEEDS HUMAN pending protected environment approvals plus provider credentials, future native shopper/operator mobile implementation is SKIPPED -- NEEDS HUMAN pending product scope/release ownership, and legacy portfolio/resume reactivation is human-gated for named cohorts only.
-- Current governance gate state: green after F8.1 mobile topology honesty (`pnpm run validate:governance` -> 157/157 PASS).
+- Current governance gate state: green after final V2 sweep (`pnpm run validate:governance` -> 157/157 PASS).
 
 ## Baseline gates
 
@@ -892,6 +892,19 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 157/157 validators.
 
+## Final V2 gate evidence
+
+- `pnpm install --frozen-lockfile --force`: failed once in the sandbox with registry DNS `ENOTFOUND`, then PASS with approved escalation.
+- `pnpm turbo typecheck --output-logs=errors-only --log-order=grouped`: PASS - 58/58 tasks on the final tree.
+- `pnpm lint`: PASS - 9/9 lint tasks, existing warnings only.
+- `pnpm turbo build --output-logs=errors-only --log-order=grouped`: sandbox run failed on Turbopack helper-process port binding (`Operation not permitted`); approved escalated rerun PASS - 58/58 tasks. Final refresh after test-harness edits also PASS - 58/58 tasks.
+- `pnpm turbo test --output-logs=errors-only --log-order=grouped`: sandbox run failed on TSX IPC pipe permissions; approved escalated rerun exposed a real path bug in `tests/contracts/mobile-topology-honesty.test.ts`. After anchoring that test to the repository root, `pnpm --filter @letbuyy/api-gateway test` PASS - 157/157 contract tests and final full Turbo test PASS - 65/65 tasks.
+- `pnpm run test:behavioral`: PASS - 459/459 tests.
+- Final generated-intelligence correction: `scripts/generate-repository-intelligence.mjs` now emits local AGENTS runtime rules based on declared dependencies, so `apps/platform-operations-portal/AGENTS.md` does not advertise undeclared `@letbuyy/api-types` or runtime-composition ownership; `pnpm --filter @letbuyy/platform-operations-portal test` PASS - 6/6.
+- Generated workspace artifacts were removed after build/test verification.
+- `pnpm run validate:governance`: PASS - 157/157 validators, including fail-closed internal routes, replayable secret persistence, no no-op test scripts, single-source crypto/utilities, repository intelligence, mobile topology honesty, stale/generated artifact checks, and all previously established mission invariants.
+- Final disposition: every `C-*`, `H-*`, and `N-*` row is DONE or SKIPPED -- NEEDS HUMAN in the traceability matrix. Remaining live/staging/prod proofs are limited to the human-gated credentials, provider approvals, payout policy, ops identity, native mobile scope, and protected-environment decisions listed below.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -929,5 +942,5 @@ Started: 2026-06-05T13:54:14Z
 - F7.1 portfolio/resume acquisition reactivation requires human product approval for a named legacy cohort plus matching gateway/public env rollout: `LETBUYY_ENABLE_LEGACY_SITE_TYPES=true` and `NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES=true`. Default acquisition remains off and validator-guarded.
 - H-3 future native shopper/operator apps require human product scope, app-store/release ownership, mobile UX/security requirements, seeded staging credentials, and gateway-wired source/tests before the reserved roots can become active runtimes.
 
-- Continue to final gate sweep.
+- V2 final gate sweep is complete. Continue only after the human-gated credentials, approvals, and product/security decisions listed above are supplied.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

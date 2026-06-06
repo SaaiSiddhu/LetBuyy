@@ -1201,11 +1201,30 @@ function buildAppAgents(target) {
   lines.push("");
   lines.push("## Runtime Rules");
   lines.push("");
-  lines.push("- Keep business logic out of page components. Use runtime-composition query layers, presentation adapters, or worker routes.");
-  lines.push("- App-owned read aggregation and projection shaping belongs in `packages/runtime-composition`.");
+  const declaredDependencies = {
+    ...(packageJson?.dependencies ?? {}),
+    ...(packageJson?.devDependencies ?? {}),
+    ...(packageJson?.peerDependencies ?? {}),
+  };
+  const declaresApiClient = Object.hasOwn(declaredDependencies, "@letbuyy/api-client");
+  const declaresApiTypes = Object.hasOwn(declaredDependencies, "@letbuyy/api-types");
+  const declaresRuntimeComposition = Object.hasOwn(declaredDependencies, "@letbuyy/runtime-composition");
+  const declaresSharedTypes = Object.hasOwn(declaredDependencies, "@letbuyy/shared-types");
+  lines.push("- Keep business logic out of page components. Use declared shared clients, app-local presentation adapters, or worker routes.");
+  if (declaresRuntimeComposition) {
+    lines.push("- App-owned read aggregation and projection shaping belongs in `packages/runtime-composition`.");
+  }
   lines.push("- Durable checkout, payment, auth, tenant, CMS, and commerce workflows belong in application-services and backend service execution containers.");
   lines.push("- Keep tenant context explicit: every store/merchant operation must bind to `site_id`, `[store]`, `[subdomain]`, or an ownership-checked resource.");
-  lines.push("- Use shared types from `@letbuyy/api-types` when interacting with worker or database-shaped data.");
+  if (declaresApiClient) {
+    lines.push("- Use `@letbuyy/api-client` for worker API calls instead of app-local transport wrappers.");
+  }
+  if (declaresSharedTypes) {
+    lines.push("- Use shared contracts from `@letbuyy/shared-types` for cross-runtime domain data.");
+  }
+  if (declaresApiTypes) {
+    lines.push("- Use shared types from `@letbuyy/api-types` when interacting with worker or database-shaped data.");
+  }
   lines.push("- Do not introduce secrets, provider keys, or service-role access into client components.");
   lines.push("- Prefer skeletons and retryable error states over spinner-only loading.");
   lines.push("- Use dark mode tokens and app-level CSS variables. Do not hardcode new raw color values in components.");
