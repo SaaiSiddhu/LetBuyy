@@ -25,9 +25,9 @@
     {
       "type": "timeseries",
       "title": "Burn Rate",
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
       "targets": [
-        { "expr": "max(letbuyy_slo_burn_rate) by (runtime_name, slo_id)", "legendFormat": "{{runtime_name}} {{slo_id}}" }
+        { "rawSql": "select date_trunc('minute', sampled_at) as time, runtime_name || ' ' || slo_id as metric, max(burn_rate) as value from sre_error_budget_snapshots where deleted_at is null group by 1, 2 order by 1", "legendFormat": "{{metric}}" }
       ]
     }
   ]

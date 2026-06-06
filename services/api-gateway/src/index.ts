@@ -48,12 +48,14 @@ import { createStorefrontGraphQLRouter } from './graphql/storefront';
 import { LETBUYY_INTERNAL_SUBREQUEST_HEADER, isGraphQLRestShimSubrequest } from './graphql/rest-shim';
 import { OutboxExecutionAdapter } from './execution/outbox-execution.adapter';
 import { QueueExecutionAdapter } from './execution/queue-execution.adapter';
+import { ObservabilityExecutionAdapter } from './execution/observability-execution.adapter';
 import {
     planScheduledDispatchQueueTriggers,
     type CloudflareQueueTriggerPlan,
     type ScheduledDispatchQueueTriggerInput,
 } from './execution/cloudflare-queue-triggers';
 import { createCloudflareQueueProducer } from '@letbuyy/infrastructure/queue-adapter';
+import { writeRuntimeTelemetryDataPoint } from '@letbuyy/infrastructure/runtime-telemetry-adapter';
 export { LetbuyyRuntimeDurableObject } from './durable/runtime-coordinator';
 
 // Environment bindings
@@ -219,10 +221,32 @@ type CloudflareQueueTriggerResult = Array<{
     error?: string;
 }>;
 
+interface ReplayLagSnapshot {
+    maxLagSeconds: number;
+    activeReplays: number;
+    ownerRuntime: string;
+    replayId: string | null;
+    status: string;
+}
+
 function numberField(value: unknown, key: string): number {
     return value && typeof value === 'object' && typeof (value as Record<string, unknown>)[key] === 'number'
         ? (value as Record<string, number>)[key]
         : 0;
+}
+
+function stringField(value: unknown, key: string): string | null {
+    const candidate = value && typeof value === 'object'
+        ? (value as Record<string, unknown>)[key]
+        : null;
+    return typeof candidate === 'string' && candidate.trim().length > 0 ? candidate.trim() : null;
+}
+
+function secondsSince(value: string | null, nowMs: number): number {
+    if (!value) return 0;
+    const timestamp = Date.parse(value);
+    if (!Number.isFinite(timestamp)) return 0;
+    return Math.max(0, Math.floor((nowMs - timestamp) / 1000));
 }
 
 function hasCount(result: { count?: number | null; error?: { message?: string } | null }, label: string): boolean {
@@ -355,6 +379,94 @@ async function enqueueScheduledDispatchTriggers(
     input: ScheduledDispatchQueueTriggerInput,
 ): Promise<CloudflareQueueTriggerResult> {
     return enqueueCloudflareQueueTriggers(env, planScheduledDispatchQueueTriggers(input));
+}
+
+async function readReplayLagSnapshot(db: ReturnType<typeof getSupabaseAdminFromEnv>): Promise<ReplayLagSnapshot> {
+    const { data, error } = await db
+        .from('replay_operation_schedules')
+        .select('replay_id, owner_runtime, status, created_at, updated_at')
+        .in('status', ['planned', 'authorized', 'running', 'paused'])
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true })
+        .limit(100);
+
+    if (error) throw new Error(`Replay lag snapshot failed: ${error.message}`);
+
+    const nowMs = Date.now();
+    const rows = Array.isArray(data) ? data : [];
+    let snapshot: ReplayLagSnapshot = {
+        maxLagSeconds: 0,
+        activeReplays: rows.length,
+        ownerRuntime: 'none',
+        replayId: null,
+        status: 'idle',
+    };
+
+    for (const row of rows) {
+        const lagSeconds = secondsSince(stringField(row, 'created_at'), nowMs);
+        if (lagSeconds >= snapshot.maxLagSeconds) {
+            snapshot = {
+                maxLagSeconds: lagSeconds,
+                activeReplays: rows.length,
+                ownerRuntime: stringField(row, 'owner_runtime') || 'unknown',
+                replayId: stringField(row, 'replay_id'),
+                status: stringField(row, 'status') || 'unknown',
+            };
+        }
+    }
+
+    return snapshot;
+}
+
+async function recordScheduledReplayLagMetric(
+    env: Env,
+    db: ReturnType<typeof getSupabaseAdminFromEnv>,
+    dispatcherId: string,
+): Promise<void> {
+    const snapshot = await readReplayLagSnapshot(db);
+    const runtimeName = env.RUNTIME_NAME || 'api-gateway';
+    const deploymentEnv = env.DEPLOYMENT_ENV || env.ENVIRONMENT;
+    const telemetryEnv = env.TELEMETRY_ENV || env.ENVIRONMENT;
+
+    writeRuntimeTelemetryDataPoint(env.RUNTIME_TELEMETRY, {
+        metricName: 'letbuyy.replay.lag.seconds',
+        runtimeName,
+        environment: env.ENVIRONMENT,
+        deploymentEnv,
+        telemetryEnv,
+        requestId: dispatcherId,
+        traceId: dispatcherId,
+        index: snapshot.ownerRuntime === 'none' ? `${runtimeName}:${env.ENVIRONMENT}` : snapshot.ownerRuntime,
+        blobs: [
+            snapshot.ownerRuntime,
+            snapshot.status,
+            snapshot.replayId || '',
+            'scheduled-dispatch',
+        ],
+        doubles: [
+            snapshot.maxLagSeconds,
+            snapshot.activeReplays,
+        ],
+    });
+
+    await new ObservabilityExecutionAdapter(db).recordRuntimeMetric({
+        metricName: 'letbuyy.replay.lag.seconds',
+        metricValue: snapshot.maxLagSeconds,
+        unit: 'seconds',
+        runtimeName,
+        requestId: dispatcherId,
+        correlationId: dispatcherId,
+        traceId: dispatcherId,
+        dimensions: {
+            owner_runtime: snapshot.ownerRuntime,
+            replay_id: snapshot.replayId,
+            status: snapshot.status,
+            active_replays: snapshot.activeReplays,
+            deployment_env: deploymentEnv,
+            telemetry_env: telemetryEnv,
+            source: 'api-gateway.scheduled_dispatch',
+        },
+    });
 }
 
 // Global middleware
@@ -541,6 +653,21 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
             queueNames,
             Boolean(env.WEBHOOK_SERVICE && env.INTERNAL_API_SECRET),
         );
+
+        try {
+            await recordScheduledReplayLagMetric(env, db, dispatcherId);
+        } catch (error) {
+            console.error(JSON.stringify({
+                level: 'error',
+                service: 'letbuyy-api',
+                route: 'scheduled.replay_lag_metric',
+                method: 'CRON',
+                status_code: 500,
+                latency_ms: 0,
+                dispatcher_id: dispatcherId,
+                error: error instanceof Error ? error.message : 'Replay lag metric recording failed',
+            }));
+        }
 
         if (!pending.hasWork) {
             console.info(JSON.stringify({

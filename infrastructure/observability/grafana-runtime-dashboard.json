@@ -13,21 +13,23 @@
       "type": "timeseries",
       "title": "API Error Rate",
       "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
       "targets": [
         {
-          "expr": "sum(rate(http_server_errors_total{runtime=\"api-gateway\"}[5m])) / sum(rate(http_requests_total{runtime=\"api-gateway\"}[5m]))",
+          "rawSql": "select date_trunc('minute', recorded_at) as time, coalesce(sum((dimensions->>'server_error_count')::numeric) / nullif(sum(metric_value), 0), 0) as value from runtime_telemetry_metrics where metric_name = 'letbuyy.runtime.request' and runtime_name = 'api-gateway' and deleted_at is null group by 1 order by 1",
           "legendFormat": "api-gateway"
         }
       ]
     },
     {
       "type": "timeseries",
-      "title": "Queue Depth",
+      "title": "Queue Delivery Volume",
       "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
       "targets": [
         {
-          "expr": "sum by (queue_name) (letbuyy_queue_depth)",
-          "legendFormat": "{{queue_name}}"
+          "rawSql": "select date_trunc('minute', recorded_at) as time, dimensions->>'cloudflare_queue_name' as metric, sum(metric_value) as value from runtime_telemetry_metrics where metric_name = 'letbuyy.queue.delivery.batch' and deleted_at is null group by 1, 2 order by 1",
+          "legendFormat": "{{metric}}"
         }
       ]
     },
@@ -35,21 +37,23 @@
       "type": "timeseries",
       "title": "Replay Lag",
       "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
       "targets": [
         {
-          "expr": "max by (owner_runtime) (letbuyy_replay_lag_seconds)",
-          "legendFormat": "{{owner_runtime}}"
+          "rawSql": "select date_trunc('minute', recorded_at) as time, dimensions->>'owner_runtime' as metric, max(metric_value) as value from runtime_telemetry_metrics where metric_name = 'letbuyy.replay.lag.seconds' and deleted_at is null group by 1, 2 order by 1",
+          "legendFormat": "{{metric}}"
         }
       ]
     },
     {
       "type": "timeseries",
-      "title": "Provider Health",
+      "title": "API Request Latency P95",
       "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
       "targets": [
         {
-          "expr": "min by (provider) (letbuyy_provider_health_score)",
-          "legendFormat": "{{provider}}"
+          "rawSql": "select date_trunc('minute', recorded_at) as time, percentile_cont(0.95) within group (order by (dimensions->>'latency_ms')::numeric) as value from runtime_telemetry_metrics where metric_name = 'letbuyy.runtime.request' and runtime_name = 'api-gateway' and deleted_at is null group by 1 order by 1",
+          "legendFormat": "api-gateway"
         }
       ]
     }

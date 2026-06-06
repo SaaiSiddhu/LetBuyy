@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F5 test reality complete locally; continue F6.1 observability producer/reconciliation.
-- Findings resolved: 24/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, and C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets.
-- Current governance gate state: green after F5.4 (`pnpm run validate:governance` -> 139/139 PASS).
+- Phase: F6.1 observability producer/reconciliation complete locally; continue F6.2 one gated production deploy path.
+- Findings resolved: 25/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `C-14`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets, and C-14 live observability rollout verification is SKIPPED -- NEEDS HUMAN pending deployed telemetry endpoints and credentials.
+- Current governance gate state: green after F6.1 (`pnpm run validate:governance` -> 140/140 PASS).
 
 ## Baseline gates
 
@@ -551,6 +551,27 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 139/139 validators.
 
+## F6.1 observability producer evidence
+
+- Added `@letbuyy/infrastructure/runtime-telemetry-adapter` to build bounded Workers Analytics Engine data points with stable `blobs`, `doubles`, and `indexes`.
+- API Gateway request middleware now emits `letbuyy.runtime.request` to `RUNTIME_TELEMETRY` and persists the same metric to `runtime_telemetry_metrics` for each non-GraphQL-shim request, carrying request id, trace id, site id, runtime, status class, and latency dimensions.
+- API Gateway scheduled dispatch now records `letbuyy.replay.lag.seconds` from active `replay_operation_schedules`; idle replay state emits a zero-lag heartbeat instead of leaving the dashboard dark.
+- Queue Workers now persist and emit `letbuyy.queue.delivery.batch` plus `letbuyy.queue.dead_letter.total` through `runtime_telemetry_metrics` and the optional `RUNTIME_TELEMETRY` binding.
+- Runtime, queue, replay, and SRE Grafana dashboards now query emitted Supabase operational projections instead of unproduced queue-depth/provider-health/Prometheus-only expressions.
+- Observability governance now names Cloudflare Workers Analytics Engine plus `runtime_telemetry_metrics` as the live producer surfaces; Prometheus remains the rollout alert target that requires execute-mode health gates.
+- Added `scripts/validators/observability-producer-validator.mjs` and wired it into `scripts/validate-governance.mjs`, raising the governance count to 140.
+- `npx tsx --test tests/contracts/runtime-telemetry-adapter.test.ts`: PASS - 3/3.
+- `node --test tests/operations/queue-bulk-cost.test.mjs tests/survivability/telemetry-pipeline.test.mjs`: PASS - 6/6.
+- `pnpm run test:contracts`: PASS - 103/103 after host IPC escalation for TSX.
+- `pnpm run test:behavioral`: PASS - 450/450.
+- `pnpm turbo typecheck --filter=@letbuyy/infrastructure --filter=@letbuyy/api-gateway --filter=@letbuyy/queue-workers --output-logs=errors-only --log-order=grouped`: PASS - 40/40.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- `pnpm turbo test --output-logs=errors-only --log-order=grouped`: PASS - 67/67 after host IPC escalation for TSX.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 140/140 validators.
+- Live observability rollout proof remains SKIPPED -- NEEDS HUMAN until deployed Cloudflare Workers with `RUNTIME_TELEMETRY`, Supabase operations access, Prometheus/Grafana/OTel health endpoints, and provider credentials are available.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -581,6 +602,7 @@ Started: 2026-06-05T13:54:14Z
 - C-10 staging proof that server-side cart persists across devices and checkout requires staging storefront/store/product/customer/gateway credentials. Exact proof path once supplied: add a product to cart in one browser, capture `lb_cart_token`, open the same store in a second browser/session with that token, verify `GET /v1/storefront/:subdomain/cart/:cartToken` returns the same lines/totals, then complete checkout using the synced cart items.
 - H-4 staging proof that theme-marketplace checkout creates a real Razorpay test order and succeeds only after provider verification requires staging merchant session, gateway Razorpay test credentials, a purchasable staging theme with INR pricing, and browser access to Razorpay checkout. Exact proof path once supplied: authenticate to staging theme marketplace, open `/checkout?theme=<slug>`, start checkout, verify the gateway returns a Razorpay order from `POST /v1/themes/<slug>/purchase`, complete test payment in Razorpay Checkout, verify `/v1/themes/<slug>/purchase/verify` records the purchase, and confirm the success page is reached only after verification.
 - H-16 per-operator gateway-side ops identity requires ops SSO/IdP or a security decision to share and validate platform-console session tokens inside the gateway worker, plus a rotation/runbook for `PLATFORM_CONSOLE_API_TOKEN`. Current static-token auth is timing-safe hardened but remains a human-gated identity architecture decision.
+- C-14 live observability rollout verification requires deployed staging/production Cloudflare Workers with `RUNTIME_TELEMETRY`, Supabase operations credentials, Prometheus/Grafana/OpenTelemetry health URLs, and provider tokens. Exact proof path once supplied: set `PROMETHEUS_URL`, `GRAFANA_URL`, `GRAFANA_TOKEN`, and `OTEL_COLLECTOR_HEALTH_URL`, then run `node infrastructure/scripts/observability/verify-observability-rollout.mjs --environment=staging --execute`; repeat for production only after deployment approval.
 
-- Continue to F5 testing reality.
+- Continue to F6.2 one gated production deploy path.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

@@ -116,6 +116,7 @@ const validators = [
   "replay-scale-validator.mjs",
   "crash-recovery-validator.mjs",
   "telemetry-ingestion-validator.mjs",
+  "observability-producer-validator.mjs",
   "benchmark-certification-validator.mjs",
   "provider-failover-certification-validator.mjs",
   "partition-recovery-validator.mjs",

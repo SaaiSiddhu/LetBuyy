@@ -32,6 +32,18 @@ export interface OperationMetricInput {
     metadata?: Metadata;
 }
 
+export interface RuntimeTelemetryMetricInput {
+    metricName: string;
+    metricValue?: number;
+    unit?: string;
+    runtimeName?: string | null;
+    dimensions?: Metadata;
+    siteId?: string | null;
+    requestId?: string | null;
+    correlationId?: string | null;
+    traceId?: string | null;
+}
+
 function isMissingOptionalOperationalTable(error: { message?: string } | null | undefined, tableName: string): boolean {
     return Boolean(error?.message?.includes(tableName) && error.message.includes('schema cache'));
 }
@@ -107,6 +119,26 @@ export class ObservabilityExecutionAdapter {
 
         if (error && !isMissingOptionalOperationalTable(error, 'operation_metrics')) {
             throw new Error(`Metric insert failed: ${error.message}`);
+        }
+    }
+
+    async recordRuntimeMetric(input: RuntimeTelemetryMetricInput): Promise<void> {
+        const { error } = await this.db
+            .from('runtime_telemetry_metrics')
+            .insert({
+                metric_name: input.metricName,
+                metric_value: input.metricValue ?? 1,
+                unit: input.unit || 'count',
+                runtime_name: input.runtimeName || null,
+                site_id: input.siteId || null,
+                dimensions: input.dimensions || {},
+                request_id: input.requestId || null,
+                correlation_id: input.correlationId || null,
+                trace_id: input.traceId || null,
+            });
+
+        if (error && !isMissingOptionalOperationalTable(error, 'runtime_telemetry_metrics')) {
+            throw new Error(`Runtime metric insert failed: ${error.message}`);
         }
     }
 }
