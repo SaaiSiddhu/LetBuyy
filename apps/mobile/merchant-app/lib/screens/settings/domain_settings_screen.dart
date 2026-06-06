@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../models/store_model.dart';
 import '../../services/domain_service.dart';
 import '../../services/skip_needs_backend_exception.dart';
-import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart';
 
@@ -41,9 +41,8 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
   Future<void> _loadStore() async {
     setState(() => _isLoading = true);
     try {
-      final storeService = context.read<StoreService>();
       final domainService = context.read<DomainService>();
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       if (!mounted) return;
       setState(() {
         _store = store;

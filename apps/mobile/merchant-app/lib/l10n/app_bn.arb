@@ -1,0 +1,11 @@
+{
+  "@@locale": "bn",
+  "appTitle": "LetBuyy স্টোর বিল্ডার",
+  "selectStore": "স্টোর নির্বাচন করুন",
+  "switchStore": "স্টোর বদলান",
+  "storeSwitcherLabel": "নির্বাচিত স্টোর সুইচার",
+  "noStoreSelected": "কোনো স্টোর নির্বাচিত নেই",
+  "offlineMode": "অফলাইন মোড",
+  "cachedDataNotice": "নেটওয়ার্ক নেই, ক্যাশ ডেটা দেখানো হচ্ছে।",
+  "deepLinkUnsupported": "এই লিঙ্কটি এখনও মোবাইলে সমর্থিত নয়।"
+}

@@ -2,14 +2,18 @@ import 'package:flutter/foundation.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 
 import 'api_client.dart';
+import 'cache_service.dart';
 
 /// Service for managing orders via the LetBuyy API.
 ///
 /// Replaces legacy real-time streams with API-backed polling.
 class OrderService extends ChangeNotifier {
   final ApiClient _api;
+  final CacheService? _cache;
 
-  OrderService({required ApiClient api}) : _api = api;
+  OrderService({required ApiClient api, CacheService? cache})
+    : _api = api,
+      _cache = cache;
 
   // ── Cached state ─────────────────────────────────────────
 
@@ -30,6 +34,17 @@ class OrderService extends ChangeNotifier {
     int limit = 20,
   }) async {
     _isLoading = true;
+    final cacheKey = CacheService.ordersKey(
+      storeId,
+      status: status,
+      customerEmail: customerEmail,
+      page: page,
+      limit: limit,
+    );
+    final cachedRows = _cache?.readJsonList(cacheKey) ?? [];
+    if (cachedRows.isNotEmpty) {
+      _orders = cachedRows.map(OrderContract.fromJson).toList(growable: false);
+    }
     notifyListeners();
 
     try {
@@ -46,9 +61,14 @@ class OrderService extends ChangeNotifier {
       _orders = pageResult.data
           .map(OrderContract.fromJson)
           .toList(growable: false);
+      await _cache?.writeJson(
+        cacheKey,
+        _orders.map((order) => order.toJson()).toList(growable: false),
+      );
       return _orders;
     } catch (e) {
       debugPrint('❌ fetchOrders error: $e');
+      if (_orders.isNotEmpty) return _orders;
       rethrow;
     } finally {
       _isLoading = false;

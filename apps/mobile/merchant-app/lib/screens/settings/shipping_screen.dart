@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 
 import '../../models/store_model.dart';
 import '../../services/shipping_tax_service.dart';
-import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart';
 
@@ -38,7 +38,7 @@ class _ShippingScreenState extends State<ShippingScreen> {
     });
 
     try {
-      final store = await context.read<StoreService>().getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       if (store == null) {
         if (!mounted) return;
         setState(() {

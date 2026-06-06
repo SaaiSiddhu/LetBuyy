@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 
 import '../../models/store_model.dart';
 import '../../services/product_service.dart';
 import '../../services/skip_needs_backend_exception.dart';
-import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart';
 
@@ -52,7 +52,7 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
   Future<void> _loadCollections() async {
     setState(() => _isLoading = true);
     try {
-      final store = await context.read<StoreService>().getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       final rows = store == null
           ? <ProductCollectionContract>[]
           : await context.read<ProductService>().fetchCollections(store.id);

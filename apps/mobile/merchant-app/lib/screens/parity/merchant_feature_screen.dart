@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 
 import '../../services/api_client.dart';
-import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
 import 'merchant_feature_definitions.dart';
 
@@ -41,7 +41,7 @@ class _MerchantFeatureScreenState extends State<MerchantFeatureScreen> {
 
       final query = Map<String, String>.from(widget.feature.query);
       if (widget.feature.requiresStore) {
-        final store = await context.read<StoreService>().getFirstStore();
+        final store = await context.read<StoreContext>().ensureSelectedStore();
         if (store == null) {
           setState(() {
             _rows = const [];

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../services/store_service.dart';
@@ -32,8 +33,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
   Future<void> _loadStore() async {
     setState(() => _isLoading = true);
     try {
-      final storeService = context.read<StoreService>();
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       setState(() {
         _store = store;
         _nameController.text = store?.name ?? '';

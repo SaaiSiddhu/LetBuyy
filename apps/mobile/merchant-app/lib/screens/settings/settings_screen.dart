@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import '../../services/store_service.dart';
@@ -15,6 +16,7 @@ import '../../theme/app_theme_colors.dart';
 import '../../widgets/settings/store_info_card.dart';
 import '../../widgets/settings/settings_tile.dart';
 import '../../widgets/shared/confirm_dialog.dart';
+import '../../widgets/store/store_switcher_button.dart';
 import '../main/store_main_screen.dart';
 
 /// Settings Screen - Clean Simple Design
@@ -38,8 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _loadStore() async {
     setState(() => _isLoading = true);
     try {
-      final storeService = context.read<StoreService>();
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       setState(() => _store = store);
     } catch (e) {
       debugPrint('Error loading store: $e');
@@ -356,6 +357,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               color: colors.textPrimary,
             ),
           ),
+          const Spacer(),
+          StoreSwitcherButton(onChanged: _loadStore),
         ],
       ),
     );

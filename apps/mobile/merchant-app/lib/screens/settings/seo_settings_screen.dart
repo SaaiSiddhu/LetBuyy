@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 
 import '../../models/store_model.dart';
 import '../../services/store_service.dart';
@@ -38,7 +39,7 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
     });
 
     try {
-      final store = await context.read<StoreService>().getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       if (mounted) {
         setState(() {
           _store = store;

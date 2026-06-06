@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/app_marketplace_service.dart';
-import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
 
@@ -48,7 +48,8 @@ class _AppsScreenState extends State<AppsScreen> {
     });
 
     try {
-      _storeId ??= (await context.read<StoreService>().getFirstStore())?.id;
+      _storeId ??=
+          (await context.read<StoreContext>().ensureSelectedStore())?.id;
       final service = context.read<AppMarketplaceService>();
       if (_storeId == null) {
         await service.fetchCategories();

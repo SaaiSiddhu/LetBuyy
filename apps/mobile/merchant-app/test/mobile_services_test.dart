@@ -5,12 +5,16 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:letbuyy_store/app/deep_link_router.dart';
+import 'package:letbuyy_store/app/store_context.dart';
+import 'package:letbuyy_store/l10n/app_localizations.dart';
 import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
 import 'package:letbuyy_store/models/store_model.dart';
 import 'package:letbuyy_store/services/analytics_service.dart';
 import 'package:letbuyy_store/services/ai_studio_service.dart';
 import 'package:letbuyy_store/services/api_client.dart';
 import 'package:letbuyy_store/services/app_marketplace_service.dart';
+import 'package:letbuyy_store/services/cache_service.dart';
 import 'package:letbuyy_store/services/cms_service.dart';
 import 'package:letbuyy_store/services/coupon_service.dart';
 import 'package:letbuyy_store/services/customer_service.dart';
@@ -62,6 +66,8 @@ import 'package:letbuyy_store/screens/settings/shipping_screen.dart';
 import 'package:letbuyy_store/screens/settings/staff_screen.dart';
 import 'package:letbuyy_store/screens/settings/taxes_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +86,32 @@ void main() {
       expect(api.paths, contains('/stores'));
     });
 
+    test('StoreContext restores and switches the selected store', () async {
+      SharedPreferences.setMockInitialValues({
+        'letbuyy.selected_store_id': 'store_2',
+      });
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [
+            _storeJson(),
+            _storeJson(id: 'store_2', name: 'Second Store', subdomain: 'two'),
+          ],
+        },
+      );
+      final service = StoreService(api: api, cache: CacheService.memory());
+      final storeContext = StoreContext(storeService: service);
+
+      final stores = await storeContext.loadStores();
+
+      expect(stores, hasLength(2));
+      expect(storeContext.selectedStoreId, 'store_2');
+
+      await storeContext.selectStore(stores.first);
+
+      expect(storeContext.selectedStoreId, 'store_1');
+      expect(service.currentStore?.id, 'store_1');
+    });
+
     test('ProductService keeps canonical ProductContract payloads', () async {
       final api = _FakeApiClient(
         paginated: {
@@ -91,6 +123,26 @@ void main() {
 
       expect(products.single['store_id'], 'store_1');
       expect(products.single.containsKey('salePrice'), isFalse);
+    });
+
+    test('ProductService falls back to cached products when offline', () async {
+      final cache = CacheService.memory();
+      await ProductService(
+        api: _FakeApiClient(
+          paginated: {
+            '/products': [_productJson()],
+          },
+        ),
+        cache: cache,
+      ).fetchProducts('store_1');
+
+      final products = await ProductService(
+        api: _ThrowingApiClient(),
+        cache: cache,
+      ).fetchProducts('store_1');
+
+      expect(products.single['id'], 'prod_1');
+      expect(products.single['name'], 'Cotton Tee');
     });
 
     test(
@@ -216,6 +268,26 @@ void main() {
 
       expect(orders, hasLength(2));
       expect(service.statusCounts['paid'], 2);
+    });
+
+    test('OrderService falls back to cached orders when offline', () async {
+      final cache = CacheService.memory();
+      await OrderService(
+        api: _FakeApiClient(
+          paginated: {
+            '/orders': [_orderJson(status: 'paid')],
+          },
+        ),
+        cache: cache,
+      ).fetchOrders('store_1');
+
+      final orders = await OrderService(
+        api: _ThrowingApiClient(),
+        cache: cache,
+      ).fetchOrders('store_1');
+
+      expect(orders.single.id, 'order_1');
+      expect(orders.single.status, 'paid');
     });
 
     test('OrderService fetches detail and refund lifecycle routes', () async {
@@ -1033,6 +1105,33 @@ void main() {
       },
     );
 
+    test('P4 deep links and localization bundles resolve mobile targets', () {
+      final orderTarget = AppDeepLinkRouter.resolve(
+        Uri.parse('letbuyy://merchant/orders/order_123'),
+      );
+      final paymentTarget = AppDeepLinkRouter.resolve(
+        Uri.parse('letbuyy://merchant/payment-return?status=success'),
+      );
+      final shareTarget = AppDeepLinkRouter.resolve(
+        Uri.parse(
+          'letbuyy://merchant/share/store_1?name=Demo&url=https://demo.letbuyy.store',
+        ),
+      );
+
+      expect(orderTarget?.routeName, '/orders/detail');
+      expect(orderTarget?.arguments['orderId'], 'order_123');
+      expect(paymentTarget?.routeName, '/pricing');
+      expect(shareTarget?.routeName, '/live-preview');
+      expect(
+        AppLocalizations.supportedLocales.map((locale) => locale.languageCode),
+        containsAll(['en', 'hi', 'ta', 'bn', 'kn']),
+      );
+      expect(
+        const AppLocalizations(Locale('bn')).selectStore,
+        'স্টোর নির্বাচন করুন',
+      );
+    });
+
     test(
       'PushService fails closed until device token backend exists',
       () async {
@@ -1347,7 +1446,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => CustomerService(api: api)),
         ],
         child: const MaterialApp(home: CustomersScreen()),
@@ -1411,7 +1510,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => InventoryService(api: api)),
         ],
         child: const MaterialApp(home: InventoryScreen()),
@@ -1440,7 +1539,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => InventoryService(api: api)),
         ],
         child: const MaterialApp(home: InventoryLocationsScreen()),
@@ -1468,7 +1567,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => InventoryService(api: api)),
         ],
         child: const MaterialApp(home: InventorySuppliersScreen()),
@@ -1494,7 +1593,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => InventoryService(api: api)),
         ],
         child: const MaterialApp(home: PurchaseOrdersScreen()),
@@ -1522,7 +1621,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => InventoryService(api: api)),
         ],
         child: const MaterialApp(home: InventoryTransfersScreen()),
@@ -1547,7 +1646,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => CouponService(api: api)),
         ],
         child: const MaterialApp(home: CouponsScreen()),
@@ -1575,7 +1674,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => ProductService(api: api)),
         ],
         child: const MaterialApp(home: CollectionsScreen()),
@@ -1649,7 +1748,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => ProductService(api: api)),
         ],
         child: const MaterialApp(home: GiftCardsScreen()),
@@ -1675,7 +1774,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(
             create: (_) => NotificationSettingsService(api: api),
           ),
@@ -1706,7 +1805,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => StaffService(api: api)),
         ],
         child: const MaterialApp(home: StaffScreen()),
@@ -1747,7 +1846,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           Provider<SubscriptionService>(
             create: (_) => SubscriptionService(api: api),
           ),
@@ -1777,7 +1876,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => ReviewService(api: api)),
         ],
         child: const MaterialApp(home: ReviewsScreen()),
@@ -1807,7 +1906,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(
             create: (_) => FormSubmissionService(api: api),
           ),
@@ -1839,7 +1938,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => CmsService(api: api)),
         ],
         child: const MaterialApp(home: PagesScreen()),
@@ -1879,7 +1978,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => CmsService(api: api)),
         ],
         child: const MaterialApp(home: BlogScreen()),
@@ -1924,7 +2023,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => CmsService(api: api)),
         ],
         child: const MaterialApp(home: NavigationScreen()),
@@ -1961,7 +2060,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => MediaService(api: api)),
         ],
         child: const MaterialApp(home: MediaLibraryScreen()),
@@ -1992,7 +2091,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => ShippingTaxService(api: api)),
         ],
         child: const MaterialApp(home: ShippingScreen()),
@@ -2026,7 +2125,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => ShippingTaxService(api: api)),
         ],
         child: const MaterialApp(home: TaxesScreen()),
@@ -2059,7 +2158,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => DomainService(api: api)),
         ],
         child: const MaterialApp(home: DomainSettingsScreen()),
@@ -2100,8 +2199,8 @@ void main() {
     );
 
     await tester.pumpWidget(
-      ChangeNotifierProvider(
-        create: (_) => StoreService(api: api),
+      MultiProvider(
+        providers: _storeProviders(api),
         child: const MaterialApp(home: SEOSettingsScreen()),
       ),
     );
@@ -2140,7 +2239,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(
             create: (_) => AppMarketplaceService(api: api),
           ),
@@ -2172,7 +2271,7 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ..._storeProviders(api),
           ChangeNotifierProvider(create: (_) => AiStudioService(api: api)),
         ],
         child: const MaterialApp(home: AiScreen()),
@@ -2219,6 +2318,16 @@ void main() {
     expect(find.text('Published'), findsOneWidget);
     expect(find.text('Roll back'), findsOneWidget);
   });
+}
+
+List<SingleChildWidget> _storeProviders(ApiClient api) {
+  final storeService = StoreService(api: api, cache: CacheService.memory());
+  return [
+    ChangeNotifierProvider<StoreService>.value(value: storeService),
+    ChangeNotifierProvider<StoreContext>(
+      create: (_) => StoreContext(storeService: storeService),
+    ),
+  ];
 }
 
 class _FakeApiClient extends ApiClient {
@@ -2288,7 +2397,41 @@ class _FakeApiClient extends ApiClient {
   }
 }
 
+class _ThrowingApiClient extends ApiClient {
+  _ThrowingApiClient() : super(baseUrl: 'https://gateway.test/v1');
+
+  @override
+  Future<dynamic> request(String path, {ApiRequestOptions? options}) {
+    throw Exception('offline');
+  }
+
+  @override
+  Future<JsonMap> requestJson(String path, {ApiRequestOptions? options}) {
+    throw Exception('offline');
+  }
+
+  @override
+  Future<T> requestData<T>(
+    String path, {
+    ApiRequestOptions? options,
+    required JsonDecoder<T> decoder,
+  }) {
+    throw Exception('offline');
+  }
+
+  @override
+  Future<PaginatedResponse<JsonMap>> requestPaginatedJson(
+    String path, {
+    ApiRequestOptions? options,
+  }) {
+    throw Exception('offline');
+  }
+}
+
 Map<String, dynamic> _storeJson({
+  String id = 'store_1',
+  String name = 'Demo Store',
+  String subdomain = 'demo',
   bool taxInclusive = false,
   String? customDomain,
   String? customDomainStatus,
@@ -2297,12 +2440,12 @@ Map<String, dynamic> _storeJson({
   bool sslActive = false,
   Map<String, dynamic>? dnsConfig,
 }) => {
-  'id': 'store_1',
+  'id': id,
   'seller_id': 'seller_1',
-  'name': 'Demo Store',
+  'name': name,
   'tagline': 'Demo',
-  'subdomain': 'demo',
-  'store_url': 'https://demo.letbuyy.store',
+  'subdomain': subdomain,
+  'store_url': 'https://$subdomain.letbuyy.store',
   'theme_id': 'modern',
   'tax_inclusive': taxInclusive,
   'seo_title': seoTitle,

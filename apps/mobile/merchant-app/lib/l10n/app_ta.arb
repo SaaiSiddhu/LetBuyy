@@ -1,0 +1,11 @@
+{
+  "@@locale": "ta",
+  "appTitle": "LetBuyy கடை பில்டர்",
+  "selectStore": "கடையை தேர்வு செய்",
+  "switchStore": "கடையை மாற்று",
+  "storeSwitcherLabel": "தேர்ந்தெடுத்த கடை மாற்றி",
+  "noStoreSelected": "கடை தேர்வு செய்யப்படவில்லை",
+  "offlineMode": "ஆஃப்லைன் முறை",
+  "cachedDataNotice": "நெட்வொர்க் இல்லை, கேஷ் தரவு காட்டப்படுகிறது.",
+  "deepLinkUnsupported": "இந்த இணைப்பு இன்னும் மொபைலில் ஆதரிக்கப்படவில்லை."
+}

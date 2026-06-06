@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import '../../services/subscription_service.dart';
-import '../../services/store_service.dart';
 import 'razorpay_checkout_screen.dart';
 
 import '../../models/store_model.dart';
@@ -34,8 +34,7 @@ class _PricingScreenState extends State<PricingScreen> {
 
   Future<void> _loadStore() async {
     try {
-      final storeService = context.read<StoreService>();
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       setState(() {
         _store = store;
         _selectedPlan = store?.subscriptionPlan ?? SubscriptionPlan.trial;

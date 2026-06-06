@@ -9,9 +9,9 @@ import 'package:flutter/services.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import '../../app/routes.dart';
 import '../../services/order_service.dart';
-import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
 import 'package:intl/intl.dart';
 
@@ -67,7 +67,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     try {
       // Lazily resolve store context.
       if (_storeId == null) {
-        final store = await context.read<StoreService>().getFirstStore();
+        final store = await context.read<StoreContext>().ensureSelectedStore();
         _storeId = store?.id;
       }
 

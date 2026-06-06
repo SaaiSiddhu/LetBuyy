@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import '../../app/store_context.dart';
 import '../../services/analytics_service.dart';
-import '../../services/store_service.dart';
 
 import '../../models/store_model.dart';
 import '../../widgets/home/stats_row.dart';
@@ -30,8 +30,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   Future<void> _loadStore() async {
     setState(() => _isLoading = true);
     try {
-      final storeService = context.read<StoreService>();
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       final analytics = store == null
           ? null
           : await context.read<AnalyticsService>().getStoreAnalytics(

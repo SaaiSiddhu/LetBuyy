@@ -2,8 +2,8 @@
 
 - Branch: `stream/letbuyy-foundation-v2`
 - Start HEAD: `62b2915218daa716b075b02d909c08e053bfce25`
-- Current HEAD: `93da1b3f4a9ca7bf8efb0e5ee29f70354862b3c3`
-- Status timestamp: `2026-06-06T17:07:23+05:30`
+- Current HEAD: `b127c6a1f1f89620c63de53e2c63c1fa5f4b4102`
+- Status timestamp: `2026-06-06T17:31:05+05:30`
 
 ## Feature Checklist
 
@@ -45,7 +45,7 @@
 | P3 | SEO | DONE | `lib/services/product_service.dart`, `lib/screens/products/product_form_screen.dart`, `lib/screens/settings/seo_settings_screen.dart`, `test/mobile_services_test.dart`; product create/update now carries `url_handle`, `seo_title`, and `seo_description` through `/products`, while `/features/seo` opens the real storefront SEO settings screen and persists store title/description through `/stores/:id`; covered by service payload assertion + product form and settings widget tests |
 | P3 | App marketplace browse | DONE-WITH-SKIP | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/app_marketplace_service.dart`, `lib/screens/apps/apps_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`, `test/mobile_services_test.dart`; `/features/app-marketplace` opens the real mobile Apps screen, lists `/app-store/apps` catalog rows with category/search filters, loads `/app-store/installations` for the active store, installs through `POST /app-store/apps/:id/install`, uninstalls through `DELETE /app-store/apps/:id/install`, and creates `/app-store/installations/:id/embed-session` handoffs for installed apps; native embedded App Bridge runtime remains an explicit desktop-only skip seam (ledger S-015); covered by service + widget tests |
 | P3 | AI Studio | DONE-WITH-SKIP | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/ai_studio_service.dart`, `lib/screens/ai/ai_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`, `lib/screens/parity/merchant_feature_definitions.dart`, `test/mobile_services_test.dart`; `/features/ai` opens the real AI Studio screen, reads credit balance from `/ai/credits`, reads paginated usage from `/ai/usage`, rates generations through `/ai/usage/:id/rate`, and exposes typed skips for generation provider execution plus AI credit purchase checkout pending backend/provider configuration (ledger S-016/S-017); covered by service + widget tests |
-| P4 | Multi-store/offline/deep-links/a11y/i18n | TODO | Not started |
+| P4 | Multi-store/offline/deep-links/a11y/i18n | DONE | `lib/app/store_context.dart`, `lib/widgets/store/store_switcher_button.dart`, `lib/services/cache_service.dart`, `lib/app/deep_link_router.dart`, `lib/l10n/app_*.arb`, `lib/l10n/app_localizations.dart`, `lib/main.dart`, `lib/app/app.dart`, `lib/screens/main/store_main_screen.dart`, `lib/services/store_service.dart`, `lib/services/product_service.dart`, `lib/services/order_service.dart`, `test/mobile_services_test.dart`; active store selection now loads from `/stores`, persists the selected store, feeds `X-Store-ID` through the shared API client, and replaces all mobile `getFirstStore()` call sites; products/orders/stores use Hive-backed cache with read-only offline fallback; deep-link targets cover push order, payment return, and share links through a `go_router` route table; bottom navigation and the switcher expose semantics/min touch targets; `.arb` localization bundles cover EN/HI/TA/BN/KN and are wired through app localization delegates |
 | P5 | Platform-blocked seams | TODO | Not started |
 
 ## Verification Log
@@ -164,6 +164,15 @@
 - P3 `AI Studio` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
 - P3 `AI Studio` diff audit: `git diff --check` PASS.
 - P3 `AI Studio` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_INTERNAL_OPERATING_SYSTEM_FOUNDATION_MISSION.md must be archived; CODEX_MERCHANT_PARTNER_VERTICAL_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
+- P4 `Multi-store/offline/deep-links/a11y/i18n` format check: `dart format ...` PASS. Output: `Formatted 2 files (0 changed) in 0.50 seconds` after the final lifecycle/test edit.
+- P4 `Multi-store/offline/deep-links/a11y/i18n` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 16.3s)`.
+- P4 `Multi-store/offline/deep-links/a11y/i18n` focused test check: `flutter test test/mobile_services_test.dart` PASS. Output: `00:03 +70: All tests passed!`.
+- P4 `Multi-store/offline/deep-links/a11y/i18n` full test check: `flutter test` PASS. Output: `00:05 +72: All tests passed!`.
+- P4 `Multi-store/offline/deep-links/a11y/i18n` Android build: `flutter build apk --debug --dart-define-from-file=dart-defines/staging.json` PASS. Output: `Built build/app/outputs/flutter-apk/app-debug.apk`.
+- P4 `Multi-store/offline/deep-links/a11y/i18n` iOS build: `flutter build ios --debug --no-codesign --dart-define-from-file=dart-defines/staging.json` PASS. Output: `Built build/ios/iphoneos/Runner.app`.
+- P4 `Multi-store/offline/deep-links/a11y/i18n` grep audit: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, no live `firebase`, `google-services`, or `GoogleService` residue appears in the checked mobile/queue-worker source paths, and no `getFirstStore()` calls remain in `apps/mobile/merchant-app/lib`.
+- P4 `Multi-store/offline/deep-links/a11y/i18n` diff audit: `git diff --check` PASS.
+- P4 `Multi-store/offline/deep-links/a11y/i18n` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_INTERNAL_OPERATING_SYSTEM_FOUNDATION_MISSION.md must be archived; CODEX_MERCHANT_PARTNER_VERTICAL_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
 
 ## Notes
 
@@ -172,6 +181,6 @@
 
 ## RESUME HINT
 
-Next feature: P4 `Multi-store/offline/deep-links/a11y/i18n`.
+Next feature: P5 `Platform-blocked seams`.
 
-Start with `lib/app/store_context.dart` plus a store switcher over `/v1/stores`, then replace remaining `getFirstStore()` call sites before layering cache, deep links, accessibility, and i18n.
+Build feature-flagged mobile screens and typed service stubs for payouts/settlement, wallet, commission, KYC, returns, 2FA, business details, localization/markets, custom data/metafields, and embedded App Bridge runtime. Each stub must throw `SkipNeedsBackendException(<id>)` and every backend gap must have a ledger row.

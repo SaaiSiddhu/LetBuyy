@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 import '../../services/store_auth_service.dart';
-import '../../services/store_service.dart';
 import '../../services/language_service.dart';
 import '../../services/theme_provider.dart';
 import '../../theme/app_theme_colors.dart';
@@ -207,10 +207,8 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Future<void> _navigateAfterAuth() async {
-    final storeService = context.read<StoreService>();
-
     try {
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       if (!mounted) return;
 
       if (store != null) {

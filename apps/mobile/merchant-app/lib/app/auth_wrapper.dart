@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'store_context.dart';
 import '../services/store_auth_service.dart';
-import '../services/store_service.dart';
 import '../services/theme_provider.dart';
 import '../theme/app_theme_colors.dart';
 import '../screens/auth/login_screen.dart';
@@ -61,6 +61,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
       final session = authState.session;
 
       if (event == AuthChangeEvent.signedOut || session == null) {
+        unawaited(context.read<StoreContext>().clearSelection());
         setState(() {
           _authState = _AuthState.login;
         });
@@ -77,10 +78,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
     _isChecking = true;
 
     try {
-      final storeService = context.read<StoreService>();
-
       setState(() => _loadingStatus = 'Loading store...');
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
 
       if (!mounted) return;
 

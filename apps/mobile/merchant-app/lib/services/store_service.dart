@@ -4,14 +4,18 @@ import 'package:flutter/foundation.dart';
 
 import '../models/store_model.dart';
 import 'api_client.dart';
+import 'cache_service.dart';
 
 /// Service for managing stores via the LetBuyy API.
 ///
 /// Replaces direct database access with REST calls to the Hono backend.
 class StoreService extends ChangeNotifier {
   final ApiClient _api;
+  final CacheService? _cache;
 
-  StoreService({required ApiClient api}) : _api = api;
+  StoreService({required ApiClient api, CacheService? cache})
+    : _api = api,
+      _cache = cache;
 
   // ── Cached state ─────────────────────────────────────────
 
@@ -37,9 +41,19 @@ class StoreService extends ChangeNotifier {
       if (_stores.isNotEmpty && _currentStore == null) {
         _currentStore = _stores.first;
       }
+      await _cache?.writeJson(
+        CacheService.storesKey,
+        _stores.map((store) => store.toJson()).toList(growable: false),
+      );
       return _stores;
     } catch (e) {
       debugPrint('❌ fetchStores error: $e');
+      final cachedRows = _cache?.readJsonList(CacheService.storesKey) ?? [];
+      if (cachedRows.isNotEmpty) {
+        _stores = cachedRows.map(StoreModel.fromJson).toList(growable: false);
+        _currentStore ??= _stores.first;
+        return _stores;
+      }
       rethrow;
     } finally {
       _isLoading = false;
@@ -53,21 +67,6 @@ class StoreService extends ChangeNotifier {
     _currentStore = store;
     notifyListeners();
     return store;
-  }
-
-  /// Get the first store for the current user (used after login).
-  Future<StoreModel?> getFirstStore() async {
-    try {
-      final page = await _api.stores.list(query: {'limit': '1'});
-      if (page.data.isEmpty) return null;
-      final store = StoreModel.fromJson(page.data.first);
-      _currentStore = store;
-      notifyListeners();
-      return store;
-    } catch (e) {
-      debugPrint('❌ getFirstStore error: $e');
-      return null;
-    }
   }
 
   // ── Create ───────────────────────────────────────────────

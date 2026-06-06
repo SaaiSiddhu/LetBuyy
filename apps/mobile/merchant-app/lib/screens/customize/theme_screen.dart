@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 
 import '../../models/store_model.dart';
 import '../../models/theme_editor_models.dart';
-import '../../services/store_service.dart';
 import '../../services/theme_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../main/store_main_screen.dart';
@@ -50,9 +50,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
   Future<void> _loadThemes() async {
     setState(() => _isLoading = true);
     try {
-      final storeService = context.read<StoreService>();
       final themeService = context.read<ThemeService>();
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       if (store == null) {
         if (mounted) setState(() => _store = null);
         return;

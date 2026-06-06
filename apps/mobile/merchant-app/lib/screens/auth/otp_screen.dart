@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app/routes.dart';
 import '../../services/store_auth_service.dart';
-import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart';
 
@@ -62,7 +62,7 @@ class _OtpScreenState extends State<OtpScreen> {
       await prefs.setString('store_user_email', widget.email);
 
       if (!mounted) return;
-      final store = await context.read<StoreService>().getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
         context,

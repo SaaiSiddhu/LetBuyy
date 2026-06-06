@@ -5,12 +5,8 @@ import '../../app/routes.dart';
 class ErrorScreen extends StatelessWidget {
   final String title;
   final String message;
-  
-  const ErrorScreen({
-    super.key,
-    required this.title,
-    required this.message,
-  });
+
+  const ErrorScreen({super.key, required this.title, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +32,9 @@ class ErrorScreen extends StatelessWidget {
                   color: Colors.red[400],
                 ),
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Title
               Text(
                 title,
@@ -47,20 +43,20 @@ class ErrorScreen extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Message
               Text(
                 message,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
-              
+
               const SizedBox(height: 48),
-              
+
               // Actions
               SizedBox(
                 width: double.infinity,
@@ -69,18 +65,16 @@ class ErrorScreen extends StatelessWidget {
                   onPressed: () {
                     // TODO: Deep link to Seller App
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Opening Seller App...'),
-                      ),
+                      const SnackBar(content: Text('Opening Seller App...')),
                     );
                   },
                   icon: const Icon(Icons.open_in_new_rounded),
                   label: const Text('Open Seller App'),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Back to login
               TextButton(
                 onPressed: () {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' hide LoadingOverlay;
 import '../../services/store_service.dart';
 
@@ -61,11 +62,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final storeService = context.read<StoreService>();
       final productService = context.read<ProductService>();
 
-      // getFirstStore uses the auth token to identify the user
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
 
       if (store != null) {
         // Fetch products for this store via API

@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 
 import '../../models/store_model.dart';
 import '../../models/theme_editor_models.dart';
-import '../../services/store_service.dart';
 import '../../services/theme_service.dart';
 
 import '../../theme/app_theme_colors.dart';
@@ -197,9 +197,8 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
   Future<void> _loadStore() async {
     setState(() => _isLoading = true);
     try {
-      final storeService = context.read<StoreService>();
       final themeService = context.read<ThemeService>();
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
 
       if (store != null) {
         final themeSlug = _resolveThemeSlug(store);

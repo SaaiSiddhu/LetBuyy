@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 
 import '../../services/ai_studio_service.dart';
-import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
 
@@ -36,7 +36,8 @@ class _AiScreenState extends State<AiScreen> {
     });
 
     try {
-      _storeId ??= (await context.read<StoreService>().getFirstStore())?.id;
+      _storeId ??=
+          (await context.read<StoreContext>().ensureSelectedStore())?.id;
       if (_storeId == null) {
         if (mounted) {
           setState(() {

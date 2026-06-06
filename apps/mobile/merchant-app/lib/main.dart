@@ -3,7 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'config/app_config.dart';
 import 'app/app.dart';
+import 'app/store_context.dart';
 import 'services/api_client.dart';
+import 'services/cache_service.dart';
 import 'services/store_service.dart';
 import 'services/store_auth_service.dart';
 import 'services/language_service.dart';
@@ -33,12 +35,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   GoogleFonts.config.allowRuntimeFetching = true;
+  final cacheService = await CacheService.open();
 
   // Shared API gateway client injected into all services.
   late final StoreAuthService authService;
+  late final StoreContext storeContext;
   final apiClient = ApiClient(
     baseUrl: AppConfig.apiBaseUrl,
     tokenProvider: () => authService.accessToken,
+    storeIdProvider: () => storeContext.selectedStoreId,
     attachSessionCookie: true,
     headers: const {'X-Client': 'flutter-builder'},
     requestIdFactory: () =>
@@ -49,6 +54,8 @@ void main() async {
     identityBaseUrl: AppConfig.identityBaseUrl,
     turnstileTokenProvider: () => AppConfig.turnstileToken,
   );
+  final storeService = StoreService(api: apiClient, cache: cacheService);
+  storeContext = StoreContext(storeService: storeService);
   await authService.restoreSession();
 
   runApp(
@@ -62,19 +69,19 @@ void main() async {
 
         // API gateway client (shared singleton)
         Provider<ApiClient>.value(value: apiClient),
+        Provider<CacheService>.value(value: cacheService),
 
         // Auth
         ChangeNotifierProvider<StoreAuthService>.value(value: authService),
+        ChangeNotifierProvider<StoreContext>.value(value: storeContext),
 
         // Data services
-        ChangeNotifierProvider<StoreService>(
-          create: (_) => StoreService(api: apiClient),
-        ),
+        ChangeNotifierProvider<StoreService>.value(value: storeService),
         ChangeNotifierProvider<ProductService>(
-          create: (_) => ProductService(api: apiClient),
+          create: (_) => ProductService(api: apiClient, cache: cacheService),
         ),
         ChangeNotifierProvider<OrderService>(
-          create: (_) => OrderService(api: apiClient),
+          create: (_) => OrderService(api: apiClient, cache: cacheService),
         ),
         ChangeNotifierProvider<CustomerService>(
           create: (_) => CustomerService(api: apiClient),

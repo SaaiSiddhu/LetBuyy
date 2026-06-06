@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import '../../widgets/wizard/wizard_container.dart';
 import '../../services/store_service.dart';
 import '../../services/store_auth_service.dart';
@@ -346,8 +347,8 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
         themeId: _selectedThemeId,
       );
 
-      // Publish store - triggers domain provisioning
-      await storeService.publishStore(store.id);
+      final publishedStore = await storeService.publishStore(store.id);
+      await context.read<StoreContext>().adoptCreatedStore(publishedStore);
 
       if (!mounted) return;
 

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import '../../services/product_service.dart';
-import '../../services/store_service.dart';
 import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
 
 /// Product Form Screen for Store Builder
@@ -857,10 +857,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
     try {
       final productService = context.read<ProductService>();
-      final storeService = context.read<StoreService>();
 
-      // Get current store for storeId
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       if (store == null) throw Exception('No store found');
 
       if (widget.product != null) {

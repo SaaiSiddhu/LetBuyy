@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../app/store_context.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../services/analytics_service.dart';
@@ -16,6 +17,7 @@ import '../../widgets/dashboard/skeleton_loader.dart';
 import '../../widgets/dashboard/quick_actions_grid.dart';
 import '../../widgets/dashboard/animated_revenue_chart.dart';
 import '../../widgets/dashboard/activity_timeline.dart';
+import '../../widgets/store/store_switcher_button.dart';
 
 /// Premium Enhanced Dashboard - Bento Grid Layout
 /// Modern 2025/2026 UI with glassmorphism, micro-interactions, and animations
@@ -42,8 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadStore() async {
     setState(() => _isLoading = true);
     try {
-      final storeService = context.read<StoreService>();
-      final store = await storeService.getFirstStore();
+      final store = await context.read<StoreContext>().ensureSelectedStore();
       StoreAnalytics? analytics;
       if (store != null) {
         try {
@@ -464,6 +465,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
+          StoreSwitcherButton(onChanged: _loadStore),
+          const SizedBox(width: 8),
           // Notifications button
           Container(
             width: 40,

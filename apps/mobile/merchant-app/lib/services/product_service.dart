@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 
 import 'api_client.dart';
+import 'cache_service.dart';
 import 'skip_needs_backend_exception.dart';
 
 /// Service for managing products via the LetBuyy API.
@@ -11,8 +12,11 @@ import 'skip_needs_backend_exception.dart';
 /// Replaces direct database/storage access with REST calls.
 class ProductService extends ChangeNotifier {
   final ApiClient _api;
+  final CacheService? _cache;
 
-  ProductService({required ApiClient api}) : _api = api;
+  ProductService({required ApiClient api, CacheService? cache})
+    : _api = api,
+      _cache = cache;
 
   static const missingCollectionMutationRouteId =
       'MOBILE_COLLECTION_UPDATE_DELETE';
@@ -41,6 +45,16 @@ class ProductService extends ChangeNotifier {
     int limit = 20,
   }) async {
     _isLoading = true;
+    final cacheKey = CacheService.productsKey(storeId, page, limit);
+    final cachedRows = _cache?.readJsonList(cacheKey) ?? [];
+    if (cachedRows.isNotEmpty) {
+      _productContracts = cachedRows
+          .map(ProductContract.fromJson)
+          .toList(growable: false);
+      _products = _productContracts
+          .map((product) => product.toJson())
+          .toList(growable: false);
+    }
     notifyListeners();
 
     try {
@@ -53,9 +67,11 @@ class ProductService extends ChangeNotifier {
       _products = _productContracts
           .map((product) => product.toJson())
           .toList(growable: false);
+      await _cache?.writeJson(cacheKey, _products);
       return _products;
     } catch (e) {
       debugPrint('❌ fetchProducts error: $e');
+      if (_products.isNotEmpty) return _products;
       rethrow;
     } finally {
       _isLoading = false;

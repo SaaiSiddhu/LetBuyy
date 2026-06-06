@@ -333,17 +333,6 @@ class StoreAuthService extends ChangeNotifier {
     return token;
   }
 
-  Future<Map<String, dynamic>?> getFirstStore() async {
-    try {
-      final res = await _api.get('stores', query: {'limit': '1'});
-      final items = res['data'] as List? ?? [];
-      return items.isNotEmpty ? items.first as Map<String, dynamic> : null;
-    } catch (error) {
-      debugPrint('Error fetching stores: $error');
-      return null;
-    }
-  }
-
   Future<String> _fetchCsrfCookie() async {
     final response = await _http.get(_identityUri('/login'));
     _storeResponseCookies(response);
