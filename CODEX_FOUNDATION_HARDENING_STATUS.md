@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F4.3 storefront login abuse controls complete locally; continue F4.4 scoped credentialed CORS.
+- Phase: F4 security/auth hardening complete locally; continue F5 testing reality.
 - Findings resolved: 23/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials and `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening.
-- Current governance gate state: green after F4.3 (`pnpm run validate:governance` -> 136/136 PASS).
+- Current governance gate state: green after F4.6 (`pnpm run validate:governance` -> 138/138 PASS).
 
 ## Baseline gates
 
@@ -455,6 +455,27 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 137/137 validators.
 
+## F4.6 production-impossible dev bypass evidence
+
+- `apps/identity-platform/src/lib/dev-auth-bypass.ts` is the identity runtime gate for dev OTP and Turnstile bypasses; it requires `NODE_ENV=development`, `LETBUYY_ENABLE_DEV_AUTH_BYPASS=true`, and no production `NODE_ENV`, `APP_ENV`, `VERCEL_ENV`, or `NEXT_PUBLIC_ENV` flag.
+- Identity signup only includes `devOtp` through `canUseIdentityDevAuthBypass(process.env)`, so OTP echo is unavailable in staging or production runtime flags.
+- Identity Turnstile `dev-bypass-token` and missing-secret paths now fail closed unless the same explicit development-only server flag is present; the client widget emits the dev token only when `NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS=true` in development.
+- Platform-console `PLATFORM_CONSOLE_DEV_MFA_CODE` now requires `LETBUYY_ENABLE_DEV_AUTH_BYPASS=true` in a development build and is blocked by production runtime flags.
+- `config/env/templates/next-app.env.example`, `config/env/schemas/next-app.schema.json`, and `docs/governance/security-operations-governance.md` document the dev-bypass flags and production-closed behavior.
+- `scripts/validators/dev-auth-bypass-validator.mjs` is wired into `scripts/validate-governance.mjs`.
+- Pre-change `pnpm run test:contracts`: FAIL - 93/97, then 96/97 while tightening the source assertion.
+- `pnpm run test:contracts`: PASS - 97/97.
+- `node scripts/validators/dev-auth-bypass-validator.mjs`: PASS.
+- `pnpm install --frozen-lockfile --force`: PASS - restored workspace links after generated-artifact cleanup.
+- `pnpm --filter @letbuyy/identity-platform typecheck`: PASS.
+- `pnpm --filter @letbuyy/platform-console typecheck`: PASS.
+- `pnpm --filter @letbuyy/identity-platform lint`: PASS with existing warnings only.
+- `pnpm --filter @letbuyy/platform-console lint`: PASS.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 138/138 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -485,5 +506,5 @@ Started: 2026-06-05T13:54:14Z
 - H-4 staging proof that theme-marketplace checkout creates a real Razorpay test order and succeeds only after provider verification requires staging merchant session, gateway Razorpay test credentials, a purchasable staging theme with INR pricing, and browser access to Razorpay checkout. Exact proof path once supplied: authenticate to staging theme marketplace, open `/checkout?theme=<slug>`, start checkout, verify the gateway returns a Razorpay order from `POST /v1/themes/<slug>/purchase`, complete test payment in Razorpay Checkout, verify `/v1/themes/<slug>/purchase/verify` records the purchase, and confirm the success page is reached only after verification.
 - H-16 per-operator gateway-side ops identity requires ops SSO/IdP or a security decision to share and validate platform-console session tokens inside the gateway worker, plus a rotation/runbook for `PLATFORM_CONSOLE_API_TOKEN`. Current static-token auth is timing-safe hardened but remains a human-gated identity architecture decision.
 
-- Continue to F4.6 production-impossible dev bypasses.
+- Continue to F5 testing reality.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

@@ -22,6 +22,11 @@ interface TurnstileWidgetProps {
     onExpire?: () => void
 }
 
+function canUseClientDevAuthBypass() {
+    return process.env.NODE_ENV === 'development'
+        && process.env.NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true'
+}
+
 /**
  * Invisible Cloudflare Turnstile widget.
  * Runs silently in the background — no UI, no checkboxes, no puzzles.
@@ -56,7 +61,7 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
 
             const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
             if (!siteKey) {
-                onVerifyRef.current('dev-bypass-token')
+                onVerifyRef.current(canUseClientDevAuthBypass() ? 'dev-bypass-token' : '')
                 return
             }
 
@@ -100,7 +105,7 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
         useEffect(() => {
             const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
             if (!siteKey) {
-                onVerifyRef.current('dev-bypass-token')
+                onVerifyRef.current(canUseClientDevAuthBypass() ? 'dev-bypass-token' : '')
                 return
             }
 
