@@ -241,4 +241,13 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - V2-A1 contrast evidence: white text on normal `#6D28D9` = 7.10:1, hover `#5B21B6` = 8.98:1, active `#4C1D95` = 10.95:1.
 - V2-A1 visual evidence: `packages/typescript/ui/storybook-screenshots/v2-a1-primary-button-before-after.png`; `pnpm --filter @letbuyy/ui test:visual:update` PASS with 312 real baselines, and `pnpm --filter @letbuyy/ui test:visual` PASS with 312 checked baselines.
 - V2-A1 harness note: the Storybook visual harness was corrected from `file://` to a local HTTP server because Chromium CORS-blocked Storybook modules and blank baselines were previously possible; the harness now also disables animations, waits for fonts, compares decoded pixels, and fails on Storybook error pages.
-- Current work: Stream A moves next to V2-A2, running V1 codemods across consumers.
+- V2-A2 DONE: V1 table codemods and manual `DataTable` render/prop migrations have been applied across all current consumer apps with exact legacy matches.
+- Supporting fix: `Table` now accepts normal object row types instead of requiring `Record<string, unknown>`, so typed app rows infer without casts.
+- App migration commits: `d00d9bdf refactor(platform-console): adopt unified ui table`, `a83a5eb8 refactor(platform-operations-portal): adopt unified ui table`, `206c4321 refactor(merchant-control-plane): adopt unified ui table`; UI typing fix commit: `551c17c0 fix(ui): relax table row typing`.
+- A2 verification: platform-console typecheck/lint/build PASS; platform-operations-portal typecheck/lint/build PASS; merchant-control-plane typecheck/lint/build PASS. Next/Turbopack builds were run with escalation where sandboxed local process binding failed.
+- A2 scan evidence: no exact `DataTable`/`IndexTable`/`TextStyle`/`PageShell`/`PageActions`/`TableFilterBar`/`Badge variant="danger"` matches remain in `apps/**/*.ts(x)`; no deprecated `--lb-*` token aliases remain in app TS/CSS sources.
+- Current work: Stream A moves next to V2-A3, enabling the UI eslint fence and migrating raw element / hardcoded hex bypass.
+
+## V2 Operational Notes
+
+- During V2-A2, the active branch was switched externally to `stream/domain-split-foundation`; a UI table typing commit was accidentally created there as `3dd08f41`. The same commit was cherry-picked onto the correct V2 branch as `551c17c0`. No user-owned dirty domain/SEO changes were reverted or staged by this stream.
