@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
-import '../../services/store_service.dart';
 
 import '../../models/store_model.dart';
+import '../../services/store_service.dart';
+import '../../theme/app_theme_colors.dart';
+import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
 
-/// SEO settings screen
 class SEOSettingsScreen extends StatefulWidget {
   const SEOSettingsScreen({super.key});
 
@@ -14,13 +14,16 @@ class SEOSettingsScreen extends StatefulWidget {
 }
 
 class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+
   StoreModel? _store;
   bool _isLoading = true;
   bool _isSaving = false;
   bool _hasChanges = false;
+  String? _error;
 
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  late AppThemeColors colors;
 
   @override
   void initState() {
@@ -29,56 +32,53 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
   }
 
   Future<void> _loadStore() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
     try {
-      final storeService = context.read<StoreService>();
-      final store = await storeService.getFirstStore();
-      setState(() {
-        _store = store;
-        _titleController.text = store?.seoTitle ?? store?.name ?? '';
-        _descriptionController.text = store?.seoDescription ?? '';
-      });
-    } catch (e) {
-      debugPrint('Error loading store: $e');
-    } finally {
-      setState(() => _isLoading = false);
+      final store = await context.read<StoreService>().getFirstStore();
+      if (mounted) {
+        setState(() {
+          _store = store;
+          _titleController.text = store?.seoTitle ?? store?.name ?? '';
+          _descriptionController.text = store?.seoDescription ?? '';
+          _hasChanges = false;
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() {
+          _error = error.toString();
+          _isLoading = false;
+        });
+      }
     }
   }
 
   Future<void> _save() async {
-    if (_store == null || _isSaving) return;
+    final store = _store;
+    if (store == null || _isSaving) return;
 
     setState(() => _isSaving = true);
     try {
-      final storeService = context.read<StoreService>();
-      final updatedStore = _store!.copyWith(
-        seoTitle: _titleController.text,
-        seoDescription: _descriptionController.text,
-      );
-
-      await storeService.updateStore(updatedStore.id, {
-        'seo_title': updatedStore.seoTitle,
-        'seo_description': updatedStore.seoDescription,
+      final updated = await context.read<StoreService>().updateStore(store.id, {
+        'seo_title': _nullableTrim(_titleController.text),
+        'seo_description': _nullableTrim(_descriptionController.text),
       });
-
-      setState(() {
-        _store = updatedStore;
-        _hasChanges = false;
-      });
-
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('SEO settings saved!')));
+        setState(() {
+          _store = updated;
+          _hasChanges = false;
+        });
+        _showSnack('SEO settings saved.');
       }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
-      }
+    } catch (error) {
+      _showSnack('Could not save SEO settings: $error');
     } finally {
-      setState(() => _isSaving = false);
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
@@ -91,203 +91,262 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    colors = AppThemeColors.of(context);
+    return Scaffold(
+      backgroundColor: colors.bgStart,
+      body: Container(
+        decoration: colors.backgroundGradient,
+        child: SafeArea(
+          child: Column(
+            children: [
+              _header(),
+              Expanded(child: _isLoading ? _loading() : _body()),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _header() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+      child: Row(
+        children: [
+          IconButton(
+            tooltip: 'Back',
+            icon: Icon(Icons.arrow_back_rounded, color: colors.textPrimary),
+            onPressed: () => Navigator.maybePop(context),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'SEO Settings',
+                  style: TextStyle(
+                    color: colors.textPrimary,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                Text(
+                  'Storefront title and meta description',
+                  style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            tooltip: 'Refresh SEO settings',
+            icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
+            onPressed: _loadStore,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _body() {
+    if (_error != null) {
+      return _centerState(
+        Icons.error_outline_rounded,
+        'Could not load SEO settings',
+        _error!,
+      );
     }
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('SEO Settings'),
-        backgroundColor: AppColors.background,
-        surfaceTintColor: AppColors.background,
-        actions: [
-          if (_hasChanges)
-            TextButton.icon(
-              onPressed: _isSaving ? null : _save,
-              icon: _isSaving
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.save_rounded, size: 18),
-              label: const Text('Save'),
-            ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          // Preview card
-          _buildPreviewCard(),
-          const SizedBox(height: 24),
-
-          // SEO Title
-          _buildField(
-            label: 'SEO Title',
-            hint: 'Your Store Name - Best Products',
-            controller: _titleController,
-            maxLength: 60,
-            helperText: 'Recommended: 50-60 characters',
-          ),
-          const SizedBox(height: 20),
-
-          // Meta Description
-          _buildField(
-            label: 'Meta Description',
-            hint: 'Describe your store and what makes it special...',
-            controller: _descriptionController,
-            maxLength: 160,
-            maxLines: 3,
-            helperText: 'Recommended: 150-160 characters',
-          ),
-          const SizedBox(height: 24),
-
-          // Tips
-          _buildTipsCard(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPreviewCard() {
-    final title = _titleController.text.isEmpty
-        ? 'Your Store Name'
-        : _titleController.text;
-    final description = _descriptionController.text.isEmpty
-        ? 'Your store description will appear here...'
-        : _descriptionController.text;
-    final url = '${_store?.subdomain ?? 'mystore'}.letbuyy.store';
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Google Preview',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(url, style: TextStyle(fontSize: 12, color: Colors.green[700])),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.blue,
-              fontWeight: FontWeight.w500,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            description,
-            style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildField({
-    required String label,
-    required String hint,
-    required TextEditingController controller,
-    String? helperText,
-    int? maxLength,
-    int maxLines = 1,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
       children: [
-        Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+        _previewCard(),
+        const SizedBox(height: 14),
+        _field(
+          label: 'SEO title',
+          controller: _titleController,
+          maxLength: 70,
+          hint: _store?.name ?? 'Store title',
         ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: controller,
-          maxLength: maxLength,
-          maxLines: maxLines,
-          decoration: InputDecoration(
-            hintText: hint,
-            helperText: helperText,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 14,
-            ),
+        const SizedBox(height: 14),
+        _field(
+          label: 'Meta description',
+          controller: _descriptionController,
+          maxLength: 160,
+          maxLines: 4,
+          hint: _store?.tagline ?? 'Store description',
+        ),
+        const SizedBox(height: 18),
+        FilledButton.icon(
+          onPressed: !_hasChanges || _isSaving ? null : _save,
+          icon: _isSaving
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.save_outlined),
+          label: const Text('Save SEO'),
+          style: FilledButton.styleFrom(
+            backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+            foregroundColor: mobile_tokens.LetbuyyColorTokens.white,
+            disabledBackgroundColor: colors.surfaceVariant,
+            disabledForegroundColor: colors.textTertiary,
+            minimumSize: const Size.fromHeight(48),
           ),
-          onChanged: (_) {
-            setState(() => _hasChanges = true);
-          },
         ),
       ],
     );
   }
 
-  Widget _buildTipsCard() {
+  Widget _previewCard() {
+    final title = _titleController.text.trim().isEmpty
+        ? (_store?.name ?? 'Store')
+        : _titleController.text.trim();
+    final description = _descriptionController.text.trim().isEmpty
+        ? (_store?.tagline ?? 'Store description')
+        : _descriptionController.text.trim();
+    final url = _store?.customDomain?.isNotEmpty == true
+        ? _store!.customDomain!
+        : '${_store?.subdomain ?? 'store'}.letbuyy.store';
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: colors.card,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue[100]!),
+        border: Border.all(color: colors.cardBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.lightbulb_rounded, color: Colors.blue[700], size: 20),
+              Icon(
+                Icons.search_outlined,
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+              ),
               const SizedBox(width: 8),
               Text(
-                'SEO Tips',
+                'Search preview',
                 style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.blue[700],
+                  color: colors.textPrimary,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          _buildTip('Include your main keywords in the title'),
-          _buildTip('Write a compelling description that encourages clicks'),
-          _buildTip('Use unique titles for each page'),
+          Text(
+            url,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: colors.success, fontSize: 12),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: mobile_tokens.LetbuyyColorTokens.info,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            description,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: colors.textSecondary, height: 1.35),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildTip(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('• ', style: TextStyle(color: Colors.blue[700])),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(fontSize: 13, color: Colors.blue[800]),
-            ),
+  Widget _field({
+    required String label,
+    required TextEditingController controller,
+    required int maxLength,
+    required String hint,
+    int maxLines = 1,
+  }) {
+    return TextField(
+      controller: controller,
+      maxLength: maxLength,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        filled: true,
+        fillColor: colors.card,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colors.cardBorder),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
           ),
-        ],
+        ),
+      ),
+      onChanged: (_) => setState(() => _hasChanges = true),
+    );
+  }
+
+  Widget _loading() {
+    return Center(
+      child: CircularProgressIndicator(
+        color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
       ),
     );
+  }
+
+  Widget _centerState(IconData icon, String title, String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: colors.textTertiary, size: 42),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: colors.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: colors.textSecondary),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showSnack(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: colors.snackbarBackground,
+      ),
+    );
+  }
+
+  String? _nullableTrim(String value) {
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
   }
 }

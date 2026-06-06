@@ -32,6 +32,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   final _originalPriceController = TextEditingController();
   final _stockController = TextEditingController();
   final _skuController = TextEditingController();
+  final _handleController = TextEditingController();
+  final _seoTitleController = TextEditingController();
+  final _seoDescriptionController = TextEditingController();
 
   // Form Data
   List<String> _images = [];
@@ -61,6 +64,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       _originalPriceController.text = p.comparePrice?.toString() ?? '';
       _stockController.text = p.stock.toString();
       _skuController.text = p.sku ?? '';
+      _handleController.text = '${p['url_handle'] ?? p.slug}';
+      _seoTitleController.text = '${p['seo_title'] ?? ''}';
+      _seoDescriptionController.text = '${p['seo_description'] ?? ''}';
       _images = List.from(p.images);
       _variants = p.variants
           .map(_ProductVariantDraft.fromContract)
@@ -86,6 +92,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     _originalPriceController.dispose();
     _stockController.dispose();
     _skuController.dispose();
+    _handleController.dispose();
+    _seoTitleController.dispose();
+    _seoDescriptionController.dispose();
     _specKeyController.dispose();
     _specValueController.dispose();
     super.dispose();
@@ -715,6 +724,55 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               ),
             );
           }),
+        const SizedBox(height: 24),
+        _buildSeoSection(),
+      ],
+    );
+  }
+
+  Widget _buildSeoSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Search listing',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _handleController,
+          decoration: InputDecoration(
+            labelText: 'URL handle',
+            hintText: 'cotton-tee',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextFormField(
+          controller: _seoTitleController,
+          maxLength: 70,
+          decoration: InputDecoration(
+            labelText: 'SEO title',
+            hintText: _nameController.text.isEmpty
+                ? 'Product title'
+                : _nameController.text,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextFormField(
+          controller: _seoDescriptionController,
+          maxLength: 160,
+          maxLines: 3,
+          decoration: InputDecoration(
+            labelText: 'Meta description',
+            hintText: _descriptionController.text.isEmpty
+                ? 'Short product summary'
+                : _descriptionController.text,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            alignLabelWithHint: true,
+          ),
+        ),
       ],
     );
   }
@@ -818,6 +876,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           'sku': _skuController.text.trim().isEmpty
               ? null
               : _skuController.text.trim(),
+          'url_handle': _nullableTrim(_handleController.text),
+          'seo_title': _nullableTrim(_seoTitleController.text),
+          'seo_description': _nullableTrim(_seoDescriptionController.text),
           'category': _categoryId,
           'images': _images,
           'is_featured': _isFeatured,
@@ -838,6 +899,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           sku: _skuController.text.trim().isEmpty
               ? null
               : _skuController.text.trim(),
+          urlHandle: _nullableTrim(_handleController.text),
+          seoTitle: _nullableTrim(_seoTitleController.text),
+          seoDescription: _nullableTrim(_seoDescriptionController.text),
           images: _images,
           isFeatured: _isFeatured,
           variants: _variants.isEmpty ? null : _variantPayloads(),
@@ -865,6 +929,11 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
   List<Map<String, dynamic>> _variantPayloads() {
     return _variants.map((variant) => variant.toJson()).toList(growable: false);
+  }
+
+  String? _nullableTrim(String value) {
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
   }
 }
 

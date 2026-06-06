@@ -2,8 +2,8 @@
 
 - Branch: `stream/letbuyy-foundation-v2`
 - Start HEAD: `62b2915218daa716b075b02d909c08e053bfce25`
-- Current HEAD: `120893527a7236b3c817287c78d859227d4357b4`
-- Status timestamp: `2026-06-06T16:37:58+05:30`
+- Current HEAD: `12f42cdb3e1b20d52d6ce3668062a3970b435826`
+- Status timestamp: `2026-06-06T16:47:27+05:30`
 
 ## Feature Checklist
 
@@ -42,7 +42,7 @@
 | P3 | Reviews | DONE-WITH-SKIP | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/review_service.dart`, `lib/screens/marketing/reviews_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`, `test/mobile_services_test.dart`; `/features/reviews` opens the real product reviews moderation screen, lists `/reviews` rows by store/status, approves/rejects through `PATCH /reviews/:id`, deletes through `DELETE /reviews/:id`, and exposes a typed reply seam pending a missing gateway merchant-reply route (ledger S-014); covered by service + widget tests |
 | P3 | Form submissions / leads | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/form_submission_service.dart`, `lib/screens/marketing/leads_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`, `test/mobile_services_test.dart`; `/features/form-submissions` opens the real Leads inbox, lists `/form-submissions` rows by store/type/status, updates follow-up status through `PATCH /form-submissions/:id`, and deletes through `DELETE /form-submissions/:id`; covered by service + widget tests |
 | P3 | Gift cards | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/product_service.dart`, `lib/screens/discounts/gift_cards_screen.dart`, `lib/app/routes.dart`, `lib/screens/parity/merchant_feature_definitions.dart`, `test/mobile_services_test.dart`; `/features/gift-cards` opens the real gift-card screen, lists `/products/gift-cards`, and issues server-generated gift cards through `POST /products/gift-cards`; covered by service + widget tests |
-| P3 | SEO | TODO | Not started |
+| P3 | SEO | DONE | `lib/services/product_service.dart`, `lib/screens/products/product_form_screen.dart`, `lib/screens/settings/seo_settings_screen.dart`, `test/mobile_services_test.dart`; product create/update now carries `url_handle`, `seo_title`, and `seo_description` through `/products`, while `/features/seo` opens the real storefront SEO settings screen and persists store title/description through `/stores/:id`; covered by service payload assertion + product form and settings widget tests |
 | P3 | App marketplace browse | TODO | Not started |
 | P3 | AI Studio | TODO | Not started |
 | P4 | Multi-store/offline/deep-links/a11y/i18n | TODO | Not started |
@@ -148,6 +148,11 @@
 - P3 `Gift cards` feature check: `flutter test` PASS. Output: `00:07 +63: All tests passed!`.
 - P3 `Gift cards` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
 - P3 `Gift cards` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_INTERNAL_OPERATING_SYSTEM_FOUNDATION_MISSION.md must be archived; CODEX_MERCHANT_PARTNER_VERTICAL_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
+- P3 `SEO` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 9.8s)`.
+- P3 `SEO` feature check: `flutter test` PASS. Output: `00:02 +64: All tests passed!`.
+- P3 `SEO` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
+- P3 `SEO` diff audit: `git diff --check` PASS.
+- P3 `SEO` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_INTERNAL_OPERATING_SYSTEM_FOUNDATION_MISSION.md must be archived; CODEX_MERCHANT_PARTNER_VERTICAL_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
 
 ## Notes
 
@@ -156,6 +161,6 @@
 
 ## RESUME HINT
 
-Next feature: P3 `SEO`.
+Next feature: P3 `App marketplace browse`.
 
-Extend product SEO fields and build the `settings/seo_*` surface for storefront preferences, using real gateway/store/product routes where present and typed skips only for missing backend contracts.
+Build the real mobile app marketplace browse screen over `/app-store/apps` and `/installations`, keeping embedded App Bridge runtime as a deep-link/web handoff if no mobile-safe runtime contract exists.

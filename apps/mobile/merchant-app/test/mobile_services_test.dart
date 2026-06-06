@@ -53,6 +53,7 @@ import 'package:letbuyy_store/screens/products/product_form_screen.dart';
 import 'package:letbuyy_store/screens/settings/notifications_screen.dart';
 import 'package:letbuyy_store/screens/settings/billing_screen.dart';
 import 'package:letbuyy_store/screens/settings/domain_settings_screen.dart';
+import 'package:letbuyy_store/screens/settings/seo_settings_screen.dart';
 import 'package:letbuyy_store/screens/settings/shipping_screen.dart';
 import 'package:letbuyy_store/screens/settings/staff_screen.dart';
 import 'package:letbuyy_store/screens/settings/taxes_screen.dart';
@@ -104,6 +105,9 @@ void main() {
           description: 'Variant test',
           price: 499,
           sku: 'TEE-BASE',
+          urlHandle: 'cotton-tee',
+          seoTitle: 'Cotton Tee India',
+          seoDescription: 'Premium cotton tee for daily wear.',
           stock: 10,
           images: ['https://cdn.test/products/tee.jpg'],
           variants: [_variantJson()],
@@ -112,6 +116,9 @@ void main() {
         final body = api.bodies['/products'] as Map<String, dynamic>;
         final variants = body['variants'] as List<Map<String, dynamic>>;
         expect(body['sku'], 'TEE-BASE');
+        expect(body['url_handle'], 'cotton-tee');
+        expect(body['seo_title'], 'Cotton Tee India');
+        expect(body['seo_description'], 'Premium cotton tee for daily wear.');
         expect(variants.single['sku'], 'TEE-XL');
         expect(variants.single['price'], 599);
         expect(variants.single['stock'], 4);
@@ -1484,6 +1491,18 @@ void main() {
     expect(find.text('Variant matrix'), findsOneWidget);
     expect(find.text('Base SKU'), findsOneWidget);
     expect(find.text('Add variant'), findsOneWidget);
+
+    final continueButton = find
+        .widgetWithText(ElevatedButton, 'Continue')
+        .first;
+    await tester.ensureVisible(continueButton);
+    await tester.tap(continueButton, warnIfMissed: false);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Search listing'), findsOneWidget);
+    expect(find.text('URL handle'), findsOneWidget);
+    expect(find.text('SEO title'), findsOneWidget);
+    expect(find.text('Meta description'), findsOneWidget);
   });
 
   testWidgets('CouponFormScreen renders create form', (tester) async {
@@ -1946,6 +1965,50 @@ void main() {
     expect(find.text('Email DNS records'), findsOneWidget);
   });
 
+  testWidgets('SEOSettingsScreen renders and saves storefront SEO', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [
+          _storeJson(
+            seoTitle: 'Demo Store India',
+            seoDescription: 'Shop premium products from Demo Store.',
+          ),
+        ],
+      },
+      json: {
+        '/stores/store_1': _storeJson(
+          seoTitle: 'Updated Store Title',
+          seoDescription: 'Shop premium products from Demo Store.',
+        ),
+      },
+    );
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider(
+        create: (_) => StoreService(api: api),
+        child: const MaterialApp(home: SEOSettingsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('SEO Settings'), findsOneWidget);
+    expect(find.text('Search preview'), findsOneWidget);
+    expect(find.text('Demo Store India'), findsWidgets);
+
+    await tester.enterText(find.byType(TextField).first, 'Updated Store Title');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save SEO'));
+    await tester.pumpAndSettle();
+
+    expect(api.paths, contains('/stores/store_1'));
+    expect(
+      api.bodies['/stores/store_1'],
+      containsPair('seo_title', 'Updated Store Title'),
+    );
+  });
+
   testWidgets('ThemeVersionsScreen renders releases for rollback', (
     tester,
   ) async {
@@ -2047,6 +2110,8 @@ Map<String, dynamic> _storeJson({
   bool taxInclusive = false,
   String? customDomain,
   String? customDomainStatus,
+  String? seoTitle,
+  String? seoDescription,
   bool sslActive = false,
   Map<String, dynamic>? dnsConfig,
 }) => {
@@ -2058,6 +2123,8 @@ Map<String, dynamic> _storeJson({
   'store_url': 'https://demo.letbuyy.store',
   'theme_id': 'modern',
   'tax_inclusive': taxInclusive,
+  'seo_title': seoTitle,
+  'seo_description': seoDescription,
   'custom_domain': customDomain,
   'custom_domain_status': customDomainStatus,
   'ssl_active': sslActive,

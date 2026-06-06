@@ -81,6 +81,9 @@ class ProductService extends ChangeNotifier {
     List<String>? images,
     String? category,
     String? sku,
+    String? urlHandle,
+    String? seoTitle,
+    String? seoDescription,
     int stock = 0,
     bool isActive = true,
     bool isFeatured = false,
@@ -97,6 +100,12 @@ class ProductService extends ChangeNotifier {
         'images': images ?? [],
         if (category != null) 'category': category,
         if (sku != null && sku.trim().isNotEmpty) 'sku': sku.trim(),
+        if (urlHandle != null && urlHandle.trim().isNotEmpty)
+          'url_handle': urlHandle.trim(),
+        if (seoTitle != null && seoTitle.trim().isNotEmpty)
+          'seo_title': seoTitle.trim(),
+        if (seoDescription != null && seoDescription.trim().isNotEmpty)
+          'seo_description': seoDescription.trim(),
         'stock': stock,
         'is_active': isActive,
         'is_featured': isFeatured,
