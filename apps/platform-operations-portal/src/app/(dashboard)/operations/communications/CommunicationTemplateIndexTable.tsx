@@ -1,11 +1,6 @@
 'use client';
 
-import {
-    Badge,
-    EmptyState,
-    IndexTable,
-    type IndexTableColumn,
-} from '@letbuyy/ui';
+import { Badge, EmptyState, Table, type TableColumn } from '@letbuyy/ui';
 import type { CommunicationTemplateRow } from './page';
 
 function categoryVariant(category: CommunicationTemplateRow['category']) {
@@ -15,7 +10,7 @@ function categoryVariant(category: CommunicationTemplateRow['category']) {
     return 'default' as const;
 }
 
-const columns: IndexTableColumn<CommunicationTemplateRow>[] = [
+const columns: TableColumn<CommunicationTemplateRow>[] = [
     {
         key: 'template',
         header: 'Template',
@@ -62,7 +57,7 @@ const columns: IndexTableColumn<CommunicationTemplateRow>[] = [
 
 export function CommunicationTemplateIndexTable({ rows }: { rows: CommunicationTemplateRow[] }) {
     return (
-        <IndexTable
+        <Table
             columns={columns}
             rows={rows}
             savedViews={[

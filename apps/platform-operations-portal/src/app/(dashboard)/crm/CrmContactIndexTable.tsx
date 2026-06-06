@@ -1,11 +1,6 @@
 'use client';
 
-import {
-    Badge,
-    EmptyState,
-    IndexTable,
-    type IndexTableColumn,
-} from '@letbuyy/ui';
+import { Badge, EmptyState, Table, type TableColumn } from '@letbuyy/ui';
 
 type CrmStage = 'contact_ready' | 'needs_profile' | 'needs_backend';
 
@@ -32,7 +27,7 @@ function stageVariant(stage: CrmContactRow['stage']) {
     return 'critical' as const;
 }
 
-const columns: IndexTableColumn<CrmContactRow>[] = [
+const columns: TableColumn<CrmContactRow>[] = [
     {
         key: 'merchant',
         header: 'Merchant',
@@ -93,7 +88,7 @@ const columns: IndexTableColumn<CrmContactRow>[] = [
 
 export function CrmContactIndexTable({ rows }: { rows: CrmContactRow[] }) {
     return (
-        <IndexTable
+        <Table
             columns={columns}
             rows={rows}
             savedViews={[

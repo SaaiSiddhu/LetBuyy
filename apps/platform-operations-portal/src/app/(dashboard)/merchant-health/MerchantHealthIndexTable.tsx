@@ -1,12 +1,6 @@
 'use client';
 
-import {
-    Badge,
-    EmptyState,
-    IndexTable,
-    ProgressBar,
-    type IndexTableColumn,
-} from '@letbuyy/ui';
+import { Badge, EmptyState, Table, ProgressBar, type TableColumn } from '@letbuyy/ui';
 
 type HealthBand = 'healthy' | 'watch' | 'at_risk';
 
@@ -33,7 +27,7 @@ function bandVariant(band: MerchantHealthRow['band']) {
     return 'critical' as const;
 }
 
-const columns: IndexTableColumn<MerchantHealthRow>[] = [
+const columns: TableColumn<MerchantHealthRow>[] = [
     {
         key: 'merchant',
         header: 'Merchant',
@@ -88,7 +82,7 @@ const columns: IndexTableColumn<MerchantHealthRow>[] = [
 
 export function MerchantHealthIndexTable({ rows }: { rows: MerchantHealthRow[] }) {
     return (
-        <IndexTable
+        <Table
             columns={columns}
             rows={rows}
             savedViews={[
