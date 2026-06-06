@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F5.1 deployable workspace no-op test scripts complete locally; continue F5.2 security-critical package/unit coverage.
+- Phase: F5.2 security-critical package/unit coverage complete locally; continue F5.3 behavioral CI gate and inherited RBAC test fix.
 - Findings resolved: 23/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials and `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening.
-- Current governance gate state: green after F5.1 (`pnpm run validate:governance` -> 139/139 PASS).
+- Current governance gate state: green after F5.2 (`pnpm run validate:governance` -> 139/139 PASS).
 
 ## Baseline gates
 
@@ -492,6 +492,22 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm --filter @letbuyy/platform-console test`: PASS - 10/10.
 - `pnpm --filter @letbuyy/identity-platform test`: PASS - 12/12 across app-local TS and root federation/auth tests.
 - `pnpm turbo test --output-logs=errors-only --log-order=grouped`: PASS - 60/60 tasks.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 139/139 validators.
+
+## F5.2 security-critical package invariant test evidence
+
+- `@letbuyy/auth-core` now has package-local unit coverage for signed customer gateway session secret enforcement, tamper rejection, expiry rejection, and password complexity constraints.
+- `@letbuyy/billing-core` now has unit coverage for INR/idempotent app billing charge inputs, India payout revenue-share/GST/provider-mode planning, and Razorpay billing signature proof payload selection.
+- `@letbuyy/payments` now has unit coverage for INR minor-unit conversions, INR-only payment money normalization, and bounded idempotency-key normalization.
+- `@letbuyy/checkout-core` now has unit coverage for storefront checkout idempotency/cart-line bounds and GST invoice CGST/SGST versus IGST calculation.
+- `@letbuyy/theme-engine` now has unit coverage for draft/preview template scoping, bounded preview TTL/base versions, and unsafe theme JSON/unknown section/unsafe URL rejection.
+- `@letbuyy/app-engine` now has unit coverage for manifest HTTPS source requirements, bounded Wasm timeout/memory normalization, extension registry install records, and app-function runtime output fail-closed behavior.
+- `@letbuyy/event-core` now has unit coverage for every accepted domain event having a contract, payout release/failure remaining human-gated, and payment event envelope/payload rejection on aggregate/schema/payload mismatch.
+- Direct package tests: `pnpm --filter @letbuyy/auth-core test` PASS - 2/2; `pnpm --filter @letbuyy/billing-core test` PASS - 3/3; `pnpm --filter @letbuyy/payments test` PASS - 2/2; `pnpm --filter @letbuyy/checkout-core test` PASS - 2/2; `pnpm --filter @letbuyy/theme-engine test` PASS - 2/2; `pnpm --filter @letbuyy/app-engine test` PASS - 2/2 after one assertion-order correction; `pnpm --filter @letbuyy/event-core test` PASS - 2/2.
+- `pnpm turbo test --output-logs=errors-only --log-order=grouped`: PASS - 67/67 tasks.
 - `pnpm turbo typecheck`: PASS - 60/60.
 - `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
 - Generated workspace artifacts were removed after verification.
