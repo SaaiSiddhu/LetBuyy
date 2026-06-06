@@ -36,7 +36,7 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 26 | raw button bypass | U8.1 | TODO |  |
 | 27 | raw input bypass | U8.1 | TODO |  |
 | 28 | hardcoded hex bypass | U8.1 | TODO |  |
-| 29 | no breakpoint tokens | U2.1 | TODO |  |
+| 29 | no breakpoint tokens | U2.1 | DONE | Added `letbuyyBreakpointTokens`, `letbuyyTailwindScreens`, `letbuyyTailwindPreset`, and `--lb-bp-{sm,md,lg,xl}` with current 640/768/1024/1280 values; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
 | 30 | no z-index scale | U1.1 | DONE | `letbuyyZIndexTokens` and emitted `--lb-z-*` variables added; `pnpm --filter @letbuyy/ui validate:tokens` PASS with 338 vars. |
 | 31 | no Grid/Columns primitive | U3.2 | TODO |  |
 | 32 | no Container primitive | U3.2 | TODO |  |
@@ -71,10 +71,10 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 61 | PageShell dead alias | U4.3 | TODO |  |
 | 62 | PageActions alias | U4.3 | TODO |  |
 | 63 | TableFilterBar alias | U4.3 | TODO |  |
-| 64 | color alias sprawl | U2.3 | TODO |  |
-| 65 | dual spacing names | U2.4 | TODO |  |
-| 66 | dual type scale | U2.4 | TODO |  |
-| 67 | two shadow systems | U2.2 | TODO |  |
+| 64 | color alias sprawl | U2.3 | DONE | Added `ui-no-new-token-alias-validator.mjs` and `token-aliases.json`; `validate:aliases` PASS with 108 protected duplicate-value groups; alias removal recorded as human-gated. |
+| 65 | dual spacing names | U2.4 | DONE | Canonical numeric `--lb-space-*` scale documented in source while named spacing aliases keep emitting; token snapshot PASS with no removals. |
+| 66 | dual type scale | U2.4 | DONE | Canonical role-based type variables documented in source while heading aliases keep emitting; token snapshot PASS with no removals. |
+| 67 | two shadow systems | U2.2 | DONE | Added `letbuyyShadowTokens`; card shadows now source from that authority while `--lb-component-card-shadow` keeps previous resolved values; visual regression PASS across 276 baselines. |
 | 68 | PageHeader redundant props | U7 | TODO |  |
 | 69 | PageHeader reimplements breadcrumbs | U5.1 | TODO |  |
 | 70 | Pagination minimal | U7.2 | TODO |  |
@@ -88,7 +88,7 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 78 | Toast placement fixed | U7.1 | TODO |  |
 | 79 | no DatePicker | U3.3 | TODO |  |
 | 80 | no Accordion/Disclosure | U3.3 | TODO |  |
-| 81 | statusSoft light values hardcoded | U2.2 | TODO |  |
+| 81 | statusSoft light values hardcoded | U2.2 | DONE | Added exact primitive soft-status colors and pointed light `statusSoft` to them with unchanged emitted soft values; `pnpm --filter @letbuyy/ui validate:tokens` PASS with 349 vars. |
 | 82 | visual preview helpers shipped in main bundle | U8.4 | TODO |  |
 | 83 | Tooltip not associated to trigger | U7.1 | TODO |  |
 | 84 | Tooltip hover-only | U7.1 | TODO |  |
@@ -113,6 +113,7 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 
 - [SKIP — NEEDS HUMAN] Issue #17 follow-up: repoint `@letbuyy/ui` `main`/`types` from `./src/index.ts` to `./dist/index.js` and `./dist/index.d.ts` only after the parallel app/service hardening stream has landed and consumers have been rechecked. Exact local decision/command: update `packages/typescript/ui/package.json` entrypoints, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Issue #9 app-scope fix: wrap `apps/marketing-site` in `DesignSystemRoot` so UI tokens are present. Exact handoff: app stream updates the marketing-site root layout with `<DesignSystemRoot surface="storefront" theme="auto">{children}</DesignSystemRoot>`, then runs `pnpm --filter @letbuyy/marketing-site typecheck`, `pnpm --filter @letbuyy/marketing-site build`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Issues #64, #65, #66 follow-up: collapse existing duplicate token aliases only after cross-app codemods and visual verification are coordinated. Exact handoff: run the U8 token-alias codemod across app/service consumers, remove deprecated aliases in `packages/typescript/ui/src/tokens.ts`, update snapshots with `pnpm --filter @letbuyy/ui snapshot:tokens:update` and `pnpm --filter @letbuyy/ui snapshot:aliases:update`, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 
 ## NEW PUBLIC API
 
@@ -120,6 +121,9 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - New package scripts: `test`, `test:visual`, `test:visual:update`, `test:watch`, `snapshot:api:update`, `snapshot:tokens:update`, `validate:api`, `validate:tokens`, `validate:ui`.
 - New export: `letbuyyZIndexTokens`.
 - New public CSS variables: `--lb-z-base`, `--lb-z-dropdown`, `--lb-z-sticky`, `--lb-z-overlay`, `--lb-z-modal`, `--lb-z-toast`, `--lb-z-tooltip`, `--lb-color-primary-text`.
+- New exports: `letbuyyBreakpointTokens`, `letbuyyTailwindScreens`, `letbuyyTailwindPreset`, `letbuyyShadowTokens`.
+- New public CSS variables: `--lb-bp-sm`, `--lb-bp-md`, `--lb-bp-lg`, `--lb-bp-xl`, `--lb-shadow-card`, `--lb-shadow-card-light`, `--lb-shadow-card-dark`, `--lb-primitive-color-green-100`, `--lb-primitive-color-amber-100`, `--lb-primitive-color-red-100`, `--lb-primitive-color-blue-100`.
+- New package scripts: `snapshot:aliases:update`, `validate:aliases`.
 
 ## DEPRECATIONS
 
@@ -135,6 +139,7 @@ None yet.
 
 - `packages/typescript/ui/tests/validators/ui-public-api-snapshot-validator.mjs`: snapshots all public exports from `src/index.ts`; `validate:api` PASS; `--self-test` PASS by detecting simulated removal of `Activity`.
 - `packages/typescript/ui/tests/validators/ui-token-variable-snapshot-validator.mjs`: snapshots all emitted `--lb-*` variables; `validate:tokens` PASS; `--self-test` PASS by detecting simulated removal of `--lb-card-bg`.
+- `packages/typescript/ui/tests/validators/ui-no-new-token-alias-validator.mjs`: snapshots current duplicate-value `--lb-*` alias groups and fails on new alias growth; `validate:aliases` PASS; `--self-test` PASS by detecting simulated `--lb-self-test-new-alias`.
 
 ## BLOCKED
 

@@ -20,6 +20,9 @@ import {
     Skeleton,
     Tabs,
     Textarea,
+    letbuyyBreakpointTokens,
+    letbuyyShadowTokens,
+    letbuyyTailwindScreens,
     letbuyyTokenCss,
     letbuyyTokenCssVariables,
 } from '../../src';
@@ -334,6 +337,22 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         expect(letbuyyTokenCssVariables.light['--lb-z-tooltip']).toBe('80');
         expect(letbuyyTokenCss).toContain('@media (prefers-color-scheme: dark)');
         expect(letbuyyTokenCss).toContain('[data-theme="auto"], [data-letbuyy-theme="auto"]');
+    });
+
+    it('exports breakpoint screens and routes card shadows through the shadow source', () => {
+        expect(letbuyyBreakpointTokens).toEqual({
+            sm: '640px',
+            md: '768px',
+            lg: '1024px',
+            xl: '1280px',
+        });
+        expect(letbuyyTailwindScreens).toEqual(letbuyyBreakpointTokens);
+        expect(letbuyyTokenCssVariables.light['--lb-bp-md']).toBe('768px');
+        expect(letbuyyTokenCssVariables.dark['--lb-bp-xl']).toBe('1280px');
+        expect(letbuyyTokenCssVariables.light['--lb-shadow-card']).toBe(letbuyyShadowTokens.cardLight);
+        expect(letbuyyTokenCssVariables.dark['--lb-shadow-card']).toBe(letbuyyShadowTokens.cardDark);
+        expect(letbuyyTokenCssVariables.light['--lb-component-card-shadow']).toBe(letbuyyShadowTokens.cardLight);
+        expect(letbuyyTokenCssVariables.dark['--lb-component-card-shadow']).toBe(letbuyyShadowTokens.cardDark);
     });
 
     it('keeps light-mode text token pairs at AA contrast', () => {

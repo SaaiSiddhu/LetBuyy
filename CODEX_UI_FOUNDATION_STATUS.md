@@ -15,6 +15,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 
 - U0 safety net is implemented.
 - U1 P0 correctness is implemented except the app-scope marketing-site wrapper, which is recorded as a human/app-stream skip.
+- U2 token system completion is implemented additively.
 - Required ledger and deprecation register have been created.
 - `@letbuyy/ui` now has a Vitest + React Testing Library + jest-axe suite covering the load-bearing components: Card, Section, Button, Badge, Input, Banner, Skeleton, EmptyState, Select, Checkbox, Radio, Combobox, and Tabs.
 - Storybook visual regression is wired through `packages/typescript/ui/tests/visual/storybook-visual-regression.mjs`; 276 baselines were captured across light/dark and compact/comfortable/spacious density modes.
@@ -24,11 +25,15 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - Input and Textarea now use React `useId()` by default and expose error/helper copy through `aria-describedby` plus `aria-invalid`.
 - Token CSS now includes an additive z-index scale and `theme="auto"` follows OS dark mode through `prefers-color-scheme`.
 - Text contrast fixes landed additively where possible: muted text is darker, primary text has a dedicated AA-safe text token, and status text pairs meet AA on light soft backgrounds.
+- Breakpoint tokens now exist as `letbuyyBreakpointTokens`, `letbuyyTailwindScreens`, `letbuyyTailwindPreset`, and emitted `--lb-bp-*` variables using the current 640/768/1024/1280 values.
+- Card shadow and light status-soft provenance now come from shared token authorities without changing the previous visual values.
+- Existing token aliases remain emitted, while `validate:aliases` now prevents new duplicate-value token aliases from being added accidentally.
 
 ## Human-Gated Remainders
 
 - [SKIP — NEEDS HUMAN] Repoint `@letbuyy/ui` package entrypoints from `./src/index.ts` to `dist` after the parallel app/service stream lands and consumers have been rechecked. Unblocks full package distribution hardening for issue #17. Exact follow-up: update `packages/typescript/ui/package.json` `main` and `types`, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Marketing-site token root fix is app-scope. Exact follow-up for the app stream: wrap the marketing-site root layout with `DesignSystemRoot`, for example `<DesignSystemRoot surface="storefront" theme="auto">{children}</DesignSystemRoot>`, then run `pnpm --filter @letbuyy/marketing-site typecheck`, `pnpm --filter @letbuyy/marketing-site build`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Existing token alias collapse is breaking until coordinated with app/service codemods and visual verification. Exact follow-up after U8 codemods exist: run the token-alias codemod across consumers, remove deprecated aliases from `packages/typescript/ui/src/tokens.ts`, refresh UI snapshots, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 
 ## Behavior Changes To Re-Check
 
@@ -36,6 +41,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - `DesignSystemRoot theme="auto"` now emits `data-letbuyy-theme="auto"` and follows OS dark preference through `@media (prefers-color-scheme: dark)`. Explicit light/dark themes remain explicit.
 - Modal and CommandPalette now trap focus, inert background content while open, close on Escape/outside pointer, and restore focus to the opener.
 - Light-mode text contrast changed intentionally: `--lb-color-text-muted` is darker; `--lb-color-primary-text` is new for primary text; soft status text tokens now use AA-safe text values.
+- U2 token additions are additive and should not change rendered output. Existing spacing/type/color aliases still emit; the new alias validator only blocks new duplicate-value aliases.
 
 ## Verification Evidence
 
@@ -68,3 +74,17 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - `pnpm turbo build` PASS after U1: 60 successful tasks.
 - `pnpm lint` PASS after U1: repo lint completed with existing warnings outside UI scope and 0 errors.
 - `node scripts/validate-governance.mjs` PASS after U1 cleanup; final line: `Governance validation passed (129 validators).`
+- `pnpm --filter @letbuyy/ui snapshot:api:update` PASS after U2: 270 public exports captured.
+- `pnpm --filter @letbuyy/ui snapshot:tokens:update` PASS after U2: 349 `--lb-*` variables captured.
+- `pnpm --filter @letbuyy/ui snapshot:aliases:update` PASS after U2: 108 duplicate-value alias groups captured.
+- `node packages/typescript/ui/tests/validators/ui-no-new-token-alias-validator.mjs --self-test` PASS: simulated alias growth detected.
+- `pnpm --filter @letbuyy/ui validate:ui` PASS after U2: 16 tests, API snapshot, token snapshot, alias snapshot.
+- `pnpm --filter @letbuyy/ui typecheck` PASS after U2.
+- `pnpm --filter @letbuyy/ui build` PASS after U2.
+- `pnpm --filter @letbuyy/ui test:visual` PASS after U2: 276 baselines checked, no unintended diffs.
+- `pnpm turbo test` PASS after U2: 61 successful tasks.
+- `pnpm turbo typecheck` PASS after U2: 60 successful tasks.
+- `pnpm turbo build` PASS after U2: 60 successful tasks.
+- `pnpm lint` PASS after U2: repo lint completed with existing warnings outside UI scope and 0 errors.
+- Generated build/install artifacts from U2 verification were removed before governance.
+- `node scripts/validate-governance.mjs` PASS after U2 cleanup; final line: `Governance validation passed (129 validators).`

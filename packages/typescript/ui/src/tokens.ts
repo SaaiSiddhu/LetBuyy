@@ -34,22 +34,26 @@ export const letbuyyPrimitiveTokens = {
         white: '#FFFFFF',
         black: '#000000',
         green: {
+            100: '#DCFCE7',
             500: '#22C55E',
             700: '#15803D',
             950: '#052E16',
         },
         amber: {
+            100: '#FEF3C7',
             500: '#F59E0B',
             800: '#92400E',
             950: '#422006',
         },
         red: {
+            100: '#FEE2E2',
             500: '#EF4444',
             600: '#DC2626',
             700: '#B91C1C',
             950: '#451A1A',
         },
         blue: {
+            100: '#E0F2FE',
             500: '#3B82F6',
             700: '#1D4ED8',
             950: '#082F49',
@@ -63,6 +67,34 @@ export const letbuyyPrimitiveTokens = {
 } as const;
 
 const primitive = letbuyyPrimitiveTokens;
+
+export const letbuyyBreakpointTokens = {
+    sm: '640px',
+    md: '768px',
+    lg: '1024px',
+    xl: '1280px',
+} as const;
+
+export const letbuyyTailwindScreens = {
+    sm: letbuyyBreakpointTokens.sm,
+    md: letbuyyBreakpointTokens.md,
+    lg: letbuyyBreakpointTokens.lg,
+    xl: letbuyyBreakpointTokens.xl,
+} as const;
+
+export const letbuyyTailwindPreset = {
+    theme: {
+        screens: letbuyyTailwindScreens,
+    },
+} as const;
+
+export const letbuyyShadowTokens = {
+    sm: '0 1px 2px rgb(0 0 0 / 4%)',
+    md: '0 4px 12px rgb(15 23 42 / 6%)',
+    lg: '0 12px 32px rgb(15 23 42 / 8%)',
+    cardLight: '0 1px 2px rgb(15 23 42 / 5%), 0 8px 24px rgb(15 23 42 / 4%)',
+    cardDark: '0 1px 2px rgb(0 0 0 / 18%), 0 10px 26px rgb(0 0 0 / 16%)',
+} as const;
 
 export const letbuyyColorTokens = {
     brandPurple: primitive.color.purple[500],
@@ -150,10 +182,10 @@ export const letbuyySemanticTokens = {
             info: primitive.color.blue[700],
         },
         statusSoft: {
-            success: '#DCFCE7',
-            warning: '#FEF3C7',
-            danger: '#FEE2E2',
-            info: '#E0F2FE',
+            success: primitive.color.green[100],
+            warning: primitive.color.amber[100],
+            danger: primitive.color.red[100],
+            info: primitive.color.blue[100],
         },
         focusRing: letbuyyColorTokens.primary,
         overlay: primitive.opacity.overlayLight,
@@ -235,7 +267,7 @@ export const letbuyyComponentTokens = {
             text: letbuyySemanticTokens.light.text.primary,
             border: letbuyySemanticTokens.light.border.default,
             radius: '16px',
-            shadow: '0 1px 2px rgb(15 23 42 / 5%), 0 8px 24px rgb(15 23 42 / 4%)',
+            shadow: letbuyyShadowTokens.cardLight,
         },
         sidebar: {
             bg: letbuyySemanticTokens.light.background.sidebar,
@@ -320,7 +352,7 @@ export const letbuyyComponentTokens = {
             text: letbuyySemanticTokens.dark.text.primary,
             border: letbuyySemanticTokens.dark.border.default,
             radius: '16px',
-            shadow: '0 1px 2px rgb(0 0 0 / 18%), 0 10px 26px rgb(0 0 0 / 16%)',
+            shadow: letbuyyShadowTokens.cardDark,
         },
         sidebar: {
             bg: letbuyySemanticTokens.dark.background.sidebar,
@@ -500,6 +532,7 @@ export const letbuyyTokens = {
     component: letbuyyComponentTokens,
     density: letbuyyDensityTokens,
     zIndex: letbuyyZIndexTokens,
+    breakpoint: letbuyyBreakpointTokens,
     color: {
         light: {
             ...letbuyyColorTokens,
@@ -649,11 +682,7 @@ export const letbuyyTokens = {
         xl: '16px',
         full: '999px',
     },
-    shadow: {
-        sm: '0 1px 2px rgb(0 0 0 / 4%)',
-        md: '0 4px 12px rgb(15 23 42 / 6%)',
-        lg: '0 12px 32px rgb(15 23 42 / 8%)',
-    },
+    shadow: letbuyyShadowTokens,
     motion: {
         duration: {
             fast: '150ms',
@@ -743,6 +772,7 @@ const sharedCssVariables: CssVariableMap = {
     '--lb-font-family-body': letbuyyTokens.typography.fontFamily.body,
     '--lb-font-family-display': letbuyyTokens.typography.fontFamily.display,
     '--lb-font-family-mono': letbuyyTokens.typography.fontFamily.mono,
+    // Canonical type variables are role-based (`page-title`, `section-title`, `body`, etc.). Heading aliases (`h1`-`h4`) stay public for existing consumers.
     '--lb-font-size-display': letbuyyTokens.typography.fontSize.display,
     '--lb-font-size-h1': letbuyyTokens.typography.fontSize.h1,
     '--lb-font-size-h2': letbuyyTokens.typography.fontSize.h2,
@@ -783,6 +813,7 @@ const sharedCssVariables: CssVariableMap = {
     '--lb-font-weight-medium': letbuyyTokens.typography.fontWeight.medium,
     '--lb-font-weight-semibold': letbuyyTokens.typography.fontWeight.semibold,
     '--lb-font-weight-bold': letbuyyTokens.typography.fontWeight.bold,
+    // Canonical spacing variables are the numeric `--lb-space-*` scale. The named `xs`/`sm`/`md`/`lg`/`xl` variables remain public aliases for compatibility.
     '--lb-space-0': letbuyyTokens.space.none,
     '--lb-space-1': letbuyyTokens.space.xs,
     '--lb-space-2': letbuyyTokens.space.sm,
@@ -797,6 +828,10 @@ const sharedCssVariables: CssVariableMap = {
     '--lb-space-md': letbuyyTokens.space.md,
     '--lb-space-lg': letbuyyTokens.space.lg,
     '--lb-space-xl': letbuyyTokens.space.xl,
+    '--lb-bp-sm': letbuyyTokens.breakpoint.sm,
+    '--lb-bp-md': letbuyyTokens.breakpoint.md,
+    '--lb-bp-lg': letbuyyTokens.breakpoint.lg,
+    '--lb-bp-xl': letbuyyTokens.breakpoint.xl,
     '--lb-radius-sm': letbuyyTokens.radius.sm,
     '--lb-radius-md': letbuyyTokens.radius.md,
     '--lb-radius-lg': letbuyyTokens.radius.lg,
@@ -805,6 +840,8 @@ const sharedCssVariables: CssVariableMap = {
     '--lb-shadow-sm': letbuyyTokens.shadow.sm,
     '--lb-shadow-md': letbuyyTokens.shadow.md,
     '--lb-shadow-lg': letbuyyTokens.shadow.lg,
+    '--lb-shadow-card-light': letbuyyTokens.shadow.cardLight,
+    '--lb-shadow-card-dark': letbuyyTokens.shadow.cardDark,
     '--lb-z-base': letbuyyZIndexTokens.base,
     '--lb-z-dropdown': letbuyyZIndexTokens.dropdown,
     '--lb-z-sticky': letbuyyZIndexTokens.sticky,
@@ -927,6 +964,7 @@ function colorVariables(theme: LetbuyyTheme): CssVariableMap {
         '--lb-color-info-soft': colors.infoSoft,
         '--lb-color-focus-ring': colors.focusRing,
         '--lb-color-overlay': colors.overlay,
+        '--lb-shadow-card': theme === 'light' ? letbuyyShadowTokens.cardLight : letbuyyShadowTokens.cardDark,
     };
 
     appendTokenVariables(variables, ['lb', 'primitive'], letbuyyTokens.primitive);
