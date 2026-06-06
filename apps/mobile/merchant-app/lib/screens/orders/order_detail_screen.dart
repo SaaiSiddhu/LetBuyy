@@ -1,0 +1,1164 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:provider/provider.dart';
+
+import '../../services/order_service.dart';
+import '../../theme/app_theme_colors.dart';
+import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
+
+class OrderDetailScreen extends StatefulWidget {
+  const OrderDetailScreen({
+    super.key,
+    required this.orderId,
+    this.initialOrder,
+  });
+
+  final String orderId;
+  final OrderContract? initialOrder;
+
+  @override
+  State<OrderDetailScreen> createState() => _OrderDetailScreenState();
+}
+
+class _OrderDetailScreenState extends State<OrderDetailScreen> {
+  OrderContract? _order;
+  bool _isLoading = true;
+  bool _isMutating = false;
+  String? _error;
+
+  late AppThemeColors colors;
+
+  @override
+  void initState() {
+    super.initState();
+    _order = widget.initialOrder;
+    _loadOrder();
+  }
+
+  Future<void> _loadOrder() async {
+    if (widget.orderId.trim().isEmpty) {
+      setState(() {
+        _isLoading = false;
+        _error = 'Order id is missing.';
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = _order == null;
+      _error = null;
+    });
+
+    try {
+      final order = await context.read<OrderService>().fetchOrder(
+        widget.orderId,
+      );
+      if (mounted) {
+        setState(() {
+          _order = order;
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() {
+          _error = error.toString();
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _issueRefund() async {
+    final order = _order;
+    if (order == null) return;
+
+    final request = await _showRefundDialog(order);
+    if (request == null) return;
+
+    setState(() => _isMutating = true);
+    try {
+      final updated = await context.read<OrderService>().refundOrder(
+        order.id,
+        amount: request.amount,
+        reason: request.reason,
+      );
+      if (mounted) {
+        setState(() => _order = updated);
+        _showSnackBar('Refund requested for ${_money(request.amount)}');
+      }
+    } catch (error) {
+      if (mounted) _showSnackBar(error.toString(), isError: true);
+    } finally {
+      if (mounted) setState(() => _isMutating = false);
+    }
+  }
+
+  Future<void> _completeRefund() async {
+    final order = _order;
+    if (order == null) return;
+
+    final request = await _showCompleteRefundDialog();
+    if (request == null) return;
+
+    setState(() => _isMutating = true);
+    try {
+      final updated = await context.read<OrderService>().completeRefund(
+        order.id,
+        refundId: request.refundId,
+        providerRefundId: request.providerRefundId,
+        notes: request.notes,
+      );
+      if (mounted) {
+        setState(() => _order = updated);
+        _showSnackBar('Refund completed');
+      }
+    } catch (error) {
+      if (mounted) _showSnackBar(error.toString(), isError: true);
+    } finally {
+      if (mounted) setState(() => _isMutating = false);
+    }
+  }
+
+  Future<void> _fulfillOrder() async {
+    final order = _order;
+    if (order == null) return;
+
+    final request = await _showTrackingDialog();
+    if (request == null) return;
+
+    setState(() => _isMutating = true);
+    try {
+      final updated = await context.read<OrderService>().fulfillOrder(
+        order.id,
+        trackingNumber: request.trackingNumber,
+        carrier: request.carrier,
+      );
+      if (mounted) {
+        setState(() => _order = updated);
+        _showSnackBar('Order marked shipped');
+      }
+    } catch (error) {
+      if (mounted) _showSnackBar(error.toString(), isError: true);
+    } finally {
+      if (mounted) setState(() => _isMutating = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    colors = AppThemeColors.of(context);
+
+    return Scaffold(
+      backgroundColor: colors.bgStart,
+      body: Container(
+        decoration: colors.backgroundGradient,
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(),
+              Expanded(child: _buildBody()),
+              if (_order != null) _buildActionBar(_order!),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 8, 12, 8),
+      child: Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back_rounded, color: colors.textPrimary),
+            tooltip: 'Back',
+            onPressed: () => Navigator.pop(context),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _orderNumber(_order),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: colors.textPrimary,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  'Order detail',
+                  style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
+            tooltip: 'Refresh',
+            onPressed: _loadOrder,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    if (_isLoading && _order == null) {
+      return Center(
+        child: CircularProgressIndicator(
+          color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+        ),
+      );
+    }
+
+    final order = _order;
+    if (order == null) {
+      return _buildErrorState();
+    }
+
+    return RefreshIndicator(
+      color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+      onRefresh: _loadOrder,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+        children: [
+          if (_error != null) _buildInlineWarning(_error!),
+          _buildSummary(order),
+          const SizedBox(height: 12),
+          _buildCustomer(order),
+          const SizedBox(height: 12),
+          _buildLineItems(order),
+          const SizedBox(height: 12),
+          _buildTotals(order),
+          const SizedBox(height: 12),
+          _buildTimeline(order),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.receipt_long_outlined, size: 48, color: colors.error),
+            const SizedBox(height: 12),
+            Text(
+              'Could not load this order',
+              style: TextStyle(
+                color: colors.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _error ?? 'Try again from the orders list.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: colors.textSecondary),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _loadOrder,
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInlineWarning(String message) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colors.warning.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: colors.warning.withValues(alpha: 0.24)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline_rounded, color: colors.warning, size: 18),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(color: colors.textSecondary, fontSize: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummary(OrderContract order) {
+    final status = _status(order.status);
+    return _section(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  _money(_orderTotal(order)),
+                  style: TextStyle(
+                    color: colors.textPrimary,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              _chip(_statusLabel(status), _statusColor(status)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _chip(
+                'Payment ${_statusLabel(order.paymentStatus)}',
+                _statusColor(order.paymentStatus),
+              ),
+              _chip(
+                'Fulfillment ${_statusLabel(order.fulfillmentStatus)}',
+                _statusColor(order.fulfillmentStatus),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          _infoRow(Icons.calendar_today_outlined, 'Placed', _formatDate(order)),
+          _infoRow(
+            Icons.payments_outlined,
+            'Payment',
+            _nonEmpty(order['payment_method']) ??
+                _nonEmpty(order['payment_provider']) ??
+                'Unavailable',
+          ),
+          _infoRow(
+            Icons.local_shipping_outlined,
+            'Shipping',
+            _nonEmpty(order['shipping_method']) ?? 'Not selected',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCustomer(OrderContract order) {
+    return _section(
+      title: 'Customer',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _customerName(order),
+            style: TextStyle(
+              color: colors.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          _infoRow(
+            Icons.email_outlined,
+            'Email',
+            _nonEmpty(order.customerEmail) ?? 'No email',
+          ),
+          _infoRow(
+            Icons.call_outlined,
+            'Phone',
+            _nonEmpty(order.customerPhone) ?? 'No phone',
+          ),
+          const SizedBox(height: 10),
+          _addressBlock('Shipping address', order.jsonMap('shipping_address')),
+          const SizedBox(height: 10),
+          _addressBlock('Billing address', order.jsonMap('billing_address')),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLineItems(OrderContract order) {
+    final items = order.lineItems;
+    return _section(
+      title: 'Line items',
+      child: items.isEmpty
+          ? Text(
+              'No line items returned for this order.',
+              style: TextStyle(color: colors.textSecondary),
+            )
+          : Column(
+              children: [
+                for (final item in items) ...[
+                  _lineItem(item),
+                  if (item != items.last)
+                    Divider(height: 20, color: colors.divider),
+                ],
+              ],
+            ),
+    );
+  }
+
+  Widget _lineItem(LineItemContract item) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: colors.surfaceVariant,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: colors.divider),
+          ),
+          child: Icon(
+            Icons.inventory_2_outlined,
+            color: colors.textSecondary,
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.name.isEmpty ? 'Item' : item.name,
+                style: TextStyle(
+                  color: colors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                [
+                  if (_nonEmpty(item.sku) != null) 'SKU ${item.sku}',
+                  'Qty ${item.quantity}',
+                  _money(item.unitPrice),
+                ].join(' | '),
+                style: TextStyle(color: colors.textSecondary, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          _money(item.total),
+          style: TextStyle(
+            color: colors.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTotals(OrderContract order) {
+    return _section(
+      title: 'Totals',
+      child: Column(
+        children: [
+          _totalRow('Subtotal', order.subtotal),
+          _totalRow('Discount', -order.discountAmount),
+          _totalRow('Shipping', order.shippingAmount),
+          _totalRow('Tax', order.taxAmount),
+          Divider(height: 20, color: colors.divider),
+          _totalRow('Total', _orderTotal(order), isStrong: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimeline(OrderContract order) {
+    final entries = _timelineEntries(order);
+    return _section(
+      title: 'Timeline',
+      child: Column(
+        children: [
+          for (var index = 0; index < entries.length; index++)
+            _timelineRow(entries[index], isLast: index == entries.length - 1),
+        ],
+      ),
+    );
+  }
+
+  Widget _timelineRow(_TimelineEntry entry, {required bool isLast}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: entry.color,
+                shape: BoxShape.circle,
+              ),
+            ),
+            if (!isLast)
+              Container(
+                width: 1,
+                height: 46,
+                color: colors.divider,
+                margin: const EdgeInsets.symmetric(vertical: 4),
+              ),
+          ],
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: isLast ? 0 : 18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  entry.title,
+                  style: TextStyle(
+                    color: colors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  entry.subtitle,
+                  style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionBar(OrderContract order) {
+    final status = _status(order.status);
+    final canFulfill =
+        status != 'shipped' &&
+        status != 'delivered' &&
+        status != 'cancelled' &&
+        status != 'refunded';
+    final canRefund = status != 'cancelled' && status != 'refunded';
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      decoration: BoxDecoration(
+        color: colors.card,
+        border: Border(top: BorderSide(color: colors.divider)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: [
+            if (canFulfill)
+              _actionButton(
+                icon: Icons.local_shipping_outlined,
+                label: 'Fulfill',
+                onPressed: _isMutating ? null : _fulfillOrder,
+              ),
+            if (canRefund)
+              _actionButton(
+                icon: Icons.currency_exchange_rounded,
+                label: 'Refund',
+                onPressed: _isMutating ? null : _issueRefund,
+                isDestructive: true,
+              ),
+            _actionButton(
+              icon: Icons.done_all_rounded,
+              label: 'Complete refund',
+              onPressed: _isMutating ? null : _completeRefund,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _section({String? title, required Widget child}) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.card,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colors.cardBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (title != null) ...[
+            Text(
+              title,
+              style: TextStyle(
+                color: colors.textPrimary,
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _chip(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.24)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  Widget _infoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: colors.textTertiary, size: 16),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 82,
+            child: Text(
+              label,
+              style: TextStyle(color: colors.textSecondary, fontSize: 12),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                color: colors.textPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _addressBlock(String title, Map<String, dynamic> address) {
+    final lines = [
+      _nonEmpty(address['name']),
+      _nonEmpty(address['line1']) ?? _nonEmpty(address['address_line1']),
+      _nonEmpty(address['line2']) ?? _nonEmpty(address['address_line2']),
+      [
+        _nonEmpty(address['city']),
+        _nonEmpty(address['state']),
+        _nonEmpty(address['postal_code']) ?? _nonEmpty(address['pincode']),
+      ].whereType<String>().join(', '),
+      _nonEmpty(address['country']),
+    ].whereType<String>().where((line) => line.isNotEmpty).toList();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colors.surfaceVariant,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: colors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: colors.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            lines.isEmpty ? 'No address returned' : lines.join('\n'),
+            style: TextStyle(color: colors.textPrimary, height: 1.35),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _totalRow(String label, double amount, {bool isStrong = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: isStrong ? colors.textPrimary : colors.textSecondary,
+                fontWeight: isStrong ? FontWeight.w800 : FontWeight.w500,
+              ),
+            ),
+          ),
+          Text(
+            _money(amount),
+            style: TextStyle(
+              color: isStrong ? colors.textPrimary : colors.textSecondary,
+              fontWeight: isStrong ? FontWeight.w800 : FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _actionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback? onPressed,
+    bool isDestructive = false,
+  }) {
+    final color = isDestructive
+        ? colors.error
+        : mobile_tokens.LetbuyyColorTokens.brandPrimary;
+    return SizedBox(
+      height: 44,
+      child: OutlinedButton.icon(
+        onPressed: onPressed,
+        icon: _isMutating && onPressed == null
+            ? SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2, color: color),
+              )
+            : Icon(icon, size: 18),
+        label: Text(label),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: color,
+          side: BorderSide(color: color.withValues(alpha: 0.45)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<_RefundRequest?> _showRefundDialog(OrderContract order) async {
+    final amountController = TextEditingController(
+      text: _orderTotal(order).toStringAsFixed(0),
+    );
+    final reasonController = TextEditingController();
+
+    return showDialog<_RefundRequest>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Issue refund',
+          style: TextStyle(color: colors.textPrimary),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: amountController,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              style: TextStyle(color: colors.textPrimary),
+              decoration: InputDecoration(
+                labelText: 'Amount',
+                prefixText: 'INR ',
+                labelStyle: TextStyle(color: colors.textSecondary),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: reasonController,
+              minLines: 2,
+              maxLines: 3,
+              style: TextStyle(color: colors.textPrimary),
+              decoration: InputDecoration(
+                labelText: 'Reason',
+                hintText: 'Customer request, damaged item, duplicate order...',
+                labelStyle: TextStyle(color: colors.textSecondary),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: colors.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              final amount = double.tryParse(amountController.text.trim());
+              if (amount == null || amount <= 0) {
+                _showSnackBar('Enter a valid refund amount', isError: true);
+                return;
+              }
+              Navigator.pop(
+                context,
+                _RefundRequest(
+                  amount: amount,
+                  reason: reasonController.text.trim(),
+                ),
+              );
+            },
+            child: Text('Refund', style: TextStyle(color: colors.error)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<_CompleteRefundRequest?> _showCompleteRefundDialog() async {
+    final refundIdController = TextEditingController();
+    final providerRefundIdController = TextEditingController();
+    final notesController = TextEditingController();
+
+    return showDialog<_CompleteRefundRequest>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Complete refund',
+          style: TextStyle(color: colors.textPrimary),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: refundIdController,
+              style: TextStyle(color: colors.textPrimary),
+              decoration: InputDecoration(
+                labelText: 'Refund ID',
+                labelStyle: TextStyle(color: colors.textSecondary),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: providerRefundIdController,
+              style: TextStyle(color: colors.textPrimary),
+              decoration: InputDecoration(
+                labelText: 'Provider refund ID',
+                labelStyle: TextStyle(color: colors.textSecondary),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: notesController,
+              minLines: 2,
+              maxLines: 3,
+              style: TextStyle(color: colors.textPrimary),
+              decoration: InputDecoration(
+                labelText: 'Notes',
+                labelStyle: TextStyle(color: colors.textSecondary),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: colors.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(
+              context,
+              _CompleteRefundRequest(
+                refundId: refundIdController.text.trim(),
+                providerRefundId: providerRefundIdController.text.trim(),
+                notes: notesController.text.trim(),
+              ),
+            ),
+            child: Text(
+              'Complete',
+              style: TextStyle(
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<_TrackingRequest?> _showTrackingDialog() async {
+    final carrierController = TextEditingController();
+    final trackingController = TextEditingController();
+
+    return showDialog<_TrackingRequest>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Fulfill order',
+          style: TextStyle(color: colors.textPrimary),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: carrierController,
+              style: TextStyle(color: colors.textPrimary),
+              decoration: InputDecoration(
+                labelText: 'Carrier',
+                labelStyle: TextStyle(color: colors.textSecondary),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: trackingController,
+              style: TextStyle(color: colors.textPrimary),
+              decoration: InputDecoration(
+                labelText: 'Tracking number',
+                labelStyle: TextStyle(color: colors.textSecondary),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: colors.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(
+              context,
+              _TrackingRequest(
+                carrier: carrierController.text.trim(),
+                trackingNumber: trackingController.text.trim(),
+              ),
+            ),
+            child: Text(
+              'Ship',
+              style: TextStyle(
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSnackBar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? colors.error : colors.success,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
+  List<_TimelineEntry> _timelineEntries(OrderContract order) {
+    final rawTimeline = order['timeline'];
+    if (rawTimeline is List) {
+      final parsed = rawTimeline.whereType<Map>().map((entry) {
+        final title =
+            _nonEmpty(entry['title']) ??
+            _nonEmpty(entry['event']) ??
+            _nonEmpty(entry['status']) ??
+            'Order update';
+        final timestamp =
+            _nonEmpty(entry['created_at']) ??
+            _nonEmpty(entry['timestamp']) ??
+            _nonEmpty(entry['time']);
+        return _TimelineEntry(
+          title: title,
+          subtitle: timestamp == null
+              ? 'Time unavailable'
+              : _formatRawDate(timestamp),
+          color: _statusColor(_nonEmpty(entry['status']) ?? order.status),
+        );
+      }).toList();
+      if (parsed.isNotEmpty) return parsed;
+    }
+
+    final entries = <_TimelineEntry>[
+      _TimelineEntry(
+        title: 'Order placed',
+        subtitle: _formatDate(order),
+        color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+      ),
+      _TimelineEntry(
+        title: 'Payment ${_statusLabel(order.paymentStatus)}',
+        subtitle: _nonEmpty(order['payment_id']) ?? 'Payment reference pending',
+        color: _statusColor(order.paymentStatus),
+      ),
+      _TimelineEntry(
+        title: 'Fulfillment ${_statusLabel(order.fulfillmentStatus)}',
+        subtitle:
+            _nonEmpty(order['tracking_number']) ??
+            _nonEmpty(order['tracking_url']) ??
+            'Tracking not added',
+        color: _statusColor(order.fulfillmentStatus),
+      ),
+      _TimelineEntry(
+        title: 'Current status ${_statusLabel(order.status)}',
+        subtitle: _formatRawDate(
+          _nonEmpty(order['updated_at']) ??
+              _nonEmpty(order['created_at']) ??
+              '',
+        ),
+        color: _statusColor(order.status),
+      ),
+    ];
+    return entries;
+  }
+
+  String _orderNumber(OrderContract? order) {
+    if (order == null) return 'Order';
+    return order.orderNumber.isNotEmpty ? order.orderNumber : order.id;
+  }
+
+  String _customerName(OrderContract order) {
+    final name = order.customerName?.trim();
+    return name?.isNotEmpty == true ? name! : 'Customer';
+  }
+
+  String _status(String value) {
+    final normalized = value.trim().toLowerCase();
+    return normalized.isEmpty ? 'unknown' : normalized;
+  }
+
+  String _statusLabel(String status) {
+    final normalized = _status(status).replaceAll('_', ' ');
+    return normalized
+        .split(' ')
+        .where((part) => part.isNotEmpty)
+        .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
+        .join(' ');
+  }
+
+  Color _statusColor(String status) {
+    switch (_status(status)) {
+      case 'paid':
+      case 'delivered':
+      case 'fulfilled':
+      case 'complete':
+      case 'completed':
+        return colors.success;
+      case 'pending':
+      case 'processing':
+      case 'unfulfilled':
+      case 'authorized':
+        return colors.warning;
+      case 'cancelled':
+      case 'canceled':
+      case 'failed':
+      case 'refunded':
+        return colors.error;
+      case 'shipped':
+      case 'in_transit':
+        return colors.accentBlue;
+      default:
+        return mobile_tokens.LetbuyyColorTokens.brandPrimary;
+    }
+  }
+
+  double _orderTotal(OrderContract order) {
+    if (order.total > 0) return order.total;
+    return order.lineItems.fold(0.0, (sum, item) => sum + item.total);
+  }
+
+  String _money(double amount) {
+    final value = NumberFormat.decimalPattern('en_IN').format(amount.abs());
+    return amount < 0 ? '-INR $value' : 'INR $value';
+  }
+
+  String _formatDate(OrderContract order) {
+    final raw = _nonEmpty(order['created_at']) ?? _nonEmpty(order['createdAt']);
+    return _formatRawDate(raw ?? '');
+  }
+
+  String _formatRawDate(String raw) {
+    final date = DateTime.tryParse(raw);
+    if (date == null) return raw.isEmpty ? 'Time unavailable' : raw;
+    return DateFormat('MMM d, yyyy h:mm a').format(date.toLocal());
+  }
+
+  String? _nonEmpty(Object? value) {
+    final text = value?.toString().trim();
+    return text == null || text.isEmpty ? null : text;
+  }
+}
+
+class _TimelineEntry {
+  const _TimelineEntry({
+    required this.title,
+    required this.subtitle,
+    required this.color,
+  });
+
+  final String title;
+  final String subtitle;
+  final Color color;
+}
+
+class _RefundRequest {
+  const _RefundRequest({required this.amount, required this.reason});
+
+  final double amount;
+  final String reason;
+}
+
+class _CompleteRefundRequest {
+  const _CompleteRefundRequest({
+    required this.refundId,
+    required this.providerRefundId,
+    required this.notes,
+  });
+
+  final String refundId;
+  final String providerRefundId;
+  final String notes;
+}
+
+class _TrackingRequest {
+  const _TrackingRequest({required this.carrier, required this.trackingNumber});
+
+  final String carrier;
+  final String trackingNumber;
+}

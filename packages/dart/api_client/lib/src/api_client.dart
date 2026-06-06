@@ -554,6 +554,15 @@ class OrdersApi {
     '/orders/${_encodePathSegment(id)}/refund',
     options: _mergeOptions(options, method: HttpMethod.post, body: input),
   );
+
+  Future<JsonMap> completeRefund(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/orders/${_encodePathSegment(id)}/refund/complete',
+    options: _mergeOptions(options, method: HttpMethod.post, body: input),
+  );
 }
 
 class CustomersApi {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letbuyy_models/letbuyy_models.dart';
 
 // All other screens are imported but Flutter's tree-shaking
 // will handle optimization at build time
@@ -18,6 +19,7 @@ import '../screens/settings/seo_settings_screen.dart';
 import '../screens/settings/store_details_screen.dart';
 import '../screens/settings/help_screen.dart';
 import '../screens/analytics/analytics_screen.dart';
+import '../screens/orders/order_detail_screen.dart';
 import '../screens/orders/orders_screen.dart';
 import '../screens/subscription/pricing_screen.dart';
 import '../screens/subscription/connect_razorpay_screen.dart';
@@ -56,11 +58,16 @@ class AppRoutes {
   static const String help = '/help';
   static const String analytics = '/analytics';
   static const String orders = '/orders';
+  static const String orderDetail = '/orders/detail';
   static const String pricing = '/pricing';
   static const String connectRazorpay = '/connect-razorpay';
 
   /// Generate routes with optimized page transitions
   static Route<dynamic> generateRoute(RouteSettings settings) {
+    if (settings.name == '/features/order-detail') {
+      return _buildRoute(const OrdersScreen(), settings);
+    }
+
     final feature = MerchantFeatureDefinitions.byRoute[settings.name];
     if (feature != null) {
       return _buildRoute(MerchantFeatureScreen(feature: feature), settings);
@@ -152,6 +159,17 @@ class AppRoutes {
 
       case orders:
         return _buildRoute(const OrdersScreen(), settings);
+
+      case orderDetail:
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        final order = args['order'];
+        return _buildRoute(
+          OrderDetailScreen(
+            orderId: args['orderId'] as String? ?? '',
+            initialOrder: order is OrderContract ? order : null,
+          ),
+          settings,
+        );
 
       case pricing:
         return _buildRoute(const PricingScreen(), settings);

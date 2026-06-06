@@ -105,9 +105,43 @@ class OrderService extends ChangeNotifier {
   // ── Refund / Cancel ──────────────────────────────────────
 
   /// Cancel and refund an order.
-  Future<OrderContract> refundOrder(String id, {String? reason}) async {
+  Future<OrderContract> refundOrder(
+    String id, {
+    String? reason,
+    double? amount,
+    String? idempotencyKey,
+  }) async {
+    final refundIdempotencyKey =
+        idempotencyKey ??
+        'mobile-refund-$id-${DateTime.now().microsecondsSinceEpoch}';
     final updated = OrderContract.fromJson(
-      await _api.orders.refund(id, {if (reason != null) 'reason': reason}),
+      await _api.orders.refund(id, {
+        if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
+        if (amount != null) 'amount': amount,
+        if (amount != null) 'amount_minor': (amount * 100).round(),
+      }, options: ApiRequestOptions(idempotencyKey: refundIdempotencyKey)),
+    );
+    final idx = _orders.indexWhere((o) => o.id == id);
+    if (idx != -1) _orders[idx] = updated;
+    notifyListeners();
+    return updated;
+  }
+
+  /// Complete a provider-side refund after the gateway marks it ready.
+  Future<OrderContract> completeRefund(
+    String id, {
+    String? refundId,
+    String? providerRefundId,
+    String? notes,
+  }) async {
+    final updated = OrderContract.fromJson(
+      await _api.orders.completeRefund(id, {
+        if (refundId != null && refundId.trim().isNotEmpty)
+          'refund_id': refundId.trim(),
+        if (providerRefundId != null && providerRefundId.trim().isNotEmpty)
+          'provider_refund_id': providerRefundId.trim(),
+        if (notes != null && notes.trim().isNotEmpty) 'notes': notes.trim(),
+      }),
     );
     final idx = _orders.indexWhere((o) => o.id == id);
     if (idx != -1) _orders[idx] = updated;

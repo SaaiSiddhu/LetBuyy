@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:provider/provider.dart';
+import '../../app/routes.dart';
 import '../../services/order_service.dart';
 import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
@@ -985,7 +986,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
         if (_isSelectionMode) {
           _toggleOrderSelection(order.id);
         } else {
-          // TODO: Navigate to order details
+          Navigator.pushNamed(
+            context,
+            AppRoutes.orderDetail,
+            arguments: {'orderId': order.id, 'order': order},
+          ).then((_) => _loadOrders());
         }
       },
       onLongPress: () {

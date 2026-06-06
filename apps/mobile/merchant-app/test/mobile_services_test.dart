@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +12,8 @@ import 'package:letbuyy_store/services/store_auth_service.dart';
 import 'package:letbuyy_store/services/store_service.dart';
 import 'package:letbuyy_store/services/subscription_service.dart';
 import 'package:letbuyy_store/services/theme_service.dart';
+import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +60,36 @@ void main() {
 
       expect(orders, hasLength(2));
       expect(service.statusCounts['paid'], 2);
+    });
+
+    test('OrderService fetches detail and refund lifecycle routes', () async {
+      final api = _FakeApiClient(
+        json: {
+          '/orders/order_1': _orderJson(),
+          '/orders/order_1/refund': _orderJson(status: 'refund_pending'),
+          '/orders/order_1/refund/complete': _orderJson(status: 'refunded'),
+        },
+      );
+      final service = OrderService(api: api);
+
+      final detail = await service.fetchOrder('order_1');
+      await service.refundOrder(
+        'order_1',
+        amount: 499,
+        reason: 'Customer requested return',
+        idempotencyKey: 'test-refund-key',
+      );
+      final completed = await service.completeRefund(
+        'order_1',
+        refundId: 'refund_1',
+        providerRefundId: 'rfnd_1',
+      );
+
+      expect(detail.id, 'order_1');
+      expect(completed.status, 'refunded');
+      expect(api.paths, contains('/orders/order_1'));
+      expect(api.paths, contains('/orders/order_1/refund'));
+      expect(api.paths, contains('/orders/order_1/refund/complete'));
     });
 
     test('AnalyticsService assembles dashboard metrics', () async {
@@ -241,6 +274,32 @@ void main() {
       expect(auth.isSignedIn, isTrue);
     });
   });
+
+  testWidgets('OrderDetailScreen renders customer, totals, and actions', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(json: {'/orders/order_1': _orderJson()});
+    final orderService = OrderService(api: api);
+    final order = OrderContract.fromJson(_orderJson());
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider.value(
+        value: orderService,
+        child: MaterialApp(
+          home: OrderDetailScreen(orderId: order.id, initialOrder: order),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Customer'), findsOneWidget);
+    await tester.drag(find.byType(ListView), const Offset(0, -500));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Line items'), findsOneWidget);
+    expect(find.text('Cotton Tee'), findsOneWidget);
+    expect(find.text('Refund'), findsOneWidget);
+  });
 }
 
 class _FakeApiClient extends ApiClient {
@@ -328,10 +387,45 @@ Map<String, dynamic> _orderJson({
   'id': id,
   'store_id': 'store_1',
   'order_number': id,
+  'customer_name': 'Meera Merchant',
+  'customer_email': 'meera@example.com',
+  'customer_phone': '+919999999999',
   'status': status,
   'payment_status': 'paid',
   'fulfillment_status': 'unfulfilled',
   'currency': 'INR',
+  'subtotal': 499,
+  'discount_amount': 0,
+  'shipping_amount': 0,
+  'tax_amount': 0,
   'total': 499,
-  'line_items': const [],
+  'created_at': '2026-06-01T10:00:00.000Z',
+  'updated_at': '2026-06-01T10:30:00.000Z',
+  'shipping_address': const {
+    'name': 'Meera Merchant',
+    'line1': '12 Market Road',
+    'city': 'Bengaluru',
+    'state': 'Karnataka',
+    'postal_code': '560001',
+    'country': 'IN',
+  },
+  'billing_address': const {
+    'name': 'Meera Merchant',
+    'line1': '12 Market Road',
+    'city': 'Bengaluru',
+    'state': 'Karnataka',
+    'postal_code': '560001',
+    'country': 'IN',
+  },
+  'line_items': const [
+    {
+      'id': 'line_1',
+      'name': 'Cotton Tee',
+      'sku': 'TEE-001',
+      'quantity': 1,
+      'unit_price': 499,
+      'total': 499,
+      'currency': 'INR',
+    },
+  ],
 };
