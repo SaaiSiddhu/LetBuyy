@@ -137,6 +137,7 @@ const validators = [
   "gateway-events-client-validator.mjs",
   "no-orphan-webhook-delivery-queue-validator.mjs",
   "source-ledger-residue-validator.mjs",
+  "dead-residue-validator.mjs",
   "route-line-count-validator.mjs",
   "single-source-crypto-validator.mjs",
   "cms-slugify-validator.mjs",
