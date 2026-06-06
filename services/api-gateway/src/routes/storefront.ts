@@ -1265,35 +1265,6 @@ async function loadNavigationMenu(c: AppContext, storeId: string, location: stri
     };
 }
 
-function hexToBytes(hex: string): Uint8Array {
-    const normalized = hex.toLowerCase();
-    const bytes = new Uint8Array(normalized.length / 2);
-    for (let index = 0; index < normalized.length; index += 2) {
-        bytes[index / 2] = parseInt(normalized.slice(index, index + 2), 16);
-    }
-    return bytes;
-}
-
-function timingSafeEqualHex(leftHex: string, rightHex: string): boolean {
-    if (leftHex.length !== rightHex.length) return false;
-    if (!/^[a-f0-9]+$/i.test(leftHex) || !/^[a-f0-9]+$/i.test(rightHex)) return false;
-
-    const left = hexToBytes(leftHex);
-    const right = hexToBytes(rightHex);
-    let diff = 0;
-    for (let index = 0; index < left.length; index += 1) {
-        diff |= left[index] ^ right[index];
-    }
-    return diff === 0;
-}
-
-async function sha256Hex(input: string): Promise<string> {
-    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
-    return Array.from(new Uint8Array(digest))
-        .map((byte) => byte.toString(16).padStart(2, '0'))
-        .join('');
-}
-
 registerStorefrontInternalPaymentRoutes(router, {
     getRequestId,
     emitStorefrontOrderPaidEvent,

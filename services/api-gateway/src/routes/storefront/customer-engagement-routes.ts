@@ -1,6 +1,7 @@
 import { Hono, type Context } from 'hono';
 import * as bcrypt from 'bcryptjs';
 import type { Env } from '../../index';
+import { hmacSha256Hex } from '../../lib/crypto';
 import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
 import { verifyInternalAppRequest } from '../../lib/internal-auth';
 import { validate } from '../../middleware/validation';
@@ -309,22 +310,6 @@ async function resolveCredentialStoreId(
     const store = await loadPublishedStore(c, body.subdomain);
     return store?.id || null;
 }
-
-async function hmacSha256Hex(secret: string, payload: string): Promise<string> {
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-        'raw',
-        encoder.encode(secret),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['sign']
-    );
-    const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
-    return Array.from(new Uint8Array(signatureBuffer))
-        .map((byte) => byte.toString(16).padStart(2, '0'))
-        .join('');
-}
-
 
 export function registerStorefrontCustomerEngagementRoutes(
     router: Hono<{ Bindings: Env }>,

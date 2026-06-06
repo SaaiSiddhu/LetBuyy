@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F7.2 `@letbuyy/utils` service-role edge removal complete; continue F7.3 duplication collapse.
+- Phase: F7.3 crypto duplication collapse complete; continue F7.3 remaining duplication collapse.
 - Findings resolved: 28/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `C-14`, `H-1`, `H-2`, `H-4`, `H-5`, `H-6`, `H-7`, `H-8`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-15`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets, C-14 live observability rollout verification is SKIPPED -- NEEDS HUMAN pending deployed telemetry endpoints/credentials, H-15 live production deploy execution is SKIPPED -- NEEDS HUMAN pending protected environment approvals plus provider credentials, and legacy portfolio/resume reactivation is human-gated for named cohorts only.
-- Current governance gate state: green after F7.2 (`pnpm run validate:governance` -> 143/143 PASS).
+- Current governance gate state: green after F7.3 crypto increment (`pnpm run validate:governance` -> 144/144 PASS).
 
 ## Baseline gates
 
@@ -656,6 +656,21 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 143/143 validators.
+
+## F7.3 crypto single-source evidence
+
+- Added `sha256Hex` to `services/api-gateway/src/lib/crypto.ts`, alongside the existing `timingSafeEqualText`, `timingSafeEqualHex`, and `hmacSha256Hex` helpers.
+- Removed dead local `hexToBytes`, `timingSafeEqualHex`, and `sha256Hex` declarations from the storefront route root.
+- Replaced storefront sub-route local `sha256Hex` and `hmacSha256Hex` copies with imports from the shared API gateway crypto module.
+- Added `scripts/validators/single-source-crypto-validator.mjs`, wired it into governance, and added `tests/contracts/single-source-crypto.test.ts`.
+- `node scripts/validators/single-source-crypto-validator.mjs`: PASS.
+- `npx tsx --test tests/contracts/single-source-crypto.test.ts`: PASS - 3/3.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm run test:contracts`: PASS - 113/113 after host IPC escalation for TSX.
+- Full `pnpm turbo typecheck --output-logs=errors-only --log-order=grouped`: PASS - 58/58.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 144/144 validators.
 
 ## V2 P-1 gate evidence
 

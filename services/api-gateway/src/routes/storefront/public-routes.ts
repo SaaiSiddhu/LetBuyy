@@ -1,5 +1,6 @@
 import { Hono, type Context } from 'hono';
 import type { Env } from '../../index';
+import { sha256Hex } from '../../lib/crypto';
 import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../../lib/supabase';
 import { cachedJson, storefrontRequestCacheKey, STOREFRONT_CACHE_SWR_SECONDS, STOREFRONT_CACHE_TTL_SECONDS } from '../../lib/storefront-cache';
 import { validate } from '../../middleware/validation';
@@ -30,13 +31,6 @@ const PRODUCT_SELECT_FULL_RELATIONAL: string = PRODUCT_SELECT_FULL.replace(',var
 
 function storefrontCacheTags(storeId: string, handle: string, ...tags: string[]): string[] {
     return [`storefront:${storeId}`, `storefront:${handle}`, ...tags];
-}
-
-async function sha256Hex(input: string): Promise<string> {
-    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
-    return Array.from(new Uint8Array(digest))
-        .map((byte) => byte.toString(16).padStart(2, '0'))
-        .join('');
 }
 
 type PublicProductQueryOptions = {
