@@ -67,6 +67,7 @@ const validators = [
   "replay-restoration-validator.mjs",
   "provider-evidence-validator.mjs",
   "env-isolation-validator.mjs",
+  "environment-honesty-validator.mjs",
   "migration-safety-validator.mjs",
   "deployment-safety-validator.mjs",
   "rollback-integrity-validator.mjs",

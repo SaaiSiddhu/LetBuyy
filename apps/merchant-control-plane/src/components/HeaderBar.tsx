@@ -9,6 +9,7 @@ import type { StoreData, UserStore } from './AdminShell'
 import NotificationsPanel from './NotificationsPanel'
 import { MaterialIcon } from '@letbuyy/ui'
 import { resolveKeyboardShortcut } from './merchantNavigation'
+import { getAccountsUrl } from '@/lib/public-urls'
 
 interface HeaderBarProps {
     store: string
@@ -177,9 +178,9 @@ export default function HeaderBar({
                 method: 'POST',
             })
             const data = await res.json()
-            window.location.assign(data.redirectTo || `${process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store'}/lookup`)
+            window.location.assign(data.redirectTo || getAccountsUrl('/lookup'))
         } catch {
-            window.location.assign(`${process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store'}/lookup`)
+            window.location.assign(getAccountsUrl('/lookup'))
         }
     }
 

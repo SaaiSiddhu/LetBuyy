@@ -1,7 +1,7 @@
 import { identityApiRequest } from '../api/client'
+import { getAccountsUrl } from '../config/urls'
 
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@letbuyy.store'
-const STAGING_ACCOUNTS_URL = 'https://accounts.staging.letbuyy.store'
 
 interface SendEmailOptions {
   to: string
@@ -47,8 +47,7 @@ export async function sendEmail({ to, subject, html }: SendEmailOptions): Promis
  * Send verification email with a link.
  */
 export async function sendVerificationEmail(email: string, token: string): Promise<{ success: boolean; error?: string }> {
-  const baseUrl = process.env.NODE_ENV === 'production' ? 'https://accounts.letbuyy.store' : STAGING_ACCOUNTS_URL
-  const verifyUrl = `${baseUrl}/api/auth/verify?token=${token}&type=email_verify`
+  const verifyUrl = `${getAccountsUrl('/api/auth/verify')}?token=${token}&type=email_verify`
 
   return sendEmail({
     to: email,
@@ -104,8 +103,7 @@ export async function sendOTPEmail(email: string, otp: string): Promise<{ succes
  * Send magic link login email.
  */
 export async function sendMagicLinkEmail(email: string, token: string): Promise<{ success: boolean; error?: string }> {
-  const baseUrl = process.env.NODE_ENV === 'production' ? 'https://accounts.letbuyy.store' : STAGING_ACCOUNTS_URL
-  const magicUrl = `${baseUrl}/api/auth/verify?token=${token}&type=magic_link`
+  const magicUrl = `${getAccountsUrl('/api/auth/verify')}?token=${token}&type=magic_link`
 
   return sendEmail({
     to: email,
@@ -134,8 +132,7 @@ export async function sendMagicLinkEmail(email: string, token: string): Promise<
  * Send password reset email.
  */
 export async function sendPasswordResetEmail(email: string, token: string): Promise<{ success: boolean; error?: string }> {
-  const baseUrl = process.env.NODE_ENV === 'production' ? 'https://accounts.letbuyy.store' : STAGING_ACCOUNTS_URL
-  const resetUrl = `${baseUrl}/reset-password?token=${token}`
+  const resetUrl = `${getAccountsUrl('/reset-password')}?token=${token}`
 
   return sendEmail({
     to: email,
@@ -249,9 +246,7 @@ export async function sendStoreCreationFailedEmail(
   errorDetails?: string
 ): Promise<{ success: boolean; error?: string }> {
   const typeLabel = SITE_TYPE_LABELS[siteType] || siteType
-  const retryUrl = process.env.NODE_ENV === 'production'
-    ? 'https://accounts.letbuyy.store/onboarding'
-    : `${STAGING_ACCOUNTS_URL}/onboarding`
+  const retryUrl = getAccountsUrl('/onboarding')
 
   const reasonMessages: Record<string, { title: string; solution: string }> = {
     subdomain_taken: { title: 'Subdomain Already Taken', solution: 'Try a different store name.' },

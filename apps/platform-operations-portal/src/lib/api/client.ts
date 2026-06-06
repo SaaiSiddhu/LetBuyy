@@ -10,19 +10,25 @@ import {
 } from '@letbuyy/auth-core';
 import { cookies } from 'next/headers';
 
-const DEFAULT_API_BASE_URL = 'https://api.staging.letbuyy.store';
+const DEFAULT_PRODUCTION_API_BASE_URL = 'https://api.letbuyy.store/v1';
 
 interface PlatformOperationsApiOptions {
     requireSession?: boolean;
 }
 
 function getApiBaseUrl(): string {
-    return (
+    const configuredApiUrl =
         process.env.LETBUYY_API_URL ||
         process.env.NEXT_PUBLIC_API_URL ||
-        process.env.API_URL ||
-        DEFAULT_API_BASE_URL
-    ).replace(/\/v1\/?$/, '').replace(/\/$/, '');
+        process.env.API_URL;
+
+    if (!configuredApiUrl && process.env.NODE_ENV !== 'production') {
+        throw new Error('Platform operations API base URL is not configured. Set LETBUYY_API_URL or NEXT_PUBLIC_API_URL for this environment.');
+    }
+
+    return (configuredApiUrl || DEFAULT_PRODUCTION_API_BASE_URL)
+        .replace(/\/v1\/?$/, '')
+        .replace(/\/$/, '');
 }
 
 export async function createPlatformOperationsApiClient(

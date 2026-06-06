@@ -101,7 +101,7 @@ export default function PolicyPage({ title, icon, lastUpdated, store, children }
 
                 {/* Footer */}
                 <div className="mt-6 text-center text-sm text-theme-muted">
-                    <p>If you have any questions, please contact us at <a href="mailto:help@letbuyy.com" className="underline" style={{ color: theme.primaryColor }}>help@letbuyy.com</a></p>
+                    <p>If you have any questions, please contact us at <a href="mailto:help@letbuyy.store" className="underline" style={{ color: theme.primaryColor }}>help@letbuyy.store</a></p>
                 </div>
             </div>
 

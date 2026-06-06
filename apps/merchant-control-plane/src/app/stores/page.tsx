@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getSessionUser, getUserStores } from '@/lib/auth/session'
 import AllStoresClient from './AllStoresClient'
+import { getAccountsUrl } from '@/lib/public-urls'
 
 /**
  * /stores — "All Stores" page (Shopify-style).
@@ -11,9 +12,7 @@ export default async function AllStoresPage() {
     const user = await getSessionUser()
 
     if (!user) {
-        const accountsUrl =
-            process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store'
-        redirect(`${accountsUrl}/lookup`)
+        redirect(getAccountsUrl('/lookup'))
     }
 
     const stores = await getUserStores(user.id)

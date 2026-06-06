@@ -2,6 +2,8 @@
 SUPABASE_URL=https://example.supabase.co
 SUPABASE_ANON_KEY=replace-with-public-anon-key
 API_BASE_URL=https://api.example.com/v1
+GEMINI_API_KEY=replace-with-mobile-ai-api-key
+GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent
+GEMINI_MODEL=gemini-2.5-flash
 RAZORPAY_KEY_ID=replace-with-public-key-id
 ENVIRONMENT=local
-

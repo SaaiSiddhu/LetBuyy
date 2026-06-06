@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F6.3 migration root and partition driver complete locally; continue F6.4 environment honesty.
+- Phase: F6.4 environment honesty complete locally; continue F7.1 legacy portfolio/resume gating.
 - Findings resolved: 26/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `C-14`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-15`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets, C-14 live observability rollout verification is SKIPPED -- NEEDS HUMAN pending deployed telemetry endpoints/credentials, and H-15 live production deploy execution is SKIPPED -- NEEDS HUMAN pending protected environment approvals plus provider credentials.
-- Current governance gate state: green after F6.3 (`pnpm run validate:governance` -> 140/140 PASS).
+- Current governance gate state: green after F6.4 (`pnpm run validate:governance` -> 141/141 PASS).
 
 ## Baseline gates
 
@@ -603,6 +603,27 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
 - Live partition maintenance execution remains SKIPPED -- NEEDS HUMAN until staging/production DB connection strings and protected environment approvals are available.
 
+## F6.4 environment honesty evidence
+
+- Removed silent staging and retired `.com` LetBuyy URL/email defaults from active app/package/service source; active defaults now use canonical `.store`, explicit env overrides, relative local URLs, or fail-loud errors.
+- Identity and platform-operations API clients throw outside production when API base URLs are missing; upload with R2 configured returns `STORAGE_UNAVAILABLE` unless `ASSET_PUBLIC_BASE_URL` is configured.
+- Gateway credentialed CORS no longer includes hardcoded staging origins; storefront frame ancestors are env-owned through `STOREFRONT_FRAME_ANCESTORS`.
+- Added mobile Gemini entries to mobile templates/schemas and documented the public URL, frame ancestor, asset URL, CORS, and Gemini env contracts.
+- Added `scripts/validators/environment-honesty-validator.mjs`, wired it into governance, and added `tests/security/environment-honesty.test.mjs`.
+- `node scripts/validators/environment-honesty-validator.mjs`: PASS.
+- `node --test tests/security/environment-honesty.test.mjs`: PASS - 3/3.
+- `pnpm run test:contracts`: PASS - 103/103 after host IPC escalation for TSX.
+- `flutter analyze apps/mobile/merchant-app packages/dart/models packages/dart/core`: PASS - no issues.
+- `pnpm run test:behavioral`: PASS - 459/459.
+- Affected `pnpm turbo typecheck --filter=@letbuyy/identity-platform --filter=@letbuyy/marketing-site --filter=@letbuyy/merchant-control-plane --filter=@letbuyy/platform-operations-portal --filter=@letbuyy/storefront-runtime --filter=@letbuyy/theme-marketplace --filter=@letbuyy/api-gateway --filter=@letbuyy/theme-engine --output-logs=errors-only --log-order=grouped`: PASS - 49/49.
+- Full `pnpm turbo typecheck --output-logs=errors-only --log-order=grouped`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- `pnpm turbo test --output-logs=errors-only --log-order=grouped`: PASS - 67/67 after host IPC escalation for TSX.
+- Affected build: non-theme-marketplace tasks completed before `ENOSPC`; `pnpm turbo build --filter=@letbuyy/theme-marketplace --output-logs=errors-only --log-order=grouped`: PASS - 17/17 with exit 0, despite a post-task Turbo crash report.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 141/141 validators.
+- Live/staging env value rollout remains SKIPPED -- NEEDS HUMAN until Vercel, Cloudflare, CDN/R2, and mobile provider-restricted values are configured.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -636,6 +657,7 @@ Started: 2026-06-05T13:54:14Z
 - C-14 live observability rollout verification requires deployed staging/production Cloudflare Workers with `RUNTIME_TELEMETRY`, Supabase operations credentials, Prometheus/Grafana/OpenTelemetry health URLs, and provider tokens. Exact proof path once supplied: set `PROMETHEUS_URL`, `GRAFANA_URL`, `GRAFANA_TOKEN`, and `OTEL_COLLECTOR_HEALTH_URL`, then run `node infrastructure/scripts/observability/verify-observability-rollout.mjs --environment=staging --execute`; repeat for production only after deployment approval.
 - H-15 live production deploy proof requires protected GitHub environment approvals plus staging/production Supabase, Cloudflare, Vercel, Playwright, and backup credentials. Exact proof path once supplied: `gh workflow run production-deploy.yml --ref main`, approve `production-migrations`, `staging`, and `production`, then verify `migration-preflight`, `staging-e2e`, `migrate-production`, `deploy-workers-production`, `deploy-apps-production`, and `smoke-test-production` all succeed without skipped required jobs.
 - F6.3 live hot-table partition maintenance proof requires staging/production Supabase DB connection strings and protected environment approvals. Exact proof path once supplied: `gh workflow run hot-table-partition-maintenance.yml --ref main -f environment=staging -f execute=true`, verify JSON output from `ensure_next_hot_table_partitions` and `detach_expired_hot_table_partitions`, then approve the production `production-migrations` run.
+- F6.4 live environment value rollout requires Vercel project env access, Cloudflare Worker env/secret access, CDN/R2 public asset-domain decision, and provider-restricted mobile Gemini credentials. Exact proof path once supplied: configure `NEXT_PUBLIC_MARKETING_URL`, `NEXT_PUBLIC_ACCOUNTS_URL`, `NEXT_PUBLIC_ADMIN_URL`, `NEXT_PUBLIC_STOREFRONT_URL`, `NEXT_PUBLIC_THEME_MARKETPLACE_URL`, API base URLs, and `STOREFRONT_FRAME_ANCESTORS` in Vercel; configure `CORS_CREDENTIAL_ORIGINS` and `ASSET_PUBLIC_BASE_URL` in Cloudflare; configure mobile release builds with `--dart-define=GEMINI_API_KEY=... --dart-define=GEMINI_BASE_URL=... --dart-define=GEMINI_MODEL=...`; then run `pnpm run validate:governance`, affected deploy smoke tests, and mobile release smoke.
 
-- Continue to F6.4 environment honesty.
+- Continue to F7.1 legacy portfolio/resume gating.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

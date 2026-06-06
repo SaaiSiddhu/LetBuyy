@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { getMarketingSiteUrl } from "@/lib/public-urls";
 
 const letbuyySans = localFont({
   src: "../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
@@ -26,7 +27,7 @@ const letbuyyMono = localFont({
 
 const fontVariables = `${letbuyySans.variable} ${letbuyyDisplay.variable} ${letbuyyMono.variable}`;
 
-const siteUrl = "https://letbuyy.com";
+const siteUrl = getMarketingSiteUrl();
 const siteTitle = "LetBuyy - India-first commerce operating system";
 const siteDescription =
   "Launch stores, portfolios, resumes, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.";

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import BrandLogo from './BrandLogo'
+import { getAccountsUrl } from '@/lib/public-urls'
 
 export default function Navbar() {
     return (
@@ -19,10 +20,10 @@ export default function Navbar() {
 
                 {/* CTA Buttons */}
                 <div className="navbar-actions">
-                    <Link href="https://accounts.staging.letbuyy.store/lookup" className="btn btn-outline">
+                    <Link href={getAccountsUrl('/lookup')} className="btn btn-outline">
                         Log in
                     </Link>
-                    <Link href="https://accounts.staging.letbuyy.store/signup" className="btn btn-primary">
+                    <Link href={getAccountsUrl('/signup')} className="btn btn-primary">
                         Start free trial
                     </Link>
                 </div>

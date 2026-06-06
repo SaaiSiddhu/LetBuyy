@@ -51,7 +51,7 @@ class HelpScreen extends StatelessWidget {
             icon: Icons.menu_book_rounded,
             title: 'Documentation',
             subtitle: 'Learn how to use LetBuyy Store',
-            url: 'https://docs.letbuyy.com',
+            url: 'https://docs.letbuyy.store',
           ),
           _buildLinkTile(
             context,
@@ -65,14 +65,14 @@ class HelpScreen extends StatelessWidget {
             icon: Icons.policy_rounded,
             title: 'Terms of Service',
             subtitle: 'Read our terms and conditions',
-            url: 'https://letbuyy.com/terms',
+            url: 'https://letbuyy.store/terms',
           ),
           _buildLinkTile(
             context,
             icon: Icons.privacy_tip_rounded,
             title: 'Privacy Policy',
             subtitle: 'How we handle your data',
-            url: 'https://letbuyy.com/privacy',
+            url: 'https://letbuyy.store/privacy',
           ),
         ],
       ),
@@ -206,7 +206,7 @@ class HelpScreen extends StatelessWidget {
   }
 
   Future<void> _launchEmail(BuildContext context) async {
-    final uri = Uri.parse('mailto:support@letbuyy.com?subject=LetBuyy Store Support');
+    final uri = Uri.parse('mailto:support@letbuyy.store?subject=LetBuyy Store Support');
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     }

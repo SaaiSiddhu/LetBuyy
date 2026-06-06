@@ -1,13 +1,20 @@
 import type { NextConfig } from "next";
 
+function parseFrameAncestors(value: string | undefined): string[] {
+  if (!value) return [];
+  return value
+    .split(/\s+/)
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
+
 const frameAncestors = [
   "'self'",
-  "https://merchant.staging.letbuyy.store",
-  "https://console.staging.letbuyy.store",
   "https://admin.letbuyy.store",
   "https://console.letbuyy.store",
   process.env.NEXT_PUBLIC_ADMIN_URL,
   process.env.ADMIN_ORIGIN,
+  ...parseFrameAncestors(process.env.STOREFRONT_FRAME_ANCESTORS),
 ].filter((origin): origin is string => Boolean(origin)).join(" ");
 
 const nextConfig: NextConfig = {

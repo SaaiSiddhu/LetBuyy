@@ -16,14 +16,6 @@ export const PLATFORM_CREDENTIAL_ORIGINS = [
     'https://developers.letbuyy.store',
     'https://admin.letbuyy.store',
     'https://team.letbuyy.store',
-    'https://accounts.staging.letbuyy.store',
-    'https://merchant.staging.letbuyy.store',
-    'https://storefront.staging.letbuyy.store',
-    'https://apps.staging.letbuyy.store',
-    'https://themes.staging.letbuyy.store',
-    'https://console.staging.letbuyy.store',
-    'https://operations.staging.letbuyy.store',
-    'https://developers.staging.letbuyy.store',
 ] as const;
 
 export function normalizeCredentialOrigin(value: string): string | null {

@@ -128,7 +128,7 @@ class StoreModel {
     this.publishedAt,
   });
 
-  /// Generate store URL from subdomain (new format: subdomain.letbuyy.com)
+  /// Generate store URL from subdomain (new format: subdomain.letbuyy.store)
   static String generateStoreUrl(String subdomain) {
     return 'https://$subdomain.letbuyy.store';
   }

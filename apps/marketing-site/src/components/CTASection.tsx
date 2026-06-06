@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getAccountsUrl } from '@/lib/public-urls'
 
 export default function CTASection() {
     return (
@@ -8,7 +9,7 @@ export default function CTASection() {
                 <p className="cta-subtitle">
                     Join 100+ entrepreneurs who&apos;ve built their online presence with LetBuyy.
                 </p>
-                <Link href="https://accounts.staging.letbuyy.store/signup" className="btn btn-secondary btn-large">
+                <Link href={getAccountsUrl('/signup')} className="btn btn-secondary btn-large">
                     Start your 14-day free trial
                 </Link>
             </div>

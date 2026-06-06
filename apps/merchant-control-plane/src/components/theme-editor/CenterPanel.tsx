@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef } from 'react'
 import { MaterialIcon } from '@letbuyy/ui'
+import { getStorefrontBaseUrl } from '@/lib/public-urls'
 
 interface CenterPanelProps {
     storeName: string
@@ -11,13 +12,6 @@ interface CenterPanelProps {
     isPreviewRefreshing: boolean
     selectedSectionId: string | null
     onSelectSection?: (sectionId: string) => void
-}
-
-function getStorefrontBaseUrl() {
-    const configured = process.env.NEXT_PUBLIC_STOREFRONT_URL?.replace(/\/$/, '')
-    if (configured) return configured
-
-    return 'https://storefront.staging.letbuyy.store'
 }
 
 export default function CenterPanel({

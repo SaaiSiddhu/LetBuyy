@@ -24,7 +24,7 @@ export const COOKIE_NAMES = {
  *   *.letbuyy.store         (any future subdomains)
  */
 const COOKIE_DOMAIN =
-    process.env.NODE_ENV === 'production' ? '.letbuyy.store' : '.staging.letbuyy.store'
+    process.env.COOKIE_DOMAIN?.trim() || (process.env.NODE_ENV === 'production' ? '.letbuyy.store' : undefined)
 
 // Cookie options shared across all auth cookies
 const BASE_OPTIONS = {

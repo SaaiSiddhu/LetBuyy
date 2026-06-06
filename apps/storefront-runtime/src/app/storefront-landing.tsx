@@ -53,6 +53,21 @@ function getSiteTypeLabel(siteType: string): string {
     return SITE_TYPE_META[siteType]?.label || 'Site';
 }
 
+function getStorefrontUrl(subdomain: string): string {
+    const encodedSubdomain = encodeURIComponent(subdomain);
+    const configuredBaseUrl = process.env.NEXT_PUBLIC_STOREFRONT_URL?.replace(/\/+$/, '');
+
+    if (configuredBaseUrl) {
+        return `${configuredBaseUrl}/store/${encodedSubdomain}`;
+    }
+
+    if (process.env.NODE_ENV === 'production') {
+        return `https://${encodedSubdomain}.letbuyy.store`;
+    }
+
+    return `/store/${encodedSubdomain}`;
+}
+
 // ─── Utilities ─────────────────────────────────────────────────
 function timeAgo(dateString: string): string {
     const now = new Date();
@@ -210,10 +225,7 @@ function StoreFinder() {
     }, [status, store, countdown]);
 
     function navigateToStore(subdomain: string) {
-        const url = process.env.NODE_ENV === 'production'
-            ? `https://${subdomain}.letbuyy.store`
-            : `https://storefront.staging.letbuyy.store/store/${subdomain}`;
-        window.location.href = url;
+        window.location.href = getStorefrontUrl(subdomain);
     }
 
     function handleVisitClick() {
@@ -316,9 +328,7 @@ function StoreFinder() {
 function StoreCard({ store }: { store: StoreShowcase }) {
     const theme = getThemeMeta(store.themeId);
     const isLive = store.status === 'published';
-    const storeUrl = process.env.NODE_ENV === 'production'
-        ? `https://${store.subdomain}.letbuyy.store`
-        : `https://storefront.staging.letbuyy.store/store/${store.subdomain}`;
+    const storeUrl = getStorefrontUrl(store.subdomain);
 
     return (
         <article

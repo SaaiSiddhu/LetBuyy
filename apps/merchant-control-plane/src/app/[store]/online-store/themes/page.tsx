@@ -22,6 +22,7 @@ import {
     XCircle,
     useToast,
 } from '@letbuyy/ui'
+import { getStorefrontStoreUrl, getThemeMarketplaceUrl } from '@/lib/public-urls'
 
 interface ThemeConfig {
     colors?: {
@@ -66,17 +67,11 @@ interface ThemeRecord {
 }
 
 function getStorefrontUrl(store: string) {
-    if (process.env.NODE_ENV !== 'production') {
-        const stagingStorefrontUrl = process.env.NEXT_PUBLIC_STOREFRONT_URL || 'https://storefront.staging.letbuyy.store'
-        return `${stagingStorefrontUrl.replace(/\/$/, '')}/store/${encodeURIComponent(store)}`
-    }
-
-    return `https://${store}.letbuyy.store`
+    return getStorefrontStoreUrl(store)
 }
 
 function getThemeStoreUrl() {
-    if (process.env.NODE_ENV !== 'production') return 'https://themes.staging.letbuyy.store/themes'
-    return 'https://themes.letbuyy.store/themes'
+    return getThemeMarketplaceUrl('/themes')
 }
 
 function getThemePalette(theme?: ThemeRecord | null) {

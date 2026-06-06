@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getAccountsUrl } from '@/lib/public-urls'
 
 export default function PricingSection() {
     const plans = [
@@ -77,7 +78,7 @@ export default function PricingSection() {
                                 ))}
                             </ul>
                             <Link
-                                href="https://accounts.staging.letbuyy.store/signup"
+                                href={getAccountsUrl('/signup')}
                                 className={`btn ${plan.popular ? 'btn-primary' : 'btn-outline'}`}
                                 style={{ width: '100%' }}
                             >

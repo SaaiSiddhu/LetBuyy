@@ -11,7 +11,7 @@ import {
 } from '@letbuyy/auth-core'
 import { getSessionCookie } from '../auth/cookies'
 
-const DEFAULT_API_BASE_URL = 'https://api.staging.letbuyy.store/v1'
+const DEFAULT_PRODUCTION_API_BASE_URL = 'https://api.letbuyy.store/v1'
 
 interface IdentityApiRequestInit extends RequestInit {
     requireSession?: boolean
@@ -72,12 +72,16 @@ export function getIdentityApiFailureMessage(payload: unknown, fallback: string)
 }
 
 function getApiBaseUrl(): string {
-    const configuredUrl = (
+    const configuredApiUrl =
         process.env.LETBUYY_API_URL ||
         process.env.NEXT_PUBLIC_API_URL ||
-        process.env.API_URL ||
-        DEFAULT_API_BASE_URL
-    ).replace(/\/$/, '')
+        process.env.API_URL
+
+    if (!configuredApiUrl && process.env.NODE_ENV !== 'production') {
+        throw new Error('Identity API base URL is not configured. Set LETBUYY_API_URL or NEXT_PUBLIC_API_URL for this environment.')
+    }
+
+    const configuredUrl = (configuredApiUrl || DEFAULT_PRODUCTION_API_BASE_URL).replace(/\/$/, '')
 
     try {
         const url = new URL(configuredUrl)

@@ -47,7 +47,7 @@ class PreviewFooter extends StatelessWidget {
     final youtubeUrl = settings['youtubeUrl'] as String? ?? '';
     
     final showSocial = settings['showSocial'] != false;
-    final contactEmail = settings['contactEmail'] as String? ?? 'help@letbuyy.com';
+    final contactEmail = settings['contactEmail'] as String? ?? 'help@letbuyy.store';
     
     final storeName = store?.name ?? 'Store';
     final currentYear = DateTime.now().year;

@@ -2,8 +2,9 @@
 
 import { createContext, useContext, useState, useCallback } from 'react';
 import type { AuthSessionUser } from '@letbuyy/shared-types';
+import { getAccountsUrl } from '@/lib/public-urls';
 
-const ACCOUNTS_URL = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://staging.letbuyy.store';
+const ACCOUNTS_URL = getAccountsUrl();
 
 interface AuthState {
     user: AuthSessionUser | null;

@@ -34,6 +34,17 @@ test('credentialed CORS reflects only exact platform or configured tenant origin
         'https://merchant.example.com',
     );
     assert.equal(
+        resolveCredentialedCorsOrigin('https://accounts.staging.letbuyy.store', {}),
+        DEFAULT_CREDENTIAL_ORIGIN,
+        'staging origins must be configured by environment, not hardcoded into production source',
+    );
+    assert.equal(
+        resolveCredentialedCorsOrigin('https://accounts.staging.letbuyy.store', {
+            CORS_CREDENTIAL_ORIGINS: 'https://accounts.staging.letbuyy.store',
+        }),
+        'https://accounts.staging.letbuyy.store',
+    );
+    assert.equal(
         resolveCredentialedCorsOrigin('https://random-store.letbuyy.store', {}),
         DEFAULT_CREDENTIAL_ORIGIN,
         'unconfigured tenant subdomains must not receive credentialed CORS reflection',

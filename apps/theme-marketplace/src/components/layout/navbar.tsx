@@ -11,9 +11,10 @@ import {
 import { useTheme } from '@/components/theme-provider';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
+import { getAccountsUrl } from '@/lib/public-urls';
 
 /* ─── Constants ─── */
-const ACCOUNTS_URL = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://staging.letbuyy.store';
+const ACCOUNTS_URL = getAccountsUrl();
 
 const NAV_LINKS = [
     { label: 'Browse Themes', href: '/themes', icon: Sparkles },

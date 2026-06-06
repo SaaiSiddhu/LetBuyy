@@ -3,7 +3,7 @@ import type { ProductModel } from '@letbuyy/commerce-core';
 import type { StoreModel } from '@letbuyy/tenant-core';
 
 const PLATFORM_DOMAIN = 'letbuyy.store';
-const DEFAULT_STAGING_STOREFRONT_URL = 'https://storefront.staging.letbuyy.store';
+const DEFAULT_LOCAL_STOREFRONT_URL = 'http://localhost:3003';
 
 function cleanPath(path: string): string {
     if (!path || path === '/') return '';
@@ -47,8 +47,8 @@ export function getStorefrontBaseUrl(store: StoreModel): string {
     if (customDomain) return customDomain.replace(/\/$/, '');
 
     if (process.env.NODE_ENV !== 'production') {
-        const stagingBase = (process.env.NEXT_PUBLIC_STOREFRONT_URL || DEFAULT_STAGING_STOREFRONT_URL).replace(/\/$/, '');
-        return `${stagingBase}/store/${encodeURIComponent(store.subdomain)}`;
+        const localBase = (process.env.NEXT_PUBLIC_STOREFRONT_URL || DEFAULT_LOCAL_STOREFRONT_URL).replace(/\/$/, '');
+        return `${localBase}/store/${encodeURIComponent(store.subdomain)}`;
     }
 
     return `https://${store.subdomain}.${PLATFORM_DOMAIN}`;

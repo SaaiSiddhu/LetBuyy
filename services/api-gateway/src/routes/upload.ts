@@ -23,10 +23,9 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 
 function publicAssetBaseUrl(env: Env): string {
     const configuredBaseUrl = env.ASSET_PUBLIC_BASE_URL?.trim();
-    const fallbackBaseUrl = isProductionEnv(env)
-        ? 'https://cdn.letbuyy.store'
-        : 'https://cdn-staging.letbuyy.store';
-    return (configuredBaseUrl || fallbackBaseUrl).replace(/\/+$/, '');
+    if (configuredBaseUrl) return configuredBaseUrl.replace(/\/+$/, '');
+    if (isProductionEnv(env)) return 'https://cdn.letbuyy.store';
+    return '';
 }
 
 // POST /upload — Upload file to R2
@@ -83,12 +82,17 @@ router.post('/', async (c) => {
             }, 201);
         }
 
+        const assetBaseUrl = publicAssetBaseUrl(c.env);
+        if (!assetBaseUrl) {
+            return c.json({ error: { code: 'STORAGE_UNAVAILABLE', message: 'Public asset base URL is not configured' } }, 503);
+        }
+
         await c.env.R2_BUCKET.put(key, file.stream(), {
             httpMetadata: { contentType: file.type },
         });
 
         // Return public URL for the environment-specific CDN in front of R2.
-        const publicUrl = `${publicAssetBaseUrl(c.env)}/${key}`;
+        const publicUrl = `${assetBaseUrl}/${key}`;
 
         return c.json({
             data: {

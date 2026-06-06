@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
+import { getAccountsUrl } from '@/lib/public-urls'
 
 /**
  * Admin proxy:
@@ -25,12 +26,10 @@ export function proxy(request: NextRequest) {
     }
 
     if (!session.accepted) {
-        const accountsUrl =
-            process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store'
         const returnUrl = encodeURIComponent(request.url)
 
         return NextResponse.redirect(
-            `${accountsUrl}/lookup?return_to=${returnUrl}`
+            `${getAccountsUrl('/lookup')}?return_to=${returnUrl}`
         )
     }
 

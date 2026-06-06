@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { getSessionUser, getStoreForUser, getUserStores } from "@/lib/auth/session";
 import AdminShell from "@/components/AdminShell";
+import { getAccountsUrl } from "@/lib/public-urls";
 
 interface StoreLayoutProps {
     children: React.ReactNode;
@@ -17,8 +18,7 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
     // Validate session
     const user = await getSessionUser();
     if (!user) {
-        const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store';
-        redirect(`${accountsUrl}/lookup`);
+        redirect(getAccountsUrl('/lookup'));
     }
 
     // Verify store ownership

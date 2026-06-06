@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Sparkles } from '@letbuyy/ui'
+import { getAccountsUrl } from '@/lib/public-urls'
 
 export default function HeroSection() {
     return (
@@ -25,7 +26,7 @@ export default function HeroSection() {
 
                 {/* CTA Buttons */}
                 <div className="hero-cta">
-                    <Link href="https://accounts.staging.letbuyy.store/signup" className="btn btn-primary btn-large">
+                    <Link href={getAccountsUrl('/signup')} className="btn btn-primary btn-large">
                         Start your free trial
                     </Link>
                     <Link href="#features" className="btn btn-outline btn-large">
