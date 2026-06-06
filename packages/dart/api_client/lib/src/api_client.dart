@@ -516,6 +516,12 @@ class ProductsApi {
     );
   }
 
+  Future<JsonMap> createGiftCard(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/products/gift-cards',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
   Future<JsonMap> importCsv(JsonMap input, {ApiRequestOptions? options}) =>
       _client.requestJson(
         '/export/import-products',

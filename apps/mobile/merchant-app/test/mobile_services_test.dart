@@ -39,6 +39,7 @@ import 'package:letbuyy_store/screens/customers/customer_detail_screen.dart';
 import 'package:letbuyy_store/screens/customers/customers_screen.dart';
 import 'package:letbuyy_store/screens/discounts/coupon_form_screen.dart';
 import 'package:letbuyy_store/screens/discounts/coupons_screen.dart';
+import 'package:letbuyy_store/screens/discounts/gift_cards_screen.dart';
 import 'package:letbuyy_store/screens/inventory/inventory_screen.dart';
 import 'package:letbuyy_store/screens/inventory/locations_screen.dart';
 import 'package:letbuyy_store/screens/inventory/purchase_orders_screen.dart';
@@ -165,6 +166,29 @@ void main() {
         );
       },
     );
+
+    test('ProductService lists and issues gift cards', () async {
+      final api = _FakeApiClient(
+        json: {
+          '/products/gift-cards': [_giftCardJson()],
+        },
+      );
+      final service = ProductService(api: api);
+
+      final cards = await service.fetchGiftCards('store_1');
+      final issued = await service.issueGiftCard(
+        const GiftCardInput(storeId: 'store_1', initialValue: 500),
+      );
+
+      expect(cards.single.code, 'GIFT-1234');
+      expect(cards.single.balanceLabel, 'INR 250.00');
+      expect(issued.initialValueLabel, 'INR 500.00');
+      expect(api.paths, contains('/products/gift-cards'));
+      expect(
+        api.bodies['/products/gift-cards'],
+        containsPair('initial_value', 500),
+      );
+    });
 
     test('OrderService fetches typed orders and status counts', () async {
       final api = _FakeApiClient(
@@ -1477,6 +1501,36 @@ void main() {
     expect(find.text('Code'), findsOneWidget);
   });
 
+  testWidgets('GiftCardsScreen renders balances and issue action', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+      },
+      json: {
+        '/products/gift-cards': [_giftCardJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => ProductService(api: api)),
+        ],
+        child: const MaterialApp(home: GiftCardsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Gift Cards'), findsOneWidget);
+    expect(find.text('GIFT-1234'), findsOneWidget);
+    expect(find.text('INR 250.00'), findsWidgets);
+    expect(find.text('Issue card'), findsOneWidget);
+    expect(find.text('Active'), findsWidgets);
+  });
+
   testWidgets('NotificationsScreen renders persisted toggles', (tester) async {
     final api = _FakeApiClient(
       paginated: {
@@ -2187,6 +2241,23 @@ Map<String, dynamic> _couponJson({
   'per_customer_limit': 1,
   'expires_at': '2026-12-31T23:59:59.000Z',
   'is_active': isActive,
+};
+
+Map<String, dynamic> _giftCardJson({
+  String id = 'gift_1',
+  String code = 'GIFT-1234',
+  String status = 'active',
+  double initialValue = 500,
+  double balance = 250,
+}) => {
+  'id': id,
+  'store_id': 'store_1',
+  'code': code,
+  'initial_value': initialValue,
+  'balance': balance,
+  'status': status,
+  'expires_at': '2026-12-31T23:59:59.000Z',
+  'created_at': '2026-06-01T11:00:00.000Z',
 };
 
 Map<String, dynamic> _pageJson({

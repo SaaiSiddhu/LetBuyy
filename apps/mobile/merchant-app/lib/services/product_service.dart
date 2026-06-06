@@ -26,6 +26,9 @@ class ProductService extends ChangeNotifier {
   List<Map<String, dynamic>> _products = [];
   List<Map<String, dynamic>> get products => List.unmodifiable(_products);
 
+  List<GiftCardContract> _giftCards = [];
+  List<GiftCardContract> get giftCards => List.unmodifiable(_giftCards);
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -202,6 +205,24 @@ class ProductService extends ChangeNotifier {
       'Gateway exposes GET/POST /v1/products/collections but no DELETE route for archiving collections.',
     );
   }
+
+  // ── Gift cards ───────────────────────────────────────────
+
+  Future<List<GiftCardContract>> fetchGiftCards(String storeId) async {
+    final rows = await _api.products.giftCards(storeId: storeId);
+    _giftCards = rows.map(GiftCardContract.fromJson).toList(growable: false);
+    notifyListeners();
+    return _giftCards;
+  }
+
+  Future<GiftCardContract> issueGiftCard(GiftCardInput input) async {
+    final card = GiftCardContract.fromJson(
+      await _api.products.createGiftCard(input.toJson()),
+    );
+    _giftCards = [card, ..._giftCards];
+    notifyListeners();
+    return card;
+  }
 }
 
 class ProductCollectionContract {
@@ -292,4 +313,75 @@ class ProductCollectionInput {
       'description': description,
     if (imageUrl != null && imageUrl!.trim().isNotEmpty) 'image_url': imageUrl,
   };
+}
+
+class GiftCardContract {
+  const GiftCardContract({
+    required this.id,
+    required this.storeId,
+    required this.code,
+    required this.initialValue,
+    required this.balance,
+    required this.status,
+    required this.expiresAt,
+    required this.createdAt,
+  });
+
+  factory GiftCardContract.fromJson(Map<String, dynamic> data) {
+    return GiftCardContract(
+      id: _stringValue(data['id']),
+      storeId: _stringValue(data['store_id'] ?? data['site_id']),
+      code: _stringValue(data['code']),
+      initialValue: _doubleValue(
+        data['initial_value'] ?? data['initialValue'] ?? data['amount'],
+      ),
+      balance: _doubleValue(data['balance']),
+      status: _stringValue(data['status'], fallback: 'active'),
+      expiresAt: _stringValue(data['expires_at'] ?? data['expiresAt']),
+      createdAt: _stringValue(data['created_at'] ?? data['createdAt']),
+    );
+  }
+
+  final String id;
+  final String storeId;
+  final String code;
+  final double initialValue;
+  final double balance;
+  final String status;
+  final String expiresAt;
+  final String createdAt;
+
+  bool get isActive => status == 'active';
+  String get balanceLabel => 'INR ${balance.toStringAsFixed(2)}';
+  String get initialValueLabel => 'INR ${initialValue.toStringAsFixed(2)}';
+}
+
+class GiftCardInput {
+  const GiftCardInput({
+    required this.storeId,
+    required this.initialValue,
+    this.expiresAt,
+  });
+
+  final String storeId;
+  final double initialValue;
+  final String? expiresAt;
+
+  Map<String, dynamic> toJson() => {
+    'store_id': storeId,
+    'initial_value': initialValue,
+    if (expiresAt != null && expiresAt!.trim().isNotEmpty)
+      'expires_at': expiresAt,
+  };
+}
+
+double _doubleValue(Object? value, {double fallback = 0}) {
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value) ?? fallback;
+  return fallback;
+}
+
+String _stringValue(Object? value, {String fallback = ''}) {
+  final text = value?.toString().trim();
+  return text == null || text.isEmpty ? fallback : text;
 }

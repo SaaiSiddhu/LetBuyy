@@ -195,7 +195,11 @@ class MerchantFeatureDefinitions {
     title: 'Gift Cards',
     summary: 'Gift card balances, issuance, redemption, and expiry.',
     icon: Icons.card_giftcard_outlined,
-    backendRequirement: 'No governed /v1 gift-card endpoint is present yet.',
+    endpoint: 'products/gift-cards',
+    backendRequirement:
+        'Requires /v1/products/gift-cards rows for the active store.',
+    titleKeys: ['code', 'id'],
+    subtitleKeys: ['balance', 'status', 'expires_at'],
   );
 
   static const reviews = MerchantFeatureDefinition(

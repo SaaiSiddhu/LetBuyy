@@ -30,6 +30,7 @@ import '../screens/customers/customer_detail_screen.dart';
 import '../screens/customers/customers_screen.dart';
 import '../screens/discounts/coupon_form_screen.dart';
 import '../screens/discounts/coupons_screen.dart';
+import '../screens/discounts/gift_cards_screen.dart';
 import '../screens/content/blog_screen.dart';
 import '../screens/content/media_library_screen.dart';
 import '../screens/content/navigation_screen.dart';
@@ -89,6 +90,7 @@ class AppRoutes {
   static const String customerDetail = '/customers/detail';
   static const String coupons = '/coupons';
   static const String couponForm = '/coupons/form';
+  static const String giftCards = '/gift-cards';
   static const String pages = '/pages';
   static const String blog = '/blog';
   static const String navigation = '/navigation';
@@ -129,6 +131,9 @@ class AppRoutes {
     }
     if (settings.name == '/features/coupons') {
       return _buildRoute(const CouponsScreen(), settings);
+    }
+    if (settings.name == '/features/gift-cards') {
+      return _buildRoute(const GiftCardsScreen(), settings);
     }
     if (settings.name == '/features/collections') {
       return _buildRoute(const CollectionsScreen(), settings);
@@ -304,6 +309,9 @@ class AppRoutes {
           ),
           settings,
         );
+
+      case giftCards:
+        return _buildRoute(const GiftCardsScreen(), settings);
 
       case pages:
         return _buildRoute(const PagesScreen(), settings);
