@@ -473,7 +473,7 @@ export function PageHeader({
                     )}
                     <div className="min-w-0 space-y-[var(--lb-space-1)]">
                         {shouldShowEyebrow && eyebrow && (
-                            <p className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-primary)]">
+                            <p className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-primary-text)]">
                                 {eyebrow}
                             </p>
                         )}

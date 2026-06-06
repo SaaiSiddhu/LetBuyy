@@ -1,7 +1,7 @@
 import React from 'react';
 import { axe } from 'jest-axe';
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import {
     Badge,
     Banner,
@@ -9,14 +9,19 @@ import {
     Card,
     Checkbox,
     Combobox,
+    CommandPalette,
     DesignSystemRoot,
     EmptyState,
     Input,
+    Modal,
     Radio,
     Section,
     Select,
     Skeleton,
     Tabs,
+    Textarea,
+    letbuyyTokenCss,
+    letbuyyTokenCssVariables,
 } from '../../src';
 
 function renderInSystem(ui: React.ReactElement) {
@@ -29,6 +34,30 @@ function renderInSystem(ui: React.ReactElement) {
 
 async function expectAxeClean(container: HTMLElement) {
     expect(await axe(container)).toHaveNoViolations();
+}
+
+function hexToRgb(hex: string) {
+    const normalized = hex.replace('#', '');
+    return {
+        r: Number.parseInt(normalized.slice(0, 2), 16),
+        g: Number.parseInt(normalized.slice(2, 4), 16),
+        b: Number.parseInt(normalized.slice(4, 6), 16),
+    };
+}
+
+function relativeLuminance(hex: string) {
+    const { r, g, b } = hexToRgb(hex);
+    const channels = [r, g, b].map((channel) => {
+        const value = channel / 255;
+        return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    });
+    return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+}
+
+function contrastRatio(foreground: string, background: string) {
+    const lighter = Math.max(relativeLuminance(foreground), relativeLuminance(background));
+    const darker = Math.min(relativeLuminance(foreground), relativeLuminance(background));
+    return (lighter + 0.05) / (darker + 0.05);
 }
 
 describe('@letbuyy/ui foundation smoke coverage', () => {
@@ -85,6 +114,8 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         const input = screen.getByLabelText('Store name');
         expect(input).toBeTruthy();
         expect(screen.getByText('Shown to shoppers')).toBeTruthy();
+        const helperId = input.getAttribute('aria-describedby');
+        expect(document.getElementById(helperId ?? '')?.textContent).toBe('Shown to shoppers');
 
         rerender(
             <DesignSystemRoot>
@@ -94,7 +125,29 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
 
         const errorInput = screen.getByLabelText('Store name');
         expect(errorInput).toBeTruthy();
+        expect(errorInput.getAttribute('aria-invalid')).toBe('true');
+        const errorId = errorInput.getAttribute('aria-describedby');
+        expect(document.getElementById(errorId ?? '')?.textContent).toBe('Store name is required');
         expect(screen.getByText('Store name is required')).toBeTruthy();
+        await expectAxeClean(container);
+    });
+
+    it('generates stable unique IDs and ARIA wiring for duplicate Input and Textarea labels', async () => {
+        const { container } = renderInSystem(
+            <>
+                <Input label="Store name" helperText="First helper" />
+                <Input label="Store name" helperText="Second helper" />
+                <Textarea label="Store name" error="Description is required" />
+            </>,
+        );
+
+        const controls = screen.getAllByLabelText('Store name');
+        const ids = controls.map((control) => control.id);
+
+        expect(new Set(ids).size).toBe(ids.length);
+        expect(controls[0].getAttribute('aria-describedby')).not.toBe(controls[1].getAttribute('aria-describedby'));
+        expect(controls[2].getAttribute('aria-invalid')).toBe('true');
+        expect(document.getElementById(controls[2].getAttribute('aria-describedby') ?? '')?.textContent).toBe('Description is required');
         await expectAxeClean(container);
     });
 
@@ -196,5 +249,107 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
 
         expect(screen.getByRole('tabpanel').textContent).toBe('Shipping panel');
         await expectAxeClean(container);
+    });
+
+    it('traps, restores, and dismisses focus in Modal', async () => {
+        function ModalHarness() {
+            const [open, setOpen] = React.useState(false);
+            return (
+                <>
+                    <button type="button" onClick={() => setOpen(true)}>
+                        Open modal
+                    </button>
+                    <button type="button">Background action</button>
+                    <Modal
+                        open={open}
+                        title="Edit product"
+                        description="Update product details"
+                        onClose={() => setOpen(false)}
+                        footer={<Button>Save product</Button>}
+                    >
+                        <Input label="Product name" />
+                    </Modal>
+                </>
+            );
+        }
+
+        const { container } = renderInSystem(<ModalHarness />);
+        const openButton = screen.getByRole('button', { name: 'Open modal' });
+        const backgroundButton = screen.getByRole('button', { name: 'Background action' }) as HTMLElement & { inert?: boolean };
+
+        openButton.focus();
+        fireEvent.click(openButton);
+
+        const closeButton = await screen.findByRole('button', { name: 'Close' });
+        await waitFor(() => expect(document.activeElement).toBe(closeButton));
+        expect(backgroundButton.getAttribute('aria-hidden')).toBe('true');
+        expect(backgroundButton.inert).toBe(true);
+
+        fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
+        expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Save product' }));
+
+        fireEvent.keyDown(document, { key: 'Tab' });
+        expect(document.activeElement).toBe(closeButton);
+
+        fireEvent.keyDown(document, { key: 'Escape' });
+        await waitFor(() => expect(document.activeElement).toBe(openButton));
+        await expectAxeClean(container);
+    });
+
+    it('traps focus and supports arrow-key roving in CommandPalette', async () => {
+        const onClose = vi.fn();
+        const onFirst = vi.fn();
+        const { container } = renderInSystem(
+            <>
+                <button type="button">Background action</button>
+                <CommandPalette
+                    open
+                    onClose={onClose}
+                    actions={[
+                        { id: 'products', label: 'Products', description: 'Open products', onSelect: onFirst },
+                        { id: 'orders', label: 'Orders', description: 'Open orders', onSelect: vi.fn() },
+                    ]}
+                />
+            </>,
+        );
+
+        const search = screen.getByRole('combobox', { name: 'Search commands' });
+        await waitFor(() => expect(document.activeElement).toBe(search));
+
+        fireEvent.keyDown(search, { key: 'ArrowDown' });
+        expect(document.activeElement).toBe(screen.getByRole('option', { name: /Products/ }));
+
+        fireEvent.keyDown(document.activeElement ?? search, { key: 'ArrowDown' });
+        expect(document.activeElement).toBe(screen.getByRole('option', { name: /Orders/ }));
+
+        fireEvent.keyDown(document.activeElement ?? search, { key: 'Escape' });
+        expect(onClose).toHaveBeenCalledTimes(1);
+        await expectAxeClean(container);
+    });
+
+    it('emits z-index tokens and an auto-theme dark media block', () => {
+        expect(letbuyyTokenCssVariables.light['--lb-z-dropdown']).toBe('30');
+        expect(letbuyyTokenCssVariables.light['--lb-z-modal']).toBe('60');
+        expect(letbuyyTokenCssVariables.light['--lb-z-toast']).toBe('70');
+        expect(letbuyyTokenCssVariables.light['--lb-z-tooltip']).toBe('80');
+        expect(letbuyyTokenCss).toContain('@media (prefers-color-scheme: dark)');
+        expect(letbuyyTokenCss).toContain('[data-theme="auto"], [data-letbuyy-theme="auto"]');
+    });
+
+    it('keeps light-mode text token pairs at AA contrast', () => {
+        const light = letbuyyTokenCssVariables.light;
+        const statusPairs = [
+            ['--lb-component-banner-info-text', '--lb-component-banner-info-bg'],
+            ['--lb-component-banner-success-text', '--lb-component-banner-success-bg'],
+            ['--lb-component-banner-warning-text', '--lb-component-banner-warning-bg'],
+            ['--lb-component-banner-danger-text', '--lb-component-banner-danger-bg'],
+        ] as const;
+
+        expect(contrastRatio(light['--lb-color-text-muted'], light['--lb-color-surface'])).toBeGreaterThanOrEqual(4.5);
+        expect(contrastRatio(light['--lb-color-primary-text'], light['--lb-color-surface'])).toBeGreaterThanOrEqual(4.5);
+
+        for (const [textToken, bgToken] of statusPairs) {
+            expect(contrastRatio(light[textToken], light[bgToken])).toBeGreaterThanOrEqual(4.5);
+        }
     });
 });

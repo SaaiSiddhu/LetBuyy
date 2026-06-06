@@ -144,6 +144,7 @@ export {
     letbuyyTokenCss,
     letbuyyTokenCssVariables,
     letbuyyTokens,
+    letbuyyZIndexTokens,
 } from './tokens';
 export type { LetbuyyDensity, LetbuyyTheme } from './tokens';
 

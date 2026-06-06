@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
     ArrowDown,
     ArrowUp,
@@ -12,6 +12,7 @@ import {
 } from './icons';
 import { Badge, Skeleton } from './feedback';
 import { cx } from './utils';
+import { useDismiss, useFocusTrap } from './overlay-hooks';
 
 export interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {
     label: string;
@@ -98,7 +99,7 @@ export function Avatar({ name, imageUrl, size = 'md', className = '', ...props }
     return (
         <div
             className={cx(
-                'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-primary)]',
+                'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-primary-text)]',
                 avatarSizeClasses[size],
                 className,
             )}
@@ -266,7 +267,7 @@ export function IndexTable<T extends { id: string }>({
                                         className={cx(
                                             'inline-flex h-[var(--lb-density-pill-height)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-3)] text-[length:var(--lb-font-size-badge)] font-[var(--lb-font-weight-medium)]',
                                             active
-                                                ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]'
+                                                ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary-text)]'
                                                 : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)]',
                                         )}
                                         onClick={() => onViewChange?.(view.value)}
@@ -320,7 +321,7 @@ export function IndexTable<T extends { id: string }>({
                                 className={cx(
                                     'inline-flex h-[var(--lb-density-pill-height)] shrink-0 items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-3)] text-[length:var(--lb-font-size-badge)] font-[var(--lb-font-weight-medium)]',
                                     active
-                                        ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]'
+                                        ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary-text)]'
                                         : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)]',
                                 )}
                                 aria-pressed={active}
@@ -485,48 +486,107 @@ export interface CommandPaletteProps {
 
 export function CommandPalette({ open, actions, onClose, placeholder = 'Search commands' }: CommandPaletteProps) {
     const [query, setQuery] = useState('');
+    const [activeIndex, setActiveIndex] = useState(0);
+    const overlayRef = useRef<HTMLDivElement>(null);
+    const dialogRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const actionRefs = useRef<Array<HTMLButtonElement | null>>([]);
+    const inputId = useId();
+    const listboxId = `${inputId}-listbox`;
     const filteredActions = useMemo(() => {
         const normalizedQuery = query.trim().toLowerCase();
         if (!normalizedQuery) return actions;
         return actions.filter((action) => `${action.label} ${action.description ?? ''}`.toLowerCase().includes(normalizedQuery));
     }, [actions, query]);
 
+    useFocusTrap(overlayRef, { active: open, initialFocusRef: inputRef });
+    useDismiss(dialogRef, { active: open, onDismiss: onClose });
+
     useEffect(() => {
-        if (!open) return;
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') onClose();
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [onClose, open]);
+        setActiveIndex(filteredActions.length > 0 ? 0 : -1);
+    }, [filteredActions.length]);
+
+    const focusAction = (index: number) => {
+        if (filteredActions.length === 0) return;
+        const nextIndex = (index + filteredActions.length) % filteredActions.length;
+        setActiveIndex(nextIndex);
+        actionRefs.current[nextIndex]?.focus();
+    };
+
+    const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            focusAction(activeIndex >= 0 ? activeIndex : 0);
+        }
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            focusAction(activeIndex >= 0 ? activeIndex : filteredActions.length - 1);
+        }
+    };
+
+    const handleActionKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            focusAction(index + 1);
+        }
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            focusAction(index - 1);
+        }
+        if (event.key === 'Home') {
+            event.preventDefault();
+            focusAction(0);
+        }
+        if (event.key === 'End') {
+            event.preventDefault();
+            focusAction(filteredActions.length - 1);
+        }
+    };
 
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-[var(--lb-color-overlay)] px-[var(--lb-space-0)] pt-[var(--lb-space-0)] sm:items-start sm:px-[var(--lb-space-4)] sm:pt-[var(--lb-size-command-palette-offset)]">
-            <div role="dialog" aria-modal="true" aria-label="Command palette" className="flex h-full w-full flex-col overflow-hidden rounded-none border-0 bg-[var(--lb-component-card-bg)] shadow-[var(--lb-shadow-lg)] sm:h-auto sm:max-h-[calc(100vh-var(--lb-space-7))] sm:w-[min(var(--lb-size-command-palette-width),100%)] sm:rounded-[var(--lb-radius-lg)] sm:border sm:border-[var(--lb-component-card-border)]">
+        <div ref={overlayRef} className="fixed inset-0 z-[var(--lb-z-modal)] flex items-stretch justify-center bg-[var(--lb-color-overlay)] px-[var(--lb-space-0)] pt-[var(--lb-space-0)] sm:items-start sm:px-[var(--lb-space-4)] sm:pt-[var(--lb-size-command-palette-offset)]">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Command palette" className="flex h-full w-full flex-col overflow-hidden rounded-none border-0 bg-[var(--lb-component-card-bg)] shadow-[var(--lb-shadow-lg)] sm:h-auto sm:max-h-[calc(100vh-var(--lb-space-7))] sm:w-[min(var(--lb-size-command-palette-width),100%)] sm:rounded-[var(--lb-radius-lg)] sm:border sm:border-[var(--lb-component-card-border)]">
                 <div className="flex items-center gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] px-[var(--lb-space-4)]">
                     <Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
                     <input
+                        ref={inputRef}
+                        id={inputId}
                         className="h-[var(--lb-density-button-height-large)] flex-1 bg-transparent text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] outline-none placeholder:text-[color:var(--lb-color-text-subdued)]"
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
+                        onKeyDown={handleInputKeyDown}
                         placeholder={placeholder}
-                        autoFocus
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-controls={listboxId}
+                        aria-expanded="true"
+                        aria-activedescendant={activeIndex >= 0 ? `${listboxId}-action-${activeIndex}` : undefined}
+                        aria-label={placeholder}
                     />
                     <Command className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
                 </div>
-                <div className="max-h-none flex-1 overflow-auto p-[var(--lb-space-2)] sm:max-h-[var(--lb-size-command-palette-list-max-height)]">
+                <div id={listboxId} role="listbox" className="max-h-none flex-1 overflow-auto p-[var(--lb-space-2)] sm:max-h-[var(--lb-size-command-palette-list-max-height)]">
                     {filteredActions.length === 0 ? (
                         <p className="m-0 px-[var(--lb-space-3)] py-[var(--lb-space-4)] text-center text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
                             No commands found
                         </p>
                     ) : (
-                        filteredActions.map((action) => (
+                        filteredActions.map((action, index) => (
                             <button
                                 key={action.id}
+                                ref={(node) => {
+                                    actionRefs.current[index] = node;
+                                }}
+                                id={`${listboxId}-action-${index}`}
                                 type="button"
+                                role="option"
+                                tabIndex={index === activeIndex ? 0 : -1}
+                                aria-selected={index === activeIndex}
                                 className="flex w-full items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-md)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-left hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                onFocus={() => setActiveIndex(index)}
+                                onKeyDown={(event) => handleActionKeyDown(event, index)}
                                 onClick={() => {
                                     action.onSelect();
                                     onClose();

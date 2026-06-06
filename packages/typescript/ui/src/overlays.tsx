@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useId } from 'react';
+import React, { useId, useRef } from 'react';
 import { X } from './icons';
 import { Button } from './button';
 import { cx } from './utils';
+import { useDismiss, useFocusTrap } from './overlay-hooks';
 
 export interface ModalProps {
     open: boolean;
@@ -18,31 +19,27 @@ export interface ModalProps {
 export function Modal({ open, title, description, children, onClose, footer, className = '' }: ModalProps) {
     const titleId = useId();
     const descriptionId = useId();
+    const overlayRef = useRef<HTMLDivElement>(null);
+    const dialogRef = useRef<HTMLElement>(null);
 
-    useEffect(() => {
-        if (!open) return;
-
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') onClose();
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [onClose, open]);
+    useFocusTrap(overlayRef, { active: open });
+    useDismiss(dialogRef, { active: open, onDismiss: onClose });
 
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-stretch justify-stretch p-[var(--lb-space-0)] sm:items-center sm:justify-center sm:p-[var(--lb-space-4)]" role="presentation">
+        <div ref={overlayRef} className="fixed inset-0 z-[var(--lb-z-modal)] flex items-stretch justify-stretch p-[var(--lb-space-0)] sm:items-center sm:justify-center sm:p-[var(--lb-space-4)]" role="presentation">
             <button
                 type="button"
+                tabIndex={-1}
                 className="absolute inset-0 bg-[var(--lb-color-overlay)]"
                 onClick={onClose}
                 aria-label="Close modal"
             />
             <section
+                ref={dialogRef}
                 className={cx(
-                    'relative z-10 flex h-full max-h-none w-full flex-col overflow-hidden rounded-none border-0 bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-lg)] sm:h-auto sm:max-h-[calc(100vh-var(--lb-space-7))] sm:w-[min(640px,calc(100vw-var(--lb-space-6)))] sm:rounded-[var(--lb-radius-lg)] sm:border sm:border-[var(--lb-color-border)]',
+                    'relative z-[var(--lb-z-base)] flex h-full max-h-none w-full flex-col overflow-hidden rounded-none border-0 bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-lg)] sm:h-auto sm:max-h-[calc(100vh-var(--lb-space-7))] sm:w-[min(640px,calc(100vw-var(--lb-space-6)))] sm:rounded-[var(--lb-radius-lg)] sm:border sm:border-[var(--lb-color-border)]',
                     className,
                 )}
                 role="dialog"
@@ -139,7 +136,7 @@ export function Tooltip({ content, children, side = 'top' }: TooltipProps) {
             <span
                 role="tooltip"
                 className={cx(
-                    'pointer-events-none absolute left-1/2 z-50 w-max max-w-[var(--lb-size-tooltip-max-width)] -translate-x-1/2 rounded-[var(--lb-radius-md)] bg-[var(--lb-color-text)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-inverse)] opacity-0 shadow-[var(--lb-shadow-md)] transition-opacity duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] group-focus-within:opacity-100 group-hover:opacity-100',
+                    'pointer-events-none absolute left-1/2 z-[var(--lb-z-tooltip)] w-max max-w-[var(--lb-size-tooltip-max-width)] -translate-x-1/2 rounded-[var(--lb-radius-md)] bg-[var(--lb-color-text)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-inverse)] opacity-0 shadow-[var(--lb-shadow-md)] transition-opacity duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] group-focus-within:opacity-100 group-hover:opacity-100',
                     side === 'top' ? 'bottom-[calc(100%+var(--lb-space-2))]' : 'top-[calc(100%+var(--lb-space-2))]',
                 )}
             >

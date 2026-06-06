@@ -8,21 +8,21 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 
 | # | issue | phase | status | evidence |
 |---|---|---|---|---|
-| 1 | Modal has no focus trap | U1.2 | TODO |  |
-| 2 | Modal no initial focus on open | U1.2 | TODO |  |
-| 3 | Modal no focus restoration on close | U1.2 | TODO |  |
-| 4 | Modal background not inert/aria-hidden | U1.2 | TODO |  |
-| 5 | Input ID derived from label text | U1.3 | TODO |  |
-| 6 | Input no aria-describedby/aria-invalid | U1.3 | TODO |  |
-| 7 | Textarea same label-ID collision | U1.3 | TODO |  |
-| 8 | Textarea no error ARIA wiring | U1.3 | TODO |  |
-| 9 | marketing-site has no DesignSystemRoot | U1.6 | TODO |  |
-| 10 | theme auto never follows OS | U1.5 | TODO |  |
-| 11 | textMuted contrast fails AA | U1.4 | TODO |  |
-| 12 | brand purple text contrast fails AA | U1.4 | TODO |  |
-| 13 | z-50 overlay collisions | U1.1 | TODO |  |
-| 14 | CommandPalette no focus trap | U1.2 | TODO |  |
-| 15 | CommandPalette no Arrow-key result nav | U1.2 | TODO |  |
+| 1 | Modal has no focus trap | U1.2 | DONE | Shared `useFocusTrap` applied to Modal; `pnpm --filter @letbuyy/ui test` PASS: Modal trap test loops Tab inside dialog. |
+| 2 | Modal no initial focus on open | U1.2 | DONE | Modal test proves the close button receives initial focus on open; `pnpm --filter @letbuyy/ui test` PASS. |
+| 3 | Modal no focus restoration on close | U1.2 | DONE | Modal test proves focus returns to the opener after Escape close; `pnpm --filter @letbuyy/ui test` PASS. |
+| 4 | Modal background not inert/aria-hidden | U1.2 | DONE | Modal test proves outside app content receives `inert` and `aria-hidden` while open; `pnpm --filter @letbuyy/ui test` PASS. |
+| 5 | Input ID derived from label text | U1.3 | DONE | Input now uses React `useId()` when no explicit `id` is provided; duplicate-label test proves unique generated IDs; `pnpm --filter @letbuyy/ui test` PASS. |
+| 6 | Input no aria-describedby/aria-invalid | U1.3 | DONE | Input helper/error IDs are wired into `aria-describedby` and errors set `aria-invalid`; `pnpm --filter @letbuyy/ui test` + axe PASS. |
+| 7 | Textarea same label-ID collision | U1.3 | DONE | Textarea now uses React `useId()` when no explicit `id` is provided; duplicate-label test proves unique generated IDs; `pnpm --filter @letbuyy/ui test` PASS. |
+| 8 | Textarea no error ARIA wiring | U1.3 | DONE | Textarea helper/error IDs are wired into `aria-describedby` and errors set `aria-invalid`; `pnpm --filter @letbuyy/ui test` + axe PASS. |
+| 9 | marketing-site has no DesignSystemRoot | U1.6 | SKIP | [SKIP — NEEDS HUMAN/app stream] App-scope wrapper change recorded in status; this stream cannot edit `apps/marketing-site/**`. |
+| 10 | theme auto never follows OS | U1.5 | DONE | Token CSS now emits `@media (prefers-color-scheme: dark)` for `auto`; `pnpm --filter @letbuyy/ui test` asserts the media block exists. |
+| 11 | textMuted contrast fails AA | U1.4 | DONE | `--lb-color-text-muted` now resolves to `#6B7280` on light surface; contrast evidence recorded at 4.83:1; `pnpm --filter @letbuyy/ui test` PASS. |
+| 12 | brand purple text contrast fails AA | U1.4 | DONE | Added additive `--lb-color-primary-text` and moved text usages to it; contrast evidence recorded at 7.10:1, status text pairs 4.57:1–6.37:1; `pnpm --filter @letbuyy/ui test` PASS. |
+| 13 | z-50 overlay collisions | U1.1 | DONE | Added `--lb-z-{base,dropdown,sticky,overlay,modal,toast,tooltip}` and mapped UI overlays to distinct vars; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
+| 14 | CommandPalette no focus trap | U1.2 | DONE | Shared `useFocusTrap` applied to CommandPalette; `pnpm --filter @letbuyy/ui test` proves focus remains in the dialog. |
+| 15 | CommandPalette no Arrow-key result nav | U1.2 | DONE | CommandPalette results use roving focus with ArrowUp/ArrowDown/Home/End; RTL keyboard test PASS. |
 | 16 | zero unit tests | U0 | DONE | `pnpm --filter @letbuyy/ui test` PASS: 10 RTL/jest-axe tests; `pnpm turbo test` PASS: 61 tasks. |
 | 17 | raw src distribution/no dist | U0.5 | DONE | `pnpm --filter @letbuyy/ui build` PASS; `dist/` emitted; `main` and `types` remain `./src/index.ts`. |
 | 18 | version 0.0.1/no semver/changelog | U8.3 | TODO |  |
@@ -37,7 +37,7 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 27 | raw input bypass | U8.1 | TODO |  |
 | 28 | hardcoded hex bypass | U8.1 | TODO |  |
 | 29 | no breakpoint tokens | U2.1 | TODO |  |
-| 30 | no z-index scale | U1.1 | TODO |  |
+| 30 | no z-index scale | U1.1 | DONE | `letbuyyZIndexTokens` and emitted `--lb-z-*` variables added; `pnpm --filter @letbuyy/ui validate:tokens` PASS with 338 vars. |
 | 31 | no Grid/Columns primitive | U3.2 | TODO |  |
 | 32 | no Container primitive | U3.2 | TODO |  |
 | 33 | PageHeader raw buttons/anchors | U5.1 | TODO |  |
@@ -112,11 +112,14 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 ## SKIPPED — NEEDS HUMAN
 
 - [SKIP — NEEDS HUMAN] Issue #17 follow-up: repoint `@letbuyy/ui` `main`/`types` from `./src/index.ts` to `./dist/index.js` and `./dist/index.d.ts` only after the parallel app/service hardening stream has landed and consumers have been rechecked. Exact local decision/command: update `packages/typescript/ui/package.json` entrypoints, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Issue #9 app-scope fix: wrap `apps/marketing-site` in `DesignSystemRoot` so UI tokens are present. Exact handoff: app stream updates the marketing-site root layout with `<DesignSystemRoot surface="storefront" theme="auto">{children}</DesignSystemRoot>`, then runs `pnpm --filter @letbuyy/marketing-site typecheck`, `pnpm --filter @letbuyy/marketing-site build`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 
 ## NEW PUBLIC API
 
 - No new runtime component exports in U0.
 - New package scripts: `test`, `test:visual`, `test:visual:update`, `test:watch`, `snapshot:api:update`, `snapshot:tokens:update`, `validate:api`, `validate:tokens`, `validate:ui`.
+- New export: `letbuyyZIndexTokens`.
+- New public CSS variables: `--lb-z-base`, `--lb-z-dropdown`, `--lb-z-sticky`, `--lb-z-overlay`, `--lb-z-modal`, `--lb-z-toast`, `--lb-z-tooltip`, `--lb-color-primary-text`.
 
 ## DEPRECATIONS
 

@@ -8,6 +8,7 @@ type CssVariableMap = Record<`--${string}`, string>;
 export const letbuyyPrimitiveTokens = {
     color: {
         purple: {
+            300: '#C4B5FD',
             500: '#8B5CF6',
             600: '#7C3AED',
             700: '#6D28D9',
@@ -34,19 +35,23 @@ export const letbuyyPrimitiveTokens = {
         black: '#000000',
         green: {
             500: '#22C55E',
+            700: '#15803D',
             950: '#052E16',
         },
         amber: {
             500: '#F59E0B',
+            800: '#92400E',
             950: '#422006',
         },
         red: {
             500: '#EF4444',
             600: '#DC2626',
+            700: '#B91C1C',
             950: '#451A1A',
         },
         blue: {
             500: '#3B82F6',
+            700: '#1D4ED8',
             950: '#082F49',
         },
     },
@@ -62,6 +67,8 @@ const primitive = letbuyyPrimitiveTokens;
 export const letbuyyColorTokens = {
     brandPurple: primitive.color.purple[500],
     primary: primitive.color.purple[500],
+    primaryTextLight: primitive.color.purple[700],
+    primaryTextDark: primitive.color.purple[300],
     primaryHover: primitive.color.purple[600],
     primaryActive: primitive.color.purple[700],
     primarySubtle: primitive.opacity.purpleSubtle,
@@ -77,7 +84,7 @@ export const letbuyyColorTokens = {
     textPrimaryDark: primitive.color.white,
     textSecondaryLight: primitive.color.gray[500],
     textSecondaryDark: '#CBD5E1',
-    textMuted: primitive.color.gray[400],
+    textMuted: primitive.color.gray[500],
     borderLight: primitive.color.gray[200],
     borderDark: primitive.color.slate[700],
     success: primitive.color.green[500],
@@ -125,6 +132,7 @@ export const letbuyySemanticTokens = {
         },
         accent: {
             brand: letbuyyColorTokens.primary,
+            text: letbuyyColorTokens.primaryTextLight,
             hover: letbuyyColorTokens.primaryHover,
             active: letbuyyColorTokens.primaryActive,
             subtle: letbuyyColorTokens.primarySubtle,
@@ -134,6 +142,12 @@ export const letbuyySemanticTokens = {
             warning: letbuyyColorTokens.warning,
             danger: letbuyyColorTokens.danger,
             info: letbuyyColorTokens.info,
+        },
+        statusText: {
+            success: primitive.color.green[700],
+            warning: primitive.color.amber[800],
+            danger: primitive.color.red[700],
+            info: primitive.color.blue[700],
         },
         statusSoft: {
             success: '#DCFCE7',
@@ -182,6 +196,7 @@ export const letbuyySemanticTokens = {
         },
         accent: {
             brand: letbuyyColorTokens.primary,
+            text: letbuyyColorTokens.primaryTextDark,
             hover: letbuyyColorTokens.primaryHover,
             active: letbuyyColorTokens.primaryActive,
             subtle: letbuyyColorTokens.primarySubtle,
@@ -191,6 +206,12 @@ export const letbuyySemanticTokens = {
             warning: letbuyyColorTokens.warning,
             danger: letbuyyColorTokens.danger,
             info: letbuyyColorTokens.info,
+        },
+        statusText: {
+            success: letbuyyColorTokens.success,
+            warning: letbuyyColorTokens.warning,
+            danger: '#FCA5A5',
+            info: '#7DD3FC',
         },
         statusSoft: {
             success: primitive.color.green[950],
@@ -271,21 +292,21 @@ export const letbuyyComponentTokens = {
         },
         badge: {
             accentBg: letbuyySemanticTokens.light.accent.subtle,
-            accentText: letbuyySemanticTokens.light.accent.brand,
+            accentText: letbuyySemanticTokens.light.accent.text,
             accentBorder: letbuyySemanticTokens.light.accent.brand,
         },
         banner: {
             infoBg: letbuyySemanticTokens.light.statusSoft.info,
-            infoText: letbuyySemanticTokens.light.status.info,
+            infoText: letbuyySemanticTokens.light.statusText.info,
             infoBorder: letbuyySemanticTokens.light.status.info,
             successBg: letbuyySemanticTokens.light.statusSoft.success,
-            successText: letbuyySemanticTokens.light.status.success,
+            successText: letbuyySemanticTokens.light.statusText.success,
             successBorder: letbuyySemanticTokens.light.status.success,
             warningBg: letbuyySemanticTokens.light.statusSoft.warning,
-            warningText: letbuyySemanticTokens.light.status.warning,
+            warningText: letbuyySemanticTokens.light.statusText.warning,
             warningBorder: letbuyySemanticTokens.light.status.warning,
             dangerBg: letbuyySemanticTokens.light.statusSoft.danger,
-            dangerText: letbuyySemanticTokens.light.status.danger,
+            dangerText: letbuyySemanticTokens.light.statusText.danger,
             dangerBorder: letbuyySemanticTokens.light.status.danger,
         },
     },
@@ -356,24 +377,34 @@ export const letbuyyComponentTokens = {
         },
         badge: {
             accentBg: letbuyySemanticTokens.dark.accent.subtle,
-            accentText: letbuyySemanticTokens.dark.accent.brand,
+            accentText: letbuyySemanticTokens.dark.accent.text,
             accentBorder: letbuyySemanticTokens.dark.accent.brand,
         },
         banner: {
             infoBg: letbuyySemanticTokens.dark.statusSoft.info,
-            infoText: letbuyySemanticTokens.dark.status.info,
+            infoText: letbuyySemanticTokens.dark.statusText.info,
             infoBorder: letbuyySemanticTokens.dark.status.info,
             successBg: letbuyySemanticTokens.dark.statusSoft.success,
-            successText: letbuyySemanticTokens.dark.status.success,
+            successText: letbuyySemanticTokens.dark.statusText.success,
             successBorder: letbuyySemanticTokens.dark.status.success,
             warningBg: letbuyySemanticTokens.dark.statusSoft.warning,
-            warningText: letbuyySemanticTokens.dark.status.warning,
+            warningText: letbuyySemanticTokens.dark.statusText.warning,
             warningBorder: letbuyySemanticTokens.dark.status.warning,
             dangerBg: letbuyySemanticTokens.dark.statusSoft.danger,
-            dangerText: letbuyySemanticTokens.dark.status.danger,
+            dangerText: letbuyySemanticTokens.dark.statusText.danger,
             dangerBorder: letbuyySemanticTokens.dark.status.danger,
         },
     },
+} as const;
+
+export const letbuyyZIndexTokens = {
+    base: '0',
+    dropdown: '30',
+    sticky: '40',
+    overlay: '50',
+    modal: '60',
+    toast: '70',
+    tooltip: '80',
 } as const;
 
 export const letbuyyDensityTokens = {
@@ -468,6 +499,7 @@ export const letbuyyTokens = {
     semantic: letbuyySemanticTokens,
     component: letbuyyComponentTokens,
     density: letbuyyDensityTokens,
+    zIndex: letbuyyZIndexTokens,
     color: {
         light: {
             ...letbuyyColorTokens,
@@ -489,6 +521,7 @@ export const letbuyyTokens = {
             textSecondary: letbuyySemanticTokens.light.text.secondary,
             textMuted: letbuyySemanticTokens.light.text.muted,
             textInverse: letbuyySemanticTokens.light.text.inverse,
+            primaryText: letbuyySemanticTokens.light.accent.text,
             primarySoft: letbuyySemanticTokens.light.accent.subtle,
             primaryCta: letbuyyComponentTokens.light.button.primary.bg,
             primaryCtaHover: letbuyyComponentTokens.light.button.primary.hover,
@@ -526,6 +559,7 @@ export const letbuyyTokens = {
             textSecondary: letbuyySemanticTokens.dark.text.secondary,
             textMuted: letbuyySemanticTokens.dark.text.muted,
             textInverse: letbuyySemanticTokens.dark.text.inverse,
+            primaryText: letbuyySemanticTokens.dark.accent.text,
             primarySoft: letbuyySemanticTokens.dark.accent.subtle,
             primaryCta: letbuyyComponentTokens.dark.button.primary.bg,
             primaryCtaHover: letbuyyComponentTokens.dark.button.primary.hover,
@@ -771,6 +805,13 @@ const sharedCssVariables: CssVariableMap = {
     '--lb-shadow-sm': letbuyyTokens.shadow.sm,
     '--lb-shadow-md': letbuyyTokens.shadow.md,
     '--lb-shadow-lg': letbuyyTokens.shadow.lg,
+    '--lb-z-base': letbuyyZIndexTokens.base,
+    '--lb-z-dropdown': letbuyyZIndexTokens.dropdown,
+    '--lb-z-sticky': letbuyyZIndexTokens.sticky,
+    '--lb-z-overlay': letbuyyZIndexTokens.overlay,
+    '--lb-z-modal': letbuyyZIndexTokens.modal,
+    '--lb-z-toast': letbuyyZIndexTokens.toast,
+    '--lb-z-tooltip': letbuyyZIndexTokens.tooltip,
     '--lb-motion-fast': letbuyyTokens.motion.duration.fast,
     '--lb-motion-normal': letbuyyTokens.motion.duration.normal,
     '--lb-motion-slow': letbuyyTokens.motion.duration.slow,
@@ -862,6 +903,7 @@ function colorVariables(theme: LetbuyyTheme): CssVariableMap {
         '--lb-color-text-muted': colors.textMuted,
         '--lb-color-text-inverse': colors.textInverse,
         '--lb-color-primary': colors.primary,
+        '--lb-color-primary-text': colors.primaryText,
         '--lb-color-primary-hover': colors.primaryHover,
         '--lb-color-primary-active': colors.primaryActive,
         '--lb-color-primary-subtle': colors.primarySubtle,
@@ -905,15 +947,25 @@ export const letbuyyTokenCssVariables = {
     },
 } as const satisfies Record<LetbuyyTheme, CssVariableMap>;
 
-function serializeVariables(variables: CssVariableMap) {
+function serializeVariables(variables: CssVariableMap, indent = '  ') {
     return Object.entries(variables)
-        .map(([name, value]) => `  ${name}: ${value};`)
+        .map(([name, value]) => `${indent}${name}: ${value};`)
         .join('\n');
 }
 
 export const letbuyyTokenCss = [
     ':root, [data-theme="light"], [data-letbuyy-theme="light"] {',
     serializeVariables(letbuyyTokenCssVariables.light),
+    '}',
+    '',
+    '[data-theme="auto"], [data-letbuyy-theme="auto"] {',
+    serializeVariables(letbuyyTokenCssVariables.light),
+    '}',
+    '',
+    '@media (prefers-color-scheme: dark) {',
+    '  :root, [data-theme="auto"], [data-letbuyy-theme="auto"] {',
+    serializeVariables(letbuyyTokenCssVariables.dark, '    '),
+    '  }',
     '}',
     '',
     '[data-theme="dark"], [data-letbuyy-theme="dark"], .dark {',

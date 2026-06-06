@@ -30,7 +30,7 @@ export function DesignSystemRoot({
                 className={className}
                 data-letbuyy-design-system="true"
                 data-letbuyy-surface={surface}
-                data-letbuyy-theme={theme === 'auto' ? undefined : theme}
+                data-letbuyy-theme={theme}
                 data-letbuyy-density={density}
             >
                 {children}

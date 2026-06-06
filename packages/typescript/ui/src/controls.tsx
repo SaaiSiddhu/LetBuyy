@@ -29,13 +29,13 @@ const tabVariantStyles: Record<NonNullable<TabsProps['variant']>, { list: string
     underline: {
         list: 'gap-[var(--lb-space-2)] border-b border-[var(--lb-color-border)]',
         tab: 'border-b-2 px-[var(--lb-space-3)]',
-        active: 'border-[var(--lb-color-primary)] text-[color:var(--lb-color-primary)]',
+        active: 'border-[var(--lb-color-primary)] text-[color:var(--lb-color-primary-text)]',
         inactive: 'border-transparent text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)]',
     },
     pills: {
         list: 'gap-[var(--lb-space-2)]',
         tab: 'rounded-[var(--lb-radius-lg)] border px-[var(--lb-space-3)]',
-        active: 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]',
+        active: 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary-text)]',
         inactive: 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)] hover:text-[color:var(--lb-color-text)]',
     },
 };
@@ -532,7 +532,7 @@ export function Select({
             )}
             <div className="relative">
                 {prefixContent && (
-                    <span className="pointer-events-none absolute left-[var(--lb-space-3)] top-1/2 z-10 -translate-y-1/2 text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
+                    <span className="pointer-events-none absolute left-[var(--lb-space-3)] top-1/2 z-[var(--lb-z-base)] -translate-y-1/2 text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
                         {prefixContent}
                     </span>
                 )}
@@ -738,7 +738,7 @@ export function Combobox({
                 <div
                     id={listboxId}
                     role="listbox"
-                    className="absolute top-[calc(100%+var(--lb-space-2))] z-40 max-h-[var(--lb-size-combobox-menu-max-height)] w-full overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-1)] shadow-[var(--lb-shadow-lg)]"
+                    className="absolute top-[calc(100%+var(--lb-space-2))] z-[var(--lb-z-dropdown)] max-h-[var(--lb-size-combobox-menu-max-height)] w-full overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-1)] shadow-[var(--lb-shadow-lg)]"
                 >
                     {loading ? (
                         <div className="px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
