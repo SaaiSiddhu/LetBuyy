@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F7.3 INR currency formatting duplication collapse complete; continue F7.3 remaining duplication collapse.
+- Phase: F7.3 merchant Apps Settings dead-twin archive complete; continue F7.3 remaining duplication collapse.
 - Findings resolved: 28/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `C-14`, `H-1`, `H-2`, `H-4`, `H-5`, `H-6`, `H-7`, `H-8`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-15`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets, C-14 live observability rollout verification is SKIPPED -- NEEDS HUMAN pending deployed telemetry endpoints/credentials, H-15 live production deploy execution is SKIPPED -- NEEDS HUMAN pending protected environment approvals plus provider credentials, and legacy portfolio/resume reactivation is human-gated for named cohorts only.
-- Current governance gate state: green after F7.3 INR currency formatting increment (`pnpm run validate:governance` -> 146/146 PASS).
+- Current governance gate state: green after F7.3 Apps Settings dead-twin archive increment (`pnpm run validate:governance` -> 147/147 PASS).
 
 ## Baseline gates
 
@@ -708,6 +708,21 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 146/146 validators.
 
+## F7.3 Apps Settings dead-twin archive evidence
+
+- Archived orphaned runtime twin `apps/merchant-control-plane/src/app/[store]/settings/apps/AppsSettingsContent.tsx` to `docs/archive/dead-code/merchant-control-plane/settings-apps/AppsSettingsContent.tsx`.
+- The live merchant settings apps route continues to render `AppsSettingsClient`, and the app-platform audit now names `AppsSettingsClient.tsx` instead of the archived twin.
+- Added `scripts/validators/settings-apps-dead-twin-validator.mjs`, wired it into governance, and added `tests/contracts/settings-apps-dead-twin.test.ts`.
+- `node scripts/validators/settings-apps-dead-twin-validator.mjs`: PASS.
+- `npx tsx --test tests/contracts/settings-apps-dead-twin.test.ts`: PASS - 3/3.
+- `pnpm --filter @letbuyy/merchant-control-plane typecheck`: PASS.
+- `pnpm --filter @letbuyy/merchant-control-plane lint`: PASS with existing warnings only.
+- `pnpm run test:contracts`: PASS - 123/123 after host IPC escalation for TSX.
+- Full `pnpm turbo typecheck --output-logs=errors-only --log-order=grouped`: PASS - 58/58.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 147/147 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -744,5 +759,5 @@ Started: 2026-06-05T13:54:14Z
 - F6.4 live environment value rollout requires Vercel project env access, Cloudflare Worker env/secret access, CDN/R2 public asset-domain decision, and provider-restricted mobile Gemini credentials. Exact proof path once supplied: configure `NEXT_PUBLIC_MARKETING_URL`, `NEXT_PUBLIC_ACCOUNTS_URL`, `NEXT_PUBLIC_ADMIN_URL`, `NEXT_PUBLIC_STOREFRONT_URL`, `NEXT_PUBLIC_THEME_MARKETPLACE_URL`, API base URLs, and `STOREFRONT_FRAME_ANCESTORS` in Vercel; configure `CORS_CREDENTIAL_ORIGINS` and `ASSET_PUBLIC_BASE_URL` in Cloudflare; configure mobile release builds with `--dart-define=GEMINI_API_KEY=... --dart-define=GEMINI_BASE_URL=... --dart-define=GEMINI_MODEL=...`; then run `pnpm run validate:governance`, affected deploy smoke tests, and mobile release smoke.
 - F7.1 portfolio/resume acquisition reactivation requires human product approval for a named legacy cohort plus matching gateway/public env rollout: `LETBUYY_ENABLE_LEGACY_SITE_TYPES=true` and `NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES=true`. Default acquisition remains off and validator-guarded.
 
-- Continue to F7.3 collapse duplicated utility/API-client wrappers and dead twins.
+- Continue to F7.3 collapse duplicated utility/API-client wrappers and date-formatting duplication.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.
