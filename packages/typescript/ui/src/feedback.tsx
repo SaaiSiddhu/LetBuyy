@@ -23,6 +23,7 @@ import {
     Users,
     X,
 } from './icons';
+import { Button } from './button';
 import { cx } from './utils';
 
 export type StatusVariant = 'default' | 'info' | 'success' | 'warning' | 'critical';
@@ -508,22 +509,24 @@ export function SaveBar({
                 {state === 'saving' ? 'Saving changes' : 'Unsaved changes'}
             </div>
             <div className="flex items-center gap-[var(--lb-space-2)] [&>button]:flex-1 sm:[&>button]:flex-none">
-                <button
+                <Button
+                    unstyled
                     type="button"
                     className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
                     onClick={onDiscard}
                     disabled={state === 'saving'}
                 >
                     {discardLabel}
-                </button>
-                <button
+                </Button>
+                <Button
+                    unstyled
                     type="button"
                     className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-component-button-primary-border)] bg-[var(--lb-component-button-primary-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-button-primary-text)] hover:bg-[var(--lb-component-button-primary-hover)] active:bg-[var(--lb-component-button-primary-active)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
                     onClick={onSave}
                     disabled={state === 'saving'}
                 >
                     {state === 'saving' ? 'Saving' : saveLabel}
-                </button>
+                </Button>
             </div>
         </div>
     );

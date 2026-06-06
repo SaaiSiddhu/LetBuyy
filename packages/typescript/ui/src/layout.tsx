@@ -1,4 +1,6 @@
 import React from 'react';
+import { Breadcrumbs } from './breadcrumbs';
+import { Button } from './button';
 import { MaterialIcon, type MaterialIconName } from './icons';
 import { cx } from './utils';
 
@@ -576,16 +578,16 @@ export function PageHeader({
 
         if (action.href) {
             return (
-                <a key={action.label} className={buttonClassName} href={action.href} aria-disabled={action.disabled}>
+                <Button key={action.label} unstyled as="a" className={buttonClassName} href={action.href} disabled={action.disabled}>
                     {content}
-                </a>
+                </Button>
             );
         }
 
         return (
-            <button key={action.label} className={buttonClassName} type="button" onClick={action.onClick} disabled={action.disabled}>
+            <Button key={action.label} unstyled className={buttonClassName} type="button" onClick={action.onClick} disabled={action.disabled}>
                 {content}
-            </button>
+            </Button>
         );
     };
 
@@ -598,22 +600,7 @@ export function PageHeader({
     return (
         <header className={cx('flex flex-col gap-[var(--lb-space-2)]', className)} {...props}>
             {shouldShowBreadcrumbs && breadcrumbs.length > 0 && (
-                <nav aria-label="Breadcrumb" className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                    <ol className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
-                        {breadcrumbs.map((breadcrumb, index) => (
-                            <li key={`${breadcrumb.label}-${index}`} className="flex items-center gap-[var(--lb-space-2)]">
-                                {breadcrumb.href ? (
-                                    <a className="hover:text-[color:var(--lb-color-text)]" href={breadcrumb.href}>
-                                        {breadcrumb.label}
-                                    </a>
-                                ) : (
-                                    <span>{breadcrumb.label}</span>
-                                )}
-                                {index < breadcrumbs.length - 1 && <span aria-hidden="true">/</span>}
-                            </li>
-                        ))}
-                    </ol>
-                </nav>
+                <Breadcrumbs items={breadcrumbs} separator="slash" currentTone="inherit" />
             )}
             <div className="flex min-h-[var(--lb-density-header-height)] flex-col gap-[var(--lb-space-2)] md:flex-row md:items-center md:justify-between">
                 <div className="flex min-w-0 items-center gap-[var(--lb-space-2)]">

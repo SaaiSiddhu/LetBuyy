@@ -1,10 +1,14 @@
 'use client';
 
 import React, { useId } from 'react';
-import { Calendar, Check, ChevronDown, ChevronRight, Loader2, X } from './icons';
+import { Button } from './button';
+import { Calendar, Check, ChevronDown, Loader2, X } from './icons';
 import { Text, type TextProps } from './layout';
 import { type LetbuyyDensity } from './tokens';
 import { cx } from './utils';
+
+export { Breadcrumbs } from './breadcrumbs';
+export type { BreadcrumbItem, BreadcrumbsProps } from './breadcrumbs';
 
 export interface ChartDatum {
     label: string;
@@ -328,7 +332,8 @@ export function SegmentedControl<TValue extends string = string>({
             {options.map((option) => {
                 const active = option.value === value;
                 return (
-                    <button
+                    <Button
+                        unstyled
                         key={option.value}
                         type="button"
                         role="radio"
@@ -347,7 +352,7 @@ export function SegmentedControl<TValue extends string = string>({
                         {active && showCheck && <Check className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />}
                         {option.icon && <span className="inline-flex shrink-0" aria-hidden="true">{option.icon}</span>}
                         {option.label}
-                    </button>
+                    </Button>
                 );
             })}
         </div>
@@ -464,45 +469,6 @@ export function ProgressBar({ value, max = 100, label, showValue = false, classN
     );
 }
 
-export interface BreadcrumbItem {
-    label: string;
-    href?: string;
-    onClick?: () => void;
-}
-
-export interface BreadcrumbsProps extends React.HTMLAttributes<HTMLElement> {
-    items: BreadcrumbItem[];
-}
-
-export function Breadcrumbs({ items, className = '', ...props }: BreadcrumbsProps) {
-    if (items.length === 0) return null;
-
-    return (
-        <nav aria-label="Breadcrumb" className={cx('text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]', className)} {...props}>
-            <ol className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
-                {items.map((item, index) => {
-                    const current = index === items.length - 1;
-                    return (
-                        <li key={`${item.label}-${index}`} className="flex items-center gap-[var(--lb-space-2)]">
-                            {item.href ? (
-                                <a className="rounded-[var(--lb-radius-sm)] hover:text-[color:var(--lb-color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]" href={item.href} aria-current={current ? 'page' : undefined}>
-                                    {item.label}
-                                </a>
-                            ) : item.onClick ? (
-                                <button type="button" className="rounded-[var(--lb-radius-sm)] hover:text-[color:var(--lb-color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]" onClick={item.onClick} aria-current={current ? 'page' : undefined}>
-                                    {item.label}
-                                </button>
-                            ) : (
-                                <span aria-current={current ? 'page' : undefined} className={current ? 'text-[color:var(--lb-color-text)]' : undefined}>{item.label}</span>
-                            )}
-                            {!current && <ChevronRight className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />}
-                        </li>
-                    );
-                })}
-            </ol>
-        </nav>
-    );
-}
 
 export interface DescriptionListItem {
     term: React.ReactNode;

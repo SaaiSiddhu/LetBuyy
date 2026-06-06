@@ -18,6 +18,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - U2 token system completion is implemented additively.
 - U3 missing primitives are implemented additively.
 - U4 consolidation shims are implemented additively.
+- U5 internal composition refactor is implemented with zero visual diffs.
 - Required ledger and deprecation register have been created.
 - `@letbuyy/ui` now has a Vitest + React Testing Library + jest-axe suite covering the load-bearing components: Card, Section, Button, Badge, Input, Banner, Skeleton, EmptyState, Select, Checkbox, Radio, Combobox, and Tabs.
 - Storybook visual regression is wired through `packages/typescript/ui/tests/visual/storybook-visual-regression.mjs`; 276 baselines were captured across light/dark and compact/comfortable/spacious density modes.
@@ -40,6 +41,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - `PageShell`, `PageActions`, and `TableFilterBar` remain exported with deprecation tags and replacement pointers.
 - `Badge variant="danger"` remains accepted and normalized, with `critical` documented as the canonical vocabulary.
 - Strict material icon helpers now exist through `StrictMaterialIconName`, `materialIconNames`, `isMaterialIconName()`, and `materialIconName()` while the loose `MaterialIconName` path stays compiling.
+- PageHeader, SaveBar, IndexTable, Pagination, and DensityToggle/SegmentedControl now compose `Button`, `Checkbox`, and `Breadcrumbs` internally while preserving public props and rendered visuals.
 
 ## Human-Gated Remainders
 
@@ -59,6 +61,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - U2 token additions are additive and should not change rendered output. Existing spacing/type/color aliases still emit; the new alias validator only blocks new duplicate-value aliases.
 - U3 primitive additions are additive. Existing consumers keep the current `Menu` icon export; use `Dropdown` or `DropdownMenu` for the new menu primitive.
 - U4 consolidation is additive. Existing `DataTable`, `IndexTable`, `TextStyle`, `PageShell`, `PageActions`, `TableFilterBar`, `Badge variant="danger"`, and loose `MaterialIconName` usages still compile and render.
+- U5 composition is intended to be visually and behaviorally unchanged. Additive `Button.unstyled`, `Checkbox.unstyled`, and `Breadcrumbs` separator/current-tone props exist only to preserve legacy internal visuals while routing through design-system primitives.
 
 ## Verification Evidence
 
@@ -134,3 +137,14 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - `pnpm --filter @letbuyy/ui validate:ui` PASS after that story import fix.
 - Generated build/install artifacts from U4 verification were removed with a depth that includes `packages/typescript/ui/dist`.
 - `node scripts/validate-governance.mjs` PASS after U4 cleanup; final line: `Governance validation passed (129 validators).`
+- `pnpm --filter @letbuyy/ui typecheck` PASS after U5 source changes.
+- `pnpm --filter @letbuyy/ui test` PASS after U5: 1 file, 24 tests. Added RTL/axe coverage for composed PageHeader, SaveBar, IndexTable, and Pagination behavior.
+- `pnpm --filter @letbuyy/ui build` PASS after U5.
+- `pnpm --filter @letbuyy/ui validate:ui` PASS after U5: 24 tests, API snapshot, token snapshot, alias snapshot.
+- `pnpm --filter @letbuyy/ui test:visual` PASS after U5 under escalated browser permission: 306 baselines checked with no baseline updates and no visual diffs.
+- `pnpm turbo test` PASS after U5: 61 successful tasks.
+- `pnpm turbo typecheck` PASS after U5: 60 successful tasks.
+- `pnpm lint` PASS after U5: repo lint completed with existing warnings outside UI scope and 0 errors.
+- `pnpm turbo build` PASS after U5 under escalated Turbopack permission: 60 successful tasks.
+- Generated build/install artifacts from U5 verification were removed with a depth that includes `packages/typescript/ui/dist`.
+- `node scripts/validate-governance.mjs` PASS after U5 cleanup; final line: `Governance validation passed (129 validators).`

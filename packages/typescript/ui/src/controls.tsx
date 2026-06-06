@@ -183,6 +183,11 @@ export interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputE
     labelTextClassName?: string;
     wrapperClassName?: string;
     onCheckedChange?: (checked: boolean) => void;
+    /**
+     * Additive escape hatch for legacy internal composition where only the
+     * checkbox input should be rendered with existing visual classes.
+     */
+    unstyled?: boolean;
 }
 
 export function Checkbox({
@@ -195,6 +200,7 @@ export function Checkbox({
     labelTextClassName = '',
     wrapperClassName = '',
     onCheckedChange,
+    unstyled = false,
     className = '',
     id,
     onChange,
@@ -206,24 +212,37 @@ export function Checkbox({
     const helperId = helperText && !error ? `${inputId}-helper` : undefined;
     const errorId = error ? `${inputId}-error` : undefined;
     const describedBy = [descriptionId, helperId, errorId, props['aria-describedby']].filter(Boolean).join(' ') || undefined;
+    const inputProps = {
+        id: inputId,
+        type: 'checkbox',
+        'aria-describedby': describedBy,
+        'aria-invalid': error ? true : props['aria-invalid'],
+        onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+            onChange?.(event);
+            onCheckedChange?.(event.currentTarget.checked);
+        },
+        ...props,
+    } satisfies React.InputHTMLAttributes<HTMLInputElement>;
+
+    if (unstyled) {
+        return (
+            <input
+                {...inputProps}
+                className={cx(className, inputClassName)}
+                aria-label={props['aria-label'] ?? (typeof label === 'string' ? label : undefined)}
+            />
+        );
+    }
 
     return (
         <div className={cx('flex flex-col gap-[var(--lb-space-1)]', className, wrapperClassName)}>
             <label className={cx('flex items-start gap-[var(--lb-space-3)]', props.disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer', labelClassName)} htmlFor={inputId}>
                 <input
-                    id={inputId}
-                    type="checkbox"
+                    {...inputProps}
                     className={cx(
                         'mt-[var(--lb-space-1)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 rounded-[var(--lb-radius-sm)] border-[var(--lb-color-border)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed',
                         inputClassName,
                     )}
-                    aria-describedby={describedBy}
-                    aria-invalid={error ? true : props['aria-invalid']}
-                    onChange={(event) => {
-                        onChange?.(event);
-                        onCheckedChange?.(event.currentTarget.checked);
-                    }}
-                    {...props}
                 />
                 <span className="min-w-0">
                     <span className={cx('block text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]', labelTextClassName)}>

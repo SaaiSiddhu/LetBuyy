@@ -11,6 +11,8 @@ import {
     Search,
 } from './icons';
 import { Badge, Skeleton } from './feedback';
+import { Button } from './button';
+import { Checkbox } from './controls';
 import { cx } from './utils';
 import { useDismiss, useFocusTrap } from './overlay-hooks';
 
@@ -121,7 +123,8 @@ export interface PaginationProps {
 export function Pagination({ page, totalPages, onPageChange, className = '' }: PaginationProps) {
     return (
         <nav className={cx('flex items-center justify-between gap-[var(--lb-space-2)]', className)} aria-label="Pagination">
-            <button
+            <Button
+                unstyled
                 type="button"
                 className="inline-flex h-[var(--lb-density-button-height)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] disabled:opacity-50"
                 onClick={() => onPageChange(Math.max(page - 1, 1))}
@@ -129,11 +132,12 @@ export function Pagination({ page, totalPages, onPageChange, className = '' }: P
             >
                 <ChevronLeft className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                 Previous
-            </button>
+            </Button>
             <span className="text-[length:var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[color:var(--lb-color-text-subdued)]">
                 Page {page} of {totalPages}
             </span>
-            <button
+            <Button
+                unstyled
                 type="button"
                 className="inline-flex h-[var(--lb-density-button-height)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] disabled:opacity-50"
                 onClick={() => onPageChange(Math.min(page + 1, totalPages))}
@@ -141,7 +145,7 @@ export function Pagination({ page, totalPages, onPageChange, className = '' }: P
             >
                 Next
                 <ChevronRight className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-            </button>
+            </Button>
         </nav>
     );
 }
@@ -267,7 +271,8 @@ export function IndexTable<T extends { id: string }>({
                             {savedViews.map((view) => {
                                 const active = view.value === activeView;
                                 return (
-                                    <button
+                                    <Button
+                                        unstyled
                                         key={view.value}
                                         type="button"
                                         className={cx(
@@ -280,7 +285,7 @@ export function IndexTable<T extends { id: string }>({
                                     >
                                         {view.label}
                                         {typeof view.count === 'number' && <span>{view.count}</span>}
-                                    </button>
+                                    </Button>
                                 );
                             })}
                         </div>
@@ -299,7 +304,8 @@ export function IndexTable<T extends { id: string }>({
                     <span className="text-[length:var(--lb-font-size-secondary)] text-[color:var(--lb-color-text)]">{selectedRows.length} selected</span>
                     <div className="flex flex-wrap gap-[var(--lb-space-2)]">
                         {bulkActions.map((action) => (
-                            <button
+                            <Button
+                                unstyled
                                 key={action.label}
                                 type="button"
                                 className={cx(
@@ -311,7 +317,7 @@ export function IndexTable<T extends { id: string }>({
                                 onClick={() => action.onAction(selectedRows)}
                             >
                                 {action.label}
-                            </button>
+                            </Button>
                         ))}
                     </div>
                 </div>
@@ -321,7 +327,8 @@ export function IndexTable<T extends { id: string }>({
                     {sortableColumns.map((column) => {
                         const active = sortKey === column.key;
                         return (
-                            <button
+                            <Button
+                                unstyled
                                 key={column.key}
                                 type="button"
                                 className={cx(
@@ -337,9 +344,9 @@ export function IndexTable<T extends { id: string }>({
                                 {active && (
                                     sortDirection === 'asc'
                                         ? <ArrowUp className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />
-                                        : <ArrowDown className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />
+                                    : <ArrowDown className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />
                                 )}
-                            </button>
+                            </Button>
                         );
                     })}
                 </div>
@@ -356,14 +363,15 @@ export function IndexTable<T extends { id: string }>({
                 ) : (
                     <div className="divide-y divide-[var(--lb-color-border)]">
                         <label className="flex items-center gap-[var(--lb-space-2)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
-                            <input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label="Select all rows" />
+                            <Checkbox unstyled label="Select all rows" checked={allSelected} onChange={toggleAll} aria-label="Select all rows" />
                             Select all visible rows
                         </label>
                         {rows.map((row, rowIndex) => (
                             <article key={row.id} className="grid gap-[var(--lb-space-3)] p-[var(--lb-space-3)]">
                                 <div className="flex items-start gap-[var(--lb-space-3)]">
-                                    <input
-                                        type="checkbox"
+                                    <Checkbox
+                                        unstyled
+                                        label={`Select row ${rowIndex + 1}`}
                                         className="mt-[var(--lb-space-1)]"
                                         checked={selectedIds.has(row.id)}
                                         onChange={() => toggleRow(row.id)}
@@ -389,13 +397,14 @@ export function IndexTable<T extends { id: string }>({
 
                                 {onRowClick && (
                                     <div className="flex justify-end">
-                                        <button
+                                        <Button
+                                            unstyled
                                             type="button"
                                             className="h-[var(--lb-density-icon-button-height)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-badge)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
                                             onClick={() => onRowClick(row)}
                                         >
                                             Open
-                                        </button>
+                                        </Button>
                                     </div>
                                 )}
                             </article>
@@ -408,11 +417,12 @@ export function IndexTable<T extends { id: string }>({
                     <thead className="bg-[var(--lb-component-table-header-bg)] text-[color:var(--lb-component-table-text-secondary)]">
                         <tr>
                             <th className="h-[var(--lb-density-table-header-height)] w-[var(--lb-density-button-height-large)] px-[var(--lb-space-3)] py-0 text-left">
-                                <input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label="Select all rows" />
+                                <Checkbox unstyled label="Select all rows" checked={allSelected} onChange={toggleAll} aria-label="Select all rows" />
                             </th>
                             {columns.map((column) => (
                                 <th key={column.key} className="h-[var(--lb-density-table-header-height)] px-[var(--lb-space-3)] py-0 text-left font-[var(--lb-font-weight-medium)]">
-                                    <button
+                                    <Button
+                                        unstyled
                                         type="button"
                                         className={cx(
                                             'inline-flex items-center gap-[var(--lb-space-1)] text-left',
@@ -424,9 +434,9 @@ export function IndexTable<T extends { id: string }>({
                                         {column.sortable && sortKey === column.key && (
                                             sortDirection === 'asc'
                                                 ? <ArrowUp className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />
-                                                : <ArrowDown className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />
+                                            : <ArrowDown className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />
                                         )}
-                                    </button>
+                                    </Button>
                                 </th>
                             ))}
                         </tr>
@@ -448,8 +458,9 @@ export function IndexTable<T extends { id: string }>({
                             rows.map((row, index) => (
                                 <tr key={row.id} className="hover:bg-[var(--lb-component-table-row-hover-bg)]">
                                     <td className="h-[var(--lb-density-table-row-height)] px-[var(--lb-space-3)] py-0">
-                                        <input
-                                            type="checkbox"
+                                        <Checkbox
+                                            unstyled
+                                            label={`Select row ${index + 1}`}
                                             checked={selectedIds.has(row.id)}
                                             onChange={() => toggleRow(row.id)}
                                             aria-label={`Select row ${index + 1}`}

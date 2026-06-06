@@ -40,10 +40,10 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 30 | no z-index scale | U1.1 | DONE | `letbuyyZIndexTokens` and emitted `--lb-z-*` variables added; `pnpm --filter @letbuyy/ui validate:tokens` PASS with 338 vars. |
 | 31 | no Grid/Columns primitive | U3.2 | DONE | Added responsive `Grid` and `Columns` layout primitives with stable gap/column props; `pnpm --filter @letbuyy/ui typecheck` and `test` PASS. |
 | 32 | no Container primitive | U3.2 | DONE | Added `Container` with size and padding contracts; covered in U3 layout primitive test; `pnpm --filter @letbuyy/ui test` PASS. |
-| 33 | PageHeader raw buttons/anchors | U5.1 | TODO |  |
-| 34 | SaveBar raw buttons | U5.1 | TODO |  |
-| 35 | IndexTable raw controls | U5.1 | TODO |  |
-| 36 | Pagination/DensityToggle/mobile Open raw buttons | U5.1 | TODO |  |
+| 33 | PageHeader raw buttons/anchors | U5.1 | DONE | PageHeader default actions now compose `Button` and keep old classes; RTL test covers primary button and secondary link behavior; `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines and zero U5 diffs. |
+| 34 | SaveBar raw buttons | U5.1 | DONE | SaveBar save/discard controls now compose `Button` with unchanged classes and callbacks; RTL/axe test PASS; visual regression PASS with 306 baselines. |
+| 35 | IndexTable raw controls | U5.1 | DONE | IndexTable saved-view, bulk, sort, select-all, row-select, and mobile Open controls now compose `Button`/`Checkbox`; RTL test covers selection, bulk action, and Open; visual regression PASS with 306 baselines. |
+| 36 | Pagination/DensityToggle/mobile Open raw buttons | U5.1 | DONE | Pagination and IndexTable mobile Open now compose `Button`; DensityToggle delegates through SegmentedControl whose options compose `Button`; RTL test covers pagination and visual regression PASS with 306 baselines. |
 | 37 | cx lacks tailwind-merge | U6.3 | TODO |  |
 | 38 | Button lacks as/asChild | U3/U5 | DONE | Added additive `Button` `as` and `asChild` support while preserving default button rendering; RTL tests cover anchor and cloned-child paths; `pnpm --filter @letbuyy/ui test` PASS. |
 | 39 | token CSS injected per root | U6.4 | TODO |  |
@@ -76,7 +76,7 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 66 | dual type scale | U2.4 | DONE | Canonical role-based type variables documented in source while heading aliases keep emitting; token snapshot PASS with no removals. |
 | 67 | two shadow systems | U2.2 | DONE | Added `letbuyyShadowTokens`; card shadows now source from that authority while `--lb-component-card-shadow` keeps previous resolved values; visual regression PASS across 276 baselines. |
 | 68 | PageHeader redundant props | U7 | TODO |  |
-| 69 | PageHeader reimplements breadcrumbs | U5.1 | TODO |  |
+| 69 | PageHeader reimplements breadcrumbs | U5.1 | DONE | Breadcrumbs moved to a standalone module and PageHeader now composes it with slash/current-tone compatibility props; RTL test covers PageHeader breadcrumb links; visual regression PASS with 306 baselines. |
 | 70 | Pagination minimal | U7.2 | TODO |  |
 | 71 | formatting exports subpath-only | U7 | TODO |  |
 | 72 | three theme selectors | U6 | TODO |  |
@@ -133,6 +133,9 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - New exports: `Table`, `materialIconName`, `isMaterialIconName`, `materialIconNames`.
 - New exported types: `TableBulkAction`, `TableColumn`, `TableFilterChip`, `TableProps`, `TableSavedView`, `StrictMaterialIconName`, `LooseMaterialIconName`.
 - New additive `Text` variants: `subdued`, `strong`, `positive`, `negative`, `code`; new additive `Text` tones: `positive`, `negative`; new additive `Text` prop: `reset`.
+- New additive `Button` prop: `unstyled` for look-preserving internal composition.
+- New additive `Checkbox` prop: `unstyled` for look-preserving internal checkbox composition.
+- New additive `Breadcrumbs` props: `separator`, `currentTone`.
 
 ## DEPRECATIONS
 
@@ -154,6 +157,7 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - U3 baseline expansion: `foundation-primitives.stories.tsx` added 24 primitive screenshots; `pnpm --filter @letbuyy/ui test:visual:update` captured 300 baselines total.
 - U4 baseline expansion: `table.stories.tsx` added 6 table screenshots; `pnpm --filter @letbuyy/ui test:visual:update` captured 306 baselines total.
 - Verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines checked.
+- U5 verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines checked and no baseline updates, proving the internal composition refactor is visually unchanged.
 
 ## VALIDATOR LEDGER
 

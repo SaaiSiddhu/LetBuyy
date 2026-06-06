@@ -26,8 +26,11 @@ import {
     Modal,
     Navigation,
     NumberField,
+    PageHeader,
+    Pagination,
     Popover,
     Radio,
+    SaveBar,
     Section,
     Select,
     SegmentedControl,
@@ -36,6 +39,7 @@ import {
     Switch,
     Tabs,
     Table,
+    IndexTable,
     Text,
     TextStyle,
     Textarea,
@@ -575,6 +579,63 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         expect(strictName).toBe('store');
         expect(isMaterialIconName(strictName)).toBe(true);
         expect(isMaterialIconName('not_a_registered_icon')).toBe(false);
+    });
+
+    it('keeps composed PageHeader, SaveBar, IndexTable, and Pagination behavior intact', async () => {
+        const onPrimary = vi.fn();
+        const onSave = vi.fn();
+        const onDiscard = vi.fn();
+        const onPageChange = vi.fn();
+        const onOpen = vi.fn();
+        const onBulk = vi.fn();
+        const rows = [
+            { id: 'order-1', order: '#1001', customer: 'Meera' },
+            { id: 'order-2', order: '#1002', customer: 'Arjun' },
+        ];
+
+        const { container } = renderInSystem(
+            <>
+                <PageHeader
+                    title="Orders"
+                    breadcrumbs={[
+                        { label: 'Home', href: '/' },
+                        { label: 'Orders' },
+                    ]}
+                    primaryAction={{ label: 'Create order', onClick: onPrimary }}
+                    secondaryActions={[{ label: 'Export', href: '/exports' }]}
+                    showBreadcrumbs
+                />
+                <SaveBar state="unsaved" onSave={onSave} onDiscard={onDiscard} />
+                <IndexTable
+                    rows={rows}
+                    columns={[
+                        { key: 'order', header: 'Order', sortable: true },
+                        { key: 'customer', header: 'Customer' },
+                    ]}
+                    bulkActions={[{ label: 'Archive', onAction: onBulk }]}
+                    onRowClick={onOpen}
+                />
+                <Pagination page={2} totalPages={3} onPageChange={onPageChange} />
+            </>,
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Create order' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Discard' }));
+        fireEvent.click(screen.getAllByLabelText('Select row 1')[0]);
+        fireEvent.click(screen.getByRole('button', { name: 'Archive' }));
+        fireEvent.click(screen.getAllByRole('button', { name: 'Open' })[0]);
+        fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+
+        expect(screen.getByRole('link', { name: 'Home' }).getAttribute('href')).toBe('/');
+        expect(screen.getByRole('link', { name: 'Export' }).getAttribute('href')).toBe('/exports');
+        expect(onPrimary).toHaveBeenCalledTimes(1);
+        expect(onSave).toHaveBeenCalledTimes(1);
+        expect(onDiscard).toHaveBeenCalledTimes(1);
+        expect(onBulk).toHaveBeenCalledWith([rows[0]]);
+        expect(onOpen).toHaveBeenCalledWith(rows[0]);
+        expect(onPageChange).toHaveBeenCalledWith(3);
+        await expectAxeClean(container);
     });
 
     it('emits z-index tokens and an auto-theme dark media block', () => {

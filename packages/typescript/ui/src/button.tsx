@@ -21,6 +21,11 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     size?: 'sm' | 'md' | 'lg' | 'icon';
     loading?: boolean;
     fullWidth?: boolean;
+    /**
+     * Additive escape hatch for legacy internal composition where existing visual
+     * classes must be preserved exactly.
+     */
+    unstyled?: boolean;
 }
 
 const variantStyles: Record<string, string> = {
@@ -45,6 +50,7 @@ export function Button({
     size = 'md',
     loading = false,
     fullWidth = false,
+    unstyled = false,
     className = '',
     disabled,
     children,
@@ -55,15 +61,17 @@ export function Button({
     ...props
 }: ButtonProps) {
     const interactiveDisabled = disabled || loading;
-    const buttonClassName = cx(
-        'inline-flex items-center justify-center gap-[var(--lb-space-2)] border font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-out)] [&_.letbuyy-icon]:h-[var(--lb-density-button-icon-size)] [&_.letbuyy-icon]:w-[var(--lb-density-button-icon-size)]',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-color-bg)]',
-        'disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50',
-        variantStyles[variant],
-        sizeStyles[size],
-        fullWidth && 'w-full',
-        className,
-    );
+    const buttonClassName = unstyled
+        ? className
+        : cx(
+            'inline-flex items-center justify-center gap-[var(--lb-space-2)] border font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-out)] [&_.letbuyy-icon]:h-[var(--lb-density-button-icon-size)] [&_.letbuyy-icon]:w-[var(--lb-density-button-icon-size)]',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-color-bg)]',
+            'disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50',
+            variantStyles[variant],
+            sizeStyles[size],
+            fullWidth && 'w-full',
+            className,
+        );
     const content = (
         <>
             {loading && (
