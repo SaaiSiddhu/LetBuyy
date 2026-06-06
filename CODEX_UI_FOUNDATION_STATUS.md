@@ -230,3 +230,11 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - Generated build/install artifacts from U8 verification were removed with a depth that includes `packages/typescript/ui/dist`.
 - First U8 governance rerun caught a package AGENTS omission: missing explicit `Runtime Authority` section. Added the section and reran.
 - `node scripts/validate-governance.mjs` PASS after U8 cleanup; final line: `Governance validation passed (129 validators).`
+
+## V2
+
+- Current branch: `stream/letbuyy-ui-v2`.
+- Preconditions: broad `stream/letbuyy-foundation-v2` and UI V1 `stream/letbuyy-ui-foundation` were merged to `develop` and pushed before this branch was created.
+- Merge reconciliation: UI formatter exports were unioned so `formatIndiaDate`, `formatInrCurrency`, `formatUsShortDate`, and related broad-stream app imports still compile while UI V1's `formatCurrency`, `formatDate`, and `formatNumber` remain exported.
+- Baseline: `node scripts/validate-governance.mjs` PASS on 2026-06-06 with `Governance validation passed (157 validators)`.
+- Current work: Stream A starts with V2-A1, the authorized purple primary CTA brand change.

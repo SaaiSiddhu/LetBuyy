@@ -9,6 +9,8 @@ const activeRootCodexFiles = new Set([
   "CODEX_FOUNDATION_HARDENING_LEDGER.md",
   "CODEX_FOUNDATION_HARDENING_MISSION_V2.md",
   "CODEX_FOUNDATION_HARDENING_STATUS.md",
+  "CODEX_UI_FOUNDATION_LEDGER.md",
+  "CODEX_UI_FOUNDATION_STATUS.md",
 ]);
 
 const sourceResidue = listWorkspaceFiles(["apps", "services", "packages"])

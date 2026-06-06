@@ -204,3 +204,36 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 ## BLOCKED
 
 None yet.
+
+## V2
+
+### Baseline
+
+- Branch: `stream/letbuyy-ui-v2`.
+- Merge preconditions: `stream/letbuyy-foundation-v2` and `stream/letbuyy-ui-foundation` are ancestors of `develop`; `git merge-base --is-ancestor` passed for both before V2 work began.
+- Governance baseline: `node scripts/validate-governance.mjs` passed on 2026-06-06 with `Governance validation passed (157 validators)`.
+- Merge reconciliation evidence: `develop` contains the broad merge (`735ed8cc`), broad governance follow-up (`47f29bc6`), and UI foundation merge (`20a8bcf1`) with the formatter union preserved.
+
+### V2 Traceability Matrix
+
+| ID | issue / capability | stream | status | evidence |
+|---|---|---|---|---|
+| V2-A1 | Brand purple primary CTA, AA contrast, visual diff | A | TODO | |
+| V2-A2 | Run V1 codemods across all consumers | A | TODO | |
+| V2-A3 | Enable UI eslint fence and migrate raw element / hardcoded hex bypass | A | TODO | |
+| V2-A4 | Wrap marketing-site in `DesignSystemRoot` | A | TODO | |
+| V2-A5 | Remove deprecated duplicate exports and collapse token aliases after migration | A | TODO | |
+| V2-A6 | Distribute from `dist`, fold UI validators into root governance, CODEOWNERS, CI gates, `@letbuyy/ui@1.0.0` | A | TODO | |
+| V2-B1 | Multi-brand white-label surfaces and contrast guardrails | B | TODO | |
+| V2-B2 | RTL/bidi and locale-aware i18n / multi-currency formatting | B | TODO | |
+| V2-B3 | Form system | B | TODO | |
+| V2-B4 | Charting library-backed `Chart` with legacy API shim | B | TODO | |
+| V2-B5 | Table virtualization | B | TODO | |
+| V2-B6 | Hosted / published docs site or static deploy-ready Storybook | B | TODO | |
+| V2-B7 | Capacity primitives: Stepper/Wizard, FileUpload/Dropzone, Calendar/date-range, Tag input, Toast actions | B | TODO | |
+
+### V2 Merge Runbook Evidence
+
+- `stream/letbuyy-foundation-v2` was merged and pushed to `develop` before UI V1.
+- `stream/letbuyy-ui-foundation` was merged and pushed to `develop` with `formatting.ts`, `index.ts`, and package subpath exports unioned.
+- `pnpm --filter @letbuyy/ui validate:ui`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs` passed after the UI merge.
