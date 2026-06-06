@@ -2,7 +2,13 @@ import { z } from 'zod';
 import { SeoSchema, UuidSchema } from '@letbuyy/shared-types';
 import type { StoreTemplateConfig } from '@letbuyy/theme-engine';
 
-export type SiteType = 'store' | 'portfolio' | 'resume' | 'blog' | 'landing';
+export const ACTIVE_SITE_TYPES = ['store', 'blog', 'landing'] as const;
+export const LEGACY_SITE_TYPES = ['portfolio', 'resume'] as const;
+export const SITE_TYPES = ['store', 'portfolio', 'resume', 'blog', 'landing'] as const;
+
+export type ActiveSiteType = typeof ACTIVE_SITE_TYPES[number];
+export type LegacySiteType = typeof LEGACY_SITE_TYPES[number];
+export type SiteType = typeof SITE_TYPES[number];
 export type StoreStatus = 'draft' | 'published' | 'frozen' | 'suspended';
 export type PaymentGateway = 'razorpay' | 'stripe' | 'paypal';
 
@@ -21,9 +27,21 @@ export const RESERVED_SUBDOMAINS = [
 
 export const SUBDOMAIN_PATTERN = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/;
 
-export const SiteTypeSchema = z.enum([
-  'store', 'portfolio', 'resume', 'blog', 'landing',
-]);
+export const SiteTypeSchema = z.enum(SITE_TYPES);
+export const ActiveSiteTypeSchema = z.enum(ACTIVE_SITE_TYPES);
+export const LegacySiteTypeSchema = z.enum(LEGACY_SITE_TYPES);
+
+export function isLegacySiteType(siteType: string | null | undefined): siteType is LegacySiteType {
+  return LEGACY_SITE_TYPES.includes(siteType as LegacySiteType);
+}
+
+export function isActiveSiteType(siteType: string | null | undefined): siteType is ActiveSiteType {
+  return ACTIVE_SITE_TYPES.includes(siteType as ActiveSiteType);
+}
+
+export function legacySiteTypeCreationEnabled(flag: string | boolean | null | undefined): boolean {
+  return flag === true || flag === 'true' || flag === '1';
+}
 
 export const SubdomainSchema = z
   .string()

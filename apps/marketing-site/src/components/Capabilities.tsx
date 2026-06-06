@@ -10,14 +10,14 @@ const capabilities: Array<{ icon: LucideIcon; title: string; desc: string }> = [
         desc: 'Sell products online with payments, inventory tracking & automated shipping.',
     },
     {
-        icon: Palette,
-        title: 'Portfolio',
-        desc: 'Showcase your creative work with stunning galleries and project displays.',
+        icon: FileText,
+        title: 'Blog',
+        desc: 'Publish buying guides, updates, and SEO content beside your store.',
     },
     {
-        icon: FileText,
-        title: 'Resume',
-        desc: 'Create professional CVs with PDF export and ATS-optimized templates.',
+        icon: Palette,
+        title: 'Themes',
+        desc: 'Customize your storefront and content pages with governed theme tools.',
     },
     {
         icon: Rocket,

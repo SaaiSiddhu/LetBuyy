@@ -29,7 +29,7 @@ export default function PricingSection() {
                 'Advanced analytics',
                 'Custom domain',
                 'Priority support',
-                'PDF export (resume)'
+                'Blog and landing pages'
             ],
             cta: 'Get started',
             popular: true

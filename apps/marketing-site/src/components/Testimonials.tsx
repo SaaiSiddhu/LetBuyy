@@ -10,15 +10,15 @@ const testimonials = [
         initial: "P",
     },
     {
-        quote: "As a freelance designer, I needed a portfolio that stands out. LetBuyy's templates are beautiful and I got 3 new clients after launching.",
+        quote: "Our launch campaign went live with a clean landing page and lead capture in one afternoon.",
         name: "Arjun Mehta",
-        role: "UI/UX Designer, Bangalore",
+        role: "Growth Consultant, Bangalore",
         initial: "A",
     },
     {
-        quote: "The resume builder is incredible. I created a stunning CV in 15 minutes and landed interviews at top tech companies. The PDF export is perfect.",
+        quote: "We publish buying guides and product updates without splitting tools between the blog and store.",
         name: "Sneha Iyer",
-        role: "Software Engineer, Chennai",
+        role: "Homeware Founder, Chennai",
         initial: "S",
     },
 ]

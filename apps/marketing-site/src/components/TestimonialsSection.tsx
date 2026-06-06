@@ -7,15 +7,15 @@ export default function TestimonialsSection() {
             initial: "P"
         },
         {
-            quote: "As a freelance designer, I needed a portfolio that stands out. LetBuyy's templates are beautiful and easy to customize.",
+            quote: "Our launch campaign went live with a clean landing page and lead capture in one afternoon.",
             name: "Arjun Mehta",
-            role: "UI/UX Designer, Bangalore",
+            role: "Growth Consultant, Bangalore",
             initial: "A"
         },
         {
-            quote: "The resume builder helped me land my dream job. The PDF export feature is exactly what I needed.",
+            quote: "We publish buying guides and product updates without splitting tools between the blog and store.",
             name: "Sneha Iyer",
-            role: "Software Engineer, Chennai",
+            role: "Homeware Founder, Chennai",
             initial: "S"
         }
     ]

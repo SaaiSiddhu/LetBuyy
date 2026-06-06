@@ -273,11 +273,19 @@ const translations: Record<Lang, Record<string, string>> = {
 
 const SITE_TYPES: { id: SiteType; nameKey: string; icon: AuthIconName; descKey: string }[] = [
     { id: 'store', nameKey: 'store', icon: 'shopping_cart', descKey: 'storeDesc' },
-    { id: 'portfolio', nameKey: 'portfolio', icon: 'work', descKey: 'portfolioDesc' },
-    { id: 'resume', nameKey: 'resume', icon: 'article', descKey: 'resumeDesc' },
     { id: 'landing', nameKey: 'landing', icon: 'rocket_launch', descKey: 'landingDesc' },
     { id: 'blog', nameKey: 'blog', icon: 'edit_note', descKey: 'blogDesc' },
 ]
+
+const LEGACY_SITE_TYPES: { id: SiteType; nameKey: string; icon: AuthIconName; descKey: string }[] = [
+    { id: 'portfolio', nameKey: 'portfolio', icon: 'work', descKey: 'portfolioDesc' },
+    { id: 'resume', nameKey: 'resume', icon: 'article', descKey: 'resumeDesc' },
+]
+
+const ACQUISITION_SITE_TYPES =
+    process.env.NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES === 'true'
+        ? [...SITE_TYPES, ...LEGACY_SITE_TYPES]
+        : SITE_TYPES
 
 type TemplateId = 'blank' | 'modern' | 'bold' | 'classic'
 
@@ -528,7 +536,7 @@ export default function OnboardingPage() {
 
     /* ——— Success state ——— */
     if (success) {
-        const selectedSiteType = SITE_TYPES.find((st) => st.id === siteType)
+        const selectedSiteType = ACQUISITION_SITE_TYPES.find((st) => st.id === siteType)
         const selectedSiteTypeLabel = selectedSiteType ? t[selectedSiteType.nameKey] : 'site'
         const dashboardUrl = getAdminDashboardUrl(subdomain)
 
@@ -640,7 +648,7 @@ export default function OnboardingPage() {
                         <p className="auth-subtitle">{t.chooseSite}</p>
 
                         <div className="onboard-type-grid">
-                            {SITE_TYPES.map((type) => (
+                            {ACQUISITION_SITE_TYPES.map((type) => (
                                 <button
                                     key={type.id}
                                     className={`onboard-type-card ${siteType === type.id ? 'selected' : ''}`}
@@ -781,7 +789,7 @@ export default function OnboardingPage() {
                             items={[
                                 {
                                     term: t.siteTypeLabel,
-                                    description: <strong>{siteType ? t[SITE_TYPES.find(s => s.id === siteType)?.nameKey || 'store'] : '—'}</strong>,
+                                    description: <strong>{siteType ? t[ACQUISITION_SITE_TYPES.find(s => s.id === siteType)?.nameKey || 'store'] : '—'}</strong>,
                                 },
                                 {
                                     term: t.displayName,
@@ -925,7 +933,7 @@ export default function OnboardingPage() {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--bg-secondary)', borderRadius: 10, border: '1px solid var(--border)' }}>
                                 <span style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>{t.siteTypeLabel}</span>
                                 <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
-                                    {siteType ? t[SITE_TYPES.find(s => s.id === siteType)?.nameKey || 'store'] : '—'}
+                                    {siteType ? t[ACQUISITION_SITE_TYPES.find(s => s.id === siteType)?.nameKey || 'store'] : '—'}
                                 </span>
                             </div>
                             {/* Template */}

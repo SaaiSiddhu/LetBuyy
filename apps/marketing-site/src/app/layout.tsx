@@ -30,7 +30,7 @@ const fontVariables = `${letbuyySans.variable} ${letbuyyDisplay.variable} ${letb
 const siteUrl = getMarketingSiteUrl();
 const siteTitle = "LetBuyy - India-first commerce operating system";
 const siteDescription =
-  "Launch stores, portfolios, resumes, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.";
+  "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.";
 const socialImage = "/icons/letbuyy-logo-light.svg";
 
 export const metadata: Metadata = {
@@ -45,8 +45,7 @@ export const metadata: Metadata = {
     "LetBuyy",
     "online store builder India",
     "commerce platform",
-    "portfolio builder",
-    "resume website builder",
+    "blog builder",
     "landing page builder",
     "GST-ready commerce",
     "COD ecommerce",

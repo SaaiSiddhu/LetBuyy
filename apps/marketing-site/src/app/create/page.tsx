@@ -6,9 +6,13 @@ import { Check, FileText, MaterialIcon, Palette, Rocket, Store, X } from '@letbu
 
 const siteTypes = [
     { id: 'store', title: 'E-commerce Store', description: 'Sell products with cart, checkout, and payments', icon: Store },
-    { id: 'portfolio', title: 'Portfolio', description: 'Showcase your projects and skills', icon: Palette },
-    { id: 'resume', title: 'Resume / CV', description: 'Professional resume with PDF export', icon: FileText },
     { id: 'landing', title: 'Landing Page', description: 'Marketing page with forms and analytics', icon: Rocket },
+    ...(process.env.NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES === 'true'
+        ? [
+            { id: 'portfolio', title: 'Portfolio', description: 'Legacy portfolio sites for existing cohorts', icon: Palette },
+            { id: 'resume', title: 'Resume / CV', description: 'Legacy resume sites for existing cohorts', icon: FileText },
+        ]
+        : []),
 ]
 
 function getApiBaseUrl(): string {

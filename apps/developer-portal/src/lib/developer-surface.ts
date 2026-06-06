@@ -427,17 +427,17 @@ export const gatewayRouteGroups: GatewayRouteGroup[] = [
   {
     surface: "Portfolio",
     mount: "/v1/portfolio",
-    access: "Protected merchant session + CSRF",
+    access: "Protected merchant session + CSRF; legacy site types only",
     routeCount: 4,
-    scope: "Portfolio page content and merchant portfolio operations.",
+    scope: "Legacy portfolio content for existing sites. New portfolio acquisition is gated by LETBUYY_ENABLE_LEGACY_SITE_TYPES.",
     source: "services/api-gateway/src/index.ts:196 + routes/portfolio.ts"
   },
   {
     surface: "Resume",
     mount: "/v1/resume",
-    access: "Protected merchant session + CSRF",
+    access: "Protected merchant session + CSRF; legacy site types only",
     routeCount: 10,
-    scope: "Resume profile, experience, education, skills, projects, and related page data.",
+    scope: "Legacy resume profile, experience, education, skills, projects, and related page data for existing sites. New resume acquisition is gated by LETBUYY_ENABLE_LEGACY_SITE_TYPES.",
     source: "services/api-gateway/src/index.ts:197 + routes/resume.ts"
   },
   {

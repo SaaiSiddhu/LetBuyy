@@ -82,7 +82,7 @@ const whyCards: MenuItem[] = [
         href: '#capabilities',
         icon: Store,
         label: 'More than stores',
-        description: 'Build stores, portfolios, resumes, blogs and landing pages from the same workspace.',
+        description: 'Build stores, blogs and landing pages from the same workspace.',
     },
 ]
 

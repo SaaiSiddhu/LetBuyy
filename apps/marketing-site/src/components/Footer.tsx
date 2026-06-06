@@ -7,8 +7,7 @@ import BrandLogo from './BrandLogo'
 const footerLinks = {
     Product: [
         { label: 'E-commerce', href: '#' },
-        { label: 'Portfolio', href: '#' },
-        { label: 'Resume', href: '#' },
+        { label: 'Blogs', href: '#' },
         { label: 'Landing Page', href: '#' },
         { label: 'Templates', href: '/templates' },
     ],
@@ -43,7 +42,7 @@ export default function Footer() {
                             <BrandLogo className="footer-logo-image" width={188} height={61} />
                         </Link>
                         <p className="footer-tagline">
-                            Build stores, portfolios, and resumes — all in one platform.
+                            Build stores, blogs, and landing pages in one platform.
                         </p>
                         <div className="footer-social">
                             <a href="https://twitter.com/letbuyy" target="_blank" rel="noopener noreferrer" aria-label="Twitter">

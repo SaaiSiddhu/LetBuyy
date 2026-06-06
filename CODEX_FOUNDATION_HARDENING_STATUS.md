@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F6.4 environment honesty complete locally; continue F7.1 legacy portfolio/resume gating.
-- Findings resolved: 26/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `C-14`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-15`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets, C-14 live observability rollout verification is SKIPPED -- NEEDS HUMAN pending deployed telemetry endpoints/credentials, and H-15 live production deploy execution is SKIPPED -- NEEDS HUMAN pending protected environment approvals plus provider credentials.
-- Current governance gate state: green after F6.4 (`pnpm run validate:governance` -> 141/141 PASS).
+- Phase: F7.1 legacy portfolio/resume gating complete; continue F7.2 remove `@letbuyy/utils` service-role edge.
+- Findings resolved: 27/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `C-14`, `H-1`, `H-2`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-15`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets, C-14 live observability rollout verification is SKIPPED -- NEEDS HUMAN pending deployed telemetry endpoints/credentials, H-15 live production deploy execution is SKIPPED -- NEEDS HUMAN pending protected environment approvals plus provider credentials, and legacy portfolio/resume reactivation is human-gated for named cohorts only.
+- Current governance gate state: green after F7.1 (`pnpm run validate:governance` -> 142/142 PASS).
 
 ## Baseline gates
 
@@ -624,6 +624,23 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm run validate:governance`: PASS - 141/141 validators.
 - Live/staging env value rollout remains SKIPPED -- NEEDS HUMAN until Vercel, Cloudflare, CDN/R2, and mobile provider-restricted values are configured.
 
+## F7.1 legacy portfolio/resume evidence
+
+- `packages/tenant-core` now separates active acquisition site types (`store`, `blog`, `landing`) from legacy site types (`portfolio`, `resume`) while preserving the full stored `SiteType` union for existing records.
+- API gateway store creation and onboarding start/step/complete paths reject new portfolio/resume creation by default with `LEGACY_SITE_TYPE_DISABLED` unless `LETBUYY_ENABLE_LEGACY_SITE_TYPES=true`; legacy template listing returns `[]` while disabled.
+- Identity create-store rejects legacy site types by default; identity onboarding plus marketing create/capability surfaces hide portfolio/resume unless `NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES=true`.
+- Public marketing copy no longer advertises portfolio/resume as active default products; developer portal marks `/v1/portfolio` and `/v1/resume` as legacy site-type surfaces only.
+- Feature-flag/domain governance and env templates/schemas document the default-off flag and schema-retention posture.
+- Added `scripts/validators/legacy-site-type-validator.mjs`, wired it into governance, and added `tests/contracts/legacy-site-type-gating.test.ts`.
+- `node scripts/validators/legacy-site-type-validator.mjs`: PASS.
+- `npx tsx --test tests/contracts/legacy-site-type-gating.test.ts`: PASS - 4/4.
+- `pnpm run test:contracts`: PASS - 107/107 after host IPC escalation for TSX.
+- Affected `pnpm turbo typecheck --filter=@letbuyy/tenant-core --filter=@letbuyy/api-gateway --filter=@letbuyy/identity-platform --filter=@letbuyy/marketing-site --filter=@letbuyy/developer-portal --output-logs=errors-only --log-order=grouped`: PASS - 45/45 after `pnpm install --frozen-lockfile --force` restored workspace dependency links.
+- Full `pnpm turbo typecheck --output-logs=errors-only --log-order=grouped`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 142/142 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -658,6 +675,7 @@ Started: 2026-06-05T13:54:14Z
 - H-15 live production deploy proof requires protected GitHub environment approvals plus staging/production Supabase, Cloudflare, Vercel, Playwright, and backup credentials. Exact proof path once supplied: `gh workflow run production-deploy.yml --ref main`, approve `production-migrations`, `staging`, and `production`, then verify `migration-preflight`, `staging-e2e`, `migrate-production`, `deploy-workers-production`, `deploy-apps-production`, and `smoke-test-production` all succeed without skipped required jobs.
 - F6.3 live hot-table partition maintenance proof requires staging/production Supabase DB connection strings and protected environment approvals. Exact proof path once supplied: `gh workflow run hot-table-partition-maintenance.yml --ref main -f environment=staging -f execute=true`, verify JSON output from `ensure_next_hot_table_partitions` and `detach_expired_hot_table_partitions`, then approve the production `production-migrations` run.
 - F6.4 live environment value rollout requires Vercel project env access, Cloudflare Worker env/secret access, CDN/R2 public asset-domain decision, and provider-restricted mobile Gemini credentials. Exact proof path once supplied: configure `NEXT_PUBLIC_MARKETING_URL`, `NEXT_PUBLIC_ACCOUNTS_URL`, `NEXT_PUBLIC_ADMIN_URL`, `NEXT_PUBLIC_STOREFRONT_URL`, `NEXT_PUBLIC_THEME_MARKETPLACE_URL`, API base URLs, and `STOREFRONT_FRAME_ANCESTORS` in Vercel; configure `CORS_CREDENTIAL_ORIGINS` and `ASSET_PUBLIC_BASE_URL` in Cloudflare; configure mobile release builds with `--dart-define=GEMINI_API_KEY=... --dart-define=GEMINI_BASE_URL=... --dart-define=GEMINI_MODEL=...`; then run `pnpm run validate:governance`, affected deploy smoke tests, and mobile release smoke.
+- F7.1 portfolio/resume acquisition reactivation requires human product approval for a named legacy cohort plus matching gateway/public env rollout: `LETBUYY_ENABLE_LEGACY_SITE_TYPES=true` and `NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES=true`. Default acquisition remains off and validator-guarded.
 
-- Continue to F7.1 legacy portfolio/resume gating.
+- Continue to F7.2 remove `@letbuyy/utils` service-role edge.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

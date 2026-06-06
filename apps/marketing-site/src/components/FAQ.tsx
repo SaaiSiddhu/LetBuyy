@@ -14,10 +14,6 @@ const faqs = [
         answer: 'Absolutely! You can connect your own domain to your LetBuyy site. Free plans get a yoursite.letbuyy.store subdomain, while paid plans support custom domains like yourbrand.com.',
     },
     {
-        question: 'Is LetBuyy good for building resumes?',
-        answer: 'Yes! LetBuyy includes professional resume templates that are ATS-friendly. You can export your resume as a PDF, share it online, and even track who views it.',
-    },
-    {
         question: 'Do you take transaction fees?',
         answer: 'LetBuyy does not charge any transaction fees on your sales. You only pay the standard payment gateway fees (Stripe, Razorpay, PayPal) for processing payments.',
     },

@@ -111,6 +111,7 @@ export interface Env {
     FEATURE_GRAPHQL?: string;
     FEATURE_EXTENSIONS?: string;
     FEATURE_LIQUID?: string;
+    LETBUYY_ENABLE_LEGACY_SITE_TYPES?: string;
     STOREFRONT_CACHE?: string;
     STOREFRONT_POOLED_SQL?: string;
     STOREFRONT_VIEW_SAMPLE_RATE?: string;

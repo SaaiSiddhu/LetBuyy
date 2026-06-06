@@ -73,7 +73,7 @@ const matrixRows: MatrixRow[] = [
         values: { free: true, basic: true, pro: true, enterprise: true },
     },
     {
-        feature: 'Store, portfolio, resume and blog sites',
+        feature: 'Store, blog and landing-page sites',
         values: { free: true, basic: true, pro: true, enterprise: true },
     },
     {

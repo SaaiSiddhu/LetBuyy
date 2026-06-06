@@ -35,6 +35,12 @@ Mobile merchant model contracts that are reused across Flutter screens belong to
 
 Database tables use `sites`. Merchant-facing URLs and UI may say `store`. Do not create a `stores` table.
 
+## Legacy Site-Type Rule
+
+`portfolio` and `resume` remain valid stored `sites.site_type` values so existing tenant data, CMS contracts, and historical schema remain readable. They are not active default acquisition products. New portfolio/resume site creation must fail closed unless `LETBUYY_ENABLE_LEGACY_SITE_TYPES=true` is configured for the gateway and `NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES=true` is configured for the matching public Next.js surface.
+
+Marketing, identity onboarding, and store-creation surfaces must default to `store`, `blog`, and `landing` only. Portfolio/resume schema tables are retained as legacy data; do not drop them without a separate migration/archive plan and human product approval.
+
 ## Enforcement
 
 - `scripts/validators/domain-boundary-validator.mjs` verifies domain package manifests, required exports, service schema facades, route schema extraction, service command contract extraction, theme marketplace DTO authority, mobile model facades, tenant validation authority, and storefront type facade ownership.

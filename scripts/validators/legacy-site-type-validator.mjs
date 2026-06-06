@@ -1,0 +1,122 @@
+import {
+  createReporter,
+  getTrackedFiles,
+  readFile,
+} from "./governance-common.mjs";
+
+const reporter = createReporter("Legacy site type validator");
+const trackedFiles = getTrackedFiles();
+
+const tenantCore = readFile("packages/tenant-core/src/index.ts");
+reporter.assert(
+  /ACTIVE_SITE_TYPES\s*=\s*\['store', 'blog', 'landing'\]/.test(tenantCore),
+  "tenant-core must keep default acquisition site types to store/blog/landing",
+);
+reporter.assert(
+  /LEGACY_SITE_TYPES\s*=\s*\['portfolio', 'resume'\]/.test(tenantCore),
+  "tenant-core must explicitly classify portfolio/resume as legacy site types",
+);
+reporter.assert(
+  tenantCore.includes("legacySiteTypeCreationEnabled"),
+  "tenant-core must expose the legacy site-type creation flag parser",
+);
+
+const gatewayStores = readFile("services/api-gateway/src/routes/stores.ts");
+reporter.assert(
+  gatewayStores.includes("isLegacySiteType(body.site_type)") &&
+    gatewayStores.includes("LEGACY_SITE_TYPE_DISABLED") &&
+    gatewayStores.includes("LETBUYY_ENABLE_LEGACY_SITE_TYPES"),
+  "gateway store creation must reject portfolio/resume unless the legacy flag is enabled",
+);
+
+const gatewayOnboarding = readFile("services/api-gateway/src/routes/onboarding.ts");
+for (const marker of [
+  "isLegacySiteType(body.site_type)",
+  "isLegacySiteType(nextSiteType)",
+  "isLegacySiteType(attemptSiteType)",
+  "isLegacySiteType(siteType)",
+  "LEGACY_SITE_TYPE_DISABLED",
+]) {
+  reporter.assert(
+    gatewayOnboarding.includes(marker),
+    `gateway onboarding must guard legacy site types at ${marker}`,
+  );
+}
+
+const identityCreateStore = readFile("apps/identity-platform/src/app/api/auth/create-store/route.ts");
+reporter.assert(
+  identityCreateStore.includes("ACTIVE_SITE_TYPES = ['store', 'landing', 'blog']") &&
+    identityCreateStore.includes("LEGACY_SITE_TYPES = ['portfolio', 'resume']") &&
+    identityCreateStore.includes("legacySiteTypesEnabled"),
+  "identity create-store route must keep legacy site types out of default creation",
+);
+
+const identityOnboarding = readFile("apps/identity-platform/src/app/onboarding/page.tsx");
+const defaultIdentityTypes = identityOnboarding.match(/const SITE_TYPES:[\s\S]*?\]\n\nconst LEGACY_SITE_TYPES/);
+reporter.assert(
+  Boolean(defaultIdentityTypes) &&
+    !defaultIdentityTypes?.[0].includes("portfolio") &&
+    !defaultIdentityTypes?.[0].includes("resume"),
+  "identity onboarding default SITE_TYPES must not include portfolio/resume",
+);
+reporter.assert(
+  identityOnboarding.includes("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES") &&
+    identityOnboarding.includes("ACQUISITION_SITE_TYPES"),
+  "identity onboarding must gate legacy site-type UI behind the public legacy flag",
+);
+
+const marketingCreate = readFile("apps/marketing-site/src/app/create/page.tsx");
+reporter.assert(
+  marketingCreate.indexOf("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES") !== -1 &&
+    marketingCreate.indexOf("portfolio") > marketingCreate.indexOf("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES") &&
+    marketingCreate.indexOf("resume") > marketingCreate.indexOf("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES"),
+  "marketing create page must expose portfolio/resume only behind the public legacy flag",
+);
+
+const marketingSiteTypes = readFile("apps/marketing-site/src/components/SiteTypes.tsx");
+reporter.assert(
+  marketingSiteTypes.indexOf("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES") !== -1 &&
+    marketingSiteTypes.indexOf("id: 'portfolio'") > marketingSiteTypes.indexOf("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES") &&
+    marketingSiteTypes.indexOf("id: 'resume'") > marketingSiteTypes.indexOf("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES"),
+  "marketing capabilities must expose portfolio/resume only behind the public legacy flag",
+);
+
+const publicMarketingCopyOffenders = trackedFiles.filter((file) => {
+  if (!file.startsWith("apps/marketing-site/src/")) return false;
+  if (!/\.(?:ts|tsx)$/.test(file)) return false;
+  if (
+    file === "apps/marketing-site/src/app/create/page.tsx" ||
+    file === "apps/marketing-site/src/components/SiteTypes.tsx"
+  ) {
+    return false;
+  }
+  return /\b(?:portfolio|resume|CV|PDF export)\b/i.test(readFile(file));
+});
+reporter.assert(
+  publicMarketingCopyOffenders.length === 0,
+  `Default marketing source must not advertise legacy portfolio/resume acquisition: ${publicMarketingCopyOffenders.join(", ")}`,
+);
+
+const developerSurface = readFile("apps/developer-portal/src/lib/developer-surface.ts");
+reporter.assert(
+  developerSurface.includes("legacy site types only") &&
+    developerSurface.includes("New portfolio acquisition is gated") &&
+    developerSurface.includes("New resume acquisition is gated"),
+  "developer portal must mark portfolio/resume API surfaces as legacy-gated",
+);
+
+for (const file of [
+  "config/env/templates/next-app.env.example",
+  "config/env/templates/worker.env.example",
+  "config/env/schemas/next-app.schema.json",
+  "config/env/schemas/worker.schema.json",
+  "docs/governance/feature-flag-governance.md",
+  "docs/governance/domain-governance.md",
+]) {
+  reporter.assert(
+    readFile(file).includes("LETBUYY_ENABLE_LEGACY_SITE_TYPES"),
+    `${file} must document the legacy site-type flag`,
+  );
+}
+
+reporter.finish("legacy portfolio/resume acquisition is default-off and documented");

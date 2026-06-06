@@ -20,7 +20,7 @@ export default function HeroSection() {
 
                 {/* Subtitle */}
                 <p className="hero-subtitle">
-                    Build beautiful online stores, portfolios, resumes, and landing pages.
+                    Build beautiful online stores, blogs, and landing pages.
                     Everything you need to grow your business online.
                 </p>
 

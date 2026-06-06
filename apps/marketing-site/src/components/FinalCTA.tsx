@@ -20,7 +20,7 @@ export default function FinalCTA() {
                         Start building with LetBuyy today.
                     </h2>
                     <p className="final-cta-subtitle">
-                        Launch your store, portfolio, or resume in minutes.
+                        Launch your store, blog, or landing page in minutes.
                     </p>
                     <motion.div
                         className="final-cta-actions"
