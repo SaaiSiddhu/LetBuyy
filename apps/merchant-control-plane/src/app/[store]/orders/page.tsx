@@ -3,26 +3,7 @@
 import { useEffect, useState, useCallback, useMemo, type SyntheticEvent } from 'react'
 import { useParams } from 'next/navigation'
 import type { LineItem as SharedLineItem, Order as SharedOrder } from '@letbuyy/shared-types'
-import {
-    Badge,
-    Banner,
-    Button,
-    Card,
-    ConfirmDialog,
-    EmptyState,
-    IndexTable,
-    Input,
-    MaterialIcon,
-    Page,
-    PageHeader,
-    Search,
-    Section,
-    Select,
-    Skeleton,
-    useToast,
-    type IndexTableColumn,
-    type IndexTableBulkAction,
-} from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, Table, Input, MaterialIcon, Page, PageHeader, Search, Section, Select, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 
 type OrderItemRow = Pick<
@@ -423,7 +404,7 @@ export default function OrdersPage() {
         setSortDirection(nextKey === 'created_at' ? 'desc' : 'asc')
     }, [sortKey])
 
-    const bulkActions = useMemo<Array<IndexTableBulkAction<OrderRow>>>(() => [
+    const bulkActions = useMemo<Array<TableBulkAction<OrderRow>>>(() => [
         {
             label: 'Confirm selected',
             onAction: rows => { void bulkUpdateOrderStatus(rows, 'confirmed', ['pending'], 'confirmed') },
@@ -461,7 +442,7 @@ export default function OrdersPage() {
         />
     )
 
-    const columns: Array<IndexTableColumn<OrderRow>> = [
+    const columns: Array<TableColumn<OrderRow>> = [
         {
             key: 'order',
             header: 'Order',
@@ -605,7 +586,7 @@ export default function OrdersPage() {
                         {loading ? (
                             <Skeleton variant="table" lines={6} />
                         ) : (
-                            <IndexTable
+                            <Table
                                 rows={sortedOrders}
                                 columns={columns}
                                 emptyState={emptyState}

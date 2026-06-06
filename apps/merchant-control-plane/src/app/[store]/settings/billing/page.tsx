@@ -2,21 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import {
-    Badge,
-    Banner,
-    Button,
-    Card,
-    CreditCard,
-    EmptyState,
-    FileText,
-    IndianRupee,
-    IndexTable,
-    Section,
-    Skeleton,
-    type IndexTableColumn,
-    useToast,
-} from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, CreditCard, EmptyState, FileText, IndianRupee, Table, Section, Skeleton, type TableColumn, useToast } from '@letbuyy/ui'
 import { formatUsLongDate, formatUsShortDate } from '@letbuyy/ui/formatting'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 
@@ -141,7 +127,7 @@ export default function BillingSettingsPage() {
     const [subscription, setSubscription] = useState<{ plan: string; status: string; current_period_end: string } | null>(null)
 
     const totalPaid = useMemo(() => invoices.reduce((total, invoice) => total + invoice.amount_paid, 0), [invoices])
-    const invoiceColumns = useMemo<IndexTableColumn<Invoice>[]>(() => [
+    const invoiceColumns = useMemo<TableColumn<Invoice>[]>(() => [
         {
             key: 'created_at',
             header: 'Date',
@@ -357,7 +343,7 @@ export default function BillingSettingsPage() {
                     title="Billing history"
                     description="Invoices and subscription charge records for this store."
                 >
-                    <IndexTable
+                    <Table
                         columns={invoiceColumns}
                         rows={invoices}
                         emptyState={(

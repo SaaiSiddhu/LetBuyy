@@ -8,7 +8,7 @@ import {
     Banner,
     Button,
     Card,
-    DataTable,
+    Table,
     Edit3,
     EmptyState,
     FileText,
@@ -23,7 +23,7 @@ import {
     Share2,
     Skeleton,
     Sparkles,
-    type Column,
+    type TableColumn,
     useToast,
 } from '@letbuyy/ui'
 import { formatIndiaDayMonthTime as formatDate } from '@letbuyy/ui/formatting'
@@ -33,6 +33,14 @@ interface AiUsage {
     feature: string
     input_tokens: number
     output_tokens: number
+    credits_used: number
+    created_at: string
+}
+
+interface AiUsageRow {
+    id: string
+    feature: string
+    tokens: number
     credits_used: number
     created_at: string
 }
@@ -150,7 +158,7 @@ export default function AiStudioPage() {
     }, [loadAiStudio])
 
     const percentUsed = credits.total > 0 ? Math.round((credits.used / credits.total) * 100) : 0
-    const usageRows = useMemo<Record<string, unknown>[]>(
+    const usageRows = useMemo<AiUsageRow[]>(
         () => usage.map((item) => ({
             id: item.id,
             feature: item.feature,
@@ -160,36 +168,36 @@ export default function AiStudioPage() {
         })),
         [usage],
     )
-    const usageColumns = useMemo<Column<Record<string, unknown>>[]>(() => [
+    const usageColumns = useMemo<TableColumn<AiUsageRow>[]>(() => [
         {
             key: 'feature',
             header: 'Feature',
-            render: (value) => (
+            render: (row) => (
                 <span className="capitalize text-[var(--lb-color-text)]">
-                    {formatFeature(String(value || 'unknown'))}
+                    {formatFeature(row.feature || 'unknown')}
                 </span>
             ),
         },
         {
             key: 'tokens',
             header: 'Tokens',
-            render: (value) => (
+            render: (row) => (
                 <span className="text-[var(--lb-color-text-subdued)]">
-                    {Number(value || 0).toLocaleString('en-IN')}
+                    {row.tokens.toLocaleString('en-IN')}
                 </span>
             ),
         },
         {
             key: 'credits_used',
             header: 'Credits',
-            render: (value) => <Badge label={Number(value || 0).toLocaleString('en-IN')} variant="default" />,
+            render: (row) => <Badge label={row.credits_used.toLocaleString('en-IN')} variant="default" />,
         },
         {
             key: 'created_at',
             header: 'Date',
-            render: (value) => (
+            render: (row) => (
                 <span className="text-[var(--lb-color-text-subdued)]">
-                    {formatDate(String(value || new Date().toISOString()))}
+                    {formatDate(row.created_at || new Date().toISOString())}
                 </span>
             ),
         },
@@ -320,9 +328,9 @@ export default function AiStudioPage() {
                     description="A record of the latest AI generations and credit consumption."
                 >
                     {usageRows.length > 0 ? (
-                        <DataTable
+                        <Table
                             columns={usageColumns}
-                            data={usageRows}
+                            rows={usageRows}
                             emptyMessage="No AI usage yet"
                         />
                     ) : (

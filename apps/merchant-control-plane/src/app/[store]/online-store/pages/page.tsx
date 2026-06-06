@@ -3,30 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useParams } from 'next/navigation'
-import {
-    Badge,
-    Banner,
-    Button,
-    Card,
-    ConfirmDialog,
-    EmptyState,
-    FileText,
-    IndexTable,
-    Input,
-    ListChecks,
-    Page,
-    PageHeader,
-    Plus,
-    RefreshCw,
-    SaveBar,
-    Section,
-    Select,
-    Skeleton,
-    Tabs,
-    Textarea,
-    Trash2,
-    useToast,
-} from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, FileText, Table, Input, ListChecks, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Select, Skeleton, Tabs, Textarea, Trash2, useToast } from '@letbuyy/ui'
 import { formatUsShortDate } from '@letbuyy/ui/formatting'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 
@@ -621,7 +598,7 @@ export default function PagesPage() {
                 </Section>
             </Card>
 
-            <IndexTable
+            <Table
                 rows={visiblePages}
                 columns={pageColumns}
                 emptyState={(
@@ -681,7 +658,7 @@ export default function PagesPage() {
                 </Section>
             </Card>
 
-            <IndexTable
+            <Table
                 rows={policies}
                 columns={policyColumns}
                 emptyState={(

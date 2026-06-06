@@ -4,25 +4,7 @@ import { useState, useEffect, useCallback, useMemo, type SyntheticEvent } from '
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import type { Product as SharedProduct } from '@letbuyy/shared-types'
-import {
-    Badge,
-    Banner,
-    Button,
-    Card,
-    EmptyState,
-    IndexTable,
-    Input,
-    MaterialIcon,
-    Page,
-    PageHeader,
-    Search,
-    Section,
-    Select,
-    Skeleton,
-    useToast,
-    type IndexTableColumn,
-    type IndexTableBulkAction,
-} from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, EmptyState, Table, Input, MaterialIcon, Page, PageHeader, Search, Section, Select, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
 
 type ProductRow = Pick<
     SharedProduct,
@@ -244,7 +226,7 @@ export default function ProductsPage() {
         setSortDirection(nextKey === 'created_at' ? 'desc' : 'asc')
     }, [sortKey])
 
-    const bulkActions = useMemo<Array<IndexTableBulkAction<ProductRow>>>(() => [
+    const bulkActions = useMemo<Array<TableBulkAction<ProductRow>>>(() => [
         {
             label: bulkActionKey === 'active' ? 'Publishing...' : 'Publish selected',
             onAction: rows => { void updateSelectedProducts(rows, 'active') },
@@ -255,7 +237,7 @@ export default function ProductsPage() {
         },
     ], [bulkActionKey, updateSelectedProducts])
 
-    const columns = useMemo<Array<IndexTableColumn<ProductRow>>>(() => [
+    const columns = useMemo<Array<TableColumn<ProductRow>>>(() => [
         {
             key: 'name',
             header: 'Product',
@@ -371,7 +353,7 @@ export default function ProductsPage() {
                                 </Banner>
                             )}
 
-                            <IndexTable
+                            <Table
                                 rows={sortedProducts}
                                 columns={columns}
                                 savedViews={productViews}
