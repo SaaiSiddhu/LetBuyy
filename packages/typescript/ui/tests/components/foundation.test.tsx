@@ -1,8 +1,9 @@
 import React from 'react';
 import { axe } from 'jest-axe';
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import {
+    Avatar,
     Badge,
     Banner,
     Button,
@@ -13,6 +14,7 @@ import {
     Columns,
     Combobox,
     CommandPalette,
+    ConfirmDialog,
     Container,
     DatePicker,
     DesignSystemRoot,
@@ -39,10 +41,15 @@ import {
     Switch,
     Tabs,
     Table,
+    ToastProvider,
+    Tooltip,
     IndexTable,
     Text,
     TextStyle,
     Textarea,
+    formatCurrency,
+    formatDate,
+    formatNumber,
     isMaterialIconName,
     createLetbuyyBrandVariables,
     letbuyyBreakpointTokens,
@@ -52,6 +59,7 @@ import {
     letbuyyTokenCss,
     letbuyyTokenCssVariables,
     materialIconName,
+    useToast,
 } from '../../src';
 import { cx } from '../../src/utils';
 
@@ -329,6 +337,7 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         fireEvent.click(openButton);
 
         const closeButton = await screen.findByRole('button', { name: 'Close' });
+        expect(screen.queryByRole('button', { name: 'Close modal' })).toBeNull();
         await waitFor(() => expect(document.activeElement).toBe(closeButton));
         expect(backgroundButton.getAttribute('aria-hidden')).toBe('true');
         expect(backgroundButton.inert).toBe(true);
@@ -373,6 +382,77 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         fireEvent.keyDown(document.activeElement ?? search, { key: 'Escape' });
         expect(onClose).toHaveBeenCalledTimes(1);
         await expectAxeClean(container);
+    });
+
+    it('associates Tooltip with its trigger and supports touch reveal', async () => {
+        const { container } = renderInSystem(
+            <Tooltip content="Names the compact action">
+                <Button aria-label="Compact action">?</Button>
+            </Tooltip>,
+        );
+
+        const trigger = screen.getByRole('button', { name: 'Compact action' });
+        const tooltip = screen.getByRole('tooltip');
+
+        expect(trigger.getAttribute('aria-describedby')).toBe(tooltip.id);
+        fireEvent.pointerDown(trigger, { pointerType: 'touch' });
+        expect(tooltip.className).toContain('opacity-100');
+        await expectAxeClean(container);
+    });
+
+    it('renders ConfirmDialog custom body copy without a button backdrop', async () => {
+        const { container } = renderInSystem(
+            <ConfirmDialog
+                open
+                title="Delete product"
+                description="This cannot be undone"
+                onClose={() => undefined}
+                onConfirm={() => undefined}
+                destructive
+            >
+                <p>Delete this product and cancel pending storefront sync.</p>
+            </ConfirmDialog>,
+        );
+
+        expect(screen.getByText('Delete this product and cancel pending storefront sync.')).toBeTruthy();
+        expect(screen.queryByText('This action can affect merchant data. Review it before continuing.')).toBeNull();
+        expect(screen.queryByRole('button', { name: 'Close modal' })).toBeNull();
+        expect(screen.getByRole('button', { name: 'Close' })).toBeTruthy();
+        await expectAxeClean(container);
+    });
+
+    it('supports Toast duration and placement options', async () => {
+        function ToastTrigger() {
+            const { notify } = useToast();
+            return (
+                <Button onClick={() => notify({ title: 'Inventory saved', duration: 1000, placement: 'bottom-left' })}>
+                    Show toast
+                </Button>
+            );
+        }
+
+        vi.useFakeTimers();
+        try {
+            const { container } = renderInSystem(
+                <ToastProvider duration={5000} placement="top-right">
+                    <ToastTrigger />
+                </ToastProvider>,
+            );
+
+            fireEvent.click(screen.getByRole('button', { name: 'Show toast' }));
+
+            expect(screen.getByText('Inventory saved')).toBeTruthy();
+            const toastContainers = Array.from(container.querySelectorAll('[aria-live="polite"]'));
+            expect(toastContainers.some((element) => element.className.includes('bottom-[var(--lb-space-5)]') && element.className.includes('left-[var(--lb-space-5)]'))).toBe(true);
+
+            act(() => {
+                vi.advanceTimersByTime(1000);
+            });
+
+            expect(screen.queryByText('Inventory saved')).toBeNull();
+        } finally {
+            vi.useRealTimers();
+        }
     });
 
     it('renders Drawer, Popover, and Dropdown with keyboard-safe dismissal', async () => {
@@ -630,8 +710,10 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         fireEvent.click(screen.getAllByRole('button', { name: 'Open' })[0]);
         fireEvent.click(screen.getByRole('button', { name: 'Next' }));
 
+        const desktopRow = screen.getAllByText('#1001').find((element) => element.closest('tr'))?.closest('tr');
         expect(screen.getByRole('link', { name: 'Home' }).getAttribute('href')).toBe('/');
         expect(screen.getByRole('link', { name: 'Export' }).getAttribute('href')).toBe('/exports');
+        expect(desktopRow?.getAttribute('aria-selected')).toBe('true');
         expect(onPrimary).toHaveBeenCalledTimes(1);
         expect(onSave).toHaveBeenCalledTimes(1);
         expect(onDiscard).toHaveBeenCalledTimes(1);
@@ -641,12 +723,63 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         await expectAxeClean(container);
     });
 
+    it('supports Pagination page numbers and page-size changes additively', async () => {
+        const onPageChange = vi.fn();
+        const onPageSizeChange = vi.fn();
+        const { container } = renderInSystem(
+            <Pagination
+                page={3}
+                totalPages={8}
+                onPageChange={onPageChange}
+                showPageNumbers
+                pageSize={25}
+                pageSizeOptions={[10, 25, 50]}
+                onPageSizeChange={onPageSizeChange}
+            />,
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: '4' }));
+        fireEvent.change(screen.getByLabelText('Rows per page'), { target: { value: '50' } });
+
+        expect(screen.getByRole('button', { name: '3' }).getAttribute('aria-current')).toBe('page');
+        expect(onPageChange).toHaveBeenCalledWith(4);
+        expect(onPageSizeChange).toHaveBeenCalledWith(50);
+        await expectAxeClean(container);
+    });
+
+    it('supports optional Avatar image alt text and custom EmptyState motifs', async () => {
+        const { container } = renderInSystem(
+            <>
+                <Avatar name="Priya Shah" imageUrl="/avatar.png" alt="Priya Shah profile photo" />
+                <EmptyState
+                    title="No products"
+                    kind="products"
+                    illustrationMotifs={{
+                        products: <circle data-testid="custom-empty-motif" cx="96" cy="64" r="20" />,
+                    }}
+                />
+            </>,
+        );
+
+        expect(screen.getByAltText('Priya Shah profile photo')).toBeTruthy();
+        expect(container.querySelector('[data-testid="custom-empty-motif"]')).toBeTruthy();
+        await expectAxeClean(container);
+    });
+
+    it('exports INR-first formatting helpers from the root API', () => {
+        expect(formatCurrency(1234, { maximumFractionDigits: 0 })).toContain('1,234');
+        expect(formatCurrency(1234, { maximumFractionDigits: 0 })).toContain('₹');
+        expect(formatNumber(1234567)).toBe('12,34,567');
+        expect(formatDate('2026-06-06', { timeZone: 'UTC' })).toContain('6');
+    });
+
     it('emits z-index tokens and an auto-theme dark media block', () => {
         expect(letbuyyTokenCssVariables.light['--lb-z-dropdown']).toBe('30');
         expect(letbuyyTokenCssVariables.light['--lb-z-modal']).toBe('60');
         expect(letbuyyTokenCssVariables.light['--lb-z-toast']).toBe('70');
         expect(letbuyyTokenCssVariables.light['--lb-z-tooltip']).toBe('80');
         expect(letbuyyTokenCss).toContain('@media (prefers-color-scheme: dark)');
+        expect(letbuyyTokenCss).toContain('@media (prefers-reduced-motion: reduce)');
         expect(letbuyyTokenCss).toContain('[data-theme="auto"], [data-letbuyy-theme="auto"]');
     });
 
@@ -677,6 +810,7 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
 
         expect(contrastRatio(light['--lb-color-text-muted'], light['--lb-color-surface'])).toBeGreaterThanOrEqual(4.5);
         expect(contrastRatio(light['--lb-color-primary-text'], light['--lb-color-surface'])).toBeGreaterThanOrEqual(4.5);
+        expect(contrastRatio(light['--lb-color-focus-ring'], light['--lb-color-surface'])).toBeGreaterThanOrEqual(3);
 
         for (const [textToken, bgToken] of statusPairs) {
             expect(contrastRatio(light[textToken], light[bgToken])).toBeGreaterThanOrEqual(4.5);
@@ -704,7 +838,7 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         };
         const brandVariables = createLetbuyyBrandVariables(brand);
         const { container } = render(
-            <DesignSystemRoot surface="identity" brand={brand}>
+            <DesignSystemRoot surface="identity" brand={brand} dir="rtl">
                 <Button>Brand action</Button>
             </DesignSystemRoot>,
         );
@@ -718,6 +852,7 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         expect(brandVariables['--lb-component-button-primary-bg']).toBe('#111827');
         expect(brandVariables['--lb-color-focus-ring']).toBe('#FF5500');
         expect(root.getAttribute('data-letbuyy-surface')).toBe('identity');
+        expect(root.getAttribute('dir')).toBe('rtl');
         expect(root.style.getPropertyValue('--lb-color-primary')).toBe('#0055FF');
         expect(root.style.getPropertyValue('--lb-component-button-primary-bg')).toBe('#111827');
         await expectAxeClean(container);

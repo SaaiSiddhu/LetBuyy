@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useId, useRef } from 'react';
+import React, { useId, useRef, useState } from 'react';
 import { X } from './icons';
 import { Button } from './button';
 import { cx } from './utils';
@@ -369,12 +369,10 @@ export function Modal({ open, title, description, children, onClose, footer, cla
 
     return (
         <div ref={overlayRef} className="fixed inset-0 z-[var(--lb-z-modal)] flex items-stretch justify-stretch p-[var(--lb-space-0)] sm:items-center sm:justify-center sm:p-[var(--lb-space-4)]" role="presentation">
-            <button
-                type="button"
-                tabIndex={-1}
+            <div
                 className="absolute inset-0 bg-[var(--lb-color-overlay)]"
                 onClick={onClose}
-                aria-label="Close modal"
+                aria-hidden="true"
             />
             <section
                 ref={dialogRef}
@@ -422,6 +420,7 @@ export interface ConfirmDialogProps {
     open: boolean;
     title: string;
     description: string;
+    children?: React.ReactNode;
     confirmLabel?: string;
     cancelLabel?: string;
     destructive?: boolean;
@@ -433,6 +432,7 @@ export function ConfirmDialog({
     open,
     title,
     description,
+    children,
     confirmLabel = 'Confirm',
     cancelLabel = 'Cancel',
     destructive = false,
@@ -456,27 +456,50 @@ export function ConfirmDialog({
                 </>
             )}
         >
-            <p className="m-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
-                This action can affect merchant data. Review it before continuing.
-            </p>
+            {children ?? (
+                <p className="m-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
+                    This action can affect merchant data. Review it before continuing.
+                </p>
+            )}
         </Modal>
     );
 }
 
 export interface TooltipProps {
+    id?: string;
     content: React.ReactNode;
     children: React.ReactNode;
     side?: 'top' | 'bottom';
 }
 
-export function Tooltip({ content, children, side = 'top' }: TooltipProps) {
+export function Tooltip({ id, content, children, side = 'top' }: TooltipProps) {
+    const generatedId = useId();
+    const tooltipId = id ?? generatedId;
+    const [touchVisible, setTouchVisible] = useState(false);
+    const trigger = React.isValidElement<React.HTMLAttributes<HTMLElement>>(children)
+        ? React.cloneElement(children, {
+            'aria-describedby': [children.props['aria-describedby'], tooltipId].filter(Boolean).join(' ') || undefined,
+        })
+        : <span aria-describedby={tooltipId}>{children}</span>;
+
     return (
-        <span className="group relative inline-flex">
-            {children}
+        <span
+            className="group relative inline-flex"
+            onPointerDown={(event) => {
+                if (event.pointerType !== 'mouse') setTouchVisible((visible) => !visible);
+            }}
+            onPointerLeave={() => setTouchVisible(false)}
+            onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget)) setTouchVisible(false);
+            }}
+        >
+            {trigger}
             <span
+                id={tooltipId}
                 role="tooltip"
                 className={cx(
                     'pointer-events-none absolute left-1/2 z-[var(--lb-z-tooltip)] w-max max-w-[var(--lb-size-tooltip-max-width)] -translate-x-1/2 rounded-[var(--lb-radius-md)] bg-[var(--lb-color-text)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-inverse)] opacity-0 shadow-[var(--lb-shadow-md)] transition-opacity duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] group-focus-within:opacity-100 group-hover:opacity-100',
+                    touchVisible && 'opacity-100',
                     side === 'top' ? 'bottom-[calc(100%+var(--lb-space-2))]' : 'top-[calc(100%+var(--lb-space-2))]',
                 )}
             >

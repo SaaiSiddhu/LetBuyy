@@ -515,9 +515,15 @@ export interface PageHeaderProps extends React.HTMLAttributes<HTMLElement> {
     icon?: React.ReactNode;
     iconName?: MaterialIconName;
     showIcon?: boolean;
+    /**
+     * @deprecated since 0.0.2. Use `showBreadcrumbs` for the canonical plural prop.
+     */
     showBreadcrumb?: boolean;
     showBreadcrumbs?: boolean;
     showEyebrow?: boolean;
+    /**
+     * @deprecated since 0.0.2. Use `showEyebrow` for the canonical PageHeader label prop.
+     */
     showSectionLabel?: boolean;
     showDescription?: boolean;
     primaryAction?: PageHeaderAction;

@@ -20,6 +20,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - U4 consolidation shims are implemented additively.
 - U5 internal composition refactor is implemented with zero visual diffs.
 - U6 theming reach is implemented additively.
+- U7 a11y and polish is implemented where non-breaking; larger prop grammar, native select replacement, chart-library replacement, and default-density policy are recorded as human-gated skips.
 - Required ledger and deprecation register have been created.
 - `@letbuyy/ui` now has a Vitest + React Testing Library + jest-axe suite covering the load-bearing components: Card, Section, Button, Badge, Input, Banner, Skeleton, EmptyState, Select, Checkbox, Radio, Combobox, and Tabs.
 - Storybook visual regression is wired through `packages/typescript/ui/tests/visual/storybook-visual-regression.mjs`; 276 baselines were captured across light/dark and compact/comfortable/spacious density modes.
@@ -45,6 +46,9 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - PageHeader, SaveBar, IndexTable, Pagination, and DensityToggle/SegmentedControl now compose `Button`, `Checkbox`, and `Breadcrumbs` internally while preserving public props and rendered visuals.
 - `DesignSystemRoot` now emits surface-scoped variable hooks through `data-letbuyy-surface` with identity defaults, supports runtime `brand` CSS-variable overrides, and dedupes nested token `<style>` output through a server-safe client boundary.
 - `cx()` now uses `tailwind-merge` while keeping the same call signature.
+- Tooltip triggers now receive `aria-describedby`, tooltips can reveal on touch/pointer activation, Modal backdrops are non-button `div`s, and ConfirmDialog accepts custom body copy.
+- Toasts now support additive duration and placement options; Pagination now supports additive page numbers and page-size controls.
+- Avatar image alt text, DesignSystemRoot `dir`, IndexTable `aria-selected`, ChoiceList overflow safety, reduced-motion CSS, stronger focus-ring contrast, EmptyState motif overrides, and INR-first formatting helpers are in place.
 
 ## Human-Gated Remainders
 
@@ -56,6 +60,10 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - [SKIP — NEEDS HUMAN] Arbitrary loose `MaterialIconName` strings cannot be removed until unknown icon names are audited. Exact follow-up: guard user-provided strings with `isMaterialIconName()` or replace known names with `materialIconName()`, remove `LooseMaterialIconName`, refresh the API snapshot, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Per-surface palettes need product/design approval. This stream added `data-letbuyy-surface` hooks with identity defaults only, so no default visuals changed. Exact follow-up: update `letbuyySurfaceTokens`, refresh snapshots, then run `pnpm --filter @letbuyy/ui validate:ui`, `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Canonical brand identity and light CTA contrast policy need approval. This stream added the `brand` plumbing path while keeping default purple unchanged. Exact follow-up: apply the approved brand ramp through `DesignSystemRoot brand` or token defaults, verify contrast, refresh snapshots, then run `pnpm --filter @letbuyy/ui validate:ui`, `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Prop grammar canonicalization for `onChange`/`onValueChange`, `size`/`controlSize`, and `helperText`/`description` is breaking without a consumer codemod. Exact follow-up: author/run U8 codemods across consumers, add deprecation warnings where applicable, refresh API snapshots, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Native `Select` rich-option replacement needs a primitive strategy decision. Exact follow-up: decide whether rich options belong in `Combobox`, a new select primitive, or additive custom `Select` props, then run `pnpm --filter @letbuyy/ui test`, `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Chart replacement needs a proven charting-library and bundle policy decision. Exact follow-up: add the approved dependency to `@letbuyy/ui`, preserve the current `Chart` API through a shim or codemod, refresh visual snapshots, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Root/default density policy needs a visual design decision. Exact follow-up: choose whether `sharedCssVariables` should continue seeding compact or move to another default, refresh visual snapshots, then run `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 
 ## Behavior Changes To Re-Check
 
@@ -68,6 +76,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - U4 consolidation is additive. Existing `DataTable`, `IndexTable`, `TextStyle`, `PageShell`, `PageActions`, `TableFilterBar`, `Badge variant="danger"`, and loose `MaterialIconName` usages still compile and render.
 - U5 composition is intended to be visually and behaviorally unchanged. Additive `Button.unstyled`, `Checkbox.unstyled`, and `Breadcrumbs` separator/current-tone props exist only to preserve legacy internal visuals while routing through design-system primitives.
 - U6 theming changes are additive and default-identity. Existing `surface` values now have real variable hooks, `brand` overrides are opt-in, nested `DesignSystemRoot` token styles dedupe automatically, and `cx()` now resolves Tailwind class conflicts in favor of later classes.
+- U7 changes are additive except intentional correctness fixes: `--lb-color-focus-ring` is stronger in light mode, Modal backdrop semantics changed from a hidden full-screen button to a non-focusable backdrop `div`, Combobox option clicks no longer suppress `mousedown`, and reduced-motion preference now disables decorative motion.
 
 ## Verification Evidence
 
@@ -173,3 +182,18 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - `pnpm turbo build` PASS after the server-safe style boundary fix under escalated Turbopack permission: 60 successful tasks.
 - Generated build/install artifacts from U6 verification were removed with a depth that includes `packages/typescript/ui/dist`.
 - `node scripts/validate-governance.mjs` PASS after U6 cleanup; final line: `Governance validation passed (129 validators).`
+- `pnpm --filter @letbuyy/ui typecheck` PASS after U7 source changes.
+- `pnpm --filter @letbuyy/ui test` PASS after U7: 1 file, 33 tests. Added coverage for Tooltip trigger association/touch reveal, ConfirmDialog custom copy, Toast duration/placement, Pagination page numbers/page-size, Avatar alt, EmptyState custom motifs, formatting helpers, IndexTable `aria-selected`, `dir`, reduced motion, and focus-ring contrast.
+- `pnpm --filter @letbuyy/ui snapshot:api:update` PASS after U7: 334 public exports captured.
+- `pnpm --filter @letbuyy/ui snapshot:aliases:update` PASS after the intentional focus-ring value change: 109 duplicate-value groups captured.
+- `pnpm --filter @letbuyy/ui build` PASS after U7.
+- `pnpm --filter @letbuyy/ui validate:ui` PASS after U7: 33 tests, API snapshot, token snapshot, alias snapshot.
+- `pnpm --filter @letbuyy/ui test:visual` PASS after U7 under escalated browser permission: 306 baselines checked with no baseline updates and no visual diffs.
+- `pnpm turbo test` PASS after U7: 61 successful tasks.
+- `pnpm turbo typecheck` PASS after U7: 60 successful tasks.
+- `pnpm lint` PASS after U7: repo lint completed with existing warnings outside UI scope and 0 errors.
+- `pnpm turbo build` PASS after U7 under escalated Turbopack permission: 60 successful tasks.
+- `pnpm --filter @letbuyy/ui typecheck` PASS after the final PageHeader prop deprecation annotations.
+- `pnpm --filter @letbuyy/ui validate:ui` PASS after the final PageHeader prop deprecation annotations.
+- Generated build/install artifacts from U7 verification were removed with a depth that includes `packages/typescript/ui/dist`.
+- `node scripts/validate-governance.mjs` PASS after U7 cleanup; final line: `Governance validation passed (129 validators).`

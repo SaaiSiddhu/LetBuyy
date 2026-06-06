@@ -97,6 +97,13 @@
         ]
       },
       {
+        "value": "#5B21B6",
+        "variables": [
+          "--lb-color-focus-ring",
+          "--lb-semantic-focus-ring"
+        ]
+      },
+      {
         "value": "#6B7280",
         "variables": [
           "--lb-color-text-muted",
@@ -136,15 +143,13 @@
         "value": "#8B5CF6",
         "variables": [
           "--lb-color-brand-purple",
-          "--lb-color-focus-ring",
           "--lb-color-primary",
           "--lb-color-secondary-action",
           "--lb-component-badge-accent-border",
           "--lb-component-empty-state-illustration-ink",
           "--lb-component-input-focus-border",
           "--lb-primitive-color-purple-500",
-          "--lb-semantic-accent-brand",
-          "--lb-semantic-focus-ring"
+          "--lb-semantic-accent-brand"
         ]
       },
       {

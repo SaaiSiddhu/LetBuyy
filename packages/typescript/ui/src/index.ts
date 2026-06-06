@@ -64,11 +64,13 @@ export {
 export type {
     BannerProps,
     EmptyStateKind,
+    EmptyStateIllustrationProps,
     EmptyStateProps,
     SaveBarProps,
     SkeletonProps,
     StatusVariant,
     ToastMessage,
+    ToastPlacement,
     ToastProviderProps,
     ToastVariant,
 } from './feedback';
@@ -157,6 +159,9 @@ export type {
 
 export { DesignSystemRoot } from './design-system-root';
 export type { DesignSystemRootProps } from './design-system-root';
+
+export { formatCurrency, formatDate, formatNumber } from './formatting';
+export type { FormatCurrencyOptions, FormatDateOptions, FormatNumberOptions } from './formatting';
 
 export {
     letbuyyComponentTokens,

@@ -532,7 +532,7 @@ export function ChoiceList({
                         <label
                             key={option.value}
                             className={cx(
-                                'flex min-w-[min(260px,100%)] items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)]',
+                                'flex min-w-0 max-w-full basis-[min(260px,100%)] items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)]',
                                 checked && 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)]',
                                 optionDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:bg-[var(--lb-color-surface-subdued)]',
                                 optionClassName,
@@ -863,7 +863,6 @@ export function Combobox({
                                     activeIndex === index && 'bg-[var(--lb-color-surface-subdued)]',
                                 )}
                                 disabled={option.disabled}
-                                onMouseDown={(event) => event.preventDefault()}
                                 onClick={() => selectOption(option)}
                             >
                                 <span className="flex min-w-0 items-start gap-[var(--lb-space-2)]">

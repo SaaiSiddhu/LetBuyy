@@ -61,11 +61,11 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 51 | storefront-runtime empty ui dir | U8.4 | TODO |  |
 | 52 | exported TS token objects undocumented/internal | U0.4 | DONE | Public API snapshot protects current exports; `pnpm --filter @letbuyy/ui validate:api` PASS and self-test detects simulated export removal. |
 | 53 | no bundle-size/API snapshot guard | U0.4 | DONE | API snapshot and token-variable snapshot guards added; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
-| 54 | ConfirmDialog hardcoded body copy | U7 | TODO |  |
+| 54 | ConfirmDialog hardcoded body copy | U7 | DONE | `ConfirmDialog` now accepts additive `children` for custom body copy while preserving the default warning copy; RTL/axe test PASS in `pnpm --filter @letbuyy/ui test` with 33 tests. |
 | 55 | no app-shell Navigation/Sidebar/AppFrame | U3.3 | DONE | Added `Navigation`, `Sidebar`, and `AppFrame` primitives with current route state and shell layout support; `pnpm --filter @letbuyy/ui test` and visual baselines PASS. |
-| 56 | inconsistent change-handler conventions | U4/U7 | TODO |  |
-| 57 | inconsistent size prop names | U4/U7 | TODO |  |
-| 58 | helperText vs description duplication | U4/U7 | TODO |  |
+| 56 | inconsistent change-handler conventions | U4/U7 | SKIP | [SKIP — NEEDS HUMAN] Renaming existing handler props is breaking across consumers; record for U8 codemod/human migration. |
+| 57 | inconsistent size prop names | U4/U7 | SKIP | [SKIP — NEEDS HUMAN] Canonical size prop migration is breaking; record for U8 codemod/human migration. |
+| 58 | helperText vs description duplication | U4/U7 | SKIP | [SKIP — NEEDS HUMAN] Canonical helper/description prop migration is breaking; record for U8 codemod/human migration. |
 | 59 | danger vs critical vocab | U4.4 | DONE | `Badge variant="danger"` still normalizes to `critical`; canonical `critical` vocabulary documented in `BadgeProps` and `DEPRECATIONS.md`; RTL/axe test PASS. |
 | 60 | Text vs TextStyle overlap | U4.2 | DONE | `Text` now covers TextStyle variants; `TextStyle` delegates to `Text`, keeps old output, and is deprecated; RTL test verifies wrapper class/element compatibility. |
 | 61 | PageShell dead alias | U4.3 | DONE | `PageShell` remains exported and working with `@deprecated` tag pointing to `Page`; removal recorded as human-gated. |
@@ -75,39 +75,39 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 65 | dual spacing names | U2.4 | DONE | Canonical numeric `--lb-space-*` scale documented in source while named spacing aliases keep emitting; token snapshot PASS with no removals. |
 | 66 | dual type scale | U2.4 | DONE | Canonical role-based type variables documented in source while heading aliases keep emitting; token snapshot PASS with no removals. |
 | 67 | two shadow systems | U2.2 | DONE | Added `letbuyyShadowTokens`; card shadows now source from that authority while `--lb-component-card-shadow` keeps previous resolved values; visual regression PASS across 276 baselines. |
-| 68 | PageHeader redundant props | U7 | TODO |  |
+| 68 | PageHeader redundant props | U7 | DONE | `PageHeaderProps.showBreadcrumb` and `showSectionLabel` are JSDoc-deprecated in favor of `showBreadcrumbs` and `showEyebrow`; behavior remains unchanged; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
 | 69 | PageHeader reimplements breadcrumbs | U5.1 | DONE | Breadcrumbs moved to a standalone module and PageHeader now composes it with slash/current-tone compatibility props; RTL test covers PageHeader breadcrumb links; visual regression PASS with 306 baselines. |
-| 70 | Pagination minimal | U7.2 | TODO |  |
-| 71 | formatting exports subpath-only | U7 | TODO |  |
+| 70 | Pagination minimal | U7.2 | DONE | `Pagination` now has additive page-number and page-size controls with old default rendering unchanged; RTL/axe test proves page and page-size callbacks; `pnpm --filter @letbuyy/ui test` PASS. |
+| 71 | formatting exports subpath-only | U7 | DONE | Added dependency-free INR-first `formatCurrency`, `formatNumber`, and `formatDate` from root API plus `@letbuyy/ui/formatting`; API snapshot updated to 334 exports; repo build PASS. |
 | 72 | three theme selectors | U6 | DONE | Token CSS now emits compatible selectors for `data-letbuyy-theme`, `data-theme`, and surface-scoped descendants while preserving explicit light/dark and auto behavior; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
 | 73 | SpaceScale under-typed | U2/U7 | DONE | Exported `SpaceScale` from layout and extended it to include `8`; `pnpm --filter @letbuyy/ui typecheck` PASS. |
-| 74 | hover lift not reduced-motion gated | U7.1 | TODO |  |
-| 75 | IndexTable lacks aria-selected | U7.1 | TODO |  |
-| 76 | Combobox preventDefault blur hack | U7 | TODO |  |
-| 77 | Toast duration fixed | U7.1 | TODO |  |
-| 78 | Toast placement fixed | U7.1 | TODO |  |
+| 74 | hover lift not reduced-motion gated | U7.1 | DONE | Token CSS now emits `@media (prefers-reduced-motion: reduce)` to zero motion duration/hover transform tokens and stop decorative empty-state animations; test asserts block exists. |
+| 75 | IndexTable lacks aria-selected | U7.1 | DONE | Desktop `IndexTable` rows now expose `aria-selected` based on selected checkbox state; RTL test asserts selected row state; `pnpm --filter @letbuyy/ui test` PASS. |
+| 76 | Combobox preventDefault blur hack | U7 | DONE | Removed option `onMouseDown(event.preventDefault())`; selection still passes keyboard/click tests through normal button activation; `pnpm --filter @letbuyy/ui test` PASS. |
+| 77 | Toast duration fixed | U7.1 | DONE | `ToastProvider` and `notify()` now support additive `duration` with default 5000ms unchanged and `null` for persistent toasts; fake-timer RTL test PASS. |
+| 78 | Toast placement fixed | U7.1 | DONE | `ToastProvider` and individual toast messages now support additive placements while default top-right remains unchanged; placement RTL test PASS. |
 | 79 | no DatePicker | U3.3 | DONE | Added single-date `DatePicker` with label/helper/error a11y wiring; `pnpm --filter @letbuyy/ui test` PASS. |
 | 80 | no Accordion/Disclosure | U3.3 | DONE | Added `Disclosure` and multi-item `Accordion` with button/region wiring; `pnpm --filter @letbuyy/ui test` PASS. |
 | 81 | statusSoft light values hardcoded | U2.2 | DONE | Added exact primitive soft-status colors and pointed light `statusSoft` to them with unchanged emitted soft values; `pnpm --filter @letbuyy/ui validate:tokens` PASS with 349 vars. |
 | 82 | visual preview helpers shipped in main bundle | U8.4 | TODO |  |
-| 83 | Tooltip not associated to trigger | U7.1 | TODO |  |
-| 84 | Tooltip hover-only | U7.1 | TODO |  |
+| 83 | Tooltip not associated to trigger | U7.1 | DONE | `Tooltip` now assigns an ID and clones valid triggers with merged `aria-describedby`; RTL/axe test PASS. |
+| 84 | Tooltip hover-only | U7.1 | DONE | `Tooltip` now toggles visibility for non-mouse pointer activation while retaining hover/focus behavior; RTL touch reveal test PASS. |
 | 85 | Badge provenance confusing | U4.4 | DONE | Canonical `Badge` remains sourced from `feedback`; `data-table` re-export preserved for back-compat and canonical vocabulary documented; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
 | 86 | PageIdentity parallels EmptyStateKind | U7/U8 | TODO |  |
 | 87 | getPageIconName brittle regex | U7/U8 | TODO |  |
-| 88 | no RTL/dir consideration | U7.1 | TODO |  |
-| 89 | focusRing contrast weak | U7.1 | TODO |  |
-| 90 | Select native limits option content | U7/U8 | TODO |  |
-| 91 | ChoiceList min-width can overflow | U7 | TODO |  |
+| 88 | no RTL/dir consideration | U7.1 | DONE | `DesignSystemRoot` now accepts additive `dir` and forwards it to the root; RTL test asserts `dir="rtl"` propagation. |
+| 89 | focusRing contrast weak | U7.1 | DONE | Light `--lb-color-focus-ring` now uses `#5B21B6`; test asserts >=3:1 contrast on light surface; alias snapshot refreshed for the intentional focus-ring value change. |
+| 90 | Select native limits option content | U7/U8 | SKIP | [SKIP — NEEDS HUMAN] Replacing native `Select` with rich custom listbox is a larger a11y/API decision; current guidance remains to use `Combobox` for rich option content. |
+| 91 | ChoiceList min-width can overflow | U7 | DONE | ChoiceList option cards now use `min-w-0 max-w-full basis-[min(260px,100%)]` instead of a hard minimum; `pnpm --filter @letbuyy/ui typecheck` PASS. |
 | 92 | no InlineError | U3.3 | DONE | Added `InlineError` with `role="alert"` and exported props; U3 form primitive test PASS. |
 | 93 | DensityToggle not general SegmentedControl | U3.2 | DONE | Added `SegmentedControl`; existing `DensityToggle` now delegates to it without public prop changes; RTL test PASS. |
-| 94 | Avatar alt always empty | U7.1 | TODO |  |
+| 94 | Avatar alt always empty | U7.1 | DONE | `Avatar` now accepts optional `alt` for image avatars while preserving decorative image behavior by default; RTL/axe test PASS. |
 | 95 | no Storybook do/don't usage docs | U8.4 | TODO |  |
-| 96 | Modal backdrop is full-screen button | U7.1 | TODO |  |
-| 97 | Chart hand-rolled SVG | U7 | TODO |  |
-| 98 | EmptyState motifs hardcoded | U7.2 | TODO |  |
-| 99 | sharedCssVariables seeds compact density only | U7 | TODO |  |
-| 100 | no inert support/polyfill note | U7.2 | TODO |  |
+| 96 | Modal backdrop is full-screen button | U7.1 | DONE | Modal backdrop is now a non-focusable `div` with `aria-hidden`, while the labelled close button remains; RTL test asserts no `Close modal` backdrop button; axe PASS. |
+| 97 | Chart hand-rolled SVG | U7 | SKIP | [SKIP — NEEDS HUMAN] Replacing Chart with a proven charting library needs dependency/API/bundle decision; no new chart dependency added in this UI-only stream. |
+| 98 | EmptyState motifs hardcoded | U7.2 | DONE | `EmptyState`/`EmptyStateIllustration` now accept additive per-kind custom motif overrides behind the current default motif set; RTL/axe test PASS. |
+| 99 | sharedCssVariables seeds compact density only | U7 | SKIP | [SKIP — NEEDS HUMAN] Changing the root default density away from compact is a visual contract decision for all unwrapped consumers; existing explicit density selectors remain. |
+| 100 | no inert support/polyfill note | U7.2 | DONE | `overlay-hooks.ts` now documents that UI overlay isolation uses platform `inert` and requires a polyfill for unsupported browsers; source note added next to implementation. |
 
 ## SKIPPED — NEEDS HUMAN
 
@@ -119,6 +119,10 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - [SKIP — NEEDS HUMAN] Issue #48 follow-up: remove loose arbitrary `MaterialIconName` strings only after auditing unknown icon names. Exact handoff: replace user-provided strings with `isMaterialIconName()` guards or strict `materialIconName()` calls, remove `LooseMaterialIconName`, refresh the API snapshot, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Issue #24 follow-up: choose non-identity per-surface palettes for admin, marketplace, storefront, identity, and operations. This stream added the surface hooks with identity defaults only. Exact handoff: update `letbuyySurfaceTokens` in `packages/typescript/ui/src/tokens.ts`, refresh token/visual snapshots, then run `pnpm --filter @letbuyy/ui validate:ui`, `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Issue #25 follow-up: decide the LetBuyy brand identity ramp and light CTA contrast policy before making non-default brand values canonical. This stream added runtime brand plumbing without changing default purple. Exact handoff: pass the approved `brand` override or change token defaults, verify brand contrast, refresh snapshots, then run `pnpm --filter @letbuyy/ui validate:ui`, `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Issues #56, #57, #58 follow-up: canonicalize legacy prop grammar (`onChange`/`onValueChange`, `size`/`controlSize`, `helperText`/`description`) only with a codemod and consumer migration plan. Exact handoff: author/run U8 codemods across consumers, add deprecation warnings where applicable, refresh API snapshots, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Issue #90 follow-up: decide whether `Select` should remain native-only with `Combobox` for rich options, or gain a custom listbox implementation. Exact handoff: choose the primitive strategy, implement behind additive props or a new component, then run `pnpm --filter @letbuyy/ui test`, `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Issue #97 follow-up: choose a proven charting library and bundle policy before replacing the current SVG `Chart`. Exact handoff: add the approved dependency to `@letbuyy/ui`, preserve the current `Chart` API through a shim or codemod, refresh visual snapshots, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Issue #99 follow-up: changing root/default density from compact would change visual output for unwrapped consumers. Exact handoff: choose the default-density policy, update `sharedCssVariables`/density selectors, refresh visual snapshots, then run `pnpm --filter @letbuyy/ui test:visual`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 
 ## NEW PUBLIC API
 
@@ -141,6 +145,14 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - New exports: `letbuyySurfaceTokens`, `createLetbuyyBrandVariables`.
 - New exported types: `LetbuyySurface`, `LetbuyyBrandInput`, `LetbuyyBrandOverrides`.
 - New additive `DesignSystemRoot` props: `brand`, `style`; `surface` is now typed through `LetbuyySurface` while retaining the same accepted values.
+- New additive `DesignSystemRoot` prop: `dir`.
+- New exports: `formatCurrency`, `formatDate`, `formatNumber`.
+- New exported types: `FormatCurrencyOptions`, `FormatDateOptions`, `FormatNumberOptions`.
+- New subpath export: `@letbuyy/ui/formatting`.
+- New exported types: `ToastPlacement`, `EmptyStateIllustrationProps`.
+- New additive `ToastProvider` props: `duration`, `placement`; new additive `ToastMessage` fields: `duration`, `placement`.
+- New additive `Pagination` props: `showPageNumbers`, `maxPageButtons`, `pageSize`, `pageSizeOptions`, `onPageSizeChange`, `pageSizeLabel`.
+- New additive `Avatar` prop: `alt`; new additive `ConfirmDialog` prop: `children`; new additive `Tooltip` prop: `id`; new additive `EmptyState` prop: `illustrationMotifs`.
 
 ## DEPRECATIONS
 
@@ -164,12 +176,14 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - Verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines checked.
 - U5 verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines checked and no baseline updates, proving the internal composition refactor is visually unchanged.
 - U6 verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines checked and no baseline updates, proving surface/brand/style-dedupe changes preserve default visuals.
+- U7 verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines checked and no baseline updates, proving default visual states remain stable after additive polish fixes.
 
 ## VALIDATOR LEDGER
 
 - `packages/typescript/ui/tests/validators/ui-public-api-snapshot-validator.mjs`: snapshots all public exports from `src/index.ts`; `validate:api` PASS; `--self-test` PASS by detecting simulated removal of `Activity`.
 - `packages/typescript/ui/tests/validators/ui-token-variable-snapshot-validator.mjs`: snapshots all emitted `--lb-*` variables; `validate:tokens` PASS; `--self-test` PASS by detecting simulated removal of `--lb-card-bg`.
 - `packages/typescript/ui/tests/validators/ui-no-new-token-alias-validator.mjs`: snapshots current duplicate-value `--lb-*` alias groups and fails on new alias growth; `validate:aliases` PASS; `--self-test` PASS by detecting simulated `--lb-self-test-new-alias`.
+- U7 focus-ring correctness intentionally refreshed `token-aliases.json`; `validate:aliases` PASS with 109 protected duplicate-value groups and no removed public variables.
 
 ## BLOCKED
 

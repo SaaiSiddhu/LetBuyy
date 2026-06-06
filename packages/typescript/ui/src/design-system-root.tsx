@@ -11,6 +11,7 @@ export interface DesignSystemRootProps {
     density?: LetbuyyDensity;
     brand?: LetbuyyBrandInput;
     className?: string;
+    dir?: React.HTMLAttributes<HTMLDivElement>['dir'];
     includeTokenStyles?: boolean;
     style?: React.CSSProperties;
 }
@@ -22,6 +23,7 @@ export function DesignSystemRoot({
     density = 'compact',
     brand,
     className = '',
+    dir,
     includeTokenStyles = true,
     style,
 }: DesignSystemRootProps) {
@@ -37,6 +39,7 @@ export function DesignSystemRoot({
                 data-letbuyy-surface={surface}
                 data-letbuyy-theme={theme}
                 data-letbuyy-density={density}
+                dir={dir}
                 style={rootStyle}
             >
                 {children}

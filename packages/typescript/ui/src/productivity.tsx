@@ -12,7 +12,7 @@ import {
 } from './icons';
 import { Badge, Skeleton } from './feedback';
 import { Button } from './button';
-import { Checkbox } from './controls';
+import { Checkbox, Select } from './controls';
 import { cx } from './utils';
 import { useDismiss, useFocusTrap } from './overlay-hooks';
 
@@ -81,6 +81,7 @@ export function MetricCard({ label, value, delta, deltaTone = 'neutral', sparkli
 export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
     name: string;
     imageUrl?: string;
+    alt?: string;
     size?: 'sm' | 'md' | 'lg';
 }
 
@@ -90,7 +91,7 @@ const avatarSizeClasses = {
     lg: 'h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] text-[length:var(--lb-font-size-heading)]',
 } as const;
 
-export function Avatar({ name, imageUrl, size = 'md', className = '', ...props }: AvatarProps) {
+export function Avatar({ name, imageUrl, alt, size = 'md', className = '', ...props }: AvatarProps) {
     const initials = name
         .split(/\s+/)
         .filter(Boolean)
@@ -108,7 +109,7 @@ export function Avatar({ name, imageUrl, size = 'md', className = '', ...props }
             aria-label={name}
             {...props}
         >
-            {imageUrl ? <img src={imageUrl} alt="" className="h-full w-full object-cover" /> : initials}
+            {imageUrl ? <img src={imageUrl} alt={alt ?? ''} className="h-full w-full object-cover" /> : initials}
         </div>
     );
 }
@@ -117,12 +118,41 @@ export interface PaginationProps {
     page: number;
     totalPages: number;
     onPageChange: (page: number) => void;
+    showPageNumbers?: boolean;
+    maxPageButtons?: number;
+    pageSize?: number;
+    pageSizeOptions?: number[];
+    onPageSizeChange?: (pageSize: number) => void;
+    pageSizeLabel?: string;
     className?: string;
 }
 
-export function Pagination({ page, totalPages, onPageChange, className = '' }: PaginationProps) {
+function getPaginationPages(page: number, totalPages: number, maxPageButtons: number) {
+    const safeTotal = Math.max(totalPages, 1);
+    const safeMax = Math.max(maxPageButtons, 1);
+    const half = Math.floor(safeMax / 2);
+    const start = Math.max(Math.min(page - half, safeTotal - safeMax + 1), 1);
+    const end = Math.min(start + safeMax - 1, safeTotal);
+    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+}
+
+export function Pagination({
+    page,
+    totalPages,
+    onPageChange,
+    showPageNumbers = false,
+    maxPageButtons = 5,
+    pageSize,
+    pageSizeOptions = [],
+    onPageSizeChange,
+    pageSizeLabel = 'Rows per page',
+    className = '',
+}: PaginationProps) {
+    const pages = showPageNumbers ? getPaginationPages(page, totalPages, maxPageButtons) : [];
+    const showPageSize = typeof pageSize === 'number' && pageSizeOptions.length > 0 && Boolean(onPageSizeChange);
+
     return (
-        <nav className={cx('flex items-center justify-between gap-[var(--lb-space-2)]', className)} aria-label="Pagination">
+        <nav className={cx('flex flex-wrap items-center justify-between gap-[var(--lb-space-2)]', className)} aria-label="Pagination">
             <Button
                 unstyled
                 type="button"
@@ -133,9 +163,48 @@ export function Pagination({ page, totalPages, onPageChange, className = '' }: P
                 <ChevronLeft className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                 Previous
             </Button>
-            <span className="text-[length:var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[color:var(--lb-color-text-subdued)]">
-                Page {page} of {totalPages}
-            </span>
+            <div className="flex min-w-0 flex-wrap items-center justify-center gap-[var(--lb-space-2)]">
+                {showPageSize && (
+                    <div className="w-[var(--lb-size-pagination-page-size-width,8rem)]">
+                        <Select
+                            hideLabel
+                            label={pageSizeLabel}
+                            controlSize="sm"
+                            value={String(pageSize)}
+                            options={pageSizeOptions.map((option) => ({ label: String(option), value: String(option) }))}
+                            onChange={(event) => onPageSizeChange?.(Number(event.currentTarget.value))}
+                        />
+                    </div>
+                )}
+                {pages.length > 0 ? (
+                    <div className="flex flex-wrap justify-center gap-[var(--lb-space-1)]" aria-label="Page numbers">
+                        {pages.map((pageNumber) => {
+                            const active = pageNumber === page;
+                            return (
+                                <Button
+                                    unstyled
+                                    key={pageNumber}
+                                    type="button"
+                                    className={cx(
+                                        'inline-flex h-[var(--lb-size-control-sm)] min-w-[var(--lb-size-control-sm)] items-center justify-center rounded-[var(--lb-radius-md)] border px-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
+                                        active
+                                            ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary-text)]'
+                                            : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)]',
+                                    )}
+                                    aria-current={active ? 'page' : undefined}
+                                    onClick={() => onPageChange(pageNumber)}
+                                >
+                                    {pageNumber}
+                                </Button>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <span className="text-[length:var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[color:var(--lb-color-text-subdued)]">
+                        Page {page} of {totalPages}
+                    </span>
+                )}
+            </div>
             <Button
                 unstyled
                 type="button"
@@ -456,7 +525,7 @@ export function IndexTable<T extends { id: string }>({
                             </tr>
                         ) : (
                             rows.map((row, index) => (
-                                <tr key={row.id} className="hover:bg-[var(--lb-component-table-row-hover-bg)]">
+                                <tr key={row.id} aria-selected={selectedIds.has(row.id)} className="hover:bg-[var(--lb-component-table-row-hover-bg)]">
                                     <td className="h-[var(--lb-density-table-row-height)] px-[var(--lb-space-3)] py-0">
                                         <Checkbox
                                             unstyled

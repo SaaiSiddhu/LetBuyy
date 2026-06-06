@@ -34,6 +34,8 @@ function setOutsideTreeInert(root: HTMLElement) {
     const hideElement = (element: Element) => {
         if (!(element instanceof HTMLElement) || element.contains(root)) return;
 
+        // Overlay isolation uses the platform `inert` property. If LetBuyy needs to
+        // support a browser without inert, load an inert polyfill before mounting UI.
         const inertElement = element as InertElement;
         changed.push({
             element: inertElement,
