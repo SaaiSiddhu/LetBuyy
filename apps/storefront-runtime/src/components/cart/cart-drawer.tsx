@@ -2,7 +2,7 @@
 
 import { useCart } from '@/context/cart-context';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Minus, Plus, ShoppingBag, X } from '@letbuyy/ui';
+import { Button, ArrowRight, Minus, Plus, ShoppingBag, X } from '@letbuyy/ui';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect } from 'react';
@@ -84,14 +84,14 @@ export default function CartDrawer({ basePath, primaryColor }: CartDrawerProps) 
                                     {cartCount} item{cartCount === 1 ? '' : 's'}
                                 </h2>
                             </div>
-                            <button
+                            <Button unstyled
                                 type="button"
                                 aria-label="Close cart"
                                 onClick={closeDrawer}
                                 className="flex h-11 w-11 items-center justify-center rounded-lg text-card-muted transition-colors hover:bg-surface-hover hover:text-card"
                             >
                                 <X size={20} />
-                            </button>
+                            </Button>
                         </div>
 
                         {items.length === 0 ? (
@@ -153,14 +153,14 @@ export default function CartDrawer({ basePath, primaryColor }: CartDrawerProps) 
                                                                     {formatPrice(item.price, currency)} each
                                                                 </p>
                                                             </div>
-                                                            <button
+                                                            <Button unstyled
                                                                 type="button"
                                                                 aria-label={`Remove ${item.name}`}
                                                                 onClick={() => removeFromCart(item.id)}
                                                                 className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg text-card-muted transition-colors hover:bg-surface-hover hover:text-red-500"
                                                             >
                                                                 <X size={16} />
-                                                            </button>
+                                                            </Button>
                                                         </div>
 
                                                         {item.selectedVariant && Object.keys(item.selectedVariant).length > 0 && (
@@ -178,25 +178,25 @@ export default function CartDrawer({ basePath, primaryColor }: CartDrawerProps) 
 
                                                         <div className="mt-3 flex items-center justify-between gap-3">
                                                             <div className="flex min-h-11 items-center overflow-hidden rounded-lg border border-card">
-                                                                <button
+                                                                <Button unstyled
                                                                     type="button"
                                                                     aria-label={`Decrease quantity for ${item.name}`}
                                                                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                                                     className="flex h-11 w-11 items-center justify-center text-card transition-colors hover:bg-surface-hover"
                                                                 >
                                                                     <Minus size={14} />
-                                                                </button>
+                                                                </Button>
                                                                 <span className="w-9 text-center text-sm font-semibold text-card">
                                                                     {item.quantity}
                                                                 </span>
-                                                                <button
+                                                                <Button unstyled
                                                                     type="button"
                                                                     aria-label={`Increase quantity for ${item.name}`}
                                                                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                                                     className="flex h-11 w-11 items-center justify-center text-card transition-colors hover:bg-surface-hover"
                                                                 >
                                                                     <Plus size={14} />
-                                                                </button>
+                                                                </Button>
                                                             </div>
                                                             <p className="text-sm font-bold text-card">
                                                                 {formatPrice(item.price * item.quantity, currency)}

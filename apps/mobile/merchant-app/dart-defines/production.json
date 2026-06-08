@@ -1,10 +1,13 @@
 {
-  "BFF_BASE_URL": "https://bff.letbuyy.store/v1",
-  "API_BASE_URL": "https://bff.letbuyy.store/v1",
-  "IDENTITY_BASE_URL": "https://accounts.letbuyy.store",
-  "STOREFRONT_BASE_URL": "https://letbuyy.store",
+  "BFF_BASE_URL": "https://bff.letbuyy.com/v1",
+  "API_BASE_URL": "https://bff.letbuyy.com/v1",
+  "IDENTITY_BASE_URL": "https://accounts.letbuyy.com",
+  "STOREFRONT_BASE_URL": "https://letbuyy.com",
   "RAZORPAY_KEY_ID": "SKIP_NEEDS_HUMAN_PRODUCTION_RAZORPAY_KEY_ID",
   "TURNSTILE_TOKEN": "SKIP_NEEDS_HUMAN_MOBILE_TURNSTILE_TOKEN",
   "TURNSTILE_SITE_KEY": "SKIP_NEEDS_HUMAN_MOBILE_TURNSTILE_SITE_KEY",
+  "SENTRY_DSN": "SKIP_NEEDS_HUMAN_MOBILE_SENTRY_DSN",
+  "APP_RELEASE": "letbuyy-merchant-mobile@1.0.0+1",
+  "MOBILE_PUSH_DEVICE_TOKEN": "",
   "ENVIRONMENT": "production"
 }

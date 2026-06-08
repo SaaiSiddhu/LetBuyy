@@ -7,6 +7,7 @@ import ts from 'typescript';
 
 const AUTH_CORE_SOURCE = 'packages/auth-core/src/index.ts';
 const AUTH_CORE_CUSTOMER_SESSION_SOURCE = 'packages/auth-core/src/customer-session.ts';
+const AUTH_CORE_STOREFRONT_ACCESS_SOURCE = 'packages/auth-core/src/storefront-access.ts';
 
 function transpileTypeScript(sourcePath) {
   return ts.transpileModule(readFileSync(sourcePath, 'utf8'), {
@@ -36,6 +37,7 @@ function loadAuthCore() {
     exports: module.exports,
     require(specifier) {
       if (specifier === './customer-session') return evaluateModule(AUTH_CORE_CUSTOMER_SESSION_SOURCE);
+      if (specifier === './storefront-access') return evaluateModule(AUTH_CORE_STOREFRONT_ACCESS_SOURCE);
       if (specifier === 'zod') return { z: { string: () => zChain, object: () => zChain } };
       if (specifier === '@letbuyy/shared-types') return { EmailSchema: zChain };
       throw new Error(`Unexpected test require: ${specifier}`);

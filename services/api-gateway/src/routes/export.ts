@@ -9,7 +9,7 @@ import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../executi
 const router = new Hono<{ Bindings: Env }>();
 
 type ExportContext = Context<{ Bindings: Env }>;
-type ExportJobType = 'products' | 'orders' | 'product_import';
+type ExportJobType = 'products' | 'orders' | 'customers' | 'product_import';
 type ExportJobStatus = 'queued' | 'running' | 'completed' | 'failed';
 
 interface ProductExportRow {
@@ -42,6 +42,22 @@ interface OrderExportRow {
     tracking_number?: string | null;
     carrier?: string | null;
     created_at?: string | null;
+}
+
+interface CustomerExportRow {
+    id?: string | null;
+    email?: string | null;
+    full_name?: string | null;
+    phone?: string | null;
+    status?: string | null;
+    total_orders?: number | string | null;
+    total_spent?: number | string | null;
+    accepts_marketing?: boolean | null;
+    tags?: string[] | null;
+    last_order_at?: string | null;
+    last_login_at?: string | null;
+    created_at?: string | null;
+    updated_at?: string | null;
 }
 
 interface ExportJobRecord {
@@ -81,8 +97,24 @@ const ORDER_EXPORT_HEADERS = [
     'carrier',
     'created_at',
 ] as const;
+const CUSTOMER_EXPORT_HEADERS = [
+    'id',
+    'email',
+    'full_name',
+    'phone',
+    'status',
+    'total_orders',
+    'total_spent',
+    'accepts_marketing',
+    'tags',
+    'last_order_at',
+    'last_login_at',
+    'created_at',
+    'updated_at',
+] as const;
 const PRODUCT_EXPORT_SELECT = PRODUCT_EXPORT_HEADERS.join(',');
 const ORDER_EXPORT_SELECT = ORDER_EXPORT_HEADERS.join(',');
+const CUSTOMER_EXPORT_SELECT = CUSTOMER_EXPORT_HEADERS.join(',');
 const EXPORT_BATCH_SIZE = 1000;
 const PRODUCT_IMPORT_MAX_ROWS = 500;
 
@@ -502,6 +534,65 @@ async function processOrdersExport(c: ExportContext, jobId: string): Promise<voi
     }
 }
 
+async function processCustomersExport(c: ExportContext, jobId: string): Promise<void> {
+    const initialJob = await readJob(c, jobId);
+    if (!initialJob) return;
+    let job = await updateJob(c, initialJob, { status: 'running', startedAt: nowIso() });
+
+    try {
+        const bucket = assertExportStorage(c);
+        const db = getSupabaseAdmin(c);
+        const rowCount = await streamCsvToR2(bucket, job.resultKey, job.filename, async (writeLine) => {
+            await writeLine(toCsvRow([...CUSTOMER_EXPORT_HEADERS]));
+            if (job.storeIds.length === 0) return 0;
+
+            let from = 0;
+            let exported = 0;
+            while (true) {
+                const { data, error } = await db
+                    .from('store_customers')
+                    .select(CUSTOMER_EXPORT_SELECT)
+                    .in('store_id', job.storeIds)
+                    .order('created_at', { ascending: false })
+                    .range(from, from + EXPORT_BATCH_SIZE - 1);
+
+                if (error) throw new Error(error.message);
+                const rows = (data || []) as CustomerExportRow[];
+                for (const customer of rows) {
+                    await writeLine(toCsvRow([
+                        customer.id,
+                        customer.email,
+                        customer.full_name,
+                        customer.phone,
+                        customer.status,
+                        customer.total_orders,
+                        customer.total_spent,
+                        customer.accepts_marketing,
+                        (customer.tags || []).join(';'),
+                        customer.last_order_at,
+                        customer.last_login_at,
+                        customer.created_at,
+                        customer.updated_at,
+                    ]));
+                }
+                exported += rows.length;
+                if (rows.length < EXPORT_BATCH_SIZE) return exported;
+                from += EXPORT_BATCH_SIZE;
+            }
+        });
+
+        job = await updateJob(c, job, { status: 'completed', rowCount, completedAt: nowIso() });
+        await writeJob(c, job);
+    } catch (error) {
+        await updateJob(c, job, {
+            status: 'failed',
+            errorCode: 'EXPORT_FAILED',
+            errorMessage: error instanceof Error ? error.message : 'Export failed',
+            completedAt: nowIso(),
+        });
+    }
+}
+
 async function processProductImport(c: ExportContext, jobId: string): Promise<void> {
     const initialJob = await readJob(c, jobId);
     if (!initialJob || !initialJob.sourceKey) return;
@@ -607,8 +698,8 @@ router.get('/products', async (c) => {
 
         c.executionCtx.waitUntil(processProductsExport(c, job.id));
         return c.json(success({ job: await serializeJob(c, job) }), 202);
-    } catch (error) {
-        return c.json({ error: { code: 'EXPORT_UNAVAILABLE', message: error instanceof Error ? error.message : 'Export unavailable' } }, 503);
+    } catch {
+        return c.json({ error: { code: 'EXPORT_UNAVAILABLE', message: 'Export unavailable' } }, 503);
     }
 });
 
@@ -628,8 +719,28 @@ router.get('/orders', async (c) => {
 
         c.executionCtx.waitUntil(processOrdersExport(c, job.id));
         return c.json(success({ job: await serializeJob(c, job) }), 202);
-    } catch (error) {
-        return c.json({ error: { code: 'EXPORT_UNAVAILABLE', message: error instanceof Error ? error.message : 'Export unavailable' } }, 503);
+    } catch {
+        return c.json({ error: { code: 'EXPORT_UNAVAILABLE', message: 'Export unavailable' } }, 503);
+    }
+});
+
+router.get('/customers', async (c) => {
+    try {
+        const scope = await resolveExportScope(c, c.req.query('store_id'));
+        if ('error' in scope) return scope.error;
+
+        const job = await createJob(c, {
+            type: 'customers',
+            actorId: scope.actorId,
+            storeIds: scope.storeIds,
+            filename: `customers-${dateStamp()}.csv`,
+            metadata: { processor: 'api-gateway.waitUntil', resultStorage: 'Cloudflare R2' },
+        });
+
+        c.executionCtx.waitUntil(processCustomersExport(c, job.id));
+        return c.json(success({ job: await serializeJob(c, job) }), 202);
+    } catch {
+        return c.json({ error: { code: 'EXPORT_UNAVAILABLE', message: 'Export unavailable' } }, 503);
     }
 });
 

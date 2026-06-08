@@ -19,14 +19,23 @@ import {
     parseAppStoreJsonRecord as parseJsonRecord,
     planAppDeveloperRegistration,
     planAppManifestRegistration,
+    buildMarketplaceAppSubmissionChecks,
     planMarketplaceAppSubmission,
     type AppEngineJsonRecord,
     type AppManifestRegistrationPlan,
 } from '@letbuyy/app-engine';
 import { sha256Hex } from '@letbuyy/auth-core';
 import {
+    appBillingModeForPricingModel,
+} from '@letbuyy/billing-core';
+import {
+    AppPricingPlanInputSchema,
+    AppPricingPlanUpdateSchema,
+    type AppPricingPlanInput,
+    type AppPricingPlanUpdate,
+} from '@letbuyy/shared-types';
+import {
     getRequestId,
-    partnerRequestCode,
     partnerStoreFromMembership,
     partnerStoreFromOwnedSite,
     sumMinor,
@@ -34,6 +43,52 @@ import {
 
 const DEVELOPER_CREDENTIAL_TARGET = '/v1/app';
 const DEVELOPER_KEY_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._~-';
+const APP_PRICING_PLAN_SELECT = [
+    'id',
+    'app_id',
+    'developer_id',
+    'plan_slug',
+    'name',
+    'description',
+    'pricing_model',
+    'billing_mode',
+    'currency',
+    'amount_minor',
+    'interval',
+    'trial_days',
+    'usage_meter',
+    'usage_unit',
+    'included_usage',
+    'usage_unit_amount_minor',
+    'features',
+    'limits',
+    'is_default',
+    'status',
+    'sort_order',
+    'created_at',
+    'updated_at',
+    'deleted_at',
+].join(', ');
+
+const APP_VERSION_SELECT = [
+    'id',
+    'app_id',
+    'developer_id',
+    'version',
+    'release_notes',
+    'changelog',
+    'rollout_percentage',
+    'rollout_cohort',
+    'status',
+    'manifest',
+    'automated_checks',
+    'review_record_id',
+    'submitted_at',
+    'released_at',
+    'created_at',
+    'updated_at',
+    'deleted_at',
+].join(', ');
 
 function randomDeveloperCredential(prefix: string, length = 64): string {
     const bytes = new Uint8Array(length);
@@ -69,6 +124,155 @@ function normalizeDeveloperRedirectUris(value: unknown): string[] {
         })
         .filter((item): item is string => Boolean(item));
     return [...new Set(uris)].slice(0, 20);
+}
+
+function amountMajorToMinor(value: unknown): number {
+    const amount = Number(value);
+    return Number.isFinite(amount) && amount > 0 ? Math.round(amount * 100) : 0;
+}
+
+function planSlug(value: string): string {
+    return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 120) || 'plan';
+}
+
+function isUuid(value: string): boolean {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+function appPricingPlanRow(input: {
+    appId: string;
+    developerId: string;
+    actorId: string;
+    plan: AppPricingPlanInput | AppPricingPlanUpdate;
+}): AppEngineJsonRecord {
+    const pricingModel = typeof input.plan.pricing_model === 'string' ? input.plan.pricing_model : 'free';
+    const billingMode = input.plan.billing_mode || appBillingModeForPricingModel(pricingModel);
+    return {
+        app_id: input.appId,
+        developer_id: input.developerId,
+        ...(input.plan.plan_slug !== undefined ? { plan_slug: planSlug(input.plan.plan_slug) } : {}),
+        ...(input.plan.name !== undefined ? { name: input.plan.name } : {}),
+        ...(input.plan.description !== undefined ? { description: input.plan.description || null } : {}),
+        ...(input.plan.pricing_model !== undefined ? { pricing_model: pricingModel } : {}),
+        ...(input.plan.billing_mode !== undefined || input.plan.pricing_model !== undefined ? { billing_mode: billingMode } : {}),
+        ...(input.plan.currency !== undefined ? { currency: 'INR' } : {}),
+        ...(input.plan.amount_minor !== undefined ? { amount_minor: Math.max(0, Math.round(Number(input.plan.amount_minor) || 0)) } : {}),
+        ...(input.plan.interval !== undefined ? { interval: input.plan.interval } : {}),
+        ...(input.plan.trial_days !== undefined ? { trial_days: Math.max(0, Math.min(365, Math.round(Number(input.plan.trial_days) || 0))) } : {}),
+        ...(input.plan.usage_meter !== undefined ? { usage_meter: input.plan.usage_meter || null } : {}),
+        ...(input.plan.usage_unit !== undefined ? { usage_unit: input.plan.usage_unit || null } : {}),
+        ...(input.plan.included_usage !== undefined ? { included_usage: Math.max(0, Math.round(Number(input.plan.included_usage) || 0)) } : {}),
+        ...(input.plan.usage_unit_amount_minor !== undefined ? { usage_unit_amount_minor: Math.max(0, Math.round(Number(input.plan.usage_unit_amount_minor) || 0)) } : {}),
+        ...(input.plan.features !== undefined ? { features: input.plan.features } : {}),
+        ...(input.plan.limits !== undefined ? { limits: input.plan.limits } : {}),
+        ...(input.plan.is_default !== undefined ? { is_default: input.plan.is_default } : {}),
+        ...(input.plan.status !== undefined ? { status: input.plan.status } : {}),
+        ...(input.plan.sort_order !== undefined ? { sort_order: input.plan.sort_order } : {}),
+        updated_by: input.actorId,
+    };
+}
+
+function submittedPricingPlans(body: AppEngineJsonRecord, pricingModel: string): { ok: true; plans: AppPricingPlanInput[] } | { ok: false; message: string } {
+    const rawPlans = Array.isArray(body.pricing_plans) ? body.pricing_plans : [];
+    if (rawPlans.length > 0) {
+        const plans: AppPricingPlanInput[] = [];
+        for (const rawPlan of rawPlans.slice(0, 12)) {
+            const parsed = AppPricingPlanInputSchema.safeParse(rawPlan);
+            if (!parsed.success) {
+                return { ok: false, message: parsed.error.issues[0]?.message || 'Invalid pricing plan' };
+            }
+            plans.push(parsed.data);
+        }
+        return { ok: true, plans };
+    }
+
+    if (pricingModel === 'free') {
+        return {
+            ok: true,
+            plans: [AppPricingPlanInputSchema.parse({
+                plan_slug: 'free',
+                name: 'Free',
+                pricing_model: 'free',
+                amount_minor: 0,
+                interval: 'none',
+                is_default: true,
+                status: 'active',
+            })],
+        };
+    }
+
+    const monthlyMinor = amountMajorToMinor(body.price_monthly);
+    const yearlyMinor = amountMajorToMinor(body.price_yearly);
+    const trialDays = Math.max(0, Math.min(365, Math.round(Number(body.trial_days) || 0)));
+    const fallbackMinor = monthlyMinor || yearlyMinor || amountMajorToMinor(body.price_inr);
+    if (!fallbackMinor && pricingModel !== 'freemium') return { ok: true, plans: [] };
+
+    if (pricingModel === 'one_time') {
+        return {
+            ok: true,
+            plans: [AppPricingPlanInputSchema.parse({
+                plan_slug: 'one-time',
+                name: 'One-time',
+                pricing_model: 'one_time',
+                billing_mode: 'one_time',
+                amount_minor: fallbackMinor,
+                interval: 'none',
+                trial_days: 0,
+                is_default: true,
+                status: 'active',
+            })],
+        };
+    }
+
+    if (pricingModel === 'usage') {
+        return {
+            ok: true,
+            plans: [AppPricingPlanInputSchema.parse({
+                plan_slug: 'usage',
+                name: 'Usage',
+                pricing_model: 'usage',
+                billing_mode: 'usage',
+                amount_minor: fallbackMinor,
+                interval: 'monthly',
+                trial_days: trialDays,
+                usage_meter: 'usage_events',
+                usage_unit: 'event',
+                usage_unit_amount_minor: fallbackMinor,
+                is_default: true,
+                status: 'active',
+            })],
+        };
+    }
+
+    const plans: AppPricingPlanInput[] = [];
+    if (monthlyMinor) {
+        plans.push(AppPricingPlanInputSchema.parse({
+            plan_slug: 'monthly',
+            name: 'Monthly',
+            pricing_model: pricingModel === 'freemium' ? 'freemium' : 'recurring',
+            billing_mode: 'recurring',
+            amount_minor: monthlyMinor,
+            interval: 'monthly',
+            trial_days: trialDays,
+            is_default: true,
+            status: 'active',
+        }));
+    }
+    if (yearlyMinor) {
+        plans.push(AppPricingPlanInputSchema.parse({
+            plan_slug: 'annual',
+            name: 'Annual',
+            pricing_model: pricingModel === 'freemium' ? 'freemium' : 'recurring',
+            billing_mode: 'recurring',
+            amount_minor: yearlyMinor,
+            interval: 'yearly',
+            trial_days: trialDays,
+            is_default: plans.length === 0,
+            status: 'active',
+            sort_order: 10,
+        }));
+    }
+    return { ok: true, plans };
 }
 
 async function mintDeveloperAppCredentials(input: {
@@ -334,6 +538,36 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
             return c.json({ error: { code: 'DB_ERROR', message: appsError.message } }, 500);
         }
 
+        const appRows = (apps || []) as unknown as AppEngineJsonRecord[];
+        const appIds = appRows.map((app) => stringOrNull(app.id)).filter((id): id is string => Boolean(id));
+        const { data: pricingPlans, error: pricingPlanError } = appIds.length > 0
+            ? await db
+                .from('app_pricing_plans')
+                .select(APP_PRICING_PLAN_SELECT)
+                .in('app_id', appIds)
+                .eq('developer_id', developer.id)
+                .is('deleted_at', null)
+                .order('sort_order', { ascending: true })
+            : { data: [], error: null };
+
+        if (pricingPlanError) {
+            return c.json({ error: { code: 'DB_ERROR', message: pricingPlanError.message } }, 500);
+        }
+
+        const { data: appVersions, error: appVersionsError } = appIds.length > 0
+            ? await db
+                .from('app_versions')
+                .select(APP_VERSION_SELECT)
+                .in('app_id', appIds)
+                .eq('developer_id', developer.id)
+                .is('deleted_at', null)
+                .order('created_at', { ascending: false })
+            : { data: [], error: null };
+
+        if (appVersionsError) {
+            return c.json({ error: { code: 'DB_ERROR', message: appVersionsError.message } }, 500);
+        }
+
         const { data: reviewRecords, error: reviewError } = await db
             .from('marketplace_review_records')
             .select([
@@ -362,7 +596,321 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
             return c.json({ error: { code: 'DB_ERROR', message: reviewError.message } }, 500);
         }
 
-        return c.json(success({ developer, apps: apps || [], review_records: reviewRecords || [] }));
+        return c.json(success({ developer, apps: apps || [], app_versions: appVersions || [], pricing_plans: pricingPlans || [], review_records: reviewRecords || [] }));
+    });
+
+    // GET /app-store/developers/apps/:id/pricing-plans — List pricing plans for an owned app
+    router.get('/developers/apps/:id/pricing-plans', authMiddleware, async (c) => {
+        const auth = c.get('auth');
+        const appId = c.req.param('id');
+        const db = getSupabaseAdmin(c);
+        const customUser = await resolveCustomUser(db, auth.user);
+
+        if (!customUser) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+        }
+
+        const { data: developer, error: developerError } = await db
+            .from('app_developers')
+            .select('id')
+            .eq('user_id', customUser.id)
+            .maybeSingle();
+
+        if (developerError) {
+            return c.json({ error: { code: 'DB_ERROR', message: developerError.message } }, 500);
+        }
+
+        if (!developer) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'You must register as a developer first' } }, 403);
+        }
+
+        const { data: app, error: appError } = await db
+            .from('marketplace_apps')
+            .select('id, name, slug, pricing_model')
+            .eq('id', appId)
+            .eq('developer_id', developer.id)
+            .maybeSingle();
+
+        if (appError) {
+            return c.json({ error: { code: 'DB_ERROR', message: appError.message } }, 500);
+        }
+
+        if (!app) {
+            return c.json({ error: { code: 'NOT_FOUND', message: 'App not found for this developer' } }, 404);
+        }
+
+        const { data: plans, error: plansError } = await db
+            .from('app_pricing_plans')
+            .select(APP_PRICING_PLAN_SELECT)
+            .eq('app_id', appId)
+            .eq('developer_id', developer.id)
+            .is('deleted_at', null)
+            .order('sort_order', { ascending: true })
+            .order('created_at', { ascending: true });
+
+        if (plansError) {
+            return c.json({ error: { code: 'DB_ERROR', message: plansError.message } }, 500);
+        }
+
+        return c.json(success({ app, plans: plans || [] }));
+    });
+
+    // GET /app-store/developers/apps/:id/usage — Usage rollups and recent metered events for an owned app
+    router.get('/developers/apps/:id/usage', authMiddleware, async (c) => {
+        const auth = c.get('auth');
+        const appId = c.req.param('id');
+        const rawLimit = Number(c.req.query('limit') || 25);
+        const limit = Number.isFinite(rawLimit) ? Math.max(1, Math.min(100, Math.round(rawLimit))) : 25;
+        const meterName = stringOrNull(c.req.query('meter_name'));
+        const db = getSupabaseAdmin(c);
+        const customUser = await resolveCustomUser(db, auth.user);
+
+        if (!customUser) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+        }
+
+        const { data: developer, error: developerError } = await db
+            .from('app_developers')
+            .select('id')
+            .eq('user_id', customUser.id)
+            .maybeSingle();
+
+        if (developerError) {
+            return c.json({ error: { code: 'DB_ERROR', message: developerError.message } }, 500);
+        }
+
+        if (!developer) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'You must register as a developer first' } }, 403);
+        }
+
+        const { data: app, error: appError } = await db
+            .from('marketplace_apps')
+            .select('id, name, slug, pricing_model')
+            .eq('id', appId)
+            .eq('developer_id', developer.id)
+            .maybeSingle();
+
+        if (appError) {
+            return c.json({ error: { code: 'DB_ERROR', message: appError.message } }, 500);
+        }
+
+        if (!app) {
+            return c.json({ error: { code: 'NOT_FOUND', message: 'App not found for this developer' } }, 404);
+        }
+
+        let rollupsQuery = db
+            .from('app_usage_meter_rollups')
+            .select('*')
+            .eq('app_id', appId)
+            .is('deleted_at', null)
+            .order('period_start', { ascending: false })
+            .limit(limit);
+        let eventsQuery = db
+            .from('app_usage_events')
+            .select('*')
+            .eq('app_id', appId)
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(limit);
+
+        if (meterName) {
+            rollupsQuery = rollupsQuery.eq('meter_name', meterName);
+            eventsQuery = eventsQuery.eq('meter_name', meterName);
+        }
+
+        const [{ data: rollups, error: rollupsError }, { data: events, error: eventsError }] = await Promise.all([
+            rollupsQuery,
+            eventsQuery,
+        ]);
+
+        if (rollupsError || eventsError) {
+            return c.json({ error: { code: 'DB_ERROR', message: rollupsError?.message || eventsError?.message || 'Usage query failed' } }, 500);
+        }
+
+        return c.json(success({ app_id: appId, app, rollups: rollups || [], events: events || [] }));
+    });
+
+    // POST /app-store/developers/apps/:id/pricing-plans — Create a pricing plan for an owned app
+    router.post('/developers/apps/:id/pricing-plans', authMiddleware, async (c) => {
+        const auth = c.get('auth');
+        const appId = c.req.param('id');
+        const body = await c.req.json();
+        const input = AppPricingPlanInputSchema.safeParse(body);
+        if (!input.success) {
+            return c.json({ error: { code: 'VALIDATION', message: input.error.issues[0]?.message || 'Invalid pricing plan' } }, 400);
+        }
+
+        const db = getSupabaseAdmin(c);
+        const customUser = await resolveCustomUser(db, auth.user);
+        if (!customUser) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+        }
+
+        const { data: developer, error: developerError } = await db
+            .from('app_developers')
+            .select('id')
+            .eq('user_id', customUser.id)
+            .maybeSingle();
+
+        if (developerError) {
+            return c.json({ error: { code: 'DB_ERROR', message: developerError.message } }, 500);
+        }
+
+        if (!developer) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'You must register as a developer first' } }, 403);
+        }
+
+        const { data: app, error: appError } = await db
+            .from('marketplace_apps')
+            .select('id')
+            .eq('id', appId)
+            .eq('developer_id', developer.id)
+            .maybeSingle();
+
+        if (appError) {
+            return c.json({ error: { code: 'DB_ERROR', message: appError.message } }, 500);
+        }
+
+        if (!app) {
+            return c.json({ error: { code: 'NOT_FOUND', message: 'App not found for this developer' } }, 404);
+        }
+
+        if (input.data.is_default) {
+            await db
+                .from('app_pricing_plans')
+                .update({ is_default: false, updated_by: customUser.id })
+                .eq('app_id', appId)
+                .eq('developer_id', developer.id)
+                .is('deleted_at', null);
+        }
+
+        const { data: plan, error: insertError } = await db
+            .from('app_pricing_plans')
+            .insert({
+                ...appPricingPlanRow({ appId, developerId: developer.id, actorId: customUser.id, plan: input.data }),
+                created_by: customUser.id,
+            })
+            .select(APP_PRICING_PLAN_SELECT)
+            .single();
+
+        if (insertError) {
+            return c.json({ error: { code: 'DB_ERROR', message: insertError.message } }, 500);
+        }
+
+        return c.json(success(plan), 201);
+    });
+
+    // PATCH /app-store/developers/apps/:id/pricing-plans/:planId — Update a pricing plan for an owned app
+    router.patch('/developers/apps/:id/pricing-plans/:planId', authMiddleware, async (c) => {
+        const auth = c.get('auth');
+        const appId = c.req.param('id');
+        const planId = c.req.param('planId');
+        const body = await c.req.json();
+        const input = AppPricingPlanUpdateSchema.safeParse(body);
+        if (!input.success) {
+            return c.json({ error: { code: 'VALIDATION', message: input.error.issues[0]?.message || 'Invalid pricing plan' } }, 400);
+        }
+
+        const db = getSupabaseAdmin(c);
+        const customUser = await resolveCustomUser(db, auth.user);
+        if (!customUser) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+        }
+
+        const { data: developer, error: developerError } = await db
+            .from('app_developers')
+            .select('id')
+            .eq('user_id', customUser.id)
+            .maybeSingle();
+
+        if (developerError) {
+            return c.json({ error: { code: 'DB_ERROR', message: developerError.message } }, 500);
+        }
+
+        if (!developer) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'You must register as a developer first' } }, 403);
+        }
+
+        if (input.data.is_default) {
+            await db
+                .from('app_pricing_plans')
+                .update({ is_default: false, updated_by: customUser.id })
+                .eq('app_id', appId)
+                .eq('developer_id', developer.id)
+                .is('deleted_at', null);
+        }
+
+        const { data: plan, error: updateError } = await db
+            .from('app_pricing_plans')
+            .update(appPricingPlanRow({ appId, developerId: developer.id, actorId: customUser.id, plan: input.data }))
+            .eq('id', planId)
+            .eq('app_id', appId)
+            .eq('developer_id', developer.id)
+            .is('deleted_at', null)
+            .select(APP_PRICING_PLAN_SELECT)
+            .maybeSingle();
+
+        if (updateError) {
+            return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);
+        }
+
+        if (!plan) {
+            return c.json({ error: { code: 'NOT_FOUND', message: 'Pricing plan not found for this app' } }, 404);
+        }
+
+        return c.json(success(plan));
+    });
+
+    // DELETE /app-store/developers/apps/:id/pricing-plans/:planId — Archive a pricing plan for an owned app
+    router.delete('/developers/apps/:id/pricing-plans/:planId', authMiddleware, async (c) => {
+        const auth = c.get('auth');
+        const appId = c.req.param('id');
+        const planId = c.req.param('planId');
+        const db = getSupabaseAdmin(c);
+        const customUser = await resolveCustomUser(db, auth.user);
+
+        if (!customUser) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+        }
+
+        const { data: developer, error: developerError } = await db
+            .from('app_developers')
+            .select('id')
+            .eq('user_id', customUser.id)
+            .maybeSingle();
+
+        if (developerError) {
+            return c.json({ error: { code: 'DB_ERROR', message: developerError.message } }, 500);
+        }
+
+        if (!developer) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'You must register as a developer first' } }, 403);
+        }
+
+        const { data: plan, error: updateError } = await db
+            .from('app_pricing_plans')
+            .update({
+                status: 'archived',
+                deleted_at: new Date().toISOString(),
+                is_default: false,
+                updated_by: customUser.id,
+            })
+            .eq('id', planId)
+            .eq('app_id', appId)
+            .eq('developer_id', developer.id)
+            .is('deleted_at', null)
+            .select(APP_PRICING_PLAN_SELECT)
+            .maybeSingle();
+
+        if (updateError) {
+            return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);
+        }
+
+        if (!plan) {
+            return c.json({ error: { code: 'NOT_FOUND', message: 'Pricing plan not found for this app' } }, 404);
+        }
+
+        return c.json(success(plan));
     });
 
     // GET /app-store/partners/dashboard — Partner console aggregate over listings, payouts, stores, and analytics
@@ -403,6 +951,34 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
         const appRows = (apps || []) as unknown as AppEngineJsonRecord[];
         const appIds = appRows.map((app) => stringOrNull(app.id)).filter((id): id is string => Boolean(id));
 
+        const { data: pricingPlans, error: pricingPlanError } = appIds.length > 0
+            ? await db
+                .from('app_pricing_plans')
+                .select(APP_PRICING_PLAN_SELECT)
+                .in('app_id', appIds)
+                .eq('developer_id', developerId)
+                .is('deleted_at', null)
+                .order('sort_order', { ascending: true })
+            : { data: [], error: null };
+
+        if (pricingPlanError) {
+            return c.json({ error: { code: 'DB_ERROR', message: pricingPlanError.message } }, 500);
+        }
+
+        const { data: appVersions, error: appVersionsError } = appIds.length > 0
+            ? await db
+                .from('app_versions')
+                .select(APP_VERSION_SELECT)
+                .in('app_id', appIds)
+                .eq('developer_id', developerId)
+                .is('deleted_at', null)
+                .order('created_at', { ascending: false })
+            : { data: [], error: null };
+
+        if (appVersionsError) {
+            return c.json({ error: { code: 'DB_ERROR', message: appVersionsError.message } }, 500);
+        }
+
         const { data: reviewRecords, error: reviewError } = await db
             .from('marketplace_review_records')
             .select([
@@ -434,7 +1010,7 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
 
         const { data: charges, error: chargesError } = await db
             .from('app_billing_charges')
-            .select('id, site_id, app_id, partner_id, installation_id, billing_mode, status, name, amount_minor, currency, revenue_share_bps, partner_amount_minor, platform_fee_minor, partner_gst_bps, partner_gst_minor, payout_rail, provider, provider_mode, approved_at, activated_at, idempotency_key, metadata, created_at, updated_at')
+            .select('id, site_id, app_id, partner_id, installation_id, pricing_plan_id, billing_mode, status, name, amount_minor, currency, trial_days, trial_starts_at, trial_ends_at, billing_starts_at, revenue_share_bps, partner_amount_minor, platform_fee_minor, partner_gst_bps, partner_gst_minor, payout_rail, provider, provider_mode, approved_at, activated_at, idempotency_key, metadata, created_at, updated_at')
             .eq('partner_id', developerId)
             .is('deleted_at', null)
             .order('created_at', { ascending: false })
@@ -507,9 +1083,21 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
             if (id && !developmentStoresById.has(id)) developmentStoresById.set(id, store);
         });
 
+        const { data: activeCode } = await db
+            .from('app_collaborator_codes')
+            .select('code_prefix, expires_at, scopes')
+            .eq('developer_id', developerId)
+            .eq('status', 'active')
+            .gt('expires_at', new Date().toISOString())
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
         const collaboratorAccess = {
-            request_code: partnerRequestCode(developerId),
-            expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+            request_code: stringOrNull(activeCode?.code_prefix) ? `${activeCode?.code_prefix}...` : 'NO_ACTIVE_CODE',
+            expires_at: stringOrNull(activeCode?.expires_at) || new Date().toISOString(),
+            has_active_code: Boolean(activeCode),
             scopes: ['read_products', 'write_themes', 'read_orders', 'app_collaboration'],
             managed_stores: membershipStores.filter((store) => store.managed === true),
         };
@@ -531,44 +1119,14 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
         return c.json(success({
             developer,
             apps: appRows,
+            app_versions: appVersions || [],
+            pricing_plans: pricingPlans || [],
             review_records: reviewRecords || [],
             charges: chargeRows,
             payouts: payoutRows,
             development_stores: Array.from(developmentStoresById.values()),
             collaborator_access: collaboratorAccess,
             analytics,
-        }));
-    });
-
-    // POST /app-store/partners/collaborator-code — Mint a short-lived partner request code
-    router.post('/partners/collaborator-code', authMiddleware, requireRoleCategory('partner'), async (c) => {
-        const auth = c.get('auth');
-        const db = getSupabaseAdmin(c);
-        const customUser = await resolveCustomUser(db, auth.user);
-
-        if (!customUser) {
-            return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-        }
-
-        const { data: developer, error } = await db
-            .from('app_developers')
-            .select('id')
-            .eq('user_id', customUser.id)
-            .maybeSingle();
-
-        if (error) {
-            return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-        }
-
-        if (!developer?.id) {
-            return c.json({ error: { code: 'NOT_FOUND', message: 'Developer profile not found' } }, 404);
-        }
-
-        return c.json(success({
-            request_code: partnerRequestCode(String(developer.id)),
-            expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
-            scopes: ['read_products', 'write_themes', 'read_orders', 'app_collaboration'],
-            managed_stores: [],
         }));
     });
 
@@ -594,15 +1152,40 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
             return c.json({ error: { code: 'FORBIDDEN', message: 'You must register as a developer first' } }, 403);
         }
 
+        if (developer.status !== 'approved' && body.save_as_draft !== true) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Developer approval is required before submitting apps for review' } }, 403);
+        }
+
         const submission = planMarketplaceAppSubmission(body, developer.id);
         if (!submission.ok) {
             return c.json({ error: { code: 'VALIDATION', message: submission.message } }, 400);
+        }
+
+        const pricingPlans = submittedPricingPlans(body, String(submission.value.pricing_model || 'free'));
+        if (!pricingPlans.ok) {
+            return c.json({ error: { code: 'VALIDATION', message: pricingPlans.message } }, 400);
         }
 
         const manifestInput = developerManifestInput(body);
         const manifestPlan = manifestInput ? planAppManifestRegistration('pending_app_id', manifestInput) : null;
         if (manifestPlan && !manifestPlan.ok) {
             return c.json({ error: { code: 'VALIDATION', message: manifestPlan.message } }, 400);
+        }
+        const redirectUris = normalizeDeveloperRedirectUris(body.oauth_redirect_uris || body.redirect_uris || body.redirectUris);
+        const submissionChecks = submission.value.status === 'draft'
+            ? null
+            : buildMarketplaceAppSubmissionChecks({
+                submission: submission.value,
+                manifest: manifestPlan?.ok ? manifestPlan.value.manifest : null,
+                redirectUris,
+                developerStatus: stringOrNull(developer.status),
+            });
+        if (submissionChecks?.hardFailed) {
+            const failed = submissionChecks.checks
+                .filter((check) => check.status === 'failed')
+                .map((check) => `${check.name}: ${check.message}`)
+                .join('; ');
+            return c.json({ error: { code: 'VALIDATION', message: failed || 'Submission checks failed' } }, 400);
         }
 
         const { data: existingSlug } = await db
@@ -619,7 +1202,6 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
             scopes: submission.value.api_scopes || [],
             issuedAt,
         });
-        const redirectUris = normalizeDeveloperRedirectUris(body.oauth_redirect_uris || body.redirect_uris || body.redirectUris);
         const { data: app, error } = await db
             .from('marketplace_apps')
             .insert({
@@ -641,6 +1223,25 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
 
         if (!credentialPersistence.ok) {
             return c.json({ error: { code: 'DB_ERROR', message: credentialPersistence.message } }, 500);
+        }
+
+        let insertedPricingPlans: AppEngineJsonRecord[] = [];
+        if (pricingPlans.plans.length > 0) {
+            const defaultIndex = Math.max(0, pricingPlans.plans.findIndex((plan) => plan.is_default));
+            const rows = pricingPlans.plans.map((plan, index) => ({
+                ...appPricingPlanRow({ appId: app.id, developerId: developer.id, actorId: customUser.id, plan }),
+                is_default: index === defaultIndex,
+                sort_order: plan.sort_order || index * 10,
+                created_by: customUser.id,
+            }));
+            const { data: planRows, error: pricingPlanError } = await db
+                .from('app_pricing_plans')
+                .insert(rows)
+                .select(APP_PRICING_PLAN_SELECT);
+            if (pricingPlanError) {
+                return c.json({ error: { code: 'DB_ERROR', message: pricingPlanError.message } }, 500);
+            }
+            insertedPricingPlans = (planRows || []) as unknown as AppEngineJsonRecord[];
         }
 
         let manifestPersistence: { extensionRows: AppEngineJsonRecord[]; functionRows: AppEngineJsonRecord[] } | null = null;
@@ -677,26 +1278,19 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
                         source: 'platform-console.app_submission',
                         checks: [
                             {
-                                name: 'schema_validation',
-                                status: 'passed',
-                                message: 'App submission payload matched the marketplace contract.',
-                            },
-                            {
-                                name: 'developer_profile',
-                                status: 'passed',
-                                message: 'Submitting user owns an app developer profile.',
-                            },
-                            {
                                 name: 'built_for_letbuyy_quality_gate',
                                 status: Object.keys(parseJsonRecord(body.quality_gate || body.built_for_letbuyy || body.builtForLetBuyy)).length > 0
                                     ? 'passed'
                                     : 'warning',
                                 message: 'Built-for-LetBuyy evidence is optional until listing review requests the badge.',
                             },
+                            ...(submissionChecks?.checks || []),
                             {
                                 name: 'extension_lifecycle_contract',
-                                status: 'passed',
-                                message: 'Review packet includes WS13 extension lifecycle, sandbox, revocation, and observability requirements.',
+                                status: manifestPlan?.ok ? 'passed' : 'warning',
+                                message: manifestPlan?.ok
+                                    ? 'Review packet includes WS13 extension lifecycle, sandbox, revocation, and observability requirements.'
+                                    : 'No manifest extensions were submitted for lifecycle review.',
                             },
                         ],
                         metadata: {
@@ -755,6 +1349,7 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
                 persisted: 'hash_only',
                 show_once: true,
             },
+            pricing_plans: insertedPricingPlans,
         }), 201);
     });
 
@@ -838,28 +1433,39 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
         }));
     });
 
-    // GET /app-store/developers/:id — Get developer profile + apps
+    // GET /app-store/developers/:id — Public approved developer profile and published apps
     router.get('/developers/:id', async (c) => {
-        const devId = c.req.param('id');
+        const profileId = c.req.param('id');
         const db = getSupabaseAdmin(c);
-
-        const { data: developer, error } = await db
+        const developerQuery = db
             .from('app_developers')
-            .select('id, company_name, website_url, description, verified, created_at')
-            .eq('id', devId)
-            .single();
+            .select('id, company_name, slug, logo_url, website_url, support_email, description, verified, status, created_at, updated_at')
+            .eq('status', 'approved');
+        const { data: developer, error } = await (isUuid(profileId)
+            ? developerQuery.eq('id', profileId)
+            : developerQuery.eq('slug', profileId)
+        ).maybeSingle();
 
-        if (error || !developer) {
+        if (error) {
+            return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+        }
+
+        if (!developer) {
             return c.json({ error: { code: 'NOT_FOUND', message: 'Developer not found' } }, 404);
         }
 
-        const { data: apps } = await db
+        const { data: apps, error: appsError } = await db
             .from('marketplace_apps')
-            .select('id, name, slug, icon_url, tagline, pricing_model, install_count, rating_avg, review_count')
-            .eq('developer_id', devId)
+            .select('id, name, slug, icon_url, tagline, pricing_model, install_count, rating_avg, review_count, created_at')
+            .eq('developer_id', developer.id)
             .eq('status', 'published')
             .order('install_count', { ascending: false });
 
-        return c.json(success({ ...developer, apps: apps || [] }));
+        if (appsError) {
+            return c.json({ error: { code: 'DB_ERROR', message: appsError.message } }, 500);
+        }
+
+        return c.json(success({ developer, apps: apps || [] }));
     });
+
 }

@@ -4,6 +4,7 @@ export interface WorkerAuthUser {
     id: string;
     email: string;
     storeId?: string;
+    role?: string;
 }
 
 export interface CustomUser {

@@ -2,17 +2,15 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button, Input,
     Badge,
     Banner,
     BookOpen,
-    Button,
     Calendar,
     Card,
     ConfirmDialog,
     EmptyState,
     GraduationCap,
-    Input,
     Page,
     PageHeader,
     Pencil,

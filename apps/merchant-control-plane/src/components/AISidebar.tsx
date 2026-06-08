@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import type { StoreData } from './AdminShell'
-import { MaterialIcon } from '@letbuyy/ui'
+import { Button, Input, MaterialIcon } from '@letbuyy/ui'
 
 interface AISidebarProps {
     store: string
@@ -193,15 +193,15 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
                     LetBuyy AI
                 </div>
                 <div className="admin-ai-panel-actions">
-                    <button type="button" onClick={onClose} title="Close" aria-label="Close AI panel">
+                    <Button unstyled type="button" onClick={onClose} title="Close" aria-label="Close AI panel">
                         <MaterialIcon name="close" size={18} />
-                    </button>
+                    </Button>
                 </div>
             </div>
 
             {/* Tabs */}
             <div className="admin-ai-tabs" role="tablist" aria-label="AI assistant panels">
-                <button
+                <Button unstyled
                     type="button"
                     role="tab"
                     aria-selected={activeTab === 'chat'}
@@ -210,8 +210,8 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
                 >
                     Chat
                     <span className="admin-ai-tab-badge">Soon</span>
-                </button>
-                <button
+                </Button>
+                <Button unstyled
                     type="button"
                     role="tab"
                     aria-selected={activeTab === 'todos'}
@@ -219,7 +219,7 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
                     onClick={() => setActiveTab('todos')}
                 >
                     To-dos ({completedCount}/{todos.length})
-                </button>
+                </Button>
             </div>
 
             {/* Body */}
@@ -262,7 +262,7 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
                                     key={todo.id}
                                     className="admin-ai-todo-item"
                                 >
-                                    <button
+                                    <Button unstyled
                                         type="button"
                                         className="admin-ai-todo-check"
                                         onClick={() => toggleTodo(todo.id)}
@@ -272,7 +272,7 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
                                         <span className={`admin-ai-todo-text ${todo.done ? 'complete' : ''}`}>
                                             {todo.text}
                                         </span>
-                                    </button>
+                                    </Button>
                                     {todo.link && !todo.done && (
                                         <a
                                             href={todo.link}
@@ -301,7 +301,7 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
             {activeTab === 'chat' && (
                 <div className="admin-ai-panel-footer">
                     <div className="admin-ai-input-wrapper">
-                        <input
+                        <Input unstyled
                             className="admin-ai-input"
                             type="text"
                             placeholder="Ask LetBuyy AI..."
@@ -311,7 +311,7 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
                                 if (e.key === 'Enter') handleSend()
                             }}
                         />
-                        <button
+                        <Button unstyled
                             type="button"
                             className="admin-ai-send-btn"
                             onClick={handleSend}
@@ -319,7 +319,7 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
                             aria-label="Send AI message"
                         >
                             <MaterialIcon name="arrow_upward" size={16} />
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )}

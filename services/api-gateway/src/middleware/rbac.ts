@@ -3,28 +3,212 @@
 // ============================================================
 
 import { createMiddleware } from 'hono/factory';
+import type { Context } from 'hono';
 import {
-    hasAnyLetbuyyRoleCategory,
-    normalizeLetbuyyRoleAssignments,
-    type LetbuyyRoleAssignment,
-    type RbacRoleCategory,
-} from '@letbuyy/auth-core';
+    INTERNAL_EMPLOYEE_ROLE_DEFAULT_TIERS,
+    INTERNAL_PERMISSION_SCOPES,
+    INTERNAL_PERMISSION_TIERS,
+    type InternalEffectivePermissionScope,
+    type InternalPermissionScope,
+} from '@letbuyy/shared-types';
+import type { RbacRoleCategory } from '@letbuyy/auth-core';
 import type { Env } from '../index';
+import { timingSafeEqualText } from '../lib/crypto';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin } from '../lib/supabase';
 
-type AuthUserWithRoles = {
-    id: string;
-    role?: string;
-    roles?: LetbuyyRoleAssignment[];
-};
+type RbacDb = ReturnType<typeof getSupabaseAdmin>;
+type JsonRecord = Record<string, unknown>;
 
-function getAuthRoleAssignments(authUser: AuthUserWithRoles): LetbuyyRoleAssignment[] {
-    if (Array.isArray(authUser.roles) && authUser.roles.length > 0) {
-        return authUser.roles;
+export type SensitiveAction =
+    | 'merchant.suspend'
+    | 'developer.suspend'
+    | 'refund.approve'
+    | 'payout.release'
+    | 'ts.appeal.decide'
+    | 'ts.reinstate'
+    | 'runtime.control-command';
+
+export interface EmployeePermissionResolutionInput {
+    role?: string | null;
+    inlinePermissions?: unknown;
+    rolePermissionRows?: readonly { permission?: string | null }[];
+    employeeRolePermissions?: unknown;
+    breakGlassGrants?: readonly {
+        id?: string | null;
+        scope?: string | null;
+        expires_at?: string | null;
+        revoked_at?: string | null;
+        deleted_at?: string | null;
+    }[];
+    isSuperAdmin?: boolean;
+    now?: Date;
+}
+
+export interface EffectivePermissionResolution {
+    scopes: InternalEffectivePermissionScope[];
+    breakGlassGrantIds: string[];
+}
+
+export interface SegregationCheckInput {
+    actorId: string;
+    targetAction: SensitiveAction;
+    originalActorId?: string | null;
+    secondaryApproverId?: string | null;
+}
+
+export interface SegregationCheckResult {
+    ok: boolean;
+    code?: 'SOD_REVIEWER_CONFLICT' | 'DUAL_CONTROL_REQUIRED';
+    message?: string;
+}
+
+function isJsonRecord(value: unknown): value is JsonRecord {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value));
+}
+
+function readBearerToken(value: string | undefined): string | null {
+    if (!value?.startsWith('Bearer ')) return null;
+    return value.slice('Bearer '.length).trim() || null;
+}
+
+function isReadOnlyRequest(method: string): boolean {
+    return method === 'GET' || method === 'HEAD';
+}
+
+export function isPlatformConsoleTokenRequest(c: Context<{ Bindings: Env }>): boolean {
+    if (!isReadOnlyRequest(c.req.method)) return false;
+    const expectedToken = c.env.PLATFORM_CONSOLE_API_TOKEN;
+    if (!expectedToken) return false;
+
+    const token = readBearerToken(c.req.header('Authorization')) || c.req.header('X-Platform-Console-Token');
+    return Boolean(token && timingSafeEqualText(token, expectedToken));
+}
+
+function normalizePermissionScope(value: unknown): InternalEffectivePermissionScope | null {
+    if (typeof value !== 'string') return null;
+    const trimmed = value.trim();
+    if (trimmed === '*') return '*';
+    return (INTERNAL_PERMISSION_SCOPES as readonly string[]).includes(trimmed)
+        ? trimmed as InternalPermissionScope
+        : null;
+}
+
+function collectJsonPermissionScopes(value: unknown): InternalEffectivePermissionScope[] {
+    if (Array.isArray(value)) {
+        return value.map(normalizePermissionScope).filter((scope): scope is InternalEffectivePermissionScope => Boolean(scope));
     }
 
-    return normalizeLetbuyyRoleAssignments(authUser.role);
+    if (!isJsonRecord(value)) return [];
+
+    const candidates: unknown[] = [];
+    if (Array.isArray(value.scopes)) candidates.push(...value.scopes);
+    if (Array.isArray(value.permissions)) candidates.push(...value.permissions);
+
+    for (const [key, enabled] of Object.entries(value)) {
+        if (enabled === true) candidates.push(key);
+    }
+
+    return candidates
+        .map(normalizePermissionScope)
+        .filter((scope): scope is InternalEffectivePermissionScope => Boolean(scope));
+}
+
+export function scopeMatches(granted: InternalEffectivePermissionScope, required: InternalPermissionScope): boolean {
+    if (granted === '*' || granted === required) return true;
+    if (!granted.endsWith(':*')) return false;
+    return required.startsWith(granted.slice(0, -1));
+}
+
+export function hasPermissionScope(
+    grantedScopes: readonly InternalEffectivePermissionScope[],
+    requiredScope: InternalPermissionScope,
+): boolean {
+    return grantedScopes.some((scope) => scopeMatches(scope, requiredScope));
+}
+
+export function validateSensitiveReason(reason: unknown): string | null {
+    if (typeof reason !== 'string') return null;
+    const trimmed = reason.trim();
+    return trimmed.length >= 8 && trimmed.length <= 1000 ? trimmed : null;
+}
+
+export function resolveEffectivePermissionScopes(input: EmployeePermissionResolutionInput): EffectivePermissionResolution {
+    const scopes = new Set<InternalEffectivePermissionScope>();
+    const breakGlassGrantIds: string[] = [];
+    const now = input.now || new Date();
+
+    if (input.isSuperAdmin) {
+        for (const scope of INTERNAL_PERMISSION_TIERS.admin) scopes.add(scope);
+    }
+
+    const role = input.role?.trim();
+    const tier = role ? INTERNAL_EMPLOYEE_ROLE_DEFAULT_TIERS[role] : undefined;
+    if (tier) {
+        for (const scope of INTERNAL_PERMISSION_TIERS[tier]) scopes.add(scope);
+    }
+
+    for (const row of input.rolePermissionRows || []) {
+        const scope = normalizePermissionScope(row.permission);
+        if (scope) scopes.add(scope);
+    }
+
+    for (const scope of collectJsonPermissionScopes(input.employeeRolePermissions)) {
+        scopes.add(scope);
+    }
+
+    for (const scope of collectJsonPermissionScopes(input.inlinePermissions)) {
+        scopes.add(scope);
+    }
+
+    for (const grant of input.breakGlassGrants || []) {
+        const scope = normalizePermissionScope(grant.scope);
+        const expiresAt = grant.expires_at ? Date.parse(grant.expires_at) : NaN;
+        const active = scope
+            && Number.isFinite(expiresAt)
+            && expiresAt > now.getTime()
+            && !grant.revoked_at
+            && !grant.deleted_at;
+
+        if (active) {
+            scopes.add(scope);
+            if (grant.id) breakGlassGrantIds.push(grant.id);
+        }
+    }
+
+    return {
+        scopes: Array.from(scopes).sort(),
+        breakGlassGrantIds,
+    };
+}
+
+export function checkSegregationOfDuty(input: SegregationCheckInput): SegregationCheckResult {
+    if (input.targetAction === 'ts.appeal.decide' && input.originalActorId === input.actorId) {
+        return {
+            ok: false,
+            code: 'SOD_REVIEWER_CONFLICT',
+            message: 'Appeals must be reviewed by a different operator than the original enforcement reviewer.',
+        };
+    }
+
+    const requiresDualControl = new Set<SensitiveAction>([
+        'merchant.suspend',
+        'developer.suspend',
+        'refund.approve',
+        'payout.release',
+        'ts.reinstate',
+        'runtime.control-command',
+    ]);
+
+    if (requiresDualControl.has(input.targetAction) && (!input.secondaryApproverId || input.secondaryApproverId === input.actorId)) {
+        return {
+            ok: false,
+            code: 'DUAL_CONTROL_REQUIRED',
+            message: 'This action requires a second approver distinct from the requesting operator.',
+        };
+    }
+
+    return { ok: true };
 }
 
 async function hasOpsAllowlistEntry(
@@ -61,6 +245,168 @@ async function hasPartnerDeveloperEntry(db: ReturnType<typeof getSupabaseAdmin>,
         .maybeSingle();
 
     return Boolean(data);
+}
+
+async function activeEmployeeForUser(db: RbacDb, userId: string) {
+    const { data } = await db
+        .from('employees')
+        .select('id, user_id, email, role, role_id, permissions, is_active, status')
+        .eq('user_id', userId)
+        .in('status', ['active'])
+        .maybeSingle();
+
+    return data || null;
+}
+
+async function readEmployeeRolePermissions(db: RbacDb, roleId: unknown): Promise<unknown> {
+    if (typeof roleId !== 'string' || !roleId) return [];
+
+    const { data } = await db
+        .from('employee_roles')
+        .select('permissions')
+        .eq('id', roleId)
+        .maybeSingle();
+
+    return isJsonRecord(data) ? data.permissions : [];
+}
+
+export async function loadEffectivePermissionScopes(
+    db: RbacDb,
+    userId: string,
+    email?: string,
+): Promise<EffectivePermissionResolution & { employeeId: string | null; isSuperAdmin: boolean }> {
+    const [employee, isSuperAdmin] = await Promise.all([
+        activeEmployeeForUser(db, userId),
+        hasOpsAllowlistEntry(db, userId, email),
+    ]);
+
+    if (!employee && !isSuperAdmin) {
+        return { scopes: [], breakGlassGrantIds: [], employeeId: null, isSuperAdmin: false };
+    }
+
+    const role = typeof employee?.role === 'string' ? employee.role : null;
+    const roleId = isJsonRecord(employee) ? employee.role_id : null;
+    const employeeId = typeof employee?.id === 'string' ? employee.id : null;
+    const now = new Date().toISOString();
+
+    const [rolePermissionRows, employeeRolePermissions, breakGlassGrants] = await Promise.all([
+        role
+            ? db.from('employee_permissions').select('permission').eq('role', role)
+            : Promise.resolve({ data: [], error: null }),
+        readEmployeeRolePermissions(db, roleId),
+        employeeId
+            ? db
+                .from('break_glass_grants')
+                .select('id, scope, expires_at, revoked_at, deleted_at')
+                .eq('employee_id', employeeId)
+                .gt('expires_at', now)
+                .is('revoked_at', null)
+                .is('deleted_at', null)
+            : Promise.resolve({ data: [], error: null }),
+    ]);
+
+    const resolution = resolveEffectivePermissionScopes({
+        role,
+        inlinePermissions: isJsonRecord(employee) ? employee.permissions : undefined,
+        rolePermissionRows: (rolePermissionRows.data || []) as { permission?: string | null }[],
+        employeeRolePermissions,
+        breakGlassGrants: (breakGlassGrants.data || []) as EmployeePermissionResolutionInput['breakGlassGrants'],
+        isSuperAdmin,
+    });
+
+    if (resolution.breakGlassGrantIds.length > 0) {
+        await db
+            .from('break_glass_grants')
+            .update({ used_at: now })
+            .in('id', resolution.breakGlassGrantIds)
+            .is('used_at', null);
+    }
+
+    return { ...resolution, employeeId, isSuperAdmin };
+}
+
+export function requirePermission(...requiredScopes: InternalPermissionScope[]) {
+    return createMiddleware<{ Bindings: Env }>(async (c, next) => {
+        if (isPlatformConsoleTokenRequest(c)) {
+            await next();
+            return;
+        }
+
+        const auth = c.get('auth');
+
+        if (!auth?.user) {
+            return c.json(
+                { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
+                401
+            );
+        }
+
+        const resolution = await loadEffectivePermissionScopes(getSupabaseAdmin(c), auth.user.id, auth.user.email);
+        const missing = requiredScopes.filter((scope) => !hasPermissionScope(resolution.scopes, scope));
+
+        if (missing.length > 0) {
+            return c.json(
+                {
+                    error: {
+                        code: 'PERMISSION_SCOPE_DENIED',
+                        message: `Missing required permission scope: ${missing.join(', ')}`,
+                    },
+                },
+                403
+            );
+        }
+
+        await next();
+    });
+}
+
+export function requireReason() {
+    return createMiddleware<{ Bindings: Env }>(async (c, next) => {
+        const reason = validateSensitiveReason(c.req.header('X-LetBuyy-Reason'));
+        if (!reason) {
+            return c.json(
+                {
+                    error: {
+                        code: 'REASON_REQUIRED',
+                        message: 'A reason of at least 8 characters is required for this privileged action.',
+                    },
+                },
+                400
+            );
+        }
+
+        await next();
+    });
+}
+
+export async function logSensitiveRead(
+    c: Context<{ Bindings: Env }>,
+    input: {
+        action: string;
+        resourceType: string;
+        resourceId?: string | null;
+        reason?: string | null;
+        metadata?: JsonRecord;
+    },
+): Promise<void> {
+    const auth = c.get('auth');
+    const db = getSupabaseAdmin(c);
+
+    await db.from('audit_logs').insert({
+        actor_id: auth?.user?.id || null,
+        actor_type: 'employee',
+        actor_email: auth?.user?.email || null,
+        action: input.action,
+        resource_type: input.resourceType,
+        resource_id: input.resourceId || null,
+        metadata: {
+            ...(input.metadata || {}),
+            reason: input.reason || null,
+            audit_kind: 'sensitive_read',
+        },
+        ip_address: c.req.header('CF-Connecting-IP') || null,
+        user_agent: c.req.header('User-Agent') || null,
+    });
 }
 
 /**
@@ -102,6 +448,11 @@ export function requireRole(...roles: string[]) {
  */
 export function requireRoleCategory(...categories: RbacRoleCategory[]) {
     return createMiddleware<{ Bindings: Env }>(async (c, next) => {
+        if (isPlatformConsoleTokenRequest(c) && categories.includes('ops')) {
+            await next();
+            return;
+        }
+
         const auth = c.get('auth');
 
         if (!auth?.user) {
@@ -111,12 +462,11 @@ export function requireRoleCategory(...categories: RbacRoleCategory[]) {
             );
         }
 
-        const assignments = getAuthRoleAssignments(auth.user);
-        if (hasAnyLetbuyyRoleCategory(assignments, categories)) {
-            await next();
-            return;
-        }
-
+        // SECURITY: never trust role claims carried on the JWT for category gating.
+        // Supabase user_metadata is writable by the user themselves (auth.updateUser),
+        // so a metadata-derived category would be a privilege-escalation path. Category
+        // membership is resolved ONLY from server-side persistence (allowlist / approved
+        // developer record) below.
         const db = getSupabaseAdmin(c);
         const allowedByPersistence = await Promise.all(categories.map(async (category) => {
             if (category === 'ops') return hasOpsAllowlistEntry(db, auth.user.id, auth.user.email);
@@ -193,6 +543,11 @@ export function requireStoreOwner() {
  */
 export const requireSuperAdmin = createMiddleware<{ Bindings: Env }>(
     async (c, next) => {
+        if (isPlatformConsoleTokenRequest(c)) {
+            await next();
+            return;
+        }
+
         const auth = c.get('auth');
         const db = getSupabaseAdmin(c);
 

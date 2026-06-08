@@ -5,7 +5,8 @@ import test from 'node:test';
 const THEME_BUNDLE = 'packages/theme-engine/src/theme-bundle.ts';
 const SCHEMA_REGISTRY = 'services/api-gateway/src/execution/schema-registry-execution.adapter.ts';
 const THEMES_ROUTE = 'services/api-gateway/src/routes/themes.ts';
-const OPERATIONS_ROUTE = 'services/api-gateway/src/routes/operations.ts';
+const THEME_AUXILIARY_ROUTES = 'services/api-gateway/src/lib/theme-marketplace-auxiliary-routes.ts';
+const MARKETPLACE_REVIEW_ROUTE = 'services/api-gateway/src/routes/operations/marketplace-reviews.ts';
 const MERCHANT_INSTALL_ROUTE = 'apps/merchant-control-plane/src/app/api/themes/install/route.ts';
 const THEME_SERVICE = 'apps/theme-marketplace/src/lib/theme-service.ts';
 const THEME_DETAIL_PAGE = 'apps/theme-marketplace/src/app/themes/[slug]/page.tsx';
@@ -41,7 +42,7 @@ test('theme package uploads default to review-gated marketplace submissions', ()
 });
 
 test('ops approval publishes theme packages into the public marketplace catalog', () => {
-  const route = read(OPERATIONS_ROUTE);
+  const route = read(MARKETPLACE_REVIEW_ROUTE);
 
   assert.match(route, /function themePackageStatusForDecision/);
   assert.match(route, /if \(decision === 'approved'\) return 'active'/);
@@ -70,12 +71,13 @@ test('theme marketplace install surface calls the gateway through the typed clie
 
   assert.match(service, /api\.stores\.list\(\{ limit: 50 \}\)/);
   assert.match(service, /api\.themes\.install\(slug/);
-  assert.match(service, /config_overrides: \{\}/);
+  assert.doesNotMatch(service, /config_overrides: \{\}/);
   assert.doesNotMatch(service, /@supabase\//);
 
   assert.match(installPage, /async function installThemeAction\(formData: FormData\)/);
   assert.match(installPage, /ThemeService\.getUserStores\(\)/);
-  assert.match(installPage, /ThemeService\.installTheme\(slug, storeId\)/);
+  assert.match(installPage, /ThemeService\.installTheme\(slug, storeId, \{/);
+  assert.match(installPage, /name="preset"/);
   assert.match(installPage, /name="store_id"/);
   assert.match(installPage, /\/dashboard\/installations\?installed=/);
   assert.doesNotMatch(installPage, /@supabase\//);
@@ -86,6 +88,56 @@ test('theme marketplace install surface calls the gateway through the typed clie
   assert.match(checkoutSuccess, /`\/install\?theme=\$\{themeSlug\}`/);
   assert.match(proxy, /const PROTECTED_ROUTES = \['\/checkout', '\/dashboard', '\/install'\]/);
   assert.match(proxy, /'\/install\/:path\*'/);
+});
+
+test('theme marketplace step-up routes expose reviews receipts downloads settings and developer listings', () => {
+  const route = read(THEMES_ROUTE);
+  const auxiliaryRoutes = read(THEME_AUXILIARY_ROUTES);
+  const apiClient = read(API_CLIENT);
+  const service = read(THEME_SERVICE);
+  const migration = read('database/supabase/migrations/091_theme_marketplace_stepup.sql');
+  const verification = read('database/supabase/verification/091_theme_marketplace_stepup_catalog_integrity.sql');
+
+  assert.match(route, /mountThemeMarketplaceAuxiliaryRoutes\(router\)/);
+
+  for (const pattern of [
+    /router\.get\('\/suggest'/,
+    /router\.get\('\/collections'/,
+    /router\.get\('\/authors\/:handle'/,
+    /router\.get\('\/purchases\/:purchaseId\/receipt'/,
+    /router\.get\('\/downloads\/list'/,
+    /router\.put\('\/settings'/,
+    /router\.post\('\/developer\/listings'/,
+    /router\.get\('\/:slug\/reviews'/,
+    /router\.post\('\/:slug\/reviews'/,
+    /router\.get\('\/:slug\/downloads\/:platform'/,
+    /router\.post\('\/:slug\/refunds'/,
+  ]) {
+    assert.match(`${route}\n${auxiliaryRoutes}`, pattern);
+  }
+
+  for (const method of [
+    /suggestions: \(query: string/,
+    /collections: \(options/,
+    /author: \(handle: string/,
+    /downloads: \(options/,
+    /receipt: \(purchaseId: string/,
+    /updateSettings: \(input:/,
+    /createReview: \(slug: string/,
+    /createDeveloperListing: \(input:/,
+  ]) {
+    assert.match(apiClient, method);
+  }
+
+  assert.match(service, /getThemeReviews/);
+  assert.match(service, /getThemeDownloads/);
+  assert.match(service, /getThemeReceipt/);
+  assert.match(service, /updateMarketplaceSettings/);
+  assert.match(service, /createDeveloperListing/);
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.theme_purchase_receipts/);
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.theme_download_artifacts/);
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.theme_developer_listings/);
+  assert.match(verification, /Theme marketplace step-up tables missing/);
 });
 
 test('private admin uploads remain installable without marketplace review', () => {

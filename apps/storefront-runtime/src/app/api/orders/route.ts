@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { LETBUYY_STOREFRONT_PREVIEW_COOKIE } from '@letbuyy/auth-core';
 import { createStorefrontApiClient, StorefrontApiRequestError } from '@/lib/api/client';
 
 function getStorefrontApiErrorMessage(payload: unknown, fallback: string) {
@@ -18,6 +19,15 @@ function getStorefrontApiErrorMessage(payload: unknown, fallback: string) {
 
 export async function POST(request: NextRequest) {
     try {
+        const previewCheckoutMode = request.headers.get('x-letbuyy-preview-checkout-mode')
+            || request.cookies.get(LETBUYY_STOREFRONT_PREVIEW_COOKIE)?.value;
+        if (previewCheckoutMode) {
+            return NextResponse.json(
+                { success: false, error: 'Preview checkout uses test mode and cannot create real orders' },
+                { status: 409 }
+            );
+        }
+
         const body = await request.json();
 
         const {

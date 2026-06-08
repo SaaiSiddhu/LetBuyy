@@ -12,6 +12,7 @@ interface DeviceTokenRow {
 }
 
 export interface PushProviderEnv {
+  PUSH_DISPATCH_MODE?: 'dry-run' | 'live';
   FCM_PROJECT_ID?: string;
   FCM_CLIENT_EMAIL?: string;
   FCM_PRIVATE_KEY?: string;
@@ -38,6 +39,16 @@ export interface PushNotificationDispatchResult {
   failed: number;
   skipped: number;
   providers: PushProvider[];
+  dryRun: boolean;
+  failureDetails: PushDispatchFailureDetail[];
+}
+
+export interface PushDispatchFailureDetail {
+  provider: PushProvider;
+  platform: PushPlatform;
+  deviceName?: string;
+  code: string;
+  message: string;
 }
 
 export interface PushDispatchOptions {
@@ -84,6 +95,33 @@ function providerForPlatform(platform: PushPlatform): PushProvider {
   return platform === 'ios' ? 'apns' : 'fcm';
 }
 
+function isDryRun(env: PushProviderEnv): boolean {
+  return env.PUSH_DISPATCH_MODE === 'dry-run';
+}
+
+function pushFailureCode(provider: PushProvider, error: unknown): string {
+  const message = error instanceof Error ? error.message : '';
+  if (message.includes('access token')) return 'PUSH_ACCESS_TOKEN_FAILED';
+  return provider === 'apns' ? 'APNS_SEND_FAILED' : 'FCM_SEND_FAILED';
+}
+
+function pushFailureDetail(
+  provider: PushProvider,
+  platform: PushPlatform,
+  row: DeviceTokenRow,
+  error: unknown,
+): PushDispatchFailureDetail {
+  return {
+    provider,
+    platform,
+    ...(typeof row.device_name === 'string' && row.device_name.trim().length > 0
+      ? { deviceName: row.device_name.trim().slice(0, 120) }
+      : {}),
+    code: pushFailureCode(provider, error),
+    message: 'Push provider delivery failed.',
+  };
+}
+
 function utf8Bytes(value: string): Uint8Array {
   return new TextEncoder().encode(value);
 }
@@ -126,6 +164,17 @@ function stringifyData(data: JsonObject, actionUrl?: string | null): Record<stri
   }
   if (actionUrl) output.action_url = actionUrl;
   return output;
+}
+
+function badgeCountFromData(data: JsonObject): number | undefined {
+  const candidate = data.open_order_count ?? data.badge_count ?? data.badge;
+  const parsed = typeof candidate === 'number'
+    ? candidate
+    : typeof candidate === 'string'
+      ? Number.parseInt(candidate, 10)
+      : Number.NaN;
+  if (!Number.isFinite(parsed) || parsed < 0) return undefined;
+  return Math.floor(parsed);
 }
 
 async function signJwt(
@@ -254,6 +303,7 @@ async function sendApnsPush(
   const host = env.APNS_ENVIRONMENT === 'production'
     ? 'https://api.push.apple.com'
     : 'https://api.sandbox.push.apple.com';
+  const badge = badgeCountFromData(input.data);
   const response = await options.fetcher(`${host}/3/device/${encodeURIComponent(token)}`, {
     method: 'POST',
     headers: {
@@ -270,6 +320,7 @@ async function sendApnsPush(
           body: input.message,
         },
         sound: 'default',
+        ...(badge !== undefined ? { badge } : {}),
       },
       data: input.data,
       action_url: input.actionUrl || undefined,
@@ -305,6 +356,8 @@ export async function dispatchPushNotificationToDevices(
     failed: 0,
     skipped: 0,
     providers: [],
+    dryRun: isDryRun(env),
+    failureDetails: [],
   };
   const providers = new Set<PushProvider>();
   const dispatchOptions: Required<PushDispatchOptions> = {
@@ -325,6 +378,10 @@ export async function dispatchPushNotificationToDevices(
     result.attempted += 1;
 
     try {
+      if (result.dryRun) {
+        result.sent += 1;
+        continue;
+      }
       if (provider === 'apns') {
         await sendApnsPush(env, token, input, dispatchOptions);
       } else {
@@ -334,6 +391,7 @@ export async function dispatchPushNotificationToDevices(
     } catch (error) {
       if (isPushProviderConfigurationError(error)) throw error;
       result.failed += 1;
+      result.failureDetails.push(pushFailureDetail(provider, platform, row, error));
     }
   }
 

@@ -35,8 +35,8 @@ test('generated root AGENTS keeps current runtime and non-negotiable governance 
     assert.match(agents, /Mobile runtimes: active `apps\/mobile\/merchant-app`; reserved\/not-implemented mobile roots `apps\/mobile\/shopper-app` and `apps\/mobile\/operator-app`/);
     assert.match(agents, /implemented `services\/api-gateway`, `services\/mobile-bff`, `services\/webhook-service`, and `services\/queue-workers`/);
     assert.match(agents, /reserved\/not-implemented service roots `services\/checkout-runtime`/);
-    assert.match(agents, /Active replay chain: `000_baseline\.sql` plus additive forward migrations `073_\*\.sql` through `089_\*\.sql`/);
-    assert.match(agents, /Baseline public tables detected: 233 `CREATE TABLE public\.\*` statements/);
+    assert.match(agents, /Active replay chain: `000_baseline\.sql` plus additive forward migrations `073_\*\.sql` through `090_\*\.sql`/);
+    assert.match(agents, /Baseline public tables detected: 237 `CREATE TABLE public\.\*` statements/);
 });
 
 test('generated intelligence excludes untracked local draft files', () => {

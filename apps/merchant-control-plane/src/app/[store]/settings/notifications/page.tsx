@@ -2,10 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button, Input,
     Banner,
     Bell,
-    Button,
     Card,
     Mail,
     MessageSquare,
@@ -266,7 +265,7 @@ export default function NotificationsSettingsPage() {
                                         <span className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
                                             {enabled ? 'On' : 'Off'}
                                         </span>
-                                        <input
+                                        <Input unstyled
                                             id={inputId}
                                             type="checkbox"
                                             checked={enabled}

@@ -7,7 +7,7 @@ import { appMarketplaceErrorResponse, createAppMarketplaceApiClient } from '@/li
  */
 export async function POST(request: NextRequest) {
     const body = await request.json();
-    const { company_name, website_url, support_email, description, country } = body;
+    const { company_name, website_url, support_email, description, country, tax_id, agreed_tos, agreed_privacy } = body;
 
     if (!company_name || !support_email) {
         return NextResponse.json(
@@ -24,6 +24,9 @@ export async function POST(request: NextRequest) {
             support_email,
             description: description || null,
             country: country || 'IN',
+            tax_id: tax_id || null,
+            agreed_tos: agreed_tos === true,
+            agreed_privacy: agreed_privacy === true,
         });
         return NextResponse.json({ data }, { status: 201 });
     } catch (error) {

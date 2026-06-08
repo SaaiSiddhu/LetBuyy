@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 
 import 'api_client.dart';
-import 'skip_needs_backend_exception.dart';
 
 class InventoryLevel {
   const InventoryLevel({
@@ -58,6 +57,50 @@ class InventoryLevel {
 
   bool get isOutOfStock => available <= 0;
   bool get isLowStock => available > 0 && available <= 5;
+}
+
+class InventoryBarcodeLookup {
+  const InventoryBarcodeLookup({
+    required this.storeId,
+    required this.barcode,
+    required this.productId,
+    required this.productName,
+    required this.productSku,
+    required this.variantId,
+    required this.variantTitle,
+    required this.variantSku,
+    required this.matchedField,
+  });
+
+  factory InventoryBarcodeLookup.fromJson(Map<String, dynamic> json) {
+    final product = _mapValue(json['product']);
+    final variant = _mapValue(json['variant']);
+    return InventoryBarcodeLookup(
+      storeId: _stringValue(json['store_id'] ?? product['store_id']),
+      barcode: _stringValue(json['barcode']),
+      productId: _stringValue(product['id']),
+      productName: _stringValue(product['name'], fallback: 'Product'),
+      productSku: _stringValue(product['sku']),
+      variantId: _stringValue(variant['id']),
+      variantTitle: _stringValue(variant['title']),
+      variantSku: _stringValue(variant['sku']),
+      matchedField: _stringValue(json['matched_field']),
+    );
+  }
+
+  final String storeId;
+  final String barcode;
+  final String productId;
+  final String productName;
+  final String productSku;
+  final String variantId;
+  final String variantTitle;
+  final String variantSku;
+  final String matchedField;
+
+  String get sku => variantSku.isNotEmpty ? variantSku : productSku;
+  String get label =>
+      variantTitle.isEmpty ? productName : '$productName / $variantTitle';
 }
 
 class InventoryLocationContract {
@@ -472,8 +515,6 @@ class InventoryTransferInput {
 class InventoryService extends ChangeNotifier {
   InventoryService({required ApiClient api}) : _api = api;
 
-  static const scannerDependencyId = 'MOBILE_SCANNER_DEPENDENCY';
-
   final ApiClient _api;
 
   List<InventoryLevel> _levels = [];
@@ -556,6 +597,59 @@ class InventoryService extends ChangeNotifier {
     }
     notifyListeners();
     return adjusted;
+  }
+
+  Future<InventoryLevel> adjustScannedStock({
+    required String storeId,
+    required InventoryBarcodeLookup lookup,
+    required int delta,
+    required String reason,
+    String? locationId,
+    String? note,
+  }) async {
+    final adjusted = InventoryLevel.fromJson(
+      await _api.inventory.adjust({
+        'store_id': storeId,
+        'product_id': lookup.productId,
+        if (lookup.variantId.isNotEmpty) 'variant_id': lookup.variantId,
+        if (locationId != null && locationId.trim().isNotEmpty)
+          'location_id': locationId.trim(),
+        if (lookup.sku.isNotEmpty) 'sku': lookup.sku,
+        'adjustment': delta,
+        'reason': reason,
+        if (note != null && note.trim().isNotEmpty) 'notes': note.trim(),
+      }),
+    );
+
+    final index = _levels.indexWhere((item) => item.id == adjusted.id);
+    if (index == -1) {
+      _levels = [adjusted, ..._levels];
+    } else {
+      final next = List<InventoryLevel>.from(_levels);
+      next[index] = adjusted;
+      _levels = next;
+    }
+    notifyListeners();
+    return adjusted;
+  }
+
+  Future<InventoryBarcodeLookup?> lookupBarcode({
+    required String storeId,
+    required String barcode,
+  }) async {
+    final normalized = barcode.trim();
+    if (normalized.isEmpty) return null;
+    try {
+      return InventoryBarcodeLookup.fromJson(
+        await _api.products.lookupBarcode(
+          storeId: storeId,
+          barcode: normalized,
+        ),
+      );
+    } on ApiException catch (error) {
+      if (error.statusCode == 404 || error.code == 'NOT_FOUND') return null;
+      rethrow;
+    }
   }
 
   Future<List<InventoryLocationContract>> fetchLocations(String storeId) async {
@@ -682,14 +776,6 @@ class InventoryService extends ChangeNotifier {
     return received;
   }
 
-  Future<String> scanBarcode() async {
-    // [SKIP-NEEDS-HUMAN: MOBILE_SCANNER_DEPENDENCY]
-    throw const SkipNeedsBackendException(
-      scannerDependencyId,
-      'The native mobile_scanner package is available in cache but not declared in the governed app dependency graph.',
-    );
-  }
-
   String makeIdempotencyKey(String scope) {
     final timestamp = DateTime.now().microsecondsSinceEpoch;
     return 'mobile-$scope-$timestamp';
@@ -740,4 +826,10 @@ String _stringValue(Object? value, {String fallback = ''}) {
   }
   final text = value?.toString().trim();
   return text == null || text.isEmpty ? fallback : text;
+}
+
+Map<String, dynamic> _mapValue(Object? value) {
+  if (value is Map<String, dynamic>) return value;
+  if (value is Map) return Map<String, dynamic>.from(value);
+  return const {};
 }

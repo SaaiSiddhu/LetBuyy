@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/app_theme_colors.dart';
+import '../shared/accessible_tap_region.dart';
+import '../shared/cached_merchant_image.dart';
 
 /// Store info banner with rounded edges - like Blinkit
 class StoreInfoCard extends StatelessWidget {
@@ -22,6 +24,23 @@ class StoreInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
+    void copyStoreUrl() {
+      Clipboard.setData(ClipboardData(text: storeUrl));
+      HapticFeedback.lightImpact();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('URL copied!'),
+          backgroundColor: colors.success,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(14),
@@ -40,7 +59,7 @@ class StoreInfoCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               image: logoUrl != null
                   ? DecorationImage(
-                      image: NetworkImage(logoUrl!),
+                      image: cachedMerchantImageProvider(logoUrl!),
                       fit: BoxFit.cover,
                     )
                   : null,
@@ -78,29 +97,22 @@ class StoreInfoCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 2),
-                GestureDetector(
-                  onTap: () {
-                    Clipboard.setData(ClipboardData(text: storeUrl));
-                    HapticFeedback.lightImpact();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('URL copied!'),
-                        backgroundColor: colors.success,
-                        behavior: SnackBarBehavior.floating,
-                        margin: const EdgeInsets.all(16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        duration: const Duration(seconds: 2),
+                AccessibleTapRegion(
+                  label: 'Copy store URL $storeUrl',
+                  hint: 'Copies the store URL to the clipboard',
+                  onTap: copyStoreUrl,
+                  excludeChildSemantics: true,
+                  child: GestureDetector(
+                    onTap: copyStoreUrl,
+                    child: Text(
+                      storeUrl,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colors.textSecondary,
                       ),
-                    );
-                  },
-                  child: Text(
-                    storeUrl,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: colors.textSecondary,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -121,7 +133,7 @@ class StoreInfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
       decoration: BoxDecoration(
-        color: isPublished 
+        color: isPublished
             ? const Color(0xFF22C55E).withValues(alpha: 0.15)
             : Colors.orange.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(4),

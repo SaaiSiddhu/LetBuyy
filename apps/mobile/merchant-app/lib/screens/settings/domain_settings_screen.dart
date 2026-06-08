@@ -6,7 +6,6 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../models/store_model.dart';
 import '../../services/custom_domains.dart';
-import '../../services/skip_needs_backend_exception.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart';
 
@@ -19,12 +18,23 @@ class DomainSettingsScreen extends StatefulWidget {
 
 class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
   final _customDomainController = TextEditingController();
+  final _domainOwnerNameController = TextEditingController();
+  final _domainOwnerEmailController = TextEditingController();
+  final _accessMessageController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   StoreModel? _store;
   DomainSettingsSnapshot? _snapshot;
   bool _isLoading = true;
   bool _isSaving = false;
   bool _isChecking = false;
+  bool _isSavingAccess = false;
+  bool _isCreatingPreview = false;
+  bool _isSearchingDomain = false;
+  bool _isBuyingDomain = false;
+  String _accessMode = 'public';
+  String? _previewUrl;
+  DomainPurchaseQuote? _domainQuote;
 
   @override
   void initState() {
@@ -35,6 +45,10 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
   @override
   void dispose() {
     _customDomainController.dispose();
+    _domainOwnerNameController.dispose();
+    _domainOwnerEmailController.dispose();
+    _accessMessageController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -50,6 +64,8 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
             ? null
             : domainService.snapshotForStore(store);
         _customDomainController.text = store?.customDomain ?? '';
+        _accessMode = store?.accessMode ?? 'public';
+        _accessMessageController.text = store?.accessMessage ?? '';
       });
     } catch (error) {
       _showSnackBar('Could not load domain settings: $error');
@@ -107,12 +123,65 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
         _customDomainController.text,
       );
       _showSnackBar(result.message);
-    } on SkipNeedsBackendException catch (error) {
-      _showSnackBar(error.toString());
     } catch (error) {
       _showSnackBar('Could not check domain: $error');
     } finally {
       if (mounted) setState(() => _isChecking = false);
+    }
+  }
+
+  Future<void> _searchDomainToBuy() async {
+    setState(() => _isSearchingDomain = true);
+    try {
+      final quote = await context.read<DomainService>().searchDomainToBuy(
+        _customDomainController.text,
+      );
+      if (!mounted) return;
+      setState(() => _domainQuote = quote);
+      _showSnackBar(
+        quote.available
+            ? '${quote.domain} is available for ${quote.priceLabel}.'
+            : '${quote.domain} is unavailable.',
+      );
+    } catch (_) {
+      _showSnackBar('Domain search could not complete.');
+    } finally {
+      if (mounted) setState(() => _isSearchingDomain = false);
+    }
+  }
+
+  Future<void> _buyDomain() async {
+    final store = _store;
+    final quote = _domainQuote;
+    if (store == null || quote == null || !quote.available) return;
+    final ownerName = _domainOwnerNameController.text.trim();
+    final ownerEmail = _domainOwnerEmailController.text.trim();
+    if (ownerName.isEmpty || !ownerEmail.contains('@')) {
+      _showSnackBar('Enter registrant name and email.');
+      return;
+    }
+    setState(() => _isBuyingDomain = true);
+    try {
+      final result = await context.read<DomainService>().purchaseDomain(
+        store,
+        quote: quote,
+        ownerName: ownerName,
+        ownerEmail: ownerEmail,
+      );
+      if (!mounted) return;
+      setState(() {
+        _customDomainController.text = result.domain;
+        _store = store.copyWith(
+          customDomain: result.domain,
+          customDomainStatus: result.status,
+        );
+        _snapshot = context.read<DomainService>().snapshotForStore(_store!);
+      });
+      _showSnackBar(result.merchantMessage);
+    } catch (_) {
+      _showSnackBar('Domain purchase could not complete.');
+    } finally {
+      if (mounted) setState(() => _isBuyingDomain = false);
     }
   }
 
@@ -126,10 +195,8 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
         _store = updated;
         _snapshot = context.read<DomainService>().snapshotForStore(updated);
       });
-    } on SkipNeedsBackendException catch (error) {
-      _showSnackBar(error.toString());
-    } catch (error) {
-      _showSnackBar('Could not verify domain: $error');
+    } catch (_) {
+      _showSnackBar('Domain verification could not complete.');
     }
   }
 
@@ -145,10 +212,54 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
         _store = updated;
         _snapshot = context.read<DomainService>().snapshotForStore(updated);
       });
-    } on SkipNeedsBackendException catch (error) {
-      _showSnackBar(error.toString());
+    } catch (_) {
+      _showSnackBar('Domain health could not refresh.');
+    }
+  }
+
+  Future<void> _saveAccess() async {
+    final store = _store;
+    if (store == null) return;
+    setState(() => _isSavingAccess = true);
+    try {
+      final updated = await context.read<DomainService>().updateStoreAccess(
+        store,
+        accessMode: _accessMode,
+        password: _passwordController.text,
+        message: _accessMessageController.text,
+      );
+      if (!mounted) return;
+      setState(() {
+        _store = updated;
+        _snapshot = context.read<DomainService>().snapshotForStore(updated);
+        _passwordController.clear();
+      });
+      _showSnackBar('Store access updated.');
     } catch (error) {
-      _showSnackBar('Could not refresh SSL status: $error');
+      _showSnackBar('Could not update store access: $error');
+    } finally {
+      if (mounted) setState(() => _isSavingAccess = false);
+    }
+  }
+
+  Future<void> _createPreviewLink() async {
+    final store = _store;
+    final snapshot = _snapshot;
+    if (store == null || snapshot == null) return;
+    setState(() => _isCreatingPreview = true);
+    try {
+      final host = snapshot.customDomain ?? snapshot.defaultDomain;
+      final result = await context.read<DomainService>().createPreviewLink(
+        store,
+        host: host,
+      );
+      if (!mounted) return;
+      setState(() => _previewUrl = result.url);
+      _showSnackBar('Preview link created.');
+    } catch (error) {
+      _showSnackBar('Could not create preview link: $error');
+    } finally {
+      if (mounted) setState(() => _isCreatingPreview = false);
     }
   }
 
@@ -210,7 +321,13 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
                   const SizedBox(height: LetbuyySpacingTokens.space24),
                   _buildCustomDomain(colors, snapshot),
                   const SizedBox(height: LetbuyySpacingTokens.space24),
+                  _buildDomainHealth(colors, snapshot),
+                  const SizedBox(height: LetbuyySpacingTokens.space24),
+                  _buildBuyDomain(colors, snapshot),
+                  const SizedBox(height: LetbuyySpacingTokens.space24),
                   _buildDnsRecords(colors, snapshot),
+                  const SizedBox(height: LetbuyySpacingTokens.space24),
+                  _buildAccessControls(colors, snapshot),
                   const SizedBox(height: LetbuyySpacingTokens.space48),
                 ],
               ),
@@ -304,7 +421,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
       colors,
       title: 'Custom domain',
       description:
-          'Save the hostname first. Verification and SSL polling need the domain lifecycle gateway route.',
+          'Save the hostname first. Verification checks ownership, DNS, and Vercel readiness through the gateway.',
       child: _panel(
         colors,
         child: Column(
@@ -364,6 +481,78 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
     );
   }
 
+  Widget _buildDomainHealth(
+    AppThemeColors colors,
+    DomainSettingsSnapshot snapshot,
+  ) {
+    final health = snapshot.health;
+    return _section(
+      colors,
+      title: 'Domain health',
+      description:
+          'Review DNS verification, SSL readiness, and renewal state before launch.',
+      child: _panel(
+        colors,
+        child: snapshot.hasCustomDomain
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _healthStatusRow(
+                    colors,
+                    icon: Icons.dns_rounded,
+                    label: 'DNS',
+                    value: snapshot.dnsLabel,
+                    status: snapshot.dnsVerified ? 'ready' : 'attention',
+                  ),
+                  const SizedBox(height: LetbuyySpacingTokens.space12),
+                  _healthStatusRow(
+                    colors,
+                    icon: Icons.lock_rounded,
+                    label: 'SSL',
+                    value: snapshot.sslLabel,
+                    status: snapshot.sslActive
+                        ? 'ready'
+                        : health?.providerUnavailable == true
+                        ? 'unknown'
+                        : 'attention',
+                  ),
+                  const SizedBox(height: LetbuyySpacingTokens.space12),
+                  _healthStatusRow(
+                    colors,
+                    icon: Icons.event_repeat_rounded,
+                    label: 'Renewal',
+                    value: snapshot.renewalLabel,
+                    status: health?.renewalStatus == 'managed'
+                        ? 'ready'
+                        : health?.renewalStatus == 'action_required'
+                        ? 'attention'
+                        : 'unknown',
+                  ),
+                  if (snapshot.checkedAtLabel != null) ...[
+                    const SizedBox(height: LetbuyySpacingTokens.space12),
+                    Text(
+                      snapshot.checkedAtLabel!,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: colors.textSecondary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ] else ...[
+                    const SizedBox(height: LetbuyySpacingTokens.space12),
+                    Text(
+                      'Tap Refresh SSL to check the latest DNS and SSL state.',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ],
+              )
+            : _buildNoHealth(colors),
+      ),
+    );
+  }
+
   Widget _buildDnsRecords(
     AppThemeColors colors,
     DomainSettingsSnapshot snapshot,
@@ -380,6 +569,13 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (snapshot.apexMxWarning) ...[
+                    _warningPanel(
+                      colors,
+                      'Your domain has email (MX) records. Use www or an ALIAS at the apex, or your email may stop working.',
+                    ),
+                    const SizedBox(height: LetbuyySpacingTokens.space12),
+                  ],
                   ...snapshot.records.map(
                     (record) => _dnsRecordRow(colors, record),
                   ),
@@ -399,6 +595,166 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
     );
   }
 
+  Widget _buildBuyDomain(
+    AppThemeColors colors,
+    DomainSettingsSnapshot snapshot,
+  ) {
+    final quote = _domainQuote;
+    return _section(
+      colors,
+      title: 'Buy a domain',
+      description:
+          'Search, pay, and let LetBuyy register the domain and auto-connect DNS.',
+      child: _panel(
+        colors,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: _customDomainController,
+              keyboardType: TextInputType.url,
+              textInputAction: TextInputAction.search,
+              decoration: _inputDecoration(colors, 'yourbrand.in'),
+            ),
+            const SizedBox(height: LetbuyySpacingTokens.space12),
+            _secondaryAction(
+              colors,
+              label: _isSearchingDomain ? 'Searching...' : 'Search domain',
+              icon: Icons.manage_search_rounded,
+              enabled: !_isSearchingDomain,
+              onPressed: _searchDomainToBuy,
+            ),
+            if (quote != null) ...[
+              const SizedBox(height: LetbuyySpacingTokens.space12),
+              _domainQuotePanel(colors, quote),
+              if (quote.available) ...[
+                const SizedBox(height: LetbuyySpacingTokens.space12),
+                TextField(
+                  controller: _domainOwnerNameController,
+                  textInputAction: TextInputAction.next,
+                  decoration: _inputDecoration(colors, 'Registrant name'),
+                ),
+                const SizedBox(height: LetbuyySpacingTokens.space12),
+                TextField(
+                  controller: _domainOwnerEmailController,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.done,
+                  decoration: _inputDecoration(colors, 'Registrant email'),
+                ),
+                const SizedBox(height: LetbuyySpacingTokens.space12),
+                _primaryAction(
+                  label: _isBuyingDomain ? 'Buying...' : 'Buy and connect',
+                  icon: Icons.shopping_cart_checkout_rounded,
+                  enabled: !_isBuyingDomain && snapshot.storeId.isNotEmpty,
+                  onPressed: _buyDomain,
+                ),
+              ],
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAccessControls(
+    AppThemeColors colors,
+    DomainSettingsSnapshot snapshot,
+  ) {
+    final modes = const ['public', 'password', 'preview_only', 'offline'];
+    return _section(
+      colors,
+      title: 'Store access',
+      description:
+          'Control whether shoppers can browse, use a shared password, or only open signed previews with ?lb_preview= links.',
+      child: _panel(
+        colors,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: LetbuyySpacingTokens.space8,
+              runSpacing: LetbuyySpacingTokens.space8,
+              children: modes
+                  .map((mode) {
+                    final selected = _accessMode == mode;
+                    return ChoiceChip(
+                      label: Text(mode.replaceAll('_', ' ')),
+                      selected: selected,
+                      onSelected: (_) => setState(() => _accessMode = mode),
+                      selectedColor: LetbuyyColorTokens.brandPrimary.withValues(
+                        alpha: 0.16,
+                      ),
+                      labelStyle: TextStyle(
+                        color: selected
+                            ? LetbuyyColorTokens.brandPrimary
+                            : colors.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    );
+                  })
+                  .toList(growable: false),
+            ),
+            const SizedBox(height: LetbuyySpacingTokens.space12),
+            if (_accessMode == 'password')
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: _inputDecoration(colors, 'Shared store password'),
+              ),
+            if (_accessMode == 'password')
+              const SizedBox(height: LetbuyySpacingTokens.space12),
+            TextField(
+              controller: _accessMessageController,
+              decoration: _inputDecoration(colors, 'Optional access message'),
+            ),
+            const SizedBox(height: LetbuyySpacingTokens.space12),
+            Wrap(
+              spacing: LetbuyySpacingTokens.space8,
+              runSpacing: LetbuyySpacingTokens.space8,
+              children: [
+                _primaryAction(
+                  label: _isSavingAccess ? 'Saving...' : 'Save access',
+                  icon: Icons.shield_rounded,
+                  enabled: !_isSavingAccess,
+                  onPressed: _saveAccess,
+                ),
+                _secondaryAction(
+                  colors,
+                  label: _isCreatingPreview
+                      ? 'Creating...'
+                      : 'Create preview link',
+                  icon: Icons.link_rounded,
+                  enabled: !_isCreatingPreview,
+                  onPressed: _createPreviewLink,
+                ),
+              ],
+            ),
+            if (_previewUrl != null) ...[
+              const SizedBox(height: LetbuyySpacingTokens.space12),
+              _dnsLine(colors, 'Preview', _previewUrl!),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: () => _copy('Preview link', _previewUrl!),
+                  icon: const Icon(Icons.copy_rounded),
+                  label: const Text('Copy preview link'),
+                ),
+              ),
+            ],
+            const SizedBox(height: LetbuyySpacingTokens.space8),
+            Text(
+              'Current mode: ${snapshot.accessMode.replaceAll('_', ' ')}',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: colors.textSecondary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildNoRecords(AppThemeColors colors) {
     return Column(
       children: [
@@ -410,6 +766,76 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: colors.textSecondary,
             fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNoHealth(AppThemeColors colors) {
+    return Column(
+      children: [
+        Icon(
+          Icons.health_and_safety_outlined,
+          color: colors.textTertiary,
+          size: 36,
+        ),
+        const SizedBox(height: LetbuyySpacingTokens.space8),
+        Text(
+          'Connect a custom domain to see DNS, SSL, and renewal health.',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: colors.textSecondary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _healthStatusRow(
+    AppThemeColors colors, {
+    required IconData icon,
+    required String label,
+    required String value,
+    required String status,
+  }) {
+    final accent = switch (status) {
+      'ready' => colors.success,
+      'attention' => colors.warning,
+      _ => colors.textTertiary,
+    };
+    return Row(
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: accent.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: accent, size: 20),
+        ),
+        const SizedBox(width: LetbuyySpacingTokens.space12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: colors.textSecondary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                value,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: colors.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -451,6 +877,99 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
           const SizedBox(height: LetbuyySpacingTokens.space8),
           _dnsLine(colors, 'Host', record.host),
           _dnsLine(colors, 'Value', record.value),
+          if (record.actual.isNotEmpty)
+            _dnsLine(colors, 'Seen', record.actual.join(', ')),
+          if (record.message != null && record.message!.isNotEmpty) ...[
+            const SizedBox(height: LetbuyySpacingTokens.space6),
+            Text(
+              record.message!,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: colors.textSecondary),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _domainQuotePanel(AppThemeColors colors, DomainPurchaseQuote quote) {
+    final accent = quote.available ? colors.success : colors.error;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(LetbuyySpacingTokens.space12),
+      decoration: BoxDecoration(
+        color: colors.surfaceVariant,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: accent.withValues(alpha: 0.32)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            quote.available ? Icons.check_circle_rounded : Icons.cancel_rounded,
+            color: accent,
+          ),
+          const SizedBox(width: LetbuyySpacingTokens.space12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  quote.domain,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: colors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                Text(
+                  quote.available ? quote.priceLabel : 'Unavailable',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: colors.textSecondary),
+                ),
+                if (quote.available) ...[
+                  const SizedBox(height: LetbuyySpacingTokens.space4),
+                  Text(
+                    quote.provider == 'mock'
+                        ? 'Test checkout is ready for this domain.'
+                        : 'Registrar checkout will record the provider payment reference.',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: colors.textSecondary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _warningPanel(AppThemeColors colors, String message) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(LetbuyySpacingTokens.space12),
+      decoration: BoxDecoration(
+        color: colors.warning.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colors.warning.withValues(alpha: 0.32)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.warning_amber_rounded, color: colors.warning),
+          const SizedBox(width: LetbuyySpacingTokens.space8),
+          Expanded(
+            child: Text(
+              message,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: colors.textPrimary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
         ],
       ),
     );

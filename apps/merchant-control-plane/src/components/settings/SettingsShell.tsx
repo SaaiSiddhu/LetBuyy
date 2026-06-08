@@ -2,9 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import {
+import { Button,
     Avatar,
-    Button,
     Menu,
     Store,
     X,
@@ -233,7 +232,7 @@ export function SettingsShell({
 
             {drawerOpen && (
                 <div className="fixed inset-0 z-50 lg:hidden" role="presentation">
-                    <button
+                    <Button unstyled
                         type="button"
                         className="absolute inset-0 bg-[var(--lb-color-overlay)]"
                         onClick={() => setDrawerOpen(false)}

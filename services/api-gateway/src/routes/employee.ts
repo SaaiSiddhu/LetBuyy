@@ -297,6 +297,10 @@ router.post('/invite', async (c) => {
 router.get('/tickets', async (c) => {
     const auth = c.get('auth');
     const db = getSupabaseAdmin(c);
+    const page = Math.max(1, Number(c.req.query('page') || 1));
+    const limit = Math.min(100, Math.max(1, Number(c.req.query('limit') || 25)));
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
 
     // Verify employee
     const { data: employee } = await db
@@ -310,10 +314,27 @@ router.get('/tickets', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Employee access required' } }, 403);
     }
 
-    return c.json(
-        { error: { code: 'SUPPORT_TICKETS_UNAVAILABLE', message: 'Support ticket infrastructure is not configured' } },
-        501
-    );
+    const { data, error, count } = await db
+        .from('support_tickets')
+        .select('id, ticket_ref, site_id, requester_email, subject, status, priority, assignee_id, first_response_due_at, resolution_due_at, created_at, updated_at', { count: 'exact' })
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+    if (error) {
+        return c.json(
+            { error: { code: 'SUPPORT_TICKETS_SCHEMA_UNAVAILABLE', message: 'Support ticket schema is not available in this environment' } },
+            503
+        );
+    }
+
+    return c.json(success({
+        available: true,
+        tickets: data || [],
+        total: count || 0,
+        page,
+        limit,
+    }));
 });
 
 // GET /employees/analytics — Read-only analytics for marketing team

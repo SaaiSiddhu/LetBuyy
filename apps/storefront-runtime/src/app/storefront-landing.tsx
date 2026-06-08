@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { MaterialIcon } from '@letbuyy/ui';
+import { Button, Input, MaterialIcon } from '@letbuyy/ui';
 import './storefront-landing.css';
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -42,11 +42,11 @@ interface FinderResult {
 
 // ─── Site Type Registry ────────────────────────────────────────
 const SITE_TYPE_META: Record<string, { label: string; icon: string; color: string }> = {
-    store: { label: 'Store', icon: 'shopping_bag', color: '#6366f1' },
-    blog: { label: 'Blog', icon: 'article', color: '#f97316' },
-    portfolio: { label: 'Portfolio', icon: 'palette', color: '#ec4899' },
-    resume: { label: 'Resume', icon: 'description', color: '#14b8a6' },
-    landing: { label: 'Landing', icon: 'rocket_launch', color: '#eab308' },
+    store: { label: 'Store', icon: 'shopping_bag', color: 'rgb(99 102 241)' },
+    blog: { label: 'Blog', icon: 'article', color: 'rgb(249 115 22)' },
+    portfolio: { label: 'Portfolio', icon: 'palette', color: 'rgb(236 72 153)' },
+    resume: { label: 'Resume', icon: 'description', color: 'rgb(20 184 166)' },
+    landing: { label: 'Landing', icon: 'rocket_launch', color: 'rgb(234 179 8)' },
 };
 
 function getSiteTypeLabel(siteType: string): string {
@@ -87,10 +87,10 @@ function formatStat(n: number): string {
 }
 
 function getThemeMeta(themeId: string | null) {
-    const fallback = { label: 'Theme', color: '#6366f1' };
+    const fallback = { label: 'Theme', color: 'rgb(99 102 241)' };
     if (!themeId) return fallback;
 
-    const palette = ['#6366f1', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+    const palette = ['rgb(99 102 241)', 'rgb(14 165 233)', 'rgb(16 185 129)', 'rgb(245 158 11)', 'rgb(239 68 68)', 'rgb(139 92 246)'];
     const hash = [...themeId].reduce((sum, char) => sum + char.charCodeAt(0), 0);
     return {
         label: themeId
@@ -236,7 +236,7 @@ function StoreFinder() {
         <div className="store-finder">
             <div className="store-finder-input-row">
                 <MaterialIcon className="store-finder-icon" name="search" />
-                <input
+                <Input unstyled
                     className="store-finder-input"
                     type="search"
                     placeholder="Enter a site name or subdomain..."
@@ -244,13 +244,13 @@ function StoreFinder() {
                     onChange={(e) => setQuery(e.target.value)}
                     aria-label="Search for a site"
                 />
-                <button
+                <Button unstyled
                     className="store-finder-btn"
                     onClick={handleVisitClick}
                     disabled={status !== 'found' && status !== 'draft'}
                 >
                     Visit Site →
-                </button>
+                </Button>
             </div>
 
             {/* Status Indicator */}

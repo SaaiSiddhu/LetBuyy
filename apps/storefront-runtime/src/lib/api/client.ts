@@ -7,6 +7,7 @@ import {
     resolveLetbuyyApiBaseUrl,
     type LetbuyyApiClient,
 } from '@letbuyy/api-client';
+import { storefrontApiBaseUrlCandidates } from './base-url';
 import {
     getLetbuyyInternalAuthSecret,
     hmacSha256Hex,
@@ -30,10 +31,7 @@ export function storefrontReadInit(revalidate: number, tags: string[] = []): Sto
 }
 
 function storefrontApiBaseUrl() {
-    return resolveLetbuyyApiBaseUrl([
-        process.env.LETBUYY_API_BASE_URL ||
-        process.env.NEXT_PUBLIC_API_BASE_URL,
-    ], {
+    return resolveLetbuyyApiBaseUrl(storefrontApiBaseUrlCandidates(), {
         fallback: LETBUYY_PRODUCTION_API_BASE_URL,
     });
 }
@@ -69,7 +67,8 @@ export async function storefrontApiFetch(path: string, init: StorefrontApiFetchI
 }
 
 function isStorefrontInternalOnlyPath(path: string): boolean {
-    return path === '/storefront/customer/by-email'
+    return path === '/storefront/customer/find-or-create'
+        || path === '/storefront/customer/by-email'
         || path === '/storefront/customer/status'
         || path === '/storefront/customer/password'
         || path === '/storefront/customer/login-success'

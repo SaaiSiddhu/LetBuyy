@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ShoppingBag, Package, Palette, Download, Settings, Crown, ChevronLeft } from '@letbuyy/ui';
+import { LayoutDashboard, ShoppingBag, Package, Download, Settings, ChevronLeft, Heart } from '@letbuyy/ui';
 import { cn } from '@/lib/utils';
 
 const SIDEBAR_ITEMS = [
     { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+    { href: '/dashboard/favorites', label: 'Saved Themes', icon: Heart },
     { href: '/dashboard/purchases', label: 'Purchases', icon: ShoppingBag },
     { href: '/dashboard/installations', label: 'Installations', icon: Package },
     { href: '/dashboard/downloads', label: 'Downloads', icon: Download },
@@ -51,15 +52,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             );
                         })}
 
-                        {/* Subscription Badge */}
-                        <div className="mt-6 p-4 rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Crown className="w-4 h-4 text-warning" />
-                                <span className="text-xs font-semibold text-text-heading">Free Plan</span>
-                            </div>
-                            <p className="text-[11px] text-text-muted mb-3">Upgrade to unlock premium themes</p>
-                            <Link href="/pricing" className="btn-primary text-xs py-1.5 px-3 w-full text-center block">
-                                Upgrade
+                        <div className="mt-6 p-4 rounded-xl border border-border bg-surface">
+                            <p className="text-xs font-semibold text-text-heading">Theme purchases</p>
+                            <p className="text-[11px] text-text-muted mb-3">Per-theme purchases are live. Subscription state is not exposed here yet.</p>
+                            <Link href="/pricing" className="btn-secondary text-xs py-1.5 px-3 w-full text-center block">
+                                View pricing
                             </Link>
                         </div>
                     </div>

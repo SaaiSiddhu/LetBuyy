@@ -2,14 +2,12 @@
 
 import { type FormEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button, Input,
     Badge,
     Banner,
-    Button,
     Card,
     CreditCard,
     IndianRupee,
-    Input,
     Key,
     Section,
     ShieldCheck,
@@ -363,7 +361,7 @@ export default function PaymentsSettingsPage() {
                                     Keep test mode on while validating credentials and payment flows.
                                 </span>
                             </span>
-                            <input
+                            <Input unstyled
                                 id="razorpay-test-mode"
                                 checked={testMode}
                                 onChange={(event) => setTestMode(event.target.checked)}

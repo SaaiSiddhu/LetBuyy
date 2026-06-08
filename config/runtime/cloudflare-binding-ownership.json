@@ -132,7 +132,9 @@
             "TELEMETRY_ENV",
             "RUNTIME_NAME",
             "PRIMARY_REGION",
-            "FAILOVER_REGION",
+            "FAILOVER_REGION"
+          ],
+          "secrets": [
             "INTERNAL_API_SECRET"
           ],
           "queueProducers": [],
@@ -162,7 +164,9 @@
             "TELEMETRY_ENV",
             "RUNTIME_NAME",
             "PRIMARY_REGION",
-            "FAILOVER_REGION",
+            "FAILOVER_REGION"
+          ],
+          "secrets": [
             "INTERNAL_API_SECRET"
           ],
           "queueProducers": [],

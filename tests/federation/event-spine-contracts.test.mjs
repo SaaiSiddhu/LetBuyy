@@ -203,7 +203,7 @@ test('payment confirmations emit registered order.paid events', () => {
   assert.match(paymentsSource, /aggregateType: 'order'/);
   assert.match(paymentsSource, /site_id: siteId/);
   assert.match(paymentsSource, /order_id: orderId/);
-  assert.match(paymentsSource, /emitOrderPaidEvent\(db/);
+  assert.match(paymentsSource, /emitOrderPaidEvent\(c\.env,\s*db/);
 
   assert.match(storefrontSource, /emitStorefrontOrderPaidEvent/);
   assert.match(storefrontSource, /eventType: 'order\.paid'/);

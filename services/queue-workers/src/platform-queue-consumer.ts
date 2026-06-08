@@ -9,7 +9,11 @@ import {
   planOrderSearchProjectionDocument,
   planProductSearchProjectionDocument,
 } from '@letbuyy/runtime-composition';
-import { planInAppNotificationForEvent } from '@letbuyy/notification-core';
+import { planInAppNotificationForEvent, type PlannedInAppNotification } from '@letbuyy/notification-core';
+import {
+  DEFAULT_APP_REVENUE_SHARE_BPS,
+  planSandboxAppPayoutTransfer,
+} from '@letbuyy/billing-core';
 import {
   createSupabaseServiceClient,
   type SupabaseClient,
@@ -18,6 +22,7 @@ import {
 import { emitGatewayDomainEvent, type GatewayServiceBinding } from '@letbuyy/infrastructure/gateway-events-adapter';
 import {
   dispatchPushNotificationToDevices,
+  type PushNotificationDispatchResult,
   type PushProviderEnv,
 } from './push-dispatcher';
 
@@ -101,7 +106,7 @@ interface AppChargeEventPayload {
   app_id?: string;
   installation_id?: string;
   charge_id?: string;
-  billing_mode?: 'recurring' | 'usage';
+  billing_mode?: 'recurring' | 'one_time' | 'usage';
   amount?: {
     amount_minor?: number;
     currency?: 'INR';
@@ -123,6 +128,8 @@ interface PayoutLedgerEntry {
   id: string;
   partner_id: string;
   partner_amount_minor: number;
+  status?: string;
+  metadata?: JsonObject | null;
 }
 
 export interface PlatformQueueConsumeResult {
@@ -476,6 +483,7 @@ class PlatformQueueConsumer {
       eventType,
       occurredAt,
       aggregateType,
+      aggregateId,
       payload: envelope.payload || {},
     })) {
       await this.incrementRollup(rollup);
@@ -531,6 +539,18 @@ class PlatformQueueConsumer {
 
     const userId = await this.resolveNotificationUserId(event.site_id || null, event.payload);
     if (!userId) return;
+    const openOrderBadgeCount = planned.type === 'order_placed' && event.site_id
+      ? await this.resolveOpenOrderBadgeCount(event.site_id)
+      : null;
+    const notificationData = {
+      ...planned.data,
+      ...(openOrderBadgeCount !== null
+        ? {
+          open_order_count: openOrderBadgeCount,
+          badge_count: openOrderBadgeCount,
+        }
+        : {}),
+    };
 
     const { error } = await this.db.from('notifications').insert({
       user_id: userId,
@@ -538,7 +558,7 @@ class PlatformQueueConsumer {
       title: planned.title,
       message: planned.message,
       data: {
-        ...planned.data,
+        ...notificationData,
         queue_job_id: job.id,
         idempotency_key: event.idempotency_key || job.idempotency_key,
         consumer_runtime: 'services/queue-workers',
@@ -548,16 +568,84 @@ class PlatformQueueConsumer {
 
     if (error) throw new Error(`Notification dispatch write failed: ${error.message}`);
 
-    await dispatchPushNotificationToDevices(this.db, this.env, {
+    const pushResult = await dispatchPushNotificationToDevices(this.db, this.env, {
       userId,
       title: planned.title,
       message: planned.message,
       data: {
-        ...planned.data,
+        ...notificationData,
         notification_type: planned.type,
       },
       actionUrl: planned.action_url || null,
     });
+
+    await this.recordPushDispatchFailureLog(job, event, planned, userId, pushResult);
+  }
+
+  private async recordPushDispatchFailureLog(
+    job: PlatformQueueJob,
+    event: RuntimeEventEnvelope<JsonObject>,
+    planned: PlannedInAppNotification,
+    userId: string,
+    pushResult: PushNotificationDispatchResult,
+  ): Promise<void> {
+    if (pushResult.failed <= 0) return;
+
+    const siteId = event.site_id || job.site_id;
+    if (!siteId) return;
+
+    const baseIdempotencyKey = event.idempotency_key || job.idempotency_key || event.event_id || job.id;
+    const failureMessage = `Push dispatch failed for ${pushResult.failed} of ${pushResult.attempted} attempted device(s).`;
+    const { error } = await this.db
+      .from('notification_logs')
+      .upsert(
+        {
+          site_id: siteId,
+          user_id: userId,
+          channel: 'push',
+          category: planned.type,
+          template_key: `mobile_push.${planned.type}`,
+          event_type: event.event_type,
+          recipient: { user_id: userId },
+          subject: planned.title,
+          body: planned.message,
+          status: 'failed',
+          provider: pushResult.providers.join(',') || null,
+          attempt_count: pushResult.attempted,
+          error_message: failureMessage,
+          request_id: event.request_id || job.request_id,
+          trace_id: job.trace_id,
+          idempotency_key: `push.failure:${baseIdempotencyKey}:${planned.type}`,
+          metadata: {
+            queue_job_id: job.id,
+            event_id: event.event_id,
+            aggregate_type: event.aggregate_type || null,
+            aggregate_id: event.aggregate_id || null,
+            sent: pushResult.sent,
+            failed: pushResult.failed,
+            skipped: pushResult.skipped,
+            attempted: pushResult.attempted,
+            providers: pushResult.providers,
+            dry_run: pushResult.dryRun,
+            failure_details: pushResult.failureDetails,
+          },
+        },
+        { onConflict: 'site_id,idempotency_key' },
+      );
+
+    if (error) throw new Error(`Push dispatch failure log write failed: ${error.message}`);
+  }
+
+  private async resolveOpenOrderBadgeCount(siteId: string): Promise<number | null> {
+    const { count, error } = await this.db
+      .from('orders')
+      .select('id', { count: 'exact', head: true })
+      .eq('site_id', siteId)
+      .is('deleted_at', null)
+      .not('status', 'in', '(delivered,cancelled,refunded)');
+
+    if (error) return null;
+    return typeof count === 'number' ? count : null;
   }
 
   private async resolveNotificationUserId(siteId: string | null, payload: JsonObject): Promise<string | null> {
@@ -649,7 +737,7 @@ class PlatformQueueConsumer {
     const payoutContext = app as MarketplaceAppPayoutContext | null;
     if (!payoutContext?.developer_id) return false;
 
-    const revenueShareBps = clampBps(payload.revenue_share_bps, 8000);
+    const revenueShareBps = clampBps(payload.revenue_share_bps, DEFAULT_APP_REVENUE_SHARE_BPS);
     const partnerAmountMinor = Math.floor((amountMinor * revenueShareBps) / 10000);
     const platformFeeMinor = amountMinor - partnerAmountMinor;
     const partnerGstBps = clampBps(payload.partner_gst_bps, 1800);
@@ -657,11 +745,30 @@ class PlatformQueueConsumer {
       ? Math.max(0, Math.trunc(payload.partner_gst_minor))
       : Math.round((partnerAmountMinor * partnerGstBps) / 10000);
     const rail = payoutRail(payload.payout_rail);
+    const providerMode = payload.provider_mode === 'live' ? 'live' : 'test';
+    const ledgerMetadata = {
+      source_event_type: eventType,
+      queue_job_id: job.id,
+      partner_gst_bps: partnerGstBps,
+      partner_gst_minor: partnerGstMinor,
+      provider_reference: payload.provider_reference || null,
+      payout_provider_mode: providerMode,
+      consumer_runtime: 'services/queue-workers',
+    };
 
-    const { data: entries, error: entryError } = await this.db
+    const { data: existingEntry, error: existingEntryError } = await this.db
       .from('partner_payout_ledger_entries')
-      .upsert(
-        {
+      .select('id, partner_id, partner_amount_minor, status, metadata')
+      .eq('source_event_id', eventId)
+      .maybeSingle();
+
+    if (existingEntryError) throw new Error(`Payout ledger lookup failed: ${existingEntryError.message}`);
+
+    let entry = existingEntry as PayoutLedgerEntry | null;
+    if (!entry) {
+      const { data: createdEntry, error: entryError } = await this.db
+        .from('partner_payout_ledger_entries')
+        .insert({
           partner_id: payoutContext.developer_id,
           site_id: siteId,
           app_id: appId,
@@ -676,23 +783,15 @@ class PlatformQueueConsumer {
           platform_fee_minor: platformFeeMinor,
           status: 'pending',
           rail,
-          metadata: {
-            source_event_type: eventType,
-            queue_job_id: job.id,
-            partner_gst_bps: partnerGstBps,
-            partner_gst_minor: partnerGstMinor,
-            provider_reference: payload.provider_reference || null,
-            payout_provider_mode: payload.provider_mode === 'live' ? 'live' : 'test',
-            consumer_runtime: 'services/queue-workers',
-          },
-        },
-        { onConflict: 'source_event_id' },
-      )
-      .select('id, partner_id, partner_amount_minor');
+          metadata: ledgerMetadata,
+        })
+        .select('id, partner_id, partner_amount_minor, status, metadata')
+        .single();
 
-    if (entryError) throw new Error(`Payout ledger write failed: ${entryError.message}`);
+      if (entryError) throw new Error(`Payout ledger write failed: ${entryError.message}`);
+      entry = createdEntry as PayoutLedgerEntry;
+    }
 
-    const entry = Array.isArray(entries) ? entries[0] as PayoutLedgerEntry | undefined : undefined;
     if (!entry) return false;
 
     await this.emitDomainEvent({
@@ -714,6 +813,71 @@ class PlatformQueueConsumer {
       requestId: envelope.request_id || job.request_id,
       actorId: null,
     });
+
+    if (!['released', 'failed'].includes(String(entry.status || 'pending'))) {
+      const processingMetadata = {
+        ...(entry.metadata || {}),
+        ...ledgerMetadata,
+        payout_settlement_started_at: new Date().toISOString(),
+      };
+      const { error: processingError } = await this.db
+        .from('partner_payout_ledger_entries')
+        .update({
+          status: 'processing',
+          metadata: processingMetadata,
+        })
+        .eq('id', entry.id)
+        .in('status', ['pending', 'processing']);
+
+      if (processingError) throw new Error(`Payout processing transition failed: ${processingError.message}`);
+
+      const settlement = planSandboxAppPayoutTransfer({
+        ledgerEntryId: entry.id,
+        partnerId: entry.partner_id,
+        amountMinor: entry.partner_amount_minor,
+        currency: 'INR',
+        rail,
+        providerMode,
+        idempotencyKey: `payout.transfer:${eventId}`,
+      });
+      const settledMetadata = {
+        ...processingMetadata,
+        payout_statement: settlement.statement,
+        payout_failure_reason: settlement.failure_reason || null,
+        live_transfer_required: settlement.status === 'processing' && providerMode === 'live',
+      };
+      const { error: settlementError } = await this.db
+        .from('partner_payout_ledger_entries')
+        .update({
+          status: settlement.status,
+          metadata: settledMetadata,
+        })
+        .eq('id', entry.id);
+
+      if (settlementError) throw new Error(`Payout settlement transition failed: ${settlementError.message}`);
+
+      if (settlement.status === 'released') {
+        await this.emitDomainEvent({
+          storeId: siteId,
+          aggregateType: 'payout',
+          aggregateId: entry.id,
+          eventType: 'payout.released',
+          payload: {
+            partner_id: entry.partner_id,
+            payout_id: entry.id,
+            ledger_entry_id: entry.id,
+            amount: {
+              amount_minor: entry.partner_amount_minor,
+              currency: 'INR',
+            },
+            rail,
+          },
+          idempotencyKey: `payout.released:${eventId}`,
+          requestId: envelope.request_id || job.request_id,
+          actorId: null,
+        });
+      }
+    }
 
     return true;
   }

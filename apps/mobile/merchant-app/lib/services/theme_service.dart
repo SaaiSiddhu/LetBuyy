@@ -6,6 +6,16 @@ import '../config/app_config.dart';
 import '../models/theme_editor_models.dart';
 import 'api_client.dart';
 
+class ThemeDraftConflictException implements Exception {
+  const ThemeDraftConflictException();
+
+  static const message =
+      'This theme draft changed in another session. Refresh the editor before saving again.';
+
+  @override
+  String toString() => message;
+}
+
 /// Store-scoped theme API client.
 ///
 /// This service intentionally mirrors the Admin Web theme flow:
@@ -77,12 +87,18 @@ class ThemeService extends ChangeNotifier {
     required Map<String, dynamic> templateConfig,
     int? baseVersion,
   }) async {
-    final res = await _api.themes.saveDraft(themeSlug, {
-      'store_id': storeId,
-      'template_config': templateConfig,
-      if (baseVersion != null) 'base_version': baseVersion,
-      'client': 'flutter-builder',
-    });
+    final Map<String, dynamic> res;
+    try {
+      res = await _api.themes.saveDraft(themeSlug, {
+        'store_id': storeId,
+        'template_config': templateConfig,
+        if (baseVersion != null) 'base_version': baseVersion,
+        'client': 'flutter-builder',
+      });
+    } on ApiException catch (error) {
+      if (_isThemeConflict(error)) throw const ThemeDraftConflictException();
+      rethrow;
+    }
 
     return ThemeDraftSaveResult.fromJson({
       'data': Map<String, dynamic>.from(res),
@@ -152,11 +168,16 @@ class ThemeService extends ChangeNotifier {
     int? baseVersion,
     bool makeStoreLive = true,
   }) async {
-    await _api.themes.publish(themeSlug, {
-      'store_id': storeId,
-      if (baseVersion != null) 'base_version': baseVersion,
-      'make_store_live': makeStoreLive,
-    });
+    try {
+      await _api.themes.publish(themeSlug, {
+        'store_id': storeId,
+        if (baseVersion != null) 'base_version': baseVersion,
+        'make_store_live': makeStoreLive,
+      });
+    } on ApiException catch (error) {
+      if (_isThemeConflict(error)) throw const ThemeDraftConflictException();
+      rethrow;
+    }
     await fetchThemes(storeId);
   }
 
@@ -197,4 +218,8 @@ class ThemeService extends ChangeNotifier {
         return 'mobile';
     }
   }
+}
+
+bool _isThemeConflict(ApiException error) {
+  return error.statusCode == 409 || error.code == 'CONFLICT';
 }

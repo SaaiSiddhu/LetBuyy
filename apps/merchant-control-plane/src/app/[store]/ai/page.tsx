@@ -2,13 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button, Table,
     Activity,
     Badge,
     Banner,
-    Button,
     Card,
-    Table,
     Edit3,
     EmptyState,
     FileText,

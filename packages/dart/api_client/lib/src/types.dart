@@ -7,6 +7,8 @@ typedef JsonDecoder<T> = T Function(Object? value);
 typedef ApiTokenProvider = FutureOr<String?> Function();
 typedef ApiStoreIdProvider = FutureOr<String?> Function();
 typedef RequestIdFactory = String Function();
+typedef ApiUnauthorizedHandler =
+    FutureOr<bool> Function(ApiException exception);
 
 enum HttpMethod {
   get('GET'),
@@ -82,6 +84,7 @@ class PaginatedResponse<T> {
     this.totalPages,
     this.hasNext,
     this.hasPrev,
+    this.nextCursor,
     this.meta = const {},
   });
 
@@ -93,6 +96,7 @@ class PaginatedResponse<T> {
   final int? totalPages;
   final bool? hasNext;
   final bool? hasPrev;
+  final String? nextCursor;
   final JsonMap meta;
 }
 

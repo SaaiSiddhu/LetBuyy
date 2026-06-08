@@ -5,6 +5,18 @@ import {
 
 const reporter = createReporter("CI simulation validator");
 
+const ci = readFile(".github/workflows/ci.yml");
+const mergeSafety = ci.split("  merge-safety-gate:")[1]?.split("\n  governance:")[0] || "";
+for (const fragment of [
+  "subosito/flutter-action@v2",
+  "working-directory: apps/mobile/merchant-app",
+  "run: flutter pub get",
+  "run: flutter analyze",
+  "run: flutter test",
+]) {
+  reporter.assert(mergeSafety.includes(fragment), `Merge safety gate must include merchant mobile blocker: ${fragment}`);
+}
+
 const architecture = readFile(".github/workflows/architecture-governance.yml");
 for (const fragment of [
   "pnpm install --frozen-lockfile",

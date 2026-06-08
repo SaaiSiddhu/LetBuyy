@@ -3,10 +3,9 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button, Input,
     Badge,
     Banner,
-    Button,
     Card,
     ClipboardList,
     Download,
@@ -459,7 +458,7 @@ export default function ExportPage() {
                                 {importing ? 'Importing...' : selectedImportFile ? 'Change CSV file' : 'Choose CSV file'}
                             </Button>
                         </div>
-                        <input
+                        <Input unstyled
                             ref={fileInputRef}
                             type="file"
                             accept=".csv"

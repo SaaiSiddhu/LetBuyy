@@ -1,51 +1,57 @@
 # Apps Marketplace UI/UX Audit (Phase 5)
 
-Assessed from components, `globals.css` (2,428 lines), and the shared `@letbuyy/ui` design system (no build run). Rates layout, navigation, app cards, listings, detail pages, search, filters, categories, and developer surfaces. Parent: [Master Audit](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md).
+**Parent:** [`../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md`](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md) · **Date:** 2026-06-07
 
-## Page-by-page ratings (1–5)
+Assessed from source (`apps/app-marketplace/src/**`, `globals.css`); no live render. Ratings are A–F for the *design and interaction quality of what exists*, independent of the empty-catalog problem (which is a content/data issue, covered in Phase 6/8).
 
-| Page / surface | Rating | What Shopify does better |
-|---|---|---|
-| Home / directory (`app/page.tsx`) | 3.5 | Featured rails, recommendations, real collections; LetBuyy is a single filter form + grid |
-| App card (`AppCard.tsx`) | 3.5 | Earned badges, recency, richer signals; LetBuyy card is clean but carries a meaningless "Built for LetBuyy" badge |
-| App detail (`apps/[slug]/page.tsx`) | 3 | Pricing plan selector, review histogram + replies, data disclosure, working screenshots; LetBuyy has placeholders + partial pricing |
-| Search (`search/page.tsx`) | 2 | Working facets + ranked relevance; LetBuyy's pricing/rating facets are dead, icon names render as text |
-| Categories (`categories/*`) | 2.5 | Counts, curated category pages, working sort; LetBuyy sort is inert, icon bug present |
-| Collections (`collections/[slug]`) | 2 | Genuine curation; LetBuyy collections are re-sorts |
-| Developer portal (`developers/page.tsx`) | 3.5 | Comparable marketing page; copy says "6 extension types" (schema has 8) |
-| Register (`developers/register`) | 3.5 | Solid 3-step wizard; but Step-1 "Continue" silently no-ops if fields empty (no inline error) |
-| Submit app (`developers/apps/new`) | 2.5 | Decorative upload zones, no scopes/webhooks/redirects, icon bug in category select |
-| Partner console (`developers/dashboard`) | 3.5 | Good payout/GST/collaborator detail; dead `Pencil` edit; aggregate-only analytics |
-| My apps (`my-apps`) | 4 | Best surface: clean grid, confirm-dialog uninstall with data-loss warning |
-| Install consent (`AppInstallConsentPanel`) | 3.5 | Clear scope modal; but bypasses real OAuth and omits billing terms |
+## 1. Design system foundation
 
-## Strengths
+The app uses Tailwind v4 (`globals.css:1`) but is styled almost entirely with hand-rolled BEM-style semantic classes plus the shared `@letbuyy/ui` package (`@source` import, `globals.css:3`). Brand is purple-first (`--primary: rgb(139 92 246)`), with a full dark-mode override (`.dark`, `globals.css:68-103`) and a flash-prevention script (`layout.tsx:99-116`). Tokens are split: many `--lb-color-*`/`--lb-radius-*`/`--lb-space-*` are defined in the shared package, not locally — workable but a maintenance seam. Typography is **all hardcoded px with no `clamp()`** (no fluid type). **Grade: B−** (coherent and themable; token split + no fluid type are the weak points).
 
-1. **Design-token discipline on the store side.** Home, cards, and detail use CSS variables (`--lb-color-*`, `--lb-space-*`, `--lb-radius-*`) and shared `@letbuyy/ui` primitives (`Page`, `Card`, `Section`, `EmptyState`, `Modal`, `ConfirmDialog`). Dark mode is handled with a pre-paint script in `layout.tsx`.
-2. **Accessibility intent.** `AppCard` has descriptive `aria-label`s (name, category, price, rating); icons are `aria-hidden`; the consent modal is a real `Modal`. StarRating renders accessible values.
-3. **Honest states.** Retryable `MarketplaceUnavailable` and explicit empty states instead of fake content.
-4. **Install/uninstall** are genuinely well-built (modal consent, success state with embedded launch, confirm-dialog uninstall).
+## 2. Per-page ratings
 
-## Weaknesses
+| Page | What's good | What's weak | Grade |
+|---|---|---|---|
+| **Home / directory** (`page.tsx`) | URL-backed search/category/sort; honest empty state; clean `Page`/`Section`/`Card` structure; `md:`/`xl:` responsive grid | Featured rail gated off; category pills capped at 12; pagination only when not searching (`:296`) | **B** |
+| **App detail** (`apps/[slug]/page.tsx`) | Rich, well-organized: hero, preview, pricing, permission review, trust disclosures, reviews+histogram, sidebar consent, related; strong JSON-LD | Screenshot placeholders when empty; disabled "Report" actions; changelog/works-with read fields with no source | **B** |
+| **Search** (`search/page.tsx`) | Debounced (300ms), skeletons, retry; faceted sidebar | **14/29 categories hidden**; **rating filter client-only over ≤20 rows**; no pagination | **C+** |
+| **Categories index** (`categories/page.tsx`) | Simple grid via `CategoryGrid` | Always renders ≥29 hardcoded items even with empty catalog → every tile dead-ends | **C** |
+| **Category detail** (`categories/[slug]`) | Breadcrumb, sort, count, empty state | `notFound()` unless slug is in hardcoded list — live-only categories 404 | **C** |
+| **Collections** (`collections/[slug]`) | Breadcrumb, reuses cards | **Fake** (re-sorts catalog); self-incriminating copy; no `/collections` index; 2 of 3 orphaned | **D** |
+| **My Apps** (`my-apps/page.tsx` + `InstalledAppsGrid`) | Real list, uninstall confirm with data-loss note, inline review | Extensions config stub; Settings often a disabled button; `🔑` emoji in sign-in state | **C+** |
+| **Developer landing** (`developers/page.tsx`) | Clear "Build for LetBuyy", 4-step "How it works" | Static; benefit copy hedges ("pending platform support") | **B−** |
+| **Register** (`developers/register/page.tsx`) | 3-step wizard, required consent checkboxes, India GST field | **Drops GSTIN + consent on submit**; weak step-1 validation (silent no-op) | **C−** |
+| **Submit app** (`developers/apps/new/page.tsx`) | Real manifest validator, localStorage draft, live preview card | **Dead icon/screenshot upload**; no scope picker; stale `apps.letbuyy.store` slug hint; "Private … (contract-gated)" | **C** |
+| **Partner Console** (`developers/dashboard/page.tsx`) | Real metrics (installs/earnings/GST/ratings), payout ledger, listings | "Released" always 0; "Edit unavailable" badge; dev-stores/managed-access mostly empty; no charts | **C+** |
+| **Review requirements** (`developers/review-requirements`) | — | Explicit placeholder; `SKIPPED (HUMAN-APPROVAL)` banner; orphan | **D−** |
+| **Partner directory** (`partners/page.tsx`) | — | Placeholder shell that prints a flag name; orphan | **F** |
+| **Developer profile** (`developers/[slug]`) | — | Placeholder shell that prints a flag name; orphan | **F** |
 
-1. **Two divergent UI idioms.** Store pages use the design system; developer pages (`dashboard`, `register`, `apps/new`, `developers`) are built with **inline `style={{…}}`** and ad-hoc classes (`dev-portal-cta`, `form-input`). This is inconsistent and harder to theme — dashboard even hardcodes `#16a34a`, `#dc2626`, `#fef2f2` that ignore dark-mode tokens.
-2. **Dead controls.** Search pricing/rating facets and category sort do nothing. Controls that look interactive but aren't are a trust and usability failure.
-3. **Non-semantic interactive elements.** Search facets are `<div onClick>` not `<button>`/`<a>` — not keyboard-focusable, no roles.
-4. **Icon rendering bug** (Material icon name as literal text) on 3 surfaces.
-5. **Meaningless badge.** "Built for LetBuyy" on every card dilutes the card's trust hierarchy.
-6. **Detail page partial data.** Permanent screenshot placeholders, possible 1970 "Updated" date, reviews count off (first 10 only).
-7. **No loading skeletons** on server-rendered pages (only the client search page has them).
-8. **No pagination** UI; the grid silently caps at 20–24.
+## 3. Navigation & information architecture
 
-## Navigation
+Header (`Header.tsx`): brand, Home, Categories, **Collections→`/collections/staff-picks`** (deep-links one collection, not an index), Developers, Partner Console, center search, My Apps, "Build an app." Mobile nav drawer present. Footer (`Footer.tsx`): Marketplace + Developers + LetBuyy columns. **IA problems:** (1) "Collections" misleads (no index); (2) orphan pages reachable only by URL (`/partners`, `/developers/[slug]`, `/developers/review-requirements`, `trending`/`made-in-india` collections); (3) external doc links (`docs.letbuyy.store/*`) likely dead; (4) stale `letbuyy.store` across footer. **Grade: C.**
 
-Header (`Header.tsx`): logo, nav (Home/Categories/Collections/Developers/Partner Console), search shortcut, theme toggle, My Apps, Build an app. Clear on desktop. **On mobile it collapses to almost nothing with no replacement** — see [Responsiveness](APPS_RESPONSIVENESS_REPORT.md). Footer is comprehensive (marketplace, developer, LetBuyy columns, docs links).
+## 4. Component quality
 
-## Top UI fixes (ranked)
+- `AppCard` (135 LOC): solid — rating, installs, price, verified/recency badges, accessible labels. **B+**
+- `AppInstallConsentPanel` (288 LOC): the best component — modal consent, scope labels+codes, target store, billing note, post-install launch. **A−** (minus the dead `embedUrl` and the OAuth-flag throw).
+- `InstalledAppsGrid` (168 LOC): real uninstall with destructive confirm + data-loss copy. **B+**
+- `ReviewComposer` (91 LOC): functional rating/title/body submit. **B**
+- `ExtensionConfigPanel` (22 LOC): **stub** — toggles a paragraph saying it "requires an approved BFF route." **F**
+- `ApiKeyPanel` (75 LOC): rotates key, honest "secret not returned by this backend" fallback. **B**
+- `CollaboratorCodePanel` (72 LOC): displays a **dead** code (no persistence/redemption behind it). **D**
+- `MarketplaceUnavailable`, `MarketplaceSkeleton`, `StarRating`, `CategoryGrid`: clean, reusable. **B+**
 
-1. Wire or remove dead facets/sort (#9, #57 in master register).
-2. Fix the category-icon rendering bug everywhere.
-3. Replace the unconditional "Built for LetBuyy" badge with an earned program.
-4. Add a mobile menu so navigation survives below 768px.
-5. Unify developer pages onto the design system + tokens.
-6. Add pagination, skeletons, and fix the reviews-count and 1970-date issues.
+## 5. Interaction states
+
+Loading (skeletons via `loading.tsx` + `MarketplaceSkeleton`), empty (honest, well-written), and error (`MarketplaceUnavailable`) states are **consistently present and a genuine strength** — but retry is wired only on the search page (others are static). Toasts/banners (`marketplace-toast`, `marketplace-banner--*`) are used for success/error across install/uninstall/review. **Grade: B.**
+
+## 6. What Shopify does better / what creates friction / what reduces trust
+
+- **Shopify does better:** discovery substance (real collections, "works with," alternatives), media-rich listings, charge/billing UI, app update flow, and a quality badge with teeth.
+- **What creates friction here:** dead-end categories/collections; hidden categories in search; no pagination; stub extension config; dead upload boxes; dropped form fields.
+- **What reduces trust:** placeholder pages that leak flag names to users; "Built for LetBuyy" badge with no backing; disabled Report buttons; stale domain; "contract-gated"/"pending approval" copy throughout.
+
+## 7. Verdict
+
+The *interaction design of what's actually built* is **B-grade** — the consent flow, honest states, and detail page are genuinely good. But the surface is dragged to a **C overall** by stub/placeholder components, dead UI, dead-end discovery, and trust-eroding "theater" copy. The fastest UI/UX wins: delete or build the placeholder pages, render all categories, fix the upload boxes and dropped fields, and make "Collections" point at a real index. See [`APP_DISCOVERY_AUDIT.md`](APP_DISCOVERY_AUDIT.md) and [`APPS_CONTENT_GAP_ANALYSIS.md`](APPS_CONTENT_GAP_ANALYSIS.md).

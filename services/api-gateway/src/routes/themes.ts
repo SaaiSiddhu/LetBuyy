@@ -11,6 +11,7 @@ import {
     buildMarketplaceAutomatedChecks,
     createMarketplaceReviewRecord,
 } from '../lib/marketplace-review-records';
+import { mountThemeMarketplaceAuxiliaryRoutes } from '../lib/theme-marketplace-auxiliary-routes';
 import {
     InstallThemeSchema,
     PreviewTokenSchema,
@@ -19,6 +20,10 @@ import {
     SaveThemeDraftSchema,
     ThemePurchaseOrderSchema,
     ThemePurchaseVerifySchema,
+    ThemeReviewCreateSchema,
+    ThemeReviewReplySchema,
+    ThemeReportSchema,
+    ThemeRefundRequestSchema,
     ThemeStoreQuerySchema,
     UploadThemePackageSchema,
     type InstallThemeInput,
@@ -28,6 +33,10 @@ import {
     type SaveThemeDraftInput,
     type ThemePurchaseOrderInput,
     type ThemePurchaseVerifyInput,
+    type ThemeReviewCreateInput,
+    type ThemeReviewReplyInput,
+    type ThemeReportInput,
+    type ThemeRefundRequestInput,
     type UploadThemePackageInput,
 } from '../schemas/theme.schema';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
@@ -49,7 +58,16 @@ router.use('/:slug/install', authMiddleware);
 router.use('/:slug/purchase', authMiddleware);
 router.use('/:slug/purchase/*', authMiddleware);
 router.use('/purchases/list', authMiddleware);
+router.use('/purchases/:purchaseId/receipt', authMiddleware);
 router.use('/installations/list', authMiddleware);
+router.use('/downloads/list', authMiddleware);
+router.use('/settings', authMiddleware);
+router.use('/saved-searches', authMiddleware);
+router.use('/developer/*', authMiddleware);
+router.use('/:slug/downloads/*', authMiddleware);
+router.use('/:slug/refunds', authMiddleware);
+router.use('/:slug/reports', authMiddleware);
+router.use('/:slug/reviews/*', authMiddleware);
 
 type ThemePurchaseTheme = {
     id: string;
@@ -67,6 +85,13 @@ type ThemePurchaseRecord = {
     provider_order_id?: string | null;
     provider_payment_id?: string | null;
     payment_idempotency_key?: string | null;
+};
+
+type CustomUserRecord = {
+    id: string;
+    email?: string | null;
+    full_name?: string | null;
+    avatar_url?: string | null;
 };
 
 function getRequestId(c: Context<{ Bindings: Env }>): string {
@@ -98,6 +123,135 @@ function recordValue(value: unknown): Record<string, unknown> {
 
 function stringOrNull(value: unknown): string | null {
     return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+function integerQuery(value: string | undefined, fallback: number, min: number, max: number): number {
+    const parsed = Number.parseInt(value || '', 10);
+    if (!Number.isFinite(parsed)) return fallback;
+    return Math.max(min, Math.min(max, parsed));
+}
+
+function numberQuery(value: string | undefined): number | null {
+    if (value === undefined || value.trim() === '') return null;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+}
+
+function sanitizeSearch(value: string | undefined): string | null {
+    if (!value) return null;
+    const cleaned = value.trim().replace(/[,%]/g, ' ').replace(/\s+/g, ' ');
+    return cleaned.length > 0 ? cleaned.slice(0, 120) : null;
+}
+
+function receiptNumber(purchaseId: string): string {
+    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    return `LBTH-${date}-${purchaseId.replace(/-/g, '').slice(0, 10).toUpperCase()}`;
+}
+
+function invoiceNumber(purchaseId: string): string {
+    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    return `LBTH-GST-${date}-${purchaseId.replace(/-/g, '').slice(0, 8).toUpperCase()}`;
+}
+
+function licenseKey(): string {
+    return `LB-THEME-${crypto.randomUUID().replace(/-/g, '').slice(0, 16).toUpperCase()}`;
+}
+
+const THEME_MARKETPLACE_GST_RATE = 18;
+const THEME_MARKETPLACE_DEV_GSTIN = '27ABCDE1234F1Z5';
+
+function envString(c: Context<{ Bindings: Env }>, key: string): string | null {
+    const value = (c.env as unknown as Record<string, string | undefined>)[key];
+    return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+function themeMarketplaceSellerGstin(c: Context<{ Bindings: Env }>): string {
+    return envString(c, 'THEME_MARKETPLACE_GSTIN') || envString(c, 'GSTIN') || THEME_MARKETPLACE_DEV_GSTIN;
+}
+
+function themeMarketplaceGstAmount(amountInr: number): number {
+    if (!Number.isFinite(amountInr) || amountInr <= 0) return 0;
+    return Number((amountInr * THEME_MARKETPLACE_GST_RATE / (100 + THEME_MARKETPLACE_GST_RATE)).toFixed(2));
+}
+
+function themeMarketplaceInvoiceJson(
+    c: Context<{ Bindings: Env }>,
+    input: {
+        purchaseId: string;
+        themeSlug: string;
+        provider: string;
+        providerPaymentId?: string | null;
+        amountInr: number;
+    }
+): Record<string, unknown> {
+    const sellerGstin = themeMarketplaceSellerGstin(c);
+    return {
+        purchase_id: input.purchaseId,
+        theme_slug: input.themeSlug,
+        provider: input.provider,
+        provider_payment_id: input.providerPaymentId || null,
+        seller_gstin: sellerGstin,
+        gstin_source: sellerGstin === THEME_MARKETPLACE_DEV_GSTIN ? 'dev_placeholder' : 'environment',
+        gst_rate: THEME_MARKETPLACE_GST_RATE,
+        gst_amount_inr: themeMarketplaceGstAmount(input.amountInr),
+        tax_treatment: 'gst_inclusive',
+        invoice_mode: 'local_dev_default',
+    };
+}
+
+function localThemeArtifactContent(theme: { slug?: string | null; name?: string | null }, platform: string, artifact: Record<string, unknown>): string {
+    return [
+        'LetBuyy local theme artifact',
+        `theme=${theme.slug || theme.name || 'theme'}`,
+        `platform=${platform}`,
+        `artifact_key=${String(artifact.artifact_key || '')}`,
+        `checksum=${String(artifact.checksum_sha256 || 'local-dev-checksum')}`,
+        'This local package proves entitlement, size, and signed-url delivery in development.',
+    ].join('\n');
+}
+
+function localThemeArtifactSizeBytes(content: string): number {
+    return new TextEncoder().encode(content).length;
+}
+
+function localThemeArtifactSignedUrl(content: string): string {
+    return `data:application/zip;charset=utf-8,${encodeURIComponent(content)}`;
+}
+
+function reviewSummary(reviews: Array<{ rating?: number | null }>): {
+    average: number;
+    total: number;
+    distribution: Record<'1' | '2' | '3' | '4' | '5', number>;
+} {
+    const distribution = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 };
+    let totalRating = 0;
+
+    for (const review of reviews) {
+        const rating = Number(review.rating || 0);
+        if (rating >= 1 && rating <= 5) {
+            distribution[String(rating) as keyof typeof distribution] += 1;
+            totalRating += rating;
+        }
+    }
+
+    const total = reviews.length;
+    return {
+        average: total > 0 ? Number((totalRating / total).toFixed(2)) : 0,
+        total,
+        distribution,
+    };
+}
+
+async function requireCustomUser(c: Context<{ Bindings: Env }>): Promise<CustomUserRecord | Response> {
+    const auth = c.get('auth');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user) as CustomUserRecord | null;
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    return customUser;
 }
 
 async function emitThemeSubmittedEvent(
@@ -140,11 +294,16 @@ router.get('/', async (c) => {
     const siteType = c.req.query('site_type');
     const pricing = c.req.query('pricing');
     const industry = c.req.query('industry');
-    const search = c.req.query('search');
+    const layout = c.req.query('layout');
+    const tag = c.req.query('tag');
+    const feature = c.req.query('feature');
+    const priceMin = numberQuery(c.req.query('price_min'));
+    const priceMax = numberQuery(c.req.query('price_max'));
+    const search = sanitizeSearch(c.req.query('search'));
     const sort = c.req.query('sort') || 'popular';
     const storeId = c.req.query('store_id');
-    const page = parseInt(c.req.query('page') || '1');
-    const limit = Math.min(parseInt(c.req.query('limit') || '20'), 50);
+    const page = integerQuery(c.req.query('page'), 1, 1, 500);
+    const limit = integerQuery(c.req.query('limit'), 20, 1, 50);
     const offset = (page - 1) * limit;
     const db = getSupabaseAdmin(c);
 
@@ -157,12 +316,24 @@ router.get('/', async (c) => {
     if (siteType) query = query.contains('supported_site_types', [siteType]);
     if (pricing) query = query.eq('letbuyy_pricing_type', pricing);
     if (industry) query = query.contains('industry', [industry]);
+    if (layout) query = query.eq('layout', layout);
+    if (tag) query = query.contains('tags', [tag]);
+    if (feature) query = query.contains('features', [feature]);
+    if (priceMin !== null) query = query.gte('letbuyy_price_inr', priceMin);
+    if (priceMax !== null) query = query.lte('letbuyy_price_inr', priceMax);
     if (search) query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
 
     switch (sort) {
+        case 'trending':
+            query = query
+                .order('rating_avg', { ascending: false })
+                .order('install_count', { ascending: false })
+                .order('created_at', { ascending: false });
+            break;
         case 'rating':
             query = query.order('rating_avg', { ascending: false });
             break;
+        case 'new':
         case 'recent':
             query = query.order('created_at', { ascending: false });
             break;
@@ -283,66 +454,7 @@ router.get('/industries', async (c) => {
     return c.json(success(industries.sort()));
 });
 
-// GET /themes/purchases/list — List user's purchased themes
-router.get('/purchases/list', async (c) => {
-    const auth = c.get('auth');
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    }
-
-    const { data, error } = await db
-        .from('theme_purchases')
-        .select('*, themes(*)')
-        .eq('user_id', customUser.id)
-        .order('purchased_at', { ascending: false });
-
-    if (error) {
-        return c.json(dbErrorBody(), 500);
-    }
-
-    return c.json(success(data || []));
-});
-
-// GET /themes/installations/list — List theme installations for user's stores
-router.get('/installations/list', async (c) => {
-    const auth = c.get('auth');
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    }
-
-    const { data: sites, error: sitesError } = await db
-        .from('sites')
-        .select('id')
-        .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`)
-        .is('deleted_at', null);
-
-    if (sitesError) {
-        return c.json(dbErrorBody(), 500);
-    }
-
-    const siteIds = (sites || []).map((site) => site.id as string);
-    if (siteIds.length === 0) {
-        return c.json(success([]));
-    }
-
-    const { data, error } = await db
-        .from('store_themes')
-        .select('*, themes(*), sites(subdomain, custom_domain)')
-        .in('store_id', siteIds)
-        .order('installed_at', { ascending: false });
-
-    if (error) {
-        return c.json(dbErrorBody(), 500);
-    }
-
-    return c.json(success(data || []));
-});
+mountThemeMarketplaceAuxiliaryRoutes(router);
 
 // GET /themes/:slug/schema — Return editable schemas for a theme
 router.get('/:slug/schema', async (c) => {
@@ -558,6 +670,296 @@ router.post('/packages/upload', validate('json', UploadThemePackageSchema), asyn
     return c.json(success({ ...uploadRecord, review_record: reviewRecord }), 201);
 });
 
+// GET /themes/:slug/reviews — List published reviews with rating summary
+router.get('/:slug/reviews', async (c) => {
+    const slug = c.req.param('slug');
+    const page = integerQuery(c.req.query('page'), 1, 1, 500);
+    const limit = integerQuery(c.req.query('limit'), 10, 1, 50);
+    const offset = (page - 1) * limit;
+    const db = getSupabaseAdmin(c);
+
+    const { data: theme, error: themeError } = await db
+        .from('themes')
+        .select('id')
+        .eq('slug', slug)
+        .eq('is_active', true)
+        .maybeSingle();
+
+    if (themeError) return c.json(dbErrorBody(), 500);
+    if (!theme) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Theme not found' } }, 404);
+    }
+
+    const [{ data: reviews, error, count }, { data: summaryRows }] = await Promise.all([
+        db
+            .from('theme_reviews')
+            .select('*', { count: 'exact' })
+            .eq('theme_id', theme.id)
+            .eq('status', 'published')
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1),
+        db
+            .from('theme_reviews')
+            .select('rating')
+            .eq('theme_id', theme.id)
+            .eq('status', 'published')
+            .is('deleted_at', null),
+    ]);
+
+    if (error) return c.json(dbErrorBody(), 500);
+
+    return c.json(success({
+        reviews: reviews || [],
+        summary: reviewSummary(summaryRows || []),
+        pagination: {
+            total: count || 0,
+            page,
+            limit,
+        },
+    }));
+});
+
+// POST /themes/:slug/reviews — Create a verified-purchase-gated pending review
+router.post('/:slug/reviews', authMiddleware, validate('json', ThemeReviewCreateSchema), async (c) => {
+    const slug = c.req.param('slug');
+    const body = c.get('validatedBody') as ThemeReviewCreateInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await requireCustomUser(c);
+    if (customUser instanceof Response) return customUser;
+
+    const { data: theme, error: themeError } = await db
+        .from('themes')
+        .select('id')
+        .eq('slug', slug)
+        .eq('is_active', true)
+        .maybeSingle();
+
+    if (themeError) return c.json(dbErrorBody(), 500);
+    if (!theme) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Theme not found' } }, 404);
+    }
+
+    const { data: purchase } = await db
+        .from('theme_purchases')
+        .select('id, status')
+        .eq('user_id', customUser.id)
+        .eq('theme_id', theme.id)
+        .eq('status', 'completed')
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    if (!purchase) {
+        return c.json({ error: { code: 'VERIFIED_PURCHASE_REQUIRED', message: 'Only verified purchasers can review this theme' } }, 403);
+    }
+
+    const { data: review, error } = await db
+        .from('theme_reviews')
+        .upsert(
+            {
+                user_id: customUser.id,
+                theme_id: theme.id,
+                purchase_id: purchase.id,
+                rating: body.rating,
+                title: body.title,
+                content: body.content,
+                is_verified_purchase: true,
+                status: 'pending',
+                created_by: customUser.id,
+                updated_by: customUser.id,
+            },
+            { onConflict: 'user_id,theme_id' }
+        )
+        .select('*')
+        .single();
+
+    if (error || !review) return c.json(dbErrorBody(), 500);
+
+    return c.json(success(review), 201);
+});
+
+// POST /themes/:slug/reviews/:reviewId/reply — Developer reply to a published review
+router.post('/:slug/reviews/:reviewId/reply', validate('json', ThemeReviewReplySchema), async (c) => {
+    const slug = c.req.param('slug');
+    const reviewId = c.req.param('reviewId');
+    const body = c.get('validatedBody') as ThemeReviewReplyInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await requireCustomUser(c);
+    if (customUser instanceof Response) return customUser;
+
+    const { data: theme, error: themeError } = await db
+        .from('themes')
+        .select('id, author_handle')
+        .eq('slug', slug)
+        .maybeSingle();
+
+    if (themeError) return c.json(dbErrorBody(), 500);
+    if (!theme) return c.json({ error: { code: 'NOT_FOUND', message: 'Theme not found' } }, 404);
+
+    const { data: profile } = await db
+        .from('developer_profiles')
+        .select('user_id')
+        .eq('handle', theme.author_handle)
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    if (profile?.user_id !== customUser.id) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Only the theme author can reply to reviews' } }, 403);
+    }
+
+    const { data: review, error } = await db
+        .from('theme_reviews')
+        .update({
+            developer_reply: body.developer_reply,
+            developer_replied_at: new Date().toISOString(),
+            updated_by: customUser.id,
+        })
+        .eq('id', reviewId)
+        .eq('theme_id', theme.id)
+        .is('deleted_at', null)
+        .select('*')
+        .single();
+
+    if (error || !review) return c.json(dbErrorBody(), 500);
+    return c.json(success(review));
+});
+
+// GET /themes/:slug/downloads/:platform — Entitlement-checked artifact metadata and signed URL when live storage is configured
+router.get('/:slug/downloads/:platform', async (c) => {
+    const slug = c.req.param('slug');
+    const platform = c.req.param('platform');
+    const db = getSupabaseAdmin(c);
+    const customUser = await requireCustomUser(c);
+    if (customUser instanceof Response) return customUser;
+
+    if (!['letbuyy', 'wordpress', 'html', 'react'].includes(platform)) {
+        return c.json({ error: { code: 'VALIDATION_ERROR', message: 'Unsupported download platform' } }, 400);
+    }
+
+    const { data: theme, error: themeError } = await db
+        .from('themes')
+        .select('id, slug, name')
+        .eq('slug', slug)
+        .eq('is_active', true)
+        .maybeSingle();
+
+    if (themeError) return c.json(dbErrorBody(), 500);
+    if (!theme) return c.json({ error: { code: 'NOT_FOUND', message: 'Theme not found' } }, 404);
+
+    const { data: purchase } = await db
+        .from('theme_purchases')
+        .select('id')
+        .eq('user_id', customUser.id)
+        .eq('theme_id', theme.id)
+        .eq('status', 'completed')
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    if (!purchase) {
+        return c.json({ error: { code: 'ENTITLEMENT_REQUIRED', message: 'A completed theme purchase is required for downloads' } }, 403);
+    }
+
+    const { data: artifact, error } = await db
+        .from('theme_download_artifacts')
+        .select('*')
+        .eq('theme_id', theme.id)
+        .eq('platform', platform)
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    if (error) return c.json(dbErrorBody(), 500);
+    if (!artifact) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Download artifact not found' } }, 404);
+    }
+
+    const artifactRecord = artifact as Record<string, unknown>;
+    const content = localThemeArtifactContent(theme, platform, artifactRecord);
+    const sizeBytes = typeof artifactRecord.size_bytes === 'number'
+        ? artifactRecord.size_bytes
+        : localThemeArtifactSizeBytes(content);
+
+    return c.json(success({
+        ...artifactRecord,
+        size_bytes: sizeBytes,
+        delivery_status: artifactRecord.delivery_status === 'disabled' ? 'disabled' : 'available',
+        storage_provider: artifactRecord.storage_provider || 'local-object-store',
+        signed_url: artifactRecord.delivery_status === 'disabled' ? null : localThemeArtifactSignedUrl(content),
+        expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+        live_storage_status: 'local_object_store',
+    }));
+});
+
+// POST /themes/:slug/reports — Report a theme problem or abuse concern
+router.post('/:slug/reports', validate('json', ThemeReportSchema), async (c) => {
+    const slug = c.req.param('slug');
+    const body = c.get('validatedBody') as ThemeReportInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await requireCustomUser(c);
+    if (customUser instanceof Response) return customUser;
+
+    const { data: theme } = await db
+        .from('themes')
+        .select('id')
+        .eq('slug', slug)
+        .maybeSingle();
+
+    if (!theme) return c.json({ error: { code: 'NOT_FOUND', message: 'Theme not found' } }, 404);
+
+    const { data, error } = await db
+        .from('theme_reports')
+        .insert({
+            theme_id: theme.id,
+            reporter_user_id: customUser.id,
+            reason: body.reason,
+            details: body.details || null,
+            created_by: customUser.id,
+            updated_by: customUser.id,
+        })
+        .select('*')
+        .single();
+
+    if (error || !data) return c.json(dbErrorBody(), 500);
+    return c.json(success(data), 201);
+});
+
+// POST /themes/:slug/refunds — Request a theme purchase refund locally; provider execution is live-gated
+router.post('/:slug/refunds', validate('json', ThemeRefundRequestSchema), async (c) => {
+    const slug = c.req.param('slug');
+    const body = c.get('validatedBody') as ThemeRefundRequestInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await requireCustomUser(c);
+    if (customUser instanceof Response) return customUser;
+
+    const { data: purchase } = await db
+        .from('theme_purchases')
+        .select('*, themes(slug)')
+        .eq('id', body.purchase_id)
+        .eq('user_id', customUser.id)
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    if (!purchase || recordValue(purchase.themes).slug !== slug) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Theme purchase not found' } }, 404);
+    }
+
+    const { data, error } = await db
+        .from('theme_refund_requests')
+        .insert({
+            purchase_id: purchase.id,
+            user_id: customUser.id,
+            reason: body.reason || null,
+            requested_amount_inr: Number(purchase.price_paid_inr || 0),
+            status: 'requested',
+            created_by: customUser.id,
+            updated_by: customUser.id,
+        })
+        .select('*')
+        .single();
+
+    if (error || !data) return c.json(dbErrorBody(), 500);
+    return c.json(success(data), 201);
+});
+
 // GET /themes/:slug — Get theme details by slug
 router.get('/:slug', async (c) => {
     const slug = c.req.param('slug');
@@ -580,10 +982,18 @@ router.get('/:slug', async (c) => {
         .select('*')
         .eq('theme_id', data.id)
         .eq('status', 'published')
+        .is('deleted_at', null)
         .order('created_at', { ascending: false })
         .limit(10);
 
-    return c.json(success({ ...data, reviews: reviews || [] }));
+    const { data: summaryRows } = await db
+        .from('theme_reviews')
+        .select('rating')
+        .eq('theme_id', data.id)
+        .eq('status', 'published')
+        .is('deleted_at', null);
+
+    return c.json(success({ ...data, reviews: reviews || [], reviews_summary: reviewSummary(summaryRows || []) }));
 });
 
 // POST /themes/:slug/install — Install/apply a theme to a store
@@ -660,14 +1070,29 @@ router.post('/:slug/purchase', validate('json', ThemePurchaseOrderSchema), async
                     payment_provider: 'free',
                     status: 'completed',
                     payment_processed_at: new Date().toISOString(),
+                    license_key: licenseKey(),
                 },
                 { onConflict: 'user_id,theme_id' }
             )
-            .select('id, status')
+            .select('id, status, license_key')
             .single();
 
         if (error || !freePurchase) {
             throw new Error('Unable to record free theme purchase');
+        }
+
+        const { count: completedPurchaseCount } = await db
+            .from('theme_purchases')
+            .select('id', { count: 'exact', head: true })
+            .eq('theme_id', purchasableTheme.id)
+            .eq('status', 'completed')
+            .is('deleted_at', null);
+
+        if (typeof completedPurchaseCount === 'number') {
+            await db
+                .from('themes')
+                .update({ purchase_count: completedPurchaseCount })
+                .eq('id', purchasableTheme.id);
         }
 
         return c.json(success({
@@ -675,11 +1100,119 @@ router.post('/:slug/purchase', validate('json', ThemePurchaseOrderSchema), async
             theme: purchasableTheme.name,
             status: 'completed',
             payment_required: false,
+            license_key: freePurchase.license_key,
+        }), 201);
+    }
+
+    const paymentProviderMode = envString(c, 'PAYMENTS_PROVIDER') || 'mock';
+    const shouldUseMockPayment = paymentProviderMode === 'mock' || (!c.env.RAZORPAY_KEY_ID && !c.env.RAZORPAY_KEY_SECRET);
+
+    if (shouldUseMockPayment) {
+        const issuedLicenseKey = licenseKey();
+        const mockPaymentId = `theme_mock_${crypto.randomUUID().replace(/-/g, '').slice(0, 18)}`;
+        const { data: mockPurchase, error } = await db
+            .from('theme_purchases')
+            .upsert(
+                {
+                    user_id: customUser.id,
+                    theme_id: purchasableTheme.id,
+                    price_paid_inr: priceInr,
+                    price_paid_usd: purchasableTheme.letbuyy_price_usd || 0,
+                    currency: body.currency,
+                    payment_method: 'mock',
+                    payment_provider: 'mock',
+                    payment_id: mockPaymentId,
+                    provider_order_id: `theme_mock_order_${purchasableTheme.id.slice(0, 8)}`,
+                    provider_payment_id: mockPaymentId,
+                    payment_idempotency_key: body.idempotency_key || null,
+                    status: 'completed',
+                    payment_processed_at: new Date().toISOString(),
+                    license_key: issuedLicenseKey,
+                },
+                { onConflict: 'user_id,theme_id' }
+            )
+            .select('id, status, provider_payment_id, price_paid_inr, currency, license_key')
+            .single();
+
+        if (error || !mockPurchase) {
+            throw new Error('Unable to record local theme purchase');
+        }
+
+        const amountInr = Number(mockPurchase.price_paid_inr || 0);
+        const gstAmountInr = themeMarketplaceGstAmount(amountInr);
+        const { data: receipt } = await db
+            .from('theme_purchase_receipts')
+            .upsert(
+                {
+                    purchase_id: mockPurchase.id,
+                    receipt_number: receiptNumber(String(mockPurchase.id)),
+                    invoice_number: invoiceNumber(String(mockPurchase.id)),
+                    license_key: mockPurchase.license_key || issuedLicenseKey,
+                    amount_inr: amountInr,
+                    currency: mockPurchase.currency || 'INR',
+                    gst_rate: THEME_MARKETPLACE_GST_RATE,
+                    gst_amount_inr: gstAmountInr,
+                    seller_gstin: themeMarketplaceSellerGstin(c),
+                    invoice_json: themeMarketplaceInvoiceJson(c, {
+                        purchaseId: String(mockPurchase.id),
+                        themeSlug: slug,
+                        provider: 'mock',
+                        providerPaymentId: String(mockPurchase.provider_payment_id || mockPaymentId),
+                        amountInr,
+                    }),
+                    created_by: customUser.id,
+                    updated_by: customUser.id,
+                },
+                { onConflict: 'purchase_id' }
+            )
+            .select('*')
+            .maybeSingle();
+
+        const { count: completedPurchaseCount } = await db
+            .from('theme_purchases')
+            .select('id', { count: 'exact', head: true })
+            .eq('theme_id', purchasableTheme.id)
+            .eq('status', 'completed')
+            .is('deleted_at', null);
+
+        if (typeof completedPurchaseCount === 'number') {
+            await db
+                .from('themes')
+                .update({ purchase_count: completedPurchaseCount })
+                .eq('id', purchasableTheme.id);
+        }
+
+        const requestId = getRequestId(c);
+        await new EventExecutionAdapter(db).emitDomainEvent({
+            storeId: null,
+            aggregateType: 'theme_purchase',
+            aggregateId: String(mockPurchase.id),
+            eventType: 'theme.purchase.completed',
+            idempotencyKey: `theme.purchase.completed:mock:${mockPurchase.id}`,
+            requestId,
+            actorId: customUser.id,
+            payload: {
+                theme_id: purchasableTheme.id,
+                theme_slug: slug,
+                provider: 'mock',
+                provider_payment_id: mockPurchase.provider_payment_id || mockPaymentId,
+                dev_default: true,
+            },
+        });
+
+        return c.json(success({
+            purchase_id: mockPurchase.id,
+            theme: purchasableTheme.name,
+            status: 'completed',
+            provider: 'mock',
+            payment_required: false,
+            license_key: mockPurchase.license_key || issuedLicenseKey,
+            receipt,
         }), 201);
     }
 
     if (!c.env.RAZORPAY_KEY_ID || !c.env.RAZORPAY_KEY_SECRET) {
-        return c.json({ error: { code: 'PAYMENT_UNAVAILABLE', message: 'Razorpay is not configured' } }, 503);
+        return c.json({ error: { code: 'PAYMENT_UNAVAILABLE', message: 'Razorpay test keys are required when PAYMENTS_PROVIDER is not mock' } }, 503);
     }
 
     if (
@@ -794,7 +1327,7 @@ router.post('/:slug/purchase/verify', validate('json', ThemePurchaseVerifySchema
     }
 
     if (!c.env.RAZORPAY_KEY_SECRET) {
-        return c.json({ error: { code: 'PAYMENT_UNAVAILABLE', message: 'Razorpay is not configured' } }, 503);
+        return c.json({ error: { code: 'PAYMENT_UNAVAILABLE', message: 'Razorpay test secret is required for Razorpay verification' } }, 503);
     }
 
     const expected = await hmacSha256Hex(
@@ -816,6 +1349,7 @@ router.post('/:slug/purchase/verify', validate('json', ThemePurchaseVerifySchema
         return c.json({ error: { code: 'NOT_FOUND', message: 'Theme not found' } }, 404);
     }
 
+    const issuedLicenseKey = licenseKey();
     const { data: purchase, error } = await db
         .from('theme_purchases')
         .update({
@@ -826,12 +1360,12 @@ router.post('/:slug/purchase/verify', validate('json', ThemePurchaseVerifySchema
             provider_payment_id: body.razorpay_payment_id,
             payment_signature: body.razorpay_signature,
             payment_processed_at: new Date().toISOString(),
-            license_key: `LB-THEME-${crypto.randomUUID().replace(/-/g, '').slice(0, 16).toUpperCase()}`,
+            license_key: issuedLicenseKey,
         })
         .eq('user_id', customUser.id)
         .eq('theme_id', theme.id)
         .eq('provider_order_id', body.razorpay_order_id)
-        .select('id, status, provider_payment_id')
+        .select('id, status, provider_payment_id, price_paid_inr, currency, license_key')
         .single();
 
     if (error || !purchase) {
@@ -871,11 +1405,57 @@ router.post('/:slug/purchase/verify', validate('json', ThemePurchaseVerifySchema
         },
     });
 
+    const amountInr = Number(purchase.price_paid_inr || 0);
+    const gstAmountInr = themeMarketplaceGstAmount(amountInr);
+    const { data: receipt } = await db
+        .from('theme_purchase_receipts')
+        .upsert(
+            {
+                purchase_id: purchase.id,
+                receipt_number: receiptNumber(String(purchase.id)),
+                invoice_number: invoiceNumber(String(purchase.id)),
+                license_key: purchase.license_key || issuedLicenseKey,
+                amount_inr: amountInr,
+                currency: purchase.currency || 'INR',
+                gst_rate: THEME_MARKETPLACE_GST_RATE,
+                gst_amount_inr: gstAmountInr,
+                seller_gstin: themeMarketplaceSellerGstin(c),
+                invoice_json: themeMarketplaceInvoiceJson(c, {
+                    purchaseId: String(purchase.id),
+                    themeSlug: slug,
+                    provider: 'razorpay',
+                    providerPaymentId: body.razorpay_payment_id,
+                    amountInr,
+                }),
+                created_by: customUser.id,
+                updated_by: customUser.id,
+            },
+            { onConflict: 'purchase_id' }
+        )
+        .select('*')
+        .maybeSingle();
+
+    const { count: completedPurchaseCount } = await db
+        .from('theme_purchases')
+        .select('id', { count: 'exact', head: true })
+        .eq('theme_id', theme.id)
+        .eq('status', 'completed')
+        .is('deleted_at', null);
+
+    if (typeof completedPurchaseCount === 'number') {
+        await db
+            .from('themes')
+            .update({ purchase_count: completedPurchaseCount })
+            .eq('id', theme.id);
+    }
+
     return c.json(success({
         purchase_id: purchase.id,
         theme: theme.name,
         status: purchase.status,
         provider_payment_id: purchase.provider_payment_id,
+        license_key: purchase.license_key || issuedLicenseKey,
+        receipt,
     }));
 });
 

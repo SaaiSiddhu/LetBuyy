@@ -36,7 +36,7 @@ function AppBlockFrame({ block }: { block: AppBlockInstance }) {
             title={block.title}
             sandbox="allow-forms allow-popups allow-scripts allow-same-origin"
             loading="lazy"
-            className="h-56 w-full rounded-lg border border-black/10 bg-white"
+            className="h-56 w-full rounded-lg border border-black/10 bg-[var(--lb-color-surface)]"
         />
     );
 }
@@ -53,7 +53,7 @@ function AppBlockCard({ block, theme }: { block: AppBlockInstance; theme: ThemeS
     if (block.render_mode === 'iframe' && block.iframe_url) {
         return (
             <div
-                className="rounded-xl border bg-white p-3 shadow-sm"
+                className="rounded-xl border bg-[var(--lb-color-surface)] p-3 shadow-sm"
                 data-app-block-app-id={block.app_id}
                 data-app-block-extension-id={block.extension_id}
                 style={accentStyle}
@@ -65,7 +65,7 @@ function AppBlockCard({ block, theme }: { block: AppBlockInstance; theme: ThemeS
 
     return (
         <article
-            className="flex h-full flex-col justify-between rounded-xl border bg-white p-5 shadow-sm"
+            className="flex h-full flex-col justify-between rounded-xl border bg-[var(--lb-color-surface)] p-5 shadow-sm"
             data-app-block-app-id={block.app_id}
             data-app-block-extension-id={block.extension_id}
             style={accentStyle}

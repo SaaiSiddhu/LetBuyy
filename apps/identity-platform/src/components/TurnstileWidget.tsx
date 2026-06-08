@@ -28,9 +28,8 @@ function canUseClientDevAuthBypass() {
 }
 
 /**
- * Invisible Cloudflare Turnstile widget.
- * Runs silently in the background — no UI, no checkboxes, no puzzles.
- * 
+ * Managed Cloudflare Turnstile widget.
+ *
  * Use the ref handle to call .reset() after a failed login attempt
  * or when the token expires.
  */
@@ -59,15 +58,18 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
                 widgetIdRef.current = null
             }
 
+            const useDevBypass = canUseClientDevAuthBypass()
             const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
-            if (!siteKey) {
-                onVerifyRef.current(canUseClientDevAuthBypass() ? 'dev-bypass-token' : '')
+            if (useDevBypass || !siteKey) {
+                onVerifyRef.current(useDevBypass ? 'dev-bypass-token' : '')
                 return
             }
 
             widgetIdRef.current = window.turnstile.render(containerRef.current, {
                 sitekey: siteKey,
-                size: 'invisible',
+                size: 'flexible',
+                theme: 'auto',
+                appearance: 'interaction-only',
                 callback: (token: string) => onVerifyRef.current(token),
                 'expired-callback': () => {
                     // Token expired — clear it and reset widget for a fresh token
@@ -103,9 +105,10 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
         }), [renderWidget])
 
         useEffect(() => {
+            const useDevBypass = canUseClientDevAuthBypass()
             const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
-            if (!siteKey) {
-                onVerifyRef.current(canUseClientDevAuthBypass() ? 'dev-bypass-token' : '')
+            if (useDevBypass || !siteKey) {
+                onVerifyRef.current(useDevBypass ? 'dev-bypass-token' : '')
                 return
             }
 
@@ -131,7 +134,7 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
             }
         }, [renderWidget])
 
-        return <div ref={containerRef} />
+        return <div ref={containerRef} className="auth-turnstile" />
     }
 )
 

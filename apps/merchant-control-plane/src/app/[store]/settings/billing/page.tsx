@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { Badge, Banner, Button, Card, CreditCard, EmptyState, FileText, IndianRupee, Table, Section, Skeleton, type TableColumn, useToast } from '@letbuyy/ui'
+import { Button, Table, Badge, Banner, Card, CreditCard, EmptyState, FileText, IndianRupee, Section, Skeleton, type TableColumn, useToast } from '@letbuyy/ui'
 import { formatUsLongDate, formatUsShortDate } from '@letbuyy/ui/formatting'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 

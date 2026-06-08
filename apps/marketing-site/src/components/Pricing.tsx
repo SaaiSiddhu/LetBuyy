@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { AlertCircle, Check, Minus } from '@letbuyy/ui'
+import { AlertCircle, Check, Minus, Table } from '@letbuyy/ui'
 import { getAccountsUrl } from '@/lib/public-urls'
 
 type PlanKey = 'free' | 'basic' | 'pro' | 'enterprise'
@@ -187,7 +187,7 @@ export default function Pricing() {
                         </p>
                     </div>
                     <div className="pricing-matrix-scroll">
-                        <table className="pricing-matrix-table">
+                        <Table tableClassName="pricing-matrix-table">
                             <thead>
                                 <tr>
                                     <th>Feature</th>
@@ -210,7 +210,7 @@ export default function Pricing() {
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
+                        </Table>
                     </div>
                 </div>
             </div>

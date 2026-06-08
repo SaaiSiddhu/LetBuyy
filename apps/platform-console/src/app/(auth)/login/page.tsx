@@ -1,4 +1,4 @@
-import { Mail, ShieldCheck } from '@letbuyy/ui';
+import { Button, Input, Mail, ShieldCheck } from '@letbuyy/ui';
 
 type LoginSearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -55,7 +55,9 @@ export default async function ConsoleLoginPage({ searchParams }: { searchParams:
 
                 {sent && (
                     <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
-                        Magic link sent to the allowlisted email.
+                        {devMagicLink && process.env.NODE_ENV !== 'production'
+                            ? 'Local development magic link generated. No email was sent.'
+                            : 'Magic link sent to the allowlisted email.'}
                     </div>
                 )}
 
@@ -79,7 +81,8 @@ export default async function ConsoleLoginPage({ searchParams }: { searchParams:
                         <label htmlFor="email" className="block text-sm font-medium text-zinc-300">
                             Email
                         </label>
-                        <input
+                        <Input
+                            unstyled
                             id="email"
                             name="email"
                             type="email"
@@ -89,13 +92,14 @@ export default async function ConsoleLoginPage({ searchParams }: { searchParams:
                             className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm text-zinc-100 outline-none focus:border-[var(--lb-color-primary)] focus:ring-2 focus:ring-[var(--lb-color-primary-subtle)]"
                         />
                     </div>
-                    <button
+                    <Button
+                        unstyled
                         type="submit"
                         className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[var(--lb-color-primary)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--lb-color-primary-hover)] active:bg-[var(--lb-color-primary-active)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lb-color-focus-ring)]"
                     >
                         <Mail size={16} />
                         Send magic link
-                    </button>
+                    </Button>
                 </form>
 
                 <p className="text-center text-xs text-zinc-600">

@@ -126,7 +126,7 @@ export function CheckoutExtensionHost({
                 <section
                     key={extension.id}
                     aria-label={extension.title}
-                    className="overflow-hidden rounded-xl border border-card bg-white/60 dark:bg-slate-950/40"
+                    className="overflow-hidden rounded-xl border border-card bg-[var(--lb-color-surface)]/60 dark:bg-slate-950/40"
                     data-checkout-extension-id={extension.id}
                     data-checkout-extension-handle={extension.handle}
                 >

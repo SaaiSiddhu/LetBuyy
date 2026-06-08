@@ -23,6 +23,7 @@ const expectedRoutes = [
     { method: 'get', path: '/:subdomain/theme-preview' },
     { method: 'get', path: '/:subdomain' },
     { method: 'get', path: '/:subdomain/status' },
+    { method: 'post', path: '/:subdomain/analytics/beacon' },
     { method: 'get', path: '/:subdomain/products' },
     { method: 'get', path: '/:subdomain/products/by-ids' },
     { method: 'get', path: '/:subdomain/products/:slug' },

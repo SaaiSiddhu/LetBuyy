@@ -263,11 +263,11 @@ export function getUrbanKicksDemoReviews(productId: string) {
 export function getUrbanKicksDemoStore(): StoreModel {
     const template = getDefaultStorefrontThemeTemplate('urban-kicks', {
         colors: {
-            primary: '#8B5CF6',
-            secondary: '#3B82F6',
-            accent: '#F59E0B',
-            background: '#FFFFFF',
-            text: '#1F2937',
+            primary: 'rgb(139 92 246)',
+            secondary: 'rgb(59 130 246)',
+            accent: 'rgb(245 158 11)',
+            background: 'rgb(255 255 255)',
+            text: 'rgb(31 41 55)',
         },
         fonts: {
             body: 'Inter',

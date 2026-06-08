@@ -65,6 +65,7 @@ export type {
   ShippingZone,
   SiteType,
   Store,
+  StoreAccessMode,
   StorePaymentConfig,
   StorePaymentSettings,
   StoreStatus,

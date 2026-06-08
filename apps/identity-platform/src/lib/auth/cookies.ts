@@ -2,8 +2,22 @@ import { cookies } from 'next/headers'
 import { SignJWT, jwtVerify } from 'jose'
 import { LETBUYY_MERCHANT_SESSION_COOKIE } from '@letbuyy/auth-core'
 
-const AUTH_SECRET = process.env.AUTH_SECRET || ''
-const secret = new TextEncoder().encode(AUTH_SECRET)
+/**
+ * Resolve the JWT signing key for the encrypted accounts cookie. SECURITY: never fall
+ * back to an empty/weak key — an empty key makes signed cookies forgeable while still
+ * "verifying". In production a missing/short AUTH_SECRET is a hard failure; in
+ * development a clearly-marked insecure key is used so local work needs no secrets.
+ */
+function getSigningKey(): Uint8Array {
+    const value = process.env.AUTH_SECRET?.trim() || ''
+    if (value.length < 16) {
+        if (process.env.NODE_ENV === 'production') {
+            throw new Error('AUTH_SECRET is missing or too short (min 16 chars); refusing to sign/verify with a weak key')
+        }
+        return new TextEncoder().encode('dev-only-insecure-auth-secret-set-AUTH_SECRET-in-prod')
+    }
+    return new TextEncoder().encode(value)
+}
 const PASSWORD_SET_INTENT_COOKIE = 'lb_password_set_intent'
 const PASSWORD_SET_INTENT_TTL_SECONDS = 15 * 60
 
@@ -17,11 +31,24 @@ export const COOKIE_NAMES = {
 } as const
 
 /**
- * In production, set cookies on the parent domain (.letbuyy.store)
- * so they are shared across all subdomains:
- *   accounts.letbuyy.store  (sets the cookie)
- *   admin.letbuyy.store     (reads the cookie)
- *   *.letbuyy.store         (any future subdomains)
+ * Platform (merchant/staff/partner) session realm.
+ *
+ * Two-domain split — see docs/governance/domain-topology-governance.md §3:
+ *   • Platform apps (accounts/admin/apps/themes/developer/console/team) share
+ *     this cookie via the parent domain, so one login at the accounts app is
+ *     valid across all of them (SSO).
+ *   • Storefronts use HOST-ONLY customer cookies in a separate realm
+ *     (apps/storefront-runtime/src/lib/session.ts — no `domain` attribute).
+ *     The two realms never share a cookie; that is the tenant-isolation guarantee.
+ *     NEVER set a parent-domain attribute on a storefront cookie.
+ *
+ * COOKIE_DOMAIN is env-driven so the realm activates at cutover WITHOUT a code
+ * change: it must always match the apex the platform apps are actually served
+ * from. Pre-split that is `.letbuyy.store` (current default). At cutover, when
+ * platform apps move to the control-plane apex, update COOKIE_DOMAIN in the
+ * secret store. Flipping it
+ * ahead of the DNS/Vercel move would break SSO (cookie scoped to a domain the
+ * apps aren't served from).
  */
 const COOKIE_DOMAIN =
     process.env.COOKIE_DOMAIN?.trim() || (process.env.NODE_ENV === 'production' ? '.letbuyy.store' : undefined)
@@ -145,7 +172,7 @@ async function encryptAccounts(accounts: AccountEntry[]): Promise<string> {
     return new SignJWT({ accounts })
         .setProtectedHeader({ alg: 'HS256' })
         .setExpirationTime('365d')
-        .sign(secret)
+        .sign(getSigningKey())
 }
 
 /**
@@ -153,7 +180,7 @@ async function encryptAccounts(accounts: AccountEntry[]): Promise<string> {
  */
 async function decryptAccounts(token: string): Promise<AccountEntry[]> {
     try {
-        const { payload } = await jwtVerify(token, secret)
+        const { payload } = await jwtVerify(token, getSigningKey())
         return (payload.accounts as AccountEntry[]) || []
     } catch {
         return []

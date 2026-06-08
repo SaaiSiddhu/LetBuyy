@@ -2,13 +2,14 @@
 
 import { useEffect, type MouseEvent } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Package, useToast } from '@letbuyy/ui';
+import { Button, Package, useToast } from '@letbuyy/ui';
 
 type InstallErrorCode = '' | 'missing_store' | 'purchase_required' | 'install_failed' | string;
 
 function installErrorMessage(error: InstallErrorCode) {
     if (error === 'purchase_required') return 'Purchase this theme before installing it.';
     if (error === 'missing_store') return 'Choose a store before installing.';
+    if (error === 'missing_confirmation') return 'Confirm the install impact before continuing.';
     if (error === 'install_failed') return 'Theme installation failed. Try another store or contact support.';
     return 'Theme installation could not be completed.';
 }
@@ -86,7 +87,7 @@ export function ThemeInstallSubmitButton() {
     };
 
     return (
-        <button
+        <Button unstyled
             type="submit"
             disabled={pending}
             onClick={handleClick}
@@ -94,6 +95,6 @@ export function ThemeInstallSubmitButton() {
         >
             <Package className="w-4 h-4" aria-hidden="true" />
             {pending ? 'Installing...' : 'Install Theme'}
-        </button>
+        </Button>
     );
 }

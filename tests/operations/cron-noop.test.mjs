@@ -24,24 +24,30 @@ test('scheduled dispatch performs a pending-work preflight before claims', () =>
   assert.match(gatewayIndex, /reason: 'no_pending_work'/);
 });
 
-test('scheduled dispatch does not enqueue routine completion events when idle', () => {
+test('scheduled dispatch only enqueues routine completion events after forward progress', () => {
   const noWorkIndex = indexOf('if (!pending.hasWork)');
   const completionIndex = indexOf("event_type: 'runtime.scheduled_dispatch.completed'");
   const hadWorkIndex = indexOf('const hadWork = scheduledDispatchHadWork(');
+  const forwardProgressIndex = indexOf('const hadForwardProgress =');
+  const enqueueIndex = indexOf('enqueueScheduledDispatchTriggers(env, completedDispatchTriggerInput)');
 
   assert.ok(noWorkIndex < hadWorkIndex, 'idle return must happen before work accounting');
-  assert.ok(hadWorkIndex < completionIndex, 'completion event must be gated by work accounting');
-  assert.match(gatewayIndex, /if \(hadWork\) \{/);
-  assert.match(gatewayIndex, /completion_event_enqueued: hadWork/);
+  assert.ok(hadWorkIndex < forwardProgressIndex, 'forward progress must be evaluated after work accounting');
+  assert.ok(forwardProgressIndex < completionIndex, 'completion payload must be built after forward progress accounting');
+  assert.ok(forwardProgressIndex < enqueueIndex, 'completion trigger enqueue must be gated by forward progress accounting');
+  assert.match(gatewayIndex, /if \(hadForwardProgress\) \{/);
+  assert.match(gatewayIndex, /completion_event_enqueued: hadForwardProgress/);
 });
 
-test('scheduled dispatch emits failure events separately from routine completion', () => {
-  assert.match(gatewayIndex, /event_type: 'runtime\.scheduled_dispatch\.failed'/);
-  assert.match(gatewayIndex, /scheduled\.outbox_dispatch\.failure_event/);
+test('scheduled dispatch logs failures without queue-trigger churn', () => {
+  assert.doesNotMatch(gatewayIndex, /event_type: 'runtime\.scheduled_dispatch\.failed'/);
+  assert.doesNotMatch(gatewayIndex, /scheduled\.outbox_dispatch\.failure_event/);
+  assert.match(gatewayIndex, /Scheduled outbox dispatch failed/);
+  assert.match(gatewayIndex, /console\.error\(JSON\.stringify\(\{/);
 });
 
-test('staging cron cadence is reduced while production remains one minute', () => {
-  assert.match(wrangler, /\[triggers\]\ncrons = \["\*\/5 \* \* \* \*"\]/);
-  assert.match(wrangler, /\[env\.staging\.triggers\]\ncrons = \["\*\/5 \* \* \* \*"\]/);
-  assert.match(wrangler, /\[env\.production\.triggers\]\ncrons = \["\*\/1 \* \* \* \*"\]/);
+test('default and staging cron are idle while production remains reduced cadence', () => {
+  assert.match(wrangler, /\[triggers\]\ncrons = \[\]/);
+  assert.match(wrangler, /\[env\.staging\.triggers\]\n# Beta free-tier: staging fully idled[\s\S]*?\ncrons = \[\]/);
+  assert.match(wrangler, /\[env\.production\.triggers\]\n# Beta free-tier:[^\n]*\ncrons = \["\*\/15 \* \* \* \*"\]/);
 });

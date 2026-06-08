@@ -3,15 +3,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import {
+import { Button, Input,
     ArrowLeft,
     Badge,
     Banner,
-    Button,
     Card,
     EmptyState,
     Image as ImageIcon,
-    Input,
     Package,
     Page,
     PageHeader,
@@ -196,7 +194,7 @@ function CheckboxControl({
 }) {
     return (
         <label className="flex items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-            <input
+            <Input unstyled
                 type="checkbox"
                 checked={checked}
                 disabled={disabled}
@@ -684,7 +682,7 @@ export default function AddProductPage() {
 
                     <Card>
                         <Section title="Media" description="Upload images that help shoppers inspect the product.">
-                            <input
+                            <Input unstyled
                                 ref={fileInputRef}
                                 type="file"
                                 accept="image/*"
@@ -906,14 +904,14 @@ export default function AddProductPage() {
                                                             className="inline-flex items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text)]"
                                                         >
                                                             {value}
-                                                            <button
+                                                            <Button unstyled
                                                                 type="button"
                                                                 className="text-[var(--lb-color-text-subdued)] hover:text-[var(--lb-color-critical)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
                                                                 onClick={() => removeValueFromOption(optionIndex, valueIndex)}
                                                                 aria-label={`Remove ${value}`}
                                                             >
                                                                 <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                                            </button>
+                                                            </Button>
                                                         </span>
                                                     ))}
                                                 </div>

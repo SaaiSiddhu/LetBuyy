@@ -31,10 +31,12 @@
   },
   "allowedDependencies": {
     "workspacePackages": [
+      "@letbuyy/billing-core",
       "@letbuyy/event-core",
       "@letbuyy/notification-core",
       "@letbuyy/orchestration",
       "@letbuyy/runtime-composition",
+      "@letbuyy/shared-types",
       "@letbuyy/infrastructure"
     ],
     "runtimeImports": []

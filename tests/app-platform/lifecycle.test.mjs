@@ -6,6 +6,7 @@ import vm from 'node:vm';
 import ts from 'typescript';
 
 const AUTH_CORE_SOURCE = 'packages/auth-core/src/index.ts';
+const AUTH_CORE_STOREFRONT_ACCESS_SOURCE = 'packages/auth-core/src/storefront-access.ts';
 const APP_ENGINE_SOURCE = 'packages/app-engine/src/index.ts';
 const WEBHOOK_DISPATCH_SOURCE = 'services/webhook-service/src/app-lifecycle-dispatch.ts';
 
@@ -69,10 +70,12 @@ function loadTypeScriptModule(sourcePath, requireMap) {
 
 const { z, zChain } = createZodStub();
 const customerSessionCore = loadTypeScriptModule('packages/auth-core/src/customer-session.ts', {});
+const storefrontAccessCore = loadTypeScriptModule(AUTH_CORE_STOREFRONT_ACCESS_SOURCE, {});
 const authCore = loadTypeScriptModule(AUTH_CORE_SOURCE, {
   zod: { z },
   '@letbuyy/shared-types': { EmailSchema: zChain },
   './customer-session': customerSessionCore,
+  './storefront-access': storefrontAccessCore,
 });
 const appEngine = loadTypeScriptModule(APP_ENGINE_SOURCE, {
   zod: { z },

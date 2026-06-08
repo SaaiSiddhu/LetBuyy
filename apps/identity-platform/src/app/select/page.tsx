@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
+import { BrandLogo } from '@/components/BrandLogo'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
 import { Badge, Banner, Button } from '@letbuyy/ui'
 
@@ -176,18 +177,18 @@ export default function SelectPage() {
     return (
         <main className="auth-container">
             <div className="auth-top-bar">
-                <button onClick={cycleLang} className="auth-lang-btn">
+                <Button unstyled onClick={cycleLang} className="auth-lang-btn">
                     {lang.toUpperCase()}
-                </button>
-                <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
+                </Button>
+                <Button unstyled onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
                     <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
-                </button>
+                </Button>
             </div>
 
             <div className="auth-card">
                 {/* Logo */}
                 <div className="auth-logo">
-                    <img src="/icons/app_icon.png" alt="LetBuyy" width={48} height={48} />
+                    <BrandLogo />
                 </div>
 
                 {initialLoading ? (
@@ -198,9 +199,9 @@ export default function SelectPage() {
                     <>
                         <h1 className="auth-title">Sign in to continue</h1>
                         <p className="auth-subtitle">Your session expired. Log in again to choose a site.</p>
-                        <button className="auth-btn-primary" onClick={() => { window.location.href = '/lookup' }}>
+                        <Button unstyled className="auth-btn-primary" onClick={() => { window.location.href = '/lookup' }}>
                             Log in
-                        </button>
+                        </Button>
                     </>
                 ) : (
                     <>
@@ -213,7 +214,7 @@ export default function SelectPage() {
 
                         <div className="auth-accounts-list">
                             {stores.map((store) => (
-                                <button
+                                <Button unstyled
                                     key={store.id}
                                     className="auth-account-item"
                                     onClick={() => handleSelectStore(store)}
@@ -233,7 +234,7 @@ export default function SelectPage() {
                                     <span className="auth-account-arrow">
                                         {loading === store.id ? t.opening : <AuthIcon name="arrow_forward" size={18} />}
                                     </span>
-                                </button>
+                                </Button>
                             ))}
                         </div>
 

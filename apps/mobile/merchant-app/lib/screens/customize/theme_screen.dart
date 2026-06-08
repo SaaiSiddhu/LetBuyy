@@ -8,6 +8,7 @@ import '../../models/store_model.dart';
 import '../../models/theme_editor_models.dart';
 import '../../services/theme_service.dart';
 import '../../theme/app_theme_colors.dart';
+import '../../widgets/shared/cached_merchant_image.dart';
 import '../main/store_main_screen.dart';
 import '../preview/live_preview_screen.dart';
 import 'theme_versions_screen.dart';
@@ -100,8 +101,11 @@ class _ThemeScreenState extends State<ThemeScreen> {
       await action();
       await _loadThemes();
       HapticFeedback.mediumImpact();
-    } catch (error) {
-      if (mounted) _showMessage('$error', isError: true);
+    } on ThemeDraftConflictException catch (error) {
+      if (mounted) _showMessage(error.toString(), isError: true);
+    } catch (_) {
+      if (mounted)
+        _showMessage('Theme action could not be completed.', isError: true);
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -508,7 +512,10 @@ class _ThemeScreenState extends State<ThemeScreen> {
       ),
       clipBehavior: Clip.antiAlias,
       child: theme.thumbnailUrl != null && theme.thumbnailUrl!.isNotEmpty
-          ? Image.network(theme.thumbnailUrl!, fit: BoxFit.cover)
+          ? CachedMerchantImage(
+              imageUrl: theme.thumbnailUrl!,
+              fit: BoxFit.cover,
+            )
           : Icon(Icons.web_rounded, color: colors.textSecondary),
     );
   }

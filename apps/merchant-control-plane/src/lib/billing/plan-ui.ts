@@ -49,11 +49,6 @@ function nullableStringField(record: Record<string, unknown>, key: string) {
     return typeof value === 'string' ? value : null
 }
 
-function numberField(record: Record<string, unknown>, key: string, fallback = 0) {
-    const value = record[key]
-    return typeof value === 'number' && Number.isFinite(value) ? value : fallback
-}
-
 function booleanField(record: Record<string, unknown>, key: string, fallback = false) {
     const value = record[key]
     return typeof value === 'boolean' ? value : fallback
@@ -127,7 +122,7 @@ export function toSubscriptionPlanView(plan: SubscriptionPlan): SubscriptionPlan
         is_popular: booleanField(record, 'is_popular'),
         price_monthly_inr: plan.price_monthly_inr,
         price_yearly_inr: plan.price_yearly_inr,
-        gmv_percentage: numberField(record, 'gmv_percentage'),
+        gmv_percentage: 0,
         promo_price_inr: plan.promo_price_inr || 0,
         promo_months: plan.promo_months || 0,
         promo_label: nullableStringField(record, 'promo_label'),

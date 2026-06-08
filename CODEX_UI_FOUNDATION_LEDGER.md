@@ -26,8 +26,8 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 16 | zero unit tests | U0 | DONE | `pnpm --filter @letbuyy/ui test` PASS: 10 RTL/jest-axe tests; `pnpm turbo test` PASS: 61 tasks. |
 | 17 | raw src distribution/no dist | U0.5 | DONE | `pnpm --filter @letbuyy/ui build` PASS; `dist/` emitted; `main` and `types` remain `./src/index.ts`. |
 | 18 | version 0.0.1/no semver/changelog | U8.3 | DONE | `@letbuyy/ui` package version bumped to `0.0.2` and `packages/typescript/ui/CHANGELOG.md` added; `pnpm --filter @letbuyy/ui build` PASS. |
-| 19 | duplicate DataTable and IndexTable | U4.1 | DONE | Added new unified `Table` with selection, saved views, chips, bulk actions, sorting, and responsive cards; kept `DataTable`/`IndexTable` exported and deprecated; `pnpm --filter @letbuyy/ui test` PASS: 23 tests. |
-| 20 | DataTable desktop-only | U4.1 | DONE | New `Table` includes mobile card rendering plus desktop table rendering; Storybook visual baseline added; `pnpm --filter @letbuyy/ui test:visual` PASS: 306 baselines. |
+| 19 | duplicate DataTable and IndexTable | U4.1 | DONE | Added new unified `Table` with selection, saved views, chips, bulk actions, sorting, and responsive cards; V1 kept `DataTable`/`IndexTable` exported and deprecated; V2-A5 removed them after app migration. |
+| 20 | Table desktop-only | U4.1 | DONE | New `Table` includes mobile card rendering plus desktop table rendering; Storybook visual baseline added; `pnpm --filter @letbuyy/ui test:visual` PASS: 306 baselines. |
 | 21 | no Drawer | U3.1 | DONE | Added focus-trapped `Drawer` with side/size variants and dismiss behavior; RTL + axe coverage in `pnpm --filter @letbuyy/ui test` PASS: 20 tests. |
 | 22 | no Dropdown/Menu | U3.1 | DONE | Added keyboard-roving `Dropdown` and `DropdownMenu` menu primitives; root `Menu` stays the existing icon export for back-compat; `pnpm turbo typecheck` PASS after collision check. |
 | 23 | no Popover | U3.1 | DONE | Added anchored `Popover` with trigger render prop, Escape/outside dismiss, and axe-clean coverage; `pnpm --filter @letbuyy/ui test` PASS. |
@@ -42,8 +42,8 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 32 | no Container primitive | U3.2 | DONE | Added `Container` with size and padding contracts; covered in U3 layout primitive test; `pnpm --filter @letbuyy/ui test` PASS. |
 | 33 | PageHeader raw buttons/anchors | U5.1 | DONE | PageHeader default actions now compose `Button` and keep old classes; RTL test covers primary button and secondary link behavior; `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines and zero U5 diffs. |
 | 34 | SaveBar raw buttons | U5.1 | DONE | SaveBar save/discard controls now compose `Button` with unchanged classes and callbacks; RTL/axe test PASS; visual regression PASS with 306 baselines. |
-| 35 | IndexTable raw controls | U5.1 | DONE | IndexTable saved-view, bulk, sort, select-all, row-select, and mobile Open controls now compose `Button`/`Checkbox`; RTL test covers selection, bulk action, and Open; visual regression PASS with 306 baselines. |
-| 36 | Pagination/DensityToggle/mobile Open raw buttons | U5.1 | DONE | Pagination and IndexTable mobile Open now compose `Button`; DensityToggle delegates through SegmentedControl whose options compose `Button`; RTL test covers pagination and visual regression PASS with 306 baselines. |
+| 35 | Table raw controls | U5.1 | DONE | Table saved-view, bulk, sort, select-all, row-select, and mobile Open controls now compose `Button`/`Checkbox`; RTL test covers selection, bulk action, and Open; visual regression PASS with 306 baselines. |
+| 36 | Pagination/DensityToggle/mobile Open raw buttons | U5.1 | DONE | Pagination and Table mobile Open now compose `Button`; DensityToggle delegates through SegmentedControl whose options compose `Button`; RTL test covers pagination and visual regression PASS with 306 baselines. |
 | 37 | cx lacks tailwind-merge | U6.3 | DONE | `cx()` now delegates conflict resolution to `tailwind-merge` with the same signature; RTL unit test proves `px-*` and `text-*` overrides resolve; `pnpm --filter @letbuyy/ui test` PASS. |
 | 38 | Button lacks as/asChild | U3/U5 | DONE | Added additive `Button` `as` and `asChild` support while preserving default button rendering; RTL tests cover anchor and cloned-child paths; `pnpm --filter @letbuyy/ui test` PASS. |
 | 39 | token CSS injected per root | U6.4 | DONE | `DesignSystemRoot` now routes token injection through a server-safe client boundary that dedupes nested roots; test asserts one token `<style>` for nested roots; repo `pnpm turbo build` PASS after fixing RSC context compatibility. |
@@ -66,11 +66,11 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 56 | inconsistent change-handler conventions | U4/U7 | SKIP | [SKIP — NEEDS HUMAN] Renaming existing handler props is breaking across consumers; record for U8 codemod/human migration. |
 | 57 | inconsistent size prop names | U4/U7 | SKIP | [SKIP — NEEDS HUMAN] Canonical size prop migration is breaking; record for U8 codemod/human migration. |
 | 58 | helperText vs description duplication | U4/U7 | SKIP | [SKIP — NEEDS HUMAN] Canonical helper/description prop migration is breaking; record for U8 codemod/human migration. |
-| 59 | danger vs critical vocab | U4.4 | DONE | `Badge variant="danger"` still normalizes to `critical`; canonical `critical` vocabulary documented in `BadgeProps` and `DEPRECATIONS.md`; RTL/axe test PASS. |
-| 60 | Text vs TextStyle overlap | U4.2 | DONE | `Text` now covers TextStyle variants; `TextStyle` delegates to `Text`, keeps old output, and is deprecated; RTL test verifies wrapper class/element compatibility. |
-| 61 | PageShell dead alias | U4.3 | DONE | `PageShell` remains exported and working with `@deprecated` tag pointing to `Page`; removal recorded as human-gated. |
-| 62 | PageActions alias | U4.3 | DONE | `PageActions` remains exported and working with `@deprecated` tag pointing to `PageHeaderActions`; removal recorded as human-gated. |
-| 63 | TableFilterBar alias | U4.3 | DONE | `TableFilterBar` remains exported and working with `@deprecated` tag pointing to `FilterBar`; removal recorded as human-gated. |
+| 59 | danger vs critical vocab | U4.4 | DONE | V1 normalized `Badge variant="danger"` to `critical`; V2-A5 removed the `danger` variant after app migration. |
+| 60 | Text vs Text overlap | U4.2 | DONE | `Text` now covers Text variants; `Text` delegates to `Text`, keeps old output, and is deprecated; RTL test verifies wrapper class/element compatibility. |
+| 61 | Page dead alias | U4.3 | DONE | `Page` remains exported and working with `@deprecated` tag pointing to `Page`; removal recorded as human-gated. |
+| 62 | PageHeaderActions alias | U4.3 | DONE | `PageHeaderActions` remains exported and working with `@deprecated` tag pointing to `PageHeaderActions`; removal recorded as human-gated. |
+| 63 | FilterBar alias | U4.3 | DONE | `FilterBar` remains exported and working with `@deprecated` tag pointing to `FilterBar`; removal recorded as human-gated. |
 | 64 | color alias sprawl | U2.3 | DONE | Added `ui-no-new-token-alias-validator.mjs` and `token-aliases.json`; `validate:aliases` PASS with 108 protected duplicate-value groups; alias removal recorded as human-gated. |
 | 65 | dual spacing names | U2.4 | DONE | Canonical numeric `--lb-space-*` scale documented in source while named spacing aliases keep emitting; token snapshot PASS with no removals. |
 | 66 | dual type scale | U2.4 | DONE | Canonical role-based type variables documented in source while heading aliases keep emitting; token snapshot PASS with no removals. |
@@ -82,7 +82,7 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 72 | three theme selectors | U6 | DONE | Token CSS now emits compatible selectors for `data-letbuyy-theme`, `data-theme`, and surface-scoped descendants while preserving explicit light/dark and auto behavior; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
 | 73 | SpaceScale under-typed | U2/U7 | DONE | Exported `SpaceScale` from layout and extended it to include `8`; `pnpm --filter @letbuyy/ui typecheck` PASS. |
 | 74 | hover lift not reduced-motion gated | U7.1 | DONE | Token CSS now emits `@media (prefers-reduced-motion: reduce)` to zero motion duration/hover transform tokens and stop decorative empty-state animations; test asserts block exists. |
-| 75 | IndexTable lacks aria-selected | U7.1 | DONE | Desktop `IndexTable` rows now expose `aria-selected` based on selected checkbox state; RTL test asserts selected row state; `pnpm --filter @letbuyy/ui test` PASS. |
+| 75 | Table lacks aria-selected | U7.1 | DONE | Desktop `Table` rows now expose `aria-selected` based on selected checkbox state; RTL test asserts selected row state; `pnpm --filter @letbuyy/ui test` PASS. |
 | 76 | Combobox preventDefault blur hack | U7 | DONE | Removed option `onMouseDown(event.preventDefault())`; selection still passes keyboard/click tests through normal button activation; `pnpm --filter @letbuyy/ui test` PASS. |
 | 77 | Toast duration fixed | U7.1 | DONE | `ToastProvider` and `notify()` now support additive `duration` with default 5000ms unchanged and `null` for persistent toasts; fake-timer RTL test PASS. |
 | 78 | Toast placement fixed | U7.1 | DONE | `ToastProvider` and individual toast messages now support additive placements while default top-right remains unchanged; placement RTL test PASS. |
@@ -169,13 +169,13 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 
 | Symbol | Since | Replacement | Codemod | Removal |
 |---|---|---|---|---|
-| `DataTable` | `0.0.2` | `Table` | `packages/typescript/ui/codemods/data-table-to-table.cjs` | SKIP - breaking, needs cross-app migration |
-| `IndexTable` | `0.0.2` | `Table` | `packages/typescript/ui/codemods/index-table-to-table.cjs` | SKIP - breaking, needs cross-app migration |
-| `TextStyle` | `0.0.2` | `Text` | `packages/typescript/ui/codemods/text-style-to-text.cjs` | SKIP - breaking, needs cross-app migration |
-| `PageShell` | `0.0.2` | `Page` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` | SKIP - breaking, needs cross-app migration |
-| `PageActions` | `0.0.2` | `PageHeaderActions` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` | SKIP - breaking, needs cross-app migration |
-| `TableFilterBar` | `0.0.2` | `FilterBar` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` | SKIP - breaking, needs cross-app migration |
-| `Badge variant="danger"` | `0.0.2` | `Badge variant="critical"` | `packages/typescript/ui/codemods/badge-danger-to-critical.cjs` | SKIP - breaking, needs cross-app migration |
+| `DataTable` | `0.0.2` | `Table` | `packages/typescript/ui/codemods/data-table-to-table.cjs` | Removed in V2-A5 for the 1.0 line after app migration |
+| `IndexTable` | `0.0.2` | `Table` | `packages/typescript/ui/codemods/index-table-to-table.cjs` | Removed in V2-A5 for the 1.0 line after app migration |
+| `TextStyle` | `0.0.2` | `Text` | `packages/typescript/ui/codemods/text-style-to-text.cjs` | Removed in V2-A5 for the 1.0 line after app migration |
+| `PageShell` | `0.0.2` | `Page` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` | Removed in V2-A5 for the 1.0 line after app migration |
+| `PageActions` | `0.0.2` | `PageHeaderActions` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` | Removed in V2-A5 for the 1.0 line after app migration |
+| `TableFilterBar` | `0.0.2` | `FilterBar` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` | Removed in V2-A5 for the 1.0 line after app migration |
+| `Badge variant="danger"` | `0.0.2` | `Badge variant="critical"` | `packages/typescript/ui/codemods/badge-danger-to-critical.cjs` | Removed in V2-A5 for the 1.0 line after app migration |
 | `LooseMaterialIconName` / arbitrary icon-name strings | `0.0.2` | `StrictMaterialIconName`, `materialIconName()`, `isMaterialIconName()` | Not planned; human review needed for unknown icon names | SKIP - breaking, needs icon-name audit |
 | Root preview helpers (`ColorSwatch`, `ColorPreviewBlock`, `ColorPreviewSurface`, `ColorPreviewButton`, `RadiusPreview`) | `0.0.2` | `@letbuyy/ui/preview` | Not needed; import-source migration only | SKIP - breaking, needs cross-app migration |
 
@@ -203,7 +203,7 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 
 ## BLOCKED
 
-None yet.
+- V2 dirty-tree lint blocker: untracked `apps/storefront-runtime/src/app/api/store-access/password/route.ts` fails `letbuyy-boundaries/no-new-next-api-route` during `pnpm lint`. The API gateway already contains `/v1/internal/store-access/verify`, and storefront middleware contains gate-cookie helpers, but removing/moving this untracked route would take over separate domain/access work. Evidence: `pnpm lint` fails only on this error; `pnpm --filter @letbuyy/storefront-runtime exec eslint --ignore-pattern 'src/app/api/store-access/password/route.ts'` PASS with 0 errors / 24 existing warnings. Disposition: BLOCKED until the domain/access stream removes, relocates, or authorizes the app-route exception.
 
 ## V2
 
@@ -220,9 +220,9 @@ None yet.
 |---|---|---|---|---|
 | V2-A1 | Brand purple primary CTA, AA contrast, visual diff | A | DONE | `pnpm --filter @letbuyy/ui test` PASS (36 tests); `pnpm --filter @letbuyy/ui validate:ui` PASS (340 exports, 349 vars, 109 alias groups); `pnpm --filter @letbuyy/ui build` PASS; `pnpm --filter @letbuyy/ui test:visual:update` PASS (312 real baselines captured after HTTP harness fix); `pnpm --filter @letbuyy/ui test:visual` PASS (312 baselines checked); contact sheet: `packages/typescript/ui/storybook-screenshots/v2-a1-primary-button-before-after.png`; white text contrast after A1: normal `#6D28D9` = 7.10:1, hover `#5B21B6` = 8.98:1, active `#4C1D95` = 10.95:1. |
 | V2-A2 | Run V1 codemods across all consumers | A | DONE | App migrations committed app-by-app: `d00d9bdf refactor(platform-console): adopt unified ui table`, `a83a5eb8 refactor(platform-operations-portal): adopt unified ui table`, `206c4321 refactor(merchant-control-plane): adopt unified ui table`; supporting UI API fix: `551c17c0 fix(ui): relax table row typing`. Evidence: `pnpm --filter @letbuyy/platform-console typecheck` PASS, `pnpm --filter @letbuyy/platform-console lint` PASS, `pnpm --filter @letbuyy/platform-console build` PASS under escalated Turbopack permissions; `pnpm --filter @letbuyy/platform-operations-portal typecheck` PASS, `lint` PASS, `build` PASS under escalation; `pnpm --filter @letbuyy/merchant-control-plane typecheck` PASS, `lint` PASS with 0 errors / 6 pre-existing warnings, `build` PASS under escalation. Repo scan after migrations: no exact `DataTable`/`IndexTable`/`TextStyle`/`PageShell`/`PageActions`/`TableFilterBar`/`Badge variant="danger"` matches in `apps/**/*.ts(x)`; token-alias scan returned 0 matches. |
-| V2-A3 | Enable UI eslint fence and migrate raw element / hardcoded hex bypass | A | TODO | |
-| V2-A4 | Wrap marketing-site in `DesignSystemRoot` | A | TODO | |
-| V2-A5 | Remove deprecated duplicate exports and collapse token aliases after migration | A | TODO | |
+| V2-A3 | Enable UI eslint fence and migrate raw element / hardcoded hex bypass | A | DONE | UI eslint rules enabled at `error` in all nine web app lint configs; raw JSX element scan returned 0 matches; app TS/TSX/CSS/SCSS hex scan returned 0 matches; `pnpm --filter @letbuyy/ui validate:ui` PASS; `pnpm turbo typecheck` PASS (59 tasks). `pnpm lint` is blocked only by untracked dirty-tree `apps/storefront-runtime/src/app/api/store-access/password/route.ts` route-boundary error; excluding that untracked file, storefront eslint PASS with 0 errors / 24 existing warnings. |
+| V2-A4 | Wrap marketing-site in `DesignSystemRoot` | A | DONE | `apps/marketing-site/src/app/layout.tsx` wraps the existing `ThemeProvider` in `<DesignSystemRoot surface="storefront" theme="auto">`; `pnpm --filter @letbuyy/marketing-site typecheck` PASS; `pnpm --filter @letbuyy/marketing-site lint` PASS with 0 errors / 1 existing warning; `env NEXT_PUBLIC_MARKETING_URL=https://letbuyy.com pnpm --filter @letbuyy/marketing-site build` PASS under escalated Turbopack permissions. |
+| V2-A5 | Remove deprecated duplicate exports and collapse token aliases after migration | A | DONE | Removed root exports/source shims for `DataTable`, `IndexTable`, `TextStyle`, `PageShell`, `PageActions`, `TableFilterBar`, root preview helpers, and `Badge variant="danger"`; deleted unexported legacy `data-table.tsx` and `visual.tsx`; removed deprecated token aliases from emitted token variables; refreshed snapshots (`337` public exports, `338` token vars, `109` alias groups); `pnpm --filter @letbuyy/ui validate:ui` PASS; `pnpm --filter @letbuyy/ui build` PASS; `pnpm turbo typecheck` PASS (59 tasks); precise app/source/snapshot scans returned 0 removed-symbol and removed-alias matches; `apps/storefront-runtime/src/components/ui` is absent. |
 | V2-A6 | Distribute from `dist`, fold UI validators into root governance, CODEOWNERS, CI gates, `@letbuyy/ui@1.0.0` | A | TODO | |
 | V2-B1 | Multi-brand white-label surfaces and contrast guardrails | B | TODO | |
 | V2-B2 | RTL/bidi and locale-aware i18n / multi-currency formatting | B | TODO | |

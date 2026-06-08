@@ -1,11 +1,21 @@
 import 'server-only';
 import { createThemeMarketplaceApiClient } from '@/lib/api/client';
 import type {
+    ThemeDeveloperListingInput,
+    ThemeDownloadGroup,
+    ThemeMarketplaceSettings,
+    ThemeMarketplaceSettingsInput,
+    ThemePreviewSessionResult,
     ThemePurchaseOrderInput,
     ThemePurchaseOrderResult,
+    ThemePurchaseReceipt,
+    ThemeReviewCreateInput,
+    ThemeReviewListResult,
+    ThemeSavedSearchInput,
     ThemePurchaseVerifyInput,
     ThemePurchaseVerifyResult,
 } from '@letbuyy/api-client';
+import type { AuthSessionUser } from '@letbuyy/shared-types';
 import type { ThemeSearchFilters, ThemeSearchResult } from '@letbuyy/theme-engine';
 
 export class MarketplaceUnavailableError extends Error {
@@ -55,6 +65,11 @@ export const ThemeService = {
         appendIfPresent(query, 'site_type', filters.siteType);
         appendIfPresent(query, 'industry', filters.industry);
         appendIfPresent(query, 'search', filters.search);
+        appendIfPresent(query, 'layout', filters.layout);
+        appendIfPresent(query, 'tag', filters.tag);
+        appendIfPresent(query, 'feature', filters.feature);
+        appendIfPresent(query, 'price_min', filters.priceMin);
+        appendIfPresent(query, 'price_max', filters.priceMax);
 
         try {
             const catalog = await api.themes.listCatalog(Object.fromEntries(query.entries()));
@@ -79,6 +94,16 @@ export const ThemeService = {
         return api.themes.get(slug).then((theme) => theme as Record<string, unknown>).catch(() => null);
     },
 
+    async getSessionUser(): Promise<AuthSessionUser | null> {
+        const api = await getThemeApi();
+        if (!api) return null;
+
+        const session = await api.auth.session().catch(() => null);
+        if (!session || !session.authenticated || !session.user) return null;
+
+        return session.user;
+    },
+
     async uploadThemePackage(bundle: Record<string, unknown>): Promise<Record<string, unknown>> {
         const api = await getThemeApi(true);
         if (!api) {
@@ -88,30 +113,25 @@ export const ThemeService = {
         return api.themes.uploadPackage({ bundle }).then((result) => result as unknown as Record<string, unknown>);
     },
 
-    async getThemeReviews(themeId: string) {
-        const purchases = await this.getUserPurchases();
-        const purchasedTheme = purchases.find((purchase) => {
-            const theme = purchase.themes as Record<string, unknown> | undefined;
-            return theme?.id === themeId;
-        });
-        const theme = purchasedTheme?.themes as { reviews?: Record<string, unknown>[] } | undefined;
-
-        return { reviews: theme?.reviews || [], total: theme?.reviews?.length || 0 };
-    },
-
-    async hasUserPurchased(_userId: string, themeId: string): Promise<boolean> {
-        const purchases = await this.getUserPurchases();
-        return purchases.some((purchase) => {
-            const theme = purchase.themes as Record<string, unknown> | undefined;
-            return theme?.id === themeId && purchase.status === 'completed';
-        });
-    },
-
-    async getUserPurchases(_userId?: string): Promise<Record<string, unknown>[]> {
+    async getUserPurchases(): Promise<Record<string, unknown>[]> {
         const api = await getThemeApi(true);
         if (!api) return [];
 
         return api.themes.purchases().catch(() => []);
+    },
+
+    async getThemeDownloads(): Promise<ThemeDownloadGroup[]> {
+        const api = await getThemeApi(true);
+        if (!api) return [];
+
+        return api.themes.downloads().catch(() => []);
+    },
+
+    async getThemeReceipt(purchaseId: string): Promise<(ThemePurchaseReceipt & Record<string, unknown>) | null> {
+        const api = await getThemeApi(true);
+        if (!api) return null;
+
+        return api.themes.receipt(purchaseId).then((receipt) => receipt as ThemePurchaseReceipt & Record<string, unknown>).catch(() => null);
     },
 
     async getUserInstallations(): Promise<Record<string, unknown>[]> {
@@ -129,7 +149,7 @@ export const ThemeService = {
         return stores?.data as Record<string, unknown>[] || [];
     },
 
-    async installTheme(slug: string, storeId: string): Promise<Record<string, unknown>> {
+    async installTheme(slug: string, storeId: string, configOverrides: Record<string, unknown> = {}): Promise<Record<string, unknown>> {
         const api = await getThemeApi(true);
         if (!api) {
             throw new Error('Authentication required');
@@ -137,8 +157,40 @@ export const ThemeService = {
 
         return api.themes.install(slug, {
             store_id: storeId,
-            config_overrides: {},
+            config_overrides: configOverrides,
         }).then((result) => result as unknown as Record<string, unknown>);
+    },
+
+    async getThemeReleases(slug: string, storeId: string): Promise<Record<string, unknown>[]> {
+        const api = await getThemeApi(true);
+        if (!api) return [];
+
+        return api.themes.releases(slug, storeId).then((releases) => releases as unknown as Record<string, unknown>[]).catch(() => []);
+    },
+
+    async rollbackThemeRelease(slug: string, storeId: string, releaseId: string): Promise<Record<string, unknown>> {
+        const api = await getThemeApi(true);
+        if (!api) {
+            throw new Error('Authentication required');
+        }
+
+        return api.themes.rollbackRelease(slug, releaseId, {
+            store_id: storeId,
+            make_store_live: true,
+            rollback_message: 'Marketplace rollback',
+        }).then((result) => result as unknown as Record<string, unknown>);
+    },
+
+    async createThemePreviewSession(slug: string, storeId: string): Promise<ThemePreviewSessionResult> {
+        const api = await getThemeApi(true);
+        if (!api) {
+            throw new Error('Authentication required');
+        }
+
+        return api.themes.previewSession(slug, {
+            store_id: storeId,
+            ttl_seconds: 900,
+        });
     },
 
     async createThemePurchase(slug: string, input: ThemePurchaseOrderInput): Promise<ThemePurchaseOrderResult> {
@@ -157,6 +209,125 @@ export const ThemeService = {
         }
 
         return api.themes.verifyPurchase(slug, input as ThemePurchaseVerifyInput);
+    },
+
+    async getThemeReviews(slug: string): Promise<ThemeReviewListResult> {
+        const api = await getThemeApi();
+        if (!api) {
+            return {
+                reviews: [],
+                summary: { average: 0, total: 0, distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 } },
+            };
+        }
+
+        return api.themes.reviews(slug).catch(() => ({
+            reviews: [],
+            summary: { average: 0, total: 0, distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 } },
+        }));
+    },
+
+    async createThemeReview(slug: string, input: ThemeReviewCreateInput): Promise<Record<string, unknown>> {
+        const api = await getThemeApi(true);
+        if (!api) {
+            throw new Error('Authentication required');
+        }
+
+        return api.themes.createReview(slug, input).then((review) => review as Record<string, unknown>);
+    },
+
+    async createSavedSearch(input: ThemeSavedSearchInput): Promise<Record<string, unknown>> {
+        const api = await getThemeApi(true);
+        if (!api) {
+            throw new Error('Authentication required');
+        }
+
+        return api.themes.createSavedSearch(input).then((savedSearch) => savedSearch as Record<string, unknown>);
+    },
+
+    async reportTheme(slug: string, input: { reason: string; details?: string }): Promise<Record<string, unknown>> {
+        const api = await getThemeApi(true);
+        if (!api) {
+            throw new Error('Authentication required');
+        }
+
+        return api.themes.report(slug, input).then((report) => report as Record<string, unknown>);
+    },
+
+    async requestThemeRefund(slug: string, input: { purchase_id: string; reason?: string }): Promise<Record<string, unknown>> {
+        const api = await getThemeApi(true);
+        if (!api) {
+            throw new Error('Authentication required');
+        }
+
+        return api.themes.refund(slug, input).then((refund) => refund as Record<string, unknown>);
+    },
+
+    async getMarketplaceSettings(): Promise<ThemeMarketplaceSettings | null> {
+        const api = await getThemeApi(true);
+        if (!api) return null;
+
+        return api.themes.settings().catch(() => null);
+    },
+
+    async updateMarketplaceSettings(input: ThemeMarketplaceSettingsInput): Promise<ThemeMarketplaceSettings> {
+        const api = await getThemeApi(true);
+        if (!api) {
+            throw new Error('Authentication required');
+        }
+
+        return api.themes.updateSettings(input);
+    },
+
+    async createDeveloperListing(input: ThemeDeveloperListingInput): Promise<Record<string, unknown>> {
+        const api = await getThemeApi(true);
+        if (!api) {
+            throw new Error('Authentication required');
+        }
+
+        return api.themes.createDeveloperListing(input).then((listing) => listing as Record<string, unknown>);
+    },
+
+    async getDeveloperDashboard(): Promise<Record<string, unknown> | null> {
+        const api = await getThemeApi(true);
+        if (!api) return null;
+
+        return api.themes.developerDashboard().then((dashboard) => dashboard as Record<string, unknown>).catch(() => null);
+    },
+
+    async getCollections(): Promise<Record<string, unknown>[]> {
+        const api = await getThemeApi();
+        if (!api) return [];
+
+        return api.themes.collections().then((collections) => collections as Record<string, unknown>[]).catch(() => []);
+    },
+
+    async getThemeSuggestions(query: string): Promise<{ themes: string[]; tags: string[]; industries: string[]; features: string[] }> {
+        const api = await getThemeApi();
+        if (!api || !query.trim()) return { themes: [], tags: [], industries: [], features: [] };
+
+        const suggestions = await api.themes.suggestions(query).catch(() => null);
+        if (!suggestions) return { themes: [], tags: [], industries: [], features: [] };
+
+        return {
+            themes: suggestions.themes.map((theme) => theme.name).filter(Boolean),
+            tags: suggestions.tags,
+            industries: suggestions.industries,
+            features: suggestions.features,
+        };
+    },
+
+    async getCollection(slug: string): Promise<Record<string, unknown> | null> {
+        const api = await getThemeApi();
+        if (!api) return null;
+
+        return api.themes.collection(slug).then((collection) => collection as Record<string, unknown>).catch(() => null);
+    },
+
+    async getAuthor(handle: string): Promise<Record<string, unknown> | null> {
+        const api = await getThemeApi();
+        if (!api) return null;
+
+        return api.themes.author(handle).then((author) => author as Record<string, unknown>).catch(() => null);
     },
 
     async getCategories(): Promise<string[]> {

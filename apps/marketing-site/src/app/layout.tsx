@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { getMarketingSiteUrl } from "@/lib/public-urls";
+import { getMarketingSiteUrl, getSupportEmail } from "@/lib/public-urls";
+import { DesignSystemRoot } from "@letbuyy/ui";
 
 const letbuyySans = localFont({
   src: "../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
@@ -28,10 +29,28 @@ const letbuyyMono = localFont({
 const fontVariables = `${letbuyySans.variable} ${letbuyyDisplay.variable} ${letbuyyMono.variable}`;
 
 const siteUrl = getMarketingSiteUrl();
+const supportEmail = getSupportEmail();
 const siteTitle = "LetBuyy - India-first commerce operating system";
 const siteDescription =
   "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.";
-const socialImage = "/icons/letbuyy-logo-light.svg";
+const socialImage = "/og/letbuyy-default.png";
+const logoImage = "/icons/letbuyy-logo-512.png";
+
+// ── Entity identity ─────────────────────────────────────────────────────────
+// Single place to wire LetBuyy's authoritative external profiles. Fill each in as
+// you create it (Steps 1, 3 & 4 of docs/seo/LETBUYY_ENTITY_AND_SEO_MASTER_PLAYBOOK.md
+// → "Entity Data Sheet"). Empty entries are filtered out, so it is safe to ship
+// with these blank — nothing fabricated is published.
+const BRAND_SAME_AS = [
+  "", // https://www.wikidata.org/wiki/Q……               (Step 1 — Wikidata)
+  "", // https://www.crunchbase.com/organization/letbuyy   (Step 1 — Crunchbase)
+  "", // https://www.linkedin.com/company/letbuyy
+  "", // https://www.instagram.com/letbuyy
+  "", // https://x.com/letbuyy
+  "", // https://www.youtube.com/@letbuyy
+].filter(Boolean);
+const FOUNDER_NAME = ""; // TODO — legal name to publish (fixes the "wrong CEO" hallucination)
+const FOUNDING_YEAR = ""; // TODO — e.g. "2025"
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -85,9 +104,9 @@ export const metadata: Metadata = {
     images: [
       {
         url: socialImage,
-        width: 680,
-        height: 220,
-        alt: "LetBuyy commerce operating system",
+        width: 1200,
+        height: 630,
+        alt: "LetBuyy — India-first commerce operating system",
       },
     ],
   },
@@ -99,35 +118,74 @@ export const metadata: Metadata = {
   },
 };
 
+const orgId = `${siteUrl}/#organization`;
+const websiteId = `${siteUrl}/#website`;
+
+const organizationNode = {
+  "@type": "Organization",
+  "@id": orgId,
+  name: "LetBuyy",
+  legalName: "LetBuyy",
+  // Alternate SPELLINGS of our own name only — never a competitor's, which would
+  // tell Google the two are the same entity (the opposite of disambiguation).
+  alternateName: ["Let Buyy", "Letbuyy", "LetBuyy Commerce"],
+  url: siteUrl,
+  logo: {
+    "@type": "ImageObject",
+    url: `${siteUrl}${logoImage}`,
+    width: 512,
+    height: 512,
+  },
+  image: `${siteUrl}${socialImage}`,
+  description: siteDescription,
+  slogan: "India-first commerce operating system",
+  email: supportEmail,
+  foundingLocation: { "@type": "Country", name: "India" },
+  areaServed: { "@type": "Country", name: "India" },
+  knowsLanguage: ["en", "hi"],
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    email: supportEmail,
+    areaServed: "IN",
+    availableLanguage: ["en", "hi"],
+  },
+  ...(FOUNDER_NAME
+    ? { founder: { "@type": "Person", name: FOUNDER_NAME, jobTitle: "Founder & CEO" } }
+    : {}),
+  ...(FOUNDING_YEAR ? { foundingDate: FOUNDING_YEAR } : {}),
+  ...(BRAND_SAME_AS.length ? { sameAs: BRAND_SAME_AS } : {}),
+};
+
+const websiteNode = {
+  "@type": "WebSite",
+  "@id": websiteId,
+  name: "LetBuyy",
+  url: siteUrl,
+  inLanguage: "en-IN",
+  publisher: { "@id": orgId },
+};
+
+const softwareNode = {
+  "@type": "SoftwareApplication",
+  name: "LetBuyy",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  url: siteUrl,
+  description: siteDescription,
+  publisher: { "@id": orgId },
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "INR",
+    description: "Free launch tier available; paid plan pricing requires human approval.",
+  },
+};
+
 const structuredData = [
   {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "LetBuyy",
-    url: siteUrl,
-    logo: `${siteUrl}${socialImage}`,
-    sameAs: ["https://letbuyy.store"],
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "LetBuyy",
-    url: siteUrl,
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: "LetBuyy",
-    applicationCategory: "BusinessApplication",
-    operatingSystem: "Web",
-    url: siteUrl,
-    description: siteDescription,
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "INR",
-      description: "Free launch tier available; paid plan pricing requires human approval.",
-    },
+    "@graph": [organizationNode, websiteNode, softwareNode],
   },
 ];
 
@@ -162,9 +220,11 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+        <DesignSystemRoot surface="storefront" theme="auto">
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
+        </DesignSystemRoot>
       </body>
     </html>
   );

@@ -162,29 +162,17 @@ class WizardContainer extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
       elevation: 6,
-      itemBuilder: (context) => [
-        _buildLanguageItem(
-          AppLanguage.english,
-          'English',
-          '🇬🇧',
-          langService,
-          isDark,
-        ),
-        _buildLanguageItem(
-          AppLanguage.tamil,
-          'தமிழ்',
-          '🇮🇳',
-          langService,
-          isDark,
-        ),
-        _buildLanguageItem(
-          AppLanguage.hindi,
-          'हिंदी',
-          '🇮🇳',
-          langService,
-          isDark,
-        ),
-      ],
+      itemBuilder: (context) => AppLanguage.values
+          .map(
+            (language) => _buildLanguageItem(
+              language,
+              langService.languageNameFor(language),
+              langService.languageFlagFor(language),
+              langService,
+              isDark,
+            ),
+          )
+          .toList(growable: false),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(

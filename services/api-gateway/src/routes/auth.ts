@@ -6,9 +6,9 @@ import {
 } from '@letbuyy/infrastructure/supabase-adapter';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import { resolveCustomUser } from '../lib/auth-user';
-import { bytesToHex, verifyInternalAppRequest } from '../lib/internal-auth';
-import { dbErrorBody, errorBody, getSupabaseAdmin } from '../lib/supabase';
-import { authMiddleware } from '../middleware/auth';
+import { verifyLetbuyyInternalSessionHeaders } from '@letbuyy/auth-core';
+import { bytesToHex, getInternalAuthSecret, verifyInternalAppRequest } from '../lib/internal-auth';
+import { dbErrorBody, errorBody, getSupabaseAdmin, shouldReturnEmptyForMissingLocalSchema } from '../lib/supabase';
 import { checkRateLimitKey } from '../middleware/rateLimit';
 import { validate } from '../middleware/validation';
 import { hashMerchantPassword, verifyMerchantPassword } from '../lib/merchant-password';
@@ -46,12 +46,63 @@ const AUTH_RATE_LIMITS = {
 } as const;
 const PASSWORD_SET_INTENT_TTL_SECONDS = 15 * 60;
 
+type LocalAuthUser = {
+    id: string;
+    email: string;
+    email_verified: boolean;
+    full_name: string | null;
+    avatar_url: string | null;
+    password_hash?: string | null;
+};
+
+type LocalAuthToken = {
+    id: string;
+    email: string;
+    user_id: string | null;
+    token: string;
+    type: AuthTokenType;
+    expires_at: string;
+    used: boolean;
+};
+
+type LocalPasswordSetIntent = {
+    id: string;
+    user_id: string;
+    email: string;
+    expires_at: string;
+    used_at: string | null;
+};
+
+type LocalAuthSession = {
+    token: string;
+    user_id: string;
+    device_id: string | null;
+    expires_at: string;
+};
+
+const localAuthUsersByEmail = new Map<string, LocalAuthUser>();
+const localAuthTokens = new Map<string, LocalAuthToken>();
+const localPasswordSetIntents = new Map<string, LocalPasswordSetIntent>();
+const localAuthSessions = new Map<string, LocalAuthSession>();
+
 async function requireAccountsInternal(c: Context<{ Bindings: import('../index').Env }>) {
     if (await verifyInternalAppRequest(c, 'accounts')) return null;
     return c.json({ error: { code: 'UNAUTHORIZED', message: 'Invalid internal auth signature' } }, 401);
 }
 
 function isLocalAuthRuntime(c: Context<{ Bindings: import('../index').Env }>): boolean {
+    const hostname = (() => {
+        try {
+            return new URL(c.req.url).hostname.toLowerCase();
+        } catch {
+            return '';
+        }
+    })();
+
+    if (['localhost', '127.0.0.1', '[::1]', '::1'].includes(hostname)) {
+        return true;
+    }
+
     return ['local', 'development'].includes(String(c.env.ENVIRONMENT || '').toLowerCase())
         || ['local', 'development'].includes(String(c.env.APP_ENV || '').toLowerCase())
         || String(c.env.NODE_ENV || '').toLowerCase() === 'development';
@@ -88,6 +139,81 @@ function randomOtp(): string {
     return (100000 + (bytes[0] % 900000)).toString();
 }
 
+async function localAuthUuid(seed: string): Promise<string> {
+    const digest = await crypto.subtle.digest(
+        'SHA-256',
+        new TextEncoder().encode(`letbuyy-local-auth:${seed}`)
+    );
+    const hex = bytesToHex(digest);
+    const variant = ((parseInt(hex.slice(16, 18), 16) & 0x3f) | 0x80)
+        .toString(16)
+        .padStart(2, '0');
+
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-${variant}${hex.slice(18, 20)}-${hex.slice(20, 32)}`;
+}
+
+async function getOrCreateLocalAuthUser(email: string, emailVerified = false): Promise<LocalAuthUser> {
+    const existing = localAuthUsersByEmail.get(email);
+    if (existing) {
+        if (emailVerified && !existing.email_verified) existing.email_verified = true;
+        return existing;
+    }
+
+    const user: LocalAuthUser = {
+        id: await localAuthUuid(`user:${email}`),
+        email,
+        email_verified: emailVerified,
+        full_name: null,
+        avatar_url: null,
+        password_hash: null,
+    };
+    localAuthUsersByEmail.set(email, user);
+    return user;
+}
+
+function findLocalAuthUserById(userId: string): LocalAuthUser | null {
+    for (const user of localAuthUsersByEmail.values()) {
+        if (user.id === userId) return user;
+    }
+    return null;
+}
+
+function localAuthUserPayload(user: LocalAuthUser) {
+    return {
+        id: user.id,
+        email: user.email,
+        email_verified: user.email_verified,
+        full_name: user.full_name,
+        avatar_url: user.avatar_url,
+    };
+}
+
+function localAuthTokenKey(type: AuthTokenType, email: string, token: string): string {
+    return `${type}:${email}:${token}`;
+}
+
+async function createLocalPasswordSetIntent(userId: string, email: string): Promise<LocalPasswordSetIntent> {
+    const intent: LocalPasswordSetIntent = {
+        id: await localAuthUuid(`password-set-intent:${userId}:${email}:${randomHex(8)}`),
+        user_id: userId,
+        email,
+        expires_at: new Date(Date.now() + PASSWORD_SET_INTENT_TTL_SECONDS * 1000).toISOString(),
+        used_at: null,
+    };
+    localPasswordSetIntents.set(intent.id, intent);
+    return intent;
+}
+
+function consumeLocalPasswordSetIntent(intentId: string): LocalPasswordSetIntent | null {
+    const intent = localPasswordSetIntents.get(intentId);
+    if (!intent || intent.used_at || new Date(intent.expires_at).getTime() < Date.now()) {
+        return null;
+    }
+
+    intent.used_at = new Date().toISOString();
+    return intent;
+}
+
 async function getOrCreateDevice(db: ReturnType<typeof getSupabaseAdmin>, userId: string, fingerprint: string, userAgent: string) {
     const deviceName = parseAuthDeviceName(userAgent);
     const { data: existing } = await db
@@ -122,15 +248,96 @@ async function getOrCreateDevice(db: ReturnType<typeof getSupabaseAdmin>, userId
     return { device_id: device.id as string, is_new: true };
 }
 
-// GET /auth/custom/session — Validate LetBuyy opaque session token via worker auth middleware
-auth.get('/custom/session', authMiddleware, async (c) => {
-    const authContext = c.get('auth');
+function accountsPasswordResetUrl(c: Context<{ Bindings: import('../index').Env }>): string {
+    const rawDomain = c.env.LETBUYY_PLATFORM_DOMAIN
+        || c.env.NEXT_PUBLIC_PLATFORM_DOMAIN
+        || c.env.PLATFORM_ROOT_DOMAIN
+        || 'letbuyy.com';
+    const domain = rawDomain
+        .trim()
+        .replace(/^https?:\/\//, '')
+        .replace(/\/.*$/, '')
+        .replace(/^\.+|\.+$/g, '');
+    return `https://accounts.${domain || 'letbuyy.com'}/reset-password`;
+}
+
+// GET /auth/custom/session — Validate LetBuyy opaque session token from a signed
+// internal app boundary. Local Wrangler sessions can live in-memory when the
+// custom auth schema is absent.
+auth.get('/custom/session', async (c) => {
+    const secret = getInternalAuthSecret(c.env);
+    const sessionVerification = await verifyLetbuyyInternalSessionHeaders({
+        sessionToken: c.req.header('X-LetBuyy-Internal-Session-Token'),
+        timestamp: c.req.header('X-LetBuyy-Internal-Timestamp'),
+        signature: c.req.header('X-LetBuyy-Internal-Signature'),
+        secret,
+    });
+
+    if (!sessionVerification.accepted || !sessionVerification.token) {
+        return c.json({
+            error: {
+                code: 'UNAUTHORIZED',
+                message: sessionVerification.reason || 'Authentication required',
+            },
+        }, 401);
+    }
+
+    const token = sessionVerification.token;
+    const localSession = localAuthSessions.get(token);
+    if (localSession) {
+        if (new Date(localSession.expires_at).getTime() < Date.now()) {
+            localAuthSessions.delete(token);
+            return c.json({ authenticated: false }, 401);
+        }
+
+        const localUser = findLocalAuthUserById(localSession.user_id);
+        if (localUser) {
+            return c.json({
+                authenticated: true,
+                user: {
+                    id: localUser.id,
+                    email: localUser.email,
+                    fullName: localUser.full_name || null,
+                },
+                expires_at: localSession.expires_at,
+                devOnly: true,
+            });
+        }
+    }
+
     const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, authContext.user);
+    const { data: session, error: sessionError } = await db
+        .from('sessions')
+        .select('id, user_id, expires_at')
+        .eq('token', token)
+        .maybeSingle();
+
+    if (sessionError) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, sessionError)) {
+            return c.json({ authenticated: false, local_schema_missing: true, devOnly: true }, 401);
+        }
+        return c.json(dbErrorBody(), 500);
+    }
+
+    if (!session) {
+        return c.json({ authenticated: false }, 401);
+    }
+
+    if (new Date(session.expires_at).getTime() < Date.now()) {
+        await db.from('sessions').delete().eq('id', session.id);
+        return c.json({ authenticated: false }, 401);
+    }
+
+    const customUser = await resolveCustomUser(db, { id: session.user_id, email: '' });
 
     if (!customUser) {
         return c.json({ authenticated: false }, 401);
     }
+
+    await db
+        .from('sessions')
+        .update({ last_active: new Date().toISOString() })
+        .eq('id', session.id);
 
     return c.json({
         authenticated: true,
@@ -139,6 +346,7 @@ auth.get('/custom/session', authMiddleware, async (c) => {
             email: customUser.email,
             fullName: customUser.full_name || null,
         },
+        expires_at: session.expires_at,
     });
 });
 
@@ -160,6 +368,21 @@ auth.post('/custom/users/by-email', async (c) => {
         .maybeSingle();
 
     if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            const localUser = localAuthUsersByEmail.get(email);
+            if (!localUser) {
+                return c.json({ data: null, local_schema_missing: true });
+            }
+
+            return c.json({
+                data: {
+                    ...localAuthUserPayload(localUser),
+                    has_password: Boolean(localUser[MERCHANT_PASSWORD_HASH_COLUMN]),
+                },
+                local_schema_missing: true,
+                devOnly: true,
+            });
+        }
         return c.json(dbErrorBody(), 500);
     }
 
@@ -174,7 +397,7 @@ auth.post('/custom/users/by-email', async (c) => {
         full_name: string | null;
         avatar_url: string | null;
         [MERCHANT_PASSWORD_HASH_COLUMN]?: string | null;
-    };
+};
 
     return c.json({
         data: {
@@ -209,6 +432,29 @@ auth.post('/custom/users/authenticate', async (c) => {
         .maybeSingle();
 
     if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            const localUser = await getOrCreateLocalAuthUser(parsed.data.email);
+            if (!localUser.password_hash) {
+                return c.json({ error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' } }, 401);
+            }
+
+            const localPasswordMatches = await verifyMerchantPassword(password, localUser.password_hash);
+            if (!localPasswordMatches || !localUser.email_verified) {
+                return c.json({ error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' } }, 401);
+            }
+
+            return c.json({
+                data: {
+                    id: localUser.id,
+                    email: localUser.email,
+                    email_verified: localUser.email_verified,
+                    full_name: localUser.full_name,
+                    avatar_url: localUser.avatar_url,
+                },
+                local_schema_missing: true,
+                devOnly: true,
+            });
+        }
         return c.json(dbErrorBody(), 500);
     }
 
@@ -379,6 +625,9 @@ auth.post('/custom/users/first-store', async (c) => {
         .maybeSingle();
 
     if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            return c.json({ data: null, local_schema_missing: true, devOnly: true });
+        }
         return c.json(dbErrorBody(), 500);
     }
 
@@ -405,10 +654,11 @@ auth.post('/custom/subdomains/validate', async (c) => {
         .limit(1);
 
     if (error) {
-        return c.json(
-            { valid: false, reason: 'error', message: 'Unable to verify availability' },
-            500
-        );
+        return c.json({
+            valid: false,
+            reason: 'unverified',
+            message: 'Unable to verify availability right now',
+        });
     }
 
     if (data && data.length > 0) {
@@ -429,11 +679,19 @@ auth.post('/custom/users/ensure', async (c) => {
     }
 
     const db = getSupabaseAdmin(c);
-    const { data: existing } = await db
+    const { data: existing, error: existingError } = await db
         .from('users_custom')
         .select('id, email, email_verified, full_name, avatar_url')
         .eq('email', userPlan.email)
         .maybeSingle();
+
+    if (existingError) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, existingError)) {
+            const localUser = await getOrCreateLocalAuthUser(userPlan.email);
+            return c.json({ data: localAuthUserPayload(localUser), local_schema_missing: true, devOnly: true }, 201);
+        }
+        return c.json(dbErrorBody(), 500);
+    }
 
     if (existing) {
         const { data, error } = await db
@@ -444,6 +702,10 @@ auth.post('/custom/users/ensure', async (c) => {
             .single();
 
         if (error) {
+            if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+                const localUser = await getOrCreateLocalAuthUser(userPlan.email, Boolean(existing.email_verified));
+                return c.json({ data: localAuthUserPayload(localUser), local_schema_missing: true, devOnly: true });
+            }
             return c.json(dbErrorBody(), 500);
         }
         return c.json({ data });
@@ -456,6 +718,10 @@ auth.post('/custom/users/ensure', async (c) => {
         .single();
 
     if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            const localUser = await getOrCreateLocalAuthUser(userPlan.email);
+            return c.json({ data: localAuthUserPayload(localUser), local_schema_missing: true, devOnly: true }, 201);
+        }
         return c.json(dbErrorBody(), 500);
     }
 
@@ -477,6 +743,27 @@ auth.post('/custom/users/verify-email', async (c) => {
     const { data, error } = await query.select('id, email, full_name, avatar_url, email_verified').single();
 
     if (error || !data) {
+        if (error && shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            const email = body.email ? normalizeAuthEmail(body.email) : null;
+            const localUser = email
+                ? await getOrCreateLocalAuthUser(email, true)
+                : findLocalAuthUserById(String(body.user_id || ''));
+
+            if (localUser) {
+                localUser.email_verified = true;
+                return c.json({
+                    data: {
+                        id: localUser.id,
+                        email: localUser.email,
+                        full_name: localUser.full_name,
+                        avatar_url: localUser.avatar_url,
+                        email_verified: localUser.email_verified,
+                    },
+                    local_schema_missing: true,
+                    devOnly: true,
+                });
+            }
+        }
         return c.json(errorBody('NOT_FOUND', 'User not found'), 404);
     }
 
@@ -504,6 +791,14 @@ auth.post('/custom/password-set-intents/create', async (c) => {
         .maybeSingle();
 
     if (userError) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, userError)) {
+            const localUser = await getOrCreateLocalAuthUser(email, true);
+            if (localUser.id !== userId) {
+                return c.json(errorBody('NOT_FOUND', 'User not found'), 404);
+            }
+            const intent = await createLocalPasswordSetIntent(userId, email);
+            return c.json({ data: intent, local_schema_missing: true, devOnly: true }, 201);
+        }
         return c.json(dbErrorBody(), 500);
     }
 
@@ -536,6 +831,10 @@ auth.post('/custom/password-set-intents/create', async (c) => {
         .single();
 
     if (intentError || !intent) {
+        if (intentError && shouldReturnEmptyForMissingLocalSchema(c.env, intentError)) {
+            const localIntent = await createLocalPasswordSetIntent(userId, email);
+            return c.json({ data: localIntent, local_schema_missing: true, devOnly: true }, 201);
+        }
         return c.json(dbErrorBody(), 500);
     }
 
@@ -565,6 +864,13 @@ auth.post('/custom/password-set-intents/consume', async (c) => {
         .maybeSingle();
 
     if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            const localIntent = consumeLocalPasswordSetIntent(intentId);
+            if (localIntent) {
+                return c.json({ data: localIntent, local_schema_missing: true, devOnly: true });
+            }
+            return c.json(errorBody('FORBIDDEN', 'Password set intent is invalid or expired'), 403);
+        }
         return c.json(dbErrorBody(), 500);
     }
 
@@ -590,12 +896,34 @@ auth.post('/custom/users/set-password', async (c) => {
     }
 
     const db = getSupabaseAdmin(c);
-    const { data: user } = await db
+    const { data: user, error: userError } = await db
         .from('users_custom')
         .select('id, email, email_verified, full_name, avatar_url')
         .eq('id', userId)
         .eq('email', email)
         .maybeSingle();
+
+    if (userError) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, userError)) {
+            const localUser = await getOrCreateLocalAuthUser(email, true);
+            if (localUser.id !== userId) {
+                return c.json({ error: { code: 'NOT_FOUND', message: 'User not found' } }, 404);
+            }
+
+            localUser.password_hash = await hashMerchantPassword(password);
+            return c.json({
+                data: {
+                    id: localUser.id,
+                    email: localUser.email,
+                    full_name: localUser.full_name,
+                    avatar_url: localUser.avatar_url,
+                },
+                local_schema_missing: true,
+                devOnly: true,
+            });
+        }
+        return c.json(dbErrorBody(), 500);
+    }
 
     if (!user) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'User not found' } }, 404);
@@ -614,6 +942,20 @@ auth.post('/custom/users/set-password', async (c) => {
         .single();
 
     if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            const localUser = await getOrCreateLocalAuthUser(email, true);
+            localUser.password_hash = passwordHash;
+            return c.json({
+                data: {
+                    id: localUser.id,
+                    email: localUser.email,
+                    full_name: localUser.full_name,
+                    avatar_url: localUser.avatar_url,
+                },
+                local_schema_missing: true,
+                devOnly: true,
+            });
+        }
         return c.json(dbErrorBody(), 500);
     }
 
@@ -635,7 +977,17 @@ auth.post('/custom/devices/get-or-create', async (c) => {
     try {
         const device = await getOrCreateDevice(getSupabaseAdmin(c), userId, fingerprint, userAgent);
         return c.json({ data: device }, device.is_new ? 201 : 200);
-    } catch {
+    } catch (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            return c.json({
+                data: {
+                    device_id: await localAuthUuid(`device:${userId}:${fingerprint}`),
+                    is_new: false,
+                },
+                local_schema_missing: true,
+                devOnly: true,
+            }, 201);
+        }
         return c.json(dbErrorBody('Device registration failed'), 500);
     }
 });
@@ -659,6 +1011,9 @@ auth.post('/custom/devices/trusted', async (c) => {
         .maybeSingle();
 
     if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            return c.json({ data: { trusted: false }, local_schema_missing: true, devOnly: true });
+        }
         return c.json(dbErrorBody(), 500);
     }
 
@@ -687,6 +1042,23 @@ auth.post('/custom/sessions/create', async (c) => {
     });
 
     if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            localAuthSessions.set(token, {
+                token,
+                user_id: userId,
+                device_id: deviceId,
+                expires_at: expiresAt,
+            });
+
+            return c.json({
+                data: {
+                    token,
+                    expires_at: expiresAt,
+                },
+                local_schema_missing: true,
+                devOnly: true,
+            }, 201);
+        }
         return c.json(dbErrorBody(), 500);
     }
 
@@ -746,6 +1118,33 @@ auth.post('/custom/tokens/create', async (c) => {
     });
 
     if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            const userId = typeof body.user_id === 'string' && body.user_id
+                ? body.user_id
+                : (await getOrCreateLocalAuthUser(email)).id;
+            const localToken: LocalAuthToken = {
+                id: await localAuthUuid(`token:${type}:${email}:${token}`),
+                email,
+                user_id: userId,
+                token,
+                type,
+                expires_at: expiresAt,
+                used: false,
+            };
+
+            for (const storedToken of localAuthTokens.values()) {
+                if (storedToken.email === email && storedToken.type === type && !storedToken.used) {
+                    storedToken.used = true;
+                }
+            }
+            localAuthTokens.set(localAuthTokenKey(type, email, token), localToken);
+
+            return c.json({
+                data: { token, expires_at: expiresAt },
+                local_schema_missing: true,
+                devOnly: true,
+            }, 201);
+        }
         return c.json(dbErrorBody(), 500);
     }
 
@@ -772,7 +1171,24 @@ auth.post('/custom/tokens/validate', async (c) => {
         .eq('type', type);
     if (email) query = query.eq('email', email);
 
-    const { data } = await query.maybeSingle();
+    const { data, error } = await query.maybeSingle();
+    if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error) && email) {
+            const localToken = localAuthTokens.get(localAuthTokenKey(type, email, token));
+            if (!localToken || localToken.used || new Date(localToken.expires_at).getTime() < Date.now()) {
+                return c.json({ data: null });
+            }
+
+            localToken.used = true;
+            return c.json({
+                data: { email: localToken.email, user_id: localToken.user_id },
+                local_schema_missing: true,
+                devOnly: true,
+            });
+        }
+        return c.json(dbErrorBody(), 500);
+    }
+
     if (!data || data.used || new Date(data.expires_at).getTime() < Date.now()) {
         return c.json({ data: null });
     }
@@ -907,7 +1323,7 @@ auth.post('/password/reset', validate('json', PasswordResetRequestSchema), async
     const supabase = createSupabaseAnonClient(c.env);
 
     const { error } = await supabase.auth.resetPasswordForEmail(body.email, {
-        redirectTo: 'https://accounts.letbuyy.store/reset-password',
+        redirectTo: accountsPasswordResetUrl(c),
     });
 
     if (error) {

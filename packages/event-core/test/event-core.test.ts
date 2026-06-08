@@ -5,6 +5,8 @@ import {
   getDomainEventContract,
   parseDomainEventPayload,
   validateDomainEventEnvelope,
+  writeWithOutbox,
+  type OutboxWritableTransaction,
 } from '../src/index.ts';
 
 const ORDER_ID = '11111111-1111-4111-8111-111111111111';
@@ -53,4 +55,71 @@ test('payment event envelopes reject raw uncontracted or mismatched payloads', (
     () => parseDomainEventPayload('payment.captured', { provider: 'razorpay', order_id: ORDER_ID }),
     /provider_event_id/,
   );
+});
+
+test('V1 executable event catalog includes cart, checkout, settlement, notification, whatsapp, and audit contracts', () => {
+  for (const eventType of [
+    'cart.created',
+    'checkout.completed',
+    'inventory.reserved',
+    'shipment.delivered',
+    'settlement.recorded',
+    'notification.sent',
+    'wa.cod_confirmed',
+    'billing.charged',
+    'customer.dsr_requested',
+    'media.processed',
+    'audit.recorded',
+  ] as const) {
+    assert.ok(DOMAIN_EVENT_TYPES.includes(eventType));
+    assert.equal(getDomainEventContract(eventType)?.schemaVersion, 1);
+  }
+});
+
+test('writeWithOutbox validates the catalog and inserts one queued outbox row after domain work', async () => {
+  const inserts: Record<string, unknown>[] = [];
+  const tx: OutboxWritableTransaction = {
+    from(table) {
+      assert.equal(table, 'outbox_events');
+      return {
+        insert(row) {
+          inserts.push(row);
+          return {
+            select() {
+              return {
+                async single() {
+                  return { data: { id: 'outbox-1', event_type: row.event_type, status: row.status }, error: null };
+                },
+              };
+            },
+          };
+        },
+      };
+    },
+  };
+
+  const result = await writeWithOutbox(
+    tx,
+    async () => ({ id: 'domain-row-1' }),
+    {
+      event_id: 'evt_cart_created_001',
+      event_type: 'cart.created',
+      source_runtime: 'api-gateway',
+      site_id: '11111111-1111-4111-8111-111111111111',
+      aggregate_type: 'cart',
+      aggregate_id: '33333333-3333-4333-8333-333333333333',
+      payload: {
+        site_id: '11111111-1111-4111-8111-111111111111',
+        cart_id: '33333333-3333-4333-8333-333333333333',
+        channel: 'web',
+      },
+      idempotency_key: 'cart:created:33333333-3333-4333-8333-333333333333',
+    },
+  );
+
+  assert.deepEqual(result.result, { id: 'domain-row-1' });
+  assert.equal(result.outbox.status, 'queued');
+  assert.equal(inserts.length, 1);
+  assert.equal(inserts[0]?.site_id, '11111111-1111-4111-8111-111111111111');
+  assert.equal(inserts[0]?.event_type, 'cart.created');
 });

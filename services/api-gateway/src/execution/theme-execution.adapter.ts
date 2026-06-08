@@ -222,6 +222,10 @@ function listThemeTemplateOptions(templateConfig: DbRecord): Array<{ key: string
     });
 }
 
+export function isStaleThemeEditorBaseVersion(currentVersion: number, baseVersion: unknown): boolean {
+    return typeof baseVersion === 'number' && Number.isFinite(baseVersion) && currentVersion > baseVersion;
+}
+
 export class ThemeExecutionAdapter {
     static readonly applicationWorkflows = THEME_APPLICATION_WORKFLOWS;
     static readonly executionPipelines = THEME_EXECUTION_PIPELINES;
@@ -1176,7 +1180,7 @@ export class ThemeExecutionAdapter {
 
         const existingVersion = (existing?.version || 0);
 
-        if (input.base_version && existingVersion > input.base_version) {
+        if (isStaleThemeEditorBaseVersion(existingVersion, input.base_version)) {
             throw new ConflictError('Theme draft has changed in another session');
         }
 
@@ -1319,7 +1323,7 @@ export class ThemeExecutionAdapter {
         const draftRecord = await this.loadEditorDraft(input.store_id, theme.slug, templateKey);
         const draftVersion = draftRecord?.version || 0;
 
-        if (input.base_version && draftVersion > input.base_version) {
+        if (isStaleThemeEditorBaseVersion(draftVersion, input.base_version)) {
             throw new ConflictError('Theme draft has changed in another session');
         }
 

@@ -1,53 +1,55 @@
 import Link from 'next/link';
-import { ArrowRight, Sparkles, Zap, Smartphone, Lock, Globe, Code, ShoppingBag, Palette, FileText, Rocket, Star, Check, ChevronRight } from '@letbuyy/ui';
+import Image from 'next/image';
+import type { Theme } from '@letbuyy/theme-engine';
+import { ArrowRight, Sparkles, Zap, Smartphone, Lock, Globe, Code, ShoppingBag, Palette, FileText, Rocket, Check } from '@letbuyy/ui';
 import ThemeCard from '@/components/theme-card';
 import { ThemeService } from '@/lib/theme-service';
 import MarketplaceUnavailable from '@/components/marketplace-unavailable';
 
-const STATS = [
-    { label: 'Premium Themes', value: '50+', icon: Palette },
-    { label: 'Active Installs', value: '10K+', icon: Zap },
-    { label: 'Avg Rating', value: '4.8', icon: Star },
-    { label: 'Categories', value: '4', icon: Globe },
-];
-
 const CATEGORIES = [
-    { slug: 'store', label: 'Store Themes', description: 'E-commerce & retail storefronts', icon: ShoppingBag, color: 'from-blue-500 to-cyan-400', shadowColor: 'shadow-blue-500/20' },
-    { slug: 'portfolio', label: 'Portfolio', description: 'Designers & creative showcases', icon: Palette, color: 'from-purple-500 to-pink-500', shadowColor: 'shadow-purple-500/20' },
-    { slug: 'resume', label: 'Resume / CV', description: 'Professional profiles & CVs', icon: FileText, color: 'from-amber-500 to-orange-400', shadowColor: 'shadow-amber-500/20' },
-    { slug: 'landing', label: 'Landing Pages', description: 'SaaS & product launches', icon: Rocket, color: 'from-emerald-500 to-teal-400', shadowColor: 'shadow-emerald-500/20' },
+    { slug: 'store', label: 'Store Themes', description: 'E-commerce & retail storefronts', icon: ShoppingBag, image: '/previews/store.png', color: 'from-blue-500 to-cyan-400' },
+    { slug: 'portfolio', label: 'Portfolio', description: 'Designers & creative showcases', icon: Palette, image: '/previews/portfolio.png', color: 'from-purple-500 to-pink-500' },
+    { slug: 'resume', label: 'Resume / CV', description: 'Professional profiles & CVs', icon: FileText, image: '/previews/resume.png', color: 'from-amber-500 to-orange-400' },
+    { slug: 'landing', label: 'Landing Pages', description: 'Launch, lead capture, and campaign layouts', icon: Rocket, image: '/previews/landing.png', color: 'from-emerald-500 to-teal-400' },
+    { slug: 'saas', label: 'SaaS', description: 'Product-led software and subscription pages', icon: Sparkles, image: '/previews/saas-console-card.png', color: 'from-indigo-500 to-violet-500' },
 ];
 
 const VALUE_PROPS = [
-    { icon: Zap, title: 'Instant Setup', desc: 'One-click install — your store is live in under 60 seconds. No code, no complexity.', accent: 'from-yellow-500 to-amber-500' },
-    { icon: Palette, title: 'Fully Customizable', desc: 'Change colors, fonts, and layouts with a live visual editor. Make it truly yours.', accent: 'from-purple-500 to-pink-500' },
-    { icon: Smartphone, title: 'Mobile Responsive', desc: 'Every theme looks pixel-perfect on phones, tablets, and desktops.', accent: 'from-blue-500 to-cyan-500' },
-    { icon: Lock, title: 'Secure Payments', desc: 'Stripe & Razorpay integrated for Indian and global transactions out of the box.', accent: 'from-emerald-500 to-green-500' },
-    { icon: Globe, title: 'Multi-Platform Export', desc: 'Export to WordPress, Shopify, HTML, or standalone React — your choice.', accent: 'from-indigo-500 to-violet-500' },
-    { icon: Code, title: 'Developer Friendly', desc: 'Clean TypeScript code, well-documented APIs, and easily extensible architecture.', accent: 'from-rose-500 to-red-500' },
+    { icon: Zap, title: 'Guided install', desc: 'Add an approved theme to a selected LetBuyy store through the marketplace install flow.', accent: 'from-yellow-500 to-amber-500' },
+    { icon: Palette, title: 'Editable after install', desc: 'Open installed themes in the merchant editor when your store is ready to customize.', accent: 'from-purple-500 to-pink-500' },
+    { icon: Smartphone, title: 'Responsive foundations', desc: 'Themes are designed for storefront, portfolio, resume, landing, and SaaS surfaces.', accent: 'from-blue-500 to-cyan-500' },
+    { icon: Lock, title: 'INR checkout', desc: 'Paid theme purchases use provider-verified Razorpay checkout for India-first commerce.', accent: 'from-emerald-500 to-green-500' },
+    { icon: Globe, title: 'Storefront runtime', desc: 'Themes render through LetBuyy storefront contracts instead of app-local business logic.', accent: 'from-indigo-500 to-violet-500' },
+    { icon: Code, title: 'Governed packages', desc: 'Marketplace uploads are validated and routed through the shared API and theme-engine contracts.', accent: 'from-rose-500 to-red-500' },
 ];
 
 const TRUST_BADGES = [
-    'No credit card required',
     'Free themes available',
-    '24/7 support',
-    'Cancel anytime',
+    'Per-theme purchase path',
+    'Razorpay INR checkout',
+    'Store-scoped installs',
 ];
 
 export default async function HomePage() {
-    const featuredResult = await ThemeService.listThemes({
-        sort: 'rating',
-        limit: 4,
-    });
-    const featuredThemes = featuredResult.ok ? featuredResult.value.themes : [];
-    const themesUnavailable = !featuredResult.ok;
-
     const categoryCountPromises = CATEGORIES.map(async (cat) => {
         const result = await ThemeService.listThemes({ category: cat.slug, limit: 1 });
         return { slug: cat.slug, count: result.ok ? result.value.total : 0 };
     });
-    const categoryCounts = await Promise.all(categoryCountPromises);
+    const [featuredResult, categoryCounts, collections] = await Promise.all([
+        ThemeService.listThemes({
+            sort: 'rating',
+            limit: 4,
+        }),
+        Promise.all(categoryCountPromises),
+        ThemeService.getCollections(),
+    ]);
+    const featuredThemes = featuredResult.ok ? featuredResult.value.themes as unknown as Theme[] : [];
+    const themesUnavailable = !featuredResult.ok;
     const countMap = Object.fromEntries(categoryCounts.map(c => [c.slug, c.count]));
+    const liveStats = [
+        ...(featuredResult.ok ? [{ label: 'Themes listed', value: String(featuredResult.value.total), icon: Palette }] : []),
+        { label: 'Categories', value: String(CATEGORIES.length), icon: Globe },
+    ];
 
     return (
         <>
@@ -55,22 +57,10 @@ export default async function HomePage() {
                 HERO — Premium Split Layout
                ═══════════════════════════════════════ */}
             <section className="relative overflow-hidden lg:min-h-[calc(100dvh-72px)] lg:flex lg:flex-col">
-                {/* ── Ambient Background Effects ── */}
+                {/* ── Background texture ── */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    {/* Primary orb */}
-                    <div className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] rounded-full bg-primary/[0.07] blur-[120px]" />
-                    {/* Secondary orb */}
-                    <div className="absolute bottom-[-15%] right-[-10%] w-[500px] h-[500px] rounded-full bg-secondary/[0.06] blur-[100px]" />
-                    {/* Accent orb */}
-                    <div className="absolute top-[40%] right-[20%] w-[300px] h-[300px] rounded-full bg-accent/[0.04] blur-[80px]" />
                     {/* Grid pattern overlay */}
-                    <div
-                        className="absolute inset-0 opacity-[0.03]"
-                        style={{
-                            backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-                            backgroundSize: '60px 60px',
-                        }}
-                    />
+                    <div className="theme-grid-overlay-60 absolute inset-0 opacity-[0.03]" />
                     {/* Top-edge gradient line */}
                     <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
                 </div>
@@ -92,7 +82,7 @@ export default async function HomePage() {
                             <p className="max-w-lg text-base md:text-lg text-text-muted leading-relaxed mb-8">
                                 Launch your online store, portfolio, or landing page with
                                 professionally crafted, pixel-perfect themes.{' '}
-                                <span className="text-text-heading font-medium">Install in one click.</span>
+                                <span className="text-text-heading font-medium">Browse the live catalog and install only when a store is selected.</span>
                             </p>
 
                             {/* CTA Buttons */}
@@ -123,10 +113,11 @@ export default async function HomePage() {
                             </div>
 
                             {/* Stats Bar */}
-                            <div className="flex flex-wrap items-center gap-6 lg:gap-8 pt-6 border-t border-white/[0.06]">
-                                {STATS.map(stat => (
+                            {liveStats.length > 0 && (
+                                <div className="flex flex-wrap items-center gap-6 lg:gap-8 pt-6 border-t border-white/[0.06]">
+                                    {liveStats.map(stat => (
                                     <div key={stat.label} className="flex items-center gap-2.5">
-                                        <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
+                                        <div className="w-8 h-8 rounded-lg bg-[var(--lb-color-surface)]/[0.04] border border-white/[0.06] flex items-center justify-center">
                                             <stat.icon className="w-3.5 h-3.5 text-primary-light" />
                                         </div>
                                         <div>
@@ -134,20 +125,23 @@ export default async function HomePage() {
                                             <p className="text-[10px] text-text-subtle mt-0.5">{stat.label}</p>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         {/* ─── Right: Bento Grid ─── */}
                         <div className="order-1 lg:order-2 space-y-[10px] md:space-y-[12px] lg:pt-0 lg:max-h-[calc(100dvh-72px-100px)]">
                             {/* Top row: Store (tall left) + Portfolio (top right) + Landing (bottom right) */}
-                            <div className="grid grid-cols-2 gap-[10px] md:gap-[12px]">
+                            <div className="grid grid-cols-1 gap-[10px] sm:grid-cols-2 md:gap-[12px]">
                                 {/* Store — tall left spanning 2 rows */}
-                                <div className="row-span-2 group relative rounded-2xl overflow-hidden border border-white/[0.08] shadow-xl shadow-black/20 hover:shadow-2xl hover:shadow-primary/10 hover:border-white/[0.14] transition-all duration-500 hover:-translate-y-1">
-                                    <img
+                                <div className="row-span-2 group relative aspect-[3/4] rounded-2xl overflow-hidden border border-white/[0.08] shadow-xl shadow-black/20 hover:shadow-2xl hover:shadow-primary/10 hover:border-white/[0.14] transition-all duration-500 hover:-translate-y-1">
+                                    <Image
                                         src="/previews/store.png"
                                         alt="Store Theme Preview"
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 min-h-[220px] md:min-h-[260px] lg:h-[260px]"
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 320px"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                                     <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -156,16 +150,18 @@ export default async function HomePage() {
                                             Store
                                         </span>
                                         <p className="text-sm font-semibold text-white/90">E-commerce & Retail</p>
-                                        <p className="text-xs text-white/50 mt-0.5">Dark minimalist storefront</p>
+                                        <p className="text-xs text-white/75 mt-0.5">Dark minimalist storefront</p>
                                     </div>
                                 </div>
 
                                 {/* Portfolio — top right */}
-                                <div className="group relative rounded-2xl overflow-hidden border border-white/[0.08] shadow-lg shadow-black/15 hover:shadow-xl hover:shadow-purple-500/10 hover:border-white/[0.14] transition-all duration-500 hover:-translate-y-1">
-                                    <img
+                                <div className="group relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/[0.08] shadow-lg shadow-black/15 hover:shadow-xl hover:shadow-purple-500/10 hover:border-white/[0.14] transition-all duration-500 hover:-translate-y-1">
+                                    <Image
                                         src="/previews/portfolio.png"
                                         alt="Portfolio Theme Preview"
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 min-h-[100px] md:min-h-[120px] lg:h-[122px]"
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 320px"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                                     <div className="absolute bottom-0 left-0 right-0 p-3">
@@ -178,11 +174,13 @@ export default async function HomePage() {
                                 </div>
 
                                 {/* Landing — bottom right */}
-                                <div className="group relative rounded-2xl overflow-hidden border border-white/[0.08] shadow-lg shadow-black/15 hover:shadow-xl hover:shadow-emerald-500/10 hover:border-white/[0.14] transition-all duration-500 hover:-translate-y-1">
-                                    <img
+                                <div className="group relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/[0.08] shadow-lg shadow-black/15 hover:shadow-xl hover:shadow-emerald-500/10 hover:border-white/[0.14] transition-all duration-500 hover:-translate-y-1">
+                                    <Image
                                         src="/previews/landing.png"
                                         alt="Landing Page Theme Preview"
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 min-h-[100px] md:min-h-[120px] lg:h-[122px]"
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 320px"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                                     <div className="absolute bottom-0 left-0 right-0 p-3">
@@ -196,11 +194,13 @@ export default async function HomePage() {
                             </div>
 
                             {/* Resume — full-width card below the grid */}
-                            <div className="group relative rounded-2xl overflow-hidden border border-white/[0.08] shadow-lg shadow-black/15 hover:shadow-xl hover:shadow-amber-500/10 hover:border-white/[0.14] transition-all duration-500 hover:-translate-y-1">
-                                <img
+                            <div className="group relative aspect-[16/5] rounded-2xl overflow-hidden border border-white/[0.08] shadow-lg shadow-black/15 hover:shadow-xl hover:shadow-amber-500/10 hover:border-white/[0.14] transition-all duration-500 hover:-translate-y-1">
+                                <Image
                                     src="/previews/resume.png"
                                     alt="Resume Theme Preview"
-                                    className="w-full object-cover transition-transform duration-700 group-hover:scale-105 h-[100px] md:h-[120px] lg:h-[120px]"
+                                    fill
+                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                    sizes="(max-width: 1024px) 100vw, 640px"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                                 <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -209,7 +209,7 @@ export default async function HomePage() {
                                         Resume
                                     </span>
                                     <p className="text-sm font-semibold text-white/90">Professional CV</p>
-                                    <p className="text-xs text-white/50 mt-0.5">Elegant dark theme with gold accents</p>
+                                    <p className="text-xs text-white/75 mt-0.5">Elegant dark theme with gold accents</p>
                                 </div>
                             </div>
                         </div>
@@ -222,14 +222,11 @@ export default async function HomePage() {
                 FEATURED THEMES — Premium Grid
                ═══════════════════════════════════════ */}
             <section className="relative py-24 overflow-hidden">
-                {/* Section ambient glow */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/[0.04] blur-[120px] rounded-full pointer-events-none" />
-
                 <div className="container-main relative">
                     {/* Section header */}
                     <div className="flex items-end justify-between mb-12">
                         <div>
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary-light text-[11px] font-semibold uppercase tracking-widest mb-3">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-text-heading text-[11px] font-semibold uppercase tracking-widest mb-3">
                                 <Sparkles className="w-3 h-3" />
                                 Handpicked
                             </div>
@@ -237,7 +234,7 @@ export default async function HomePage() {
                                 Featured Themes
                             </h2>
                             <p className="text-sm text-text-muted mt-2 max-w-md">
-                                Curated collection of our best-rated, most-loved themes — ready to install.
+                                Themes returned by the live marketplace API. Ratings appear only after review data exists.
                             </p>
                         </div>
                         <Link
@@ -253,7 +250,7 @@ export default async function HomePage() {
                         <MarketplaceUnavailable />
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                            {featuredThemes.map((theme: any) => (
+                            {featuredThemes.map((theme) => (
                                 <ThemeCard key={theme.id} theme={theme} featured />
                             ))}
                         </div>
@@ -272,13 +269,38 @@ export default async function HomePage() {
                 </div>
             </section>
 
+            {collections.length > 0 && (
+                <section className="relative py-16 border-t border-white/[0.04]">
+                    <div className="container-main relative">
+                        <div className="mb-8">
+                            <h2 className="text-2xl md:text-3xl font-bold text-text-heading">
+                                Curated collections
+                            </h2>
+                            <p className="text-sm text-text-muted mt-2 max-w-md">
+                                Data-backed marketplace collections from the theme catalog API.
+                            </p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {collections.slice(0, 3).map((collection) => {
+                                const slug = typeof collection.slug === 'string' ? collection.slug : '';
+                                const title = typeof collection.title === 'string' ? collection.title : slug;
+                                const description = typeof collection.description === 'string' ? collection.description : 'Browse this marketplace collection.';
+                                return (
+                                    <Link key={slug || title} href={slug ? `/collections/${slug}` : '/themes'} className="glass-card block p-5 transition-colors hover:border-primary/30">
+                                        <p className="m-0 text-base font-semibold text-text-heading">{title}</p>
+                                        <p className="m-0 mt-2 text-sm text-text-muted">{description}</p>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </section>
+            )}
+
             {/* ═══════════════════════════════════════
                 BROWSE BY CATEGORY — Shopify-Style Theme Showcase
                ═══════════════════════════════════════ */}
             <section className="relative py-24 border-t border-white/[0.04]">
-                {/* Ambient glow */}
-                <div className="absolute top-[20%] left-[-5%] w-[400px] h-[400px] bg-secondary/[0.04] blur-[120px] rounded-full pointer-events-none" />
-
                 <div className="container-main relative">
                     {/* Section header — left-aligned like Shopify */}
                     <div className="mb-12">
@@ -295,31 +317,19 @@ export default async function HomePage() {
                         {CATEGORIES.map(cat => (
                             <Link
                                 key={cat.slug}
-                                href={`/themes?category=${cat.slug}`}
+                            href={`/themes/category/${cat.slug}`}
                                 className="group block"
                             >
-                                {/* Browser-frame preview card */}
+                                {/* Category preview card */}
                                 <div className="relative rounded-xl overflow-hidden border border-white/[0.08] hover:border-white/[0.16] transition-all duration-500 shadow-xl shadow-black/20 hover:shadow-2xl hover:shadow-black/30">
-                                    {/* Faux browser chrome */}
-                                    <div className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.03] border-b border-white/[0.06]">
-                                        <div className="flex items-center gap-1.5">
-                                            <div className="w-2.5 h-2.5 rounded-full bg-white/[0.08]" />
-                                            <div className="w-2.5 h-2.5 rounded-full bg-white/[0.08]" />
-                                            <div className="w-2.5 h-2.5 rounded-full bg-white/[0.08]" />
-                                        </div>
-                                        <div className="flex-1 mx-3">
-                                            <div className="max-w-[200px] mx-auto px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.06]">
-                                                <span className="text-[10px] text-text-subtle font-mono">letbuyy.store/{cat.slug}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     {/* Screenshot */}
                                     <div className="relative overflow-hidden aspect-[16/10]">
-                                        <img
-                                            src={`/previews/${cat.slug}.png`}
+                                        <Image
+                                            src={cat.image}
                                             alt={`${cat.label} Theme Preview`}
-                                            className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
+                                            fill
+                                            className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
+                                            sizes="(max-width: 768px) 100vw, 50vw"
                                         />
                                         {/* Bottom fade */}
                                         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/30 to-transparent" />
@@ -350,12 +360,9 @@ export default async function HomePage() {
                 VALUE PROPOSITIONS — Bento Feature Grid
                ═══════════════════════════════════════ */}
             <section className="relative py-24 border-t border-white/[0.04] overflow-hidden">
-                {/* Ambient glow */}
-                <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-primary/[0.04] blur-[120px] rounded-full pointer-events-none" />
-
                 <div className="container-main relative">
                     <div className="text-center mb-14">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-[11px] font-semibold uppercase tracking-widest mb-3">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-text-heading text-[11px] font-semibold uppercase tracking-widest mb-3">
                             <Sparkles className="w-3 h-3" />
                             Why Choose Us
                         </div>
@@ -369,10 +376,10 @@ export default async function HomePage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {VALUE_PROPS.map((prop, i) => (
+                        {VALUE_PROPS.map((prop) => (
                             <div
                                 key={prop.title}
-                                className="group relative rounded-2xl border border-white/[0.06] bg-white/[0.02] p-7 hover:border-white/[0.12] hover:bg-white/[0.04] transition-all duration-500 hover:-translate-y-1"
+                                className="group relative rounded-2xl border border-white/[0.06] bg-[var(--lb-color-surface)]/[0.02] p-7 hover:border-white/[0.12] hover:bg-[var(--lb-color-surface)]/[0.04] transition-all duration-500 hover:-translate-y-1"
                             >
                                 {/* Icon with gradient accent */}
                                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${prop.accent} flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-500`}>
@@ -395,23 +402,13 @@ export default async function HomePage() {
                ═══════════════════════════════════════ */}
             <section className="container-main py-24">
                 <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] p-12 md:p-20 text-center">
-                    {/* Background gradient layers */}
+                    {/* Background gradient layer */}
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.08] via-transparent to-secondary/[0.08]" />
-                    <div className="absolute inset-0 pointer-events-none">
-                        <div className="absolute top-[-30%] right-[-10%] w-[400px] h-[400px] bg-primary/[0.08] rounded-full blur-[100px]" />
-                        <div className="absolute bottom-[-30%] left-[-10%] w-[400px] h-[400px] bg-secondary/[0.06] rounded-full blur-[100px]" />
-                    </div>
                     {/* Grid pattern */}
-                    <div
-                        className="absolute inset-0 opacity-[0.03]"
-                        style={{
-                            backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-                            backgroundSize: '40px 40px',
-                        }}
-                    />
+                    <div className="theme-grid-overlay-40 absolute inset-0 opacity-[0.03]" />
 
                     <div className="relative">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] text-primary-light text-[11px] font-semibold uppercase tracking-widest mb-6">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--lb-color-surface)]/[0.06] border border-white/[0.08] text-primary-light text-[11px] font-semibold uppercase tracking-widest mb-6">
                             <Rocket className="w-3 h-3" />
                             Get Started
                         </div>
@@ -421,7 +418,7 @@ export default async function HomePage() {
                             <span className="gradient-text">Amazing</span>?
                         </h2>
                         <p className="text-base text-text-muted max-w-lg mx-auto mb-10 leading-relaxed">
-                            Join thousands of businesses using LetBuyy Themes to power their online presence. Start free, scale as you grow.
+                            Browse the live catalog, select a store, and install an approved LetBuyy theme through the governed marketplace flow.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -429,7 +426,7 @@ export default async function HomePage() {
                                 href="/themes"
                                 className="btn-primary text-base py-3.5 px-10 inline-flex items-center gap-2.5 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30"
                             >
-                                Get Started — It&apos;s Free
+                                Browse Themes
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
                             <Link
@@ -442,7 +439,7 @@ export default async function HomePage() {
 
                         {/* Trust line */}
                         <div className="flex items-center justify-center gap-5 mt-8">
-                            {['No credit card required', 'Free tier available', 'Setup in 60s'].map(text => (
+                            {['Free themes available', 'INR checkout for paid themes', 'Install requires a selected store'].map(text => (
                                 <span key={text} className="text-xs text-text-subtle flex items-center gap-1.5">
                                     <Check className="w-3 h-3 text-emerald-400" />
                                     {text}

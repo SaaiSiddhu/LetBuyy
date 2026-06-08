@@ -1,20 +1,48 @@
 import Link from 'next/link';
-import { Palette, ShoppingBag, Package, Star, ArrowRight, Clock } from '@letbuyy/ui';
+import Image from 'next/image';
+import { ShoppingBag, Package, Star, ArrowRight, Clock } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'Dashboard' };
 
+type DashboardTheme = {
+    slug?: string;
+    name?: string;
+    thumbnail_url?: string;
+    version?: string;
+    rating?: number;
+    rating_avg?: number;
+    letbuyy_pricing_type?: string;
+};
+
+type DashboardPurchase = {
+    id?: string;
+    created_at?: string;
+    themes?: DashboardTheme;
+};
+
+type DashboardInstallation = {
+    id?: string;
+    is_active?: boolean;
+    version_installed?: string;
+    themes?: DashboardTheme;
+};
+
 export default async function DashboardOverview() {
-    const purchases = (await ThemeService.getUserPurchases()).slice(0, 5);
-    const installedThemes = (await ThemeService.getUserInstallations())
-        .filter((installation: Record<string, unknown>) => installation.is_active !== false)
+    const [purchaseRows, installationRows] = await Promise.all([
+        ThemeService.getUserPurchases() as Promise<DashboardPurchase[]>,
+        ThemeService.getUserInstallations() as Promise<DashboardInstallation[]>,
+    ]);
+    const purchases = purchaseRows.slice(0, 5);
+    const installedThemes = installationRows
+        .filter((installation) => installation.is_active !== false)
         .slice(0, 5);
 
     const STATS = [
         { label: 'Installed Themes', value: String(installedThemes.length), icon: Package, color: 'text-primary-light bg-primary/15' },
         { label: 'Purchases', value: String(purchases.length), icon: ShoppingBag, color: 'text-success bg-success/15' },
-        { label: 'Premium Licenses', value: String(purchases.filter((p: any) => p.themes?.letbuyy_pricing_type !== 'free').length), icon: Star, color: 'text-warning bg-warning/15' },
+        { label: 'Premium Licenses', value: String(purchases.filter((p) => p.themes?.letbuyy_pricing_type !== 'free').length), icon: Star, color: 'text-warning bg-warning/15' },
     ];
 
     return (
@@ -28,7 +56,7 @@ export default async function DashboardOverview() {
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
                 {STATS.map(stat => (
-                    <div key={stat.label} className="glass-card p-5 flex items-center gap-4" style={{ transform: 'none' }}>
+                    <div key={stat.label} className="glass-card p-5 flex items-center gap-4">
                         <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${stat.color}`}>
                             <stat.icon className="w-5 h-5" />
                         </div>
@@ -50,15 +78,22 @@ export default async function DashboardOverview() {
                 </div>
 
                 {installedThemes.length > 0 ? (
-                    <div className="glass-card divide-y divide-border" style={{ transform: 'none' }}>
-                        {installedThemes.map((inst: any) => {
+                    <div className="glass-card divide-y divide-border">
+                        {installedThemes.map((inst) => {
                             const theme = inst.themes || {};
                             return (
                                 <div key={inst.id} className="flex items-center gap-4 p-4 hover:bg-surface/30 transition-colors">
-                                    <div
-                                        className="w-14 h-10 rounded-lg bg-cover bg-center flex-shrink-0 border border-border"
-                                        style={{ backgroundImage: `url(${theme.thumbnail_url || ''})` }}
-                                    />
+                                    <div className="relative h-10 w-14 flex-shrink-0 overflow-hidden rounded-lg border border-border bg-surface">
+                                        {theme.thumbnail_url ? (
+                                            <Image
+                                                src={theme.thumbnail_url}
+                                                alt={`${theme.name || 'Theme'} thumbnail`}
+                                                fill
+                                                className="object-cover"
+                                                sizes="56px"
+                                            />
+                                        ) : null}
+                                    </div>
                                     <div className="flex-grow min-w-0">
                                         <h3 className="text-sm font-semibold text-text-heading truncate">{theme.name || 'Unknown Theme'}</h3>
                                         <p className="text-[11px] text-text-muted flex items-center gap-2">
@@ -67,7 +102,7 @@ export default async function DashboardOverview() {
                                         </p>
                                     </div>
                                     <Link
-                                        href={`/themes/${theme.slug || ''}`}
+                                        href={theme.slug ? `/themes/${theme.slug}` : '/themes'}
                                         className="btn-secondary text-xs py-1.5 px-3 flex-shrink-0"
                                     >
                                         View
@@ -77,7 +112,7 @@ export default async function DashboardOverview() {
                         })}
                     </div>
                 ) : (
-                    <div className="glass-card p-8 text-center" style={{ transform: 'none' }}>
+                    <div className="glass-card p-8 text-center">
                         <p className="text-sm text-text-muted">No themes installed yet.</p>
                         <Link href="/themes" className="text-sm text-primary-light hover:underline mt-2 inline-block">
                             Browse themes →
@@ -96,7 +131,7 @@ export default async function DashboardOverview() {
                         </Link>
                     </div>
                     <div className="space-y-3">
-                        {purchases.map((purchase: any) => (
+                        {purchases.map((purchase) => (
                             <div key={purchase.id} className="flex items-start gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center flex-shrink-0 mt-0.5">
                                     <ShoppingBag className="w-4 h-4 text-text-subtle" />
@@ -107,7 +142,9 @@ export default async function DashboardOverview() {
                                     </p>
                                     <p className="text-[11px] text-text-subtle flex items-center gap-1 mt-0.5">
                                         <Clock className="w-3 h-3" />
-                                        {new Date(purchase.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                        {purchase.created_at
+                                            ? new Date(purchase.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })
+                                            : 'Date unavailable'}
                                     </p>
                                 </div>
                             </div>

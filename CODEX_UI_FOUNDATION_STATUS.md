@@ -39,17 +39,17 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - `Button` now supports additive `as` and `asChild` rendering while default button rendering remains unchanged.
 - `DensityToggle` now delegates to `SegmentedControl` without changing its public props.
 - The bare root `Menu` symbol remains the existing icon export for consumer compatibility. The menu primitive is exported as `Dropdown`/`DropdownMenu`.
-- A new unified `Table` export exists with saved views, filter chips, bulk selection/actions, sorting, mobile cards, and desktop table rendering. `DataTable` and `IndexTable` stay exported and are deprecated, not removed.
-- `Text` now absorbs the `TextStyle` variants. `TextStyle` delegates to `Text` and preserves its old default element/class output.
-- `PageShell`, `PageActions`, and `TableFilterBar` remain exported with deprecation tags and replacement pointers.
-- `Badge variant="danger"` remains accepted and normalized, with `critical` documented as the canonical vocabulary.
+- A new unified `Table` export exists with saved views, filter chips, bulk selection/actions, sorting, mobile cards, and desktop table rendering. V1 kept `DataTable` and `IndexTable` as deprecated shims; V2-A5 removed them after app migration.
+- `Text` now absorbs the old `TextStyle` variants. V1 kept `TextStyle` as a deprecated shim; V2-A5 removed it after app migration.
+- V1 kept `PageShell`, `PageActions`, and `TableFilterBar` as deprecated shims; V2-A5 removed them after app migration.
+- V1 normalized `Badge variant="danger"` to `critical`; V2-A5 removed the `danger` variant after app migration.
 - Strict material icon helpers now exist through `StrictMaterialIconName`, `materialIconNames`, `isMaterialIconName()`, and `materialIconName()` while the loose `MaterialIconName` path stays compiling.
-- PageHeader, SaveBar, IndexTable, Pagination, and DensityToggle/SegmentedControl now compose `Button`, `Checkbox`, and `Breadcrumbs` internally while preserving public props and rendered visuals.
+- PageHeader, SaveBar, Table, Pagination, and DensityToggle/SegmentedControl now compose `Button`, `Checkbox`, and `Breadcrumbs` internally while preserving public props and rendered visuals.
 - `DesignSystemRoot` now emits surface-scoped variable hooks through `data-letbuyy-surface` with identity defaults, supports runtime `brand` CSS-variable overrides, and dedupes nested token `<style>` output through a server-safe client boundary.
 - `cx()` now uses `tailwind-merge` while keeping the same call signature.
 - Tooltip triggers now receive `aria-describedby`, tooltips can reveal on touch/pointer activation, Modal backdrops are non-button `div`s, and ConfirmDialog accepts custom body copy.
 - Toasts now support additive duration and placement options; Pagination now supports additive page numbers and page-size controls.
-- Avatar image alt text, DesignSystemRoot `dir`, IndexTable `aria-selected`, ChoiceList overflow safety, reduced-motion CSS, stronger focus-ring contrast, EmptyState motif overrides, and INR-first formatting helpers are in place.
+- Avatar image alt text, DesignSystemRoot `dir`, Table `aria-selected`, ChoiceList overflow safety, reduced-motion CSS, stronger focus-ring contrast, EmptyState motif overrides, and INR-first formatting helpers are in place.
 - `@letbuyy/ui` is now versioned at `0.0.2` with a package-local changelog and finalized deprecation register.
 - Deprecated compatibility exports emit one-time development warnings while preserving runtime output and public props.
 - UI eslint plugin artifacts now exist for raw `<button>`, `<input>`, `<table>`, and hardcoded hex enforcement; enabling them in apps remains a human/app-stream handoff.
@@ -87,7 +87,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - Light-mode text contrast changed intentionally: `--lb-color-text-muted` is darker; `--lb-color-primary-text` is new for primary text; soft status text tokens now use AA-safe text values.
 - U2 token additions are additive and should not change rendered output. Existing spacing/type/color aliases still emit; the new alias validator only blocks new duplicate-value aliases.
 - U3 primitive additions are additive. Existing consumers keep the current `Menu` icon export; use `Dropdown` or `DropdownMenu` for the new menu primitive.
-- U4 consolidation is additive. Existing `DataTable`, `IndexTable`, `TextStyle`, `PageShell`, `PageActions`, `TableFilterBar`, `Badge variant="danger"`, and loose `MaterialIconName` usages still compile and render.
+- U4 consolidation was additive in V1. V2-A5 later removed the migrated deprecated exports: `DataTable`, `IndexTable`, `TextStyle`, `PageShell`, `PageActions`, `TableFilterBar`, root preview helpers, and `Badge variant="danger"`.
 - U5 composition is intended to be visually and behaviorally unchanged. Additive `Button.unstyled`, `Checkbox.unstyled`, and `Breadcrumbs` separator/current-tone props exist only to preserve legacy internal visuals while routing through design-system primitives.
 - U6 theming changes are additive and default-identity. Existing `surface` values now have real variable hooks, `brand` overrides are opt-in, nested `DesignSystemRoot` token styles dedupe automatically, and `cx()` now resolves Tailwind class conflicts in favor of later classes.
 - U7 changes are additive except intentional correctness fixes: `--lb-color-focus-ring` is stronger in light mode, Modal backdrop semantics changed from a hidden full-screen button to a non-focusable backdrop `div`, Combobox option clicks no longer suppress `mousedown`, and reduced-motion preference now disables decorative motion.
@@ -170,7 +170,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - Generated build/install artifacts from U4 verification were removed with a depth that includes `packages/typescript/ui/dist`.
 - `node scripts/validate-governance.mjs` PASS after U4 cleanup; final line: `Governance validation passed (129 validators).`
 - `pnpm --filter @letbuyy/ui typecheck` PASS after U5 source changes.
-- `pnpm --filter @letbuyy/ui test` PASS after U5: 1 file, 24 tests. Added RTL/axe coverage for composed PageHeader, SaveBar, IndexTable, and Pagination behavior.
+- `pnpm --filter @letbuyy/ui test` PASS after U5: 1 file, 24 tests. Added RTL/axe coverage for composed PageHeader, SaveBar, Table, and Pagination behavior.
 - `pnpm --filter @letbuyy/ui build` PASS after U5.
 - `pnpm --filter @letbuyy/ui validate:ui` PASS after U5: 24 tests, API snapshot, token snapshot, alias snapshot.
 - `pnpm --filter @letbuyy/ui test:visual` PASS after U5 under escalated browser permission: 306 baselines checked with no baseline updates and no visual diffs.
@@ -200,7 +200,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - Generated build/install artifacts from U6 verification were removed with a depth that includes `packages/typescript/ui/dist`.
 - `node scripts/validate-governance.mjs` PASS after U6 cleanup; final line: `Governance validation passed (129 validators).`
 - `pnpm --filter @letbuyy/ui typecheck` PASS after U7 source changes.
-- `pnpm --filter @letbuyy/ui test` PASS after U7: 1 file, 33 tests. Added coverage for Tooltip trigger association/touch reveal, ConfirmDialog custom copy, Toast duration/placement, Pagination page numbers/page-size, Avatar alt, EmptyState custom motifs, formatting helpers, IndexTable `aria-selected`, `dir`, reduced motion, and focus-ring contrast.
+- `pnpm --filter @letbuyy/ui test` PASS after U7: 1 file, 33 tests. Added coverage for Tooltip trigger association/touch reveal, ConfirmDialog custom copy, Toast duration/placement, Pagination page numbers/page-size, Avatar alt, EmptyState custom motifs, formatting helpers, Table `aria-selected`, `dir`, reduced motion, and focus-ring contrast.
 - `pnpm --filter @letbuyy/ui snapshot:api:update` PASS after U7: 334 public exports captured.
 - `pnpm --filter @letbuyy/ui snapshot:aliases:update` PASS after the intentional focus-ring value change: 109 duplicate-value groups captured.
 - `pnpm --filter @letbuyy/ui build` PASS after U7.
@@ -241,12 +241,23 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - V2-A1 contrast evidence: white text on normal `#6D28D9` = 7.10:1, hover `#5B21B6` = 8.98:1, active `#4C1D95` = 10.95:1.
 - V2-A1 visual evidence: `packages/typescript/ui/storybook-screenshots/v2-a1-primary-button-before-after.png`; `pnpm --filter @letbuyy/ui test:visual:update` PASS with 312 real baselines, and `pnpm --filter @letbuyy/ui test:visual` PASS with 312 checked baselines.
 - V2-A1 harness note: the Storybook visual harness was corrected from `file://` to a local HTTP server because Chromium CORS-blocked Storybook modules and blank baselines were previously possible; the harness now also disables animations, waits for fonts, compares decoded pixels, and fails on Storybook error pages.
-- V2-A2 DONE: V1 table codemods and manual `DataTable` render/prop migrations have been applied across all current consumer apps with exact legacy matches.
+- V2-A2 DONE: V1 table codemods and manual `Table` render/prop migrations have been applied across all current consumer apps with exact legacy matches.
 - Supporting fix: `Table` now accepts normal object row types instead of requiring `Record<string, unknown>`, so typed app rows infer without casts.
 - App migration commits: `d00d9bdf refactor(platform-console): adopt unified ui table`, `a83a5eb8 refactor(platform-operations-portal): adopt unified ui table`, `206c4321 refactor(merchant-control-plane): adopt unified ui table`; UI typing fix commit: `551c17c0 fix(ui): relax table row typing`.
 - A2 verification: platform-console typecheck/lint/build PASS; platform-operations-portal typecheck/lint/build PASS; merchant-control-plane typecheck/lint/build PASS. Next/Turbopack builds were run with escalation where sandboxed local process binding failed.
 - A2 scan evidence: no exact `DataTable`/`IndexTable`/`TextStyle`/`PageShell`/`PageActions`/`TableFilterBar`/`Badge variant="danger"` matches remain in `apps/**/*.ts(x)`; no deprecated `--lb-*` token aliases remain in app TS/CSS sources.
-- Current work: Stream A moves next to V2-A3, enabling the UI eslint fence and migrating raw element / hardcoded hex bypass.
+- V2-A3 DONE for the UI adoption surface: `packages/typescript/ui/eslint` is enabled at `error` in all nine web app lint configs for `@letbuyy/ui/no-raw-elements` and `@letbuyy/ui/no-hardcoded-hex`.
+- V2-A3 app migration: raw JSX `<button>`, `<input>`, and `<table>` bypasses were migrated to `Button`, `Input`, and `Table` composition. `Input` gained additive `unstyled` + `forwardRef` support, and `Table` gained additive static-child rendering for app-owned table markup.
+- V2-A3 color migration: app TS/TSX/CSS/SCSS hardcoded hex colors were mechanically converted to token/rgb forms.
+- V2-A3 scan evidence: `rg -n "<button\\b|<input\\b|<table\\b" apps --glob '*.{ts,tsx}'` returned 0 matches; `rg -n --glob '*.{ts,tsx,css,scss}' -- "#[0-9a-fA-F]{3,8}\\b" apps` returned 0 matches; rule wiring scan confirmed both UI rules in all nine app `eslint.config.mjs` files.
+- V2-A3 verification: `pnpm --filter @letbuyy/ui typecheck` PASS; `pnpm --filter @letbuyy/ui test` PASS (36 tests); `pnpm --filter @letbuyy/ui validate:ui` PASS; app-level typechecks PASS for merchant-control-plane, storefront-runtime, identity-platform, and theme-marketplace after reconciling dirty-tree type blockers; `pnpm turbo typecheck` PASS (59 tasks).
+- V2-A3 lint evidence: `pnpm lint` fails only on the untracked dirty-tree file `apps/storefront-runtime/src/app/api/store-access/password/route.ts` with `letbuyy-boundaries/no-new-next-api-route`. Excluding only that untracked file, `pnpm --filter @letbuyy/storefront-runtime exec eslint --ignore-pattern 'src/app/api/store-access/password/route.ts'` PASS with 0 errors / 24 existing warnings. This is recorded as a V2 blocker because removing or moving the untracked domain/access route would take over separate work.
+- Dirty-tree type reconciliation note: two unrelated domain/access type blockers were minimally fixed so repo typecheck could measure A3 honestly: `packages/auth-core/src/storefront-access.ts` WebCrypto/payload generic typing and `packages/typescript/api-types/src/index.ts` explicit `StoreAccessMode` re-export. These are outside the UI adoption surface and should be reconciled with the domain/access stream during staging.
+- V2-A4 DONE: marketing-site root layout now wraps the existing `ThemeProvider` and children in `<DesignSystemRoot surface="storefront" theme="auto">`, so UI tokens are present on the public marketing surface.
+- V2-A4 verification: `pnpm --filter @letbuyy/marketing-site typecheck` PASS; `pnpm --filter @letbuyy/marketing-site lint` PASS with 0 errors / 1 existing warning; sandboxed `pnpm --filter @letbuyy/marketing-site build` was terminated after a Turbopack stall, then escalated build compiled and exposed an unrelated dirty-tree env requirement (`NEXT_PUBLIC_MARKETING_URL`); `env NEXT_PUBLIC_MARKETING_URL=https://letbuyy.com pnpm --filter @letbuyy/marketing-site build` PASS under escalated Turbopack permissions.
+- V2-A5 DONE: deprecated duplicate UI exports and root preview-helper re-exports were removed after consumer migration; emitted deprecated token aliases were collapsed to the canonical token set; `apps/storefront-runtime/src/components/ui` is already absent.
+- V2-A5 verification: `pnpm --filter @letbuyy/ui validate:ui` PASS (36 tests, eslint-rule self-test, codemod dry-run, API snapshot, token snapshot, alias snapshot); `pnpm --filter @letbuyy/ui build` PASS; `pnpm turbo typecheck` PASS (59 tasks); precise app/source/snapshot scans returned 0 removed-symbol and removed-alias matches.
+- Current work: Stream A moves next to V2-A6, distributing `@letbuyy/ui` from `dist`, folding UI validators into root governance, adding CODEOWNERS, wiring CI gates, and cutting the package to 1.0.
 
 ## V2 Operational Notes
 

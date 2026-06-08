@@ -17,7 +17,6 @@ import {
     ConfirmDialog,
     Container,
     DatePicker,
-    DataTable,
     DesignSystemRoot,
     Disclosure,
     Drawer,
@@ -29,9 +28,9 @@ import {
     Modal,
     Navigation,
     NumberField,
-    PageActions,
+    PageHeaderActions,
     PageHeader,
-    PageShell,
+    Page,
     Pagination,
     Popover,
     Radio,
@@ -44,12 +43,10 @@ import {
     Switch,
     Tabs,
     Table,
-    TableFilterBar,
+    FilterBar,
     ToastProvider,
     Tooltip,
-    IndexTable,
     Text,
-    TextStyle,
     Textarea,
     formatCurrency,
     formatDate,
@@ -642,48 +639,43 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         await expectAxeClean(container);
     });
 
-    it('emits one-time development warnings for deprecated compatibility shims', () => {
+    it('renders canonical 1.0 replacements without deprecated warnings', () => {
         const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
 
         renderInSystem(
             <>
-                <DataTable columns={[{ key: 'name', header: 'Name' }]} data={[{ id: '1', name: 'Anika' }]} />
-                <PageShell title="Legacy page">
-                    <PageActions>Actions</PageActions>
-                    <TableFilterBar search={<span>Search</span>} />
-                </PageShell>
-                <IndexTable rows={[]} columns={[]} />
-                <TextStyle>Legacy text</TextStyle>
-                <Badge label="Legacy danger" variant="danger" />
+                <Table columns={[{ key: 'name', header: 'Name' }]} rows={[{ id: '1', name: 'Anika' }]} />
+                <Page title="Legacy page">
+                    <PageHeaderActions>Actions</PageHeaderActions>
+                    <FilterBar search={<span>Search</span>} />
+                </Page>
+                <Table rows={[]} columns={[]} />
+                <Text>Legacy text</Text>
+                <Badge label="Legacy danger" variant="critical" />
             </>,
         );
 
-        const warnings = warnSpy.mock.calls.map((call) => String(call[0]));
-        expect(warnings.some((warning) => warning.includes('DataTable'))).toBe(true);
-        expect(warnings.some((warning) => warning.includes('PageShell'))).toBe(true);
-        expect(warnings.some((warning) => warning.includes('PageActions'))).toBe(true);
-        expect(warnings.some((warning) => warning.includes('TableFilterBar'))).toBe(true);
-        expect(warnings.some((warning) => warning.includes('IndexTable'))).toBe(true);
-        expect(warnings.some((warning) => warning.includes('TextStyle'))).toBe(true);
-        expect(warnings.some((warning) => warning.includes('Badge variant="danger"'))).toBe(true);
+        expect(screen.getAllByText('Anika').length).toBeGreaterThan(0);
+        expect(screen.getByText('Legacy text')).toBeTruthy();
+        expect(warnSpy).not.toHaveBeenCalled();
 
         warnSpy.mockRestore();
     });
 
-    it('keeps TextStyle output compatible while Text covers its variants', async () => {
+    it('renders canonical Text variants', async () => {
         const { container } = renderInSystem(
             <>
-                <TextStyle variant="strong">Legacy strong</TextStyle>
-                <TextStyle variant="code">legacy.code</TextStyle>
+                <Text variant="strong">Legacy strong</Text>
+                <Text variant="code">legacy.code</Text>
                 <Text as="span" variant="positive" reset={false}>Positive text</Text>
-                <Badge label="Legacy danger" variant="danger" />
+                <Badge label="Legacy danger" variant="critical" />
             </>,
         );
 
         const legacyStrong = screen.getByText('Legacy strong');
-        expect(legacyStrong.tagName.toLowerCase()).toBe('span');
+        expect(legacyStrong.tagName.toLowerCase()).toBe('p');
         expect(legacyStrong.className).toContain('font-[var(--lb-font-weight-semibold)]');
-        expect(legacyStrong.className).not.toContain('m-0');
+        expect(legacyStrong.className).toContain('m-0');
         expect(screen.getByText('legacy.code').tagName.toLowerCase()).toBe('code');
         expect(screen.getByText('Positive text').className).toContain('text-[color:var(--lb-color-success)]');
         expect(screen.getByText('Legacy danger')).toBeTruthy();
@@ -698,7 +690,7 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         expect(isMaterialIconName('not_a_registered_icon')).toBe(false);
     });
 
-    it('keeps composed PageHeader, SaveBar, IndexTable, and Pagination behavior intact', async () => {
+    it('keeps composed PageHeader, SaveBar, Table, and Pagination behavior intact', async () => {
         const onPrimary = vi.fn();
         const onSave = vi.fn();
         const onDiscard = vi.fn();
@@ -723,7 +715,7 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
                     showBreadcrumbs
                 />
                 <SaveBar state="unsaved" onSave={onSave} onDiscard={onDiscard} />
-                <IndexTable
+                <Table
                     rows={rows}
                     columns={[
                         { key: 'order', header: 'Order', sortable: true },
@@ -819,6 +811,8 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
 
     it('exports breakpoint screens and routes card shadows through the shadow source', () => {
         expect(letbuyyBreakpointTokens).toEqual({
+            xs: '360px',
+            mobile: '480px',
             sm: '640px',
             md: '768px',
             lg: '1024px',

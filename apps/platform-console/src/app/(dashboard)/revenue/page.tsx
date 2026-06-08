@@ -1,9 +1,11 @@
+import type { ExecutiveMrrAnalytics } from '@letbuyy/shared-types';
+import { Table } from '@letbuyy/ui';
 import {
     ConsoleWorkspace,
+    EmptyDataState,
     LeadershipMetric,
     MetricGrid,
     Panel,
-    SkipBackendPanel,
     StatusPill,
 } from '@/components/_local-ui/console-workspace';
 import { ConsoleApiErrorPanel } from '@/components/ConsoleDataTable';
@@ -33,17 +35,23 @@ type ConsoleSubscription = {
     created_at: string | null;
 };
 
+function freshnessTone(stale?: boolean): 'success' | 'warning' {
+    return stale ? 'warning' : 'success';
+}
+
 export default async function RevenuePage() {
-    const [summaryResult, subscriptionsResult] = await Promise.all([
+    const [summaryResult, mrrResult, subscriptionsResult] = await Promise.all([
         fetchConsoleApi<ConsoleDataResponse<ConsoleSummary>>('/internal/console/summary'),
+        fetchConsoleApi<ConsoleDataResponse<ExecutiveMrrAnalytics>>('/internal/console/analytics/mrr', { limit: 13 }),
         fetchConsoleApi<ConsolePaginatedResponse<ConsoleSubscription>>('/internal/console/subscriptions', {
             page: 1,
             limit: 10,
         }),
     ]);
     const summary = summaryResult.data?.data;
+    const mrr = mrrResult.data?.data;
+    const latest = mrr?.latest;
     const rows = subscriptionsResult.data?.data || [];
-    const pageRevenuePaise = rows.reduce((total, row) => total + Number(row.amount_paid || 0), 0);
     const activeRows = rows.filter((row) => row.status === 'active').length;
     const trialRows = rows.filter((row) => row.status === 'trialing').length;
 
@@ -51,24 +59,64 @@ export default async function RevenuePage() {
         <ConsoleWorkspace
             eyebrow="Revenue"
             title="Revenue"
-            description="Leadership billing view built from the existing console summary and subscription list contracts."
+            description="Leadership billing view backed by versioned MRR, ARR, marketplace revenue, and payout-liability rollups."
         >
             {summaryResult.error ? <ConsoleApiErrorPanel title="Summary API unavailable" message={summaryResult.error} /> : null}
+            {mrrResult.error ? <ConsoleApiErrorPanel title="MRR rollups unavailable" message={mrrResult.error} /> : null}
             {subscriptionsResult.error ? <ConsoleApiErrorPanel title="Subscriptions API unavailable" message={subscriptionsResult.error} /> : null}
 
             <MetricGrid>
-                <LeadershipMetric label="Monthly recurring value" value={formatMoneyFromPaise(summary?.monthly_revenue_paise || 0)} />
-                <LeadershipMetric label="Active subscriptions" value={`${summary?.active_subscriptions || 0}/${summary?.total_subscriptions || 0}`} />
-                <LeadershipMetric label="Latest page value" value={formatMoneyFromPaise(pageRevenuePaise)} />
-                <LeadershipMetric label="Trials on latest page" value={String(trialRows)} tone="warning" />
+                <LeadershipMetric
+                    label="MRR"
+                    value={formatMoneyFromPaise(latest?.mrr_paise || summary?.monthly_revenue_paise || 0)}
+                    detail={`${mrr?.freshness.stale ? 'stale' : 'fresh'} · ${latest?.period_date || 'summary fallback'}`}
+                    tone={freshnessTone(mrr?.freshness.stale)}
+                />
+                <LeadershipMetric label="ARR" value={formatMoneyFromPaise(latest?.arr_paise || 0)} />
+                <LeadershipMetric label="Active subscriptions" value={`${latest?.active_subscriptions || summary?.active_subscriptions || 0}/${summary?.total_subscriptions || 0}`} />
+                <LeadershipMetric label="Logo churn" value={String(latest?.logo_churn_count || 0)} tone="warning" />
             </MetricGrid>
+
+            {mrr?.freshness.stale ? (
+                <Panel title="Rollup freshness" description={mrr.freshness.stale_reason || 'Latest revenue rollup is stale.'}>
+                    <StatusPill value="stale" tone="warning" />
+                </Panel>
+            ) : null}
+
+            <Panel title="Revenue Mix" description="Reconciles subscription MRR, app charges, theme purchases, and pending partner payout liability.">
+                <MetricGrid>
+                    <LeadershipMetric label="Subscription" value={formatMoneyFromPaise(latest?.subscription_revenue_paise || 0)} />
+                    <LeadershipMetric label="App marketplace" value={formatMoneyFromPaise(latest?.app_revenue_paise || 0)} />
+                    <LeadershipMetric label="Theme marketplace" value={formatMoneyFromPaise(latest?.theme_revenue_paise || 0)} />
+                    <LeadershipMetric label="Payout liability" value={formatMoneyFromPaise(latest?.partner_payout_liability_paise || 0)} tone="warning" />
+                </MetricGrid>
+            </Panel>
+
+            <Panel title="MRR Trend" description={`Definition: ${mrr?.definition_version || 'unknown'}.`}>
+                {mrr?.trend.length ? (
+                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3 xl:grid-cols-4">
+                        {mrr.trend.slice(-8).map((row) => (
+                            <div key={row.id || row.period_date} className="rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] p-[var(--lb-space-4)]">
+                                <p className="m-0 text-[var(--lb-font-size-caption)] text-[var(--lb-color-text-subdued)]">{row.period_date}</p>
+                                <p className="m-0 mt-[var(--lb-space-1)] text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)]">
+                                    {formatMoneyFromPaise(row.mrr_paise)}
+                                </p>
+                                <p className="m-0 mt-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] text-[var(--lb-color-text-subdued)]">
+                                    Net new {formatMoneyFromPaise(row.new_mrr_paise)} · churn {formatMoneyFromPaise(row.churned_mrr_paise)}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <EmptyDataState message="No MRR trend rollups are available yet." />
+                )}
+            </Panel>
 
             <Panel
                 title="Recent Billing Records"
-                description="Latest subscription records from /v1/internal/console/subscriptions."
+                description="Latest subscription records remain available for source-level reconciliation."
             >
-                <div className="overflow-x-auto">
-                    <table className="w-full min-w-[720px] text-left text-sm">
+                <Table className="shadow-none" containerClassName="overflow-x-auto" tableClassName="min-w-[720px] text-left text-sm">
                         <thead className="text-[var(--lb-color-text-subdued)]">
                             <tr className="border-b border-[var(--lb-color-border)]">
                                 <th className="px-[var(--lb-space-3)] py-[var(--lb-space-3)] font-[var(--lb-font-weight-medium)]">Plan</th>
@@ -100,16 +148,11 @@ export default async function RevenuePage() {
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
-                </div>
+                </Table>
                 <p className="m-0 mt-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                    Active records on latest page: {activeRows}. Full revenue cohorts need a dedicated aggregate endpoint.
+                    Active records on latest page: {activeRows}. Trials on latest page: {trialRows}.
                 </p>
             </Panel>
-
-            <SkipBackendPanel title="Cohort revenue, churn, refunds, and invoices" contract="/v1/internal/console/revenue">
-                The current gateway exposes summary totals and subscription rows only. Leadership-grade MRR cohorts, churn, refunds, invoice aging, and net revenue require backend projections.
-            </SkipBackendPanel>
         </ConsoleWorkspace>
     );
 }

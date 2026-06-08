@@ -1,36 +1,41 @@
 # Merchant Trust Scorecard (Phase 13)
 
-Would a merchant trust *installing apps* from LetBuyy today? Scored across the signals merchants actually use. Parent: [Master Audit](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md).
+**Parent:** [`../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md`](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md) · **Date:** 2026-06-07
 
-## Score: 41 / 100
+**Question:** *Would a merchant trust installing apps from LetBuyy today?* **Scoring:** 0–10 per signal, weighted. **Overall: 4.1 / 10 — "not yet trustworthy enough to rely on."** The install/permission moment is genuinely trustworthy; almost everything around it (catalog emptiness, unbacked badges, invisible billing, leaked internal copy) erodes confidence.
 
-| Dimension | Weight | Score | Notes |
+## Scorecard
+
+| Trust signal | Score | Why | Evidence |
 |---|---|---|---|
-| Catalog credibility (are there real, vetted apps?) | 20 | 3/20 | **Empty catalog**; homepage admits no rows. Nothing to trust because nothing is there. |
-| Trust badges (meaningful?) | 12 | 3/12 | "Built for LetBuyy" hard-coded on every app — meaningless. "Verified" maps to `app_developers.verified` (real) but rarely set. |
-| Reviews & ratings | 14 | 8/14 | **Verified-install-only** reviews are a real strength; but no write UI, no histogram, no replies, no moderation, and no reviews exist yet. |
-| Permissions transparency | 12 | 8/12 | Clear scope list (label + code) in consent modal and detail; but no per-scope rationale, no data-handling disclosure, all-or-nothing. |
-| Pricing clarity | 10 | 5/10 | Detail shows plans/trial; but submission only captures monthly, `usage_based` is rejected by DB, billing terms aren't shown at install. |
-| Safe install/uninstall | 12 | 9/12 | Idempotent install, scope normalization, confirm-dialog uninstall with data-loss warning. Strong. Iframe sandbox combo is a risk. |
-| Developer accountability | 8 | 3/8 | Developer card + website/support email; `tax_id` collected but not verified; no profile depth, no support SLA. |
-| Security signals | 8 | 2/8 | GDPR webhooks exist server-side (good) but aren't surfaced; no security/compliance disclosure on listings; search-injection risk. |
-| Honesty of states | 4 | 4/4 | Honest outage + empty states instead of fake data. Genuinely good. |
+| **Permissions transparency** | 9/10 | Best surface in the product: consent modal lists each scope (label + raw code), names target store, states billing terms before granting | `AppInstallConsentPanel.tsx:185-279` |
+| **Safe install/uninstall** | 8/10 | Session-gated install; uninstall confirm with explicit data-loss note; backend revokes token + fires `shop/redact` | `InstalledAppsGrid.tsx:153`; `install-lifecycle-routes.ts:257,344` |
+| **Authentic reviews** | 6/10 | Reviews are real (install required), histogram derived from data, honest "No reviews yet" — but none exist yet and abuse reporting is disabled | `apps/[slug]/page.tsx:464-506,493` |
+| **Honest data (no fakery)** | 8/10 | No fabricated catalog/metrics/reviews anywhere; honest empty states | `page.tsx:274`; `AppCard.tsx:31-42` |
+| **Catalog depth / social proof** | 1/10 | Empty catalog; 0 installs, 0 reviews to learn from | `page.tsx:274` |
+| **Quality/vetting signals** | 2/10 | "Built for LetBuyy" badge has **no program and no DB column**; "Verified partner" has no verification workflow; no security/perf signals | `marketplace-display.ts:25,49` |
+| **Pricing clarity** | 5/10 | Pricing rows + "merchant approval required" clear; but `usage_based`→"not supported yet", taxonomy inconsistent, **no charge-approval UI** so paid apps can't actually be billed | `marketplace-display.ts:33-47` |
+| **Developer accountability** | 2/10 | Public developer profiles are placeholder shells that print a flag name; no track record, no support SLA enforced | `developers/[slug]/page.tsx:28,38` |
+| **App quality over time** | 1/10 | No versioning/update path → merchants can't trust apps get fixed; changelog UI has no data source | Master flow 5 |
+| **Support & recourse** | 2/10 | Only a developer support email; no ticketing, no merchant→developer channel, disabled "Report" buttons | `apps/[slug]:617` |
+| **Professional polish** | 5/10 | Detail page & consent are polished; but placeholder pages leak `Flag: NEXT_PUBLIC_*` to users, stale `letbuyy.store` domain, dead upload boxes | `partners/page.tsx:26`; `Footer.tsx:34` |
 
-## What earns trust today
-- Verified-install-only reviews.
-- Explicit, retryable outage state; honest empty catalog copy.
-- Clear permission disclosure and a strong uninstall confirmation with data-loss warning.
+**Weighted overall: ~4.1 / 10.**
 
-## What destroys trust today
-- **An empty store.** A merchant who arrives finds no apps to install.
-- **A trust badge on every app that means nothing** — once noticed, it poisons every other signal.
-- **Pricing promises the product can't keep** (usage_based rejected; 15% vs 20% commission visible to anyone comparing the developer page to behavior).
-- **No quality signals**: no real "last updated," no install trend, no support responsiveness, no editorial vetting visible.
+## What builds trust here (keep)
 
-## To reach a trustworthy 75+
-1. Seed a curated launch catalog of real, working apps.
-2. Make "Built for LetBuyy" an **earned** badge with published criteria and annual re-review.
-3. Ship the **review write UI** + histogram + developer replies + moderation.
-4. Add **data-handling disclosures** and surface the compliance posture on listings.
-5. Show **billing terms at install** and fix the commission/pricing contradictions.
-6. Verify developer identity (GSTIN/KYC) before granting payouts and show a verified-developer signal that's actually gated.
+The **install decision moment** is the product's trust high-water mark: clear permissions, explicit target-store context, billing-approval guarantee, data-loss-aware uninstall, and a refusal to fake data. A merchant who reaches the consent modal is treated honestly.
+
+## What breaks trust (fix)
+
+1. **Emptiness** — a store with nothing in it reads as abandoned; there's no social proof to lean on.
+2. **Unbacked badges** — "Built for LetBuyy"/"Verified partner" imply vetting that doesn't exist; this is the most damaging trust issue because it's *actively misleading*, not merely absent.
+3. **Leaked internal state** — pages that print feature-flag names and "contract-gated"/"SKIPPED (HUMAN-APPROVAL)" copy make the product feel like a staging build.
+4. **Invisible billing** — a merchant can install a paid app but never see/approve a charge, undermining confidence that money is handled correctly.
+5. **No accountability** — placeholder developer profiles, no support channel, disabled reporting.
+6. **No quality-over-time signal** — without versioning, a merchant can't trust apps are maintained.
+7. **Stale domain** — `letbuyy.store` vs canonical `letbuyy.com` reads as inconsistency/неglect.
+
+## Path to a trustworthy 8/10
+
+In priority order: seed a real catalog with real installs/reviews (Master #1); make "Built for LetBuyy"/"Verified" true or remove them (#17, #31); ship charge-approval UI so billing is visible (#10); remove all leaked-flag/governance copy (Content #1); build real developer profiles + support + reporting (#19, #26, #27); ship versioning so quality-over-time is visible (#2); migrate the domain (#28). The foundation (consent UX, honesty) is strong enough that trust can rise quickly once the surrounding signals become real.

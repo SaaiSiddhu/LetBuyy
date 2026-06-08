@@ -3,8 +3,15 @@ import {
   writeRuntimeTelemetryDataPoint,
   type RuntimeTelemetryDatasetBinding,
 } from '@letbuyy/infrastructure/runtime-telemetry-adapter';
+import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import { consumePlatformQueuesForCloudflareQueue } from './platform-queue-consumer';
 import type { PushProviderEnv } from './push-dispatcher';
+import { processComplianceDeliveries, runComplianceAuditExportDryRun } from './compliance';
+import { processExecutiveAnalyticsDeliveries, runExecutiveAnalyticsRollup } from './executive-analytics';
+import { processIncidentCommandDeliveries, runIncidentPostmortemReminders } from './incident-command';
+import { processRiskScoringDeliveries } from './risk-scoring';
+import { processReviewCheckDeliveries } from './review-checks';
+import { processSupportAutomationDeliveries } from './support-automation';
 
 type QueuePayload = {
   messageId?: string;
@@ -43,6 +50,11 @@ export interface Env extends SupabaseServiceEnv, PushProviderEnv {
   PLATFORM_QUEUE_CIRCUIT_FAILURE_THRESHOLD?: string;
   PLATFORM_QUEUE_CIRCUIT_OPEN_SECONDS?: string;
   PLATFORM_QUEUE_DRAIN_GENERIC_FANOUT?: string;
+  API_GATEWAY_SERVICE?: Fetcher;
+  INTERNAL_API_SECRET?: string;
+  CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT?: string;
+  RESEND_API_KEY?: string;
+  RESEND_FROM_EMAIL?: string;
 }
 
 class QueueProcessingError extends Error {
@@ -328,6 +340,108 @@ function writeQueueLog(level: 'info' | 'error', fields: Record<string, unknown>)
   console.info(line);
 }
 
+function emailPayload(value: Record<string, unknown>): {
+  to: string;
+  subject: string;
+  text: string;
+  html?: string;
+  orderId?: string;
+  storeId?: string;
+} | null {
+  const to = typeof value.to === 'string' ? value.to : '';
+  const subject = typeof value.subject === 'string' ? value.subject : '';
+  const text = typeof value.text === 'string' ? value.text : '';
+  if (!to || !subject || !text) return null;
+
+  return {
+    to,
+    subject,
+    text,
+    html: typeof value.html === 'string' ? value.html : undefined,
+    orderId: typeof value.order_id === 'string' ? value.order_id : undefined,
+    storeId: typeof value.store_id === 'string' ? value.store_id : undefined,
+  };
+}
+
+function resendConfigured(env: Env): boolean {
+  const key = env.RESEND_API_KEY;
+  return Boolean(key && !key.toLowerCase().includes('placeholder') && !key.toLowerCase().includes('skip_needs_human'));
+}
+
+async function dispatchEmailDeliveries(env: Env, deliveries: NormalizedQueueDelivery[]): Promise<void> {
+  for (const delivery of deliveries) {
+    if (delivery.status === 'dead-lettered' || delivery.input.jobType !== 'email.order_confirmation') continue;
+    const payload = emailPayload(delivery.input.payload);
+    if (!payload) {
+      throw new QueueProcessingError('email.order_confirmation payload is invalid', { deterministic: true });
+    }
+
+    if (!resendConfigured(env)) {
+      writeQueueLog('error', {
+        job_type: delivery.input.jobType,
+        status: 'missing-resend-secret',
+        order_id: payload.orderId || null,
+        store_id: payload.storeId || delivery.input.siteId,
+        request_id: delivery.input.requestId,
+      });
+      continue;
+    }
+
+    const result = await sendResendEmail({
+      apiKey: env.RESEND_API_KEY!,
+      from: env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>',
+      to: payload.to,
+      subject: payload.subject,
+      text: payload.text,
+      html: payload.html,
+    });
+
+    if (!result.success) {
+      throw new QueueProcessingError(result.error || 'Resend order confirmation failed', { deterministic: false });
+    }
+
+    writeQueueLog('info', {
+      job_type: delivery.input.jobType,
+      status: 'sent',
+      order_id: payload.orderId || null,
+      store_id: payload.storeId || delivery.input.siteId,
+      request_id: delivery.input.requestId,
+    });
+  }
+}
+
+async function triggerCustomDomainReconciler(env: Env, cron: string): Promise<void> {
+  if (!env.API_GATEWAY_SERVICE || !env.INTERNAL_API_SECRET) {
+    writeQueueLog('error', {
+      route: 'scheduled.custom_domain_reconciler',
+      status: 'missing-binding-or-secret',
+    });
+    return;
+  }
+
+  const url = new URL('https://queue-workers.internal/v1/internal/custom-domain-reconcile/run');
+  if (env.CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT) {
+    url.searchParams.set('limit', env.CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT);
+  }
+
+  const response = await env.API_GATEWAY_SERVICE.fetch(new Request(url.toString(), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Internal-API-Secret': env.INTERNAL_API_SECRET,
+      'X-Request-ID': `custom-domain-reconcile:${cron}:${Date.now()}`,
+    },
+  }));
+
+  const body = await response.json().catch(() => null) as unknown;
+  writeQueueLog(response.ok ? 'info' : 'error', {
+    route: 'scheduled.custom_domain_reconciler',
+    status: response.ok ? 'completed' : 'failed',
+    response_status: response.status,
+    result: body,
+  });
+}
+
 export default {
   async queue(batch, env) {
     const deliveries = normalizeDeliveries(batch);
@@ -356,6 +470,14 @@ export default {
         });
       }
 
+      await dispatchEmailDeliveries(env, deliveries);
+      const riskScoringResult = await processRiskScoringDeliveries(env, deliveries);
+      const reviewCheckResult = await processReviewCheckDeliveries(env, deliveries);
+      const supportAutomationResult = await processSupportAutomationDeliveries(env, deliveries);
+      const complianceResult = await processComplianceDeliveries(env, deliveries);
+      const executiveAnalyticsResult = await processExecutiveAnalyticsDeliveries(env, deliveries);
+      const incidentCommandResult = await processIncidentCommandDeliveries(env, deliveries);
+
       for (const delivery of deliveries) delivery.message.ack();
       writeQueueLog('info', {
         queue_name: batch.queue,
@@ -363,6 +485,12 @@ export default {
         status: 'acked',
         quarantined: deliveries.filter((delivery) => delivery.status === 'dead-lettered').length,
         platform_queue_result: platformQueueResult,
+        risk_scoring_result: riskScoringResult,
+        review_check_result: reviewCheckResult,
+        support_automation_result: supportAutomationResult,
+        compliance_result: complianceResult,
+        executive_analytics_result: executiveAnalyticsResult,
+        incident_command_result: incidentCommandResult,
       });
     } catch (error) {
       for (const delivery of deliveries) delivery.message.retry();
@@ -373,5 +501,56 @@ export default {
         error: error instanceof Error ? error.message : 'queue batch failed',
       });
     }
+  },
+  async scheduled(controller, env, ctx) {
+    const cron = controller.cron || 'manual';
+    ctx.waitUntil(triggerCustomDomainReconciler(env, cron));
+    ctx.waitUntil(
+      runExecutiveAnalyticsRollup(env, {
+        requestId: `scheduled:executive-analytics:${cron}:${Date.now()}`,
+        reason: 'Nightly executive analytics rollup from queue-worker scheduled trigger.',
+      })
+        .then((result) => writeQueueLog('info', {
+          route: 'scheduled.executive_analytics_rollup',
+          status: 'completed',
+          result,
+        }))
+        .catch((error) => writeQueueLog('error', {
+          route: 'scheduled.executive_analytics_rollup',
+          status: 'failed',
+          error: error instanceof Error ? error.message : 'executive analytics rollup failed',
+        })),
+    );
+    ctx.waitUntil(
+      runIncidentPostmortemReminders(env, {
+        requestId: `scheduled:incident-postmortem-reminder:${cron}:${Date.now()}`,
+      })
+        .then((result) => writeQueueLog('info', {
+          route: 'scheduled.incident_postmortem_reminder',
+          status: 'completed',
+          result,
+        }))
+        .catch((error) => writeQueueLog('error', {
+          route: 'scheduled.incident_postmortem_reminder',
+          status: 'failed',
+          error: error instanceof Error ? error.message : 'incident postmortem reminder failed',
+        })),
+    );
+    ctx.waitUntil(
+      runComplianceAuditExportDryRun(env, {
+        requestId: `scheduled:compliance-audit-export:${cron}:${Date.now()}`,
+        reason: 'Scheduled local dry-run audit export cursor advance.',
+      })
+        .then((result) => writeQueueLog('info', {
+          route: 'scheduled.compliance_audit_export',
+          status: 'completed',
+          result,
+        }))
+        .catch((error) => writeQueueLog('error', {
+          route: 'scheduled.compliance_audit_export',
+          status: 'failed',
+          error: error instanceof Error ? error.message : 'compliance audit export failed',
+        })),
+    );
   },
 } satisfies ExportedHandler<Env, QueuePayload | Record<string, unknown>>;

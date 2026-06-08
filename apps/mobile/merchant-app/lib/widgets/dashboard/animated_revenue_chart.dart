@@ -155,46 +155,56 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
               Expanded(
                 child: Row(
                   children: [
-                    Text(
-                      '${widget.currency}${_formatNumber(widget.totalRevenue.toInt())}',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                        color: colors.textPrimary,
-                        letterSpacing: -0.5,
+                    Flexible(
+                      child: Text(
+                        '${widget.currency}${_formatNumber(widget.totalRevenue.toInt())}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: colors.textPrimary,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: mobile_tokens.LetbuyyColorTokens.brandPrimary
-                            .withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.payments_outlined,
-                            color:
-                                mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                            size: 10,
-                          ),
-                          const SizedBox(width: 2),
-                          Text(
-                            'Live total',
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: mobile_tokens.LetbuyyColorTokens.brandPrimary
+                              .withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.payments_outlined,
                               color:
                                   mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                              size: 10,
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 2),
+                            Flexible(
+                              child: Text(
+                                'Live total',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w700,
+                                  color: mobile_tokens
+                                      .LetbuyyColorTokens
+                                      .brandPrimary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],

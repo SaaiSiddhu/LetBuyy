@@ -8,7 +8,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
+import { Button, Input,
     X, User, Mail, Lock, Eye, EyeOff,
     Package, Heart, MapPin, Settings, LogOut,
     ArrowLeft, Loader2, ShoppingBag,
@@ -174,35 +174,35 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                        className="fixed bottom-0 left-0 right-0 z-[90] bg-white rounded-t-2xl max-h-[85vh] overflow-y-auto md:right-auto md:top-0 md:bottom-0 md:left-auto md:rounded-none md:rounded-l-2xl md:w-[400px] shadow-2xl"
+                        className="fixed bottom-0 left-0 right-0 z-[90] bg-[var(--lb-color-surface)] rounded-t-2xl max-h-[85vh] overflow-y-auto md:right-auto md:top-0 md:bottom-0 md:left-auto md:rounded-none md:rounded-l-2xl md:w-[400px] shadow-2xl"
                         style={{
-                            backgroundColor: 'var(--background, #FFFFFF)',
-                            color: 'var(--text, #1A1A2E)',
+                            backgroundColor: 'var(--background, rgb(255 255 255))',
+                            color: 'var(--text, rgb(26 26 46))',
                         }}
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'var(--border, #E5E7EB)' }}>
+                        <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
                             <div className="flex items-center gap-2">
                                 {(state === 'password_login' || state === 'set_password' || state === 'not_found') && (
-                                    <button
+                                    <Button unstyled
                                         onClick={goBack}
-                                        className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
-                                        style={{ color: 'var(--text-secondary, #6B7280)' }}
+                                        className="p-1 rounded-lg hover:bg-[var(--lb-color-surface-subdued)] transition-colors"
+                                        style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}
                                     >
                                         <ArrowLeft size={20} />
-                                    </button>
+                                    </Button>
                                 )}
                                 <h2 className="text-lg font-semibold">
                                     {state === 'logged_in' ? 'My Account' : 'Sign In'}
                                 </h2>
                             </div>
-                            <button
+                            <Button unstyled
                                 onClick={onClose}
-                                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                                style={{ color: 'var(--text-secondary, #6B7280)' }}
+                                className="p-2 rounded-lg hover:bg-[var(--lb-color-surface-subdued)] transition-colors"
+                                style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}
                             >
                                 <X size={20} />
-                            </button>
+                            </Button>
                         </div>
 
                         {/* Content */}
@@ -218,12 +218,12 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                         onSubmit={handleEmailSubmit}
                                         className="space-y-4"
                                     >
-                                        <p className="text-sm" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                                        <p className="text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                             Enter your email to sign in or create an account.
                                         </p>
                                         <div className="relative">
-                                            <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, #9CA3AF)' }} />
-                                            <input
+                                            <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, rgb(156 163 175))' }} />
+                                            <Input unstyled
                                                 ref={emailRef}
                                                 type="email"
                                                 value={email}
@@ -232,21 +232,21 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                                 required
                                                 className="w-full pl-10 pr-4 py-3 rounded-xl border text-sm outline-none transition-colors"
                                                 style={{
-                                                    borderColor: 'var(--border, #D1D5DB)',
-                                                    backgroundColor: 'var(--surface, #F9FAFB)',
-                                                    color: 'var(--text, #1A1A2E)',
+                                                    borderColor: 'var(--border, rgb(209 213 219))',
+                                                    backgroundColor: 'var(--surface, rgb(249 250 251))',
+                                                    color: 'var(--text, rgb(26 26 46))',
                                                 }}
                                             />
                                         </div>
                                         {error && <p className="text-red-500 text-sm">{error}</p>}
-                                        <button
+                                        <Button unstyled
                                             type="submit"
                                             disabled={loading}
                                             className="w-full py-3 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-opacity disabled:opacity-50"
-                                            style={{ backgroundColor: 'var(--primary, #00B3B3)' }}
+                                            style={{ backgroundColor: 'var(--primary, rgb(0 179 179))' }}
                                         >
                                             {loading ? <Loader2 size={18} className="animate-spin" /> : 'Continue'}
-                                        </button>
+                                        </Button>
                                     </motion.form>
                                 )}
 
@@ -260,13 +260,13 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                         onSubmit={handleLogin}
                                         className="space-y-4"
                                     >
-                                        <p className="text-sm" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                                        <p className="text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                             Welcome back! Enter your password for <strong>{email}</strong>.
                                         </p>
                                         <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} onExpire={() => setTurnstileToken(null)} />
                                         <div className="relative">
-                                            <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, #9CA3AF)' }} />
-                                            <input
+                                            <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, rgb(156 163 175))' }} />
+                                            <Input unstyled
                                                 ref={passwordRef}
                                                 type={showPassword ? 'text' : 'password'}
                                                 value={password}
@@ -275,29 +275,29 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                                 required
                                                 className="w-full pl-10 pr-12 py-3 rounded-xl border text-sm outline-none transition-colors"
                                                 style={{
-                                                    borderColor: 'var(--border, #D1D5DB)',
-                                                    backgroundColor: 'var(--surface, #F9FAFB)',
-                                                    color: 'var(--text, #1A1A2E)',
+                                                    borderColor: 'var(--border, rgb(209 213 219))',
+                                                    backgroundColor: 'var(--surface, rgb(249 250 251))',
+                                                    color: 'var(--text, rgb(26 26 46))',
                                                 }}
                                             />
-                                            <button
+                                            <Button unstyled
                                                 type="button"
                                                 onClick={() => setShowPassword(!showPassword)}
                                                 className="absolute right-3 top-1/2 -translate-y-1/2"
-                                                style={{ color: 'var(--text-secondary, #9CA3AF)' }}
+                                                style={{ color: 'var(--text-secondary, rgb(156 163 175))' }}
                                             >
                                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                            </button>
+                                            </Button>
                                         </div>
                                         {error && <p className="text-red-500 text-sm">{error}</p>}
-                                        <button
+                                        <Button unstyled
                                             type="submit"
                                             disabled={loading}
                                             className="w-full py-3 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-opacity disabled:opacity-50"
-                                            style={{ backgroundColor: 'var(--primary, #00B3B3)' }}
+                                            style={{ backgroundColor: 'var(--primary, rgb(0 179 179))' }}
                                         >
                                             {loading ? <Loader2 size={18} className="animate-spin" /> : 'Sign In'}
-                                        </button>
+                                        </Button>
                                     </motion.form>
                                 )}
 
@@ -311,12 +311,12 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                         onSubmit={handleSetPassword}
                                         className="space-y-4"
                                     >
-                                        <p className="text-sm" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                                        <p className="text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                             We found your account for <strong>{email}</strong>. Set a password to secure it.
                                         </p>
                                         <div className="relative">
-                                            <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, #9CA3AF)' }} />
-                                            <input
+                                            <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, rgb(156 163 175))' }} />
+                                            <Input unstyled
                                                 ref={passwordRef}
                                                 type={showPassword ? 'text' : 'password'}
                                                 value={password}
@@ -326,23 +326,23 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                                 minLength={6}
                                                 className="w-full pl-10 pr-12 py-3 rounded-xl border text-sm outline-none transition-colors"
                                                 style={{
-                                                    borderColor: 'var(--border, #D1D5DB)',
-                                                    backgroundColor: 'var(--surface, #F9FAFB)',
-                                                    color: 'var(--text, #1A1A2E)',
+                                                    borderColor: 'var(--border, rgb(209 213 219))',
+                                                    backgroundColor: 'var(--surface, rgb(249 250 251))',
+                                                    color: 'var(--text, rgb(26 26 46))',
                                                 }}
                                             />
-                                            <button
+                                            <Button unstyled
                                                 type="button"
                                                 onClick={() => setShowPassword(!showPassword)}
                                                 className="absolute right-3 top-1/2 -translate-y-1/2"
-                                                style={{ color: 'var(--text-secondary, #9CA3AF)' }}
+                                                style={{ color: 'var(--text-secondary, rgb(156 163 175))' }}
                                             >
                                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                            </button>
+                                            </Button>
                                         </div>
                                         <div className="relative">
-                                            <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, #9CA3AF)' }} />
-                                            <input
+                                            <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, rgb(156 163 175))' }} />
+                                            <Input unstyled
                                                 type={showPassword ? 'text' : 'password'}
                                                 value={confirmPassword}
                                                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -350,21 +350,21 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                                 required
                                                 className="w-full pl-10 pr-4 py-3 rounded-xl border text-sm outline-none transition-colors"
                                                 style={{
-                                                    borderColor: 'var(--border, #D1D5DB)',
-                                                    backgroundColor: 'var(--surface, #F9FAFB)',
-                                                    color: 'var(--text, #1A1A2E)',
+                                                    borderColor: 'var(--border, rgb(209 213 219))',
+                                                    backgroundColor: 'var(--surface, rgb(249 250 251))',
+                                                    color: 'var(--text, rgb(26 26 46))',
                                                 }}
                                             />
                                         </div>
                                         {error && <p className="text-red-500 text-sm">{error}</p>}
-                                        <button
+                                        <Button unstyled
                                             type="submit"
                                             disabled={loading}
                                             className="w-full py-3 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-opacity disabled:opacity-50"
-                                            style={{ backgroundColor: 'var(--primary, #00B3B3)' }}
+                                            style={{ backgroundColor: 'var(--primary, rgb(0 179 179))' }}
                                         >
                                             {loading ? <Loader2 size={18} className="animate-spin" /> : 'Create Account'}
-                                        </button>
+                                        </Button>
                                     </motion.form>
                                 )}
 
@@ -379,13 +379,13 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                     >
                                         <div
                                             className="w-16 h-16 rounded-full mx-auto flex items-center justify-center"
-                                            style={{ backgroundColor: 'var(--surface, #F3F4F6)' }}
+                                            style={{ backgroundColor: 'var(--surface, rgb(243 244 246))' }}
                                         >
-                                            <User size={28} style={{ color: 'var(--text-secondary, #9CA3AF)' }} />
+                                            <User size={28} style={{ color: 'var(--text-secondary, rgb(156 163 175))' }} />
                                         </div>
                                         <div>
                                             <p className="font-semibold">No account found</p>
-                                            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                                            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                                 No account exists for <strong>{email}</strong>. Place an order and your account will be created automatically!
                                             </p>
                                         </div>
@@ -394,20 +394,20 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                                 href={`${basePath}/shop`}
                                                 onClick={onClose}
                                                 className="w-full py-3 rounded-xl text-white text-sm font-semibold text-center transition-opacity"
-                                                style={{ backgroundColor: 'var(--primary, #00B3B3)' }}
+                                                style={{ backgroundColor: 'var(--primary, rgb(0 179 179))' }}
                                             >
                                                 <span className="flex items-center justify-center gap-2">
                                                     <ShoppingBag size={18} />
                                                     Start Shopping
                                                 </span>
                                             </Link>
-                                            <button
+                                            <Button unstyled
                                                 onClick={goBack}
                                                 className="text-sm py-2 transition-colors"
-                                                style={{ color: 'var(--primary, #00B3B3)' }}
+                                                style={{ color: 'var(--primary, rgb(0 179 179))' }}
                                             >
                                                 Try a different email
-                                            </button>
+                                            </Button>
                                         </div>
                                     </motion.div>
                                 )}
@@ -422,16 +422,16 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                         className="space-y-5"
                                     >
                                         {/* Avatar & Greeting */}
-                                        <div className="flex items-center gap-3 pb-4 border-b" style={{ borderColor: 'var(--border, #E5E7EB)' }}>
+                                        <div className="flex items-center gap-3 pb-4 border-b" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
                                             <div
                                                 className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
-                                                style={{ backgroundColor: 'var(--primary, #00B3B3)' }}
+                                                style={{ backgroundColor: 'var(--primary, rgb(0 179 179))' }}
                                             >
                                                 {initials}
                                             </div>
                                             <div>
                                                 <p className="font-semibold">{customer.fullName || 'Customer'}</p>
-                                                <p className="text-sm" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                                                <p className="text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                                     {customer.email}
                                                 </p>
                                             </div>
@@ -451,27 +451,27 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                                     onClick={onClose}
                                                     className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-colors hover:opacity-80"
                                                     style={{
-                                                        color: 'var(--text, #1A1A2E)',
+                                                        color: 'var(--text, rgb(26 26 46))',
                                                     }}
                                                 >
-                                                    <Icon size={20} style={{ color: 'var(--text-secondary, #6B7280)' }} />
+                                                    <Icon size={20} style={{ color: 'var(--text-secondary, rgb(107 114 128))' }} />
                                                     {label}
                                                 </Link>
                                             ))}
                                         </nav>
 
                                         {/* Sign Out */}
-                                        <button
+                                        <Button unstyled
                                             onClick={handleLogout}
                                             className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
                                             style={{
-                                                borderColor: 'var(--border, #E5E7EB)',
-                                                color: 'var(--text-secondary, #6B7280)',
+                                                borderColor: 'var(--border, rgb(229 231 235))',
+                                                color: 'var(--text-secondary, rgb(107 114 128))',
                                             }}
                                         >
                                             <LogOut size={18} />
                                             Sign Out
-                                        </button>
+                                        </Button>
                                     </motion.div>
                                 )}
                             </AnimatePresence>

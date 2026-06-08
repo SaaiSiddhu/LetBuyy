@@ -3,12 +3,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { DEFAULT_ADMIN_LOCALE, getAdminLocaleOptions, normalizeAdminLocale } from '@/lib/i18n/admin-locales'
-import {
+import { Button, Input,
     Banner,
-    Button,
     Card,
     ConfirmDialog,
-    Input,
     Section,
     Select,
     Skeleton,

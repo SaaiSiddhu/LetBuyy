@@ -60,6 +60,7 @@ type InternalPaymentRouteDeps = {
     emitStorefrontOrderPaidEvent(
         db: GatewayDb,
         input: {
+            env?: Env;
             orderId: string;
             order: StorefrontPaidOrderSnapshot;
             fallbackOrder?: StorefrontPaidOrderSnapshot;
@@ -171,6 +172,7 @@ export function registerStorefrontInternalPaymentRoutes(router: StorefrontRouter
         await deps.emitStorefrontOrderPaidEvent(db, {
             orderId: body.orderId,
             order: order as StorefrontPaidOrderSnapshot,
+            env: c.env,
             requestId: deps.getRequestId(c),
             idempotencyKey: body.idempotencyKey || body.providerEventId || body.paymentId,
         });

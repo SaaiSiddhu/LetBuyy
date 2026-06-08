@@ -211,6 +211,7 @@ export function planAnalyticsRollupIncrements(input: {
   eventType: string;
   occurredAt?: string;
   aggregateType?: string | null;
+  aggregateId?: string | null;
   payload?: Record<string, unknown>;
 }): AnalyticsRollupIncrementPlan[] {
   const date = analyticsRollupDate(input.occurredAt);
@@ -285,6 +286,137 @@ export function planAnalyticsRollupIncrements(input: {
       dimensions: { status },
       increment: 1,
     });
+  }
+
+  if (input.eventType === 'media.processed') {
+    plans.push({
+      siteId: input.siteId,
+      metricName: 'media.processed',
+      date,
+      dimensions: {
+        content_type: typeof input.payload?.content_type === 'string' ? input.payload.content_type : null,
+      },
+      increment: 1,
+    });
+
+    const sizeBytes = analyticsPositiveNumber(input.payload?.size_bytes, 0);
+    if (sizeBytes > 0) {
+      plans.push({
+        siteId: input.siteId,
+        metricName: 'media.size_bytes',
+        date,
+        dimensions: {},
+        increment: sizeBytes,
+      });
+    }
+  }
+
+  const storefrontKind = storefrontAnalyticsKind(input.eventType, input.payload);
+  if (storefrontKind) {
+    const sampleWeight = analyticsPositiveNumber(input.payload?.sample_weight, 1);
+    const source = analyticsDimension(input.payload?.source, 'direct');
+    const referrer = analyticsDimension(input.payload?.referrer, null);
+    const campaign = analyticsDimension(input.payload?.campaign, null);
+    const medium = analyticsDimension(input.payload?.medium, null);
+    const sourceDimensions = { source, referrer, campaign, medium };
+
+    if (storefrontKind === 'session_started') {
+      plans.push({
+        siteId: input.siteId,
+        metricName: 'storefront.sessions.started',
+        date,
+        dimensions: sourceDimensions,
+        increment: sampleWeight,
+      });
+      plans.push({
+        siteId: input.siteId,
+        metricName: 'storefront.sessions.active',
+        date,
+        dimensions: {
+          session_id: analyticsDimension(input.payload?.session_id, null),
+          source,
+        },
+        increment: sampleWeight,
+      });
+      plans.push({
+        siteId: input.siteId,
+        metricName: 'storefront.traffic.source',
+        date,
+        dimensions: sourceDimensions,
+        increment: sampleWeight,
+      });
+
+      const device = analyticsDimension(input.payload?.device, null);
+      if (device) {
+        plans.push({
+          siteId: input.siteId,
+          metricName: 'storefront.session.device',
+          date,
+          dimensions: { device },
+          increment: sampleWeight,
+        });
+      }
+
+      const country = analyticsDimension(input.payload?.country, null);
+      if (country) {
+        plans.push({
+          siteId: input.siteId,
+          metricName: 'storefront.session.country',
+          date,
+          dimensions: { country },
+          increment: sampleWeight,
+        });
+      }
+    }
+
+    if (storefrontKind === 'page_view' || storefrontKind === 'product_view') {
+      plans.push({
+        siteId: input.siteId,
+        metricName: 'storefront.page.views',
+        date,
+        dimensions: {
+          path: analyticsDimension(input.payload?.path, '/'),
+          page_title: analyticsDimension(input.payload?.page_title, null),
+          source,
+          referrer,
+        },
+        increment: sampleWeight,
+      });
+    }
+
+    if (storefrontKind === 'product_view') {
+      plans.push({
+        siteId: input.siteId,
+        metricName: 'storefront.product.views',
+        date,
+        dimensions: {
+          product_id: analyticsDimension(input.payload?.product_id, input.aggregateId || null),
+          product_slug: analyticsDimension(input.payload?.product_slug, null),
+          source,
+        },
+        increment: sampleWeight,
+      });
+    }
+
+    if (storefrontKind === 'cart_add') {
+      plans.push({
+        siteId: input.siteId,
+        metricName: 'storefront.cart.added',
+        date,
+        dimensions: sourceDimensions,
+        increment: sampleWeight,
+      });
+    }
+
+    if (storefrontKind === 'checkout_started') {
+      plans.push({
+        siteId: input.siteId,
+        metricName: 'storefront.checkouts.started',
+        date,
+        dimensions: sourceDimensions,
+        increment: sampleWeight,
+      });
+    }
   }
 
   return plans;
@@ -363,6 +495,42 @@ function analyticsPositiveNumber(value: unknown, fallback: number): number {
   const numberValue = Number(value);
   if (!Number.isFinite(numberValue) || numberValue <= 0) return fallback;
   return Math.max(1, Math.trunc(numberValue));
+}
+
+function analyticsDimension(value: unknown, fallback: string | null): string | null {
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim().slice(0, 240) : fallback;
+}
+
+function storefrontAnalyticsKind(
+  eventType: string,
+  payload?: Record<string, unknown>,
+): 'session_started' | 'page_view' | 'product_view' | 'cart_add' | 'checkout_started' | null {
+  const explicit = typeof payload?.storefront_event_type === 'string' ? payload.storefront_event_type : null;
+  switch (explicit || eventType) {
+    case 'session_started':
+    case 'storefront.session_started':
+    case 'storefront.session.started':
+      return 'session_started';
+    case 'page_view':
+    case 'storefront.page_view':
+    case 'storefront.page.view':
+      return 'page_view';
+    case 'product_view':
+    case 'storefront.product_view':
+    case 'storefront.product.view':
+    case 'product.viewed':
+      return 'product_view';
+    case 'cart_add':
+    case 'storefront.cart_add':
+    case 'storefront.cart.added':
+      return 'cart_add';
+    case 'checkout_started':
+    case 'storefront.checkout_started':
+    case 'storefront.checkout.started':
+      return 'checkout_started';
+    default:
+      return null;
+  }
 }
 
 function analyticsMajorToMinor(value: unknown): number | null {

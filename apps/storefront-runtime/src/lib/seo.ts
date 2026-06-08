@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import type { ProductModel } from '@letbuyy/commerce-core';
+import { normalizeStoreRootDomain, resolveStorefrontHost } from '@letbuyy/tenant-core';
 import type { StoreModel } from '@letbuyy/tenant-core';
 
-const PLATFORM_DOMAIN = 'letbuyy.store';
 const DEFAULT_LOCAL_STOREFRONT_URL = 'http://localhost:3003';
 
 function cleanPath(path: string): string {
@@ -29,21 +29,14 @@ function absoluteDomainUrl(domain: string | undefined): string | undefined {
 }
 
 export function resolveSubdomainFromHost(host: string | null): string | null {
-    const hostname = host?.split(':')[0]?.toLowerCase();
-    if (!hostname) return null;
-
-    if (hostname.endsWith(`.${PLATFORM_DOMAIN}`)) {
-        const subdomain = hostname.slice(0, -(`.${PLATFORM_DOMAIN}`.length)).split('.').pop();
-        if (subdomain && !['www', 'accounts', 'admin', 'api', 'console', 'storefront'].includes(subdomain)) {
-            return subdomain;
-        }
-    }
-
-    return null;
+    const resolved = resolveStorefrontHost(host, process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
+    return resolved.kind === 'subdomain' ? resolved.subdomain : null;
 }
 
 export function getStorefrontBaseUrl(store: StoreModel): string {
-    const customDomain = absoluteDomainUrl(store.storeUrl);
+    const customDomain = store.customDomainStatus === 'active'
+        ? absoluteDomainUrl(store.storeUrl)
+        : undefined;
     if (customDomain) return customDomain.replace(/\/$/, '');
 
     if (process.env.NODE_ENV !== 'production') {
@@ -51,11 +44,18 @@ export function getStorefrontBaseUrl(store: StoreModel): string {
         return `${localBase}/store/${encodeURIComponent(store.subdomain)}`;
     }
 
-    return `https://${store.subdomain}.${PLATFORM_DOMAIN}`;
+    const storeRootDomain = normalizeStoreRootDomain(process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
+    return `https://${store.subdomain}.${storeRootDomain}`;
 }
 
 export function getStorefrontUrl(store: StoreModel, path = '/'): string {
     return `${getStorefrontBaseUrl(store)}${cleanPath(path)}`;
+}
+
+export function isStorefrontIndexable(store: StoreModel): boolean {
+    return store.status === 'published'
+        && store.published !== false
+        && (store.accessMode || 'public') === 'public';
 }
 
 function absoluteAssetUrl(store: StoreModel, value: string | undefined): string | undefined {
@@ -143,34 +143,104 @@ export function buildStoreMetadata(
             description,
             images: image ? [image] : undefined,
         },
-        robots: options.noIndex ? { index: false, follow: false } : undefined,
+        robots: (options.noIndex || !isStorefrontIndexable(store)) ? { index: false, follow: false } : undefined,
     };
+}
+
+function priceValidUntil(monthsAhead = 12): string {
+    const date = new Date();
+    date.setMonth(date.getMonth() + monthsAhead);
+    return date.toISOString().split('T')[0];
 }
 
 export function buildProductJsonLd(store: StoreModel, product: ProductModel) {
     const productUrl = getStorefrontUrl(store, `/product/${product.id}`);
+    const storeUrl = getStorefrontBaseUrl(store);
     const image = product.images
         .map((entry) => absoluteAssetUrl(store, entry))
         .filter((entry): entry is string => Boolean(entry));
 
-    return {
+    const offer: Record<string, unknown> = {
+        '@type': 'Offer',
+        url: productUrl,
+        priceCurrency: product.currency || 'INR',
+        price: product.price,
+        priceValidUntil: priceValidUntil(),
+        availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        itemCondition: 'https://schema.org/NewCondition',
+        seller: {
+            '@type': 'Organization',
+            name: store.name,
+            url: storeUrl,
+        },
+    };
+
+    const node: Record<string, unknown> = {
         '@context': 'https://schema.org',
         '@type': 'Product',
         name: product.name,
         description: product.description,
         image: image.length > 0 ? image : undefined,
         sku: product.id,
+        category: product.category,
         brand: {
             '@type': 'Brand',
             name: store.name,
         },
-        offers: {
-            '@type': 'Offer',
-            url: productUrl,
-            priceCurrency: product.currency || 'INR',
-            price: product.price,
-            availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-            itemCondition: 'https://schema.org/NewCondition',
-        },
+        offers: offer,
+    };
+
+    // Only emit ratings when the merchant actually has them — fabricated review
+    // markup is a manual-action risk and gets the whole site demoted.
+    if (typeof product.rating === 'number' && product.rating > 0 && typeof product.reviewCount === 'number' && product.reviewCount > 0) {
+        node.aggregateRating = {
+            '@type': 'AggregateRating',
+            ratingValue: Number(product.rating.toFixed(1)),
+            reviewCount: product.reviewCount,
+            bestRating: 5,
+            worstRating: 1,
+        };
+    }
+
+    return node;
+}
+
+/**
+ * Store-level node that establishes each merchant storefront as its own brand
+ * entity, distinct from the LetBuyy platform. `store` site type maps to
+ * schema.org OnlineStore; other site types fall back to Organization.
+ */
+export function buildStoreJsonLd(store: StoreModel) {
+    const url = getStorefrontBaseUrl(store);
+    const logo = absoluteAssetUrl(store, store.logoUrl);
+
+    const node: Record<string, unknown> = {
+        '@context': 'https://schema.org',
+        '@type': store.siteType === 'store' ? 'OnlineStore' : 'Organization',
+        '@id': `${url}/#store`,
+        name: store.name,
+        url,
+        description: store.seoDescription || store.tagline || `Shop ${store.name} on LetBuyy.`,
+    };
+
+    if (logo) {
+        node.logo = logo;
+        node.image = logo;
+    }
+
+    return node;
+}
+
+/** BreadcrumbList for a storefront path. Pass ordered crumbs from home -> leaf. */
+export function buildBreadcrumbJsonLd(store: StoreModel, crumbs: Array<{ name: string; path: string }>) {
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: crumbs.map((crumb, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: crumb.name,
+            item: getStorefrontUrl(store, crumb.path),
+        })),
     };
 }

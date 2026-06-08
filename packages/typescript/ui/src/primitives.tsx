@@ -2,9 +2,7 @@
 
 import React, { useId } from 'react';
 import { Button } from './button';
-import { warnDeprecated } from './deprecations';
 import { Calendar, Check, ChevronDown, Loader2, X } from './icons';
-import { Text, type TextProps } from './layout';
 import { type LetbuyyDensity } from './tokens';
 import { cx } from './utils';
 
@@ -639,34 +637,5 @@ export function Spinner({ label = 'Loading', size = 'md', className = '', ...pro
             <Loader2 className={cx('animate-spin', spinnerSizeClasses[size])} aria-hidden="true" />
             <span className="sr-only">{label}</span>
         </span>
-    );
-}
-
-export interface TextStyleProps extends React.HTMLAttributes<HTMLElement> {
-    children: React.ReactNode;
-    as?: 'span' | 'p' | 'strong' | 'em' | 'code';
-    variant?: 'body' | 'subdued' | 'strong' | 'positive' | 'negative' | 'code';
-}
-
-/**
- * @deprecated since 0.0.2. Use `Text` with `variant`, `tone`, and `weight` instead.
- */
-export function TextStyle({ children, as, variant = 'body', className = '', ...props }: TextStyleProps) {
-    warnDeprecated('TextStyle', 'Text');
-
-    const textVariant = variant === 'body' ? 'body' : variant;
-    const tone: TextProps['tone'] | undefined = variant === 'body' ? 'default' : undefined;
-
-    return (
-        <Text
-            as={as ?? (variant === 'code' ? 'code' : 'span')}
-            variant={textVariant}
-            tone={tone}
-            reset={false}
-            className={className}
-            {...props}
-        >
-            {children}
-        </Text>
     );
 }

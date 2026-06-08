@@ -2,11 +2,10 @@
 
 import { useMemo, useState, useTransition } from 'react'
 import type { InstalledApp } from '@letbuyy/shared-types'
-import {
+import { Button,
     AppWindow,
     Badge,
     Banner,
-    Button,
     Card,
     ConfirmDialog,
     EmptyState,

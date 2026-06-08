@@ -5,7 +5,7 @@
 'use client';
 
 import { useWishlist } from '@/context/wishlist-context';
-import { Heart, ShoppingBag } from '@letbuyy/ui';
+import { Button, Heart, ShoppingBag } from '@letbuyy/ui';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
@@ -32,36 +32,36 @@ export default function WishlistPage() {
     return (
         <div>
             <h1 className="text-2xl font-bold mb-6">
-                Wishlist <span className="text-base font-normal" style={{ color: 'var(--text-secondary, #6B7280)' }}>({items.length})</span>
+                Wishlist <span className="text-base font-normal" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>({items.length})</span>
             </h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {items.map(productId => (
                     <div
                         key={productId}
                         className="rounded-2xl border p-4 relative transition-shadow hover:shadow-md"
-                        style={{ borderColor: 'var(--border, #E5E7EB)' }}
+                        style={{ borderColor: 'var(--border, rgb(229 231 235))' }}
                     >
-                        <button
+                        <Button unstyled
                             onClick={() => toggleWishlist(productId)}
                             className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-red-50 transition-colors"
                             aria-label="Remove from wishlist"
                         >
-                            <Heart size={18} fill="#ef4444" stroke="#ef4444" />
-                        </button>
+                            <Heart size={18} fill="rgb(239 68 68)" stroke="rgb(239 68 68)" />
+                        </Button>
                         <Link href={`${basePath}/product/${productId}`}>
                             <div
                                 className="w-full aspect-square rounded-xl mb-3 flex items-center justify-center"
-                                style={{ backgroundColor: 'var(--surface, #F3F4F6)' }}
+                                style={{ backgroundColor: 'var(--surface, rgb(243 244 246))' }}
                             >
-                                <ShoppingBag size={24} style={{ color: 'var(--text-secondary, #9CA3AF)' }} />
+                                <ShoppingBag size={24} style={{ color: 'var(--text-secondary, rgb(156 163 175))' }} />
                             </div>
                             <p className="text-sm font-semibold">
                                 Saved product
                             </p>
-                            <p className="mt-1 text-xs font-mono" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                            <p className="mt-1 text-xs font-mono" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                 {productId.slice(0, 12)}
                             </p>
-                            <p className="mt-2 text-xs leading-relaxed" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                            <p className="mt-2 text-xs leading-relaxed" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                 Product detail hydration needs backend support; open the product page for the current storefront record.
                             </p>
                         </Link>

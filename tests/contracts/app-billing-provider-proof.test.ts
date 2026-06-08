@@ -47,5 +47,7 @@ test('gateway activates app billing only after provider verification', () => {
     assert.match(sharedRouteSource, /provider_reference: stringOrNull\(input\.charge\.provider_reference\) \|\| undefined/);
     assert.match(sharedRouteSource, /provider_mode: input\.charge\.provider_mode === 'live' \? 'live' : 'test'/);
     assert.match(queueSource, /provider_reference: payload\.provider_reference \|\| null/);
-    assert.match(queueSource, /payout_provider_mode: payload\.provider_mode === 'live' \? 'live' : 'test'/);
+    assert.match(queueSource, /payout_provider_mode: providerMode/);
+    assert.match(queueSource, /planSandboxAppPayoutTransfer/);
+    assert.match(queueSource, /eventType: 'payout\.released'/);
 });

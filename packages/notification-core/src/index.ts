@@ -1,8 +1,10 @@
 import { z } from 'zod';
 import type { RuntimeEventEnvelope } from '@letbuyy/event-core';
 
-export type NotificationChannel = 'email' | 'sms' | 'push' | 'in_app';
+export type NotificationChannel = 'whatsapp' | 'sms' | 'email' | 'push' | 'in_app';
 export type NotificationAudience = 'shopper' | 'customer' | 'merchant' | 'platform-employee' | 'platform-operator';
+
+export const NotificationChannelSchema = z.enum(['whatsapp', 'sms', 'email', 'push', 'in_app']);
 
 export const NotificationRecipientSchema = z.object({
   actor_id: z.string().min(1).max(200).optional(),
@@ -12,7 +14,7 @@ export const NotificationRecipientSchema = z.object({
 });
 
 export const NotificationMessageSchema = z.object({
-  channel: z.enum(['email', 'sms', 'push', 'in_app']),
+  channel: NotificationChannelSchema,
   template_key: z.string().min(1).max(120),
   locale: z.string().min(2).max(12).default('en-IN'),
   subject: z.string().max(200).optional(),
@@ -25,6 +27,46 @@ export const NotificationDispatchSchema = z.object({
   recipient: NotificationRecipientSchema,
   message: NotificationMessageSchema,
   idempotency_key: z.string().min(8).max(200),
+});
+
+export const NotificationSendSchema = z.object({
+  site_id: z.string().uuid(),
+  category: z.string().trim().min(1).max(80).default('system'),
+  event_type: z.string().trim().min(1).max(120).optional(),
+  recipient: NotificationRecipientSchema,
+  message: NotificationMessageSchema.omit({ channel: true }).extend({
+    channel: NotificationChannelSchema.optional(),
+  }),
+  preferred_channels: z.array(NotificationChannelSchema).min(1).max(5).optional(),
+  idempotency_key: z.string().min(8).max(200),
+  metadata: z.record(z.string(), z.unknown()).default({}),
+});
+
+const EmailProviderSchema = z.enum(['mock_resend', 'mock_ses', 'mock_sendgrid', 'resend', 'ses', 'sendgrid']);
+
+const EmailContextSchema = z.record(z.string(), z.unknown()).default({});
+
+export const EmailRenderSchema = z.object({
+  template_key: z.string().trim().min(1).max(160),
+  locale: z.string().trim().min(2).max(12).default('en-IN'),
+  subject: z.string().trim().min(1).max(240).optional(),
+  body: z.string().trim().min(1).max(20000).optional(),
+  context: EmailContextSchema,
+});
+
+export const EmailSendSchema = z.object({
+  site_id: z.string().uuid(),
+  to: z.string().email().max(320),
+  from: z.string().email().max(320).optional(),
+  sender_domain: z.string().trim().min(3).max(253).optional(),
+  template_key: z.string().trim().min(1).max(160),
+  locale: z.string().trim().min(2).max(12).default('en-IN'),
+  subject: z.string().trim().min(1).max(240).optional(),
+  body: z.string().trim().min(1).max(20000).optional(),
+  context: EmailContextSchema,
+  provider_preference: EmailProviderSchema.optional(),
+  idempotency_key: z.string().min(8).max(200),
+  metadata: z.record(z.string(), z.unknown()).default({}),
 });
 
 export interface NotificationTemplate {
@@ -47,6 +89,173 @@ export interface NotificationRecipient {
   email?: string;
   phone?: string;
   push_token?: string;
+}
+
+export interface NotificationRoutePlan {
+  selected_channel: NotificationChannel | null;
+  candidates: NotificationChannel[];
+  reason: 'explicit' | 'whatsapp_first' | 'no_reachable_channel';
+}
+
+export type EmailProvider = z.infer<typeof EmailProviderSchema>;
+export type EmailMode = 'mock' | 'sandbox' | 'live';
+
+export interface RenderedEmailTemplate {
+  template_key: string;
+  locale: string;
+  subject: string;
+  html: string;
+  text: string;
+}
+
+export interface EmailProviderFailoverPlan {
+  mode: EmailMode;
+  providers: EmailProvider[];
+  preferred_provider: EmailProvider | null;
+}
+
+const MOCK_EMAIL_PROVIDERS: EmailProvider[] = ['mock_resend', 'mock_ses', 'mock_sendgrid'];
+const LIVE_EMAIL_PROVIDERS: EmailProvider[] = ['resend', 'ses', 'sendgrid'];
+
+const DEFAULT_EMAIL_TEMPLATES: Record<string, { subject: string; body: string }> = {
+  order_confirmation: {
+    subject: 'Order {{ order_number }} confirmed',
+    body: '<mjml><mj-body><mj-section><mj-column><mj-text>Hello {{ customer.name }}, your order {{ order_number }} is confirmed.</mj-text></mj-column></mj-section></mj-body></mjml>',
+  },
+  passwordless_otp: {
+    subject: 'Your LetBuyy sign-in code',
+    body: '<mjml><mj-body><mj-section><mj-column><mj-text>Your sign-in code is {{ otp }}.</mj-text></mj-column></mj-section></mj-body></mjml>',
+  },
+  billing_invoice: {
+    subject: 'LetBuyy invoice {{ invoice_number }}',
+    body: '<mjml><mj-body><mj-section><mj-column><mj-text>Your invoice {{ invoice_number }} for {{ amount }} is ready.</mj-text></mj-column></mj-section></mj-body></mjml>',
+  },
+  shipment_update: {
+    subject: 'Shipment update for {{ order_number }}',
+    body: '<mjml><mj-body><mj-section><mj-column><mj-text>Your order {{ order_number }} is now {{ shipment_status }}.</mj-text></mj-column></mj-section></mj-body></mjml>',
+  },
+  cart_abandoned: {
+    subject: 'Your LetBuyy cart is waiting',
+    body: '<mjml><mj-body><mj-section><mj-column><mj-text>Complete your cart at {{ checkout_url }}.</mj-text></mj-column></mj-section></mj-body></mjml>',
+  },
+};
+
+function escapeHtml(value: unknown): string {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function lookupContextPath(context: Record<string, unknown>, path: string): unknown {
+  return path.split('.').reduce<unknown>((current, key) => {
+    if (!current || typeof current !== 'object' || Array.isArray(current)) return undefined;
+    return (current as Record<string, unknown>)[key];
+  }, context);
+}
+
+function renderLiquidLike(template: string, context: Record<string, unknown>): string {
+  return template.replace(/\{\{\s*([a-zA-Z0-9_.-]+)\s*\}\}/g, (_match, path: string) => (
+    escapeHtml(lookupContextPath(context, path))
+  ));
+}
+
+function normalizeMjml(input: string): string {
+  return input
+    .replace(/<\/?mjml[^>]*>/gi, '')
+    .replace(/<mj-body([^>]*)>/gi, '<div$1>')
+    .replace(/<\/mj-body>/gi, '</div>')
+    .replace(/<mj-section([^>]*)>/gi, '<section$1>')
+    .replace(/<\/mj-section>/gi, '</section>')
+    .replace(/<mj-column([^>]*)>/gi, '<div$1>')
+    .replace(/<\/mj-column>/gi, '</div>')
+    .replace(/<mj-text([^>]*)>/gi, '<p$1>')
+    .replace(/<\/mj-text>/gi, '</p>')
+    .replace(/<mj-button([^>]*)>/gi, '<a$1>')
+    .replace(/<\/mj-button>/gi, '</a>');
+}
+
+function htmlToText(input: string): string {
+  return input
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function renderEmailTemplate(input: z.infer<typeof EmailRenderSchema>): RenderedEmailTemplate {
+  const parsed = EmailRenderSchema.parse(input);
+  const fallback = DEFAULT_EMAIL_TEMPLATES[parsed.template_key] || {
+    subject: parsed.subject || parsed.template_key,
+    body: parsed.body || '<mjml><mj-body><mj-section><mj-column><mj-text>{{ message }}</mj-text></mj-column></mj-section></mj-body></mjml>',
+  };
+  const subject = renderLiquidLike(parsed.subject || fallback.subject, parsed.context);
+  const rawBody = renderLiquidLike(parsed.body || fallback.body, parsed.context);
+  const html = normalizeMjml(rawBody);
+
+  return {
+    template_key: parsed.template_key,
+    locale: parsed.locale,
+    subject,
+    html,
+    text: htmlToText(html),
+  };
+}
+
+export function planEmailProviderFailover(input: {
+  mode?: EmailMode | null;
+  preferredProvider?: EmailProvider | null;
+  availableProviders?: EmailProvider[] | null;
+} = {}): EmailProviderFailoverPlan {
+  const mode = input.mode || 'mock';
+  const baseline = input.availableProviders?.length
+    ? input.availableProviders
+    : mode === 'live'
+      ? LIVE_EMAIL_PROVIDERS
+      : MOCK_EMAIL_PROVIDERS;
+  const providers = baseline.filter((provider, index) => baseline.indexOf(provider) === index);
+  const preferred = input.preferredProvider && providers.includes(input.preferredProvider)
+    ? input.preferredProvider
+    : null;
+
+  return {
+    mode,
+    providers: preferred
+      ? [preferred, ...providers.filter((provider) => provider !== preferred)]
+      : providers,
+    preferred_provider: preferred,
+  };
+}
+
+const WHATSAPP_FIRST_ORDER: NotificationChannel[] = ['whatsapp', 'sms', 'email', 'push', 'in_app'];
+
+function canReachChannel(channel: NotificationChannel, recipient: NotificationRecipient): boolean {
+  if (channel === 'whatsapp' || channel === 'sms') return Boolean(recipient.phone);
+  if (channel === 'email') return Boolean(recipient.email);
+  if (channel === 'push') return Boolean(recipient.push_token || recipient.actor_id);
+  if (channel === 'in_app') return Boolean(recipient.actor_id);
+  return false;
+}
+
+export function planNotificationRoute(input: {
+  recipient: NotificationRecipient;
+  explicitChannel?: NotificationChannel | null;
+  preferredChannels?: NotificationChannel[] | null;
+}): NotificationRoutePlan {
+  const ordered = input.explicitChannel
+    ? [input.explicitChannel]
+    : (input.preferredChannels?.length ? input.preferredChannels : WHATSAPP_FIRST_ORDER);
+  const candidates = ordered.filter((channel, index) => ordered.indexOf(channel) === index);
+  const selected = candidates.find((channel) => canReachChannel(channel, input.recipient)) || null;
+
+  return {
+    selected_channel: selected,
+    candidates,
+    reason: input.explicitChannel ? 'explicit' : selected ? 'whatsapp_first' : 'no_reachable_channel',
+  };
 }
 
 export type InAppNotificationType =
@@ -205,3 +414,6 @@ export function isValidWebhookTarget(targetUrl: string): boolean {
 export type NotificationRecipientInput = z.infer<typeof NotificationRecipientSchema>;
 export type NotificationMessageInput = z.infer<typeof NotificationMessageSchema>;
 export type NotificationDispatchInput = z.infer<typeof NotificationDispatchSchema>;
+export type NotificationSendInput = z.infer<typeof NotificationSendSchema>;
+export type EmailRenderInput = z.infer<typeof EmailRenderSchema>;
+export type EmailSendInput = z.infer<typeof EmailSendSchema>;

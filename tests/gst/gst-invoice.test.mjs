@@ -45,6 +45,7 @@ function createZodStub() {
     unknown: () => generic,
     date: () => generic,
     enum: () => generic,
+    literal: () => generic,
     union: () => generic,
     array: () => generic,
     record: () => generic,
@@ -79,6 +80,7 @@ function loadCheckoutCore() {
         return {
           AddressSchema: generic,
           CurrencySchema: generic,
+          DraftOrderStatusSchema: generic,
           EmailSchema: generic,
           MoneySchema: generic,
           PaginationQuery: generic,

@@ -2,11 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button, Table,
     Avatar,
     Badge,
     Banner,
-    Button,
     Card,
     ConfirmDialog,
     EmptyState,
@@ -252,7 +251,7 @@ export default function LeadsPage() {
 
         return (
             <div className="overflow-x-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
-                <table className="min-w-full border-collapse bg-[var(--lb-color-surface)] text-left">
+                <Table tableClassName="min-w-full border-collapse bg-[var(--lb-color-surface)] text-left">
                     <thead>
                         <tr className="border-b border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)]">
                             <th scope="col" className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Lead</th>
@@ -314,7 +313,7 @@ export default function LeadsPage() {
                             </tr>
                         ))}
                     </tbody>
-                </table>
+                </Table>
             </div>
         )
     }

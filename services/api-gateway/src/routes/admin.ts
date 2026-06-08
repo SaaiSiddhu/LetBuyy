@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { Env } from '../index';
 import { getSupabaseAdmin, success, paginated } from '../lib/supabase';
 import { requireRoleCategory, requireSuperAdmin } from '../middleware/rbac';
+import { dispatchStoreAppComplianceWebhook } from './app-store/compliance-routes';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -140,6 +141,19 @@ router.delete('/stores/:id', async (c) => {
 
     const storeId = c.req.param('id');
     const db = getSupabaseAdmin(c);
+    const auth = c.get('auth');
+    const deletedAt = new Date().toISOString();
+
+    await dispatchStoreAppComplianceWebhook(c, {
+        eventType: 'shop/redact',
+        storeId,
+        idempotencyKey: c.req.header('X-Idempotency-Key') || `store-delete:${storeId}`,
+        triggerSource: 'system',
+        actorId: auth.user.id,
+        reason: 'store_deleted',
+        requestedAt: deletedAt,
+        failClosed: false,
+    });
 
     // Cascade delete: products, orders, etc. are handled by FK constraints
     const { error } = await db.from('sites').delete().eq('id', storeId);
@@ -150,7 +164,7 @@ router.delete('/stores/:id', async (c) => {
 
     // Audit log
     await db.from('audit_logs').insert({
-        actor_id: c.get('auth').user.id,
+        actor_id: auth.user.id,
         actor_type: 'super_admin',
         action: 'store_deleted',
         resource_type: 'store',

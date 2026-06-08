@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import type { SessionUser } from '@/lib/auth/session'
 import type { StoreData, UserStore } from './AdminShell'
-import { MaterialIcon } from '@letbuyy/ui'
+import { Button, MaterialIcon } from '@letbuyy/ui'
 import { getMerchantNavigation, type MerchantNavItem } from './merchantNavigation'
 
 /* ——————————————————————————————————————
@@ -103,7 +103,7 @@ export default function Sidebar({ store, storeData, isOpen, onClose }: SidebarPr
                         {item.shortcut && <kbd className="admin-nav-shortcut">{item.shortcut}</kbd>}
                     </Link>
                     {hasChildren && (
-                        <button
+                        <Button unstyled
                             className="admin-nav-expand-btn"
                             onClick={(e) => {
                                 e.stopPropagation()
@@ -114,7 +114,7 @@ export default function Sidebar({ store, storeData, isOpen, onClose }: SidebarPr
                             aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${item.label} navigation`}
                         >
                             <MaterialIcon name="chevron_right" className={`${isExpanded ? 'expanded' : ''}`} />
-                        </button>
+                        </Button>
                     )}
                 </div>
 

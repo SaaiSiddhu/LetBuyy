@@ -2,14 +2,19 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+    Button,
     CheckCircle2,
     ExternalLink,
+    Input,
     Lock,
     Loader2,
     Modal,
     ShieldCheck,
 } from '@letbuyy/ui';
 import { formatScopeLabel } from '@/lib/marketplace-display';
+import { recordMarketplaceEvent } from '@/lib/telemetry';
+import { formatInrCurrency } from '@letbuyy/ui/formatting';
+import type { AppPricingPlan } from '@letbuyy/shared-types';
 
 interface AppInstallConsentPanelProps {
     appId: string;
@@ -17,6 +22,7 @@ interface AppInstallConsentPanelProps {
     priceLabel: string;
     priceDetail: string;
     scopes: string[];
+    pricingPlans?: AppPricingPlan[];
     launchUrl?: string | null;
     privacyUrl?: string | null;
     termsUrl?: string | null;
@@ -29,6 +35,12 @@ interface InstallResponse {
         installation?: {
             id?: string;
         };
+        authorization?: {
+            installation_id?: string;
+        };
+        token?: {
+            expires_at?: string | null;
+        } | null;
     };
     error?: {
         message?: string;
@@ -42,24 +54,50 @@ function getErrorMessage(payload: InstallResponse | null, status: number): strin
     return 'The app could not be installed right now.';
 }
 
+function planPriceDetail(plan: AppPricingPlan): string {
+    const amount = formatInrCurrency(Number(plan.amount_minor || plan.usage_unit_amount_minor || 0) / 100, {
+        maximumFractionDigits: 0,
+        requirePositive: true,
+    });
+    const interval = plan.interval === 'monthly' ? '/mo' : plan.interval === 'yearly' ? '/yr' : '';
+    const trial = typeof plan.trial_days === 'number' && plan.trial_days > 0 ? ` · ${plan.trial_days}-day trial` : '';
+    const usage = plan.pricing_model === 'usage' && plan.usage_unit ? ` per ${plan.usage_unit}` : '';
+    return amount ? `${amount}${interval}${usage}${trial}` : `Free${trial}`;
+}
+
+function defaultPricingPlan(plans: AppPricingPlan[]): AppPricingPlan | null {
+    return plans.find((plan) => plan.is_default) || plans[0] || null;
+}
+
 function AppInstallConsentPanelInner({
     appId,
     appName,
     priceLabel,
     priceDetail,
     scopes,
+    pricingPlans = [],
     launchUrl,
     privacyUrl,
     termsUrl,
 }: AppInstallConsentPanelProps) {
+    const activePlans = useMemo(() => pricingPlans.filter((plan) => plan.status === 'active'), [pricingPlans]);
+    const initialPlan = useMemo(() => defaultPricingPlan(activePlans), [activePlans]);
     const [mode, setMode] = useState<InstallMode>('ready');
     const [consentOpen, setConsentOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
     const [installationId, setInstallationId] = useState<string | null>(null);
+    const [selectedPlanId, setSelectedPlanId] = useState<string | null>(initialPlan?.id || null);
+    const embedUrl: string | null = null;
     const launchRef = useRef<HTMLDivElement>(null);
     const permissionLabels = useMemo(() => scopes.map(formatScopeLabel), [scopes]);
-    const canLaunch = Boolean(launchUrl);
+    const selectedPlan = useMemo(
+        () => activePlans.find((plan) => plan.id === selectedPlanId) || initialPlan,
+        [activePlans, initialPlan, selectedPlanId],
+    );
+    const installPriceLabel = selectedPlan ? selectedPlan.name : priceLabel;
+    const installPriceDetail = selectedPlan ? planPriceDetail(selectedPlan) : priceDetail;
+    const canLaunch = Boolean(embedUrl || launchUrl);
 
     useEffect(() => {
         if (mode !== 'installed' || !canLaunch) return;
@@ -76,12 +114,18 @@ function AppInstallConsentPanelInner({
         setMode('installing');
         setError(null);
         setNotice(null);
+        recordMarketplaceEvent('install_started', { appId, scopes });
 
         try {
             const response = await fetch(`/api/apps/${appId}/install`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ scopes }),
+                body: JSON.stringify({
+                    action: 'oauth_install',
+                    scopes,
+                    pricing_plan_id: selectedPlan?.id || undefined,
+                    redirect_uri: launchUrl || undefined,
+                }),
             });
             const payload = await response.json().catch(() => null) as InstallResponse | null;
 
@@ -89,10 +133,12 @@ function AppInstallConsentPanelInner({
                 throw new Error(getErrorMessage(payload, response.status));
             }
 
-            setInstallationId(payload?.data?.installation?.id || null);
+            const nextInstallationId = payload?.data?.installation?.id || payload?.data?.authorization?.installation_id || null;
+            setInstallationId(nextInstallationId);
             setMode('installed');
             setConsentOpen(false);
-            setNotice(canLaunch ? 'Launching the embedded app view.' : 'Open My Apps to manage this installation.');
+            setNotice(nextInstallationId ? 'OAuth install completed. Open My Apps for setup, scopes, and billing actions.' : 'Open My Apps to manage this installation.');
+            recordMarketplaceEvent('install_completed', { appId, installationId: nextInstallationId, oauth: true });
         } catch (installError) {
             const message = installError instanceof Error ? installError.message : 'The app could not be installed right now.';
             setError(message);
@@ -130,16 +176,16 @@ function AppInstallConsentPanelInner({
                     >
                         <div className="app-install-launch__header">
                             <span>Embedded launch</span>
-                            <a href={launchUrl || '#'} target="_blank" rel="noreferrer">
+                            <a href={embedUrl || launchUrl || '#'} target="_blank" rel="noreferrer">
                                 Open full screen
                                 <ExternalLink size={13} aria-hidden="true" />
                             </a>
                         </div>
                         <iframe
                             title={`${appName} embedded launch`}
-                            src={launchUrl || undefined}
+                            src={embedUrl || launchUrl || undefined}
                             loading="lazy"
-                            sandbox="allow-forms allow-popups allow-same-origin allow-scripts"
+                            sandbox="allow-forms allow-popups allow-scripts"
                         />
                     </div>
                 ) : (
@@ -164,9 +210,29 @@ function AppInstallConsentPanelInner({
     return (
         <div className="app-install-panel">
             <div className="app-install-price">
-                <span>{priceLabel}</span>
-                <p>{priceDetail}</p>
+                <span>{installPriceLabel}</span>
+                <p>{installPriceDetail}</p>
             </div>
+            {activePlans.length > 0 && (
+                <div className="app-install-plan-selector" role="radiogroup" aria-label={`${appName} pricing plans`}>
+                    {activePlans.map((plan) => (
+                        <label key={plan.id} className="app-install-plan-option">
+                            <Input
+                                unstyled
+                                type="radio"
+                                name={`pricing-plan-${appId}`}
+                                value={plan.id}
+                                checked={(selectedPlan?.id || '') === plan.id}
+                                onChange={() => setSelectedPlanId(plan.id)}
+                            />
+                            <span>
+                                <strong>{plan.name}</strong>
+                                <small>{planPriceDetail(plan)}</small>
+                            </span>
+                        </label>
+                    ))}
+                </div>
+            )}
             <div className="app-install-scope-summary">
                 <ShieldCheck size={15} aria-hidden="true" />
                 <span>
@@ -175,10 +241,18 @@ function AppInstallConsentPanelInner({
                         : 'No API permissions requested.'}
                 </span>
             </div>
-            <button className="app-install-primary-button" type="button" onClick={() => setConsentOpen(true)}>
+            <Button
+                unstyled
+                className="app-install-primary-button"
+                type="button"
+                onClick={() => {
+                    recordMarketplaceEvent('install_consent_opened', { appId });
+                    setConsentOpen(true);
+                }}
+            >
                 <ShieldCheck size={16} aria-hidden="true" />
                 Review access and install
-            </button>
+            </Button>
             <Modal
                 open={consentOpen}
                 title={`Approve ${appName} access`}
@@ -186,15 +260,17 @@ function AppInstallConsentPanelInner({
                 onClose={closeConsent}
                 footer={(
                     <>
-                        <button
+                        <Button
+                            unstyled
                             type="button"
                             className="app-install-secondary-button"
                             onClick={closeConsent}
                             disabled={mode === 'installing'}
                         >
                             Cancel
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                            unstyled
                             type="button"
                             className="app-install-primary-button"
                             onClick={installApp}
@@ -202,7 +278,7 @@ function AppInstallConsentPanelInner({
                         >
                             {mode === 'installing' && <Loader2 size={15} className="app-install-spinner" aria-hidden="true" />}
                             Grant access and install
-                        </button>
+                        </Button>
                     </>
                 )}
             >
@@ -210,9 +286,17 @@ function AppInstallConsentPanelInner({
                     <div className="app-install-consent__heading">
                         <Lock size={16} aria-hidden="true" />
                         <div>
-                            <h3>Permissions requested</h3>
-                            <p>Review the exact scope names before granting access to your store.</p>
+                            <h3>Permissions, store, and billing</h3>
+                            <p>Review requested scopes, target store context, and billing terms before granting access.</p>
                         </div>
+                    </div>
+                    <div className="marketplace-banner marketplace-banner--info">
+                        <strong>Target store</strong>
+                        <span>The app will be installed to the store attached to your signed-in merchant session.</span>
+                    </div>
+                    <div className="marketplace-banner marketplace-banner--info">
+                        <strong>{installPriceLabel}</strong>
+                        <span>{installPriceDetail}. Paid charges require merchant billing approval before activation.</span>
                     </div>
                     <ul className="app-install-permission-list">
                         {permissionLabels.length > 0 ? (

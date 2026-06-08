@@ -3,6 +3,8 @@ import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
+import '../shared/accessible_tap_region.dart';
+
 /// Quick actions grid for dashboard
 class QuickActionsGrid extends StatelessWidget {
   final VoidCallback? onEditSections;
@@ -96,61 +98,69 @@ class _ActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white.withValues(alpha: 0.05), // Glass
-      borderRadius: BorderRadius.circular(16),
-      elevation: 0,
-      child: InkWell(
-        onTap: () {
-          HapticFeedback.lightImpact();
-          onTap?.call();
-        },
+    void handleTap() {
+      HapticFeedback.lightImpact();
+      onTap?.call();
+    }
+
+    return AccessibleTapRegion(
+      label: label,
+      hint: subtitle,
+      onTap: onTap == null ? null : handleTap,
+      excludeChildSemantics: true,
+      child: Material(
+        color: Colors.white.withValues(alpha: 0.05), // Glass
         borderRadius: BorderRadius.circular(16),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
+        elevation: 0,
+        child: InkWell(
+          onTap: onTap == null ? null : handleTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: color, size: 24),
                 ),
-                child: Icon(icon, color: color, size: 24),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      label,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        label,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.white.withValues(alpha: 0.5),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.white.withValues(alpha: 0.5),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -177,31 +187,38 @@ class QuickActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveColor = color ?? AppColors.primary;
 
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        onTap?.call();
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: effectiveColor.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: effectiveColor.withValues(alpha: 0.3)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: effectiveColor, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: effectiveColor,
-                fontWeight: FontWeight.w600,
+    void handleTap() {
+      HapticFeedback.lightImpact();
+      onTap?.call();
+    }
+
+    return AccessibleTapRegion(
+      label: label,
+      onTap: onTap == null ? null : handleTap,
+      excludeChildSemantics: true,
+      child: GestureDetector(
+        onTap: onTap == null ? null : handleTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: effectiveColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: effectiveColor.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: effectiveColor, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  color: effectiveColor,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

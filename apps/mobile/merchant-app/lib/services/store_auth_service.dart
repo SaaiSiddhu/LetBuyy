@@ -9,7 +9,13 @@ import 'api_client.dart';
 
 typedef TurnstileTokenProvider = FutureOr<String> Function();
 
-enum AuthChangeEvent { initialSession, signedIn, signedOut, tokenRefreshed }
+enum AuthChangeEvent {
+  initialSession,
+  signedIn,
+  signedOut,
+  tokenRefreshed,
+  sessionExpired,
+}
 
 class AuthState {
   const AuthState({required this.event, this.session});
@@ -116,6 +122,7 @@ class StoreAuthService extends ChangeNotifier {
   MerchantSessionUser? get currentUser => _session?.user;
   bool get isSignedIn => _session != null;
   String? get accessToken => _session?.token;
+  DateTime? get sessionExpiresAt => _session?.expiresAt;
   Stream<AuthState> get authStateChanges => _authEvents.stream;
 
   Future<void> restoreSession() async {
@@ -126,8 +133,13 @@ class StoreAuthService extends ChangeNotifier {
     }
 
     final restoredUser = await _readStoredUser();
-    if (restoredUser != null) {
-      _session = MerchantSession(token: token, user: restoredUser);
+    final restoredExpiresAt = await _readStoredExpiresAt();
+    if (restoredUser != null && !_isExpired(restoredExpiresAt)) {
+      _session = MerchantSession(
+        token: token,
+        user: restoredUser,
+        expiresAt: restoredExpiresAt,
+      );
       notifyListeners();
     }
 
@@ -141,7 +153,8 @@ class StoreAuthService extends ChangeNotifier {
     }
 
     await _clearSession();
-    _emit(AuthChangeEvent.signedOut);
+    _emit(AuthChangeEvent.sessionExpired);
+    notifyListeners();
   }
 
   Future<MerchantSessionUser?> signInWithPassword(
@@ -318,7 +331,35 @@ class StoreAuthService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> refreshSession() => restoreSession();
+  Future<bool> refreshSession() async {
+    final token =
+        _session?.token ?? await _secureStorage.read(key: _sessionTokenKey);
+    if (token == null || token.isEmpty) {
+      await _clearSession();
+      _emit(AuthChangeEvent.signedOut);
+      notifyListeners();
+      return false;
+    }
+
+    final validatedSession = await _validateIdentitySession(token);
+    if (validatedSession != null) {
+      await _persistSession(validatedSession);
+      _session = validatedSession;
+      _emit(AuthChangeEvent.tokenRefreshed);
+      notifyListeners();
+      return true;
+    }
+
+    await _clearSession();
+    _emit(AuthChangeEvent.sessionExpired);
+    notifyListeners();
+    return false;
+  }
+
+  Future<bool> handleUnauthorized(ApiException exception) async {
+    if (exception.statusCode != 401) return false;
+    return refreshSession();
+  }
 
   Future<String> _requireTurnstileToken([String? override]) async {
     final token =
@@ -327,7 +368,7 @@ class StoreAuthService extends ChangeNotifier {
         token.isEmpty ||
         token.startsWith('SKIP_NEEDS_HUMAN_')) {
       throw Exception(
-        'SKIP_NEEDS_HUMAN_MOBILE_TURNSTILE_TOKEN: mobile Turnstile challenge token is not configured.',
+        'Verification is temporarily unavailable. Please try again later.',
       );
     }
     return token;
@@ -377,7 +418,11 @@ class StoreAuthService extends ChangeNotifier {
       final user = MerchantSessionUser.fromJson(
         Map<String, dynamic>.from(body['user'] as Map),
       );
-      return MerchantSession(token: token, user: user);
+      return MerchantSession(
+        token: token,
+        user: user,
+        expiresAt: _parseDateTime(body['expires_at'] ?? body['expiresAt']),
+      );
     } catch (error) {
       debugPrint('Identity session validation failed: $error');
       return null;
@@ -421,6 +466,8 @@ class StoreAuthService extends ChangeNotifier {
         key: _sessionExpiresAtKey,
         value: session.expiresAt!.toIso8601String(),
       );
+    } else {
+      await _secureStorage.delete(key: _sessionExpiresAtKey);
     }
   }
 
@@ -436,11 +483,20 @@ class StoreAuthService extends ChangeNotifier {
     }
   }
 
+  Future<DateTime?> _readStoredExpiresAt() async {
+    return _parseDateTime(await _secureStorage.read(key: _sessionExpiresAtKey));
+  }
+
   Future<void> _clearSession() async {
     _session = null;
     await _secureStorage.delete(key: _sessionTokenKey);
     await _secureStorage.delete(key: _sessionUserKey);
     await _secureStorage.delete(key: _sessionExpiresAtKey);
+  }
+
+  bool _isExpired(DateTime? expiresAt) {
+    if (expiresAt == null) return false;
+    return !expiresAt.isAfter(DateTime.now().add(const Duration(minutes: 2)));
   }
 
   Uri _identityUri(String path) => Uri.parse('$_identityBaseUrl$path');
@@ -499,4 +555,9 @@ String _stringValue(Object? value) => value is String ? value : '';
 String? _nullableString(Object? value) {
   if (value is! String || value.isEmpty) return null;
   return value;
+}
+
+DateTime? _parseDateTime(Object? value) {
+  if (value is! String || value.trim().isEmpty) return null;
+  return DateTime.tryParse(value.trim());
 }

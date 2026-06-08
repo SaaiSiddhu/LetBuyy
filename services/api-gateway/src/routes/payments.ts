@@ -4,13 +4,15 @@ import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { hmacSha256Hex, timingSafeEqualHex } from '../lib/crypto';
 import { dbErrorBody, errorBody, getSupabaseAdmin } from '../lib/supabase';
-import { ForbiddenError, ConflictError, NotFoundError } from '../lib/errors';
+import { ForbiddenError, ConflictError, HumanRequiredError, NotFoundError } from '../lib/errors';
 import { validate } from '../middleware/validation';
 import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { enqueueOrderConfirmationEmail } from '../lib/order-confirmation-email';
+import { stepUpErrorBody, verifySensitiveActionStepUp } from '../lib/security-controls';
 import { SubscriptionExecutionAdapter } from '../execution/subscription-execution.adapter';
-import { createRazorpayOrder, createRazorpaySubscription } from '@letbuyy/infrastructure/razorpay-adapter';
+import { createRazorpayOrder, fetchRazorpayPayment } from '@letbuyy/infrastructure/razorpay-adapter';
 import { createStripeCheckoutSessionWithFetch } from '@letbuyy/infrastructure/stripe-adapter';
 import {
     RazorpayOrderSchema,
@@ -21,20 +23,40 @@ import {
     CancelSubscriptionSchema,
     CreateSubscriptionOrderSchema,
     PlanListQuerySchema,
+    RecoverSubscriptionPaymentSchema,
     StoreSubscriptionQuerySchema,
     VerifySubscriptionSchema,
     type CancelSubscriptionInput,
     type BillingPlanCatalogRecord,
     type CreateSubscriptionOrderInput,
     type PlanListQueryInput,
+    type RecoverSubscriptionPaymentInput,
     type StoreSubscriptionQueryInput,
     type VerifySubscriptionInput,
     applyStorePlanTierDefaults,
-    normalizeMerchantApprovedUsageCharges,
     planBillingAmountMinor,
-    planMerchantRazorpayBillingCheckout,
     razorpayBillingSignaturePayload,
 } from '@letbuyy/billing-core';
+import { createMerchantSubscriptionCheckout } from '../lib/subscription-checkout';
+import {
+    CreatePaymentSessionSchema,
+    PaymentCaptureSchema,
+    PaymentRefundSchema,
+    PaymentVoidSchema,
+    type CreatePaymentSessionInput,
+    type PaymentCaptureInput,
+    type PaymentRefundInput,
+    type PaymentVoidInput,
+} from '../schemas/payment.schema';
+import {
+    buildMockPaymentSessionPlan,
+    inrMoney,
+    livePaymentCredentialsAreRequired,
+    normalizeV1PaymentSessionProvider,
+    resolvePaymentProviderMode,
+    type PaymentProviderMode,
+    type V1PaymentSessionProvider,
+} from '@letbuyy/payments';
 
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
@@ -62,9 +84,190 @@ type ClientAmountFields = {
 };
 
 type JsonRecord = Record<string, unknown>;
+type PaymentJsonValue = null | boolean | number | string | PaymentJsonValue[] | { [key: string]: PaymentJsonValue };
+
+type PaymentSessionRow = {
+    id: string;
+    site_id: string;
+    order_id: string;
+    provider: V1PaymentSessionProvider;
+    mode: PaymentProviderMode;
+    status: string;
+    amount_minor: number;
+    currency: 'INR';
+    provider_order_id?: string | null;
+    provider_payment_id?: string | null;
+    provider_session_id?: string | null;
+    idempotency_key: string;
+    client_action?: string | null;
+    metadata?: JsonRecord | null;
+};
+
+
+function resolvePlatformOrigin(c: AppContext): string {
+    const rawDomain = c.env.LETBUYY_PLATFORM_DOMAIN
+        || c.env.NEXT_PUBLIC_PLATFORM_DOMAIN
+        || c.env.PLATFORM_ROOT_DOMAIN
+        || 'letbuyy.com';
+    const domain = rawDomain
+        .trim()
+        .replace(/^https?:\/\//, '')
+        .replace(/\/.*$/, '')
+        .replace(/^\.+|\.+$/g, '');
+
+    return `https://${domain || 'letbuyy.com'}`;
+}
 
 function getRequestId(c: AppContext): string {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
+}
+
+function paymentProviderMode(c: AppContext, provider: V1PaymentSessionProvider, requested?: PaymentProviderMode): PaymentProviderMode {
+    if (requested) return resolvePaymentProviderMode(requested);
+
+    const envRecord = c.env as Env & Record<string, string | undefined>;
+    const providerKey = `LETBUYY_${provider.toUpperCase()}_MODE`;
+    return resolvePaymentProviderMode(envRecord[providerKey] || c.env.LETBUYY_PAYMENT_MODE || 'mock');
+}
+
+async function activeMerchantPaymentCredential(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    siteId: string,
+    provider: V1PaymentSessionProvider,
+    mode: PaymentProviderMode,
+): Promise<{ id: string } | null> {
+    if (mode === 'mock') return null;
+
+    const { data } = await db
+        .from('payment_credentials')
+        .select('id')
+        .eq('site_id', siteId)
+        .eq('provider', provider)
+        .eq('mode', mode)
+        .eq('status', 'active')
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    return data as { id: string } | null;
+}
+
+function paymentSetupRequiredResponse(c: AppContext) {
+    return c.json(
+        {
+            error: {
+                code: 'PAYMENT_SETUP_REQUIRED',
+                message: 'Payment provider setup is required before live payments can be enabled.',
+            },
+        },
+        503,
+    );
+}
+
+async function requireLivePaymentCredential(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    siteId: string,
+    provider: V1PaymentSessionProvider,
+    mode: PaymentProviderMode,
+): Promise<{ id: string } | null> {
+    const credential = await activeMerchantPaymentCredential(db, siteId, provider, mode);
+    if (livePaymentCredentialsAreRequired({ provider, mode, merchantCredentialPresent: Boolean(credential) })) {
+        // [HUMAN-REQUIRED] HR-MERCHANT-PSP-LIVE: merchant-owned live PSP credentials
+        // must be captured and encrypted before live payment rails are enabled.
+        throw new HumanRequiredError('Payment provider setup is required before live payments can be enabled.', {
+            provider,
+            site_id: siteId,
+        });
+    }
+    return credential;
+}
+
+async function emitPaymentEvent(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        siteId: string;
+        paymentId: string;
+        orderId: string;
+        eventType: string;
+        payload: JsonRecord;
+        actorId?: string | null;
+        requestId: string;
+        idempotencyKey: string;
+    },
+): Promise<void> {
+    await new EventExecutionAdapter(db).emitDomainEvent({
+        storeId: input.siteId,
+        aggregateType: 'order',
+        aggregateId: input.orderId,
+        eventType: input.eventType,
+        payload: {
+            order_id: input.orderId,
+            payment_id: input.paymentId,
+            provider_event_id: String(input.payload.provider_event_id || input.idempotencyKey),
+            ...input.payload,
+        },
+        idempotencyKey: input.idempotencyKey,
+        requestId: input.requestId,
+        actorId: input.actorId || null,
+    });
+}
+
+async function loadOwnedPaymentSession(
+    c: AppContext,
+    paymentId: string,
+    userId: string,
+    sessionStoreId?: string,
+): Promise<PaymentSessionRow> {
+    const db = getSupabaseAdmin(c);
+    const { data: payment } = await db
+        .from('payments')
+        .select('*')
+        .eq('id', paymentId)
+        .is('deleted_at', null)
+        .single();
+
+    if (!payment) {
+        throw new NotFoundError('Payment not found');
+    }
+
+    const row = payment as PaymentSessionRow;
+    if (!(await verifySiteOwnership(db, row.site_id, userId, sessionStoreId))) {
+        throw new ForbiddenError('Not authorized for this payment');
+    }
+    return row;
+}
+
+async function assertProviderPaymentNotReplayed(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    params: {
+        provider: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
+        providerPaymentId: string;
+        providerOrderId?: string | null;
+        orderId: string;
+    },
+): Promise<void> {
+    const { data: existing, error } = await db
+        .from('payment_transactions')
+        .select('order_id, provider_order_id, provider_payment_id')
+        .eq('gateway', params.provider)
+        .eq('provider_payment_id', params.providerPaymentId)
+        .is('deleted_at', null)
+        .limit(1)
+        .maybeSingle();
+
+    if (error) {
+        throw new Error(`Failed to check payment replay state: ${error.message}`);
+    }
+
+    const replay = existing as { order_id?: string | null; provider_order_id?: string | null } | null;
+    if (!replay) return;
+
+    if (replay.order_id && replay.order_id !== params.orderId) {
+        throw new ConflictError('Payment already verified for another order');
+    }
+
+    if (params.providerOrderId && replay.provider_order_id && replay.provider_order_id !== params.providerOrderId) {
+        throw new ConflictError('Payment reference mismatch');
+    }
 }
 
 function requestedAmountMinorUnits(input: ClientAmountFields): number | null {
@@ -108,6 +311,7 @@ function orderPaidTotalPayload(order: JsonRecord): { amount_minor: number; curre
 }
 
 async function emitOrderPaidEvent(
+    env: Env,
     db: ReturnType<typeof getSupabaseAdmin>,
     input: {
         order: unknown;
@@ -140,6 +344,22 @@ async function emitOrderPaidEvent(
         idempotencyKey: `order.paid:${siteId}:${orderId}:${input.idempotencyKey}`,
         requestId: input.requestId,
         actorId: input.actorId || null,
+    });
+
+    await enqueueOrderConfirmationEmail(env, db, {
+        orderId,
+        storeId: siteId,
+        requestId: input.requestId,
+        idempotencyKey: input.idempotencyKey,
+    }).catch((error) => {
+        console.error(JSON.stringify({
+            level: 'error',
+            event: 'order_confirmation_email_dispatch_failed',
+            order_id: orderId,
+            store_id: siteId,
+            request_id: input.requestId,
+            error: error instanceof Error ? error.message : 'unknown error',
+        }));
     });
 }
 
@@ -214,6 +434,427 @@ async function loadPayableOrder(
     };
 }
 
+// POST /payments/sessions — V1 provider-agnostic merchant-owned payment session
+router.post('/sessions', validate('json', CreatePaymentSessionSchema), async (c) => {
+    const auth = c.get('auth');
+    const body = c.get('validatedBody') as CreatePaymentSessionInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    const requestId = getRequestId(c);
+
+    if (!customUser) {
+        throw new ForbiddenError('User profile not found');
+    }
+
+    const order = await loadPayableOrder(c, body.order_id, customUser.id, auth.user.storeId);
+    const provider = normalizeV1PaymentSessionProvider(body.provider);
+    const mode = paymentProviderMode(c, provider, body.mode);
+
+    let credential: { id: string } | null = null;
+    try {
+        credential = await requireLivePaymentCredential(db, order.store_id, provider, mode);
+    } catch (error) {
+        if (error instanceof HumanRequiredError) {
+            return paymentSetupRequiredResponse(c);
+        }
+        throw error;
+    }
+
+    const amountMinorUnits = Math.round(order.total * 100);
+    const idempotency = new IdempotencyExecutionAdapter(db);
+    const claim = await idempotency.begin({
+        siteId: order.store_id,
+        key: body.idempotency_key,
+        scope: `payment.session:${body.order_id}`,
+        requestBody: body,
+        requestId,
+    });
+
+    if (claim.kind === 'replay') {
+        return c.json(claim.responseBody as never, claim.statusCode as never);
+    }
+
+    try {
+        const plan = buildMockPaymentSessionPlan({
+            provider,
+            mode,
+            orderId: body.order_id,
+            amount: inrMoney(amountMinorUnits),
+            idempotencyKey: body.idempotency_key,
+            merchantCredentialPresent: Boolean(credential),
+            metadata: {
+                ...(body.metadata || {}),
+                channel: asRecord(body.metadata).channel || 'web',
+                tokenization_requested: body.tokenize === true,
+            },
+        });
+        const expiresAt = new Date(Date.now() + (plan.expiresInSeconds * 1000)).toISOString();
+
+        const { data: insertedPayment, error: insertError } = await db
+            .from('payments')
+            .insert({
+                site_id: order.store_id,
+                order_id: body.order_id,
+                provider: plan.provider,
+                mode: plan.mode,
+                status: plan.status,
+                amount_minor: plan.amount.amountMinor,
+                currency: plan.amount.currency,
+                provider_order_id: plan.providerOrderId,
+                provider_session_id: plan.providerSessionId,
+                idempotency_key: String(plan.idempotencyKey),
+                credential_id: credential?.id || null,
+                client_action: plan.clientAction,
+                expires_at: expiresAt,
+                metadata: plan.metadata,
+                request_id: requestId,
+                created_by: customUser.id,
+                updated_by: customUser.id,
+            })
+            .select('*')
+            .single();
+
+        if (insertError || !insertedPayment) {
+            await idempotency.fail(claim.id);
+            return c.json(dbErrorBody('Failed to create payment session'), 500);
+        }
+
+        const payment = insertedPayment as PaymentSessionRow;
+
+        if (provider === 'razorpay' || provider === 'cashfree') {
+            await new PaymentExecutionAdapter(db).attachPaymentReference({
+                orderId: body.order_id,
+                provider,
+                providerOrderId: payment.provider_order_id || plan.providerOrderId,
+                requestId,
+                idempotencyKey: body.idempotency_key,
+            });
+        }
+
+        await emitPaymentEvent(db, {
+            siteId: order.store_id,
+            paymentId: payment.id,
+            orderId: body.order_id,
+            eventType: plan.status === 'authorized' ? 'payment.authorized' : 'payment.pending',
+            payload: {
+                provider,
+                provider_event_id: payment.provider_session_id || `payment.session:${payment.id}`,
+                payment_status: plan.status === 'authorized' ? 'authorized' : 'pending',
+                mode,
+                status: plan.status,
+                amount_minor: plan.amount.amountMinor,
+                currency: plan.amount.currency,
+                provider_order_id: payment.provider_order_id,
+                provider_session_id: payment.provider_session_id,
+                client_action: payment.client_action,
+            },
+            actorId: customUser.id,
+            requestId,
+            idempotencyKey: `payment.session:${payment.id}:${body.idempotency_key}`,
+        });
+
+        const responseBody: PaymentJsonValue = {
+            data: {
+                payment_id: payment.id,
+                provider,
+                mode,
+                status: plan.status,
+                amount_minor: plan.amount.amountMinor,
+                currency: plan.amount.currency,
+                provider_order_id: payment.provider_order_id ?? null,
+                provider_session_id: payment.provider_session_id ?? null,
+                client_action: payment.client_action ?? null,
+                expires_at: expiresAt,
+            },
+        };
+
+        await idempotency.complete({
+            id: claim.id,
+            responseBody,
+            statusCode: 201,
+            resourceType: 'payment',
+            resourceId: payment.id,
+        });
+
+        return c.json(responseBody, 201);
+    } catch (error) {
+        await idempotency.fail(claim.id);
+        throw error;
+    }
+});
+
+// POST /payments/:id/capture — capture a V1 payment session in mock/sandbox/live-shaped mode
+router.post('/:paymentId/capture', validate('json', PaymentCaptureSchema), async (c) => {
+    const auth = c.get('auth');
+    const body = c.get('validatedBody') as PaymentCaptureInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    const requestId = getRequestId(c);
+
+    if (!customUser) throw new ForbiddenError('User profile not found');
+
+    const payment = await loadOwnedPaymentSession(c, c.req.param('paymentId'), customUser.id, auth.user.storeId);
+    if (payment.status === 'captured') {
+        return c.json({ data: { captured: true, payment } });
+    }
+    if (payment.status === 'voided' || payment.status === 'refunded' || payment.status === 'failed') {
+        throw new ConflictError('Payment cannot be captured in its current state');
+    }
+
+    const providerPaymentId = body.provider_payment_id || payment.provider_payment_id || `${payment.provider}_${payment.mode}_capture_${payment.id}`;
+    const idempotency = new IdempotencyExecutionAdapter(db);
+    const claim = await idempotency.begin({
+        siteId: payment.site_id,
+        key: body.idempotency_key,
+        scope: `payment.capture:${payment.id}`,
+        requestBody: body,
+        requestId,
+    });
+
+    if (claim.kind === 'replay') {
+        return c.json(claim.responseBody as never, claim.statusCode as never);
+    }
+
+    const { data: updated, error } = await db
+        .from('payments')
+        .update({
+            status: 'captured',
+            provider_payment_id: providerPaymentId,
+            captured_at: new Date().toISOString(),
+            metadata: { ...(payment.metadata || {}), ...(body.metadata || {}) },
+            request_id: requestId,
+            updated_by: customUser.id,
+        })
+        .eq('id', payment.id)
+        .select('*')
+        .single();
+
+    if (error || !updated) {
+        await idempotency.fail(claim.id);
+        return c.json(dbErrorBody('Failed to capture payment'), 500);
+    }
+
+    await db.from('payment_attempts').insert({
+        site_id: payment.site_id,
+        order_id: payment.order_id,
+        payment_id: payment.id,
+        provider: payment.provider,
+        attempt_type: 'capture',
+        status: 'succeeded',
+        amount: payment.amount_minor / 100,
+        currency: payment.currency,
+        provider_order_id: payment.provider_order_id,
+        provider_payment_id: providerPaymentId,
+        provider_session_id: payment.provider_session_id,
+        idempotency_key: body.idempotency_key,
+        request_id: requestId,
+        metadata: body.metadata,
+        created_by: customUser.id,
+        updated_by: customUser.id,
+    });
+
+    await emitPaymentEvent(db, {
+        siteId: payment.site_id,
+        paymentId: payment.id,
+        orderId: payment.order_id,
+        eventType: 'payment.captured',
+        payload: {
+            provider: payment.provider,
+            provider_event_id: providerPaymentId,
+            payment_status: 'paid',
+            mode: payment.mode,
+            provider_payment_id: providerPaymentId,
+            amount_minor: payment.amount_minor,
+            currency: payment.currency,
+        },
+        actorId: customUser.id,
+        requestId,
+        idempotencyKey: `payment.capture:${payment.id}:${body.idempotency_key}`,
+    });
+
+    const responseBody = { data: { captured: true, payment: updated } };
+    await idempotency.complete({
+        id: claim.id,
+        responseBody,
+        statusCode: 200,
+        resourceType: 'payment',
+        resourceId: payment.id,
+    });
+
+    return c.json(responseBody);
+});
+
+// POST /payments/:id/void — void a V1 payment session without mutating ledger truth
+router.post('/:paymentId/void', validate('json', PaymentVoidSchema), async (c) => {
+    const auth = c.get('auth');
+    const body = c.get('validatedBody') as PaymentVoidInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    const requestId = getRequestId(c);
+
+    if (!customUser) throw new ForbiddenError('User profile not found');
+
+    const payment = await loadOwnedPaymentSession(c, c.req.param('paymentId'), customUser.id, auth.user.storeId);
+    if (payment.status === 'captured' || payment.status === 'refunded') {
+        throw new ConflictError('Captured or refunded payments cannot be voided');
+    }
+
+    const { data: updated, error } = await db
+        .from('payments')
+        .update({
+            status: 'voided',
+            voided_at: new Date().toISOString(),
+            failure_code: 'PAYMENT_VOIDED',
+            failure_message: body.reason || 'Payment voided',
+            metadata: { ...(payment.metadata || {}), ...(body.metadata || {}) },
+            request_id: requestId,
+            updated_by: customUser.id,
+        })
+        .eq('id', payment.id)
+        .select('*')
+        .single();
+
+    if (error || !updated) {
+        return c.json(dbErrorBody('Failed to void payment'), 500);
+    }
+
+    await db.from('payment_attempts').insert({
+        site_id: payment.site_id,
+        order_id: payment.order_id,
+        payment_id: payment.id,
+        provider: payment.provider,
+        attempt_type: 'void',
+        status: 'succeeded',
+        amount: payment.amount_minor / 100,
+        currency: payment.currency,
+        provider_order_id: payment.provider_order_id,
+        provider_payment_id: payment.provider_payment_id,
+        provider_session_id: payment.provider_session_id,
+        idempotency_key: body.idempotency_key,
+        request_id: requestId,
+        failure_reason: body.reason || null,
+        metadata: body.metadata,
+        created_by: customUser.id,
+        updated_by: customUser.id,
+    });
+
+    await emitPaymentEvent(db, {
+        siteId: payment.site_id,
+        paymentId: payment.id,
+        orderId: payment.order_id,
+        eventType: 'payment.failed',
+        payload: {
+            provider: payment.provider,
+            provider_event_id: `payment.void:${payment.id}`,
+            payment_status: 'failed',
+            mode: payment.mode,
+            failure_code: 'PAYMENT_VOIDED',
+            failure_message: body.reason || 'Payment voided',
+        },
+        actorId: customUser.id,
+        requestId,
+        idempotencyKey: `payment.void:${payment.id}:${body.idempotency_key}`,
+    });
+
+    return c.json({ data: { voided: true, payment: updated } });
+});
+
+// POST /payments/:id/refund — record a refund request; settlement posts canonical F6 ledger entries
+router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (c) => {
+    const auth = c.get('auth');
+    const body = c.get('validatedBody') as PaymentRefundInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    const requestId = getRequestId(c);
+
+    if (!customUser) throw new ForbiddenError('User profile not found');
+
+    const payment = await loadOwnedPaymentSession(c, c.req.param('paymentId'), customUser.id, auth.user.storeId);
+    if (payment.status !== 'captured') {
+        throw new ConflictError('Only captured payments can be refunded');
+    }
+
+    const refundAmountMinor = body.amount_minor || payment.amount_minor;
+    if (refundAmountMinor > payment.amount_minor) {
+        throw new ConflictError('Refund amount cannot exceed captured amount');
+    }
+
+    const stepUp = verifySensitiveActionStepUp({
+        action: 'refund.approve',
+        actorId: customUser.id,
+        siteId: payment.site_id,
+        token: c.req.header('X-Step-Up-Token') || (body.metadata?.step_up_token as string | undefined),
+        verifiedAt: c.req.header('X-Step-Up-Verified-At') || (body.metadata?.step_up_verified_at as string | undefined),
+    });
+    if (!stepUp.ok) {
+        return c.json(stepUpErrorBody(stepUp), 428);
+    }
+
+    const { data: updated, error } = await db
+        .from('payments')
+        .update({
+            status: 'refunded',
+            refunded_at: new Date().toISOString(),
+            metadata: {
+                ...(payment.metadata || {}),
+                ...(body.metadata || {}),
+                ...stepUp.metadata,
+                refund_amount_minor: refundAmountMinor,
+                refund_reason: body.reason || null,
+            },
+            request_id: requestId,
+            updated_by: customUser.id,
+        })
+        .eq('id', payment.id)
+        .select('*')
+        .single();
+
+    if (error || !updated) {
+        return c.json(dbErrorBody('Failed to refund payment'), 500);
+    }
+
+    await db.from('payment_attempts').insert({
+        site_id: payment.site_id,
+        order_id: payment.order_id,
+        payment_id: payment.id,
+        provider: payment.provider,
+        attempt_type: 'refund',
+        status: 'succeeded',
+        amount: refundAmountMinor / 100,
+        currency: payment.currency,
+        provider_order_id: payment.provider_order_id,
+        provider_payment_id: payment.provider_payment_id,
+        provider_session_id: payment.provider_session_id,
+        idempotency_key: body.idempotency_key,
+        request_id: requestId,
+        failure_reason: body.reason || null,
+        metadata: { ...(body.metadata || {}), ...stepUp.metadata },
+        created_by: customUser.id,
+        updated_by: customUser.id,
+    });
+
+    await emitPaymentEvent(db, {
+        siteId: payment.site_id,
+        paymentId: payment.id,
+        orderId: payment.order_id,
+        eventType: 'payment.refunded',
+        payload: {
+            provider: payment.provider,
+            provider_event_id: `payment.refund:${payment.id}`,
+            payment_status: 'refunded',
+            mode: payment.mode,
+            amount_minor: refundAmountMinor,
+            currency: payment.currency,
+            reason: body.reason || null,
+        },
+        actorId: customUser.id,
+        requestId,
+        idempotencyKey: `payment.refund:${payment.id}:${body.idempotency_key}`,
+    });
+
+    return c.json({ data: { refunded: true, payment: updated } });
+});
+
 // GET /payments/subscription — Store-scoped billing state for merchant admin
 router.get('/subscription', validate('query', StoreSubscriptionQuerySchema), async (c) => {
     const auth = c.get('auth');
@@ -235,9 +876,9 @@ router.get('/subscription', validate('query', StoreSubscriptionQuerySchema), asy
 
     const { data: subscription, error } = await db
         .from('subscriptions')
-        .select('plan, status, billing_period, current_period_end, promo_ends_at, amount_paid')
+        .select('id, plan, status, billing_period, current_period_end, promo_ends_at, amount_paid, created_at, updated_at, external_subscription_id')
         .eq('store_id', store_id)
-        .eq('status', 'active')
+        .in('status', ['active', 'past_due', 'failed'])
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -325,131 +966,76 @@ router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchem
         throw new ForbiddenError('Not authorized for this store');
     }
 
-    const { data: rawPlan } = await db
-        .from('plans')
-        .select('*')
-        .eq('site_type', body.site_type)
-        .eq('slug', body.plan_slug)
-        .eq('is_active', true)
-        .single();
-
-    if (!rawPlan) {
-        throw new NotFoundError('Plan not found');
-    }
-
-    const plan = applyStorePlanTierDefaults(rawPlan as BillingPlanCatalogRecord) as BillingPlanCatalogRecord & Record<string, unknown>;
-
-    if (plan.requires_contact) {
-        return c.json({ error: { code: 'PLAN_REQUIRES_SALES', message: 'This plan requires contacting sales' } }, 400);
-    }
-
-    const checkout = planMerchantRazorpayBillingCheckout({
-        plan,
-        storeId: body.store_id,
+    const checkout = await createMerchantSubscriptionCheckout({
+        db,
+        env: c.env,
         userId: customUser.id,
+        storeId: body.store_id,
+        siteType: body.site_type,
+        planSlug: body.plan_slug,
         billingPeriod: body.billing_period,
-        approvedUsageCharges: normalizeMerchantApprovedUsageCharges(body.approved_usage_charges),
+        approvedUsageCharges: body.approved_usage_charges,
     });
 
-    if (checkout.mode === 'free_activation') {
-        const subscription = await new SubscriptionExecutionAdapter(db).activateMerchantSubscription({
-            userId: customUser.id,
-            storeId: body.store_id,
-            plan,
-            billingPeriod: body.billing_period,
-            amountPaid: 0,
-            paymentGateway: null,
-            externalSubscriptionId: `free:${body.store_id}:${Date.now()}`,
-        });
+    return c.json(checkout.body, checkout.status);
+});
 
-        return c.json({
-            data: {
-                razorpay_order_id: null,
-                razorpay_subscription_id: null,
-                checkout_mode: checkout.mode,
-                amount: 0,
-                currency: checkout.currency,
-                key_id: null,
-                plan: checkout.plan_payload,
-                billing_period: checkout.billing_period,
-                is_promo: false,
-                recurring: false,
-                activated: true,
-                subscription,
-            },
-        }, 201);
+// POST /payments/subscription/recover — Create a checkout to recover a failed subscription payment
+router.post('/subscription/recover', validate('json', RecoverSubscriptionPaymentSchema), async (c) => {
+    const auth = c.get('auth');
+    const body = c.get('validatedBody') as RecoverSubscriptionPaymentInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser || !(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
+        throw new ForbiddenError('Not authorized for this store');
     }
 
-    if (!c.env.RAZORPAY_KEY_ID || !c.env.RAZORPAY_KEY_SECRET) {
+    const { data: subscription, error } = await db
+        .from('subscriptions')
+        .select('id, plan, status, billing_period')
+        .eq('store_id', body.store_id)
+        .in('status', ['past_due', 'failed'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    if (error) return c.json(dbErrorBody(), 500);
+    if (!subscription) {
         return c.json(
-            { error: { code: 'PAYMENT_UNAVAILABLE', message: 'Razorpay is not configured' } },
-            503
+            { error: { code: 'SUBSCRIPTION_RECOVERY_UNAVAILABLE', message: 'No failed subscription payment needs recovery' } },
+            409,
         );
     }
 
-    if (checkout.mode === 'razorpay_subscription' && checkout.subscription) {
-        const subscription = await createRazorpaySubscription(
-            { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
-            checkout.subscription
-        );
-
-        if (!subscription.id) {
-            return c.json(
-                errorBody('PAYMENT_PROVIDER_ERROR', subscription.error?.description || 'Failed to create recurring subscription'),
-                502
-            );
-        }
-
-        return c.json({
-            data: {
-                razorpay_order_id: null,
-                razorpay_subscription_id: subscription.id,
-                checkout_mode: checkout.mode,
-                amount: checkout.amount_minor,
-                currency: checkout.currency,
-                key_id: c.env.RAZORPAY_KEY_ID,
-                plan: checkout.plan_payload,
-                billing_period: checkout.billing_period,
-                is_promo: checkout.is_promo,
-                recurring: true,
-                short_url: subscription.short_url || null,
-            },
-        });
-    }
-
-    if (!checkout.order) {
-        return c.json(
-            errorBody('PAYMENT_PROVIDER_ERROR', 'Subscription checkout could not be planned'),
-            500
-        );
-    }
-
-    const order = await createRazorpayOrder(
-        { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
-        checkout.order
-    );
-
-    if (!order.id) {
-        return c.json(
-            errorBody('PAYMENT_PROVIDER_ERROR', 'Failed to create subscription payment order'),
-            502
-        );
-    }
-
-    return c.json({
-        data: {
-            razorpay_order_id: order.id,
-            razorpay_subscription_id: null,
-            checkout_mode: checkout.mode,
-            amount: order.amount ?? checkout.amount_minor,
-            currency: order.currency || 'INR',
-            key_id: c.env.RAZORPAY_KEY_ID,
-            plan: checkout.plan_payload,
-            billing_period: checkout.billing_period,
-            is_promo: checkout.is_promo,
-            recurring: false,
-        },
+    const billingPeriod = body.billing_period === 'yearly' || subscription.billing_period === 'yearly' ? 'yearly' : 'monthly';
+    const checkout = await createMerchantSubscriptionCheckout({
+        db,
+        env: c.env,
+        userId: customUser.id,
+        storeId: body.store_id,
+        siteType: 'store',
+        planSlug: String(subscription.plan || 'business'),
+        billingPeriod,
+        approvedUsageCharges: [],
     });
+    const data = checkout.body.data;
+
+    if (data && typeof data === 'object' && !Array.isArray(data)) {
+        return c.json({
+            data: {
+                ...(data as Record<string, unknown>),
+                recovery: {
+                    subscription_id: String(subscription.id),
+                    previous_status: String(subscription.status),
+                    plan_slug: String(subscription.plan || 'business'),
+                    next_step: (data as Record<string, unknown>).activated === true ? 'activated' : 'checkout',
+                },
+            },
+        }, checkout.status);
+    }
+
+    return c.json(checkout.body, checkout.status);
 });
 
 // POST /payments/subscription/verify — Verify Razorpay and activate a merchant subscription
@@ -471,7 +1057,7 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
 
     if (!store) throw new NotFoundError('Store not found');
 
-    if (!c.env.RAZORPAY_KEY_SECRET) {
+    if (!c.env.RAZORPAY_KEY_ID || !c.env.RAZORPAY_KEY_SECRET) {
         return c.json({ error: { code: 'PAYMENT_UNAVAILABLE', message: 'Payment gateway is not configured' } }, 503);
     }
 
@@ -503,6 +1089,33 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
     const plan = applyStorePlanTierDefaults(rawPlan as BillingPlanCatalogRecord) as BillingPlanCatalogRecord & Record<string, unknown>;
 
     const amountPaid = planBillingAmountMinor(plan, body.billing_period).amountMinor;
+
+    // SECURITY: a valid HMAC only proves Razorpay signed (order|subscription)+payment ids
+    // — NOT that money was captured, nor how much. Without a server-side capture check a
+    // merchant can replay ANY valid signature (e.g. from a ₹1 order, or a cheaper plan's
+    // payment) to self-activate any plan for free. Confirm the payment was actually
+    // captured for at least the plan price and is bound to the submitted order.
+    if (!Number.isFinite(amountPaid) || amountPaid <= 0) {
+        return c.json({ error: { code: 'PAYMENT_VERIFICATION_FAILED', message: 'Plan price could not be determined' } }, 400);
+    }
+    const capturedPayment = await fetchRazorpayPayment(
+        { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
+        body.razorpay_payment_id,
+    );
+    const capturedStatus = (capturedPayment.status || '').toLowerCase();
+    const capturedAmount = typeof capturedPayment.amount === 'number' ? capturedPayment.amount : null;
+    const captureOk = !capturedPayment.error && capturedStatus === 'captured';
+    const amountOk = capturedAmount !== null && capturedAmount >= amountPaid;
+    // One-time order mode: the captured payment must belong to the submitted order.
+    const orderBindingOk = !body.razorpay_order_id
+        || !capturedPayment.order_id
+        || capturedPayment.order_id === body.razorpay_order_id;
+    if (!captureOk || !amountOk || !orderBindingOk) {
+        return c.json(
+            { error: { code: 'PAYMENT_VERIFICATION_FAILED', message: 'Payment could not be verified with the provider' } },
+            400,
+        );
+    }
 
     let subscription;
     try {
@@ -696,9 +1309,20 @@ router.post('/razorpay/verify', validate('json', RazorpayVerifySchema), async (c
         );
     }
 
-    if (order.payment_id && order.payment_id !== body.razorpay_order_id) {
+    // SECURITY: fail closed — the order MUST have been bound to a server-created Razorpay
+    // order (via POST /razorpay/order → attachPaymentReference) before it can be verified.
+    // A null payment_id means no provider order was created for this order, so any signature
+    // presented here is being replayed from a different order. Reject.
+    if (!order.payment_id || order.payment_id !== body.razorpay_order_id) {
         throw new ConflictError('Payment reference mismatch');
     }
+
+    await assertProviderPaymentNotReplayed(db, {
+        provider: 'razorpay',
+        providerPaymentId: body.razorpay_payment_id,
+        providerOrderId: body.razorpay_order_id,
+        orderId: order.id,
+    });
 
     const paymentService = new PaymentExecutionAdapter(db);
     const updated = await paymentService.confirmPayment({
@@ -710,7 +1334,7 @@ router.post('/razorpay/verify', validate('json', RazorpayVerifySchema), async (c
         requestId: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
         idempotencyKey: body.idempotency_key,
     });
-    await emitOrderPaidEvent(db, {
+    await emitOrderPaidEvent(c.env, db, {
         order: updated,
         fallbackOrder: order,
         actorId: customUser.id,
@@ -753,8 +1377,8 @@ router.post('/stripe/checkout', validate('json', StripeCheckoutSchema), async (c
             orderId: body.order_id,
             amountMinorUnits: unitAmount,
             currency: order.currency || 'INR',
-            successUrl: body.success_url || 'https://letbuyy.store/checkout/success?session_id={CHECKOUT_SESSION_ID}',
-            cancelUrl: body.cancel_url || 'https://letbuyy.store/checkout/cancel',
+            successUrl: body.success_url || `${resolvePlatformOrigin(c)}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl: body.cancel_url || `${resolvePlatformOrigin(c)}/checkout/cancel`,
             idempotencyKey: body.idempotency_key,
             name: `LetBuyy order ${body.order_id}`,
         });

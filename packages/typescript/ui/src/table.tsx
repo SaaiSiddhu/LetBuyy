@@ -12,6 +12,9 @@ export interface TableColumn<T> {
     header: React.ReactNode;
     sortable?: boolean;
     width?: string;
+    className?: string;
+    headerClassName?: string;
+    cellClassName?: string;
     render?: (row: T, index: number) => React.ReactNode;
     cardLabel?: React.ReactNode;
 }
@@ -33,7 +36,13 @@ export interface TableFilterChip {
     onRemove?: () => void;
 }
 
-export interface TableProps<T extends object> {
+export interface StaticTableProps extends React.HTMLAttributes<HTMLDivElement> {
+    children: React.ReactNode;
+    tableClassName?: string;
+    containerClassName?: string;
+}
+
+export interface TableDataProps<T extends object> {
     columns: TableColumn<T>[];
     rows: T[];
     loading?: boolean;
@@ -55,6 +64,8 @@ export interface TableProps<T extends object> {
     className?: string;
 }
 
+export type TableProps<T extends object> = StaticTableProps | TableDataProps<T>;
+
 function defaultRowId<T extends object>(row: T, index: number) {
     const id = (row as { id?: unknown }).id;
     return typeof id === 'string' || typeof id === 'number' ? String(id) : String(index);
@@ -73,27 +84,48 @@ function SortIcon({ active, direction }: { active: boolean; direction?: 'asc' | 
         : <ArrowDown className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />;
 }
 
-export function Table<T extends object>({
-    columns,
-    rows,
-    loading = false,
-    emptyState,
-    emptyMessage = 'No data found',
-    savedViews = [],
-    activeView,
-    onViewChange,
-    filterChips = [],
-    bulkActions = [],
-    sortKey,
-    sortDirection,
-    onSort,
-    onRowClick,
-    getRowId = defaultRowId,
-    selectedRowIds,
-    onSelectionChange,
-    selectable,
-    className = '',
-}: TableProps<T>) {
+export function Table<T extends object>(props: TableProps<T>) {
+    if ('children' in props) {
+        const {
+            children,
+            className = '',
+            tableClassName = '',
+            containerClassName = '',
+            ...staticProps
+        } = props;
+
+        return (
+            <div className={cx('overflow-hidden rounded-[var(--lb-component-card-radius)] border border-[var(--lb-component-table-border)] bg-[var(--lb-component-table-bg)] shadow-[var(--lb-component-card-shadow)]', className)} {...staticProps}>
+                <div className={cx('overflow-auto', containerClassName)}>
+                    <table className={cx('w-full border-collapse text-[length:var(--lb-font-size-table)] leading-[var(--lb-line-height-table)]', tableClassName)}>
+                        {children}
+                    </table>
+                </div>
+            </div>
+        );
+    }
+
+    const {
+        columns,
+        rows,
+        loading = false,
+        emptyState,
+        emptyMessage = 'No data found',
+        savedViews = [],
+        activeView,
+        onViewChange,
+        filterChips = [],
+        bulkActions = [],
+        sortKey,
+        sortDirection,
+        onSort,
+        onRowClick,
+        getRowId = defaultRowId,
+        selectedRowIds,
+        onSelectionChange,
+        selectable,
+        className = '',
+    } = props;
     const [internalSelectedIds, setInternalSelectedIds] = useState<string[]>([]);
     const selectedIds = selectedRowIds ?? internalSelectedIds;
     const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
@@ -263,7 +295,11 @@ export function Table<T extends object>({
                             {columns.map((column) => (
                                 <th
                                     key={column.key}
-                                    className="h-[var(--lb-density-table-header-height)] px-[var(--lb-space-3)] py-0 text-left font-[var(--lb-font-weight-medium)]"
+                                    className={cx(
+                                        'h-[var(--lb-density-table-header-height)] px-[var(--lb-space-3)] py-0 text-left font-[var(--lb-font-weight-medium)]',
+                                        column.className,
+                                        column.headerClassName,
+                                    )}
                                     style={column.width ? { width: column.width } : undefined}
                                 >
                                     {column.sortable ? (
@@ -313,7 +349,12 @@ export function Table<T extends object>({
                                         {columns.map((column) => (
                                             <td
                                                 key={column.key}
-                                                className={cx('h-[var(--lb-density-table-row-height)] px-[var(--lb-space-3)] py-0 text-[color:var(--lb-component-table-text)]', onRowClick && 'cursor-pointer')}
+                                                className={cx(
+                                                    'h-[var(--lb-density-table-row-height)] px-[var(--lb-space-3)] py-0 text-[color:var(--lb-component-table-text)]',
+                                                    column.className,
+                                                    column.cellClassName,
+                                                    onRowClick && 'cursor-pointer',
+                                                )}
                                                 onClick={() => onRowClick?.(row)}
                                             >
                                                 {renderCell(column, row, index)}

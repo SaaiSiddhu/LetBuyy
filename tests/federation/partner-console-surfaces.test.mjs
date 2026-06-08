@@ -53,7 +53,9 @@ test('gateway Partner API is RBAC gated and aggregates listings, payouts, stores
   assert.match(source, /from\('partner_payout_ledger_entries'\)/);
   assert.match(source, /from\('app_installations'\)/);
   assert.match(source, /from\('site_memberships'\)/);
-  assert.match(source, /partnerRequestCode\(developerId\)/);
+  assert.match(source, /const code = randomToken\('lbc', 24\)/);
+  assert.match(source, /code_prefix: code\.slice\(0, 12\)/);
+  assert.match(source, /code_hash: await sha256Hex\(code\)/);
   assert.match(source, /partner_gst_minor: sumMinor\(chargeRows, 'partner_gst_minor'\)/);
   assert.match(source, /payout_pending_minor: sumMinor/);
   assert.match(source, /development_stores: Array\.from\(developmentStoresById\.values\(\)\)/);

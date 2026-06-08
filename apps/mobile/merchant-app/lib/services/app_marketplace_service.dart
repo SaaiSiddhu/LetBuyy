@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 
 import 'api_client.dart';
-import 'skip_needs_backend_exception.dart';
 
 class MarketplaceAppContract {
   const MarketplaceAppContract({
@@ -131,6 +130,50 @@ class InstalledAppContract {
   final List<String> scopes;
   final String installedAt;
   final MarketplaceAppContract app;
+
+  List<AppPermissionDisplay> get permissions {
+    final grantedScopes = scopes.isNotEmpty ? scopes : app.scopes;
+    return grantedScopes
+        .map(AppPermissionDisplay.fromScope)
+        .toList(growable: false);
+  }
+}
+
+class AppPermissionDisplay {
+  const AppPermissionDisplay({
+    required this.scope,
+    required this.title,
+    required this.description,
+  });
+
+  factory AppPermissionDisplay.fromScope(String scope) {
+    final normalized = scope.trim().toLowerCase();
+    if (normalized == '*') {
+      return const AppPermissionDisplay(
+        scope: '*',
+        title: 'Full store access',
+        description: 'Can read and manage store data for this installation.',
+      );
+    }
+
+    final parts = normalized.split(':');
+    final resource = parts.isNotEmpty ? parts.first : normalized;
+    final action = parts.length > 1 ? parts[1] : 'access';
+    final resourceLabel =
+        _permissionResourceLabels[resource] ??
+        resource.replaceAll(RegExp(r'[_-]+'), ' ');
+    final title = _permissionTitle(action, resourceLabel);
+
+    return AppPermissionDisplay(
+      scope: normalized.isEmpty ? scope : normalized,
+      title: title,
+      description: _permissionDescription(action, resourceLabel),
+    );
+  }
+
+  final String scope;
+  final String title;
+  final String description;
 }
 
 class AppBridgeHandoffContract {
@@ -153,6 +196,152 @@ class AppBridgeHandoffContract {
   final String title;
   final String url;
   final String expiresAt;
+}
+
+class AppBridgeHostPolicyContract {
+  const AppBridgeHostPolicyContract({
+    required this.platform,
+    required this.hostVersion,
+    required this.allowedOrigin,
+    required this.allowedNavigationOrigins,
+    required this.jsNamespace,
+    required this.messageChannel,
+    required this.bridgeFetchPath,
+    required this.tokenTransport,
+    required this.capabilities,
+    required this.expiresAt,
+  });
+
+  factory AppBridgeHostPolicyContract.fromJson(Map<String, dynamic> json) {
+    return AppBridgeHostPolicyContract(
+      platform: _stringValue(json['platform'], fallback: 'mobile_webview'),
+      hostVersion: _stringValue(json['host_version']),
+      allowedOrigin: _stringValue(json['allowed_origin']),
+      allowedNavigationOrigins: _stringList(json['allowed_navigation_origins']),
+      jsNamespace: _stringValue(
+        json['js_namespace'],
+        fallback: 'LetBuyyAppBridge',
+      ),
+      messageChannel: _stringValue(
+        json['message_channel'],
+        fallback: 'LetBuyyAppBridge',
+      ),
+      bridgeFetchPath: _stringValue(
+        json['bridge_fetch_path'],
+        fallback: '/app-store/bridge/fetch',
+      ),
+      tokenTransport: _stringValue(
+        json['token_transport'],
+        fallback: 'native_bridge',
+      ),
+      capabilities: _stringList(json['capabilities']),
+      expiresAt: _stringValue(json['expires_at']),
+    );
+  }
+
+  final String platform;
+  final String hostVersion;
+  final String allowedOrigin;
+  final List<String> allowedNavigationOrigins;
+  final String jsNamespace;
+  final String messageChannel;
+  final String bridgeFetchPath;
+  final String tokenTransport;
+  final List<String> capabilities;
+  final String expiresAt;
+
+  bool get isMobileWebView => platform == 'mobile_webview';
+
+  bool allowsUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null || !uri.hasScheme || !uri.hasAuthority) return false;
+    if (uri.scheme != 'https') return false;
+    final origin =
+        '${uri.scheme}://${uri.host}${uri.hasPort ? ':${uri.port}' : ''}';
+    final allowed = allowedNavigationOrigins.isNotEmpty
+        ? allowedNavigationOrigins
+        : [allowedOrigin];
+    return allowed.contains(origin);
+  }
+}
+
+class AppBridgeRuntimeSessionContract {
+  const AppBridgeRuntimeSessionContract({
+    required this.installation,
+    required this.title,
+    required this.initialUrl,
+    required this.origin,
+    required this.accessToken,
+    required this.expiresAt,
+    required this.apiBaseUrl,
+    required this.storeId,
+    required this.installationId,
+    required this.appId,
+    required this.scopes,
+    required this.capabilities,
+    required this.host,
+  });
+
+  factory AppBridgeRuntimeSessionContract.fromJson(
+    Map<String, dynamic> json,
+    InstalledAppContract fallbackInstallation,
+  ) {
+    final embed = _mapValue(json['embed']);
+    final bridge = _mapValue(json['bridge']);
+    final installationJson = _mapValue(json['installation']);
+    final installation = installationJson.isEmpty
+        ? fallbackInstallation
+        : InstalledAppContract.fromJson(installationJson);
+    final hostJson = _mapValue(json['mobile_host']);
+    final host = AppBridgeHostPolicyContract.fromJson({
+      ...hostJson,
+      if (hostJson['allowed_origin'] == null) 'allowed_origin': embed['origin'],
+      if (hostJson['allowed_navigation_origins'] == null)
+        'allowed_navigation_origins': [embed['origin']],
+      if (hostJson['capabilities'] == null)
+        'capabilities': bridge['capabilities'],
+      if (hostJson['expires_at'] == null) 'expires_at': bridge['expires_at'],
+    });
+    return AppBridgeRuntimeSessionContract(
+      installation: installation,
+      title: _stringValue(embed['title'], fallback: installation.app.name),
+      initialUrl: _stringValue(embed['url'], fallback: installation.app.appUrl),
+      origin: _stringValue(embed['origin'], fallback: host.allowedOrigin),
+      accessToken: _stringValue(bridge['access_token']),
+      expiresAt: _stringValue(bridge['expires_at']),
+      apiBaseUrl: _stringValue(bridge['api_base_url']),
+      storeId: _stringValue(bridge['store_id'], fallback: installation.storeId),
+      installationId: _stringValue(
+        bridge['installation_id'],
+        fallback: installation.id,
+      ),
+      appId: _stringValue(bridge['app_id'], fallback: installation.appId),
+      scopes: _stringList(bridge['scopes']),
+      capabilities: _stringList(bridge['capabilities']),
+      host: host,
+    );
+  }
+
+  final InstalledAppContract installation;
+  final String title;
+  final String initialUrl;
+  final String origin;
+  final String accessToken;
+  final String expiresAt;
+  final String apiBaseUrl;
+  final String storeId;
+  final String installationId;
+  final String appId;
+  final List<String> scopes;
+  final List<String> capabilities;
+  final AppBridgeHostPolicyContract host;
+
+  Uri? get initialUri => Uri.tryParse(initialUrl);
+  bool get canOpenInApp =>
+      accessToken.isNotEmpty &&
+      host.isMobileWebView &&
+      initialUrl.isNotEmpty &&
+      host.allowsUrl(initialUrl);
 }
 
 class AppMarketplaceService extends ChangeNotifier {
@@ -285,14 +474,42 @@ class AppMarketplaceService extends ChangeNotifier {
     return AppBridgeHandoffContract.fromJson(response);
   }
 
-  Future<void> openEmbeddedAppBridgeRuntime(
-    InstalledAppContract installation,
-  ) async {
-    // [SKIP-NEEDS-BACKEND: MOBILE_EMBEDDED_APP_BRIDGE_RUNTIME]
-    throw const SkipNeedsBackendException(
-      'MOBILE_EMBEDDED_APP_BRIDGE_RUNTIME',
-      'Native mobile App Bridge runtime is platform-blocked; use the web handoff until a mobile-safe extension host contract exists.',
+  Future<AppBridgeRuntimeSessionContract> createEmbeddedAppBridgeRuntime({
+    required InstalledAppContract installation,
+  }) async {
+    final response = await _api.appStore.embedSession(
+      installation.id,
+      query: {'store_id': installation.storeId},
     );
+    final session = AppBridgeRuntimeSessionContract.fromJson(
+      response,
+      installation,
+    );
+    if (!session.canOpenInApp) {
+      throw const ApiException(
+        message: 'This app cannot be opened in the mobile host.',
+        statusCode: 400,
+        code: 'APP_BRIDGE_HOST_UNAVAILABLE',
+      );
+    }
+    return session;
+  }
+
+  Future<AppBridgeRuntimeSessionContract> openEmbeddedAppBridgeRuntime(
+    InstalledAppContract installation,
+  ) {
+    return createEmbeddedAppBridgeRuntime(installation: installation);
+  }
+
+  Future<Map<String, dynamic>> fetchEmbeddedBridgeData({
+    required AppBridgeRuntimeSessionContract session,
+    required String path,
+  }) {
+    return _api.appStore.bridgeFetch({
+      'method': 'GET',
+      'path': path,
+      'store_id': session.storeId,
+    }, accessToken: session.accessToken);
   }
 
   bool isInstalled(String appId) {
@@ -308,6 +525,62 @@ class AppMarketplaceService extends ChangeNotifier {
       }
     }
     return null;
+  }
+}
+
+const _permissionResourceLabels = {
+  'analytics': 'analytics',
+  'apps': 'apps',
+  'billing': 'billing',
+  'blog': 'blog posts',
+  'collections': 'collections',
+  'content': 'content',
+  'customers': 'customers',
+  'discounts': 'discounts',
+  'domains': 'domains',
+  'inventory': 'inventory',
+  'marketing': 'marketing campaigns',
+  'metafields': 'custom data',
+  'notifications': 'notifications',
+  'orders': 'orders',
+  'payments': 'payments',
+  'products': 'products',
+  'returns': 'returns',
+  'shipping': 'shipping',
+  'staff': 'staff',
+  'store': 'store settings',
+  'themes': 'themes',
+};
+
+String _permissionTitle(String action, String resourceLabel) {
+  switch (action) {
+    case 'read':
+      return 'Read $resourceLabel';
+    case 'write':
+    case 'manage':
+      return 'Manage $resourceLabel';
+    case 'delete':
+      return 'Delete $resourceLabel';
+    case 'webhook':
+      return 'Receive $resourceLabel events';
+    default:
+      return '${_titleCase(action)} $resourceLabel';
+  }
+}
+
+String _permissionDescription(String action, String resourceLabel) {
+  switch (action) {
+    case 'read':
+      return 'Can view $resourceLabel for this store.';
+    case 'write':
+    case 'manage':
+      return 'Can create and update $resourceLabel for this store.';
+    case 'delete':
+      return 'Can delete $resourceLabel for this store.';
+    case 'webhook':
+      return 'Can receive event notifications for $resourceLabel.';
+    default:
+      return 'Can access $resourceLabel for this store.';
   }
 }
 

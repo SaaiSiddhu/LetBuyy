@@ -221,6 +221,12 @@ router.post('/validate', validate('json', ValidateCouponSchema), async (c) => {
         product_ids?: string[]; customer_id?: string;
     };
     const db = getSupabaseAdmin(c);
+    const auth = c.get('auth');
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser || !(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
 
     const { data: coupon } = await db
         .from('coupons')
@@ -245,6 +251,8 @@ router.post('/validate', validate('json', ValidateCouponSchema), async (c) => {
             code: plan.coupon.code,
             type: plan.coupon.type,
             value: plan.coupon.value,
+            discount_class: plan.coupon.discountClass,
+            combines_with: plan.coupon.combinesWith,
             minimum_order_amount: plan.coupon.minimumOrderAmount,
             maximum_discount: plan.coupon.maximumDiscount,
         },

@@ -3,9 +3,9 @@ import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import '../../theme/app_theme_colors.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../models/store_model.dart';
+import '../shared/cached_merchant_image.dart';
 import '../shared/image_picker_widget.dart';
 
 /// Bottom sheet for editing section settings
@@ -296,11 +296,11 @@ class _SectionSettingsSheetState extends State<SectionSettingsSheet> {
                       children: [
                         if (showLogo) ...[
                           if (logoUrl != null && logoUrl.isNotEmpty)
-                            CachedNetworkImage(
+                            CachedMerchantImage(
                               imageUrl: logoUrl,
                               height: logoHeight,
-                              placeholder: (_, __) => const SizedBox(),
-                              errorWidget: (_, __, ___) => Icon(
+                              placeholderBuilder: (_) => const SizedBox(),
+                              errorBuilder: (_) => Icon(
                                 Icons.store,
                                 color: AppColors.primary,
                                 size: 24,
@@ -355,15 +355,15 @@ class _SectionSettingsSheetState extends State<SectionSettingsSheet> {
           decoration: BoxDecoration(
             image: imageUrl != null && imageUrl.toString().isNotEmpty
                 ? DecorationImage(
-                    image: NetworkImage(imageUrl),
+                    image: cachedMerchantImageProvider(imageUrl),
                     fit: BoxFit.cover,
                     colorFilter: ColorFilter.mode(
                       Colors.black.withValues(alpha: 0.3),
                       BlendMode.darken,
                     ),
                   )
-                : const DecorationImage(
-                    image: NetworkImage(
+                : DecorationImage(
+                    image: cachedMerchantImageProvider(
                       'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800',
                     ),
                     fit: BoxFit.cover,
@@ -526,7 +526,9 @@ class _SectionSettingsSheetState extends State<SectionSettingsSheet> {
                     borderRadius: BorderRadius.circular(8),
                     image: banners[i]['imageUrl'] != null
                         ? DecorationImage(
-                            image: NetworkImage(banners[i]['imageUrl']),
+                            image: cachedMerchantImageProvider(
+                              banners[i]['imageUrl'],
+                            ),
                             fit: BoxFit.cover,
                           )
                         : null,

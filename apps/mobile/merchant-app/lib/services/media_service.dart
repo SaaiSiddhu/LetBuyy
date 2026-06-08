@@ -53,9 +53,10 @@ class MediaService extends ChangeNotifier {
   Future<FileUploadResultContract> uploadFile(
     File file, {
     String folder = 'media',
+    String? storeId,
   }) async {
     return FileUploadResultContract.fromJson(
-      await _api.upload.file(file, folder: folder),
+      await _api.upload.file(file, folder: folder, storeId: storeId),
     );
   }
 
@@ -67,7 +68,7 @@ class MediaService extends ChangeNotifier {
     String? caption,
     List<String> tags = const [],
   }) async {
-    final upload = await uploadFile(file, folder: folder);
+    final upload = await uploadFile(file, folder: folder, storeId: storeId);
     return createMedia(
       MediaCreateInput(
         storeId: storeId,
@@ -120,15 +121,15 @@ class MediaService extends ChangeNotifier {
     await _api.media.remove(asset.id);
     final key = asset.storageKey;
     if (deleteObject && key != null) {
-      await deleteUpload(key);
+      await deleteUpload(key, storeId: asset.storeId);
     }
     _assets = _assets.where((item) => item.id != asset.id).toList();
     notifyListeners();
   }
 
-  Future<void> deleteUpload(String key) async {
+  Future<void> deleteUpload(String key, {String? storeId}) async {
     if (key.trim().isEmpty) return;
-    await _api.upload.remove(key.trim());
+    await _api.upload.remove(key.trim(), storeId: storeId);
   }
 
   static String _fileName(File file) {
@@ -142,6 +143,12 @@ class MediaService extends ChangeNotifier {
     if (lower.endsWith('.gif')) return 'image/gif';
     if (lower.endsWith('.webp')) return 'image/webp';
     if (lower.endsWith('.mp4')) return 'video/mp4';
+    if (lower.endsWith('.mov')) return 'video/quicktime';
+    if (lower.endsWith('.m4v')) return 'video/x-m4v';
+    if (lower.endsWith('.webm')) return 'video/webm';
+    if (lower.endsWith('.glb')) return 'model/gltf-binary';
+    if (lower.endsWith('.gltf')) return 'model/gltf+json';
+    if (lower.endsWith('.usdz')) return 'model/vnd.usdz+zip';
     if (lower.endsWith('.pdf')) return 'application/pdf';
     if (lower.endsWith('.txt')) return 'text/plain';
     return 'application/octet-stream';
@@ -174,6 +181,18 @@ class MediaAssetContract extends SharedTypeContract {
   String? get createdAt => _optionalString('created_at');
   String? get updatedAt => _optionalString('updated_at');
   bool get isImage => mediaType == 'image' || mimeType.startsWith('image/');
+  bool get isVideo => mediaType == 'video' || mimeType.startsWith('video/');
+  bool get isThreeDModel {
+    final lowerName = filename.toLowerCase();
+    final lowerUrl = url.toLowerCase();
+    return mimeType.startsWith('model/') ||
+        lowerName.endsWith('.glb') ||
+        lowerName.endsWith('.gltf') ||
+        lowerName.endsWith('.usdz') ||
+        lowerUrl.endsWith('.glb') ||
+        lowerUrl.endsWith('.gltf') ||
+        lowerUrl.endsWith('.usdz');
+  }
 
   List<String> get tags {
     final value = toJson()['tags'];
@@ -218,6 +237,7 @@ class FileUploadResultContract extends SharedTypeContract {
   String get key => _string('key');
   int get size => _int('size');
   String? get contentType => _optionalString('content_type');
+  String? get mediaType => _optionalString('media_type');
   String? get storage => _optionalString('storage');
 
   String _string(String key, {String fallback = ''}) {

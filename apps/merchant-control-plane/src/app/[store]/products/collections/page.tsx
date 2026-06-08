@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import type { Collection as SharedCollection } from '@letbuyy/shared-types'
-import { Avatar, Badge, Banner, Button, Card, EmptyState, Table, Input, Package, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Skeleton, Textarea, useToast } from '@letbuyy/ui'
+import { Button, Input, Table, Avatar, Badge, Banner, Card, EmptyState, Package, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Skeleton, Textarea, useToast } from '@letbuyy/ui'
 
 type CollectionRow = Pick<SharedCollection, 'id' | 'title' | 'description' | 'image_url' | 'created_at'> & {
     is_active: boolean

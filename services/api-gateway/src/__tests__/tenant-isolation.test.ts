@@ -11,6 +11,23 @@ function source(path: string): string {
     return readFileSync(join(srcRoot, path), 'utf8');
 }
 
+function repositorySource(path: string): string {
+    return readFileSync(join(testDir, '../../../..', path), 'utf8');
+}
+
+test('foundation tenant kernel exposes fail-closed site GUC and query predicate guards', () => {
+    const tenantSource = source('lib/tenant-context.ts');
+    const tenantCoreSource = repositorySource('packages/tenant-core/src/index.ts');
+
+    assert.match(tenantCoreSource, /export const TENANT_SITE_GUC = 'app\.site_id'/);
+    assert.match(tenantCoreSource, /tenantGucSetLocalStatement/);
+    assert.match(tenantCoreSource, /requireSiteIdPredicate/);
+    assert.match(tenantCoreSource, /site_id = public\.current_site_id\(\)/);
+    assert.match(tenantSource, /export \{ TENANT_SITE_GUC \}/);
+    assert.match(tenantSource, /export function tenantSetLocalStatement/);
+    assert.match(tenantSource, /export function assertTenantScopedQuery/);
+});
+
 test('products are isolated by owned store for read, update, and delete paths', () => {
     const routeSource = source('routes/products.ts');
     const adapterSource = source('execution/product-execution.adapter.ts');
@@ -18,7 +35,7 @@ test('products are isolated by owned store for read, update, and delete paths', 
     assert.match(routeSource, /\.in\('store_id',\s*ownedStoreIds\)/);
     assert.match(routeSource, /verifyStoreOwnership\(db,\s*query\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(routeSource, /\.from\('products'\)\s*[\s\S]*\.eq\('id',\s*productId\)/);
-    assert.match(routeSource, /verifyStoreOwnership\(db,\s*data\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    assert.match(routeSource, /verifyStoreOwnership\(db,\s*String\(product\.store_id\),\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(routeSource, /service\.updateProduct\(productId,\s*customUser\.id,\s*body as Record<string, unknown>,\s*auth\.user\.storeId\)/);
     assert.match(routeSource, /service\.softDelete\(productId,\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(adapterSource, /private async getOwnedProduct/);
@@ -38,22 +55,56 @@ test('orders are isolated by owned store before listing, reading, and mutating',
     assert.match(tenantSource, /export async function resolveTenantContextForOrder/);
     assert.match(tenantSource, /\.from\('orders'\)\s*[\s\S]*\.select\('id, store_id'\)\s*[\s\S]*\.eq\('id',\s*orderId\)/);
     assert.match(tenantSource, /return resolveTenantContextForOwnedSite\(c,\s*order\.store_id as string\)/);
-    assert.match(tenantSource, /verifySiteOwnership\(db,\s*siteId,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    assert.match(tenantSource, /verifySiteOwnership\(db,\s*siteId,\s*customUser\.id,\s*authUser\.storeId\)/);
 });
 
 test('customers require owned store scope before exposing profiles, orders, or addresses', () => {
     const routeSource = source('routes/customers.ts');
+    const tenantSource = source('lib/tenant-context.ts');
 
-    assert.match(routeSource, /async function verifyStoreOwnership/);
-    assert.match(routeSource, /verifySiteOwnership\(db,\s*storeId,\s*customUser\.id,\s*authUser\.storeId\)/);
-    assert.match(routeSource, /if \(!\(await verifyStoreOwnership\(db,\s*storeId,\s*auth\.user\)\)\)/);
+    assert.match(tenantSource, /export interface OwnedStoreScope/);
+    assert.match(tenantSource, /export async function resolveOwnedStoreScope/);
+    assert.match(tenantSource, /verifySiteOwnership\(db,\s*siteId,\s*customUser\.id,\s*authUser\.storeId\)/);
+    assert.match(routeSource, /import \{ resolveOwnedStoreScope \} from '\.\.\/lib\/tenant-context'/);
+    assert.match(routeSource, /async function hasOwnedStoreScope\(c: CustomerRouteContext,\s*storeId: string\)/);
+    assert.match(routeSource, /await resolveOwnedStoreScope\(c,\s*storeId\)/);
+    assert.doesNotMatch(routeSource, /async function verifyStoreOwnership/);
+    assert.match(routeSource, /if \(!\(await hasOwnedStoreScope\(c,\s*storeId\)\)\)/);
+    assert.match(routeSource, /if \(!\(await hasOwnedStoreScope\(c,\s*q\.store_id\)\)\)/);
+    assert.match(routeSource, /if \(!\(await hasOwnedStoreScope\(c,\s*body\.store_id\)\)\)/);
+    assert.match(routeSource, /if \(!\(await hasOwnedStoreScope\(c,\s*existingSegment\.store_id\)\)\)/);
+    assert.match(routeSource, /router\.post\('\/',\s*validate\('json',\s*CreateCustomerSchema\)/);
+    assert.match(routeSource, /\.from\('store_customers'\)\.insert\(\{\s*store_id:\s*body\.store_id,\s*\.\.\.payload\s*\}\)/);
+    assert.match(routeSource, /replaceCustomerTags\(db,\s*body\.store_id,\s*email,\s*tags,\s*actorId\)/);
     assert.match(routeSource, /\.from\('orders'\)\s*[\s\S]*\.eq\('store_id',\s*storeId\)\s*[\s\S]*\.eq\('customer_email',\s*email\)/);
     assert.match(routeSource, /\.from\('customer_addresses'\)\s*[\s\S]*\.eq\('store_id',\s*storeId\)\s*[\s\S]*\.eq\('customer_email',\s*email\)/);
     assert.match(routeSource, /\.from\('customer_addresses'\)\s*[\s\S]*\.select\('store_id'\)\s*[\s\S]*\.eq\('id',\s*addressId\)\s*[\s\S]*\.eq\('customer_email',\s*email\)/);
-    assert.match(routeSource, /verifySiteOwnership\(db,\s*ownedAddress\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    assert.match(routeSource, /hasOwnedStoreScope\(c,\s*ownedAddress\.store_id\)/);
+    assert.match(routeSource, /router\.get\('\/:email\/data-export'/);
+    assert.match(routeSource, /\.from\('customer_credentials'\)\s*[\s\S]*\.select\('id,email_or_phone,last_login_at,login_count,created_at,updated_at'\)\s*[\s\S]*\.eq\('store_id',\s*storeId\)\s*[\s\S]*\.eq\('email_or_phone',\s*email\)/);
+    assert.doesNotMatch(routeSource, /data-export[\s\S]{0,2600}password_hash/);
+    assert.match(routeSource, /\.from\('customer_credentials'\)\s*[\s\S]*\.delete\(\)\s*[\s\S]*\.eq\('store_id',\s*storeId\)\s*[\s\S]*\.eq\('email_or_phone',\s*customer\.email\.toLowerCase\(\)\)/);
+    assert.match(routeSource, /\.from\('orders'\)\s*[\s\S]*\.update\(\{[\s\S]*customer_email:\s*redactedEmail[\s\S]*customer_phone:\s*null[\s\S]*\}\)\s*[\s\S]*\.eq\('store_id',\s*storeId\)\s*[\s\S]*\.eq\('customer_email',\s*customer\.email\)/);
+    assert.match(routeSource, /router\.patch\('\/:email'/);
+    assert.match(routeSource, /router\.get\('\/:email\/notes'/);
+    assert.match(routeSource, /router\.put\('\/:email\/tags'/);
+    assert.match(routeSource, /router\.post\('\/:email\/email'/);
+    assert.match(routeSource, /router\.post\('\/:email\/merge'/);
+    assert.match(routeSource, /router\.get\('\/segments'/);
+    assert.match(routeSource, /router\.post\('\/segments'/);
+    assert.match(routeSource, /router\.post\('\/segments\/preview'/);
+    assert.match(routeSource, /router\.get\('\/segments\/:id\/customers'/);
+    assert.match(routeSource, /\.from\('customer_segments'\)\s*[\s\S]*\.eq\('store_id',\s*q\.store_id\)/);
+    assert.match(routeSource, /\.from\('customer_segments'\)\s*[\s\S]*\.insert\(\{[\s\S]*store_id:\s*body\.store_id/);
+    assert.match(routeSource, /\.from\('customer_segments'\)\s*[\s\S]*\.eq\('id',\s*id\)\s*[\s\S]*\.eq\('store_id',\s*storeId\)/);
+    assert.match(routeSource, /\.from\('customer_notes'\)\s*[\s\S]*\.eq\('store_id',\s*storeId\)\s*[\s\S]*\.eq\('customer_email',\s*email\)/);
+    assert.match(routeSource, /\.from\('customer_tags'\)\s*[\s\S]*\.eq\('store_id',\s*body\.store_id\)\s*[\s\S]*\.eq\('customer_email',\s*email\)/);
+    assert.match(routeSource, /\.from\('orders'\)\.update\(\{\s*customer_email:\s*targetEmail\s*\}\)\.eq\('store_id',\s*body\.store_id\)\.eq\('customer_email',\s*sourceEmail\)/);
+    assert.match(routeSource, /\.from\('store_customers'\)\s*[\s\S]*\.update\(\{[\s\S]*email:\s*redactedSourceEmail[\s\S]*status:\s*'disabled'[\s\S]*deleted_at:\s*now/);
+    assert.match(routeSource, /sendResendEmail/);
 });
 
-test('coupons are isolated by owned store for CRUD while checkout validation stays store scoped', () => {
+test('coupons are isolated by owned store for CRUD and validation', () => {
     const routeSource = source('routes/coupons.ts');
 
     assert.match(routeSource, /\.in\('store_id',\s*ownedStoreIds\)/);
@@ -63,8 +114,9 @@ test('coupons are isolated by owned store for CRUD while checkout validation sta
     assert.match(routeSource, /verifySiteOwnership\(db,\s*data\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(routeSource, /\.select\('id, store_id'\)\s*[\s\S]*\.eq\('id',\s*couponId\)/);
     assert.match(routeSource, /verifySiteOwnership\(db,\s*ownedCoupon\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    assert.match(routeSource, /if \(!customUser \|\| !\(await verifySiteOwnership\(db,\s*body\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)\)\)/);
     assert.match(routeSource, /\.from\('coupons'\)\s*[\s\S]*\.eq\('store_id',\s*body\.store_id\)\s*[\s\S]*\.eq\('code',\s*body\.code\.toUpperCase\(\)\)/);
-    assert.match(routeSource, /pricing_authority:\s*'checkout'/);
+    assert.match(routeSource, /pricing_authority:\s*plan\.pricingAuthority/);
 });
 
 test('categories are isolated by owned store for tree reads and mutations', () => {
@@ -110,9 +162,9 @@ test('theme editor instances, drafts, releases, and installs are isolated by own
     const adapterSource = source('execution/theme-execution.adapter.ts');
 
     assert.match(routeSource, /service\.verifyStoreOwner\(queryResult\.data\.store_id,\s*customUser\.id\)/);
-    assert.match(routeSource, /service\.loadEditor\(slug,\s*parsed\.data\.store_id,\s*customUser\.id\)/);
+    assert.match(routeSource, /service\.loadEditor\(slug,\s*parsed\.data\.store_id,\s*customUser\.id,\s*parsed\.data\.template_key\)/);
     assert.match(routeSource, /service\.saveDraft\(slug,\s*body,\s*customUser\.id,\s*getRequestId\(c\)\)/);
-    assert.match(routeSource, /service\.deleteDraft\(slug,\s*parsed\.data\.store_id,\s*customUser\.id,\s*getRequestId\(c\)\)/);
+    assert.match(routeSource, /service\.deleteDraft\(slug,\s*parsed\.data\.store_id,\s*customUser\.id,\s*getRequestId\(c\),\s*parsed\.data\.template_key\)/);
     assert.match(routeSource, /service\.publish\(slug,\s*body,\s*customUser\.id,\s*getRequestId\(c\)\)/);
     assert.match(routeSource, /service\.rollbackRelease\(slug,\s*releaseId,\s*body,\s*customUser\.id,\s*getRequestId\(c\)\)/);
     assert.match(adapterSource, /async verifyStoreOwner\(storeId: string,\s*userId: string\)/);

@@ -2,15 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button, Input,
     Avatar,
     Badge,
     Banner,
-    Button,
     Card,
     ConfirmDialog,
     EmptyState,
-    Input,
     MessageSquare,
     Page,
     PageHeader,

@@ -5,7 +5,8 @@ import { validateCsrf } from '@/lib/auth/csrf'
 import { identityApiRequest } from '@/lib/api/client'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
 
-const ACTIVE_SITE_TYPES = ['store', 'landing', 'blog'] as const
+const ACTIVE_SITE_TYPES = ['store'] as const
+const COMING_SOON_SITE_TYPES = ['landing', 'blog'] as const
 const LEGACY_SITE_TYPES = ['portfolio', 'resume'] as const
 
 function legacySiteTypesEnabled(): boolean {
@@ -16,6 +17,10 @@ function isSupportedSiteType(siteType: string): boolean {
     return [...ACTIVE_SITE_TYPES, ...(legacySiteTypesEnabled() ? LEGACY_SITE_TYPES : [])].includes(
         siteType as (typeof ACTIVE_SITE_TYPES[number] | typeof LEGACY_SITE_TYPES[number])
     )
+}
+
+function isComingSoonSiteType(siteType: string): boolean {
+    return COMING_SOON_SITE_TYPES.includes(siteType as (typeof COMING_SOON_SITE_TYPES[number]))
 }
 
 /**
@@ -59,10 +64,17 @@ export async function POST(request: NextRequest) {
         }
 
         // Validate site type
+        if (isComingSoonSiteType(siteType)) {
+            return NextResponse.json(
+                { error: 'Landing pages and blogs are coming soon. Online Store is available today.' },
+                { status: 403 }
+            )
+        }
+
         if (!isSupportedSiteType(siteType)) {
             return NextResponse.json(
                 { error: 'This site type is not available for new stores.' },
-                { status: 400 }
+                { status: 403 }
             )
         }
 

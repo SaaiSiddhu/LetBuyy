@@ -2,11 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button,
     Avatar,
     Badge,
     Banner,
-    Button,
     Card,
     ConfirmDialog,
     EmptyState,
@@ -299,7 +298,7 @@ export default function ContactPage() {
                                     const isUnread = submission.status === 'new'
 
                                     return (
-                                        <button
+                                        <Button unstyled
                                             key={submission.id}
                                             type="button"
                                             className={[
@@ -338,7 +337,7 @@ export default function ContactPage() {
                                                     Marking as read...
                                                 </span>
                                             )}
-                                        </button>
+                                        </Button>
                                     )
                                 })}
                             </div>

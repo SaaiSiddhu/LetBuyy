@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
+import { BrandLogo } from '@/components/BrandLogo'
 import { Badge, Banner, Button, Input, ProgressBar } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
@@ -152,12 +153,15 @@ function ResetPasswordContent() {
         return (
             <main className="auth-container">
                 <div className="auth-top-bar">
-                    <button onClick={cycleLang} className="auth-lang-btn">{lang.toUpperCase()}</button>
-                    <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
+                    <Button unstyled onClick={cycleLang} className="auth-lang-btn">{lang.toUpperCase()}</Button>
+                    <Button unstyled onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
                         <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
-                    </button>
+                    </Button>
                 </div>
                 <div className="auth-card">
+                    <div className="auth-logo">
+                        <BrandLogo />
+                    </div>
                     <div className="auth-icon"><AuthIcon name="warning" size={36} /></div>
                     <h1 className="auth-title">{t.expired}</h1>
                     <Banner title={t.expired} variant="warning" className="text-left">
@@ -180,16 +184,18 @@ function ResetPasswordContent() {
     return (
         <main className="auth-container">
             <div className="auth-top-bar">
-                <button onClick={cycleLang} className="auth-lang-btn">
+                <Button unstyled onClick={cycleLang} className="auth-lang-btn">
                     {lang.toUpperCase()}
-                </button>
-                <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
+                </Button>
+                <Button unstyled onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
                     <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
-                </button>
+                </Button>
             </div>
 
             <div className="auth-card">
-                {/* No logo on reset-password */}
+                <div className="auth-logo">
+                    <BrandLogo />
+                </div>
 
                 <h1 className="auth-title">{t.title}</h1>
                 <p className="auth-subtitle">{t.subtitle}</p>
@@ -206,14 +212,14 @@ function ResetPasswordContent() {
                         autoFocus
                         required
                         rightIcon={
-                            <button
+                            <Button unstyled
                                 type="button"
                                 className={visibilityButtonClass}
                                 onClick={() => setShowPassword(!showPassword)}
                                 aria-label={showPassword ? t.hidePassword : t.showPassword}
                             >
                                 <AuthIcon name={showPassword ? 'visibility_off' : 'visibility'} size={18} />
-                            </button>
+                            </Button>
                         }
                     />
 
@@ -236,14 +242,14 @@ function ResetPasswordContent() {
                         error={confirmPassword && !passwordsMatch ? t.mismatch : undefined}
                         required
                         rightIcon={
-                            <button
+                            <Button unstyled
                                 type="button"
                                 className={visibilityButtonClass}
                                 onClick={() => setShowConfirm(!showConfirm)}
                                 aria-label={showConfirm ? t.hidePassword : t.showPassword}
                             >
                                 <AuthIcon name={showConfirm ? 'visibility_off' : 'visibility'} size={18} />
-                            </button>
+                            </Button>
                         }
                     />
 

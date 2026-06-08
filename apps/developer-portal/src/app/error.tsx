@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Section } from "@letbuyy/ui";
+import { Button, Card, Section } from "@letbuyy/ui";
 
 export default function Error({
   reset
@@ -12,7 +12,7 @@ export default function Error({
     <main className="developer-main">
       <Card>
         <Section title="Developer portal failed to render" description="Retry the static docs surface. No backend mutation was attempted.">
-          <button className="developer-button developer-button--primary" type="button" onClick={reset}>Retry</button>
+          <Button unstyled className="developer-button developer-button--primary" type="button" onClick={reset}>Retry</Button>
         </Section>
       </Card>
     </main>

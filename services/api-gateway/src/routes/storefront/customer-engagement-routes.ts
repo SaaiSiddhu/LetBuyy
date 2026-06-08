@@ -5,7 +5,7 @@ import { hmacSha256Hex } from '../../lib/crypto';
 import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
 import { verifyInternalAppRequest } from '../../lib/internal-auth';
 import { validate } from '../../middleware/validation';
-import { getCustomerSession, isCustomerLegacyAuthEnabled } from '../../middleware/customer-session';
+import { getCustomerSession } from '../../middleware/customer-session';
 import { enforceCustomerAuthRateLimit } from '../../middleware/rateLimit';
 import { CreateStorefrontProductReviewSchema, type CreateStorefrontProductReviewInput } from '../../schemas/review.schema';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
@@ -113,7 +113,7 @@ async function getVerifiedStoreCustomer(c: AppContext, storeId: string, customer
         if (session.storeId !== storeId || session.customerId !== customerId) {
             return null;
         }
-    } else if (!isCustomerLegacyAuthEnabled(c.env)) {
+    } else {
         return null;
     }
 
@@ -227,7 +227,7 @@ function customerPasswordResetBaseUrl(c: AppContext): string {
     return c.env.CUSTOMER_PASSWORD_RESET_URL
         || c.env.STOREFRONT_BASE_URL
         || c.env.NEXT_PUBLIC_STOREFRONT_URL
-        || 'https://store.letbuyy.store/account/reset-password';
+        || 'https://store.letbuyy.com/account/reset-password';
 }
 
 function customerPasswordResetUrl(c: AppContext, storeId: string, email: string, token: string, requestedUrl?: string | null): string {
@@ -243,7 +243,7 @@ function customerPasswordResetUrl(c: AppContext, storeId: string, email: string,
         url.searchParams.set('token', token);
         return url.toString();
     } catch {
-        const url = new URL('https://store.letbuyy.store/account/reset-password');
+        const url = new URL('https://store.letbuyy.com/account/reset-password');
         url.searchParams.set('store_id', storeId);
         url.searchParams.set('email', normalizeEmail(email));
         url.searchParams.set('token', token);
@@ -325,6 +325,9 @@ export function registerStorefrontCustomerEngagementRoutes(
     } = dependencies;
 
     router.post('/customer/find-or-create', async (c) => {
+        const unauthorized = await requireStorefrontInternal(c);
+        if (unauthorized) return unauthorized;
+
         const body = await c.req.json() as CustomerLifecycleBody;
 
         if (!body.store_id || !body.email) {
@@ -389,7 +392,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ customer: publicCustomerProfile(created), created: true }), 201);
     });
 
-    // POST /storefront/customer/password — Persist a server-generated password hash
     router.post('/customer/password', async (c) => {
         const unauthorized = await requireStorefrontInternal(c);
         if (unauthorized) return unauthorized;
@@ -408,7 +410,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         const { data, error } = await db
             .from('store_customers')
             .update({
-                password_hash: passwordHash,
                 status: 'active',
             })
             .eq('store_id', body.store_id)
@@ -420,11 +421,27 @@ export function registerStorefrontCustomerEngagementRoutes(
             return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Customer not found' } }, 404);
         }
 
+        const { error: credentialError } = await db
+            .from('customer_credentials')
+            .upsert(
+                {
+                    store_id: body.store_id,
+                    email_or_phone: normalizeEmail(body.email),
+                    password_hash: passwordHash,
+                    customer_id: data.id,
+                    updated_at: new Date().toISOString(),
+                },
+                { onConflict: 'store_id,email_or_phone' },
+            );
+
+        if (credentialError) {
+            return c.json({ success: false, error: { code: 'CREDENTIAL_ERROR', message: 'Unable to save customer credential' } }, 500);
+        }
+
         await insertCustomerActivity(c, data.id, body.store_id, 'password_set', {});
         return c.json(success({ customer_id: data.id }));
     });
 
-    // POST /storefront/customer/password/request-reset — Create a token-bound reset intent
     router.post('/customer/password/request-reset', async (c) => {
         const body = await c.req.json() as CustomerLifecycleBody;
 
@@ -501,7 +518,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ accepted: true }));
     });
 
-    // POST /storefront/customer/password/confirm-reset — Consume a token-bound reset intent
     router.post('/customer/password/confirm-reset', async (c) => {
         const body = await c.req.json() as CustomerLifecycleBody;
         const resetToken = normalizePasswordResetToken(body.token || body.reset_token);
@@ -613,7 +629,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return response;
     });
 
-    // GET /storefront/customer/by-email — Sessionless customer lookup scoped to a store
     router.get('/customer/by-email', async (c) => {
         const unauthorized = await requireStorefrontInternal(c);
         if (unauthorized) return unauthorized;
@@ -640,7 +655,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ customer: publicCustomerProfile(data) }));
     });
 
-    // GET /storefront/customer/status — Check whether a customer exists and has a password
     router.get('/customer/status', async (c) => {
         const unauthorized = await requireStorefrontInternal(c);
         if (unauthorized) return unauthorized;
@@ -655,7 +669,7 @@ export function registerStorefrontCustomerEngagementRoutes(
         const db = getSupabaseAdmin(c);
         const { data } = await db
             .from('store_customers')
-            .select('password_hash, status')
+            .select('id, status')
             .eq('store_id', storeId)
             .eq('email', normalizeEmail(email))
             .single();
@@ -664,14 +678,20 @@ export function registerStorefrontCustomerEngagementRoutes(
             return c.json(success({ exists: false, hasPassword: false, status: 'none' }));
         }
 
+        const { data: credential } = await db
+            .from('customer_credentials')
+            .select('id')
+            .eq('store_id', storeId)
+            .eq('email_or_phone', normalizeEmail(email))
+            .maybeSingle();
+
         return c.json(success({
             exists: true,
-            hasPassword: Boolean(data.password_hash),
+            hasPassword: Boolean(credential?.id),
             status: data.status || 'active',
         }));
     });
 
-    // POST /storefront/customer/login — Verify customer password in the worker boundary
     router.post('/customer/login', async (c) => {
         const body = await c.req.json() as CustomerLifecycleBody;
 
@@ -692,12 +712,12 @@ export function registerStorefrontCustomerEngagementRoutes(
         const db = getSupabaseAdmin(c);
         const { data, error } = await db
             .from('store_customers')
-            .select('id, store_id, email, full_name, phone, status, password_hash, login_count, accepts_marketing, updated_at')
+            .select('id, store_id, email, full_name, phone, status, login_count, accepts_marketing, updated_at')
             .eq('store_id', body.store_id)
             .eq('email', normalizeEmail(body.email))
             .single<StoreCustomerAuthRow>();
 
-        if (error || !data || !data.password_hash) {
+        if (error || !data) {
             return c.json(success({ customer: null }));
         }
 
@@ -705,7 +725,18 @@ export function registerStorefrontCustomerEngagementRoutes(
             return c.json({ success: false, error: { code: 'CUSTOMER_DISABLED', message: 'Account is disabled. Contact the store for assistance.' } }, 403);
         }
 
-        const isValid = await bcrypt.compare(body.password, data.password_hash);
+        const { data: credential } = await db
+            .from('customer_credentials')
+            .select('password_hash')
+            .eq('store_id', body.store_id)
+            .eq('email_or_phone', normalizeEmail(body.email))
+            .maybeSingle<{ password_hash?: string | null }>();
+
+        if (!credential?.password_hash) {
+            return c.json(success({ customer: null }));
+        }
+
+        const isValid = await bcrypt.compare(body.password, credential.password_hash);
         if (!isValid) return c.json(success({ customer: null }));
 
         await db
@@ -721,10 +752,6 @@ export function registerStorefrontCustomerEngagementRoutes(
 
         const responseBody = success({ customer: publicCustomerProfile(data) });
         if (!c.env.CUSTOMER_SESSION_SECRET) {
-            if (isCustomerLegacyAuthEnabled(c.env)) {
-                return c.json(responseBody);
-            }
-
             return c.json(
                 {
                     success: false,
@@ -760,7 +787,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return response;
     });
 
-    // POST /storefront/customer/login-success — Record verified customer login metadata
     router.post('/customer/login-success', async (c) => {
         const unauthorized = await requireStorefrontInternal(c);
         if (unauthorized) return unauthorized;
@@ -800,7 +826,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ recorded: true }));
     });
 
-    // POST /storefront/customer/order-credential — Persist legacy order-tracking credential
     router.post('/customer/order-credential', async (c) => {
         const unauthorized = await requireStorefrontInternal(c);
         if (unauthorized) return unauthorized;
@@ -835,7 +860,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ saved: true, store_id: storeId }));
     });
 
-    // POST /storefront/customer/order-credential/login — Verify legacy order-tracking credential
     router.post('/customer/order-credential/login', async (c) => {
         const unauthorized = await requireStorefrontInternal(c);
         if (unauthorized) return unauthorized;
@@ -873,7 +897,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ valid: true, store_id: storeId }));
     });
 
-    // POST /storefront/customer/order-credential/login-success — Record legacy order login metadata
     router.post('/customer/order-credential/login-success', async (c) => {
         const unauthorized = await requireStorefrontInternal(c);
         if (unauthorized) return unauthorized;
@@ -914,7 +937,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ recorded: true, store_id: storeId }));
     });
 
-    // POST /storefront/customer/order-stats — Reconcile customer order counters after checkout
     router.post('/customer/order-stats', async (c) => {
         const unauthorized = await requireStorefrontInternal(c);
         if (unauthorized) return unauthorized;
@@ -964,7 +986,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ updated: true }));
     });
 
-    // GET /storefront/customer/wishlist — Session-proxied customer wishlist read
     router.get('/customer/wishlist', async (c) => {
         const customerId = c.req.query('customer_id');
         const storeId = c.req.query('store_id');
@@ -988,7 +1009,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ product_ids: (data || []).map((row) => row.product_id) }));
     });
 
-    // GET /storefront/customer/orders — Session-proxied customer order history
     router.get('/customer/orders', async (c) => {
         const storeId = c.req.query('store_id');
         const customerId = getCustomerSession(c)?.customerId || c.req.query('customer_id');
@@ -1016,7 +1036,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ orders }));
     });
 
-    // GET /storefront/:subdomain/orders/contact — Public order tracking lookup by contact
     router.get('/:subdomain/orders/contact', async (c) => {
         const unauthorized = await requireStorefrontInternal(c);
         if (unauthorized) return unauthorized;
@@ -1070,7 +1089,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         }));
     });
 
-    // POST /storefront/customer/wishlist — Session-proxied customer wishlist add
     router.post('/customer/wishlist', async (c) => {
         const body = await c.req.json() as CustomerWishlistBody;
 
@@ -1100,7 +1118,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ saved: true }));
     });
 
-    // DELETE /storefront/customer/wishlist — Session-proxied customer wishlist remove
     router.delete('/customer/wishlist', async (c) => {
         const body = await c.req.json() as CustomerWishlistBody;
 
@@ -1127,7 +1144,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ removed: true }));
     });
 
-    // POST /storefront/customer/wishlist/sync — Session-proxied local wishlist sync
     router.post('/customer/wishlist/sync', async (c) => {
         const body = await c.req.json() as CustomerWishlistSyncBody;
 
@@ -1159,7 +1175,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ synced: productIds.length }));
     });
 
-    // POST /storefront/customer/activity — Session-proxied customer activity audit
     router.post('/customer/activity', async (c) => {
         const body = await c.req.json() as CustomerActivityBody;
 
@@ -1186,7 +1201,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ logged: true }));
     });
 
-    // PATCH /storefront/customer/profile — Session-proxied customer profile update
     router.patch('/customer/profile', async (c) => {
         const body = await c.req.json() as CustomerProfileBody;
 
@@ -1223,7 +1237,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ customer: data }));
     });
 
-    // POST /storefront/reviews — Public review submission; defaults to pending moderation
     router.post('/reviews', validate('json', CreateStorefrontProductReviewSchema), async (c) => {
         const body = c.get('validatedBody') as StorefrontReviewBody;
         const turnstileRejected = await requireValidTurnstile(c, body);
@@ -1326,7 +1339,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         }), 201);
     });
 
-    // GET /storefront/customer/addresses — Session-proxied customer addresses
     router.get('/customer/addresses', async (c) => {
         const storeId = c.req.query('store_id');
         const customerId = getCustomerSession(c)?.customerId || c.req.query('customer_id');
@@ -1356,7 +1368,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ addresses: data || [] }));
     });
 
-    // POST /storefront/customer/addresses — Session-proxied address create
     router.post('/customer/addresses', async (c) => {
         const body = await c.req.json() as CustomerAddressBody;
 
@@ -1406,7 +1417,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ address: data }), 201);
     });
 
-    // PATCH /storefront/customer/addresses/:id — Session-proxied address update
     router.patch('/customer/addresses/:id', async (c) => {
         const addressId = c.req.param('id');
         const body = await c.req.json() as CustomerAddressBody;
@@ -1453,7 +1463,6 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ address: data }));
     });
 
-    // DELETE /storefront/customer/addresses/:id — Session-proxied address delete
     router.delete('/customer/addresses/:id', async (c) => {
         const addressId = c.req.param('id');
         const body = await c.req.json() as CustomerAddressBody;

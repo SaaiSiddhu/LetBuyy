@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { formatInrCurrency } from '@letbuyy/ui/formatting'
-import { Badge, Banner, Button, Card, CreditCard, EmptyState, Table, IndianRupee, Input, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Skeleton, useToast } from '@letbuyy/ui'
+import { Button, Input, Table, Badge, Banner, Card, CreditCard, EmptyState, IndianRupee, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Skeleton, useToast } from '@letbuyy/ui'
 
 interface GiftCard {
     id: string

@@ -7,6 +7,7 @@ import '../../app/routes.dart';
 import '../../services/subscription_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import '../subscription/razorpay_checkout_screen.dart';
 
 class BillingScreen extends StatefulWidget {
   const BillingScreen({super.key});
@@ -19,6 +20,7 @@ class _BillingScreenState extends State<BillingScreen> {
   SubscriptionModel? _subscription;
   List<BillingHistoryEntry> _history = const [];
   bool _isLoading = true;
+  bool _isRecovering = false;
   String? _storeId;
   String? _error;
 
@@ -63,10 +65,57 @@ class _BillingScreenState extends State<BillingScreen> {
     } catch (error) {
       if (mounted) {
         setState(() {
-          _error = error.toString();
+          _error =
+              'Billing details could not load. Pull to refresh or try again.';
           _isLoading = false;
         });
       }
+    }
+  }
+
+  Future<void> _recoverFailedPayment() async {
+    final subscription = _subscription;
+    if (_storeId == null || subscription == null || _isRecovering) return;
+
+    setState(() => _isRecovering = true);
+    try {
+      final checkout = await context
+          .read<SubscriptionService>()
+          .recoverFailedPayment(storeId: _storeId!);
+
+      if (checkout['activated'] == true) {
+        _showMessage('Payment recovered.', isSuccess: true);
+        await _load();
+        return;
+      }
+
+      final verified = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (_) => RazorpayCheckoutScreen(
+            storeId: _storeId!,
+            plan: subscription.plan,
+            checkout: checkout,
+          ),
+        ),
+      );
+
+      if (!mounted) return;
+      if (verified == true) {
+        _showMessage('Payment recovered.', isSuccess: true);
+        await _load();
+      } else if (verified == false) {
+        _showMessage('Payment recovery did not complete.', isError: true);
+      }
+    } catch (_) {
+      if (mounted) {
+        _showMessage(
+          'Payment recovery is unavailable right now.',
+          isError: true,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isRecovering = false);
     }
   }
 
@@ -161,6 +210,8 @@ class _BillingScreenState extends State<BillingScreen> {
     final planInfo = SubscriptionService.getPlanInfo(plan);
     final amount = _subscription?.lastPaymentAmount ?? 0;
     final nextBilling = _subscription?.nextBillingDate;
+    final recoverable = _subscription?.status == SubscriptionStatus.pastDue;
+    final statusTone = recoverable ? colors.warning : colors.success;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -189,9 +240,10 @@ class _BillingScreenState extends State<BillingScreen> {
                   ),
                 ),
               ),
-              _statusChip(status, colors.success),
+              _statusChip(_statusLabel(status), statusTone),
             ],
           ),
+          if (recoverable) ...[const SizedBox(height: 14), _recoveryBanner()],
           const SizedBox(height: 14),
           Row(
             children: [
@@ -215,6 +267,54 @@ class _BillingScreenState extends State<BillingScreen> {
             onPressed: () => Navigator.pushNamed(context, AppRoutes.pricing),
             icon: const Icon(Icons.rocket_launch_outlined),
             label: const Text('Manage plan'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _recoveryBanner() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colors.warning.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: colors.warning.withValues(alpha: 0.35)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.error_outline_rounded, color: colors.warning),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Payment needs attention',
+                  style: TextStyle(
+                    color: colors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Retry checkout to keep this store active.',
+            style: TextStyle(color: colors.textSecondary, fontSize: 12),
+          ),
+          const SizedBox(height: 10),
+          FilledButton.icon(
+            onPressed: _isRecovering ? null : _recoverFailedPayment,
+            icon: _isRecovering
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.refresh_rounded),
+            label: Text(_isRecovering ? 'Starting recovery' : 'Retry payment'),
           ),
         ],
       ),
@@ -388,6 +488,23 @@ class _BillingScreenState extends State<BillingScreen> {
       ),
     );
   }
+
+  void _showMessage(
+    String message, {
+    bool isSuccess = false,
+    bool isError = false,
+  }) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError
+            ? colors.error
+            : (isSuccess ? colors.success : colors.card),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 }
 
 String _dateLabel(DateTime value) {
@@ -403,4 +520,9 @@ String _titleCase(String value) {
       .where((part) => part.isNotEmpty)
       .map((part) => part[0].toUpperCase() + part.substring(1))
       .join(' ');
+}
+
+String _statusLabel(String value) {
+  if (value == 'pastDue') return 'Past due';
+  return _titleCase(value);
 }

@@ -14,6 +14,7 @@ const APP_STORE_ROUTE_SOURCES = [
   'services/api-gateway/src/routes/app-store/billing-oauth-routes.ts',
   'services/api-gateway/src/routes/app-store/install-lifecycle-routes.ts',
   'services/api-gateway/src/routes/app-store/compliance-routes.ts',
+  'services/api-gateway/src/routes/app-store/developer-tooling-routes.ts',
   'services/api-gateway/src/routes/app-store/developer-routes.ts',
   'services/api-gateway/src/routes/app-store/shared.ts',
 ];

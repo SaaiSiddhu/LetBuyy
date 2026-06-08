@@ -38,6 +38,9 @@ test('marketplace app submission accepts a matching manifest and rejects slug dr
         category_id: '11111111-1111-4111-8111-111111111111',
         app_url: 'https://apps.example.com/loyalty',
         privacy_policy_url: 'https://apps.example.com/privacy',
+        screenshots: ['https://apps.example.com/media/loyalty-dashboard.webp'],
+        data_handling_summary: 'Reads product and checkout metadata to render loyalty rewards and does not store customer data outside the merchant installation.',
+        data_collected: ['Products', 'Checkout metadata'],
         pricing_model: 'free',
         manifest,
     }, '22222222-2222-4222-8222-222222222222');
@@ -55,6 +58,7 @@ test('marketplace app submission accepts a matching manifest and rejects slug dr
         category_id: '11111111-1111-4111-8111-111111111111',
         app_url: 'https://apps.example.com/loyalty',
         privacy_policy_url: 'https://apps.example.com/privacy',
+        screenshots: ['https://apps.example.com/media/loyalty-dashboard.webp'],
         pricing_model: 'free',
         manifest,
     }, '22222222-2222-4222-8222-222222222222');

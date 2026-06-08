@@ -9,16 +9,20 @@ import {
     CreateProductSchema,
     UpdateProductSchema,
     ListProductsQuery,
+    ProductBarcodeLookupQuery,
     BulkProductActionSchema,
     StoreScopedQuerySchema,
     CreateCollectionSchema,
+    UpdateCollectionSchema,
     CreateGiftCardSchema,
     type CreateProductInput,
     type UpdateProductInput,
     type BulkProductActionInput,
     type ListProductsInput,
+    type ProductBarcodeLookupInput,
     type StoreScopedQueryInput,
     type CreateCollectionInput,
+    type UpdateCollectionInput,
     type CreateGiftCardInput,
     generateGiftCardCodeFromBytes,
     planGiftCardInsert,
@@ -27,6 +31,7 @@ import {
 const router = new Hono<{ Bindings: Env }>();
 type ListProductsQueryInput = ListProductsInput;
 type ProductEventType = 'product.created' | 'product.updated' | 'product.deleted';
+const SAMPLE_PRODUCT_SKU = 'LETBUYY-SAMPLE-PRODUCT';
 
 const PRODUCT_LIST_COLUMNS = [
     'id',
@@ -59,6 +64,7 @@ const PRODUCT_LIST_COLUMNS = [
     'product_type',
     'vendor',
     'url_handle',
+    'metadata',
     'cost_per_item',
     'charge_tax',
     'sell_when_oos',
@@ -92,6 +98,8 @@ type ProductVariantRelationRow = {
     image_url?: string | null;
     position?: number | string | null;
 };
+
+type ProductBarcodeLookupVariantRow = ProductVariantRelationRow;
 
 type DatabaseErrorLike = {
     message?: string;
@@ -217,6 +225,74 @@ async function hydrateProductVariants(
     });
 }
 
+async function loadProductByBarcode(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    env: Env,
+    storeId: string,
+    barcode: string,
+): Promise<Record<string, unknown> | null> {
+    const buildProductQuery = (includeDeletedAtFilter: boolean) => {
+        let query = db
+            .from('products')
+            .select(productVariantRelationalReadsEnabled(env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : PRODUCT_LIST_COLUMNS)
+            .eq('store_id', storeId)
+            .eq('barcode', barcode);
+
+        if (includeDeletedAtFilter) query = query.is('deleted_at', null);
+        return query.maybeSingle();
+    };
+
+    let { data, error } = await buildProductQuery(true);
+    if (isMissingDeletedAtError(error)) {
+        ({ data, error } = await buildProductQuery(false));
+    }
+
+    if (error || !data) return null;
+    return data as unknown as Record<string, unknown>;
+}
+
+async function loadVariantProductByBarcode(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    env: Env,
+    storeId: string,
+    barcode: string,
+): Promise<{ product: Record<string, unknown>; variant: ProductBarcodeLookupVariantRow } | null> {
+    const { data: variantRows, error: variantError } = await db
+        .from('product_variants')
+        .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position')
+        .eq('barcode', barcode)
+        .limit(20);
+
+    if (isMissingTableError(variantError, 'product_variants')) return null;
+    if (variantError) return null;
+
+    for (const variant of (variantRows || []) as ProductBarcodeLookupVariantRow[]) {
+        if (!variant.product_id) continue;
+
+        const buildProductQuery = (includeDeletedAtFilter: boolean) => {
+            let query = db
+                .from('products')
+                .select(productVariantRelationalReadsEnabled(env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : PRODUCT_LIST_COLUMNS)
+                .eq('id', variant.product_id)
+                .eq('store_id', storeId);
+
+            if (includeDeletedAtFilter) query = query.is('deleted_at', null);
+            return query.maybeSingle();
+        };
+
+        let { data: product, error: productError } = await buildProductQuery(true);
+        if (isMissingDeletedAtError(productError)) {
+            ({ data: product, error: productError } = await buildProductQuery(false));
+        }
+
+        if (!productError && product) {
+            return { product: product as unknown as Record<string, unknown>, variant };
+        }
+    }
+
+    return null;
+}
+
 function productStatus(record: Record<string, unknown>, deleted = false): 'draft' | 'active' | 'archived' | 'deleted' | undefined {
     if (deleted || stringOrNull(record.deleted_at)) return 'deleted';
     if (record.is_active === true) return 'active';
@@ -256,6 +332,94 @@ async function emitProductEvent(
         requestId: input.requestId || null,
         actorId: input.actorId,
     });
+}
+
+function sampleProductInput(storeId: string): CreateProductInput {
+    return {
+        store_id: storeId,
+        name: 'Sample Product - Cotton Tote',
+        description: 'Sample product for exploring your catalog. It is saved as an inactive draft and should be edited or deleted before launch.',
+        price: 499,
+        compare_price: null,
+        images: [],
+        category: 'Sample',
+        product_type: 'Sample',
+        vendor: 'LetBuyy sample data',
+        tags: ['sample', 'not-for-sale', 'delete-before-launch'],
+        metadata: {},
+        variants: [],
+        product_options: [],
+        stock: 1,
+        track_inventory: true,
+        sku: SAMPLE_PRODUCT_SKU,
+        barcode: null,
+        sell_when_oos: false,
+        is_physical: true,
+        weight: 0.25,
+        weight_unit: 'kg',
+        country_of_origin: 'India',
+        hs_code: null,
+        hsn_code: null,
+        url_handle: 'sample-product',
+        seo_title: 'Sample Product - Not for sale',
+        seo_description: 'A sample draft product for setting up your LetBuyy catalog.',
+        charge_tax: true,
+        is_active: false,
+        is_featured: false,
+        display_order: 0,
+    };
+}
+
+async function loadExistingSampleProduct(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    env: Env,
+    storeId: string,
+): Promise<Record<string, unknown> | null> {
+    const buildSampleQuery = (includeDeletedAtFilter: boolean) => {
+        let query = db
+            .from('products')
+            .select(productVariantRelationalReadsEnabled(env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : PRODUCT_LIST_COLUMNS)
+            .eq('store_id', storeId)
+            .eq('sku', SAMPLE_PRODUCT_SKU);
+
+        if (includeDeletedAtFilter) query = query.is('deleted_at', null);
+        return query.maybeSingle();
+    };
+
+    let { data, error } = await buildSampleQuery(true);
+    if (isMissingDeletedAtError(error)) {
+        ({ data, error } = await buildSampleQuery(false));
+    }
+
+    if (error) throw new Error(`Sample product lookup failed: ${error.message}`);
+    if (!data) return null;
+    const rows = productVariantRelationalReadsEnabled(env)
+        ? await hydrateProductVariants(db, [data as unknown as Record<string, unknown>])
+        : [data as unknown as Record<string, unknown>];
+    return rows[0] || null;
+}
+
+async function countStoreProducts(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    storeId: string,
+): Promise<number> {
+    const buildCountQuery = (includeDeletedAtFilter: boolean) => {
+        let query = db
+            .from('products')
+            .select('id', { count: 'exact', head: true })
+            .eq('store_id', storeId);
+
+        if (includeDeletedAtFilter) query = query.is('deleted_at', null);
+        return query;
+    };
+
+    let { count, error } = await buildCountQuery(true);
+    if (isMissingDeletedAtError(error)) {
+        ({ count, error } = await buildCountQuery(false));
+    }
+
+    if (error) throw new Error(`Product count failed: ${error.message}`);
+    return count || 0;
 }
 
 // GET /products — List products (optionally by store)
@@ -336,6 +500,54 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         total: query.withCount ? count || 0 : undefined,
         nextCursor,
     }));
+});
+
+// GET /products/barcode/lookup — Resolve a scanned product or variant barcode
+router.get('/barcode/lookup', validate('query', ProductBarcodeLookupQuery), async (c) => {
+    const auth = c.get('auth');
+    const query = c.get('validatedQuery') as ProductBarcodeLookupInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const ownsStore = await verifyStoreOwnership(db, query.store_id, customUser.id, auth.user.storeId);
+    if (!ownsStore) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const barcode = query.barcode.trim();
+    const directProduct = await loadProductByBarcode(db, c.env, query.store_id, barcode);
+    if (directProduct) {
+        const rows = productVariantRelationalReadsEnabled(c.env)
+            ? await hydrateProductVariants(db, [directProduct])
+            : [directProduct];
+        return c.json(success({
+            store_id: query.store_id,
+            barcode,
+            product: rows[0],
+            variant: null,
+            matched_field: 'product.barcode',
+        }));
+    }
+
+    const variantMatch = await loadVariantProductByBarcode(db, c.env, query.store_id, barcode);
+    if (variantMatch) {
+        const rows = productVariantRelationalReadsEnabled(c.env)
+            ? await hydrateProductVariants(db, [variantMatch.product])
+            : [variantMatch.product];
+        return c.json(success({
+            store_id: query.store_id,
+            barcode,
+            product: rows[0],
+            variant: productVariantView(variantMatch.variant),
+            matched_field: 'variant.barcode',
+        }));
+    }
+
+    return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
 });
 
 // GET /products/collections — List collections for a store
@@ -433,6 +645,138 @@ router.post('/collections', validate('json', CreateCollectionSchema), async (c) 
     return c.json(success(data), 201);
 });
 
+// PATCH /products/collections/:id — Update a collection
+router.patch('/collections/:id', validate('json', UpdateCollectionSchema), async (c) => {
+    const auth = c.get('auth');
+    const collectionId = c.req.param('id');
+    const body = c.get('validatedBody') as UpdateCollectionInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const loadCollection = async (includeDeletedAtFilter: boolean) => {
+        let request = db
+            .from('collections')
+            .select('id, store_id')
+            .eq('id', collectionId);
+
+        if (includeDeletedAtFilter) request = request.is('deleted_at', null);
+        return request.maybeSingle();
+    };
+
+    let { data: existing, error: existingError } = await loadCollection(true);
+    if (isMissingDeletedAtError(existingError)) {
+        ({ data: existing, error: existingError } = await loadCollection(false));
+    }
+
+    if (isMissingTableError(existingError, 'collections')) {
+        return c.json({ error: { code: 'COLLECTION_SCHEMA_MISSING', message: 'Collections are not available in this environment.' } }, 503);
+    }
+    if (existingError) {
+        return c.json({ error: { code: 'DB_ERROR', message: existingError.message } }, 500);
+    }
+
+    const collection = existing as { id: string; store_id?: string | null } | null;
+    if (!collection?.store_id || !(await verifyStoreOwnership(db, collection.store_id, customUser.id, auth.user.storeId))) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Collection not found' } }, 404);
+    }
+
+    const update: Record<string, unknown> = {};
+    if (body.title !== undefined) update.title = body.title;
+    if (body.description !== undefined) update.description = body.description || null;
+    if (body.image_url !== undefined) update.image_url = body.image_url || null;
+    if (body.is_active !== undefined) update.is_active = body.is_active;
+
+    const updateCollection = (includeAuditFields: boolean) => {
+        const payload = includeAuditFields ? { ...update, updated_by: customUser.id } : update;
+        return db
+            .from('collections')
+            .update(payload)
+            .eq('id', collectionId)
+            .select()
+            .single();
+    };
+
+    let { data, error } = await updateCollection(true);
+    if (isMissingAuditColumnError(error)) {
+        ({ data, error } = await updateCollection(false));
+    }
+
+    if (error || !data) {
+        return c.json({ error: { code: 'DB_ERROR', message: error?.message || 'Unable to update collection' } }, 500);
+    }
+
+    return c.json(success(data));
+});
+
+// DELETE /products/collections/:id — Soft-delete a collection
+router.delete('/collections/:id', async (c) => {
+    const auth = c.get('auth');
+    const collectionId = c.req.param('id');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const loadCollection = async (includeDeletedAtFilter: boolean) => {
+        let request = db
+            .from('collections')
+            .select('id, store_id')
+            .eq('id', collectionId);
+
+        if (includeDeletedAtFilter) request = request.is('deleted_at', null);
+        return request.maybeSingle();
+    };
+
+    let { data: existing, error: existingError } = await loadCollection(true);
+    if (isMissingDeletedAtError(existingError)) {
+        ({ data: existing, error: existingError } = await loadCollection(false));
+    }
+
+    if (isMissingTableError(existingError, 'collections')) {
+        return c.json({ error: { code: 'COLLECTION_SCHEMA_MISSING', message: 'Collections are not available in this environment.' } }, 503);
+    }
+    if (existingError) {
+        return c.json({ error: { code: 'DB_ERROR', message: existingError.message } }, 500);
+    }
+
+    const collection = existing as { id: string; store_id?: string | null } | null;
+    if (!collection?.store_id || !(await verifyStoreOwnership(db, collection.store_id, customUser.id, auth.user.storeId))) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Collection not found' } }, 404);
+    }
+
+    const softDeleteCollection = (includeAuditFields: boolean) => {
+        const payload: Record<string, unknown> = { deleted_at: new Date().toISOString() };
+        if (includeAuditFields) payload.updated_by = customUser.id;
+        return db
+            .from('collections')
+            .update(payload)
+            .eq('id', collectionId);
+    };
+
+    let { error } = await softDeleteCollection(true);
+    if (isMissingAuditColumnError(error)) {
+        ({ error } = await softDeleteCollection(false));
+    }
+    if (isMissingDeletedAtError(error)) {
+        ({ error } = await db
+            .from('collections')
+            .delete()
+            .eq('id', collectionId));
+    }
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    return c.json(success({ deleted: true, id: collectionId }));
+});
+
 // GET /products/gift-cards — List gift cards for a store
 router.get('/gift-cards', validate('query', StoreScopedQuerySchema), async (c) => {
     const auth = c.get('auth');
@@ -512,6 +856,65 @@ router.post('/gift-cards', validate('json', CreateGiftCardSchema), async (c) => 
         }
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
+
+    return c.json(success(data), 201);
+});
+
+// POST /products/sample — Seed one clearly labeled inactive sample product for an empty store
+router.post('/sample', validate('json', StoreScopedQuerySchema), async (c) => {
+    const auth = c.get('auth');
+    const body = c.get('validatedBody') as StoreScopedQueryInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const ownsStore = await verifyStoreOwnership(db, body.store_id, customUser.id, auth.user.storeId);
+    if (!ownsStore) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    let existingSample: Record<string, unknown> | null = null;
+    try {
+        existingSample = await loadExistingSampleProduct(db, c.env, body.store_id);
+        if (existingSample) return c.json(success(existingSample));
+
+        const productCount = await countStoreProducts(db, body.store_id);
+        if (productCount > 0) {
+            return c.json({
+                error: {
+                    code: 'PRODUCT_CATALOG_NOT_EMPTY',
+                    message: 'Sample products can only be added to an empty catalog.',
+                },
+            }, 409);
+        }
+    } catch {
+        return c.json({ error: { code: 'DB_ERROR', message: 'Unable to inspect product catalog.' } }, 500);
+    }
+
+    const service = createProductExecutionAdapter(db, c.env);
+    let data: Record<string, unknown>;
+    try {
+        data = await service.createProduct(sampleProductInput(body.store_id), customUser.id, auth.user.storeId) as Record<string, unknown>;
+    } catch {
+        try {
+            existingSample = await loadExistingSampleProduct(db, c.env, body.store_id);
+            if (existingSample) return c.json(success(existingSample));
+        } catch {
+            // Fall through to the generic, merchant-safe failure response.
+        }
+        return c.json({ error: { code: 'SAMPLE_PRODUCT_CREATE_FAILED', message: 'Unable to create sample product.' } }, 500);
+    }
+
+    await emitProductEvent(db, {
+        eventType: 'product.created',
+        product: data,
+        fallbackStoreId: body.store_id,
+        actorId: customUser.id,
+        requestId: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
+    });
 
     return c.json(success(data), 201);
 });

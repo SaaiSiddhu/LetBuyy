@@ -11958,6 +11958,12 @@ CREATE TABLE public.sites (
     site_type text NOT NULL,
     subdomain text NOT NULL,
     custom_domain text,
+    custom_domain_status text DEFAULT 'none'::text,
+    custom_domain_verification_token text,
+    access_mode text DEFAULT 'public'::text NOT NULL,
+    access_password_hash text,
+    access_message text,
+    published boolean DEFAULT false NOT NULL,
     theme_id text DEFAULT 'modern'::text,
     theme_settings jsonb DEFAULT '{}'::jsonb,
     template_config jsonb DEFAULT '{}'::jsonb,
@@ -12000,12 +12006,107 @@ CREATE TABLE public.sites (
     gstin text,
     gst_state_code text,
     invoice_prefix text DEFAULT 'LBY'::text,
+    CONSTRAINT sites_access_mode_check CHECK ((access_mode = ANY (ARRAY['public'::text, 'password'::text, 'preview_only'::text, 'offline'::text]))),
+    CONSTRAINT sites_custom_domain_status_check CHECK ((custom_domain_status = ANY (ARRAY['none'::text, 'pending'::text, 'review'::text, 'verifying'::text, 'active'::text, 'error'::text]))),
     CONSTRAINT sites_gst_state_code_check CHECK (((gst_state_code IS NULL) OR (gst_state_code ~ '^(0[1-9]|[12][0-9]|3[0-8]|97)$'::text))),
     CONSTRAINT sites_gstin_format_check CHECK (((gstin IS NULL) OR (gstin ~ '^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$'::text))),
     CONSTRAINT sites_site_type_check CHECK ((site_type = ANY (ARRAY['store'::text, 'portfolio'::text, 'resume'::text, 'landing'::text, 'blog'::text]))),
     CONSTRAINT sites_ssl_status_check CHECK ((ssl_status = ANY (ARRAY['pending'::text, 'active'::text, 'failed'::text]))),
     CONSTRAINT sites_status_check CHECK ((status = ANY (ARRAY['draft'::text, 'published'::text, 'unpublished'::text, 'frozen'::text, 'suspended'::text]))),
     CONSTRAINT sites_trial_status_check CHECK ((trial_status = ANY (ARRAY['active'::text, 'grace'::text, 'frozen'::text, 'cancelled'::text, 'paid'::text])))
+);
+
+
+--
+-- Name: site_preview_links; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.site_preview_links (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    site_id uuid NOT NULL,
+    jti text NOT NULL,
+    scope text NOT NULL,
+    theme_id text,
+    created_by uuid,
+    expires_at timestamp with time zone NOT NULL,
+    revoked_at timestamp with time zone,
+    last_used_at timestamp with time zone,
+    hit_count integer DEFAULT 0 NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    deleted_at timestamp with time zone,
+    CONSTRAINT site_preview_links_scope_check CHECK ((scope = ANY (ARRAY['merchant-preview'::text, 'share-link'::text])))
+);
+
+
+--
+-- Name: site_gate_attempts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.site_gate_attempts (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    site_id uuid NOT NULL,
+    ip inet,
+    host text NOT NULL,
+    ts timestamp with time zone DEFAULT now() NOT NULL,
+    ok boolean DEFAULT false NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+--
+-- Name: site_domain_reviews; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.site_domain_reviews (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    site_id uuid NOT NULL,
+    domain text NOT NULL,
+    risk_tier text NOT NULL,
+    status text DEFAULT 'pending'::text NOT NULL,
+    reasons jsonb DEFAULT '[]'::jsonb NOT NULL,
+    provider_evidence jsonb,
+    decision_notes text,
+    decided_at timestamp with time zone,
+    created_by uuid,
+    updated_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    deleted_at timestamp with time zone,
+    CONSTRAINT site_domain_reviews_risk_tier_check CHECK ((risk_tier = ANY (ARRAY['low'::text, 'medium'::text, 'high'::text]))),
+    CONSTRAINT site_domain_reviews_status_check CHECK ((status = ANY (ARRAY['pending'::text, 'approved'::text, 'denied'::text, 'rejected'::text])))
+);
+
+--
+-- Name: domain_orders; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.domain_orders (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    site_id uuid NOT NULL,
+    domain text NOT NULL,
+    provider text NOT NULL,
+    status text DEFAULT 'created'::text NOT NULL,
+    years integer DEFAULT 1 NOT NULL,
+    currency text DEFAULT 'INR'::text NOT NULL,
+    amount_minor integer DEFAULT 0 NOT NULL,
+    payment_provider text DEFAULT 'razorpay'::text NOT NULL,
+    payment_reference text NOT NULL,
+    registrar_order_id text,
+    registrar_payload jsonb,
+    dns_payload jsonb,
+    vercel_payload jsonb,
+    failure_reason text,
+    idempotency_key text NOT NULL,
+    completed_at timestamp with time zone,
+    created_by uuid,
+    updated_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    deleted_at timestamp with time zone,
+    CONSTRAINT domain_orders_provider_check CHECK ((provider = ANY (ARRAY['resellerclub'::text, 'opensrs'::text, 'mock'::text]))),
+    CONSTRAINT domain_orders_status_check CHECK ((status = ANY (ARRAY['created'::text, 'registering'::text, 'provisioning'::text, 'active'::text, 'failed'::text])))
 );
 
 
@@ -15524,6 +15625,35 @@ ALTER TABLE ONLY public.site_entitlement_overrides
 
 
 --
+-- Name: site_gate_attempts site_gate_attempts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.site_gate_attempts
+    ADD CONSTRAINT site_gate_attempts_pkey PRIMARY KEY (id);
+
+--
+-- Name: site_domain_reviews site_domain_reviews_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.site_domain_reviews
+    ADD CONSTRAINT site_domain_reviews_pkey PRIMARY KEY (id);
+
+--
+-- Name: domain_orders domain_orders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.domain_orders
+    ADD CONSTRAINT domain_orders_pkey PRIMARY KEY (id);
+
+--
+-- Name: domain_orders domain_orders_idempotency_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.domain_orders
+    ADD CONSTRAINT domain_orders_idempotency_key UNIQUE (idempotency_key);
+
+
+--
 -- Name: site_memberships site_memberships_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -15561,6 +15691,22 @@ ALTER TABLE ONLY public.site_roles
 
 ALTER TABLE ONLY public.site_roles
     ADD CONSTRAINT site_roles_site_id_slug_key UNIQUE (site_id, slug);
+
+
+--
+-- Name: site_preview_links site_preview_links_jti_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.site_preview_links
+    ADD CONSTRAINT site_preview_links_jti_key UNIQUE (jti);
+
+
+--
+-- Name: site_preview_links site_preview_links_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.site_preview_links
+    ADD CONSTRAINT site_preview_links_pkey PRIMARY KEY (id);
 
 
 --
@@ -18331,6 +18477,44 @@ CREATE INDEX idx_site_entitlement_overrides_active ON public.site_entitlement_ov
 
 
 --
+-- Name: idx_site_gate_attempts_rate; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_site_gate_attempts_rate ON public.site_gate_attempts USING btree (site_id, host, ip, ts DESC);
+
+
+--
+-- Name: idx_site_gate_attempts_site_ts; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_site_gate_attempts_site_ts ON public.site_gate_attempts USING btree (site_id, ts DESC);
+
+--
+-- Name: idx_site_domain_reviews_site; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_site_domain_reviews_site ON public.site_domain_reviews USING btree (site_id, created_at DESC) WHERE (deleted_at IS NULL);
+
+--
+-- Name: idx_site_domain_reviews_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_site_domain_reviews_status ON public.site_domain_reviews USING btree (status, risk_tier, created_at DESC) WHERE (deleted_at IS NULL);
+
+--
+-- Name: idx_domain_orders_site; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_domain_orders_site ON public.domain_orders USING btree (site_id, created_at DESC) WHERE (deleted_at IS NULL);
+
+--
+-- Name: idx_domain_orders_domain; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_domain_orders_domain ON public.domain_orders USING btree (lower(domain)) WHERE (deleted_at IS NULL);
+
+
+--
 -- Name: idx_site_memberships_custom_user; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -18380,6 +18564,20 @@ CREATE UNIQUE INDEX idx_site_roles_system_slug ON public.site_roles USING btree 
 
 
 --
+-- Name: idx_site_preview_links_active; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_site_preview_links_active ON public.site_preview_links USING btree (site_id, jti) WHERE ((revoked_at IS NULL) AND (deleted_at IS NULL));
+
+
+--
+-- Name: idx_site_preview_links_site_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_site_preview_links_site_id ON public.site_preview_links USING btree (site_id, expires_at DESC) WHERE (deleted_at IS NULL);
+
+
+--
 -- Name: idx_site_usage_meters_site_period; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -18394,10 +18592,31 @@ CREATE INDEX idx_sites_active ON public.sites USING btree (user_id) WHERE (delet
 
 
 --
+-- Name: idx_sites_access_mode; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_sites_access_mode ON public.sites USING btree (access_mode) WHERE (deleted_at IS NULL);
+
+
+--
 -- Name: idx_sites_current_theme_release; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_sites_current_theme_release ON public.sites USING btree (current_theme_release_id) WHERE (current_theme_release_id IS NOT NULL);
+
+
+--
+-- Name: idx_sites_custom_domain_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_sites_custom_domain_status ON public.sites USING btree (custom_domain_status) WHERE (custom_domain_status <> 'none'::text);
+
+
+--
+-- Name: sites_custom_domain_unique; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX sites_custom_domain_unique ON public.sites USING btree (lower(custom_domain)) WHERE ((custom_domain IS NOT NULL) AND (deleted_at IS NULL));
 
 
 --
@@ -18412,6 +18631,13 @@ CREATE INDEX idx_sites_custom_user ON public.sites USING btree (custom_user_id);
 --
 
 CREATE INDEX idx_sites_gstin ON public.sites USING btree (gstin) WHERE (gstin IS NOT NULL);
+
+
+--
+-- Name: idx_sites_published; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_sites_published ON public.sites USING btree (published) WHERE (deleted_at IS NULL);
 
 
 --
@@ -19462,6 +19688,32 @@ CREATE TRIGGER trg_shipment_events_updated_at BEFORE UPDATE ON public.shipment_e
 --
 
 CREATE TRIGGER trg_shipments_updated_at BEFORE UPDATE ON public.shipments FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+
+--
+-- Name: site_gate_attempts update_site_gate_attempts_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_site_gate_attempts_updated_at BEFORE UPDATE ON public.site_gate_attempts FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+--
+-- Name: site_domain_reviews update_site_domain_reviews_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_site_domain_reviews_updated_at BEFORE UPDATE ON public.site_domain_reviews FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+--
+-- Name: domain_orders update_domain_orders_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_domain_orders_updated_at BEFORE UPDATE ON public.domain_orders FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+
+--
+-- Name: site_preview_links update_site_preview_links_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_site_preview_links_updated_at BEFORE UPDATE ON public.site_preview_links FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
 
 --
@@ -22612,6 +22864,36 @@ ALTER TABLE ONLY public.runtime_telemetry_metrics
 
 ALTER TABLE ONLY public.search_documents
     ADD CONSTRAINT search_documents_site_id_fkey FOREIGN KEY (site_id) REFERENCES public.sites(id) ON DELETE CASCADE;
+
+
+--
+-- Name: site_gate_attempts site_gate_attempts_site_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.site_gate_attempts
+    ADD CONSTRAINT site_gate_attempts_site_id_fkey FOREIGN KEY (site_id) REFERENCES public.sites(id) ON DELETE CASCADE;
+
+--
+-- Name: site_domain_reviews site_domain_reviews_site_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.site_domain_reviews
+    ADD CONSTRAINT site_domain_reviews_site_id_fkey FOREIGN KEY (site_id) REFERENCES public.sites(id) ON DELETE CASCADE;
+
+--
+-- Name: domain_orders domain_orders_site_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.domain_orders
+    ADD CONSTRAINT domain_orders_site_id_fkey FOREIGN KEY (site_id) REFERENCES public.sites(id) ON DELETE CASCADE;
+
+
+--
+-- Name: site_preview_links site_preview_links_site_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.site_preview_links
+    ADD CONSTRAINT site_preview_links_site_id_fkey FOREIGN KEY (site_id) REFERENCES public.sites(id) ON DELETE CASCADE;
 
 
 --
@@ -26559,6 +26841,43 @@ CREATE POLICY site_entitlement_overrides_service_all ON public.site_entitlement_
 
 
 --
+-- Name: site_gate_attempts; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.site_gate_attempts ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: site_gate_attempts site_gate_attempts_service_all; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY site_gate_attempts_service_all ON public.site_gate_attempts USING ((auth.role() = 'service_role'::text)) WITH CHECK ((auth.role() = 'service_role'::text));
+
+--
+-- Name: site_domain_reviews; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.site_domain_reviews ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: site_domain_reviews site_domain_reviews_service_all; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY site_domain_reviews_service_all ON public.site_domain_reviews USING ((auth.role() = 'service_role'::text)) WITH CHECK ((auth.role() = 'service_role'::text));
+
+--
+-- Name: domain_orders; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.domain_orders ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: domain_orders domain_orders_service_all; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY domain_orders_service_all ON public.domain_orders USING ((auth.role() = 'service_role'::text)) WITH CHECK ((auth.role() = 'service_role'::text));
+
+
+--
 -- Name: site_memberships; Type: ROW SECURITY; Schema: public; Owner: -
 --
 
@@ -26620,6 +26939,19 @@ ALTER TABLE public.site_roles ENABLE ROW LEVEL SECURITY;
 --
 
 CREATE POLICY site_roles_service_all ON public.site_roles USING ((auth.role() = 'service_role'::text)) WITH CHECK ((auth.role() = 'service_role'::text));
+
+
+--
+-- Name: site_preview_links; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.site_preview_links ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: site_preview_links site_preview_links_service_all; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY site_preview_links_service_all ON public.site_preview_links USING ((auth.role() = 'service_role'::text)) WITH CHECK ((auth.role() = 'service_role'::text));
 
 
 --

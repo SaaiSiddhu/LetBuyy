@@ -33,7 +33,7 @@ export async function loadEmployeeAnalytics(): Promise<ApiLoadResult<EmployeeAna
 export async function probeTicketInfrastructure(): Promise<ApiLoadResult<{ available: boolean }>> {
     try {
         const api = await createPlatformOperationsApiClient({ requireSession: true });
-        await api.requestData<unknown>('/employees/tickets');
+        await api.operations.supportOverview();
         return { data: { available: true } };
     } catch (error) {
         return { error: normalizeApiError(error, 'Support ticket infrastructure is not configured') };

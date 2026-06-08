@@ -1,8 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
+import '../../config/app_config.dart';
 import '../../services/order_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
@@ -33,10 +39,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   void initState() {
     super.initState();
     _order = widget.initialOrder;
-    _loadOrder();
+    _loadOrder(preferCached: true);
   }
 
-  Future<void> _loadOrder() async {
+  Future<void> _loadOrder({bool preferCached = false}) async {
     if (widget.orderId.trim().isEmpty) {
       setState(() {
         _isLoading = false;
@@ -45,15 +51,26 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       return;
     }
 
+    final service = context.read<OrderService>();
+    if (preferCached) {
+      final cached = _order ?? service.cachedOrder(widget.orderId);
+      if (cached != null) {
+        setState(() {
+          _order = cached;
+          _isLoading = false;
+          _error = null;
+        });
+        return;
+      }
+    }
+
     setState(() {
       _isLoading = _order == null;
       _error = null;
     });
 
     try {
-      final order = await context.read<OrderService>().fetchOrder(
-        widget.orderId,
-      );
+      final order = await service.fetchOrder(widget.orderId);
       if (mounted) {
         setState(() {
           _order = order;
@@ -130,14 +147,100 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
     setState(() => _isMutating = true);
     try {
+      String? trackingNumber = request.trackingNumber;
+      String? carrier = request.carrier;
+      Map<String, dynamic>? label;
+
+      if (request.createShippingLabel) {
+        final labelResponse = await context
+            .read<OrderService>()
+            .buyShippingLabel(
+              order.id,
+              provider: request.logisticsProvider ?? 'shiprocket',
+              packageWeightGrams: request.packageWeightGrams ?? 500,
+              packageLengthCm: request.packageLengthCm,
+              packageWidthCm: request.packageWidthCm,
+              packageHeightCm: request.packageHeightCm,
+            );
+        label = labelResponse['label'] is Map
+            ? Map<String, dynamic>.from(labelResponse['label'] as Map)
+            : labelResponse;
+        trackingNumber = label['tracking_number']?.toString();
+        carrier = label['carrier']?.toString();
+      }
+
       final updated = await context.read<OrderService>().fulfillOrder(
         order.id,
-        trackingNumber: request.trackingNumber,
-        carrier: request.carrier,
+        trackingNumber: trackingNumber,
+        carrier: carrier,
+        createShippingLabel: false,
+      );
+      if (label != null) await _shareLabelPdf(label);
+      if (mounted) {
+        setState(() => _order = updated);
+        _showSnackBar(
+          request.createShippingLabel
+              ? 'Shipping label created and order shipped'
+              : 'Order marked shipped',
+        );
+      }
+    } catch (error) {
+      if (mounted) _showSnackBar(error.toString(), isError: true);
+    } finally {
+      if (mounted) setState(() => _isMutating = false);
+    }
+  }
+
+  Future<void> _shareLabelPdf(Map<String, dynamic> label) async {
+    final raw = label['pdf_base64']?.toString();
+    if (raw == null || raw.isEmpty) return;
+
+    final bytes = base64Decode(raw);
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/shipping-label-${label['id']}.pdf');
+    await file.writeAsBytes(bytes, flush: true);
+    await Share.shareXFiles([
+      XFile(file.path, mimeType: 'application/pdf'),
+    ], subject: 'Shipping label ${label['tracking_number'] ?? ''}');
+  }
+
+  Future<void> _editLineItems(OrderContract order) async {
+    final request = await _showLineItemsDialog(order);
+    if (request == null || request.lines.isEmpty) return;
+
+    setState(() => _isMutating = true);
+    try {
+      final updated = await context.read<OrderService>().updateLineItems(
+        order.id,
+        lines: request.lines,
       );
       if (mounted) {
         setState(() => _order = updated);
-        _showSnackBar('Order marked shipped');
+        _showSnackBar('Order line items updated');
+      }
+    } catch (error) {
+      if (mounted) _showSnackBar(error.toString(), isError: true);
+    } finally {
+      if (mounted) setState(() => _isMutating = false);
+    }
+  }
+
+  Future<void> _cancelOrder() async {
+    final order = _order;
+    if (order == null) return;
+
+    final reason = await _showCancelReasonDialog(order);
+    if (reason == null) return;
+
+    setState(() => _isMutating = true);
+    try {
+      final updated = await context.read<OrderService>().cancelOrder(
+        order.id,
+        reason: reason,
+      );
+      if (mounted) {
+        setState(() => _order = updated);
+        _showSnackBar('Order cancelled');
       }
     } catch (error) {
       if (mounted) _showSnackBar(error.toString(), isError: true);
@@ -230,6 +333,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         children: [
           if (_error != null) _buildInlineWarning(_error!),
           _buildSummary(order),
+          if (_hasRiskSignal(order)) ...[
+            const SizedBox(height: 12),
+            _buildRiskSignal(order),
+          ],
           const SizedBox(height: 12),
           _buildCustomer(order),
           const SizedBox(height: 12),
@@ -357,6 +464,77 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
+  Widget _buildRiskSignal(OrderContract order) {
+    final color = _riskColor(order);
+    final level = _riskLevel(order);
+    final details = _riskDetails(order);
+
+    return _section(
+      title: 'Risk signal',
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: color.withValues(alpha: 0.22)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.shield_outlined, color: color, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '${_statusLabel(level)} risk',
+                    style: TextStyle(
+                      color: color,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                Text(
+                  'Score ${order.riskScore}/100',
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+            if (details.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              ...details.map(
+                (detail) => Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.circle, color: color, size: 6),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          detail,
+                          style: TextStyle(
+                            color: colors.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildCustomer(OrderContract order) {
     return _section(
       title: 'Customer',
@@ -395,6 +573,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final items = order.lineItems;
     return _section(
       title: 'Line items',
+      action: items.isEmpty
+          ? null
+          : TextButton.icon(
+              onPressed: _isMutating ? null : () => _editLineItems(order),
+              icon: const Icon(Icons.edit_outlined, size: 16),
+              label: const Text('Edit'),
+            ),
       child: items.isEmpty
           ? Text(
               'No line items returned for this order.',
@@ -553,6 +738,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         status != 'cancelled' &&
         status != 'refunded';
     final canRefund = status != 'cancelled' && status != 'refunded';
+    final canCancel =
+        status != 'cancelled' && status != 'refunded' && status != 'delivered';
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
@@ -579,6 +766,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 onPressed: _isMutating ? null : _issueRefund,
                 isDestructive: true,
               ),
+            if (canCancel)
+              _actionButton(
+                icon: Icons.cancel_outlined,
+                label: 'Cancel',
+                onPressed: _isMutating ? null : _cancelOrder,
+                isDestructive: true,
+              ),
             _actionButton(
               icon: Icons.done_all_rounded,
               label: 'Complete refund',
@@ -590,7 +784,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _section({String? title, required Widget child}) {
+  Widget _section({String? title, Widget? action, required Widget child}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -602,13 +796,20 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (title != null) ...[
-            Text(
-              title,
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: colors.textPrimary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                if (action != null) action,
+              ],
             ),
             const SizedBox(height: 12),
           ],
@@ -841,6 +1042,73 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
+  Future<String?> _showCancelReasonDialog(OrderContract order) {
+    final reasonController = TextEditingController();
+    final orderNumber = _orderNumber(order);
+    return showDialog<String>(
+      context: context,
+      builder: (context) {
+        var reason = '';
+        return StatefulBuilder(
+          builder: (context, setDialogState) => AlertDialog(
+            backgroundColor: colors.card,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Text(
+              'Cancel $orderNumber?',
+              style: TextStyle(color: colors.textPrimary),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Add a cancellation reason for the order timeline.',
+                  style: TextStyle(color: colors.textSecondary),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: reasonController,
+                  autofocus: true,
+                  maxLines: 3,
+                  maxLength: 500,
+                  onChanged: (value) =>
+                      setDialogState(() => reason = value.trim()),
+                  decoration: InputDecoration(
+                    labelText: 'Cancellation reason',
+                    hintText: 'Customer requested cancellation',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Keep order',
+                  style: TextStyle(color: colors.textSecondary),
+                ),
+              ),
+              TextButton(
+                onPressed: reason.isEmpty
+                    ? null
+                    : () => Navigator.pop(context, reason),
+                child: Text(
+                  'Cancel order',
+                  style: TextStyle(color: colors.error),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<_CompleteRefundRequest?> _showCompleteRefundDialog() async {
     final refundIdController = TextEditingController();
     final providerRefundIdController = TextEditingController();
@@ -920,37 +1188,240 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   Future<_TrackingRequest?> _showTrackingDialog() async {
     final carrierController = TextEditingController();
     final trackingController = TextEditingController();
+    final weightController = TextEditingController(text: '500');
+    final lengthController = TextEditingController(text: '10');
+    final widthController = TextEditingController(text: '10');
+    final heightController = TextEditingController(text: '5');
+    var createShippingLabel = false;
+    var logisticsProvider = AppConfig.normalizedDefaultLogisticsProvider;
 
     return showDialog<_TrackingRequest>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: colors.card,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Fulfill order',
+            style: TextStyle(color: colors.textPrimary),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SwitchListTile.adaptive(
+                  contentPadding: EdgeInsets.zero,
+                  value: createShippingLabel,
+                  activeColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                  title: Text(
+                    'Buy shipping label',
+                    style: TextStyle(color: colors.textPrimary),
+                  ),
+                  subtitle: Text(
+                    'Creates a test-mode label unless live carrier credentials are configured.',
+                    style: TextStyle(color: colors.textSecondary),
+                  ),
+                  onChanged: (value) =>
+                      setDialogState(() => createShippingLabel = value),
+                ),
+                if (createShippingLabel) ...[
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    value: logisticsProvider,
+                    dropdownColor: colors.card,
+                    decoration: InputDecoration(
+                      labelText: 'Carrier account',
+                      labelStyle: TextStyle(color: colors.textSecondary),
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'shiprocket',
+                        child: Text('Shiprocket'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'delhivery',
+                        child: Text('Delhivery'),
+                      ),
+                      DropdownMenuItem(value: 'pickrr', child: Text('Pickrr')),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        setDialogState(() => logisticsProvider = value);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: weightController,
+                    keyboardType: TextInputType.number,
+                    style: TextStyle(color: colors.textPrimary),
+                    decoration: InputDecoration(
+                      labelText: 'Package weight (grams)',
+                      labelStyle: TextStyle(color: colors.textSecondary),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: lengthController,
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(color: colors.textPrimary),
+                          decoration: InputDecoration(
+                            labelText: 'L cm',
+                            labelStyle: TextStyle(color: colors.textSecondary),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextField(
+                          controller: widthController,
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(color: colors.textPrimary),
+                          decoration: InputDecoration(
+                            labelText: 'W cm',
+                            labelStyle: TextStyle(color: colors.textSecondary),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextField(
+                          controller: heightController,
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(color: colors.textPrimary),
+                          decoration: InputDecoration(
+                            labelText: 'H cm',
+                            labelStyle: TextStyle(color: colors.textSecondary),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ] else ...[
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: carrierController,
+                    style: TextStyle(color: colors.textPrimary),
+                    decoration: InputDecoration(
+                      labelText: 'Carrier',
+                      labelStyle: TextStyle(color: colors.textSecondary),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: trackingController,
+                    style: TextStyle(color: colors.textPrimary),
+                    decoration: InputDecoration(
+                      labelText: 'Tracking number',
+                      labelStyle: TextStyle(color: colors.textSecondary),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: colors.textSecondary),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(
+                context,
+                _TrackingRequest(
+                  carrier: carrierController.text.trim(),
+                  trackingNumber: trackingController.text.trim(),
+                  createShippingLabel: createShippingLabel,
+                  logisticsProvider: createShippingLabel
+                      ? logisticsProvider
+                      : null,
+                  packageWeightGrams: createShippingLabel
+                      ? int.tryParse(weightController.text.trim())
+                      : null,
+                  packageLengthCm: createShippingLabel
+                      ? double.tryParse(lengthController.text.trim())
+                      : null,
+                  packageWidthCm: createShippingLabel
+                      ? double.tryParse(widthController.text.trim())
+                      : null,
+                  packageHeightCm: createShippingLabel
+                      ? double.tryParse(heightController.text.trim())
+                      : null,
+                ),
+              ),
+              child: Text(
+                createShippingLabel ? 'Buy label + ship' : 'Ship',
+                style: TextStyle(
+                  color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<_LineItemsRequest?> _showLineItemsDialog(OrderContract order) async {
+    final controllers = <LineItemContract, TextEditingController>{
+      for (final item in order.lineItems)
+        if (item.id.isNotEmpty)
+          item: TextEditingController(text: item.quantity.toString()),
+    };
+
+    return showDialog<_LineItemsRequest>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: colors.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Fulfill order',
+          'Edit line items',
           style: TextStyle(color: colors.textPrimary),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: carrierController,
-              style: TextStyle(color: colors.textPrimary),
-              decoration: InputDecoration(
-                labelText: 'Carrier',
-                labelStyle: TextStyle(color: colors.textSecondary),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final entry in controllers.entries) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        entry.key.name.isEmpty ? 'Item' : entry.key.name,
+                        style: TextStyle(color: colors.textPrimary),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    SizedBox(
+                      width: 84,
+                      child: TextField(
+                        controller: entry.value,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(color: colors.textPrimary),
+                        decoration: InputDecoration(
+                          labelText: 'Qty',
+                          labelStyle: TextStyle(color: colors.textSecondary),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+              ],
+              Text(
+                'Set quantity to 0 to remove a line. Totals are recalculated on the server.',
+                style: TextStyle(color: colors.textSecondary, fontSize: 12),
               ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: trackingController,
-              style: TextStyle(color: colors.textPrimary),
-              decoration: InputDecoration(
-                labelText: 'Tracking number',
-                labelStyle: TextStyle(color: colors.textSecondary),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -961,15 +1432,21 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(
-              context,
-              _TrackingRequest(
-                carrier: carrierController.text.trim(),
-                trackingNumber: trackingController.text.trim(),
-              ),
-            ),
+            onPressed: () {
+              final lines = controllers.entries
+                  .map((entry) {
+                    return {
+                      'order_item_id': entry.key.id,
+                      'quantity':
+                          int.tryParse(entry.value.text.trim()) ??
+                          entry.key.quantity,
+                    };
+                  })
+                  .toList(growable: false);
+              Navigator.pop(context, _LineItemsRequest(lines: lines));
+            },
             child: Text(
-              'Ship',
+              'Save',
               style: TextStyle(
                 color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
               ),
@@ -1098,6 +1575,49 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     }
   }
 
+  bool _hasRiskSignal(OrderContract order) {
+    final level = _riskLevel(order);
+    return order.riskScore > 0 ||
+        level == 'medium' ||
+        level == 'high' ||
+        _status(order.fulfillmentState ?? '') == 'hold' ||
+        _status(order.codConfirmationStatus ?? '') == 'requested' ||
+        _status(order.rtoStatus ?? '') == 'at_risk';
+  }
+
+  String _riskLevel(OrderContract order) {
+    final level = _status(order.riskLevel);
+    return (level == 'medium' || level == 'high') ? level : 'low';
+  }
+
+  Color _riskColor(OrderContract order) {
+    switch (_riskLevel(order)) {
+      case 'high':
+        return colors.error;
+      case 'medium':
+        return colors.warning;
+      default:
+        return colors.accentBlue;
+    }
+  }
+
+  List<String> _riskDetails(OrderContract order) {
+    final details = <String>[];
+    if (_status(order.fulfillmentState ?? '') == 'hold') {
+      details.add('Fulfillment hold is active.');
+    }
+    if (_status(order.codConfirmationStatus ?? '') == 'requested') {
+      details.add('COD confirmation requested.');
+    }
+    if (_status(order.rtoStatus ?? '') == 'at_risk') {
+      details.add('RTO watchlist active.');
+    }
+    if (details.isEmpty) {
+      details.add('Review this order before fulfillment.');
+    }
+    return details;
+  }
+
   double _orderTotal(OrderContract order) {
     if (order.total > 0) return order.total;
     return order.lineItems.fold(0.0, (sum, item) => sum + item.total);
@@ -1157,8 +1677,29 @@ class _CompleteRefundRequest {
 }
 
 class _TrackingRequest {
-  const _TrackingRequest({required this.carrier, required this.trackingNumber});
+  const _TrackingRequest({
+    required this.carrier,
+    required this.trackingNumber,
+    this.createShippingLabel = false,
+    this.logisticsProvider,
+    this.packageWeightGrams,
+    this.packageLengthCm,
+    this.packageWidthCm,
+    this.packageHeightCm,
+  });
 
   final String carrier;
   final String trackingNumber;
+  final bool createShippingLabel;
+  final String? logisticsProvider;
+  final int? packageWeightGrams;
+  final double? packageLengthCm;
+  final double? packageWidthCm;
+  final double? packageHeightCm;
+}
+
+class _LineItemsRequest {
+  const _LineItemsRequest({required this.lines});
+
+  final List<Map<String, dynamic>> lines;
 }

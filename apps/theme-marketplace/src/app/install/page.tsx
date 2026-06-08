@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { ArrowLeft, CheckCircle, ExternalLink, Package, Store } from '@letbuyy/ui';
+import { ArrowLeft, CheckCircle, ExternalLink, Input, Package, Store } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
+import { getAdminUrl } from '@/lib/public-urls';
 import { ThemeInstallFeedbackToast, ThemeInstallSubmitButton } from '@/components/theme-action-feedback';
 import type { Metadata } from 'next';
 
@@ -33,13 +34,21 @@ async function installThemeAction(formData: FormData) {
 
     const slug = stringValue(formData.get('theme'));
     const storeId = stringValue(formData.get('store_id'));
+    const preset = stringValue(formData.get('preset')) || 'default';
+    const confirmed = formData.get('confirm_install') === 'yes';
 
     if (!slug || !storeId) {
         redirect(`/install?theme=${encodeURIComponent(slug)}&error=missing_store`);
     }
+    if (!confirmed) {
+        redirect(`/install?theme=${encodeURIComponent(slug)}&error=missing_confirmation`);
+    }
 
     try {
-        await ThemeService.installTheme(slug, storeId);
+        await ThemeService.installTheme(slug, storeId, {
+            preset,
+            marketplace_install: true,
+        });
     } catch (error) {
         const code = error instanceof Error && error.message.includes('purchase')
             ? 'purchase_required'
@@ -101,7 +110,9 @@ export default async function InstallThemePage({ searchParams }: InstallPageProp
                             ? 'Purchase this theme before installing it.'
                             : error === 'missing_store'
                                 ? 'Choose a store before installing.'
-                                : 'Theme installation failed. Try another store or contact support.'}
+                                : error === 'missing_confirmation'
+                                    ? 'Confirm the install impact before continuing.'
+                                    : 'Theme installation failed. Try another store or contact support.'}
                     </div>
                 )}
 
@@ -110,14 +121,14 @@ export default async function InstallThemePage({ searchParams }: InstallPageProp
                         <Store className="w-8 h-8 text-text-subtle mx-auto mb-3" />
                         <h2 className="text-lg font-semibold mb-2">No stores found</h2>
                         <p className="text-sm text-text-muted mb-5">Create a store before installing marketplace themes.</p>
-                        <Link href={process.env.NEXT_PUBLIC_ADMIN_URL || 'https://admin.letbuyy.store'} className="btn-primary inline-flex items-center gap-2">
+                        <Link href={getAdminUrl()} className="btn-primary inline-flex items-center gap-2">
                             Open Admin
                             <ExternalLink className="w-4 h-4" />
                         </Link>
                     </div>
                 ) : (
                     <form action={installThemeAction} className="space-y-6">
-                        <input type="hidden" name="theme" value={slug} />
+                        <Input unstyled type="hidden" name="theme" value={slug} />
                         <div>
                             <label htmlFor="store_id" className="block text-sm font-semibold text-text-heading mb-3">
                                 Store
@@ -142,8 +153,41 @@ export default async function InstallThemePage({ searchParams }: InstallPageProp
                             </select>
                         </div>
 
+                        <div>
+                            <label htmlFor="preset" className="block text-sm font-semibold text-text-heading mb-3">
+                                Preset
+                            </label>
+                            <select
+                                id="preset"
+                                name="preset"
+                                className="w-full px-4 py-3 rounded-lg bg-bg-card border border-border text-text-heading text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                defaultValue="default"
+                            >
+                                <option value="default">Default preset</option>
+                                <option value="conversion">Conversion focused</option>
+                                <option value="editorial">Editorial</option>
+                            </select>
+                        </div>
+
                         <div className="rounded-xl bg-surface/50 p-4 text-sm text-text-muted">
-                            Your current storefront styling will be replaced for the selected store.
+                            Marketplace install creates a release for the selected store. You can preview, publish, and roll back from the marketplace installation history.
+                        </div>
+
+                        <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface/40 p-4">
+                            <Link href={`/themes/${slug}`} className="btn-secondary inline-flex items-center justify-center gap-2 text-sm">
+                                Review theme before install
+                                <ExternalLink className="w-4 h-4" />
+                            </Link>
+                            <label className="flex items-start gap-3 text-sm text-text-muted">
+                                <Input unstyled
+                                    type="checkbox"
+                                    name="confirm_install"
+                                    value="yes"
+                                    required
+                                    className="mt-1 h-4 w-4 rounded border-border"
+                                />
+                                <span>I understand this install creates a store theme release and can be rolled back from installation history.</span>
+                            </label>
                         </div>
 
                         <ThemeInstallSubmitButton />

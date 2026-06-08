@@ -6,11 +6,17 @@
   "properties": {
     "SUPABASE_URL": { "type": "string", "format": "uri" },
     "SUPABASE_ANON_KEY": { "type": "string" },
+    "BFF_BASE_URL": { "type": "string", "format": "uri" },
     "API_BASE_URL": { "type": "string", "format": "uri" },
+    "IDENTITY_BASE_URL": { "type": "string", "format": "uri" },
+    "STOREFRONT_BASE_URL": { "type": "string", "format": "uri" },
+    "MOBILE_PUSH_DEVICE_TOKEN": { "type": "string" },
     "GEMINI_API_KEY": { "type": "string" },
     "GEMINI_BASE_URL": { "type": "string", "format": "uri" },
     "GEMINI_MODEL": { "type": "string" },
     "RAZORPAY_KEY_ID": { "type": "string" },
+    "SENTRY_DSN": { "type": "string" },
+    "APP_RELEASE": { "type": "string" },
     "ENVIRONMENT": { "enum": ["staging", "production"] }
   }
 }

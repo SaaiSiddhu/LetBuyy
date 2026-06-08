@@ -7,6 +7,22 @@ function hexToBytes(hex: string): Uint8Array {
     return bytes;
 }
 
+function bytesToBase64Url(bytes: Uint8Array): string {
+    let binary = '';
+    for (const byte of bytes) binary += String.fromCharCode(byte);
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
+function base64UrlToBytes(value: string): Uint8Array {
+    const padded = value.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(value.length / 4) * 4, '=');
+    const binary = atob(padded);
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) {
+        bytes[index] = binary.charCodeAt(index);
+    }
+    return bytes;
+}
+
 export function timingSafeEqualText(left: string | null | undefined, right: string | null | undefined): boolean {
     if (typeof left !== 'string' || typeof right !== 'string') return false;
     if (!left || !right || left.length !== right.length) return false;
@@ -53,4 +69,150 @@ export async function sha256Hex(input: string): Promise<string> {
     return Array.from(new Uint8Array(digest))
         .map((byte) => byte.toString(16).padStart(2, '0'))
         .join('');
+}
+
+async function aesGcmKey(secret: string): Promise<CryptoKey> {
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(secret));
+    return crypto.subtle.importKey('raw', digest, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+}
+
+export async function encryptTextAesGcm(secret: string, plaintext: string): Promise<string> {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const key = await aesGcmKey(secret);
+    const ciphertext = await crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv },
+        key,
+        new TextEncoder().encode(plaintext)
+    );
+    return `${bytesToBase64Url(iv)}.${bytesToBase64Url(new Uint8Array(ciphertext))}`;
+}
+
+export async function decryptTextAesGcm(secret: string, token: string): Promise<string> {
+    const [ivValue, ciphertextValue] = token.split('.');
+    if (!ivValue || !ciphertextValue) throw new Error('Invalid encrypted payload');
+    const key = await aesGcmKey(secret);
+    const plaintext = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv: base64UrlToBytes(ivValue) },
+        key,
+        base64UrlToBytes(ciphertextValue)
+    );
+    return new TextDecoder().decode(plaintext);
+}
+
+export type KmsMode = 'mock' | 'live';
+
+export interface KmsProvider {
+    mode: KmsMode;
+    keyId: string;
+    encryptDataKey(dataKey: string): Promise<string>;
+    decryptDataKey(encryptedDataKey: string): Promise<string>;
+}
+
+export interface KmsEnvelope {
+    version: 1;
+    mode: KmsMode;
+    key_id: string;
+    encrypted_data_key: string;
+    ciphertext: string;
+}
+
+export class KmsHumanRequiredError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'KmsHumanRequiredError';
+    }
+}
+
+function encodeEnvelope(envelope: KmsEnvelope): string {
+    const bytes = new TextEncoder().encode(JSON.stringify(envelope));
+    return `kms.${bytesToBase64Url(bytes)}`;
+}
+
+function decodeEnvelope(token: string): KmsEnvelope {
+    if (!token.startsWith('kms.')) {
+        throw new Error('Invalid KMS envelope');
+    }
+
+    const payload = new TextDecoder().decode(base64UrlToBytes(token.slice(4)));
+    const envelope = JSON.parse(payload) as KmsEnvelope;
+    if (envelope.version !== 1 || !envelope.key_id || !envelope.encrypted_data_key || !envelope.ciphertext) {
+        throw new Error('Invalid KMS envelope payload');
+    }
+    return envelope;
+}
+
+export function createMockKmsProvider(options: { keyId?: string; secret?: string } = {}): KmsProvider {
+    const keyId = options.keyId || 'mock-local-kms-key';
+    const secret = options.secret || 'letbuyy-local-mock-kms-envelope-secret';
+
+    return {
+        mode: 'mock',
+        keyId,
+        encryptDataKey(dataKey: string) {
+            return encryptTextAesGcm(`${secret}:${keyId}`, dataKey);
+        },
+        decryptDataKey(encryptedDataKey: string) {
+            return decryptTextAesGcm(`${secret}:${keyId}`, encryptedDataKey);
+        },
+    };
+}
+
+export function createLiveKmsProvider(): KmsProvider {
+    return {
+        mode: 'live',
+        keyId: 'SKIP_NEEDS_HUMAN_KMS_KEY_ID',
+        encryptDataKey() {
+            // [HUMAN-REQUIRED] Live KMS provider credentials and key policy must be configured outside git.
+            throw new KmsHumanRequiredError('Live KMS encryption requires provider credentials and key policy');
+        },
+        decryptDataKey() {
+            // [HUMAN-REQUIRED] Live KMS provider credentials and key policy must be configured outside git.
+            throw new KmsHumanRequiredError('Live KMS decryption requires provider credentials and key policy');
+        },
+    };
+}
+
+export function resolveKmsProviderFromEnv(env: {
+    LETBUYY_KMS_MODE?: string;
+    LETBUYY_KMS_MOCK_SECRET?: string;
+    LETBUYY_KMS_KEY_ID?: string;
+}): KmsProvider {
+    const mode = (env.LETBUYY_KMS_MODE || 'mock').trim().toLowerCase();
+    if (mode === 'live') {
+        if (!env.LETBUYY_KMS_KEY_ID || env.LETBUYY_KMS_KEY_ID.startsWith('SKIP_NEEDS_HUMAN_')) {
+            // [HUMAN-REQUIRED] Live KMS key id must be installed in the environment before live mode is usable.
+            throw new KmsHumanRequiredError('Live KMS mode requires LETBUYY_KMS_KEY_ID');
+        }
+        return createLiveKmsProvider();
+    }
+
+    return createMockKmsProvider({
+        keyId: env.LETBUYY_KMS_KEY_ID || 'mock-local-kms-key',
+        secret: env.LETBUYY_KMS_MOCK_SECRET,
+    });
+}
+
+export async function encryptFieldWithKms(provider: KmsProvider, plaintext: string): Promise<string> {
+    const dataKey = crypto.randomUUID();
+    const [encryptedDataKey, ciphertext] = await Promise.all([
+        provider.encryptDataKey(dataKey),
+        encryptTextAesGcm(dataKey, plaintext),
+    ]);
+
+    return encodeEnvelope({
+        version: 1,
+        mode: provider.mode,
+        key_id: provider.keyId,
+        encrypted_data_key: encryptedDataKey,
+        ciphertext,
+    });
+}
+
+export async function decryptFieldWithKms(provider: KmsProvider, token: string): Promise<string> {
+    const envelope = decodeEnvelope(token);
+    if (envelope.key_id !== provider.keyId) {
+        throw new Error('KMS envelope key mismatch');
+    }
+    const dataKey = await provider.decryptDataKey(envelope.encrypted_data_key);
+    return decryptTextAesGcm(dataKey, envelope.ciphertext);
 }

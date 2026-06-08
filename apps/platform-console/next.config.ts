@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
+import { createSecurityHeaders } from "../../config/security/next-security-headers";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async headers() {
+    return [{ source: '/:path*', headers: createSecurityHeaders({ frameAncestors: ["'none'"] }) }];
+  },
 };
 
 export default nextConfig;

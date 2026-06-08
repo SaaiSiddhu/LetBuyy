@@ -1,6 +1,6 @@
 'use client'
 
-import { Search } from '@letbuyy/ui'
+import { Input, Search } from '@letbuyy/ui'
 
 interface SettingsSearchProps {
     inputId: string
@@ -25,7 +25,7 @@ export function SettingsSearch({ inputId, value, onChange, resultCount }: Settin
                     className="pointer-events-none absolute left-[var(--lb-space-3)] top-1/2 h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] -translate-y-1/2 text-[var(--lb-color-text-subdued)]"
                     aria-hidden="true"
                 />
-                <input
+                <Input unstyled
                     id={inputId}
                     type="search"
                     value={value}

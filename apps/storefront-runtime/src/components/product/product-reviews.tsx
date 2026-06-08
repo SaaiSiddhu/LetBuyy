@@ -5,7 +5,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Star, ThumbsUp, CheckCircle, Send, Loader2, ChevronDown } from '@letbuyy/ui';
+import { Button, Input, Star, ThumbsUp, CheckCircle, Send, Loader2, ChevronDown } from '@letbuyy/ui';
 import { useCustomerAuth } from '@/context/customer-auth-context';
 import TurnstileWidget, { type TurnstileHandle } from '@/components/security/turnstile-widget';
 
@@ -41,7 +41,7 @@ function StarRating({
     return (
         <div className="flex gap-0.5">
             {[1, 2, 3, 4, 5].map(star => (
-                <button
+                <Button unstyled
                     key={star}
                     type="button"
                     disabled={!interactive}
@@ -53,7 +53,7 @@ function StarRating({
                         className={star <= rating ? 'text-amber-400' : 'text-gray-200'}
                         fill={star <= rating ? 'currentColor' : 'none'}
                     />
-                </button>
+                </Button>
             ))}
         </div>
     );
@@ -72,7 +72,7 @@ function getApiError(payload: unknown, fallback: string) {
     return fallback;
 }
 
-export default function ProductReviews({ productId, storeId, primaryColor = '#00B3B3' }: Props) {
+export default function ProductReviews({ productId, storeId, primaryColor = 'rgb(0 179 179)' }: Props) {
     const { isAuthenticated, customer } = useCustomerAuth();
     const [reviews, setReviews] = useState<Review[]>([]);
     const [summary, setSummary] = useState<ReviewSummary | null>(null);
@@ -187,21 +187,21 @@ export default function ProductReviews({ productId, storeId, primaryColor = '#00
     if (loadError) {
         return (
             <div className="py-8 text-center">
-                <Star size={32} className="mx-auto mb-3" style={{ color: 'var(--text-muted, #D1D5DB)' }} />
-                <p className="font-medium" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                <Star size={32} className="mx-auto mb-3" style={{ color: 'var(--text-muted, rgb(209 213 219))' }} />
+                <p className="font-medium" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                     Unable to load reviews
                 </p>
-                <p className="text-sm mt-1" style={{ color: 'var(--text-muted, #9CA3AF)' }}>
+                <p className="text-sm mt-1" style={{ color: 'var(--text-muted, rgb(156 163 175))' }}>
                     {loadError}
                 </p>
-                <button
+                <Button unstyled
                     type="button"
                     onClick={fetchReviews}
                     className="mt-4 px-4 py-2 rounded-xl text-white text-sm font-semibold"
                     style={{ backgroundColor: primaryColor }}
                 >
                     Retry
-                </button>
+                </Button>
             </div>
         );
     }
@@ -211,26 +211,26 @@ export default function ProductReviews({ productId, storeId, primaryColor = '#00
             <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold">Customer Reviews</h2>
                 {!submitted && !showForm && (
-                    <button
+                    <Button unstyled
                         onClick={() => setShowForm(true)}
                         className="text-sm font-semibold px-4 py-2 rounded-xl transition-opacity hover:opacity-90"
-                        style={{ backgroundColor: primaryColor, color: '#fff' }}
+                        style={{ backgroundColor: primaryColor, color: 'rgb(255 255 255)' }}
                     >
                         Write a Review
-                    </button>
+                    </Button>
                 )}
             </div>
 
             {/* ── Summary Section ───────────────────────── */}
             {summary && summary.totalReviews > 0 && (
-                <div className="flex flex-col sm:flex-row gap-6 p-4 rounded-2xl" style={{ backgroundColor: 'var(--surface, #F9FAFB)' }}>
+                <div className="flex flex-col sm:flex-row gap-6 p-4 rounded-2xl" style={{ backgroundColor: 'var(--surface, rgb(249 250 251))' }}>
                     {/* Average */}
                     <div className="flex flex-col items-center justify-center min-w-[120px]">
                         <span className="text-4xl font-bold" style={{ color: primaryColor }}>
                             {summary.averageRating}
                         </span>
                         <StarRating rating={Math.round(summary.averageRating)} size={16} />
-                        <span className="text-xs mt-1" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                        <span className="text-xs mt-1" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                             {summary.totalReviews} review{summary.totalReviews !== 1 ? 's' : ''}
                         </span>
                     </div>
@@ -243,13 +243,13 @@ export default function ProductReviews({ productId, storeId, primaryColor = '#00
                                 <div key={star} className="flex items-center gap-2 text-sm">
                                     <span className="w-3 text-right font-medium" style={{ color: 'var(--text, inherit)' }}>{star}</span>
                                     <Star size={12} className="text-amber-400" fill="currentColor" />
-                                    <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--border, #E5E7EB)' }}>
+                                    <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--border, rgb(229 231 235))' }}>
                                         <div
                                             className="h-full rounded-full transition-all duration-500"
                                             style={{ width: `${pct}%`, backgroundColor: primaryColor }}
                                         />
                                     </div>
-                                    <span className="w-6 text-right text-xs" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                                    <span className="w-6 text-right text-xs" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                         {count}
                                     </span>
                                 </div>
@@ -261,33 +261,33 @@ export default function ProductReviews({ productId, storeId, primaryColor = '#00
 
             {/* ── Review Form ──────────────────────────── */}
             {showForm && (
-                <form onSubmit={handleSubmit} className="rounded-2xl border p-4 space-y-4" style={{ borderColor: 'var(--border, #E5E7EB)' }}>
+                <form onSubmit={handleSubmit} className="rounded-2xl border p-4 space-y-4" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
                     <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} onExpire={() => setTurnstileToken(null)} />
                     <h3 className="font-semibold text-sm">Write Your Review</h3>
 
                     <div>
-                        <label className="text-xs font-medium block mb-1" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                        <label className="text-xs font-medium block mb-1" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                             Your Rating *
                         </label>
                         <StarRating rating={formRating} size={28} interactive onChange={setFormRating} />
                     </div>
 
                     {!isAuthenticated && (
-                        <input
+                        <Input unstyled
                             value={formName}
                             onChange={e => setFormName(e.target.value)}
                             placeholder="Your Name"
                             className="w-full px-4 py-2.5 rounded-xl text-sm border outline-none"
-                            style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
+                            style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
                         />
                     )}
 
-                    <input
+                    <Input unstyled
                         value={formTitle}
                         onChange={e => setFormTitle(e.target.value)}
                         placeholder="Review Title (optional)"
                         className="w-full px-4 py-2.5 rounded-xl text-sm border outline-none"
-                        style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
+                        style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
                     />
 
                     <textarea
@@ -296,13 +296,13 @@ export default function ProductReviews({ productId, storeId, primaryColor = '#00
                         placeholder="Share your experience with this product..."
                         rows={3}
                         className="w-full px-4 py-2.5 rounded-xl text-sm border outline-none resize-none"
-                        style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
+                        style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
                     />
 
                     {error && <p className="text-sm text-red-500">{error}</p>}
 
                     <div className="flex gap-2">
-                        <button
+                        <Button unstyled
                             type="submit"
                             disabled={submitting}
                             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
@@ -310,15 +310,15 @@ export default function ProductReviews({ productId, storeId, primaryColor = '#00
                         >
                             {submitting ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                             Submit Review
-                        </button>
-                        <button
+                        </Button>
+                        <Button unstyled
                             type="button"
                             onClick={() => setShowForm(false)}
                             className="px-4 py-2.5 text-sm rounded-xl transition-colors"
-                            style={{ color: 'var(--text-secondary, #6B7280)' }}
+                            style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}
                         >
                             Cancel
-                        </button>
+                        </Button>
                     </div>
                 </form>
             )}
@@ -334,11 +334,11 @@ export default function ProductReviews({ productId, storeId, primaryColor = '#00
             {/* ── Review Cards ─────────────────────────── */}
             {reviews.length === 0 ? (
                 <div className="text-center py-8">
-                    <Star size={32} className="mx-auto mb-3" style={{ color: 'var(--text-muted, #D1D5DB)' }} />
-                    <p className="font-medium" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                    <Star size={32} className="mx-auto mb-3" style={{ color: 'var(--text-muted, rgb(209 213 219))' }} />
+                    <p className="font-medium" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                         No reviews yet
                     </p>
-                    <p className="text-sm mt-1" style={{ color: 'var(--text-muted, #9CA3AF)' }}>
+                    <p className="text-sm mt-1" style={{ color: 'var(--text-muted, rgb(156 163 175))' }}>
                         Be the first to review this product!
                     </p>
                 </div>
@@ -348,7 +348,7 @@ export default function ProductReviews({ productId, storeId, primaryColor = '#00
                         <div
                             key={review.id}
                             className="rounded-2xl border p-4"
-                            style={{ borderColor: 'var(--border, #E5E7EB)' }}
+                            style={{ borderColor: 'var(--border, rgb(229 231 235))' }}
                         >
                             <div className="flex items-start justify-between">
                                 <div>
@@ -364,23 +364,23 @@ export default function ProductReviews({ productId, storeId, primaryColor = '#00
                                         <p className="font-semibold text-sm mt-1">{review.title}</p>
                                     )}
                                 </div>
-                                <span className="text-xs shrink-0" style={{ color: 'var(--text-muted, #9CA3AF)' }}>
+                                <span className="text-xs shrink-0" style={{ color: 'var(--text-muted, rgb(156 163 175))' }}>
                                     {timeAgo(review.created_at)}
                                 </span>
                             </div>
 
                             {review.body && (
-                                <p className="text-sm mt-2 leading-relaxed" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                                <p className="text-sm mt-2 leading-relaxed" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                     {review.body}
                                 </p>
                             )}
 
-                            <div className="flex items-center justify-between mt-3 pt-2 border-t" style={{ borderColor: 'var(--border, #E5E7EB)' }}>
-                                <span className="text-xs font-medium" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                            <div className="flex items-center justify-between mt-3 pt-2 border-t" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
+                                <span className="text-xs font-medium" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                     {review.customer_name}
                                 </span>
                                 {review.helpful_count > 0 && (
-                                    <span className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-muted, #9CA3AF)' }}>
+                                    <span className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-muted, rgb(156 163 175))' }}>
                                         <ThumbsUp size={12} /> {review.helpful_count} helpful
                                     </span>
                                 )}
@@ -390,14 +390,14 @@ export default function ProductReviews({ productId, storeId, primaryColor = '#00
 
                     {/* Show More */}
                     {reviews.length > 3 && !showAll && (
-                        <button
+                        <Button unstyled
                             onClick={() => setShowAll(true)}
                             className="w-full text-center py-3 text-sm font-medium rounded-xl transition-colors hover:opacity-80 flex items-center justify-center gap-1"
                             style={{ color: primaryColor }}
                         >
                             <ChevronDown size={16} />
                             Show All {reviews.length} Reviews
-                        </button>
+                        </Button>
                     )}
                 </div>
             )}

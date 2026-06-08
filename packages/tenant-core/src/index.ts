@@ -1,20 +1,51 @@
 import { z } from 'zod';
-import { SeoSchema, UuidSchema } from '@letbuyy/shared-types';
+import {
+  AddressSchema,
+  BusinessProfileSchema,
+  GstinSchema,
+  IndianStateCodeSchema,
+  resolvePlatformDomain,
+  SeoSchema,
+  StoreAccessModeSchema,
+  UuidSchema,
+} from '@letbuyy/shared-types';
 import type { StoreTemplateConfig } from '@letbuyy/theme-engine';
 
-export const ACTIVE_SITE_TYPES = ['store', 'blog', 'landing'] as const;
+export const ACTIVE_SITE_TYPES = ['store'] as const;
+export const COMING_SOON_SITE_TYPES = ['blog', 'landing'] as const;
 export const LEGACY_SITE_TYPES = ['portfolio', 'resume'] as const;
 export const SITE_TYPES = ['store', 'portfolio', 'resume', 'blog', 'landing'] as const;
 
 export type ActiveSiteType = typeof ACTIVE_SITE_TYPES[number];
+export type ComingSoonSiteType = typeof COMING_SOON_SITE_TYPES[number];
 export type LegacySiteType = typeof LEGACY_SITE_TYPES[number];
 export type SiteType = typeof SITE_TYPES[number];
 export type StoreStatus = 'draft' | 'published' | 'frozen' | 'suspended';
+export type StoreAccessMode = z.infer<typeof StoreAccessModeSchema>;
 export type PaymentGateway = 'razorpay' | 'stripe' | 'paypal';
 
+export const RESERVED_STOREFRONT_LABELS = [
+  'www',
+  'api',
+  'admin',
+  'accounts',
+  'apps',
+  'themes',
+  'developer',
+  'console',
+  'team',
+  'webhooks',
+  'assets',
+  'cdn',
+  'static',
+  'mail',
+  'dcv',
+  'connect',
+] as const;
+
 export const RESERVED_SUBDOMAINS = [
-  'accounts', 'admin', 'console', 'team', 'api', 'webhooks',
-  'www', 'mail', 'ftp', 'localhost', 'letbuyy',
+  ...RESERVED_STOREFRONT_LABELS,
+  'ftp', 'localhost', 'letbuyy',
   'seller', 'buyer', 'customer', 'support', 'help', 'contact',
   'about', 'terms', 'privacy', 'policy', 'faq', 'blog', 'press',
   'careers', 'investors', 'partners', 'affiliates', 'legal',
@@ -29,7 +60,81 @@ export const SUBDOMAIN_PATTERN = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/;
 
 export const SiteTypeSchema = z.enum(SITE_TYPES);
 export const ActiveSiteTypeSchema = z.enum(ACTIVE_SITE_TYPES);
+export const ComingSoonSiteTypeSchema = z.enum(COMING_SOON_SITE_TYPES);
 export const LegacySiteTypeSchema = z.enum(LEGACY_SITE_TYPES);
+
+export type StorefrontHostResolution =
+  | { kind: 'subdomain'; subdomain: string; host: string; rootDomain: string }
+  | { kind: 'custom_domain'; domain: string; host: string; rootDomain: string | null }
+  | { kind: 'reserved' | 'root' | 'invalid'; host: string; rootDomain: string | null };
+
+export function normalizeStoreRootDomain(rootDomain: string | null | undefined): string {
+  // Falls back to the shared platform-domain config (env-overridable, defaulting
+  // to letbuyy.store) so a future apex cutover stays a single config change.
+  return (rootDomain || resolvePlatformDomain())
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, '')
+    .replace(/\/.*$/, '')
+    .replace(/^\.+|\.+$/g, '');
+}
+
+export function normalizeRequestHost(host: string | null | undefined): string | null {
+  if (!host) return null;
+  const firstHost = host.split(',')[0]?.trim().toLowerCase();
+  if (!firstHost) return null;
+  const withoutScheme = firstHost.replace(/^https?:\/\//, '');
+  const withoutPath = withoutScheme.replace(/\/.*$/, '');
+  const withoutPort = withoutPath.startsWith('[')
+    ? withoutPath
+    : withoutPath.replace(/:\d+$/, '');
+  const normalized = withoutPort.replace(/^\.+|\.+$/g, '');
+  return normalized.length > 0 ? normalized : null;
+}
+
+export function isReservedStorefrontLabel(label: string | null | undefined): boolean {
+  if (!label) return false;
+  return RESERVED_STOREFRONT_LABELS.includes(label.toLowerCase() as typeof RESERVED_STOREFRONT_LABELS[number]);
+}
+
+export function isReservedSubdomain(label: string | null | undefined): boolean {
+  if (!label) return false;
+  return RESERVED_SUBDOMAINS.includes(label.toLowerCase() as typeof RESERVED_SUBDOMAINS[number]);
+}
+
+export function extractStorefrontSubdomain(
+  host: string | null | undefined,
+  rootDomain: string | null | undefined,
+): string | null {
+  const normalizedHost = normalizeRequestHost(host);
+  const normalizedRoot = normalizeStoreRootDomain(rootDomain);
+  if (!normalizedHost || normalizedHost === normalizedRoot) return null;
+  const suffix = `.${normalizedRoot}`;
+  if (!normalizedHost.endsWith(suffix)) return null;
+  const label = normalizedHost.slice(0, -suffix.length);
+  if (!label || label.includes('.') || isReservedStorefrontLabel(label)) return null;
+  return label;
+}
+
+export function resolveStorefrontHost(
+  host: string | null | undefined,
+  rootDomain: string | null | undefined,
+): StorefrontHostResolution {
+  const normalizedHost = normalizeRequestHost(host);
+  const normalizedRoot = normalizeStoreRootDomain(rootDomain);
+  if (!normalizedHost) return { kind: 'invalid', host: '', rootDomain: normalizedRoot };
+  if (normalizedHost === normalizedRoot) return { kind: 'root', host: normalizedHost, rootDomain: normalizedRoot };
+
+  const suffix = `.${normalizedRoot}`;
+  if (!normalizedHost.endsWith(suffix)) {
+    return { kind: 'custom_domain', domain: normalizedHost, host: normalizedHost, rootDomain: normalizedRoot };
+  }
+
+  const label = normalizedHost.slice(0, -suffix.length);
+  if (!label || label.includes('.')) return { kind: 'invalid', host: normalizedHost, rootDomain: normalizedRoot };
+  if (isReservedStorefrontLabel(label)) return { kind: 'reserved', host: normalizedHost, rootDomain: normalizedRoot };
+  return { kind: 'subdomain', subdomain: label, host: normalizedHost, rootDomain: normalizedRoot };
+}
 
 export function isLegacySiteType(siteType: string | null | undefined): siteType is LegacySiteType {
   return LEGACY_SITE_TYPES.includes(siteType as LegacySiteType);
@@ -37,6 +142,10 @@ export function isLegacySiteType(siteType: string | null | undefined): siteType 
 
 export function isActiveSiteType(siteType: string | null | undefined): siteType is ActiveSiteType {
   return ACTIVE_SITE_TYPES.includes(siteType as ActiveSiteType);
+}
+
+export function isComingSoonSiteType(siteType: string | null | undefined): siteType is ComingSoonSiteType {
+  return COMING_SOON_SITE_TYPES.includes(siteType as ComingSoonSiteType);
 }
 
 export function legacySiteTypeCreationEnabled(flag: string | boolean | null | undefined): boolean {
@@ -49,7 +158,7 @@ export const SubdomainSchema = z
   .max(63, 'Subdomain cannot exceed 63 characters')
   .regex(SUBDOMAIN_PATTERN, 'Subdomain must be lowercase alphanumeric, may contain hyphens (not at start/end)')
   .refine(
-    (subdomain) => !RESERVED_SUBDOMAINS.includes(subdomain as typeof RESERVED_SUBDOMAINS[number]),
+    (subdomain) => !isReservedSubdomain(subdomain),
     'This subdomain is reserved',
   );
 
@@ -82,7 +191,7 @@ export function validateSubdomainFormat(subdomain: string): SubdomainValidationR
     return { valid: false, reason: 'double_hyphen', message: 'Cannot contain consecutive hyphens' };
   }
 
-  if (RESERVED_SUBDOMAINS.includes(subdomain as typeof RESERVED_SUBDOMAINS[number])) {
+  if (isReservedSubdomain(subdomain)) {
     return { valid: false, reason: 'reserved', message: 'This name is reserved' };
   }
 
@@ -110,6 +219,10 @@ export const UpdateStoreSchema = z.object({
   site_settings: z.record(z.string(), z.unknown()).optional(),
   logo_url: z.string().url().optional().nullable(),
   custom_domain: z.string().max(255).optional().nullable(),
+  custom_domain_status: z.enum(['none', 'pending', 'review', 'verifying', 'active', 'error']).optional(),
+  access_mode: StoreAccessModeSchema.optional(),
+  access_message: z.string().max(1000).optional().nullable(),
+  published: z.boolean().optional(),
   currency: z.string().length(3).optional(),
   locale: z.string().min(2).max(16).optional(),
   refund_policy: z.string().max(20000).optional(),
@@ -119,6 +232,14 @@ export const UpdateStoreSchema = z.object({
   seo_title: z.string().max(70).optional(),
   seo_description: z.string().max(160).optional(),
   tax_inclusive: z.boolean().optional(),
+  legal_name: z.string().min(1).max(200).optional().nullable(),
+  gstin: GstinSchema.optional().nullable(),
+  gst_state_code: IndianStateCodeSchema.optional().nullable(),
+  invoice_prefix: z.string().min(1).max(20).optional().nullable(),
+  business_profile: BusinessProfileSchema.optional().nullable(),
+  invoice_address: AddressSchema.partial().passthrough().optional().nullable(),
+  invoice_footer: z.string().max(1000).optional().nullable(),
+  invoice_number_next: z.number().int().positive().optional().nullable(),
   version: z.number().int().positive('Version is required for concurrent safety').optional(),
 });
 
@@ -187,6 +308,10 @@ export interface Store {
   name: string;
   subdomain: string;
   custom_domain?: string;
+  custom_domain_status?: 'none' | 'pending' | 'review' | 'verifying' | 'active' | 'error';
+  access_mode?: StoreAccessMode;
+  access_message?: string | null;
+  published?: boolean;
   site_type: SiteType;
   status: StoreStatus;
   theme_id?: string;
@@ -263,6 +388,10 @@ export interface StoreModel {
   selectedProductIds: string[];
   templateConfig: StoreTemplateConfig;
   status: 'draft' | 'published' | 'suspended';
+  customDomainStatus?: 'none' | 'pending' | 'review' | 'verifying' | 'active' | 'error';
+  accessMode?: StoreAccessMode;
+  accessMessage?: string;
+  published?: boolean;
   plan?: 'free' | 'premium';
   seoTitle?: string;
   seoDescription?: string;
@@ -292,8 +421,12 @@ export interface StorefrontSiteRecord {
   logo_url?: string | null;
   brand_color?: string | null;
   custom_domain?: string | null;
+  custom_domain_status?: 'none' | 'pending' | 'review' | 'verifying' | 'active' | 'error' | null;
   currency?: string | null;
   locale?: string | null;
+  access_mode?: StoreAccessMode | null;
+  access_message?: string | null;
+  published?: boolean | null;
   settings?: Record<string, unknown> | null;
   theme_id?: string | null;
   template_config?: Record<string, unknown> | null;
@@ -415,3 +548,82 @@ export type Step4Input = z.infer<typeof Step4Schema>;
 export type Step5Input = z.infer<typeof Step5Schema>;
 export type Step6Input = z.infer<typeof Step6Schema>;
 export type CheckSubdomainInput = z.infer<typeof CheckSubdomainSchema>;
+
+export const TENANT_SITE_GUC = 'app.site_id' as const;
+export const TENANT_RLS_SITE_ID_PREDICATE = 'site_id = public.current_site_id()' as const;
+
+const UUID_V4ISH_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const SQL_IDENTIFIER_PATTERN = /^[a-z][a-z0-9_]*$/;
+
+export interface TenantGucSetLocalStatement {
+  sql: 'SELECT set_config($1, $2, true)';
+  values: readonly [typeof TENANT_SITE_GUC, string];
+}
+
+export interface TenantScopedQueryRequirement {
+  table: string;
+  siteId?: string | null;
+  predicates?: readonly string[];
+}
+
+export interface TenantRlsPolicyTemplate {
+  table: string;
+  enableSql: string;
+  forceSql: string;
+  policySql: string;
+}
+
+function assertSqlIdentifier(value: string, label: string): string {
+  if (!SQL_IDENTIFIER_PATTERN.test(value)) {
+    throw new Error(`${label} must be a safe lowercase SQL identifier`);
+  }
+  return value;
+}
+
+export function assertTenantSiteId(siteId: string): string {
+  if (!UUID_V4ISH_PATTERN.test(siteId)) {
+    throw new Error('Tenant site_id must be a valid UUID');
+  }
+  return siteId;
+}
+
+export function tenantGucSetLocalStatement(siteId: string): TenantGucSetLocalStatement {
+  return {
+    sql: 'SELECT set_config($1, $2, true)',
+    values: [TENANT_SITE_GUC, assertTenantSiteId(siteId)],
+  };
+}
+
+export function requireSiteIdPredicate(requirement: TenantScopedQueryRequirement): void {
+  assertSqlIdentifier(requirement.table, 'Tenant-scoped table');
+
+  if (requirement.siteId) {
+    assertTenantSiteId(requirement.siteId);
+    return;
+  }
+
+  const hasSitePredicate = (requirement.predicates || []).some((predicate) => (
+    /\bsite_id\b/.test(predicate) && /(=|IN\b|IS\s+NOT\s+NULL)/i.test(predicate)
+  ));
+
+  if (!hasSitePredicate) {
+    throw new Error(`Tenant-scoped query for ${requirement.table} must include a site_id predicate`);
+  }
+}
+
+export function tenantRlsPolicyTemplate(table: string): TenantRlsPolicyTemplate {
+  const safeTable = assertSqlIdentifier(table, 'Tenant table');
+  const policyName = `${safeTable}_tenant_site_guc`;
+
+  return {
+    table: safeTable,
+    enableSql: `ALTER TABLE public.${safeTable} ENABLE ROW LEVEL SECURITY;`,
+    forceSql: `ALTER TABLE public.${safeTable} FORCE ROW LEVEL SECURITY;`,
+    policySql: [
+      `CREATE POLICY ${policyName} ON public.${safeTable}`,
+      'FOR ALL',
+      `USING (${TENANT_RLS_SITE_ID_PREDICATE})`,
+      `WITH CHECK (${TENANT_RLS_SITE_ID_PREDICATE});`,
+    ].join(' '),
+  };
+}

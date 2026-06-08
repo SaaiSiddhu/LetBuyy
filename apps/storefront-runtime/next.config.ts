@@ -1,4 +1,6 @@
 import type { NextConfig } from "next";
+import { resolvePlatformDomain } from "@letbuyy/shared-types";
+import { createSecurityHeaders } from "../../config/security/next-security-headers";
 
 function parseFrameAncestors(value: string | undefined): string[] {
   if (!value) return [];
@@ -10,12 +12,21 @@ function parseFrameAncestors(value: string | undefined): string[] {
 
 const frameAncestors = [
   "'self'",
-  "https://admin.letbuyy.store",
-  "https://console.letbuyy.store",
   process.env.NEXT_PUBLIC_ADMIN_URL,
   process.env.ADMIN_ORIGIN,
   ...parseFrameAncestors(process.env.STOREFRONT_FRAME_ANCESTORS),
-].filter((origin): origin is string => Boolean(origin)).join(" ");
+].filter((origin): origin is string => Boolean(origin));
+
+function storefrontGatewayBaseUrl(): string {
+  const configured =
+    process.env.LETBUYY_API_BASE_URL ||
+    process.env.LETBUYY_API_URL ||
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    `https://api.${resolvePlatformDomain()}/v1`;
+
+  return configured.replace(/\/+$/, '');
+}
 
 const nextConfig: NextConfig = {
   compress: true, // Enable gzip compression for cost savings
@@ -84,13 +95,17 @@ const nextConfig: NextConfig = {
         source: '/:path*',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=300, stale-while-revalidate=3600' },
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'Content-Security-Policy', value: `frame-ancestors ${frameAncestors}` },
-          { key: 'X-XSS-Protection', value: '1; mode=block' },
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+          ...createSecurityHeaders({ frameAncestors }),
         ],
+      },
+    ];
+  },
+
+  async rewrites() {
+    return [
+      {
+        source: '/api/storefront/:subdomain/:path*',
+        destination: `${storefrontGatewayBaseUrl()}/storefront/:subdomain/:path*`,
       },
     ];
   },

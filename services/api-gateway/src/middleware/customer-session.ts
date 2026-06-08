@@ -18,22 +18,12 @@ declare module 'hono' {
     }
 }
 
-export function isCustomerLegacyAuthEnabled(env: Pick<Env, 'CUSTOMER_LEGACY_AUTH'>): boolean {
-    const value = env.CUSTOMER_LEGACY_AUTH?.trim().toLowerCase();
-    return value === '1' || value === 'true' || value === 'on';
-}
-
 export function getCustomerSession(c: Context): CustomerSessionContext | null {
     return c.get('customer') || null;
 }
 
 export const requireCustomerSession = createMiddleware<{ Bindings: Env }>(
     async (c, next) => {
-        if (isCustomerLegacyAuthEnabled(c.env)) {
-            await next();
-            return;
-        }
-
         const session = await verifyGatewayCustomerSession(c);
 
         if (!session) {
@@ -56,10 +46,8 @@ export const requireCustomerSession = createMiddleware<{ Bindings: Env }>(
 
 export const optionalCustomerSession = createMiddleware<{ Bindings: Env }>(
     async (c, next) => {
-        if (!isCustomerLegacyAuthEnabled(c.env)) {
-            const session = await verifyGatewayCustomerSession(c);
-            if (session) c.set('customer', session);
-        }
+        const session = await verifyGatewayCustomerSession(c);
+        if (session) c.set('customer', session);
 
         await next();
     },

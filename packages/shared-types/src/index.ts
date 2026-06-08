@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+export * from './brand';
+
 export const UuidSchema = z.string().uuid('Must be a valid UUID');
 
 export const QueryBooleanSchema = z.preprocess((value) => {
@@ -36,12 +38,17 @@ export const PhoneSchema = z
 
 export const UrlSchema = z.string().url().max(2000);
 
+export const JsonRecordSchema = z.record(z.string(), z.unknown());
+
 export const MoneySchema = z
   .number()
   .min(0, 'Amount cannot be negative')
   .max(99_999_999.99, 'Amount exceeds maximum');
 
 export const CurrencySchema = z.string().length(3).toUpperCase().default('INR');
+
+export const CommerceChannelSchema = z.enum(['web', 'whatsapp', 'instagram', 'pos', 'api']).default('web');
+export type CommerceChannel = z.infer<typeof CommerceChannelSchema>;
 
 export const GstinSchema = z
   .string()
@@ -75,11 +82,74 @@ export const AddressSchema = z.object({
   gstin: GstinSchema.optional(),
 });
 
+export const BusinessEntityTypeSchema = z.enum([
+  'proprietorship',
+  'partnership',
+  'llp',
+  'private_limited',
+  'public_limited',
+  'individual',
+  'other',
+]);
+
+export const BusinessProfileSchema = z.object({
+  legal_name: z.string().min(1).max(200).optional(),
+  trade_name: z.string().max(200).optional(),
+  entity_type: BusinessEntityTypeSchema.optional(),
+  gstin: GstinSchema.optional(),
+  gst_state_code: IndianStateCodeSchema.optional(),
+  pan_last4: z.string().trim().toUpperCase().regex(/^[A-Z0-9]{4}$/).optional(),
+  email: EmailSchema.optional(),
+  phone: z.string().max(30).optional(),
+  website: UrlSchema.optional(),
+}).passthrough();
+
+export const InvoiceAddressSchema = AddressSchema.partial().passthrough();
+
+export const RobotsDirectiveSchema = z.enum([
+  'index,follow',
+  'index,nofollow',
+  'noindex,follow',
+  'noindex,nofollow',
+]);
+
+export const StructuredDataTypeSchema = z.enum([
+  'Product',
+  'Article',
+  'BlogPosting',
+  'WebPage',
+  'CollectionPage',
+  'FAQPage',
+  'LocalBusiness',
+  'Organization',
+  'BreadcrumbList',
+  'Service',
+  'None',
+]);
+
+/**
+ * Canonical per-entity SEO contract. All fields beyond title/description/og_image
+ * are optional and additive: existing payloads continue to validate unchanged.
+ * Merchant-facing surfaces (storefront pages, products, collections, CMS pages,
+ * themes, apps) should persist and round-trip these through the API gateway.
+ */
 export const SeoSchema = z.object({
   seo_title: z.string().max(70).optional(),
   seo_description: z.string().max(160).optional(),
   og_image_url: UrlSchema.optional(),
+  og_title: z.string().max(70).optional(),
+  og_description: z.string().max(200).optional(),
+  canonical_url: UrlSchema.optional(),
+  robots_directive: RobotsDirectiveSchema.optional(),
+  focus_keyword: z.string().max(120).optional(),
+  structured_data_type: StructuredDataTypeSchema.optional(),
+  alternate_name: z.string().max(120).optional(),
+  twitter_handle: z.string().max(40).optional(),
 });
+
+export type SeoInput = z.infer<typeof SeoSchema>;
+export type RobotsDirective = z.infer<typeof RobotsDirectiveSchema>;
+export type StructuredDataType = z.infer<typeof StructuredDataTypeSchema>;
 
 export type PaginationQueryInput = z.infer<typeof PaginationQuery>;
 export type AddressInput = z.infer<typeof AddressSchema>;
@@ -124,6 +194,376 @@ export type IsoDateTime = string;
 export type JsonRecord = Record<string, unknown>;
 export type MoneyMinorUnit = number;
 
+export const InternalPermissionTierSchema = z.enum(['viewer', 'operator', 'lead', 'admin']);
+export const InternalPermissionScopeSchema = z.enum([
+  'rbac:view',
+  'rbac:manage',
+  'audit:read',
+  'risk:view',
+  'risk:decide',
+  'risk:rules',
+  'ts:view',
+  'ts:enforce',
+  'ts:appeal',
+  'support:view',
+  'support:reply',
+  'support:manage',
+  'merchant:view',
+  'merchant:pii',
+  'merchant:impersonate',
+  'merchant:suspend',
+  'review:view',
+  'review:decide',
+  'incident:view',
+  'incident:command',
+  'payout:view',
+  'payout:release',
+  'exec:view',
+  'exec:pii',
+  'compliance:view',
+  'compliance:manage',
+  'developer:view',
+  'developer:manage',
+]);
+
+export type InternalPermissionTier = z.infer<typeof InternalPermissionTierSchema>;
+export type InternalPermissionScope = z.infer<typeof InternalPermissionScopeSchema>;
+export type InternalEffectivePermissionScope = InternalPermissionScope | '*';
+
+export const INTERNAL_PERMISSION_SCOPES = InternalPermissionScopeSchema.options;
+
+export const INTERNAL_PERMISSION_TIERS: Record<InternalPermissionTier, readonly InternalPermissionScope[]> = {
+  viewer: [
+    'audit:read',
+    'risk:view',
+    'ts:view',
+    'support:view',
+    'merchant:view',
+    'review:view',
+    'incident:view',
+    'payout:view',
+    'exec:view',
+    'compliance:view',
+    'developer:view',
+  ],
+  operator: [
+    'audit:read',
+    'risk:view',
+    'risk:decide',
+    'ts:view',
+    'support:view',
+    'support:reply',
+    'merchant:view',
+    'merchant:pii',
+    'review:view',
+    'incident:view',
+    'payout:view',
+    'compliance:view',
+    'developer:view',
+  ],
+  lead: [
+    'audit:read',
+    'risk:view',
+    'risk:decide',
+    'risk:rules',
+    'ts:view',
+    'ts:enforce',
+    'ts:appeal',
+    'support:view',
+    'support:reply',
+    'support:manage',
+    'merchant:view',
+    'merchant:pii',
+    'merchant:impersonate',
+    'merchant:suspend',
+    'review:view',
+    'review:decide',
+    'incident:view',
+    'incident:command',
+    'payout:view',
+    'compliance:view',
+    'developer:view',
+    'developer:manage',
+  ],
+  admin: InternalPermissionScopeSchema.options,
+};
+
+export const INTERNAL_EMPLOYEE_ROLE_DEFAULT_TIERS: Record<string, InternalPermissionTier> = {
+  viewer: 'viewer',
+  staff: 'operator',
+  support: 'operator',
+  sales: 'operator',
+  marketing: 'operator',
+  fulfillment: 'operator',
+  editor: 'operator',
+  operations: 'lead',
+  manager: 'lead',
+  admin: 'admin',
+};
+
+export const RiskEntityTypeSchema = z.enum(['signup', 'merchant', 'site', 'payment', 'app', 'theme', 'developer']);
+export const RiskSignalTypeSchema = z.enum([
+  'signup_velocity',
+  'store_creation_velocity',
+  'disposable_email',
+  'shared_banned_instrument',
+  'shared_banned_device',
+  'failed_auth_burst',
+  'chargeback_rate_breach',
+  'country_ip_mismatch',
+  'vpn_tor',
+  'manual_review',
+]);
+export const RiskSignalSeveritySchema = z.enum(['low', 'medium', 'high', 'critical']);
+export const RiskBandSchema = z.enum(['low', 'medium', 'high']);
+export const RiskScoreStatusSchema = z.enum(['open', 'confirmed', 'dismissed', 'restricted']);
+export const RiskDecisionSchema = z.enum(['confirm', 'dismiss', 'manual_block']);
+
+export type RiskEntityType = z.infer<typeof RiskEntityTypeSchema>;
+export type RiskSignalType = z.infer<typeof RiskSignalTypeSchema>;
+export type RiskSignalSeverity = z.infer<typeof RiskSignalSeveritySchema>;
+export type RiskBand = z.infer<typeof RiskBandSchema>;
+export type RiskScoreStatus = z.infer<typeof RiskScoreStatusSchema>;
+export type RiskDecision = z.infer<typeof RiskDecisionSchema>;
+
+export const RISK_SCORE_BANDS = {
+  low: { min: 0, max: 39 },
+  medium: { min: 40, max: 74 },
+  high: { min: 75, max: 100 },
+} as const satisfies Record<RiskBand, { min: number; max: number }>;
+
+export const RISK_AUTO_RESTRICT_SCORE = RISK_SCORE_BANDS.high.min;
+
+export const RISK_DEFAULT_RULE_WEIGHTS: Record<RiskSignalType, number> = {
+  signup_velocity: 35,
+  store_creation_velocity: 35,
+  disposable_email: 25,
+  shared_banned_instrument: 55,
+  shared_banned_device: 45,
+  failed_auth_burst: 25,
+  chargeback_rate_breach: 45,
+  country_ip_mismatch: 20,
+  vpn_tor: 20,
+  manual_review: 15,
+};
+
+const RISK_SEVERITY_MULTIPLIER: Record<RiskSignalSeverity, number> = {
+  low: 0.5,
+  medium: 1,
+  high: 1.2,
+  critical: 1.5,
+};
+
+export interface RiskSignalForScoring {
+  id?: string | null;
+  rule_id?: string | null;
+  signal_type: RiskSignalType | string;
+  severity?: RiskSignalSeverity | string | null;
+  weight?: number | null;
+  evidence?: JsonRecord | null;
+  metadata?: JsonRecord | null;
+}
+
+export interface RiskScoreBreakdownEntry {
+  signal_type: string;
+  severity: string;
+  weight: number;
+  score_contribution: number;
+  rule_id?: string | null;
+  signal_id?: string | null;
+  evidence?: JsonRecord | null;
+}
+
+export interface RiskScoreComputation {
+  score: number;
+  band: RiskBand;
+  auto_restrict: boolean;
+  breakdown: {
+    bands: typeof RISK_SCORE_BANDS;
+    threshold: { auto_restrict: number };
+    signals: RiskScoreBreakdownEntry[];
+  };
+}
+
+export function resolveRiskBand(score: number): RiskBand {
+  const normalized = Math.max(0, Math.min(100, Math.round(score)));
+  if (normalized >= RISK_SCORE_BANDS.high.min) return 'high';
+  if (normalized >= RISK_SCORE_BANDS.medium.min) return 'medium';
+  return 'low';
+}
+
+export function scoreRiskSignals(signals: readonly RiskSignalForScoring[]): RiskScoreComputation {
+  const entries = signals.map((signal) => {
+    const signalType = RiskSignalTypeSchema.safeParse(signal.signal_type).success
+      ? signal.signal_type as RiskSignalType
+      : 'manual_review';
+    const severity = RiskSignalSeveritySchema.safeParse(signal.severity).success
+      ? signal.severity as RiskSignalSeverity
+      : 'medium';
+    const baseWeight = typeof signal.weight === 'number' && Number.isFinite(signal.weight)
+      ? signal.weight
+      : RISK_DEFAULT_RULE_WEIGHTS[signalType];
+    const scoreContribution = Math.max(0, Math.min(100, Math.round(baseWeight * RISK_SEVERITY_MULTIPLIER[severity])));
+
+    return {
+      signal_type: signal.signal_type,
+      severity,
+      weight: baseWeight,
+      score_contribution: scoreContribution,
+      rule_id: signal.rule_id || null,
+      signal_id: signal.id || null,
+      evidence: signal.evidence || null,
+    } satisfies RiskScoreBreakdownEntry;
+  });
+  const score = Math.max(0, Math.min(100, entries.reduce((sum, entry) => sum + entry.score_contribution, 0)));
+  const band = resolveRiskBand(score);
+
+  return {
+    score,
+    band,
+    auto_restrict: score >= RISK_AUTO_RESTRICT_SCORE,
+    breakdown: {
+      bands: RISK_SCORE_BANDS,
+      threshold: { auto_restrict: RISK_AUTO_RESTRICT_SCORE },
+      signals: entries,
+    },
+  };
+}
+
+export const TrustSafetySubjectTypeSchema = z.enum(['site', 'merchant', 'app', 'theme', 'developer', 'payment', 'order', 'custom']);
+export const TrustSafetyCaseCategorySchema = z.enum([
+  'fraud',
+  'illegal_goods',
+  'counterfeit',
+  'phishing',
+  'abuse_report',
+  'copyright',
+  'trademark',
+  'payments',
+  'platform_integrity',
+  'other',
+]);
+export const TrustSafetySeveritySchema = z.enum(['low', 'medium', 'high', 'critical']);
+export const TrustSafetyCaseStatusSchema = z.enum(['open', 'under_review', 'actioned', 'appealed', 'reinstated', 'closed', 'finalized']);
+export const TrustSafetyDecisionSchema = z.enum(['no_violation', 'violation', 'needs_more_info']);
+export const TrustSafetyEnforcementActionSchema = z.enum(['none', 'suspend_site', 'takedown_theme', 'disable_app', 'freeze_payouts', 'platform_disable']);
+export const TrustSafetyAppealStatusSchema = z.enum(['filed', 'under_review', 'upheld', 'overturned', 'rejected', 'expired']);
+export const TrustSafetyTakedownStatusSchema = z.enum(['pending', 'active', 'reversed']);
+
+export type TrustSafetySubjectType = z.infer<typeof TrustSafetySubjectTypeSchema>;
+export type TrustSafetyCaseCategory = z.infer<typeof TrustSafetyCaseCategorySchema>;
+export type TrustSafetySeverity = z.infer<typeof TrustSafetySeveritySchema>;
+export type TrustSafetyCaseStatus = z.infer<typeof TrustSafetyCaseStatusSchema>;
+export type TrustSafetyDecision = z.infer<typeof TrustSafetyDecisionSchema>;
+export type TrustSafetyEnforcementAction = z.infer<typeof TrustSafetyEnforcementActionSchema>;
+export type TrustSafetyAppealStatus = z.infer<typeof TrustSafetyAppealStatusSchema>;
+export type TrustSafetyTakedownStatus = z.infer<typeof TrustSafetyTakedownStatusSchema>;
+
+export const TRUST_SAFETY_DEFAULT_APPEAL_WINDOW_BUSINESS_DAYS = 7;
+export const TRUST_SAFETY_RETENTION_EXEMPT_TABLES = [
+  'ts_cases',
+  'ts_case_events',
+  'ts_evidence',
+  'ts_appeals',
+  'ts_takedowns',
+] as const;
+
+export const ComplianceDataSubjectRequestTypeSchema = z.enum(['access', 'erasure']);
+export const ComplianceDataSubjectSubjectTypeSchema = z.enum(['customer', 'shop', 'merchant', 'developer', 'employee', 'other']);
+export const ComplianceDataSubjectSourceSchema = z.enum([
+  'manual',
+  'customers/data_request',
+  'customers/redact',
+  'shop/redact',
+  'support',
+  'trust_safety',
+  'system',
+]);
+export const ComplianceDataSubjectStatusSchema = z.enum([
+  'open',
+  'verifying',
+  'in_progress',
+  'fulfilled',
+  'rejected',
+  'cancelled',
+  'expired',
+]);
+export const ComplianceAuditExportStatusSchema = z.enum(['idle', 'running', 'completed', 'failed']);
+export const ComplianceAuditExportSinkTypeSchema = z.enum(['local_dry_run', 'siem', 'worm']);
+
+export type ComplianceDataSubjectRequestType = z.infer<typeof ComplianceDataSubjectRequestTypeSchema>;
+export type ComplianceDataSubjectSubjectType = z.infer<typeof ComplianceDataSubjectSubjectTypeSchema>;
+export type ComplianceDataSubjectSource = z.infer<typeof ComplianceDataSubjectSourceSchema>;
+export type ComplianceDataSubjectStatus = z.infer<typeof ComplianceDataSubjectStatusSchema>;
+export type ComplianceAuditExportStatus = z.infer<typeof ComplianceAuditExportStatusSchema>;
+export type ComplianceAuditExportSinkType = z.infer<typeof ComplianceAuditExportSinkTypeSchema>;
+
+export const COMPLIANCE_DATA_REQUEST_DUE_DAYS = 30;
+export const COMPLIANCE_AUDIT_EXPORT_DRY_RUN_SINK: ComplianceAuditExportSinkType = 'local_dry_run';
+export const COMPLIANCE_RETENTION_POLICY_VERSION = 'internal_compliance_v1';
+export const COMPLIANCE_RETENTION_POLICY = [
+  {
+    key: 'trust_safety_enforcement',
+    label: 'Trust & Safety enforcement records',
+    disposition: 'retention_exempt',
+    tables: TRUST_SAFETY_RETENTION_EXEMPT_TABLES,
+    erasure_behavior: 'retain enforcement record, redact purgeable PII fields only after legal review',
+  },
+  {
+    key: 'customer_commerce_pii',
+    label: 'Customer commerce PII',
+    disposition: 'purgeable_or_redactable',
+    tables: ['store_customers', 'customer_addresses', 'customer_credentials', 'customer_wishlist', 'orders'],
+    erasure_behavior: 'redact direct identifiers while preserving transactional integrity and audit references',
+  },
+  {
+    key: 'merchant_account_pii',
+    label: 'Merchant account PII',
+    disposition: 'purgeable_or_redactable',
+    tables: ['users_custom', 'sites', 'subscriptions', 'support_tickets', 'ticket_messages'],
+    erasure_behavior: 'route through data-subject workflow with site ownership and billing/legal hold checks',
+  },
+  {
+    key: 'audit_spine',
+    label: 'Audit spine',
+    disposition: 'append_only_exported',
+    tables: ['audit_logs', 'execution_audit_trail', 'runtime_control_commands'],
+    erasure_behavior: 'retain immutable audit rows; export through tamper-evident sink and redact direct PII where lawful',
+  },
+] as const;
+
+export const SupportTicketStatusSchema = z.enum(['open', 'pending_customer', 'pending_internal', 'escalated', 'resolved', 'closed']);
+export const SupportTicketPrioritySchema = z.enum(['low', 'normal', 'high', 'urgent']);
+export const SupportTicketChannelSchema = z.enum(['email', 'in_app', 'chat', 'phone', 'api']);
+export const SupportTicketTopicSchema = z.enum(['billing', 'technical', 'abuse', 'onboarding', 'payments', 'orders', 'themes', 'apps', 'general']);
+export const SupportTicketMessageAuthorSchema = z.enum(['requester', 'agent', 'system']);
+export const SupportTicketMessageVisibilitySchema = z.enum(['public', 'internal']);
+export const SupportTicketEscalationTargetSchema = z.enum(['risk', 'trust_safety', 'incident', 'finance', 'engineering']);
+export const SupportTicketSlaClockTypeSchema = z.enum(['first_response', 'resolution']);
+
+export type SupportTicketStatus = z.infer<typeof SupportTicketStatusSchema>;
+export type SupportTicketPriority = z.infer<typeof SupportTicketPrioritySchema>;
+export type SupportTicketChannel = z.infer<typeof SupportTicketChannelSchema>;
+export type SupportTicketTopic = z.infer<typeof SupportTicketTopicSchema>;
+export type SupportTicketMessageAuthor = z.infer<typeof SupportTicketMessageAuthorSchema>;
+export type SupportTicketMessageVisibility = z.infer<typeof SupportTicketMessageVisibilitySchema>;
+export type SupportTicketEscalationTarget = z.infer<typeof SupportTicketEscalationTargetSchema>;
+export type SupportTicketSlaClockType = z.infer<typeof SupportTicketSlaClockTypeSchema>;
+
+export const SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS = 8;
+export const SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS = 3;
+export const SUPPORT_DEFAULT_CSAT_SCALE = { min: 1, max: 5 } as const;
+export const SUPPORT_ESCALATION_KEYWORDS = [
+  'fraud',
+  'chargeback',
+  'abuse',
+  'phishing',
+  'counterfeit',
+  'illegal',
+  'scam',
+  'stolen',
+] as const;
+
 export interface TimestampedEntity {
   id: EntityId;
   created_at: IsoDateTime;
@@ -154,6 +594,9 @@ export const AuditedEntitySchema = TimestampedEntitySchema.extend({
 
 export const SiteTypeSchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'landing']);
 export const StoreStatusSchema = z.enum(['draft', 'published', 'frozen', 'suspended']);
+export const CustomDomainStatusSchema = z.enum(['none', 'pending', 'review', 'verifying', 'active', 'error']);
+export const StoreAccessModeSchema = z.enum(['public', 'password', 'preview_only', 'offline']);
+export const StoreHealthPillarStatusSchema = z.enum(['ready', 'attention', 'blocked', 'unknown']);
 export const ProductStatusSchema = z.enum(['draft', 'active', 'archived']);
 export const InventoryPolicySchema = z.enum(['deny', 'continue']);
 export const InventoryAdjustmentReasonSchema = z.enum([
@@ -183,6 +626,7 @@ export const OrderStatusSchema = z.enum([
   'cancelled',
   'refunded',
 ]);
+export const DraftOrderStatusSchema = z.enum(['draft', 'converted', 'discarded']);
 export const PaymentStatusSchema = z.enum([
   'pending',
   'requires_action',
@@ -257,6 +701,243 @@ export const MoneyAmountSchema = z.object({
   currency: CurrencySchema,
 });
 
+export const MerchantPayoutStatusSchema = z.enum(['pending', 'processing', 'released', 'failed']);
+export const MerchantPayoutRailSchema = z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']);
+export const MerchantPayoutModeSchema = z.enum(['sandbox', 'live']);
+export const WalletLedgerEntryTypeSchema = z.enum(['payout_credit', 'payout_debit', 'adjustment', 'hold', 'release', 'cod_remittance_credit']);
+export const WalletLedgerDirectionSchema = z.enum(['credit', 'debit']);
+export const WalletLedgerStatusSchema = z.enum(['pending', 'posted', 'held', 'reversed']);
+export const CommissionReconciliationStatusSchema = z.enum(['pending', 'included_in_payout', 'reconciled', 'reversed']);
+export const CodReconciliationStatusSchema = z.enum(['pending', 'collected', 'reconciled', 'short', 'over', 'reversed']);
+export const MerchantKycDocumentTypeSchema = z.enum([
+  'business_pan',
+  'gst_certificate',
+  'bank_proof',
+  'address_proof',
+  'identity_proof',
+]);
+export const MerchantKycDocumentStatusSchema = z.enum([
+  'draft',
+  'submitted',
+  'needs_review',
+  'verified',
+  'rejected',
+]);
+export const MerchantKycProviderModeSchema = z.enum(['sandbox', 'live']);
+export const MerchantKycOverallStatusSchema = z.enum([
+  'not_started',
+  'in_progress',
+  'needs_review',
+  'verified',
+  'rejected',
+]);
+export const MerchantTwoFactorTypeSchema = z.enum(['totp', 'passkey']);
+export const MerchantTwoFactorStatusSchema = z.enum(['pending', 'active', 'disabled']);
+
+export const MerchantPayoutStatementSchema = AuditedEntitySchema.extend({
+  site_id: UuidSchema,
+  statement_number: z.string().min(1).max(120),
+  status: MerchantPayoutStatusSchema,
+  provider: z.string().min(1).max(80),
+  provider_mode: MerchantPayoutModeSchema,
+  rail: MerchantPayoutRailSchema,
+  currency: CurrencySchema,
+  gross_amount_minor: z.number().int().nonnegative(),
+  platform_fee_minor: z.number().int().nonnegative(),
+  tax_minor: z.number().int().nonnegative(),
+  net_amount_minor: z.number().int().nonnegative(),
+  period_start: z.string().optional().nullable(),
+  period_end: z.string().optional().nullable(),
+  available_on: z.string().optional().nullable(),
+  processing_at: z.string().datetime().optional().nullable(),
+  released_at: z.string().datetime().optional().nullable(),
+  failed_at: z.string().datetime().optional().nullable(),
+  utr: z.string().optional().nullable(),
+  provider_reference: z.string().optional().nullable(),
+  failure_reason: z.string().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+}).passthrough();
+
+export const WalletLedgerEntrySchema = AuditedEntitySchema.extend({
+  site_id: UuidSchema,
+  payout_statement_id: UuidSchema.optional().nullable(),
+  entry_type: WalletLedgerEntryTypeSchema,
+  direction: WalletLedgerDirectionSchema,
+  status: WalletLedgerStatusSchema,
+  currency: CurrencySchema,
+  amount_minor: z.number().int().nonnegative(),
+  available_on: z.string().optional().nullable(),
+  reference_type: z.string().optional().nullable(),
+  reference_id: z.string().optional().nullable(),
+  description: z.string().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+}).passthrough();
+
+export const WalletBalanceSchema = z.object({
+  site_id: UuidSchema,
+  currency: CurrencySchema,
+  available_minor: z.number().int(),
+  pending_minor: z.number().int(),
+  held_minor: z.number().int(),
+  released_minor: z.number().int(),
+  ledger: z.array(WalletLedgerEntrySchema).default([]),
+});
+
+export const CommissionScheduleSchema = AuditedEntitySchema.extend({
+  site_id: UuidSchema,
+  name: z.string().min(1).max(160),
+  status: z.enum(['draft', 'active', 'archived']),
+  currency: CurrencySchema,
+  commission_bps: z.number().int().min(0).max(10000),
+  gst_bps: z.number().int().min(0).max(2800),
+  effective_from: z.string(),
+  effective_to: z.string().optional().nullable(),
+  source: z.string().min(1).max(120),
+  metadata: MetadataSchema.default({}),
+}).passthrough();
+
+export const CommissionReconciliationEntrySchema = AuditedEntitySchema.extend({
+  site_id: UuidSchema,
+  order_id: UuidSchema.optional().nullable(),
+  payout_statement_id: UuidSchema.optional().nullable(),
+  commission_schedule_id: UuidSchema.optional().nullable(),
+  status: CommissionReconciliationStatusSchema,
+  currency: CurrencySchema,
+  gross_amount_minor: z.number().int().nonnegative(),
+  commission_bps: z.number().int().min(0).max(10000),
+  commission_amount_minor: z.number().int().nonnegative(),
+  gst_bps: z.number().int().min(0).max(2800),
+  gst_amount_minor: z.number().int().nonnegative(),
+  net_payable_minor: z.number().int().nonnegative(),
+  metadata: MetadataSchema.default({}),
+}).passthrough();
+
+export const CodReconciliationEntrySchema = AuditedEntitySchema.extend({
+  site_id: UuidSchema,
+  order_id: UuidSchema,
+  status: CodReconciliationStatusSchema,
+  currency: CurrencySchema,
+  expected_amount_minor: z.number().int().nonnegative(),
+  collected_amount_minor: z.number().int().nonnegative(),
+  deposited_amount_minor: z.number().int().nonnegative(),
+  difference_amount_minor: z.number().int(),
+  collected_at: z.string().datetime().optional().nullable(),
+  deposited_at: z.string().datetime().optional().nullable(),
+  reconciled_at: z.string().datetime().optional().nullable(),
+  collection_idempotency_key: z.string().optional().nullable(),
+  reconciliation_idempotency_key: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+}).passthrough();
+
+export const MerchantPayoutListSchema = z.object({
+  payouts: z.array(MerchantPayoutStatementSchema).default([]),
+  summary: z.object({
+    site_id: UuidSchema,
+    currency: CurrencySchema,
+    pending_minor: z.number().int().nonnegative(),
+    processing_minor: z.number().int().nonnegative(),
+    released_minor: z.number().int().nonnegative(),
+    failed_minor: z.number().int().nonnegative(),
+    next_payout: MerchantPayoutStatementSchema.optional().nullable(),
+  }),
+});
+
+export const CommissionOverviewSchema = z.object({
+  site_id: UuidSchema,
+  currency: CurrencySchema,
+  schedule: CommissionScheduleSchema,
+  entries: z.array(CommissionReconciliationEntrySchema).default([]),
+  summary: z.object({
+    gross_amount_minor: z.number().int().nonnegative(),
+    commission_amount_minor: z.number().int().nonnegative(),
+    gst_amount_minor: z.number().int().nonnegative(),
+    net_payable_minor: z.number().int().nonnegative(),
+  }),
+});
+
+export const CodReconciliationOverviewSchema = z.object({
+  site_id: UuidSchema,
+  currency: CurrencySchema,
+  entries: z.array(CodReconciliationEntrySchema).default([]),
+  summary: z.object({
+    site_id: UuidSchema,
+    currency: CurrencySchema,
+    expected_amount_minor: z.number().int().nonnegative(),
+    collected_amount_minor: z.number().int().nonnegative(),
+    deposited_amount_minor: z.number().int().nonnegative(),
+    difference_amount_minor: z.number().int(),
+    counts: z.record(CodReconciliationStatusSchema, z.number().int().nonnegative()),
+  }),
+});
+
+export const MerchantKycDocumentSchema = AuditedEntitySchema.extend({
+  site_id: UuidSchema,
+  document_type: MerchantKycDocumentTypeSchema,
+  status: MerchantKycDocumentStatusSchema,
+  provider: z.string().min(1).max(80),
+  provider_mode: MerchantKycProviderModeSchema,
+  provider_reference: z.string().optional().nullable(),
+  document_number_last4: z.string().optional().nullable(),
+  file_url: UrlSchema.optional().nullable(),
+  file_name: z.string().optional().nullable(),
+  rejection_reason: z.string().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+  submitted_at: z.string().datetime().optional().nullable(),
+  verified_at: z.string().datetime().optional().nullable(),
+  rejected_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const MerchantKycRequirementSchema = z.object({
+  document_type: MerchantKycDocumentTypeSchema,
+  title: z.string().min(1),
+  required: z.boolean(),
+  status: MerchantKycDocumentStatusSchema.optional().nullable(),
+});
+
+export const MerchantKycOverviewSchema = z.object({
+  site_id: UuidSchema,
+  overall_status: MerchantKycOverallStatusSchema,
+  provider_mode: MerchantKycProviderModeSchema,
+  required_documents: z.array(MerchantKycRequirementSchema).default([]),
+  documents: z.array(MerchantKycDocumentSchema).default([]),
+  next_action: z.string().optional().nullable(),
+});
+
+export const MerchantTwoFactorSchema = AuditedEntitySchema.extend({
+  custom_user_id: UuidSchema,
+  factor_type: MerchantTwoFactorTypeSchema,
+  status: MerchantTwoFactorStatusSchema,
+  issuer: z.string().min(1).max(80),
+  label: z.string().min(1).max(160),
+  last_verified_at: z.string().datetime().optional().nullable(),
+  enrolled_at: z.string().datetime().optional().nullable(),
+  disabled_at: z.string().datetime().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+}).passthrough();
+
+export const MerchantSessionInventoryItemSchema = z.object({
+  id: UuidSchema,
+  device_id: z.string().optional().nullable(),
+  expires_at: z.string().datetime().optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  last_active: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const MerchantTwoFactorOverviewSchema = z.object({
+  custom_user_id: UuidSchema,
+  email: EmailSchema,
+  mfa_enabled: z.boolean(),
+  factors: z.array(MerchantTwoFactorSchema).default([]),
+  sessions: z.array(MerchantSessionInventoryItemSchema).default([]),
+});
+
+export const MerchantTwoFactorEnrollmentSchema = z.object({
+  factor: MerchantTwoFactorSchema,
+  secret: z.string().min(16),
+  otpauth_uri: z.string().min(1),
+});
+
 export const AuthSessionUserSchema = z.object({
   id: UuidSchema,
   email: EmailSchema,
@@ -274,6 +955,11 @@ export const StoreSchema = AuditedEntitySchema.extend({
   name: z.string().min(1).max(100),
   subdomain: z.string().min(3).max(63),
   custom_domain: z.string().max(255).optional().nullable(),
+  custom_domain_status: CustomDomainStatusSchema.default('none').optional(),
+  custom_domain_verification_token: z.string().max(255).optional().nullable(),
+  access_mode: StoreAccessModeSchema.default('public'),
+  access_message: z.string().max(1000).optional().nullable(),
+  published: z.boolean().default(false),
   site_type: SiteTypeSchema,
   status: StoreStatusSchema,
   theme_id: z.string().max(120).optional().nullable(),
@@ -290,6 +976,10 @@ export const StoreSchema = AuditedEntitySchema.extend({
   gstin: GstinSchema.optional().nullable(),
   gst_state_code: IndianStateCodeSchema.optional().nullable(),
   invoice_prefix: z.string().min(1).max(20).optional().nullable(),
+  business_profile: BusinessProfileSchema.optional().nullable(),
+  invoice_address: InvoiceAddressSchema.optional().nullable(),
+  invoice_footer: z.string().max(1000).optional().nullable(),
+  invoice_number_next: z.number().int().positive().optional().nullable(),
   theme_config: MetadataSchema.default({}),
   settings: MetadataSchema.default({}),
   navigation: MetadataSchema.default({}),
@@ -307,12 +997,216 @@ export const StoreSummarySchema = StoreSchema.pick({
   status: true,
   theme_id: true,
   custom_domain: true,
+  custom_domain_status: true,
+  access_mode: true,
+  access_message: true,
+  published: true,
 }).extend({
   store_name: z.string().max(100).optional().nullable(),
   trial_ends_at: z.string().datetime().optional().nullable(),
   trial_status: z.string().max(80).optional().nullable(),
   theme_settings: MetadataSchema.optional().nullable(),
 }).passthrough();
+
+export const DomainHealthRecordSchema = z.object({
+  type: z.string().min(1).max(16),
+  host: z.string().min(1).max(255),
+  value: z.string().min(1).max(1000),
+  status: z.enum(['verified', 'pending', 'mismatch', 'unknown']),
+  actual: z.array(z.string().min(1).max(1000)).default([]),
+  message: z.string().max(500).optional().nullable(),
+});
+
+export const CustomDomainHealthSchema = z.object({
+  site_id: UuidSchema,
+  domain: z.string().min(3).max(255),
+  status: CustomDomainStatusSchema,
+  txt_verified: z.boolean(),
+  cname_verified: z.boolean(),
+  ssl_active: z.boolean(),
+  provider_status: z.enum(['configured', 'unavailable']).default('configured'),
+  configured_by: z.string().max(255).optional().nullable(),
+  misconfigured: z.boolean().default(false),
+  apex_mx_warning: z.boolean().default(false),
+  renewal_status: z.enum(['managed', 'action_required', 'unknown']).default('unknown'),
+  renewal_date: z.string().datetime().optional().nullable(),
+  checked_at: z.string().datetime(),
+  records: z.array(DomainHealthRecordSchema).min(1).max(6),
+  vercel: MetadataSchema.default({}),
+});
+
+export const DomainRegistrarProviderSchema = z.enum(['resellerclub', 'opensrs', 'mock']);
+
+export const DomainAvailabilityQuoteSchema = z.object({
+  domain: z.string().min(3).max(255),
+  available: z.boolean(),
+  currency: CurrencySchema,
+  amountMinor: z.number().int().min(0),
+  provider: DomainRegistrarProviderSchema,
+  premium: z.boolean().default(false),
+  reasons: z.array(z.string().max(120)).default([]),
+}).passthrough();
+
+export const DomainCheckoutSchema = z.object({
+  mode: z.enum(['sandbox', 'external_reference']),
+  status: z.enum(['verified', 'reference_recorded']),
+  payment_reference: z.string().min(3).max(180),
+  amount_minor: z.number().int().min(0),
+  currency: CurrencySchema,
+}).passthrough();
+
+export const DomainPurchaseResultSchema = z.object({
+  order_id: UuidSchema.or(z.string().min(1).max(120)),
+  domain: z.string().min(3).max(255),
+  provider: DomainRegistrarProviderSchema,
+  status: CustomDomainStatusSchema.or(z.enum(['provisioning', 'failed'])),
+  registrar_order_id: z.string().max(255).optional().nullable(),
+  dns_configured: z.boolean().default(false),
+  checkout: DomainCheckoutSchema,
+}).passthrough();
+
+export const StoreHealthPillarSchema = z.object({
+  id: z.string().min(1).max(80),
+  label: z.string().min(1).max(120),
+  score: z.number().int().min(0).max(100),
+  status: StoreHealthPillarStatusSchema,
+  summary: z.string().min(1).max(500),
+  action_label: z.string().min(1).max(120).optional().nullable(),
+  route: z.string().min(1).max(200).optional().nullable(),
+  metrics: MetadataSchema.default({}),
+});
+
+export const StoreHealthSchema = z.object({
+  store_id: UuidSchema,
+  score: z.number().int().min(0).max(100),
+  generated_at: z.string().datetime(),
+  pillars: z.array(StoreHealthPillarSchema).min(1).max(12),
+  metadata: MetadataSchema.default({}),
+});
+
+export const StorefrontLocaleStatusSchema = z.enum(['draft', 'published', 'archived']);
+export const StorefrontTranslationResourceTypeSchema = z.enum([
+  'store',
+  'product',
+  'collection',
+  'page',
+  'policy',
+  'theme',
+  'navigation',
+]);
+export const StorefrontTranslationStatusSchema = z.enum(['draft', 'published', 'needs_review']);
+export const StoreMarketRoundingModeSchema = z.enum(['standard', 'up', 'down', 'none']);
+
+export const StoreMarketSchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  name: z.string().min(1).max(120),
+  country_code: z.string().regex(/^[A-Z]{2}$/),
+  currency: z.string().regex(/^[A-Z]{3}$/).default('INR'),
+  locale: z.string().min(2).max(16).default('en-IN'),
+  is_primary: z.boolean().default(false),
+  is_active: z.boolean().default(true),
+  price_adjustment_bps: z.number().int().min(-10000).max(10000).default(0),
+  rounding_mode: StoreMarketRoundingModeSchema.default('standard'),
+  metadata: MetadataSchema.default({}),
+});
+
+export const StorefrontLocaleSchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  locale: z.string().min(2).max(16),
+  name: z.string().min(1).max(120),
+  status: StorefrontLocaleStatusSchema.default('draft'),
+  is_default: z.boolean().default(false),
+  published_at: z.string().datetime().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+});
+
+export const StorefrontTranslationSchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  locale: z.string().min(2).max(16),
+  resource_type: StorefrontTranslationResourceTypeSchema,
+  resource_id: z.string().min(1).max(200),
+  field: z.string().min(1).max(120),
+  source_text: z.string().max(5000).optional().nullable(),
+  translated_text: z.string().min(1).max(5000),
+  status: StorefrontTranslationStatusSchema.default('draft'),
+  published_at: z.string().datetime().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+});
+
+export const StoreLocalizationSummarySchema = z.object({
+  store_id: UuidSchema,
+  default_locale: z.string().min(2).max(16),
+  currency: z.string().regex(/^[A-Z]{3}$/),
+  timezone: z.string().min(1).max(80),
+  markets: z.array(StoreMarketSchema).default([]),
+  locales: z.array(StorefrontLocaleSchema).default([]),
+  translations: z.array(StorefrontTranslationSchema).default([]),
+  schema_ready: z.boolean().default(true),
+  metadata: MetadataSchema.default({}),
+});
+
+export const StoreMetafieldOwnerTypeSchema = z.enum([
+  'store',
+  'product',
+  'variant',
+  'collection',
+  'customer',
+  'order',
+  'page',
+  'theme',
+]);
+export const StoreMetafieldValueTypeSchema = z.enum([
+  'single_line_text',
+  'multi_line_text',
+  'number_integer',
+  'number_decimal',
+  'boolean',
+  'json',
+  'date',
+  'url',
+]);
+export const StoreMetafieldJsonValueSchema = z.union([
+  z.string(),
+  z.number(),
+  z.boolean(),
+  z.null(),
+  JsonRecordSchema,
+  z.array(z.unknown()),
+]);
+
+export const StoreMetafieldDefinitionSchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  owner_type: StoreMetafieldOwnerTypeSchema,
+  namespace: z.string().min(1).max(80).default('custom'),
+  key: z.string().min(1).max(120),
+  name: z.string().min(1).max(160),
+  description: z.string().max(1000).optional().nullable(),
+  value_type: StoreMetafieldValueTypeSchema,
+  validation_rules: MetadataSchema.default({}),
+  is_required: z.boolean().default(false),
+  is_public: z.boolean().default(false),
+  sort_order: z.number().int().default(0),
+  metadata: MetadataSchema.default({}),
+});
+
+export const StoreMetafieldValueSchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  definition_id: UuidSchema,
+  owner_type: StoreMetafieldOwnerTypeSchema,
+  owner_id: z.string().min(1).max(200),
+  value: StoreMetafieldJsonValueSchema,
+  metadata: MetadataSchema.default({}),
+});
+
+export const StoreMetafieldsSummarySchema = z.object({
+  store_id: UuidSchema,
+  owner_type: StoreMetafieldOwnerTypeSchema,
+  owner_id: z.string().min(1).max(200),
+  definitions: z.array(StoreMetafieldDefinitionSchema).default([]),
+  values: z.array(StoreMetafieldValueSchema).default([]),
+  schema_ready: z.boolean().default(true),
+  metadata: MetadataSchema.default({}),
+});
 
 export const ProductOptionSchema = z.object({
   id: UuidSchema.optional(),
@@ -371,6 +1265,14 @@ export const ProductSchema = AuditedEntitySchema.extend({
   seo_description: z.string().max(160).optional().nullable(),
   metadata: MetadataSchema.default({}),
 });
+
+export const ProductBarcodeLookupSchema = z.object({
+  store_id: UuidSchema,
+  barcode: z.string().min(1).max(100),
+  product: ProductSchema,
+  variant: VariantSchema.optional().nullable(),
+  matched_field: z.enum(['product.barcode', 'variant.barcode']),
+}).strict();
 
 export const ProductCategorySchema = AuditedEntitySchema.extend({
   store_id: UuidSchema,
@@ -435,6 +1337,9 @@ export const ProductReviewSchema = AuditedEntitySchema.extend({
   is_approved: z.boolean().default(false),
   helpful_count: z.number().int().min(0).default(0),
   status: ReviewModerationStatusSchema.default('pending'),
+  merchant_reply: z.string().max(1000).optional().nullable(),
+  merchant_reply_by: UuidSchema.optional().nullable(),
+  merchant_reply_at: z.string().datetime().optional().nullable(),
 }).passthrough();
 
 export const InventoryLevelSchema = z.object({
@@ -494,6 +1399,188 @@ export const CustomerSchema = AuditedEntitySchema.extend({
   metadata: MetadataSchema.default({}),
 });
 
+export const CustomerNoteSchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  customer_email: EmailSchema,
+  note: z.string().min(1).max(2000),
+});
+
+export const WhatsAppTemplateKeySchema = z.enum([
+  'order_update',
+  'order_paid',
+  'order_shipped',
+  'order_delivered',
+  'shipping_update',
+  'cod_confirmation',
+  'abandoned_cart',
+  'custom_message',
+]);
+export const WhatsAppMessageDirectionSchema = z.enum(['outbound', 'inbound']);
+export const WhatsAppMessageStatusSchema = z.enum(['queued', 'sent', 'delivered', 'read', 'failed', 'received']);
+
+export const WhatsAppTemplateSchema = z.object({
+  key: WhatsAppTemplateKeySchema,
+  label: z.string().min(1).max(120),
+  description: z.string().max(500),
+  required_variables: z.array(z.string().min(1).max(80)).default([]),
+}).passthrough();
+
+export const WhatsAppMessageSchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  customer_email: EmailSchema.optional().nullable(),
+  customer_phone: z.string().min(5).max(40),
+  direction: WhatsAppMessageDirectionSchema,
+  template: WhatsAppTemplateKeySchema.optional().nullable(),
+  message: z.string().min(1).max(2000),
+  provider: z.string().min(1).max(80),
+  provider_message_id: z.string().max(200).optional().nullable(),
+  status: WhatsAppMessageStatusSchema.default('queued'),
+  metadata: MetadataSchema.default({}),
+}).passthrough();
+
+export const WhatsAppCapabilitySchema = z.object({
+  store_id: UuidSchema,
+  available: z.boolean(),
+  provider: z.string().min(1).max(80),
+  provider_mode: z.enum(['sandbox', 'live']).or(z.string().min(1).max(40)),
+  unavailable_reason: z.string().max(500).optional().nullable(),
+  templates: z.array(WhatsAppTemplateSchema).default([]),
+}).passthrough();
+
+export const WhatsAppSendInputSchema = z.object({
+  store_id: UuidSchema,
+  customer_email: EmailSchema.optional().nullable(),
+  customer_phone: z.string().min(5).max(40).optional().nullable(),
+  template: WhatsAppTemplateKeySchema,
+  variables: MetadataSchema.default({}),
+  message: z.string().min(1).max(1200).optional().nullable(),
+  idempotency_key: z.string().min(8).max(160).optional().nullable(),
+}).passthrough();
+
+export const WhatsAppSendResultSchema = z.object({
+  message: WhatsAppMessageSchema,
+  provider_message_id: z.string().min(1).max(200),
+  status: WhatsAppMessageStatusSchema,
+  sandbox: z.boolean().default(false),
+}).passthrough();
+
+export const CustomerSegmentRulesSchema = z
+  .object({
+    status: CustomerStatusSchema.optional().nullable(),
+    accepts_marketing: z.boolean().optional().nullable(),
+    tags_any: z.array(z.string().min(1).max(50).trim()).max(20).default([]),
+    min_order_count: z.number().int().min(0).optional().nullable(),
+    min_total_spent: MoneySchema.optional().nullable(),
+    last_order_after: z.string().datetime().optional().nullable(),
+    last_order_before: z.string().datetime().optional().nullable(),
+  })
+  .default({ tags_any: [] });
+
+export const CustomerSegmentSchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  name: z.string().min(1).max(100),
+  description: z.string().max(500).optional().nullable(),
+  rules: CustomerSegmentRulesSchema,
+  customer_count: z.number().int().min(0).default(0),
+});
+
+export const CustomerSegmentPreviewSchema = z.object({
+  store_id: UuidSchema,
+  rules: CustomerSegmentRulesSchema,
+  customer_count: z.number().int().min(0),
+  sample_customers: z.array(CustomerSchema).default([]),
+});
+
+export const MarketingEmailCampaignStatusSchema = z.enum([
+  'draft',
+  'scheduled',
+  'sending',
+  'sent',
+  'failed',
+  'cancelled',
+]);
+
+export const MarketingEmailAudienceTypeSchema = z.enum([
+  'all_marketing',
+  'segment',
+  'manual',
+]);
+
+export const MarketingEmailDeliveryModeSchema = z.enum(['sandbox', 'live']);
+
+export const MarketingEmailRecipientStatusSchema = z.enum([
+  'queued',
+  'sandbox_sent',
+  'sent',
+  'failed',
+  'skipped',
+]);
+
+export const MarketingEmailAudienceSchema = z.object({
+  type: MarketingEmailAudienceTypeSchema.default('all_marketing'),
+  segment_id: UuidSchema.optional().nullable(),
+  rules: CustomerSegmentRulesSchema.optional().nullable(),
+  recipients: z.array(EmailSchema).max(500).default([]),
+}).passthrough();
+
+export const MarketingEmailCampaignSchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  name: z.string().min(1).max(160),
+  subject: z.string().min(1).max(180),
+  preview_text: z.string().max(240).optional().nullable(),
+  body_text: z.string().min(1).max(20000),
+  body_html: z.string().max(50000).optional().nullable(),
+  status: MarketingEmailCampaignStatusSchema.default('draft'),
+  audience_type: MarketingEmailAudienceTypeSchema.default('all_marketing'),
+  audience_segment_id: UuidSchema.optional().nullable(),
+  audience_rules: CustomerSegmentRulesSchema.default({ tags_any: [] }),
+  manual_recipients: z.array(EmailSchema).max(500).default([]),
+  recipient_count: z.number().int().min(0).default(0),
+  sent_count: z.number().int().min(0).default(0),
+  failed_count: z.number().int().min(0).default(0),
+  delivery_mode: MarketingEmailDeliveryModeSchema.default('sandbox'),
+  provider: z.string().min(1).max(120).default('letbuyy_sandbox'),
+  last_send_idempotency_key: z.string().max(200).optional().nullable(),
+  scheduled_at: z.string().datetime().optional().nullable(),
+  sent_at: z.string().datetime().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+}).passthrough();
+
+export const MarketingEmailRecipientSchema = z.object({
+  id: UuidSchema,
+  campaign_id: UuidSchema,
+  store_id: UuidSchema,
+  customer_email: EmailSchema,
+  customer_id: UuidSchema.optional().nullable(),
+  status: MarketingEmailRecipientStatusSchema.default('queued'),
+  provider: z.string().min(1).max(120).default('letbuyy_sandbox'),
+  provider_message_id: z.string().max(200).optional().nullable(),
+  error_code: z.string().max(120).optional().nullable(),
+  error_message: z.string().max(1000).optional().nullable(),
+  sent_at: z.string().datetime().optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+  deleted_at: z.string().datetime().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+}).passthrough();
+
+export const MarketingEmailAudiencePreviewSchema = z.object({
+  store_id: UuidSchema,
+  audience: MarketingEmailAudienceSchema,
+  customer_count: z.number().int().min(0).default(0),
+  sample_customers: z.array(CustomerSchema).max(20).default([]),
+});
+
+export const MarketingEmailSendResultSchema = z.object({
+  campaign: MarketingEmailCampaignSchema,
+  recipients: z.array(MarketingEmailRecipientSchema).default([]),
+  delivery_mode: MarketingEmailDeliveryModeSchema,
+  provider: z.string().min(1).max(120),
+  sandbox: z.boolean().default(true),
+  sent_count: z.number().int().min(0).default(0),
+  failed_count: z.number().int().min(0).default(0),
+}).passthrough();
+
 export const CartLineSchema = z.object({
   id: z.string().min(1).max(120),
   product_id: UuidSchema,
@@ -514,6 +1601,8 @@ export const CartSchema = AuditedEntitySchema.extend({
   customer_id: UuidSchema.optional().nullable(),
   session_id: z.string().min(1).max(200).optional().nullable(),
   status: CartStatusSchema.default('active'),
+  channel: CommerceChannelSchema,
+  buyer_email: EmailSchema.optional().nullable(),
   currency: CurrencySchema,
   lines: z.array(CartLineSchema).max(250).default([]),
   subtotal: MoneySchema.default(0),
@@ -546,6 +1635,14 @@ export const LineItemSchema = z.object({
   image_url: UrlSchema.optional().nullable(),
   variant_title: z.string().max(200).optional().nullable(),
   properties: MetadataSchema.default({}),
+});
+
+export const DraftOrderLineSchema = z.object({
+  id: UuidSchema.optional(),
+  draft_order_id: UuidSchema.optional(),
+  product_id: UuidSchema,
+  variant_id: UuidSchema.optional().nullable(),
+  quantity: z.number().int().min(1).max(999),
 });
 
 export const GstInvoicePartySchema = z.object({
@@ -614,6 +1711,11 @@ export const OrderSchema = AuditedEntitySchema.extend({
   payment_method: PaymentMethodSchema.optional().nullable(),
   payment_provider: PaymentProviderSchema.optional().nullable(),
   payment_id: z.string().max(200).optional().nullable(),
+  risk_score: z.number().int().min(0).max(100).optional().nullable(),
+  risk_level: z.enum(['low', 'medium', 'high']).optional().nullable(),
+  fulfillment_state: z.enum(['unfulfilled', 'hold', 'partial', 'fulfilled', 'delivered', 'returned', 'rto', 'cancelled']).optional().nullable(),
+  cod_confirmation_status: z.enum(['not_required', 'requested', 'confirmed', 'rejected', 'expired']).optional().nullable(),
+  rto_status: z.enum(['none', 'at_risk', 'in_transit', 'returned', 'resolved']).optional().nullable(),
   shipping_address: CustomerAddressSchema.partial().optional().nullable(),
   billing_address: CustomerAddressSchema.partial().optional().nullable(),
   place_of_supply_state: IndianStateCodeSchema.optional().nullable(),
@@ -626,6 +1728,25 @@ export const OrderSchema = AuditedEntitySchema.extend({
   coupon_code: z.string().max(50).optional().nullable(),
   idempotency_key: z.string().min(8).max(200).optional().nullable(),
   line_items: z.array(LineItemSchema).max(250).default([]),
+  metadata: MetadataSchema.default({}),
+});
+
+export const DraftOrderSchema = AuditedEntitySchema.extend({
+  site_id: UuidSchema,
+  store_id: UuidSchema,
+  customer_email: EmailSchema,
+  customer_name: z.string().min(1).max(200),
+  customer_phone: z.string().max(30).optional().nullable(),
+  customer_gstin: GstinSchema.optional().nullable(),
+  shipping_address: CustomerAddressSchema.partial().optional().nullable(),
+  payment_method: PaymentMethodSchema.optional().nullable(),
+  shipping_method: z.enum(['standard', 'express']).default('standard'),
+  notes: z.string().max(2000).optional().nullable(),
+  coupon_code: z.string().max(50).optional().nullable(),
+  gift_card_code: z.string().max(100).optional().nullable(),
+  status: DraftOrderStatusSchema,
+  converted_order_id: UuidSchema.optional().nullable(),
+  items: z.array(DraftOrderLineSchema).max(250).default([]),
   metadata: MetadataSchema.default({}),
 });
 
@@ -735,6 +1856,15 @@ export const SubscriptionOrderResultSchema = z.object({
   short_url: UrlSchema.optional().nullable(),
 }).passthrough();
 
+export const SubscriptionRecoveryResultSchema = SubscriptionOrderResultSchema.extend({
+  recovery: z.object({
+    subscription_id: UuidSchema.or(z.string().min(1).max(120)),
+    previous_status: z.string().min(1).max(80),
+    plan_slug: z.string().min(1).max(120),
+    next_step: z.enum(['checkout', 'activated']),
+  }).passthrough(),
+}).passthrough();
+
 export const SubscriptionVerificationResultSchema = z.object({
   subscription: StoreSubscriptionSchema.extend({
     plan_name: z.string().max(200).optional().nullable(),
@@ -809,6 +1939,7 @@ export const FileUploadResultSchema = z.object({
   key: z.string().min(1).max(1000),
   size: z.number().int().min(0),
   content_type: z.string().max(255).optional().nullable(),
+  media_type: MediaTypeSchema.optional().nullable(),
   storage: z.string().max(120).optional().nullable(),
 }).passthrough();
 
@@ -816,6 +1947,19 @@ export const AnalyticsMetricSchema = z.object({
   value: z.number().default(0),
   change_pct: z.number().default(0),
   prev: z.number().default(0),
+}).passthrough();
+
+export const AnalyticsPeriodWindowSchema = z.object({
+  from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  label: z.string().max(80).optional(),
+}).passthrough();
+
+export const AnalyticsComparisonSchema = z.object({
+  previous_period: AnalyticsPeriodWindowSchema,
+  revenue: AnalyticsMetricSchema,
+  orders: AnalyticsMetricSchema,
+  average_order_value: AnalyticsMetricSchema,
 }).passthrough();
 
 export const AnalyticsDashboardSchema = z.object({
@@ -827,11 +1971,124 @@ export const AnalyticsDashboardSchema = z.object({
     customers: z.number().int().min(0).default(0),
     avg_order_value: z.number().min(0).default(0),
   }).passthrough(),
+  comparison: AnalyticsComparisonSchema.optional(),
+}).passthrough();
+
+export const AnalyticsRevenuePointSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  revenue: z.number().min(0).default(0),
+  orders: z.number().min(0).default(0),
+}).passthrough();
+
+export const AnalyticsRevenueSchema = z.object({
+  period: z.string().default('30d'),
+  chart: z.array(AnalyticsRevenuePointSchema).default([]),
+  comparison: z.object({
+    previous_period: AnalyticsPeriodWindowSchema,
+    chart: z.array(AnalyticsRevenuePointSchema).default([]),
+  }).passthrough().optional(),
 }).passthrough();
 
 export const AnalyticsOrdersBreakdownSchema = z.object({
   breakdown: z.record(z.string(), z.number().int().min(0)).default({}),
   total: z.number().int().min(0).default(0),
+}).passthrough();
+
+export const AnalyticsLiveViewEntrySchema = z.object({
+  label: z.string().min(1).max(240),
+  value: z.number().min(0).default(0),
+  metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])).default({}),
+}).passthrough();
+
+export const AnalyticsLiveViewSignalSchema = z.object({
+  metric_name: z.string().min(1).max(160),
+  label: z.string().min(1).max(240),
+  value: z.number().min(0).default(0),
+  seen_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AnalyticsLiveViewSchema = z.object({
+  store_id: UuidSchema,
+  available: z.boolean().default(false),
+  window_minutes: z.number().int().min(1).max(120).default(15),
+  active_sessions: z.number().int().min(0).default(0),
+  visitors: z.number().int().min(0).default(0),
+  page_views: z.number().int().min(0).default(0),
+  cart_adds: z.number().int().min(0).default(0),
+  checkouts_started: z.number().int().min(0).default(0),
+  top_pages: z.array(AnalyticsLiveViewEntrySchema).default([]),
+  traffic_sources: z.array(AnalyticsLiveViewEntrySchema).default([]),
+  devices: z.array(AnalyticsLiveViewEntrySchema).default([]),
+  countries: z.array(AnalyticsLiveViewEntrySchema).default([]),
+  recent_signals: z.array(AnalyticsLiveViewSignalSchema).default([]),
+  generated_at: z.string().datetime(),
+  last_seen_at: z.string().datetime().optional().nullable(),
+  refresh_after_seconds: z.number().int().min(10).max(300).default(30),
+  pipeline: z.object({
+    status: z.enum(['ready', 'waiting_for_events']),
+    source: z.string().min(1).max(160),
+    message: z.string().max(500).optional().nullable(),
+  }).passthrough(),
+}).passthrough();
+
+export const StorefrontAnalyticsEventTypeSchema = z.enum([
+  'session_started',
+  'page_view',
+  'product_view',
+  'cart_add',
+  'checkout_started',
+]);
+
+export const StorefrontAnalyticsBeaconSchema = z.object({
+  event_id: UuidSchema.optional(),
+  event_type: StorefrontAnalyticsEventTypeSchema.default('page_view'),
+  session_id: z.string().trim().min(1).max(160),
+  visitor_id: z.string().trim().min(1).max(160).optional().nullable(),
+  path: z.string().trim().min(1).max(1000).optional().nullable(),
+  page_title: z.string().trim().max(240).optional().nullable(),
+  referrer: z.string().trim().max(2000).optional().nullable(),
+  source: z.string().trim().max(120).optional().nullable(),
+  medium: z.string().trim().max(120).optional().nullable(),
+  campaign: z.string().trim().max(200).optional().nullable(),
+  product_id: UuidSchema.optional().nullable(),
+  product_slug: z.string().trim().max(180).optional().nullable(),
+  cart_id: UuidSchema.optional().nullable(),
+  checkout_id: UuidSchema.optional().nullable(),
+  device: z.enum(['desktop', 'mobile', 'tablet', 'unknown']).optional(),
+  country: z.string().trim().min(2).max(2).optional().nullable(),
+  occurred_at: z.string().datetime().optional(),
+}).passthrough();
+
+export const StorefrontAnalyticsBeaconResultSchema = z.object({
+  accepted: z.boolean(),
+  queued: z.boolean(),
+  sampled: z.boolean(),
+  event_id: UuidSchema,
+  store_id: UuidSchema,
+  source: z.string().min(1).max(120),
+  generated_at: z.string().datetime(),
+}).passthrough();
+
+export const AnalyticsTrafficSourceEntrySchema = z.object({
+  label: z.string().min(1).max(240),
+  value: z.number().min(0).default(0),
+  percentage: z.number().min(0).max(100).default(0),
+  metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])).default({}),
+}).passthrough();
+
+export const AnalyticsTrafficSourcesSchema = z.object({
+  store_id: UuidSchema,
+  period: z.string().default('30d'),
+  available: z.boolean().default(false),
+  total_sessions: z.number().int().min(0).default(0),
+  total_page_views: z.number().int().min(0).default(0),
+  sources: z.array(AnalyticsTrafficSourceEntrySchema).default([]),
+  generated_at: z.string().datetime(),
+  pipeline: z.object({
+    status: z.enum(['ready', 'waiting_for_events']),
+    source: z.string().min(1).max(160),
+    message: z.string().max(500).optional().nullable(),
+  }).passthrough(),
 }).passthrough();
 
 export const AICreditBalanceSchema = z.object({
@@ -841,8 +2098,26 @@ export const AICreditBalanceSchema = z.object({
   bonus_credits: z.number().int().min(0).default(0),
   total_used: z.number().int().min(0).default(0),
   total_purchased: z.number().int().min(0).default(0),
+  purchase_available: z.boolean().default(false),
+  purchase_mode: z.enum(['sandbox', 'live']).optional().nullable(),
+  purchase_provider: z.string().max(120).optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AICreditPurchaseSchema = z.object({
+  id: z.string().min(1),
+  store_id: UuidSchema,
+  status: z.enum(['completed', 'requires_checkout', 'unavailable']),
+  provider: z.string().max(120),
+  provider_mode: z.enum(['sandbox', 'live']),
+  credits: z.number().int().min(1),
+  amount_minor: z.number().int().min(0),
+  currency: z.string().length(3),
+  provider_reference: z.string().optional().nullable(),
+  checkout_url: z.string().url().optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  metadata: JsonRecordSchema.optional().nullable(),
 }).passthrough();
 
 export const AIUsageRecordSchema = z.object({
@@ -864,6 +2139,81 @@ export const AIUsageRecordSchema = z.object({
   user_feedback: z.string().max(2000).optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AIOperatorToolSchema = z.enum([
+  'answer_metrics',
+  'create_product',
+  'draft_discount',
+  'draft_homepage_section',
+]);
+
+export const AIOperatorToolStatusSchema = z.enum([
+  'ready',
+  'completed',
+  'requires_confirmation',
+  'unavailable',
+]);
+
+export const AIOperatorRequestSchema = z.object({
+  store_id: UuidSchema,
+  message: z.string().min(2).max(2000),
+  conversation_id: UuidSchema.optional().nullable(),
+  execute: z.boolean().default(true),
+  context: JsonRecordSchema.default({}),
+}).passthrough();
+
+export const AIOperatorToolCallSchema = z.object({
+  id: z.string().min(1).max(120),
+  tool: AIOperatorToolSchema,
+  label: z.string().min(1).max(160),
+  status: AIOperatorToolStatusSchema,
+  summary: z.string().min(1).max(1000),
+  payload: JsonRecordSchema.default({}),
+  result: JsonRecordSchema.optional().nullable(),
+}).passthrough();
+
+export const AIOperatorResponseSchema = z.object({
+  store_id: UuidSchema,
+  conversation_id: z.string().min(1).max(120),
+  message: z.string().min(1).max(4000),
+  tool_calls: z.array(AIOperatorToolCallSchema).max(10).default([]),
+  created_at: z.string().datetime(),
+}).passthrough();
+
+export const AIHomepageGenerationRequestSchema = z.object({
+  store_id: UuidSchema,
+  prompt: z.string().trim().min(8).max(2000),
+  theme_slug: z.string().trim().min(1).max(120).optional().nullable(),
+  section_count: z.number().int().min(1).max(5).default(3),
+  locale: z.string().trim().min(2).max(12).default('en'),
+  template_config: JsonRecordSchema.default({}),
+}).passthrough();
+
+export const AIHomepageDraftSectionSchema = z.object({
+  id: z.string().min(1).max(160),
+  type: z.string().min(1).max(80),
+  order: z.number().int().min(0),
+  visible: z.boolean().default(true),
+  settings: JsonRecordSchema.default({}),
+  blocks: z.array(JsonRecordSchema).default([]),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+}).passthrough();
+
+export const AIHomepageGenerationResultSchema = z.object({
+  store_id: UuidSchema,
+  theme_slug: z.string().min(1).max(120),
+  prompt: z.string().min(1).max(2000),
+  title: z.string().min(1).max(160),
+  summary: z.string().min(1).max(1200),
+  template_config: JsonRecordSchema,
+  sections: z.array(AIHomepageDraftSectionSchema).min(1).max(8),
+  usage: AIUsageRecordSchema.optional().nullable(),
+  generated_at: z.string().datetime(),
+  provider: z.string().max(120).optional().nullable(),
+  provider_mode: z.enum(['sandbox', 'live']).optional().nullable(),
+  model: z.string().max(160).optional().nullable(),
 }).passthrough();
 
 export const CouponSchema = AuditedEntitySchema.extend({
@@ -1301,8 +2651,9 @@ export const MarketplaceAppPricingModelSchema = z.enum([
   'freemium',
   'recurring',
   'one_time',
-  'usage_based',
+  'usage',
 ]);
+export const AppBillingChargeModeSchema = z.enum(['recurring', 'one_time', 'usage']);
 export const MarketplaceAppExtensionTypeSchema = z.enum([
   'storefront_block',
   'storefront_embed',
@@ -1319,6 +2670,539 @@ export const MarketplaceReviewStatusSchema = z.enum([
   'rejected',
   'changes_requested',
 ]);
+export const ReviewCheckTypeSchema = z.enum([
+  'app_scope_minimization',
+  'app_webhook_signature',
+  'app_oauth_pkce',
+  'app_redirect_uri_allowlist',
+  'app_data_collection',
+  'app_secret_handling',
+  'app_rate_limit_posture',
+  'theme_performance_budget',
+  'theme_accessibility',
+  'theme_security',
+  'theme_compatibility',
+  'theme_code_quality',
+  'post_publish_abuse_monitor',
+]);
+export const ReviewCheckResultSchema = z.enum(['passed', 'warning', 'failed']);
+
+export const APP_REVIEW_REQUIRED_CHECK_TYPES = [
+  'app_scope_minimization',
+  'app_webhook_signature',
+  'app_oauth_pkce',
+  'app_redirect_uri_allowlist',
+  'app_data_collection',
+  'app_secret_handling',
+  'app_rate_limit_posture',
+] as const;
+
+export const THEME_REVIEW_REQUIRED_CHECK_TYPES = [
+  'theme_performance_budget',
+  'theme_accessibility',
+  'theme_security',
+  'theme_compatibility',
+  'theme_code_quality',
+] as const;
+
+export const THEME_REVIEW_PERFORMANCE_FLOOR = 60;
+export const THEME_REVIEW_ACCESSIBILITY_FLOOR = 90;
+
+export const ReviewCheckRunSchema = AuditedEntitySchema.extend({
+  review_record_id: UuidSchema,
+  submission_type: MarketplaceSubmissionTypeSchema,
+  resource_id: UuidSchema,
+  check_type: ReviewCheckTypeSchema,
+  result: ReviewCheckResultSchema,
+  title: z.string().min(1).max(160),
+  summary: z.string().min(1).max(1000),
+  detail: JsonRecordSchema.default({}),
+  evidence: JsonRecordSchema.default({}),
+  hard_fail: z.boolean().default(false),
+  started_at: z.string().datetime(),
+  completed_at: z.string().datetime().optional().nullable(),
+  actor_type: z.enum(['employee', 'super_admin', 'system', 'worker']).default('system'),
+  actor_id: UuidSchema.optional().nullable(),
+  request_id: z.string().max(160).optional().nullable(),
+}).passthrough();
+
+export const MarketplaceReviewAutomatedChecksSchema = z.object({
+  status: z.enum(['passed', 'warning', 'failed']).default('warning'),
+  checked_at: z.string().datetime(),
+  source: z.string().min(1).max(120),
+  checks: z.array(z.object({
+    check_type: ReviewCheckTypeSchema,
+    name: z.string().min(1).max(160),
+    status: ReviewCheckResultSchema,
+    message: z.string().min(1).max(1000),
+    hard_fail: z.boolean().default(false),
+  }).passthrough()).default([]),
+  failed_count: z.number().int().nonnegative().default(0),
+  warning_count: z.number().int().nonnegative().default(0),
+  hard_fail_count: z.number().int().nonnegative().default(0),
+  metadata: JsonRecordSchema.default({}),
+}).passthrough();
+
+export const EXECUTIVE_ANALYTICS_DEFINITION_VERSION = 'internal_exec_v1';
+export const EXECUTIVE_ANALYTICS_STALE_AFTER_HOURS = 36;
+
+export const EXECUTIVE_FUNNEL_STEPS = [
+  { step_key: 'signup', step_index: 0, label: 'Signup' },
+  { step_key: 'store_created', step_index: 1, label: 'Store created' },
+  { step_key: 'store_published', step_index: 2, label: 'Store published' },
+  { step_key: 'first_order', step_index: 3, label: 'First paid order' },
+  { step_key: 'paying', step_index: 4, label: 'Paying' },
+] as const;
+
+export const EXECUTIVE_METRIC_DEFINITIONS = [
+  {
+    metric_key: 'mrr',
+    label: 'MRR',
+    unit: 'paise',
+    formula: 'Active monthly subscription amount plus annual subscriptions normalized to one month.',
+  },
+  {
+    metric_key: 'arr',
+    label: 'ARR',
+    unit: 'paise',
+    formula: 'MRR multiplied by 12.',
+  },
+  {
+    metric_key: 'activation_funnel',
+    label: 'Activation funnel',
+    unit: 'count',
+    formula: 'Signup, store-created, store-published, first-paid-order, and paying counts by period.',
+  },
+  {
+    metric_key: 'company_health',
+    label: 'Company health',
+    unit: 'mixed',
+    formula: 'Support, risk, Trust & Safety, incident, and error-budget rollups from operating-system tables.',
+  },
+] as const;
+
+export const ExecutiveMetricDefinitionSchema = z.object({
+  metric_key: z.string().min(1).max(120),
+  label: z.string().min(1).max(160),
+  unit: z.string().min(1).max(40),
+  formula: z.string().min(1).max(1000),
+});
+
+export const ExecutiveRollupFreshnessSchema = z.object({
+  computed_at: z.string().datetime().optional().nullable(),
+  stale: z.boolean(),
+  stale_after_hours: z.number().int().positive().default(EXECUTIVE_ANALYTICS_STALE_AFTER_HOURS),
+  stale_reason: z.string().max(400).optional().nullable(),
+});
+
+export const ExecutiveMrrRollupSchema = AuditedEntitySchema.extend({
+  period_date: z.string(),
+  mrr_paise: z.number().int().nonnegative().default(0),
+  arr_paise: z.number().int().nonnegative().default(0),
+  new_mrr_paise: z.number().int().default(0),
+  expansion_mrr_paise: z.number().int().default(0),
+  contraction_mrr_paise: z.number().int().default(0),
+  churned_mrr_paise: z.number().int().default(0),
+  active_subscriptions: z.number().int().nonnegative().default(0),
+  logo_churn_count: z.number().int().nonnegative().default(0),
+  subscription_revenue_paise: z.number().int().nonnegative().default(0),
+  app_revenue_paise: z.number().int().nonnegative().default(0),
+  theme_revenue_paise: z.number().int().nonnegative().default(0),
+  partner_payout_liability_paise: z.number().int().nonnegative().default(0),
+  definition_version: z.string().min(1).max(80).default(EXECUTIVE_ANALYTICS_DEFINITION_VERSION),
+  computed_at: z.string().datetime(),
+  metadata: JsonRecordSchema.default({}),
+}).passthrough();
+
+export const ExecutiveMetricRollupSchema = AuditedEntitySchema.extend({
+  metric_key: z.string().min(1).max(120),
+  dimension: JsonRecordSchema.default({}),
+  period_date: z.string(),
+  value: z.number().default(0),
+  unit: z.string().min(1).max(40).default('count'),
+  definition_version: z.string().min(1).max(80).default(EXECUTIVE_ANALYTICS_DEFINITION_VERSION),
+  computed_at: z.string().datetime(),
+  metadata: JsonRecordSchema.default({}),
+}).passthrough();
+
+export const ExecutiveCohortSnapshotSchema = AuditedEntitySchema.extend({
+  cohort_month: z.string(),
+  period_index: z.number().int().nonnegative(),
+  metric_key: z.string().min(1).max(120).default('active_stores'),
+  cohort_size: z.number().int().nonnegative().default(0),
+  retained_count: z.number().int().nonnegative().default(0),
+  conversion_count: z.number().int().nonnegative().default(0),
+  definition_version: z.string().min(1).max(80).default(EXECUTIVE_ANALYTICS_DEFINITION_VERSION),
+  computed_at: z.string().datetime(),
+  metadata: JsonRecordSchema.default({}),
+}).passthrough();
+
+export const ExecutiveFunnelStepSchema = AuditedEntitySchema.extend({
+  period_date: z.string(),
+  step_key: z.enum(['signup', 'store_created', 'store_published', 'first_order', 'paying']),
+  step_index: z.number().int().nonnegative(),
+  count: z.number().int().nonnegative().default(0),
+  conversion_rate_bps: z.number().int().min(0).max(10000).default(0),
+  definition_version: z.string().min(1).max(80).default(EXECUTIVE_ANALYTICS_DEFINITION_VERSION),
+  computed_at: z.string().datetime(),
+  metadata: JsonRecordSchema.default({}),
+}).passthrough();
+
+export const ExecutiveMrrAnalyticsSchema = z.object({
+  definition_version: z.string().min(1).max(80),
+  definitions: z.array(ExecutiveMetricDefinitionSchema),
+  freshness: ExecutiveRollupFreshnessSchema,
+  latest: ExecutiveMrrRollupSchema.optional().nullable(),
+  trend: z.array(ExecutiveMrrRollupSchema).default([]),
+}).passthrough();
+
+export const ExecutiveFunnelAnalyticsSchema = z.object({
+  definition_version: z.string().min(1).max(80),
+  freshness: ExecutiveRollupFreshnessSchema,
+  latest_period_date: z.string().optional().nullable(),
+  steps: z.array(ExecutiveFunnelStepSchema).default([]),
+  history: z.array(ExecutiveFunnelStepSchema).default([]),
+}).passthrough();
+
+export const ExecutiveCohortAnalyticsSchema = z.object({
+  definition_version: z.string().min(1).max(80),
+  freshness: ExecutiveRollupFreshnessSchema,
+  snapshots: z.array(ExecutiveCohortSnapshotSchema).default([]),
+}).passthrough();
+
+export const ExecutiveCompanyHealthSchema = z.object({
+  definition_version: z.string().min(1).max(80),
+  freshness: ExecutiveRollupFreshnessSchema,
+  metrics: z.array(ExecutiveMetricRollupSchema).default([]),
+}).passthrough();
+
+export interface ReviewCheckEvaluation {
+  check_type: z.infer<typeof ReviewCheckTypeSchema>;
+  result: z.infer<typeof ReviewCheckResultSchema>;
+  title: string;
+  summary: string;
+  detail: JsonRecord;
+  evidence: JsonRecord;
+  hard_fail: boolean;
+}
+
+export interface MarketplaceReviewCheckInput {
+  submission_type: z.infer<typeof MarketplaceSubmissionTypeSchema>;
+  metadata?: JsonRecord | null;
+  automated_checks?: JsonRecord | null;
+  resource?: JsonRecord | null;
+}
+
+function reviewRecord(value: unknown): JsonRecord {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as JsonRecord : {};
+}
+
+function reviewArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function reviewStringArray(value: unknown): string[] {
+  return reviewArray(value).map((item) => String(item || '').trim()).filter(Boolean);
+}
+
+function reviewBoolean(...values: unknown[]): boolean | null {
+  for (const value of values) {
+    if (typeof value === 'boolean') return value;
+  }
+  return null;
+}
+
+function reviewNumber(...values: unknown[]): number | null {
+  for (const value of values) {
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string' && value.trim() && Number.isFinite(Number(value))) return Number(value);
+  }
+  return null;
+}
+
+function nestedReviewRecord(source: JsonRecord, ...keys: string[]): JsonRecord {
+  let current: unknown = source;
+  for (const key of keys) current = reviewRecord(current)[key];
+  return reviewRecord(current);
+}
+
+function checkResult(input: Omit<ReviewCheckEvaluation, 'hard_fail'> & { hard_fail?: boolean }): ReviewCheckEvaluation {
+  return { ...input, hard_fail: input.hard_fail ?? input.result === 'failed' };
+}
+
+function appReviewCheckEvaluations(input: MarketplaceReviewCheckInput): ReviewCheckEvaluation[] {
+  const metadata = reviewRecord(input.metadata);
+  const resource = reviewRecord(input.resource);
+  const manifest = {
+    ...nestedReviewRecord(metadata, 'manifest'),
+    ...nestedReviewRecord(resource, 'manifest'),
+  };
+  const dataHandling = {
+    ...nestedReviewRecord(metadata, 'data_handling'),
+    ...nestedReviewRecord(resource, 'data_handling'),
+  };
+  const scopes = [
+    ...reviewStringArray(resource.scopes),
+    ...reviewStringArray(resource.api_scopes),
+    ...reviewStringArray(manifest.scopes),
+    ...reviewStringArray(metadata.scopes),
+  ];
+  const uniqueScopes = Array.from(new Set(scopes));
+  const sensitiveScopes = uniqueScopes.filter((scope) => /(customer|payment|order|pii|write|admin)/i.test(scope));
+  const redirectUris = [
+    ...reviewStringArray(resource.redirect_uris),
+    ...reviewStringArray(resource.oauth_redirect_uris),
+    ...reviewStringArray(manifest.redirect_uris),
+    ...reviewStringArray(manifest.oauth_redirect_uris),
+    ...reviewStringArray(metadata.redirect_uris),
+    ...reviewStringArray(metadata.oauth_redirect_uris),
+  ];
+  const hasWildcardScope = uniqueScopes.some((scope) => scope === '*' || scope.endsWith(':*') || scope.includes('all'));
+  const invalidRedirects = redirectUris.filter((uri) => !uri.startsWith('https://') || uri.includes('*'));
+  const webhookSignatureConfigured = reviewBoolean(
+    metadata.webhook_signature_configured,
+    metadata.signed_webhooks,
+    manifest.webhook_signature_configured,
+  );
+  const pkceRequired = reviewBoolean(metadata.oauth_pkce_required, metadata.pkce_required, manifest.oauth_pkce_required, manifest.pkce_required);
+  const rateLimitConfigured = reviewBoolean(metadata.rate_limit_configured, manifest.rate_limit_configured)
+    ?? Boolean(reviewRecord(manifest.rate_limits).requests_per_minute || reviewRecord(metadata.rate_limits).requests_per_minute);
+  const serialized = JSON.stringify({ metadata, resource, manifest }).toLowerCase();
+  const secretExposure = reviewBoolean(metadata.secret_exposure_detected, manifest.secret_exposure_detected)
+    ?? /\b(client_secret|api_secret|private_key|sk_live|rzp_live)\b/.test(serialized);
+  const hasDataHandling = Object.keys(dataHandling).length > 0 || Boolean(metadata.data_collection_declared || manifest.data_collection_declared);
+
+  return [
+    checkResult({
+      check_type: 'app_scope_minimization',
+      result: hasWildcardScope ? 'failed' : sensitiveScopes.length > 0 || uniqueScopes.length > 8 ? 'warning' : 'passed',
+      title: 'Scope minimization',
+      summary: hasWildcardScope
+        ? 'Requested wildcard or all-access scopes.'
+        : sensitiveScopes.length > 0
+          ? 'Sensitive scopes require senior reviewer attention.'
+          : 'Requested scopes are bounded.',
+      detail: { scopes: uniqueScopes, sensitive_scopes: sensitiveScopes },
+      evidence: { source: 'manifest-and-listing' },
+      hard_fail: hasWildcardScope,
+    }),
+    checkResult({
+      check_type: 'app_webhook_signature',
+      result: webhookSignatureConfigured === true ? 'passed' : 'warning',
+      title: 'Webhook signature configuration',
+      summary: webhookSignatureConfigured === true
+        ? 'Webhook signature verification is declared.'
+        : 'Webhook signature verification was not declared in submission metadata.',
+      detail: { configured: webhookSignatureConfigured },
+      evidence: { source: 'submission-metadata' },
+      hard_fail: false,
+    }),
+    checkResult({
+      check_type: 'app_oauth_pkce',
+      result: pkceRequired === true ? 'passed' : 'warning',
+      title: 'OAuth and PKCE posture',
+      summary: pkceRequired === true ? 'PKCE requirement is declared.' : 'PKCE requirement was not declared.',
+      detail: { pkce_required: pkceRequired },
+      evidence: { source: 'submission-metadata' },
+      hard_fail: false,
+    }),
+    checkResult({
+      check_type: 'app_redirect_uri_allowlist',
+      result: redirectUris.length === 0 ? 'warning' : invalidRedirects.length > 0 ? 'failed' : 'passed',
+      title: 'Redirect URI allowlist',
+      summary: invalidRedirects.length > 0
+        ? 'Redirect allowlist contains wildcard or non-HTTPS entries.'
+        : redirectUris.length === 0
+          ? 'No redirect URI allowlist was provided.'
+          : 'Redirect URI allowlist is HTTPS and specific.',
+      detail: { redirect_uris: redirectUris, invalid_redirect_uris: invalidRedirects },
+      evidence: { source: 'manifest-and-listing' },
+      hard_fail: invalidRedirects.length > 0,
+    }),
+    checkResult({
+      check_type: 'app_data_collection',
+      result: !hasDataHandling && sensitiveScopes.length > 0 ? 'failed' : hasDataHandling ? 'passed' : 'warning',
+      title: 'Data collection declaration',
+      summary: !hasDataHandling && sensitiveScopes.length > 0
+        ? 'Sensitive scopes were requested without a data-handling declaration.'
+        : hasDataHandling
+          ? 'Data-handling declaration is present.'
+          : 'Data-handling declaration was not provided.',
+      detail: { data_handling: dataHandling, sensitive_scopes: sensitiveScopes },
+      evidence: { source: 'submission-metadata' },
+      hard_fail: !hasDataHandling && sensitiveScopes.length > 0,
+    }),
+    checkResult({
+      check_type: 'app_secret_handling',
+      result: secretExposure ? 'failed' : 'passed',
+      title: 'Secret handling scan',
+      summary: secretExposure ? 'Submission metadata appears to contain secret material.' : 'No secret markers were detected in submitted metadata.',
+      detail: { secret_marker_detected: secretExposure },
+      evidence: { source: 'metadata-pattern-scan' },
+      hard_fail: secretExposure,
+    }),
+    checkResult({
+      check_type: 'app_rate_limit_posture',
+      result: rateLimitConfigured ? 'passed' : 'warning',
+      title: 'Rate-limit posture',
+      summary: rateLimitConfigured ? 'Rate-limit posture is declared.' : 'Rate-limit posture was not declared.',
+      detail: { configured: rateLimitConfigured },
+      evidence: { source: 'submission-metadata' },
+      hard_fail: false,
+    }),
+  ];
+}
+
+function themeReviewCheckEvaluations(input: MarketplaceReviewCheckInput): ReviewCheckEvaluation[] {
+  const metadata = reviewRecord(input.metadata);
+  const resource = reviewRecord(input.resource);
+  const qa = {
+    ...nestedReviewRecord(metadata, 'qa'),
+    ...nestedReviewRecord(resource, 'qa'),
+    ...nestedReviewRecord(resource, 'quality_report'),
+  };
+  const lighthouse = {
+    ...nestedReviewRecord(metadata, 'lighthouse'),
+    ...nestedReviewRecord(resource, 'lighthouse'),
+  };
+  const performanceScore = reviewNumber(
+    qa.performance_score,
+    qa.perf_score,
+    lighthouse.performance,
+    metadata.performance_score,
+    resource.performance_score,
+  );
+  const accessibilityScore = reviewNumber(
+    qa.accessibility_score,
+    qa.a11y_score,
+    lighthouse.accessibility,
+    metadata.accessibility_score,
+    resource.accessibility_score,
+  );
+  const unsafeScripts = reviewStringArray(qa.unsafe_scripts).concat(reviewStringArray(metadata.unsafe_scripts));
+  const compatibilityErrors = reviewStringArray(qa.compatibility_errors).concat(reviewStringArray(metadata.compatibility_errors));
+  const hasManifest = Boolean(
+    resource.renderer_manifest_id
+    || resource.schema_manifest_id
+    || Object.keys(nestedReviewRecord(resource, 'renderer_manifest')).length > 0
+    || Object.keys(nestedReviewRecord(resource, 'schema_manifest')).length > 0
+    || Object.keys(nestedReviewRecord(metadata, 'renderer_manifest')).length > 0
+    || Object.keys(nestedReviewRecord(metadata, 'schema_manifest')).length > 0
+  );
+  const bundleSizeKb = reviewNumber(qa.bundle_size_kb, metadata.bundle_size_kb, resource.bundle_size_kb);
+  const codeQualityIssues = reviewStringArray(qa.code_quality_issues).concat(reviewStringArray(metadata.code_quality_issues));
+
+  return [
+    checkResult({
+      check_type: 'theme_performance_budget',
+      result: performanceScore === null ? 'warning' : performanceScore < THEME_REVIEW_PERFORMANCE_FLOOR ? 'failed' : 'passed',
+      title: 'Performance budget',
+      summary: performanceScore === null
+        ? 'No performance score was provided for this theme version.'
+        : performanceScore < THEME_REVIEW_PERFORMANCE_FLOOR
+          ? `Performance score ${performanceScore} is below the ${THEME_REVIEW_PERFORMANCE_FLOOR} floor.`
+          : `Performance score ${performanceScore} meets the floor.`,
+      detail: { performance_score: performanceScore, floor: THEME_REVIEW_PERFORMANCE_FLOOR },
+      evidence: { source: 'theme-qa-metadata' },
+      hard_fail: performanceScore !== null && performanceScore < THEME_REVIEW_PERFORMANCE_FLOOR,
+    }),
+    checkResult({
+      check_type: 'theme_accessibility',
+      result: accessibilityScore === null ? 'warning' : accessibilityScore < THEME_REVIEW_ACCESSIBILITY_FLOOR ? 'failed' : 'passed',
+      title: 'Accessibility floor',
+      summary: accessibilityScore === null
+        ? 'No accessibility score was provided for this theme version.'
+        : accessibilityScore < THEME_REVIEW_ACCESSIBILITY_FLOOR
+          ? `Accessibility score ${accessibilityScore} is below the ${THEME_REVIEW_ACCESSIBILITY_FLOOR} floor.`
+          : `Accessibility score ${accessibilityScore} meets the floor.`,
+      detail: { accessibility_score: accessibilityScore, floor: THEME_REVIEW_ACCESSIBILITY_FLOOR },
+      evidence: { source: 'theme-qa-metadata' },
+      hard_fail: accessibilityScore !== null && accessibilityScore < THEME_REVIEW_ACCESSIBILITY_FLOOR,
+    }),
+    checkResult({
+      check_type: 'theme_security',
+      result: unsafeScripts.length > 0 ? 'failed' : 'passed',
+      title: 'Theme security scan',
+      summary: unsafeScripts.length > 0 ? 'Unsafe scripts or eval-like usage were reported.' : 'No unsafe script findings were reported.',
+      detail: { unsafe_scripts: unsafeScripts },
+      evidence: { source: 'theme-qa-metadata' },
+      hard_fail: unsafeScripts.length > 0,
+    }),
+    checkResult({
+      check_type: 'theme_compatibility',
+      result: compatibilityErrors.length > 0 ? 'failed' : hasManifest ? 'passed' : 'warning',
+      title: 'Theme-engine compatibility',
+      summary: compatibilityErrors.length > 0
+        ? 'Theme-engine compatibility errors were reported.'
+        : hasManifest
+          ? 'Theme manifests are present for compatibility review.'
+          : 'Theme manifest evidence was not attached.',
+      detail: { compatibility_errors: compatibilityErrors, has_manifest: hasManifest },
+      evidence: { source: 'theme-engine-manifest' },
+      hard_fail: compatibilityErrors.length > 0,
+    }),
+    checkResult({
+      check_type: 'theme_code_quality',
+      result: bundleSizeKb !== null && bundleSizeKb > 1000 ? 'failed' : codeQualityIssues.length > 0 || bundleSizeKb === null ? 'warning' : 'passed',
+      title: 'Theme code quality',
+      summary: bundleSizeKb !== null && bundleSizeKb > 1000
+        ? `Bundle size ${bundleSizeKb}KB exceeds the 1000KB foundation budget.`
+        : codeQualityIssues.length > 0
+          ? 'Theme QA reported code-quality issues.'
+          : bundleSizeKb === null
+            ? 'Bundle size evidence was not attached.'
+            : 'Theme code-quality checks are within foundation limits.',
+      detail: { bundle_size_kb: bundleSizeKb, code_quality_issues: codeQualityIssues, bundle_size_budget_kb: 1000 },
+      evidence: { source: 'theme-qa-metadata' },
+      hard_fail: bundleSizeKb !== null && bundleSizeKb > 1000,
+    }),
+  ];
+}
+
+export function evaluateMarketplaceReviewChecks(input: MarketplaceReviewCheckInput): ReviewCheckEvaluation[] {
+  return input.submission_type === 'theme'
+    ? themeReviewCheckEvaluations(input)
+    : appReviewCheckEvaluations(input);
+}
+
+export function buildMarketplaceReviewAutomatedChecks(input: {
+  source: string;
+  checks: ReviewCheckEvaluation[];
+  metadata?: JsonRecord;
+}): z.infer<typeof MarketplaceReviewAutomatedChecksSchema> {
+  const failed = input.checks.filter((check) => check.result === 'failed');
+  const warnings = input.checks.filter((check) => check.result === 'warning');
+  const hardFails = input.checks.filter((check) => check.hard_fail);
+
+  return {
+    status: hardFails.length > 0 || failed.length > 0 ? 'failed' : warnings.length > 0 ? 'warning' : 'passed',
+    checked_at: new Date().toISOString(),
+    source: input.source,
+    checks: input.checks.map((check) => ({
+      check_type: check.check_type,
+      name: check.title,
+      status: check.result,
+      message: check.summary,
+      hard_fail: check.hard_fail,
+      detail: check.detail,
+    })),
+    failed_count: failed.length,
+    warning_count: warnings.length,
+    hard_fail_count: hardFails.length,
+    metadata: input.metadata ?? {},
+  };
+}
+
+export function isExecutiveAnalyticsStale(
+  computedAt: string | null | undefined,
+  referenceDate: Date = new Date(),
+  staleAfterHours = EXECUTIVE_ANALYTICS_STALE_AFTER_HOURS,
+): boolean {
+  if (!computedAt) return true;
+  const timestamp = Date.parse(computedAt);
+  if (!Number.isFinite(timestamp)) return true;
+  return referenceDate.getTime() - timestamp > staleAfterHours * 60 * 60 * 1000;
+}
 
 export const AppBridgeCapabilitySchema = z.enum([
   'api.fetch',
@@ -1328,11 +3212,275 @@ export const AppBridgeCapabilitySchema = z.enum([
 ]);
 
 export const MarketplaceAppCategorySchema = z.object({
+  id: z.string().min(1).optional().nullable(),
   slug: z.string().min(1).max(120),
   name: z.string().min(1).max(160),
+  description: z.string().max(1000).optional().nullable(),
   icon: z.string().min(1).max(80).optional().nullable(),
   group: z.string().min(1).max(120).optional().nullable(),
+  sort_order: z.number().int().optional().nullable(),
+  is_active: z.boolean().optional().nullable(),
+  seo_title: z.string().max(120).optional().nullable(),
+  seo_description: z.string().max(300).optional().nullable(),
+  seo_content: z.string().max(5000).optional().nullable(),
+  seo_faq: z.array(z.object({
+    question: z.string().min(1).max(240),
+    answer: z.string().min(1).max(1000),
+  }).passthrough()).optional().nullable(),
+  buyer_guidance: z.string().max(2000).optional().nullable(),
+    count: z.number().int().nonnegative().optional().nullable(),
+}).passthrough();
+
+export const MarketplaceAppFeatureTagSchema = z.object({
+  id: z.string().min(1),
+  group_id: z.string().min(1).optional().nullable(),
+  handle: z.string().min(1).max(160),
+  label: z.string().min(1).max(160),
+  description: z.string().max(1000).optional().nullable(),
+  display_order: z.number().int().optional().nullable(),
   count: z.number().int().nonnegative().optional().nullable(),
+  selected: z.boolean().optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const MarketplaceAppFeatureGroupSchema = z.object({
+  id: z.string().min(1),
+  category_id: z.string().min(1),
+  category_slug: z.string().min(1).max(120).optional().nullable(),
+  handle: z.string().min(1).max(160),
+  label: z.string().min(1).max(160),
+  description: z.string().max(1000).optional().nullable(),
+  display_order: z.number().int().optional().nullable(),
+  tags: z.array(MarketplaceAppFeatureTagSchema).default([]),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const MarketplaceAppAwardSchema = z.object({
+  id: z.string().min(1),
+  app_id: z.string().min(1),
+  award_key: z.string().min(1).max(120),
+  label: z.string().min(1).max(160),
+  year: z.number().int().optional().nullable(),
+  blurb: z.string().max(1000).optional().nullable(),
+  awarded_at: z.string().datetime().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const MarketplaceAppReviewSummarySchema = z.object({
+  id: z.string().min(1),
+  app_id: z.string().min(1),
+  summary: z.string().min(1).max(5000),
+  source: z.string().min(1).max(80).optional().nullable(),
+  model: z.string().max(120).optional().nullable(),
+  eligibility_snapshot: MetadataSchema.default({}),
+  generated_at: z.string().datetime().optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const MarketplaceAppCollectionSectionSchema = z.object({
+  id: z.string().min(1),
+  collection_id: z.string().min(1),
+  section_type: z.string().min(1).max(80),
+  heading: z.string().max(240).optional().nullable(),
+  body: z.string().max(50000).optional().nullable(),
+  media_url: UrlSchema.optional().nullable(),
+  app_id: z.string().min(1).optional().nullable(),
+  cta_label: z.string().max(120).optional().nullable(),
+  cta_href: z.string().max(2000).optional().nullable(),
+  sort_order: z.number().int().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const MarketplaceAppCollectionReferenceSchema = z.object({
+  id: z.string().min(1),
+  slug: z.string().min(1).max(120),
+  name: z.string().min(1).max(160),
+  description: z.string().max(1200).optional().nullable(),
+  curation_type: z.string().min(1).max(80).optional().nullable(),
+  disclosure: z.string().max(500).optional().nullable(),
+  status: z.string().min(1).max(80).optional().nullable(),
+  sort_order: z.number().int().optional().nullable(),
+  count: z.number().int().nonnegative().optional().nullable(),
+  sections: z.array(MarketplaceAppCollectionSectionSchema).optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const MarketplaceAppCollectionSchema = z.object({
+  id: z.string().min(1),
+  slug: z.string().min(1).max(120),
+  name: z.string().min(1).max(160),
+  description: z.string().max(1200).optional().nullable(),
+  curation_type: z.string().min(1).max(80).optional().nullable(),
+  disclosure: z.string().max(500).optional().nullable(),
+  status: z.string().min(1).max(80).optional().nullable(),
+  sort_order: z.number().int().optional().nullable(),
+  count: z.number().int().nonnegative().optional().nullable(),
+  sections: z.array(MarketplaceAppCollectionSectionSchema).optional().nullable(),
+  apps: z.array(z.lazy(() => MarketplaceAppSchema)).optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppDiscoveryEventInputSchema = z.object({
+  event_type: z.enum(['search', 'zero_results', 'app_click', 'collection_view', 'featured_impression']),
+  site_id: z.string().min(1).optional().nullable(),
+  app_id: z.string().min(1).optional().nullable(),
+  category_id: z.string().min(1).optional().nullable(),
+  collection_id: z.string().min(1).optional().nullable(),
+  search_query: z.string().trim().max(200).optional().nullable(),
+  result_count: z.number().int().min(0).max(100000).optional().nullable(),
+  request_id: z.string().trim().max(200).optional().nullable(),
+  metadata: MetadataSchema.default({}),
+}).strict();
+
+export const AppDiscoveryEventResultSchema = z.object({
+  accepted: z.boolean().default(true),
+  id: z.string().min(1).optional().nullable(),
+}).passthrough();
+
+export const AppRequestInputSchema = z.object({
+  query: z.string().trim().max(200).optional().nullable(),
+  category_slug: z.string().trim().max(120).optional().nullable(),
+  requested_app_name: z.string().trim().max(200).optional().nullable(),
+  use_case: z.string().trim().min(1).max(2000),
+  contact_email: EmailSchema.optional().nullable(),
+  metadata: MetadataSchema.default({}),
+}).strict();
+
+export const AppRequestResultSchema = z.object({
+  accepted: z.boolean().default(true),
+  request_id: z.string().min(1).optional().nullable(),
+  status: z.string().min(1).max(80).default('open'),
+}).passthrough();
+
+export const AppSavedAppInputSchema = z.object({
+  site_id: z.string().min(1).optional().nullable(),
+  app_id: z.string().min(1),
+  source: z.string().trim().max(80).optional().nullable(),
+  metadata: MetadataSchema.default({}),
+}).strict();
+
+export const AppSavedAppSchema = z.object({
+  id: z.string().min(1),
+  site_id: z.string().min(1),
+  app_id: z.string().min(1),
+  saved_by: z.string().min(1).optional().nullable(),
+  source: z.string().max(80).optional().nullable(),
+  metadata: MetadataSchema.default({}),
+  marketplace_apps: z.lazy(() => MarketplaceAppSchema).optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+  deleted_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppSavedAppsResultSchema = z.object({
+  saved_apps: z.array(AppSavedAppSchema).default([]),
+  apps: z.array(z.lazy(() => MarketplaceAppSchema)).default([]),
+}).passthrough();
+
+export const AppTrustReportInputSchema = z.object({
+  reason_code: z.string().trim().min(1).max(80),
+  reason_text: z.string().trim().max(1000).optional().nullable(),
+  site_id: z.string().min(1).optional().nullable(),
+  metadata: MetadataSchema.default({}),
+}).strict();
+
+export const AppReviewReplyInputSchema = z.object({
+  developer_reply: z.string().trim().min(1).max(2000),
+}).strict();
+
+export const AppTrustReportResultSchema = z.object({
+  accepted: z.boolean().default(true),
+  report_id: z.string().min(1).optional().nullable(),
+  status: z.string().min(1).max(80).optional().nullable(),
+}).passthrough();
+
+export const AppReviewPolicySchema = z.object({
+  id: z.string().min(1),
+  slug: z.string().min(1).max(120),
+  version: z.string().min(1).max(120),
+  title: z.string().min(1).max(200),
+  summary: z.string().min(1).max(2000),
+  sections: z.array(z.object({
+    heading: z.string().min(1).max(200),
+    items: z.array(z.string().min(1).max(500)).default([]),
+  }).passthrough()).default([]),
+  status: z.string().min(1).max(80),
+  effective_at: z.string().datetime().optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppActivityEventSchema = z.object({
+  id: z.string().min(1),
+  site_id: z.string().min(1),
+  app_id: z.string().min(1),
+  installation_id: z.string().min(1).optional().nullable(),
+  actor_id: z.string().min(1).optional().nullable(),
+  event_type: z.string().min(1).max(80),
+  summary: z.string().min(1).max(500),
+  metadata: MetadataSchema.default({}),
+  created_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppBundleSchema = z.object({
+  id: z.string().min(1),
+  slug: z.string().min(1).max(160),
+  name: z.string().min(1).max(200),
+  description: z.string().max(2000).optional().nullable(),
+  status: z.string().min(1).max(80).optional().nullable(),
+  currency: z.string().regex(/^[A-Z]{3}$/).default('INR'),
+  discount_percent: z.number().min(0).max(100).optional().nullable(),
+  discount_amount_minor: z.number().int().nonnegative().optional().nullable(),
+  disclosure: z.string().max(500).optional().nullable(),
+  sort_order: z.number().int().optional().nullable(),
+  starts_at: z.string().datetime().optional().nullable(),
+  ends_at: z.string().datetime().optional().nullable(),
+  apps: z.array(z.lazy(() => MarketplaceAppSchema)).default([]),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppReviewProofSchema = z.object({
+  id: z.string().min(1),
+  review_id: z.string().min(1),
+  app_id: z.string().min(1),
+  site_id: z.string().min(1).optional().nullable(),
+  installation_id: z.string().min(1).optional().nullable(),
+  proof_type: z.string().min(1).max(80),
+  proof_status: z.string().min(1).max(80),
+  source: z.string().max(120).optional().nullable(),
+  external_reference: z.string().max(300).optional().nullable(),
+  metadata: MetadataSchema.default({}),
+  created_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppReviewModerationItemSchema = z.object({
+  id: z.string().min(1),
+  app_id: z.string().min(1),
+  rating: z.number().int().min(1).max(5),
+  title: z.string().max(200).optional().nullable(),
+  body: z.string().optional().nullable(),
+  user_name: z.string().max(200).optional().nullable(),
+  status: z.string().max(80).optional().nullable(),
+  fraud_score: z.number().nonnegative().optional().nullable(),
+  fraud_flags: z.array(z.string().min(1)).default([]),
+  reported_count: z.number().int().nonnegative().optional().nullable(),
+  moderation_reason: z.string().optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  marketplace_apps: z.object({
+    id: z.string().min(1),
+    name: z.string().min(1).max(200),
+    slug: z.string().min(1).max(160).optional().nullable(),
+  }).passthrough().optional().nullable(),
 }).passthrough();
 
 export const MarketplaceAppDeveloperSchema = z.object({
@@ -1342,6 +3490,8 @@ export const MarketplaceAppDeveloperSchema = z.object({
   logo_url: UrlSchema.optional().nullable(),
   website_url: UrlSchema.optional().nullable(),
   support_email: EmailSchema.optional().nullable(),
+  description: z.string().max(4000).optional().nullable(),
+  country: z.string().max(20).optional().nullable(),
   verified: z.boolean().optional().nullable(),
   status: z.string().min(1).max(80).optional().nullable(),
 }).passthrough();
@@ -1357,6 +3507,115 @@ export const MarketplaceAppExtensionSchema = z.object({
   config: MetadataSchema.default({}),
   status: z.string().min(1).max(80).optional().nullable(),
   sort_order: z.number().int().optional().nullable(),
+}).passthrough();
+
+export const AppPricingPlanIntervalSchema = z.enum(['none', 'monthly', 'yearly']);
+export const AppPricingPlanStatusSchema = z.enum(['draft', 'active', 'archived']);
+
+export const AppPricingPlanInputSchema = z.object({
+  plan_slug: z.string().trim().min(1).max(120),
+  name: z.string().trim().min(1).max(160),
+  description: z.string().trim().max(1000).optional().nullable(),
+  pricing_model: MarketplaceAppPricingModelSchema.default('free'),
+  billing_mode: AppBillingChargeModeSchema.optional().nullable(),
+  currency: z.literal('INR').default('INR'),
+  amount_minor: z.number().int().nonnegative().default(0),
+  interval: AppPricingPlanIntervalSchema.default('none'),
+  trial_days: z.number().int().min(0).max(365).default(0),
+  usage_meter: z.string().trim().max(120).optional().nullable(),
+  usage_unit: z.string().trim().max(80).optional().nullable(),
+  included_usage: z.number().int().nonnegative().default(0),
+  usage_unit_amount_minor: z.number().int().nonnegative().default(0),
+  features: z.array(z.string().trim().min(1).max(200)).max(40).default([]),
+  limits: MetadataSchema.default({}),
+  is_default: z.boolean().default(false),
+  status: AppPricingPlanStatusSchema.default('active'),
+  sort_order: z.number().int().min(0).max(1000).default(0),
+}).strict();
+
+export const AppPricingPlanUpdateSchema = AppPricingPlanInputSchema.partial().strict();
+
+export const AppPricingPlanSchema = z.object({
+  id: z.string().min(1),
+  app_id: z.string().min(1),
+  developer_id: z.string().min(1),
+  plan_slug: z.string().min(1).max(120),
+  name: z.string().min(1).max(160),
+  description: z.string().max(1000).optional().nullable(),
+  pricing_model: MarketplaceAppPricingModelSchema.or(z.string().min(1)),
+  billing_mode: AppBillingChargeModeSchema.or(z.string().min(1)).optional().nullable(),
+  currency: z.literal('INR').default('INR'),
+  amount_minor: z.number().int().nonnegative(),
+  interval: AppPricingPlanIntervalSchema.or(z.string().min(1)).default('none'),
+  trial_days: z.number().int().nonnegative().optional().nullable(),
+  usage_meter: z.string().max(120).optional().nullable(),
+  usage_unit: z.string().max(80).optional().nullable(),
+  included_usage: z.number().int().nonnegative().optional().nullable(),
+  usage_unit_amount_minor: z.number().int().nonnegative().optional().nullable(),
+  features: z.array(z.string().min(1)).default([]),
+  limits: MetadataSchema.default({}),
+  is_default: z.boolean().default(false),
+  status: AppPricingPlanStatusSchema.or(z.string().min(1)).default('active'),
+  sort_order: z.number().int().optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+  deleted_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppVersionStatusSchema = z.enum(['draft', 'in_review', 'approved', 'released', 'rejected', 'rolled_back']);
+
+export const AppVersionInputSchema = z.object({
+  version: z.string().trim().min(1).max(60),
+  release_notes: z.string().trim().min(1).max(5000),
+  changelog: z.array(z.string().trim().min(1).max(500)).max(20).default([]),
+  rollout_percentage: z.number().int().min(0).max(100).default(100),
+  rollout_cohort: z.string().trim().max(120).optional().nullable(),
+  manifest: MetadataSchema.optional().nullable(),
+}).strict();
+
+export const AppListingUpdateSchema = z.object({
+  name: z.string().trim().min(1).max(200).optional(),
+  tagline: z.string().trim().min(1).max(300).optional(),
+  description: z.string().trim().min(1).max(50000).optional(),
+  category_id: z.string().trim().min(1).max(120).optional(),
+  app_url: UrlSchema.optional(),
+  privacy_policy_url: UrlSchema.optional(),
+  terms_url: UrlSchema.optional().nullable(),
+  documentation_url: UrlSchema.optional().nullable(),
+  pricing_model: MarketplaceAppPricingModelSchema.optional(),
+  version: z.string().trim().min(1).max(60).optional(),
+  release_notes: z.string().trim().min(1).max(5000).optional(),
+  changelog: z.array(z.string().trim().min(1).max(500)).max(20).optional(),
+  rollout_percentage: z.number().int().min(0).max(100).optional(),
+  rollout_cohort: z.string().trim().max(120).optional().nullable(),
+  manifest: MetadataSchema.optional().nullable(),
+}).strict();
+
+export const AppVersionSchema = z.object({
+  id: UuidSchema,
+  app_id: UuidSchema,
+  developer_id: UuidSchema,
+  version: z.string().min(1).max(60),
+  release_notes: z.string().max(5000).optional().nullable(),
+  changelog: z.array(z.string().min(1)).default([]),
+  rollout_percentage: z.number().int().min(0).max(100).default(100),
+  rollout_cohort: z.string().max(120).optional().nullable(),
+  status: AppVersionStatusSchema.or(z.string().min(1)).default('draft'),
+  manifest: MetadataSchema.default({}),
+  automated_checks: MetadataSchema.default({}),
+  review_record_id: UuidSchema.optional().nullable(),
+  submitted_at: z.string().datetime().optional().nullable(),
+  released_at: z.string().datetime().optional().nullable(),
+  created_by: UuidSchema.optional().nullable(),
+  updated_by: UuidSchema.optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+  deleted_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppVersionsResultSchema = z.object({
+  app: z.lazy(() => MarketplaceAppSchema),
+  versions: z.array(AppVersionSchema).default([]),
 }).passthrough();
 
 export const MarketplaceAppSchema = z.object({
@@ -1380,10 +3639,13 @@ export const MarketplaceAppSchema = z.object({
   privacy_url: UrlSchema.optional().nullable(),
   privacy_policy_url: UrlSchema.optional().nullable(),
   terms_url: UrlSchema.optional().nullable(),
+  documentation_url: UrlSchema.optional().nullable(),
   icon_url: UrlSchema.optional().nullable(),
   screenshots: z.array(UrlSchema).optional().nullable(),
   video_url: UrlSchema.optional().nullable(),
+  video_captions_url: UrlSchema.optional().nullable(),
   pricing_model: MarketplaceAppPricingModelSchema.or(z.string().min(1)).optional().nullable(),
+  currency: z.string().regex(/^[A-Z]{3}$/).optional().nullable(),
   price_monthly: z.number().nonnegative().optional().nullable(),
   price_yearly: z.number().nonnegative().optional().nullable(),
   price_inr: z.number().nonnegative().optional().nullable(),
@@ -1397,15 +3659,45 @@ export const MarketplaceAppSchema = z.object({
   rating_avg: z.number().or(z.string()).optional().nullable(),
   extensions: z.array(MarketplaceAppExtensionSchema).optional().nullable(),
   app_extensions: z.array(MarketplaceAppExtensionSchema).optional().nullable(),
+  app_pricing_plans: z.array(AppPricingPlanSchema).optional().nullable(),
+  app_versions: z.array(AppVersionSchema).optional().nullable(),
+  feature_tags: z.array(MarketplaceAppFeatureTagSchema).optional().nullable(),
+  feature_groups: z.array(MarketplaceAppFeatureGroupSchema).optional().nullable(),
+  awards: z.array(MarketplaceAppAwardSchema).optional().nullable(),
+  app_awards: z.array(MarketplaceAppAwardSchema).optional().nullable(),
+  app_review_summary: MarketplaceAppReviewSummarySchema.optional().nullable(),
+  featured_in: z.array(MarketplaceAppCollectionReferenceSchema).optional().nullable(),
   app_developers: MarketplaceAppDeveloperSchema.optional().nullable(),
   app_categories: MarketplaceAppCategorySchema.optional().nullable(),
+  version: z.string().max(80).optional().nullable(),
   current_version: z.string().max(80).optional().nullable(),
   min_plan: z.string().max(80).optional().nullable(),
   supported_locales: z.array(z.string().min(2)).optional().nullable(),
+  is_first_party_demo: z.boolean().optional().nullable(),
   is_featured: z.boolean().optional().nullable(),
+  built_for_letbuyy: z.boolean().optional().nullable(),
+  built_for_letbuyy_awarded_at: z.string().datetime().optional().nullable(),
+  built_for_letbuyy_checked_at: z.string().datetime().optional().nullable(),
+  data_handling: MetadataSchema.optional().nullable(),
+  support_sla: z.string().max(300).optional().nullable(),
+  support_sla_response_minutes: z.number().int().nonnegative().optional().nullable(),
+  status_url: UrlSchema.optional().nullable(),
+  works_with: z.array(z.string().min(1)).optional().nullable(),
+  conflict_app_ids: z.array(z.string().min(1)).optional().nullable(),
+  health_status: z.string().max(80).optional().nullable(),
+  health_checked_at: z.string().datetime().optional().nullable(),
+  discovery_label: z.string().max(120).optional().nullable(),
+  featured_disclosure: z.string().max(500).optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
   published_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const MarketplaceAppRecommendationsSchema = z.object({
+  app_id: z.string().min(1),
+  works_with: z.array(z.string().min(1)).default([]),
+  alternatives: z.array(MarketplaceAppSchema).default([]),
+  also_installed: z.array(MarketplaceAppSchema).default([]),
 }).passthrough();
 
 export const MarketplaceAppReviewSchema = z.object({
@@ -1414,11 +3706,27 @@ export const MarketplaceAppReviewSchema = z.object({
   user_id: z.string().min(1).optional().nullable(),
   user_name: z.string().max(200).optional().nullable(),
   store_name: z.string().max(200).optional().nullable(),
+  store_country: z.string().max(120).optional().nullable(),
+  country: z.string().max(120).optional().nullable(),
+  country_code: z.string().max(10).optional().nullable(),
+  duration_using_app: z.string().max(120).optional().nullable(),
+  usage_duration: z.string().max(120).optional().nullable(),
+  installed_at: z.string().datetime().optional().nullable(),
   rating: z.number().int().min(1).max(5),
   title: z.string().max(200).optional().nullable(),
   body: z.string().optional().nullable(),
   helpful_count: z.number().int().nonnegative().optional().nullable(),
   is_verified: z.boolean().optional().nullable(),
+  verified_installation_id: z.string().min(1).optional().nullable(),
+  proof_status: z.string().max(80).optional().nullable(),
+  app_review_proofs: z.array(AppReviewProofSchema).optional().nullable(),
+  developer_reply: z.string().optional().nullable(),
+  developer_replied_at: z.string().datetime().optional().nullable(),
+  developer_reply_by: z.string().min(1).optional().nullable(),
+  reported_count: z.number().int().nonnegative().optional().nullable(),
+  fraud_score: z.number().nonnegative().optional().nullable(),
+  fraud_flags: z.array(z.string().min(1)).default([]),
+  moderation_reason: z.string().optional().nullable(),
   status: z.string().max(80).optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
 }).passthrough();
@@ -1471,6 +3779,19 @@ export const AdminAppEmbedSurfaceSchema = z.object({
   capabilities: z.array(AppBridgeCapabilitySchema).default(['api.fetch', 'toast', 'resize']),
 }).strict();
 
+export const MobileAdminAppBridgeHostPolicySchema = z.object({
+  platform: z.literal('mobile_webview'),
+  host_version: z.string().min(1).max(80),
+  allowed_origin: z.string().min(1).max(300),
+  allowed_navigation_origins: z.array(z.string().min(1).max(300)).default([]),
+  js_namespace: z.string().min(1).max(80).default('LetBuyyAppBridge'),
+  message_channel: z.string().min(1).max(80).default('LetBuyyAppBridge'),
+  bridge_fetch_path: z.literal('/app-store/bridge/fetch'),
+  token_transport: z.literal('native_bridge'),
+  capabilities: z.array(AppBridgeCapabilitySchema).default(['api.fetch', 'toast', 'resize']),
+  expires_at: z.string().datetime(),
+}).strict();
+
 export const AdminAppBridgeSessionSchema = z.object({
   installation: InstalledAppSchema,
   embed: AdminAppEmbedSurfaceSchema,
@@ -1486,6 +3807,7 @@ export const AdminAppBridgeSessionSchema = z.object({
     scopes: z.array(z.string().min(1)).default([]),
     capabilities: z.array(AppBridgeCapabilitySchema).default(['api.fetch', 'toast', 'resize']),
   }).strict(),
+  mobile_host: MobileAdminAppBridgeHostPolicySchema.optional(),
 }).strict();
 
 export const AppBridgeApiFetchResultSchema = z.object({
@@ -1563,10 +3885,10 @@ export const StorefrontCheckoutExtensionRegistryResponseSchema = z.object({
   extensions: z.array(AppExtensionRegistrationSchema).default([]),
 }).strict();
 
-export const AppBillingChargeModeSchema = z.enum(['recurring', 'usage']);
 export const AppBillingChargeStatusSchema = z.enum([
   'pending_merchant_approval',
   'approved',
+  'trialing',
   'active',
   'cancelled',
   'failed',
@@ -1580,12 +3902,17 @@ export const AppBillingChargeSchema = z.object({
   app_id: UuidSchema,
   partner_id: UuidSchema,
   installation_id: UuidSchema,
+  pricing_plan_id: UuidSchema.optional().nullable(),
   billing_mode: AppBillingChargeModeSchema,
   status: AppBillingChargeStatusSchema.or(z.string().min(1)),
   name: z.string().min(1).max(160),
   amount_minor: z.number().int().positive(),
   currency: z.literal('INR').default('INR'),
-  revenue_share_bps: z.number().int().min(0).max(10000).default(8000),
+  trial_days: z.number().int().min(0).max(365).default(0),
+  trial_starts_at: z.string().datetime().optional().nullable(),
+  trial_ends_at: z.string().datetime().optional().nullable(),
+  billing_starts_at: z.string().datetime().optional().nullable(),
+  revenue_share_bps: z.number().int().min(0).max(10000).default(8500),
   partner_amount_minor: z.number().int().nonnegative(),
   platform_fee_minor: z.number().int().nonnegative(),
   partner_gst_bps: z.number().int().min(0).max(10000).default(1800),
@@ -1607,9 +3934,11 @@ export const AppBillingChargeSchema = z.object({
 export const AppBillingChargeCreateSchema = z.object({
   store_id: UuidSchema,
   installation_id: UuidSchema,
+  pricing_plan_id: UuidSchema.optional(),
   billing_mode: AppBillingChargeModeSchema.default('recurring'),
   name: z.string().trim().min(1).max(160),
   amount_minor: z.number().int().positive(),
+  trial_days: z.number().int().min(0).max(365).default(0),
   idempotency_key: z.string().trim().min(8).max(200),
   return_url: UrlSchema.optional(),
   metadata: MetadataSchema.default({}),
@@ -1636,6 +3965,114 @@ export const AppBillingChargeResultSchema = z.object({
   payout_plan: z.record(z.string(), z.unknown()).optional(),
 }).passthrough();
 
+export const AppUsageBillingStatusSchema = z.enum(['metered', 'trial_included', 'blocked']);
+
+export const AppUsageEventCreateSchema = z.object({
+  meter_name: z.string().trim().min(1).max(120),
+  quantity: z.number().positive(),
+  idempotency_key: z.string().trim().min(8).max(200),
+  source: z.string().trim().min(1).max(80).optional(),
+  resource_type: z.string().trim().min(1).max(80).optional(),
+  resource_id: z.string().trim().min(1).max(200).optional(),
+  metadata: MetadataSchema.default({}),
+}).strict();
+
+export const AppUsageEventSchema = z.object({
+  id: UuidSchema,
+  site_id: UuidSchema,
+  app_id: UuidSchema,
+  installation_id: UuidSchema,
+  pricing_plan_id: UuidSchema.optional().nullable(),
+  charge_id: UuidSchema.optional().nullable(),
+  meter_name: z.string().min(1).max(120),
+  quantity: z.number().positive(),
+  billable_quantity: z.number().nonnegative().default(0),
+  usage_unit: z.string().min(1).max(80).default('unit'),
+  unit_amount_minor: z.number().int().nonnegative().default(0),
+  amount_minor: z.number().int().nonnegative().default(0),
+  currency: z.literal('INR').default('INR'),
+  billing_status: AppUsageBillingStatusSchema.default('metered'),
+  period_start: z.string().datetime(),
+  period_end: z.string().datetime(),
+  idempotency_key: z.string().min(8).max(200),
+  source: z.string().min(1).max(80).default('app_api'),
+  resource_type: z.string().max(80).optional().nullable(),
+  resource_id: z.string().max(200).optional().nullable(),
+  metadata: MetadataSchema.default({}),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppUsageMeterRollupSchema = z.object({
+  id: UuidSchema,
+  site_id: UuidSchema,
+  app_id: UuidSchema,
+  installation_id: UuidSchema,
+  pricing_plan_id: UuidSchema.optional().nullable(),
+  charge_id: UuidSchema.optional().nullable(),
+  meter_name: z.string().min(1).max(120),
+  usage_unit: z.string().min(1).max(80).default('unit'),
+  period_start: z.string().datetime(),
+  period_end: z.string().datetime(),
+  quantity: z.number().nonnegative().default(0),
+  included_quantity: z.number().nonnegative().default(0),
+  billable_quantity: z.number().nonnegative().default(0),
+  unit_amount_minor: z.number().int().nonnegative().default(0),
+  amount_minor: z.number().int().nonnegative().default(0),
+  currency: z.literal('INR').default('INR'),
+  last_event_at: z.string().datetime().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppUsageMeteringResultSchema = z.object({
+  event: AppUsageEventSchema,
+  rollup: AppUsageMeterRollupSchema,
+}).passthrough();
+
+export const AppUsageSummarySchema = z.object({
+  app_id: UuidSchema,
+  rollups: z.array(AppUsageMeterRollupSchema).default([]),
+  events: z.array(AppUsageEventSchema).default([]),
+}).passthrough();
+
+export const AppSpendControlEnforcementModeSchema = z.enum(['block', 'alert_only']);
+export const AppSpendControlStatusSchema = z.enum(['active', 'disabled']);
+
+export const AppSpendControlSchema = z.object({
+  id: UuidSchema,
+  site_id: UuidSchema,
+  monthly_cap_minor: z.number().int().nonnegative().default(0),
+  alert_threshold_minor: z.number().int().nonnegative().default(0),
+  alerts_enabled: z.boolean().default(true),
+  enforcement_mode: AppSpendControlEnforcementModeSchema.default('block'),
+  status: AppSpendControlStatusSchema.default('active'),
+  metadata: MetadataSchema.default({}),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppSpendControlUpdateSchema = z.object({
+  monthly_cap_minor: z.number().int().nonnegative().max(999_999_999).optional(),
+  alert_threshold_minor: z.number().int().nonnegative().max(999_999_999).optional(),
+  alerts_enabled: z.boolean().optional(),
+  enforcement_mode: AppSpendControlEnforcementModeSchema.optional(),
+  status: AppSpendControlStatusSchema.optional(),
+}).strict();
+
+export const AppSpendControlResultSchema = z.object({
+  control: AppSpendControlSchema.optional().nullable(),
+  spend: z.object({
+    period_start: z.string().datetime(),
+    period_end: z.string().datetime(),
+    current_amount_minor: z.number().int().nonnegative(),
+    projected_amount_minor: z.number().int().nonnegative().optional(),
+    over_cap: z.boolean().default(false),
+    over_alert_threshold: z.boolean().default(false),
+  }),
+}).passthrough();
+
 export const PartnerPayoutLedgerEntrySchema = z.object({
   id: UuidSchema,
   partner_id: UuidSchema,
@@ -1646,7 +4083,7 @@ export const PartnerPayoutLedgerEntrySchema = z.object({
   billing_mode: AppBillingChargeModeSchema,
   amount_minor: z.number().int().nonnegative(),
   currency: z.literal('INR').default('INR'),
-  revenue_share_bps: z.number().int().min(0).max(10000).default(8000),
+  revenue_share_bps: z.number().int().min(0).max(10000).default(8500),
   partner_amount_minor: z.number().int().nonnegative(),
   platform_fee_minor: z.number().int().nonnegative(),
   status: z.string().min(1).max(80),
@@ -1670,6 +4107,7 @@ export const PartnerDevelopmentStoreSchema = z.object({
 export const PartnerCollaboratorAccessSchema = z.object({
   request_code: z.string().min(8).max(80),
   expires_at: z.string().datetime(),
+  has_active_code: z.boolean().optional().default(false),
   scopes: z.array(z.string().min(1)).default([]),
   managed_stores: z.array(PartnerDevelopmentStoreSchema).default([]),
 }).passthrough();
@@ -1688,15 +4126,144 @@ export const PartnerAnalyticsSchema = z.object({
   currency: z.literal('INR').default('INR'),
 }).passthrough();
 
+export const PartnerAnalyticsPointSchema = z.object({
+  metric_date: z.string().min(1),
+  app_id: UuidSchema.optional().nullable(),
+  installs: z.number().int().nonnegative().default(0),
+  uninstalls: z.number().int().nonnegative().default(0),
+  active_installations: z.number().int().nonnegative().default(0),
+  reviews: z.number().int().nonnegative().default(0),
+  usage_events: z.number().int().nonnegative().default(0),
+  api_requests: z.number().int().nonnegative().default(0),
+  api_errors: z.number().int().nonnegative().default(0),
+  gross_amount_minor: z.number().int().nonnegative().default(0),
+  partner_amount_minor: z.number().int().nonnegative().default(0),
+  payout_released_minor: z.number().int().nonnegative().default(0),
+  currency: z.literal('INR').default('INR'),
+}).passthrough();
+
+export const PartnerAnalyticsTimeseriesSchema = z.object({
+  points: z.array(PartnerAnalyticsPointSchema).default([]),
+  totals: PartnerAnalyticsSchema.partial().passthrough().default({}),
+}).passthrough();
+
+export const AppApiUsageMetricSchema = z.object({
+  id: UuidSchema.optional().nullable(),
+  app_id: UuidSchema,
+  developer_id: UuidSchema.optional().nullable(),
+  metric_date: z.string().min(1),
+  route_group: z.string().min(1).max(160),
+  method: z.string().min(1).max(16).default('GET'),
+  request_count: z.number().int().nonnegative().default(0),
+  error_count: z.number().int().nonnegative().default(0),
+  avg_latency_ms: z.number().int().nonnegative().default(0),
+  p95_latency_ms: z.number().int().nonnegative().default(0),
+  metadata: JsonRecordSchema.default({}),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppApiUsageSummarySchema = z.object({
+  app_id: UuidSchema,
+  metrics: z.array(AppApiUsageMetricSchema).default([]),
+}).passthrough();
+
+export const AppWebhookEndpointSchema = z.object({
+  id: UuidSchema,
+  app_id: UuidSchema,
+  name: z.string().min(1).max(160).optional().nullable(),
+  event: z.string().min(1).max(120),
+  event_types: z.array(z.string().min(1).max(120)).default([]),
+  url: UrlSchema,
+  is_active: z.boolean().default(true),
+  status: z.enum(['active', 'paused', 'disabled']).default('active'),
+  last_delivery_at: z.string().datetime().optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppWebhookEndpointInputSchema = z.object({
+  name: z.string().min(1).max(160).optional().nullable(),
+  event: z.string().min(1).max(120),
+  event_types: z.array(z.string().min(1).max(120)).default([]),
+  url: UrlSchema,
+  status: z.enum(['active', 'paused', 'disabled']).default('active'),
+}).strict();
+
+export const AppWebhookEndpointUpdateSchema = AppWebhookEndpointInputSchema.partial().strict();
+
+export const PartnerCollaboratorRedeemInputSchema = z.object({
+  request_code: z.string().min(8).max(120),
+  site_id: UuidSchema,
+}).strict();
+
+export const PartnerTierSchema = z.object({
+  id: UuidSchema,
+  developer_id: UuidSchema,
+  tier: z.enum(['bronze', 'silver', 'gold', 'platinum']),
+  status: z.enum(['active', 'expired', 'revoked']).default('active'),
+  awarded_at: z.string().datetime().optional().nullable(),
+  expires_at: z.string().datetime().optional().nullable(),
+  criteria: JsonRecordSchema.default({}),
+  metrics: JsonRecordSchema.default({}),
+  reason: z.string().optional().nullable(),
+}).passthrough();
+
+export const AppSandboxStoreSchema = z.object({
+  id: UuidSchema,
+  developer_id: UuidSchema,
+  site_id: UuidSchema.optional().nullable(),
+  name: z.string().min(1).max(200),
+  subdomain: z.string().optional().nullable(),
+  status: z.enum(['requested', 'ready', 'failed', 'expired']),
+  provisioning_mode: z.enum(['sandbox', 'test_store', 'manual']).default('sandbox'),
+  expires_at: z.string().datetime().optional().nullable(),
+  metadata: JsonRecordSchema.default({}),
+  created_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppDemoSessionSchema = z.object({
+  id: UuidSchema,
+  app_id: UuidSchema,
+  developer_id: UuidSchema,
+  site_id: UuidSchema.optional().nullable(),
+  demo_url: UrlSchema,
+  status: z.enum(['active', 'expired', 'disabled']).default('active'),
+  expires_at: z.string().datetime().optional().nullable(),
+  metadata: JsonRecordSchema.default({}),
+  created_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppTelemetryEventInputSchema = z.object({
+  event_type: z.string().min(1).max(160),
+  app_id: UuidSchema.optional().nullable(),
+  site_id: UuidSchema.optional().nullable(),
+  session_id: z.string().min(1).max(240).optional().nullable(),
+  source: z.string().min(1).max(80).default('marketplace'),
+  metadata: JsonRecordSchema.default({}),
+  occurred_at: z.string().datetime().optional().nullable(),
+}).strict();
+
+export const AppTelemetryEventResultSchema = z.object({
+  accepted: z.boolean(),
+  event_id: UuidSchema.optional().nullable(),
+}).passthrough();
+
 export const PartnerDashboardSchema = z.object({
   developer: MarketplaceAppDeveloperSchema,
   apps: z.array(MarketplaceAppSchema).default([]),
+  app_versions: z.array(AppVersionSchema).default([]),
+  pricing_plans: z.array(AppPricingPlanSchema).default([]),
   review_records: z.array(MarketplaceReviewRecordSchema).default([]),
   charges: z.array(AppBillingChargeSchema).default([]),
   payouts: z.array(PartnerPayoutLedgerEntrySchema).default([]),
   development_stores: z.array(PartnerDevelopmentStoreSchema).default([]),
   collaborator_access: PartnerCollaboratorAccessSchema,
   analytics: PartnerAnalyticsSchema,
+  analytics_timeseries: z.array(PartnerAnalyticsPointSchema).default([]),
+  api_usage: z.array(AppApiUsageMetricSchema).default([]),
+  partner_tiers: z.array(PartnerTierSchema).default([]),
+  sandbox_stores: z.array(AppSandboxStoreSchema).default([]),
 }).passthrough();
 
 export const AppOAuthAuthorizationSchema = z.object({
@@ -1782,6 +4349,15 @@ export const GraphQLBulkOperationSchema = z.object({
 
 export type SiteType = z.infer<typeof SiteTypeSchema>;
 export type StoreStatus = z.infer<typeof StoreStatusSchema>;
+export type CustomDomainStatus = z.infer<typeof CustomDomainStatusSchema>;
+export type DomainHealthRecord = z.infer<typeof DomainHealthRecordSchema>;
+export type CustomDomainHealth = z.infer<typeof CustomDomainHealthSchema>;
+export type DomainRegistrarProvider = z.infer<typeof DomainRegistrarProviderSchema>;
+export type DomainAvailabilityQuote = z.infer<typeof DomainAvailabilityQuoteSchema>;
+export type DomainCheckout = z.infer<typeof DomainCheckoutSchema>;
+export type DomainPurchaseResult = z.infer<typeof DomainPurchaseResultSchema>;
+export type StoreAccessMode = z.infer<typeof StoreAccessModeSchema>;
+export type StoreHealthPillarStatus = z.infer<typeof StoreHealthPillarStatusSchema>;
 export type ProductStatus = z.infer<typeof ProductStatusSchema>;
 export type InventoryPolicy = z.infer<typeof InventoryPolicySchema>;
 export type InventoryAdjustmentReason = z.infer<typeof InventoryAdjustmentReasonSchema>;
@@ -1791,6 +4367,7 @@ export type ReviewModerationStatus = z.infer<typeof ReviewModerationStatusSchema
 export type CustomerStatus = z.infer<typeof CustomerStatusSchema>;
 export type CartStatus = z.infer<typeof CartStatusSchema>;
 export type OrderStatus = z.infer<typeof OrderStatusSchema>;
+export type DraftOrderStatus = z.infer<typeof DraftOrderStatusSchema>;
 export type PaymentStatus = z.infer<typeof PaymentStatusSchema>;
 export type FulfillmentStatus = z.infer<typeof FulfillmentStatusSchema>;
 export type PaymentProvider = z.infer<typeof PaymentProviderSchema>;
@@ -1812,14 +4389,64 @@ export type ThemePricingType = z.infer<typeof ThemePricingTypeSchema>;
 export type ShippingRateType = z.infer<typeof ShippingRateTypeSchema>;
 export type TaxAppliesTo = z.infer<typeof TaxAppliesToSchema>;
 export type MoneyAmount = z.infer<typeof MoneyAmountSchema>;
+export type MerchantPayoutStatus = z.infer<typeof MerchantPayoutStatusSchema>;
+export type MerchantPayoutRail = z.infer<typeof MerchantPayoutRailSchema>;
+export type MerchantPayoutMode = z.infer<typeof MerchantPayoutModeSchema>;
+export type WalletLedgerEntryType = z.infer<typeof WalletLedgerEntryTypeSchema>;
+export type WalletLedgerDirection = z.infer<typeof WalletLedgerDirectionSchema>;
+export type WalletLedgerStatus = z.infer<typeof WalletLedgerStatusSchema>;
+export type CommissionReconciliationStatus = z.infer<typeof CommissionReconciliationStatusSchema>;
+export type MerchantKycDocumentType = z.infer<typeof MerchantKycDocumentTypeSchema>;
+export type MerchantKycDocumentStatus = z.infer<typeof MerchantKycDocumentStatusSchema>;
+export type MerchantKycProviderMode = z.infer<typeof MerchantKycProviderModeSchema>;
+export type MerchantKycOverallStatus = z.infer<typeof MerchantKycOverallStatusSchema>;
+export type MerchantTwoFactorType = z.infer<typeof MerchantTwoFactorTypeSchema>;
+export type MerchantTwoFactorStatus = z.infer<typeof MerchantTwoFactorStatusSchema>;
+export type BusinessEntityType = z.infer<typeof BusinessEntityTypeSchema>;
+export type BusinessProfile = z.infer<typeof BusinessProfileSchema>;
+export type InvoiceAddress = z.infer<typeof InvoiceAddressSchema>;
 export type AuthSessionUser = z.infer<typeof AuthSessionUserSchema>;
 export type AuthSessionResponse = z.infer<typeof AuthSessionResponseSchema>;
 export type Store = z.infer<typeof StoreSchema>;
 export type StoreSummary = z.infer<typeof StoreSummarySchema>;
+export type StoreHealthPillar = z.infer<typeof StoreHealthPillarSchema>;
+export type StoreHealth = z.infer<typeof StoreHealthSchema>;
+export type StorefrontLocaleStatus = z.infer<typeof StorefrontLocaleStatusSchema>;
+export type StorefrontTranslationResourceType = z.infer<typeof StorefrontTranslationResourceTypeSchema>;
+export type StorefrontTranslationStatus = z.infer<typeof StorefrontTranslationStatusSchema>;
+export type StoreMarketRoundingMode = z.infer<typeof StoreMarketRoundingModeSchema>;
+export type StoreMarket = z.infer<typeof StoreMarketSchema>;
+export type StorefrontLocale = z.infer<typeof StorefrontLocaleSchema>;
+export type StorefrontTranslation = z.infer<typeof StorefrontTranslationSchema>;
+export type StoreLocalizationSummary = z.infer<typeof StoreLocalizationSummarySchema>;
+export type StoreMetafieldOwnerType = z.infer<typeof StoreMetafieldOwnerTypeSchema>;
+export type StoreMetafieldValueType = z.infer<typeof StoreMetafieldValueTypeSchema>;
+export type StoreMetafieldJsonValue = z.infer<typeof StoreMetafieldJsonValueSchema>;
+export type StoreMetafieldDefinition = z.infer<typeof StoreMetafieldDefinitionSchema>;
+export type StoreMetafieldValue = z.infer<typeof StoreMetafieldValueSchema>;
+export type StoreMetafieldsSummary = z.infer<typeof StoreMetafieldsSummarySchema>;
+export type MerchantPayoutStatement = z.infer<typeof MerchantPayoutStatementSchema>;
+export type MerchantPayoutList = z.infer<typeof MerchantPayoutListSchema>;
+export type WalletLedgerEntry = z.infer<typeof WalletLedgerEntrySchema>;
+export type WalletBalance = z.infer<typeof WalletBalanceSchema>;
+export type CommissionSchedule = z.infer<typeof CommissionScheduleSchema>;
+export type CommissionReconciliationEntry = z.infer<typeof CommissionReconciliationEntrySchema>;
+export type CommissionOverview = z.infer<typeof CommissionOverviewSchema>;
+export type CodReconciliationStatus = z.infer<typeof CodReconciliationStatusSchema>;
+export type CodReconciliationEntry = z.infer<typeof CodReconciliationEntrySchema>;
+export type CodReconciliationOverview = z.infer<typeof CodReconciliationOverviewSchema>;
+export type MerchantKycDocument = z.infer<typeof MerchantKycDocumentSchema>;
+export type MerchantKycRequirement = z.infer<typeof MerchantKycRequirementSchema>;
+export type MerchantKycOverview = z.infer<typeof MerchantKycOverviewSchema>;
+export type MerchantTwoFactor = z.infer<typeof MerchantTwoFactorSchema>;
+export type MerchantSessionInventoryItem = z.infer<typeof MerchantSessionInventoryItemSchema>;
+export type MerchantTwoFactorOverview = z.infer<typeof MerchantTwoFactorOverviewSchema>;
+export type MerchantTwoFactorEnrollment = z.infer<typeof MerchantTwoFactorEnrollmentSchema>;
 export type ProductOption = z.infer<typeof ProductOptionSchema>;
 export type Variant = z.infer<typeof VariantSchema>;
 export type ProductVariant = Variant;
 export type Product = z.infer<typeof ProductSchema>;
+export type ProductBarcodeLookup = z.infer<typeof ProductBarcodeLookupSchema>;
 export type ProductCategory = z.infer<typeof ProductCategorySchema>;
 export type CollectionRule = z.infer<typeof CollectionRuleSchema>;
 export type Collection = z.infer<typeof CollectionSchema>;
@@ -1828,14 +4455,35 @@ export type ProductReview = z.infer<typeof ProductReviewSchema>;
 export type InventoryLevel = z.infer<typeof InventoryLevelSchema>;
 export type CustomerAddress = z.infer<typeof CustomerAddressSchema>;
 export type Customer = z.infer<typeof CustomerSchema>;
+export type CustomerNote = z.infer<typeof CustomerNoteSchema>;
+export type WhatsAppCapability = z.infer<typeof WhatsAppCapabilitySchema>;
+export type WhatsAppMessage = z.infer<typeof WhatsAppMessageSchema>;
+export type WhatsAppSendInput = z.infer<typeof WhatsAppSendInputSchema>;
+export type WhatsAppSendResult = z.infer<typeof WhatsAppSendResultSchema>;
+export type WhatsAppTemplate = z.infer<typeof WhatsAppTemplateSchema>;
+export type WhatsAppTemplateKey = z.infer<typeof WhatsAppTemplateKeySchema>;
+export type CustomerSegmentRules = z.infer<typeof CustomerSegmentRulesSchema>;
+export type CustomerSegment = z.infer<typeof CustomerSegmentSchema>;
+export type CustomerSegmentPreview = z.infer<typeof CustomerSegmentPreviewSchema>;
+export type MarketingEmailCampaignStatus = z.infer<typeof MarketingEmailCampaignStatusSchema>;
+export type MarketingEmailAudienceType = z.infer<typeof MarketingEmailAudienceTypeSchema>;
+export type MarketingEmailDeliveryMode = z.infer<typeof MarketingEmailDeliveryModeSchema>;
+export type MarketingEmailRecipientStatus = z.infer<typeof MarketingEmailRecipientStatusSchema>;
+export type MarketingEmailAudience = z.infer<typeof MarketingEmailAudienceSchema>;
+export type MarketingEmailCampaign = z.infer<typeof MarketingEmailCampaignSchema>;
+export type MarketingEmailRecipient = z.infer<typeof MarketingEmailRecipientSchema>;
+export type MarketingEmailAudiencePreview = z.infer<typeof MarketingEmailAudiencePreviewSchema>;
+export type MarketingEmailSendResult = z.infer<typeof MarketingEmailSendResultSchema>;
 export type CartLine = z.infer<typeof CartLineSchema>;
 export type Cart = z.infer<typeof CartSchema>;
 export type LineItem = z.infer<typeof LineItemSchema>;
 export type OrderItem = LineItem;
+export type DraftOrderLine = z.infer<typeof DraftOrderLineSchema>;
 export type GstInvoiceParty = z.infer<typeof GstInvoicePartySchema>;
 export type GstInvoiceLine = z.infer<typeof GstInvoiceLineSchema>;
 export type GstInvoice = z.infer<typeof GstInvoiceSchema>;
 export type Order = z.infer<typeof OrderSchema>;
+export type DraftOrder = z.infer<typeof DraftOrderSchema>;
 export type Payment = z.infer<typeof PaymentSchema>;
 export type SubscriptionPlan = z.infer<typeof SubscriptionPlanSchema>;
 export type StoreSubscription = z.infer<typeof StoreSubscriptionSchema>;
@@ -1843,6 +4491,7 @@ export type StoreSubscriptionState = z.infer<typeof StoreSubscriptionStateSchema
 export type BillingHistoryItem = z.infer<typeof BillingHistoryItemSchema>;
 export type SubscriptionCancelResult = z.infer<typeof SubscriptionCancelResultSchema>;
 export type SubscriptionOrderResult = z.infer<typeof SubscriptionOrderResultSchema>;
+export type SubscriptionRecoveryResult = z.infer<typeof SubscriptionRecoveryResultSchema>;
 export type SubscriptionVerificationResult = z.infer<typeof SubscriptionVerificationResultSchema>;
 export type StorePaymentSettings = z.infer<typeof StorePaymentSettingsSchema>;
 export type StorePaymentConfig = z.infer<typeof StorePaymentConfigSchema>;
@@ -1851,10 +4500,31 @@ export type Employee = z.infer<typeof EmployeeSchema>;
 export type MediaAsset = z.infer<typeof MediaAssetSchema>;
 export type FileUploadResult = z.infer<typeof FileUploadResultSchema>;
 export type AnalyticsMetric = z.infer<typeof AnalyticsMetricSchema>;
+export type AnalyticsPeriodWindow = z.infer<typeof AnalyticsPeriodWindowSchema>;
+export type AnalyticsComparison = z.infer<typeof AnalyticsComparisonSchema>;
 export type AnalyticsDashboard = z.infer<typeof AnalyticsDashboardSchema>;
+export type AnalyticsRevenuePoint = z.infer<typeof AnalyticsRevenuePointSchema>;
+export type AnalyticsRevenue = z.infer<typeof AnalyticsRevenueSchema>;
 export type AnalyticsOrdersBreakdown = z.infer<typeof AnalyticsOrdersBreakdownSchema>;
+export type AnalyticsLiveViewEntry = z.infer<typeof AnalyticsLiveViewEntrySchema>;
+export type AnalyticsLiveViewSignal = z.infer<typeof AnalyticsLiveViewSignalSchema>;
+export type AnalyticsLiveView = z.infer<typeof AnalyticsLiveViewSchema>;
+export type StorefrontAnalyticsEventType = z.infer<typeof StorefrontAnalyticsEventTypeSchema>;
+export type StorefrontAnalyticsBeacon = z.infer<typeof StorefrontAnalyticsBeaconSchema>;
+export type StorefrontAnalyticsBeaconResult = z.infer<typeof StorefrontAnalyticsBeaconResultSchema>;
+export type AnalyticsTrafficSourceEntry = z.infer<typeof AnalyticsTrafficSourceEntrySchema>;
+export type AnalyticsTrafficSources = z.infer<typeof AnalyticsTrafficSourcesSchema>;
 export type AICreditBalance = z.infer<typeof AICreditBalanceSchema>;
+export type AICreditPurchase = z.infer<typeof AICreditPurchaseSchema>;
 export type AIUsageRecord = z.infer<typeof AIUsageRecordSchema>;
+export type AIOperatorRequest = z.infer<typeof AIOperatorRequestSchema>;
+export type AIOperatorTool = z.infer<typeof AIOperatorToolSchema>;
+export type AIOperatorToolCall = z.infer<typeof AIOperatorToolCallSchema>;
+export type AIOperatorToolStatus = z.infer<typeof AIOperatorToolStatusSchema>;
+export type AIOperatorResponse = z.infer<typeof AIOperatorResponseSchema>;
+export type AIHomepageGenerationRequest = z.infer<typeof AIHomepageGenerationRequestSchema>;
+export type AIHomepageDraftSection = z.infer<typeof AIHomepageDraftSectionSchema>;
+export type AIHomepageGenerationResult = z.infer<typeof AIHomepageGenerationResultSchema>;
 export type Coupon = z.infer<typeof CouponSchema>;
 export type ShippingZone = z.infer<typeof ShippingZoneSchema>;
 export type ShippingRate = z.infer<typeof ShippingRateSchema>;
@@ -1890,17 +4560,65 @@ export type MarketplaceAppStatus = z.infer<typeof MarketplaceAppStatusSchema>;
 export type MarketplaceAppPricingModel = z.infer<typeof MarketplaceAppPricingModelSchema>;
 export type MarketplaceAppExtensionType = z.infer<typeof MarketplaceAppExtensionTypeSchema>;
 export type MarketplaceAppCategory = z.infer<typeof MarketplaceAppCategorySchema>;
+export type MarketplaceAppFeatureTag = z.infer<typeof MarketplaceAppFeatureTagSchema>;
+export type MarketplaceAppFeatureGroup = z.infer<typeof MarketplaceAppFeatureGroupSchema>;
+export type MarketplaceAppAward = z.infer<typeof MarketplaceAppAwardSchema>;
+export type MarketplaceAppReviewSummary = z.infer<typeof MarketplaceAppReviewSummarySchema>;
+export type MarketplaceAppCollectionSection = z.infer<typeof MarketplaceAppCollectionSectionSchema>;
+export type MarketplaceAppCollectionReference = z.infer<typeof MarketplaceAppCollectionReferenceSchema>;
+export type MarketplaceAppCollection = z.infer<typeof MarketplaceAppCollectionSchema>;
+export type AppDiscoveryEventInput = z.infer<typeof AppDiscoveryEventInputSchema>;
+export type AppDiscoveryEventResult = z.infer<typeof AppDiscoveryEventResultSchema>;
+export type AppRequestInput = z.infer<typeof AppRequestInputSchema>;
+export type AppRequestResult = z.infer<typeof AppRequestResultSchema>;
+export type AppSavedAppInput = z.infer<typeof AppSavedAppInputSchema>;
+export type AppSavedApp = z.infer<typeof AppSavedAppSchema>;
+export type AppSavedAppsResult = z.infer<typeof AppSavedAppsResultSchema>;
+export type AppTrustReportInput = z.infer<typeof AppTrustReportInputSchema>;
+export type AppReviewReplyInput = z.infer<typeof AppReviewReplyInputSchema>;
+export type AppTrustReportResult = z.infer<typeof AppTrustReportResultSchema>;
+export type AppReviewPolicy = z.infer<typeof AppReviewPolicySchema>;
+export type AppActivityEvent = z.infer<typeof AppActivityEventSchema>;
+export type AppBundle = z.infer<typeof AppBundleSchema>;
+export type AppReviewProof = z.infer<typeof AppReviewProofSchema>;
+export type AppReviewModerationItem = z.infer<typeof AppReviewModerationItemSchema>;
 export type MarketplaceAppDeveloper = z.infer<typeof MarketplaceAppDeveloperSchema>;
 export type MarketplaceAppExtension = z.infer<typeof MarketplaceAppExtensionSchema>;
+export type AppPricingPlanInterval = z.infer<typeof AppPricingPlanIntervalSchema>;
+export type AppPricingPlanStatus = z.infer<typeof AppPricingPlanStatusSchema>;
+export type AppPricingPlanInput = z.infer<typeof AppPricingPlanInputSchema>;
+export type AppPricingPlanUpdate = z.infer<typeof AppPricingPlanUpdateSchema>;
+export type AppPricingPlan = z.infer<typeof AppPricingPlanSchema>;
+export type AppVersionStatus = z.infer<typeof AppVersionStatusSchema>;
+export type AppVersionInput = z.infer<typeof AppVersionInputSchema>;
+export type AppListingUpdate = z.infer<typeof AppListingUpdateSchema>;
+export type AppVersion = z.infer<typeof AppVersionSchema>;
+export type AppVersionsResult = z.infer<typeof AppVersionsResultSchema>;
 export type MarketplaceApp = z.infer<typeof MarketplaceAppSchema>;
+export type MarketplaceAppRecommendations = z.infer<typeof MarketplaceAppRecommendationsSchema>;
 export type MarketplaceAppReview = z.infer<typeof MarketplaceAppReviewSchema>;
 export type MarketplaceSubmissionType = z.infer<typeof MarketplaceSubmissionTypeSchema>;
 export type MarketplaceReviewStatus = z.infer<typeof MarketplaceReviewStatusSchema>;
+export type ReviewCheckType = z.infer<typeof ReviewCheckTypeSchema>;
+export type ReviewCheckResult = z.infer<typeof ReviewCheckResultSchema>;
+export type ReviewCheckRun = z.infer<typeof ReviewCheckRunSchema>;
+export type MarketplaceReviewAutomatedChecks = z.infer<typeof MarketplaceReviewAutomatedChecksSchema>;
+export type ExecutiveMetricDefinition = z.infer<typeof ExecutiveMetricDefinitionSchema>;
+export type ExecutiveRollupFreshness = z.infer<typeof ExecutiveRollupFreshnessSchema>;
+export type ExecutiveMrrRollup = z.infer<typeof ExecutiveMrrRollupSchema>;
+export type ExecutiveMetricRollup = z.infer<typeof ExecutiveMetricRollupSchema>;
+export type ExecutiveCohortSnapshot = z.infer<typeof ExecutiveCohortSnapshotSchema>;
+export type ExecutiveFunnelStep = z.infer<typeof ExecutiveFunnelStepSchema>;
+export type ExecutiveMrrAnalytics = z.infer<typeof ExecutiveMrrAnalyticsSchema>;
+export type ExecutiveFunnelAnalytics = z.infer<typeof ExecutiveFunnelAnalyticsSchema>;
+export type ExecutiveCohortAnalytics = z.infer<typeof ExecutiveCohortAnalyticsSchema>;
+export type ExecutiveCompanyHealth = z.infer<typeof ExecutiveCompanyHealthSchema>;
 export type MarketplaceReviewRecord = z.infer<typeof MarketplaceReviewRecordSchema>;
 export type AppBridgeCapability = z.infer<typeof AppBridgeCapabilitySchema>;
 export type InstalledMarketplaceApp = z.infer<typeof InstalledMarketplaceAppSchema>;
 export type InstalledApp = z.infer<typeof InstalledAppSchema>;
 export type AdminAppEmbedSurface = z.infer<typeof AdminAppEmbedSurfaceSchema>;
+export type MobileAdminAppBridgeHostPolicy = z.infer<typeof MobileAdminAppBridgeHostPolicySchema>;
 export type AdminAppBridgeSession = z.infer<typeof AdminAppBridgeSessionSchema>;
 export type AppBridgeApiFetchResult = z.infer<typeof AppBridgeApiFetchResultSchema>;
 export type AppExtensionRegistrationStatus = z.infer<typeof AppExtensionRegistrationStatusSchema>;
@@ -1916,10 +4634,32 @@ export type AppBillingCharge = z.infer<typeof AppBillingChargeSchema>;
 export type AppBillingChargeCreate = z.infer<typeof AppBillingChargeCreateSchema>;
 export type AppBillingChargeApprove = z.infer<typeof AppBillingChargeApproveSchema>;
 export type AppBillingChargeResult = z.infer<typeof AppBillingChargeResultSchema>;
+export type AppUsageBillingStatus = z.infer<typeof AppUsageBillingStatusSchema>;
+export type AppUsageEventCreate = z.infer<typeof AppUsageEventCreateSchema>;
+export type AppUsageEvent = z.infer<typeof AppUsageEventSchema>;
+export type AppUsageMeterRollup = z.infer<typeof AppUsageMeterRollupSchema>;
+export type AppUsageMeteringResult = z.infer<typeof AppUsageMeteringResultSchema>;
+export type AppUsageSummary = z.infer<typeof AppUsageSummarySchema>;
+export type AppSpendControl = z.infer<typeof AppSpendControlSchema>;
+export type AppSpendControlUpdate = z.infer<typeof AppSpendControlUpdateSchema>;
+export type AppSpendControlResult = z.infer<typeof AppSpendControlResultSchema>;
 export type PartnerPayoutLedgerEntry = z.infer<typeof PartnerPayoutLedgerEntrySchema>;
 export type PartnerDevelopmentStore = z.infer<typeof PartnerDevelopmentStoreSchema>;
 export type PartnerCollaboratorAccess = z.infer<typeof PartnerCollaboratorAccessSchema>;
 export type PartnerAnalytics = z.infer<typeof PartnerAnalyticsSchema>;
+export type PartnerAnalyticsPoint = z.infer<typeof PartnerAnalyticsPointSchema>;
+export type PartnerAnalyticsTimeseries = z.infer<typeof PartnerAnalyticsTimeseriesSchema>;
+export type AppApiUsageMetric = z.infer<typeof AppApiUsageMetricSchema>;
+export type AppApiUsageSummary = z.infer<typeof AppApiUsageSummarySchema>;
+export type AppWebhookEndpoint = z.infer<typeof AppWebhookEndpointSchema>;
+export type AppWebhookEndpointInput = z.infer<typeof AppWebhookEndpointInputSchema>;
+export type AppWebhookEndpointUpdate = z.infer<typeof AppWebhookEndpointUpdateSchema>;
+export type PartnerCollaboratorRedeemInput = z.infer<typeof PartnerCollaboratorRedeemInputSchema>;
+export type PartnerTier = z.infer<typeof PartnerTierSchema>;
+export type AppSandboxStore = z.infer<typeof AppSandboxStoreSchema>;
+export type AppDemoSession = z.infer<typeof AppDemoSessionSchema>;
+export type AppTelemetryEventInput = z.infer<typeof AppTelemetryEventInputSchema>;
+export type AppTelemetryEventResult = z.infer<typeof AppTelemetryEventResultSchema>;
 export type PartnerDashboard = z.infer<typeof PartnerDashboardSchema>;
 export type AppOAuthAuthorization = z.infer<typeof AppOAuthAuthorizationSchema>;
 export type AppOAuthAuthorizationResult = z.infer<typeof AppOAuthAuthorizationResultSchema>;

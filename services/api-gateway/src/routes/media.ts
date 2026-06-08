@@ -1,12 +1,16 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, success } from '../lib/supabase';
+import { hmacSha256Hex, sha256Hex } from '../lib/crypto';
+import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { validate } from '../middleware/validation';
 import { ListMediaQuery } from '../schemas/media.schema';
-import type { z } from 'zod';
+import { planSignedR2UploadIntent, type MediaAssetType } from '@letbuyy/infrastructure/storage-adapter';
+import { z } from 'zod';
 
 const router = new Hono<{ Bindings: Env }>();
+type MediaContext = Context<{ Bindings: Env }>;
 
 type ListMediaQueryInput = z.infer<typeof ListMediaQuery>;
 
@@ -35,6 +39,149 @@ const MEDIA_LIST_COLUMNS = [
 interface MediaOwnerRow {
     store_id?: string | null;
     url?: string | null;
+}
+
+const SignedMediaUploadSchema = z.object({
+    site_id: z.string().uuid(),
+    filename: z.string().trim().min(1).max(180),
+    content_type: z.string().trim().min(1).max(160),
+    size_bytes: z.number().int().positive().max(100 * 1024 * 1024),
+    folder: z.string().trim().max(96).optional(),
+    checksum_sha256: z.string().trim().regex(/^[a-f0-9]{64}$/i).optional(),
+    channel: z.enum(['web', 'whatsapp', 'instagram', 'pos', 'api']).default('web'),
+});
+type SignedMediaUploadInput = z.infer<typeof SignedMediaUploadSchema>;
+
+function requestId(c: MediaContext): string | null {
+    return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null;
+}
+
+function mediaUploadSigningSecret(env: Pick<Env, 'MEDIA_UPLOAD_SIGNING_SECRET' | 'AUTH_SECRET' | 'ENVIRONMENT' | 'APP_ENV'>): string | null {
+    const configured = env.MEDIA_UPLOAD_SIGNING_SECRET || env.AUTH_SECRET;
+    if (configured && !configured.startsWith('SKIP_NEEDS_HUMAN_')) return configured;
+    if (env.ENVIRONMENT === 'production' || env.APP_ENV === 'production') return null;
+    return 'letbuyy-local-mock-media-upload-secret';
+}
+
+function base64UrlJson(value: Record<string, unknown>): string {
+    const bytes = new TextEncoder().encode(JSON.stringify(value));
+    let binary = '';
+    for (const byte of bytes) binary += String.fromCharCode(byte);
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
+async function signUploadIntent(env: Env, intent: ReturnType<typeof planSignedR2UploadIntent>): Promise<string | null> {
+    const secret = mediaUploadSigningSecret(env);
+    if (!secret) return null;
+    const payload = base64UrlJson({
+        site_id: intent.siteId,
+        intent_id: intent.intentId,
+        object_key: intent.objectKey,
+        content_type: intent.contentType,
+        size_bytes: intent.sizeBytes,
+        expires_at: intent.expiresAt,
+    });
+    const signature = await hmacSha256Hex(secret, payload);
+    return `${payload}.${signature}`;
+}
+
+function assetTypeForMediaType(mediaType: string): MediaAssetType {
+    if (mediaType === 'image' || mediaType === 'video' || mediaType === 'font' || mediaType === 'icon') return mediaType;
+    return 'file';
+}
+
+function objectKeyFromMediaUrl(url: string | null | undefined): string | null {
+    if (!url) return null;
+    try {
+        return new URL(url).pathname.replace(/^\/+/, '') || null;
+    } catch {
+        return url.replace(/^\/+/, '') || null;
+    }
+}
+
+function isOptionalMediaAssetWriteError(error: { message?: string } | null | undefined): boolean {
+    const message = error?.message || '';
+    return message.includes('schema cache')
+        || message.includes('site_id')
+        || message.includes('object_key')
+        || message.includes('processing_status');
+}
+
+async function emitMediaProcessedEvent(
+    c: MediaContext,
+    input: {
+        siteId: string;
+        mediaId: string;
+        assetId?: string | null;
+        objectKey?: string | null;
+        contentType?: string | null;
+        sizeBytes?: number | null;
+    },
+): Promise<void> {
+    await new EventExecutionAdapter(getSupabaseAdmin(c)).emitDomainEvent({
+        storeId: input.siteId,
+        aggregateType: 'media',
+        aggregateId: input.mediaId,
+        eventType: 'media.processed',
+        payload: {
+            site_id: input.siteId,
+            media_id: input.mediaId,
+            asset_id: input.assetId || undefined,
+            object_key: input.objectKey || undefined,
+            content_type: input.contentType || undefined,
+            size_bytes: input.sizeBytes || undefined,
+        },
+        idempotencyKey: `media.processed:${input.siteId}:${input.mediaId}`,
+        requestId: requestId(c),
+    });
+}
+
+async function recordProcessedMediaAsset(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        siteId: string;
+        filename: string;
+        originalName: string;
+        publicUrl: string;
+        objectKey: string;
+        mediaType: string;
+        mimeType: string;
+        sizeBytes: number;
+        checksumSha256?: string | null;
+        channel?: string | null;
+    },
+) {
+    const { data, error } = await db
+        .from('media_assets')
+        .insert({
+            store_id: input.siteId,
+            site_id: input.siteId,
+            asset_type: assetTypeForMediaType(input.mediaType),
+            storage_provider: 'r2',
+            storage_path: input.objectKey,
+            object_key: input.objectKey,
+            public_url: input.publicUrl,
+            filename: input.originalName || input.filename,
+            content_type: input.mimeType,
+            size_bytes: input.sizeBytes,
+            processing_status: 'processed',
+            processed_at: new Date().toISOString(),
+            checksum_sha256: input.checksumSha256 || null,
+            source_channel: input.channel || 'web',
+            metadata: {
+                source: 'media-route',
+                filename: input.filename,
+            },
+        })
+        .select('id, object_key, processing_status')
+        .single();
+
+    if (error) {
+        if (isOptionalMediaAssetWriteError(error)) return null;
+        throw new Error(`Media asset mirror failed: ${error.message}`);
+    }
+
+    return data as { id: string; object_key: string; processing_status: string };
 }
 
 // GET /media — List media files for a store
@@ -95,6 +242,84 @@ router.get('/', validate('query', ListMediaQuery), async (c) => {
     }));
 });
 
+// POST /media/signed-upload — Create a signed R2 upload intent without activating a media service.
+router.post('/signed-upload', async (c) => {
+    const auth = c.get('auth');
+    const parsed = SignedMediaUploadSchema.safeParse(await c.req.json());
+    if (!parsed.success) {
+        return c.json({ error: { code: 'VALIDATION', message: 'Invalid media upload intent' } }, 400);
+    }
+
+    const input: SignedMediaUploadInput = parsed.data;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+    if (!(await verifySiteOwnership(db, input.site_id, customUser.id, auth.user.storeId))) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const origin = new URL(c.req.url).origin;
+    const intent = planSignedR2UploadIntent({
+        siteId: input.site_id,
+        intentId: crypto.randomUUID(),
+        filename: input.filename,
+        contentType: input.content_type,
+        sizeBytes: input.size_bytes,
+        folder: input.folder || 'media',
+        publicBaseUrl: c.env.ASSET_PUBLIC_BASE_URL,
+        uploadPath: `${origin}/v1/upload`,
+    });
+    const token = await signUploadIntent(c.env, intent);
+    if (!token) {
+        return c.json({ error: { code: 'STORAGE_UNAVAILABLE', message: 'Media upload signing is not configured' } }, 503);
+    }
+    const tokenHash = await sha256Hex(token);
+
+    const { data, error } = await db
+        .from('media_assets')
+        .insert({
+            store_id: input.site_id,
+            site_id: input.site_id,
+            asset_type: intent.assetType,
+            storage_provider: 'r2',
+            storage_path: intent.objectKey,
+            object_key: intent.objectKey,
+            public_url: intent.publicUrl,
+            filename: intent.filename,
+            content_type: intent.contentType,
+            size_bytes: intent.sizeBytes,
+            upload_token_hash: tokenHash,
+            upload_intent_expires_at: intent.expiresAt,
+            processing_status: 'pending',
+            checksum_sha256: input.checksum_sha256 || null,
+            source_channel: input.channel,
+            metadata: {
+                ...intent.metadata,
+                signed_upload: true,
+            },
+        })
+        .select('id, object_key, public_url, upload_intent_expires_at, processing_status')
+        .single();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    return c.json(success({
+        asset: data,
+        upload: {
+            ...intent,
+            token,
+            headers: {
+                ...intent.headers,
+                'x-letbuyy-media-upload-token': token,
+            },
+        },
+    }), 201);
+});
+
 // POST /media — Create media record (metadata registration after upload via R2)
 router.post('/', async (c) => {
     const auth = c.get('auth');
@@ -146,7 +371,30 @@ router.post('/', async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(success(data), 201);
+    const mediaRow = data as { id: string; url?: string | null };
+    const objectKey = body.object_key || body.storage_path || objectKeyFromMediaUrl(mediaRow.url || body.url) || `${body.store_id}/${body.filename}`;
+    const asset = await recordProcessedMediaAsset(db, {
+        siteId: body.store_id,
+        filename: body.filename,
+        originalName: body.original_name || body.filename,
+        publicUrl: body.url,
+        objectKey,
+        mediaType,
+        mimeType: body.mime_type,
+        sizeBytes: body.size_bytes || 0,
+        checksumSha256: body.checksum_sha256 || null,
+        channel: body.channel || 'web',
+    });
+    await emitMediaProcessedEvent(c, {
+        siteId: body.store_id,
+        mediaId: mediaRow.id,
+        assetId: asset?.id,
+        objectKey,
+        contentType: body.mime_type,
+        sizeBytes: body.size_bytes || 0,
+    });
+
+    return c.json(success({ ...mediaRow, asset }), 201);
 });
 
 // PATCH /media/:id — Update media metadata

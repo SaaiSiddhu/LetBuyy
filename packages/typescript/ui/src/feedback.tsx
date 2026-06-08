@@ -24,7 +24,6 @@ import {
     X,
 } from './icons';
 import { Button } from './button';
-import { warnDeprecated } from './deprecations';
 import { cx } from './utils';
 
 export type StatusVariant = 'default' | 'info' | 'success' | 'warning' | 'critical';
@@ -64,20 +63,11 @@ const statusStyles: Record<StatusVariant, { surface: string; text: string; borde
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
     label: string;
-    /**
-     * `critical` is the canonical danger/error vocabulary. `danger` remains accepted
-     * for compatibility with existing consumers and is normalized to `critical`.
-     */
-    variant?: StatusVariant | 'danger';
+    variant?: StatusVariant;
 }
 
 export function Badge({ label, variant = 'default', className = '', ...props }: BadgeProps) {
-    if (variant === 'danger') {
-        warnDeprecated('Badge variant="danger"', 'Badge variant="critical"');
-    }
-
-    const normalizedVariant = variant === 'danger' ? 'critical' : variant;
-    const style = statusStyles[normalizedVariant];
+    const style = statusStyles[variant];
 
     return (
         <span

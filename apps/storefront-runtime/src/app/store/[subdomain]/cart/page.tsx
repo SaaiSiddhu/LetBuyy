@@ -2,7 +2,7 @@
 
 import { useCart } from '@/context/cart-context';
 import Link from 'next/link';
-import { Plus, Minus, ArrowRight, ArrowLeft, ShoppingBag, X, Shield, Truck, Package } from '@letbuyy/ui';
+import { Button, Plus, Minus, ArrowRight, ArrowLeft, ShoppingBag, X, Shield, Truck, Package } from '@letbuyy/ui';
 import { useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -17,7 +17,7 @@ export default function CartPage() {
     const basePath = `/store/${subdomain}`;
 
     // Theme colors - would come from store context in production
-    const primaryColor = 'var(--primary, #6366f1)';
+    const primaryColor = 'var(--primary, rgb(99 102 241))';
     const finalTotal = cartTotal;
 
     if (items.length === 0) {
@@ -38,7 +38,7 @@ export default function CartPage() {
     }
 
     return (
-        <div className="min-h-screen pt-20" style={{ backgroundColor: 'var(--background, #f9fafb)' }}>
+        <div className="min-h-screen pt-20" style={{ backgroundColor: 'var(--background, rgb(249 250 251))' }}>
             <div className="container mx-auto px-4 max-w-5xl pb-8">
                 {/* Header */}
                 <div className="py-4">
@@ -52,14 +52,14 @@ export default function CartPage() {
                         <h1 className="text-2xl font-bold" style={{ color: 'var(--text)' }}>Shopping Bag</h1>
                         <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{items.length} item{items.length > 1 ? 's' : ''}</p>
                     </div>
-                    <button
+                    <Button unstyled
                         onClick={clearCart}
                         aria-label="Clear all items from cart"
                         className="flex min-h-11 items-center px-2 text-sm hover:text-red-500 transition-colors"
                         style={{ color: 'var(--text-muted)' }}
                     >
                         Clear All
-                    </button>
+                    </Button>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -106,33 +106,33 @@ export default function CartPage() {
                                                 {/* Unit Price */}
                                                 <p className="text-xs text-card-muted mt-1">₹{item.price.toLocaleString('en-IN')} each</p>
                                             </div>
-                                            <button
+                                            <Button unstyled
                                                 onClick={() => removeFromCart(item.id)}
                                                 aria-label={`Remove ${item.name} from cart`}
                                                 className="flex h-11 w-11 items-center justify-center text-card-muted hover:text-red-500 transition-colors"
                                             >
                                                 <X size={16} />
-                                            </button>
+                                            </Button>
                                         </div>
 
                                         {/* Quantity & Total */}
                                         <div className="flex justify-between items-center mt-2">
                                             <div className="flex items-center border border-card rounded-lg overflow-hidden">
-                                                <button
+                                                <Button unstyled
                                                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                                     aria-label={`Decrease quantity of ${item.name}`}
                                                     className="flex h-11 w-11 items-center justify-center hover:bg-surface-hover transition-colors text-card"
                                                 >
                                                     <Minus size={12} />
-                                                </button>
+                                                </Button>
                                                 <span className="text-xs font-semibold w-6 text-center text-card" aria-live="polite">{item.quantity}</span>
-                                                <button
+                                                <Button unstyled
                                                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                                     aria-label={`Increase quantity of ${item.name}`}
                                                     className="flex h-11 w-11 items-center justify-center hover:bg-surface-hover transition-colors text-card"
                                                 >
                                                     <Plus size={12} />
-                                                </button>
+                                                </Button>
                                             </div>
                                             <p className="text-base font-bold" style={{ color: primaryColor }}>
                                                 ₹{(item.price * item.quantity).toLocaleString('en-IN')}

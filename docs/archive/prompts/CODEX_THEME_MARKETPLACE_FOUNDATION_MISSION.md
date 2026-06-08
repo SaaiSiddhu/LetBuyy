@@ -1,191 +1,204 @@
-# CODEX MISSION — THEME MARKETPLACE FOUNDATION (close the 100, make it honest)
+<!-- CODEX MISSION PROMPT — paste/point Codex at this file. Single-runtime scope: apps/theme-marketplace. Safe to run in parallel with other single-runtime missions. -->
 
-**Owner runtime (HARD boundary):** `apps/theme-marketplace` **only.** This mission modifies source **exclusively** under `apps/theme-marketplace/**` plus this mission's own root ledger/status files. It is designed to run **in parallel** with a separate gateway/DB/developer-platform task — so it must **never** edit `services/**`, `packages/**`, `database/**`, or any other `apps/**`. Anything that requires a change outside the boundary is recorded as a SKIP (see §1.L9) and the in-app half is implemented up to the boundary.
+# CODEX MISSION — Theme Marketplace Foundation Hardening (single runtime, single go)
 
-**Issue source of truth (canonical):** the audit you must read first, in order:
-1. `docs/LETBUYY_THEMES_MARKETPLACE_MASTER_AUDIT.md` — **Phase 15 "Top 100" is the traceability spine. Each row #1…#100 = issue `TM‑1…TM‑100`.**
-2. `docs/themes-marketplace-audit/THEME_CONTENT_GAP_ANALYSIS.md`, `…/THEME_MARKETPLACE_UI_UX_AUDIT.md`, `…/THEME_INSTALLATION_JOURNEY_AUDIT.md`, `…/THEME_DISCOVERY_AUDIT.md`, `…/THEME_REVIEW_SYSTEM_AUDIT.md`, `…/THEME_RESPONSIVENESS_REPORT.md`, `…/THEME_FEATURE_GAP_ANALYSIS.md`, `…/MERCHANT_TRUST_SCORECARD.md`, `…/DEVELOPER_TRUST_SCORECARD.md`, `…/LETBUYY_THEME_MARKETPLACE_V2.md`, `…/SHOPIFY_THEME_STORE_COMPARISON.md`.
+You are Codex operating **locally** on the LetBuyy monorepo. This mission makes the **Theme Marketplace** runtime *fundamentally strong* by implementing the entire 100-issue backlog from the audit in **one continuous run**. Where a step needs a human decision, a cross-runtime/backend change, secrets, or legal/brand sign-off, **do not stop** — apply the safe in-boundary part, then **mark the remainder `SKIPPED` with a reason and a contract** and keep going. This mirrors the prior `CODEX_FOUNDATION_HARDENING_*` missions (`DONE`, `DONE locally/SKIPPED live`, `DONE/SKIPPED human-gated`).
 
-Trust the cited `file:line` evidence in those docs; verify only at the point of edit.
+## 0. Single source of truth & required reading
 
-**Driver:** GPT‑5.5 in Codex — `xhigh` for money/auth/lifecycle work, `high` for behavior-preserving refactors + UI rewires, `medium` for mechanical content/copy edits.
-**Mode:** Continuous, autonomous, single-go. Run as long as it takes. Never stop while an unblocked TM‑item remains.
-**Branch:** `stream/theme-marketplace-foundation` off current `develop`.
-**Governance posture (non‑negotiable):** keep **all** validators green at every commit — `node scripts/validate-governance.mjs` (**currently 157, never fewer**; add a validator only for a real invariant this mission establishes). Never delete/weaken a validator to pass. Obey root `AGENTS.md`, `CLAUDE.md`, `docs/governance/**`, and the **generated** `apps/theme-marketplace/AGENTS.md` (regenerate via `scripts/generate-repository-intelligence.mjs`; never hand-patch it).
+Authority order (obey top-down): root `AGENTS.md` → `apps/theme-marketplace/AGENTS.md` → `docs/governance/*` → this mission. If anything here conflicts with `AGENTS.md`, **AGENTS.md wins** and you log the conflict.
 
-> **This mission changes code** under one runtime. You are authorized and required to modify `apps/theme-marketplace/**` to close the TM findings below under the Operating Contract. The point of this phase is **foundational honesty**: a merchant or developer must never see a control, claim, or metric the system cannot back.
-
----
-
-## 0. PRIME DIRECTIVE
-
-The marketplace is a beautiful shell over an empty catalog, a half-wired checkout, decorative controls, and visible engineering placeholders. The audit found **100 ranked issues** (28 P0, 42 P1, 30 P2). The platform is **more capable than the marketplace shows** — `previewSession`, `publish`, `releases`, `rollbackRelease`, `orders.refund` already exist in `@letbuyy/api-client`. Your job is to make the marketplace **true to itself**:
-
-- **Wire** every capability whose backing API already exists in `@letbuyy/api-client` (consume-don't-create).
-- **Tell the truth** in every metric, claim, empty state, and control: derive from data or remove. No fabricated numbers, no `[SKIP - NEEDS BACKEND]` strings in shipped UI, no dead buttons.
-- **Stop at the boundary.** When a fix needs a new gateway endpoint, a DB seed/migration, or a business/legal decision, implement the in-app half (honest state + correct client call up to the contract) and **SKIP‑record the remainder** for the parallel task or a human.
-
-**Disposition rule (per TM‑item):**
-- **REAL** — when the api-client method or in-app change suffices → implement, prove, commit.
-- **HONEST** — when the backend isn't ready → ship a truthful state (empty/disabled-with-reason/"configure"/"coming soon" that links somewhere real), never a fake or a dead control.
-- **`[SKIP — NEEDS GATEWAY/PARALLEL]`** — cross-boundary code (`services/**`, `packages/**`, `database/**`, other `apps/**`).
-- **`[SKIP — NEEDS HUMAN]`** — legal text, pricing-model decision, revenue-share %, live payment keys, real catalog content/curation, any new marketing promise.
-
-**SUCCESS — COMPLETE only when all are proven with recorded command + screenshot evidence:**
-1. Every `TM‑1…TM‑100` ends `DONE`, `HONEST`, `SKIP — NEEDS GATEWAY/PARALLEL`, or `SKIP — NEEDS HUMAN` in the ledger TRACEABILITY MATRIX. Nothing disappears silently.
-2. **No fabricated metric** ships: the home `STATS`, SEO copy, and any count/rating are data-derived or removed (TM‑2,3,4,71).
-3. **No `[SKIP - NEEDS BACKEND]` / "needs seeded data" / "needs backend support" string** appears in any rendered surface (TM‑5, content-gap §C).
-4. **No dead/decorative control** ships: every button/link/input either does what it implies or is removed/disabled-with-an-honest-reason (TM‑18,19,20,21,22,23,24,25,37,87,100).
-5. **Preview + safe lifecycle real:** `previewSession` wired; install is non-destructive (draft→preview→publish) with update + rollback surfaced; "Customize" deep-links to the real editor (TM‑7,22,23,50,51,52,53).
-6. **Checkout honest:** success page shows a real receipt/pending state (no placeholder); payment-rail copy matches reality; coupon wired or removed (TM‑5,6,17,87).
-7. **Boundary respected:** `git diff --name-only develop` shows changes **only** under `apps/theme-marketplace/**` and the three root `CODEX_THEME_MARKETPLACE_*` files. Zero edits to `services/**`, `packages/**`, `database/**`, other `apps/**`.
-8. **Every gate green on real evidence:** `pnpm --filter @letbuyy/theme-marketplace typecheck`, `lint`, `build` (no network); `node scripts/validate-governance.mjs` (≥157); marketplace tests in `package.json` pass; UI self-verified at 320/390/768/1024/1440 with screenshots.
-9. `CODEX_THEME_MARKETPLACE_STATUS.md` summarizes outcomes with every SKIP remainder + exact follow-up command/decision and the cross-boundary contract each unblocks.
+Read before editing (these are the evidence base; every issue ID below traces to them):
+- `docs/LETBUYY_THEMES_MARKETPLACE_MASTER_AUDIT.md` — **Phase 15 "Top 100 issues" is the canonical backlog (issues #1–#100).**
+- `docs/themes-marketplace-audit/SHOPIFY_THEME_STORE_COMPARISON.md`
+- `docs/themes-marketplace-audit/THEME_MARKETPLACE_UI_UX_AUDIT.md`
+- `docs/themes-marketplace-audit/THEME_CONTENT_GAP_ANALYSIS.md`
+- `docs/themes-marketplace-audit/THEME_FEATURE_GAP_ANALYSIS.md`
+- `docs/themes-marketplace-audit/THEME_DISCOVERY_AUDIT.md`
+- `docs/themes-marketplace-audit/THEME_INSTALLATION_JOURNEY_AUDIT.md`
+- `docs/themes-marketplace-audit/THEME_REVIEW_SYSTEM_AUDIT.md`
+- `docs/themes-marketplace-audit/THEME_RESPONSIVENESS_REPORT.md`
+- `docs/themes-marketplace-audit/MERCHANT_TRUST_SCORECARD.md`
+- `docs/themes-marketplace-audit/DEVELOPER_TRUST_SCORECARD.md`
+- `docs/themes-marketplace-audit/LETBUYY_THEME_MARKETPLACE_V2.md` — **target design; the phase plan below mirrors its roadmap.**
 
 ---
 
-## 1. OPERATING CONTRACT (the laws)
+## 1. OWNERSHIP & BOUNDARY (hard rule — this is a single-runtime mission)
 
-1. **L1 Continuous execution.** Finish a TM‑item → update ledger → next unblocked item. Never pause to ask. Never end while unblocked items remain.
-2. **L2 The Green Law.** Tree green after every commit: `pnpm --filter @letbuyy/theme-marketplace typecheck` + `lint` each increment; full `validate:governance` (≥157) at every WS gate. Never commit red. 3 failed attempts → revert, log `BLOCKED` + diagnosis, move on.
-3. **L3 The Honesty Law.** Never pass a check by asserting something untrue; never "pass" a feature by faking it. A claim/metric must be data-derived or deleted. A provider/endpoint that isn't ready gets an **honest** state, never fake success and never a dead control.
-4. **L4 The Boundary Law (defines parallelism).** Modify **only** `apps/theme-marketplace/**` + the three root `CODEX_THEME_MARKETPLACE_*` files. The marketplace is a **thin client**: it consumes `@letbuyy/api-client` and must add **no** backend/business logic (root `AGENTS.md`: the gateway is the sole Commerce API). If a fix needs a new client method, gateway route, schema, seed, or migration → **do not create it here** → SKIP‑record it and ship the honest in-app half.
-5. **L5 Consume‑don't‑create.** If a needed method already exists on `api-client` (`previewSession`, `editor`, `saveDraft`, `deleteDraft`, `publish`, `releases`, `rollbackRelease`, `schema`, `orders.refund`), wire it through the existing server-only `ThemeService`/`createThemeMarketplaceApiClient` path. If it does **not** exist, that's cross-boundary.
-6. **L6 Secrets & storage law.** No provider keys/secrets in client components; server-only for API access (keep the `server-only` boundary). `localStorage` only for non-secret UI prefs or preview-only wishlist/search (root `AGENTS.md`). No auth tokens in `localStorage`.
-7. **L7 Design-system law.** Use `@letbuyy/ui` + app CSS variables/tokens; **no new raw hex** in components (the marketplace `AGENTS.md` forbids it; some legacy raw values exist — don't add more). Prefer skeletons over spinner-only loading. No new `any`; no `console.log` in shipped source.
-8. **L8 REAL‑evidence law.** Behavioral/UI proof = a real browser against a local/staging stack with screenshots. Mocks are forbidden as proof. No stack creds → produce code + local proof and record the live proof as `SKIP — NEEDS HUMAN: staging secrets` with exact commands.
-9. **L9 SKIP ledger (mark and continue).** Two SKIP classes, both appended to `CODEX_THEME_MARKETPLACE_LEDGER.md` with the exact cross-boundary contract or human decision + the TM‑ids they unblock, then continue:
-   - `## SKIP — NEEDS GATEWAY/PARALLEL` (e.g., themes-review endpoints, catalog seed, industry taxonomy, filter server-support, developer-program backend, malware scan).
-   - `## SKIP — NEEDS HUMAN` (legal text, pricing-model decision, revenue-share %/payouts, live payment keys, real catalog content, new marketing promises).
-10. **L10 No fabrication.** Every `DONE` needs command/screenshot evidence. Never fake a test, never claim a provider works when it throws, never call a mock end-to-end.
-11. **L11 Anti-thrash.** Max 3 attempts/item → `BLOCKED` + diagnosis → next.
-12. **L12 Small reversible increments.** One logical change → validate → commit. UI rewires proven by a screenshot before/after; behavior-preserving refactors keep route/markup order.
-13. **L13 Anti-ceremony.** No new top-level docs beyond this mission + its ledger + status. New in-app routes are allowed (e.g., honest legal/support landing) but prefer linking to canonical destinations over duplicating cross-app pages. On completion, these three `CODEX_THEME_MARKETPLACE_*` files archive to `docs/archive/` in the final commit.
-14. **L14 Respect existing law.** Obey root `AGENTS.md`, `CLAUDE.md`, `docs/governance/**`, the Deprecated Runtime Policy, and the marketplace runtime rules. Regenerate `apps/theme-marketplace/AGENTS.md` via the generator if topology/routes change; never hand-edit it.
+**You OWN and may modify ONLY:**
+- `apps/theme-marketplace/**` (all source, config, public assets, tests local to the app)
+- Your own ledger/status files at repo root: `CODEX_THEME_MARKETPLACE_FOUNDATION_LEDGER.md`, `CODEX_THEME_MARKETPLACE_FOUNDATION_STATUS.md`
+- App-scoped tests you add under `apps/theme-marketplace/**` (and you may *extend*, not rewrite, the three existing app tests referenced by `apps/theme-marketplace/package.json`: `tests/federation/theme-marketplace-thin-client.test.mjs`, `tests/auth/sso-redirects.test.mjs`, `tests/federation/theme-store-install-lifecycle.test.mjs` — keep them green; only touch them if a behavior you ship requires it, and log it).
 
----
+**You MAY import (consume) but MUST NOT edit** the runtime's allowed workspace packages (`apps/theme-marketplace/runtime.manifest.json` → `allowedDependencies.workspacePackages`):
+`@letbuyy/api-client`, `@letbuyy/auth-core`, `@letbuyy/shared-types`, `@letbuyy/theme-engine`, `@letbuyy/ui`.
 
-## 2. ARCHITECTURE INVARIANTS (never violate)
-One backend (`api-gateway`) reached only through `@letbuyy/api-client`; one contract (`@letbuyy/shared-types`/`@letbuyy/theme-engine`) — no app-local `Theme`/`Order`/`Payment` DTOs; one identity verifier (`@letbuyy/auth-core`); one design system (`@letbuyy/ui`). Server-only secrets; tenant context explicit (`store_id`/`site_id`/ownership). Themes are **data-only** in this app — no business logic in pages. INR-first; the only configured rail today is Razorpay (test mode) — never imply more than is wired.
+**You MUST NOT touch (these belong to other runtimes / coordination passes — editing them breaks parallel missions):**
+- `packages/**` (incl. api-client, theme-engine, ui, shared-types, auth-core) — *consume only*.
+- `services/**`, other `apps/**`, `database/**`, `infrastructure/**`, `legacy/**`, `generated-artifacts/**`.
+- Root shared/config files: `AGENTS.md`, `package.json` (root), `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `turbo.json`, `tsconfig.base.json`, `scripts/**`, any other runtime's `CODEX_*` files.
+- **Generated intelligence:** do **not** hand-edit `apps/theme-marketplace/AGENTS.md` or any `AGENTS.md`. If route changes make it stale, **SKIP regeneration** and log it for the final coordination pass (parallel missions regenerating shared intelligence will collide).
+
+**PARALLEL-EXECUTION CONTRACT:** another Codex mission may run concurrently on other runtimes. Therefore: (a) every file you write is under `apps/theme-marketplace/**` or your two scoped ledger files; (b) if a fix *requires* a change outside your boundary, you **do not make it** — you implement the in-boundary half and record a `SKIPPED cross-boundary` ledger entry naming the exact package/service/endpoint another mission must deliver. No exceptions.
 
 ---
 
-## 3. LEDGER & STATUS (create + maintain)
-- Create `CODEX_THEME_MARKETPLACE_LEDGER.md` with: a **TRACEABILITY MATRIX** row per `TM‑1…TM‑100` (`id | title | WS | disposition | evidence | commit`), plus `## SKIP — NEEDS GATEWAY/PARALLEL`, `## SKIP — NEEDS HUMAN`, `## VALIDATOR LEDGER`, `## SCREENSHOT EVIDENCE`.
-- Create `CODEX_THEME_MARKETPLACE_STATUS.md`: rolling summary + final outcome with every SKIP remainder and exact follow-up.
-- Flip statuses as you go. A WS gate may not pass until every owned TM‑id is `DONE`/`HONEST`/`SKIP`.
+## 2. PRIME DIRECTIVES (the foundation principles)
+
+1. **No dead controls.** Never ship a button/link/input that implies a capability it does not have. If you can't make it real in-boundary → **remove or hide it** (that removal is in-boundary and is the fix), or gate it behind an off-by-default feature flag with an honest disabled state.
+2. **No false or fabricated content.** No hardcoded metrics, no invented file sizes, no unverifiable claims, no engineering placeholders (e.g. `[SKIP - NEEDS BACKEND]`) in shipped UI. Numbers must be data-derived or removed.
+3. **Honesty over completeness.** A truthful "not available yet / contact support" state beats a fake working one. This satisfies the audit.
+4. **Consume, don't fork.** Use existing `@letbuyy/*` package methods (e.g. `api.themes.previewSession`, `api.themes.install`). Never reimplement them locally or edit the packages.
+5. **Respect app runtime rules** (`apps/theme-marketplace/AGENTS.md`): business logic out of page components; no secrets/provider keys in client components; explicit tenant/store binding; design tokens + dark-mode CSS vars (no new hardcoded colors); skeletons over spinners; retryable error states.
+6. **Green gates always.** After every phase: typecheck, lint, test, build for this app, plus governance validation, must pass (or you fix what you broke). Never leave the app non-building.
+7. **Log everything.** Every issue gets a ledger line with status + evidence. Silent changes are not allowed.
 
 ---
 
-## 4. THE WORK — WS0 → WS7 (WS0 first and complete, then in order)
+## 3. CLASSIFICATION PROTOCOL (apply to each of the 100 issues)
 
-> Each item: **what → do → DoD.** TM‑ids map to Master Audit Phase 15. Where a row is split, the in-app half is owned here and the rest is SKIP-recorded.
+For each issue, classify and act:
 
-### WS0 — TRUTH & SAFETY GATE (do FIRST; stops active trust erosion)
-*TM‑2,3,4,5,6(in-app half),13,17(copy),18,19,20,21,24,25,71,73,87,94,100,84.*
-- **WS0.1 Kill fabricated metrics (TM‑2,3,4,71).** `src/app/page.tsx:7-12` `STATS` ("50+/10K+/4.8/4") and `src/app/layout.tsx:41` SEO "50+". Replace with values derived from `ThemeService.listThemes` totals (real counts), or remove the stat bar until the catalog is real. Fix "Categories: 4" vs the 5 real categories. _DoD: no hardcoded count/rating renders; home shows real totals or no stat bar; no metric contradicts the live category counts on screen._
-- **WS0.2 Remove the post-payment placeholder (TM‑5,6 in-app half).** `src/app/checkout/success/page.tsx:36-65` shows `[SKIP - NEEDS BACKEND]…` and "pending provider confirmation". Render an **honest** receipt state from whatever the verify/purchase response actually returns (purchase id, status, theme); if settlement fields aren't in the response, show a truthful "Payment confirmed — license will appear in your Purchases" with a link, **not** a dev placeholder. Real settlement receipt/license fields = `SKIP — NEEDS GATEWAY/PARALLEL: settlement endpoint`. _DoD: no `[SKIP - NEEDS BACKEND]` string ships; success page reflects real response data; remainder SKIP-recorded._
-- **WS0.3 Declaw every dead/decorative control (TM‑18,19,20,21,24,25,37,73,87,100).** Each must do what it implies or be removed/honestly disabled with a reason:
-  - Navbar ⌘K search input (`navbar.tsx:124-201`) → wire to `/themes?q=` (submit/enter routes to catalog) or remove the input (TM‑24).
-  - Notification bell (`navbar.tsx:318-350`) hitting non-existent `/api/notifications/count` → remove the bell, or HONEST-hide until a real source exists (TM‑25).
-  - Card "Preview theme"/"Save" spans (`theme-card.tsx:46-53`) → make Preview a real `previewSession` action (see WS2) and Save a real wishlist (localStorage preview-only is allowed) or remove (TM‑37).
-  - Purchases "Download" (`dashboard/purchases/page.tsx:83-86`) and Downloads buttons + fake sizes (`dashboard/downloads/page.tsx:25-28,84-101`) → wire to a real artifact/signed-URL if `api-client` exposes one, else HONEST "downloads available after settlement" and drop the fabricated MB sizes (TM‑20,21,74).
-  - Settings (`dashboard/settings/page.tsx`) hardcodes identity + fake Save → load the real session user; persist via an existing client method or render read-only/honest; remove dead Password/2FA buttons or link them to the accounts app (TM‑18,19).
-  - Coupon field (`checkout/page.tsx:410-422`) → remove it (no coupon contract) or HONEST-disable with reason (TM‑87).
-  - Footer `#` links (`components/layout/footer.tsx:11-28`) → point each to a real destination (accounts/marketing/support) or remove; real Legal/Docs pages = SKIP (see WS5) (TM‑100).
-  _DoD: zero controls render that do nothing; each is wired, removed, or disabled-with-reason; screenshot per surface._
-- **WS0.4 Payment-rail copy honesty (TM‑17,84).** Home "Stripe & Razorpay integrated… global transactions" (`page.tsx:25`) vs checkout Stripe disabled/"Not configured" (`checkout/page.tsx:366-374`), INR-only. Change copy to match reality (Razorpay/INR today). Enabling Stripe / a global rail = `SKIP — NEEDS GATEWAY/PARALLEL + NEEDS HUMAN: keys`. _DoD: no claim exceeds what's wired._
-- **WS0.5 Strip remaining "needs backend/seeded data" strings (TM‑94, content-gap §C).** The four catalog warnings (`themes/page.tsx:364-366,448-450,518-520`) and detail warnings (`[slug]/page.tsx:400-402,510-512`): either make the feature real (WS1/WS2) or hide the control and its banner. _DoD: no engineering-placeholder copy in any rendered surface._
+- **`IN` — In-boundary → IMPLEMENT now.** Fix lives entirely in `apps/theme-marketplace/**` (incl. consuming allowed packages). Do it.
+- **`CROSS` — Cross-boundary → SKIP + contract + safe in-boundary half.** Needs `packages/*`, `services/*`, `database/*`, or another app. Implement the client-side scaffolding/guard/honest-state that *is* in-boundary, then log `SKIPPED cross-boundary` naming the exact endpoint/package/table required.
+- **`HUMAN` — Needs human/legal/brand/secret decision → SKIP + DEFAULT.** Apply the **DEFAULT** named in §7, implement the reversible in-boundary part, and log `SKIPPED human-gated` with the decision needed.
 
-**GATE WS0:** ≥157 validators; typecheck+lint+build green; no fabricated metric, no `[SKIP/NEEDS]` string, no dead control, no over-claim ship. Screenshots recorded.
-
-### WS1 — DISCOVERY HONESTY
-*TM‑26,39,46,47,64,65,66,81,38(in-app),54,55(in-app).*
-- **WS1.1 Real or hidden filters (TM‑26,64).** Industry/layout/price filters are inert (`themes/page.tsx`). For each: if `api-client.themes.listCatalog` accepts the param and the gateway honors it, wire it; if not, **hide** the control (don't ship an inert filter). Server-side support for unsupported params = `SKIP — NEEDS GATEWAY/PARALLEL`. _DoD: every visible filter changes results; unsupported ones are hidden + SKIP-recorded._
-- **WS1.2 Pagination (TM‑65).** `limit:30`, no next page. Add pagination/"load more" using the existing `total`/`offset`. _DoD: catalog pages beyond 30; offset reflected in URL._
-- **WS1.3 Working navbar search + autocomplete from API (TM‑24,81).** Route ⌘K + catalog search to real queries; build suggestions from catalog data, not just current-page rows. _DoD: search returns results; suggestions are catalog-derived._
-- **WS1.4 Honest curation rows (TM‑38,39,47).** "Trending" links to `/themes` (`navbar.tsx:642`); no collections. Either back trending/featured with a real `sort` signal or relabel honestly; replace empty-catalog "seed data" copy with merchant-appropriate empty state. Real curation/collections data = `SKIP — NEEDS GATEWAY/PARALLEL`. _DoD: no row implies a signal it lacks._
-
-**GATE WS1:** ≥157; every shown discovery control is real; unsupported ones hidden + SKIP-recorded.
-
-### WS2 — PREVIEW & SAFE LIFECYCLE (consume existing api-client)
-*TM‑7,22,23,31,50,51,52,53,95,29(in-app),30(in-app).*
-- **WS2.1 Wire live preview (TM‑7,50).** Detail "Preview in your store" is disabled (`[slug]/page.tsx:470-512`) though `api.themes.previewSession` exists (`api-client:1490`). Wire a real preview session via `ThemeService`; enable the card "Preview theme" too. _DoD: clicking Preview opens a real preview session; screenshot._
-- **WS2.2 Non-destructive install (TM‑52).** Install replaces storefront with no preview/backup (`install/page.tsx`). Use the draft→preview→publish path (`saveDraft`/`previewSession`/`publish` exist) so the merchant previews before going live. Where install must remain a direct apply, surface the risk + a rollback affordance. _DoD: install offers preview-before-publish or an honest confirm + rollback path._
-- **WS2.3 Update + rollback actions (TM‑23,31,51,53).** Installations shows "Update Available" with no action (`installations/page.tsx:11-14`). Add an "Apply update" action via `publish`/`releases`, and surface `rollbackRelease`. _DoD: a merchant can apply an update and roll back; both proven._
-- **WS2.4 Customize deep-link (TM‑22).** "Customize" links to the public detail page (`installations/page.tsx:133-139`). Deep-link to the merchant editor URL (`merchant-control-plane` `/[store]/online-store/themes/[themeId]/editor`) via a configured public-URL helper. _DoD: Customize opens the real editor for that store/theme._
-- **WS2.5 config_overrides (TM‑95).** `installTheme` always sends `{}` (`theme-service.ts:138-141`). Pass through any selected preset/overrides the UI offers. _DoD: overrides reach the install call when set._
-
-**GATE WS2:** ≥157; preview real; install non-destructive or honest+rollback; update/rollback surfaced; Customize correct.
-
-### WS3 — CHECKOUT & MONEY HONESTY
-*TM‑5,6,16(copy),28(in-app),43,48,62,72,80,87.*
-- **WS3.1 Honest receipt/license (TM‑5,6).** (See WS0.2.) Ensure success reflects real verify/purchase data; license issuance fields absent → honest "in Purchases" + `SKIP — NEEDS GATEWAY/PARALLEL`.
-- **WS3.2 Currency consistency (TM‑48,72,80,62).** `formatPrice` defaults USD (`utils.ts:10-18`) while checkout charges INR; detail shows USD + "INR reference"; dates mix `en-IN`/`en-US`. Make currency + locale consistent and truthful to the charged rail. _DoD: displayed currency matches what's charged; one locale policy._
-- **WS3.3 Tax honesty (TM‑43).** "Tax — Calculated by provider" (`checkout/page.tsx:472`). Keep only if true; otherwise remove the line. _DoD: tax line is accurate or absent._
-- **WS3.4 Refund affordance (TM‑28 in-app).** "30-day money-back" promised (`pricing.tsx:75-77`) with no refund flow. Either wire a request-refund action to `api.orders.refund` (exists) **or** change the copy to the true policy. Refund **policy/eligibility** + provider settlement = `SKIP — NEEDS HUMAN/GATEWAY`. _DoD: copy matches a real, reachable action or the true policy._
-- **WS3.5 Pricing-model coherence (TM‑14,15,16 in-app).** Pro CTA → broken `/checkout?plan=pro` (`pricing.tsx:34`; checkout only reads `?theme=`), Unlimited CTA `#`. Make the CTAs land somewhere real (working subscription checkout if a plan API exists, else an honest "contact"/"coming soon"). The **decision** per-theme-vs-subscription unification = `SKIP — NEEDS HUMAN`. _DoD: no pricing CTA dead-ends; decision SKIP-recorded._
-
-**GATE WS3:** ≥157; checkout/success honest; currency consistent; no dead pricing CTA.
-
-### WS4 — DASHBOARD TRUTH
-*TM‑18,19,20,21,45,70,74,88,89,90.*
-- **WS4.1 Real Settings (TM‑18,19).** Load session user; persist via an existing method or render honest read-only; remove/relocate dead Password/2FA. _DoD: no hardcoded identity; Save persists or is absent._
-- **WS4.2 Real Downloads/Purchases actions (TM‑20,21,74).** Drop fabricated sizes; wire downloads to a real artifact if `api-client` exposes one, else honest-gate. _DoD: no fake size; buttons act or are honestly gated._
-- **WS4.3 Real subscription badge + notifications (TM‑70,45).** Sidebar badge hardcoded "Free Plan" (`dashboard/layout.tsx:54-63`); notification toggles fake. Reflect real plan if available else HONEST; wire or remove notification prefs. _DoD: badge truthful; no fake toggles persist nothing silently._
-- **WS4.4 Perf cleanups (TM‑88,89,90).** Parallelize dashboard calls; avoid N sequential category-count calls on home; stop the purchase-scan in `getThemeReviews`. _DoD: no obvious N+1 on home/dashboard; behavior preserved._
-
-**GATE WS4:** ≥157; dashboard reflects real state or honest gates.
-
-### WS5 — TRUST, CONTENT & LEGAL (honest in-app; real text = SKIP)
-*TM‑8(in-app),11,12,35(in-app),36,40,67(in-app),75,100.*
-- **WS5.1 Resolve every footer/nav `#` (TM‑11,12,40,100).** Point Legal/Support/Docs/Changelog/Company links to canonical destinations (accounts/marketing/support domains via a public-URL helper) or remove. **Real legal text + canonical pages** = `SKIP — NEEDS HUMAN` (and `SKIP — NEEDS GATEWAY/PARALLEL` if they live in another app). _DoD: no `#` ships; remainders SKIP-recorded._
-- **WS5.2 Honest reviews surface (TM‑8 in-app, 75,36).** No themes-review API exists → **do not fake reviews.** Render an honest "No reviews yet" state and stop showing a `review_count`/rating with no content behind it; remove the misleading "Marketplace proof" numbers until real. Full reviews (list/create/verified-purchase) = `SKIP — NEEDS GATEWAY/PARALLEL: themes.reviews + createReview`. _DoD: no unanchored rating/review count ships; reviews gap SKIP-recorded with the exact endpoint contract._
-- **WS5.3 Author identity (TM‑35,67 in-app).** Link `author_name` to a real author route if one exists, else render plain (no fake profile). Verified-author/profiles backend = `SKIP — NEEDS GATEWAY/PARALLEL`. _DoD: no fake author affordance._
-
-**GATE WS5:** ≥157; no `#`; no unanchored trust signals; review/author gaps SKIP-recorded with contracts.
-
-### WS6 — RESPONSIVENESS, A11Y & POLISH
-*TM‑76,77,82,85,86,91,92,93,96,97,98 + RESPONSIVENESS_REPORT risks.*
-- **WS6.1 Responsive fixes.** Replace fixed-height bento with aspect-ratio utilities (`page.tsx:142-214`); guard hero max-height clipping; verify catalog filter-rail on tablet; bump icon-button hit areas toward ≥44px on touch; review `text-[10px]/[11px]` legibility. _DoD: clean render at 320/390/768/1024/1440 with screenshots; no clipped hero; tap targets enlarged on touch._
-- **WS6.2 Affordance + polish.** Stronger disabled-button affordance; detail-page skeleton; de-duplicate trivia (TM‑92,93,96,97,98); remove inline `style transform:none` hacks where a token/class works. _DoD: P2 items closed or SKIP-noted; no `console.log`/new `any` introduced._
-
-**GATE WS6:** ≥157; responsive + a11y proven by screenshots; P2 list dispositioned.
-
-### WS7 — DEVELOPER SURFACE (mostly cross-boundary → honest in-app + SKIP)
-*TM‑9,10,35,56,57,58,59,60,67.*
-- **WS7.1 Harden the in-app upload route (TM‑56,57 in-app).** `src/app/api/themes/route.ts` POST proxies uploads. Add **in-app** request hardening: require an authenticated session before proxying upload (reuse the protected-route/session pattern), basic payload size/shape guards, and a simple per-session rate limit at the route handler. Malware/asset scanning + server-side limits = `SKIP — NEEDS GATEWAY/PARALLEL`. _DoD: anonymous/oversized uploads rejected in-app; deep scan SKIP-recorded._
-- **WS7.2 Honest submission UX (TM‑58,59 in-app).** The sidebar JSON upload is the whole "submission." Add an honest pre-upload notice (what's accepted, that review/listing/pricing isn't available yet) and, **only if** `uploadPackage`'s contract already accepts metadata, a minimal metadata field set. A real listing builder (assets/screenshots/pricing/categories), submission states, analytics, payouts, revenue-share = `SKIP — NEEDS GATEWAY/PARALLEL + NEEDS HUMAN`. _DoD: upload UX is honest about scope; the developer-program build is SKIP-recorded as a discrete cross-boundary epic._
-
-**GATE WS7:** ≥157; upload authenticated + bounded in-app; developer-program remainder is a single, clearly-scoped SKIP epic for the parallel task.
+**Ledger status vocabulary (match prior missions):** `DONE` · `DONE locally/SKIPPED live <reason>` · `DONE/SKIPPED human-gated <reason>` · `SKIPPED cross-boundary (needs <pkg/service/endpoint>)` · `SKIPPED human-gated (<decision needed>)`.
 
 ---
 
-## 5. CROSS-BOUNDARY REGISTER (hand-off to the parallel task — DO NOT build here)
-Record these in `## SKIP — NEEDS GATEWAY/PARALLEL` with the exact contract each needs:
-- **TM‑1 Real catalog** — DB seed/content beyond `urban-kicks` (also NEEDS HUMAN for content).
-- **TM‑8 Themes reviews** — `themes.reviews` (list) + `createReview` (verified-purchase) in api-client + gateway + `theme_reviews` storage; then the UI un-gates.
-- **TM‑26/64 Filter server-support** — gateway honoring industry/layout/price params.
-- **TM‑55 Industry taxonomy** — seed + endpoint.
-- **TM‑5/6 Settlement receipt/license** — provider settlement endpoint feeding the success page.
-- **TM‑9/10/60/67 Developer program** — listing builder backend, submission states, analytics, payouts, revenue-share, author verification.
-- **TM‑56 Upload malware/asset scanning + server limits.**
-- **TM‑17 Stripe/global rail** — gateway + keys (also NEEDS HUMAN).
+## 4. EXECUTION ORDER & WORKFLOW
 
-## 6. HUMAN REGISTER (decisions only a human makes)
-Record in `## SKIP — NEEDS HUMAN`:
-- Legal text: Terms, Privacy, **Refund Policy**, License Agreement (TM‑11,28).
-- **Pricing-model decision:** per-theme one-time vs Free/Pro/Unlimited subscription unification (TM‑16).
-- **Revenue-share % + payout rails** for developers (TM‑10).
-- Enabling **live payment providers/keys** (TM‑17).
-- Real **catalog content/curation** and any **new marketing promise** (TM‑1,13,38).
+1. **Baseline capture** → write the BASELINE section of the ledger: run and record results of `pnpm --filter @letbuyy/theme-marketplace typecheck`, `... lint`, `... build`, `... test`, and `pnpm run validate:governance` (== `node scripts/validate-governance.mjs`). Note the pre-existing worktree state.
+2. **Work phases TM-P0 → TM-P5 in order** (§6). Within a phase, do all `IN` issues, scaffold all `CROSS`, default all `HUMAN`.
+3. **After each phase:** run the gate suite (§5), then append progress-log entries for every issue touched.
+4. **Final gate sweep:** full gate suite green; write the STATUS doc summary (counts of DONE / SKIPPED-cross / SKIPPED-human, per phase) and a "remaining cross-boundary contracts" list for coordination.
+5. **Do not open PRs, deploy, or run live/prod commands.** Local only.
 
 ---
 
-## 7. EXECUTION ORDER & EVIDENCE
-1. Read the audit (§ source of truth) → build the TM‑1…100 matrix in the ledger.
-2. WS0 → WS7 in order; each item: implement → `typecheck`+`lint` → screenshot (UI) → commit → flip ledger row.
-3. At each WS gate: `node scripts/validate-governance.mjs` (≥157) + `pnpm --filter @letbuyy/theme-marketplace build` (no network).
-4. Final: confirm `git diff --name-only develop` is inside the boundary; write `CODEX_THEME_MARKETPLACE_STATUS.md`; archive the three mission files to `docs/archive/`; leave every TM‑id dispositioned.
+## 5. VERIFICATION GATES (run after every phase and at final)
 
-**Definition of done for the mission:** all 100 TM‑ids `DONE`/`HONEST`/`SKIP`-recorded; no fabricated metric, placeholder string, dead control, or over-claim ships; preview + safe lifecycle + honest checkout real; boundary respected; all gates green on recorded evidence.
+```bash
+pnpm --filter @letbuyy/theme-marketplace typecheck
+pnpm --filter @letbuyy/theme-marketplace lint
+pnpm --filter @letbuyy/theme-marketplace build
+pnpm --filter @letbuyy/theme-marketplace test          # keeps the 3 federation/auth tests green; add app tests
+pnpm run validate:governance                            # == node scripts/validate-governance.mjs (expect: all validators pass)
+```
+Acceptance: typecheck/lint/build pass; tests pass; governance reports all validators passed. If a change would only pass by editing out-of-boundary files, **revert it and reclassify the issue as `CROSS`.** Add focused app tests for every behavioral change (honesty states, removed dead controls, preview wiring, filter wiring).
+
+---
+
+## 6. THE PHASES (mirror LETBUYY_THEME_MARKETPLACE_V2 roadmap)
+
+> Issue numbers `#N` reference `MASTER_AUDIT.md` Phase 15 (Top 100). Class = IN / CROSS / HUMAN.
+
+### TM-P0 — Truth & Safety (stop eroding trust)
+**Goal:** zero false claims, zero shipped placeholders, zero dead controls, no abuse vectors. Highest priority.
+
+| # | Issue | Class | Action |
+|---|---|---|---|
+|2,3|Hero "50+ Premium Themes" / "10K+ Active Installs" hardcoded (`page.tsx:7-12`)|IN|Derive from live API counts; if unavailable, remove the stat. Never hardcode.|
+|71|Stats "Categories: 4" vs 5 real categories|IN|Derive count from the real category set.|
+|4|Hero "50+" contradicts live "0 themes" category cards|IN|Once #2 is data-derived, contradiction resolves; verify same-screen consistency.|
+|"50+" in SEO metadata (`layout.tsx:41,51`)|Content #6 grp|IN|Rewrite metadata to non-fabricated copy.|
+|5,6|Checkout success leaks `[SKIP - NEEDS BACKEND]`; Order/Amount/License "pending" (`success/page.tsx:36-65`)|IN (copy) / CROSS (real receipt)|Remove the placeholder string + show an honest "payment confirming / receipt will arrive" state. Real receipt/license issuance = SKIP cross-boundary (settlement endpoint).|
+|17|"Stripe & Razorpay… global" vs Stripe disabled (`page.tsx:25`,`checkout:366-374`)|IN (copy) / HUMAN (enable Stripe)|Rewrite copy to India-first/Razorpay reality. Enabling Stripe = SKIP human-gated (keys/provider).|
+|13|"24/7 support" claim, no support (`page.tsx:33`, pricing FAQ)|IN|Remove/soften claim until a support surface exists (see #12).|
+|28|"30-day money-back" promise, no refund flow (`pricing.tsx:75-77`)|IN (copy) / CROSS (refund)|Make copy accurate (or remove). Real refunds via `api.orders.refund` = SKIP cross-boundary + human policy.|
+|24|Navbar ⌘K search doesn't search (`navbar.tsx:124-201`)|IN|Make the input submit to `/themes?q=<query>` (real) OR remove the search field; remove `Documentation`→`#` quick action or point to the new docs route (#100).|
+|25|Notification bell hits missing `/api/notifications/count` (`navbar.tsx:322`)|IN|Remove the bell (no notifications system in this runtime) or hide until backed. Do not call a nonexistent endpoint.|
+|37,96|Card "Preview/Save" are decorative spans (`theme-card.tsx:46-53`)|IN|Wire "Preview" to the real preview action (see TM-P1 #7) or remove; wire "Save" to wishlist (TM-P3 #37) or remove.|
+|20|Downloads: fake sizes + dead buttons (`downloads:25-28,84-101`)|IN (remove fakes) / CROSS (real download)|Remove fabricated MB sizes; render only real metadata. Real artifact download = SKIP cross-boundary (no download/signed-URL client method); show honest "available after purchase / coming soon" state, not a dead button.|
+|21|Purchases "Download" dead (`purchases:83-86`)|IN/CROSS|Same as #20: honest state, no dead button; real download = SKIP cross-boundary.|
+|18,19|Settings persists nothing; hardcodes "Saai Sidd"/email (`settings:14-17,38-48`)|IN (identity+honesty) / CROSS (persist)|Load identity from the session user if exposed by `@letbuyy/auth-core`/api-client; if not, render read-only from session (no fabricated defaults). Persisting prefs = SKIP cross-boundary (settings endpoint). Replace fake "Saved!" with honest behavior; wire Change Password/2FA to `accounts.letbuyy.store` flows or remove.|
+|57|Public upload route lacks rate-limit/abuse guard (`api/themes/route.ts:43-64`)|IN (guard) / CROSS (full scan)|Add auth assertion + basic rate-limit/size guard in the route handler (in-boundary). Malware/asset scanning = SKIP cross-boundary.|
+|11|All Legal links dead (`footer.tsx:23-28`)|IN (routes) / HUMAN (legal text)|Create honest placeholder routes `/legal/{terms,privacy,refund,license}` rendering "being finalized — contact support@letbuyy.com"; wire footer to them (no `#`). Actual legal copy = SKIP human-gated (legal).|
+|12|Support/Contact/About/Blog dead (`footer.tsx:17-22`)|IN (routes) / HUMAN (content)|Create honest `/support`, `/contact` (mailto/contact form to support@), and either real `/about` or remove Blog until it exists. No `#`.|
+|100|Docs/API/Changelog footer dead (`footer.tsx:11-16`)|IN (routes) / CROSS (real docs)|Point to honest `/docs` placeholder + real changelog route if data exists; else remove until backed. No `#`.|
+|84|"Built with ♥ in India" + INR-only vs "global" copy|IN|Align global/India copy with the Razorpay/INR reality.|
+|78|`any` types flagged by AGENTS (`api/themes/route.ts:19` etc.)|IN|Replace `any` with typed inputs from `@letbuyy/theme-engine`/`shared-types`.|
+
+**TM-P0 acceptance:** grep the app for `#"`-href dead links, `[SKIP`, hardcoded `50+/10K+/4.8`, and decorative `<span>` CTAs → none remain in shipped paths; gates green.
+
+### TM-P1 — Catalog & Discovery (find & try)
+**Goal:** every discovery control is real or hidden; preview works.
+
+| # | Issue | Class | Action |
+|---|---|---|---|
+|7,50|Theme preview disabled though `previewSession` exists (`[slug]:470-512`,`api-client:1490`)|IN|Wire "Preview in your store" + card preview to `api.themes.previewSession`; fall back to `demo_url`; honest disabled only if both unavailable.|
+|26,64|Layout & price-range filters inert (`themes/page.tsx:454-521`)|IN|The catalog API has no layout/price params → **hide** these filters (remove dead controls) and log a `CROSS` contract for the params. Keep category/pricing/search/sort (API-backed).|
+|55|Industry filter empty (`themes:447-451`)|IN (wire) / CROSS (seed)|`api.themes.industries()` exists → render real options when present; hide gracefully when empty. Seeding industry data = SKIP cross-boundary (database).|
+|39,93|"Trending" → `/themes`; no trending/new/popular (`navbar:642`)|IN (sort-backed) / CROSS (real signal)|Make "Trending" use a real `sort` (e.g. popular) or remove the label's implication; true trending signal = SKIP cross-boundary.|
+|65|No pagination (`themes:284`)|IN|Add pagination/"load more" using existing `total`/`limit`/`offset`.|
+|81|Autocomplete from current page only (`themes:235-256`)|IN (honest) / CROSS (server suggest)|Either remove the "autocomplete" framing or keep client suggestions clearly scoped; server suggestions = SKIP cross-boundary.|
+|38,47|No collections/curation; weak empty-state merchandising|CROSS|Build presentational collection UI behind a flag; data/curation = SKIP cross-boundary.|
+|46|No relevance/ranking beyond `sort`|CROSS|SKIP cross-boundary (ranking is gateway/data); keep `sort` honest.|
+|1|Catalog effectively empty (1 seed)|CROSS/HUMAN|SKIP (catalog seeding = database + content decision). Ensure the app degrades honestly with a sparse catalog (no fake fillers).|
+
+### TM-P2 — Trust layer (reviews, receipts, identity)
+| # | Issue | Class | Action |
+|---|---|---|---|
+|8,9,75|No reviews/ratings; "Marketplace proof" shows counts with no content (`[slug]:515-543`)|CROSS (endpoint) / IN (UI shell)|Build a presentational reviews section + verified-purchase write-form **behind an off-by-default flag**; render honest empty-state; do not POST to a nonexistent endpoint. `themes.reviews`/`createReview` = SKIP cross-boundary (api-client + gateway).|
+|27|Navbar never shows logged-in identity (`layout.tsx:100`)|IN/CROSS|Pass the session user into `AuthProvider` if the session/user is retrievable in-boundary (auth-core/api-client `me`); else SKIP cross-boundary and stop rendering a fake "User".|
+|67|No author verification/trust badges|CROSS|SKIP; render author honestly (no fake badges).|
+|43,44,45|Tax/invoice, receipts/order history, email notifications|CROSS|SKIP cross-boundary; ensure no fabricated tax/receipt/notification UI remains.|
+
+### TM-P3 — Safe lifecycle (install/update/rollback non-destructive)
+| # | Issue | Class | Action |
+|---|---|---|---|
+|22|"Customize" → public detail page, not editor (`installations:133-139`)|IN|Deep-link to the merchant editor URL (env-based, e.g. `NEXT_PUBLIC_ADMIN_URL` + `/[store]/online-store/themes/[themeId]/editor`); do not embed editor logic here.|
+|23|"Update Available" badge with no action (`installations:11-14`)|IN/CROSS|Add "Apply update" wired to the existing install/publish client method if semantics are safe; else SKIP cross-boundary with the required endpoint named.|
+|52,53|Destructive install, no preview/backup/uninstall (`install:145-147`)|IN/CROSS|Add a confirm step + preview link (uses TM-P1 preview). Draft/rollback flow via `api.themes.releases`/`rollbackRelease` if invocable in-boundary; else SKIP cross-boundary.|
+|37,61|Wishlist/favorites, saved searches|CROSS|SKIP cross-boundary (persistence); remove decorative "Save" or flag it off.|
+|70|Subscription badge hardcoded "Free Plan" (`dashboard/layout:54-63`)|IN/CROSS|Read real plan from session/api if available; else remove the hardcoded plan claim (no fake "Free Plan").|
+
+### TM-P4 — Developer experience (scaffold only; backend is cross-boundary)
+| # | Issue | Class | Action |
+|---|---|---|---|
+|9,58,59|Submission = one JSON upload; no listing builder, no agreement, no assets (`theme-upload-panel.tsx`)|CROSS (backend) / IN (UX shell + agreement gate)|Build a `/developer` console + listing-builder UI shell (assets/screens/pricing/category form) that calls **typed client methods behind a flag**; add a developer-agreement checkbox gate before upload (in-boundary). Real listing/submission persistence + review pipeline = SKIP cross-boundary.|
+|10,35,60,67|Revenue/payouts, profiles, analytics, verification|CROSS/HUMAN|SKIP cross-boundary; default rev-share display to "TBD pending program terms" (HUMAN). Build read-only placeholder dashboards that render real data when endpoints exist, honest empty otherwise.|
+
+### TM-P5 — Polish & responsiveness
+Address the remaining P2 items (#72–#99) that are in-boundary: currency-format consistency (#72), remove unused helpers or use them (#73), responsiveness fixes from `THEME_RESPONSIVENESS_REPORT.md` (fixed bento heights #82, ≥44px touch targets, tablet filter rail, small-type legibility), parallelize sequential dashboard/home API calls (#88,#90), locale consistency (#80), and the faux-browser "preview" implication (#83). Anything requiring data/endpoints → SKIP cross-boundary.
+
+---
+
+## 7. DEFAULT DECISIONS (apply now; flag as `SKIPPED human-gated` for ratification)
+
+- **D-1 Pricing model:** DEFAULT = per-theme one-time purchase is the live commerce path; the Free/Pro/Unlimited subscription page is **marketing-only** until subscription checkout exists. Fix the broken Pro CTA (`/checkout?plan=pro` → "No theme selected") by pointing it to a waitlist/contact or removing it; the "Unlimited → `#`" CTA → contact route. **Unifying the two models is a HUMAN decision (SKIP).**
+- **D-2 Metrics:** DEFAULT = remove all hardcoded counts/ratings; show live values only where the API provides them; otherwise omit the element entirely.
+- **D-3 Legal/support pages:** DEFAULT = create honest placeholder routes wired into the footer (no `#`), pointing to `support@letbuyy.com`; **actual legal/marketing copy is HUMAN (SKIP).**
+- **D-4 Payments/geography:** DEFAULT = keep Razorpay/INR and make copy India-first; **enabling Stripe/global is HUMAN (SKIP — keys/provider).**
+- **D-5 Reviews & developer console:** DEFAULT = build presentational/UI shells behind off-by-default feature flags that activate when the cross-boundary endpoints land; never ship a control that writes to a missing endpoint.
+- **D-6 Catalog content:** DEFAULT = do not fabricate themes/metrics; the app must degrade honestly on a sparse catalog. Seeding real themes is CROSS/HUMAN (SKIP).
+- **D-7 Generated intelligence:** DEFAULT = do not regenerate any `AGENTS.md`; defer to the final coordination pass (SKIP) to avoid parallel-mission collisions.
+
+---
+
+## 8. LEDGER & STATUS (create and maintain these two root files)
+
+Create `CODEX_THEME_MARKETPLACE_FOUNDATION_LEDGER.md` with sections, matching prior missions:
+1. **ARCHITECTURE-DIRECTION DECISIONS** — record D-1…D-7 with chosen DEFAULT.
+2. **BASELINE** — pre-edit gate results + worktree state (§4.1).
+3. **PROGRESS LOG** — one line per issue/sub-task, newest acceptable any order:
+   `- <ISO8601Z> [TM-P{n}] #<issue> <short title> - <STATUS> - evidence: <files/cmd>`
+   Example: `- 2026-06-07T10:12:00Z [TM-P0] #5 success placeholder removed - DONE locally/SKIPPED live (settlement endpoint) - evidence: apps/theme-marketplace/src/app/checkout/success/page.tsx`
+4. **CROSS-BOUNDARY CONTRACTS** — the consolidated list of endpoints/packages/tables other missions must deliver (reviews API, settlement/receipt, refunds, downloads artifact, settings persistence, catalog/industry seeding, developer-program backend, ranking/curation).
+
+Create `CODEX_THEME_MARKETPLACE_FOUNDATION_STATUS.md` with: per-phase counts (DONE / SKIPPED-cross / SKIPPED-human), the final gate output, and the "what's left and who owns it" summary.
+
+---
+
+## 9. DEFINITION OF DONE (this mission)
+
+- All 100 issues have a ledger line with a terminal status (DONE or an explicit SKIPPED class + contract). **None left silently unaddressed.**
+- Shipped UI contains: no fabricated metrics, no `[SKIP/NEEDS BACKEND]`/dev-placeholder strings, no `href="#"` dead links, no decorative CTAs that imply missing capability.
+- `previewSession` wired; `Customize` deep-links to the editor; filters are real-or-hidden; pagination works.
+- All §5 gates pass; the 3 existing app tests stay green; new app tests cover every behavioral change.
+- Only `apps/theme-marketplace/**` and the two scoped ledger/status files were modified (verify with `git status` — nothing outside the boundary).
+- STATUS doc written; CROSS-BOUNDARY CONTRACTS list is complete for the parallel/coordination missions.
+
+**Begin with the BASELINE capture, then TM-P0. Work the whole list in one go. When in doubt: make it honest, keep it in-boundary, log it, and continue.**

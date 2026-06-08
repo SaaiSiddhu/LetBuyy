@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../../../../config/tailwind/letbuyy-tokens.css";
 @source "./**/*.{ts,tsx}";
 @source "../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
 
@@ -8,16 +9,16 @@
 
 @theme {
     /* ── Brand Colors (constant across themes) ── */
-    --color-primary: #6C5CE7;
-    --color-primary-light: #A29BFE;
-    --color-primary-dark: #4834D4;
-    --color-secondary: #00D2D3;
-    --color-accent: #FD79A8;
+    --color-primary: rgb(108 92 231);
+    --color-primary-light: rgb(162 155 254);
+    --color-primary-dark: rgb(72 52 212);
+    --color-secondary: rgb(0 210 211);
+    --color-accent: rgb(253 121 168);
 
     /* ── Status (constant across themes) ── */
-    --color-success: #00B894;
-    --color-warning: #FDCB6E;
-    --color-error: #E17055;
+    --color-success: rgb(0 184 148);
+    --color-warning: rgb(253 203 110);
+    --color-error: rgb(225 112 85);
 
     /* ── Spacing ── */
     --spacing-section: 80px;
@@ -46,19 +47,19 @@
     --font-display-premium: var(--font-letbuyy-display), var(--font-letbuyy-sans), ui-sans-serif, system-ui, sans-serif;
     --font-mono-premium: var(--font-letbuyy-mono), "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 
-    --color-bg: #F8F9FC;
-    --color-bg-secondary: #FFFFFF;
-    --color-bg-card: #FFFFFF;
-    --color-bg-elevated: #F1F3F8;
-    --color-surface: #E8ECF4;
-    --color-surface-hover: #DDE2ED;
+    --color-bg: rgb(248 249 252);
+    --color-bg-secondary: rgb(255 255 255);
+    --color-bg-card: rgb(255 255 255);
+    --color-bg-elevated: rgb(241 243 248);
+    --color-surface: rgb(232 236 244);
+    --color-surface-hover: rgb(221 226 237);
     --color-border: rgba(0, 0, 0, 0.08);
     --color-border-light: rgba(0, 0, 0, 0.12);
 
-    --color-text-primary: #6C5CE7;
-    --color-text-heading: #1A1A2E;
-    --color-text-body: #4A5568;
-    --color-text-muted: #8895A7;
+    --color-text-primary: rgb(108 92 231);
+    --color-text-heading: rgb(26 26 46);
+    --color-text-body: rgb(74 85 104);
+    --color-text-muted: rgb(136 149 167);
     --color-text-subtle: rgba(0, 0, 0, 0.35);
 
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
@@ -75,19 +76,19 @@
    ═══════════════════════════════════════════════════ */
 
 .dark {
-    --color-bg: #0F0F1A;
-    --color-bg-secondary: #1A1A2E;
-    --color-bg-card: #16213E;
-    --color-bg-elevated: #1E2A4A;
-    --color-surface: #232946;
-    --color-surface-hover: #2D3561;
+    --color-bg: rgb(15 15 26);
+    --color-bg-secondary: rgb(26 26 46);
+    --color-bg-card: rgb(22 33 62);
+    --color-bg-elevated: rgb(30 42 74);
+    --color-surface: rgb(35 41 70);
+    --color-surface-hover: rgb(45 53 97);
     --color-border: rgba(255, 255, 255, 0.08);
     --color-border-light: rgba(255, 255, 255, 0.12);
 
-    --color-text-primary: #EEBBC3;
-    --color-text-heading: #FFFFFE;
-    --color-text-body: #B8C1EC;
-    --color-text-muted: #6B7280;
+    --color-text-primary: rgb(238 187 195);
+    --color-text-heading: rgb(255 255 254);
+    --color-text-body: rgb(184 193 236);
+    --color-text-muted: rgb(107 114 128);
     --color-text-subtle: rgba(255, 255, 255, 0.4);
 
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -102,19 +103,19 @@
 /* System default: detect preference when no class is set */
 @media (prefers-color-scheme: dark) {
     :root:not(.light):not(.dark) {
-        --color-bg: #0F0F1A;
-        --color-bg-secondary: #1A1A2E;
-        --color-bg-card: #16213E;
-        --color-bg-elevated: #1E2A4A;
-        --color-surface: #232946;
-        --color-surface-hover: #2D3561;
+        --color-bg: rgb(15 15 26);
+        --color-bg-secondary: rgb(26 26 46);
+        --color-bg-card: rgb(22 33 62);
+        --color-bg-elevated: rgb(30 42 74);
+        --color-surface: rgb(35 41 70);
+        --color-surface-hover: rgb(45 53 97);
         --color-border: rgba(255, 255, 255, 0.08);
         --color-border-light: rgba(255, 255, 255, 0.12);
 
-        --color-text-primary: #EEBBC3;
-        --color-text-heading: #FFFFFE;
-        --color-text-body: #B8C1EC;
-        --color-text-muted: #6B7280;
+        --color-text-primary: rgb(238 187 195);
+        --color-text-heading: rgb(255 255 254);
+        --color-text-body: rgb(184 193 236);
+        --color-text-muted: rgb(107 114 128);
         --color-text-subtle: rgba(255, 255, 255, 0.4);
 
         --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -166,27 +167,28 @@ h6 {
 .glass {
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    background: var(--glass-bg);
-    border: 1px solid var(--color-border);
+    background: color-mix(in srgb, var(--lb-color-surface) 82%, transparent);
+    border: 1px solid var(--lb-color-border);
 }
 
 .glass-card {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    background: var(--glass-card-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    transition: all var(--transition-base);
+    background: color-mix(in srgb, var(--lb-component-card-bg) 86%, transparent);
+    border: 1px solid var(--lb-component-card-border);
+    border-radius: var(--lb-component-card-radius);
+    box-shadow: var(--lb-component-card-shadow);
+    transition: all var(--lb-motion-fast) var(--lb-ease-standard);
 }
 
 .glass-card:hover {
-    border-color: var(--color-border-light);
-    box-shadow: var(--shadow-md);
+    border-color: var(--lb-color-border);
+    box-shadow: var(--lb-shadow-md);
     transform: translateY(-2px);
 }
 
 .gradient-text {
-    background: linear-gradient(135deg, var(--color-primary-light), var(--color-secondary));
+    background: linear-gradient(135deg, var(--lb-color-primary), var(--lb-color-focus-ring));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -208,44 +210,65 @@ h6 {
     opacity: 0.3;
 }
 
+.theme-grid-overlay-60 {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 60px 60px;
+}
+
+.theme-grid-overlay-40 {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+
 .btn-primary {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-    color: white;
+    background: var(--lb-component-button-primary-bg);
+    color: var(--lb-component-button-primary-text);
     padding: 10px 24px;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all var(--transition-base);
-    border: none;
+    border-radius: var(--lb-radius-md);
+    font-weight: var(--lb-font-weight-semibold);
+    font-size: var(--lb-font-size-body);
+    transition: all var(--lb-motion-fast) var(--lb-ease-standard);
+    border: 1px solid var(--lb-component-button-primary-border);
     cursor: pointer;
 }
 
 .btn-primary:hover {
-    box-shadow: var(--shadow-glow);
+    background: var(--lb-component-button-primary-hover);
+    box-shadow: var(--lb-shadow-md);
     transform: translateY(-1px);
 }
 
 .btn-secondary {
-    background: transparent;
-    color: var(--color-text-heading);
+    background: var(--lb-component-button-secondary-bg);
+    color: var(--lb-component-button-secondary-text);
     padding: 10px 24px;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    font-size: 0.9rem;
-    border: 1px solid var(--color-border-light);
+    border-radius: var(--lb-radius-md);
+    font-weight: var(--lb-font-weight-semibold);
+    font-size: var(--lb-font-size-body);
+    border: 1px solid var(--lb-component-button-secondary-border);
     cursor: pointer;
-    transition: all var(--transition-base);
+    transition: all var(--lb-motion-fast) var(--lb-ease-standard);
 }
 
 .btn-secondary:hover {
-    background: var(--color-surface);
-    border-color: var(--color-primary);
+    background: var(--lb-component-button-secondary-hover);
+    border-color: var(--lb-color-primary);
 }
 
 .container-main {
-    max-width: var(--spacing-container);
+    max-width: min(var(--spacing-container), calc(100vw - var(--lb-space-6)));
     margin: 0 auto;
-    padding-inline: 24px;
+    padding-inline: var(--lb-space-4);
+}
+
+@media (min-width: 1536px) {
+    .container-main {
+        max-width: min(1440px, calc(100vw - var(--lb-space-7)));
+    }
 }
 
 /* ═══════════════════════════════════════════════════

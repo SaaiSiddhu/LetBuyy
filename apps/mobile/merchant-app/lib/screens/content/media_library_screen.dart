@@ -3,12 +3,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 import '../../app/store_context.dart';
 
 import '../../models/store_model.dart';
 import '../../services/media_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart';
+import '../../widgets/shared/cached_merchant_image.dart';
+import '../../widgets/shared/image_source_sheet.dart';
 
 class MediaLibraryScreen extends StatefulWidget {
   const MediaLibraryScreen({super.key});
@@ -99,9 +102,14 @@ class _MediaLibraryScreenState extends State<MediaLibraryScreen> {
                 leading: const Icon(Icons.image_outlined),
                 title: const Text('Upload image'),
                 subtitle: const Text('PNG, JPG, GIF, or WebP'),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(sheetContext);
-                  _pickAndUpload(video: false);
+                  final source = await showImageSourceSheet(
+                    context,
+                    title: 'Image source',
+                  );
+                  if (source == null) return;
+                  _pickAndUpload(video: false, source: source);
                 },
               ),
               ListTile(
@@ -120,13 +128,16 @@ class _MediaLibraryScreenState extends State<MediaLibraryScreen> {
     );
   }
 
-  Future<void> _pickAndUpload({required bool video}) async {
+  Future<void> _pickAndUpload({
+    required bool video,
+    ImageSource source = ImageSource.gallery,
+  }) async {
     final store = _store;
     if (store == null || _isBusy) return;
 
     final picked = video
         ? await _picker.pickVideo(source: ImageSource.gallery)
-        : await _picker.pickImage(source: ImageSource.gallery);
+        : await _picker.pickImage(source: source);
     if (picked == null) return;
 
     setState(() => _isBusy = true);
@@ -539,13 +550,34 @@ class _MediaLibraryScreenState extends State<MediaLibraryScreen> {
 
   Widget _buildPreview(MediaAssetContract asset, AppThemeColors colors) {
     if (asset.isImage) {
-      return Image.network(
-        asset.thumbnailUrl ?? asset.url,
+      return CachedMerchantImage(
+        imageUrl: asset.thumbnailUrl ?? asset.url,
         fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => _previewIcon(asset, colors),
+        errorBuilder: (_) => _previewIcon(asset, colors),
       );
     }
+    if (asset.isVideo) {
+      return GestureDetector(
+        onTap: () => _showVideoPreview(asset),
+        child: _VideoAssetPreview(asset: asset, colors: colors),
+      );
+    }
+    if (asset.isThreeDModel) {
+      return _ModelAssetPreview(asset: asset, colors: colors);
+    }
     return _previewIcon(asset, colors);
+  }
+
+  Future<void> _showVideoPreview(MediaAssetContract asset) {
+    final colors = AppThemeColors.of(context);
+    return showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: colors.card,
+        insetPadding: const EdgeInsets.all(20),
+        child: _VideoPreviewDialog(asset: asset, colors: colors),
+      ),
+    );
   }
 
   Widget _previewIcon(MediaAssetContract asset, AppThemeColors colors) {
@@ -613,5 +645,232 @@ class _MediaLibraryScreenState extends State<MediaLibraryScreen> {
     final normalized = value.replaceAll('-', ' ').replaceAll('_', ' ').trim();
     if (normalized.isEmpty) return value;
     return '${normalized[0].toUpperCase()}${normalized.substring(1)}';
+  }
+}
+
+class _VideoAssetPreview extends StatefulWidget {
+  final MediaAssetContract asset;
+  final AppThemeColors colors;
+
+  const _VideoAssetPreview({required this.asset, required this.colors});
+
+  @override
+  State<_VideoAssetPreview> createState() => _VideoAssetPreviewState();
+}
+
+class _VideoAssetPreviewState extends State<_VideoAssetPreview> {
+  VideoPlayerController? _controller;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadVideo();
+  }
+
+  @override
+  void didUpdateWidget(covariant _VideoAssetPreview oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.asset.url != widget.asset.url) {
+      _controller?.dispose();
+      _controller = null;
+      _hasError = false;
+      _loadVideo();
+    }
+  }
+
+  Future<void> _loadVideo() async {
+    try {
+      final controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.asset.url),
+      );
+      _controller = controller;
+      await controller.initialize();
+      await controller.setLooping(true);
+      if (mounted) setState(() {});
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = _controller;
+    if (_hasError || controller == null || !controller.value.isInitialized) {
+      return Container(
+        color: widget.colors.surfaceVariant,
+        child: Center(
+          child: Icon(
+            Icons.play_circle_outline_rounded,
+            color: widget.colors.textTertiary,
+            size: 44,
+          ),
+        ),
+      );
+    }
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: controller.value.size.width,
+            height: controller.value.size.height,
+            child: VideoPlayer(controller),
+          ),
+        ),
+        Container(color: Colors.black.withValues(alpha: 0.18)),
+        Center(
+          child: Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.54),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.play_arrow_rounded, color: Colors.white),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _VideoPreviewDialog extends StatefulWidget {
+  final MediaAssetContract asset;
+  final AppThemeColors colors;
+
+  const _VideoPreviewDialog({required this.asset, required this.colors});
+
+  @override
+  State<_VideoPreviewDialog> createState() => _VideoPreviewDialogState();
+}
+
+class _VideoPreviewDialogState extends State<_VideoPreviewDialog> {
+  late final VideoPlayerController _controller;
+  bool _isReady = false;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.asset.url));
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    try {
+      await _controller.initialize();
+      await _controller.setLooping(true);
+      await _controller.play();
+      if (mounted) setState(() => _isReady = true);
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  widget.asset.displayName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: widget.colors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              IconButton(
+                tooltip: 'Close preview',
+                onPressed: () => Navigator.pop(context),
+                icon: Icon(
+                  Icons.close_rounded,
+                  color: widget.colors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          AspectRatio(
+            aspectRatio: _isReady ? _controller.value.aspectRatio : 16 / 9,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: ColoredBox(
+                color: Colors.black,
+                child: _hasError
+                    ? const Center(
+                        child: Icon(
+                          Icons.play_circle_outline_rounded,
+                          color: Colors.white54,
+                          size: 48,
+                        ),
+                      )
+                    : _isReady
+                    ? VideoPlayer(_controller)
+                    : const Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ModelAssetPreview extends StatelessWidget {
+  final MediaAssetContract asset;
+  final AppThemeColors colors;
+
+  const _ModelAssetPreview({required this.asset, required this.colors});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: colors.surfaceVariant,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.view_in_ar_rounded, color: colors.textTertiary, size: 40),
+          const SizedBox(height: 8),
+          Text(
+            asset.filename.toLowerCase().endsWith('.usdz')
+                ? 'USDZ model'
+                : '3D model',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: colors.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

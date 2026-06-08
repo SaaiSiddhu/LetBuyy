@@ -4,7 +4,8 @@ import test from 'node:test';
 
 const EVENT_CORE = 'packages/event-core/src/index.ts';
 const OPERATIONS_SCHEMA = 'services/api-gateway/src/schemas/operations.schema.ts';
-const OPERATIONS_ROUTE = 'services/api-gateway/src/routes/operations.ts';
+const OPERATIONS_INDEX = 'services/api-gateway/src/index.ts';
+const MARKETPLACE_REVIEW_ROUTE = 'services/api-gateway/src/routes/operations/marketplace-reviews.ts';
 const REVIEW_HELPER = 'services/api-gateway/src/lib/marketplace-review-records.ts';
 const API_CLIENT = 'packages/typescript/api-client/src/index.ts';
 const OPERATIONS_PACKAGE = 'apps/platform-operations-portal/package.json';
@@ -40,12 +41,14 @@ test('operations schemas expose marketplace review queue contracts', () => {
 });
 
 test('ops route lists and decides marketplace app and theme reviews', () => {
-  const route = read(OPERATIONS_ROUTE);
+  const index = read(OPERATIONS_INDEX);
+  const route = read(MARKETPLACE_REVIEW_ROUTE);
   const helper = read(REVIEW_HELPER);
 
+  assert.match(index, /api\.route\('\/operations\/marketplace-reviews', operationsMarketplaceReviewsRouter\)/);
   assert.match(route, /router\.use\('\*', requireRoleCategory\('ops'\), requireSuperAdmin\)/);
-  assert.match(route, /router\.get\('\/marketplace-reviews'/);
-  assert.match(route, /router\.post\('\/marketplace-reviews\/:id\/decision'/);
+  assert.match(route, /router\.get\('\/', requirePermission\('review:view'\)/);
+  assert.match(route, /router\.post\('\/:id\/decision', requirePermission\('review:decide'\)/);
   assert.match(route, /MarketplaceReviewListQuerySchema\.safeParse/);
   assert.match(route, /MarketplaceReviewDecisionSchema\.safeParse/);
   assert.match(route, /from\('marketplace_review_records'\)/);
@@ -56,7 +59,7 @@ test('ops route lists and decides marketplace app and theme reviews', () => {
 });
 
 test('ops decisions publish apps, publish or revoke theme versions, and emit review events', () => {
-  const route = read(OPERATIONS_ROUTE);
+  const route = read(MARKETPLACE_REVIEW_ROUTE);
 
   assert.match(route, /from\('marketplace_apps'\)/);
   assert.match(route, /status: marketplaceAppStatusForDecision\(decision\)/);

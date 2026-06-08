@@ -1,49 +1,67 @@
 # App Installation Journey Audit (Phase 9)
 
-Walks the full lifecycle — browse → view permissions → install → authorize → configure → use → upgrade → cancel → uninstall — flagging every friction point and missing step. Parent: [Master Audit](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md).
+**Parent:** [`../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md`](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md) · **Date:** 2026-06-07
 
-## Stage-by-stage
+Step-by-step simulation of the merchant journey: **browse → view permissions → install → authorize → configure → use → upgrade plan → cancel → uninstall.** Each step is rated and friction is cited.
 
-### 1. Browse → 2. View permissions
-- App detail (`apps/[slug]/page.tsx`) has a dedicated **Permission review** section + sidebar permissions panel listing scopes with human labels. Good transparency.
-- **Friction:** scopes show as a flat list with no "why this scope is needed" rationale and no data-handling disclosure. Pricing is shown but **billing terms are not surfaced in the same place as the install action**.
+## Journey map
 
-### 3. Install → 4. Authorize
-- `AppInstallConsentPanel` opens a `Modal` listing scopes (label + raw code), optional privacy/terms links, then `POST /api/apps/:id/install {scopes}`.
-- Backend (`install-lifecycle-routes.ts`): optional **idempotency** via `X-Idempotency-Key`, **scope normalization** against `app.api_scopes`, upsert `app_installations` (active), **webhook subscription provisioning**, `app.installed` outbox event, `install_count` increment. This is solid.
-- **Major gap:** this **is not the OAuth flow.** The real `/app-store/apps/:id/oauth/authorize` + `/oauth/token` exist and mint JWTs, but the marketplace never calls them. The consent panel sends the app's **entire declared scope set** with no per-scope opt-out and no incremental authorization.
-- **Security note:** on success the panel renders the app in an `<iframe sandbox="allow-forms allow-popups allow-same-origin allow-scripts">`. `allow-same-origin` + `allow-scripts` together is unsafe if the launch target is same-origin; third-party apps must be served cross-origin and the sandbox tightened.
+```mermaid
+flowchart LR
+  A[Browse / detail] --> B[Review permissions]
+  B --> C[Consent modal]
+  C --> D[Install POST /api/apps/:id/install]
+  D --> E{Launch target?}
+  E -->|launchUrl| F[Embedded iframe / open]
+  E -->|none| G[Warning: no app URL]
+  D --> H[My Apps]
+  H --> I[Configure extensions]
+  H --> J[Review app]
+  H --> K[Uninstall confirm]
+  C -.->|paid app| X[(Charge approval — NO UI)]
+  H -.->|upgrade plan| X
+```
 
-### 5. Configure
-- **Missing.** There is no post-install setup/onboarding. The success state either embeds `app_url` in an iframe or, if no URL, shows "Launch target unavailable." No setup checklist, no required-config capture, no deep link into the merchant admin.
+## Step-by-step
 
-### 6. Use
-- Embedded iframe launch or "Open full screen." `My Apps` lists installs with a Settings link (only if `app_url` exists) and uninstall.
-- **Missing:** App Bridge session handoff in the UI (the `embed-session`/`bridge/fetch` endpoints exist but aren't used), so the embed is a raw iframe rather than an authenticated embedded app.
+| Step | What happens | Friction | Grade |
+|---|---|---|---|
+| **Browse** | Detail page is rich (hero, preview, pricing, permissions, reviews, trust) (`apps/[slug]/page.tsx`) | Screenshots are placeholders if none; empty catalog | B |
+| **View permissions** | Dedicated "Permission review" section + sidebar list with human-readable scope labels (`apps/[slug]/page.tsx:379-408`, `marketplace-display.ts:107`) | None — clear | A− |
+| **Consent** | Modal names target store, lists each scope (label + raw code), states billing terms, links privacy/terms (`AppInstallConsentPanel.tsx:205-279`) | None — best-in-class moment | A− |
+| **Install** | POST `/api/apps/:id/install` (session-gated by `proxy.ts:9` + `requireSession`) → gateway mints app token immediately (`install-lifecycle-routes.ts:128`); idempotency-aware | **Two install paths**: default direct-token; OAuth path **throws** if its flag is on (`AppInstallConsentPanel.tsx:90`) | C+ |
+| **Authorize (OAuth)** | Full PKCE S256 authorize/token flow exists in backend (`billing-oauth-routes.ts:530`) | **Never invoked by UI** | F (as a UX) |
+| **Launch / use** | On success, panel shows embedded `iframe` or "Open full screen" — but only from `launchUrl` | `embedUrl` hardcoded null (`:67`) → real embedded admin session never used; if no `launchUrl`, warning "listing does not expose a direct app URL" | C |
+| **Configure** | "My Apps" → per-install `ExtensionConfigPanel` | **Stub**: "requires an approved BFF route" (`ExtensionConfigPanel.tsx:17`); Settings is external link or disabled button | D |
+| **Upgrade plan / pay** | — | **No UI exists** to create/approve a charge; `createCharge`/`approveCharge` unused; no plans/tiers | F |
+| **Cancel plan** | — | No subscription-cancel UI distinct from uninstall | F |
+| **Uninstall** | "My Apps" `ConfirmDialog` with explicit data-loss note (`InstalledAppsGrid.tsx:153-166`); backend revokes token, disables subscriptions, fires `shop/redact` (`install-lifecycle-routes.ts:257,344`) | None — clean | A− |
+| **Review** | Inline `ReviewComposer` on active installs → `POST /api/apps/:id/reviews` (install required) | None | B+ |
 
-### 7. Upgrade plan / 8. Cancel plan
-- **Missing entirely in the product.** Billing charges + approval exist server-side (`/installations/:id/charges`, `/charges/:id/approve`), but there is **no UI** to view a charge, approve/decline it, change plans, start a trial, or cancel. The detail page only shows a passive "Billing approval required" banner.
+## The decisive break: the paid path
 
-### 9. Uninstall
-- Best-built stage. `InstalledAppsGrid` → `ConfirmDialog` with an explicit data-loss warning → `DELETE /api/apps/:id/install` → status `uninstalled`, lifecycle outbox, install-count recount. Optimistic UI with error rollback. 
+The journey is **excellent through install and uninstall**, then **falls off a cliff for anything involving money or configuration**:
 
-## Friction & missing-step register
+- A merchant can install a `recurring`-priced app, but there is **no surface to approve its charge** — the backend `POST /charges/:id/approve` (which even verifies Razorpay payment proof, `billing-oauth-routes.ts:286-331`) is unreachable from the marketplace.
+- There is **no upgrade/downgrade/cancel-plan** flow distinct from a full uninstall.
+- **Configuration is a stub** despite a complete extension/function registry backend (`extension-routes.ts:73-297`).
 
-| Stage | Issue | Severity |
-|---|---|---|
-| Permissions | No rationale per scope; no data-handling disclosure | High |
-| Install | Bypasses real OAuth; all-or-nothing scopes; no incremental auth | High |
-| Install | Billing terms not shown alongside install consent | High |
-| Install | Unsafe iframe sandbox combination | High |
-| Configure | No post-install setup/onboarding at all | High |
-| Use | No App Bridge session; raw iframe only | Medium |
-| Upgrade/Cancel | No billing UI (plan change, trial, cancel, refund) | Critical |
-| Uninstall | No reason capture / win-back | Low |
-| All | No notifications on install/charge/uninstall (events emitted, no inbox) | Medium |
+So the realistic merchant outcome today: *install a free app, maybe launch it via an external URL, and uninstall it.* Anything paid or configurable dead-ends.
 
-## Recommendations
-1. Route install through the real OAuth authorize/consent, with **billing terms + scopes in one approval** and **re-consent when an update widens scopes**.
-2. Add a **post-install setup** step and use `embed-session`/App Bridge for authenticated embedding.
-3. Build the **billing surface**: plan selection, charge approval, trials, plan changes, cancellation, refunds.
-4. Tighten the embed sandbox; serve third-party apps cross-origin.
-5. Keep the uninstall flow as the model for the rest of the product.
+## Edge cases & states
+
+- **Not signed in:** `proxy.ts` redirects protected routes to `accounts.letbuyy.store/lookup` (stale domain) and returns 401 for protected APIs (`proxy.ts:7,22-34`). Install consent surfaces 401/403 copy (`AppInstallConsentPanel.tsx:47-49`).
+- **No launch target:** explicit warning banner (`AppInstallConsentPanel.tsx:161`, `apps/[slug]/page.tsx:611`).
+- **Backend down:** `MarketplaceUnavailable` / honest errors throughout.
+- **Idempotency:** install/uninstall/charges dedupe on idempotency key (`install-lifecycle-routes.ts:63`).
+
+## Recommendations (in journey order)
+
+1. **Build the charge-approval surface** (My Apps + detail) — wire `createCharge`/`approveCharge`; this is the missing half of the journey.
+2. **Wire real configuration** — replace the `ExtensionConfigPanel` stub with `extensionRegistry`/`update*Registration`.
+3. **Wire embedded launch** — use `embedSession` instead of the hardcoded-null `embedUrl`.
+4. **Add plan management** — upgrade/downgrade/cancel distinct from uninstall (needs pricing plans, Master #60).
+5. **Collapse install to one path** (OAuth) and remove the throw.
+6. **Add granted-scope review + per-scope revocation** in My Apps.
+
+The install/uninstall bookends are genuinely strong; the work is to **build the middle of the journey** (pay, configure, manage) that the backend already supports.

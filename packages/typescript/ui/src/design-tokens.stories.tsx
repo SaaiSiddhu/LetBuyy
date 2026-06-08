@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Badge, Banner, Button, Card, DataTable, EmptyState, FilterBar, Input, MaterialIcon, MetricCard, Page, PageContent, PageHeader, PageShell, Section, Textarea } from './index';
+import { Badge, Banner, Button, Card, Table, EmptyState, FilterBar, Input, MaterialIcon, MetricCard, Page, PageContent, PageHeader, Section, Textarea } from './index';
 import {
     letbuyyDensityTokens,
     letbuyyColorTokens,
@@ -36,7 +36,7 @@ const primitiveTokenSpecs = [
 ] as const satisfies readonly TokenSpec[];
 
 const brandTokenSpecs = [
-    { label: 'Brand Accent', variable: '--lb-semantic-accent-brand', role: 'Purple brand accent' },
+    { label: 'Brand Accent', variable: '--lb-color-primary', role: 'Purple brand accent' },
     { label: 'Brand Hover', variable: '--lb-semantic-accent-hover', role: 'Accent hover' },
     { label: 'Brand Active', variable: '--lb-semantic-accent-active', role: 'Accent active' },
     { label: 'Brand Subtle', variable: '--lb-semantic-accent-subtle', role: 'Selected and focus tint' },
@@ -48,8 +48,8 @@ const lightThemeTokenSpecs = [
     { label: 'Surface', variable: '--lb-semantic-background-surface', role: 'Light raised surface' },
     { label: 'Card', variable: '--lb-semantic-background-card', role: 'Light card surface' },
     { label: 'Border', variable: '--lb-semantic-border-default', role: 'Light border' },
-    { label: 'Text Primary', variable: '--lb-semantic-text-primary', role: 'Light primary text' },
-    { label: 'Text Secondary', variable: '--lb-semantic-text-secondary', role: 'Light secondary text' },
+    { label: 'Text Primary', variable: '--lb-color-text', role: 'Light primary text' },
+    { label: 'Text Secondary', variable: '--lb-color-text-subdued', role: 'Light secondary text' },
     { label: 'Primary CTA', variable: '--lb-component-button-primary-bg', role: 'Light primary button background' },
     { label: 'Primary CTA Text', variable: '--lb-component-button-primary-text', role: 'Light primary button text' },
 ] as const satisfies readonly TokenSpec[];
@@ -60,8 +60,8 @@ const darkThemeTokenSpecs = [
     { label: 'Surface', variable: '--lb-semantic-background-surface', role: 'Dark raised surface' },
     { label: 'Card', variable: '--lb-semantic-background-card', role: 'Dark card surface' },
     { label: 'Border', variable: '--lb-semantic-border-default', role: 'Dark border' },
-    { label: 'Text Primary', variable: '--lb-semantic-text-primary', role: 'Dark primary text' },
-    { label: 'Text Secondary', variable: '--lb-semantic-text-secondary', role: 'Dark secondary text' },
+    { label: 'Text Primary', variable: '--lb-color-text', role: 'Dark primary text' },
+    { label: 'Text Secondary', variable: '--lb-color-text-subdued', role: 'Dark secondary text' },
     { label: 'Primary CTA', variable: '--lb-component-button-primary-bg', role: 'Dark primary button background' },
     { label: 'Primary CTA Text', variable: '--lb-component-button-primary-text', role: 'Dark primary button text' },
 ] as const satisfies readonly TokenSpec[];
@@ -313,8 +313,8 @@ function SurfaceHierarchyContent() {
                             <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text-subdued)]">Card</p>
                             <p className="m-0 text-[length:var(--lb-font-size-h3)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]">Primary content</p>
                         </div>
-                        <div className="rounded-[var(--lb-component-card-radius)] border border-[var(--lb-semantic-accent-brand)] bg-[var(--lb-semantic-accent-subtle)] p-[var(--lb-space-4)]">
-                            <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-semantic-accent-brand)]">Accent</p>
+                        <div className="rounded-[var(--lb-component-card-radius)] border border-[var(--lb-color-primary)] bg-[var(--lb-semantic-accent-subtle)] p-[var(--lb-space-4)]">
+                            <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-primary)]">Accent</p>
                             <p className="m-0 text-[length:var(--lb-font-size-h3)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]">Selected state</p>
                         </div>
                     </div>
@@ -332,7 +332,7 @@ function SpacingScaleContent() {
                     {spacingSpecs.map(([label, variable]) => (
                         <div key={variable} className="rounded-[var(--lb-component-card-radius)] border border-[var(--lb-component-card-border)] bg-[var(--lb-component-card-bg)] p-[var(--lb-space-4)]">
                             <div className="mb-[var(--lb-space-3)] h-[var(--lb-space-4)] rounded-[var(--lb-radius-full)] bg-[var(--lb-semantic-accent-subtle)]">
-                                <div className="h-full rounded-[var(--lb-radius-full)] bg-[var(--lb-semantic-accent-brand)]" style={{ width: `var(${variable})` }} />
+                                <div className="h-full rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)]" style={{ width: `var(${variable})` }} />
                             </div>
                             <p className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]">{label}px</p>
                             <code className="text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">{variable}</code>
@@ -436,7 +436,7 @@ function OnboardingPreviewContent() {
                             <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text-subdued)]">Setup progress</p>
                             <p className="m-0 text-[length:var(--lb-font-size-h2)] font-[var(--lb-font-weight-bold)] leading-[var(--lb-line-height-h2)] text-[color:var(--lb-color-text)]">40%</p>
                             <div className="mt-[var(--lb-space-3)] h-[var(--lb-space-2)] rounded-[var(--lb-radius-full)] bg-[var(--lb-component-card-border)]">
-                                <div className="h-full w-2/5 rounded-[var(--lb-radius-full)] bg-[var(--lb-semantic-accent-brand)]" />
+                                <div className="h-full w-2/5 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)]" />
                             </div>
                         </div>
                     </div>
@@ -496,7 +496,7 @@ function ButtonHierarchyContent() {
                 <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
                     <TokenSwatch spec={{ label: 'Primary BG', variable: '--lb-component-button-primary-bg', role: 'Component primary background' }} />
                     <TokenSwatch spec={{ label: 'Primary Text', variable: '--lb-component-button-primary-text', role: 'Component primary text' }} />
-                    <TokenSwatch spec={{ label: 'Brand Accent', variable: '--lb-semantic-accent-brand', role: 'Interactive accent' }} />
+                    <TokenSwatch spec={{ label: 'Brand Accent', variable: '--lb-color-primary', role: 'Interactive accent' }} />
                 </div>
             </Section>
         </Card>
@@ -649,12 +649,12 @@ export function TablePreview() {
                 />
                 <Card>
                     <Section title="Recent orders" description="Dense operational tables keep neutral surfaces and semantic statuses.">
-                        <DataTable
-                            data={storyRows}
+                        <Table
+                            rows={storyRows}
                             columns={[
                                 { key: 'order', header: 'Order', sortable: true },
                                 { key: 'customer', header: 'Customer' },
-                                { key: 'status', header: 'Status', render: (_value, row) => <StatusBadge status={row.status as string} /> },
+                                { key: 'status', header: 'Status', render: (row) => <StatusBadge status={row.status} /> },
                                 { key: 'total', header: 'Total' },
                             ]}
                             sortKey="order"
@@ -697,7 +697,7 @@ export function CompactMerchantShell() {
                         ))}
                     </div>
                 </aside>
-                <PageShell className="max-w-none">
+                <Page className="max-w-none">
                     <PageHeader title="Products" primaryAction={{ label: 'Add product', icon: <MaterialIcon name="add" /> }} secondaryActions={[{ label: 'Collections' }]} />
                     <PageContent>
                         <FilterBar
@@ -708,7 +708,7 @@ export function CompactMerchantShell() {
                         <DashboardMetrics />
                         <TablePreviewContent />
                     </PageContent>
-                </PageShell>
+                </Page>
             </div>
         </TokenFrame>
     );
@@ -716,12 +716,12 @@ export function CompactMerchantShell() {
 
 function TablePreviewContent() {
     return (
-        <DataTable
-            data={storyRows}
+        <Table
+            rows={storyRows}
             columns={[
                 { key: 'order', header: 'Order', sortable: true },
                 { key: 'customer', header: 'Customer' },
-                { key: 'status', header: 'Status', render: (_value, row) => <StatusBadge status={row.status as string} /> },
+                { key: 'status', header: 'Status', render: (row) => <StatusBadge status={row.status} /> },
                 { key: 'total', header: 'Total' },
             ]}
             sortKey="order"
@@ -758,8 +758,8 @@ function DensityAuditContent() {
     return (
         <Card>
             <Section title="Density Audit" description="The compact admin density reduces vertical consumption through shared size variables, not page-level overrides.">
-                <DataTable
-                    data={densitySpecs.map((spec) => ({
+                <Table
+                    rows={densitySpecs.map((spec) => ({
                         id: spec.key,
                         component: spec.label,
                         compact: letbuyyDensityTokens.compact[spec.key],
@@ -814,7 +814,7 @@ function DensityAdminSurface({ density, label, description }: { density: Letbuyy
                         ))}
                     </div>
                 </aside>
-                <PageShell className="max-w-none">
+                <Page className="max-w-none">
                     <PageHeader
                         title={label}
                         description={description}
@@ -839,7 +839,7 @@ function DensityAdminSurface({ density, label, description }: { density: Letbuyy
                             secondaryAction={<Button variant="secondary">Clear filters</Button>}
                         />
                     </PageContent>
-                </PageShell>
+                </Page>
             </div>
         </div>
     );

@@ -90,11 +90,11 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
   // Language helper
   LanguageService get _lang => context.watch<LanguageService>();
 
-  void _nextStep() {
+  Future<void> _nextStep() async {
     if (_currentStep < _totalSteps) {
       // Save onboarding data after step 4 before moving to step 5
       if (_currentStep == 4) {
-        _saveOnboardingData();
+        await _saveOnboardingData();
       }
 
       final nextStep = _currentStep + 1;
@@ -278,19 +278,31 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
 
   Future<void> _saveOnboardingData() async {
     try {
-      final authService = context.read<StoreAuthService>();
-      final userId = authService.currentUser?.id;
-      if (userId == null) return;
+      if (_businessType == null || _productType == null || _category == null) {
+        return;
+      }
 
-      // TODO: Wire up onboarding data save via API when endpoint is ready
-      debugPrint(
-        'Onboarding data ready for user $userId: '
-        'businessType=$_businessType, channels=$_selectedChannels, '
-        'productType=$_productType, category=$_category',
+      await context.read<StoreService>().saveMobileOnboardingProgress(
+        businessType: _businessType!,
+        channels: _selectedChannels,
+        productType: _productType!,
+        category: _category!,
       );
     } catch (e) {
       debugPrint('Error saving onboarding: $e');
     }
+  }
+
+  Map<String, dynamic> _onboardingTemplateConfig() {
+    return {
+      'onboarding': {
+        if (_businessType != null) 'business_type': _businessType,
+        'channels': _selectedChannels.toList(growable: false),
+        if (_productType != null) 'product_type': _productType,
+        if (_category != null) 'category': _category,
+        'source': 'mobile-merchant-app',
+      },
+    };
   }
 
   Future<void> _checkSubdomainAvailability(String subdomain) async {
@@ -345,6 +357,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
         tagline: '',
         subdomain: _subdomainController.text.trim().toLowerCase(),
         themeId: _selectedThemeId,
+        templateConfig: _onboardingTemplateConfig(),
       );
 
       final publishedStore = await storeService.publishStore(store.id);

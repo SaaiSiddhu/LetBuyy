@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
 import 'api_client.dart';
-import 'skip_needs_backend_exception.dart';
+
+typedef PushTokenProvider = FutureOr<String?> Function();
 
 enum PushDevicePlatform {
   android('android'),
@@ -37,15 +39,18 @@ class PushDeviceRegistration {
 }
 
 class PushService extends ChangeNotifier {
-  PushService({required ApiClient api}) : _api = api;
-
-  static const missingRegistrationRouteId =
-      'MOBILE_PUSH_DEVICE_TOKEN_REGISTRATION';
+  PushService({required ApiClient api, PushTokenProvider? tokenProvider})
+    : _api = api,
+      _tokenProvider = tokenProvider;
 
   final ApiClient _api;
+  final PushTokenProvider? _tokenProvider;
 
   PushDeviceRegistration? _lastAttempt;
   PushDeviceRegistration? get lastAttempt => _lastAttempt;
+  bool _lastCurrentDeviceRegistrationSkipped = false;
+  bool get lastCurrentDeviceRegistrationSkipped =>
+      _lastCurrentDeviceRegistrationSkipped;
 
   String get expectedRegistrationEndpoint =>
       '${_api.baseUrl}/notifications/device-tokens';
@@ -67,21 +72,26 @@ class PushService extends ChangeNotifier {
     );
     notifyListeners();
 
-    // [SKIP-NEEDS-BACKEND: MOBILE_PUSH_DEVICE_TOKEN_REGISTRATION]
-    throw const SkipNeedsBackendException(
-      missingRegistrationRouteId,
-      'Gateway route for inserting device_tokens is not implemented.',
-    );
+    await _api.notifications.registerDeviceToken(_lastAttempt!.toJson());
   }
 
   Future<void> unregisterDeviceToken(String token) async {
     if (token.trim().isEmpty) return;
 
-    // [SKIP-NEEDS-BACKEND: MOBILE_PUSH_DEVICE_TOKEN_REGISTRATION]
-    throw const SkipNeedsBackendException(
-      missingRegistrationRouteId,
-      'Gateway route for deleting device_tokens is not implemented.',
-    );
+    await _api.notifications.unregisterDeviceToken(token.trim());
+  }
+
+  Future<bool> registerCurrentDeviceToken({String? deviceName}) async {
+    final token = (await _tokenProvider?.call())?.trim();
+    if (token == null || token.isEmpty) {
+      _lastCurrentDeviceRegistrationSkipped = true;
+      notifyListeners();
+      return false;
+    }
+
+    _lastCurrentDeviceRegistrationSkipped = false;
+    await registerDeviceToken(token: token, deviceName: deviceName);
+    return true;
   }
 
   PushDevicePlatform currentPlatform() {

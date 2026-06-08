@@ -4,6 +4,9 @@ class SkipNeedsBackendException implements Exception {
   final String id;
   final String message;
 
+  static const userMessage =
+      'This action is not available in the mobile app yet.';
+
   @override
-  String toString() => 'SKIP-NEEDS-BACKEND: $id: $message';
+  String toString() => userMessage;
 }

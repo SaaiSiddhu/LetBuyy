@@ -46,12 +46,13 @@ class MerchantFeatureDefinitions {
     coupons,
     giftCards,
     reviews,
+    returns,
     orderDetail,
   ];
 
   static const onlineStore = [themeMarketplace, pages, blog, navigation, media];
 
-  static const apps = [appMarketplace];
+  static const apps = [appMarketplace, embeddedAppBridgeRuntime];
 
   static const settingsHub = [
     checkout,
@@ -64,23 +65,18 @@ class MerchantFeatureDefinitions {
     billing,
     business,
     localization,
+    localizationMarkets,
+    customData,
     security,
   ];
 
-  static const other = [formSubmissions, analytics, aiStudio];
+  static const other = [formSubmissions, emailCampaigns, analytics, aiStudio];
 
-  static const platformBlocked = [
-    payoutsSettlement,
-    wallet,
-    commission,
-    kyc,
-    returns,
-    twoFactor,
-    businessDetails,
-    localizationMarkets,
-    customData,
-    embeddedAppBridgeRuntime,
-  ];
+  static const money = [payoutsSettlement, wallet, commission];
+
+  static const trust = [kyc, twoFactor];
+
+  static const platformBlocked = <MerchantFeatureDefinition>[];
 
   static const all = [
     ...commerce,
@@ -88,6 +84,8 @@ class MerchantFeatureDefinitions {
     ...apps,
     ...settingsHub,
     ...other,
+    ...money,
+    ...trust,
     ...platformBlocked,
   ];
 
@@ -428,8 +426,9 @@ class MerchantFeatureDefinitions {
     summary:
         'Legal name, GSTIN, invoice prefix, billing address, and compliance.',
     icon: Icons.business_outlined,
+    endpoint: 'stores',
     backendRequirement:
-        'Store PATCH does not yet accept full business-detail or billing-address fields.',
+        'Requires /v1/stores/:id PATCH business-profile and invoice-address fields.',
   );
 
   static const localization = MerchantFeatureDefinition(
@@ -439,8 +438,9 @@ class MerchantFeatureDefinitions {
     title: 'Localization',
     summary: 'Languages, markets, default locale, and storefront translations.',
     icon: Icons.language_outlined,
+    endpoint: 'stores/:id/localization',
     backendRequirement:
-        'No storefront localization/settings endpoint exists beyond current locale.',
+        'Requires /v1/stores/:id/localization for locales, markets, and translations.',
   );
 
   static const security = MerchantFeatureDefinition(
@@ -458,111 +458,117 @@ class MerchantFeatureDefinitions {
   static const payoutsSettlement = MerchantFeatureDefinition(
     id: 'payouts-settlement',
     route: '/features/payouts-settlement',
-    group: 'Platform Blocked',
+    group: 'Money',
     title: 'Payouts & Settlement',
     summary: 'Settlement batches, provider payout status, UTRs, and exports.',
     icon: Icons.account_balance_wallet_outlined,
-    backendRequirement:
-        'No tenant-safe merchant payout, settlement, or UTR gateway contract exists.',
+    endpoint: 'payouts',
+    backendRequirement: 'Requires /v1/payouts for the active store.',
   );
 
   static const wallet = MerchantFeatureDefinition(
     id: 'wallet',
     route: '/features/wallet',
-    group: 'Platform Blocked',
+    group: 'Money',
     title: 'Wallet',
     summary: 'Merchant wallet balance, credits, debits, holds, and top-ups.',
     icon: Icons.wallet_outlined,
-    backendRequirement:
-        'No merchant wallet ledger or balance gateway contract exists.',
+    endpoint: 'wallet',
+    backendRequirement: 'Requires /v1/wallet for the active store.',
   );
 
   static const commission = MerchantFeatureDefinition(
     id: 'commission',
     route: '/features/commission',
-    group: 'Platform Blocked',
+    group: 'Money',
     title: 'Commission',
     summary: 'Commission rules, order-level fees, and reconciliation.',
     icon: Icons.percent_outlined,
-    backendRequirement:
-        'No merchant-facing commission schedule or reconciliation gateway contract exists.',
+    endpoint: 'commission',
+    backendRequirement: 'Requires /v1/commission for the active store.',
   );
 
   static const kyc = MerchantFeatureDefinition(
     id: 'kyc',
     route: '/features/kyc',
-    group: 'Platform Blocked',
+    group: 'Trust',
     title: 'KYC',
     summary: 'Business verification, documents, bank proof, and approval.',
     icon: Icons.verified_user_outlined,
+    endpoint: 'kyc',
     backendRequirement:
-        'No mobile-safe KYC document, verification, or provider status gateway contract exists.',
+        'Requires /v1/kyc document capture and provider status for the active store.',
   );
 
   static const returns = MerchantFeatureDefinition(
     id: 'returns',
     route: '/features/returns',
-    group: 'Platform Blocked',
+    group: 'Commerce',
     title: 'Returns',
     summary: 'Return requests, RMAs, labels, inspections, and restocking.',
     icon: Icons.assignment_return_outlined,
-    backendRequirement:
-        'No merchant return/RMA lifecycle gateway contract exists.',
+    endpoint: 'returns',
+    backendRequirement: 'Requires /v1/returns rows for the active store.',
   );
 
   static const twoFactor = MerchantFeatureDefinition(
     id: 'two-factor',
     route: '/features/two-factor',
-    group: 'Platform Blocked',
+    group: 'Trust',
     title: 'Two-factor Authentication',
     summary: 'TOTP setup, recovery codes, enforced roles, and sessions.',
     icon: Icons.phonelink_lock_outlined,
+    endpoint: '2fa',
     backendRequirement:
-        'No merchant 2FA/passkey/session inventory gateway contract exists for mobile.',
+        'Requires /v1/2fa TOTP enrollment, recovery codes, and session inventory for the merchant account.',
   );
 
   static const businessDetails = MerchantFeatureDefinition(
     id: 'business-details',
     route: '/features/business-details',
-    group: 'Platform Blocked',
+    group: 'Settings',
     title: 'Business Details',
     summary: 'Legal entity, GSTIN, invoice profile, and billing address.',
     icon: Icons.business_center_outlined,
+    endpoint: 'stores',
     backendRequirement:
-        'Store PATCH does not expose a full business profile and invoice-address contract.',
+        'Requires /v1/stores/:id PATCH business-profile and invoice-address fields.',
   );
 
   static const localizationMarkets = MerchantFeatureDefinition(
     id: 'localization-markets',
     route: '/features/localization-markets',
-    group: 'Platform Blocked',
+    group: 'Settings',
     title: 'Localization & Markets',
     summary: 'Markets, locales, currencies, and storefront translations.',
     icon: Icons.public_outlined,
+    endpoint: 'stores/:id/localization',
     backendRequirement:
-        'No storefront markets, locale publishing, or translation gateway contract exists.',
+        'Requires /v1/stores/:id/localization and nested market, locale, and translation mutations.',
   );
 
   static const customData = MerchantFeatureDefinition(
     id: 'custom-data',
     route: '/features/custom-data',
-    group: 'Platform Blocked',
+    group: 'Settings',
     title: 'Custom Data',
     summary: 'Metafields, definitions, namespaces, and validation rules.',
     icon: Icons.data_object_outlined,
+    endpoint: 'metafields',
     backendRequirement:
-        'No merchant-safe metafield definition/value gateway contract exists.',
+        'Uses /v1/metafields definitions and values for the active store.',
   );
 
   static const embeddedAppBridgeRuntime = MerchantFeatureDefinition(
     id: 'embedded-app-bridge-runtime',
     route: '/features/embedded-app-bridge',
-    group: 'Platform Blocked',
+    group: 'Apps',
     title: 'Embedded App Bridge Runtime',
     summary: 'Native app-extension host, signed sessions, and UI rendering.',
     icon: Icons.integration_instructions_outlined,
+    endpoint: 'app-store/installations/:id/embed-session',
     backendRequirement:
-        'Mobile App Bridge runtime needs a signed native extension-host gateway contract.',
+        'Uses signed /v1/app-store embed sessions and the mobile extension host.',
   );
 
   static const formSubmissions = MerchantFeatureDefinition(
@@ -575,6 +581,18 @@ class MerchantFeatureDefinitions {
     endpoint: 'form-submissions',
     backendRequirement:
         'Requires /v1/form-submissions rows for the active store.',
+  );
+
+  static const emailCampaigns = MerchantFeatureDefinition(
+    id: 'email-campaigns',
+    route: '/features/email-campaigns',
+    group: 'Other',
+    title: 'Email Campaigns',
+    summary: 'Create and send campaigns to subscribed customers.',
+    icon: Icons.campaign_outlined,
+    endpoint: 'marketing/email-campaigns',
+    backendRequirement:
+        'Requires protected /v1/marketing/email-campaigns access for the active store.',
   );
 
   static const analytics = MerchantFeatureDefinition(

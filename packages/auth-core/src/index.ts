@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { EmailSchema } from '@letbuyy/shared-types';
 
 export * from './customer-session';
+export * from './storefront-access';
 
 const PasswordSchema = z
   .string()
@@ -759,6 +760,46 @@ export async function verifyCustomerSessionToken(
     kind: 'customer',
     token: cookieVerification.token,
     payload,
+  };
+}
+
+export interface ShopperIdentityCookieContract {
+  name: typeof LETBUYY_CUSTOMER_SESSION_COOKIE;
+  hostOnly: true;
+  sameSite: 'lax';
+  path: '/';
+  ttlSeconds: typeof LETBUYY_CUSTOMER_SESSION_TTL_SECONDS;
+}
+
+export interface ShopperIdentityProvider {
+  readonly realm: 'storefront-host-only';
+  readonly reservedFutureIssuerHost: string;
+  readonly platformSessionReachable: false;
+  readonly cookie: ShopperIdentityCookieContract;
+  issueSessionToken(customer: CustomerSessionSubject, options?: CustomerSessionTokenOptions): Promise<string>;
+  verifySessionToken(token: string | null | undefined, options?: CustomerSessionTokenOptions): Promise<LetbuyySessionVerificationResult<LetbuyyCustomerSessionPayload>>;
+}
+
+export function createHostOnlyShopperIdentityProvider(secret: string | null | undefined): ShopperIdentityProvider {
+  const reservedFutureIssuerHost = ['id', 'letbuyy', 'store'].join('.');
+  return {
+    realm: 'storefront-host-only',
+    reservedFutureIssuerHost,
+    platformSessionReachable: false,
+    cookie: {
+      name: LETBUYY_CUSTOMER_SESSION_COOKIE,
+      hostOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      ttlSeconds: LETBUYY_CUSTOMER_SESSION_TTL_SECONDS,
+    },
+    issueSessionToken(customer, options) {
+      if (!secret) throw new Error('CUSTOMER_SESSION_SECRET is required for shopper identity');
+      return createCustomerSessionToken(customer, secret, options);
+    },
+    verifySessionToken(token, options) {
+      return verifyCustomerSessionToken(token, secret, options);
+    },
   };
 }
 

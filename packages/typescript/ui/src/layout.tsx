@@ -1,7 +1,6 @@
 import React from 'react';
 import { Breadcrumbs } from './breadcrumbs';
 import { Button } from './button';
-import { warnDeprecated } from './deprecations';
 import { MaterialIcon, type MaterialIconName } from './icons';
 import { cx } from './utils';
 
@@ -512,16 +511,6 @@ export function getPageIconName(title: string, identity?: PageIdentity): Materia
     return resolvedIdentity ? letbuyyPageIdentityIcons[resolvedIdentity] : 'page';
 }
 
-export interface PageShellProps extends PageProps {}
-
-/**
- * @deprecated since 0.0.2. Use `Page` instead. This alias remains for backward compatibility.
- */
-export function PageShell(props: PageShellProps) {
-    warnDeprecated('PageShell', 'Page');
-    return <Page {...props} />;
-}
-
 export interface PageContentProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
 }
@@ -577,14 +566,6 @@ export function PageHeaderActions({ children, className = '', ...props }: PageHe
             {children}
         </div>
     );
-}
-
-/**
- * @deprecated since 0.0.2. Use `PageHeaderActions` instead. This alias remains for backward compatibility.
- */
-export function PageActions(props: PageHeaderActionsProps) {
-    warnDeprecated('PageActions', 'PageHeaderActions');
-    return <PageHeaderActions {...props} />;
 }
 
 export function PageHeader({

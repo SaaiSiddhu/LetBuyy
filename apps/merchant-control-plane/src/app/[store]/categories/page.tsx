@@ -2,14 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button, Input, Table,
     Badge,
     Banner,
-    Button,
     Card,
     ConfirmDialog,
     EmptyState,
-    Input,
     LayoutGrid,
     Package,
     Page,
@@ -405,7 +403,7 @@ export default function CategoriesPage() {
                         />
                     ) : categories.length > 0 ? (
                         <div className="overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
-                            <table className="w-full text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
+                            <Table tableClassName="w-full text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
                                 <thead className="bg-[var(--lb-color-surface-subdued)]">
                                     <tr>
                                         <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Name</th>
@@ -458,7 +456,7 @@ export default function CategoriesPage() {
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
+                            </Table>
                         </div>
                     ) : null}
                 </Section>

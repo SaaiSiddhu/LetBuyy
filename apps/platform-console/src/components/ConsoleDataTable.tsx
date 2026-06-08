@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Button, Input, Table } from '@letbuyy/ui';
 import type { ConsolePagination } from '@/lib/console-api';
 
 export type ConsoleDataColumn<T> = {
@@ -28,9 +29,8 @@ export function ConsoleDataTable<T>({
     getRowKey,
 }: ConsoleDataTableProps<T>) {
     return (
-        <section className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-zinc-800 text-sm">
+        <section>
+            <Table className="rounded-lg border-zinc-800 bg-zinc-900 shadow-none" containerClassName="overflow-x-auto" tableClassName="min-w-full divide-y divide-zinc-800 text-sm">
                     <thead className="bg-zinc-950/60">
                         <tr>
                             {columns.map((column) => (
@@ -61,8 +61,7 @@ export function ConsoleDataTable<T>({
                             </tr>
                         ))}
                     </tbody>
-                </table>
-            </div>
+            </Table>
 
             {meta ? (
                 <div className="flex flex-col gap-3 border-t border-zinc-800 px-4 py-3 text-sm text-zinc-400 sm:flex-row sm:items-center sm:justify-between">
@@ -122,7 +121,8 @@ export function ConsoleSearchForm({
 }) {
     return (
         <form className="flex flex-col gap-2 sm:flex-row sm:items-center" method="get">
-            <input
+            <Input
+                unstyled
                 type="search"
                 name="q"
                 defaultValue={defaultValue}
@@ -130,12 +130,13 @@ export function ConsoleSearchForm({
                 className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm text-zinc-100 outline-none transition-colors placeholder:text-zinc-500 focus:border-[var(--lb-color-primary)]"
             />
             {children}
-            <button
+            <Button
+                unstyled
                 type="submit"
                 className="min-h-11 rounded-lg bg-[var(--lb-color-primary)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--lb-color-primary-hover)] active:bg-[var(--lb-color-primary-active)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lb-color-focus-ring)]"
             >
                 Search
-            </button>
+            </Button>
         </form>
     );
 }

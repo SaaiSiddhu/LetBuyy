@@ -8,6 +8,12 @@ import ThemeProvider from '@/components/theme-provider';
 import AuthProvider from '@/components/auth-provider';
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core';
 import { DesignSystemRoot, ToastProvider } from '@letbuyy/ui';
+import { getThemeMarketplaceUrl } from '@/lib/site-url';
+import { ThemeService } from '@/lib/theme-service';
+
+const siteUrl = getThemeMarketplaceUrl();
+const PLATFORM_ORIGIN = process.env.NEXT_PUBLIC_MARKETING_URL?.trim() || siteUrl;
+const sharedOgImage = `${PLATFORM_ORIGIN}/og/letbuyy-default.png`;
 
 const letbuyySans = localFont({
     src: '../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2',
@@ -33,33 +39,69 @@ const letbuyyMono = localFont({
 const fontVariables = `${letbuyySans.variable} ${letbuyyDisplay.variable} ${letbuyyMono.variable}`;
 
 export const metadata: Metadata = {
+    metadataBase: new URL(siteUrl),
+    applicationName: 'LetBuyy Themes',
     title: {
         default: 'LetBuyy Themes — Beautiful Themes for Every Business',
         template: '%s | LetBuyy Themes',
     },
     description:
-        'Discover 50+ professionally designed themes for online stores, portfolios, resumes, and landing pages. Install in one click, customize everything.',
+        'Discover governed LetBuyy themes for online stores, portfolios, resumes, blogs, and landing pages with store-scoped preview and install flows.',
     keywords: [
         'themes', 'templates', 'ecommerce', 'store themes', 'portfolio themes',
-        'next.js themes', 'react themes', 'website templates', 'letbuyy',
+        'website templates', 'letbuyy', 'india',
     ],
+    alternates: { canonical: '/' },
     openGraph: {
         type: 'website',
-        locale: 'en_US',
+        url: siteUrl,
+        locale: 'en_IN',
         siteName: 'LetBuyy Themes',
         title: 'LetBuyy Themes — Beautiful Themes for Every Business',
-        description: 'Discover 50+ professionally designed themes. Install in one click.',
+        description: 'Discover governed LetBuyy themes with store-scoped preview and install flows.',
+        images: [{ url: sharedOgImage, width: 1200, height: 630, alt: 'LetBuyy Themes' }],
     },
     twitter: {
         card: 'summary_large_image',
         title: 'LetBuyy Themes',
         description: 'Beautiful themes for every business.',
+        images: [sharedOgImage],
     },
     robots: {
         index: true,
         follow: true,
+        googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
     },
 };
+
+const structuredData = [
+    {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                '@type': 'Organization',
+                '@id': `${PLATFORM_ORIGIN}/#organization`,
+                name: 'LetBuyy',
+                url: PLATFORM_ORIGIN,
+            },
+            {
+                '@type': 'WebSite',
+                '@id': `${siteUrl}/#website`,
+                name: 'LetBuyy Themes',
+                url: siteUrl,
+                inLanguage: 'en-IN',
+                publisher: { '@id': `${PLATFORM_ORIGIN}/#organization` },
+            },
+            {
+                '@type': 'CollectionPage',
+                name: 'LetBuyy Theme Marketplace',
+                url: siteUrl,
+                description: 'Professionally designed themes for stores, portfolios, blogs, and landing pages.',
+                isPartOf: { '@id': `${siteUrl}/#website` },
+            },
+        ],
+    },
+];
 
 export default async function RootLayout({
     children,
@@ -71,6 +113,7 @@ export default async function RootLayout({
         'merchant',
         cookieStore.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value,
     );
+    const initialUser = session.accepted ? await ThemeService.getSessionUser() : null;
 
     return (
         <html lang="en" className={fontVariables} suppressHydrationWarning>
@@ -93,11 +136,15 @@ export default async function RootLayout({
                         `,
                     }}
                 />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}
+                />
             </head>
             <body className="min-h-screen flex flex-col">
                 <DesignSystemRoot surface="marketplace" className="min-h-screen flex flex-col">
                     <ThemeProvider>
-                        <AuthProvider initialAuthenticated={session.accepted}>
+                        <AuthProvider initialAuthenticated={session.accepted} initialUser={initialUser}>
                             <ToastProvider>
                                 <Navbar />
                                 <main className="flex-grow pt-[72px]">

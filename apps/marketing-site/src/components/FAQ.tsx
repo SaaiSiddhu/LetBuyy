@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown } from '@letbuyy/ui'
+import { Button, ChevronDown } from '@letbuyy/ui'
 
 const faqs = [
     {
@@ -57,13 +57,13 @@ export default function FAQ() {
                             viewport={{ once: true }}
                             transition={{ duration: 0.4, delay: index * 0.05 }}
                         >
-                            <button
+                            <Button unstyled
                                 className="faq-question"
                                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
                             >
                                 <span>{faq.question}</span>
                                 <ChevronDown className="faq-icon" width={20} height={20} aria-hidden="true" />
-                            </button>
+                            </Button>
                             <AnimatePresence>
                                 {openIndex === index && (
                                     <motion.div

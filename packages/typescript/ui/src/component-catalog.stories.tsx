@@ -9,14 +9,10 @@ import {
     Button,
     Card,
     Chart,
-    ColorPreviewBlock,
-    ColorPreviewButton,
-    ColorPreviewSurface,
-    ColorSwatch,
     CommandPalette,
     Combobox,
     ConfirmDialog,
-    DataTable,
+    Table,
     DateRangePicker,
     DensityToggle,
     DescriptionList,
@@ -25,34 +21,36 @@ import {
     EmptyState,
     FilterBar,
     FilterChips,
-    IndexTable,
     Input,
     MaterialIcon,
     MetricCard,
     Modal,
     Page,
-    PageActions,
     PageContent,
     PageHeader,
     PageHeaderActions,
-    PageShell,
     Pagination,
     ProgressBar,
-    RadiusPreview,
     SaveBar,
     Section,
     Select,
     Skeleton,
     Spinner,
-    TableFilterBar,
     Tabs,
     Textarea,
-    TextStyle,
+    Text,
     ToastProvider,
     Tooltip,
     useToast,
 } from './index';
 import type { LetbuyyDensity } from './index';
+import {
+    ColorPreviewBlock,
+    ColorPreviewButton,
+    ColorPreviewSurface,
+    ColorSwatch,
+    RadiusPreview,
+} from './preview';
 
 interface StoryOrder extends Record<string, unknown> {
     id: string;
@@ -216,7 +214,7 @@ export function CoreControlsAndLayout() {
 
     return (
         <StoryFrame>
-            <PageShell>
+            <Page>
                 <PageHeader
                     eyebrow="Component catalog"
                     title="Core controls and layout"
@@ -244,7 +242,7 @@ export function CoreControlsAndLayout() {
                                     <Button variant="destructive">Destructive</Button>
                                     <Button loading>Loading</Button>
                                 </PageHeaderActions>
-                                <PageActions>
+                                <PageHeaderActions>
                                     <Button size="sm" variant="secondary">Small</Button>
                                     <Button size="lg">Large</Button>
                                     <Tooltip content="Icon button tooltip">
@@ -252,7 +250,7 @@ export function CoreControlsAndLayout() {
                                             <MaterialIcon name="products" />
                                         </Button>
                                     </Tooltip>
-                                </PageActions>
+                                </PageHeaderActions>
                             </div>
                             <div className="grid gap-[var(--lb-space-3)]">
                                 <Input label="Store name" defaultValue="Urban Kicks Demo" helperText="Shown across checkout and email templates." />
@@ -286,11 +284,11 @@ export function CoreControlsAndLayout() {
                                     <Badge label="Critical" variant="critical" />
                                 </div>
                                 <div className="grid gap-[var(--lb-space-2)]">
-                                    <TextStyle variant="strong">Strong merchant label</TextStyle>
-                                    <TextStyle variant="subdued">Subdued helper copy for dense forms.</TextStyle>
-                                    <TextStyle variant="positive">Positive trend copy.</TextStyle>
-                                    <TextStyle variant="negative">Negative exception copy.</TextStyle>
-                                    <TextStyle variant="code">--lb-component-card-bg</TextStyle>
+                                    <Text variant="strong">Strong merchant label</Text>
+                                    <Text variant="subdued">Subdued helper copy for dense forms.</Text>
+                                    <Text variant="positive">Positive trend copy.</Text>
+                                    <Text variant="negative">Negative exception copy.</Text>
+                                    <Text variant="code">--lb-component-card-bg</Text>
                                 </div>
                             </div>
                         </Section>
@@ -308,7 +306,7 @@ export function CoreControlsAndLayout() {
                                     </RadiusPreview>
                                 </div>
                                 <ColorPreviewSurface color="var(--lb-color-primary-soft)" label="Primary soft surface" className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] p-[var(--lb-space-3)]">
-                                    <TextStyle variant="strong">Preview surface</TextStyle>
+                                    <Text variant="strong">Preview surface</Text>
                                 </ColorPreviewSurface>
                                 <ColorPreviewButton color="var(--lb-component-button-primary-bg)" className="h-[var(--lb-density-button-height)] px-[var(--lb-space-4)] text-[color:var(--lb-component-button-primary-text)]">
                                     Preview CTA
@@ -317,7 +315,7 @@ export function CoreControlsAndLayout() {
                         </Section>
                     </Card>
                 </PageContent>
-            </PageShell>
+            </Page>
         </StoryFrame>
     );
 }
@@ -347,7 +345,7 @@ export function DataNavigationAndAnalytics() {
                         </Section>
                     </Card>
                     <Card>
-                        <Section title="Filters and table tools" description="FilterBar, TableFilterBar, FilterChips, DateRangePicker, and DensityToggle keep dense lists scannable.">
+                        <Section title="Filters and table tools" description="FilterBar, FilterBar, FilterChips, DateRangePicker, and DensityToggle keep dense lists scannable.">
                             <div className="grid gap-[var(--lb-space-3)]">
                                 <FilterBar
                                     search={<Input label="Search orders" defaultValue="#LB" />}
@@ -355,18 +353,18 @@ export function DataNavigationAndAnalytics() {
                                     chips={<FilterChips chips={[{ id: 'paid', label: 'Paid', onRemove: () => undefined }, { id: 'online', label: 'Online Store', onRemove: () => undefined }]} onClearAll={() => undefined} />}
                                     actions={<DensityToggle value={density} onChange={setDensity} />}
                                 />
-                                <TableFilterBar
-                                    search={<TextStyle variant="subdued">TableFilterBar shares FilterBar behavior for index pages.</TextStyle>}
+                                <FilterBar
+                                    search={<Text variant="subdued">FilterBar shares FilterBar behavior for index pages.</Text>}
                                     actions={<Badge label={`Density: ${density}`} variant="info" />}
                                 />
-                                <DataTable
+                                <Table
                                     columns={[
                                         { key: 'order', header: 'Order', sortable: true },
                                         { key: 'customer', header: 'Customer' },
-                                        { key: 'status', header: 'Status', render: (value) => statusBadge(value as StoryOrder['status']) },
+                                        { key: 'status', header: 'Status', render: (row) => statusBadge(row.status) },
                                         { key: 'total', header: 'Total' },
                                     ]}
-                                    data={orderRows}
+                                    rows={orderRows}
                                     sortKey="order"
                                     sortDirection="desc"
                                 />
@@ -374,12 +372,12 @@ export function DataNavigationAndAnalytics() {
                         </Section>
                     </Card>
                     <Card>
-                        <Section title="Index tables and navigation" description="IndexTable switches to card rows on mobile and keeps bulk selection accessible.">
+                        <Section title="Index tables and navigation" description="Table switches to card rows on mobile and keeps bulk selection accessible.">
                             <div className="grid gap-[var(--lb-space-3)]">
-                                <IndexTable
+                                <Table
                                     rows={productRows}
                                     columns={[
-                                        { key: 'title', header: 'Product', sortable: true, render: (row) => <TextStyle variant="strong">{row.title}</TextStyle> },
+                                        { key: 'title', header: 'Product', sortable: true, render: (row) => <Text variant="strong">{row.title}</Text> },
                                         { key: 'status', header: 'Status', render: (row) => statusBadge(row.status) },
                                         { key: 'inventory', header: 'Inventory' },
                                         { key: 'channel', header: 'Channel' },
@@ -437,7 +435,7 @@ export function FeedbackOverlaysAndResponsiveStates() {
                                             One payout has a missing settlement reference.
                                         </Banner>
                                         <ProgressBar label="Setup guide" value={68} showValue />
-                                        <TextStyle variant="subdued">4 of 6 tasks complete</TextStyle>
+                                        <Text variant="subdued">4 of 6 tasks complete</Text>
                                         <div className="flex flex-wrap items-center gap-[var(--lb-space-3)]">
                                             <Spinner label="Loading analytics" />
                                             <ToastTrigger />
@@ -477,7 +475,7 @@ export function FeedbackOverlaysAndResponsiveStates() {
                                             content: (
                                                 <div className="flex items-center gap-[var(--lb-space-3)]">
                                                     <Avatar name="Aarav Mehta" />
-                                                    <TextStyle variant="strong">Aarav Mehta</TextStyle>
+                                                    <Text variant="strong">Aarav Mehta</Text>
                                                 </div>
                                             ),
                                         },
@@ -485,7 +483,7 @@ export function FeedbackOverlaysAndResponsiveStates() {
                                             value: 'activity',
                                             label: 'Activity',
                                             badge: '3',
-                                            content: <TextStyle variant="subdued">Recent merchant activity appears here.</TextStyle>,
+                                            content: <Text variant="subdued">Recent merchant activity appears here.</Text>,
                                         },
                                     ]}
                                 />

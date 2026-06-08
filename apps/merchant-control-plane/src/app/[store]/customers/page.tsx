@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import type { Customer as SharedCustomer } from '@letbuyy/shared-types'
 import { formatIndiaDate as formatDate, formatInrCurrency } from '@letbuyy/ui/formatting'
-import { Avatar, Badge, Banner, Button, Card, EmptyState, Table, Input, MaterialIcon, Page, PageHeader, Search, Section, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
+import { Button, Input, Table, Avatar, Badge, Banner, Card, EmptyState, MaterialIcon, Page, PageHeader, Search, Section, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
 
 type CustomerRow = Omit<Pick<SharedCustomer, 'id' | 'email' | 'phone' | 'status' | 'created_at' | 'total_spent' | 'last_order_at'>, 'email' | 'phone' | 'last_order_at'> & {
     full_name: string

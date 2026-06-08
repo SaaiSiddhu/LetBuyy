@@ -6,8 +6,10 @@ import 'package:provider/provider.dart';
 import '../../app/routes.dart';
 import '../../services/customer_service.dart';
 import '../../services/order_service.dart';
+import '../../services/whatsapp_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import '../../widgets/shared/accessible_tap_region.dart';
 
 class CustomerDetailScreen extends StatefulWidget {
   const CustomerDetailScreen({
@@ -27,6 +29,9 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   CustomerContract? _customer;
   List<CustomerAddressContract> _addresses = [];
   List<OrderContract> _orders = [];
+  List<Map<String, dynamic>> _notes = [];
+  List<Map<String, dynamic>> _whatsAppTimeline = [];
+  bool _whatsAppAvailable = false;
   bool _isLoading = true;
   bool _isMutating = false;
   String? _error;
@@ -37,10 +42,10 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   void initState() {
     super.initState();
     _customer = widget.initialCustomer;
-    _loadCustomer();
+    _loadCustomer(preferCached: true);
   }
 
-  Future<void> _loadCustomer() async {
+  Future<void> _loadCustomer({bool preferCached = false}) async {
     if (widget.email.trim().isEmpty) {
       setState(() {
         _isLoading = false;
@@ -56,14 +61,43 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
 
     try {
       final service = context.read<CustomerService>();
-      final customer = await service.fetchCustomerByEmail(widget.email);
-      final addresses = await service.fetchAddresses(widget.email);
+      final initialStoreId = _customer?.storeId.trim();
+      final storeIdHint = initialStoreId == null || initialStoreId.isEmpty
+          ? null
+          : initialStoreId;
+      final cached = preferCached
+          ? _customer ??
+                service.cachedCustomerByEmail(
+                  widget.email,
+                  storeId: storeIdHint,
+                )
+          : null;
+      final customer =
+          cached ??
+          await service.fetchCustomerByEmail(
+            widget.email,
+            storeId: storeIdHint,
+          );
+      final storeId = customer.storeId.trim();
+      final addresses = await service.fetchAddresses(
+        widget.email,
+        storeId: storeId.isEmpty ? null : storeId,
+      );
+      final notes = storeId.isEmpty
+          ? const <Map<String, dynamic>>[]
+          : await service.fetchNotes(widget.email, storeId: storeId);
       final orders = await _loadRecentOrders(customer);
+      final whatsApp = storeId.isEmpty
+          ? const _WhatsAppLoadResult()
+          : await _loadWhatsApp(customer, storeId);
       if (mounted) {
         setState(() {
           _customer = customer;
           _addresses = addresses;
           _orders = orders;
+          _notes = notes;
+          _whatsAppAvailable = whatsApp.available;
+          _whatsAppTimeline = whatsApp.timeline;
           _isLoading = false;
         });
       }
@@ -95,6 +129,27 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
       );
     } catch (_) {
       return payloadOrders;
+    }
+  }
+
+  Future<_WhatsAppLoadResult> _loadWhatsApp(
+    CustomerContract customer,
+    String storeId,
+  ) async {
+    final service = Provider.of<WhatsAppService?>(context, listen: false);
+    if (service == null) return const _WhatsAppLoadResult();
+
+    try {
+      final status = await service.fetchStatus(storeId);
+      final available = status['available'] == true;
+      final timeline = await service.fetchTimeline(
+        storeId,
+        customerEmail: customer.email,
+        customerPhone: customer.phone,
+      );
+      return _WhatsAppLoadResult(available: available, timeline: timeline);
+    } catch (_) {
+      return const _WhatsAppLoadResult();
     }
   }
 
@@ -168,6 +223,255 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     }
   }
 
+  Future<void> _editCustomer() async {
+    final customer = _customer;
+    if (customer == null) return;
+    final storeId = customer.storeId.trim();
+
+    final request = await _showCustomerDialog(customer);
+    if (request == null) return;
+
+    setState(() => _isMutating = true);
+    try {
+      final updated = await context.read<CustomerService>().updateCustomer(
+        widget.email,
+        request,
+        storeId: storeId.isEmpty ? null : storeId,
+      );
+      await _loadCustomer();
+      if (mounted) {
+        setState(() => _customer = updated);
+        _showSnackBar('Customer updated');
+      }
+    } catch (error) {
+      if (mounted) _showSnackBar(error.toString(), isError: true);
+    } finally {
+      if (mounted) setState(() => _isMutating = false);
+    }
+  }
+
+  Future<void> _addNote() async {
+    final customer = _customer;
+    final storeId = customer?.storeId.trim() ?? '';
+    if (storeId.isEmpty) {
+      _showSnackBar('Customer store is unavailable.', isError: true);
+      return;
+    }
+
+    final note = await _showNoteDialog();
+    if (note == null || note.trim().isEmpty) return;
+
+    setState(() => _isMutating = true);
+    try {
+      await context.read<CustomerService>().addNote(
+        widget.email,
+        storeId: storeId,
+        note: note.trim(),
+      );
+      await _loadCustomer();
+      if (mounted) _showSnackBar('Note saved');
+    } catch (error) {
+      if (mounted) _showSnackBar(error.toString(), isError: true);
+    } finally {
+      if (mounted) setState(() => _isMutating = false);
+    }
+  }
+
+  Future<void> _editTags() async {
+    final customer = _customer;
+    final storeId = customer?.storeId.trim() ?? '';
+    if (customer == null || storeId.isEmpty) {
+      _showSnackBar('Customer store is unavailable.', isError: true);
+      return;
+    }
+
+    final tags = await _showTagsDialog(_customerTags(customer));
+    if (tags == null) return;
+
+    setState(() => _isMutating = true);
+    try {
+      final updated = await context.read<CustomerService>().updateTags(
+        widget.email,
+        storeId: storeId,
+        tags: tags,
+      );
+      await _loadCustomer();
+      if (mounted) {
+        setState(() => _customer = updated);
+        _showSnackBar('Tags updated');
+      }
+    } catch (error) {
+      if (mounted) _showSnackBar(error.toString(), isError: true);
+    } finally {
+      if (mounted) setState(() => _isMutating = false);
+    }
+  }
+
+  Future<void> _emailCustomer() async {
+    final customer = _customer;
+    final storeId = customer?.storeId.trim() ?? '';
+    if (storeId.isEmpty) {
+      _showSnackBar('Customer store is unavailable.', isError: true);
+      return;
+    }
+
+    final request = await _showEmailDialog();
+    if (request == null) return;
+
+    setState(() => _isMutating = true);
+    try {
+      await context.read<CustomerService>().emailCustomer(
+        widget.email,
+        storeId: storeId,
+        subject: request['subject'] ?? '',
+        message: request['message'] ?? '',
+      );
+      if (mounted) _showSnackBar('Email sent');
+    } catch (_) {
+      if (mounted) {
+        _showSnackBar(
+          'Customer email is unavailable right now.',
+          isError: true,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isMutating = false);
+    }
+  }
+
+  Future<void> _whatsAppCustomer() async {
+    final customer = _customer;
+    final storeId = customer?.storeId.trim() ?? '';
+    final phone = customer?.phone?.trim() ?? '';
+    if (customer == null || storeId.isEmpty || phone.isEmpty) {
+      _showSnackBar('Customer phone is unavailable.', isError: true);
+      return;
+    }
+
+    final request = await _showWhatsAppDialog(customer);
+    if (request == null) return;
+
+    setState(() => _isMutating = true);
+    try {
+      await context.read<WhatsAppService>().sendTemplate(
+        storeId: storeId,
+        customerEmail: customer.email,
+        customerPhone: phone,
+        template: request['template'] ?? 'custom_message',
+        message: request['message'],
+        variables: _whatsAppVariables(customer),
+      );
+      final timeline = await context.read<WhatsAppService>().fetchTimeline(
+        storeId,
+        customerEmail: customer.email,
+        customerPhone: phone,
+      );
+      if (mounted) {
+        setState(() => _whatsAppTimeline = timeline);
+        _showSnackBar('WhatsApp message queued');
+      }
+    } on WhatsAppUnavailableException {
+      if (mounted) {
+        _showSnackBar(
+          'WhatsApp messages are unavailable right now.',
+          isError: true,
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        _showSnackBar('Could not send that WhatsApp message.', isError: true);
+      }
+    } finally {
+      if (mounted) setState(() => _isMutating = false);
+    }
+  }
+
+  Future<void> _mergeCustomer() async {
+    final customer = _customer;
+    final storeId = customer?.storeId.trim() ?? '';
+    if (storeId.isEmpty) {
+      _showSnackBar('Customer store is unavailable.', isError: true);
+      return;
+    }
+
+    final targetEmail = await _showMergeDialog();
+    if (targetEmail == null || targetEmail.trim().isEmpty) return;
+
+    setState(() => _isMutating = true);
+    try {
+      final merged = await context.read<CustomerService>().mergeCustomer(
+        widget.email,
+        storeId: storeId,
+        targetEmail: targetEmail.trim(),
+      );
+      if (!mounted) return;
+      _showSnackBar('Customer merged');
+      Navigator.pop(context, {'merged_into': merged.email});
+    } catch (_) {
+      if (mounted) {
+        _showSnackBar('Could not merge that customer.', isError: true);
+      }
+    } finally {
+      if (mounted) setState(() => _isMutating = false);
+    }
+  }
+
+  Future<void> _deleteCustomerProfile() async {
+    final customer = _customer;
+    final storeId = customer?.storeId.trim() ?? '';
+    if (storeId.isEmpty) {
+      _showSnackBar('Customer store is unavailable.', isError: true);
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Delete customer?',
+          style: TextStyle(color: colors.textPrimary),
+        ),
+        content: Text(
+          'This redacts the customer profile and removes saved addresses.',
+          style: TextStyle(color: colors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: colors.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Delete', style: TextStyle(color: colors.error)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    setState(() => _isMutating = true);
+    try {
+      await context.read<CustomerService>().deleteCustomer(
+        widget.email,
+        storeId: storeId,
+      );
+      if (!mounted) return;
+      _showSnackBar('Customer deleted');
+      Navigator.pop(context, {'deleted': true});
+    } catch (_) {
+      if (mounted) {
+        _showSnackBar('Could not delete that customer.', isError: true);
+      }
+    } finally {
+      if (mounted) setState(() => _isMutating = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     colors = AppThemeColors.of(context);
@@ -222,9 +526,58 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
             ),
           ),
           IconButton(
+            icon: Icon(Icons.edit_outlined, color: colors.textSecondary),
+            tooltip: 'Edit customer',
+            onPressed: _isMutating ? null : _editCustomer,
+          ),
+          IconButton(
+            icon: Icon(Icons.email_outlined, color: colors.textSecondary),
+            tooltip: 'Email customer',
+            onPressed: _isMutating ? null : _emailCustomer,
+          ),
+          if (_whatsAppAvailable &&
+              (_customer?.phone?.trim().isNotEmpty ?? false))
+            IconButton(
+              icon: Icon(Icons.chat_outlined, color: colors.textSecondary),
+              tooltip: 'WhatsApp customer',
+              onPressed: _isMutating ? null : _whatsAppCustomer,
+            ),
+          IconButton(
             icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
             tooltip: 'Refresh',
             onPressed: _loadCustomer,
+          ),
+          PopupMenuButton<String>(
+            tooltip: 'Customer actions',
+            icon: Icon(Icons.more_vert_rounded, color: colors.textSecondary),
+            enabled: !_isMutating,
+            color: colors.card,
+            onSelected: (value) {
+              if (value == 'merge') _mergeCustomer();
+              if (value == 'delete') _deleteCustomerProfile();
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'merge',
+                child: Row(
+                  children: [
+                    Icon(Icons.call_merge_rounded, color: colors.textPrimary),
+                    const SizedBox(width: 10),
+                    Text('Merge', style: TextStyle(color: colors.textPrimary)),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'delete',
+                child: Row(
+                  children: [
+                    Icon(Icons.delete_outline_rounded, color: colors.error),
+                    const SizedBox(width: 10),
+                    Text('Delete', style: TextStyle(color: colors.error)),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -263,6 +616,12 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
           if (_error != null) _inlineWarning(_error!),
           _summary(customer),
           const SizedBox(height: 12),
+          _crmSection(customer),
+          const SizedBox(height: 12),
+          if (_whatsAppAvailable || _whatsAppTimeline.isNotEmpty) ...[
+            _whatsAppSection(customer),
+            const SizedBox(height: 12),
+          ],
           _addressesSection(),
           const SizedBox(height: 12),
           _ordersSection(),
@@ -379,6 +738,142 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     );
   }
 
+  Widget _crmSection(CustomerContract customer) {
+    final tags = _customerTags(customer);
+    final latestNote = _notes.isEmpty
+        ? _nonEmpty(customer['notes'])
+        : _nonEmpty(_notes.first['note']);
+
+    return _section(
+      title: 'Customer CRM',
+      trailing: Wrap(
+        spacing: 4,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.sell_outlined, size: 20),
+            tooltip: 'Edit tags',
+            onPressed: _isMutating ? null : _editTags,
+          ),
+          IconButton(
+            icon: const Icon(Icons.note_add_outlined, size: 20),
+            tooltip: 'Add note',
+            onPressed: _isMutating ? null : _addNote,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (tags.isEmpty)
+            Text('No tags yet.', style: TextStyle(color: colors.textSecondary))
+          else
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final tag in tags)
+                  Chip(
+                    label: Text(tag),
+                    backgroundColor: colors.surfaceVariant,
+                    side: BorderSide(color: colors.divider),
+                    labelStyle: TextStyle(color: colors.textPrimary),
+                  ),
+              ],
+            ),
+          const SizedBox(height: 12),
+          Text(
+            latestNote ?? 'No notes saved for this customer.',
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: colors.textSecondary, height: 1.35),
+          ),
+          if (_notes.length > 1) ...[
+            const SizedBox(height: 8),
+            Text(
+              '${_notes.length} notes saved',
+              style: TextStyle(color: colors.textTertiary, fontSize: 12),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _whatsAppSection(CustomerContract customer) {
+    return _section(
+      title: 'WhatsApp',
+      trailing:
+          _whatsAppAvailable && (customer.phone?.trim().isNotEmpty ?? false)
+          ? TextButton.icon(
+              onPressed: _isMutating ? null : _whatsAppCustomer,
+              icon: const Icon(Icons.send_rounded, size: 18),
+              label: const Text('Send'),
+            )
+          : null,
+      child: _whatsAppTimeline.isEmpty
+          ? Text(
+              'No WhatsApp messages yet.',
+              style: TextStyle(color: colors.textSecondary),
+            )
+          : Column(
+              children: [
+                for (final message in _whatsAppTimeline.take(5)) ...[
+                  _whatsAppRow(message),
+                  if (message != _whatsAppTimeline.take(5).last)
+                    Divider(height: 20, color: colors.divider),
+                ],
+              ],
+            ),
+    );
+  }
+
+  Widget _whatsAppRow(Map<String, dynamic> message) {
+    final outbound = message['direction'] == 'outbound';
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          outbound ? Icons.north_east_rounded : Icons.south_west_rounded,
+          color: outbound
+              ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+              : colors.success,
+          size: 18,
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    outbound ? 'Sent' : 'Reply',
+                    style: TextStyle(
+                      color: colors.textPrimary,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _shortDate(message['created_at']?.toString() ?? ''),
+                    style: TextStyle(color: colors.textTertiary, fontSize: 12),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                message['message']?.toString() ?? '',
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: colors.textSecondary, height: 1.35),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _addressCard(CustomerAddressContract address) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -452,54 +947,66 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   }
 
   Widget _orderRow(OrderContract order) {
-    return InkWell(
-      onTap: () => Navigator.pushNamed(
-        context,
-        AppRoutes.orderDetail,
-        arguments: {'orderId': order.id, 'order': order},
-      ),
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(
-          children: [
-            Icon(Icons.receipt_long_outlined, color: colors.textTertiary),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    final orderLabel = order.orderNumber.isEmpty ? order.id : order.orderNumber;
+    void openOrder() => Navigator.pushNamed(
+      context,
+      AppRoutes.orderDetail,
+      arguments: {'orderId': order.id, 'order': order},
+    );
+
+    return AccessibleTapRegion(
+      label:
+          'Order $orderLabel, ${_titleCase(order.status)}, ${_money(order.total)}',
+      hint: 'Open order details',
+      onTap: openOrder,
+      child: InkWell(
+        onTap: openOrder,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            children: [
+              Icon(Icons.receipt_long_outlined, color: colors.textTertiary),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      order.orderNumber.isEmpty ? order.id : order.orderNumber,
+                      style: TextStyle(
+                        color: colors.textPrimary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    Text(
+                      _shortDate(order['created_at']?.toString() ?? ''),
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    order.orderNumber.isEmpty ? order.id : order.orderNumber,
+                    _money(order.total),
                     style: TextStyle(
                       color: colors.textPrimary,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
                   Text(
-                    _shortDate(order['created_at']?.toString() ?? ''),
+                    _titleCase(order.status),
                     style: TextStyle(color: colors.textSecondary, fontSize: 12),
                   ),
                 ],
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  _money(order.total),
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                Text(
-                  _titleCase(order.status),
-                  style: TextStyle(color: colors.textSecondary, fontSize: 12),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -766,11 +1273,376 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     );
   }
 
-  Widget _dialogField(TextEditingController controller, String label) {
+  Future<Map<String, dynamic>?> _showCustomerDialog(CustomerContract customer) {
+    final nameParts = _splitName(_customerName(customer));
+    final firstController = TextEditingController(text: nameParts.$1);
+    final lastController = TextEditingController(text: nameParts.$2);
+    final phoneController = TextEditingController(text: customer.phone);
+    final notesController = TextEditingController(
+      text: _nonEmpty(customer['notes']),
+    );
+    var acceptsMarketing = customer.acceptsMarketing;
+
+    return showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: colors.card,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Edit customer',
+            style: TextStyle(color: colors.textPrimary),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _dialogField(firstController, 'First name'),
+                _dialogField(lastController, 'Last name'),
+                _dialogField(phoneController, 'Phone'),
+                _dialogField(notesController, 'Notes', maxLines: 3),
+                SwitchListTile.adaptive(
+                  value: acceptsMarketing,
+                  onChanged: (value) =>
+                      setDialogState(() => acceptsMarketing = value),
+                  title: Text(
+                    'Accepts marketing',
+                    style: TextStyle(color: colors.textPrimary),
+                  ),
+                  activeThumbColor:
+                      mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: colors.textSecondary),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, {
+                  'first_name': firstController.text.trim(),
+                  'last_name': lastController.text.trim(),
+                  'phone': phoneController.text.trim(),
+                  'notes': notesController.text.trim(),
+                  'accepts_marketing': acceptsMarketing,
+                });
+              },
+              child: Text(
+                'Save',
+                style: TextStyle(
+                  color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<String?> _showNoteDialog() {
+    final noteController = TextEditingController();
+
+    return showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Add note', style: TextStyle(color: colors.textPrimary)),
+        content: _dialogField(noteController, 'Note', maxLines: 4),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: colors.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              final note = noteController.text.trim();
+              if (note.isEmpty) {
+                _showSnackBar('Note is required');
+                return;
+              }
+              Navigator.pop(context, note);
+            },
+            child: Text(
+              'Save',
+              style: TextStyle(
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<List<String>?> _showTagsDialog(List<String> currentTags) {
+    final tagsController = TextEditingController(text: currentTags.join(', '));
+
+    return showDialog<List<String>>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Edit tags', style: TextStyle(color: colors.textPrimary)),
+        content: _dialogField(tagsController, 'Tags separated by commas'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: colors.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              final tags = tagsController.text
+                  .split(',')
+                  .map((tag) => tag.trim())
+                  .where((tag) => tag.isNotEmpty)
+                  .toSet()
+                  .toList(growable: false);
+              Navigator.pop(context, tags);
+            },
+            child: Text(
+              'Save',
+              style: TextStyle(
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<Map<String, String>?> _showEmailDialog() {
+    final subjectController = TextEditingController();
+    final messageController = TextEditingController();
+
+    return showDialog<Map<String, String>>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Email customer',
+          style: TextStyle(color: colors.textPrimary),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _dialogField(subjectController, 'Subject'),
+              _dialogField(messageController, 'Message', maxLines: 5),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: colors.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              final subject = subjectController.text.trim();
+              final message = messageController.text.trim();
+              if (subject.isEmpty || message.isEmpty) {
+                _showSnackBar('Subject and message are required');
+                return;
+              }
+              Navigator.pop(context, {'subject': subject, 'message': message});
+            },
+            child: Text(
+              'Send',
+              style: TextStyle(
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<Map<String, String>?> _showWhatsAppDialog(CustomerContract customer) {
+    final messageController = TextEditingController(
+      text: 'Hi ${_customerName(customer)}, your order update is ready.',
+    );
+    var template = 'custom_message';
+
+    return showDialog<Map<String, String>>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: colors.card,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'WhatsApp customer',
+            style: TextStyle(color: colors.textPrimary),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButtonFormField<String>(
+                  value: template,
+                  dropdownColor: colors.card,
+                  decoration: InputDecoration(
+                    labelText: 'Template',
+                    labelStyle: TextStyle(color: colors.textSecondary),
+                  ),
+                  style: TextStyle(color: colors.textPrimary),
+                  items: const [
+                    DropdownMenuItem(
+                      value: 'custom_message',
+                      child: Text('Custom message'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'order_update',
+                      child: Text('Order update'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'shipping_update',
+                      child: Text('Shipping update'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'abandoned_cart',
+                      child: Text('Abandoned cart'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setDialogState(() => template = value);
+                    }
+                  },
+                ),
+                const SizedBox(height: 10),
+                if (template == 'custom_message')
+                  _dialogField(messageController, 'Message', maxLines: 5)
+                else
+                  Text(
+                    'LetBuyy will fill this template from the latest customer and order data.',
+                    style: TextStyle(color: colors.textSecondary, height: 1.35),
+                  ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: colors.textSecondary),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                final message = messageController.text.trim();
+                if (template == 'custom_message' && message.isEmpty) {
+                  _showSnackBar('Message is required');
+                  return;
+                }
+                Navigator.pop(context, {
+                  'template': template,
+                  if (message.isNotEmpty) 'message': message,
+                });
+              },
+              child: Text(
+                'Send',
+                style: TextStyle(
+                  color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<String?> _showMergeDialog() {
+    final targetController = TextEditingController();
+
+    return showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Merge customer',
+          style: TextStyle(color: colors.textPrimary),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Orders, addresses, notes, and tags move to the target customer.',
+                style: TextStyle(color: colors.textSecondary),
+              ),
+              const SizedBox(height: 12),
+              _dialogField(targetController, 'Target email'),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: colors.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              final target = targetController.text.trim();
+              if (target.isEmpty ||
+                  target.toLowerCase() == widget.email.toLowerCase()) {
+                _showSnackBar('Choose a different target customer');
+                return;
+              }
+              Navigator.pop(context, target);
+            },
+            child: Text(
+              'Merge',
+              style: TextStyle(
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _dialogField(
+    TextEditingController controller,
+    String label, {
+    int maxLines = 1,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextField(
         controller: controller,
+        maxLines: maxLines,
         style: TextStyle(color: colors.textPrimary),
         decoration: InputDecoration(
           labelText: label,
@@ -811,6 +1683,24 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         _nonEmpty(customer.email) ??
         _nonEmpty(customer.phone) ??
         'Customer';
+  }
+
+  (String, String) _splitName(String value) {
+    final parts = value
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty);
+    if (parts.isEmpty) return ('', '');
+    return (parts.first, parts.skip(1).join(' '));
+  }
+
+  List<String> _customerTags(CustomerContract customer) {
+    final raw = customer['tags'];
+    if (raw is! List) return const [];
+    return raw
+        .map((tag) => tag.toString().trim())
+        .where((tag) => tag.isNotEmpty)
+        .toList(growable: false);
   }
 
   String _initials(CustomerContract customer) {
@@ -859,6 +1749,31 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     final text = value?.toString().trim();
     return text == null || text.isEmpty ? null : text;
   }
+
+  Map<String, dynamic> _whatsAppVariables(CustomerContract customer) {
+    final latestOrder = _orders.isEmpty ? null : _orders.first;
+    return {
+      'customer_name': _customerName(customer),
+      'order_number': latestOrder?.orderNumber ?? 'latest order',
+      'status': latestOrder?.status ?? 'updated',
+      'total': latestOrder == null ? '' : _money(latestOrder.total),
+      'carrier': latestOrder?['carrier']?.toString() ?? 'your carrier',
+      'tracking_number':
+          latestOrder?['tracking_number']?.toString() ?? 'pending',
+      'store_name': 'your store',
+      'checkout_url': '',
+    };
+  }
+}
+
+class _WhatsAppLoadResult {
+  const _WhatsAppLoadResult({
+    this.available = false,
+    this.timeline = const <Map<String, dynamic>>[],
+  });
+
+  final bool available;
+  final List<Map<String, dynamic>> timeline;
 }
 
 extension on String {

@@ -158,6 +158,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                       SettingsTile(
+                        icon: Icons.health_and_safety_outlined,
+                        title: 'Store Health',
+                        subtitle: 'Launch, catalog, orders, domain, reviews',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.storeHealth),
+                      ),
+                      SettingsTile(
                         icon: Icons.link_outlined,
                         title: 'Domain Settings',
                         onTap: () => Navigator.pushNamed(
@@ -172,6 +179,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             Navigator.pushNamed(context, AppRoutes.seoSettings),
                       ),
                       SettingsTile(
+                        icon: Icons.public_outlined,
+                        title: 'Localization & Markets',
+                        subtitle: 'Locales, currencies, markets, translations',
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          AppRoutes.localizationMarkets,
+                        ),
+                      ),
+                      SettingsTile(
                         icon: Icons.bar_chart_outlined,
                         title: 'Analytics',
                         onTap: () =>
@@ -183,6 +199,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _buildFeatureSection(
                     title: 'Commerce',
                     features: MerchantFeatureDefinitions.commerce,
+                  ),
+
+                  _buildFeatureSection(
+                    title: 'Money',
+                    features: MerchantFeatureDefinitions.money,
+                  ),
+
+                  _buildFeatureSection(
+                    title: 'Trust',
+                    features: MerchantFeatureDefinitions.trust,
                   ),
 
                   _buildFeatureSection(
@@ -304,9 +330,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       SettingsTile(
                         icon: Icons.description_outlined,
                         title: 'Terms & Privacy',
-                        onTap: () {
-                          // TODO: Open terms/privacy page
-                        },
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.help),
                       ),
                     ],
                   ),
@@ -373,6 +398,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required String title,
     required List<MerchantFeatureDefinition> features,
   }) {
+    if (features.isEmpty) return const SizedBox.shrink();
+
     return SettingsSection(
       title: title,
       children: features

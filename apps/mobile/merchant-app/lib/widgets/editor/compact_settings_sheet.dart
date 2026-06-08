@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../models/store_model.dart';
+import '../shared/cached_merchant_image.dart';
 
 /// Compact settings sheet that slides up from bottom
 /// Shows quick-edit fields for the selected section
@@ -770,8 +771,8 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                   if (logoUrl != null)
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
-                      child: Image.network(
-                        logoUrl,
+                      child: CachedMerchantImage(
+                        imageUrl: logoUrl,
                         height: 24,
                         width: 24,
                         fit: BoxFit.cover,
@@ -944,7 +945,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                   border: Border.all(color: colors.divider),
                   image: logoUrl != null
                       ? DecorationImage(
-                          image: NetworkImage(logoUrl),
+                          image: cachedMerchantImageProvider(logoUrl),
                           fit: BoxFit.cover,
                         )
                       : null,

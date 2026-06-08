@@ -26,6 +26,10 @@ const migrations = {
 };
 
 const combined = Object.values(migrations).join('\n');
+const mirrorMigration = readFileSync(
+  new URL('../../database/supabase/migrations/131_hot_table_partition_shadow_mirror.sql', import.meta.url),
+  'utf8',
+);
 
 test('partition migrations create shadow range-partitioned parents for every hot table', () => {
   for (const [table, migration] of Object.entries(migrations)) {
@@ -110,4 +114,23 @@ test('partition migrations remain additive until the approved maintenance-window
   assert.doesNotMatch(combined, /\bTRUNCATE\b/i);
   assert.match(combined, /worker_request_logs_legacy/);
   assert.match(combined, /outbox_events_legacy/);
+});
+
+test('partition shadows are actively mirrored before human-approved cutover', () => {
+  assert.match(mirrorMigration, /CREATE OR REPLACE FUNCTION public\.mirror_hot_table_partition_shadow/);
+  assert.match(mirrorMigration, /CREATE OR REPLACE FUNCTION public\.set_hot_table_partition_shadow_mirror_enabled/);
+  assert.match(mirrorMigration, /INSERT INTO public\.%I SELECT \(\$1\)\.\* ON CONFLICT DO NOTHING/);
+  assert.match(mirrorMigration, /Issue #50: partition shadow mirror trigger is active/);
+
+  for (const table of Object.keys(migrations)) {
+    assert.match(
+      mirrorMigration,
+      new RegExp(`CREATE TRIGGER mirror_${table}_partition_shadow\\s+AFTER INSERT OR UPDATE OR DELETE ON public\\.${table}`),
+      `${table} mirror trigger`,
+    );
+  }
+
+  assert.doesNotMatch(mirrorMigration, /\bDROP\s+TABLE\b/i);
+  assert.doesNotMatch(mirrorMigration, /\bALTER\s+TABLE\b[\s\S]*?\bRENAME\s+TO\b/i);
+  assert.doesNotMatch(mirrorMigration, /\bTRUNCATE\b/i);
 });

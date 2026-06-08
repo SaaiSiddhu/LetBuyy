@@ -6,8 +6,10 @@ import { fileURLToPath } from 'node:url';
 
 import {
     ACTIVE_SITE_TYPES,
+    COMING_SOON_SITE_TYPES,
     LEGACY_SITE_TYPES,
     isActiveSiteType,
+    isComingSoonSiteType,
     isLegacySiteType,
     legacySiteTypeCreationEnabled,
 } from '../../packages/tenant-core/src/index';
@@ -20,10 +22,14 @@ function read(path: string): string {
     return readFileSync(path, 'utf8');
 }
 
-test('tenant-core classifies portfolio and resume as legacy site types', () => {
-    assert.deepEqual(ACTIVE_SITE_TYPES, ['store', 'blog', 'landing']);
+test('tenant-core classifies only online store as active acquisition', () => {
+    assert.deepEqual(ACTIVE_SITE_TYPES, ['store']);
+    assert.deepEqual(COMING_SOON_SITE_TYPES, ['blog', 'landing']);
     assert.deepEqual(LEGACY_SITE_TYPES, ['portfolio', 'resume']);
     assert.equal(isActiveSiteType('store'), true);
+    assert.equal(isActiveSiteType('blog'), false);
+    assert.equal(isComingSoonSiteType('blog'), true);
+    assert.equal(isComingSoonSiteType('landing'), true);
     assert.equal(isActiveSiteType('portfolio'), false);
     assert.equal(isLegacySiteType('portfolio'), true);
     assert.equal(isLegacySiteType('resume'), true);
@@ -34,23 +40,29 @@ test('tenant-core classifies portfolio and resume as legacy site types', () => {
     assert.equal(legacySiteTypeCreationEnabled('1'), true);
 });
 
-test('gateway and identity creation paths fail closed for legacy site types by default', () => {
+test('gateway and identity creation paths fail closed for unavailable site types by default', () => {
     const gatewayStores = read(join(repoRoot, 'services/api-gateway/src/routes/stores.ts'));
     const gatewayOnboarding = read(join(repoRoot, 'services/api-gateway/src/routes/onboarding.ts'));
     const identityCreateStore = read(join(repoRoot, 'apps/identity-platform/src/app/api/auth/create-store/route.ts'));
 
+    assert.match(gatewayStores, /isComingSoonSiteType\(body\.site_type\)[\s\S]{0,140}comingSoonSiteTypeCreationResponse/);
     assert.match(gatewayStores, /isLegacySiteType\(body\.site_type\)[\s\S]{0,140}legacySiteTypeCreationAllowed/);
+    assert.match(gatewayStores, /SITE_TYPE_COMING_SOON/);
     assert.match(gatewayStores, /LEGACY_SITE_TYPE_DISABLED/);
+    assert.match(gatewayOnboarding, /isComingSoonSiteType\(body\.site_type\)[\s\S]{0,140}comingSoonSiteTypeCreationResponse/);
     assert.match(gatewayOnboarding, /isLegacySiteType\(body\.site_type\)[\s\S]{0,140}legacySiteTypeCreationAllowed/);
+    assert.match(gatewayOnboarding, /isComingSoonSiteType\(nextSiteType\)[\s\S]{0,160}comingSoonSiteTypeCreationResponse/);
     assert.match(gatewayOnboarding, /isLegacySiteType\(nextSiteType\)[\s\S]{0,160}legacySiteTypeCreationAllowed/);
+    assert.match(gatewayOnboarding, /isComingSoonSiteType\(attemptSiteType\)[\s\S]{0,160}comingSoonSiteTypeCreationResponse/);
     assert.match(gatewayOnboarding, /isLegacySiteType\(attemptSiteType\)[\s\S]{0,160}legacySiteTypeCreationAllowed/);
-    assert.match(gatewayOnboarding, /isLegacySiteType\(siteType\)[\s\S]{0,160}success\(\[\]\)/);
-    assert.match(identityCreateStore, /ACTIVE_SITE_TYPES = \['store', 'landing', 'blog'\]/);
+    assert.match(gatewayOnboarding, /isComingSoonSiteType\(siteType\)[\s\S]{0,200}success\(\[\]\)/);
+    assert.match(identityCreateStore, /ACTIVE_SITE_TYPES = \['store'\]/);
+    assert.match(identityCreateStore, /COMING_SOON_SITE_TYPES = \['landing', 'blog'\]/);
     assert.match(identityCreateStore, /LEGACY_SITE_TYPES = \['portfolio', 'resume'\]/);
     assert.match(identityCreateStore, /legacySiteTypesEnabled/);
 });
 
-test('public acquisition surfaces hide portfolio and resume unless the legacy flag is enabled', () => {
+test('public acquisition surfaces show landing and blog as locked coming soon', () => {
     const identityOnboarding = read(join(repoRoot, 'apps/identity-platform/src/app/onboarding/page.tsx'));
     const marketingCreate = read(join(repoRoot, 'apps/marketing-site/src/app/create/page.tsx'));
     const marketingSiteTypes = read(join(repoRoot, 'apps/marketing-site/src/components/SiteTypes.tsx'));
@@ -58,6 +70,9 @@ test('public acquisition surfaces hide portfolio and resume unless the legacy fl
     const defaultIdentityTypes = identityOnboarding.match(/const SITE_TYPES:[\s\S]*?\]\n\nconst LEGACY_SITE_TYPES/);
     assert.ok(defaultIdentityTypes);
     assert.doesNotMatch(defaultIdentityTypes[0], /portfolio|resume/);
+    assert.match(defaultIdentityTypes[0], /availability:\s*'available'/);
+    assert.match(defaultIdentityTypes[0], /availability:\s*'coming-soon'/);
+    assert.match(identityOnboarding, /aria-disabled=\{!isSiteTypeAvailable\(type\)\}/);
     assert.match(identityOnboarding, /NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES/);
     assert.match(identityOnboarding, /ACQUISITION_SITE_TYPES/);
 

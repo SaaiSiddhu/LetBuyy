@@ -111,6 +111,45 @@ export async function createRazorpayOrder(
   return data;
 }
 
+export interface RazorpayPaymentFetchResult {
+  id?: string;
+  order_id?: string;
+  amount?: number;
+  currency?: string;
+  status?: string;
+  captured?: boolean;
+  error?: { code?: string; description?: string };
+}
+
+/**
+ * Server-side fetch of a Razorpay payment. Use to confirm a payment was actually
+ * captured for the expected amount/order BEFORE granting value — never trust a
+ * client-supplied signature alone (the HMAC only proves order_id|payment_id, not
+ * that the money was taken or how much).
+ */
+export async function fetchRazorpayPayment(
+  credentials: RazorpayCredentials,
+  paymentId: string,
+  options: { fetch?: RazorpayFetch } = {},
+): Promise<RazorpayPaymentFetchResult> {
+  const fetchImpl = options.fetch ?? fetch;
+  const response = await fetchImpl(`https://api.razorpay.com/v1/payments/${encodeURIComponent(paymentId)}`, {
+    method: 'GET',
+    headers: {
+      Authorization: basicAuth(credentials),
+    },
+  });
+
+  const data = await response.json().catch(() => ({})) as RazorpayPaymentFetchResult;
+  if (!response.ok) {
+    return {
+      ...data,
+      error: data.error || { description: `Razorpay payment fetch failed with ${response.status}` },
+    };
+  }
+  return data;
+}
+
 export async function createRazorpaySubscription(
   credentials: RazorpayCredentials,
   input: RazorpaySubscriptionCreateInput,

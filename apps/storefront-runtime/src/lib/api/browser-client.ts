@@ -1,4 +1,7 @@
-import { LETBUYY_PRODUCTION_API_BASE_URL, resolveLetbuyyApiBaseUrl } from '@letbuyy/api-client';
+import {
+    apiClientInputToLetbuyyApiPath,
+    resolveLetbuyyApiBaseUrl,
+} from '@letbuyy/api-client';
 
 export type StorefrontApiJsonEnvelope<TData> = {
     success?: boolean;
@@ -9,15 +12,6 @@ export type StorefrontApiJsonEnvelope<TData> = {
     };
     message?: string;
 };
-
-function storefrontPublicApiBaseUrl() {
-    return resolveLetbuyyApiBaseUrl([
-        process.env.NEXT_PUBLIC_API_BASE_URL ||
-        process.env.NEXT_PUBLIC_API_URL,
-    ], {
-        fallback: LETBUYY_PRODUCTION_API_BASE_URL,
-    });
-}
 
 export function storefrontApiErrorMessage(
     payload: StorefrontApiJsonEnvelope<unknown>,
@@ -34,7 +28,6 @@ export async function storefrontBrowserApiFetch(
     path: string,
     init: RequestInit = {},
 ): Promise<Response> {
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
     const headers = new Headers(init.headers);
 
     headers.set('Content-Type', headers.get('Content-Type') || 'application/json');
@@ -42,13 +35,35 @@ export async function storefrontBrowserApiFetch(
     headers.set('X-Request-ID', headers.get('X-Request-ID') || crypto.randomUUID());
 
     return fetch(
-        `${storefrontPublicApiBaseUrl()}/storefront/${encodeURIComponent(subdomain)}${cleanPath}`,
+        storefrontBrowserProxyPath(subdomain, path),
         {
             ...init,
             headers,
             cache: init.cache || 'no-store',
         },
     );
+}
+
+function storefrontBrowserProxyPath(subdomain: string, inputPath: string): string {
+    const sameOriginBaseUrl = resolveLetbuyyApiBaseUrl([browserOrigin()], {
+        requireConfigured: true,
+        errorMessage: 'Storefront browser API calls require a browser origin.',
+        includeVersionPath: false,
+    });
+    const apiPath = apiClientInputToLetbuyyApiPath(
+        new URL(inputPath.startsWith('/') ? inputPath : `/${inputPath}`, sameOriginBaseUrl),
+        sameOriginBaseUrl,
+    );
+
+    return `/api/storefront/${encodeURIComponent(subdomain)}${apiPath}`;
+}
+
+function browserOrigin(): string {
+    if (typeof window === 'undefined') {
+        throw new Error('Storefront browser API calls require a browser origin.');
+    }
+
+    return window.location.origin;
 }
 
 export async function readStorefrontApiJson<TData>(

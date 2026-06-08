@@ -29,6 +29,7 @@ function loadAuthCore() {
       if (specifier === 'zod') return { z: { string: () => zChain, object: () => zChain } };
       if (specifier === '@letbuyy/shared-types') return { EmailSchema: zChain };
       if (specifier === './customer-session') return {};
+      if (specifier === './storefront-access') return {};
       throw new Error(`Unexpected test require: ${specifier}`);
     },
     TextEncoder,
@@ -87,13 +88,17 @@ test('partner role does not satisfy ops category access', () => {
   assert.equal(authCore.hasAnyLetbuyyRoleCategory(opsRoles, ['ops']), true);
 });
 
-test('gateway ops surfaces require ops category before super admin allowlist', () => {
+test('gateway ops surfaces require persisted category evidence before super admin allowlist', () => {
   const rbacSource = readFileSync('services/api-gateway/src/middleware/rbac.ts', 'utf8');
   const operationsSource = readFileSync('services/api-gateway/src/routes/operations.ts', 'utf8');
   const adminSource = readFileSync('services/api-gateway/src/routes/admin.ts', 'utf8');
 
   assert.match(rbacSource, /export function requireRoleCategory\(\.\.\.categories: RbacRoleCategory\[\]\)/);
-  assert.match(rbacSource, /hasAnyLetbuyyRoleCategory\(assignments,\s*categories\)/);
+  assert.match(rbacSource, /never trust role claims carried on the JWT for category gating/);
+  assert.match(rbacSource, /category === 'ops'[\s\S]*hasOpsAllowlistEntry\(db,\s*auth\.user\.id,\s*auth\.user\.email\)/);
+  assert.match(rbacSource, /category === 'partner'[\s\S]*hasPartnerDeveloperEntry\(db,\s*auth\.user\.id\)/);
+  assert.doesNotMatch(rbacSource, /hasAnyLetbuyyRoleCategory\(/);
+  assert.doesNotMatch(rbacSource, /normalizeLetbuyyRoleAssignments\(/);
   assert.match(operationsSource, /router\.use\('\*',\s*requireRoleCategory\('ops'\),\s*requireSuperAdmin\)/);
   assert.match(adminSource, /router\.use\('\*',\s*requireRoleCategory\('ops'\),\s*requireSuperAdmin\)/);
 });

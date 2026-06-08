@@ -2,7 +2,7 @@ class ApiConstants {
   // Base URLs
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://api.letbuyy.store/v1',
+    defaultValue: 'https://api.letbuyy.com/v1',
   );
   static const String apiVersion = 'v1';
   static const String apiBaseUrl = baseUrl;

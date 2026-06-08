@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import {
+import { Button, Input,
     Package, Truck, CheckCircle, Clock, AlertCircle,
     Mail, Lock, Eye, EyeOff, Search, ArrowLeft, MapPin
 } from '@letbuyy/ui';
@@ -16,14 +16,14 @@ interface OrdersClientProps {
 }
 
 const statusConfig: Record<OrderStatus, { color: string; icon: typeof Package; label: string }> = {
-    pending: { color: '#f59e0b', icon: Clock, label: 'Pending' },
-    pending_cod: { color: '#f59e0b', icon: Clock, label: 'COD pending' },
-    confirmed: { color: '#3b82f6', icon: CheckCircle, label: 'Confirmed' },
-    processing: { color: '#0ea5e9', icon: Package, label: 'Processing' },
-    shipped: { color: '#8b5cf6', icon: Truck, label: 'Shipped' },
-    delivered: { color: '#10b981', icon: Package, label: 'Delivered' },
-    cancelled: { color: '#ef4444', icon: AlertCircle, label: 'Cancelled' },
-    refunded: { color: '#64748b', icon: AlertCircle, label: 'Refunded' },
+    pending: { color: 'rgb(245 158 11)', icon: Clock, label: 'Pending' },
+    pending_cod: { color: 'rgb(245 158 11)', icon: Clock, label: 'COD pending' },
+    confirmed: { color: 'rgb(59 130 246)', icon: CheckCircle, label: 'Confirmed' },
+    processing: { color: 'rgb(14 165 233)', icon: Package, label: 'Processing' },
+    shipped: { color: 'rgb(139 92 246)', icon: Truck, label: 'Shipped' },
+    delivered: { color: 'rgb(16 185 129)', icon: Package, label: 'Delivered' },
+    cancelled: { color: 'rgb(239 68 68)', icon: AlertCircle, label: 'Cancelled' },
+    refunded: { color: 'rgb(100 116 139)', icon: AlertCircle, label: 'Refunded' },
 };
 
 const timelineStatuses: OrderStatus[] = ['pending', 'confirmed', 'processing', 'shipped', 'delivered'];
@@ -46,7 +46,7 @@ export default function OrdersClient({ subdomain }: OrdersClientProps) {
     const [orders, setOrders] = useState<OrderModel[]>([]);
     const [selectedOrder, setSelectedOrder] = useState<OrderModel | null>(null);
 
-    const primaryColor = 'var(--primary, #6366f1)';
+    const primaryColor = 'var(--primary, rgb(99 102 241))';
 
     const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -122,14 +122,14 @@ export default function OrdersClient({ subdomain }: OrdersClientProps) {
     // Order Details Modal
     if (selectedOrder) {
         return (
-            <div className="min-h-screen pt-20 pb-8" style={{ backgroundColor: 'var(--background, #f9fafb)' }}>
+            <div className="min-h-screen pt-20 pb-8" style={{ backgroundColor: 'var(--background, rgb(249 250 251))' }}>
                 <div className="container mx-auto px-4 max-w-2xl">
-                    <button
+                    <Button unstyled
                         onClick={() => setSelectedOrder(null)}
                         className="flex items-center gap-2 text-theme-secondary hover:opacity-70 mb-4"
                     >
                         <ArrowLeft size={18} /> Back to Orders
-                    </button>
+                    </Button>
 
                     <div className="card-theme rounded-2xl shadow-lg overflow-hidden">
                         {/* Header */}
@@ -245,11 +245,11 @@ export default function OrdersClient({ subdomain }: OrdersClientProps) {
     // Orders List
     if (step === 'orders') {
         return (
-            <div className="min-h-screen pt-20 pb-8" style={{ backgroundColor: 'var(--background, #f9fafb)' }}>
+            <div className="min-h-screen pt-20 pb-8" style={{ backgroundColor: 'var(--background, rgb(249 250 251))' }}>
                 <div className="container mx-auto px-4 max-w-2xl">
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="text-2xl font-bold">Your Orders</h1>
-                        <button
+                        <Button unstyled
                             onClick={() => {
                                 setStep('login');
                                 setOrders([]);
@@ -261,7 +261,7 @@ export default function OrdersClient({ subdomain }: OrdersClientProps) {
                             className="text-sm text-theme-secondary hover:opacity-70"
                         >
                             Logout
-                        </button>
+                        </Button>
                     </div>
 
                     {orders.length === 0 ? (
@@ -341,7 +341,7 @@ export default function OrdersClient({ subdomain }: OrdersClientProps) {
 
     // Login Form
     return (
-        <div className="min-h-screen pt-20 flex items-center justify-center p-4" style={{ backgroundColor: 'var(--background, #f9fafb)' }}>
+        <div className="min-h-screen pt-20 flex items-center justify-center p-4" style={{ backgroundColor: 'var(--background, rgb(249 250 251))' }}>
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -360,7 +360,7 @@ export default function OrdersClient({ subdomain }: OrdersClientProps) {
                         <label className="text-sm font-medium text-theme-secondary block mb-1">Email or Phone</label>
                         <div className="relative">
                             <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted" />
-                            <input
+                            <Input unstyled
                                 type="text"
                                 value={emailOrPhone}
                                 onChange={e => {
@@ -389,7 +389,7 @@ export default function OrdersClient({ subdomain }: OrdersClientProps) {
                                 </label>
                                 <div className="relative">
                                     <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted" />
-                                    <input
+                                    <Input unstyled
                                         type={showPassword ? 'text' : 'password'}
                                         value={password}
                                         onChange={e => { setPassword(e.target.value); setError(''); }}
@@ -397,13 +397,13 @@ export default function OrdersClient({ subdomain }: OrdersClientProps) {
                                         className="w-full pl-10 pr-12 py-3 input-theme rounded-xl text-sm outline-none focus:ring-2"
                                         style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
                                     />
-                                    <button
+                                    <Button unstyled
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-muted"
                                     >
                                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                    </button>
+                                    </Button>
                                 </div>
                                 {isNewUser && (
                                     <p className="text-xs text-theme-secondary mt-1">
@@ -418,7 +418,7 @@ export default function OrdersClient({ subdomain }: OrdersClientProps) {
                         <p className="text-red-500 text-sm text-center">{error}</p>
                     )}
 
-                    <button
+                    <Button unstyled
                         type="submit"
                         disabled={isLoading}
                         className="w-full text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
@@ -432,7 +432,7 @@ export default function OrdersClient({ subdomain }: OrdersClientProps) {
                                 {isNewUser ? 'Set Password & View Orders' : contactChecked ? 'View Orders' : 'Find Orders'}
                             </>
                         )}
-                    </button>
+                    </Button>
                 </form>
 
                 <Link

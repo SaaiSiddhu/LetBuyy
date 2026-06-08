@@ -70,6 +70,11 @@ function createZodStub() {
   const z = {
     string: () => generic,
     number: () => generic,
+    coerce: {
+      number: () => generic,
+      string: () => generic,
+      boolean: () => generic,
+    },
     unknown: () => generic,
     enum: () => generic,
     array: () => generic,
@@ -90,6 +95,9 @@ function createZodStub() {
 
 const billingCore = loadTypeScriptModule(BILLING_CORE_SOURCE, {
   zod: createZodStub(),
+  '@letbuyy/shared-types': {
+    MarketplaceAppPricingModelSchema: createSchema(),
+  },
 });
 
 const paymentsMock = {
@@ -294,6 +302,8 @@ test('billing core plans merchant-approved app charges with India payout math', 
   assert.equal(charge.status, 'pending_merchant_approval');
   assert.equal(charge.billing_mode, 'usage');
   assert.equal(charge.amount_minor, 100000);
-  assert.equal(charge.payout.partner_amount_minor, 80000);
+  assert.equal(charge.payout.revenue_share_bps, 8500);
+  assert.equal(charge.payout.partner_amount_minor, 85000);
+  assert.equal(charge.payout.platform_fee_minor, 15000);
   assert.equal(charge.metadata.india_payout.payout_rail, 'razorpay_route');
 });

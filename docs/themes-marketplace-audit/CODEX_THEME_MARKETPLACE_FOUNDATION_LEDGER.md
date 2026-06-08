@@ -1,0 +1,138 @@
+# Codex Theme Marketplace Foundation Ledger
+
+## Architecture-Direction Decisions
+
+- D-1 Pricing model: per-theme one-time purchase is the live commerce path. Subscription pricing remains marketing-only; subscription checkout and entitlement gating are out of scope.
+- D-2 Metrics: hardcoded counts and ratings are removed unless backed by the live theme API response.
+- D-3 Legal/support pages: honest placeholder routes may be created and wired to the governed support address `support@letbuyy.store`; final legal and marketing copy is human-gated. Conflict logged: the mission text requested `support@letbuyy.com`, but root environment honesty governance rejects retired `@letbuyy.com` email defaults, so governance wins.
+- D-4 Payments/geography: Razorpay/INR and India-first copy are the live path. Stripe/global enablement is human-gated.
+- D-5 Reviews and developer console: UI shells may exist only behind default-off feature flags or as read-only honest states until endpoints exist.
+- D-6 Catalog content: no fabricated themes or marketplace proof. Sparse catalog states must degrade honestly.
+- D-7 Generated intelligence and root residue: do not regenerate AGENTS.md or root intelligence in this single-runtime mission.
+
+## Baseline
+
+- Captured: 2026-06-06T19:54:35Z.
+- Worktree: pre-existing dirty tree includes root CODEX/docs/governance churn, many sibling runtime edits, and pre-existing theme-marketplace edits. Scoped theme-marketplace status before this mission included modified AGENTS.md, eslint config, package.json, checkout, dashboard, globals, install, layout, pricing, themes pages, navbar, action feedback, upload panel, and added site-url plus untracked robots/sitemap. These are treated as user/parallel-mission owned starting state.
+- `pnpm --filter @letbuyy/theme-marketplace typecheck`: PASS.
+- `pnpm --filter @letbuyy/theme-marketplace lint`: PASS with 33 warnings, including pre-existing `any`, unused imports, `img` warnings, and `react-hooks/set-state-in-effect` warnings.
+- `pnpm --filter @letbuyy/theme-marketplace build`: sandbox run failed with Turbopack `Operation not permitted` while binding a port; escalated rerun PASS.
+- `pnpm --filter @letbuyy/theme-marketplace test`: PASS, 11 node-test subtests.
+- `pnpm run validate:governance`: FAIL before mission edits at `Domain boundary validator failed: App-local API route inventory changed without updating P4-4 classification: expected 115, found 123`. This is recorded as pre-existing cross-runtime/root governance state, not fixed in this single-runtime mission.
+
+## Progress Log
+
+- 2026-06-06T20:27:27Z [TM-P1] #1 sparse catalog - SKIPPED cross-boundary (needs database catalog seed/content approval) - evidence: apps/theme-marketplace/src/app/themes/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #2 hero theme count - DONE - evidence: apps/theme-marketplace/src/app/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #3 hero install count - DONE - evidence: apps/theme-marketplace/src/app/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #4 same-screen metric contradiction - DONE - evidence: apps/theme-marketplace/src/app/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #5 success placeholder removed - DONE locally/SKIPPED live (needs settlement/receipt endpoint) - evidence: apps/theme-marketplace/src/app/checkout/success/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #6 receipt/license pending copy - DONE locally/SKIPPED live (needs gateway receipt/license issuance) - evidence: apps/theme-marketplace/src/app/checkout/success/page.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #7 store preview session - DONE - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx; apps/theme-marketplace/src/lib/theme-service.ts
+- 2026-06-06T20:27:27Z [TM-P2] #8 reviews/ratings - SKIPPED cross-boundary (needs `themes.reviews` + `themes.createReview` gateway endpoints and moderation) - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx
+- 2026-06-06T20:27:27Z [TM-P4] #9 developer submission portal - DONE locally/SKIPPED live (needs developer-program persistence/review backend) - evidence: apps/theme-marketplace/src/app/developer/page.tsx; apps/theme-marketplace/src/components/theme-upload-panel.tsx
+- 2026-06-06T20:27:27Z [TM-P4] #10 developer revenue/payout model - SKIPPED human-gated (needs program terms and payout provider contract) - evidence: apps/theme-marketplace/src/app/developer/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #11 legal links - DONE/SKIPPED human-gated (legal copy approval needed) - evidence: apps/theme-marketplace/src/app/legal/*/page.tsx; apps/theme-marketplace/src/components/layout/footer.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #12 support/contact links - DONE/SKIPPED human-gated (support SLA/workflow owner needed) - evidence: apps/theme-marketplace/src/app/support/page.tsx; apps/theme-marketplace/src/app/contact/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #13 unsupported support claim - DONE - evidence: apps/theme-marketplace/src/app/page.tsx; apps/theme-marketplace/src/app/pricing/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #14 broken Pro subscription CTA - DONE/SKIPPED human-gated (subscription checkout out of scope per D-1) - evidence: apps/theme-marketplace/src/app/pricing/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #15 Unlimited dead CTA - DONE/SKIPPED human-gated (sales/program flow needed) - evidence: apps/theme-marketplace/src/app/pricing/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #16 pricing model mismatch - DONE/SKIPPED human-gated (per-theme live path ratified; subscriptions marketing-only) - evidence: apps/theme-marketplace/src/app/pricing/page.tsx; apps/theme-marketplace/src/app/checkout/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #17 Stripe/global mismatch - DONE/SKIPPED human-gated (Stripe keys/provider rollout needed) - evidence: apps/theme-marketplace/src/app/checkout/page.tsx; apps/theme-marketplace/src/app/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #18 fake settings save - DONE locally/SKIPPED live (needs profile/settings persistence endpoint) - evidence: apps/theme-marketplace/src/app/dashboard/settings/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #19 hardcoded settings identity - DONE - evidence: apps/theme-marketplace/src/app/dashboard/settings/page.tsx; apps/theme-marketplace/src/app/layout.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #20 fake downloads - DONE locally/SKIPPED live (needs signed theme artifact delivery) - evidence: apps/theme-marketplace/src/app/dashboard/downloads/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #21 purchases dead download - DONE locally/SKIPPED live (needs signed artifact/license delivery) - evidence: apps/theme-marketplace/src/app/dashboard/purchases/page.tsx
+- 2026-06-06T20:27:27Z [TM-P3] #22 customize editor link - DONE - evidence: apps/theme-marketplace/src/app/dashboard/installations/page.tsx
+- 2026-06-06T20:27:27Z [TM-P3] #23 update available without action - DONE locally/SKIPPED live (needs safe apply-release/update endpoint) - evidence: apps/theme-marketplace/src/app/dashboard/installations/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #24 navbar command search - DONE - evidence: apps/theme-marketplace/src/components/layout/navbar.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #25 missing notification endpoint - DONE - evidence: apps/theme-marketplace/src/components/layout/navbar.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #26 inert layout/price/industry filters - DONE locally/SKIPPED live (needs layout/price API params and industry seed) - evidence: apps/theme-marketplace/src/app/themes/page.tsx
+- 2026-06-06T20:27:27Z [TM-P2] #27 logged-in navbar identity - DONE - evidence: apps/theme-marketplace/src/app/layout.tsx; apps/theme-marketplace/src/components/layout/navbar.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #28 refund promise - DONE locally/SKIPPED live (needs refund endpoint + human refund policy) - evidence: apps/theme-marketplace/src/app/pricing/page.tsx; apps/theme-marketplace/src/app/legal/refund/page.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #29 demo stores/live sandbox - SKIPPED cross-boundary (needs demo store provisioning + preview tenant infrastructure) - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #30 changelog/release notes - SKIPPED cross-boundary (needs theme release notes endpoint/table) - evidence: apps/theme-marketplace/src/components/layout/footer.tsx
+- 2026-06-06T20:27:27Z [TM-P3] #31 version history - SKIPPED cross-boundary (needs release history endpoint) - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #32 performance metrics - SKIPPED cross-boundary (needs Lighthouse/Core Web Vitals collection) - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #33 accessibility report - SKIPPED cross-boundary (needs theme QA/accessibility evidence pipeline) - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #34 compatibility matrix - SKIPPED cross-boundary (needs compatibility data contract) - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx
+- 2026-06-06T20:27:27Z [TM-P4] #35 developer profile - SKIPPED cross-boundary (needs developer profile endpoint/routes) - evidence: apps/theme-marketplace/src/app/developer/page.tsx
+- 2026-06-06T20:27:27Z [TM-P2] #36 social proof - DONE locally/SKIPPED live (counts render only when API supplies them; needs real install data) - evidence: apps/theme-marketplace/src/components/theme-card.tsx; apps/theme-marketplace/src/app/themes/[slug]/page.tsx
+- 2026-06-06T20:27:27Z [TM-P3] #37 wishlist/favorites - DONE locally/SKIPPED live (decorative save removed; needs wishlist persistence) - evidence: apps/theme-marketplace/src/components/theme-card.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #38 collections/curation - SKIPPED cross-boundary (needs curated collection data contract) - evidence: apps/theme-marketplace/src/app/themes/page.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #39 trending/popular/new rows - DONE locally/SKIPPED live (popular sort link only; needs trending signal) - evidence: apps/theme-marketplace/src/components/layout/navbar.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #40 documentation/setup guide - DONE locally/SKIPPED live (docs placeholder only; needs real documentation content) - evidence: apps/theme-marketplace/src/app/docs/page.tsx
+- 2026-06-06T20:27:27Z [TM-P4] #41 developer support channel - SKIPPED cross-boundary (needs developer support/inbox contract) - evidence: apps/theme-marketplace/src/app/developer/page.tsx
+- 2026-06-06T20:27:27Z [TM-P4] #42 license tiers UI - SKIPPED cross-boundary (needs license-tier purchase/entitlement contract) - evidence: apps/theme-marketplace/src/app/pricing/page.tsx
+- 2026-06-06T20:27:27Z [TM-P2] #43 tax/invoice handling - DONE locally/SKIPPED live (copy honest; needs tax/invoice endpoint) - evidence: apps/theme-marketplace/src/app/checkout/page.tsx; apps/theme-marketplace/src/app/checkout/success/page.tsx
+- 2026-06-06T20:27:27Z [TM-P2] #44 receipts/order history - DONE locally/SKIPPED live (no fabricated receipt; needs receipt/order history endpoint) - evidence: apps/theme-marketplace/src/app/checkout/success/page.tsx; apps/theme-marketplace/src/app/dashboard/purchases/page.tsx
+- 2026-06-06T20:27:27Z [TM-P2] #45 email notifications - SKIPPED cross-boundary (needs notification templates/events) - evidence: apps/theme-marketplace/src/app/dashboard/settings/page.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #46 ranking/relevance - SKIPPED cross-boundary (needs search relevance/ranking service) - evidence: apps/theme-marketplace/src/app/themes/page.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #47 empty-catalog merchandising - DONE locally/SKIPPED live (honest empty state; needs content/curation data) - evidence: apps/theme-marketplace/src/app/themes/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #48 multi-currency display - DONE locally/SKIPPED live (INR preferred; broader currency contract needed) - evidence: apps/theme-marketplace/src/lib/utils.ts
+- 2026-06-06T20:27:27Z [TM-P5] #49 compare external platform price - SKIPPED cross-boundary (needs merchandising/comparison content policy) - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #50 preview API unused - DONE - evidence: apps/theme-marketplace/src/lib/theme-service.ts; apps/theme-marketplace/src/app/api/themes/[slug]/route.ts
+- 2026-06-06T20:27:27Z [TM-P3] #51 publish/rollback unused - SKIPPED cross-boundary (needs safe release/rollback UX contract) - evidence: apps/theme-marketplace/src/app/install/page.tsx
+- 2026-06-06T20:27:27Z [TM-P3] #52 destructive install - DONE locally/SKIPPED live (confirm + preview warning; needs draft/backup backend) - evidence: apps/theme-marketplace/src/app/install/page.tsx
+- 2026-06-06T20:27:27Z [TM-P3] #53 uninstall/revert - SKIPPED cross-boundary (needs uninstall/revert endpoint) - evidence: apps/theme-marketplace/src/app/dashboard/installations/page.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #54 fixed category taxonomy - SKIPPED cross-boundary (needs `@letbuyy/theme-engine` taxonomy expansion) - evidence: apps/theme-marketplace/src/app/themes/page.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #55 industry taxonomy - DONE locally/SKIPPED live (renders real options; needs database seeding) - evidence: apps/theme-marketplace/src/app/themes/page.tsx
+- 2026-06-06T20:27:27Z [TM-P4] #56 upload moderation/malware - DONE locally/SKIPPED live (agreement/size guard only; needs scanner/review pipeline) - evidence: apps/theme-marketplace/src/components/theme-upload-panel.tsx; apps/theme-marketplace/src/app/api/themes/route.ts
+- 2026-06-06T20:27:27Z [TM-P0] #57 upload rate limiting/abuse - DONE locally/SKIPPED live (in-memory guard; needs durable shared rate limiter) - evidence: apps/theme-marketplace/src/app/api/themes/route.ts
+- 2026-06-06T20:27:27Z [TM-P4] #58 developer agreement gate - DONE - evidence: apps/theme-marketplace/src/components/theme-upload-panel.tsx
+- 2026-06-06T20:27:27Z [TM-P4] #59 screenshot/asset upload - DONE locally/SKIPPED live (read-only shell; needs media upload backend) - evidence: apps/theme-marketplace/src/app/developer/page.tsx
+- 2026-06-06T20:27:27Z [TM-P4] #60 theme analytics - SKIPPED cross-boundary (needs analytics/funnel endpoint) - evidence: apps/theme-marketplace/src/app/developer/page.tsx
+- 2026-06-06T20:27:27Z [TM-P3] #61 saved searches/alerts - SKIPPED cross-boundary (needs persistence + notification contract) - evidence: apps/theme-marketplace/src/app/themes/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #62 locale/i18n consistency - DONE locally/SKIPPED live (dates/currency aligned; full i18n contract needed) - evidence: apps/theme-marketplace/src/lib/utils.ts; apps/theme-marketplace/src/app/dashboard/purchases/page.tsx
+- 2026-06-06T20:27:27Z [TM-P2] #63 report a problem - SKIPPED cross-boundary (needs abuse/report endpoint and ops workflow) - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #64 server-side price filter - DONE locally/SKIPPED live (inert UI removed; needs API params) - evidence: apps/theme-marketplace/src/app/themes/page.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #65 pagination UI - DONE - evidence: apps/theme-marketplace/src/app/themes/page.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #66 sort newest/recent labeling - DONE - evidence: apps/theme-marketplace/src/app/themes/page.tsx
+- 2026-06-06T20:27:27Z [TM-P2] #67 author verification - SKIPPED cross-boundary (needs developer verification/badge contract) - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx
+- 2026-06-06T20:27:27Z [TM-P4] #68 bundle/multi-theme purchase - SKIPPED cross-boundary (needs bundle checkout/entitlement contract) - evidence: apps/theme-marketplace/src/app/checkout/page.tsx
+- 2026-06-06T20:27:27Z [TM-P4] #69 gift/transfer license - SKIPPED cross-boundary (needs license transfer/gift workflow) - evidence: apps/theme-marketplace/src/app/dashboard/purchases/page.tsx
+- 2026-06-06T20:27:27Z [TM-P3] #70 hardcoded subscription badge - DONE locally/SKIPPED live (badge removed; needs subscription endpoint) - evidence: apps/theme-marketplace/src/app/dashboard/layout.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #71 category count - DONE - evidence: apps/theme-marketplace/src/app/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #72 price formatting - DONE - evidence: apps/theme-marketplace/src/lib/utils.ts
+- 2026-06-06T20:27:27Z [TM-P5] #73 unused rating helper - DONE - evidence: apps/theme-marketplace/src/lib/utils.ts
+- 2026-06-06T20:27:27Z [TM-P5] #74 unused download/purchase metrics - SKIPPED cross-boundary (needs trustworthy metric seeding/display policy) - evidence: apps/theme-marketplace/src/app/themes/page.tsx
+- 2026-06-06T20:27:27Z [TM-P2] #75 marketplace proof with no reviews - DONE locally/SKIPPED live (proof hidden unless API counts exist; needs reviews endpoint) - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #76 SaaS fallback image - SKIPPED human-gated (needs approved SaaS preview asset) - evidence: apps/theme-marketplace/src/app/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #77 inline transform styles - DONE - evidence: apps/theme-marketplace/src/app/pricing/page.tsx; apps/theme-marketplace/src/app/globals.css
+- 2026-06-06T20:27:27Z [TM-P0] #78 `any` in API route - DONE - evidence: apps/theme-marketplace/src/app/api/themes/route.ts
+- 2026-06-06T20:27:27Z [TM-P5] #79 install optimistic action - DONE - evidence: apps/theme-marketplace/src/app/install/page.tsx; apps/theme-marketplace/src/components/theme-action-feedback.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #80 mixed date locales - DONE - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx; apps/theme-marketplace/src/app/dashboard/purchases/page.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #81 autocomplete scope - DONE locally/SKIPPED live (scoped copy; needs server suggestions endpoint) - evidence: apps/theme-marketplace/src/app/themes/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #82 fixed bento heights - DONE - evidence: apps/theme-marketplace/src/app/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #83 faux browser chrome - DONE - evidence: apps/theme-marketplace/src/app/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #84 global/India copy - DONE - evidence: apps/theme-marketplace/src/components/layout/footer.tsx; apps/theme-marketplace/src/app/checkout/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #85 favicon/OG asset - SKIPPED human-gated (needs approved brand/OG asset) - evidence: apps/theme-marketplace/src/app/layout.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #86 disabled preview affordance - DONE - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #87 fake coupon UI - DONE - evidence: apps/theme-marketplace/src/app/checkout/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #88 dashboard sequential calls - DONE - evidence: apps/theme-marketplace/src/app/dashboard/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #89 review N-scan helper - DONE - evidence: apps/theme-marketplace/src/lib/theme-service.ts
+- 2026-06-06T20:27:27Z [TM-P5] #90 home category calls - DONE - evidence: apps/theme-marketplace/src/app/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #91 detail skeleton - DONE - evidence: apps/theme-marketplace/src/app/themes/[slug]/loading.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #92 marketplace unavailable copy - DONE - evidence: apps/theme-marketplace/src/components/marketplace-unavailable.tsx
+- 2026-06-06T20:27:27Z [TM-P1] #93 Trending and Browse All duplicate - DONE - evidence: apps/theme-marketplace/src/components/layout/navbar.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #94 placeholder noindex - DONE - evidence: apps/theme-marketplace/src/app/legal/*/page.tsx; apps/theme-marketplace/src/app/docs/page.tsx
+- 2026-06-06T20:27:27Z [TM-P3] #95 empty config overrides - DONE - evidence: apps/theme-marketplace/src/lib/theme-service.ts; tests/federation/theme-store-install-lifecycle.test.mjs
+- 2026-06-06T20:27:27Z [TM-P0] #96 tag overflow indicator - DONE - evidence: apps/theme-marketplace/src/components/theme-card.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #97 publication label - DONE - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #98 zero-review pluralization - DONE - evidence: apps/theme-marketplace/src/components/theme-card.tsx
+- 2026-06-06T20:27:27Z [TM-P5] #99 funnel analytics/telemetry - SKIPPED cross-boundary (needs analytics event contract) - evidence: apps/theme-marketplace/src/app/themes/[slug]/page.tsx
+- 2026-06-06T20:27:27Z [TM-P0] #100 docs/API/changelog footer - DONE locally/SKIPPED live (docs/API placeholders; changelog removed until endpoint exists) - evidence: apps/theme-marketplace/src/components/layout/footer.tsx; apps/theme-marketplace/src/app/docs/page.tsx; apps/theme-marketplace/src/app/docs/api/page.tsx
+- 2026-06-06T20:27:27Z [VERIFY] final app gates - DONE locally/SKIPPED live (governance blocked by unrelated cross-runtime residue/settings checks) - evidence: typecheck PASS; lint PASS 12 warnings; build PASS; test PASS 16/16; governance latest FAIL on merchant-control-plane domains settings `cname.vercel-dns.com`; prior run reached source-ledger residue for root/apps-app-marketplace CODEX files
+
+## Cross-Boundary Contracts
+
+- Catalog/content: seed a real theme catalog, real category/industry taxonomy rows, demo URLs, approved SaaS preview artwork, and curated collections.
+- Preview/live sandbox: provision demo stores or preview tenant infrastructure for unauthenticated card-level previews; current in-store preview uses `api.themes.previewSession` when a merchant store is available.
+- Reviews/trust: deliver gateway endpoints for `themes.reviews`, `themes.createReview`, moderation, verified-purchase checks, review replies, report-a-problem, and author verification badges.
+- Settlement/receipts/license: deliver payment settlement, receipt/tax invoice, license issuance, email receipt/update notifications, order history, and signed artifact download URL contracts.
+- Refunds: deliver a refund policy decision, refund endpoint/workflow, and operator reconciliation path before automated refunds are advertised.
+- Installation lifecycle: deliver draft install, backup, safe apply-update, release history, rollback, uninstall/revert, and publish/release action contracts.
+- Developer program: deliver listing persistence, screenshots/assets/media upload, review requirements, developer profiles, analytics, support inbox, payout provider integration, revenue-share terms, and verification workflow.
+- Search/discovery: deliver layout/price API parameters, server autocomplete/suggestions, ranking/relevance, trending/new/popular signals, saved searches, alerts, collections, and bundle/multi-theme purchase data.
+- QA/evidence: deliver Lighthouse/Core Web Vitals, accessibility, compatibility, changelog/release notes, documentation/setup guide, telemetry/funnel event contracts, and approved OG/favicon assets.
+- Governance/coordination: archive unrelated root and app-marketplace `CODEX_*` residue; regenerate generated intelligence/AGENTS only in the final coordination pass, not in this single-runtime mission.

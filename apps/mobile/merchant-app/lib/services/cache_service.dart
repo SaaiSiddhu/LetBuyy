@@ -80,15 +80,46 @@ class CacheService {
 
   static String storesKey = 'stores:list';
 
-  static String productsKey(String storeId, int page, int limit) =>
-      'products:$storeId:$page:$limit';
+  static String storeDetailKey(String storeId) => 'stores:detail:$storeId';
+
+  static String _cursorSegment(String? cursor) {
+    final trimmed = cursor?.trim();
+    return trimmed == null || trimmed.isEmpty
+        ? 'none'
+        : Uri.encodeComponent(trimmed);
+  }
+
+  static String productsKey(
+    String storeId,
+    int page,
+    int limit, {
+    String? cursor,
+  }) => 'products:$storeId:$page:$limit:${_cursorSegment(cursor)}';
+
+  static String productDetailKey(String productId) =>
+      'products:detail:$productId';
 
   static String ordersKey(
     String storeId, {
     String? status,
     String? customerEmail,
+    String? cursor,
     required int page,
     required int limit,
   }) =>
-      'orders:$storeId:${status ?? 'all'}:${customerEmail ?? 'all'}:$page:$limit';
+      'orders:$storeId:${status ?? 'all'}:${customerEmail ?? 'all'}:$page:$limit:${_cursorSegment(cursor)}';
+
+  static String orderDetailKey(String orderId) => 'orders:detail:$orderId';
+
+  static String customersKey(
+    String storeId, {
+    String? search,
+    String? cursor,
+    required int page,
+    required int limit,
+  }) =>
+      'customers:$storeId:${search?.trim().toLowerCase() ?? 'all'}:$page:$limit:${_cursorSegment(cursor)}';
+
+  static String customerDetailKey(String storeId, String email) =>
+      'customers:detail:$storeId:${Uri.encodeComponent(email.trim().toLowerCase())}';
 }

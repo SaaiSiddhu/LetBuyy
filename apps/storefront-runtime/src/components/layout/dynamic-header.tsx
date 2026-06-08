@@ -5,7 +5,7 @@ import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ShoppingBag, Menu, Search, X, ChevronRight, Home, Store, FileText, Shield, Truck, User } from '@letbuyy/ui';
+import { Button, Input, ShoppingBag, Menu, Search, X, ChevronRight, Home, Store, FileText, Shield, Truck, User } from '@letbuyy/ui';
 import { useCart } from '@/context/cart-context';
 import AccountBottomSheet from '@/components/account/account-bottom-sheet';
 import CartDrawer from '@/components/cart/cart-drawer';
@@ -44,11 +44,11 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
 
     // Get theme settings from store
     const theme: ThemeSettings = store.templateConfig?.themeSettings || {
-        primaryColor: '#00B3B3',
-        secondaryColor: '#008080',
-        accentColor: '#A4E500',
-        backgroundColor: '#FFFFFF',
-        textColor: '#1A1A2E',
+        primaryColor: 'rgb(0 179 179)',
+        secondaryColor: 'rgb(0 128 128)',
+        accentColor: 'rgb(164 229 0)',
+        backgroundColor: 'rgb(255 255 255)',
+        textColor: 'rgb(26 26 46)',
         fontFamily: 'Inter',
         headingFontFamily: 'Inter',
         borderRadius: 12,
@@ -260,7 +260,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                 aria-label={searchOpen ? 'Close product search' : 'Open product search'}
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => setSearchOpen(!searchOpen)}
-                                className={`flex h-11 w-11 items-center justify-center rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
+                                className={`flex h-11 w-11 items-center justify-center rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-[var(--lb-color-surface)]/10'}`}
                             >
                                 <Search size={20} strokeWidth={1.5} />
                             </motion.button>
@@ -271,7 +271,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                 aria-label="Open customer account menu"
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => setAccountOpen(true)}
-                                className={`flex h-11 w-11 items-center justify-center rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
+                                className={`flex h-11 w-11 items-center justify-center rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-[var(--lb-color-surface)]/10'}`}
                             >
                                 <User size={20} strokeWidth={1.5} />
                             </motion.button>
@@ -282,7 +282,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                 aria-label={`Open cart${cartCount > 0 ? ` with ${cartCount} items` : ''}`}
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => setCartOpen(true)}
-                                className={`relative flex h-11 w-11 items-center justify-center rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
+                                className={`relative flex h-11 w-11 items-center justify-center rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-[var(--lb-color-surface)]/10'}`}
                             >
                                 <ShoppingBag size={20} strokeWidth={1.5} />
                                 <AnimatePresence>
@@ -292,7 +292,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                             animate={{ scale: 1 }}
                                             exit={{ scale: 0 }}
                                             className="absolute -top-0.5 -right-0.5 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full"
-                                            style={{ backgroundColor: theme.accentColor || '#ff4757' }}
+                                            style={{ backgroundColor: theme.accentColor || 'rgb(255 71 87)' }}
                                         >
                                             {cartCount > 9 ? '9+' : cartCount}
                                         </motion.span>
@@ -311,12 +311,12 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                             className="overflow-hidden border-t"
-                            style={{ borderColor: scrolled ? '#e5e7eb' : 'rgba(255,255,255,0.1)' }}
+                            style={{ borderColor: scrolled ? 'rgb(229 231 235)' : 'rgba(255,255,255,0.1)' }}
                         >
                             <div ref={searchContainerRef} className="container mx-auto px-4 py-3">
                                 <form onSubmit={handleSearchSubmit} className="relative">
                                     <Search size={18} className={`absolute left-3 top-1/2 -translate-y-1/2 ${scrolled ? 'text-theme-muted' : 'text-white/60'}`} />
-                                    <input
+                                    <Input unstyled
                                         ref={searchInputRef}
                                         type="text"
                                         value={searchQuery}
@@ -324,18 +324,18 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                         placeholder="Search products..."
                                         className={`min-h-11 w-full rounded-lg py-2.5 pl-10 pr-10 text-sm ${scrolled
                                             ? 'input-theme'
-                                            : 'bg-white/10 text-white placeholder-white/60'
+                                            : 'bg-[var(--lb-color-surface)]/10 text-white placeholder-white/60'
                                             } outline-none`}
                                     />
                                     {searchQuery && (
-                                        <button
+                                        <Button unstyled
                                             type="button"
                                             aria-label="Clear product search"
                                             onClick={() => setSearchQuery('')}
                                             className={`absolute right-3 top-1/2 -translate-y-1/2 ${scrolled ? 'text-theme-muted hover:text-theme-secondary' : 'text-white/60 hover:text-white'}`}
                                         >
                                             <X size={16} />
-                                        </button>
+                                        </Button>
                                     )}
                                 </form>
 
@@ -425,14 +425,14 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                         {/* Minimal Header - Just Close Button */}
                         <div className="flex items-center justify-between px-4 py-3 border-b border-card">
                             <span className="text-sm font-medium text-card-muted uppercase tracking-wider">Menu</span>
-                            <button
+                            <Button unstyled
                                 type="button"
                                 aria-label="Close store menu"
                                 onClick={() => setMobileMenuOpen(false)}
                                 className="-mr-2 flex h-11 w-11 items-center justify-center rounded-lg text-card-muted hover:bg-surface-hover"
                             >
                                 <X size={20} />
-                            </button>
+                            </Button>
                         </div>
 
                         {/* Search in Mobile Menu */}
@@ -449,7 +449,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                 className="relative"
                             >
                                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-card-muted" />
-                                <input
+                                <Input unstyled
                                     aria-label="Search products"
                                     type="text"
                                     value={searchQuery}
@@ -490,7 +490,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                         <div className="border-t border-card p-4 space-y-3">
                             {isStoreSite ? (
                                 <>
-                                    <button
+                                    <Button unstyled
                                         type="button"
                                         aria-label={`Open cart${cartCount > 0 ? ` with ${cartCount} items` : ''}`}
                                         onClick={() => {
@@ -501,7 +501,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                     >
                                         <ShoppingBag size={16} />
                                         Cart {cartCount > 0 && `(${cartCount})`}
-                                    </button>
+                                    </Button>
                                     <Link href={`${basePath}/shop`} onClick={() => setMobileMenuOpen(false)}>
                                         <div
                                             className="flex min-h-11 w-full items-center justify-center rounded-lg py-3 text-center text-sm font-semibold text-white"

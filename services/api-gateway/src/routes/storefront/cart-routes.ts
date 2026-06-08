@@ -1,9 +1,12 @@
 import { Hono, type Context } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../../index';
+import { EventExecutionAdapter } from '../../execution/event-execution.adapter';
+import { hmacSha256Hex } from '../../lib/crypto';
 import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
 import { validate } from '../../middleware/validation';
 import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
+import { CommerceChannelSchema, DEFAULT_PLATFORM_DOMAIN, type CommerceChannel } from '@letbuyy/shared-types';
 
 type AppContext = Context<{ Bindings: Env }>;
 type DbRecord = Record<string, unknown>;
@@ -33,7 +36,19 @@ const StorefrontCartLineInputSchema = z.object({
 const StorefrontCartMutationSchema = z.object({
     cart_token: z.string().trim().min(1).max(120).optional().nullable(),
     customer_id: z.string().uuid().optional().nullable(),
+    buyer_email: z.string().trim().email().max(254).optional().nullable(),
+    channel: CommerceChannelSchema.optional().default('web'),
     lines: z.array(StorefrontCartLineInputSchema).max(250).default([]),
+    coupon_codes: z.array(z.string().trim().min(1).max(50)).max(20).default([]),
+}).strict();
+
+const StorefrontCartBuyerIdentitySchema = z.object({
+    customer_id: z.string().uuid().optional().nullable(),
+    buyer_email: z.string().trim().email().max(254).optional().nullable(),
+    channel: CommerceChannelSchema.optional().default('web'),
+}).strict();
+
+const StorefrontCartDiscountCodesSchema = z.object({
     coupon_codes: z.array(z.string().trim().min(1).max(50)).max(20).default([]),
 }).strict();
 
@@ -59,8 +74,10 @@ type StorefrontServerCart = {
     id: string;
     store_id: string;
     customer_id?: string | null;
+    buyer_email?: string | null;
     cart_token: string;
     status: string;
+    channel: CommerceChannel;
     currency: string;
     lines: StorefrontServerCartLine[];
     subtotal: number;
@@ -69,10 +86,29 @@ type StorefrontServerCart = {
     tax_total: number;
     total: number;
     coupon_codes: string[];
+    checkout_handoff?: Record<string, unknown>;
+    abandonment_enqueued_at?: string | null;
     expires_at?: string | null;
     created_at?: string | null;
     updated_at?: string | null;
 };
+
+const CART_SELECT = [
+    'id',
+    'store_id',
+    'customer_id',
+    'buyer_email',
+    'session_id',
+    'items',
+    'coupon_code',
+    'status',
+    'channel',
+    'checkout_handoff',
+    'abandonment_enqueued_at',
+    'expires_at',
+    'created_at',
+    'updated_at',
+].join(', ');
 
 function stringValue(value: unknown): string | null {
     return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
@@ -130,13 +166,16 @@ function cartFromRow(row: DbRecord): StorefrontServerCart {
     const subtotal = lines.reduce((total, line) => total + line.line_total, 0);
     const currency = lines[0]?.currency || 'INR';
     const couponCode = stringValue(row.coupon_code);
+    const parsedChannel = CommerceChannelSchema.safeParse(row.channel);
 
     return {
         id: String(row.id),
         store_id: String(row.store_id),
         customer_id: stringValue(row.customer_id),
+        buyer_email: stringValue(row.buyer_email),
         cart_token: String(row.session_id),
         status: stringValue(row.status) || 'active',
+        channel: parsedChannel.success ? parsedChannel.data : 'web',
         currency,
         lines,
         subtotal,
@@ -145,6 +184,10 @@ function cartFromRow(row: DbRecord): StorefrontServerCart {
         tax_total: 0,
         total: subtotal,
         coupon_codes: couponCode ? [couponCode] : [],
+        checkout_handoff: row.checkout_handoff && typeof row.checkout_handoff === 'object' && !Array.isArray(row.checkout_handoff)
+            ? row.checkout_handoff as Record<string, unknown>
+            : {},
+        abandonment_enqueued_at: stringValue(row.abandonment_enqueued_at),
         expires_at: stringValue(row.expires_at),
         created_at: stringValue(row.created_at),
         updated_at: stringValue(row.updated_at),
@@ -154,7 +197,7 @@ function cartFromRow(row: DbRecord): StorefrontServerCart {
 async function loadCartByToken(c: AppContext, storeId: string, cartToken: string): Promise<{ cart: StorefrontServerCart | null; error: unknown }> {
     const { data, error } = await getSupabaseAdmin(c)
         .from('carts')
-        .select('id, store_id, customer_id, session_id, items, coupon_code, status, expires_at, created_at, updated_at')
+        .select(CART_SELECT)
         .eq('store_id', storeId)
         .eq('session_id', cartToken)
         .eq('status', 'active')
@@ -162,7 +205,7 @@ async function loadCartByToken(c: AppContext, storeId: string, cartToken: string
         .maybeSingle();
 
     if (error) return { cart: null, error };
-    return { cart: data ? cartFromRow(data as DbRecord) : null, error: null };
+    return { cart: data ? cartFromRow(data as unknown as DbRecord) : null, error: null };
 }
 
 async function hydrateCartLines(
@@ -233,6 +276,109 @@ async function hydrateCartLines(
     };
 }
 
+function requestId(c: AppContext): string {
+    return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
+}
+
+function cartLinesToInput(lines: StorefrontServerCartLine[]): StorefrontCartLineInput[] {
+    return lines.map((line) => ({
+        product_id: line.product_id,
+        variant_id: line.variant_id || null,
+        quantity: line.quantity,
+        properties: line.properties || {},
+    }));
+}
+
+function checkoutOrigin(c: AppContext): string {
+    const explicit = c.env.CHECKOUT_ORIGIN || c.env.NEXT_PUBLIC_STOREFRONT_URL || c.env.STOREFRONT_BASE_URL;
+    if (explicit) return explicit.trim().replace(/\/+$/, '');
+
+    const rawDomain = c.env.LETBUYY_PLATFORM_DOMAIN
+        || c.env.NEXT_PUBLIC_PLATFORM_DOMAIN
+        || c.env.PLATFORM_ROOT_DOMAIN
+        || DEFAULT_PLATFORM_DOMAIN;
+    const domain = rawDomain.trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace(/^\.+|\.+$/g, '');
+    return `https://checkout.${domain || DEFAULT_PLATFORM_DOMAIN}`;
+}
+
+function checkoutSigningSecret(c: AppContext): string | null {
+    const configured = c.env.CHECKOUT_SIGNING_SECRET || c.env.AUTH_SECRET || c.env.STORE_ACCESS_SIGNING_KEY;
+    if (configured && !configured.startsWith('SKIP_NEEDS_HUMAN_')) return configured;
+    if (c.env.ENVIRONMENT === 'production' || c.env.APP_ENV === 'production') return null;
+    return 'letbuyy-local-mock-checkout-handoff-secret';
+}
+
+async function emitCartEvent(
+    c: AppContext,
+    cart: StorefrontServerCart,
+    eventType: 'cart.created' | 'cart.email_captured' | 'cart.abandoned',
+    idempotencyKey: string,
+    metadata: Record<string, unknown> = {},
+): Promise<void> {
+    await new EventExecutionAdapter(getSupabaseAdmin(c)).emitDomainEvent({
+        storeId: cart.store_id,
+        aggregateType: 'cart',
+        aggregateId: cart.id,
+        eventType,
+        payload: {
+            site_id: cart.store_id,
+            cart_id: cart.id,
+            channel: cart.channel,
+            buyer_email: cart.buyer_email || undefined,
+            cart_token: cart.cart_token,
+            line_count: cart.lines.length,
+            subtotal_minor: Math.round(cart.subtotal * 100),
+            ...metadata,
+        },
+        idempotencyKey,
+        requestId: requestId(c),
+    });
+}
+
+async function enqueueAbandonmentCheck(c: AppContext, cart: StorefrontServerCart): Promise<void> {
+    if (!cart.buyer_email || cart.lines.length === 0) return;
+
+    const availableAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    const db = getSupabaseAdmin(c);
+    const { error } = await db
+        .from('platform_queue_jobs')
+        .upsert(
+            {
+                site_id: cart.store_id,
+                queue_name: 'analytics-events',
+                job_type: 'cart.abandonment_check',
+                payload: {
+                    site_id: cart.store_id,
+                    cart_id: cart.id,
+                    cart_token: cart.cart_token,
+                    channel: cart.channel,
+                    buyer_email: cart.buyer_email,
+                },
+                idempotency_key: `cart.abandonment_check:${cart.store_id}:${cart.id}`,
+                request_id: requestId(c),
+                available_at: availableAt,
+            },
+            { onConflict: 'queue_name,idempotency_key' },
+        )
+        .select('id')
+        .single();
+
+    if (error && !String(error.message || '').includes('schema cache')) {
+        throw new Error(`Cart abandonment enqueue failed: ${error.message}`);
+    }
+
+    await db
+        .from('carts')
+        .update({ abandonment_enqueued_at: new Date().toISOString() })
+        .eq('store_id', cart.store_id)
+        .eq('id', cart.id);
+
+    await emitCartEvent(c, cart, 'cart.abandoned', `cart.abandoned:${cart.store_id}:${cart.id}`, {
+        scheduled_check_at: availableAt,
+        reason: 'abandonment_check_enqueued',
+    });
+}
+
 async function persistCart(
     c: AppContext,
     store: PublishedStoreRecord,
@@ -246,6 +392,8 @@ async function persistCart(
     const payload = {
         store_id: store.id,
         customer_id: input.customer_id || null,
+        buyer_email: input.buyer_email || null,
+        channel: input.channel || 'web',
         session_id: cartToken,
         items: hydrated.lines,
         coupon_code: input.coupon_codes[0] || null,
@@ -263,16 +411,24 @@ async function persistCart(
             .update(payload)
             .eq('store_id', store.id)
             .eq('session_id', cartToken)
-            .select('id, store_id, customer_id, session_id, items, coupon_code, status, expires_at, created_at, updated_at')
+            .select(CART_SELECT)
             .single()
         : await db
             .from('carts')
             .insert({ ...payload, session_id: cartToken })
-            .select('id, store_id, customer_id, session_id, items, coupon_code, status, expires_at, created_at, updated_at')
+            .select(CART_SELECT)
             .single();
 
     if (result.error || !result.data) return c.json(dbFailureBody(), 500);
-    return c.json(success(cartFromRow(result.data as DbRecord)), existing.cart ? 200 : 201);
+    const cart = cartFromRow(result.data as unknown as DbRecord);
+    if (!existing.cart) {
+        await emitCartEvent(c, cart, 'cart.created', `cart.created:${store.id}:${cart.id}`);
+    }
+    if (cart.buyer_email) {
+        await emitCartEvent(c, cart, 'cart.email_captured', `cart.email_captured:${store.id}:${cart.id}:${cart.buyer_email}`);
+        await enqueueAbandonmentCheck(c, cart);
+    }
+    return c.json(success(cart), existing.cart ? 200 : 201);
 }
 
 export function registerStorefrontCartRoutes(
@@ -323,6 +479,99 @@ export function registerStorefrontCartRoutes(
         return persistCart(c, store, cartToken, body, queryPublicProducts);
     });
 
+    router.put('/:subdomain/cart/:cartToken/buyer-identity', validate('json', StorefrontCartBuyerIdentitySchema), async (c) => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+
+        const cartToken = normalizePublicRouteToken(c.req.param('cartToken'));
+        if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
+
+        const existing = await loadCartByToken(c, store.id, cartToken);
+        if (existing.error) return c.json(dbFailureBody(), 500);
+        if (!existing.cart) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Cart not found' } }, 404);
+
+        const body = c.get('validatedBody') as z.infer<typeof StorefrontCartBuyerIdentitySchema>;
+        return persistCart(c, store, cartToken, {
+            cart_token: cartToken,
+            customer_id: body.customer_id || existing.cart.customer_id || null,
+            buyer_email: body.buyer_email || existing.cart.buyer_email || null,
+            channel: body.channel || existing.cart.channel,
+            lines: cartLinesToInput(existing.cart.lines),
+            coupon_codes: existing.cart.coupon_codes,
+        }, queryPublicProducts);
+    });
+
+    router.post('/:subdomain/cart/:cartToken/discount-codes', validate('json', StorefrontCartDiscountCodesSchema), async (c) => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+
+        const cartToken = normalizePublicRouteToken(c.req.param('cartToken'));
+        if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
+
+        const existing = await loadCartByToken(c, store.id, cartToken);
+        if (existing.error) return c.json(dbFailureBody(), 500);
+        if (!existing.cart) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Cart not found' } }, 404);
+
+        const body = c.get('validatedBody') as z.infer<typeof StorefrontCartDiscountCodesSchema>;
+        return persistCart(c, store, cartToken, {
+            cart_token: cartToken,
+            customer_id: existing.cart.customer_id || null,
+            buyer_email: existing.cart.buyer_email || null,
+            channel: existing.cart.channel,
+            lines: cartLinesToInput(existing.cart.lines),
+            coupon_codes: body.coupon_codes,
+        }, queryPublicProducts);
+    });
+
+    router.get('/:subdomain/cart/:cartToken/checkout-url', async (c) => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+
+        const cartToken = normalizePublicRouteToken(c.req.param('cartToken'));
+        if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
+
+        const { cart, error } = await loadCartByToken(c, store.id, cartToken);
+        if (error) return c.json(dbFailureBody(), 500);
+        if (!cart) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Cart not found' } }, 404);
+        if (cart.lines.length === 0) return c.json({ success: false, error: { code: 'EMPTY_CART', message: 'Cart has no checkout lines' } }, 409);
+
+        const secret = checkoutSigningSecret(c);
+        if (!secret) {
+            // [HUMAN-REQUIRED] Production checkout URL signing secret must be installed before live checkout handoff.
+            return c.json({ success: false, error: { code: 'CHECKOUT_SIGNING_UNAVAILABLE', message: 'Checkout handoff is unavailable.' } }, 503);
+        }
+
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+        const signaturePayload = `${store.id}:${cart.id}:${cart.cart_token}:${cart.channel}:${expiresAt}`;
+        const signature = await hmacSha256Hex(secret, signaturePayload);
+        const checkoutUrl = new URL('/checkout', checkoutOrigin(c));
+        checkoutUrl.searchParams.set('site_id', store.id);
+        checkoutUrl.searchParams.set('cart_id', cart.id);
+        checkoutUrl.searchParams.set('cart_token', cart.cart_token);
+        checkoutUrl.searchParams.set('channel', cart.channel);
+        checkoutUrl.searchParams.set('expires_at', expiresAt);
+        checkoutUrl.searchParams.set('signature', signature);
+
+        await getSupabaseAdmin(c)
+            .from('carts')
+            .update({
+                checkout_handoff: {
+                    checkout_url: checkoutUrl.toString(),
+                    expires_at: expiresAt,
+                    signed_at: new Date().toISOString(),
+                    channel: cart.channel,
+                },
+            })
+            .eq('store_id', store.id)
+            .eq('id', cart.id);
+
+        return c.json(success({
+            checkout_url: checkoutUrl.toString(),
+            expires_at: expiresAt,
+            signature,
+        }));
+    });
+
     router.delete('/:subdomain/cart/:cartToken', async (c) => {
         const store = await loadPublishedStore(c, c.req.param('subdomain'));
         if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
@@ -339,10 +588,10 @@ export function registerStorefrontCartRoutes(
             })
             .eq('store_id', store.id)
             .eq('session_id', cartToken)
-            .select('id, store_id, customer_id, session_id, items, coupon_code, status, expires_at, created_at, updated_at')
+            .select(CART_SELECT)
             .single();
 
         if (error || !data) return c.json(dbFailureBody(), 500);
-        return c.json(success(cartFromRow(data as DbRecord)));
+        return c.json(success(cartFromRow(data as unknown as DbRecord)));
     });
 }

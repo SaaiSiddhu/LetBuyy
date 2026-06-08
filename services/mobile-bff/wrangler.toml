@@ -27,14 +27,19 @@ TELEMETRY_ENV = "staging"
 RUNTIME_NAME = "Mobile BFF"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
-INTERNAL_API_SECRET = "SKIP_NEEDS_HUMAN_BFF_INTERNAL_API_SECRET"
+# INTERNAL_API_SECRET is a Worker SECRET — provision per environment with:
+#   wrangler secret put INTERNAL_API_SECRET            (default/dev)
+#   wrangler secret put INTERNAL_API_SECRET --env staging
+#   wrangler secret put INTERNAL_API_SECRET --env production
+# Do NOT commit it as a plaintext [vars] value. The runtime fails closed (HTTP 500)
+# if it is unset or still equals the old SKIP_NEEDS_HUMAN placeholder.
 
 [env.staging]
 name = "letbuyy-mobile-bff-staging"
 workers_dev = false
 routes = [
-  { pattern = "bff-staging.letbuyy.store", custom_domain = true },
-  { pattern = "bff.staging.letbuyy.store", custom_domain = true }
+  { pattern = "bff-staging.letbuyy.com", custom_domain = true },
+  { pattern = "bff.staging.letbuyy.com", custom_domain = true }
 ]
 
 [env.staging.observability]
@@ -57,7 +62,12 @@ TELEMETRY_ENV = "staging"
 RUNTIME_NAME = "Mobile BFF"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
-INTERNAL_API_SECRET = "SKIP_NEEDS_HUMAN_BFF_INTERNAL_API_SECRET"
+# INTERNAL_API_SECRET is a Worker SECRET — provision per environment with:
+#   wrangler secret put INTERNAL_API_SECRET            (default/dev)
+#   wrangler secret put INTERNAL_API_SECRET --env staging
+#   wrangler secret put INTERNAL_API_SECRET --env production
+# Do NOT commit it as a plaintext [vars] value. The runtime fails closed (HTTP 500)
+# if it is unset or still equals the old SKIP_NEEDS_HUMAN placeholder.
 
 [[env.staging.services]]
 binding = "API_GATEWAY_SERVICE"
@@ -74,7 +84,7 @@ mode = "smart"
 name = "letbuyy-mobile-bff"
 workers_dev = false
 routes = [
-  { pattern = "bff.letbuyy.store", custom_domain = true }
+  { pattern = "bff.letbuyy.com", custom_domain = true }
 ]
 
 [env.production.observability]
@@ -97,7 +107,12 @@ TELEMETRY_ENV = "production"
 RUNTIME_NAME = "Mobile BFF"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
-INTERNAL_API_SECRET = "SKIP_NEEDS_HUMAN_BFF_INTERNAL_API_SECRET"
+# INTERNAL_API_SECRET is a Worker SECRET — provision per environment with:
+#   wrangler secret put INTERNAL_API_SECRET            (default/dev)
+#   wrangler secret put INTERNAL_API_SECRET --env staging
+#   wrangler secret put INTERNAL_API_SECRET --env production
+# Do NOT commit it as a plaintext [vars] value. The runtime fails closed (HTTP 500)
+# if it is unset or still equals the old SKIP_NEEDS_HUMAN placeholder.
 
 [[env.production.services]]
 binding = "API_GATEWAY_SERVICE"

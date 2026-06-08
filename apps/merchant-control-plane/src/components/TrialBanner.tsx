@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { MaterialIcon } from '@letbuyy/ui'
+import { Button, MaterialIcon } from '@letbuyy/ui'
 
 interface TrialBannerProps {
     trialEndsAt: string | null
@@ -28,7 +28,7 @@ export default function TrialBanner({ trialEndsAt, trialStatus }: TrialBannerPro
     return (
         <div className="admin-trial-toast">
             <div className="admin-trial-toast-header">
-                <button
+                <Button unstyled
                     type="button"
                     className="admin-trial-toast-toggle"
                     onClick={() => setCollapsed(!collapsed)}
@@ -44,15 +44,15 @@ export default function TrialBanner({ trialEndsAt, trialStatus }: TrialBannerPro
                         className={`admin-trial-toast-chevron ${collapsed ? 'collapsed' : ''}`}
                         size={20}
                     />
-                </button>
-                <button
+                </Button>
+                <Button unstyled
                     type="button"
                     className="admin-trial-toast-dismiss"
                     onClick={() => setDismissed(true)}
                     aria-label="Dismiss trial banner"
                 >
                     <MaterialIcon name="close" size={18} />
-                </button>
+                </Button>
             </div>
 
             {!collapsed && (

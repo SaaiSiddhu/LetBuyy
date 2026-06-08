@@ -203,6 +203,7 @@ class ProductVariantContract extends SharedTypeContract {
   String get productId => stringValue('product_id');
   String get title => stringValue('title');
   String? get sku => optionalString('sku');
+  String? get barcode => optionalString('barcode');
   double? get price => this['price'] == null ? null : numberValue('price');
   int get stock => intValue('stock');
   int get inventoryQuantity => intValue('inventory_quantity');
@@ -265,6 +266,7 @@ class ProductContract extends SharedTypeContract {
       this['compare_price'] == null ? null : numberValue('compare_price');
   String get currency => stringValue('currency', fallback: 'INR');
   String? get sku => optionalString('sku');
+  String? get barcode => optionalString('barcode');
   String? get category => optionalString('category');
   int get stock => intValue('stock');
   bool get isActive => boolValue('is_active');
@@ -365,6 +367,38 @@ class CustomerContract extends SharedTypeContract {
       contractList('addresses', CustomerAddressContract.fromJson);
 }
 
+class CustomerSegmentContract extends SharedTypeContract {
+  static const ownFields = <String>[
+    'store_id',
+    'name',
+    'description',
+    'rules',
+    'customer_count',
+  ];
+
+  static const schemaFields = <String>[
+    ...ContractFieldSets.audited,
+    ...ownFields,
+  ];
+
+  CustomerSegmentContract(super.json);
+
+  factory CustomerSegmentContract.fromJson(JsonMap json) =>
+      CustomerSegmentContract(json);
+
+  String get id => stringValue('id');
+  String get storeId => stringValue('store_id');
+  String get name => stringValue('name');
+  String? get description => optionalString('description');
+  JsonMap get rules => jsonMap('rules');
+  int get customerCount => intValue('customer_count');
+  List<String> get tagsAny {
+    final value = rules['tags_any'];
+    if (value is List) return value.map((item) => item.toString()).toList();
+    return const [];
+  }
+}
+
 class CartLineContract extends SharedTypeContract {
   static const schemaFields = <String>[
     'id',
@@ -399,6 +433,8 @@ class CartContract extends SharedTypeContract {
     'customer_id',
     'session_id',
     'status',
+    'channel',
+    'buyer_email',
     'currency',
     'lines',
     'subtotal',
@@ -423,6 +459,8 @@ class CartContract extends SharedTypeContract {
   String get id => stringValue('id');
   String get storeId => stringValue('store_id');
   String get status => stringValue('status', fallback: 'active');
+  String get channel => stringValue('channel');
+  String? get buyerEmail => optionalString('buyer_email');
   String get currency => stringValue('currency', fallback: 'INR');
   List<CartLineContract> get lines =>
       contractList('lines', CartLineContract.fromJson);
@@ -489,6 +527,11 @@ class OrderContract extends SharedTypeContract {
     'payment_method',
     'payment_provider',
     'payment_id',
+    'risk_score',
+    'risk_level',
+    'fulfillment_state',
+    'cod_confirmation_status',
+    'rto_status',
     'shipping_address',
     'billing_address',
     'place_of_supply_state',
@@ -528,6 +571,12 @@ class OrderContract extends SharedTypeContract {
   double get shippingAmount => numberValue('shipping_amount');
   double get taxAmount => numberValue('tax_amount');
   double get total => numberValue('total');
+  int get riskScore => intValue('risk_score');
+  String get riskLevel => stringValue('risk_level', fallback: 'low');
+  String? get fulfillmentState => optionalString('fulfillment_state');
+  String? get codConfirmationStatus =>
+      optionalString('cod_confirmation_status');
+  String? get rtoStatus => optionalString('rto_status');
   List<LineItemContract> get lineItems =>
       contractList('line_items', LineItemContract.fromJson);
 }

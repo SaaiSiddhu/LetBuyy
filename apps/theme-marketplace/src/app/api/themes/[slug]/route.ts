@@ -47,7 +47,7 @@ export async function GET(req: NextRequest, { params }: Props) {
 
         if (!theme) {
             return NextResponse.json(
-                { error: 'Theme not found', theme: null },
+                { error: { code: 'THEME_NOT_FOUND', message: 'Theme not found' }, theme: null },
                 { status: 404 }
             );
         }
@@ -56,7 +56,7 @@ export async function GET(req: NextRequest, { params }: Props) {
     } catch (error) {
         logger.error('failed to fetch theme', { error: error instanceof Error ? error.message : String(error) });
         return NextResponse.json(
-            { error: 'Failed to fetch theme', theme: null },
+            { error: { code: 'THEME_FETCH_FAILED', message: 'Failed to fetch theme' }, theme: null },
             { status: 500 }
         );
     }
@@ -82,6 +82,19 @@ export async function POST(req: NextRequest, { params }: Props) {
         if (body.action === 'verify_purchase') {
             const result = await ThemeService.verifyThemePurchase(slug, body.provider_proof || body);
             return NextResponse.json({ success: true, data: result });
+        }
+
+        if (body.action === 'preview_session') {
+            const storeId = stringBodyField(body, 'store_id');
+            if (!storeId) {
+                return NextResponse.json(
+                    { success: false, error: { code: 'MISSING_STORE', message: 'Choose a store before creating a preview session.' } },
+                    { status: 400 },
+                );
+            }
+
+            const result = await ThemeService.createThemePreviewSession(slug, storeId);
+            return NextResponse.json({ success: true, data: result }, { status: 201 });
         }
 
         return NextResponse.json(

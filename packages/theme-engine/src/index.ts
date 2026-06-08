@@ -924,6 +924,58 @@ export const ThemePurchaseVerifySchema = z.object({
   razorpay_signature: z.string().min(1).max(500),
 });
 
+export const ThemeReviewCreateSchema = z.object({
+  rating: z.number().int().min(1).max(5),
+  title: z.string().trim().min(3).max(140),
+  content: z.string().trim().min(10).max(4000),
+});
+
+export const ThemeReviewReplySchema = z.object({
+  developer_reply: z.string().trim().min(3).max(2000),
+});
+
+export const ThemeReportSchema = z.object({
+  reason: z.string().trim().min(3).max(120),
+  details: z.string().trim().max(2000).optional(),
+});
+
+export const ThemeRefundRequestSchema = z.object({
+  purchase_id: UuidSchema,
+  reason: z.string().trim().min(3).max(1000).optional(),
+});
+
+export const ThemeDownloadPlatformSchema = z.enum(['letbuyy', 'wordpress', 'html', 'react']);
+
+export const ThemeMarketplaceSettingsSchema = z.object({
+  display_name: z.string().trim().max(120).optional(),
+  support_email: z.string().trim().email().max(240).optional(),
+  notification_preferences: z.record(z.string(), z.unknown()).default({}),
+  saved_filters: z.record(z.string(), z.unknown()).default({}),
+});
+
+export const ThemeSavedSearchSchema = z.object({
+  name: z.string().trim().min(2).max(120),
+  query: z.record(z.string(), z.unknown()).default({}),
+  alerts_enabled: z.boolean().default(false),
+});
+
+export const ThemeDeveloperListingSchema = z.object({
+  slug: SlugSchema,
+  name: z.string().trim().min(3).max(120),
+  short_description: z.string().trim().min(10).max(280),
+  long_description: z.string().trim().max(5000).optional(),
+  category: z.enum(['store', 'portfolio', 'resume', 'landing', 'saas']),
+  industries: z.array(z.string().trim().min(1).max(80)).max(20).default([]),
+  tags: z.array(z.string().trim().min(1).max(60)).max(30).default([]),
+  supported_platforms: z.array(ThemeDownloadPlatformSchema).min(1).default(['letbuyy']),
+  screenshots: z.array(z.string().trim().min(1).max(500)).max(12).default([]),
+  pricing: z.record(z.string(), z.unknown()).default({}),
+  license_tiers: z.array(z.record(z.string(), z.unknown())).max(10).default([]),
+  bundle_manifest: z.record(z.string(), z.unknown()).default({}),
+  agreement_accepted: z.boolean().default(false),
+  submit: z.boolean().default(false),
+});
+
 export interface ThemeEngineRenderContext {
   site_id: string;
   route_type: string;
@@ -946,9 +998,39 @@ export type PreviewTokenInput = z.infer<typeof PreviewTokenSchema>;
 export type RollbackThemeReleaseInput = z.infer<typeof RollbackThemeReleaseSchema>;
 export type ThemePurchaseOrderInput = z.infer<typeof ThemePurchaseOrderSchema>;
 export type ThemePurchaseVerifyInput = z.infer<typeof ThemePurchaseVerifySchema>;
+export type ThemeReviewCreateInput = z.infer<typeof ThemeReviewCreateSchema>;
+export type ThemeReviewReplyInput = z.infer<typeof ThemeReviewReplySchema>;
+export type ThemeReportInput = z.infer<typeof ThemeReportSchema>;
+export type ThemeRefundRequestInput = z.infer<typeof ThemeRefundRequestSchema>;
+export type ThemeDownloadPlatform = z.infer<typeof ThemeDownloadPlatformSchema>;
+export type ThemeMarketplaceSettingsInput = z.infer<typeof ThemeMarketplaceSettingsSchema>;
+export type ThemeSavedSearchInput = z.infer<typeof ThemeSavedSearchSchema>;
+export type ThemeDeveloperListingInput = z.infer<typeof ThemeDeveloperListingSchema>;
 
 export type ThemeCategory = 'store' | 'portfolio' | 'resume' | 'landing' | 'saas';
 export type ThemePricingType = 'free' | 'one_time' | 'subscription';
+
+export interface ThemeQualityReport {
+  measured_at?: string;
+  source?: string;
+  url?: string;
+  lighthouse_performance?: number;
+  lighthouse_accessibility?: number;
+  status?: 'measured' | 'not_measured' | 'ci_required' | string;
+}
+
+export interface ThemeCompatibilityMatrix {
+  browsers?: string[];
+  locales?: string[];
+  platforms?: string[];
+  minimum_viewport?: string;
+}
+
+export interface ThemeChangelogEntry {
+  version: string;
+  released_at?: string;
+  changes: string[];
+}
 
 export interface Theme {
   id: string;
@@ -988,6 +1070,10 @@ export interface Theme {
   published_at: string | null;
   created_at: string;
   updated_at: string;
+  performance_report?: ThemeQualityReport | null;
+  accessibility_report?: ThemeQualityReport | null;
+  compatibility?: ThemeCompatibilityMatrix | null;
+  changelog?: ThemeChangelogEntry[];
 }
 
 export interface ThemePurchase {
@@ -1022,14 +1108,77 @@ export interface ThemeReview {
   id: string;
   user_id: string;
   theme_id: string;
+  purchase_id?: string | null;
   rating: number;
   title: string;
   content: string;
   is_verified_purchase: boolean;
   status: 'published' | 'pending' | 'rejected';
   created_at: string;
+  updated_at?: string;
+  developer_reply?: string | null;
+  developer_replied_at?: string | null;
   user_name?: string;
   user_avatar?: string;
+}
+
+export interface ThemeReviewSummary {
+  average: number;
+  total: number;
+  distribution: Record<1 | 2 | 3 | 4 | 5, number>;
+}
+
+export interface ThemeCollection {
+  id: string;
+  slug: string;
+  title: string;
+  description?: string | null;
+  collection_type: 'manual' | 'auto';
+  rule: Record<string, unknown>;
+  themes?: Record<string, unknown>[];
+}
+
+export interface ThemeAuthorProfile {
+  id: string;
+  handle: string;
+  display_name: string;
+  bio?: string | null;
+  support_email?: string | null;
+  website_url?: string | null;
+  avatar_url?: string | null;
+  verification_status: 'unverified' | 'verified' | 'suspended';
+  support_sla?: string | null;
+  aggregate_rating: number;
+  review_count: number;
+  themes?: Record<string, unknown>[];
+}
+
+export interface ThemeDownloadArtifact {
+  id: string;
+  theme_id: string;
+  platform: ThemeDownloadPlatform;
+  file_name: string;
+  size_bytes: number | null;
+  checksum_sha256?: string | null;
+  delivery_status: 'available' | 'disabled';
+  signed_url?: string | null;
+  expires_at?: string | null;
+}
+
+export interface ThemePurchaseReceipt {
+  id: string;
+  purchase_id: string;
+  receipt_number: string;
+  invoice_number?: string | null;
+  license_key?: string | null;
+  amount_inr: number;
+  currency: 'INR' | string;
+  gst_rate: number;
+  gst_amount_inr: number;
+  buyer_gstin?: string | null;
+  seller_gstin?: string | null;
+  invoice_json: Record<string, unknown>;
+  receipt_status: 'issued' | 'void';
 }
 
 export interface ThemeFilters {
@@ -1047,8 +1196,13 @@ export interface ThemeSearchFilters {
   pricingType?: string;
   siteType?: string;
   industry?: string;
+  layout?: string;
+  tag?: string;
+  feature?: string;
+  priceMin?: number;
+  priceMax?: number;
   search?: string;
-  sort?: 'popular' | 'rating' | 'recent' | 'name' | 'price_low' | 'price_high';
+  sort?: 'popular' | 'trending' | 'rating' | 'recent' | 'new' | 'name' | 'price_low' | 'price_high';
   limit?: number;
   offset?: number;
 }

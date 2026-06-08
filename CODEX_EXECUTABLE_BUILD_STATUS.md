@@ -1,0 +1,95 @@
+# LetBuyy Executable Architecture V1 Build Status
+
+## Current Phase
+
+- Phase: 5 implementation complete; final validation cleanup/regeneration complete.
+- Active task: none. Tasks `001-foundation`, `002-cart`, `006-inventory`, `004-payment`, `007-discount`, `008-tax`, `009-shipping`, `003-checkout`, `005-order`, `010-notifications`, `011-email`, `012-whatsapp-scoped`, `013-settlement`, `014-billing`, `015-security`, and `016-observability` are done.
+- Branch/worktree: current branch retained. The worktree is already heavily dirty and user-owned; no stash, reset, checkout, or revert has been performed.
+- Mission file: `CODEX_LETBUYY_EXECUTABLE_BUILD_MISSION.md` exists at repo root as the active mission pointer for the pasted V1 run.
+- Architecture source: `LETBUYY_EXECUTABLE_ARCHITECTURE_V1.md` is frozen and wins over older missions.
+- Migration reality: `database/supabase/migrations/138_mobile_store_metafields.sql` exists in the live dirty tree, so this run must use `139_*` for new migrations unless the owner removes that file.
+
+## Task Table
+
+| id | status | covers | tests | governance | human-skips |
+|---|---|---|---|---|---|
+| 001 | done | foundation F1-F12; tenant GUC, outbox, event catalog, scoped compensation, idempotency, money ledger, rollback, channel, observability, KMS/security, boundaries, proof harness | F6 real-PG proof PASS; Task 001 reference slice real-PG PASS; package/gateway/unit/typecheck PASS; live-path skip registry PASS 4 skipped | `validate-governance.mjs` PASS 172; architecture PASS | `HR-KMS-LIVE`, `HR-PROD-MIGRATE-DEPLOY` |
+| 002 | done | server-authoritative cart, channel/email capture, signed checkout handoff, abandonment enqueue | gateway typecheck PASS; gateway unit PASS 165/165; shared-types typecheck PASS | `validate-governance.mjs` PASS 172 | none |
+| 003 | done | hosted checkout session state machine, signed cart handoff verification, contact/delivery/payment-intent/confirm APIs, data-only store branding | real-PG checkout proof PASS; checkout-core tests PASS 7/7; checkout-core typecheck PASS; gateway typecheck PASS; gateway unit PASS 186/186 | `validate-governance.mjs` PASS 172; architecture PASS | `HR-DNS-CHECKOUT` |
+| 004 | done | merchant-owned payment sessions, mock-first provider modes, encrypted credential/token tables, capture/void/refund routes, existing replay-safe webhooks | real-PG payment proof PASS; payments package test/typecheck PASS; gateway typecheck PASS; gateway unit PASS 171/171 | `validate-governance.mjs` PASS 172; architecture PASS | `HR-MERCHANT-PSP-LIVE`, `HR-PA-SPLIT-LIVE` |
+| 005 | done | immutable checkout-created orders, financial/fulfillment/COD/RTO state, FulfillmentOrder RLS, heuristic risk, mock WhatsApp COD confirm, route split under 1500 lines | real-PG order proof PASS; checkout-core tests PASS 8/8; checkout-core typecheck PASS; gateway typecheck PASS; gateway unit PASS 190/190 | `validate-governance.mjs` PASS 172; architecture PASS | `HR-WHATSAPP-LIVE` |
+| 006 | done | oversell-proof inventory reservations, optimistic concurrency, TTL sweeper, reserve/commit/release APIs | real-PG inventory proof PASS; gateway unit PASS 170/170; commerce-core typecheck PASS | `validate-governance.mjs` PASS 172; architecture PASS | none |
+| 007 | done | deterministic discount stacking, class/combination metadata, allocation table, `/discounts` alias over coupons route | real-PG discount proof PASS; checkout-core tests PASS 4/4; checkout-core typecheck PASS; gateway typecheck PASS; gateway unit PASS 173/173 | `validate-governance.mjs` PASS 172; architecture PASS | none |
+| 008 | done | GST place-of-supply, HSN rates, TCS, immutable invoices, `/tax/calculate`, `/tax/invoice/:orderId`, mock IRP | real-PG tax proof PASS; checkout-core tests PASS 4/4; checkout-core typecheck PASS; gateway typecheck PASS; gateway unit PASS 177/177 | `validate-governance.mjs` PASS 172; architecture PASS | `HR-GST-IRP-LIVE` |
+| 009 | done | pincode/COD serviceability, shipping profiles/rules, shipment provider/AWB/tracking fields, `/shipping` rates/serviceability/track routes | real-PG shipping proof PASS; checkout-core tests PASS 5/5; checkout-core typecheck PASS; gateway typecheck PASS; gateway unit PASS 181/181 | `validate-governance.mjs` PASS 172; architecture PASS | `HR-CARRIER-LIVE` |
+| 010 | done | WhatsApp-first notification router, preferences/suppression, delivery logs, merchant webhook CRUD, webhook nonce/timestamp signing | real-PG notification proof PASS; notification-core typecheck PASS; gateway typecheck PASS; webhook-service typecheck/test PASS 12/12; gateway unit PASS 192/192 | `validate-governance.mjs` PASS 172; architecture PASS | `HR-DLT-TRAI-LIVE` |
+| 011 | done | MJML/Liquid-style email render, mock ESP failover, sender-domain controls, suppressions, tenant-scoped email logs, email events | real-PG email proof PASS; notification-core typecheck PASS; event-core typecheck PASS; gateway typecheck PASS; gateway unit PASS 195/195; lint PASS | `validate-governance.mjs` PASS 172; architecture PASS | `HR-ESP-LIVE` |
+| 012 | done | scoped WhatsApp utility lifecycle, COD reply-to-confirm, DPDP opt-ins, `/wa` aliases, canonical message/session tables | real-PG WhatsApp proof PASS; shared-types typecheck PASS; infrastructure typecheck PASS; event-core typecheck/test PASS 4/4; gateway typecheck PASS; focused WhatsApp PASS 6/6; gateway unit PASS 196/196; lint PASS | `validate-governance.mjs` PASS 172; architecture PASS | `HR-WHATSAPP-LIVE`, `HR-LEGAL-DPDP-PA` |
+| 013 | done | settlement ingest, PA/COD canonical ledger postings, recon breaks/reserve suspense, no-custody payout instructions, mobile money compatibility ledger links | real-PG settlement proof PASS; billing-core typecheck PASS; billing-core tests PASS 8/8; gateway typecheck PASS; focused settlement tests PASS 3/3; human live-path skips PASS 10 skipped; gateway unit PASS 199/199; lint PASS | `validate-governance.mjs` PASS 172; architecture PASS | `HR-PA-SPLIT-LIVE`, `HR-LEGAL-DPDP-PA` |
+| 014 | done | mock UPI AutoPay mandates, subscriptions, dunning, merchant billing invoices, usage metering, permanent removal of store GMV rake | real-PG billing proof PASS; billing-core typecheck PASS; billing-core tests PASS 10/10; merchant-control-plane typecheck PASS; gateway typecheck PASS; focused billing tests PASS 4/4; human live-path skips PASS 11 skipped; gateway unit PASS 203/203; lint PASS | `validate-governance.mjs` PASS 172; architecture PASS | `HR-AUTOPAY-LIVE` |
+| 015 | done | security route, DSR export/erase, mock KMS field encryption, consent/store-credit tables, maker-checker, shared step-up on payout/refund, auth/customer events, date helper single-source | real-PG security proof PASS; event-core typecheck/test PASS 4/4; gateway typecheck PASS; focused security tests PASS 4/4; human live-path skips PASS 13 skipped; gateway unit PASS 207/207; lint PASS | `validate-governance.mjs` PASS 172; architecture PASS | `HR-KMS-LIVE`, `HR-TURNSTILE-LIVE`, `HR-LEGAL-DPDP-PA` |
+| 016 | done | in-DB analytics MV summary, media signed-upload module, `media.processed` event, AI capability seam only, live warehouse/model guards | real-PG analytics/media/AI proof PASS; event-core typecheck/test PASS 4/4; runtime-composition typecheck PASS; infrastructure typecheck PASS; gateway typecheck PASS; focused observability/media tests PASS 3/3; human live-path skips PASS 15 skipped; gateway unit PASS 210/210; lint PASS; turbo typecheck PASS 59/59; behavioral PASS 505; contracts PASS 197; turbo test PASS 67/67 | `validate-governance.mjs` PASS 172; architecture PASS | `HR-WAREHOUSE-LIVE`, `HR-AI-MODEL-LIVE` |
+
+## Baseline Gate State
+
+| gate | result | notes |
+|---|---|---|
+| `docker version` | PASS with escalation | Docker/Colima socket is available outside sandbox. |
+| `command -v psql` | FAIL | `psql` is not installed in PATH; Postgres proofs can use Docker `psql` inside a container. |
+| `node scripts/validators/source-ledger-residue-validator.mjs` | PASS | Executable CODEX files are allowlisted. |
+| `node scripts/validators/stale-artifact-validator.mjs` | PASS | Generated app/package artifacts removed after Task 016 verification; standalone stale pass green. |
+| `node scripts/validate-architecture.mjs` | PASS | Final pass after repository intelligence regeneration is green. |
+| `node scripts/validate-governance.mjs` | PASS 172 | Final 172-validator pass after repository intelligence regeneration is green. |
+| `pnpm turbo typecheck` | PASS 59/59 | Required temporary `pnpm install --frozen-lockfile`; generated artifacts cleaned afterward. |
+| `cd services/api-gateway && npx tsc --noEmit` | PASS | Gateway TypeScript check passed. |
+| `pnpm lint` | PASS | Current repo lint gate passed with existing warnings. |
+| `pnpm run test:unit:gateway` | PASS 210/210 | Ran outside sandbox due `tsx` IPC permission issue. |
+| `pnpm run test:behavioral` | PASS 505 tests | 490 pass, 15 `[HUMAN-REQUIRED]` skips, 0 fail. Docker-backed proofs ran with escalation. |
+| `pnpm run test:contracts` | PASS 197/197 | Ran outside sandbox due `tsx` IPC permission issue. |
+| `pnpm turbo test` | PASS 67/67 tasks | Ran outside sandbox due workspace `tsx`/IPC test runners. |
+
+## Money-Suite Gate
+
+| suite | status | evidence |
+|---|---|---|
+| property-based balance invariance on real local Postgres | PASS | `node --test tests/executable/money-ledger-postgres.test.mjs` randomized 64 posting sequences across two sites and asserted zero balance breaks. |
+| reconciliation-to-zero-break harness on real local Postgres | PASS | PSP and COD remittance fixtures replayed through `post_ledger_transaction`; `ledger_balance_breaks()` returned zero. |
+| reversing-entry coverage on real local Postgres | PASS | Reversal posting inserted; direct `UPDATE` and `DELETE` on `ledger_entries` rejected by DB trigger. |
+| parallel-writer concurrency on real local Postgres | PASS | 12 concurrent writers using the same idempotency key produced one ledger transaction and two entries. |
+
+## Current Findings
+
+- F6 canonical ledger tables now exist in migration `139_executable_foundation_ledger_core.sql`: `ledger_accounts`, `ledger_transactions`, `ledger_entries`, plus `outbox_consumptions` and `compensation_actions`.
+- The ledger migration uses `public.current_site_id()` / `app.site_id`, `ENABLE` + `FORCE ROW LEVEL SECURITY`, append-only mutation rejection, and a deferred transaction-balance constraint.
+- `packages/payments` now exposes canonical ledger account codes, balance validation, payment-capture posting, and reversal posting helpers.
+- `packages/event-core` now contains the V1-approved event families and `writeWithOutbox`.
+- `@letbuyy/shared-types` now exposes `CommerceChannelSchema`.
+- `tests/executable/foundation-reference-postgres.test.mjs` proves the Task 001 vertical slice on real local Postgres: tenant-scoped domain write + outbox commit, publish stamp, idempotent consumption, balanced ledger post, audit correlation, replay no double effect, RLS fail-closed, and rollback.
+- `services/api-gateway/src/lib/crypto.ts` exposes mock KMS envelope encryption for local PII field encryption; live mode throws `[HUMAN-REQUIRED]` until credentials/key policy are installed.
+- `services/api-gateway/src/lib/foundation-observability.ts` exposes redacted structured logs, trace context, audit relay envelopes, and a small in-process metrics registry.
+- Task 002 extends the existing storefront cart route with `channel`, `buyer_email`, buyer-identity and discount-code endpoints, signed checkout handoff, outbox cart events, and a `platform_queue_jobs` abandonment-check enqueue marker.
+- Migration `156_executable_cart_channel_handoff.sql` adds the missing cart columns, indexes, rollback proof, and `FORCE ROW LEVEL SECURITY` tenant-GUC policy on `public.carts`.
+- Task 006 extends the existing inventory route instead of creating a new service: `POST /v1/inventory/reserve`, `/commit`, and `/release` call tenant-scoped Postgres RPCs and emit `inventory.reserved|committed|released` outbox events.
+- Migration `141_executable_inventory_reservations.sql` adds inventory versioning/idempotency fields, tenant-GUC RLS/FORCE policies, `reserve_inventory`, `commit_inventory_reservation`, `release_inventory_reservation`, and `expire_inventory_reservations` RPCs; rollback proof removes them cleanly.
+- Task 004 extends the existing payment monolith route with `POST /v1/payments/sessions`, `/payments/:id/capture`, `/void`, and `/refund`; provider webhooks remain centralized in `services/webhook-service`.
+- Migration `142_executable_payment_sessions.sql` adds canonical `payments`, encrypted `payment_credentials`, `payment_tokens`, provider-mode constraints, UPI/refund attempt support, provider-payment uniqueness, and tenant-GUC RLS/FORCE with rollback proof.
+- Task 007 extends the existing coupons route instead of creating a duplicate discount service: `packages/checkout-core` now plans deterministic product/order/shipping discount stacks, `POST /v1/discounts/*` aliases the coupons router, and migration `143_executable_discount_stack.sql` adds allocation storage with tenant-GUC RLS/FORCE and rollback proof.
+- Task 008 adds the V1 `/v1/tax` module while preserving `/v1/shipping-tax` parity routes: `@letbuyy/checkout-core` now returns marketplace TCS and deterministic mock IRP metadata, `services/api-gateway/src/routes/tax.ts` exposes calculation/invoice reads, and migration `144_executable_tax_gst_invoices.sql` creates immutable GST invoice storage with tenant-GUC RLS/FORCE and rollback proof.
+- Task 009 adds the V1 `/v1/shipping` module while preserving existing shipping-labels: `@letbuyy/checkout-core` now plans serviceability by pincode/COD/amount/weight, `services/api-gateway/src/routes/shipping.ts` exposes serviceability/rates/tracking through the mock-default logistics adapter, and migration `145_executable_shipping_serviceability.sql` creates tenant-owned profiles/rules plus shipment provider/AWB/tracking fields with tenant-GUC RLS/FORCE and rollback proof.
+- Task 003 adds the V1 `/v1/checkout` state-machine module without activating a checkout runtime service: `@letbuyy/checkout-core` now owns lifecycle schemas, state transitions, channel normalization, and data-only branding guards; `services/api-gateway/src/routes/checkout.ts` verifies signed cart handoff, persists contact/delivery/payment-intent/confirm steps idempotently, records scoped compensation on failed confirm, and splits public/protected store branding; migration `146_executable_checkout_state_machine.sql` extends checkout sessions and creates `store_branding` with tenant-GUC RLS/FORCE and rollback proof.
+- Task 005 adds immutable V1 order state without fraud ML or a new service: `@letbuyy/checkout-core` now owns deterministic order-risk heuristics, `services/api-gateway/src/routes/order-risk.ts` exposes `/risk/assess` plus mock COD confirm/timeout endpoints, `services/api-gateway/src/routes/orders.ts` stays below the 1500-line limit, and migration `147_executable_order_state_risk.sql` adds checkout-order immutability, risk assessments, COD confirmation requests, RTO fields, and tenant-GUC RLS/FORCE with rollback proof.
+- Task 010 extends the existing notification monolith and webhook-service without activating `notification-service`: `@letbuyy/notification-core` now plans WhatsApp-first fallback, `services/api-gateway/src/routes/notifications.ts` exposes `/notifications/send` and merchant-scoped `/notifications/webhooks` CRUD, `services/webhook-service/src/app-lifecycle-dispatch.ts` adds an outbound nonce header, and migration `148_executable_notifications_router.sql` creates notification logs/suppressions plus webhook replay metadata with tenant-GUC RLS/FORCE and rollback proof.
+- Task 011 extends the existing notification/email stack without activating a service: `@letbuyy/notification-core` now owns email render and ESP failover contracts, `services/api-gateway/src/routes/email.ts` exposes `/email/render` and `/email/send`, `packages/event-core` catalogs `email.delivered|bounced|complained`, and migration `149_executable_email_delivery.sql` extends `email_logs` plus creates `email_suppressions` and `sender_domains` with tenant-GUC RLS/FORCE and rollback proof.
+- Task 012 extends the existing WhatsApp route and notification adapter without activating a service or full in-WhatsApp commerce: scoped utility templates, DPDP opt-ins, lifecycle/COD session storage, inbound idempotency, `wa.message_received` and `wa.cod_confirmed` events, `/wa` aliases, and migration `150_executable_whatsapp_scoped.sql` with tenant-GUC RLS/FORCE and rollback proof.
+- Task 013 adds the V1 settlement route in the monolith, `@letbuyy/billing-core` settlement ledger planners, migration `151_executable_settlement_ledger.sql`, a `post_settlement_ledger_transaction` wrapper over the F6 ledger invariant, PA/COD ledger postings, reserve-backed recon breaks, no-custody payout instructions, and canonical ledger links for `payout_statements`, `wallet_ledger_entries`, and `commission_reconciliation_entries`.
+- Task 014 adds the V1 billing route in the monolith, mock UPI AutoPay mandate planning, subscription/dunning/invoice APIs, migration `152_executable_billing_autopay.sql`, tenant-GUC RLS/FORCE on billing rows, merchant billing invoice and usage-meter storage, and a DB check constraint that permanently rejects non-zero store-plan GMV rake.
+- Task 015 adds the V1 security route in the monolith, mock step-up challenge issuance, DSR export/erase through encrypted KMS payload storage, consent/store-credit/maker-checker tables, encrypted PII columns on existing customer tables, shared payout/refund step-up enforcement, `auth.login|auth.stepup` catalog events, and migration `153_executable_identity_security.sql` with tenant-GUC RLS/FORCE and rollback proof.
+- Task 016 adds in-DB analytics MV reads, signed R2 media upload intents, `media.processed` outbox emission, media rollup plans, and an AI capability seam with model calls disabled. Migration `154_executable_analytics_media_ai_seam.sql` extends `media_assets`, creates `commerce_analytics_daily_mv`, and creates `ai_capability_seams` with tenant-GUC RLS/FORCE and rollback proof.
+- Existing cart, checkout, idempotency, audit, outbox, payment, inventory, plans, subscriptions, media, and webhook tables are present in `000_baseline.sql`.
+- Existing mobile V2 money routes (`/v1/payouts`, `/v1/wallet`, `/v1/commission`) write/read `payout_statements`, `wallet_ledger_entries`, and `commission_reconciliation_entries`; they are not V1 F6 double-entry ledger truth yet.
+- `apps/platform-operations-portal/src/app/(dashboard)/operations/page.tsx` already imports `formatIndiaDateTime` from `@letbuyy/ui/formatting` in this dirty tree, so the known date helper issue appears fixed before this run's runtime edits.
+- Reserved services contain only `AGENTS.md` and `runtime.manifest.json`; no active service source was found under those roots.
+
+## SKIPPED - NEEDS HUMAN Runbook
+
+See `EXECUTABLE_HUMAN_REQUIRED.md`. All live-provider paths must remain mock-by-default locally.

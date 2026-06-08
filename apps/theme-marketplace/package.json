@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "next dev -p 9005",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "cd ../.. && node --test tests/federation/theme-marketplace-thin-client.test.mjs tests/auth/sso-redirects.test.mjs tests/federation/theme-store-install-lifecycle.test.mjs"
+    "test": "cd ../.. && node --test tests/federation/theme-marketplace-thin-client.test.mjs tests/auth/sso-redirects.test.mjs tests/federation/theme-store-install-lifecycle.test.mjs apps/theme-marketplace/tests/foundation-honesty.test.mjs apps/theme-marketplace/tests/ga-realness.test.mjs && cd apps/theme-marketplace && pnpm exec tsx --test tests/ui-render.test.tsx"
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",
@@ -33,6 +34,6 @@
     "eslint-config-next": "16.1.6",
     "postcss-load-config": "^6.0.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   }
 }

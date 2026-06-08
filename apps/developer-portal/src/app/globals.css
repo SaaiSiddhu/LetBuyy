@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../../../../config/tailwind/letbuyy-tokens.css";
 @source "./**/*.{ts,tsx}";
 @source "../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
 
@@ -6,10 +7,10 @@
   --developer-font-sans: var(--font-letbuyy-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --developer-font-display: var(--font-letbuyy-display), var(--font-letbuyy-sans), ui-sans-serif, system-ui, sans-serif;
   --developer-font-mono: var(--font-letbuyy-mono), "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  --developer-accent-teal: #0f766e;
-  --developer-accent-blue: #2563eb;
-  --developer-accent-amber: #b45309;
-  --developer-accent-rose: #be123c;
+  --developer-accent-teal: rgb(15 118 110);
+  --developer-accent-blue: rgb(37 99 235);
+  --developer-accent-amber: rgb(180 83 9);
+  --developer-accent-rose: rgb(190 18 60);
 }
 
 @theme inline {
@@ -200,8 +201,8 @@ a {
   overflow: hidden;
   border: 1px solid var(--lb-color-border);
   border-radius: var(--lb-component-card-radius);
-  background: #101827;
-  color: #dbeafe;
+  background: rgb(16 24 39);
+  color: rgb(219 234 254);
   box-shadow: var(--lb-component-card-shadow);
 }
 
@@ -220,15 +221,15 @@ a {
 }
 
 .developer-dot:nth-child(1) {
-  background: #fb7185;
+  background: rgb(251 113 133);
 }
 
 .developer-dot:nth-child(2) {
-  background: #fbbf24;
+  background: rgb(251 191 36);
 }
 
 .developer-dot:nth-child(3) {
-  background: #34d399;
+  background: rgb(52 211 153);
 }
 
 .developer-code {

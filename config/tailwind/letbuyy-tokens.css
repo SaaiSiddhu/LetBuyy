@@ -1,0 +1,57 @@
+/*
+ * LetBuyy shared Tailwind v4 token layer.
+ *
+ * Imported by every app's globals.css (after `@import "tailwindcss"`). Purely
+ * ADDITIVE — it does not override Tailwind's built-in palette, so existing
+ * classes are unaffected. It provides:
+ *
+ *   1. The design-system breakpoints (xs / mobile / sm / md / lg / xl), so
+ *      responsive prefixes derive from --lb tokens instead of Tailwind defaults.
+ *   2. Theme-aware, token-backed colour utilities — the migration target for
+ *      raw Tailwind palette classes flagged by @letbuyy/ui/no-tailwind-default-color:
+ *        bg-white        -> bg-surface
+ *        bg-gray-50      -> bg-surface-subdued
+ *        text-gray-900   -> text-default
+ *        text-gray-500   -> text-subdued
+ *        border-gray-200 -> border-line
+ *      These resolve to --lb-color-* and therefore switch correctly in dark mode.
+ */
+@theme {
+    /* Design-system breakpoints */
+    --breakpoint-xs: 360px;
+    --breakpoint-mobile: 480px;
+    --breakpoint-sm: 640px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 1024px;
+    --breakpoint-xl: 1280px;
+
+    /* Surfaces (theme-aware) */
+    --color-surface: var(--lb-color-surface);
+    --color-surface-raised: var(--lb-color-surface-raised);
+    --color-surface-subdued: var(--lb-color-surface-subdued);
+    --color-card: var(--lb-color-card);
+    --color-page: var(--lb-color-bg);
+    --color-sidebar: var(--lb-color-sidebar);
+
+    /* Text (theme-aware) */
+    --color-default: var(--lb-color-text);
+    --color-subdued: var(--lb-color-text-subdued);
+    --color-muted: var(--lb-color-text-muted);
+    --color-inverse: var(--lb-color-text-inverse);
+
+    /* Brand + actions */
+    --color-primary: var(--lb-color-primary);
+    --color-primary-cta: var(--lb-color-primary-cta);
+    --color-primary-soft: var(--lb-color-primary-soft);
+
+    /* Status */
+    --color-critical: var(--lb-color-critical);
+    --color-success: var(--lb-color-success);
+    --color-warning: var(--lb-color-warning);
+    --color-info: var(--lb-color-info);
+
+    /* Lines / focus */
+    --color-line: var(--lb-color-border);
+    --color-line-subtle: var(--lb-color-border-subtle);
+    --color-focus: var(--lb-color-focus-ring);
+}

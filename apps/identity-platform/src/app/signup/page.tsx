@@ -5,7 +5,9 @@ import { getAuthHeaders } from '@/lib/csrf-client'
 import { useSearchParams } from 'next/navigation'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { AuthIcon } from '@/components/AuthIcon'
-import { Badge, Banner, Button, Globe, Input, ProgressBar, ShieldCheck } from '@letbuyy/ui'
+import { BrandLogo } from '@/components/BrandLogo'
+import { OAuthBrandIcon } from '@/components/OAuthBrandIcon'
+import { Button, Input } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
 type Step = 'email' | 'otp' | 'password'
@@ -54,7 +56,9 @@ const translations: Record<Lang, Record<string, string>> = {
         pwCreate: 'Create account',
         pwRule8: 'At least 8 characters',
         pwRuleUpper: 'One uppercase letter',
+        pwRuleLower: 'One lowercase letter',
         pwRuleNumber: 'One number',
+        pwRuleSpecial: 'One special character',
         pwMismatch: 'Passwords do not match',
     },
     hi: {
@@ -98,7 +102,9 @@ const translations: Record<Lang, Record<string, string>> = {
         pwCreate: 'अकाउंट बनाएं',
         pwRule8: 'कम से कम 8 अक्षर',
         pwRuleUpper: 'एक अपरकेस अक्षर',
+        pwRuleLower: 'एक लोअरकेस अक्षर',
         pwRuleNumber: 'एक संख्या',
+        pwRuleSpecial: 'एक विशेष अक्षर',
         pwMismatch: 'पासवर्ड मेल नहीं खाते',
     },
     ta: {
@@ -142,7 +148,9 @@ const translations: Record<Lang, Record<string, string>> = {
         pwCreate: 'கணக்கை உருவாக்கவும்',
         pwRule8: 'குறைந்தது 8 எழுத்துக்கள்',
         pwRuleUpper: 'ஒரு பெரிய எழுத்து',
+        pwRuleLower: 'ஒரு சிறிய எழுத்து',
         pwRuleNumber: 'ஒரு எண்',
+        pwRuleSpecial: 'ஒரு சிறப்பு எழுத்து',
         pwMismatch: 'கடவுச்சொற்கள் பொருந்தவில்லை',
     },
 }
@@ -233,7 +241,9 @@ function SignupContent() {
     const pwRules = {
         minLength: password.length >= 8,
         hasUppercase: /[A-Z]/.test(password),
+        hasLowercase: /[a-z]/.test(password),
         hasNumber: /[0-9]/.test(password),
+        hasSpecial: /[^A-Za-z0-9]/.test(password),
     }
     const pwValid = Object.values(pwRules).every(Boolean)
     const pwMatch = password === confirmPassword && confirmPassword.length > 0
@@ -460,79 +470,62 @@ function SignupContent() {
 
     // ——— Step indicator ———
     const stepNumber = step === 'email' ? 1 : step === 'otp' ? 2 : 3
+    const stepLabel = step === 'email' ? t.stepAccount : step === 'otp' ? t.stepVerify : t.stepSecure
 
     return (
         <main className="auth-container">
             <div className="auth-top-bar">
-                <button onClick={cycleLang} className="auth-lang-btn">
+                <Button unstyled onClick={cycleLang} className="auth-lang-btn">
                     {lang.toUpperCase()}
-                </button>
-                <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
+                </Button>
+                <Button unstyled onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
                     <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
-                </button>
+                </Button>
             </div>
 
             <div className="auth-card">
-                {/* Step indicator */}
-                <div className="mb-[var(--lb-space-5)] grid gap-[var(--lb-space-3)]">
-                    <div className="flex items-center justify-between gap-[var(--lb-space-3)]">
-                        <Badge label={t.guidedBadge} variant="info" />
-                        <span className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
-                            Step {stepNumber} of 3
-                        </span>
-                    </div>
-                    <ProgressBar value={stepNumber} max={3} label={step === 'email' ? t.stepAccount : step === 'otp' ? t.stepVerify : t.stepSecure} />
-                    <div className="grid grid-cols-3 gap-[var(--lb-space-2)] text-center text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
-                        {[t.stepAccount, t.stepVerify, t.stepSecure].map((label, index) => (
-                            <span key={label} className={index + 1 === stepNumber ? 'text-[color:var(--lb-color-text)]' : undefined}>
-                                {label}
-                            </span>
-                        ))}
-                    </div>
+                <div className="auth-logo">
+                    <BrandLogo />
                 </div>
 
                 {/* ——— STEP 1: EMAIL ——— */}
                 {step === 'email' && (
                     <div className="auth-step-content" key="email">
-                        <div className="auth-logo">
-                            <img src="/icons/app_icon.png" alt="LetBuyy" width={48} height={48} />
-                        </div>
-
                         <h1 className="auth-title">{t.title}</h1>
                         <p className="auth-subtitle">{t.subtitle}</p>
 
                         <form onSubmit={handleEmailSubmit} className="auth-form">
-                            <Input
-                                id="signupEmail"
-                                label={t.email}
-                                type="email"
-                                value={email}
-                                onBlur={() => setEmailTouched(true)}
-                                onChange={(e) => {
-                                    setEmail(e.target.value)
-                                    setError(null)
-                                }}
-                                placeholder={t.emailPlaceholder}
-                                autoComplete="email"
-                                autoFocus
-                                required
-                                error={emailError}
-                                helperText={emailHelper}
-                            />
+                            <div className="auth-field">
+                                <label htmlFor="signupEmail">{t.email}</label>
+                                <Input unstyled
+                                    id="signupEmail"
+                                    type="email"
+                                    value={email}
+                                    onBlur={() => setEmailTouched(true)}
+                                    onChange={(e) => {
+                                        setEmail(e.target.value)
+                                        setError(null)
+                                    }}
+                                    placeholder={t.emailPlaceholder}
+                                    autoComplete="email"
+                                    autoFocus
+                                    required
+                                    aria-invalid={emailError ? true : undefined}
+                                    aria-describedby="signupEmail-helper"
+                                />
+                                <p id="signupEmail-helper" className={emailError ? 'auth-field-error' : 'auth-helper'}>
+                                    {emailError || emailHelper}
+                                </p>
+                            </div>
 
-                            {error && (
-                                <Banner title={t.actionNeeded} variant="critical">
-                                    {error}
-                                </Banner>
-                            )}
+                            {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
 
-                            <Button
+                            <Button unstyled
                                 type="submit"
-                                fullWidth
-                                loading={loading}
-                                disabled={!emailFormatValid}
+                                className="auth-btn-primary"
+                                disabled={loading || !emailFormatValid}
                             >
-                                {t.continue}
+                                {loading ? '...' : t.continue}
                             </Button>
                         </form>
 
@@ -541,13 +534,13 @@ function SignupContent() {
                         </div>
 
                         <div className="auth-oauth-row">
-                            <Button type="button" variant="outline" fullWidth onClick={(e) => e.preventDefault()} aria-disabled="true">
-                                <ShieldCheck width={18} height={18} aria-hidden="true" />
+                            <Button unstyled type="button" className="auth-btn-oauth coming-soon" onClick={(e) => e.preventDefault()} aria-disabled="true">
+                                <OAuthBrandIcon provider="apple" className="auth-oauth-brand-icon" />
                                 {t.apple}
-                                <Badge label={t.comingSoon} variant="warning" />
+                                <span className="auth-coming-soon-badge">{t.comingSoon}</span>
                             </Button>
-                            <Button type="button" variant="outline" fullWidth onClick={() => handleOAuth('google')}>
-                                <Globe width={18} height={18} aria-hidden="true" />
+                            <Button unstyled type="button" className="auth-btn-oauth" onClick={() => handleOAuth('google')}>
+                                <OAuthBrandIcon provider="google" className="auth-oauth-brand-icon" />
                                 {t.google}
                             </Button>
                         </div>
@@ -568,8 +561,10 @@ function SignupContent() {
                 {/* ——— STEP 2: OTP ——— */}
                 {step === 'otp' && (
                     <div className="auth-step-content" key="otp">
+                        <div className="auth-step-kicker">Step {stepNumber} of 3 · {stepLabel}</div>
+
                         <div className="auth-otp-icon">
-                            <AuthIcon name="mail" size={32} style={{ color: 'var(--primary)' }} />
+                            <AuthIcon name="mail" size={32} />
                         </div>
 
                         <h1 className="auth-title">{t.otpTitle}</h1>
@@ -580,7 +575,7 @@ function SignupContent() {
 
                         <div className="auth-otp-inputs" onPaste={handleOtpPaste}>
                             {otp.map((digit, i) => (
-                                <input
+                                <Input unstyled
                                     key={i}
                                     ref={el => { otpRefs.current[i] = el }}
                                     type="text"
@@ -595,24 +590,19 @@ function SignupContent() {
                             ))}
                         </div>
 
-                        {error && (
-                            <Banner title={t.actionNeeded} variant="critical">
-                                {error}
-                            </Banner>
-                        )}
+                        {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
 
-                        <Button
+                        <Button unstyled
                             type="button"
-                            fullWidth
-                            loading={loading}
+                            className="auth-btn-primary"
                             disabled={loading || otp.join('').length !== 6}
                             onClick={() => handleOtpVerify()}
                         >
-                            {t.otpVerify}
+                            {loading ? '...' : t.otpVerify}
                         </Button>
 
                         <div className="auth-otp-actions">
-                            <button
+                            <Button unstyled
                                 className="auth-btn-text"
                                 onClick={handleResendOtp}
                                 disabled={!canResend}
@@ -621,8 +611,8 @@ function SignupContent() {
                                     ? t.otpResend
                                     : `${t.otpResendIn} ${resendTimer}s`
                                 }
-                            </button>
-                            <button
+                            </Button>
+                            <Button unstyled
                                 className="auth-btn-text"
                                 onClick={() => {
                                     setStep('email')
@@ -631,7 +621,7 @@ function SignupContent() {
                                 }}
                             >
                                 {t.otpBack}
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 )}
@@ -639,8 +629,10 @@ function SignupContent() {
                 {/* ——— STEP 3: PASSWORD ——— */}
                 {step === 'password' && (
                     <div className="auth-step-content" key="password">
+                        <div className="auth-step-kicker">Step {stepNumber} of 3 · {stepLabel}</div>
+
                         <div className="auth-otp-icon">
-                            <AuthIcon name="lock" size={32} style={{ color: 'var(--primary)' }} />
+                            <AuthIcon name="lock" size={32} />
                         </div>
 
                         <h1 className="auth-title">{t.pwTitle}</h1>
@@ -650,7 +642,7 @@ function SignupContent() {
                             <div className="auth-field">
                                 <label htmlFor="signupPassword">{t.pwLabel}</label>
                                 <div className="auth-password-wrapper">
-                                    <input
+                                    <Input unstyled
                                         id="signupPassword"
                                         type={showPassword ? 'text' : 'password'}
                                         value={password}
@@ -660,20 +652,20 @@ function SignupContent() {
                                         autoFocus
                                         required
                                     />
-                                    <button
+                                    <Button unstyled
                                         type="button"
                                         className="auth-password-toggle"
                                         onClick={() => setShowPassword(!showPassword)}
                                         tabIndex={-1}
                                     >
                                         <AuthIcon name={showPassword ? 'visibility_off' : 'visibility'} size={18} />
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
 
                             <div className="auth-field">
                                 <label htmlFor="signupConfirmPassword">{t.pwConfirmLabel}</label>
-                                <input
+                                <Input unstyled
                                     id="signupConfirmPassword"
                                     type={showPassword ? 'text' : 'password'}
                                     value={confirmPassword}
@@ -694,31 +686,30 @@ function SignupContent() {
                                     <AuthIcon name={pwRules.hasUppercase ? 'check_circle' : 'radio_button_unchecked'} size={16} />
                                     {t.pwRuleUpper}
                                 </div>
+                                <div className={`auth-pw-rule ${pwRules.hasLowercase ? 'pass' : ''}`}>
+                                    <AuthIcon name={pwRules.hasLowercase ? 'check_circle' : 'radio_button_unchecked'} size={16} />
+                                    {t.pwRuleLower}
+                                </div>
                                 <div className={`auth-pw-rule ${pwRules.hasNumber ? 'pass' : ''}`}>
                                     <AuthIcon name={pwRules.hasNumber ? 'check_circle' : 'radio_button_unchecked'} size={16} />
                                     {t.pwRuleNumber}
                                 </div>
+                                <div className={`auth-pw-rule ${pwRules.hasSpecial ? 'pass' : ''}`}>
+                                    <AuthIcon name={pwRules.hasSpecial ? 'check_circle' : 'radio_button_unchecked'} size={16} />
+                                    {t.pwRuleSpecial}
+                                </div>
                             </div>
 
-                            {confirmPassword && !pwMatch && (
-                                <Banner title={t.actionNeeded} variant="critical">
-                                    {t.pwMismatch}
-                                </Banner>
-                            )}
+                            {confirmPassword && !pwMatch && <div className="auth-error"><AuthIcon name="error" />{t.pwMismatch}</div>}
 
-                            {error && (
-                                <Banner title={t.actionNeeded} variant="critical">
-                                    {error}
-                                </Banner>
-                            )}
+                            {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
 
-                            <Button
+                            <Button unstyled
                                 type="submit"
-                                fullWidth
-                                loading={loading}
+                                className="auth-btn-primary"
                                 disabled={loading || !pwValid || !pwMatch}
                             >
-                                {t.pwCreate}
+                                {loading ? '...' : t.pwCreate}
                             </Button>
                         </form>
                     </div>
@@ -730,7 +721,7 @@ function SignupContent() {
 
 export default function SignupPage() {
     return (
-        <Suspense fallback={<div className="auth-container"><div className="auth-card" style={{ textAlign: 'center' }}><p style={{ color: 'var(--text-hint)' }}>Loading...</p></div></div>}>
+        <Suspense fallback={<div className="auth-container"><div className="auth-card"><p className="auth-loading">Loading...</p></div></div>}>
             <SignupContent />
         </Suspense>
     )

@@ -7,7 +7,7 @@ import Image from 'next/image'
 import type { SessionUser } from '@/lib/auth/session'
 import type { StoreData, UserStore } from './AdminShell'
 import NotificationsPanel from './NotificationsPanel'
-import { MaterialIcon } from '@letbuyy/ui'
+import { Button, MaterialIcon } from '@letbuyy/ui'
 import { resolveKeyboardShortcut } from './merchantNavigation'
 import { getAccountsUrl } from '@/lib/public-urls'
 
@@ -206,7 +206,7 @@ export default function HeaderBar({
                 {userStores.map((s) => {
                     const isCurrent = s.subdomain === store || s.store_name === store
                     return (
-                        <button
+                        <Button unstyled
                             key={s.id}
                             className={`store-switcher-item ${isCurrent ? 'active' : ''}`}
                             onClick={() => !isCurrent && handleSwitchStore(s.subdomain)}
@@ -223,14 +223,14 @@ export default function HeaderBar({
                             {isCurrent && (
                                 <MaterialIcon name="check" className="store-switcher-check" />
                             )}
-                        </button>
+                        </Button>
                     )
                 })}
             </div>
 
             {/* Section 2: All stores link */}
             <div className="store-switcher-section">
-                <button
+                <Button unstyled
                     className="store-switcher-link"
                     onClick={() => {
                         setSwitcherOpen(false)
@@ -239,7 +239,7 @@ export default function HeaderBar({
                 >
                     <MaterialIcon name="apps" />
                     All stores
-                </button>
+                </Button>
             </div>
 
             {/* Section 3: Theme toggle */}
@@ -249,7 +249,7 @@ export default function HeaderBar({
                         <MaterialIcon name={isDark ? 'dark_mode' : 'light_mode'} />
                         {isDark ? 'Dark mode' : 'Light mode'}
                     </div>
-                    <button
+                    <Button unstyled
                         className={`admin-theme-switch ${isDark ? 'active' : ''}`}
                         onClick={(e) => {
                             e.stopPropagation()
@@ -275,13 +275,13 @@ export default function HeaderBar({
 
             {/* Section 5: Log out */}
             <div className="store-switcher-section">
-                <button
+                <Button unstyled
                     className="store-switcher-link logout"
                     onClick={handleSignOut}
                 >
                     <MaterialIcon name="logout" />
                     Log out
-                </button>
+                </Button>
             </div>
         </>
     )
@@ -291,14 +291,14 @@ export default function HeaderBar({
             <header className={`admin-header ${isSettingsPage ? 'settings-header' : ''}`}>
                 {/* Left: Logo + hamburger or back affordance */}
                 <div className="admin-header-left">
-                    <button
+                    <Button unstyled
                         type="button"
                         className="admin-header-hamburger"
                         onClick={onMenuToggle}
                         aria-label="Open menu"
                     >
                         <MaterialIcon name="menu" size={20} />
-                    </button>
+                    </Button>
 
                     <Link href={`/${store}/dashboard`} className="admin-header-logo" aria-label="LetBuyy dashboard">
                         <span className="admin-header-logo-frame" aria-hidden="true">
@@ -316,20 +316,20 @@ export default function HeaderBar({
 
                 {/* Center: search bar (desktop) */}
                 <div className="admin-header-center">
-                    <button type="button" className="admin-header-search" onClick={onSearchOpen}>
+                    <Button unstyled type="button" className="admin-header-search" onClick={onSearchOpen}>
                         <MaterialIcon name="search" />
                         <span className="search-text">Search</span>
                         <span className="admin-header-shortcut" aria-hidden="true">
                             <kbd>⌘</kbd>
                             <kbd>K</kbd>
                         </span>
-                    </button>
+                    </Button>
                 </div>
 
                 {/* Right: actions */}
                 <div className="admin-header-right">
                     {/* Mobile search icon */}
-                    <button
+                    <Button unstyled
                         type="button"
                         className="admin-header-btn admin-header-search-mobile"
                         onClick={onSearchOpen}
@@ -337,10 +337,10 @@ export default function HeaderBar({
                         aria-label="Search"
                     >
                         <MaterialIcon name="search" size={18} />
-                    </button>
+                    </Button>
 
                     {/* AI button */}
-                    <button
+                    <Button unstyled
                         type="button"
                         className="admin-header-btn"
                         onClick={onAISidebarToggle}
@@ -348,11 +348,11 @@ export default function HeaderBar({
                         aria-label="LetBuyy AI"
                     >
                         <MaterialIcon name="assistant" size={16} />
-                    </button>
+                    </Button>
 
                     {/* Notifications */}
                     <div className="admin-notifications-container" ref={notificationsRef}>
-                        <button
+                        <Button unstyled
                             type="button"
                             className="admin-header-btn"
                             title="Notifications"
@@ -363,7 +363,7 @@ export default function HeaderBar({
                             }}
                         >
                             <MaterialIcon name="notifications" size={16} />
-                        </button>
+                        </Button>
 
                         {/* Desktop: inline dropdown */}
                         {notificationsOpen && !isMobile && <NotificationsPanel />}
@@ -371,7 +371,7 @@ export default function HeaderBar({
 
                     {/* ===== STORE SWITCHER PILL ===== */}
                     <div className="store-switcher-container" ref={switcherRef}>
-                        <button
+                        <Button unstyled
                             type="button"
                             className={`store-switcher-pill ${switcherOpen ? 'open' : ''}`}
                             onClick={() => {
@@ -388,7 +388,7 @@ export default function HeaderBar({
                                 {storeData.name || storeData.store_name}
                             </span>
                             <MaterialIcon name="expand_more" className="store-switcher-pill-chevron" />
-                        </button>
+                        </Button>
 
                         {/* Desktop: inline dropdown */}
                         {switcherOpen && !isMobile && (

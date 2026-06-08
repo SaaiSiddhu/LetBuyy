@@ -1,7 +1,13 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
+import { resolveCustomUser, verifySiteOwnership, type WorkerAuthUser } from '../lib/auth-user';
+import { getSupabaseAdmin } from '../lib/supabase';
 
 const router = new Hono<{ Bindings: Env }>();
+type UploadContext = Context<{ Bindings: Env }>;
+const STANDARD_UPLOAD_LIMIT_BYTES = 10 * 1024 * 1024;
+const VIDEO_UPLOAD_LIMIT_BYTES = 100 * 1024 * 1024;
+const MODEL_UPLOAD_LIMIT_BYTES = 50 * 1024 * 1024;
 
 function isProductionEnv(env: Env): boolean {
     return [env.ENVIRONMENT, env.APP_ENV, env.NODE_ENV, env.DEPLOYMENT_ENV]
@@ -24,8 +30,88 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 function publicAssetBaseUrl(env: Env): string {
     const configuredBaseUrl = env.ASSET_PUBLIC_BASE_URL?.trim();
     if (configuredBaseUrl) return configuredBaseUrl.replace(/\/+$/, '');
-    if (isProductionEnv(env)) return 'https://cdn.letbuyy.store';
     return '';
+}
+
+function safeUploadFolder(value: string): string {
+    return value
+        .trim()
+        .replace(/[^a-zA-Z0-9/_-]/g, '-')
+        .replace(/\/+/g, '/')
+        .replace(/^\/+|\/+$/g, '')
+        .slice(0, 96) || 'uploads';
+}
+
+function safeFileExtension(fileName: string): string {
+    const ext = fileName.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'bin';
+    return ext.slice(0, 12) || 'bin';
+}
+
+function mediaKindForUpload(file: File): 'video' | 'model' | 'standard' {
+    const type = file.type.toLowerCase();
+    const ext = safeFileExtension(file.name);
+    if (type.startsWith('video/') || ['mp4', 'mov', 'm4v', 'webm'].includes(ext)) return 'video';
+    if (type.startsWith('model/') || ['glb', 'gltf', 'usdz'].includes(ext)) return 'model';
+    return 'standard';
+}
+
+function uploadLimitForKind(kind: 'video' | 'model' | 'standard'): number {
+    if (kind === 'video') return VIDEO_UPLOAD_LIMIT_BYTES;
+    if (kind === 'model') return MODEL_UPLOAD_LIMIT_BYTES;
+    return STANDARD_UPLOAD_LIMIT_BYTES;
+}
+
+function uploadLimitLabel(bytes: number): string {
+    return `${Math.floor(bytes / (1024 * 1024))}MB`;
+}
+
+function uploadMediaType(file: File, kind: 'video' | 'model' | 'standard'): 'image' | 'video' | 'audio' | 'document' | 'other' {
+    const type = file.type.toLowerCase();
+    if (kind === 'video') return 'video';
+    if (kind === 'model') return 'other';
+    if (type.startsWith('image/')) return 'image';
+    if (type.startsWith('audio/')) return 'audio';
+    if (type.includes('pdf') || type.includes('document') || type.includes('text')) return 'document';
+    return 'other';
+}
+
+function uploadDeleteKeyFromPath(path: string): string {
+    return decodeURIComponent(path)
+        .replace(/^\/(?:v\d+\/)?upload\/?/, '')
+        .replace(/^\/+|\/+$/g, '');
+}
+
+function stringValue(value: unknown): string | null {
+    if (typeof value !== 'string') return null;
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : null;
+}
+
+function metadataValue(metadata: Record<string, string> | undefined, key: string): string | null {
+    return stringValue(metadata?.[key]);
+}
+
+function isLegacyOwnerKey(key: string, ownerId: string): boolean {
+    return key.split('/').filter(Boolean).includes(ownerId);
+}
+
+async function verifyUploadStoreOwnership(c: UploadContext, storeId: string, authUser: WorkerAuthUser): Promise<boolean> {
+    if (authUser.storeId) return authUser.storeId === storeId;
+
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, authUser);
+    if (!customUser) return false;
+
+    return verifySiteOwnership(db, storeId, customUser.id, authUser.storeId);
+}
+
+function logUploadError(error: unknown): void {
+    console.error(JSON.stringify({
+        level: 'error',
+        service: 'api-gateway',
+        route: 'upload',
+        message: error instanceof Error ? error.message : 'Unknown upload error',
+    }));
 }
 
 // POST /upload — Upload file to R2
@@ -41,6 +127,7 @@ router.post('/', async (c) => {
         const formData = await c.req.formData();
         const fileEntry = formData.get('file');
         const folderEntry = formData.get('folder');
+        const storeId = stringValue(formData.get('store_id')) || stringValue(formData.get('site_id'));
 
         if (
             !fileEntry ||
@@ -53,16 +140,21 @@ router.post('/', async (c) => {
         const file = fileEntry as File;
         const folder =
             typeof folderEntry === 'string' && folderEntry.trim().length > 0
-                ? folderEntry.trim()
+                ? safeUploadFolder(folderEntry)
                 : 'uploads';
+        if (storeId && !(await verifyUploadStoreOwnership(c, storeId, auth.user))) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized to upload for this store' } }, 403);
+        }
 
-        // Validate file size (10MB max)
-        if (file.size > 10 * 1024 * 1024) {
-            return c.json({ error: { code: 'VALIDATION', message: 'File too large (max 10MB)' } }, 400);
+        const mediaKind = mediaKindForUpload(file);
+        const sizeLimit = uploadLimitForKind(mediaKind);
+        const mediaType = uploadMediaType(file, mediaKind);
+        if (file.size > sizeLimit) {
+            return c.json({ error: { code: 'VALIDATION', message: `File too large (max ${uploadLimitLabel(sizeLimit)})` } }, 400);
         }
 
         // Generate unique path
-        const ext = file.name.split('.').pop() || 'bin';
+        const ext = safeFileExtension(file.name);
         const key = `${folder}/${auth.user.id}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
 
         if (!c.env.R2_BUCKET) {
@@ -77,7 +169,10 @@ router.post('/', async (c) => {
                     key: `local-dev/${key}`,
                     size: file.size,
                     content_type: file.type,
+                    media_type: mediaType,
                     storage: 'local-dev-inline',
+                    cdn_configured: false,
+                    store_id: storeId || null,
                 },
             }, 201);
         }
@@ -89,6 +184,13 @@ router.post('/', async (c) => {
 
         await c.env.R2_BUCKET.put(key, file.stream(), {
             httpMetadata: { contentType: file.type },
+            customMetadata: {
+                owner_id: auth.user.id,
+                ...(storeId ? { store_id: storeId } : {}),
+                folder,
+                original_name: file.name.slice(0, 160),
+                media_type: mediaType,
+            },
         });
 
         // Return public URL for the environment-specific CDN in front of R2.
@@ -100,18 +202,24 @@ router.post('/', async (c) => {
                 key,
                 size: file.size,
                 content_type: file.type,
+                media_type: mediaType,
+                storage: 'r2',
+                cdn_configured: true,
+                store_id: storeId || null,
             },
         }, 201);
     } catch (err) {
-        console.error('Upload error:', err);
+        logUploadError(err);
         return c.json({ error: { code: 'UPLOAD_ERROR', message: 'Failed to upload file' } }, 500);
     }
 });
 
 // DELETE /upload/:key — Delete file from R2
 router.delete('/*', async (c) => {
-    const key = c.req.path.replace('/upload/', '');
-    if (!key) {
+    const auth = c.get('auth');
+    const key = (c.req.param('*') || uploadDeleteKeyFromPath(c.req.path)).replace(/^\/+|\/+$/g, '');
+    const requestedStoreId = stringValue(c.req.query('store_id')) || stringValue(c.req.query('site_id'));
+    if (!key || key.includes('..') || key.includes('\\')) {
         return c.json({ error: { code: 'VALIDATION', message: 'File key required' } }, 400);
     }
 
@@ -122,6 +230,31 @@ router.delete('/*', async (c) => {
             }
 
             return c.json({ data: { deleted: true, storage: 'local-dev-inline' } });
+        }
+
+        const object = await c.env.R2_BUCKET.head(key);
+        if (!object) {
+            return c.json({ error: { code: 'NOT_FOUND', message: 'File not found' } }, 404);
+        }
+
+        const metadataStoreId = metadataValue(object.customMetadata, 'store_id') || metadataValue(object.customMetadata, 'site_id');
+        const ownerId = metadataValue(object.customMetadata, 'owner_id');
+
+        if (metadataStoreId && requestedStoreId && metadataStoreId !== requestedStoreId) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized to delete this file' } }, 403);
+        }
+
+        if (metadataStoreId) {
+            if (!(await verifyUploadStoreOwnership(c, metadataStoreId, auth.user))) {
+                return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized to delete this file' } }, 403);
+            }
+        } else if (
+            !requestedStoreId ||
+            ownerId !== auth.user.id ||
+            !isLegacyOwnerKey(key, auth.user.id) ||
+            !(await verifyUploadStoreOwnership(c, requestedStoreId, auth.user))
+        ) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized to delete this file' } }, 403);
         }
 
         await c.env.R2_BUCKET.delete(key);

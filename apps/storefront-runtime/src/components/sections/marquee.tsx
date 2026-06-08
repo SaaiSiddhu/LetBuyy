@@ -27,7 +27,7 @@ export default function Marquee() {
                     {[...items, ...items, ...items].map((item, i) => (
                         <span key={i} className="text-xs font-medium uppercase tracking-[0.2em] flex items-center gap-12">
                             {item}
-                            <span className="w-1.5 h-1.5 rounded-full bg-white/30" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--lb-color-surface)]/30" />
                         </span>
                     ))}
                 </motion.div>
@@ -46,7 +46,7 @@ export default function Marquee() {
                     {[...items, ...items, ...items].map((item, i) => (
                         <span key={`dup-${i}`} className="text-xs font-medium uppercase tracking-[0.2em] flex items-center gap-12">
                             {item}
-                            <span className="w-1.5 h-1.5 rounded-full bg-white/30" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--lb-color-surface)]/30" />
                         </span>
                     ))}
                 </motion.div>

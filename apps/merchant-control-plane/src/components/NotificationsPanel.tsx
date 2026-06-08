@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { Bell, EmptyState, MaterialIcon, Skeleton } from '@letbuyy/ui'
+import { Button, Bell, EmptyState, MaterialIcon, Skeleton } from '@letbuyy/ui'
 
 interface Notification {
     id: string
@@ -59,7 +59,7 @@ export default function NotificationsPanel() {
                     )}
                 </h3>
                 {unreadCount > 0 && (
-                    <button onClick={markAllRead}>Mark all read</button>
+                    <Button unstyled onClick={markAllRead}>Mark all read</Button>
                 )}
             </div>
 
@@ -87,7 +87,7 @@ export default function NotificationsPanel() {
                         ))}
                     </div>
                     <div className="admin-notifications-footer">
-                        <button>View all notifications</button>
+                        <Button unstyled>View all notifications</Button>
                     </div>
                 </>
             ) : (

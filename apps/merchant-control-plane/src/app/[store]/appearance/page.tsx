@@ -2,14 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button, Input,
     Banner,
-    Button,
     Card,
     Code,
     ColorPreviewButton,
     Image as ImageIcon,
-    Input,
     LayoutGrid,
     Palette,
     Page,
@@ -23,6 +21,7 @@ import {
     Skeleton,
     Textarea,
     PenTool,
+    letbuyyPrimitiveTokens,
     useToast,
 } from '@letbuyy/ui'
 
@@ -36,7 +35,7 @@ interface AppearanceFormState {
 }
 
 const defaultForm: AppearanceFormState = {
-    primary_color: '#6366f1',
+    primary_color: letbuyyPrimitiveTokens.color.purple[500],
     font_family: 'Inter',
     border_radius: '8',
     logo_url: '',
@@ -56,7 +55,15 @@ const fontOptions = [
     'Merriweather',
 ].map((font) => ({ label: font, value: font }))
 
-const colorPresets = ['#6366f1', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6']
+const colorPresets = [
+    letbuyyPrimitiveTokens.color.purple[500],
+    letbuyyPrimitiveTokens.color.blue[500],
+    letbuyyPrimitiveTokens.color.green[500],
+    letbuyyPrimitiveTokens.color.amber[500],
+    letbuyyPrimitiveTokens.color.red[500],
+    'rgb(236 72 153)',
+    letbuyyPrimitiveTokens.color.purple[500],
+]
 
 function getErrorMessage(payload: unknown, fallback: string) {
     if (payload && typeof payload === 'object') {
@@ -327,7 +334,7 @@ export default function AppearancePage() {
                                     >
                                         Border radius
                                     </label>
-                                    <input
+                                    <Input unstyled
                                         id="border-radius"
                                         type="range"
                                         min="0"

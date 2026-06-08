@@ -1,8 +1,6 @@
 'use client'
 
-import {
-    Banner,
-    Button,
+import { Button, Banner,
     Card,
     ClipboardList,
     EmptyState,

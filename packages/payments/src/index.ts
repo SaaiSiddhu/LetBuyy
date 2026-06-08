@@ -20,6 +20,9 @@ export type PaymentMethodName = SharedPaymentMethod;
 export type PaymentLifecycleStatus = SharedPaymentStatus;
 export type PaymentMetadata = Record<string, unknown>;
 export type PaymentWebhookHeaders = Record<string, string | string[] | undefined>;
+export type PaymentProviderMode = 'mock' | 'sandbox' | 'live';
+export type V1PaymentSessionProvider = Extract<PaymentProviderName, 'razorpay' | 'cashfree' | 'upi' | 'cod'>;
+export type V1PaymentSessionStatus = 'pending' | 'requires_action' | 'authorized' | 'captured' | 'failed' | 'voided' | 'refunded';
 export type PaymentProviderReference = {
   providerOrderId?: string;
   providerPaymentId?: string;
@@ -65,6 +68,29 @@ export interface PaymentIntentResult {
   redirectUrl?: string;
   expiresAt?: string;
   metadata?: PaymentMetadata;
+}
+
+export interface PaymentSessionPlanInput {
+  provider: V1PaymentSessionProvider;
+  mode?: string | null;
+  orderId: string;
+  amount: PaymentMoney;
+  idempotencyKey: IdempotencyKey | string;
+  merchantCredentialPresent?: boolean;
+  metadata?: PaymentMetadata;
+}
+
+export interface PaymentSessionPlan {
+  provider: V1PaymentSessionProvider;
+  mode: PaymentProviderMode;
+  status: Extract<V1PaymentSessionStatus, 'pending' | 'requires_action' | 'authorized'>;
+  amount: PaymentMoney;
+  idempotencyKey: IdempotencyKey;
+  providerOrderId: string;
+  providerSessionId: string;
+  clientAction: 'none' | 'redirect' | 'upi_collect' | 'cod_confirm';
+  expiresInSeconds: number;
+  metadata: PaymentMetadata;
 }
 
 export interface PaymentVerifyInput extends PaymentProviderReference {
@@ -226,4 +252,235 @@ export function normalizePaymentMoney(value: PaymentMoney): PaymentMoney {
     throw new Error('Payment money currently supports INR only');
   }
   return inrMoney(value.amountMinor);
+}
+
+export function resolvePaymentProviderMode(value?: string | null): PaymentProviderMode {
+  const normalized = (value || 'mock').trim().toLowerCase();
+  if (normalized === 'mock' || normalized === 'sandbox' || normalized === 'live') {
+    return normalized;
+  }
+  throw new Error('Payment provider mode must be mock, sandbox, or live');
+}
+
+export function normalizeV1PaymentSessionProvider(value: string): V1PaymentSessionProvider {
+  const normalized = value.trim().toLowerCase();
+  if (normalized === 'razorpay' || normalized === 'cashfree' || normalized === 'upi' || normalized === 'cod') {
+    return normalized;
+  }
+  throw new Error('Unsupported V1 payment session provider');
+}
+
+export function livePaymentCredentialsAreRequired(input: {
+  provider: V1PaymentSessionProvider;
+  mode: PaymentProviderMode;
+  merchantCredentialPresent?: boolean;
+}): boolean {
+  return input.mode === 'live' && input.merchantCredentialPresent !== true;
+}
+
+export function buildMockPaymentSessionPlan(input: PaymentSessionPlanInput): PaymentSessionPlan {
+  const provider = input.provider;
+  const mode = resolvePaymentProviderMode(input.mode);
+  const amount = normalizePaymentMoney(input.amount);
+  const idempotencyKey = normalizeIdempotencyKey(String(input.idempotencyKey));
+  const providerOrderId = `${provider}_${mode}_${input.orderId}`;
+  const clientAction: PaymentSessionPlan['clientAction'] = provider === 'upi'
+    ? 'upi_collect'
+    : provider === 'cod'
+      ? 'cod_confirm'
+      : mode === 'mock'
+        ? 'none'
+        : 'redirect';
+
+  return {
+    provider,
+    mode,
+    status: provider === 'cod' ? 'requires_action' : mode === 'mock' ? 'authorized' : 'pending',
+    amount,
+    idempotencyKey,
+    providerOrderId,
+    providerSessionId: `${provider}_${mode}_session_${idempotencyKey}`,
+    clientAction,
+    expiresInSeconds: provider === 'cod' ? 86400 : 900,
+    metadata: {
+      ...(input.metadata || {}),
+      provider,
+      provider_mode: mode,
+      external_rail: mode === 'mock' ? 'mock' : provider,
+    },
+  };
+}
+
+export const LEDGER_ACCOUNT_CODES = [
+  'pa_clearing',
+  'merchant_payable',
+  'platform_revenue',
+  'gst_payable',
+  'cod_receivable',
+  'reserve',
+  'vendor_payable',
+  'refund_clearing',
+] as const;
+
+export type LedgerAccountCode = (typeof LEDGER_ACCOUNT_CODES)[number];
+export type LedgerSide = 'debit' | 'credit';
+
+export interface LedgerPostingLine {
+  accountCode: LedgerAccountCode;
+  side: LedgerSide;
+  amountMinor: MoneyMinorUnit;
+  currency: PaymentCurrencyCode;
+  memo?: string;
+}
+
+export interface LedgerPostingPlan {
+  siteId: string;
+  currency: PaymentCurrencyCode;
+  sourceType: 'payment_capture' | 'refund' | 'settlement' | 'cod_remittance' | 'payout' | 'reversal';
+  sourceId: string;
+  idempotencyKey: IdempotencyKey | string;
+  lines: readonly LedgerPostingLine[];
+}
+
+export interface PaymentCaptureLedgerPostingInput {
+  siteId: string;
+  orderId: string;
+  providerPaymentId: string;
+  grossAmountMinor: number;
+  platformFeeMinor: number;
+  gstMinor: number;
+  idempotencyKey: IdempotencyKey | string;
+}
+
+function assertLedgerAccountCode(value: LedgerAccountCode): LedgerAccountCode {
+  if (!LEDGER_ACCOUNT_CODES.includes(value)) {
+    throw new Error(`Unsupported ledger account code: ${value}`);
+  }
+  return value;
+}
+
+function normalizeLedgerLine(line: LedgerPostingLine, expectedCurrency: PaymentCurrencyCode): LedgerPostingLine {
+  if (line.currency !== expectedCurrency) {
+    throw new Error('Ledger posting lines must use a single currency');
+  }
+
+  return {
+    accountCode: assertLedgerAccountCode(line.accountCode),
+    side: line.side,
+    amountMinor: assertInrMinorUnits(line.amountMinor),
+    currency: expectedCurrency,
+    memo: line.memo,
+  };
+}
+
+export function signedLedgerAmountMinor(line: LedgerPostingLine): bigint {
+  const amount = BigInt(assertInrMinorUnits(line.amountMinor));
+  return line.side === 'debit' ? amount : -amount;
+}
+
+export function assertBalancedLedgerLines(
+  lines: readonly LedgerPostingLine[],
+  currency: PaymentCurrencyCode = INR_CURRENCY,
+): readonly LedgerPostingLine[] {
+  if (lines.length < 2) {
+    throw new Error('A double-entry posting must contain at least two ledger lines');
+  }
+
+  let debitTotal = 0n;
+  let creditTotal = 0n;
+  const normalized = lines.map((line) => normalizeLedgerLine(line, currency));
+
+  for (const line of normalized) {
+    if (line.amountMinor <= 0) {
+      throw new Error('Ledger line amount must be positive');
+    }
+
+    if (line.side === 'debit') {
+      debitTotal += BigInt(line.amountMinor);
+    } else {
+      creditTotal += BigInt(line.amountMinor);
+    }
+  }
+
+  if (debitTotal !== creditTotal) {
+    throw new Error(`Ledger posting must balance: debit=${debitTotal.toString()} credit=${creditTotal.toString()}`);
+  }
+
+  return normalized;
+}
+
+export function reverseLedgerLines(lines: readonly LedgerPostingLine[]): readonly LedgerPostingLine[] {
+  return lines.map((line) => ({
+    ...line,
+    side: line.side === 'debit' ? 'credit' : 'debit',
+    memo: line.memo ? `Reversal: ${line.memo}` : 'Reversal',
+  }));
+}
+
+export function buildPaymentCaptureLedgerPosting(input: PaymentCaptureLedgerPostingInput): LedgerPostingPlan {
+  const grossAmountMinor = assertInrMinorUnits(input.grossAmountMinor);
+  const platformFeeMinor = assertInrMinorUnits(input.platformFeeMinor);
+  const gstMinor = assertInrMinorUnits(input.gstMinor);
+  const merchantPayableMinor = assertInrMinorUnits(grossAmountMinor - platformFeeMinor - gstMinor);
+
+  const lines: LedgerPostingLine[] = [
+    {
+      accountCode: 'pa_clearing',
+      side: 'debit',
+      amountMinor: grossAmountMinor,
+      currency: INR_CURRENCY,
+      memo: `Provider capture ${input.providerPaymentId}`,
+    },
+    {
+      accountCode: 'merchant_payable',
+      side: 'credit',
+      amountMinor: merchantPayableMinor,
+      currency: INR_CURRENCY,
+      memo: `Merchant payable for order ${input.orderId}`,
+    },
+  ];
+
+  if (platformFeeMinor > 0) {
+    lines.push({
+      accountCode: 'platform_revenue',
+      side: 'credit',
+      amountMinor: platformFeeMinor,
+      currency: INR_CURRENCY,
+      memo: `Platform revenue for order ${input.orderId}`,
+    });
+  }
+
+  if (gstMinor > 0) {
+    lines.push({
+      accountCode: 'gst_payable',
+      side: 'credit',
+      amountMinor: gstMinor,
+      currency: INR_CURRENCY,
+      memo: `GST payable for order ${input.orderId}`,
+    });
+  }
+
+  return {
+    siteId: input.siteId,
+    currency: INR_CURRENCY,
+    sourceType: 'payment_capture',
+    sourceId: input.providerPaymentId,
+    idempotencyKey: normalizeIdempotencyKey(String(input.idempotencyKey)),
+    lines: assertBalancedLedgerLines(lines, INR_CURRENCY),
+  };
+}
+
+export function buildReversalLedgerPosting(
+  original: LedgerPostingPlan,
+  reversalId: string,
+  idempotencyKey: IdempotencyKey | string,
+): LedgerPostingPlan {
+  return {
+    siteId: original.siteId,
+    currency: original.currency,
+    sourceType: 'reversal',
+    sourceId: reversalId,
+    idempotencyKey: normalizeIdempotencyKey(String(idempotencyKey)),
+    lines: assertBalancedLedgerLines(reverseLedgerLines(original.lines), original.currency),
+  };
 }

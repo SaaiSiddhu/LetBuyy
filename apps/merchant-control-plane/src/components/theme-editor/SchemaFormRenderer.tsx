@@ -2,7 +2,7 @@
 
 import { useCallback, useState, type ChangeEvent } from 'react'
 import type { SchemaField } from '@/lib/theme-schemas'
-import { MaterialIcon, useToast } from '@letbuyy/ui'
+import { Button, Input, MaterialIcon, letbuyyPrimitiveTokens, useToast } from '@letbuyy/ui'
 
 interface SchemaFormRendererProps {
     schema: Record<string, SchemaField>
@@ -81,7 +81,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
             return (
                 <ColorInput
                     label={field.label}
-                    value={String(value ?? '#000000')}
+                    value={String(value ?? letbuyyPrimitiveTokens.color.black)}
                     helpText={helpText}
                     onChange={handleChange}
                 />
@@ -168,7 +168,7 @@ function TextInput({ label, value, maxLength, helpText, onChange }: { label: str
     return (
         <label className="te-field">
             <span className="te-field-label">{label}</span>
-            <input
+            <Input unstyled
                 type="text"
                 className="te-field-input"
                 value={value}
@@ -201,13 +201,13 @@ function ColorInput({ label, value, helpText, onChange }: { label: string; value
         <label className="te-field">
             <span className="te-field-label">{label}</span>
             <div className="te-field-color-wrapper">
-                <input
+                <Input unstyled
                     type="color"
                     className="te-field-color"
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                 />
-                <input
+                <Input unstyled
                     type="text"
                     className="te-field-input te-field-color-text"
                     value={value}
@@ -306,16 +306,16 @@ function ImageInput({ label, value, onChange, storeName, helpText }: { label: st
                     <div className="te-field-image-preview">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={value} alt="" className="te-field-image-thumb" />
-                        <button
+                        <Button unstyled
                             className="te-field-image-remove"
                             onClick={(e) => { e.preventDefault(); onChange('') }}
                             title="Remove image"
                         >
                             <MaterialIcon name="close" size={14} />
-                        </button>
+                        </Button>
                     </div>
                 ) : null}
-                <input
+                <Input unstyled
                     type="text"
                     className="te-field-input"
                     value={value}
@@ -325,7 +325,7 @@ function ImageInput({ label, value, onChange, storeName, helpText }: { label: st
                 <label className={`te-field-upload-btn ${isUploading ? 'te-field-upload-btn--busy' : ''}`}>
                     <MaterialIcon name={isUploading ? 'hourglass_top' : 'cloud_upload'} size={16} />
                     {isUploading ? 'Uploading...' : 'Upload image'}
-                    <input
+                    <Input unstyled
                         className="te-field-file-input"
                         type="file"
                         accept="image/*"
@@ -366,14 +366,14 @@ function RadioInput({ label, value, options, helpText, onChange }: { label: stri
             <span className="te-field-label">{label}</span>
             <div className="te-field-radio-group">
                 {options.map((opt) => (
-                    <button
+                    <Button unstyled
                         key={opt}
                         type="button"
                         className={`te-field-radio ${value === opt ? 'te-field-radio--selected' : ''}`}
                         onClick={() => onChange(opt)}
                     >
                         {opt.charAt(0).toUpperCase() + opt.slice(1).replace(/_/g, ' ')}
-                    </button>
+                    </Button>
                 ))}
             </div>
             <FieldHelp helpText={helpText} />
@@ -385,7 +385,7 @@ function ToggleInput({ label, value, helpText, onChange }: { label: string; valu
     return (
         <label className="te-field te-field--toggle">
             <span className="te-field-label">{label}</span>
-            <button
+            <Button unstyled
                 type="button"
                 className={`te-toggle ${value ? 'te-toggle--on' : ''}`}
                 onClick={() => onChange(!value)}
@@ -393,7 +393,7 @@ function ToggleInput({ label, value, helpText, onChange }: { label: string; valu
                 aria-checked={value}
             >
                 <span className="te-toggle-thumb" />
-            </button>
+            </Button>
             <FieldHelp helpText={helpText} />
         </label>
     )
@@ -404,7 +404,7 @@ function RangeInput({ label, value, min, max, step, unit, helpText, onChange }: 
         <label className="te-field">
             <span className="te-field-label">{label}</span>
             <div className="te-field-range-wrapper">
-                <input
+                <Input unstyled
                     type="range"
                     className="te-field-range"
                     value={value}
@@ -426,7 +426,7 @@ function UrlInput({ label, value, helpText, onChange }: { label: string; value: 
     return (
         <label className="te-field">
             <span className="te-field-label">{label}</span>
-            <input
+            <Input unstyled
                 type="url"
                 className="te-field-input"
                 value={value}
@@ -442,7 +442,7 @@ function NumberInput({ label, value, helpText, onChange }: { label: string; valu
     return (
         <label className="te-field">
             <span className="te-field-label">{label}</span>
-            <input
+            <Input unstyled
                 type="number"
                 className="te-field-input"
                 value={value}

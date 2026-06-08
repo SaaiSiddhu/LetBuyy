@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { Avatar, Badge, Banner, Button, Card, EmptyState, Table, Input, Package, Page, PageHeader, Pencil, RefreshCw, SaveBar, Search, Section, Skeleton, useToast } from '@letbuyy/ui'
+import { Button, Input, Table, Avatar, Badge, Banner, Card, EmptyState, Package, Page, PageHeader, Pencil, RefreshCw, SaveBar, Search, Section, Skeleton, useToast } from '@letbuyy/ui'
 import { formatDisplayDate } from '@letbuyy/ui/formatting'
 import type { InventoryLevel } from '@letbuyy/shared-types'
 

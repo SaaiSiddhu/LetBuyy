@@ -1,93 +1,115 @@
 # LetBuyy Apps Marketplace V2 — Target Design (Phase 16)
 
-The marketplace LetBuyy should build, given the platform it already has. Benchmarks: Shopify App Store (depth), Atlassian Marketplace (developer monetization/versioning), Stripe Apps (OAuth/permission clarity), Cloudflare (performance/edge catalog). Parent: [Master Audit](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md).
+**Parent:** [`../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md`](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md) · **Date:** 2026-06-07
+**Benchmarks:** Shopify App Store, Atlassian Marketplace (Forge), Stripe Apps/Partner Ecosystem, Cloudflare developer platform.
 
-## Design principle
+This is the target the audit recommends building toward. It assumes the existing platform primitives (OAuth/PKCE, scope enforcement, extension/function model, GDPR webhooks) are kept and built upon — V2 is mostly **finishing and operationalizing**, not rewriting.
 
-**Wire the product to the platform that already exists, make trust earned, and make economics truthful.** Most of V2 is exposing/correcting existing backend capability, not building new infrastructure.
+## 0. Design principles
 
-## 1. Navigation
+1. **Honesty by hiding, not narrating.** If a feature isn't ready, it isn't in the UI — never print flag names, "contract-gated," or "SKIPPED (HUMAN-APPROVAL)" to users.
+2. **Earn every surface.** Don't render categories/collections/rails over an empty catalog; gate discovery on real depth.
+3. **One source of truth for economics.** A single revenue-share number in code, docs, and UI.
+4. **The lifecycle is the product.** Submit → automated checks → review → publish → **update/version** → settle payouts. Close the loop.
+5. **Wire what exists before building new.** 10/26 SDK methods are unused; that's the cheapest roadmap.
 
-- Persistent top nav + **mobile menu/bottom nav** (fix the <768px nav loss): Home, Categories, Collections, Search, My Apps, Build.
-- Search reachable at every breakpoint; global command-style search with suggestions.
-- Breadcrumbs on category/detail; "My Apps" and "Partner Console" always one tap away.
+## 1. Information architecture & navigation
 
-## 2. Discovery
+```
+Home (curated rails, gated on depth)
+├── Browse → all apps (search + facets + pagination)
+├── Categories (DB-backed taxonomy) → category landing (SEO copy + ranked apps)
+├── Collections (real curation) → /collections index → collection detail
+├── App detail (media, pricing plans, permissions, reviews, changelog, trust)
+├── Compare (tray; up to 3 apps side-by-side)
+└── Partners → partner directory → public developer profile
 
-- **Data-driven categories** from `GET /categories` with live app counts; hide empty categories; support **multi-tag** apps.
-- **Real collections**: a `collections` + `collection_members` model with an editorial/curation UI; "Staff Picks" actually curated.
-- **Trending** = install velocity over a rolling window (not all-time `install_count`); **"Made in India"** filtered by developer country.
-- **Recommendations**: "similar apps," "merchants also installed," "category leaders," personalized by store type.
-- **Search**: ranked full-text (use the shipped trigram indexes) over name/tagline/description/keywords/developer; synonyms; **sanitized input** (no raw `.or()` interpolation); working **pricing/rating/site-type facets** bound to query params.
-- **Featured/sponsored** rails with clear labeling.
+Merchant account
+├── My Apps (installed; configure, manage plan, view scopes, usage, uninstall)
+└── Billing (app charges, approvals, invoices, spend controls)
 
-## 3. App listings (cards)
+Developer (Partner Console)
+├── Apps (list; edit; submit new version; review status timeline)
+├── Submit app (with working media upload + scope picker + manifest)
+├── Analytics (installs, revenue, usage, API metrics — time series)
+├── Payouts (ledger + settlement status + statements + GST)
+├── Webhooks (register/list/update/delete)
+├── Team/Collaborators (functional agency seats)
+└── Docs / Review policy / Economics (real pages)
+```
 
-- Signals: rating + **review count + distribution**, install count (active-only, anti-gamed), price/plan summary, **earned** badges only, recency ("Updated 3d ago" — never 1970), category tags, "works with."
-- Remove the unconditional "Built for LetBuyy" badge; show it **only when earned**.
+Fix: "Collections" points at an index; remove orphan routes or link them; migrate all hosts to `letbuyy.com`.
 
-## 4. App detail
+## 2. Discovery (V2)
 
-- Working screenshots/video (wired to media-service uploads), **pricing plan selector** (monthly/annual/usage/trial), **review section with histogram + developer replies + helpfulness + moderation**, **data-handling/privacy disclosure**, scope list **with rationale**, changelog/release notes, support info + SLA, compatibility, developer profile link.
-- Install CTA that opens the **combined consent** (scopes + billing terms + privacy in one approval).
+- **Search:** server-side relevance ranking, **all** categories selectable, **server-side rating/price filters**, pagination/infinite scroll, zero-result suggestions, and discovery analytics (terms, CTR, zero-results) wired to the analytics pipeline.
+- **Taxonomy:** categories live in the DB, admin-governed, with counts; category landing pages carry SEO copy.
+- **Curation:** a real `app_collections` table (editorial picks, themed sets) with a `/collections` index; "Trending" from a rolling install/usage window; "Made in India" actually filters by developer country.
+- **Recommendations:** "works with" (compatibility metadata), "alternatives," "merchants also installed," and a featured/sponsored inventory model with disclosure.
 
-## 5. Merchant experience
+## 3. App listing & detail (V2)
 
-- **OAuth-based install** with granular/optional scopes and **re-consent on scope changes**.
-- **Post-install onboarding**: setup checklist, required config capture, deep link into admin, App-Bridge embedded session (use `embed-session`/`bridge/fetch`).
-- **Billing surface**: view/approve charges, start trials, change/cancel plans, see usage, refunds; charges visible on the merchant bill.
-- **App activity log** (what each app did), notifications, and a strong uninstall flow (keep current confirm-dialog; add reason capture).
-- Compare-apps tray; alternatives.
+- **Required media** at submit (≥1 screenshot, icon) via working upload → media-service/CDN.
+- **Pricing plans/tiers** (named plans, feature gating, monthly/annual/one-time, trials, usage meters) — sourced from a real `app_pricing_plans` table, not a flat price.
+- **Permissions:** keep the excellent consent model; add per-scope rationale and post-install scope review/revocation.
+- **Reviews:** keep verified-install reviews + histogram; add **developer replies** and **abuse reporting** (the disabled buttons become real).
+- **Changelog/versions:** populated from `app_versions`; "Updated <date>" reflects real releases.
+- **Trust block:** real "Built for LetBuyy" badge (see §8), data-handling disclosure, support SLA, status page.
 
-## 6. Developer experience
+## 4. Merchant app management (V2)
 
-- **Full lifecycle in-product**: register → create → configure (scopes, webhooks, extensions, OAuth redirect URIs, **media upload**) → **manifest validation** → submit → **edit** → **version/update with re-review** → manage → delist.
-- **API-key management** (reveal-once secret, rotation) — endpoint already exists.
-- **Dev-store provisioning** + collaborator request/redeem (collaborator code exists; build the flow).
-- **Docs, SDK, CLI** links; published **review rubric + SLA**.
+`My Apps` becomes a real control plane: configure extensions/functions (wire `extensionRegistry`/`update*Registration`), **launch embedded** via `embedSession` (not a hardcoded-null `embedUrl`), **manage plan** (upgrade/downgrade/cancel distinct from uninstall), **approve charges** (wire `createCharge`/`approveCharge`), **review granted scopes**, **see usage**, and keep the strong data-loss-aware uninstall.
 
-## 7. Developer dashboard & analytics
+## 5. Billing & developer economics (V2)
 
-- Per-app: **installs over time, install funnel, churn, active vs uninstalled, revenue, payouts, GST**, ratings trend.
-- **App health**: API request volume, error rate, **p95 latency** (enable a Built-for-LetBuyy-style performance gate), webhook delivery success.
-- Payout **statements + GST invoices + CSV export**.
+- **One revenue-share rate**, published. Recommended: adopt the market-standard **0% up to a lifetime threshold, then 15%** (matching Shopify/Atlassian Forge) — and reconcile the code default (currently 8000 bps = 20%) to it. Decide and set it in `billing-core`, the docs, and the UI together.
+- **Billing models:** recurring + usage (metered via an events endpoint) + one-time + trials; merchant-approval semantics retained; pricing plans/tiers.
+- **Payout settlement:** a ledger **state machine** (`pending → processing → released/failed`) with **actual transfer execution** (RazorpayX/Route), statements, GST evidence, and FK integrity on `charge_id`/`source_event_id`.
+- **Merchant spend controls:** budgets/caps/alerts.
 
-## 8. OAuth & permissions
+## 6. OAuth, permissions, app APIs (V2)
 
-- Route all installs through `/oauth/authorize` → `/oauth/token` (already implemented).
-- **Optional + incremental scopes**; least-privilege prompts with per-scope rationale; **re-consent** when an update widens scopes.
+- **One install path:** OAuth (PKCE S256) as the canonical flow; retire or internalize the direct-token path; implement the OAuth BFF route and remove the throw.
+- **Scopes:** keep enforcement; add a **scope picker** at submit, a merchant-facing granted-scope view, and per-scope revocation; retire dead scopes (`app_collaboration`, `write_themes`) or enforce them.
+- **App data API:** expand beyond products/orders (customers, inventory, fulfillment) as demand warrants; keep secret-key rejection.
+- **Hardening:** dedicated brute-force rate limits on `/oauth/token`,`/authorize`,`/bridge/fetch`; per-app/install quota accounting; **real RLS predicates** on the 7 core tables; unify `site_id`/`store_id`.
 
-## 9. Billing & revenue model
+## 7. Webhooks & events (V2)
 
-- Adopt **managed pricing** (LetBuyy-hosted plan page) covering free/freemium/recurring/annual/**usage (fixed/graduated/volume)**/one-time, trials, proration, test charges. Fix the `pricing_model` enum to match the UI.
-- **Truthful, published economics**: one commission rate everywhere. Recommended: a Shopify-style **0% on first ₹X lifetime, then 15%** to bootstrap supply — and fix the `revenue_share_bps` default to match whatever is promised.
-- Refunds, disputes, and India payout rails (UPI/bank) + GST invoicing already partly modeled — finish them.
+- **Developer webhook management:** CRUD for app webhook endpoints (give `app_webhooks` a writer or replace it); topic catalog; signed delivery with retries + DLQ (on the reserved event-bus/notification-service).
+- **GDPR:** wire `customers/redact`/`data-request` to the **real** customer-record lifecycle, not just merchant-triggered fan-out.
 
-## 10. Review & quality process
+## 8. Review process & quality program (V2)
 
-- **Automated gates that actually run**: manifest lint, scope-justification, `app_url`/`privacy_url` reachability + TLS, static/dependency scan, and **verify the GDPR webhooks respond** before `in_review`.
-- Human review with a **published rubric + SLA**; **re-review on version/scope change**; suspension + appeal UX; **annual re-review** for earned badges.
-- Record automated-check results **truthfully** (pass only when executed).
+- **Real automated checks** that gate the human queue: manifest/scope sanity, HTTPS redirect validation, mandatory-webhook presence, broken-link + basic static/security scan. Replace the hardcoded `passed`.
+- **Self-serve developer approval** (`pending → approved`) with an ops UI and an applicant status page.
+- **Published review policy, rubric, and SLA** (replace the placeholder); a developer-facing review-status timeline.
+- **"Built for LetBuyy" program:** measurable perf/design/integration bars (e.g. p95 latency, no storefront slowdown beyond a threshold, design conformance), a backing DB column, and periodic re-review — modeled on Built for Shopify.
+- **Update review + staged rollout** once versioning exists.
 
-## 11. Trust & safety
+## 9. Developer analytics (V2)
 
-- **Earned "Built for LetBuyy"** with quantitative criteria (installs, reviews, rating, performance, design, latest API).
-- Developer **KYC/GSTIN verification** before payouts; verified-developer signal that's gated.
-- Data-handling disclosures; security posture surfaced; tightened embed sandbox (cross-origin only).
+Time-series installs/uninstalls, revenue and payout status, usage/metering, per-app API request/error/latency, funnel (listing views → installs), and churn reasons — self-serve in the Partner Console with charts, replacing today's single snapshot.
 
-## 12. Scale & performance
+## 10. Data model additions
 
-- Cache/CDN the public catalog; read replicas for catalog/search at scale.
-- Tiered/automated review pipeline for 1,000+ apps; recommendation + ranking infrastructure; multi-currency/locale for non-India growth.
+`app_versions` (release history/changelog); `app_pricing_plans`/tiers; `app_install_events`/`app_usage_events` (analytics + metering); `app_api_quota`/rate-limit accounting; `app_collections` (curation); `app_support_tickets` (or an integration); persisted OAuth codes/tokens if needed; collaborator/seat tables. Add FKs to the payout ledger; add real RLS to the legacy 7 tables; unify the tenant column.
 
-## Phased roadmap
+## 11. Phased roadmap
 
-| Phase | Theme | Ships |
-|---|---|---|
-| **0 — Truth & content (weeks)** | Make it real | Seed curated catalog + categories; fix 15%/20% economics; fix icon bug, dead filters, fake collections, badge; remove `usage_based` until supported |
-| **1 — Developer lifecycle** | Let apps live | Edit + **version/update with re-review**, media upload, scopes/webhooks/extension config, API-key UI, manifest validator, dev stores |
-| **2 — Trust & install** | Earn trust | OAuth-based install + granular consent + billing-at-install; earned badge program; review write UI + histogram + replies; data disclosures |
-| **3 — Discovery & billing** | Make it findable & monetizable | Data-driven categories, real collections/trending, ranked search, recommendations; managed pricing (trials/usage/refunds), statements/invoices |
-| **4 — Analytics & governance** | Make it durable | Per-app analytics + app-health/perf gates; automated review gates; moderation/anti-abuse; caching/CDN; localization |
+**Phase A — Make it real (launch-blocking).** Seed catalog + launch partners; one revenue rate; payout settlement; **app update/versioning**; self-serve approval; real submission checks; working media upload; fix registration data loss; remove all leaked-flag/governance copy; domain migration.
 
-**Net:** V2 is mostly *exposing and correcting* what the gateway already does, plus four genuine platform additions (versioning, real review gates, per-app analytics, app-health monitoring). The foundation is good enough that this is a finishing job, not a rebuild.
+**Phase B — Wire what exists.** Charge-approval UI; extension/function management; OAuth install + embed session; public developer profiles; bridge — all backend already present.
+
+**Phase C — Earn discovery & trust.** DB taxonomy + all categories; real collections + index; recommendations/compare; "Built for LetBuyy" program; reviews replies + abuse reporting; real docs/economics/review-policy pages.
+
+**Phase D — Scale platform.** Search-service (ranking/pagination); analytics-pipeline (self-serve analytics + metering); event-bus/notification-service (reliable webhooks); media-service/CDN; quotas + OAuth rate limits + real RLS; multi-region.
+
+## 12. Success criteria
+
+- A merchant can discover, compare, install, **pay for**, configure, and manage an app — and trust the badges.
+- A developer can register, get approved self-serve, read real docs, submit with media, **know the revenue share**, ship updates, see real analytics, and **get paid**.
+- No user-facing copy references flags, contracts, or governance state.
+- Discovery surfaces reflect real catalog depth; every badge is backed by data.
+
+V2 is within reach because the hard primitives already exist. The work is **finishing the lifecycle, operationalizing the economics, and removing the theater** — then filling the catalog.

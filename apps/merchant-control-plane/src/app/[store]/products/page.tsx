@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo, type SyntheticEvent } from '
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import type { Product as SharedProduct } from '@letbuyy/shared-types'
-import { Badge, Banner, Button, Card, EmptyState, Table, Input, MaterialIcon, Page, PageHeader, Search, Section, Select, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
+import { Button, Input, Table, Badge, Banner, Card, EmptyState, MaterialIcon, Page, PageHeader, Search, Section, Select, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
 
 type ProductRow = Pick<
     SharedProduct,

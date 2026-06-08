@@ -47,6 +47,19 @@ jobs:
       - name: Run typecheck
         run: pnpm turbo typecheck --filter="...[HEAD^1]"
 
+  secret-hygiene:
+    name: Secret hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Fail on committed credential placeholders
+        run: node scripts/validators/committed-secret-placeholder-validator.mjs
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -100,6 +113,59 @@ jobs:
         env:
           CI: "true"
 
+  merge-safety-gate:
+    name: Merge safety gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Full-repo typecheck
+        run: pnpm turbo typecheck
+
+      - name: Gateway unit tests
+        run: pnpm run test:unit:gateway
+        env:
+          CI: "true"
+
+      - name: Behavioral tests
+        run: pnpm run test:behavioral
+        env:
+          CI: "true"
+
+      - name: Contract tests
+        run: pnpm run test:contracts
+        env:
+          CI: "true"
+
+      - name: Install merchant mobile Flutter dependencies
+        working-directory: apps/mobile/merchant-app
+        run: flutter pub get
+
+      - name: Merchant mobile analyze
+        working-directory: apps/mobile/merchant-app
+        run: flutter analyze
+
+      - name: Merchant mobile tests
+        working-directory: apps/mobile/merchant-app
+        run: flutter test
+
   governance:
     name: Governance
     runs-on: ubuntu-latest
@@ -114,6 +180,9 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Validate governance
         run: pnpm run validate:governance
@@ -174,9 +243,11 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder_anon_key
-          NEXT_PUBLIC_APP_URL: https://letbuyy.store
-          NEXT_PUBLIC_ACCOUNTS_URL: https://accounts.letbuyy.store
-          NEXT_PUBLIC_ADMIN_URL: https://admin.letbuyy.store
-          NEXT_PUBLIC_API_URL: https://api.letbuyy.store
+          NEXT_PUBLIC_APP_URL: https://letbuyy.com
+          NEXT_PUBLIC_ACCOUNTS_URL: https://accounts.letbuyy.com
+          NEXT_PUBLIC_ADMIN_URL: https://admin.letbuyy.com
+          NEXT_PUBLIC_API_URL: https://api.letbuyy.com
+          LETBUYY_PLATFORM_DOMAIN: letbuyy.com
+          NEXT_PUBLIC_PLATFORM_DOMAIN: letbuyy.com
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: placeholder
           NODE_ENV: production

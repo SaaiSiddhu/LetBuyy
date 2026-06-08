@@ -5,6 +5,7 @@ import '../../app/store_context.dart';
 import '../../services/ai_studio_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import '../../widgets/shared/ai_operator_sheet.dart';
 
 class AiScreen extends StatefulWidget {
   const AiScreen({super.key});
@@ -59,10 +60,10 @@ class _AiScreenState extends State<AiScreen> {
           _isLoading = false;
         });
       }
-    } catch (error) {
+    } catch (_) {
       if (mounted) {
         setState(() {
-          _error = error.toString();
+          _error = 'AI Studio data could not load.';
           _isLoading = false;
         });
       }
@@ -118,10 +119,16 @@ class _AiScreenState extends State<AiScreen> {
             ),
           ),
           IconButton(
-            tooltip: 'Buy credits',
-            icon: Icon(Icons.add_card_outlined, color: colors.textSecondary),
-            onPressed: _storeId == null ? null : _purchaseCredits,
+            tooltip: 'AI store operator',
+            icon: Icon(Icons.auto_awesome_rounded, color: colors.textSecondary),
+            onPressed: () => showAiOperatorSheet(context),
           ),
+          if (_canPurchaseCredits)
+            IconButton(
+              tooltip: 'Buy credits',
+              icon: Icon(Icons.add_card_outlined, color: colors.textSecondary),
+              onPressed: _purchaseCredits,
+            ),
           IconButton(
             tooltip: 'Refresh AI Studio',
             icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
@@ -160,6 +167,9 @@ class _AiScreenState extends State<AiScreen> {
       ),
     );
   }
+
+  bool get _canPurchaseCredits =>
+      _storeId != null && (_credits?.purchaseAvailable ?? false);
 
   Widget _creditSummary() {
     final credits = _credits;
@@ -316,6 +326,15 @@ class _AiScreenState extends State<AiScreen> {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(color: colors.textSecondary),
           ),
+          if (item.output.trim().isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              item.output,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: colors.textPrimary, fontSize: 13),
+            ),
+          ],
           const SizedBox(height: 10),
           Row(
             children: [
@@ -444,13 +463,26 @@ class _AiScreenState extends State<AiScreen> {
     if (prompt == null || prompt.trim().isEmpty) return;
     setState(() => _isBusy = true);
     try {
-      await context.read<AiStudioService>().generateContent(
+      final generated = await context.read<AiStudioService>().generateContent(
         storeId: storeId,
         feature: tool.feature,
         prompt: prompt,
       );
-    } catch (error) {
+      if (mounted) {
+        final service = context.read<AiStudioService>();
+        setState(() {
+          _credits = service.credits ?? _credits;
+          _usage = [
+            generated,
+            ..._usage.where((item) => item.id != generated.id),
+          ];
+        });
+        _showSnack('Generated content saved.');
+      }
+    } on AiFeatureUnavailableException catch (error) {
       _showSnack(error.toString());
+    } catch (_) {
+      _showSnack('Generation could not be completed.');
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -460,12 +492,21 @@ class _AiScreenState extends State<AiScreen> {
     final storeId = _storeId;
     if (storeId == null) return;
     try {
-      await context.read<AiStudioService>().purchaseCredits(
+      final service = context.read<AiStudioService>();
+      final purchase = await service.purchaseCredits(
         storeId: storeId,
         amount: 100,
       );
-    } catch (error) {
+      if (mounted) {
+        setState(() => _credits = service.credits ?? _credits);
+        _showSnack(
+          purchase.completed ? 'Credits added.' : 'Credit checkout is ready.',
+        );
+      }
+    } on AiCreditPurchaseUnavailableException catch (error) {
       _showSnack(error.toString());
+    } catch (_) {
+      _showSnack('Credit purchase could not be completed.');
     }
   }
 
@@ -483,8 +524,8 @@ class _AiScreenState extends State<AiScreen> {
         });
         _showSnack('Rating saved.');
       }
-    } catch (error) {
-      _showSnack('Could not save rating: $error');
+    } catch (_) {
+      _showSnack('Could not save rating.');
     }
   }
 

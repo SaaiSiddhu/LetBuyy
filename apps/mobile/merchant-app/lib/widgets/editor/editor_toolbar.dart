@@ -11,8 +11,10 @@ class EditorToolbar extends StatelessWidget {
   final VoidCallback? onUndo;
   final VoidCallback? onRedo;
   final VoidCallback? onRefresh;
+  final VoidCallback? onGenerateHomepage;
   final bool canUndo;
   final bool canRedo;
+  final bool isGeneratingHomepage;
 
   const EditorToolbar({
     super.key,
@@ -21,8 +23,10 @@ class EditorToolbar extends StatelessWidget {
     this.onUndo,
     this.onRedo,
     this.onRefresh,
+    this.onGenerateHomepage,
     this.canUndo = false,
     this.canRedo = false,
+    this.isGeneratingHomepage = false,
   });
 
   @override
@@ -53,9 +57,24 @@ class EditorToolbar extends StatelessWidget {
 
             const SizedBox(width: 12),
 
+            _ToolbarIconButton(
+              icon: Icons.auto_awesome_rounded,
+              tooltip: 'Generate homepage',
+              isBusy: isGeneratingHomepage,
+              onTap: isGeneratingHomepage
+                  ? null
+                  : () {
+                      HapticFeedback.lightImpact();
+                      onGenerateHomepage?.call();
+                    },
+            ),
+
+            const SizedBox(width: 8),
+
             // Layers Button
             _ToolbarIconButton(
               icon: Icons.layers_outlined,
+              tooltip: 'Layers',
               onTap: () {
                 HapticFeedback.lightImpact();
                 onShowLayers?.call();
@@ -67,6 +86,7 @@ class EditorToolbar extends StatelessWidget {
             // Undo
             _ToolbarIconButton(
               icon: Icons.undo_rounded,
+              tooltip: 'Undo',
               isEnabled: canUndo,
               onTap: canUndo
                   ? () {
@@ -81,6 +101,7 @@ class EditorToolbar extends StatelessWidget {
             // Redo
             _ToolbarIconButton(
               icon: Icons.redo_rounded,
+              tooltip: 'Redo',
               isEnabled: canRedo,
               onTap: canRedo
                   ? () {
@@ -95,6 +116,7 @@ class EditorToolbar extends StatelessWidget {
             // Refresh
             _ToolbarIconButton(
               icon: Icons.refresh_rounded,
+              tooltip: 'Refresh preview',
               onTap: () {
                 HapticFeedback.lightImpact();
                 onRefresh?.call();
@@ -159,33 +181,49 @@ class _ToolbarButton extends StatelessWidget {
 
 class _ToolbarIconButton extends StatelessWidget {
   final IconData icon;
+  final String? tooltip;
   final bool isEnabled;
+  final bool isBusy;
   final VoidCallback? onTap;
 
   const _ToolbarIconButton({
     required this.icon,
+    this.tooltip,
     this.isEnabled = true,
+    this.isBusy = false,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    return GestureDetector(
-      onTap: onTap,
+    final button = GestureDetector(
+      onTap: isBusy ? null : onTap,
       child: Container(
-        width: 44,
+        width: 42,
         height: 44,
         decoration: BoxDecoration(
           color: colors.surfaceVariant,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(
-          icon,
-          size: 20,
-          color: isEnabled ? colors.textSecondary : colors.textTertiary,
+        child: Center(
+          child: isBusy
+              ? SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: colors.textSecondary,
+                  ),
+                )
+              : Icon(
+                  icon,
+                  size: 20,
+                  color: isEnabled ? colors.textSecondary : colors.textTertiary,
+                ),
         ),
       ),
     );
+    return tooltip == null ? button : Tooltip(message: tooltip!, child: button);
   }
 }

@@ -190,7 +190,7 @@ class _RazorpayCheckoutScreenState extends State<RazorpayCheckoutScreen> {
     );
 
     if (keyId == null ||
-        keyId.startsWith('SKIP_NEEDS_HUMAN_') ||
+        !AppConfig.isConfiguredValue(keyId) ||
         (orderId == null && subscriptionId == null)) {
       return null;
     }

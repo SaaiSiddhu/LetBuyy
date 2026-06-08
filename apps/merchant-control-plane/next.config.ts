@@ -1,22 +1,71 @@
 import type { NextConfig } from "next";
+import { createRequire } from "node:module";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const requireFromConfig = createRequire(import.meta.url);
+const { createSecurityHeaders } = requireFromConfig(
+  "../../config/security/next-security-headers.ts",
+) as typeof import("../../config/security/next-security-headers");
+
+const appRoot = dirname(fileURLToPath(import.meta.url));
+const workspaceRoot = resolve(appRoot, "../..");
+const workspaceModules = resolve(workspaceRoot, "node_modules/.pnpm/node_modules");
+
+const workspacePackages = [
+  "@letbuyy/api-client",
+  "@letbuyy/api-types",
+  "@letbuyy/auth-core",
+  "@letbuyy/cms-core",
+  "@letbuyy/extension-host",
+  "@letbuyy/shared-types",
+  "@letbuyy/theme-engine",
+  "@letbuyy/ui",
+];
+
+const workspacePackageAliases = {
+  "@letbuyy/api-client": resolve(appRoot, "../../packages/typescript/api-client/src/index.ts"),
+  "@letbuyy/api-types": resolve(appRoot, "../../packages/typescript/api-types/src/index.ts"),
+  "@letbuyy/auth-core": resolve(appRoot, "../../packages/auth-core/src/index.ts"),
+  "@letbuyy/cms-core": resolve(appRoot, "../../packages/cms-core/src/index.ts"),
+  "@letbuyy/extension-host": resolve(appRoot, "../../packages/extension-host/src/index.ts"),
+  "@letbuyy/shared-types": resolve(appRoot, "../../packages/shared-types/src/index.ts"),
+  "@letbuyy/theme-engine": resolve(appRoot, "../../packages/theme-engine/src/index.ts"),
+  "@letbuyy/ui": resolve(appRoot, "../../packages/typescript/ui/src/index.ts"),
+  "@letbuyy/ui/formatting": resolve(appRoot, "../../packages/typescript/ui/src/formatting.ts"),
+  "lucide-react": resolve(appRoot, "../../node_modules/.pnpm/node_modules/lucide-react"),
+  "tailwind-merge": resolve(appRoot, "../../node_modules/.pnpm/node_modules/tailwind-merge"),
+  zod: resolve(appRoot, "../../node_modules/.pnpm/node_modules/zod"),
+};
+
+type WebpackResolveConfig = {
+  resolve?: {
+    modules?: string[];
+  };
+};
 
 const nextConfig: NextConfig = {
+  transpilePackages: workspacePackages,
+  turbopack: {
+    root: workspaceRoot,
+    resolveAlias: workspacePackageAliases,
+  },
+  webpack(config: WebpackResolveConfig) {
+    const modules = config.resolve?.modules ?? [];
+    config.resolve = {
+      ...config.resolve,
+      modules: [...modules, workspaceModules],
+    };
+    return config;
+  },
   async headers() {
     return [
       {
         source: '/:path*',
-        headers: [
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
-          { key: 'X-XSS-Protection', value: '1; mode=block' },
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
-        ],
+        headers: createSecurityHeaders(),
       },
     ];
   },
 };
 
 export default nextConfig;
-

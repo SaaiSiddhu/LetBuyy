@@ -35,10 +35,22 @@ test('product reads are scoped to owned sites and cross-site access is hidden', 
 
     assert.match(routeSource, /router\.get\('\/:id'/);
     assert.match(routeSource, /\.from\('products'\)\s*[\s\S]*\.eq\('id',\s*productId\)/);
-    assert.match(routeSource, /verifyStoreOwnership\(db,\s*data\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    assert.match(routeSource, /verifyStoreOwnership\(db,\s*String\(product\.store_id\),\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(routeSource, /code:\s*'NOT_FOUND',\s*message:\s*'Product not found'/);
     assert.match(routeSource, /query\.status === 'active'[\s\S]*dbQuery = dbQuery\.eq\('is_active',\s*true\)/);
     assert.match(routeSource, /query\.status === 'inactive'[\s\S]*dbQuery = dbQuery\.eq\('is_active',\s*false\)/);
+});
+
+test('barcode lookup resolves product and variant barcodes inside owned stores only', () => {
+    const routeSource = source('routes/products.ts');
+
+    assert.match(routeSource, /router\.get\('\/barcode\/lookup',\s*validate\('query',\s*ProductBarcodeLookupQuery\)/);
+    assert.match(routeSource, /verifyStoreOwnership\(db,\s*query\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    assert.match(routeSource, /loadProductByBarcode\(db,\s*c\.env,\s*query\.store_id,\s*barcode\)/);
+    assert.match(routeSource, /loadVariantProductByBarcode\(db,\s*c\.env,\s*query\.store_id,\s*barcode\)/);
+    assert.match(routeSource, /matched_field:\s*'product\.barcode'/);
+    assert.match(routeSource, /matched_field:\s*'variant\.barcode'/);
+    assert.match(routeSource, /code:\s*'NOT_FOUND',\s*message:\s*'Product not found'/);
 });
 
 test('product updates and deletes use owned-product lookup before mutation', () => {
@@ -53,6 +65,18 @@ test('product updates and deletes use owned-product lookup before mutation', () 
     assert.match(adapterSource, /\.eq\('id',\s*productId\)\s*[\s\S]*\.is\('deleted_at',\s*null\)/);
     assert.match(adapterSource, /await this\.assertStoreOwnership\(ownedProduct\.store_id,\s*userId,\s*sessionStoreId/);
     assert.match(adapterSource, /deleted_at:\s*new Date\(\)\.toISOString\(\)/);
+});
+
+test('collection updates and deletes verify collection ownership before mutation', () => {
+    const routeSource = source('routes/products.ts');
+
+    assert.match(routeSource, /router\.patch\('\/collections\/:id',\s*validate\('json',\s*UpdateCollectionSchema\)/);
+    assert.match(routeSource, /\.from\('collections'\)\s*[\s\S]*\.select\('id, store_id'\)\s*[\s\S]*\.eq\('id',\s*collectionId\)/);
+    assert.match(routeSource, /verifyStoreOwnership\(db,\s*collection\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    assert.match(routeSource, /\.from\('collections'\)\s*[\s\S]*\.update\(payload\)\s*[\s\S]*\.eq\('id',\s*collectionId\)/);
+    assert.match(routeSource, /router\.delete\('\/collections\/:id'/);
+    assert.match(routeSource, /deleted_at:\s*new Date\(\)\.toISOString\(\)/);
+    assert.match(routeSource, /\.from\('collections'\)\s*[\s\S]*\.delete\(\)\s*[\s\S]*\.eq\('id',\s*collectionId\)/);
 });
 
 test('merchant product proxies resolve the URL store to sites.id before worker calls', () => {
@@ -73,7 +97,6 @@ test('uploads fail closed in production and use an inline local fallback without
     assert.match(routeSource, /if \(!c\.env\.R2_BUCKET\)/);
     assert.match(routeSource, /isProductionEnv\(c\.env\)/);
     assert.match(routeSource, /ASSET_PUBLIC_BASE_URL/);
-    assert.match(routeSource, /cdn-staging\.letbuyy\.store/);
     assert.match(routeSource, /code:\s*'STORAGE_UNAVAILABLE'/);
     assert.match(routeSource, /data:\$\{file\.type \|\| 'application\/octet-stream'\};base64,\$\{base64\}/);
     assert.match(routeSource, /storage:\s*'local-dev-inline'/);

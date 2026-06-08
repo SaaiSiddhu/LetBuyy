@@ -4,6 +4,7 @@
 
 import { Hono } from 'hono';
 import type { Env } from '../index';
+import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { dbFailureBody, failureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
@@ -17,6 +18,7 @@ import {
     CreateTransferSchema,
     ReceivePurchaseOrderSchema,
     ReceiveTransferSchema,
+    ReserveInventorySchema,
     ShipTransferSchema,
     mapInventoryAdjustmentReason,
     mapInventoryLevelRecord,
@@ -31,7 +33,10 @@ import {
     type ProductInventoryFallbackRecord,
     type ReceivePurchaseOrderInput,
     type ReceiveTransferInput,
+    type ReserveInventoryInput,
     type ShipTransferInput,
+    type InventoryReservationActionInput,
+    InventoryReservationActionSchema,
 } from '@letbuyy/commerce-core';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -158,6 +163,56 @@ async function loadOwnedProductForInventory(
     }
 
     return { data: data as ProductOwnerRow | null, error };
+}
+
+function rpcErrorCode(error: DatabaseErrorLike): string {
+    return databaseErrorText(error).includes('insufficient_inventory')
+        ? 'INSUFFICIENT_INVENTORY'
+        : 'INVENTORY_MUTATION_FAILED';
+}
+
+function reservationIdFromRpc(value: unknown): string | null {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const candidate = (value as Record<string, unknown>).reservation_id;
+    return typeof candidate === 'string' && candidate.length > 0 ? candidate : null;
+}
+
+function quantityFromRpc(value: unknown): number | undefined {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+    const candidate = Number((value as Record<string, unknown>).quantity);
+    return Number.isFinite(candidate) ? candidate : undefined;
+}
+
+async function emitInventoryEvent(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        storeId: string;
+        eventType: 'inventory.reserved' | 'inventory.committed' | 'inventory.released';
+        reservationId: string;
+        productId?: string | null;
+        variantId?: string | null;
+        quantity?: number;
+        idempotencyKey: string;
+        requestId?: string | null;
+        actorId?: string | null;
+    },
+) {
+    await new EventExecutionAdapter(db).emitDomainEvent({
+        storeId: input.storeId,
+        aggregateType: 'inventory',
+        aggregateId: input.reservationId,
+        eventType: input.eventType,
+        payload: {
+            site_id: input.storeId,
+            reservation_id: input.reservationId,
+            product_id: input.productId || undefined,
+            variant_id: input.variantId || undefined,
+            quantity: input.quantity,
+        },
+        idempotencyKey: input.idempotencyKey,
+        requestId: input.requestId || null,
+        actorId: input.actorId || null,
+    });
 }
 
 // ── Routes ──────────────────────────────────────────────────
@@ -551,6 +606,127 @@ router.post('/transfers/:id/receive', validate('json', ReceiveTransferSchema), a
         await idempotency.fail(claim.id);
         throw error;
     }
+});
+
+// POST /inventory/reserve - Reserve available stock with optimistic concurrency.
+router.post('/reserve', validate('json', ReserveInventorySchema), async (c) => {
+    const auth = c.get('auth');
+    const body = c.get('validatedBody') as ReserveInventoryInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    const request = requestId(c);
+
+    if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const { data, error } = await db.rpc('reserve_inventory', {
+        p_store_id: body.store_id,
+        p_product_id: body.product_id,
+        p_variant_id: body.variant_id || null,
+        p_location_id: body.location_id,
+        p_quantity: body.quantity,
+        p_ttl_seconds: body.ttl_seconds,
+        p_idempotency_key: body.idempotency_key,
+        p_actor_id: customUser.id,
+        p_request_id: request,
+    });
+
+    if (error) {
+        const code = rpcErrorCode(error);
+        return c.json(failureBody(code, code === 'INSUFFICIENT_INVENTORY' ? 'Insufficient inventory' : 'Unable to reserve inventory'), code === 'INSUFFICIENT_INVENTORY' ? 409 : 400);
+    }
+
+    const reservationId = reservationIdFromRpc(data);
+    if (reservationId) {
+        await emitInventoryEvent(db, {
+            storeId: body.store_id,
+            eventType: 'inventory.reserved',
+            reservationId,
+            productId: body.product_id,
+            variantId: body.variant_id || null,
+            quantity: quantityFromRpc(data) || body.quantity,
+            idempotencyKey: `inventory.reserved:${body.store_id}:${reservationId}:${body.idempotency_key}`,
+            requestId: request,
+            actorId: customUser.id,
+        });
+    }
+
+    return c.json(success(data), 201);
+});
+
+// POST /inventory/commit - Commit a reservation into consumed/committed stock.
+router.post('/commit', validate('json', InventoryReservationActionSchema), async (c) => {
+    const auth = c.get('auth');
+    const body = c.get('validatedBody') as InventoryReservationActionInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    const request = requestId(c);
+
+    if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const { data, error } = await db.rpc('commit_inventory_reservation', {
+        p_store_id: body.store_id,
+        p_reservation_id: body.reservation_id,
+        p_idempotency_key: body.idempotency_key,
+        p_actor_id: customUser.id,
+        p_request_id: request,
+    });
+
+    if (error) return c.json(failureBody('INVENTORY_COMMIT_FAILED', 'Unable to commit inventory reservation'), 400);
+
+    await emitInventoryEvent(db, {
+        storeId: body.store_id,
+        eventType: 'inventory.committed',
+        reservationId: body.reservation_id,
+        quantity: quantityFromRpc(data),
+        idempotencyKey: `inventory.committed:${body.store_id}:${body.reservation_id}:${body.idempotency_key}`,
+        requestId: request,
+        actorId: customUser.id,
+    });
+
+    return c.json(success(data));
+});
+
+// POST /inventory/release - Release an active reservation back to sellable stock.
+router.post('/release', validate('json', InventoryReservationActionSchema), async (c) => {
+    const auth = c.get('auth');
+    const body = c.get('validatedBody') as InventoryReservationActionInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    const request = requestId(c);
+
+    if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const { data, error } = await db.rpc('release_inventory_reservation', {
+        p_store_id: body.store_id,
+        p_reservation_id: body.reservation_id,
+        p_idempotency_key: body.idempotency_key,
+        p_reason: body.reason || null,
+        p_actor_id: customUser.id,
+        p_request_id: request,
+    });
+
+    if (error) return c.json(failureBody('INVENTORY_RELEASE_FAILED', 'Unable to release inventory reservation'), 400);
+
+    await emitInventoryEvent(db, {
+        storeId: body.store_id,
+        eventType: 'inventory.released',
+        reservationId: body.reservation_id,
+        quantity: quantityFromRpc(data),
+        idempotencyKey: `inventory.released:${body.store_id}:${body.reservation_id}:${body.idempotency_key}`,
+        requestId: request,
+        actorId: customUser.id,
+    });
+
+    return c.json(success(data));
 });
 
 // GET /inventory/levels — Get inventory levels for a store

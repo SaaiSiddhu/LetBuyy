@@ -6,7 +6,9 @@ import { useSearchParams } from 'next/navigation'
 import TurnstileWidget, { type TurnstileHandle } from '@/components/TurnstileWidget'
 import { features } from '@/lib/config/features'
 import { AuthIcon } from '@/components/AuthIcon'
-import { Globe, ShieldCheck } from '@letbuyy/ui'
+import { BrandLogo } from '@/components/BrandLogo'
+import { OAuthBrandIcon } from '@/components/OAuthBrandIcon'
+import { Button, Input } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -217,18 +219,18 @@ function LoginContent() {
         <main className="auth-container">
             {/* Top bar: Language + Theme — matches lookup page exactly */}
             <div className="auth-top-bar">
-                <button onClick={cycleLang} className="auth-lang-btn">
+                <Button unstyled onClick={cycleLang} className="auth-lang-btn">
                     {lang.toUpperCase()}
-                </button>
-                <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
+                </Button>
+                <Button unstyled onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
                     <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
-                </button>
+                </Button>
             </div>
 
             <div className="auth-card">
                 {/* Logo — matches lookup page */}
                 <div className="auth-logo">
-                    <img src="/icons/app_icon.png" alt="LetBuyy" width={48} height={48} />
+                    <BrandLogo />
                 </div>
 
                 {/* === EMAIL INPUT VIEW === */}
@@ -240,7 +242,7 @@ function LoginContent() {
                         <form onSubmit={handleEmailContinue} className="auth-form">
                             <div className="auth-field">
                                 <label htmlFor="email">{t.email}</label>
-                                <input
+                                <Input unstyled
                                     id="email"
                                     type="email"
                                     value={email}
@@ -254,13 +256,13 @@ function LoginContent() {
 
                             {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
 
-                            <button
+                            <Button unstyled
                                 type="submit"
                                 className="auth-btn-primary"
                                 disabled={loading || !email.trim()}
                             >
                                 {loading ? '...' : t.continueWithEmail}
-                            </button>
+                            </Button>
                         </form>
 
                         <div className="auth-divider">
@@ -268,21 +270,21 @@ function LoginContent() {
                         </div>
 
                         {features.passkey && (
-                            <button className="auth-btn-secondary" disabled>
+                            <Button unstyled className="auth-btn-secondary" disabled>
                                 <AuthIcon name="passkey" size={18} style={{ marginRight: 6 }} /> {t.signInWithPasskey}
-                            </button>
+                            </Button>
                         )}
 
                         <div className="auth-oauth-row">
-                            <button className="auth-btn-oauth coming-soon" onClick={(e) => e.preventDefault()} aria-disabled="true">
-                                <ShieldCheck width={18} height={18} aria-hidden="true" />
+                            <Button unstyled className="auth-btn-oauth coming-soon" onClick={(e) => e.preventDefault()} aria-disabled="true">
+                                <OAuthBrandIcon provider="apple" className="auth-oauth-brand-icon" />
                                 {t.apple}
                                 <span className="auth-coming-soon-badge">{t.comingSoon}</span>
-                            </button>
-                            <button className="auth-btn-oauth" onClick={() => handleOAuth('google')}>
-                                <Globe width={18} height={18} aria-hidden="true" />
+                            </Button>
+                            <Button unstyled className="auth-btn-oauth" onClick={() => handleOAuth('google')}>
+                                <OAuthBrandIcon provider="google" className="auth-oauth-brand-icon" />
                                 {t.google}
-                            </button>
+                            </Button>
                         </div>
 
                         <div className="auth-bottom-link">
@@ -303,7 +305,7 @@ function LoginContent() {
                                 <label htmlFor="loginEmail">{t.email}</label>
                                 <div className="auth-email-display">
                                     <span>{email}</span>
-                                    <button
+                                    <Button unstyled
                                         type="button"
                                         className="auth-edit-btn"
                                         onClick={() => {
@@ -313,14 +315,14 @@ function LoginContent() {
                                         }}
                                     >
                                         <AuthIcon name="edit" size={16} />
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
 
                             <div className="auth-field">
                                 <label htmlFor="password">{t.password}</label>
                                 <div className="auth-password-wrapper">
-                                    <input
+                                    <Input unstyled
                                         id="password"
                                         type={showPasswordVisible ? 'text' : 'password'}
                                         value={password}
@@ -329,25 +331,25 @@ function LoginContent() {
                                         autoFocus
                                         required
                                     />
-                                    <button
+                                    <Button unstyled
                                         type="button"
                                         className="auth-toggle-password"
                                         onClick={() => setShowPasswordVisible(!showPasswordVisible)}
                                     >
                                         <AuthIcon name={showPasswordVisible ? 'visibility_off' : 'visibility'} size={18} />
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
 
                             {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
 
-                            <button
+                            <Button unstyled
                                 type="submit"
                                 className="auth-btn-primary"
                                 disabled={loading || !password}
                             >
                                 {loading ? '...' : t.logInBtn}
-                            </button>
+                            </Button>
                         </form>
 
                         <div className="auth-divider">
@@ -355,12 +357,12 @@ function LoginContent() {
                         </div>
 
                         {features.magicLink && (
-                            <button
+                            <Button unstyled
                                 className="auth-btn-secondary"
                                 disabled={loading}
                             >
                                 <AuthIcon name="mail" size={18} style={{ marginRight: 6 }} /> {t.emailMeLink}
-                            </button>
+                            </Button>
                         )}
 
                         <a href="/forgot-password" className="auth-forgot-link">

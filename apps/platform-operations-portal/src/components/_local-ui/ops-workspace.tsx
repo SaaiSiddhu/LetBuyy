@@ -162,13 +162,13 @@ export function SkipBackendPanel({
     return (
         <section className="rounded-[var(--lb-radius-lg)] border border-dashed border-[var(--lb-color-warning)] bg-[var(--lb-color-warning-soft)] p-[var(--lb-space-4)]">
             <p className="m-0 text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[var(--lb-color-warning)]">
-                [SKIP -- NEEDS BACKEND]
+                Not available
             </p>
             <h2 className="m-0 mt-[var(--lb-space-1)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
                 {title}
             </h2>
             <p className="m-0 mt-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                Missing contract: {contract}
+                Data source: {contract}
             </p>
             <div className="mt-[var(--lb-space-3)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
                 {children}

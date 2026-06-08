@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
 import type { SectionModel, ProductGridSettings, ThemeSettings } from '@letbuyy/theme-engine';
 import type { ProductModel } from '@letbuyy/commerce-core';
-import { ArrowRight, ShoppingBag, Heart } from '@letbuyy/ui';
+import { Button, ArrowRight, ShoppingBag, Heart } from '@letbuyy/ui';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -138,7 +138,7 @@ export default function ProductGrid({ section, products, theme, basePath: provid
                                                 </span>
                                             )}
                                             {/* Heart icon - uses primaryColor */}
-                                            <button
+                                            <Button unstyled
                                                 onClick={(e) => handleToggleWishlist(e, product.id)}
                                                 className="absolute top-2 right-2 z-10 flex h-11 w-11 items-center justify-center rounded-full transition-all card-theme"
                                                 style={{
@@ -147,15 +147,15 @@ export default function ProductGrid({ section, products, theme, basePath: provid
                                                 }}
                                             >
                                                 <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
-                                            </button>
+                                            </Button>
                                             {showAddToCart && (
-                                                <button
+                                                <Button unstyled
                                                     onClick={(e) => handleQuickAdd(e, product)}
                                                     className="absolute bottom-2 left-2 right-2 flex min-h-11 items-center justify-center gap-2 rounded text-sm font-semibold text-white transition-opacity"
                                                     style={{ backgroundColor: colors.primaryColor }}
                                                 >
                                                     <ShoppingBag size={16} /> Add
-                                                </button>
+                                                </Button>
                                             )}
                                         </div>
                                         {/* Info */}

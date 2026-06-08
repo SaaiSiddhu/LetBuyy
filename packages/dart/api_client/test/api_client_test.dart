@@ -107,56 +107,62 @@ void main() {
     expect(captured.headers['Cookie'], 'lb_session=opaque-lb-session');
   });
 
-  test('posts generated Storefront GraphQL operations through the gateway', () async {
-    final dio = Dio();
-    late RequestOptions captured;
-    final client = ApiClient(
-      baseUrl: 'https://gateway.test/v1',
-      dio: dio,
-      maxRetries: 0,
-    );
+  test(
+    'posts generated Storefront GraphQL operations through the gateway',
+    () async {
+      final dio = Dio();
+      late RequestOptions captured;
+      final client = ApiClient(
+        baseUrl: 'https://gateway.test/v1',
+        dio: dio,
+        maxRetries: 0,
+      );
 
-    dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          captured = options;
-          handler.resolve(
-            Response<Object?>(
-              requestOptions: options,
-              statusCode: 200,
-              data: const {
-                'data': {
-                  'products': {
-                    'nodes': <Object?>[],
-                    'pageInfo': {
-                      'hasNextPage': false,
-                      'hasPreviousPage': false,
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) {
+            captured = options;
+            handler.resolve(
+              Response<Object?>(
+                requestOptions: options,
+                statusCode: 200,
+                data: const {
+                  'data': {
+                    'products': {
+                      'nodes': <Object?>[],
+                      'pageInfo': {
+                        'hasNextPage': false,
+                        'hasPreviousPage': false,
+                      },
                     },
                   },
+                  'extensions': {
+                    'cost': {'requested': 8, 'actual': 8},
+                  },
                 },
-                'extensions': {
-                  'cost': {'requested': 8, 'actual': 8},
-                },
-              },
-            ),
-          );
-        },
-      ),
-    );
+              ),
+            );
+          },
+        ),
+      );
 
-    final result = await client.graphql.storefrontProducts(
-      handle: 'urban-kicks',
-      first: 2,
-    );
-    final body = captured.data! as Map;
+      final result = await client.graphql.storefrontProducts(
+        handle: 'urban-kicks',
+        first: 2,
+      );
+      final body = captured.data! as Map;
 
-    expect(captured.uri.toString(), 'https://gateway.test/v1/storefront/graphql');
-    expect(body['operationName'], 'StorefrontProducts');
-    expect(body['query'], contains('query StorefrontProducts'));
-    expect(body['variables'], {'handle': 'urban-kicks', 'first': 2});
-    expect(result.data['products'], isA<Map>());
-    expect(result.extensions['cost'], isA<Map>());
-  });
+      expect(
+        captured.uri.toString(),
+        'https://gateway.test/v1/storefront/graphql',
+      );
+      expect(body['operationName'], 'StorefrontProducts');
+      expect(body['query'], contains('query StorefrontProducts'));
+      expect(body['variables'], {'handle': 'urban-kicks', 'first': 2});
+      expect(result.data['products'], isA<Map>());
+      expect(result.extensions['cost'], isA<Map>());
+    },
+  );
 
   test('maps gateway failure payloads to ApiException', () async {
     final dio = Dio();
@@ -255,5 +261,101 @@ void main() {
     final page = await client.products.list();
     expect(page.data, isEmpty);
     expect(attempts, 2);
+  });
+
+  test('exposes AI operator endpoint', () async {
+    final dio = Dio();
+    final client = ApiClient(
+      baseUrl: 'https://gateway.test/v1',
+      dio: dio,
+      maxRetries: 0,
+    );
+    final captured = <String>[];
+
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          captured.add(options.uri.path);
+          handler.resolve(
+            Response<Object?>(
+              requestOptions: options,
+              statusCode: 200,
+              data: const {
+                'success': true,
+                'data': {
+                  'store_id': 'store-1',
+                  'conversation_id': 'operator_1',
+                  'message': 'Draft work is ready.',
+                  'tool_calls': [],
+                  'created_at': '2026-06-08T10:00:00.000Z',
+                },
+              },
+            ),
+          );
+        },
+      ),
+    );
+
+    final result = await client.ai.operator(const {
+      'store_id': 'store-1',
+      'message': 'Show sales this week',
+    });
+
+    expect(result['conversation_id'], 'operator_1');
+    expect(captured, contains('/v1/ai/operator'));
+  });
+
+  test('exposes WhatsApp commerce endpoints', () async {
+    final dio = Dio();
+    final client = ApiClient(
+      baseUrl: 'https://gateway.test/v1',
+      dio: dio,
+      maxRetries: 0,
+    );
+    final captured = <String>[];
+
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          captured.add(options.uri.path);
+          final data = options.uri.path.endsWith('/timeline')
+              ? const [
+                  {'id': 'wa_1', 'message': 'Order update sent.'},
+                ]
+              : options.uri.path.endsWith('/send')
+              ? const {
+                  'message': {'id': 'wa_2'},
+                  'status': 'queued',
+                }
+              : const {'available': true};
+          handler.resolve(
+            Response<Object?>(
+              requestOptions: options,
+              statusCode: 200,
+              data: {'success': true, 'data': data},
+            ),
+          );
+        },
+      ),
+    );
+
+    final status = await client.whatsapp.status(storeId: 'store-1');
+    final timeline = await client.whatsapp.timeline(
+      storeId: 'store-1',
+      customerEmail: 'meera@example.com',
+    );
+    final sent = await client.whatsapp.send(const {
+      'store_id': 'store-1',
+      'customer_email': 'meera@example.com',
+      'template': 'order_update',
+      'variables': {'order_number': 'order_1'},
+    });
+
+    expect(status['available'], isTrue);
+    expect(timeline.single['message'], 'Order update sent.');
+    expect(sent['status'], 'queued');
+    expect(captured, contains('/v1/whatsapp/status'));
+    expect(captured, contains('/v1/whatsapp/timeline'));
+    expect(captured, contains('/v1/whatsapp/send'));
   });
 }

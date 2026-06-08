@@ -8,6 +8,7 @@ import {
     ArrowLeft,
     BarChart3,
     Bot,
+    Button,
     ChevronDown,
     ChevronRight,
     Code2,
@@ -33,6 +34,7 @@ import {
     X,
 } from '@letbuyy/ui'
 import BrandLogo from './BrandLogo'
+import { getAccountsUrl } from '../lib/public-urls'
 
 type DropdownKey = 'why' | 'products'
 
@@ -298,7 +300,7 @@ function MobileMainMenu({
                 {navLinks.map((link) => {
                     if ('menu' in link) {
                         return (
-                            <button
+                            <Button unstyled
                                 key={link.label}
                                 type="button"
                                 className="mobile-drawer-link"
@@ -306,7 +308,7 @@ function MobileMainMenu({
                             >
                                 <span>{link.label}</span>
                                 <ChevronRight width={34} height={34} aria-hidden="true" />
-                            </button>
+                            </Button>
                         )
                     }
 
@@ -331,10 +333,10 @@ function MobileWhyPanel({ closeMenu, goBack }: { closeMenu: () => void; goBack: 
             exit={{ opacity: 0, x: 24 }}
             transition={{ duration: 0.22 }}
         >
-            <button type="button" className="mobile-panel-back" onClick={goBack}>
+            <Button unstyled type="button" className="mobile-panel-back" onClick={goBack}>
                 <ArrowLeft width={24} height={24} aria-hidden="true" />
                 <span>Back</span>
-            </button>
+            </Button>
 
             <div className="mobile-card-stack">
                 {whyCards.map((item) => (
@@ -372,10 +374,10 @@ function MobileProductsPanel({ closeMenu, goBack }: { closeMenu: () => void; goB
             exit={{ opacity: 0, x: 24 }}
             transition={{ duration: 0.22 }}
         >
-            <button type="button" className="mobile-panel-back" onClick={goBack}>
+            <Button unstyled type="button" className="mobile-panel-back" onClick={goBack}>
                 <ArrowLeft width={24} height={24} aria-hidden="true" />
                 <span>Back</span>
-            </button>
+            </Button>
 
             <div className="mobile-section-stack">
                 {productSections.map((section) => (
@@ -458,6 +460,9 @@ export default function Header() {
         setMobilePanel(null)
     }
 
+    const loginUrl = getAccountsUrl('/lookup')
+    const signupUrl = getAccountsUrl('/signup')
+
     const openMobileMenu = () => {
         setActiveDesktopMenu(null)
         setMobilePanel(null)
@@ -490,7 +495,7 @@ export default function Header() {
                                 const expanded = activeDesktopMenu === link.menu
 
                                 return (
-                                    <button
+                                    <Button unstyled
                                         key={link.label}
                                         type="button"
                                         className={`header-nav-link ${expanded ? 'active' : ''}`}
@@ -500,7 +505,7 @@ export default function Header() {
                                     >
                                         <span>{link.label}</span>
                                         <ChevronDown className="header-nav-chevron" width={15} height={15} aria-hidden="true" />
-                                    </button>
+                                    </Button>
                                 )
                             }
 
@@ -513,28 +518,28 @@ export default function Header() {
                     </nav>
 
                     <div className="header-actions">
-                        <Link href="https://accounts.letbuyy.store/lookup" className="btn btn-ghost" onClick={closeAllMenus}>
+                        <Link href={loginUrl} className="btn btn-ghost" onClick={closeAllMenus}>
                             Log in
                         </Link>
                         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                            <Link href="https://accounts.letbuyy.store/signup" className="btn btn-primary" onClick={closeAllMenus}>
+                            <Link href={signupUrl} className="btn btn-primary" onClick={closeAllMenus}>
                                 Start for free
                             </Link>
                         </motion.div>
                     </div>
 
-                    <Link href="https://accounts.letbuyy.store/signup" className="mobile-start-link" onClick={closeAllMenus}>
+                    <Link href={signupUrl} className="mobile-start-link" onClick={closeAllMenus}>
                         Start for free
                     </Link>
 
-                    <button
+                    <Button unstyled
                         className="mobile-menu-btn"
                         onClick={mobileMenuOpen ? closeAllMenus : openMobileMenu}
                         aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
                         aria-expanded={mobileMenuOpen}
                     >
                         <span className={`hamburger ${mobileMenuOpen ? 'open' : ''}`} />
-                    </button>
+                    </Button>
                 </div>
             </motion.header>
 
@@ -576,12 +581,12 @@ export default function Header() {
                             <Link href="/" className="mobile-drawer-logo" onClick={closeAllMenus}>
                                 <BrandLogo className="mobile-drawer-logo-image" width={152} height={49} />
                             </Link>
-                            <Link href="https://accounts.letbuyy.store/signup" className="mobile-drawer-start" onClick={closeAllMenus}>
+                            <Link href={signupUrl} className="mobile-drawer-start" onClick={closeAllMenus}>
                                 Start for free
                             </Link>
-                            <button className="mobile-drawer-close" onClick={closeAllMenus} aria-label="Close menu">
+                            <Button unstyled className="mobile-drawer-close" onClick={closeAllMenus} aria-label="Close menu">
                                 <X width={24} height={24} aria-hidden="true" />
-                            </button>
+                            </Button>
                         </div>
 
                         <div className="mobile-drawer-content">
@@ -598,14 +603,14 @@ export default function Header() {
 
                         <div className="mobile-drawer-actions">
                             <Link
-                                href="https://accounts.letbuyy.store/lookup"
+                                href={loginUrl}
                                 className="btn btn-ghost btn-block"
                                 onClick={closeAllMenus}
                             >
                                 Log in
                             </Link>
                             <Link
-                                href="https://accounts.letbuyy.store/signup"
+                                href={signupUrl}
                                 className="btn btn-primary btn-block"
                                 onClick={closeAllMenus}
                             >

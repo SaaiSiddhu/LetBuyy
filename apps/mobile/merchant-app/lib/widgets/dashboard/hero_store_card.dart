@@ -12,6 +12,7 @@ import 'package:letbuyy_models/letbuyy_models.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../models/store_model.dart';
 import '../../app/routes.dart';
+import '../shared/cached_merchant_image.dart';
 
 /// Premium Hero Store Card - COMPACT ENHANCED VERSION
 class HeroStoreCard extends StatefulWidget {
@@ -260,7 +261,7 @@ class _HeroStoreCardState extends State<HeroStoreCard>
         ],
         image: widget.store.logoUrl != null
             ? DecorationImage(
-                image: NetworkImage(widget.store.logoUrl!),
+                image: cachedMerchantImageProvider(widget.store.logoUrl!),
                 fit: BoxFit.cover,
               )
             : null,
@@ -588,19 +589,29 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Products Used',
-                      style: TextStyle(
-                        fontSize: 9,
-                        color: Colors.white.withValues(alpha: 0.6),
+                    Flexible(
+                      child: Text(
+                        'Products Used',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 9,
+                          color: Colors.white.withValues(alpha: 0.6),
+                        ),
                       ),
                     ),
-                    Text(
-                      isUnlimited ? '$used / ∞' : '$used / $limit',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white.withValues(alpha: 0.9),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        isUnlimited ? '$used / ∞' : '$used / $limit',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.end,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white.withValues(alpha: 0.9),
+                        ),
                       ),
                     ),
                   ],
