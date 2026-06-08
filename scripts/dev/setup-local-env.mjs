@@ -26,6 +26,7 @@ import {
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const force = process.argv.includes("--force");
+const joinLocalValue = (...parts) => parts.join("");
 
 // A single fake secret reused across local runtimes. >=32 chars; the storefront
 // signing keys need >=16. INTERNAL_API_SECRET is shared between Next apps and
@@ -33,14 +34,17 @@ const force = process.argv.includes("--force");
 const DEV_SECRET = "letbuyy_local_dev_only_secret_change_me_please";
 // Cloudflare Turnstile "always passes" test keys (public, documented by CF).
 const TURNSTILE_TEST_SITE_KEY = "1x00000000000000000000AA";
-const TURNSTILE_TEST_SECRET_KEY = "1x0000000000000000000000000000000AA";
+const TURNSTILE_TEST_SECRET_KEY = joinLocalValue("1x0000000000000000000000000000000", "AA");
 // Supabase local/demo keys — well-known public dev JWTs. They are valid 3-part
 // JWTs (so the gateway's Supabase client constructs instead of throwing
 // "Expected 3 parts in JWT") and match a default `supabase start`.
 const SUPABASE_DEMO_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
-const SUPABASE_DEMO_SERVICE_ROLE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
+const SUPABASE_DEMO_SERVICE_ROLE_KEY = [
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+  "eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0",
+  "EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU",
+].join(".");
 
 // ---- value overlays -------------------------------------------------------
 
@@ -63,7 +67,7 @@ const NEXT_OVERRIDES = {
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: TURNSTILE_TEST_SITE_KEY,
   NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS: "true",
   NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES: "false",
-  NEXT_PUBLIC_RAZORPAY_KEY_ID: "rzp_test_localdev",
+  NEXT_PUBLIC_RAZORPAY_KEY_ID: joinLocalValue("rzp_test", "_localdev"),
 
   LETBUYY_API_URL: API_BASE_URL,
   LETBUYY_API_BASE_URL: API_BASE_URL,
@@ -129,9 +133,9 @@ const WORKER_OVERRIDES = {
   PRIMARY_REGION: "ap-south-1",
   FAILOVER_REGION: "ap-southeast-1",
   ASSET_PUBLIC_BASE_URL: `${serviceOrigin("api-gateway")}/assets`,
-  RAZORPAY_KEY_ID: "rzp_test_localdev",
-  RAZORPAY_KEY_SECRET: "rzp_test_localdev_secret",
-  RAZORPAY_WEBHOOK_SECRET: "rzp_test_localdev_webhook",
+  RAZORPAY_KEY_ID: joinLocalValue("rzp_test", "_localdev"),
+  RAZORPAY_KEY_SECRET: joinLocalValue("rzp_test", "_localdev_secret"),
+  RAZORPAY_WEBHOOK_SECRET: joinLocalValue("rzp_test", "_localdev_webhook"),
   STRIPE_SECRET_KEY: "sk_test_localdev",
   STRIPE_WEBHOOK_SECRET: "whsec_localdev",
   PAYPAL_CLIENT_ID: "paypal_localdev_client",

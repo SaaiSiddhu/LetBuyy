@@ -1,6 +1,7 @@
 import type { InternalRiskScore } from '@letbuyy/api-client';
 import type { RiskDecision } from '@letbuyy/shared-types';
 import { Button, Input } from '@letbuyy/ui';
+import { formatIndiaDateTime as formatDateTime } from '@letbuyy/ui/formatting';
 import { revalidatePath } from 'next/cache';
 import {
     EmptyDataState,
@@ -105,7 +106,7 @@ function RiskDecisionCard({ score }: { score: InternalRiskScore }) {
             <div className="grid content-start gap-[var(--lb-space-2)]">
                 <StatusPill value={score.status} />
                 <span className="text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                    Scored {formatDateTime(score.scored_at)}
+                    Scored {formatDateTime(score.scored_at, { emptyValue: 'Not recorded' })}
                 </span>
             </div>
 
@@ -156,13 +157,4 @@ function RiskDecisionCard({ score }: { score: InternalRiskScore }) {
             </form>
         </article>
     );
-}
-
-function formatDateTime(value: string | null | undefined): string {
-    if (!value) return 'Not recorded';
-
-    return new Intl.DateTimeFormat('en-IN', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-    }).format(new Date(value));
 }
