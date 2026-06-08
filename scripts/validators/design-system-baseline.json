@@ -1,0 +1,12 @@
+{
+  "_comment": "Design-system drift ratchet. Counts may only DECREASE. Regenerate with --update only when intentionally lowering.",
+  "generatedAt": "2026-06-08",
+  "metrics": {
+    "appCssRawHex": 25,
+    "appCssNakedRgbHsl": 763,
+    "tailwindPaletteClasses": 680,
+    "appLocalLbTokenRedefs": 112,
+    "rawPxFontSize": 665,
+    "rawPxSpacing": 1752
+  }
+}

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { DesignSystemRoot } from "@letbuyy/ui";
+import { LetbuyyThemeProvider, ThemeScript } from "@letbuyy/ui";
 import "./globals.css";
 
 const letbuyySans = localFont({
@@ -87,22 +87,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Script to prevent theme flash - runs immediately before any rendering
-const themeScript = `
-  (function() {
-    try {
-      var theme = localStorage.getItem('letbuyy_theme');
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-        document.documentElement.style.colorScheme = 'dark';
-      } else {
-        document.documentElement.classList.remove('dark');
-        document.documentElement.style.colorScheme = 'light';
-      }
-    } catch (e) {}
-  })();
-`;
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -111,7 +95,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={fontVariables} suppressHydrationWarning>
       <head>
-        <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <ThemeScript />
         <style suppressHydrationWarning dangerouslySetInnerHTML={{
           __html: `
           html { background: var(--lb-color-bg, white); }
@@ -119,9 +103,9 @@ export default function RootLayout({
         `}} />
       </head>
       <body className="antialiased">
-        <DesignSystemRoot surface="identity">
+        <LetbuyyThemeProvider surface="identity">
           {children}
-        </DesignSystemRoot>
+        </LetbuyyThemeProvider>
       </body>
     </html>
   );

@@ -17,6 +17,7 @@ const requiredScriptDirectories = [
   "scripts/validators",
   "scripts/governance",
   "scripts/generators",
+  "scripts/git-hooks",
   "scripts/migration",
   "scripts/utilities",
 ];
@@ -44,7 +45,10 @@ for (const entry of fs.readdirSync(path.join(root, "scripts"), { withFileTypes: 
 
 for (const entry of fs.readdirSync(path.join(root, "scripts/validators"), { withFileTypes: true })) {
   if (!entry.isFile()) continue;
-  reporter.assert(entry.name.endsWith(".mjs") || entry.name === "README.md", `Validator must be an .mjs module: scripts/validators/${entry.name}`);
+  reporter.assert(
+    entry.name.endsWith(".mjs") || entry.name === "README.md" || entry.name === "design-system-baseline.json",
+    `Validator must be an .mjs module: scripts/validators/${entry.name}`,
+  );
 }
 
 reporter.finish(`${requiredScriptDirectories.length} canonical tooling directories checked`);

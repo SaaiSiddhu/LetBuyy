@@ -372,7 +372,7 @@ export default function OnboardingPage() {
 
     /* ——— Initialize theme & language from localStorage ——— */
     useEffect(() => {
-        const savedTheme = localStorage.getItem('letbuyy_theme')
+        const savedTheme = localStorage.getItem('letbuyy-theme')
         const dark = savedTheme === 'dark'
         setIsDark(dark)
         document.documentElement.classList.toggle('dark', dark)
@@ -418,7 +418,7 @@ export default function OnboardingPage() {
     const toggleTheme = () => {
         const newTheme = !isDark
         setIsDark(newTheme)
-        localStorage.setItem('letbuyy_theme', newTheme ? 'dark' : 'light')
+        localStorage.setItem('letbuyy-theme', newTheme ? 'dark' : 'light')
         document.documentElement.classList.toggle('dark', newTheme)
         document.documentElement.style.colorScheme = newTheme ? 'dark' : 'light'
     }

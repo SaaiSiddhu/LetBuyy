@@ -57,11 +57,14 @@ export {
     EmptyStateIllustration,
     SaveBar,
     Skeleton,
+    StatusBadge,
+    statusToBadgeVariant,
     ToastProvider,
     useToast,
 } from './feedback';
 export type {
     BadgeProps,
+    StatusBadgeProps,
     BannerProps,
     EmptyStateKind,
     EmptyStateIllustrationProps,
@@ -92,8 +95,8 @@ export type {
     TabsProps,
 } from './controls';
 
-export { AppFrame, Navigation, Sidebar } from './app-shell';
-export type { AppFrameProps, NavigationItem, NavigationProps, SidebarProps } from './app-shell';
+export { AppFrame, Navigation, Sidebar, AppNavigation, isNavItemActive } from './navigation';
+export type { AppFrameProps, NavigationItem, NavigationProps, SidebarProps, AppNavigationProps, AppNavigationSection } from './navigation';
 
 export { Avatar, CommandPalette, FilterBar, MetricCard, Pagination } from './productivity';
 export type {
@@ -160,6 +163,20 @@ export type {
 
 export { DesignSystemRoot } from './design-system-root';
 export type { DesignSystemRootProps } from './design-system-root';
+
+export {
+    LetbuyyThemeProvider,
+    ThemeScript,
+    useTheme,
+    LETBUYY_THEME_STORAGE_KEY,
+    LETBUYY_THEME_CHOICES,
+} from './theme-provider';
+export type {
+    LetbuyyThemeChoice,
+    LetbuyyResolvedTheme,
+    LetbuyyThemeProviderProps,
+    ThemeScriptProps,
+} from './theme-provider';
 
 export {
     formatInrCurrency,

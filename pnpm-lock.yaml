@@ -62,7 +62,7 @@ importers:
         version: 0.562.0(react@19.2.3)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -114,7 +114,7 @@ importers:
         version: link:../../packages/typescript/ui
       next:
         specifier: 16.1.6
-        version: 16.1.6(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -175,7 +175,7 @@ importers:
         version: 6.1.3
       next:
         specifier: 16.1.6
-        version: 16.1.6(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -236,7 +236,7 @@ importers:
         version: 1.3.17(react@19.2.3)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -297,7 +297,7 @@ importers:
         version: 0.562.0(react@19.2.3)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -349,7 +349,7 @@ importers:
         version: 0.562.0(react@19.2.3)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -407,7 +407,7 @@ importers:
         version: 0.562.0(react@19.2.3)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -495,7 +495,7 @@ importers:
         version: 0.562.0(react@19.2.3)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -562,7 +562,7 @@ importers:
         version: 0.562.0(react@19.2.3)
       next:
         specifier: 16.1.6
-        version: 16.1.6(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -655,6 +655,22 @@ importers:
       '@letbuyy/theme-engine':
         specifier: workspace:*
         version: link:../theme-engine
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/audit-core:
+    dependencies:
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../auth-core
+      '@letbuyy/identity-core':
+        specifier: workspace:*
+        version: link:../identity-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -767,6 +783,22 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/identity-core:
+    dependencies:
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../auth-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/infrastructure:
     dependencies:
       '@letbuyy/payments':
@@ -833,8 +865,43 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/organization-core:
+    dependencies:
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../auth-core
+      '@letbuyy/identity-core':
+        specifier: workspace:*
+        version: link:../identity-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      '@letbuyy/tenant-core':
+        specifier: workspace:*
+        version: link:../tenant-core
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/payments:
     dependencies:
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/permission-core:
+    dependencies:
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../auth-core
+      '@letbuyy/identity-core':
+        specifier: workspace:*
+        version: link:../identity-core
       '@letbuyy/shared-types':
         specifier: workspace:*
         version: link:../shared-types
@@ -909,6 +976,22 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/session-core:
+    dependencies:
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../auth-core
+      '@letbuyy/identity-core':
+        specifier: workspace:*
+        version: link:../identity-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/shared-types:
     dependencies:
       zod:
@@ -946,6 +1029,22 @@ importers:
       zod:
         specifier: ^4.3.6
         version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/token-core:
+    dependencies:
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../auth-core
+      '@letbuyy/identity-core':
+        specifier: workspace:*
+        version: link:../identity-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -1046,6 +1145,9 @@ importers:
       jsdom:
         specifier: ^29.1.1
         version: 29.1.1
+      next:
+        specifier: 16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -1079,6 +1181,9 @@ importers:
       '@letbuyy/application-services':
         specifier: workspace:*
         version: link:../../packages/application-services
+      '@letbuyy/audit-core':
+        specifier: workspace:*
+        version: link:../../packages/audit-core
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core
@@ -1100,6 +1205,9 @@ importers:
       '@letbuyy/extension-host':
         specifier: workspace:*
         version: link:../../packages/extension-host
+      '@letbuyy/identity-core':
+        specifier: workspace:*
+        version: link:../../packages/identity-core
       '@letbuyy/infrastructure':
         specifier: workspace:*
         version: link:../../packages/infrastructure
@@ -1109,12 +1217,21 @@ importers:
       '@letbuyy/orchestration':
         specifier: workspace:*
         version: link:../../packages/orchestration
+      '@letbuyy/organization-core':
+        specifier: workspace:*
+        version: link:../../packages/organization-core
       '@letbuyy/payments':
         specifier: workspace:*
         version: link:../../packages/payments
+      '@letbuyy/permission-core':
+        specifier: workspace:*
+        version: link:../../packages/permission-core
       '@letbuyy/runtime-composition':
         specifier: workspace:*
         version: link:../../packages/runtime-composition
+      '@letbuyy/session-core':
+        specifier: workspace:*
+        version: link:../../packages/session-core
       '@letbuyy/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
@@ -1124,6 +1241,9 @@ importers:
       '@letbuyy/theme-engine':
         specifier: workspace:*
         version: link:../../packages/theme-engine
+      '@letbuyy/token-core':
+        specifier: workspace:*
+        version: link:../../packages/token-core
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -7324,7 +7444,7 @@ snapshots:
 
   '@vercel/speed-insights@1.3.1(next@16.1.6(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)':
     optionalDependencies:
-      next: 16.1.6(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      next: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
 
   '@vitest/expect@3.2.4':
@@ -8983,7 +9103,7 @@ snapshots:
 
   negotiator@0.6.3: {}
 
-  next@16.1.6(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+  next@16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       '@next/env': 16.1.6
       '@swc/helpers': 0.5.15
@@ -8992,7 +9112,7 @@ snapshots:
       postcss: 8.4.31
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
-      styled-jsx: 5.1.6(react@19.2.3)
+      styled-jsx: 5.1.6(@babel/core@7.29.0)(react@19.2.3)
     optionalDependencies:
       '@next/swc-darwin-arm64': 16.1.6
       '@next/swc-darwin-x64': 16.1.6
@@ -9742,10 +9862,12 @@ snapshots:
 
   stubborn-utils@1.0.2: {}
 
-  styled-jsx@5.1.6(react@19.2.3):
+  styled-jsx@5.1.6(@babel/core@7.29.0)(react@19.2.3):
     dependencies:
       client-only: 0.0.1
       react: 19.2.3
+    optionalDependencies:
+      '@babel/core': 7.29.0
 
   supports-color@10.2.2: {}
 

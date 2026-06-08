@@ -14,6 +14,10 @@ import {
 } from '@letbuyy/auth-core';
 import type { Context } from 'hono';
 import type { Env } from '../index';
+import {
+    AUTH_VERIFIER_REGISTRY,
+    type AuthVerifierName,
+} from '../identity-foundation/auth-verifier-registry';
 import { timingSafeEqualText } from '../lib/crypto';
 import { verifyInternalSessionHeaders, verifySignedPayload } from '../lib/internal-auth';
 
@@ -27,6 +31,14 @@ interface AuthContext {
         storeId?: string;
         authSource?: 'supabase' | 'internal-sso' | 'platform-console';
     };
+}
+
+export const authMiddlewareVerifierRegistry = AUTH_VERIFIER_REGISTRY;
+
+interface GatewayAuthVerifier {
+    name: AuthVerifierName;
+    shouldAttempt(c: Context<{ Bindings: Env }>, authHeader: string | undefined): boolean;
+    verify(c: Context<{ Bindings: Env }>, authHeader: string | undefined): Promise<AuthContext | null>;
 }
 
 declare module 'hono' {
@@ -63,6 +75,11 @@ function buildAuthContextUser(input: {
 function readBearerToken(value: string | undefined): string | null {
     if (!value?.startsWith('Bearer ')) return null;
     return value.slice('Bearer '.length).trim() || null;
+}
+
+function readSupabaseBearerToken(value: string | undefined): string | null {
+    if (!value?.startsWith('Bearer ')) return null;
+    return value.slice('Bearer '.length);
 }
 
 function isReadOnlyPlatformConsoleOperationsRequest(c: Context<{ Bindings: Env }>): boolean {
@@ -165,109 +182,137 @@ async function getInternalSessionAuthContext(c: Context<{ Bindings: Env }>): Pro
     };
 }
 
-/**
- * Standard auth middleware — requires a valid Supabase Bearer token or a
- * signed internal SSO identity from a server-side LetBuyy app boundary.
- */
-export const authMiddleware = createMiddleware<{ Bindings: Env }>(
-    async (c, next) => {
-        if (isReadOnlyPlatformConsoleOperationsRequest(c)) {
-            c.set('auth', {
+async function getSupabaseBearerAuthContext(
+    c: Context<{ Bindings: Env }>,
+    authHeader: string | undefined,
+): Promise<AuthContext | null> {
+    const token = readSupabaseBearerToken(authHeader);
+    if (!token) return null;
+
+    const supabase = createSupabaseAnonClient(c.env);
+
+    const {
+        data: { user },
+        error,
+    } = await supabase.auth.getUser(token);
+
+    if (error || !user) return null;
+
+    return {
+        user: buildAuthContextUser({
+            id: user.id,
+            email: user.email!,
+            // Prefer server-controlled app_metadata over client-writable
+            // user_metadata. user_metadata can be set by the user via
+            // auth.updateUser, so it must never be the source of truth for
+            // privileged role/category decisions (those are DB-backed in rbac.ts).
+            role: user.app_metadata?.role ?? user.user_metadata?.role,
+            roles: user.app_metadata?.roles ?? user.user_metadata?.roles,
+            authSource: 'supabase',
+        }),
+    };
+}
+
+export const legacyGatewayAuthVerifiers: GatewayAuthVerifier[] = [
+    {
+        name: 'platform-console-token',
+        shouldAttempt: (c) => isReadOnlyPlatformConsoleOperationsRequest(c),
+        async verify(c) {
+            if (!isReadOnlyPlatformConsoleOperationsRequest(c)) return null;
+            return {
                 user: buildAuthContextUser({
                     id: '00000000-0000-4000-8000-000000000000',
                     email: 'platform-console@letbuyy.local',
                     role: 'super_admin',
                     authSource: 'platform-console',
                 }),
-            });
-            await next();
-            return;
-        }
+            };
+        },
+    },
+    {
+        name: 'internal-session-hmac',
+        shouldAttempt: (_c, authHeader) => !authHeader?.startsWith('Bearer '),
+        verify: (c) => getInternalSessionAuthContext(c),
+    },
+    {
+        name: 'internal-identity-hmac',
+        shouldAttempt: (_c, authHeader) => !authHeader?.startsWith('Bearer '),
+        verify: (c) => getInternalAuthContext(c),
+    },
+    {
+        name: 'supabase-bearer',
+        shouldAttempt: (_c, authHeader) => Boolean(authHeader?.startsWith('Bearer ')),
+        verify: getSupabaseBearerAuthContext,
+    },
+];
 
+export function legacyGatewayAuthVerifierNames(): AuthVerifierName[] {
+    return legacyGatewayAuthVerifiers.map((verifier) => verifier.name);
+}
+
+/**
+ * Standard auth middleware — requires a valid Supabase Bearer token or a
+ * signed internal SSO identity from a server-side LetBuyy app boundary.
+ */
+export const authMiddleware = createMiddleware<{ Bindings: Env }>(
+    async (c, next) => {
         const authHeader = c.req.header('Authorization');
 
-        if (!authHeader?.startsWith('Bearer ')) {
-            const sessionAuth = await getInternalSessionAuthContext(c);
-            if (sessionAuth) {
-                c.set('auth', sessionAuth);
+        for (const verifier of legacyGatewayAuthVerifiers) {
+            if (!verifier.shouldAttempt(c, authHeader)) continue;
+
+            try {
+                const auth = await verifier.verify(c, authHeader);
+                if (!auth) {
+                    if (verifier.name === 'supabase-bearer') {
+                        return c.json(
+                            {
+                                error: {
+                                    code: 'UNAUTHORIZED',
+                                    message: 'Invalid or expired token',
+                                },
+                            },
+                            401
+                        );
+                    }
+                    continue;
+                }
+
+                c.set('auth', auth);
                 await next();
                 return;
-            }
+            } catch (err) {
+                if (verifier.name !== 'supabase-bearer') throw err;
 
-            const internalAuth = await getInternalAuthContext(c);
-            if (internalAuth) {
-                c.set('auth', internalAuth);
-                await next();
-                return;
-            }
-
-            return c.json(
-                {
-                    error: {
-                        code: 'UNAUTHORIZED',
-                        message: 'Missing or invalid authorization header',
-                    },
-                },
-                401
-            );
-        }
-
-        const token = authHeader.slice(7);
-
-        try {
-            const supabase = createSupabaseAnonClient(c.env);
-
-            const {
-                data: { user },
-                error,
-            } = await supabase.auth.getUser(token);
-
-            if (error || !user) {
+                console.error(JSON.stringify({
+                    level: 'error',
+                    service: 'letbuyy-api',
+                    route: c.req.path,
+                    method: c.req.method,
+                    status_code: 401,
+                    error: err instanceof Error ? err.message : 'Authentication failed',
+                }));
                 return c.json(
                     {
                         error: {
                             code: 'UNAUTHORIZED',
-                            message: 'Invalid or expired token',
+                            message: 'Authentication failed',
                         },
                     },
                     401
                 );
             }
-
-            c.set('auth', {
-                user: buildAuthContextUser({
-                    id: user.id,
-                    email: user.email!,
-                    // Prefer server-controlled app_metadata over client-writable
-                    // user_metadata. user_metadata can be set by the user via
-                    // auth.updateUser, so it must never be the source of truth for
-                    // privileged role/category decisions (those are DB-backed in rbac.ts).
-                    role: user.app_metadata?.role ?? user.user_metadata?.role,
-                    roles: user.app_metadata?.roles ?? user.user_metadata?.roles,
-                    authSource: 'supabase',
-                }),
-            });
-
-            await next();
-        } catch (err) {
-            console.error(JSON.stringify({
-                level: 'error',
-                service: 'letbuyy-api',
-                route: c.req.path,
-                method: c.req.method,
-                status_code: 401,
-                error: err instanceof Error ? err.message : 'Authentication failed',
-            }));
-            return c.json(
-                {
-                    error: {
-                        code: 'UNAUTHORIZED',
-                        message: 'Authentication failed',
-                    },
-                },
-                401
-            );
         }
+
+        return c.json(
+            {
+                error: {
+                    code: 'UNAUTHORIZED',
+                    message: 'Missing or invalid authorization header',
+                },
+            },
+            401
+        );
     }
 );
 

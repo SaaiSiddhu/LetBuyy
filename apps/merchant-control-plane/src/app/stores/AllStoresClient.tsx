@@ -63,7 +63,7 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
     const accountsUrl = getAccountsUrl()
 
     useEffect(() => {
-        const theme = localStorage.getItem('letbuyy_theme')
+        const theme = localStorage.getItem('letbuyy-theme')
         setIsDark(theme === 'dark')
     }, [])
 

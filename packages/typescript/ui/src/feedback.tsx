@@ -86,6 +86,38 @@ export function Badge({ label, variant = 'default', className = '', ...props }: 
     );
 }
 
+/**
+ * Map an arbitrary status/state string to a canonical Badge variant. This is the
+ * single source for status→tone logic (replacing the per-app StatusBadge/StatusPill
+ * forks — see COMPONENT_DUPLICATION_REPORT.md DUP-4).
+ */
+export function statusToBadgeVariant(status: string): StatusVariant {
+    const s = status.toLowerCase().trim();
+    const has = (...keys: string[]) => keys.some((k) => s.includes(k));
+    if (has('success', 'active', 'approved', 'paid', 'complete', 'live', 'healthy', 'resolved', 'online', 'passed', 'published', 'enabled', 'verified', 'connected')) return 'success';
+    if (has('fail', 'error', 'critical', 'reject', 'declin', 'block', 'suspend', 'overdue', 'offline', 'ban', 'fraud', 'cancel', 'expired', 'disabled', 'down')) return 'critical';
+    if (has('pending', 'review', 'warning', 'processing', 'draft', 'paused', 'degraded', 'partial', 'awaiting', 'hold', 'retry')) return 'warning';
+    if (has('info', 'new', 'scheduled', 'queued', 'in progress', 'in-progress')) return 'info';
+    return 'default';
+}
+
+export interface StatusBadgeProps extends Omit<BadgeProps, 'variant' | 'label'> {
+    /** The raw status/state string; tone is derived automatically. */
+    status: string;
+    /** Display label (defaults to the status string). */
+    label?: string;
+    /** Explicit variant override; otherwise derived from `status`. */
+    variant?: StatusVariant;
+}
+
+/**
+ * A Badge whose tone is derived from a status string. Use this instead of
+ * re-deriving status→color in each app.
+ */
+export function StatusBadge({ status, label, variant, ...props }: StatusBadgeProps) {
+    return <Badge label={label ?? status} variant={variant ?? statusToBadgeVariant(status)} {...props} />;
+}
+
 export interface BannerProps extends React.HTMLAttributes<HTMLDivElement> {
     title?: string;
     children: React.ReactNode;

@@ -1,0 +1,14 @@
+{
+  "$schema": "../identity-residency.schema.json",
+  "defaultRegion": "ap-south-1",
+  "identityDataResidency": {
+    "requiredRegion": "ap-south-1",
+    "providerEvidence": "HR-RESIDENCY-DPDP",
+    "liveCertificationRequired": true
+  },
+  "mockAllowed": {
+    "local": true,
+    "staging": true,
+    "production": false
+  }
+}

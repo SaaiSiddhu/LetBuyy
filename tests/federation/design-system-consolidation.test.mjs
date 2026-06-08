@@ -46,7 +46,7 @@ test('all seven web apps consume the shared design-system package', () => {
       `${app} runtime manifest`,
     );
     assert.match(layout, /from ['"]@letbuyy\/ui['"]/, `${app} layout import`);
-    assert.match(layout, /<DesignSystemRoot\b/, `${app} layout root`);
+    assert.match(layout, /<LetbuyyThemeProvider\b/, `${app} layout root`);
   }
 });
 

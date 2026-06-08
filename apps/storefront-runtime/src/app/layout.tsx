@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import localFont from "next/font/local";
-import { DesignSystemRoot } from "@letbuyy/ui";
+import { LetbuyyThemeProvider, ThemeScript } from "@letbuyy/ui";
 
 const letbuyySans = localFont({
   src: "../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
@@ -38,11 +38,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={fontVariables}>
+    <html lang="en" className={fontVariables} suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
       <body className="antialiased">
-        <DesignSystemRoot surface="storefront">
+        <LetbuyyThemeProvider surface="storefront">
           {children}
-        </DesignSystemRoot>
+        </LetbuyyThemeProvider>
         <SpeedInsights />
       </body>
     </html>

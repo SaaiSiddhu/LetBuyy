@@ -83,6 +83,9 @@ jobs:
       - name: Run lint
         run: pnpm turbo lint --filter="...[HEAD^1]"
 
+      - name: Validate design system (theme unification + drift ratchet)
+        run: pnpm run validate:design-system
+
   unit-tests:
     name: Unit tests
     runs-on: ubuntu-latest

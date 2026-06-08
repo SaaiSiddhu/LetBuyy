@@ -54,6 +54,15 @@ jobs:
       - name: Validate governance
         run: pnpm run validate:governance
 
+      - name: Validate design system
+        run: pnpm run validate:design-system
+
+      - name: Validate design-token interchange (tokens.json ↔ tokens.ts)
+        run: pnpm run validate:design-tokens
+
+      - name: Validate mobile token parity
+        run: pnpm run validate:mobile-tokens
+
       - name: Validate runtime safety
         run: pnpm run validate:runtime
 

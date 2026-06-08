@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LetBuyy Identity Residency Runtime Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["defaultRegion", "identityDataResidency", "mockAllowed"],
+  "properties": {
+    "defaultRegion": {
+      "type": "string",
+      "const": "ap-south-1"
+    },
+    "identityDataResidency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requiredRegion", "providerEvidence", "liveCertificationRequired"],
+      "properties": {
+        "requiredRegion": {
+          "type": "string",
+          "const": "ap-south-1"
+        },
+        "providerEvidence": {
+          "type": "string",
+          "const": "HR-RESIDENCY-DPDP"
+        },
+        "liveCertificationRequired": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "mockAllowed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["local", "staging", "production"],
+      "properties": {
+        "local": {
+          "type": "boolean"
+        },
+        "staging": {
+          "type": "boolean"
+        },
+        "production": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    }
+  }
+}

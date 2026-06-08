@@ -7,9 +7,8 @@ import {
     Button, Palette, Search, Sun, Moon, ChevronRight,
     LayoutDashboard, LayoutGrid, Tag, Sparkles, ArrowRight, Settings,
     Download, Star, LogOut, Package,
-    BookOpen, Input, ChevronDown, Command,
+    BookOpen, Input, ChevronDown, Command, useTheme,
 } from '@letbuyy/ui';
-import { useTheme } from '@/components/theme-provider';
 import { useAuth } from '@/hooks/useAuth';
 import { cn, isCommandSearchShortcut } from '@/lib/utils';
 import { getAccountsUrl } from '@/lib/public-urls';

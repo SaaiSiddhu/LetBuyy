@@ -87,7 +87,7 @@ function CheckEmailContent() {
     const resendProgress = Math.max(0, Math.min(60, 60 - countdown))
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem('letbuyy_theme')
+        const savedTheme = localStorage.getItem('letbuyy-theme')
         setIsDark(savedTheme === 'dark')
         const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
         setLang(savedLang)
@@ -105,7 +105,7 @@ function CheckEmailContent() {
     const toggleTheme = () => {
         const newTheme = !isDark
         setIsDark(newTheme)
-        localStorage.setItem('letbuyy_theme', newTheme ? 'dark' : 'light')
+        localStorage.setItem('letbuyy-theme', newTheme ? 'dark' : 'light')
         document.documentElement.classList.toggle('dark', newTheme)
         document.documentElement.style.colorScheme = newTheme ? 'dark' : 'light'
     }

@@ -31,7 +31,8 @@
     "./provider-resilience-adapter": "./provider-resilience-adapter/index.ts",
     "./ai-generation-adapter": "./ai-generation-adapter/index.ts",
     "./ai-credit-purchase-adapter": "./ai-credit-purchase-adapter/index.ts",
-    "./whatsapp-commerce-adapter": "./whatsapp-commerce-adapter/index.ts"
+    "./whatsapp-commerce-adapter": "./whatsapp-commerce-adapter/index.ts",
+    "./identity-otp-adapter": "./identity-otp-adapter/index.ts"
   },
   "scripts": {
     "build": "tsc -b",

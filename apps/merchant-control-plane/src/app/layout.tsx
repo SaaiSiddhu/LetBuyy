@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { DesignSystemRoot } from "@letbuyy/ui";
+import { LetbuyyThemeProvider, ThemeScript } from "@letbuyy/ui";
 import "./globals.css";
 
 const letbuyySans = localFont({
@@ -40,30 +40,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={fontVariables} suppressHydrationWarning>
       <head>
-        {/* Theme flash prevention — synced with accounts app */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var theme = localStorage.getItem('letbuyy_theme');
-                  if (theme === 'dark') {
-                    document.documentElement.classList.add('dark');
-                    document.documentElement.style.colorScheme = 'dark';
-                  } else {
-                    document.documentElement.classList.remove('dark');
-                    document.documentElement.style.colorScheme = 'light';
-                  }
-                } catch(e) {}
-              })();
-            `,
-          }}
-        />
+        <ThemeScript />
       </head>
       <body className="antialiased">
-        <DesignSystemRoot surface="admin">
+        <LetbuyyThemeProvider surface="admin">
           {children}
-        </DesignSystemRoot>
+        </LetbuyyThemeProvider>
       </body>
     </html>
   );

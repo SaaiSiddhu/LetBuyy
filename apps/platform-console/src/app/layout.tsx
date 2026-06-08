@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { DesignSystemRoot } from "@letbuyy/ui";
+import { LetbuyyThemeProvider, ThemeScript } from "@letbuyy/ui";
 import "./globals.css";
 
 const letbuyySans = localFont({
@@ -38,11 +38,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={fontVariables}>
+    <html lang="en" className={fontVariables} suppressHydrationWarning>
+      <head>
+        <ThemeScript defaultTheme="dark" />
+      </head>
       <body className="antialiased">
-        <DesignSystemRoot surface="operations" theme="dark">
+        <LetbuyyThemeProvider surface="operations" defaultTheme="dark">
           {children}
-        </DesignSystemRoot>
+        </LetbuyyThemeProvider>
       </body>
     </html>
   );

@@ -7,7 +7,7 @@ import Image from 'next/image'
 import type { SessionUser } from '@/lib/auth/session'
 import type { StoreData, UserStore } from './AdminShell'
 import NotificationsPanel from './NotificationsPanel'
-import { Button, MaterialIcon } from '@letbuyy/ui'
+import { Button, MaterialIcon, useTheme } from '@letbuyy/ui'
 import { resolveKeyboardShortcut } from './merchantNavigation'
 import { getAccountsUrl } from '@/lib/public-urls'
 
@@ -56,9 +56,8 @@ export default function HeaderBar({
     const router = useRouter()
     const [switcherOpen, setSwitcherOpen] = useState(false)
     const [notificationsOpen, setNotificationsOpen] = useState(false)
-    const [isDark, setIsDark] = useState(() => (
-        typeof window !== 'undefined' && window.localStorage.getItem('letbuyy_theme') === 'dark'
-    ))
+    const { resolvedTheme, setTheme } = useTheme()
+    const isDark = resolvedTheme === 'dark'
     const [isMobile, setIsMobile] = useState(false)
     const switcherRef = useRef<HTMLDivElement>(null)
     const notificationsRef = useRef<HTMLDivElement>(null)
@@ -159,17 +158,7 @@ export default function HeaderBar({
     }, [clearShortcutPrefix, onSearchOpen, router, store, storeData.site_type])
 
     const toggleTheme = () => {
-        const newDark = !isDark
-        setIsDark(newDark)
-        if (newDark) {
-            document.documentElement.classList.add('dark')
-            document.documentElement.style.colorScheme = 'dark'
-            localStorage.setItem('letbuyy_theme', 'dark')
-        } else {
-            document.documentElement.classList.remove('dark')
-            document.documentElement.style.colorScheme = 'light'
-            localStorage.setItem('letbuyy_theme', 'light')
-        }
+        setTheme(isDark ? 'light' : 'dark')
     }
 
     const handleSignOut = async () => {

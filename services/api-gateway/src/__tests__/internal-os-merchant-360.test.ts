@@ -89,5 +89,5 @@ test('merchant 360 console surfaces replace placeholders with real links and act
     assert.doesNotMatch(detailPageSource, /SkipBackendPanel/);
     assert.match(storesPageSource, /href=\{`\/merchants\/\$\{row\.id\}`\}/);
     assert.doesNotMatch(storesPageSource, /SkipBackendPanel/);
-    assert.match(layoutSource, /href="\/merchants" label="Merchant 360"/);
+    assert.match(layoutSource, /href="\/merchants"\s+label="Merchant 360"|label:\s*'Merchant 360'[\s\S]*href:\s*'\/merchants'/);
 });

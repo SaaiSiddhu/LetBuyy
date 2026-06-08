@@ -43,6 +43,9 @@
       "@letbuyy/application-services": [
         "../../packages/application-services/src/index.ts"
       ],
+      "@letbuyy/audit-core": [
+        "../../packages/audit-core/src/index.ts"
+      ],
       "@letbuyy/auth-core": [
         "../../packages/auth-core/src/index.ts"
       ],
@@ -64,11 +67,20 @@
       "@letbuyy/infrastructure/*": [
         "../../packages/infrastructure/*/index.ts"
       ],
+      "@letbuyy/identity-core": [
+        "../../packages/identity-core/src/index.ts"
+      ],
       "@letbuyy/notification-core": [
         "../../packages/notification-core/src/index.ts"
       ],
       "@letbuyy/orchestration": [
         "../../packages/orchestration/src/index.ts"
+      ],
+      "@letbuyy/organization-core": [
+        "../../packages/organization-core/src/index.ts"
+      ],
+      "@letbuyy/permission-core": [
+        "../../packages/permission-core/src/index.ts"
       ],
       "@letbuyy/projection-runtime": [
         "../../packages/projection-runtime/src/index.ts"
@@ -85,11 +97,17 @@
       "@letbuyy/shared-types": [
         "../../packages/shared-types/src/index.ts"
       ],
+      "@letbuyy/session-core": [
+        "../../packages/session-core/src/index.ts"
+      ],
       "@letbuyy/tenant-core": [
         "../../packages/tenant-core/src/index.ts"
       ],
       "@letbuyy/theme-engine": [
         "../../packages/theme-engine/src/index.ts"
+      ],
+      "@letbuyy/token-core": [
+        "../../packages/token-core/src/index.ts"
       ],
       "*": [
         "../../node_modules/.pnpm/node_modules/*"

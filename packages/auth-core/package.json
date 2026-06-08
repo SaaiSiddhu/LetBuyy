@@ -6,7 +6,13 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./cookies": "./src/cookies.ts",
+    "./feature-flags": "./src/feature-flags.ts",
+    "./keys": "./src/keys.ts",
+    "./legacy": "./src/legacy.ts",
+    "./rp-sdk": "./src/rp-sdk.ts",
+    "./session": "./src/session.ts"
   },
   "scripts": {
     "build": "tsc -b",

@@ -89,17 +89,20 @@ class AppColors {
   // ============================================
   // STATUS COLORS
   // ============================================
-  static const Color success = Color(0xFFA4E500);
-  static const Color successLight = Color(0xFFC8F06B);
-  static const Color successDark = Color(0xFF798700);
+  // Reconciled to the canonical design tokens (packages/typescript/ui/src/tokens.ts
+  // green-500 / red-500 / amber-500, with 700/800 darks). Previously these diverged
+  // (lime success #A4E500, brick error #B02525) — see DESIGN_TOKEN_AUDIT.md TOK-4.
+  static const Color success = Color(0xFF22C55E);
+  static const Color successLight = Color(0xFF86EFAC);
+  static const Color successDark = Color(0xFF15803D);
 
-  static const Color error = Color(0xFFB02525);
-  static const Color errorLight = Color(0xFFE05C5C);
-  static const Color errorDark = Color(0xFF710A0A);
+  static const Color error = Color(0xFFEF4444);
+  static const Color errorLight = Color(0xFFFCA5A5);
+  static const Color errorDark = Color(0xFFB91C1C);
 
-  static const Color warning = Color(0xFFFBBF24);
-  static const Color warningLight = Color(0xFFFDE68A);
-  static const Color warningDark = Color(0xFFB45309);
+  static const Color warning = Color(0xFFF59E0B);
+  static const Color warningLight = Color(0xFFFCD34D);
+  static const Color warningDark = Color(0xFF92400E);
 
   static const Color info = Color(0xFF3B82F6);
   static const Color infoLight = Color(0xFF60A5FA);

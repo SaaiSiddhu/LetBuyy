@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { DesignSystemRoot } from "@letbuyy/ui";
+import { LetbuyyThemeProvider, ThemeScript } from "@letbuyy/ui";
 import { getDeveloperPortalUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -87,15 +87,16 @@ export default function RootLayout({
   return (
     <html lang="en" className={fontVariables}>
       <head>
+        <ThemeScript />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }}
         />
       </head>
       <body>
-        <DesignSystemRoot surface="marketplace" density="compact" className="developer-shell">
+        <LetbuyyThemeProvider surface="marketplace" density="compact" className="developer-shell">
           {children}
-        </DesignSystemRoot>
+        </LetbuyyThemeProvider>
       </body>
     </html>
   );

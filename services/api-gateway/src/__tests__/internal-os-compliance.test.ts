@@ -107,7 +107,7 @@ test('compliance API client and platform console expose the real workflow withou
     assert.match(pageSource, /runAuditExport/);
     assert.match(pageSource, /Retention policy/);
     assert.match(pageSource, /T&S enforcement records are explicitly retention-exempt/);
-    assert.match(layoutSource, /href="\/compliance"/);
+    assert.match(layoutSource, /href="\/compliance"|href:\s*'\/compliance'/);
     assert.doesNotMatch(pageSource, /SkipBackendPanel/);
     assert.doesNotMatch(pageSource, /SKIPPED/i);
 });

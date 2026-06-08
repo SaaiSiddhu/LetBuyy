@@ -91,7 +91,7 @@ function LoginContent() {
 
     // Initialize theme and language
     useEffect(() => {
-        const savedTheme = localStorage.getItem('letbuyy_theme')
+        const savedTheme = localStorage.getItem('letbuyy-theme')
         setIsDark(savedTheme === 'dark')
 
         const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
@@ -125,11 +125,11 @@ function LoginContent() {
         if (newDark) {
             document.documentElement.classList.add('dark')
             document.documentElement.style.colorScheme = 'dark'
-            localStorage.setItem('letbuyy_theme', 'dark')
+            localStorage.setItem('letbuyy-theme', 'dark')
         } else {
             document.documentElement.classList.remove('dark')
             document.documentElement.style.colorScheme = 'light'
-            localStorage.setItem('letbuyy_theme', 'light')
+            localStorage.setItem('letbuyy-theme', 'light')
         }
     }
 

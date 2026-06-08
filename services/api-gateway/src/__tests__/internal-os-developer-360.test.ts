@@ -141,8 +141,8 @@ test('developer 360 API client and operations portal are wired to real backend p
     assert.match(pageSource, /approveDeveloperPayoutRelease/);
     assert.match(pageSource, /runDeveloperPayoutReconciliation/);
     assert.match(pageSource, /createDeveloperPayoutDispute/);
-    assert.match(layoutSource, /href="\/developers"/);
-    assert.match(dashboardSource, /href="\/developers"/);
+    assert.match(layoutSource, /href="\/developers"|href:\s*'\/developers'/);
+    assert.match(dashboardSource, /href="\/developers"|href:\s*'\/developers'/);
     assert.doesNotMatch(pageSource, /SkipBackendPanel/);
     assert.doesNotMatch(pageSource, /SKIPPED/i);
 });

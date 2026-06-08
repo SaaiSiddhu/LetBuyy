@@ -41,6 +41,7 @@ export function DesignSystemRoot({
                 data-letbuyy-density={density}
                 dir={dir}
                 style={rootStyle}
+                suppressHydrationWarning
             >
                 {children}
             </div>

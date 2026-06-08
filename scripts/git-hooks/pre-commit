@@ -1,0 +1,24 @@
+#!/bin/sh
+# LetBuyy pre-commit hook — design-system governance + mobile token parity.
+#
+# Enable once per clone:  pnpm run hooks:install
+# (sets git config core.hooksPath scripts/git-hooks)
+#
+# Keep this dependency-free (pure node) so it runs without a stylelint install.
+set -e
+
+echo "› design-system governance…"
+node scripts/validators/validate-design-system.mjs
+
+echo "› design-token interchange parity…"
+node scripts/generators/generate-design-tokens.mjs --check
+
+echo "› mobile token parity…"
+node scripts/generators/generate-mobile-tokens.mjs --check
+
+# If stylelint is installed (pnpm add -Dw stylelint stylelint-config-standard),
+# also fence the CSS layer. No-op when the binary is absent.
+if [ -x "node_modules/.bin/stylelint" ]; then
+  echo "› stylelint css…"
+  node_modules/.bin/stylelint "apps/**/src/**/*.css" "packages/**/src/**/*.css"
+fi

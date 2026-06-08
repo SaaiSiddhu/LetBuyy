@@ -37,6 +37,7 @@
       "@letbuyy/api-types",
       "@letbuyy/app-engine",
       "@letbuyy/application-services",
+      "@letbuyy/audit-core",
       "@letbuyy/auth-core",
       "@letbuyy/billing-core",
       "@letbuyy/checkout-core",
@@ -45,13 +46,18 @@
       "@letbuyy/event-core",
       "@letbuyy/extension-host",
       "@letbuyy/infrastructure",
+      "@letbuyy/identity-core",
       "@letbuyy/notification-core",
       "@letbuyy/orchestration",
+      "@letbuyy/organization-core",
       "@letbuyy/payments",
+      "@letbuyy/permission-core",
       "@letbuyy/runtime-composition",
       "@letbuyy/shared-types",
+      "@letbuyy/session-core",
       "@letbuyy/tenant-core",
-      "@letbuyy/theme-engine"
+      "@letbuyy/theme-engine",
+      "@letbuyy/token-core"
     ],
     "runtimeImports": []
   },

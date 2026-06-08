@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import { getMarketingSiteUrl, getSupportEmail } from "@/lib/public-urls";
 import { getPlatformNavigationLinks } from "@/lib/platform-links";
-import { DesignSystemRoot } from "@letbuyy/ui";
+import { LetbuyyThemeProvider, ThemeScript } from "@letbuyy/ui";
 
 const letbuyySans = localFont({
   src: "../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
@@ -215,21 +214,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={fontVariables} suppressHydrationWarning>
       <head>
-        {/* Prevent flash of wrong theme */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                const stored = localStorage.getItem('theme');
-                const theme = stored || 'system';
-                const resolved = theme === 'system' 
-                  ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-                  : theme;
-                document.documentElement.setAttribute('data-theme', resolved);
-              })();
-            `,
-          }}
-        />
+        <ThemeScript />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -238,11 +223,9 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <DesignSystemRoot surface="storefront" theme="auto">
-          <ThemeProvider>
-            {children}
-          </ThemeProvider>
-        </DesignSystemRoot>
+        <LetbuyyThemeProvider surface="storefront">
+          {children}
+        </LetbuyyThemeProvider>
       </body>
     </html>
   );

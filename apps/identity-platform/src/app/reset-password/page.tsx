@@ -85,7 +85,7 @@ function ResetPasswordContent() {
     const t = translations[lang]
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem('letbuyy_theme')
+        const savedTheme = localStorage.getItem('letbuyy-theme')
         setIsDark(savedTheme === 'dark')
         const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
         setLang(savedLang)
@@ -94,7 +94,7 @@ function ResetPasswordContent() {
     const toggleTheme = () => {
         const newTheme = !isDark
         setIsDark(newTheme)
-        localStorage.setItem('letbuyy_theme', newTheme ? 'dark' : 'light')
+        localStorage.setItem('letbuyy-theme', newTheme ? 'dark' : 'light')
         document.documentElement.classList.toggle('dark', newTheme)
         document.documentElement.style.colorScheme = newTheme ? 'dark' : 'light'
     }

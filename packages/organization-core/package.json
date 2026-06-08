@@ -1,0 +1,24 @@
+{
+  "name": "@letbuyy/organization-core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@letbuyy/auth-core": "workspace:*",
+    "@letbuyy/identity-core": "workspace:*",
+    "@letbuyy/shared-types": "workspace:*",
+    "@letbuyy/tenant-core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

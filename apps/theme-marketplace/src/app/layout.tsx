@@ -4,10 +4,9 @@ import localFont from 'next/font/local';
 import './globals.css';
 import Navbar from '@/components/layout/navbar';
 import Footer from '@/components/layout/footer';
-import ThemeProvider from '@/components/theme-provider';
 import AuthProvider from '@/components/auth-provider';
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core';
-import { DesignSystemRoot, ToastProvider } from '@letbuyy/ui';
+import { LetbuyyThemeProvider, ThemeScript, ToastProvider } from '@letbuyy/ui';
 import { getThemeMarketplaceUrl } from '@/lib/site-url';
 import { ThemeService } from '@/lib/theme-service';
 
@@ -118,43 +117,24 @@ export default async function RootLayout({
     return (
         <html lang="en" className={fontVariables} suppressHydrationWarning>
             <head>
-                {/* Inline script to prevent flash of wrong theme */}
-                <script
-                    dangerouslySetInnerHTML={{
-                        __html: `
-                            (function() {
-                                try {
-                                    var stored = localStorage.getItem('theme-marketplace-theme');
-                                    var theme = stored || 'system';
-                                    var resolved = theme;
-                                    if (theme === 'system') {
-                                        resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-                                    }
-                                    document.documentElement.classList.add(resolved);
-                                } catch(e) {}
-                            })();
-                        `,
-                    }}
-                />
+                <ThemeScript />
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}
                 />
             </head>
             <body className="min-h-screen flex flex-col">
-                <DesignSystemRoot surface="marketplace" className="min-h-screen flex flex-col">
-                    <ThemeProvider>
-                        <AuthProvider initialAuthenticated={session.accepted} initialUser={initialUser}>
-                            <ToastProvider>
-                                <Navbar />
-                                <main className="flex-grow pt-[72px]">
-                                    {children}
-                                </main>
-                                <Footer />
-                            </ToastProvider>
-                        </AuthProvider>
-                    </ThemeProvider>
-                </DesignSystemRoot>
+                <LetbuyyThemeProvider surface="marketplace" className="min-h-screen flex flex-col">
+                    <AuthProvider initialAuthenticated={session.accepted} initialUser={initialUser}>
+                        <ToastProvider>
+                            <Navbar />
+                            <main className="flex-grow pt-[72px]">
+                                {children}
+                            </main>
+                            <Footer />
+                        </ToastProvider>
+                    </AuthProvider>
+                </LetbuyyThemeProvider>
             </body>
         </html>
     );

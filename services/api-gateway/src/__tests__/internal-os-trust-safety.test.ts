@@ -107,5 +107,5 @@ test('trust safety API client and operator pages are wired to real backend paths
     assert.match(opsSource, /openTrustSafetyCase/);
     assert.match(opsSource, /enforceTrustSafetyCase/);
     assert.match(opsSource, /reinstateTrustSafetyCase/);
-    assert.match(opsLayoutSource, /href="\/trust-safety"/);
+    assert.match(opsLayoutSource, /href="\/trust-safety"|href:\s*'\/trust-safety'/);
 });
