@@ -215,10 +215,12 @@ test('Task 006 inventory reservations prevent oversell and support commit, relea
     '1:1:2',
   );
 
-  const reservationId = psql(`SELECT id FROM public.inventory_reservations WHERE status = 'active' LIMIT 1;`);
+  const reservation = psql(`SELECT id || '|' || idempotency_key FROM public.inventory_reservations WHERE status = 'active' LIMIT 1;`);
+  const [reservationId, reservationKey] = reservation.split('|');
   assert.match(reservationId, /^[0-9a-f-]{36}$/);
+  assert.match(reservationKey, /^reserve:last-unit:[ab]$/);
 
-  const replay = psql(reserveSql({ siteId, productId, locationId, key: 'reserve:last-unit:a' }));
+  const replay = psql(reserveSql({ siteId, productId, locationId, key: reservationKey }));
   assert.match(replay, /"idempotent" : true|"idempotent": true/);
   assert.equal(psql('SELECT count(*) FROM public.inventory_reservations;'), '1');
 
