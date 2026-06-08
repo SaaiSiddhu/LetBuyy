@@ -88,11 +88,13 @@ export function Footer() {
     const supportEmail = getSupportEmail();
     const resolvedColumns = footerColumns.map((column) => ({
         ...column,
-        links: column.links.map((link) => {
+        links: column.links.flatMap((link) => {
             if (link.href === 'marketing') return { ...link, href: marketingUrl };
             if (link.href === 'admin') return { ...link, href: adminUrl };
             if (link.href === 'themes') return { ...link, href: themeMarketplaceUrl };
-            if (link.href === 'support') return { ...link, href: `mailto:${supportEmail}` };
+            if (link.href === 'support') {
+                return supportEmail ? { ...link, href: `mailto:${supportEmail}` } : [];
+            }
             return link;
         }),
     }));

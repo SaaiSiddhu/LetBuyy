@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import {
+    Button,
     Check,
+    Checkbox,
     ChevronDown,
     Facebook,
     Globe,
@@ -126,13 +128,13 @@ export default function Footer() {
 
                 <div className="footer-meta">
                     <div className="footer-region-row" aria-label="Region and language">
-                        <button className="footer-region-button" type="button" aria-label="Change region and language">
+                        <Button unstyled className="footer-region-button" type="button" aria-label="Change region and language">
                             <Globe width={19} height={19} aria-hidden="true" />
                             <span>India</span>
                             <span className="footer-region-divider" aria-hidden="true" />
                             <span>English</span>
                             <ChevronDown width={18} height={18} aria-hidden="true" />
-                        </button>
+                        </Button>
                     </div>
 
                     <nav className="footer-legal-row" aria-label="Legal links">
@@ -141,14 +143,15 @@ export default function Footer() {
                                 {link.label}
                             </Link>
                         ))}
-                        <button
+                        <Button
+                            unstyled
                             type="button"
                             className="footer-privacy-choice"
                             onClick={() => setPrivacyPanelOpen(true)}
                         >
                             <span>Your Privacy Choices</span>
                             <img src={privacyChoicesIconUrl} alt="" width="32" height="16" aria-hidden="true" />
-                        </button>
+                        </Button>
                     </nav>
 
                     <nav className="footer-social" aria-label="Social links">
@@ -171,14 +174,15 @@ export default function Footer() {
             {privacyPanelOpen && (
                 <div className="footer-privacy-sheet" role="dialog" aria-modal="true" aria-labelledby="footer-privacy-title">
                     <div className="footer-privacy-card">
-                        <button
+                        <Button
+                            unstyled
                             type="button"
                             className="footer-privacy-close"
                             aria-label="Close privacy choices"
                             onClick={() => setPrivacyPanelOpen(false)}
                         >
                             <X width={20} height={20} aria-hidden="true" />
-                        </button>
+                        </Button>
 
                         <img className="footer-privacy-icon" src={privacyChoicesIconUrl} alt="" width="48" height="24" aria-hidden="true" />
                         <h3 id="footer-privacy-title">Your Privacy Choices</h3>
@@ -202,10 +206,11 @@ export default function Footer() {
                                     <strong>Analytics</strong>
                                     <small>Help us understand page performance and product interest.</small>
                                 </span>
-                                <input
-                                    type="checkbox"
+                                <Checkbox
+                                    unstyled
+                                    label="Analytics"
                                     checked={analyticsEnabled}
-                                    onChange={(event) => setAnalyticsEnabled(event.target.checked)}
+                                    onCheckedChange={setAnalyticsEnabled}
                                 />
                             </label>
 
@@ -214,17 +219,18 @@ export default function Footer() {
                                     <strong>Personalization</strong>
                                     <small>Remember non-sensitive marketing preferences for future visits.</small>
                                 </span>
-                                <input
-                                    type="checkbox"
+                                <Checkbox
+                                    unstyled
+                                    label="Personalization"
                                     checked={personalizationEnabled}
-                                    onChange={(event) => setPersonalizationEnabled(event.target.checked)}
+                                    onCheckedChange={setPersonalizationEnabled}
                                 />
                             </label>
                         </div>
 
-                        <button type="button" className="footer-privacy-save" onClick={savePrivacyChoices}>
+                        <Button unstyled type="button" className="footer-privacy-save" onClick={savePrivacyChoices}>
                             Save choices
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )}

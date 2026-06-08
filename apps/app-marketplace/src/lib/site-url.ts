@@ -19,6 +19,33 @@ function trimTrailingSlash(value: string): string {
     return value.replace(/\/+$/, '');
 }
 
+function normalizeOrigin(rawValue: string | undefined): string | null {
+    const value = rawValue?.trim();
+    if (!value) return null;
+
+    const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+    try {
+        return new URL(withProtocol).origin;
+    } catch {
+        return null;
+    }
+}
+
+function getVercelDeploymentOrigin(): string | null {
+    if (typeof window !== 'undefined') return window.location.origin;
+
+    const vercelEnv = process.env.VERCEL_ENV?.trim();
+    const productionOrigin = normalizeOrigin(process.env.VERCEL_PROJECT_PRODUCTION_URL);
+    const branchOrigin = normalizeOrigin(process.env.VERCEL_BRANCH_URL);
+    const deploymentOrigin = normalizeOrigin(process.env.VERCEL_URL);
+
+    if (vercelEnv === 'production') {
+        return productionOrigin ?? deploymentOrigin ?? branchOrigin;
+    }
+
+    return branchOrigin ?? deploymentOrigin ?? productionOrigin;
+}
+
 function appendPath(base: string, path: string): string {
     if (!path) return base;
     return `${base}${path.startsWith('/') ? path : `/${path}`}`;
@@ -26,7 +53,7 @@ function appendPath(base: string, path: string): string {
 
 export function getConfiguredPublicUrl(key: PublicUrlKey, path = ''): string {
     const config = PUBLIC_URLS[key];
-    const configured = config.value?.trim();
+    const configured = config.value?.trim() || getVercelDeploymentOrigin();
     if (!configured) {
         throw new Error(`${config.envName} is not configured; refusing to use a hardcoded public host`);
     }
@@ -57,10 +84,7 @@ export function getDeveloperPortalUrl(path = ''): string {
     return getConfiguredPublicUrl('developerPortal', path);
 }
 
-export function getSupportEmail(): string {
+export function getSupportEmail(): string | null {
     const configured = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim();
-    if (!configured) {
-        throw new Error('NEXT_PUBLIC_SUPPORT_EMAIL is not configured; refusing to use a hardcoded support mailbox');
-    }
-    return configured;
+    return configured || null;
 }
