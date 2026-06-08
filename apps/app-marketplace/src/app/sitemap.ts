@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { appendOriginPath, getPlatformRequestOrigin } from '@/lib/platform-request-origin';
 import { getAppMarketplaceUrl } from '@/lib/site-url';
 import { AppService } from '@/lib/app-service';
 
@@ -8,14 +9,16 @@ export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const now = new Date();
+    const origin = await getPlatformRequestOrigin(getAppMarketplaceUrl());
+    const url = (path = '') => appendOriginPath(origin, path);
 
     const entries: MetadataRoute.Sitemap = [
-        { url: getAppMarketplaceUrl('/'), lastModified: now, changeFrequency: 'daily', priority: 1 },
-        { url: getAppMarketplaceUrl('/categories'), lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-        { url: getAppMarketplaceUrl('/collections'), lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
-        { url: getAppMarketplaceUrl('/stories'), lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
-        { url: getAppMarketplaceUrl('/search'), lastModified: now, changeFrequency: 'weekly', priority: 0.6 },
-        { url: getAppMarketplaceUrl('/developers'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+        { url: url('/'), lastModified: now, changeFrequency: 'daily', priority: 1 },
+        { url: url('/categories'), lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+        { url: url('/collections'), lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+        { url: url('/stories'), lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+        { url: url('/search'), lastModified: now, changeFrequency: 'weekly', priority: 0.6 },
+        { url: url('/developers'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
     ];
 
     try {
@@ -29,7 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             for (const app of appsResult.value.apps) {
                 if (!app.slug) continue;
                 entries.push({
-                    url: getAppMarketplaceUrl(`/apps/${app.slug}`),
+                    url: url(`/apps/${app.slug}`),
                     lastModified: now,
                     changeFrequency: 'weekly',
                     priority: 0.7,
@@ -40,13 +43,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         for (const category of categories) {
             if (!category.slug) continue;
             entries.push({
-                url: getAppMarketplaceUrl(`/categories/${category.slug}`),
+                url: url(`/categories/${category.slug}`),
                 lastModified: now,
                 changeFrequency: 'weekly',
                 priority: 0.6,
             });
             entries.push({
-                url: getAppMarketplaceUrl(`/categories/${category.slug}/all`),
+                url: url(`/categories/${category.slug}/all`),
                 lastModified: now,
                 changeFrequency: 'weekly',
                 priority: 0.55,
@@ -56,7 +59,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         for (const collection of collections) {
             if (!collection.slug) continue;
             entries.push({
-                url: getAppMarketplaceUrl(`/collections/${collection.slug}`),
+                url: url(`/collections/${collection.slug}`),
                 lastModified: now,
                 changeFrequency: 'weekly',
                 priority: 0.55,
@@ -65,7 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             const type = (collection.curation_type || '').toLowerCase();
             if (collection.status === 'published' && (type.includes('story') || type.includes('editorial') || type.includes('guide'))) {
                 entries.push({
-                    url: getAppMarketplaceUrl(`/stories/${collection.slug}`),
+                    url: url(`/stories/${collection.slug}`),
                     lastModified: now,
                     changeFrequency: 'weekly',
                     priority: 0.55,

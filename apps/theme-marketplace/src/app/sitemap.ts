@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import type { ThemeCategory } from '@letbuyy/theme-engine';
+import { appendOriginPath, getPlatformRequestOrigin } from '@/lib/platform-request-origin';
 import { getThemeMarketplaceUrl } from '@/lib/site-url';
 import { ThemeService } from '@/lib/theme-service';
 
@@ -11,13 +12,15 @@ const CATEGORY_ROUTES: ThemeCategory[] = ['store', 'portfolio', 'resume', 'landi
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const now = new Date();
+    const origin = await getPlatformRequestOrigin(getThemeMarketplaceUrl());
+    const url = (path = '') => appendOriginPath(origin, path);
 
     const entries: MetadataRoute.Sitemap = [
-        { url: getThemeMarketplaceUrl('/'), lastModified: now, changeFrequency: 'daily', priority: 1 },
-        { url: getThemeMarketplaceUrl('/themes'), lastModified: now, changeFrequency: 'daily', priority: 0.9 },
-        { url: getThemeMarketplaceUrl('/pricing'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+        { url: url('/'), lastModified: now, changeFrequency: 'daily', priority: 1 },
+        { url: url('/themes'), lastModified: now, changeFrequency: 'daily', priority: 0.9 },
+        { url: url('/pricing'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
         ...CATEGORY_ROUTES.map((category) => ({
-            url: getThemeMarketplaceUrl(`/themes/category/${category}`),
+            url: url(`/themes/category/${category}`),
             lastModified: now,
             changeFrequency: 'weekly' as const,
             priority: 0.75,
@@ -31,7 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                 const slug = (theme as { slug?: string }).slug;
                 if (!slug) continue;
                 entries.push({
-                    url: getThemeMarketplaceUrl(`/themes/${slug}`),
+                    url: url(`/themes/${slug}`),
                     lastModified: now,
                     changeFrequency: 'weekly',
                     priority: 0.8,

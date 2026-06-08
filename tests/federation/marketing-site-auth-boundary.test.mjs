@@ -87,3 +87,20 @@ test('marketing site exposes crawlable platform app navigation and sitemaps', ()
   assert.match(directory, /platform-directory/);
   assert.match(sitemapPage, /XML sitemaps/);
 });
+
+test('marketplace robots and sitemaps derive canonical URLs from the request host', () => {
+  for (const app of ['app-marketplace', 'theme-marketplace']) {
+    const root = join('apps', app, 'src');
+    const requestOrigin = read(join(root, 'lib/platform-request-origin.ts'));
+    const robots = read(join(root, 'app/robots.ts'));
+    const sitemap = read(join(root, 'app/sitemap.ts'));
+
+    assert.match(requestOrigin, /from 'next\/headers'/);
+    assert.match(requestOrigin, /x-forwarded-host/);
+    assert.match(requestOrigin, /letbuyy\.com/);
+    assert.match(robots, /getPlatformRequestOrigin/);
+    assert.match(robots, /appendOriginPath\(origin, '\/sitemap\.xml'\)/);
+    assert.match(sitemap, /getPlatformRequestOrigin/);
+    assert.match(sitemap, /appendOriginPath\(origin, path\)/);
+  }
+});

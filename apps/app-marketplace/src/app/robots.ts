@@ -1,7 +1,10 @@
 import type { MetadataRoute } from 'next';
+import { appendOriginPath, getPlatformRequestOrigin } from '@/lib/platform-request-origin';
 import { getAppMarketplaceUrl } from '@/lib/site-url';
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+    const origin = await getPlatformRequestOrigin(getAppMarketplaceUrl());
+
     return {
         rules: [
             {
@@ -10,7 +13,7 @@ export default function robots(): MetadataRoute.Robots {
                 disallow: ['/api/', '/my-apps', '/developers/dashboard'],
             },
         ],
-        sitemap: getAppMarketplaceUrl('/sitemap.xml'),
-        host: getAppMarketplaceUrl(),
+        sitemap: appendOriginPath(origin, '/sitemap.xml'),
+        host: origin,
     };
 }

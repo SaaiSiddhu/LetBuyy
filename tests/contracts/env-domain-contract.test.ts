@@ -83,6 +83,7 @@ test('canonical platform .com target appears only in approved cutover/default su
   ];
   const allowedCanonicalFiles = new Set([
     'apps/app-marketplace/src/lib/site-url.ts',
+    'apps/app-marketplace/src/lib/platform-request-origin.ts',
     'apps/developer-portal/src/lib/site-url.ts',
     'apps/identity-platform/src/app/layout.tsx',
     'apps/marketing-site/src/lib/public-urls.ts',
@@ -96,6 +97,7 @@ test('canonical platform .com target appears only in approved cutover/default su
     'apps/theme-marketplace/src/components/layout/footer.tsx',
     'apps/theme-marketplace/src/components/policy-draft-page.tsx',
     'apps/theme-marketplace/src/lib/public-urls.ts',
+    'apps/theme-marketplace/src/lib/platform-request-origin.ts',
     'apps/theme-marketplace/src/proxy.ts',
     'packages/dart/core/lib/src/constants/api_constants.dart',
     'packages/shared-types/src/brand.ts',
