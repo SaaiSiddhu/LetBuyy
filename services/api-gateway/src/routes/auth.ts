@@ -6,8 +6,7 @@ import {
 } from '@letbuyy/infrastructure/supabase-adapter';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import { resolveCustomUser } from '../lib/auth-user';
-import { verifyLetbuyyInternalSessionHeaders } from '@letbuyy/auth-core';
-import { bytesToHex, getInternalAuthSecret, verifyInternalAppRequest } from '../lib/internal-auth';
+import { bytesToHex, verifyInternalAppRequest, verifyInternalSessionHeaders } from '../lib/internal-auth';
 import { dbErrorBody, errorBody, getSupabaseAdmin, shouldReturnEmptyForMissingLocalSchema } from '../lib/supabase';
 import { checkRateLimitKey } from '../middleware/rateLimit';
 import { validate } from '../middleware/validation';
@@ -265,12 +264,10 @@ function accountsPasswordResetUrl(c: Context<{ Bindings: import('../index').Env 
 // internal app boundary. Local Wrangler sessions can live in-memory when the
 // custom auth schema is absent.
 auth.get('/custom/session', async (c) => {
-    const secret = getInternalAuthSecret(c.env);
-    const sessionVerification = await verifyLetbuyyInternalSessionHeaders({
+    const sessionVerification = await verifyInternalSessionHeaders(c.env, {
         sessionToken: c.req.header('X-LetBuyy-Internal-Session-Token'),
         timestamp: c.req.header('X-LetBuyy-Internal-Timestamp'),
         signature: c.req.header('X-LetBuyy-Internal-Signature'),
-        secret,
     });
 
     if (!sessionVerification.accepted || !sessionVerification.token) {

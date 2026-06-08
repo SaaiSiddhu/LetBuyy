@@ -2,6 +2,7 @@ import { timingSafeEqualText } from './crypto';
 
 type InternalSecretEnv = {
     INTERNAL_API_SECRET?: string;
+    WORKER_INTERNAL_API_SECRET?: string;
 };
 
 type HeaderReader = {
@@ -9,7 +10,10 @@ type HeaderReader = {
 };
 
 export function isInternalApiSecretRequest(env: InternalSecretEnv, req: HeaderReader): boolean {
-    const secret = env.INTERNAL_API_SECRET;
-    if (!secret) return false;
-    return timingSafeEqualText(req.header('X-Internal-API-Secret'), secret);
+    const headerSecret = req.header('X-Internal-API-Secret');
+    if (!headerSecret) return false;
+
+    return [env.INTERNAL_API_SECRET, env.WORKER_INTERNAL_API_SECRET]
+        .filter((secret): secret is string => Boolean(secret))
+        .some((secret) => timingSafeEqualText(headerSecret, secret));
 }

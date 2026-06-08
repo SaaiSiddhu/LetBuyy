@@ -181,6 +181,7 @@ export interface Env {
     LETBUYY_AI_MODEL_MODE?: 'mock' | 'live';
     MEDIA_UPLOAD_SIGNING_SECRET?: string;
     INTERNAL_API_SECRET?: string;
+    WORKER_INTERNAL_API_SECRET?: string;
     PLATFORM_CONSOLE_API_TOKEN?: string;
     ASSET_PUBLIC_BASE_URL?: string;
     R2_BUCKET?: R2Bucket;

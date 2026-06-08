@@ -4,20 +4,18 @@ import {
     createSupabaseServiceClient,
 } from '@letbuyy/infrastructure/supabase-adapter';
 import {
-    getLetbuyyInternalAuthSecret,
     getLetbuyyRoleCategories,
     isAuthUuid,
     isFreshLetbuyyInternalTimestamp,
     isSafeAuthEmail,
     normalizeLetbuyyRoleAssignments,
-    verifyLetbuyyInternalSessionHeaders,
-    verifyLetbuyySignedPayload,
     type LetbuyyRoleAssignment,
     type RbacRoleCategory,
 } from '@letbuyy/auth-core';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import { timingSafeEqualText } from '../lib/crypto';
+import { verifyInternalSessionHeaders, verifySignedPayload } from '../lib/internal-auth';
 
 interface AuthContext {
     user: {
@@ -79,9 +77,6 @@ function isReadOnlyPlatformConsoleOperationsRequest(c: Context<{ Bindings: Env }
 }
 
 async function getInternalAuthContext(c: Context<{ Bindings: Env }>): Promise<AuthContext | null> {
-    const secret = getLetbuyyInternalAuthSecret(c.env);
-    if (!secret) return null;
-
     const userId = c.req.header('X-LetBuyy-Internal-User-ID');
     const email = c.req.header('X-LetBuyy-Internal-Email');
     const storeId = c.req.header('X-LetBuyy-Internal-Store-ID') || undefined;
@@ -101,7 +96,7 @@ async function getInternalAuthContext(c: Context<{ Bindings: Env }>): Promise<Au
     }
 
     const payload = `${userId}.${email}.${storeId || ''}.${timestampHeader}`;
-    if (!(await verifyLetbuyySignedPayload(secret, payload, signature))) {
+    if (!(await verifySignedPayload(c.env, payload, signature))) {
         return null;
     }
 
@@ -116,17 +111,13 @@ async function getInternalAuthContext(c: Context<{ Bindings: Env }>): Promise<Au
 }
 
 async function getInternalSessionAuthContext(c: Context<{ Bindings: Env }>): Promise<AuthContext | null> {
-    const secret = getLetbuyyInternalAuthSecret(c.env);
-    if (!secret) return null;
-
     const sessionToken = c.req.header('X-LetBuyy-Internal-Session-Token');
     const timestampHeader = c.req.header('X-LetBuyy-Internal-Timestamp');
     const signature = c.req.header('X-LetBuyy-Internal-Signature');
-    const sessionVerification = await verifyLetbuyyInternalSessionHeaders({
+    const sessionVerification = await verifyInternalSessionHeaders(c.env, {
         sessionToken,
         timestamp: timestampHeader,
         signature,
-        secret,
     });
 
     if (!sessionVerification.accepted || !sessionVerification.token) {
