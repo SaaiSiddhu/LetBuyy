@@ -262,7 +262,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build workers
-        run: pnpm turbo build --filter="@letbuyy/api-gateway" --filter="@letbuyy/webhook-service" --filter="@letbuyy/queue-workers"
+        run: pnpm turbo build --filter="@letbuyy/api-gateway" --filter="@letbuyy/webhook-service" --filter="@letbuyy/queue-workers" --filter="@letbuyy/mobile-bff"
 
       - name: Set api-gateway production secrets
         run: |
@@ -297,6 +297,7 @@ jobs:
 
       - name: Set webhook-service production secrets
         run: |
+          echo "${{ secrets.PRODUCTION_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env production
           echo "${{ secrets.PRODUCTION_RAZORPAY_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_WEBHOOK_SECRET --env production
           echo "${{ secrets.PRODUCTION_STRIPE_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put STRIPE_WEBHOOK_SECRET --env production
         working-directory: services/webhook-service
@@ -311,9 +312,32 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
+      - name: Set queue-workers production secrets
+        run: |
+          echo "${{ secrets.PRODUCTION_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env production
+        working-directory: services/queue-workers
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - name: Deploy queue-workers to production
         run: pnpm exec wrangler deploy --env production
         working-directory: services/queue-workers
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Set mobile-bff production secrets
+        run: |
+          echo "${{ secrets.PRODUCTION_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env production
+        working-directory: services/mobile-bff
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy mobile-bff to production
+        run: pnpm exec wrangler deploy --env production
+        working-directory: services/mobile-bff
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
