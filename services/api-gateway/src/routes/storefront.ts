@@ -20,9 +20,9 @@ import { registerStorefrontInternalPaymentRoutes } from './storefront/internal-p
 import { registerStorefrontPublicRoutes } from './storefront/public-routes';
 import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { enqueueOrderConfirmationEmail } from '../lib/order-confirmation-email';
 import {
     getCustomerSession,
-    isCustomerLegacyAuthEnabled,
     requireCustomerSession,
 } from '../middleware/customer-session';
 import { csrfProtection, extractTurnstileToken, verifyTurnstileToken } from '../middleware/security';
@@ -288,6 +288,7 @@ function orderEventTotalPayload(totalValue: unknown): { amount_minor: number; cu
 async function emitStorefrontOrderPaidEvent(
     db: ReturnType<typeof getSupabaseAdmin>,
     input: {
+        env?: Env;
         storeId?: string | null;
         orderId: string;
         order: StorefrontPaidOrderSnapshot;
@@ -319,14 +320,32 @@ async function emitStorefrontOrderPaidEvent(
         requestId: input.requestId,
         actorId: null,
     });
+
+    if (input.env) {
+        await enqueueOrderConfirmationEmail(input.env, db, {
+            orderId: order.id || input.orderId,
+            storeId,
+            requestId: input.requestId,
+            idempotencyKey: input.idempotencyKey,
+        }).catch((error) => {
+            console.error(JSON.stringify({
+                level: 'error',
+                event: 'storefront_order_confirmation_email_dispatch_failed',
+                order_id: order.id || input.orderId,
+                store_id: storeId,
+                request_id: input.requestId,
+                error: error instanceof Error ? error.message : 'unknown error',
+            }));
+        });
+    }
 }
 
 const STOREFRONT_SITE_SELECT: string =
-    'id,user_id,custom_user_id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,currency,locale,theme_id,template_config,status,published_at,created_at,updated_at,seo_title,seo_description';
+    'id,user_id,custom_user_id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,custom_domain_status,access_mode,access_message,published,currency,locale,theme_id,template_config,status,published_at,created_at,updated_at,seo_title,seo_description';
 const STOREFRONT_SITE_RELEASE_SELECT: string =
     `${STOREFRONT_SITE_SELECT},current_theme_release_id,storefront_release_version`;
 const STOREFRONT_SITE_COMPAT_SELECT: string =
-    'id,user_id,custom_user_id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,currency,locale,theme_id,template_config,status,published_at,created_at,updated_at';
+    'id,user_id,custom_user_id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,custom_domain_status,access_mode,access_message,published,currency,locale,theme_id,template_config,status,published_at,created_at,updated_at';
 const STOREFRONT_SITE_RELEASE_COMPAT_SELECT: string =
     `${STOREFRONT_SITE_COMPAT_SELECT},current_theme_release_id,storefront_release_version`;
 const PRODUCT_SELECT_FULL: string =

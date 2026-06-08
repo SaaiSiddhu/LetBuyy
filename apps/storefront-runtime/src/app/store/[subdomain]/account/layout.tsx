@@ -62,7 +62,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                     </div>
                     <div className="min-w-0">
                         <p className="truncate text-sm font-semibold">{customer?.fullName || 'Customer'}</p>
-                        <p className="truncate text-xs" style={{ color: 'var(--text-secondary, #6B7280)' }}>{customer?.email}</p>
+                        <p className="truncate text-xs" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>{customer?.email}</p>
                     </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -75,8 +75,8 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                                 href={itemHref}
                                 className="flex min-h-11 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2 text-xs font-medium transition-colors"
                                 style={{
-                                    backgroundColor: active ? 'var(--primary)' : 'var(--surface, #F3F4F6)',
-                                    color: active ? '#FFFFFF' : 'var(--text, #1A1A2E)',
+                                    backgroundColor: active ? 'var(--primary)' : 'var(--surface, rgb(243 244 246))',
+                                    color: active ? 'rgb(255 255 255)' : 'var(--text, rgb(26 26 46))',
                                 }}
                             >
                                 <Icon size={14} />
@@ -100,7 +100,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                             </div>
                             <div className="min-w-0">
                                 <p className="truncate font-semibold">{customer?.fullName || 'Customer'}</p>
-                                <p className="truncate text-sm" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                                <p className="truncate text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                     {customer?.email}
                                 </p>
                             </div>
@@ -117,7 +117,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                                         className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-colors"
                                         style={{
                                             backgroundColor: active ? 'var(--primary)' : 'transparent',
-                                            color: active ? '#FFFFFF' : 'var(--text, #1A1A2E)',
+                                            color: active ? 'rgb(255 255 255)' : 'var(--text, rgb(26 26 46))',
                                         }}
                                     >
                                         <div className="flex items-center gap-3">

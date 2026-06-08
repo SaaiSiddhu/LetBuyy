@@ -73,7 +73,7 @@ export default function TrustBadges({ section }: TrustBadgesProps) {
     const title = (section.settings.title as string) || '';
 
     return (
-        <section className="py-10 md:py-14 px-4 md:px-8 bg-white">
+        <section className="py-10 md:py-14 px-4 md:px-8 bg-[var(--lb-color-surface)]">
             <div className="max-w-screen-xl mx-auto">
                 {title && (
                     <h2 className="text-lg md:text-xl font-bold tracking-tight text-black mb-6 text-center">

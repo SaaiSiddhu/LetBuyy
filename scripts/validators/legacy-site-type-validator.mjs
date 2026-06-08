@@ -9,8 +9,9 @@ const trackedFiles = getTrackedFiles();
 
 const tenantCore = readFile("packages/tenant-core/src/index.ts");
 reporter.assert(
-  /ACTIVE_SITE_TYPES\s*=\s*\['store', 'blog', 'landing'\]/.test(tenantCore),
-  "tenant-core must keep default acquisition site types to store/blog/landing",
+  /ACTIVE_SITE_TYPES\s*=\s*\['store'\]/.test(tenantCore) &&
+    /COMING_SOON_SITE_TYPES\s*=\s*\['blog', 'landing'\]/.test(tenantCore),
+  "tenant-core must keep only store active and classify blog/landing as coming soon",
 );
 reporter.assert(
   /LEGACY_SITE_TYPES\s*=\s*\['portfolio', 'resume'\]/.test(tenantCore),
@@ -45,10 +46,11 @@ for (const marker of [
 
 const identityCreateStore = readFile("apps/identity-platform/src/app/api/auth/create-store/route.ts");
 reporter.assert(
-  identityCreateStore.includes("ACTIVE_SITE_TYPES = ['store', 'landing', 'blog']") &&
+  identityCreateStore.includes("ACTIVE_SITE_TYPES = ['store']") &&
+    identityCreateStore.includes("COMING_SOON_SITE_TYPES = ['landing', 'blog']") &&
     identityCreateStore.includes("LEGACY_SITE_TYPES = ['portfolio', 'resume']") &&
     identityCreateStore.includes("legacySiteTypesEnabled"),
-  "identity create-store route must keep legacy site types out of default creation",
+  "identity create-store route must keep unavailable site types out of default creation",
 );
 
 const identityOnboarding = readFile("apps/identity-platform/src/app/onboarding/page.tsx");

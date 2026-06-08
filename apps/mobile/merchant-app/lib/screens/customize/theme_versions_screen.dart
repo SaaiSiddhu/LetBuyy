@@ -65,7 +65,10 @@ class _ThemeVersionsScreenState extends State<ThemeVersionsScreen> {
       setState(() => _releases = releases);
     } catch (error) {
       if (!mounted) return;
-      setState(() => _error = 'Unable to load theme versions: $error');
+      setState(
+        () => _error =
+            'Unable to load theme versions. Pull to refresh or try again.',
+      );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -88,7 +91,9 @@ class _ThemeVersionsScreenState extends State<ThemeVersionsScreen> {
       if (!mounted) return;
       _showMessage('Theme rolled back to v${release.version}', isSuccess: true);
     } catch (error) {
-      if (mounted) _showMessage('$error', isError: true);
+      if (mounted) {
+        _showMessage('Theme rollback could not complete.', isError: true);
+      }
     } finally {
       if (mounted) setState(() => _isRollingBack = false);
     }

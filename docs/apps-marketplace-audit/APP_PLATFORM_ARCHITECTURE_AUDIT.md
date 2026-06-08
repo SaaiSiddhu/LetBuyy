@@ -1,50 +1,59 @@
 # App Platform Architecture Audit (Phase 11)
 
-Can a real third-party ecosystem exist on this architecture? Audits OAuth, scopes/permissions, app authentication, webhooks, extensions, embedded apps, billing APIs, and developer APIs. This is the strongest area of the marketplace. Parent: [Master Audit](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md).
+**Parent:** [`../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md`](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md) · **Date:** 2026-06-07
 
-## Architecture in one line
+**Central question:** *Can a real third-party ecosystem exist on this architecture?* Answer: **the primitives are sound enough to build on — OAuth/PKCE, enforced scopes, an extension/function model, mandatory privacy webhooks — but four structural gaps (no update/versioning, no payout settlement, no developer webhook/analytics management, and weak data-layer isolation) would each become load-bearing problems as the ecosystem grows.**
 
-A **Next.js thin client** over a **Hono API gateway** (`services/api-gateway`) backed by **Supabase/Postgres**, with domain events emitted to **queue-workers / webhook-service**. The app-store routes are ~3,940 LOC (≈4,455 with the `app-auth` middleware and the `/app` data API) across 30 endpoints.
+## 1. Identity & auth (3 token types)
 
-## Subsystem assessment
-
-| Subsystem | Implementation | Status |
+| Identity | Mechanism | Verdict |
 |---|---|---|
-| **OAuth 2.0** | `/apps/:id/oauth/authorize`, `/oauth/token`, `/oauth/token-exchange`; `mintAppOAuthAccessToken` / `mintAppOAuthRefreshToken` (jose JWT) | ✅ Real — but **unused by the marketplace UI** |
-| **Scopes** | `marketplace_apps.api_scopes`; install normalizes requested scopes against declared (`normalizeAppInstallScopes`) | ✅ Real; ❌ no optional/incremental scopes; no re-consent (no update flow) |
-| **App authentication** | `middleware/app-auth.ts`; app credentials minted at submit; API-key rotation endpoint | ✅ Real; ❌ no key-management UI |
-| **Webhooks** | `app_webhooks` table; `insertAppWebhookSubscriptions`; lifecycle outbox `app.installed`; signing secret generated server-side (not forwarded from client — good) | ✅ Real; ❌ no developer webhook UI/delivery logs |
-| **Extensions** | 8 types in `app_extensions` (storefront_block, admin_link, checkout_extension, product_action, order_action, settings_page, dashboard_widget, api_endpoint); registry + function registration endpoints; manifest validation | ✅ Real model; ❌ no configuration UI |
-| **Embedded apps** | `/installations/:id/embed-session`, `/bridge/fetch` (App-Bridge-style) | ✅ Endpoints exist; ❌ UI raw-iframes `app_url` instead |
-| **Billing API** | `app_billing_charges` (pending_merchant_approval → approved → active → cancelled → failed); merchant approval w/ `verifySiteOwnership`; revenue share + GST | ✅ Real; ❌ no UI; ❌ no usage metering, trials, refunds |
-| **App data API** | `/app/products`, `/app/orders`, `/app/installation/metadata` (`app-api.ts`) | ✅ Real scoped data access for installed apps |
-| **Compliance** | `/compliance/customers/data-request`, `/customers/redact`, `/shop/redact` | ✅ Matches Shopify's mandatory webhooks |
-| **Idempotency** | `X-Idempotency-Key` → `IdempotencyExecutionAdapter` on install | ✅ Real |
-| **Events** | `emitDomainEvent` (`app.installed`, `app.charge.created`, `app.approved/rejected`) | ✅ Real |
+| Merchant / developer | `authMiddleware` accepts Supabase `Bearer` JWT **or** signed internal-SSO headers (`middleware/auth.ts:161`, `:68-119`); store ownership re-checked per request via `verifySiteOwnership` (`install-lifecycle-routes.ts:57`) | ✅ Solid; defense beyond the token |
+| App / OAuth token | `appAuthMiddleware(requiredScopes)` verifies an HS256 app-scoped JWT and enforces **four** checks: identity match, installation `scopes_granted ⊇ required`, token scopes ⊆ granted, **and token hash == stored hash** so revoked tokens fail (`middleware/app-auth.ts:78-101`; mint at `auth-core:1013`) | ✅ Genuinely enforced |
+| Embedded session | `token-exchange` mints a 15-min embedded token (`billing-oauth-routes.ts:920`) | ✅ (unused by UI) |
 
-## Why an ecosystem *could* exist here
+**OAuth** is a correct PKCE (S256-only) implementation: authorize issues a 15-min single-use code (hash + `redeemed_at`), token exchange verifies signature, client_id/redirect_uri match, single-use, and PKCE verifier (`billing-oauth-routes.ts:530-877`); refresh tokens supported. **Caveat:** a **second, simpler install path** (`POST /apps/:id/install`) mints an app token immediately with no OAuth and no refresh token (`install-lifecycle-routes.ts:128`) — two doors into the same house; pick one.
 
-The hard primitives are present and mostly correct: OAuth with refresh, scoped install with server-side normalization, server-generated webhook signing secrets, an extension/manifest model, App-Bridge-style embedding, merchant-approval billing, scoped app data APIs, idempotency, and event emission. That's the load-bearing structure of a Shopify-class platform. A competent third party *could* build against `@letbuyy/api-client`.
+## 2. Scopes & permissions
 
-## Why it can't *yet*
+Scopes are declared per app in `marketplace_apps.api_scopes`; `normalizeAppInstallScopes` rejects any requested scope outside the app's allowed set (`app-engine:1330`). The bridge maps request path → required scope (`shared.ts:396-412`) and re-signs internal-SSO identity as the `installed_by` user to call the gateway on the merchant's behalf (`extension-routes.ts:465-483`). Known scopes: `read_products/orders/customers/themes/storefront`, `write_app_metadata`, `write_discounts`. **Gap:** the collaborator scopes (`app_collaboration`, `write_themes`) referenced in `partnerRequestCode` aren't in the enforced app-token set — dead scopes.
 
-These are the architecture-level blockers (distinct from UI gaps):
+## 3. App data API
 
-1. **No app update/versioning anywhere.** No `PATCH/PUT /developers/apps/:id`, no version records, no staged rollout. An ecosystem where apps can never change after approval is not viable. **(S0)**
-2. **Review gating is non-functional.** Automated checks are recorded as passed without executing; the only real gate is a human in another portal. Malicious/over-scoped apps aren't actually screened. **(S1)**
-3. **Search injection.** `GET /app-store/apps` interpolates the raw `search` string into a PostgREST `.or()` filter (`name.ilike.%q%,tagline.ilike.%q%`). A crafted query can inject additional filter syntax. Use escaped builders or an RPC full-text function. **(S1 security)**
-4. **OAuth designed but disconnected.** The platform has a real authorization-code flow the product doesn't use; install posts scopes directly. This forks the security model and makes optional scopes / incremental auth impossible in practice. **(S1)**
-5. **No app health / API-usage / rate-limit observability** exposed to developers or the review team — so quality bars like Shopify's p95<500ms can't be enforced.
-6. **Pricing model mismatch.** UI offers `usage_based`; DB CHECK on `marketplace_apps.pricing_model` allows only `free/freemium/one_time/recurring`. Submissions can desync from the schema. **(S2)**
-7. **Economic logic inconsistent.** `revenue_share_bps` defaults to `8000` (20% platform) while the product promises 15%. **(S0 trust)**
+`/v1/app/*`: `GET /app/products`, `GET /app/orders`, `PATCH /app/installation/metadata` (`app-api.ts:152,209,271`), all behind `appAuthMiddleware`. Secret-like keys are rejected from metadata writes (`app-api.ts:95-124`) — good hygiene. **Narrow but correct.** A real ecosystem will need far more surface (customers, fulfillment, inventory, webhooks-as-source).
 
-## Scale & resilience notes
+## 4. Webhooks
 
-- **Data model** is normalized with denormalized counters maintained by triggers (`install_count`, `rating_avg`) — fine to thousands of apps.
-- **Catalog reads** use inner joins on `app_developers`/`app_categories` with `status='published'` and range pagination (cap 50) — reasonable, but no stated caching/CDN for a public catalog.
-- **Install/charge** paths are idempotent and event-driven — good for retries and async fan-out.
-- The repo carries heavy runtime/replay/queue governance validators; the app-store routes plug into that execution/idempotency/outbox machinery rather than reinventing it.
+- **Mandatory GDPR webhooks** (`customers/data_request`, `customers/redact`, `shop/redact`) exist and are auto-subscribed at install (`app-engine:154,1438`); `shop/redact` also fires on uninstall (`install-lifecycle-routes.ts:344`). Delivery is via the webhook-service, fire-and-forget (`shared.ts:553`).
+- **Compliance endpoints** are merchant-triggered fan-outs (`compliance-routes.ts:135-139`) — they dispatch to the store's app subscriptions when a merchant POSTs, **not** when actual customer/shop data is deleted. So `customers/redact` is not wired to the real customer-record lifecycle.
+- **No developer webhook management.** `app_webhooks` is **only read** (joined at install/authorize) and **has no writer anywhere** — effectively a dead table. There is no CRUD for a developer to register/list/update/delete app webhook endpoints; the only webhook-subscription CRUD lives in the ops portal.
 
-## Bottom line
+## 5. Extensions & functions
 
-**Architecturally a B+/A− foundation.** The ecosystem can exist on this once four things are fixed: (1) add app update/versioning, (2) make review gating real, (3) close the search-injection and OAuth-bypass gaps, and (4) reconcile economics and the pricing-model enum. None require re-platforming — they're additive.
+Three surfaces (`admin.ui`, `checkout.ui`, `theme.app_block`), three renderers (`iframe`, `web_component`, `liquid_app_block`), plus WASM **functions** with a fixed hook enum, `wasm_sha256`, and timeout/memory caps (`app-engine:197,224`; `076_app_extension_registry.sql:105-109`). Manifests are validated at dry-run, submit, and install (`developer-routes.ts:285,603`; `shared.ts:645`); per-install registry rows go to `app_extension_registrations`/`app_function_registrations` with prior rows revoked on re-install and all revoked on uninstall (`shared.ts:681-797`). Enable/disable is merchant-controlled (`extension-routes.ts:149,223`) behind a `FEATURE_EXTENSIONS` gate. **This is a real, well-shaped extension model** — its only problem is that the **merchant-facing config UI is a stub** and there are **two extension tables** (legacy `app_extensions` declaration with no real RLS vs the newer registry with real RLS), which invites confusion.
+
+## 6. Billing APIs
+
+Charge create → `pending_merchant_approval`; approve requires verified Razorpay proof to reach `active`, else `approved` (`billing-oauth-routes.ts:62,208,410`). Split: partner `revenue_share_bps` (default **8000 = partner 80% / platform 20%**) + GST 18% on partner share (`billing-core:269,577-581`). Modes: `recurring`/`usage` only. **Architectural gaps:** no one-time charge, no trials, **no usage metering endpoint**, **no pricing plans/tiers**, and — critically — **the payout side is record-only**: ledger rows are written `pending` and never settled (`queue-execution.adapter.ts:474`). `partner_payout_ledger_entries.charge_id`/`source_event_id` are `NOT NULL` but have **no FK** (integrity gap).
+
+## 7. Data layer & multi-tenancy
+
+- **12 tables**; denormalization triggers (`install_count`, `rating_avg`, `review_count`) are real (`000_baseline.sql:7812-7838`).
+- **Tenant column inconsistency:** `app_billing_charges`/payout ledger/registries use `site_id`; `app_installations`/`app_reviews` use `store_id` — same concept (`public.sites`), two names.
+- **Two-tier RLS:** the 7 original tables (`marketplace_apps`, `app_developers`, `app_categories`, `app_extensions`, `app_installations`, `app_reviews`, `app_webhooks`) have RLS *enabled* but only a blanket `service_role USING(true)` policy — **no row-level tenant isolation** (`000_baseline.sql:24311+`); isolation depends entirely on the gateway running as service_role and filtering in code. Newer tables (billing charges, review records, payout ledger, the two registries) have **real** per-tenant/per-partner RLS. This is a defense-in-depth gap.
+- **Missing tables** for an ecosystem: `app_versions`/releases, install/usage event analytics, rate-limit/quota accounting, pricing plans/tiers, support/ticketing, persisted OAuth codes/tokens.
+
+## 8. Rate limiting & abuse
+
+A generic IP/user cost bucket (leaky, cap 200, 20 pts/s) covers all `/v1/*` (`index.ts:543`, `rateLimit.ts`), but the **security-sensitive `/oauth/token`, `/oauth/authorize`, `/bridge/fetch` have no dedicated brute-force limit** the way `/auth/*` does (`index.ts:570`); the coarse IP bucket is bypassable by IP rotation. Limiting is skipped in dev and requires Redis in prod.
+
+## 9. Can an ecosystem exist on this?
+
+**Yes, structurally — with four must-fixes before scale:**
+
+1. **App update/versioning** (+ `app_versions`, re-review, staged rollout) — without it, no living ecosystem.
+2. **Payout settlement** (+ ledger state machine, transfer execution, FK integrity) — without it, no paid developers.
+3. **Developer self-service for webhooks & analytics** (+ writers for `app_webhooks`, time-series analytics) — without it, no serious SaaS will build.
+4. **Real tenant RLS + dedicated OAuth rate limits + unified `site_id`** — without it, security/scale risk grows with every tenant.
+
+The encouraging finding: the **hard, get-them-wrong-and-rebuild primitives (OAuth, scope enforcement, extension/function model, privacy webhooks) are already right**. The remaining work is finishing the lifecycle and hardening the data layer — additive, not a rewrite. See [`ECOSYSTEM_SCALABILITY_REPORT.md`](ECOSYSTEM_SCALABILITY_REPORT.md).

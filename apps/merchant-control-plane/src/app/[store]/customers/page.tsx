@@ -4,25 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import type { Customer as SharedCustomer } from '@letbuyy/shared-types'
 import { formatIndiaDate as formatDate, formatInrCurrency } from '@letbuyy/ui/formatting'
-import {
-    Avatar,
-    Badge,
-    Banner,
-    Button,
-    Card,
-    EmptyState,
-    IndexTable,
-    Input,
-    MaterialIcon,
-    Page,
-    PageHeader,
-    Search,
-    Section,
-    Skeleton,
-    useToast,
-    type IndexTableColumn,
-    type IndexTableBulkAction,
-} from '@letbuyy/ui'
+import { Button, Input, Table, Avatar, Badge, Banner, Card, EmptyState, MaterialIcon, Page, PageHeader, Search, Section, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
 
 type CustomerRow = Omit<Pick<SharedCustomer, 'id' | 'email' | 'phone' | 'status' | 'created_at' | 'total_spent' | 'last_order_at'>, 'email' | 'phone' | 'last_order_at'> & {
     full_name: string
@@ -241,7 +223,7 @@ export default function CustomersPage() {
         setSortDirection(nextKey === 'last_order_at' || nextKey === 'total_spent' || nextKey === 'total_orders' ? 'desc' : 'asc')
     }, [sortKey])
 
-    const bulkActions = useMemo<Array<IndexTableBulkAction<CustomerRow>>>(() => [
+    const bulkActions = useMemo<Array<TableBulkAction<CustomerRow>>>(() => [
         {
             label: 'Copy emails',
             onAction: rows => {
@@ -271,7 +253,7 @@ export default function CustomersPage() {
         },
     ], [notify])
 
-    const columns: Array<IndexTableColumn<CustomerRow>> = [
+    const columns: Array<TableColumn<CustomerRow>> = [
         {
             key: 'name',
             header: 'Name',
@@ -394,7 +376,7 @@ export default function CustomersPage() {
                         {loading ? (
                             <Skeleton variant="table" lines={6} />
                         ) : (
-                            <IndexTable
+                            <Table
                                 rows={sortedCustomers}
                                 columns={columns}
                                 emptyState={emptyState}

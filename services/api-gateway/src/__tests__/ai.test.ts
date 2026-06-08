@@ -1,0 +1,139 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import test from 'node:test';
+import { createAiCreditPurchaseAdapter } from '@letbuyy/infrastructure/ai-credit-purchase-adapter';
+import { createAiGenerationAdapter } from '@letbuyy/infrastructure/ai-generation-adapter';
+
+const indexSource = readFileSync(new URL('../index.ts', import.meta.url), 'utf8');
+const aiRouteSource = readFileSync(new URL('../routes/ai.ts', import.meta.url), 'utf8');
+const bffSource = readFileSync(new URL('../../../mobile-bff/src/index.ts', import.meta.url), 'utf8');
+const wranglerSource = readFileSync(new URL('../../wrangler.toml', import.meta.url), 'utf8');
+const appEngineSource = readFileSync(new URL('../../../../packages/app-engine/src/index.ts', import.meta.url), 'utf8');
+const mobileAiServiceSource = readFileSync(
+    new URL('../../../../apps/mobile/merchant-app/lib/services/ai_studio_service.dart', import.meta.url),
+    'utf8'
+);
+const mobileEditorSource = readFileSync(
+    new URL('../../../../apps/mobile/merchant-app/lib/screens/editor/section_editor_screen.dart', import.meta.url),
+    'utf8'
+);
+const tsClientSource = readFileSync(new URL('../../../../packages/typescript/api-client/src/index.ts', import.meta.url), 'utf8');
+const dartClientSource = readFileSync(new URL('../../../../packages/dart/api_client/lib/src/api_client.dart', import.meta.url), 'utf8');
+
+test('merchant AI route is mounted, mobile allowlisted, and provider-backed', () => {
+    assert.match(indexSource, /import aiRouter from '\.\/routes\/ai'/);
+    assert.match(indexSource, /api\.route\('\/ai', aiRouter\)/);
+    assert.match(bffSource, /'\/v1\/ai'/);
+    assert.match(aiRouteSource, /router\.post\('\/generate'/);
+    assert.match(aiRouteSource, /createAiGenerationAdapter/);
+    assert.match(aiRouteSource, /createAiCreditPurchaseAdapter/);
+    assert.match(aiRouteSource, /adapter\.generate/);
+    assert.match(aiRouteSource, /adapter\.purchase/);
+    assert.match(aiRouteSource, /router\.post\('\/operator'/);
+    assert.match(aiRouteSource, /router\.post\('\/homepage'/);
+    assert.match(aiRouteSource, /genericAiOperatorUnavailable/);
+    assert.match(aiRouteSource, /'create_product'/);
+    assert.match(aiRouteSource, /'draft_discount'/);
+    assert.match(aiRouteSource, /'draft_homepage_section'/);
+    assert.match(aiRouteSource, /\.from\('ai_usage'\)[\s\S]*status:\s*'completed'/);
+    assert.match(aiRouteSource, /feature:\s*'homepage_generator'/);
+    assert.match(aiRouteSource, /AI_HOMEPAGE_GENERATOR_UNAVAILABLE/);
+    assert.match(aiRouteSource, /\.from\('ai_credits'\)[\s\S]*\.update/);
+    assert.match(aiRouteSource, /purchase_available/);
+    assert.doesNotMatch(aiRouteSource, /\.from\('products'\)[^\n]*\.insert/);
+    assert.doesNotMatch(aiRouteSource, /\.from\('coupons'\)[^\n]*\.insert/);
+    assert.doesNotMatch(aiRouteSource, /AI generation is not configured for this environment/);
+    assert.doesNotMatch(aiRouteSource, /AI credit purchases are not configured/);
+});
+
+test('AI provider configuration is sandbox-first and live credential-gated', async () => {
+    const sandboxAdapter = createAiGenerationAdapter({
+        mode: 'sandbox',
+        provider: 'letbuyy_sandbox',
+        model: 'letbuyy-sandbox-copywriter',
+    });
+    const result = await sandboxAdapter.generate({
+        storeId: 'store_1',
+        feature: 'product_description',
+        prompt: 'Write concise copy for a cotton tee',
+    });
+
+    assert.equal(sandboxAdapter.available, true);
+    assert.equal(result.providerMode, 'sandbox');
+    assert.equal(result.provider, 'letbuyy_sandbox');
+    assert.match(result.output, /Product Description draft/);
+
+    const liveAdapter = createAiGenerationAdapter({
+        mode: 'live',
+        provider: 'openai_compatible',
+        model: 'SKIP_NEEDS_HUMAN_AI_PROVIDER_MODEL',
+        apiKey: 'SKIP_NEEDS_HUMAN_AI_PROVIDER_API_KEY',
+        environment: 'production',
+    });
+
+    assert.equal(liveAdapter.available, false);
+    assert.match(liveAdapter.unavailableReason || '', /credentials and model/);
+});
+
+test('AI credit purchase is sandbox-first and live Razorpay credential-gated', async () => {
+    const sandboxAdapter = createAiCreditPurchaseAdapter({
+        mode: 'sandbox',
+        provider: 'letbuyy_sandbox',
+        pricePerCreditMinor: '100',
+    });
+    const sandboxPurchase = await sandboxAdapter.purchase({
+        storeId: 'store_1',
+        userId: 'user_1',
+        credits: 100,
+        idempotencyKey: 'purchase_1',
+    });
+
+    assert.equal(sandboxAdapter.available, true);
+    assert.equal(sandboxPurchase.status, 'completed');
+    assert.equal(sandboxPurchase.providerMode, 'sandbox');
+    assert.equal(sandboxPurchase.amountMinor, 10000);
+
+    const liveAdapter = createAiCreditPurchaseAdapter({
+        mode: 'live',
+        provider: 'razorpay',
+        razorpayKeyId: 'SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_ID',
+        razorpayKeySecret: 'SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_SECRET',
+        environment: 'production',
+    });
+
+    assert.equal(liveAdapter.available, false);
+    assert.match(liveAdapter.unavailableReason || '', /provider credentials/);
+});
+
+test('AI schemas and mobile service accept the mobile generation contract', () => {
+    assert.match(appEngineSource, /'social_copy'/);
+    assert.match(appEngineSource, /'email_campaign'/);
+    assert.match(appEngineSource, /AiOperatorCommandSchema/);
+    assert.match(appEngineSource, /AiHomepageGenerationSchema/);
+    assert.match(tsClientSource, /\/ai\/homepage/);
+    assert.match(dartClientSource, /\/ai\/homepage/);
+    assert.match(mobileAiServiceSource, /_api\.ai\.generate/);
+    assert.match(mobileAiServiceSource, /generateHomepageDraft/);
+    assert.match(mobileAiServiceSource, /_api\.ai\.homepage/);
+    assert.match(mobileAiServiceSource, /runOperatorCommand/);
+    assert.match(mobileAiServiceSource, /_api\.products\.create/);
+    assert.match(mobileAiServiceSource, /_api\.coupons\.create/);
+    assert.match(mobileAiServiceSource, /_api\.themes\.saveDraft/);
+    assert.match(mobileAiServiceSource, /AiFeatureUnavailableException/);
+    assert.match(mobileEditorSource, /Describe your homepage/);
+    assert.match(mobileEditorSource, /_showAiHomepageSheet/);
+    assert.match(mobileEditorSource, /themeService\.saveDraft/);
+    assert.doesNotMatch(mobileAiServiceSource, /MOBILE_AI_GENERATION_PROVIDER/);
+});
+
+test('AI wrangler config documents sandbox defaults and production human approval', () => {
+    assert.match(wranglerSource, /AI_PROVIDER_MODE = "sandbox"/);
+    assert.match(wranglerSource, /AI_PROVIDER = "letbuyy_sandbox"/);
+    assert.match(wranglerSource, /AI_PROVIDER_MODE = "live"/);
+    assert.match(wranglerSource, /AI_PROVIDER = "openai_compatible"/);
+    assert.match(wranglerSource, /AI_PROVIDER_MODEL = "SKIP_NEEDS_HUMAN_AI_PROVIDER_MODEL"/);
+    assert.match(wranglerSource, /AI_CREDIT_PURCHASE_MODE = "sandbox"/);
+    assert.match(wranglerSource, /AI_CREDIT_PURCHASE_MODE = "live"/);
+    assert.match(wranglerSource, /AI_CREDIT_PURCHASE_PROVIDER = "razorpay"/);
+    assert.match(wranglerSource, /AI_CREDIT_RAZORPAY_KEY_ID = "SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_ID"/);
+});

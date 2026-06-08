@@ -16,7 +16,7 @@ export default async function TeamDashboardPage() {
         <OpsWorkspace
             eyebrow="Employee operations"
             title="Operations Portal"
-            description="Support, success, sales, and operations workspace for CRM, tickets, merchant health, retention, campaigns, communications, and onboarding."
+            description="Support, success, sales, developer operations, marketplace review, and merchant health workspace."
         >
             <MetricGrid>
                 <OpsMetric label="Stores visible" value={String(analytics.data?.total_stores || 0)} detail="/v1/employees/analytics" />
@@ -32,13 +32,14 @@ export default async function TeamDashboardPage() {
 
             <ModuleGrid>
                 <ModuleCard href="/crm" title="CRM" description="Merchant and contact relationship workspace." status="blocked" detail="Needs employee CRM/search endpoint." />
-                <ModuleCard href="/tickets" title="Tickets" description="Support queue and SLA triage." status="blocked" detail="Current endpoint returns support infrastructure unavailable." />
+                <ModuleCard href="/tickets" title="Tickets" description="Support queue and SLA triage." status="live" detail="Live support workspace" />
                 <ModuleCard href="/merchant-health" title="Merchant Health" description="Merchant risk and growth monitoring." status="partial" detail="Uses /employees/analytics totals only." />
+                <ModuleCard href="/developers" title="Developer 360" description="Partner profile, apps, payouts, disputes, and enforcement context." status="live" detail="Live developer operations workspace" />
                 <ModuleCard href="/retention" title="Retention" description="Save plays, churn risk, and renewal assistance." status="blocked" detail="Needs retention/cohort endpoint." />
                 <ModuleCard href="/campaigns" title="Campaigns" description="Lifecycle campaigns and operational announcements." status="blocked" detail="Needs campaign endpoint." />
                 <ModuleCard href="/communications" title="Communications" description="Merchant email, chat, and notification history." status="blocked" detail="Needs communications endpoint." />
                 <ModuleCard href="/onboarding" title="Onboarding" description="Store setup and activation checklist." status="blocked" detail="Needs onboarding pipeline endpoint." />
-                <ModuleCard href="/operations" title="Review Queue" description="Marketplace app/theme review decisions." status="live" detail="Contract: /v1/operations/marketplace-reviews" />
+                <ModuleCard href="/operations" title="Review Queue" description="Marketplace app/theme review decisions." status="live" detail="Live reviewer workspace" />
             </ModuleGrid>
 
             <Panel title="Operating Rules" description="Current employee portal data constraints.">

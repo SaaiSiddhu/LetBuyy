@@ -39,6 +39,10 @@
 	<string>468123057306-pu3n7p8i7ad7fjgjf487noteqjogjk9n.apps.googleusercontent.com</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>LetBuyy uses the camera to capture product, logo, and verification images.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>LetBuyy uses your photo library to upload product, logo, and storefront media.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

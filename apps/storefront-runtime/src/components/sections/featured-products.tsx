@@ -7,7 +7,7 @@ import type { ProductModel } from '@letbuyy/commerce-core';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ChevronLeft, ChevronRight, ShoppingBag, Heart, Star } from '@letbuyy/ui';
+import { Button, ChevronLeft, ChevronRight, ShoppingBag, Heart, Star } from '@letbuyy/ui';
 import { useState, useRef } from 'react';
 import { useCart } from '@/context/cart-context';
 import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
@@ -108,7 +108,7 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
                     <div className="flex items-center gap-2">
                         <span
                             className="flex h-7 w-7 items-center justify-center rounded"
-                            style={{ backgroundColor: colors.primaryColor, color: '#fff' }}
+                            style={{ backgroundColor: colors.primaryColor, color: 'rgb(255 255 255)' }}
                         >
                             <Star size={14} fill="currentColor" />
                         </span>
@@ -117,20 +117,20 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
                         </h2>
                     </div>
                     <div className="flex gap-1">
-                        <button
+                        <Button unstyled
                             onClick={() => scroll('left')}
                             className="flex h-11 w-11 items-center justify-center rounded-full border hover:bg-surface-hover"
                             style={{ borderColor: hexToRgba(colors.primaryColor, 0.3) }}
                         >
                             <ChevronLeft size={16} style={{ color: colors.primaryColor }} />
-                        </button>
-                        <button
+                        </Button>
+                        <Button unstyled
                             onClick={() => scroll('right')}
                             className="flex h-11 w-11 items-center justify-center rounded-full text-white"
                             style={{ backgroundColor: colors.primaryColor }}
                         >
                             <ChevronRight size={16} />
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
@@ -182,20 +182,20 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
                                                     </span>
                                                 )}
                                                 {/* Heart icon - uses primaryColor */}
-                                                <button
+                                                <Button unstyled
                                                     onClick={(e) => toggleWishlist(e, product.id)}
                                                     className="absolute top-2 right-2 flex h-11 w-11 items-center justify-center rounded-full transition-all card-theme"
                                                     style={{ color: colors.primaryColor }}
                                                 >
                                                     <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
-                                                </button>
-                                                <button
+                                                </Button>
+                                                <Button unstyled
                                                     onClick={(e) => handleQuickAdd(e, product)}
                                                     className="absolute bottom-2 left-2 right-2 flex min-h-11 items-center justify-center gap-2 rounded text-sm font-semibold text-white opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100"
                                                     style={{ backgroundColor: colors.primaryColor }}
                                                 >
                                                     <ShoppingBag size={16} /> Add
-                                                </button>
+                                                </Button>
                                             </div>
                                             <div className="storefront-product-card__body p-3">
                                                 {/* Category label - uses primaryColor */}

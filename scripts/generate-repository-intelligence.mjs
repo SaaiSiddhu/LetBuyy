@@ -622,8 +622,9 @@ function countBy(files, fn) {
 }
 
 const allFiles = listTrackedFiles();
-const allAbsFiles = allFiles.map((file) => path.join(root, file)).filter((file) => fs.existsSync(file));
-const textFiles = allFiles.filter((file) => isTextFile(path.join(root, file)) && !isGeneratedIntelligenceOutput(file) && !isLocalEnvironmentFile(file));
+const existingFiles = allFiles.filter((file) => fs.existsSync(path.join(root, file)));
+const allAbsFiles = existingFiles.map((file) => path.join(root, file));
+const textFiles = existingFiles.filter((file) => isTextFile(path.join(root, file)) && !isGeneratedIntelligenceOutput(file) && !isLocalEnvironmentFile(file));
 const sourceFiles = textFiles.filter((file) => sourceExtensions.has(path.extname(file)) || sourceExtensions.has(path.basename(file)));
 
 const fileSummaries = sourceFiles.map((file) => summarizeFile(file, readText(path.join(root, file))));

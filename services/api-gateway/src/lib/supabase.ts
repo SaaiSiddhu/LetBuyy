@@ -145,3 +145,27 @@ export function dbErrorBody(message = DATABASE_ERROR_MESSAGE) {
 export function dbFailureBody(message = DATABASE_ERROR_MESSAGE) {
     return failureBody('DB_ERROR', message);
 }
+
+export function isLocalSupabaseEnvironment(env: Env): boolean {
+    const url = env.SUPABASE_URL || '';
+    return url.includes('localhost') || url.includes('127.0.0.1');
+}
+
+export function isMissingSchemaError(error: unknown): boolean {
+    if (!error) return false;
+    const message = typeof error === 'string'
+        ? error
+        : error instanceof Error
+            ? error.message
+            : typeof (error as { message?: unknown }).message === 'string'
+                ? (error as { message: string }).message
+                : '';
+
+    return /Could not find the table 'public\.[^']+' in the schema cache/i.test(message)
+        || /relation "public\.[^"]+" does not exist/i.test(message)
+        || /schema cache/i.test(message);
+}
+
+export function shouldReturnEmptyForMissingLocalSchema(env: Env, error: unknown): boolean {
+    return isLocalSupabaseEnvironment(env) && isMissingSchemaError(error);
+}

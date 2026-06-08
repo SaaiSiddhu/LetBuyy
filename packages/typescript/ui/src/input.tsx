@@ -10,25 +10,44 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
     error?: string;
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
+    /**
+     * Additive escape hatch for legacy app adoption where existing classes and
+     * layout must be preserved exactly while still composing the UI primitive.
+     */
+    unstyled?: boolean;
 }
 
-export function Input({
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
     label,
     helperText,
     error,
     leftIcon,
     rightIcon,
+    unstyled = false,
     className = '',
     id,
     'aria-describedby': ariaDescribedBy,
     'aria-invalid': ariaInvalid,
     ...props
-}: InputProps) {
+}: InputProps, ref) {
     const generatedId = useId();
     const inputId = id ?? generatedId;
     const errorId = error ? `${inputId}-error` : undefined;
     const helperId = helperText && !error ? `${inputId}-helper` : undefined;
     const describedBy = [ariaDescribedBy, errorId, helperId].filter(Boolean).join(' ') || undefined;
+
+    if (unstyled) {
+        return (
+            <input
+                id={inputId}
+                aria-describedby={describedBy}
+                aria-invalid={error ? true : ariaInvalid}
+                className={className}
+                ref={ref}
+                {...props}
+            />
+        );
+    }
 
     return (
         <div className="flex flex-col gap-[var(--lb-space-1)]">
@@ -47,6 +66,7 @@ export function Input({
                     id={inputId}
                     aria-describedby={describedBy}
                     aria-invalid={error ? true : ariaInvalid}
+                    ref={ref}
                     className={cx(
                         'flex h-[var(--lb-density-input-height)] w-full rounded-[var(--lb-radius-lg)] border bg-[var(--lb-component-input-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-component-input-text)]',
                         'transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] file:border-0 file:bg-transparent file:text-[length:var(--lb-font-size-body)] file:font-[var(--lb-font-weight-medium)]',
@@ -70,18 +90,24 @@ export function Input({
             {helperText && !error && <p id={helperId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{helperText}</p>}
         </div>
     );
-}
+});
 
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
     label?: string;
     helperText?: string;
     error?: string;
+    /**
+     * Additive escape hatch for legacy app adoption where existing classes and
+     * layout must be preserved exactly while still composing the UI primitive.
+     */
+    unstyled?: boolean;
 }
 
 export function Textarea({
     label,
     helperText,
     error,
+    unstyled = false,
     className = '',
     id,
     'aria-describedby': ariaDescribedBy,
@@ -93,6 +119,18 @@ export function Textarea({
     const errorId = error ? `${inputId}-error` : undefined;
     const helperId = helperText && !error ? `${inputId}-helper` : undefined;
     const describedBy = [ariaDescribedBy, errorId, helperId].filter(Boolean).join(' ') || undefined;
+
+    if (unstyled) {
+        return (
+            <textarea
+                id={inputId}
+                aria-describedby={describedBy}
+                aria-invalid={error ? true : ariaInvalid}
+                className={className}
+                {...props}
+            />
+        );
+    }
 
     return (
         <div className="flex flex-col gap-[var(--lb-space-1)]">

@@ -5,7 +5,6 @@ import 'package:letbuyy_models/letbuyy_models.dart';
 
 import 'api_client.dart';
 import 'cache_service.dart';
-import 'skip_needs_backend_exception.dart';
 
 /// Service for managing products via the LetBuyy API.
 ///
@@ -17,9 +16,6 @@ class ProductService extends ChangeNotifier {
   ProductService({required ApiClient api, CacheService? cache})
     : _api = api,
       _cache = cache;
-
-  static const missingCollectionMutationRouteId =
-      'MOBILE_COLLECTION_UPDATE_DELETE';
 
   // ── Cached state ─────────────────────────────────────────
 
@@ -36,6 +32,9 @@ class ProductService extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  String? _productsNextCursor;
+  String? get productsNextCursor => _productsNextCursor;
+
   // ── Read ─────────────────────────────────────────────────
 
   /// Fetch products for a store (paginated).
@@ -43,9 +42,16 @@ class ProductService extends ChangeNotifier {
     String storeId, {
     int page = 1,
     int limit = 20,
+    String? cursor,
   }) async {
     _isLoading = true;
-    final cacheKey = CacheService.productsKey(storeId, page, limit);
+    final normalizedCursor = cursor?.trim();
+    final cacheKey = CacheService.productsKey(
+      storeId,
+      page,
+      limit,
+      cursor: normalizedCursor,
+    );
     final cachedRows = _cache?.readJsonList(cacheKey) ?? [];
     if (cachedRows.isNotEmpty) {
       _productContracts = cachedRows
@@ -59,8 +65,15 @@ class ProductService extends ChangeNotifier {
 
     try {
       final pageResult = await _api.products.list(
-        query: {'store_id': storeId, 'page': page, 'limit': limit},
+        query: {
+          'store_id': storeId,
+          'page': page,
+          'limit': limit,
+          if (normalizedCursor != null && normalizedCursor.isNotEmpty)
+            'cursor': normalizedCursor,
+        },
       );
+      _productsNextCursor = pageResult.nextCursor;
       _productContracts = pageResult.data
           .map(ProductContract.fromJson)
           .toList(growable: false);
@@ -68,6 +81,12 @@ class ProductService extends ChangeNotifier {
           .map((product) => product.toJson())
           .toList(growable: false);
       await _cache?.writeJson(cacheKey, _products);
+      for (final product in _products) {
+        final id = product['id']?.toString();
+        if (id != null && id.isNotEmpty) {
+          await _cache?.writeJson(CacheService.productDetailKey(id), product);
+        }
+      }
       return _products;
     } catch (e) {
       debugPrint('❌ fetchProducts error: $e');
@@ -81,8 +100,17 @@ class ProductService extends ChangeNotifier {
 
   /// Get a single product by ID.
   Future<Map<String, dynamic>> fetchProduct(String id) async {
-    final product = ProductContract.fromJson(await _api.products.get(id));
-    return product.toJson();
+    try {
+      final product = ProductContract.fromJson(await _api.products.get(id));
+      final payload = product.toJson();
+      await _cache?.writeJson(CacheService.productDetailKey(id), payload);
+      return payload;
+    } catch (e) {
+      debugPrint('❌ fetchProduct error: $e');
+      final cached = _cache?.readJsonMap(CacheService.productDetailKey(id));
+      if (cached != null) return cached;
+      rethrow;
+    }
   }
 
   // ── Create ───────────────────────────────────────────────
@@ -97,13 +125,17 @@ class ProductService extends ChangeNotifier {
     List<String>? images,
     String? category,
     String? sku,
+    String? barcode,
     String? urlHandle,
     String? seoTitle,
     String? seoDescription,
     int stock = 0,
     bool isActive = true,
     bool isFeatured = false,
+    String? productType,
+    String? vendor,
     List<String>? tags,
+    Map<String, dynamic>? metadata,
     List<Map<String, dynamic>>? variants,
   }) async {
     final created = ProductContract.fromJson(
@@ -116,22 +148,52 @@ class ProductService extends ChangeNotifier {
         'images': images ?? [],
         if (category != null) 'category': category,
         if (sku != null && sku.trim().isNotEmpty) 'sku': sku.trim(),
+        if (barcode != null && barcode.trim().isNotEmpty)
+          'barcode': barcode.trim(),
         if (urlHandle != null && urlHandle.trim().isNotEmpty)
           'url_handle': urlHandle.trim(),
         if (seoTitle != null && seoTitle.trim().isNotEmpty)
           'seo_title': seoTitle.trim(),
         if (seoDescription != null && seoDescription.trim().isNotEmpty)
           'seo_description': seoDescription.trim(),
+        if (productType != null && productType.trim().isNotEmpty)
+          'product_type': productType.trim(),
+        if (vendor != null && vendor.trim().isNotEmpty) 'vendor': vendor.trim(),
         'stock': stock,
         'is_active': isActive,
         'is_featured': isFeatured,
         'tags': tags ?? [],
+        if (metadata != null) 'metadata': metadata,
         if (variants != null) 'variants': variants,
       }),
     );
     final product = created.toJson();
     _productContracts = [..._productContracts, created];
     _products.add(product);
+    await _cache?.writeJson(CacheService.productDetailKey(created.id), product);
+    notifyListeners();
+    return product;
+  }
+
+  /// Add one clearly labeled inactive sample product to an empty store.
+  Future<Map<String, dynamic>> seedSampleProduct(String storeId) async {
+    final created = ProductContract.fromJson(
+      await _api.products.sample({'store_id': storeId}),
+    );
+    final product = created.toJson();
+    _productContracts = [
+      created,
+      ..._productContracts.where((item) => item.id != created.id),
+    ];
+    _products = [
+      product,
+      ..._products.where((item) => item['id'] != created.id),
+    ];
+    await _cache?.writeJson(CacheService.productDetailKey(created.id), product);
+    await _cache?.writeJson(
+      CacheService.productsKey(storeId, 1, 20),
+      _products,
+    );
     notifyListeners();
     return product;
   }
@@ -151,6 +213,7 @@ class ProductService extends ChangeNotifier {
     if (contractIdx != -1) _productContracts[contractIdx] = contract;
     final idx = _products.indexWhere((p) => p['id'] == id);
     if (idx != -1) _products[idx] = updated;
+    await _cache?.writeJson(CacheService.productDetailKey(id), updated);
     notifyListeners();
     return updated;
   }
@@ -164,6 +227,7 @@ class ProductService extends ChangeNotifier {
         .where((product) => product.id != id)
         .toList(growable: false);
     _products.removeWhere((p) => p['id'] == id);
+    await _cache?.remove(CacheService.productDetailKey(id));
     notifyListeners();
   }
 
@@ -196,6 +260,14 @@ class ProductService extends ChangeNotifier {
     return _api.uploadFile(file, folder: 'products');
   }
 
+  Future<Map<String, dynamic>> exportProducts(String storeId) {
+    return _api.exports.products(storeId: storeId);
+  }
+
+  Future<Map<String, dynamic>> fetchExportJob(String id) {
+    return _api.exports.job(id);
+  }
+
   // ── Collections ──────────────────────────────────────────
 
   Future<List<ProductCollectionContract>> fetchCollections(
@@ -216,19 +288,12 @@ class ProductService extends ChangeNotifier {
     String id,
     ProductCollectionInput input,
   ) async {
-    // [SKIP-NEEDS-BACKEND: MOBILE_COLLECTION_UPDATE_DELETE]
-    throw const SkipNeedsBackendException(
-      missingCollectionMutationRouteId,
-      'Gateway exposes GET/POST /v1/products/collections but no PATCH route for updating collections.',
-    );
+    final row = await _api.products.updateCollection(id, input.toUpdateJson());
+    return ProductCollectionContract.fromJson(row);
   }
 
   Future<void> deleteCollection(String id) async {
-    // [SKIP-NEEDS-BACKEND: MOBILE_COLLECTION_UPDATE_DELETE]
-    throw const SkipNeedsBackendException(
-      missingCollectionMutationRouteId,
-      'Gateway exposes GET/POST /v1/products/collections but no DELETE route for archiving collections.',
-    );
+    await _api.products.removeCollection(id);
   }
 
   // ── Gift cards ───────────────────────────────────────────
@@ -337,6 +402,12 @@ class ProductCollectionInput {
     if (description != null && description!.trim().isNotEmpty)
       'description': description,
     if (imageUrl != null && imageUrl!.trim().isNotEmpty) 'image_url': imageUrl,
+  };
+
+  Map<String, dynamic> toUpdateJson() => {
+    'title': title,
+    if (description != null) 'description': description,
+    if (imageUrl != null) 'image_url': imageUrl,
   };
 }
 

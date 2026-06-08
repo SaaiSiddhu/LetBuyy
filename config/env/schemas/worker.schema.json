@@ -27,8 +27,34 @@
     "INTERNAL_API_SECRET": {
       "type": "string"
     },
+    "PREVIEW_SIGNING_KEY": {
+      "type": "string"
+    },
+    "STORE_ACCESS_SIGNING_KEY": {
+      "type": "string"
+    },
     "LETBUYY_INTERNAL_API_SECRET": {
       "type": "string"
+    },
+    "NEXT_PUBLIC_STORE_ROOT_DOMAIN": {
+      "type": "string",
+      "pattern": "^[a-z0-9.-]+$"
+    },
+    "STOREFRONT_ROOT_DOMAIN": {
+      "type": "string",
+      "pattern": "^[a-z0-9.-]+$"
+    },
+    "PLATFORM_ROOT_DOMAIN": {
+      "type": "string",
+      "pattern": "^[a-z0-9.-]+$"
+    },
+    "CUSTOM_DOMAIN_CNAME_TARGET": {
+      "type": "string",
+      "pattern": "^[a-z0-9.-]+$"
+    },
+    "NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET": {
+      "type": "string",
+      "pattern": "^[a-z0-9.-]+$"
     },
     "PLATFORM_CONSOLE_API_TOKEN": {
       "type": "string"
@@ -161,6 +187,76 @@
     "CASHFREE_API_VERSION": {
       "type": "string"
     },
+    "AI_PROVIDER_MODE": {
+      "enum": [
+        "sandbox",
+        "live"
+      ]
+    },
+    "AI_PROVIDER": {
+      "enum": [
+        "letbuyy_sandbox",
+        "openai_compatible",
+        "manual"
+      ]
+    },
+    "AI_PROVIDER_API_KEY": {
+      "type": "string"
+    },
+    "AI_PROVIDER_BASE_URL": {
+      "type": "string",
+      "format": "uri"
+    },
+    "AI_PROVIDER_MODEL": {
+      "type": "string"
+    },
+    "AI_CREDIT_PURCHASE_MODE": {
+      "enum": [
+        "sandbox",
+        "live"
+      ]
+    },
+    "AI_CREDIT_PURCHASE_PROVIDER": {
+      "enum": [
+        "letbuyy_sandbox",
+        "razorpay",
+        "manual"
+      ]
+    },
+    "AI_CREDIT_PRICE_INR_PAISE": {
+      "type": "string"
+    },
+    "AI_CREDIT_RAZORPAY_KEY_ID": {
+      "type": "string"
+    },
+    "AI_CREDIT_RAZORPAY_KEY_SECRET": {
+      "type": "string"
+    },
+    "WHATSAPP_PROVIDER_MODE": {
+      "enum": [
+        "sandbox",
+        "live"
+      ]
+    },
+    "WHATSAPP_PROVIDER": {
+      "enum": [
+        "letbuyy_sandbox",
+        "twilio",
+        "manual"
+      ]
+    },
+    "WHATSAPP_WEBHOOK_SECRET": {
+      "type": "string"
+    },
+    "TWILIO_ACCOUNT_SID": {
+      "type": "string"
+    },
+    "TWILIO_AUTH_TOKEN": {
+      "type": "string"
+    },
+    "TWILIO_WHATSAPP_FROM": {
+      "type": "string"
+    },
     "RESEND_API_KEY": {
       "type": "string"
     },
@@ -176,6 +272,60 @@
     },
     "PAYMENT_CONFIG_ENCRYPTION_KEY": {
       "type": "string"
+    },
+    "VERCEL_API_TOKEN": {
+      "type": "string"
+    },
+    "VERCEL_STOREFRONT_PROJECT_ID": {
+      "type": "string"
+    },
+    "VERCEL_TEAM_ID": {
+      "type": "string"
+    },
+    "VERCEL_TEAM_SLUG": {
+      "type": "string"
+    },
+    "ABUSE_REPUTATION_API_URL": {
+      "type": "string",
+      "format": "uri"
+    },
+    "ABUSE_REPUTATION_API_KEY": {
+      "type": "string"
+    },
+    "CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT": {
+      "type": "string"
+    },
+    "REGISTRAR_PROVIDER": {
+      "enum": [
+        "resellerclub",
+        "opensrs",
+        "mock"
+      ]
+    },
+    "REGISTRAR_API_URL": {
+      "type": "string",
+      "format": "uri"
+    },
+    "REGISTRAR_RESELLER_ID": {
+      "type": "string"
+    },
+    "REGISTRAR_API_KEY": {
+      "type": "string"
+    },
+    "REGISTRAR_USERNAME": {
+      "type": "string"
+    },
+    "REGISTRAR_PASSWORD": {
+      "type": "string"
+    },
+    "REGISTRAR_DEFAULT_CURRENCY": {
+      "type": "string"
+    },
+    "REGISTRAR_MOCK_ENABLED": {
+      "enum": [
+        "true",
+        "false"
+      ]
     },
     "R2_BUCKET": {
       "type": "string"

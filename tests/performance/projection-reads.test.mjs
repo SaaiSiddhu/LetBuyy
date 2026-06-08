@@ -26,9 +26,22 @@ test('analytics rollup planner emits commerce projection metrics', () => {
   assert.match(runtimeComposition, /export function planOrderItemAnalyticsRollupIncrements/);
 });
 
+test('analytics rollup planner emits storefront session and source metrics', () => {
+  assert.match(runtimeComposition, /function storefrontAnalyticsKind/);
+  assert.match(runtimeComposition, /metricName: 'storefront\.sessions\.started'/);
+  assert.match(runtimeComposition, /metricName: 'storefront\.sessions\.active'/);
+  assert.match(runtimeComposition, /metricName: 'storefront\.traffic\.source'/);
+  assert.match(runtimeComposition, /metricName: 'storefront\.page\.views'/);
+  assert.match(runtimeComposition, /metricName: 'storefront\.product\.views'/);
+  assert.match(runtimeComposition, /metricName: 'storefront\.cart\.added'/);
+  assert.match(runtimeComposition, /metricName: 'storefront\.checkouts\.started'/);
+  assert.match(runtimeComposition, /sample_weight/);
+});
+
 test('queue consumers maintain analytics/search projections from events', () => {
   for (const source of [queueWorker, gatewayQueueConsumer]) {
     assert.match(source, /planAnalyticsRollupIncrements\(\{[\s\S]*payload: envelope\.payload \|\| \{\}/);
+    assert.match(source, /aggregateId/);
     assert.match(source, /planOrderItemAnalyticsRollupIncrements/);
     assert.match(source, /from\('order_items'\)/);
     assert.match(source, /from\('analytics_event_stream'\)/);

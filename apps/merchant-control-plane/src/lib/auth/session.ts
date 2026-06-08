@@ -1,5 +1,17 @@
 import { cache } from 'react'
-import { createMerchantApiClient } from '@/lib/api/client'
+import { LetbuyyApiError } from '@letbuyy/api-client'
+import { MerchantApiRequestError, createMerchantApiClient } from '@/lib/api/client'
+
+/**
+ * Extract the HTTP status code carried by a typed API error.
+ * Returns null for non-HTTP failures (network, timeout, unexpected throws),
+ * which callers treat as transient and rethrow.
+ */
+function apiErrorStatus(error: unknown): number | null {
+    if (error instanceof LetbuyyApiError) return error.status
+    if (error instanceof MerchantApiRequestError) return error.status
+    return null
+}
 
 export interface SessionUser {
     id: string
@@ -20,8 +32,13 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
             fullName: payload.user.fullName ?? null,
             avatarUrl: null,
         }
-    } catch {
-        return null
+    } catch (error) {
+        // Only genuine auth failures mean "logged out". Transient failures
+        // (5xx, network, timeout, unexpected throws) must rethrow so an error
+        // boundary renders instead of bouncing a valid merchant to login.
+        const status = apiErrorStatus(error)
+        if (status === 401 || status === 403) return null
+        throw error
     }
 })
 
@@ -59,8 +76,13 @@ export const getStoreForUser = cache(async (
             theme_settings: data.theme_settings || null,
             custom_domain: data.custom_domain || null,
         }
-    } catch {
-        return null
+    } catch (error) {
+        // 401/403 (no access) and 404 (missing store) → not found.
+        // 5xx/network/unexpected → rethrow so an error boundary renders
+        // instead of faking a 404 for a transient backend failure.
+        const status = apiErrorStatus(error)
+        if (status === 401 || status === 403 || status === 404) return null
+        throw error
     }
 })
 
@@ -85,7 +107,12 @@ export const getUserStores = cache(async (
             site_type: store.site_type,
             status: store.status,
         }))
-    } catch {
-        return []
+    } catch (error) {
+        // Only genuine auth failures yield an empty list. Transient failures
+        // (5xx, network, timeout, unexpected throws) rethrow so an error
+        // boundary renders instead of silently showing "no stores".
+        const status = apiErrorStatus(error)
+        if (status === 401 || status === 403) return []
+        throw error
     }
 })

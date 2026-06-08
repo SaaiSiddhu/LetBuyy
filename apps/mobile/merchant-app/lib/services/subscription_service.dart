@@ -200,6 +200,22 @@ class SubscriptionService {
     }
   }
 
+  /// Start a checkout that recovers the latest failed subscription payment.
+  Future<Map<String, dynamic>> recoverFailedPayment({
+    required String storeId,
+    String? billingPeriod,
+  }) async {
+    try {
+      return await _api.payments.subscription.recover({
+        'store_id': storeId,
+        if (billingPeriod != null) 'billing_period': billingPeriod,
+      });
+    } catch (e) {
+      debugPrint('Error recovering subscription payment: $e');
+      rethrow;
+    }
+  }
+
   // ============================================================
   // CONNECT OWN RAZORPAY
   // ============================================================
@@ -403,6 +419,7 @@ class SubscriptionService {
     final status = value?.toString().toLowerCase();
     if (status == 'cancelled') return 'canceled';
     if (status == 'past_due') return 'pastDue';
+    if (status == 'failed') return 'pastDue';
     return status ?? 'active';
   }
 }

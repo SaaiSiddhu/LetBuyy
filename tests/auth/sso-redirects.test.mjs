@@ -23,8 +23,20 @@ test('federated app proxies accept the shared merchant session verifier', () => 
 test('federated apps redirect unauthenticated browser traffic to accounts lookup with return_to', () => {
   for (const file of FEDERATED_PROXY_FILES) {
     const source = readFileSync(file, 'utf8');
+    const resolverFile = file === 'apps/app-marketplace/src/proxy.ts'
+      ? 'apps/app-marketplace/src/lib/site-url.ts'
+      : file === 'apps/theme-marketplace/src/proxy.ts'
+        ? 'apps/theme-marketplace/src/lib/public-urls.ts'
+        : null;
+    const centralResolver =
+      Boolean(resolverFile) &&
+      /getAccountsUrl\(\)/.test(source) &&
+      /NEXT_PUBLIC_ACCOUNTS_URL/.test(readFileSync(resolverFile, 'utf8'));
 
-    assert.match(source, /NEXT_PUBLIC_ACCOUNTS_URL/, `${file} must allow the accounts origin to be configured`);
+    assert.ok(
+      /NEXT_PUBLIC_ACCOUNTS_URL/.test(source) || centralResolver,
+      `${file} must allow the accounts origin to be configured`,
+    );
     assert.match(source, /new URL\(['"]\/lookup['"]/, `${file} must redirect through the identity lookup flow`);
     assert.match(source, /searchParams\.set\(['"]return_to['"],\s*request\.url\)/, `${file} must preserve the caller URL`);
     assert.doesNotMatch(source, /searchParams\.set\(['"]redirect['"],\s*request\.url\)/, `${file} must not use the legacy login redirect contract`);

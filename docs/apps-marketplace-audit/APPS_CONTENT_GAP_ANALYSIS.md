@@ -1,54 +1,65 @@
 # Apps Content Gap Analysis (Phase 6)
 
-Audits every user-facing string surface — titles, taglines, cards, detail pages, help text, onboarding, empty/error states — for accuracy, professionalism, and usefulness, and flags placeholder/filler/misleading content. Parent: [Master Audit](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md).
+**Parent:** [`../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md`](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md) · **Date:** 2026-06-07
 
-## 1. What's genuinely good
+Audit of every user-facing string, empty/error state, and onboarding copy in the marketplace front-end. The headline finding: **content *integrity* is good (no fabricated apps, reviews, or metrics), but content *theater* is pervasive** — placeholder pages, "contract-gated"/"pending approval" hedges, and copy that leaks internal governance state to end users.
 
-- **Honest outage/empty copy.** `MarketplaceUnavailable` says "We could not reach the app catalog service right now… please try again," and the home empty state says "The marketplace shell is ready, but the app catalog API returned no rows in this environment." This is rare and commendable honesty — no fake apps.
-- **Uninstall data-loss warning** is specific and correct: "this removes app access, embedded surfaces, webhooks, and app-managed configuration… App-owned data may stop syncing or become unavailable" (`InstalledAppsGrid.tsx`).
-- **Permission consent copy** names exact scope codes alongside human labels (`AppInstallConsentPanel.tsx`), which is good security UX.
-- **Billing-approval banner** correctly states paid charges aren't activated until merchant approval.
+## 1. Integrity — what's honest (credit)
 
-## 2. Misleading or inaccurate content (fix before launch)
+- **No fabricated data.** Cards/detail render whatever the API returns and default numbers to 0; ratings/histograms derive from real reviews; dashboard metrics come from the live `partnerDashboard()` (`AppCard.tsx:31-42`, `apps/[slug]/page.tsx:464-506`, `developers/dashboard/page.tsx:107-141`). No mock catalog, no seeded reviews, no fake install counts.
+- **Honest empty states.** Home: *"The marketplace shell is ready, but the app catalog API returned no rows in this environment."* (`page.tsx:274`). App detail: *"No reviews yet."* (`apps/[slug]/page.tsx:503`).
+- **Honest fallbacks.** Developer name → "LetBuyy Partner" (`marketplace-display.ts:22`); tagline → "No app summary has been provided yet." (`AppCard.tsx:94`); API key → "Key rotated. Secret is not returned by this backend." (`ApiKeyPanel.tsx:40`).
 
-| Surface | Problem | Evidence |
-|---|---|---|
-| Every app card + detail | **"Built for LetBuyy"** shown unconditionally — implies an earned quality bar that doesn't exist | `AppCard.tsx`, `apps/[slug]/page.tsx` |
-| Developer register Step 3 | "LetBuyy takes a **15% commission** (net-85 revenue share)" — contradicts backend default 20% | `developers/register/page.tsx` vs `queue-execution.adapter.ts:449` |
-| Submit form pricing hint | "In INR. LetBuyy takes a **15% commission**." — same contradiction | `apps/new/page.tsx` |
-| "Made in India" collection | "Apps built by Indian developers, optimized for Indian merchants" — **no country filter applied**; just sorts by recent | `collections/[slug]/page.tsx` |
-| "Staff Picks" / "Trending This Week" | Copy implies curation/real-time popularity; both are plain re-sorts of the same query | `collections/[slug]/page.tsx` |
-| Layout metadata | "Browse **thousands of apps**…" while catalog is empty | `app/layout.tsx`, `Footer.tsx` |
-| Marketing keyword | `keywords: ["… shopify alternatives …"]` ships in production metadata | `app/layout.tsx` |
-| Developer portal | "6 Extension Types" but schema defines **8** (`app_extensions_type_check`) | `developers/page.tsx` vs `000_baseline.sql:8342` |
+No `lorem ipsum`, `TODO`/`FIXME`, `coming soon`, or `mock`/`stub` literals were found in front-end source.
 
-## 3. Placeholder / unfinished content
+## 2. Theater inventory (placeholder / "pending" / contract-gated copy)
 
-| Surface | Problem |
-|---|---|
-| App detail screenshots | Defaults to 3 placeholders: "Awaiting approved media from the app partner" — fine as fallback, but submission can't upload media anyway, so it's the *permanent* state |
-| Detail "Updated" date | Falls back to `1970-01-01` epoch when timestamps are missing (`formatIndiaDate(... || '1970-01-01...')`) — would display a 1970 date |
-| Category pages | Sort `<select>` is inert (no handler); options render but do nothing |
-| Search sidebar | Pricing (Free/Freemium/Paid) and Rating (4+/3+) options are static text with no behavior |
-| Country select | US/GB show flag emoji, India doesn't; payout copy is India-only — cosmetic mismatch |
+Each is real shipped copy with a citation:
 
-## 4. Visible rendering bug (content correctness)
+| Surface | Copy (verbatim) | File:line | Problem |
+|---|---|---|---|
+| Pricing display | "Pricing unavailable" / "Usage billing is not supported yet" | `marketplace-display.ts:38` | A pricing model the catalog can hold but the product can't bill |
+| i18n string | "Final policy text requires human approval." | `i18n/messages.ts:8` | Internal governance state surfaced as product copy |
+| Review-requirements | "Final policy text requires human approval. This page lists the product-owned checks…" | `review-requirements/page.tsx:18` | Whole page is a placeholder |
+| Review-requirements banner | `SKIPPED (HUMAN-APPROVAL)` / "Final review rubric, SLA, and legal policy wording must be supplied by LetBuyy governance." | `review-requirements/page.tsx:35` | Ledger status string leaked to users |
+| Submit app | "Usage-based pricing is unavailable until the billing contract supports it." | `apps/new/page.tsx:293` | Hedge |
+| Submit app | "Annual billing persistence is tracked in the pricing contract." | `apps/new/page.tsx:322` | Internal contract reference in user copy |
+| Submit app + Register | "Final marketplace commission is pending business approval…" | `apps/new/page.tsx:307`, `register/page.tsx:200` | Core economics unknown to developer |
+| Developer landing | "Earn Revenue … Usage billing is pending platform support." | `developers/page.tsx:14` | Hedge on the headline benefit |
+| Developer landing | "Extension APIs … as platform capabilities become available in-product." | `developers/page.tsx:17` | Hedge |
+| Submit app | distribution option "Private app install link (contract-gated)" | `apps/new/page.tsx:358` | "contract-gated" shown as a selectable option label |
+| Dashboard | "Edit unavailable" + "Editing and new versions are gated on the app-update contract." | `developers/dashboard/page.tsx:309,312` | The update gap, surfaced as copy |
+| Partner directory | "Partner directory data is not exposed by the platform yet…" + `Flag: NEXT_PUBLIC_MP_PARTNER_DIRECTORY default off.` | `partners/page.tsx:19,26` | **Prints the env-var name to users** |
+| Developer profile | "Public developer profiles require a gateway endpoint…" + `Flag: NEXT_PUBLIC_MP_DEVELOPER_PROFILES default off` | `developers/[slug]/page.tsx:28,38` | **Prints the env-var name to users** |
+| Collections | "Currently sorted by rating until LetBuyy editorial curation is connected." | `collections/[slug]/page.tsx:13` | "Staff Picks" admits it isn't curated |
+| Collections | "India developer filtering is not connected yet; this view currently shows recent marketplace apps." | `collections/[slug]/page.tsx:25` | "Made in India" with no India filtering |
+| Install panel | "OAuth install is contract-gated until the marketplace BFF route is approved by governance." | `AppInstallConsentPanel.tsx:91` | Thrown as an error if the flag is on |
+| App detail | "Report review unavailable" / "Report listing unavailable" (disabled) | `apps/[slug]/page.tsx:493,617` | Dead controls |
+| App detail | "Awaiting approved media from the app partner." | `apps/[slug]/page.tsx:322` | Placeholder screenshots |
 
-`APP_CATEGORIES[].icon` holds a **Material icon name string** (e.g., `'inventory_2'`, `'local_shipping'`). `CategoryGrid.tsx` and the home pills correctly pass it to `<MaterialIcon name=…>`. But three surfaces render it as raw text:
+## 3. Misleading / inaccurate content
 
-- Search sidebar: `{cat.icon} {cat.name}` → "inventory_2 Product Sourcing" (`search/page.tsx`)
-- Category header: `<span style={{fontSize:32}}>{category.icon}</span>` → "inventory_2" at 32px (`categories/[slug]/page.tsx`)
-- Submit dropdown: `{cat.icon} {cat.name}` (`apps/new/page.tsx`)
+- **"Built for LetBuyy"** badge implies a vetting program; there is no program and no `built_for_letbuyy` DB column behind it (`marketplace-display.ts:49`, schema). Either build it or remove it.
+- **"Verified partner"** badge is sourced from `app_developers.verified` (`marketplace-display.ts:25`) — fine *if* verification is a real process, but no verification workflow exists in the gateway, so the badge currently has no path to becoming true.
+- **Revenue economics are unstated to developers** while the code has already decided 20% (`billing-core:269`). A developer cannot make a business decision on "pending business approval."
+- **Stale domain** in user-visible copy: submit slug hint `apps.letbuyy.store/apps/...` (`apps/new/page.tsx:176`); footer `docs.letbuyy.store`, `letbuyy.store`, `admin.letbuyy.store`, `themes.letbuyy.store`, `support@letbuyy.store` (`Footer.tsx:28-37`) — versus canonical `letbuyy.com`.
 
-## 5. Missing content that merchants/developers need
+## 4. Missing content (gaps that should exist)
 
-- **No data-handling/privacy disclosure** on listings (what the app collects, where data goes).
-- **No review policy / submission rubric** published anywhere in the product.
-- **No changelog/release notes**, no "what's new."
-- **No support expectations** (response time, channels) beyond a raw `support_email`.
-- **No compatibility statements** ("works with theme/app X").
-- **Empty-search has no guidance** beyond "Try different keywords."
+- **No developer documentation** (the footer links to `docs.letbuyy.store/apps` and `/api`, which are external and likely unpublished). A developer marketplace cannot function without API docs, manifest reference, and a getting-started guide.
+- **No published review policy / app guidelines** (the page that should hold it is a placeholder).
+- **No pricing/economics page** stating the revenue share, payout schedule, GST handling, and supported billing models.
+- **No "request an app" demand-capture** on empty states — a missed signal-collection opportunity while the catalog fills.
+- **No category landing copy** for SEO/merchant education.
+- **No trust/security page** (data handling expectations, what review covers).
 
-## 6. Tone & professionalism
+## 5. Recommendations (content)
 
-Copy is generally clean, professional, and India-aware (₹, GST, UPI). The problems are not grammar — they're **truthfulness** (badges, commission, collections) and **completeness** (placeholders that are permanent because the pipeline to replace them doesn't exist). Fixing §2 and §4 is mandatory before any merchant sees this; §3 and §5 are launch-quality work.
+1. **Stop leaking governance state.** Remove every `Flag: NEXT_PUBLIC_*`, `SKIPPED (HUMAN-APPROVAL)`, and "contract-gated/contract" string from user-facing copy. If a feature isn't ready, hide it — don't narrate the internal reason.
+2. **Decide and publish the economics.** One revenue-share number, payout schedule, and billing-model list — in code, docs, and UI.
+3. **Make badges true or remove them** ("Built for LetBuyy", "Verified partner").
+4. **Fix the stale domain** everywhere it appears in copy.
+5. **Write the missing pages:** review policy, developer docs, pricing/economics, trust/security.
+6. **Replace "fake collection" copy** with either real curation or no collection at all.
+
+Content integrity is a real asset here — the team resisted faking data. The work is to **remove the scaffolding language** and **write the substantive pages** a marketplace needs.

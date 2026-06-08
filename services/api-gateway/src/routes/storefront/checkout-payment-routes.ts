@@ -224,6 +224,7 @@ export type StorefrontCheckoutPaymentDependencies = {
     emitStorefrontOrderPaidEvent: (
         db: ReturnType<typeof getSupabaseAdmin>,
         input: {
+            env?: Env;
             storeId?: string | null;
             orderId: string;
             order: StorefrontPaidOrderSnapshot;
@@ -576,7 +577,10 @@ export function registerStorefrontCheckoutPaymentRoutes(
                 return c.json(claim.responseBody as any, claim.statusCode as any);
             }
 
-            if (order.payment_id && order.payment_id !== body.razorpay_order_id) {
+            // SECURITY: fail closed — the order MUST have been bound to a server-created
+            // Razorpay order (via .../razorpay/order → attachPaymentReference) first. A null
+            // payment_id means the signature is being replayed from a different order.
+            if (!order.payment_id || order.payment_id !== body.razorpay_order_id) {
                 await idempotency.fail(claim.id);
                 return c.json(
                     { success: false, error: { code: 'PAYMENT_REFERENCE_MISMATCH', message: 'Razorpay order does not match this checkout order' } },
@@ -627,6 +631,7 @@ export function registerStorefrontCheckoutPaymentRoutes(
                     orderId: body.orderId,
                     order: confirmedOrder as StorefrontPaidOrderSnapshot,
                     fallbackOrder: order,
+                    env: c.env,
                     requestId: getRequestId(c),
                     idempotencyKey: body.idempotencyKey,
                 });
@@ -803,7 +808,7 @@ export function registerStorefrontCheckoutPaymentRoutes(
                 );
             }
 
-            if (order.payment_id && order.payment_id !== body.cashfree_order_id && order.payment_id !== body.cf_payment_id) {
+            if (!order.payment_id || (order.payment_id !== body.cashfree_order_id && order.payment_id !== body.cf_payment_id)) {
                 return c.json(
                     { success: false, error: { code: 'PAYMENT_REFERENCE_MISMATCH', message: 'Cashfree order does not match this checkout order' } },
                     409
@@ -866,6 +871,7 @@ export function registerStorefrontCheckoutPaymentRoutes(
                     orderId: body.orderId,
                     order: confirmedOrder as StorefrontPaidOrderSnapshot,
                     fallbackOrder: order,
+                    env: c.env,
                     requestId: getRequestId(c),
                     idempotencyKey: body.idempotencyKey,
                 });
@@ -1134,7 +1140,7 @@ export function registerStorefrontCheckoutPaymentRoutes(
                 );
             }
 
-            if (order.payment_id && order.payment_id !== body.paypalOrderId) {
+            if (!order.payment_id || order.payment_id !== body.paypalOrderId) {
                 return c.json(
                     { success: false, error: { code: 'PAYMENT_REFERENCE_MISMATCH', message: 'PayPal order does not match this checkout order' } },
                     409
@@ -1192,6 +1198,7 @@ export function registerStorefrontCheckoutPaymentRoutes(
                     orderId: body.orderId,
                     order: confirmedOrder as StorefrontPaidOrderSnapshot,
                     fallbackOrder: order,
+                    env: c.env,
                     requestId: getRequestId(c),
                     idempotencyKey: body.idempotencyKey,
                 });

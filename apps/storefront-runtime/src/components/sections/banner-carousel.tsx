@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, ArrowRight } from '@letbuyy/ui';
+import { Button, ChevronLeft, ChevronRight, ArrowRight } from '@letbuyy/ui';
 import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
 import type { ThemeSettings } from '@letbuyy/theme-engine';
 
@@ -202,7 +202,7 @@ export default function BannerCarousel({
                                         <motion.button
                                             whileHover={{ scale: 1.02 }}
                                             whileTap={{ scale: 0.98 }}
-                                            className="px-6 py-3 bg-white rounded-lg font-semibold text-base flex items-center gap-2 shadow-lg"
+                                            className="px-6 py-3 bg-[var(--lb-color-surface)] rounded-lg font-semibold text-base flex items-center gap-2 shadow-lg"
                                             style={{ color: colors.primaryColor }}
                                         >
                                             {currentBanner.buttonText}
@@ -219,18 +219,18 @@ export default function BannerCarousel({
             {/* Navigation Arrows */}
             {showArrows && totalSlides > 1 && (
                 <>
-                    <button
+                    <Button unstyled
                         onClick={() => paginate(-1)}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-[var(--lb-color-surface)]/20 backdrop-blur-sm text-white hover:bg-[var(--lb-color-surface)]/30 transition-colors"
                     >
                         <ChevronLeft size={20} />
-                    </button>
-                    <button
+                    </Button>
+                    <Button unstyled
                         onClick={() => paginate(1)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-[var(--lb-color-surface)]/20 backdrop-blur-sm text-white hover:bg-[var(--lb-color-surface)]/30 transition-colors"
                     >
                         <ChevronRight size={20} />
-                    </button>
+                    </Button>
                 </>
             )}
 
@@ -238,12 +238,12 @@ export default function BannerCarousel({
             {showIndicators && totalSlides > 1 && (
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
                     {displayBanners.map((_, index) => (
-                        <button
+                        <Button unstyled
                             key={index}
                             onClick={() => goToSlide(index)}
                             className={`transition-all duration-300 rounded-full ${index === currentIndex
-                                ? 'w-6 h-2 bg-white'
-                                : 'w-2 h-2 bg-white/40 hover:bg-white/60'
+                                ? 'w-6 h-2 bg-[var(--lb-color-surface)]'
+                                : 'w-2 h-2 bg-[var(--lb-color-surface)]/40 hover:bg-[var(--lb-color-surface)]/60'
                                 }`}
                         />
                     ))}

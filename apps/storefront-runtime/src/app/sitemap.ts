@@ -3,17 +3,24 @@ import { headers } from 'next/headers';
 import { ContentService } from '@/lib/content-service';
 import { ProductService } from '@/lib/product-service';
 import { StoreService } from '@/lib/store-service';
-import { getStorefrontUrl, resolveSubdomainFromHost } from '@/lib/seo';
+import { getStorefrontUrl, isStorefrontIndexable, resolveSubdomainFromHost } from '@/lib/seo';
+import { resolveStorefrontAccessContext } from '@/lib/storefront-access';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const requestHeaders = await headers();
     const host = requestHeaders.get('x-forwarded-host') || requestHeaders.get('host');
-    const subdomain = resolveSubdomainFromHost(host);
+    const accessContext = host ? await resolveStorefrontAccessContext(host).catch(() => null) : null;
+    const subdomain = accessContext?.subdomain || resolveSubdomainFromHost(host);
 
     if (!subdomain) return [];
 
     const store = await StoreService.getStoreBySubdomain(subdomain);
-    if (!store || store.status !== 'published') return [];
+    if (
+        !store
+        || !isStorefrontIndexable(store)
+        || accessContext?.access_mode !== 'public'
+        || accessContext?.published === false
+    ) return [];
 
     const [products, pages, blogPosts] = await Promise.all([
         ProductService.getProductsByStoreSubdomain(subdomain).catch(() => []),

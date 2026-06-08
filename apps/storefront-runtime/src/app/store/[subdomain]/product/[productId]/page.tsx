@@ -5,7 +5,7 @@ import StorefrontCompositionEngine from '@/lib/theme-engine/composition-engine';
 import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver';
 import { createProductDetailFallbackSection } from '@/lib/theme-engine/product-route';
 import type { SectionRenderData } from '@/lib/theme-engine/types';
-import { buildProductJsonLd, buildStoreMetadata } from '@/lib/seo';
+import { buildBreadcrumbJsonLd, buildProductJsonLd, buildStoreJsonLd, buildStoreMetadata } from '@/lib/seo';
 import type { Metadata } from 'next';
 
 export const revalidate = 30;
@@ -53,14 +53,25 @@ export default async function ProductPage({ params }: { params: Promise<{ subdom
         sectionData.set(section.id, { product });
     }
 
-    const productJsonLd = JSON.stringify(buildProductJsonLd(store, product)).replace(/</g, '\\u003c');
+    const jsonLdNodes = [
+        buildProductJsonLd(store, product),
+        buildBreadcrumbJsonLd(store, [
+            { name: 'Home', path: '/' },
+            { name: 'Shop', path: '/shop' },
+            { name: product.name, path: `/product/${product.id}` },
+        ]),
+        buildStoreJsonLd(store),
+    ];
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: productJsonLd }}
-            />
+            {jsonLdNodes.map((node, index) => (
+                <script
+                    key={index}
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(node).replace(/</g, '\\u003c') }}
+                />
+            ))}
             <StorefrontCompositionEngine store={store} plan={plan} sectionData={sectionData} />
         </>
     );

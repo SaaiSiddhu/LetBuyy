@@ -73,6 +73,7 @@ export class SubscriptionExecutionAdapter {
             .insert({
                 user_id: input.userId,
                 store_id: input.storeId,
+                site_id: input.storeId,
                 plan: input.plan.slug,
                 plan_id: input.plan.id,
                 status: 'active',
@@ -114,6 +115,7 @@ export class SubscriptionExecutionAdapter {
             paymentGateway: input.paymentGateway || null,
             paymentId: input.razorpayPaymentId || input.externalSubscriptionId || input.razorpayOrderId || null,
             paymentStatus: 'paid',
+            billingPeriod: input.billingPeriod,
             periodStart: now.toISOString(),
             periodEnd: periodEnd.toISOString(),
         });
@@ -170,6 +172,7 @@ export class SubscriptionExecutionAdapter {
         paymentGateway: 'razorpay' | 'stripe' | null;
         paymentId?: string | null;
         paymentStatus: 'paid' | 'failed';
+        billingPeriod?: SubscriptionBillingPeriod | null;
         periodStart: string;
         periodEnd: string;
     }) {
@@ -178,6 +181,7 @@ export class SubscriptionExecutionAdapter {
             .insert({
                 user_id: input.userId,
                 store_id: input.storeId,
+                site_id: input.storeId,
                 subscription_id: input.subscriptionId || null,
                 invoice_number: input.invoiceNumber,
                 description: input.description,
@@ -188,6 +192,7 @@ export class SubscriptionExecutionAdapter {
                 payment_gateway: input.paymentGateway,
                 payment_id: input.paymentId || null,
                 payment_status: input.paymentStatus,
+                billing_period: input.billingPeriod || null,
                 period_start: input.periodStart,
                 period_end: input.periodEnd,
             })

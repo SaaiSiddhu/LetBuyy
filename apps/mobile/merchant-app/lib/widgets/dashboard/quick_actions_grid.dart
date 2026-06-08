@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/app_theme_colors.dart';
+import '../shared/accessible_tap_region.dart';
 
 /// Quick Actions Grid for Dashboard
 /// Modern bento-style quick action buttons
@@ -93,10 +94,7 @@ class _Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    return Container(
-      height: 1,
-      color: colors.glassMediumBorder,
-    );
+    return Container(height: 1, color: colors.glassMediumBorder);
   }
 }
 
@@ -127,76 +125,74 @@ class _QuickActionItemState extends State<_QuickActionItem> {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) {
-        setState(() => _isPressed = false);
-        HapticFeedback.selectionClick();
-        widget.onTap?.call();
-      },
-      onTapCancel: () => setState(() => _isPressed = false),
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: colors.durationFast,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: _isPressed 
-              ? colors.glassHeavy 
-              : Colors.transparent,
-          borderRadius: BorderRadius.vertical(
-            top: widget.isLast ? Radius.zero : Radius.zero,
-            bottom: widget.isLast 
-                ? const Radius.circular(20) 
-                : Radius.zero,
+    return AccessibleTapRegion(
+      label: widget.title,
+      hint: widget.subtitle,
+      onTap: widget.onTap,
+      excludeChildSemantics: true,
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) {
+          setState(() => _isPressed = false);
+          HapticFeedback.selectionClick();
+          widget.onTap?.call();
+        },
+        onTapCancel: () => setState(() => _isPressed = false),
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: colors.durationFast,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: _isPressed ? colors.glassHeavy : Colors.transparent,
+            borderRadius: BorderRadius.vertical(
+              top: widget.isLast ? Radius.zero : Radius.zero,
+              bottom: widget.isLast ? const Radius.circular(20) : Radius.zero,
+            ),
           ),
-        ),
-        child: Row(
-          children: [
-            // Icon with glow
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: widget.color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
+          child: Row(
+            children: [
+              // Icon with glow
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: widget.color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(widget.icon, color: widget.color, size: 20),
               ),
-              child: Icon(
-                widget.icon,
-                color: widget.color,
+              const SizedBox(width: 14),
+              // Text
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.title,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      widget.subtitle,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Chevron
+              Icon(
+                Icons.chevron_right_rounded,
+                color: colors.textTertiary,
                 size: 20,
               ),
-            ),
-            const SizedBox(width: 14),
-            // Text
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    widget.subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Chevron
-            Icon(
-              Icons.chevron_right_rounded,
-              color: colors.textTertiary,
-              size: 20,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -228,45 +224,50 @@ class _QuickActionPillState extends State<QuickActionPill> {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) {
-        setState(() => _isPressed = false);
-        HapticFeedback.lightImpact();
-        widget.onTap?.call();
-      },
-      onTapCancel: () => setState(() => _isPressed = false),
-      child: AnimatedScale(
-        scale: _isPressed ? 0.95 : 1.0,
-        duration: colors.durationFast,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: colors.glassMedium,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.glassMediumBorder),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: widget.color.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
+    return AccessibleTapRegion(
+      label: widget.label,
+      onTap: widget.onTap,
+      excludeChildSemantics: true,
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) {
+          setState(() => _isPressed = false);
+          HapticFeedback.lightImpact();
+          widget.onTap?.call();
+        },
+        onTapCancel: () => setState(() => _isPressed = false),
+        child: AnimatedScale(
+          scale: _isPressed ? 0.95 : 1.0,
+          duration: colors.durationFast,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: colors.glassMedium,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: colors.glassMediumBorder),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: widget.color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(widget.icon, color: widget.color, size: 16),
                 ),
-                child: Icon(widget.icon, color: widget.color, size: 16),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                widget.label,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: colors.textPrimary,
+                const SizedBox(width: 10),
+                Text(
+                  widget.label,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textPrimary,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

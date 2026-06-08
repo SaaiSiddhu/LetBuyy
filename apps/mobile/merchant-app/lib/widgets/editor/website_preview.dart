@@ -148,7 +148,8 @@ class _StorefrontPreviewWebViewState extends State<_StorefrontPreviewWebView> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.url != widget.url) {
       _controller.loadRequest(Uri.parse(widget.url));
-    } else if (oldWidget.zoomLevel != widget.zoomLevel) {
+    } else if (oldWidget.zoomLevel != widget.zoomLevel ||
+        oldWidget.deviceMode != widget.deviceMode) {
       _applyZoom();
     }
   }

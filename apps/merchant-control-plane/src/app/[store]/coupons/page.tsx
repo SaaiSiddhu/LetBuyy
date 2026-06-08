@@ -3,15 +3,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import type { Coupon as SharedCoupon } from '@letbuyy/shared-types'
-import {
+import { Button, Input, Table,
     Badge,
     Banner,
-    Button,
     Card,
     ConfirmDialog,
     EmptyState,
     IndianRupee,
-    Input,
     Page,
     PageHeader,
     Pencil,
@@ -464,7 +462,7 @@ export default function CouponsPage() {
                                 onChange={(event) => updateForm('expires_at', event.target.value)}
                             />
                             <label className="flex items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)] md:col-span-2">
-                                <input
+                                <Input unstyled
                                     type="checkbox"
                                     checked={formData.is_active}
                                     onChange={(event) => updateForm('is_active', event.target.checked)}
@@ -504,7 +502,7 @@ export default function CouponsPage() {
                         />
                     ) : coupons.length > 0 ? (
                         <div className="overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
-                            <table className="w-full text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
+                            <Table tableClassName="w-full text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
                                 <thead className="bg-[var(--lb-color-surface-subdued)]">
                                     <tr>
                                         <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Code</th>
@@ -562,7 +560,7 @@ export default function CouponsPage() {
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
+                            </Table>
                         </div>
                     ) : null}
                 </Section>

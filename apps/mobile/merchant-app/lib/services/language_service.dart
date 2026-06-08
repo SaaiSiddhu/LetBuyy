@@ -4,39 +4,63 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum AppLanguage {
-  english,
-  tamil,
-  hindi,
-}
+enum AppLanguage { english, tamil, hindi, bengali, kannada, marathi, telugu }
 
 class LanguageService extends ChangeNotifier {
   static const String _languageKey = 'app_language';
-  
+
   AppLanguage _currentLanguage = AppLanguage.english;
-  
+
   AppLanguage get currentLanguage => _currentLanguage;
-  
+
   String get languageCode {
-    switch (_currentLanguage) {
+    return languageCodeFor(_currentLanguage);
+  }
+
+  String languageCodeFor(AppLanguage language) {
+    switch (language) {
       case AppLanguage.english:
         return 'en';
       case AppLanguage.tamil:
         return 'ta';
       case AppLanguage.hindi:
         return 'hi';
+      case AppLanguage.bengali:
+        return 'bn';
+      case AppLanguage.kannada:
+        return 'kn';
+      case AppLanguage.marathi:
+        return 'mr';
+      case AppLanguage.telugu:
+        return 'te';
     }
   }
-  
+
   String get languageName {
-    switch (_currentLanguage) {
+    return languageNameFor(_currentLanguage);
+  }
+
+  String languageNameFor(AppLanguage language) {
+    switch (language) {
       case AppLanguage.english:
         return 'English';
       case AppLanguage.tamil:
         return 'தமிழ்';
       case AppLanguage.hindi:
         return 'हिंदी';
+      case AppLanguage.bengali:
+        return 'বাংলা';
+      case AppLanguage.kannada:
+        return 'ಕನ್ನಡ';
+      case AppLanguage.marathi:
+        return 'मराठी';
+      case AppLanguage.telugu:
+        return 'తెలుగు';
     }
+  }
+
+  String languageFlagFor(AppLanguage language) {
+    return language == AppLanguage.english ? '🇬🇧' : '🇮🇳';
   }
 
   Future<void> loadLanguage() async {
@@ -58,7 +82,7 @@ class LanguageService extends ChangeNotifier {
   Future<void> setLanguage(AppLanguage language) async {
     _currentLanguage = language;
     notifyListeners();
-    
+
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_languageKey, language.name);
@@ -68,105 +92,114 @@ class LanguageService extends ChangeNotifier {
   }
 
   // ============ TRANSLATIONS ============
-  
-  String get getStarted => _translations['getStarted']![languageCode]!;
-  String get signInOrCreateStore => _translations['signInOrCreateStore']![languageCode]!;
-  String get setYourPassword => _translations['setYourPassword']![languageCode]!;
-  String get createPasswordToSecure => _translations['createPasswordToSecure']![languageCode]!;
-  String get continueWithGoogle => _translations['continueWithGoogle']![languageCode]!;
-  String get or => _translations['or']![languageCode]!;
-  String get emailAddress => _translations['emailAddress']![languageCode]!;
-  String get password => _translations['password']![languageCode]!;
-  String get confirmPassword => _translations['confirmPassword']![languageCode]!;
-  String get login => _translations['login']![languageCode]!;
-  String get signUp => _translations['signUp']![languageCode]!;
-  String get forgotPassword => _translations['forgotPassword']![languageCode]!;
-  String get resetPassword => _translations['resetPassword']![languageCode]!;
-  String get alreadyHaveAccount => _translations['alreadyHaveAccount']![languageCode]!;
-  String get dontHaveAccount => _translations['dontHaveAccount']![languageCode]!;
-  String get areYouLetBuyySeller => _translations['areYouLetBuyySeller']![languageCode]!;
-  String get letBuyySeller => _translations['letBuyySeller']![languageCode]!;
-  String get emailRequired => _translations['emailRequired']![languageCode]!;
-  String get validEmail => _translations['validEmail']![languageCode]!;
-  String get passwordRequired => _translations['passwordRequired']![languageCode]!;
-  String get passwordMinLength => _translations['passwordMinLength']![languageCode]!;
-  String get passwordNeedsLetter => _translations['passwordNeedsLetter']![languageCode]!;
-  String get passwordNeedsNumber => _translations['passwordNeedsNumber']![languageCode]!;
-  String get confirmPasswordRequired => _translations['confirmPasswordRequired']![languageCode]!;
-  String get passwordsDoNotMatch => _translations['passwordsDoNotMatch']![languageCode]!;
-  String get continueBtn => _translations['continueBtn']![languageCode]!;
-  String get setPassword => _translations['setPassword']![languageCode]!;
+
+  String get getStarted => _translation('getStarted');
+  String get signInOrCreateStore => _translation('signInOrCreateStore');
+  String get setYourPassword => _translation('setYourPassword');
+  String get createPasswordToSecure => _translation('createPasswordToSecure');
+  String get continueWithGoogle => _translation('continueWithGoogle');
+  String get or => _translation('or');
+  String get emailAddress => _translation('emailAddress');
+  String get password => _translation('password');
+  String get confirmPassword => _translation('confirmPassword');
+  String get login => _translation('login');
+  String get signUp => _translation('signUp');
+  String get forgotPassword => _translation('forgotPassword');
+  String get resetPassword => _translation('resetPassword');
+  String get alreadyHaveAccount => _translation('alreadyHaveAccount');
+  String get dontHaveAccount => _translation('dontHaveAccount');
+  String get areYouLetBuyySeller => _translation('areYouLetBuyySeller');
+  String get letBuyySeller => _translation('letBuyySeller');
+  String get emailRequired => _translation('emailRequired');
+  String get validEmail => _translation('validEmail');
+  String get passwordRequired => _translation('passwordRequired');
+  String get passwordMinLength => _translation('passwordMinLength');
+  String get passwordNeedsLetter => _translation('passwordNeedsLetter');
+  String get passwordNeedsNumber => _translation('passwordNeedsNumber');
+  String get confirmPasswordRequired => _translation('confirmPasswordRequired');
+  String get passwordsDoNotMatch => _translation('passwordsDoNotMatch');
+  String get continueBtn => _translation('continueBtn');
+  String get setPassword => _translation('setPassword');
 
   // ============ WIZARD TRANSLATIONS ============
-  
+
   // Step Titles
-  String get wizardSetupStore => _translations['wizardSetupStore']![languageCode]!;
-  String get wizardNewOrExisting => _translations['wizardNewOrExisting']![languageCode]!;
-  String get wizardNewBusiness => _translations['wizardNewBusiness']![languageCode]!;
-  String get wizardJustStarting => _translations['wizardJustStarting']![languageCode]!;
-  String get wizardExistingBusiness => _translations['wizardExistingBusiness']![languageCode]!;
-  String get wizardAlreadyHaveBusiness => _translations['wizardAlreadyHaveBusiness']![languageCode]!;
-  String get wizardWhereToSell => _translations['wizardWhereToSell']![languageCode]!;
-  String get wizardWhereToSellSubtitle => _translations['wizardWhereToSellSubtitle']![languageCode]!;
-  String get wizardWhatToSell => _translations['wizardWhatToSell']![languageCode]!;
-  String get wizardWhatToSellSubtitle => _translations['wizardWhatToSellSubtitle']![languageCode]!;
-  String get wizardCategory => _translations['wizardCategory']![languageCode]!;
-  String get wizardCategorySubtitle => _translations['wizardCategorySubtitle']![languageCode]!;
-  String get wizardStoreName => _translations['wizardStoreName']![languageCode]!;
-  String get wizardStoreNameSubtitle => _translations['wizardStoreNameSubtitle']![languageCode]!;
-  String get wizardEnterStoreName => _translations['wizardEnterStoreName']![languageCode]!;
-  String get wizardSubdomain => _translations['wizardSubdomain']![languageCode]!;
-  String get wizardSubdomainSubtitle => _translations['wizardSubdomainSubtitle']![languageCode]!;
-  String get wizardTheme => _translations['wizardTheme']![languageCode]!;
-  String get wizardThemeSubtitle => _translations['wizardThemeSubtitle']![languageCode]!;
-  
+  String get wizardSetupStore => _translation('wizardSetupStore');
+  String get wizardNewOrExisting => _translation('wizardNewOrExisting');
+  String get wizardNewBusiness => _translation('wizardNewBusiness');
+  String get wizardJustStarting => _translation('wizardJustStarting');
+  String get wizardExistingBusiness => _translation('wizardExistingBusiness');
+  String get wizardAlreadyHaveBusiness =>
+      _translation('wizardAlreadyHaveBusiness');
+  String get wizardWhereToSell => _translation('wizardWhereToSell');
+  String get wizardWhereToSellSubtitle =>
+      _translation('wizardWhereToSellSubtitle');
+  String get wizardWhatToSell => _translation('wizardWhatToSell');
+  String get wizardWhatToSellSubtitle =>
+      _translation('wizardWhatToSellSubtitle');
+  String get wizardCategory => _translation('wizardCategory');
+  String get wizardCategorySubtitle => _translation('wizardCategorySubtitle');
+  String get wizardStoreName => _translation('wizardStoreName');
+  String get wizardStoreNameSubtitle => _translation('wizardStoreNameSubtitle');
+  String get wizardEnterStoreName => _translation('wizardEnterStoreName');
+  String get wizardSubdomain => _translation('wizardSubdomain');
+  String get wizardSubdomainSubtitle => _translation('wizardSubdomainSubtitle');
+  String get wizardTheme => _translation('wizardTheme');
+  String get wizardThemeSubtitle => _translation('wizardThemeSubtitle');
+
   // Common Wizard Buttons
-  String get back => _translations['back']![languageCode]!;
-  String get next => _translations['next']![languageCode]!;
-  String get skipStep => _translations['skipStep']![languageCode]!;
-  String get createStore => _translations['createStore']![languageCode]!;
-  
+  String get back => _translation('back');
+  String get next => _translation('next');
+  String get skipStep => _translation('skipStep');
+  String get createStore => _translation('createStore');
+
   // Sales Channels
-  String get onlineStore => _translations['onlineStore']![languageCode]!;
-  String get retailStore => _translations['retailStore']![languageCode]!;
-  String get socialMedia => _translations['socialMedia']![languageCode]!;
-  String get marketplaces => _translations['marketplaces']![languageCode]!;
-  String get eventsPopups => _translations['eventsPopups']![languageCode]!;
-  
+  String get onlineStore => _translation('onlineStore');
+  String get retailStore => _translation('retailStore');
+  String get socialMedia => _translation('socialMedia');
+  String get marketplaces => _translation('marketplaces');
+  String get eventsPopups => _translation('eventsPopups');
+
   // Product Types
-  String get physicalProducts => _translations['physicalProducts']![languageCode]!;
-  String get physicalProductsSubtitle => _translations['physicalProductsSubtitle']![languageCode]!;
-  String get digitalProducts => _translations['digitalProducts']![languageCode]!;
-  String get digitalProductsSubtitle => _translations['digitalProductsSubtitle']![languageCode]!;
-  String get dropshipping => _translations['dropshipping']![languageCode]!;
-  String get dropshippingSubtitle => _translations['dropshippingSubtitle']![languageCode]!;
-  String get services => _translations['services']![languageCode]!;
-  String get servicesSubtitle => _translations['servicesSubtitle']![languageCode]!;
-  String get printOnDemand => _translations['printOnDemand']![languageCode]!;
-  String get printOnDemandSubtitle => _translations['printOnDemandSubtitle']![languageCode]!;
-  String get decideLater => _translations['decideLater']![languageCode]!;
-  String get decideLaterSubtitle => _translations['decideLaterSubtitle']![languageCode]!;
-  
+  String get physicalProducts => _translation('physicalProducts');
+  String get physicalProductsSubtitle =>
+      _translation('physicalProductsSubtitle');
+  String get digitalProducts => _translation('digitalProducts');
+  String get digitalProductsSubtitle => _translation('digitalProductsSubtitle');
+  String get dropshipping => _translation('dropshipping');
+  String get dropshippingSubtitle => _translation('dropshippingSubtitle');
+  String get services => _translation('services');
+  String get servicesSubtitle => _translation('servicesSubtitle');
+  String get printOnDemand => _translation('printOnDemand');
+  String get printOnDemandSubtitle => _translation('printOnDemandSubtitle');
+  String get decideLater => _translation('decideLater');
+  String get decideLaterSubtitle => _translation('decideLaterSubtitle');
+
   // Categories
-  String get fashionApparel => _translations['fashionApparel']![languageCode]!;
-  String get electronics => _translations['electronics']![languageCode]!;
-  String get beautyCosmetics => _translations['beautyCosmetics']![languageCode]!;
-  String get homeDecor => _translations['homeDecor']![languageCode]!;
-  String get foodBeverages => _translations['foodBeverages']![languageCode]!;
-  String get sportsFitness => _translations['sportsFitness']![languageCode]!;
-  String get booksStationery => _translations['booksStationery']![languageCode]!;
-  String get other => _translations['other']![languageCode]!;
-  
+  String get fashionApparel => _translation('fashionApparel');
+  String get electronics => _translation('electronics');
+  String get beautyCosmetics => _translation('beautyCosmetics');
+  String get homeDecor => _translation('homeDecor');
+  String get foodBeverages => _translation('foodBeverages');
+  String get sportsFitness => _translation('sportsFitness');
+  String get booksStationery => _translation('booksStationery');
+  String get other => _translation('other');
+
   // Subdomain Status
-  String get checkingAvailability => _translations['checkingAvailability']![languageCode]!;
-  String get subdomainAvailable => _translations['subdomainAvailable']![languageCode]!;
-  String get subdomainTaken => _translations['subdomainTaken']![languageCode]!;
-  
+  String get checkingAvailability => _translation('checkingAvailability');
+  String get subdomainAvailable => _translation('subdomainAvailable');
+  String get subdomainTaken => _translation('subdomainTaken');
+
   // Logout Dialog
-  String get logoutTitle => _translations['logoutTitle']![languageCode]!;
-  String get logoutMessage => _translations['logoutMessage']![languageCode]!;
-  String get cancel => _translations['cancel']![languageCode]!;
-  String get logout => _translations['logout']![languageCode]!;
+  String get logoutTitle => _translation('logoutTitle');
+  String get logoutMessage => _translation('logoutMessage');
+  String get cancel => _translation('cancel');
+  String get logout => _translation('logout');
+
+  String _translation(String key) {
+    final values = _translations[key]!;
+    return values[languageCode] ?? values['en']!;
+  }
 
   static const Map<String, Map<String, String>> _translations = {
     'getStarted': {
@@ -194,36 +227,20 @@ class LanguageService extends ChangeNotifier {
       'ta': 'Google உடன் தொடரவும்',
       'hi': 'Google के साथ जारी रखें',
     },
-    'or': {
-      'en': 'or',
-      'ta': 'அல்லது',
-      'hi': 'या',
-    },
+    'or': {'en': 'or', 'ta': 'அல்லது', 'hi': 'या'},
     'emailAddress': {
       'en': 'Email Address',
       'ta': 'மின்னஞ்சல் முகவரி',
       'hi': 'ईमेल पता',
     },
-    'password': {
-      'en': 'Password',
-      'ta': 'கடவுச்சொல்',
-      'hi': 'पासवर्ड',
-    },
+    'password': {'en': 'Password', 'ta': 'கடவுச்சொல்', 'hi': 'पासवर्ड'},
     'confirmPassword': {
       'en': 'Confirm Password',
       'ta': 'கடவுச்சொல்லை உறுதிப்படுத்து',
       'hi': 'पासवर्ड की पुष्टि करें',
     },
-    'login': {
-      'en': 'Login',
-      'ta': 'உள்நுழை',
-      'hi': 'लॉगिन',
-    },
-    'signUp': {
-      'en': 'Sign Up',
-      'ta': 'பதிவு செய்',
-      'hi': 'साइन अप',
-    },
+    'login': {'en': 'Login', 'ta': 'உள்நுழை', 'hi': 'लॉगिन'},
+    'signUp': {'en': 'Sign Up', 'ta': 'பதிவு செய்', 'hi': 'साइन अप'},
     'forgotPassword': {
       'en': 'Forgot your password?',
       'ta': 'கடவுச்சொல் மறந்துவிட்டதா?',
@@ -294,19 +311,15 @@ class LanguageService extends ChangeNotifier {
       'ta': 'கடவுச்சொற்கள் பொருந்தவில்லை',
       'hi': 'पासवर्ड मेल नहीं खाते',
     },
-    'continueBtn': {
-      'en': 'Continue',
-      'ta': 'தொடர்க',
-      'hi': 'जारी रखें',
-    },
+    'continueBtn': {'en': 'Continue', 'ta': 'தொடர்க', 'hi': 'जारी रखें'},
     'setPassword': {
       'en': 'Set Password',
       'ta': 'கடவுச்சொல் அமை',
       'hi': 'पासवर्ड सेट करें',
     },
-    
+
     // ============ WIZARD TRANSLATIONS ============
-    
+
     // Step Titles
     'wizardSetupStore': {
       'en': "Let's set up your store",
@@ -403,18 +416,10 @@ class LanguageService extends ChangeNotifier {
       'ta': 'உங்கள் பிராண்டுக்கு பொருத்தமான தோற்றத்தை தேர்வு செய்க',
       'hi': 'अपने ब्रांड से मेल खाता लुक चुनें',
     },
-    
+
     // Common Wizard Buttons
-    'back': {
-      'en': '← Back',
-      'ta': '← பின்',
-      'hi': '← वापस',
-    },
-    'next': {
-      'en': 'Next →',
-      'ta': 'அடுத்து →',
-      'hi': 'आगे →',
-    },
+    'back': {'en': '← Back', 'ta': '← பின்', 'hi': '← वापस'},
+    'next': {'en': 'Next →', 'ta': 'அடுத்து →', 'hi': 'आगे →'},
     'skipStep': {
       'en': 'Skip this step →',
       'ta': 'இந்த படியை தவிர் →',
@@ -425,7 +430,7 @@ class LanguageService extends ChangeNotifier {
       'ta': 'கடை உருவாக்கு',
       'hi': 'स्टोर बनाएं',
     },
-    
+
     // Sales Channels
     'onlineStore': {
       'en': 'An online store',
@@ -452,7 +457,7 @@ class LanguageService extends ChangeNotifier {
       'ta': 'நிகழ்வுகள் அல்லது பாப்-அப்களில்',
       'hi': 'इवेंट्स या पॉप-अप्स में',
     },
-    
+
     // Product Types
     'physicalProducts': {
       'en': 'Products I buy or make myself',
@@ -484,11 +489,7 @@ class LanguageService extends ChangeNotifier {
       'ta': 'மூன்றாம் தரப்பால் அனுப்பப்பட்டு பேக் செய்யப்படும்',
       'hi': 'थर्ड पार्टी द्वारा शिप और पैक किया गया',
     },
-    'services': {
-      'en': 'Services',
-      'ta': 'சேவைகள்',
-      'hi': 'सेवाएं',
-    },
+    'services': {'en': 'Services', 'ta': 'சேவைகள்', 'hi': 'सेवाएं'},
     'servicesSubtitle': {
       'en': 'Consulting, bookkeeping, lessons',
       'ta': 'ஆலோசனை, கணக்கு பராமரிப்பு, பாடங்கள்',
@@ -514,7 +515,7 @@ class LanguageService extends ChangeNotifier {
       'ta': 'இப்போது தவிர்',
       'hi': 'अभी के लिए छोड़ें',
     },
-    
+
     // Categories
     'fashionApparel': {
       'en': 'Fashion & Apparel',
@@ -551,12 +552,8 @@ class LanguageService extends ChangeNotifier {
       'ta': 'புத்தகங்கள் & எழுது பொருட்கள்',
       'hi': 'किताबें और स्टेशनरी',
     },
-    'other': {
-      'en': 'Other',
-      'ta': 'மற்றவை',
-      'hi': 'अन्य',
-    },
-    
+    'other': {'en': 'Other', 'ta': 'மற்றவை', 'hi': 'अन्य'},
+
     // Subdomain Status
     'checkingAvailability': {
       'en': 'Checking availability...',
@@ -573,28 +570,15 @@ class LanguageService extends ChangeNotifier {
       'ta': 'இந்த URL ஏற்கனவே எடுக்கப்பட்டுள்ளது',
       'hi': 'यह URL पहले से लिया गया है',
     },
-    
+
     // Logout Dialog
-    'logoutTitle': {
-      'en': 'Logout?',
-      'ta': 'வெளியேறவா?',
-      'hi': 'लॉग आउट करें?',
-    },
+    'logoutTitle': {'en': 'Logout?', 'ta': 'வெளியேறவா?', 'hi': 'लॉग आउट करें?'},
     'logoutMessage': {
       'en': 'Are you sure you want to logout?',
       'ta': 'நிச்சயமாக வெளியேற விரும்புகிறீர்களா?',
       'hi': 'क्या आप वाकई लॉग आउट करना चाहते हैं?',
     },
-    'cancel': {
-      'en': 'Cancel',
-      'ta': 'ரத்து செய்',
-      'hi': 'रद्द करें',
-    },
-    'logout': {
-      'en': 'Logout',
-      'ta': 'வெளியேறு',
-      'hi': 'लॉग आउट',
-    },
+    'cancel': {'en': 'Cancel', 'ta': 'ரத்து செய்', 'hi': 'रद्द करें'},
+    'logout': {'en': 'Logout', 'ta': 'வெளியேறு', 'hi': 'लॉग आउट'},
   };
 }
-

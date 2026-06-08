@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
+import { getAccountsUrl } from '@/lib/public-urls'
 
 const PROTECTED_ROUTES = ['/checkout', '/dashboard', '/install']
-const ACCOUNTS_URL = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.store'
+const ACCOUNTS_URL = getAccountsUrl()
 
 function isProtectedPath(pathname: string) {
     return PROTECTED_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`))

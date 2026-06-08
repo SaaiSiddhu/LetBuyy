@@ -1,7 +1,9 @@
 import { z } from 'zod';
 import {
   AddressSchema,
+  CommerceChannelSchema,
   CurrencySchema,
+  DraftOrderStatusSchema,
   EmailSchema,
   GstinSchema,
   HsnCodeSchema,
@@ -66,6 +68,109 @@ export const StorefrontCreateOrderSchema = z.object({
   giftCardCode: z.string().min(6).max(100).optional(),
   idempotencyKey: z.string().min(8).max(200),
 });
+
+export const CheckoutSessionStateSchema = z.enum([
+  'contact',
+  'delivery',
+  'payment_intent',
+  'confirming',
+  'completed',
+  'failed',
+  'cancelled',
+  'expired',
+]);
+
+export const CheckoutContactSchema = z.object({
+  idempotency_key: z.string().min(8).max(200),
+  email: EmailSchema,
+  name: z.string().min(1).max(200).trim(),
+  phone: z.string().max(20).optional().nullable(),
+  gstin: GstinSchema.optional().nullable(),
+}).strict();
+
+export const CheckoutDeliverySchema = z.object({
+  idempotency_key: z.string().min(8).max(200),
+  shipping_method: z.enum(['standard', 'express']).default('standard'),
+  shipping_address: AddressSchema.partial().extend({
+    line1: z.string().min(1).max(500).optional(),
+    city: z.string().min(1).max(100).optional(),
+    state: z.string().min(1).max(100).optional(),
+    zip: z.string().min(3).max(20).optional(),
+    pincode: z.string().min(3).max(20).optional(),
+  }).passthrough(),
+  cod_requested: z.boolean().default(false),
+  shipping_quote: z.record(z.string(), z.unknown()).default({}),
+}).strict();
+
+export const CheckoutPaymentIntentSchema = z.object({
+  idempotency_key: z.string().min(8).max(200),
+  provider: z.enum(['razorpay', 'cashfree', 'upi', 'cod']).default('cod'),
+  mode: z.enum(['mock', 'sandbox', 'live']).default('mock'),
+  tokenize: z.boolean().default(false),
+  metadata: z.record(z.string(), z.unknown()).default({}),
+}).strict();
+
+export const CheckoutConfirmSchema = z.object({
+  idempotency_key: z.string().min(8).max(200),
+  payment_intent_id: z.string().min(1).max(200).optional(),
+  provider_payment_id: z.string().min(1).max(200).optional(),
+  simulate_order_failure: z.boolean().default(false),
+}).strict();
+
+export const StoreBrandingSchema = z.object({
+  logo_url: z.string().url().optional().nullable(),
+  favicon_url: z.string().url().optional().nullable(),
+  primary_color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default('#111827'),
+  accent_color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default('#2563EB'),
+  checkout_theme: z.enum(['system', 'light', 'dark']).default('system'),
+  tokens: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({}),
+}).strict();
+
+export type CheckoutSessionState = z.infer<typeof CheckoutSessionStateSchema>;
+export type CheckoutContactInput = z.infer<typeof CheckoutContactSchema>;
+export type CheckoutDeliveryInput = z.infer<typeof CheckoutDeliverySchema>;
+export type CheckoutPaymentIntentInput = z.infer<typeof CheckoutPaymentIntentSchema>;
+export type CheckoutConfirmInput = z.infer<typeof CheckoutConfirmSchema>;
+export type StoreBrandingInput = z.infer<typeof StoreBrandingSchema>;
+
+const CHECKOUT_STATE_ORDER: Record<CheckoutSessionState, number> = {
+  contact: 1,
+  delivery: 2,
+  payment_intent: 3,
+  confirming: 4,
+  completed: 5,
+  failed: 5,
+  cancelled: 5,
+  expired: 5,
+};
+
+export function planCheckoutStateTransition(
+  current: CheckoutSessionState | null | undefined,
+  next: CheckoutSessionState,
+): { allowed: boolean; reason: 'initial' | 'forward' | 'same_state' | 'terminal' | 'backwards' } {
+  if (!current) return { allowed: next === 'contact', reason: 'initial' };
+  if (current === next) return { allowed: true, reason: 'same_state' };
+  if (['completed', 'failed', 'cancelled', 'expired'].includes(current)) {
+    return { allowed: false, reason: 'terminal' };
+  }
+
+  return CHECKOUT_STATE_ORDER[next] >= CHECKOUT_STATE_ORDER[current]
+    ? { allowed: true, reason: 'forward' }
+    : { allowed: false, reason: 'backwards' };
+}
+
+export function normalizeCheckoutChannel(value: unknown): z.infer<typeof CommerceChannelSchema> {
+  const parsed = CommerceChannelSchema.safeParse(value);
+  return parsed.success ? parsed.data : 'web';
+}
+
+export function assertBrandingIsDataOnly(input: StoreBrandingInput): StoreBrandingInput {
+  const serialized = JSON.stringify(input).toLowerCase();
+  if (serialized.includes('<script') || serialized.includes('javascript:') || serialized.includes('onerror=')) {
+    throw new Error('Store branding must be data-only');
+  }
+  return input;
+}
 
 export const StorefrontRazorpayOrderSchema = z.object({
   orderId: UuidSchema,
@@ -135,6 +240,84 @@ export const UpdateOrderStatusSchema = z.object({
   version: z.number().int().positive('Version required for concurrent safety').optional(),
 });
 
+export const OrderRiskAssessmentSchema = z.object({
+  store_id: UuidSchema,
+  order_id: UuidSchema.optional(),
+  payment_method: z.enum(['razorpay', 'stripe', 'paypal', 'cashfree', 'upi', 'cod']).default('cod'),
+  order_total_minor: z.number().int().min(0).default(0),
+  pincode: z.string().max(20).optional().nullable(),
+  phone: z.string().max(20).optional().nullable(),
+  prior_rto_count: z.number().int().min(0).max(100).default(0),
+  cod_confirmation_required: z.boolean().optional(),
+  idempotency_key: z.string().min(8).max(200).optional(),
+}).strict();
+
+export const CodConfirmationSchema = z.object({
+  idempotency_key: z.string().min(8).max(200),
+  confirmed: z.boolean().default(true),
+  reply_text: z.string().max(500).optional(),
+}).strict();
+
+export const CodTimeoutSchema = z.object({
+  idempotency_key: z.string().min(8).max(200),
+  reason: z.string().max(500).default('cod_confirmation_timeout'),
+}).strict();
+
+export type OrderRiskAssessmentInput = z.infer<typeof OrderRiskAssessmentSchema>;
+export type CodConfirmationInput = z.infer<typeof CodConfirmationSchema>;
+export type CodTimeoutInput = z.infer<typeof CodTimeoutSchema>;
+
+export interface OrderRiskAssessmentPlan {
+  risk_score: number;
+  risk_level: 'low' | 'medium' | 'high';
+  reasons: string[];
+  actions: Array<'request_cod_confirmation' | 'hold_fulfillment' | 'allow'>;
+}
+
+export function assessOrderRisk(input: OrderRiskAssessmentInput): OrderRiskAssessmentPlan {
+  let score = 0;
+  const reasons: string[] = [];
+
+  if (input.payment_method === 'cod') {
+    score += 25;
+    reasons.push('cod_payment');
+  }
+  if (input.order_total_minor >= 100_000) {
+    score += 20;
+    reasons.push('high_order_value');
+  }
+  if (input.prior_rto_count > 0) {
+    score += Math.min(40, input.prior_rto_count * 15);
+    reasons.push('prior_rto');
+  }
+  if (!input.phone || input.phone.trim().length < 8) {
+    score += 15;
+    reasons.push('weak_phone_signal');
+  }
+  if (!input.pincode || !/^[1-9][0-9]{5}$/.test(input.pincode)) {
+    score += 10;
+    reasons.push('weak_pincode_signal');
+  }
+  if (input.cod_confirmation_required === true) {
+    score += 10;
+    reasons.push('merchant_cod_confirmation_policy');
+  }
+
+  const riskScore = Math.min(100, score);
+  const riskLevel = riskScore >= 60 ? 'high' : riskScore >= 35 ? 'medium' : 'low';
+  const actions: OrderRiskAssessmentPlan['actions'] = [];
+  if (input.payment_method === 'cod' && riskScore >= 35) actions.push('request_cod_confirmation');
+  if (riskScore >= 60) actions.push('hold_fulfillment');
+  if (actions.length === 0) actions.push('allow');
+
+  return {
+    risk_score: riskScore,
+    risk_level: riskLevel,
+    reasons,
+    actions,
+  };
+}
+
 export const FulfillmentLineSchema = z.object({
   order_item_id: UuidSchema,
   quantity: z.number().int().min(1).max(999),
@@ -159,10 +342,94 @@ export const FulfillOrderSchema = z.object({
   }).optional(),
 });
 
+export const OrderLineItemPatchSchema = z.object({
+  order_item_id: UuidSchema,
+  quantity: z.number().int().min(0).max(999),
+});
+
+export const OrderLineItemAddSchema = z.object({
+  product_id: UuidSchema,
+  variant_id: z.string().max(100).optional().nullable(),
+  quantity: z.number().int().min(1).max(999),
+});
+
+export const UpdateOrderLineItemsSchema = z.object({
+  idempotency_key: z.string().min(8).max(200),
+  lines: z.array(OrderLineItemPatchSchema).max(100).default([]),
+  add_items: z.array(OrderLineItemAddSchema).max(100).default([]),
+  remove_line_item_ids: z.array(UuidSchema).max(100).default([]),
+  notes: z.string().max(1000).optional(),
+});
+
+export const ListDraftOrdersQuery = PaginationQuery.extend({
+  store_id: UuidSchema,
+  status: DraftOrderStatusSchema.or(z.literal('all')).default('draft'),
+});
+
+export const CreateDraftOrderSchema = z.object({
+  store_id: UuidSchema,
+  idempotency_key: z.string().min(8).max(200),
+  customer_email: EmailSchema,
+  customer_name: z.string().min(1).max(200).trim(),
+  customer_phone: z.string().max(20).optional(),
+  customer_gstin: GstinSchema.optional(),
+  shipping_address: AddressSchema.optional(),
+  items: z.array(OrderItemInput).min(1).max(50),
+  payment_method: z.enum(['razorpay', 'stripe', 'cashfree', 'cod']).default('cod'),
+  shipping_method: z.enum(['standard', 'express']).default('standard'),
+  notes: z.string().max(1000).optional(),
+  coupon_code: z.string().max(50).optional(),
+  gift_card_code: z.string().min(6).max(100).optional(),
+});
+
+export const ConvertDraftOrderSchema = z.object({
+  idempotency_key: z.string().min(8).max(200),
+});
+
 export const RefundLineSchema = z.object({
   order_item_id: UuidSchema,
   quantity: z.number().int().min(1).max(999),
   restock_quantity: z.number().int().min(0).max(999).optional(),
+});
+
+export const ReturnStatusSchema = z.enum([
+  'requested',
+  'authorized',
+  'rejected',
+  'received',
+  'inspected',
+  'approved',
+  'refunded',
+  'closed',
+  'cancelled',
+]);
+
+export const ListReturnsQuery = PaginationQuery.extend({
+  store_id: UuidSchema,
+  order_id: UuidSchema.optional(),
+  status: ReturnStatusSchema.or(z.literal('all')).default('all'),
+});
+
+export const CreateReturnSchema = z.object({
+  order_id: UuidSchema,
+  idempotency_key: z.string().min(8).max(200),
+  lines: z.array(RefundLineSchema).min(1).max(100).optional(),
+  reason: z.string().max(500).optional(),
+  refund_method: z.enum(['original_payment', 'gift_card', 'manual']).default('original_payment'),
+  restock: z.boolean().default(false),
+});
+
+export const UpdateReturnStatusSchema = z.object({
+  status: ReturnStatusSchema,
+  notes: z.string().max(1000).optional(),
+});
+
+export const CompleteReturnRefundSchema = z.object({
+  idempotency_key: z.string().min(8).max(200),
+  refund_id: UuidSchema.optional(),
+  provider_refund_id: z.string().max(200).optional(),
+  provider_event_id: z.string().max(200).optional(),
+  notes: z.string().max(1000).optional(),
 });
 
 export const RefundOrderSchema = z.object({
@@ -276,11 +543,17 @@ export const GenerateGstInvoiceSchema = z.object({
   recipient: GstInvoicePartyInputSchema,
   place_of_supply_state_code: IndianStateCodeSchema.optional().nullable(),
   lines: z.array(GstInvoiceLineInputSchema).min(1).max(250),
+  marketplace_tcs_bps: z.number().int().min(0).max(1000).default(0),
+}).strict();
+
+export const CalculateTaxSchema = GenerateGstInvoiceSchema.extend({
+  store_id: UuidSchema.optional(),
 }).strict();
 
 export type GstInvoicePartyInput = z.infer<typeof GstInvoicePartyInputSchema>;
 export type GstInvoiceLineInput = z.infer<typeof GstInvoiceLineInputSchema>;
 export type GenerateGstInvoiceInput = z.infer<typeof GenerateGstInvoiceSchema>;
+export type CalculateTaxInput = z.infer<typeof CalculateTaxSchema>;
 
 export interface GeneratedGstInvoiceParty {
   name: string;
@@ -326,6 +599,14 @@ export interface GeneratedGstInvoice {
   igst_amount_minor: number;
   tax_amount_minor: number;
   total_amount_minor: number;
+  marketplace_tcs_bps: number;
+  tcs_amount_minor: number;
+  irp: {
+    mode: 'mock';
+    irn: string;
+    qr_payload: string;
+    acknowledged_at: string;
+  };
 }
 
 function parseOptionalGstin(value: string | null | undefined, fieldName: string): string | null {
@@ -379,6 +660,25 @@ function defaultInvoiceNumber(orderNumber: string, invoiceDate: string): string 
   const yyyymmdd = invoiceDate.slice(0, 10).replace(/-/g, '');
   const safeOrderNumber = orderNumber.replace(/[^A-Za-z0-9-]/g, '').slice(0, 40) || 'ORDER';
   return `LBY-${yyyymmdd}-${safeOrderNumber}`;
+}
+
+function stableTaxHash(input: string): string {
+  let hash = 2166136261;
+  for (let index = 0; index < input.length; index += 1) {
+    hash ^= input.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16).padStart(8, '0');
+}
+
+function buildMockIrpAcknowledgement(invoiceNumber: string, orderId: string, invoiceDate: string) {
+  const irn = `MOCK-IRN-${stableTaxHash(`${invoiceNumber}:${orderId}:${invoiceDate}`).toUpperCase()}`;
+  return {
+    mode: 'mock' as const,
+    irn,
+    qr_payload: `letbuyy://gst-invoice/${encodeURIComponent(irn)}`,
+    acknowledged_at: invoiceDate,
+  };
 }
 
 function positiveMinorUnit(value: number | undefined, fieldName: string): number {
@@ -466,9 +766,12 @@ export function generateGstInvoice(input: GenerateGstInvoiceInput): GeneratedGst
       total_amount_minor: 0,
     },
   );
+  const marketplaceTcsBps = Math.max(0, Math.min(1000, Math.trunc(Number(input.marketplace_tcs_bps ?? 0))));
+  const tcsAmountMinor = Math.round((totals.taxable_amount_minor * marketplaceTcsBps) / 10_000);
+  const invoiceNumber = input.invoice_number || defaultInvoiceNumber(input.order_number, invoiceDate);
 
   return {
-    invoice_number: input.invoice_number || defaultInvoiceNumber(input.order_number, invoiceDate),
+    invoice_number: invoiceNumber,
     order_id: input.order_id,
     order_number: input.order_number,
     invoice_date: invoiceDate,
@@ -479,6 +782,9 @@ export function generateGstInvoice(input: GenerateGstInvoiceInput): GeneratedGst
     supply_type: supplyType,
     lines,
     ...totals,
+    marketplace_tcs_bps: marketplaceTcsBps,
+    tcs_amount_minor: tcsAmountMinor,
+    irp: buildMockIrpAcknowledgement(invoiceNumber, input.order_id, invoiceDate),
   };
 }
 
@@ -541,6 +847,14 @@ export const CreateShippingRateSchema = z.object({
   is_active: z.boolean().default(true),
 });
 
+export const ShippingServiceabilityQuerySchema = z.object({
+  store_id: UuidSchema,
+  pincode: z.string().trim().regex(/^[1-9][0-9]{5}$/, 'Indian pincode must be 6 digits'),
+  cod: z.boolean().default(false),
+  order_amount_minor: z.number().int().min(0).default(0),
+  weight_grams: z.number().int().min(1).max(50_000).default(500),
+});
+
 export const CreateTaxRateSchema = z.object({
   store_id: UuidSchema,
   name: z.string().min(1).max(100).trim(),
@@ -561,6 +875,14 @@ export const CreateCouponSchema = z.object({
   description: z.string().max(500).optional(),
   type: z.enum(['percentage', 'fixed', 'free_shipping']),
   value: z.number().min(0),
+  discount_class: z.enum(['product', 'order', 'shipping']).default('order'),
+  combines_with: z.object({
+    product: z.boolean().default(false),
+    order: z.boolean().default(false),
+    shipping: z.boolean().default(false),
+  }).default({ product: false, order: false, shipping: false }),
+  automatic: z.boolean().default(false),
+  priority: z.number().int().min(0).max(10_000).default(100),
   minimum_order_amount: MoneySchema.optional(),
   maximum_discount: MoneySchema.optional(),
   usage_limit: z.number().int().min(1).optional(),
@@ -604,6 +926,10 @@ export interface CouponRecord extends Record<string, unknown> {
   expires_at?: string | Date | null;
   usage_limit?: number | string | null;
   usage_count?: number | string | null;
+  discount_class?: string | null;
+  combines_with?: unknown;
+  automatic?: boolean | null;
+  priority?: number | string | null;
 }
 
 export interface NormalizedCouponRecord extends CouponRecord {
@@ -612,6 +938,10 @@ export interface NormalizedCouponRecord extends CouponRecord {
   minimum_order_amount: number | string | null;
   maximum_discount: number | string | null;
   per_customer_limit: number | string | null;
+  discount_class: string;
+  combines_with: DiscountCombinesWith;
+  automatic: boolean;
+  priority: number;
 }
 
 export interface CouponCreatePlan {
@@ -628,6 +958,51 @@ export type CouponValidationFailureCode =
   | 'usage_limit_reached'
   | 'minimum_order_not_met';
 
+export type DiscountClass = 'product' | 'order' | 'shipping';
+export type DiscountSourceType = 'code' | 'automatic';
+export type DiscountRejectionReason = 'combine_blocked' | 'amount_exhausted';
+
+export interface DiscountCombinesWith {
+  product: boolean;
+  order: boolean;
+  shipping: boolean;
+}
+
+export interface DiscountStackCandidate {
+  id: string;
+  code?: string | null;
+  discountClass: DiscountClass;
+  sourceType?: DiscountSourceType;
+  amountMinor: number;
+  combinesWith?: Partial<DiscountCombinesWith> | null;
+  priority?: number | null;
+}
+
+export interface DiscountStackInput {
+  subtotalMinor: number;
+  shippingMinor?: number;
+  candidates: readonly DiscountStackCandidate[];
+}
+
+export interface DiscountAllocationPlan {
+  discountId: string;
+  code?: string | null;
+  discountClass: DiscountClass;
+  sourceType: DiscountSourceType;
+  amountMinor: number;
+}
+
+export interface DiscountStackPlan {
+  allocations: DiscountAllocationPlan[];
+  rejected: Array<{
+    discountId: string;
+    code?: string | null;
+    reason: DiscountRejectionReason;
+    blockedBy?: string;
+  }>;
+  totalDiscountMinor: number;
+}
+
 export interface CouponValidationPlan {
   valid: boolean;
   failureCode?: CouponValidationFailureCode;
@@ -635,6 +1010,8 @@ export interface CouponValidationPlan {
     code: string;
     type: string | null;
     value: number;
+    discountClass: DiscountClass;
+    combinesWith: DiscountCombinesWith;
     minimumOrderAmount: number;
     maximumDiscount: number | null;
     discount: number;
@@ -652,6 +1029,10 @@ const COUPON_UPDATE_FIELDS = [
   'maximum_discount',
   'usage_limit',
   'per_customer_limit',
+  'discount_class',
+  'combines_with',
+  'automatic',
+  'priority',
   'starts_at',
   'expires_at',
   'is_active',
@@ -686,6 +1067,117 @@ function toOptionalCouponNumber(value: number | string | null | undefined) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+const DISCOUNT_CLASS_RANK: Record<DiscountClass, number> = {
+  product: 0,
+  order: 1,
+  shipping: 2,
+};
+
+const DEFAULT_COMBINES_WITH: DiscountCombinesWith = {
+  product: false,
+  order: false,
+  shipping: false,
+};
+
+function normalizeDiscountClass(value: unknown): DiscountClass {
+  return value === 'product' || value === 'shipping' ? value : 'order';
+}
+
+function normalizeDiscountCombinesWith(value: unknown): DiscountCombinesWith {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return { ...DEFAULT_COMBINES_WITH };
+  }
+
+  const record = value as Partial<Record<DiscountClass, unknown>>;
+  return {
+    product: record.product === true,
+    order: record.order === true,
+    shipping: record.shipping === true,
+  };
+}
+
+function positiveMinor(value: number | null | undefined): number {
+  if (typeof value !== 'number') return 0;
+  return Number.isSafeInteger(value) && value > 0 ? value : 0;
+}
+
+function discountsCanCombine(
+  candidate: DiscountStackCandidate,
+  accepted: DiscountAllocationPlan,
+  acceptedCombinesWith: DiscountCombinesWith,
+): boolean {
+  const candidateCombinesWith = normalizeDiscountCombinesWith(candidate.combinesWith);
+  return candidateCombinesWith[accepted.discountClass] === true
+    && acceptedCombinesWith[candidate.discountClass] === true;
+}
+
+export function planDiscountStack(input: DiscountStackInput): DiscountStackPlan {
+  const subtotalMinor = positiveMinor(input.subtotalMinor);
+  const shippingMinor = positiveMinor(input.shippingMinor);
+  const classCapacity: Record<DiscountClass, number> = {
+    product: subtotalMinor,
+    order: subtotalMinor,
+    shipping: shippingMinor,
+  };
+  const classAllocated: Record<DiscountClass, number> = {
+    product: 0,
+    order: 0,
+    shipping: 0,
+  };
+  const allocations: DiscountAllocationPlan[] = [];
+  const allocationCombines = new Map<string, DiscountCombinesWith>();
+  const rejected: DiscountStackPlan['rejected'] = [];
+
+  const sorted = [...input.candidates].sort((left, right) => {
+    const leftClass = normalizeDiscountClass(left.discountClass);
+    const rightClass = normalizeDiscountClass(right.discountClass);
+    return DISCOUNT_CLASS_RANK[leftClass] - DISCOUNT_CLASS_RANK[rightClass]
+      || toCouponNumber(left.priority, 100) - toCouponNumber(right.priority, 100)
+      || String(left.code || left.id).localeCompare(String(right.code || right.id));
+  });
+
+  for (const candidate of sorted) {
+    const discountClass = normalizeDiscountClass(candidate.discountClass);
+    const blockedBy = allocations.find((accepted) => {
+      const acceptedCombinesWith = allocationCombines.get(accepted.discountId) || DEFAULT_COMBINES_WITH;
+      return !discountsCanCombine(candidate, accepted, acceptedCombinesWith);
+    });
+
+    if (blockedBy) {
+      rejected.push({
+        discountId: candidate.id,
+        code: candidate.code,
+        reason: 'combine_blocked',
+        blockedBy: blockedBy.discountId,
+      });
+      continue;
+    }
+
+    const remainingCapacity = Math.max(0, classCapacity[discountClass] - classAllocated[discountClass]);
+    const amountMinor = Math.min(positiveMinor(candidate.amountMinor), remainingCapacity);
+    if (amountMinor <= 0) {
+      rejected.push({ discountId: candidate.id, code: candidate.code, reason: 'amount_exhausted' });
+      continue;
+    }
+
+    allocations.push({
+      discountId: candidate.id,
+      code: candidate.code,
+      discountClass,
+      sourceType: candidate.sourceType || 'code',
+      amountMinor,
+    });
+    allocationCombines.set(candidate.id, normalizeDiscountCombinesWith(candidate.combinesWith));
+    classAllocated[discountClass] += amountMinor;
+  }
+
+  return {
+    allocations,
+    rejected,
+    totalDiscountMinor: allocations.reduce((total, allocation) => total + allocation.amountMinor, 0),
+  };
+}
+
 function isCouponDateBefore(value: CouponRecord['expires_at'], date: Date) {
   if (!value) return false;
   const parsed = value instanceof Date ? value : new Date(String(value));
@@ -712,6 +1204,10 @@ export function normalizeCouponRecord(coupon: unknown): unknown {
     minimum_order_amount: row.minimum_order_amount ?? row.min_order_amount ?? null,
     maximum_discount: row.maximum_discount ?? row.max_discount ?? null,
     per_customer_limit: row.per_customer_limit ?? row.per_user_limit ?? 1,
+    discount_class: normalizeDiscountClass(row.discount_class),
+    combines_with: normalizeDiscountCombinesWith(row.combines_with),
+    automatic: row.automatic === true,
+    priority: toCouponNumber(row.priority, 100),
   } satisfies NormalizedCouponRecord;
 }
 
@@ -723,6 +1219,10 @@ export function planCouponCreate(input: CreateCouponInput): CouponCreatePlan {
       description: input.description ?? null,
       discount_type: input.type,
       discount_value: input.value,
+      discount_class: input.discount_class,
+      combines_with: input.combines_with,
+      automatic: input.automatic,
+      priority: input.priority,
       min_order_amount: input.minimum_order_amount ?? null,
       max_discount: input.maximum_discount ?? null,
       usage_limit: input.usage_limit ?? null,
@@ -789,6 +1289,8 @@ export function planCouponValidation(
       code: coupon.code || '',
       type,
       value,
+      discountClass: normalizeDiscountClass(coupon.discount_class),
+      combinesWith: normalizeDiscountCombinesWith(coupon.combines_with),
       minimumOrderAmount,
       maximumDiscount,
       discount,
@@ -1140,6 +1642,15 @@ export type StorefrontCashfreeVerifyInput = z.infer<typeof StorefrontCashfreeVer
 export type UpdateOrderStatusInput = z.infer<typeof UpdateOrderStatusSchema>;
 export type LogisticsProviderName = z.infer<typeof LogisticsProviderNameSchema>;
 export type FulfillOrderInput = z.infer<typeof FulfillOrderSchema>;
+export type UpdateOrderLineItemsInput = z.infer<typeof UpdateOrderLineItemsSchema>;
+export type CheckoutDraftOrderStatusInput = z.infer<typeof DraftOrderStatusSchema>;
+export type ListDraftOrdersInput = z.infer<typeof ListDraftOrdersQuery>;
+export type CreateDraftOrderInput = z.infer<typeof CreateDraftOrderSchema>;
+export type ConvertDraftOrderInput = z.infer<typeof ConvertDraftOrderSchema>;
+export type ListReturnsInput = z.infer<typeof ListReturnsQuery>;
+export type CreateReturnInput = z.infer<typeof CreateReturnSchema>;
+export type UpdateReturnStatusInput = z.infer<typeof UpdateReturnStatusSchema>;
+export type CompleteReturnRefundInput = z.infer<typeof CompleteReturnRefundSchema>;
 export type RefundOrderInput = z.infer<typeof RefundOrderSchema>;
 export type CompleteRefundInput = z.infer<typeof CompleteRefundSchema>;
 export type ListOrdersInput = z.infer<typeof ListOrdersQuery>;
@@ -1148,6 +1659,30 @@ export type RazorpayOrderInput = z.infer<typeof RazorpayOrderSchema>;
 export type StripeCheckoutInput = z.infer<typeof StripeCheckoutSchema>;
 export type CreateShippingZoneInput = z.infer<typeof CreateShippingZoneSchema>;
 export type CreateShippingRateInput = z.infer<typeof CreateShippingRateSchema>;
+export type ShippingServiceabilityQueryInput = z.infer<typeof ShippingServiceabilityQuerySchema>;
+
+export interface ShippingServiceabilityRule {
+  provider: 'shiprocket' | 'delhivery' | 'pickrr';
+  pincode: string;
+  serviceable: boolean;
+  cod_available: boolean;
+  min_cod_amount_minor?: number | null;
+  max_cod_amount_minor?: number | null;
+  min_weight_grams?: number | null;
+  max_weight_grams?: number | null;
+  estimated_days_min?: number | null;
+  estimated_days_max?: number | null;
+}
+
+export interface ShippingServiceabilityPlan {
+  pincode: string;
+  serviceable: boolean;
+  cod_available: boolean;
+  provider: ShippingServiceabilityRule['provider'];
+  estimated_days_min: number;
+  estimated_days_max: number;
+  reason: 'matched_rule' | 'cod_unavailable' | 'amount_out_of_range' | 'weight_out_of_range' | 'no_rule';
+}
 export type CreateTaxRateInput = z.infer<typeof CreateTaxRateSchema>;
 export type CreateCouponInput = z.infer<typeof CreateCouponSchema>;
 export type ValidateCouponInput = z.infer<typeof ValidateCouponSchema>;
@@ -1191,7 +1726,7 @@ const SHIPPING_RATE_UPDATE_FIELDS = [
   'type',
   'is_active',
 ] as const;
-const TAX_RATE_UPDATE_FIELDS = ['name', 'rate', 'country', 'state', 'is_compound', 'is_shipping', 'priority', 'is_active'] as const;
+const TAX_RATE_UPDATE_FIELDS = ['name', 'rate', 'country', 'state', 'hsn_code', 'applies_to', 'is_compound', 'is_shipping', 'priority', 'is_active'] as const;
 
 export function planShippingZoneCreate(input: CreateShippingZoneInput): ShippingZoneCreatePlan {
   return {
@@ -1236,6 +1771,65 @@ export function planShippingRateUpdate(patch: Record<string, unknown>): Shipping
   return { updates };
 }
 
+export function planShippingServiceability(
+  input: ShippingServiceabilityQueryInput,
+  rules: ShippingServiceabilityRule[],
+): ShippingServiceabilityPlan {
+  const matchingRule = rules.find((rule) => rule.pincode === input.pincode && rule.serviceable)
+    || rules.find((rule) => rule.pincode === input.pincode);
+
+  if (!matchingRule || !matchingRule.serviceable) {
+    return {
+      pincode: input.pincode,
+      serviceable: false,
+      cod_available: false,
+      provider: matchingRule?.provider || 'shiprocket',
+      estimated_days_min: matchingRule?.estimated_days_min || 0,
+      estimated_days_max: matchingRule?.estimated_days_max || 0,
+      reason: matchingRule ? 'matched_rule' : 'no_rule',
+    };
+  }
+
+  const minWeight = matchingRule.min_weight_grams ?? 1;
+  const maxWeight = matchingRule.max_weight_grams ?? 50_000;
+  if (input.weight_grams < minWeight || input.weight_grams > maxWeight) {
+    return {
+      pincode: input.pincode,
+      serviceable: false,
+      cod_available: false,
+      provider: matchingRule.provider,
+      estimated_days_min: matchingRule.estimated_days_min || 0,
+      estimated_days_max: matchingRule.estimated_days_max || 0,
+      reason: 'weight_out_of_range',
+    };
+  }
+
+  let codAvailable = matchingRule.cod_available;
+  let reason: ShippingServiceabilityPlan['reason'] = 'matched_rule';
+  if (input.cod && !matchingRule.cod_available) {
+    codAvailable = false;
+    reason = 'cod_unavailable';
+  }
+  if (input.cod && matchingRule.cod_available) {
+    const minAmount = matchingRule.min_cod_amount_minor ?? 0;
+    const maxAmount = matchingRule.max_cod_amount_minor ?? Number.MAX_SAFE_INTEGER;
+    if (input.order_amount_minor < minAmount || input.order_amount_minor > maxAmount) {
+      codAvailable = false;
+      reason = 'amount_out_of_range';
+    }
+  }
+
+  return {
+    pincode: input.pincode,
+    serviceable: true,
+    cod_available: codAvailable,
+    provider: matchingRule.provider,
+    estimated_days_min: matchingRule.estimated_days_min || 3,
+    estimated_days_max: matchingRule.estimated_days_max || 7,
+    reason,
+  };
+}
+
 export function planTaxRateCreate(input: CreateTaxRateInput): TaxRateCreatePlan {
   return {
     taxRateInsert: {
@@ -1244,6 +1838,8 @@ export function planTaxRateCreate(input: CreateTaxRateInput): TaxRateCreatePlan 
       rate: input.rate,
       country: input.country || 'IN',
       state: input.state || null,
+      hsn_code: input.hsn_code || null,
+      applies_to: input.applies_to || 'all',
       is_compound: input.is_compound ?? false,
       is_shipping: input.is_shipping ?? false,
       priority: input.priority || 0,

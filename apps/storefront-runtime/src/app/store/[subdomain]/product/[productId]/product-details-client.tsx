@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import {
+import { Button,
     ArrowLeft, Minus, Plus, ShoppingBag, Heart, Share2,
     Zap, Truck, ShieldCheck, RefreshCcw, Package, ChevronDown, ChevronUp, Check, Star, Flame
 } from '@letbuyy/ui';
@@ -173,7 +173,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 {discount > 0 && (
                                     <span
                                         className="text-white text-xs font-bold px-2.5 py-1 rounded-md shadow"
-                                        style={{ backgroundColor: colors.accentColor || '#ff4757' }}
+                                        style={{ backgroundColor: colors.accentColor || 'rgb(255 71 87)' }}
                                     >
                                         {discount}% OFF
                                     </span>
@@ -192,7 +192,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
 
                             {/* Wishlist & Share */}
                             <div className="absolute top-3 right-3 flex flex-col gap-2">
-                                <button
+                                <Button unstyled
                                     type="button"
                                     aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
                                     aria-pressed={isWishlisted}
@@ -200,14 +200,14 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                     className={`flex h-11 w-11 items-center justify-center rounded-full shadow transition-all ${isWishlisted ? 'bg-rose-500 text-white' : 'card-theme text-theme-secondary'}`}
                                 >
                                     <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
-                                </button>
-                                <button
+                                </Button>
+                                <Button unstyled
                                     type="button"
                                     aria-label="Share product"
                                     className="flex h-11 w-11 items-center justify-center rounded-full shadow card-theme text-theme-secondary"
                                 >
                                     <Share2 size={18} />
-                                </button>
+                                </Button>
                             </div>
                         </motion.div>
 
@@ -215,7 +215,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                         {productImages.length > 1 && (
                             <div className="flex gap-2 overflow-x-auto pb-1">
                                 {productImages.map((img, i) => (
-                                    <button
+                                    <Button unstyled
                                         key={i}
                                         type="button"
                                         aria-label={`View product image ${i + 1}`}
@@ -231,7 +231,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                         }}
                                     >
                                         <Image src={img} alt="" fill sizes="64px" className="object-cover" unoptimized />
-                                    </button>
+                                    </Button>
                                 ))}
                             </div>
                         )}
@@ -327,7 +327,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                                             }`}
                                                         style={{
                                                             backgroundColor: isSelected ? colors.primaryColor : undefined,
-                                                            borderColor: isSelected ? colors.primaryColor : '#e5e7eb'
+                                                            borderColor: isSelected ? colors.primaryColor : 'rgb(229 231 235)'
                                                         }}
                                                     >
                                                         {isSelected && <Check size={14} />}
@@ -347,7 +347,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 className="border rounded-xl overflow-hidden"
                                 style={{ borderColor: `${colors.primaryColor}20` }}
                             >
-                                <button
+                                <Button unstyled
                                     type="button"
                                     aria-expanded={specsOpen}
                                     onClick={() => setSpecsOpen(!specsOpen)}
@@ -357,7 +357,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                         Specifications ({Object.keys(specs).length})
                                     </span>
                                     {specsOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                                </button>
+                                </Button>
                                 <AnimatePresence>
                                     {specsOpen && (
                                         <motion.div
@@ -388,7 +388,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 className="flex items-center border rounded-lg overflow-hidden"
                                 style={{ borderColor: `${colors.primaryColor}30` }}
                             >
-                                <button
+                                <Button unstyled
                                     type="button"
                                     aria-label="Decrease quantity"
                                     onClick={() => handleQuantity(-1)}
@@ -396,7 +396,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                     className="flex h-11 w-11 items-center justify-center hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
                                 >
                                     <Minus size={16} />
-                                </button>
+                                </Button>
                                 <span
                                     aria-live="polite"
                                     className="px-5 py-1.5 font-semibold min-w-[48px] text-center card-theme-secondary"
@@ -404,7 +404,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 >
                                     {quantity}
                                 </span>
-                                <button
+                                <Button unstyled
                                     type="button"
                                     aria-label="Increase quantity"
                                     onClick={() => handleQuantity(1)}
@@ -412,7 +412,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                     className="flex h-11 w-11 items-center justify-center hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
                                 >
                                     <Plus size={16} />
-                                </button>
+                                </Button>
                             </div>
                         </div>
 

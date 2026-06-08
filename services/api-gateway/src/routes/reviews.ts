@@ -5,7 +5,9 @@ import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import {
     ListProductReviewsQuery,
+    ProductReviewReplySchema,
     UpdateProductReviewSchema,
+    type ProductReviewReplyInput,
     type ReviewModerationStatus,
 } from '../schemas/review.schema';
 import { normalizeProductReviewRecord } from '@letbuyy/commerce-core';
@@ -34,6 +36,9 @@ interface ProductReviewRow extends ProductReviewOwnerRow {
     is_approved?: boolean | null;
     helpful_count?: number | null;
     status?: ReviewModerationStatus | null;
+    merchant_reply?: string | null;
+    merchant_reply_by?: string | null;
+    merchant_reply_at?: string | null;
     created_at?: string | null;
     updated_at?: string | null;
     products?: { name?: string | null } | null;
@@ -224,6 +229,54 @@ router.patch('/:id', validate('json', UpdateProductReviewSchema), async (c) => {
     }
 
     return c.json(success(normalizeProductReviewRecord({ ...(data as ProductReviewRow), status: body.status })));
+});
+
+router.post('/:id/reply', validate('json', ProductReviewReplySchema), async (c) => {
+    const auth = c.get('auth');
+    const reviewId = c.req.param('id');
+    const body = c.get('validatedBody') as ProductReviewReplyInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    const { data: existing, error: existingError } = await loadReviewOwner(db, reviewId);
+
+    if (existingError) {
+        return c.json({ success: false, error: { code: 'DB_ERROR', message: 'Unable to load review' } }, 500);
+    }
+
+    const ownedReview = existing as ProductReviewOwnerRow | null;
+    if (!customUser || !ownedReview?.store_id || !(await verifySiteOwnership(db, ownedReview.store_id, customUser.id, auth.user.storeId))) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const repliedAt = new Date().toISOString();
+    const { data, error } = await db
+        .from('product_reviews')
+        .update({
+            merchant_reply: body.message,
+            merchant_reply_by: customUser.id,
+            merchant_reply_at: repliedAt,
+            updated_at: repliedAt,
+        })
+        .eq('id', reviewId)
+        .select('*')
+        .single();
+
+    if (isMissingColumnError(error, 'merchant_reply') || isMissingColumnError(error, 'merchant_reply_by') || isMissingColumnError(error, 'merchant_reply_at')) {
+        return c.json({
+            success: false,
+            error: {
+                code: 'REVIEW_REPLY_SCHEMA_MISSING',
+                message: 'Review replies are not available in this environment.',
+            },
+        }, 503);
+    }
+
+    if (error || !data) {
+        return c.json({ success: false, error: { code: 'DB_ERROR', message: 'Unable to reply to review' } }, 500);
+    }
+
+    return c.json(success(normalizeProductReviewRecord(data as ProductReviewRow)));
 });
 
 router.delete('/:id', async (c) => {

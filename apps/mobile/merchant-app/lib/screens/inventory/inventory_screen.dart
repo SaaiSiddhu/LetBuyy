@@ -6,6 +6,7 @@ import '../../app/routes.dart';
 import '../../services/inventory_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import '../../widgets/shared/barcode_scanner_sheet.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -145,6 +146,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 ),
               ],
             ),
+          ),
+          IconButton(
+            tooltip: 'Scan barcode',
+            icon: Icon(
+              Icons.qr_code_scanner_rounded,
+              color: colors.textSecondary,
+            ),
+            onPressed: _scanAndAdjust,
           ),
           IconButton(
             tooltip: 'Refresh inventory',
@@ -560,6 +569,49 @@ class _InventoryScreenState extends State<InventoryScreen> {
     }
   }
 
+  Future<void> _scanAndAdjust() async {
+    if (_storeId == null) {
+      _showSnackBar('Select a store before scanning inventory.', isError: true);
+      return;
+    }
+    final barcode = await showBarcodeScannerSheet(
+      context,
+      title: 'Scan inventory barcode',
+    );
+    if (!mounted || barcode == null || barcode.trim().isEmpty) return;
+
+    try {
+      final service = context.read<InventoryService>();
+      final lookup = await service.lookupBarcode(
+        storeId: _storeId!,
+        barcode: barcode,
+      );
+      if (!mounted) return;
+      if (lookup == null) {
+        _showSnackBar('No product found for that barcode.', isError: true);
+        return;
+      }
+      final request = await _scanAdjustmentDialog(lookup);
+      if (request == null) return;
+      await service.adjustScannedStock(
+        storeId: _storeId!,
+        lookup: lookup,
+        delta: request.delta,
+        reason: request.reason,
+        locationId: request.locationId,
+        note: request.note,
+      );
+      if (mounted) {
+        _showSnackBar('Stock adjusted for ${lookup.label}');
+        _loadInventory();
+      }
+    } catch (error) {
+      if (mounted) {
+        _showSnackBar('Barcode inventory update failed.', isError: true);
+      }
+    }
+  }
+
   Future<_InventoryAdjustment?> _adjustmentDialog(InventoryLevel level) {
     final deltaController = TextEditingController();
     final noteController = TextEditingController();
@@ -671,6 +723,152 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
+  Future<_ScannedInventoryAdjustment?> _scanAdjustmentDialog(
+    InventoryBarcodeLookup lookup,
+  ) {
+    final deltaController = TextEditingController();
+    final locationController = TextEditingController();
+    final noteController = TextEditingController();
+    var reason = 'recount';
+
+    InventoryLevel? matchingLevel;
+    for (final level in _levels) {
+      final sameProduct = level.productId == lookup.productId;
+      final sameVariant =
+          lookup.variantId.isEmpty || level.variantId == lookup.variantId;
+      if (sameProduct && sameVariant) {
+        matchingLevel = level;
+        break;
+      }
+    }
+    if (matchingLevel != null && matchingLevel.locationId.isNotEmpty) {
+      locationController.text = matchingLevel.locationId;
+    }
+
+    return showDialog<_ScannedInventoryAdjustment>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: colors.card,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Adjust ${lookup.label}',
+            style: TextStyle(color: colors.textPrimary),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Scanned ${lookup.barcode}',
+                    style: TextStyle(color: colors.textSecondary),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: deltaController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    signed: true,
+                  ),
+                  style: TextStyle(color: colors.textPrimary),
+                  decoration: InputDecoration(
+                    labelText: 'Change quantity',
+                    hintText: '+5 or -2',
+                    labelStyle: TextStyle(color: colors.textSecondary),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: locationController,
+                  style: TextStyle(color: colors.textPrimary),
+                  decoration: InputDecoration(
+                    labelText: 'Location ID',
+                    labelStyle: TextStyle(color: colors.textSecondary),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  value: reason,
+                  dropdownColor: colors.card,
+                  style: TextStyle(color: colors.textPrimary),
+                  decoration: InputDecoration(
+                    labelText: 'Reason',
+                    labelStyle: TextStyle(color: colors.textSecondary),
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 'recount', child: Text('Recount')),
+                    DropdownMenuItem(
+                      value: 'received',
+                      child: Text('Received'),
+                    ),
+                    DropdownMenuItem(value: 'damaged', child: Text('Damaged')),
+                    DropdownMenuItem(
+                      value: 'correction',
+                      child: Text('Correction'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) setDialogState(() => reason = value);
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: noteController,
+                  minLines: 2,
+                  maxLines: 3,
+                  style: TextStyle(color: colors.textPrimary),
+                  decoration: InputDecoration(
+                    labelText: 'Note',
+                    labelStyle: TextStyle(color: colors.textSecondary),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: colors.textSecondary),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                final delta = int.tryParse(
+                  deltaController.text.trim().replaceFirst('+', ''),
+                );
+                if (delta == null || delta == 0) {
+                  _showSnackBar('Enter a non-zero adjustment', isError: true);
+                  return;
+                }
+                Navigator.pop(
+                  context,
+                  _ScannedInventoryAdjustment(
+                    delta: delta,
+                    reason: reason,
+                    note: noteController.text.trim(),
+                    locationId: locationController.text.trim(),
+                  ),
+                );
+              },
+              child: Text(
+                'Apply',
+                style: TextStyle(
+                  color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showSnackBar(String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -694,6 +892,17 @@ class _InventoryAdjustment {
   final int delta;
   final String reason;
   final String note;
+}
+
+class _ScannedInventoryAdjustment extends _InventoryAdjustment {
+  const _ScannedInventoryAdjustment({
+    required super.delta,
+    required super.reason,
+    required super.note,
+    required this.locationId,
+  });
+
+  final String locationId;
 }
 
 class _WmsShortcut {

@@ -13,9 +13,39 @@ type AnalyticsRollupRow = {
     rollup_date: string;
     dimensions: Record<string, unknown> | null;
     metric_value: number | string | null;
+    updated_at?: string | null;
+};
+
+type CommerceAnalyticsDailyMvRow = {
+    rollup_date: string;
+    orders_created: number | string | null;
+    orders_paid: number | string | null;
+    revenue_paid_minor: number | string | null;
+    media_processed: number | string | null;
+    media_size_bytes: number | string | null;
+    refreshed_from_rollups_at?: string | null;
 };
 
 type AnalyticsDb = ReturnType<typeof getSupabaseAdmin>;
+
+const LIVE_VIEW_METRICS = [
+    'storefront.sessions.active',
+    'storefront.sessions.started',
+    'storefront.page.views',
+    'storefront.page.view',
+    'storefront.product.views',
+    'storefront.cart.added',
+    'storefront.checkouts.started',
+    'storefront.traffic.source',
+    'storefront.session.device',
+    'storefront.session.country',
+];
+const TRAFFIC_SOURCE_METRICS = [
+    'storefront.sessions.started',
+    'storefront.page.views',
+    'storefront.page.view',
+    'storefront.traffic.source',
+];
 
 function analyticsRollupReadsEnabled(env: Pick<Env, 'ANALYTICS_PROJECTION_READS'>): boolean {
     return (env.ANALYTICS_PROJECTION_READS || 'on').trim().toLowerCase() !== 'off';
@@ -37,9 +67,31 @@ function rollupNumber(value: number | string | null | undefined): number {
     return Number.isFinite(numberValue) ? numberValue : 0;
 }
 
+function warehouseReadiness(env: Pick<Env, 'LETBUYY_WAREHOUSE_MODE'>) {
+    const mode = (env.LETBUYY_WAREHOUSE_MODE || 'mock').trim().toLowerCase();
+    if (mode === 'live') {
+        // [HUMAN-REQUIRED] HR-WAREHOUSE-LIVE: warehouse/replica credentials and data contracts are not activated in V1 local mode.
+        return {
+            mode: 'live',
+            status: 'human_required',
+            message: 'External warehouse activation requires operator approval.',
+        };
+    }
+
+    return {
+        mode: 'mock',
+        status: 'deferred',
+        message: 'Dashboards read from in-DB rollups in this release.',
+    };
+}
+
 function rollupDimension(row: AnalyticsRollupRow, key: string): string | null {
     const value = row.dimensions?.[key];
     return typeof value === 'string' && value.length > 0 ? value : null;
+}
+
+function rollupUpdatedAt(row: AnalyticsRollupRow): string | null {
+    return typeof row.updated_at === 'string' && row.updated_at.length > 0 ? row.updated_at : null;
 }
 
 function rollupRowsBetween(rows: AnalyticsRollupRow[], fromDate: string, toDate?: string): AnalyticsRollupRow[] {
@@ -52,6 +104,18 @@ function sumRollup(rows: AnalyticsRollupRow[], metricName: string): number {
         .reduce((sum, row) => sum + rollupNumber(row.metric_value), 0);
 }
 
+function percentageChange(current: number, previous: number): number {
+    return previous === 0 ? 0 : Math.round(((current - previous) / previous) * 1000) / 10;
+}
+
+function metricDelta(current: number, previous: number) {
+    return {
+        value: current,
+        change_pct: percentageChange(current, previous),
+        prev: previous,
+    };
+}
+
 async function loadRollups(
     db: AnalyticsDb,
     storeId: string,
@@ -61,7 +125,7 @@ async function loadRollups(
 ): Promise<AnalyticsRollupRow[] | null> {
     let query = db
         .from('analytics_rollups_daily')
-        .select('metric_name, rollup_date, dimensions, metric_value')
+        .select('metric_name, rollup_date, dimensions, metric_value, updated_at')
         .eq('site_id', storeId)
         .in('metric_name', metricNames)
         .is('deleted_at', null)
@@ -73,6 +137,145 @@ async function loadRollups(
     const { data, error } = await query;
     if (error) return null;
     return Array.isArray(data) ? data as AnalyticsRollupRow[] : [];
+}
+
+function analyticsLiveWindowMinutes(value: string | undefined): number {
+    const parsed = Number(value || 15);
+    if (!Number.isFinite(parsed)) return 15;
+    return Math.min(Math.max(Math.round(parsed), 5), 60);
+}
+
+function analyticsLimit(value: string | undefined, fallback = 10, max = 50): number {
+    const parsed = Number(value || fallback);
+    if (!Number.isFinite(parsed)) return fallback;
+    return Math.min(Math.max(Math.round(parsed), 1), max);
+}
+
+function liveRollupLabel(row: AnalyticsRollupRow): string {
+    return rollupDimension(row, 'page_title')
+        || rollupDimension(row, 'path')
+        || rollupDimension(row, 'source')
+        || rollupDimension(row, 'device')
+        || rollupDimension(row, 'country')
+        || row.metric_name;
+}
+
+function sumMetric(rows: AnalyticsRollupRow[], metricName: string): number {
+    return Math.round(sumRollup(rows, metricName));
+}
+
+function topDimensionEntries(
+    rows: AnalyticsRollupRow[],
+    metricNames: string[],
+    dimensionKeys: string[],
+    limit: number,
+): Array<{ label: string; value: number; metadata: Record<string, string | number | boolean | null> }> {
+    const grouped = new Map<string, { label: string; value: number; metadata: Record<string, string | number | boolean | null> }>();
+
+    for (const row of rows) {
+        if (!metricNames.includes(row.metric_name)) continue;
+        const label = dimensionKeys.map((key) => rollupDimension(row, key)).find(Boolean);
+        if (!label) continue;
+        const entry = grouped.get(label) || { label, value: 0, metadata: {} };
+        entry.value += rollupNumber(row.metric_value);
+        for (const key of dimensionKeys) {
+            const value = rollupDimension(row, key);
+            if (value) entry.metadata[key] = value;
+        }
+        grouped.set(label, entry);
+    }
+
+    return Array.from(grouped.values())
+        .map((entry) => ({ ...entry, value: Math.round(entry.value) }))
+        .sort((left, right) => right.value - left.value || left.label.localeCompare(right.label))
+        .slice(0, limit);
+}
+
+async function loadRollupLiveView(db: AnalyticsDb, storeId: string, windowMinutes: number) {
+    const rows = await loadRollups(db, storeId, LIVE_VIEW_METRICS, rollupDate(1), 2000);
+    if (!rows) return null;
+
+    const now = Date.now();
+    const sinceMs = now - windowMinutes * 60000;
+    const liveRows = rows.filter((row) => {
+        const updatedAt = rollupUpdatedAt(row);
+        return updatedAt ? Date.parse(updatedAt) >= sinceMs : false;
+    });
+    const lastSeenAt = liveRows
+        .map(rollupUpdatedAt)
+        .filter((value): value is string => Boolean(value))
+        .sort()
+        .at(-1) || null;
+    const available = liveRows.some((row) => rollupNumber(row.metric_value) > 0);
+
+    return {
+        store_id: storeId,
+        available,
+        window_minutes: windowMinutes,
+        active_sessions: sumMetric(liveRows, 'storefront.sessions.active'),
+        visitors: sumMetric(liveRows, 'storefront.sessions.started'),
+        page_views: sumMetric(liveRows, 'storefront.page.views') + sumMetric(liveRows, 'storefront.page.view'),
+        cart_adds: sumMetric(liveRows, 'storefront.cart.added'),
+        checkouts_started: sumMetric(liveRows, 'storefront.checkouts.started'),
+        top_pages: topDimensionEntries(liveRows, ['storefront.page.views', 'storefront.page.view'], ['page_title', 'path'], 5),
+        traffic_sources: topDimensionEntries(liveRows, ['storefront.traffic.source', 'storefront.sessions.started', 'storefront.page.views', 'storefront.page.view'], ['source', 'referrer'], 5),
+        devices: topDimensionEntries(liveRows, ['storefront.session.device', 'storefront.sessions.started'], ['device'], 5),
+        countries: topDimensionEntries(liveRows, ['storefront.session.country', 'storefront.sessions.started'], ['country'], 5),
+        recent_signals: liveRows
+            .slice()
+            .sort((left, right) => Date.parse(rollupUpdatedAt(right) || '') - Date.parse(rollupUpdatedAt(left) || ''))
+            .slice(0, 8)
+            .map((row) => ({
+                metric_name: row.metric_name,
+                label: liveRollupLabel(row),
+                value: Math.round(rollupNumber(row.metric_value)),
+                seen_at: rollupUpdatedAt(row),
+            })),
+        generated_at: new Date(now).toISOString(),
+        last_seen_at: lastSeenAt,
+        refresh_after_seconds: 30,
+        pipeline: {
+            status: available ? 'ready' : 'waiting_for_events',
+            source: 'analytics_rollups_daily',
+            message: available
+                ? 'Live storefront signals are being received.'
+                : 'Live storefront signals appear after traffic data is collected.',
+        },
+    };
+}
+
+async function loadRollupTrafficSources(db: AnalyticsDb, storeId: string, period: string, limit: number) {
+    const rows = await loadRollups(db, storeId, TRAFFIC_SOURCE_METRICS, rollupDate(analyticsPeriodDays(period)), 2000);
+    const generatedAt = new Date().toISOString();
+
+    if (!rows) return null;
+
+    const totalSessions = Math.round(sumRollup(rows, 'storefront.sessions.started'));
+    const totalPageViews = Math.round(sumRollup(rows, 'storefront.page.views') + sumRollup(rows, 'storefront.page.view'));
+    const sourceEntries = topDimensionEntries(rows, ['storefront.traffic.source'], ['source', 'referrer', 'campaign', 'medium'], limit);
+    const sourceTotal = sourceEntries.reduce((sum, entry) => sum + entry.value, 0);
+    const denominator = sourceTotal || totalSessions || 0;
+    const available = denominator > 0 || totalPageViews > 0;
+
+    return {
+        store_id: storeId,
+        period,
+        available,
+        total_sessions: totalSessions,
+        total_page_views: totalPageViews,
+        sources: sourceEntries.map((entry) => ({
+            ...entry,
+            percentage: denominator > 0 ? Math.round((entry.value / denominator) * 1000) / 10 : 0,
+        })),
+        generated_at: generatedAt,
+        pipeline: {
+            status: available ? 'ready' : 'waiting_for_events',
+            source: 'analytics_rollups_daily',
+            message: available
+                ? 'Storefront session sources are being collected.'
+                : 'Traffic source attribution appears after storefront visits are collected.',
+        },
+    };
 }
 
 async function loadStoreEntityCounts(db: AnalyticsDb, storeId: string): Promise<{ products: number; customers: number }> {
@@ -101,25 +304,32 @@ async function loadRollupDashboard(db: AnalyticsDb, storeId: string, period: str
     const currentOrders = sumRollup(currentRows, 'orders.created');
     const previousOrders = sumRollup(previousRows, 'orders.created');
     const counts = await loadStoreEntityCounts(db, storeId);
-    const changePct = (curr: number, prev: number) => prev === 0 ? 0 : Math.round(((curr - prev) / prev) * 1000) / 10;
+    const currentAverageOrderValue = currentOrders > 0 ? Math.round(revenue / currentOrders) : 0;
+    const previousAverageOrderValue = previousOrders > 0 ? Math.round(prevRevenue / previousOrders) : 0;
 
     return {
         period,
         summary: {
-            revenue: { value: revenue, change_pct: changePct(revenue, prevRevenue), prev: prevRevenue },
-            orders: { value: currentOrders, change_pct: changePct(currentOrders, previousOrders), prev: previousOrders },
+            revenue: metricDelta(revenue, prevRevenue),
+            orders: metricDelta(currentOrders, previousOrders),
             products: counts.products,
             customers: counts.customers,
-            avg_order_value: currentOrders > 0 ? Math.round(revenue / currentOrders) : 0,
+            avg_order_value: currentAverageOrderValue,
+        },
+        comparison: {
+            previous_period: {
+                from: previousSince,
+                to: currentSince,
+                label: `Previous ${days} days`,
+            },
+            revenue: metricDelta(revenue, prevRevenue),
+            orders: metricDelta(currentOrders, previousOrders),
+            average_order_value: metricDelta(currentAverageOrderValue, previousAverageOrderValue),
         },
     };
 }
 
-async function loadRollupRevenue(db: AnalyticsDb, storeId: string, period: string) {
-    const days = analyticsPeriodDays(period === '12m' ? '90d' : period);
-    const rows = await loadRollups(db, storeId, ['orders.paid', 'revenue.paid_minor'], rollupDate(days));
-    if (!rows) return null;
-
+function revenueChartFromRollupRows(rows: AnalyticsRollupRow[]) {
     const byDate = new Map<string, { revenue: number; orders: number }>();
     for (const row of rows) {
         const entry = byDate.get(row.rollup_date) || { revenue: 0, orders: 0 };
@@ -128,13 +338,34 @@ async function loadRollupRevenue(db: AnalyticsDb, storeId: string, period: strin
         byDate.set(row.rollup_date, entry);
     }
 
+    return Array.from(byDate.entries()).map(([date, value]) => ({
+        date,
+        revenue: Math.round(value.revenue),
+        orders: value.orders,
+    }));
+}
+
+async function loadRollupRevenue(db: AnalyticsDb, storeId: string, period: string) {
+    const days = analyticsPeriodDays(period === '12m' ? '90d' : period);
+    const currentSince = rollupDate(days);
+    const previousSince = rollupDate(days * 2);
+    const rows = await loadRollups(db, storeId, ['orders.paid', 'revenue.paid_minor'], previousSince);
+    if (!rows) return null;
+
+    const currentRows = rollupRowsBetween(rows, currentSince);
+    const previousRows = rollupRowsBetween(rows, previousSince, currentSince);
+
     return {
         period,
-        chart: Array.from(byDate.entries()).map(([date, value]) => ({
-            date,
-            revenue: Math.round(value.revenue),
-            orders: value.orders,
-        })),
+        chart: revenueChartFromRollupRows(currentRows),
+        comparison: {
+            previous_period: {
+                from: previousSince,
+                to: currentSince,
+                label: `Previous ${days} days`,
+            },
+            chart: revenueChartFromRollupRows(previousRows),
+        },
     };
 }
 
@@ -186,6 +417,131 @@ async function loadRollupOrderBreakdown(db: AnalyticsDb, storeId: string) {
     };
 }
 
+async function loadCommerceAnalyticsMvSummary(db: AnalyticsDb, storeId: string, period: string) {
+    const days = analyticsPeriodDays(period);
+    const sinceDate = rollupDate(days);
+    const { data, error } = await db
+        .from('commerce_analytics_daily_mv')
+        .select('rollup_date, orders_created, orders_paid, revenue_paid_minor, media_processed, media_size_bytes, refreshed_from_rollups_at')
+        .eq('site_id', storeId)
+        .gte('rollup_date', sinceDate)
+        .order('rollup_date', { ascending: true });
+
+    if (error) return null;
+    const rows = Array.isArray(data) ? data as CommerceAnalyticsDailyMvRow[] : [];
+    const totals = rows.reduce(
+        (acc, row) => ({
+            orders_created: acc.orders_created + rollupNumber(row.orders_created),
+            orders_paid: acc.orders_paid + rollupNumber(row.orders_paid),
+            revenue_paid_minor: acc.revenue_paid_minor + rollupNumber(row.revenue_paid_minor),
+            media_processed: acc.media_processed + rollupNumber(row.media_processed),
+            media_size_bytes: acc.media_size_bytes + rollupNumber(row.media_size_bytes),
+        }),
+        { orders_created: 0, orders_paid: 0, revenue_paid_minor: 0, media_processed: 0, media_size_bytes: 0 },
+    );
+
+    return {
+        store_id: storeId,
+        period,
+        source: 'commerce_analytics_daily_mv',
+        totals: {
+            orders_created: Math.round(totals.orders_created),
+            orders_paid: Math.round(totals.orders_paid),
+            revenue_paid_minor: Math.round(totals.revenue_paid_minor),
+            media_processed: Math.round(totals.media_processed),
+            media_size_bytes: Math.round(totals.media_size_bytes),
+        },
+        chart: rows.map((row) => ({
+            date: row.rollup_date,
+            orders_created: Math.round(rollupNumber(row.orders_created)),
+            orders_paid: Math.round(rollupNumber(row.orders_paid)),
+            revenue_paid_minor: Math.round(rollupNumber(row.revenue_paid_minor)),
+            media_processed: Math.round(rollupNumber(row.media_processed)),
+            media_size_bytes: Math.round(rollupNumber(row.media_size_bytes)),
+        })),
+        refreshed_from_rollups_at: rows
+            .map((row) => row.refreshed_from_rollups_at)
+            .filter((value): value is string => Boolean(value))
+            .sort()
+            .at(-1) || null,
+    };
+}
+
+// GET /analytics/live — Storefront live traffic snapshot
+router.get('/live', async (c) => {
+    const auth = c.get('auth');
+    const storeId = c.req.query('store_id');
+    const windowMinutes = analyticsLiveWindowMinutes(c.req.query('window_minutes'));
+    const db = getSupabaseAdmin(c);
+
+    if (!storeId) return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id required' } }, 400);
+    if (!(await canAccessStore(db, auth.user, storeId))) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const liveView = await loadRollupLiveView(db, storeId, windowMinutes);
+    if (liveView) return c.json(success(liveView));
+
+    return c.json(success({
+        store_id: storeId,
+        available: false,
+        window_minutes: windowMinutes,
+        active_sessions: 0,
+        visitors: 0,
+        page_views: 0,
+        cart_adds: 0,
+        checkouts_started: 0,
+        top_pages: [],
+        traffic_sources: [],
+        devices: [],
+        countries: [],
+        recent_signals: [],
+        generated_at: new Date().toISOString(),
+        last_seen_at: null,
+        refresh_after_seconds: 30,
+        pipeline: {
+            status: 'waiting_for_events',
+            source: 'analytics_rollups_daily',
+            message: 'Live storefront signals appear after traffic data is collected.',
+        },
+    }));
+});
+
+// GET /analytics/traffic-sources — Storefront session source attribution from rollups.
+router.get('/traffic-sources', async (c) => {
+    const auth = c.get('auth');
+    const storeId = c.req.query('store_id');
+    const period = c.req.query('period') || '30d';
+    const limit = analyticsLimit(c.req.query('limit'));
+    const db = getSupabaseAdmin(c);
+
+    if (!storeId) return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id required' } }, 400);
+    if (!(await canAccessStore(db, auth.user, storeId))) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const report = analyticsRollupReadsEnabled(c.env)
+        ? await loadRollupTrafficSources(db, storeId, period, limit)
+        : null;
+
+    if (report) return c.json(success(report));
+
+    return c.json(success({
+        store_id: storeId,
+        period,
+        available: false,
+        total_sessions: 0,
+        total_page_views: 0,
+        sources: [],
+        generated_at: new Date().toISOString(),
+        pipeline: {
+            status: 'waiting_for_events',
+            source: 'analytics_rollups_daily',
+            message: 'Traffic source attribution appears after storefront visits are collected.',
+        },
+    }));
+});
+
 // GET /analytics/dashboard — Main dashboard metrics
 router.get('/dashboard', async (c) => {
     const auth = c.get('auth');
@@ -224,16 +580,29 @@ router.get('/dashboard', async (c) => {
 
     const { products: productCount, customers: customerCount } = await loadStoreEntityCounts(db, storeId);
 
-    const changePct = (curr: number, prev: number) => prev === 0 ? 0 : Math.round(((curr - prev) / prev) * 1000) / 10;
+    const currentAverageOrderValue = currentOrders.length > 0 ? Math.round(revenue / currentOrders.length) : 0;
+    const previousAverageOrderValue = previousOrders.length > 0 ? Math.round(prevRevenue / previousOrders.length) : 0;
+    const previousPeriodFrom = new Date(prevSince).toISOString().slice(0, 10);
+    const previousPeriodTo = new Date(since).toISOString().slice(0, 10);
 
     return c.json(success({
         period,
         summary: {
-            revenue: { value: revenue, change_pct: changePct(revenue, prevRevenue), prev: prevRevenue },
-            orders: { value: currentOrders.length, change_pct: changePct(currentOrders.length, previousOrders.length), prev: previousOrders.length },
+            revenue: metricDelta(revenue, prevRevenue),
+            orders: metricDelta(currentOrders.length, previousOrders.length),
             products: productCount || 0,
             customers: customerCount || 0,
-            avg_order_value: currentOrders.length > 0 ? Math.round(revenue / currentOrders.length) : 0,
+            avg_order_value: currentAverageOrderValue,
+        },
+        comparison: {
+            previous_period: {
+                from: previousPeriodFrom,
+                to: previousPeriodTo,
+                label: `Previous ${days} days`,
+            },
+            revenue: metricDelta(revenue, prevRevenue),
+            orders: metricDelta(currentOrders.length, previousOrders.length),
+            average_order_value: metricDelta(currentAverageOrderValue, previousAverageOrderValue),
         },
     }));
 });
@@ -255,26 +624,43 @@ router.get('/revenue', async (c) => {
         if (projected) return c.json(success(projected));
     }
 
-    const days = period === '7d' ? 7 : period === '90d' ? 90 : 30;
+    const days = analyticsPeriodDays(period === '12m' ? '90d' : period);
     const since = new Date(Date.now() - days * 86400000).toISOString();
+    const prevSince = new Date(Date.now() - days * 2 * 86400000).toISOString();
 
     const { data: orders } = await db.from('orders').select('total, created_at, payment_status')
         .eq('store_id', storeId).gte('created_at', since).eq('payment_status', 'paid')
         .order('created_at', { ascending: true });
 
-    // Group by date
-    const dailyMap = new Map<string, { revenue: number; orders: number }>();
-    for (const o of orders || []) {
-        const date = o.created_at.slice(0, 10);
-        const entry = dailyMap.get(date) || { revenue: 0, orders: 0 };
-        entry.revenue += o.total || 0;
-        entry.orders += 1;
-        dailyMap.set(date, entry);
-    }
+    const { data: previousOrders } = await db.from('orders').select('total, created_at, payment_status')
+        .eq('store_id', storeId).gte('created_at', prevSince).lt('created_at', since).eq('payment_status', 'paid')
+        .order('created_at', { ascending: true });
 
-    const chart = Array.from(dailyMap.entries()).map(([date, d]) => ({ date, ...d }));
+    const dailyChart = (rows: Array<{ total?: number | null; created_at: string }>) => {
+        const dailyMap = new Map<string, { revenue: number; orders: number }>();
+        for (const o of rows) {
+            const date = o.created_at.slice(0, 10);
+            const entry = dailyMap.get(date) || { revenue: 0, orders: 0 };
+            entry.revenue += o.total || 0;
+            entry.orders += 1;
+            dailyMap.set(date, entry);
+        }
 
-    return c.json(success({ period, chart }));
+        return Array.from(dailyMap.entries()).map(([date, d]) => ({ date, ...d }));
+    };
+
+    return c.json(success({
+        period,
+        chart: dailyChart(orders || []),
+        comparison: {
+            previous_period: {
+                from: new Date(prevSince).toISOString().slice(0, 10),
+                to: new Date(since).toISOString().slice(0, 10),
+                label: `Previous ${days} days`,
+            },
+            chart: dailyChart(previousOrders || []),
+        },
+    }));
 });
 
 // GET /analytics/top-products — Top-selling products
@@ -322,6 +708,35 @@ router.get('/orders', async (c) => {
     for (const o of data || []) { breakdown[o.status] = (breakdown[o.status] || 0) + 1; }
 
     return c.json(success({ breakdown, total: (data || []).length }));
+});
+
+// GET /analytics/:site/summary — V1 in-DB rollup dashboard alias backed by the commerce materialized view.
+router.get('/:site/summary', async (c) => {
+    const auth = c.get('auth');
+    const storeId = c.req.param('site');
+    const period = c.req.query('period') || '30d';
+    const db = getSupabaseAdmin(c);
+
+    if (!(await canAccessStore(db, auth.user, storeId))) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const projected = await loadCommerceAnalyticsMvSummary(db, storeId, period);
+    if (projected) {
+        return c.json(success({
+            ...projected,
+            warehouse: warehouseReadiness(c.env),
+        }));
+    }
+
+    const fallback = await loadRollupDashboard(db, storeId, period);
+    return c.json(success({
+        store_id: storeId,
+        period,
+        source: 'analytics_rollups_daily',
+        summary: fallback?.summary || null,
+        warehouse: warehouseReadiness(c.env),
+    }));
 });
 
 async function canAccessStore(

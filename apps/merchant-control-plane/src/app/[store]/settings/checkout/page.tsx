@@ -2,9 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button, Input,
     Banner,
-    Button,
     Card,
     Section,
     Select,
@@ -121,7 +120,7 @@ function ToggleRow({ id, label, description, checked, onChange }: ToggleRowProps
                     {description}
                 </span>
             </span>
-            <input
+            <Input unstyled
                 id={id}
                 type="checkbox"
                 checked={checked}

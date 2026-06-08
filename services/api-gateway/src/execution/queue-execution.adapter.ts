@@ -18,6 +18,10 @@ import { eventRetryDelaySeconds } from '@letbuyy/orchestration';
 import { getDomainEventContract, type RuntimeEventEnvelope } from '@letbuyy/event-core';
 import { planInAppNotificationForEvent } from '@letbuyy/notification-core';
 import { EventExecutionAdapter } from './event-execution.adapter';
+import {
+    DEFAULT_APP_REVENUE_SHARE_BPS,
+    planSandboxAppPayoutTransfer,
+} from '@letbuyy/billing-core';
 
 type JsonObject = Record<string, unknown>;
 
@@ -109,7 +113,7 @@ interface AppChargeEventPayload {
     app_id?: string;
     installation_id?: string;
     charge_id?: string;
-    billing_mode?: 'recurring' | 'usage';
+    billing_mode?: 'recurring' | 'one_time' | 'usage';
     amount?: {
         amount_minor?: number;
         currency?: 'INR';
@@ -131,6 +135,8 @@ interface PayoutLedgerEntry {
     id: string;
     partner_id: string;
     partner_amount_minor: number;
+    status?: string;
+    metadata?: JsonObject | null;
 }
 
 function clampBps(value: unknown, fallback: number): number {
@@ -293,6 +299,7 @@ export class QueueExecutionAdapter {
             eventType,
             occurredAt,
             aggregateType,
+            aggregateId,
             payload: envelope.payload || {},
         })) {
             await this.incrementRollup(rollup);
@@ -446,7 +453,7 @@ export class QueueExecutionAdapter {
         const payoutContext = app as MarketplaceAppPayoutContext | null;
         if (!payoutContext?.developer_id) return false;
 
-        const revenueShareBps = clampBps(payload.revenue_share_bps, 8000);
+        const revenueShareBps = clampBps(payload.revenue_share_bps, DEFAULT_APP_REVENUE_SHARE_BPS);
         const partnerAmountMinor = Math.floor((amountMinor * revenueShareBps) / 10000);
         const platformFeeMinor = amountMinor - partnerAmountMinor;
         const partnerGstBps = clampBps(payload.partner_gst_bps, 1800);
@@ -454,11 +461,29 @@ export class QueueExecutionAdapter {
             ? Math.max(0, Math.trunc(payload.partner_gst_minor))
             : Math.round((partnerAmountMinor * partnerGstBps) / 10000);
         const rail = payoutRail(payload.payout_rail);
+        const providerMode = payload.provider_mode === 'live' ? 'live' : 'test';
+        const ledgerMetadata = {
+            source_event_type: eventType,
+            queue_job_id: job.id,
+            partner_gst_bps: partnerGstBps,
+            partner_gst_minor: partnerGstMinor,
+            provider_reference: payload.provider_reference || null,
+            payout_provider_mode: providerMode,
+        };
 
-        const { data: entries, error: entryError } = await this.db
+        const { data: existingEntry, error: existingEntryError } = await this.db
             .from('partner_payout_ledger_entries')
-            .upsert(
-                {
+            .select('id, partner_id, partner_amount_minor, status, metadata')
+            .eq('source_event_id', eventId)
+            .maybeSingle();
+
+        if (existingEntryError) throw new Error(`Payout ledger lookup failed: ${existingEntryError.message}`);
+
+        let entry = existingEntry as PayoutLedgerEntry | null;
+        if (!entry) {
+            const { data: createdEntry, error: entryError } = await this.db
+                .from('partner_payout_ledger_entries')
+                .insert({
                     partner_id: payoutContext.developer_id,
                     site_id: siteId,
                     app_id: appId,
@@ -473,25 +498,19 @@ export class QueueExecutionAdapter {
                     platform_fee_minor: platformFeeMinor,
                     status: 'pending',
                     rail,
-                    metadata: {
-                        source_event_type: eventType,
-                        queue_job_id: job.id,
-                        partner_gst_bps: partnerGstBps,
-                        partner_gst_minor: partnerGstMinor,
-                        provider_reference: payload.provider_reference || null,
-                        payout_provider_mode: payload.provider_mode === 'live' ? 'live' : 'test',
-                    },
-                },
-                { onConflict: 'source_event_id' }
-            )
-            .select('id, partner_id, partner_amount_minor');
+                    metadata: ledgerMetadata,
+                })
+                .select('id, partner_id, partner_amount_minor, status, metadata')
+                .single();
 
-        if (entryError) throw new Error(`Payout ledger write failed: ${entryError.message}`);
+            if (entryError) throw new Error(`Payout ledger write failed: ${entryError.message}`);
+            entry = createdEntry as PayoutLedgerEntry;
+        }
 
-        const entry = Array.isArray(entries) ? entries[0] as PayoutLedgerEntry | undefined : undefined;
         if (!entry) return false;
 
-        await new EventExecutionAdapter(this.db).emitDomainEvent({
+        const events = new EventExecutionAdapter(this.db);
+        await events.emitDomainEvent({
             storeId: siteId,
             aggregateType: 'payout',
             aggregateId: entry.id,
@@ -510,6 +529,71 @@ export class QueueExecutionAdapter {
             requestId: envelope.request_id || job.request_id,
             actorId: null,
         });
+
+        if (!['released', 'failed'].includes(String(entry.status || 'pending'))) {
+            const processingMetadata = {
+                ...(entry.metadata || {}),
+                ...ledgerMetadata,
+                payout_settlement_started_at: new Date().toISOString(),
+            };
+            const { error: processingError } = await this.db
+                .from('partner_payout_ledger_entries')
+                .update({
+                    status: 'processing',
+                    metadata: processingMetadata,
+                })
+                .eq('id', entry.id)
+                .in('status', ['pending', 'processing']);
+
+            if (processingError) throw new Error(`Payout processing transition failed: ${processingError.message}`);
+
+            const settlement = planSandboxAppPayoutTransfer({
+                ledgerEntryId: entry.id,
+                partnerId: entry.partner_id,
+                amountMinor: entry.partner_amount_minor,
+                currency: 'INR',
+                rail,
+                providerMode,
+                idempotencyKey: `payout.transfer:${eventId}`,
+            });
+            const settledMetadata = {
+                ...processingMetadata,
+                payout_statement: settlement.statement,
+                payout_failure_reason: settlement.failure_reason || null,
+                live_transfer_required: settlement.status === 'processing' && providerMode === 'live',
+            };
+            const { error: settlementError } = await this.db
+                .from('partner_payout_ledger_entries')
+                .update({
+                    status: settlement.status,
+                    metadata: settledMetadata,
+                })
+                .eq('id', entry.id);
+
+            if (settlementError) throw new Error(`Payout settlement transition failed: ${settlementError.message}`);
+
+            if (settlement.status === 'released') {
+                await events.emitDomainEvent({
+                    storeId: siteId,
+                    aggregateType: 'payout',
+                    aggregateId: entry.id,
+                    eventType: 'payout.released',
+                    payload: {
+                        partner_id: entry.partner_id,
+                        payout_id: entry.id,
+                        ledger_entry_id: entry.id,
+                        amount: {
+                            amount_minor: entry.partner_amount_minor,
+                            currency: 'INR',
+                        },
+                        rail,
+                    },
+                    idempotencyKey: `payout.released:${eventId}`,
+                    requestId: envelope.request_id || job.request_id,
+                    actorId: null,
+                });
+            }
+        }
 
         return true;
     }

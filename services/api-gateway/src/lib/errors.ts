@@ -48,6 +48,13 @@ export class ConflictError extends AppError {
     }
 }
 
+export class HumanRequiredError extends AppError {
+    constructor(message: string, details?: unknown) {
+        super(message, 503, 'HUMAN_REQUIRED', details);
+        this.name = 'HumanRequiredError';
+    }
+}
+
 export class InsufficientStockError extends AppError {
     constructor(product: string, available: number, requested: number) {
         super(

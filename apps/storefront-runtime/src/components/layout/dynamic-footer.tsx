@@ -23,11 +23,11 @@ function booleanSetting(value: unknown, fallback = false): boolean {
 
 export default function DynamicFooter({ store, settings, blocks = [] }: DynamicFooterProps) {
     const theme: ThemeSettings = store.templateConfig?.themeSettings || {
-        primaryColor: '#00B3B3',
-        secondaryColor: '#008080',
-        accentColor: '#A4E500',
-        backgroundColor: '#FFFFFF',
-        textColor: '#1A1A2E',
+        primaryColor: 'rgb(0 179 179)',
+        secondaryColor: 'rgb(0 128 128)',
+        accentColor: 'rgb(164 229 0)',
+        backgroundColor: 'rgb(255 255 255)',
+        textColor: 'rgb(26 26 46)',
         fontFamily: 'Inter',
         headingFontFamily: 'Inter',
         borderRadius: 12,

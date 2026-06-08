@@ -1,11 +1,6 @@
 'use client';
 
-import {
-    Badge,
-    EmptyState,
-    IndexTable,
-    type IndexTableColumn,
-} from '@letbuyy/ui';
+import { Badge, EmptyState, Table, type TableColumn } from '@letbuyy/ui';
 import { formatIndiaDateTime as formatDateTime } from '@letbuyy/ui/formatting';
 
 export type TrustSafetyStoreRisk = {
@@ -28,7 +23,7 @@ type TrustSafetyIndexTableProps = {
     filterChipLabels: string[];
 };
 
-const columns: Array<IndexTableColumn<TrustSafetyStoreRisk>> = [
+const columns: Array<TableColumn<TrustSafetyStoreRisk>> = [
     {
         key: 'merchant',
         header: 'Merchant',
@@ -83,7 +78,7 @@ const columns: Array<IndexTableColumn<TrustSafetyStoreRisk>> = [
 
 export function TrustSafetyIndexTable({ rows, filterChipLabels }: TrustSafetyIndexTableProps) {
     return (
-        <IndexTable
+        <Table
             columns={columns}
             rows={rows}
             emptyState={(

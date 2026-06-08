@@ -1,22 +1,186 @@
 import { Hono } from 'hono';
+import { z } from 'zod';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { authMiddleware } from '../middleware/auth';
+import { requireRoleCategory, requireSuperAdmin } from '../middleware/rbac';
 import { isAppStoreUuid as isUuid } from '@letbuyy/app-engine';
+import {
+    AppDiscoveryEventInputSchema,
+    AppReviewReplyInputSchema,
+    AppTrustReportInputSchema,
+} from '@letbuyy/shared-types';
 import { registerAppStoreExtensionRoutes } from './app-store/extension-routes';
 import { registerAppStoreBillingOAuthRoutes } from './app-store/billing-oauth-routes';
 import { registerAppStoreInstallLifecycleRoutes } from './app-store/install-lifecycle-routes';
+import { registerAppStoreAppLifecycleRoutes } from './app-store/app-lifecycle-routes';
+import { registerAppStoreDeveloperToolingRoutes } from './app-store/developer-tooling-routes';
 import { registerAppStoreDeveloperRoutes } from './app-store/developer-routes';
 import { registerAppStoreComplianceRoutes } from './app-store/compliance-routes';
+import { registerAppStoreGrowthRoutes } from './app-store/growth-routes';
+import { enqueueMarketplaceAnalyticsEvent } from './app-store/shared';
+import {
+    buildReviewSummaryGenerationResult,
+    decorateAppsWithParityData,
+    decorateCollectionWithSections,
+    decorateCollectionsWithSections,
+    decorateReviewsWithProvenance,
+    getCategoryFeatureGroups,
+    getFeatureFilteredAppIds,
+    normalizeFeatureHandles,
+} from './app-store/parity-data';
 
 const router = new Hono<{ Bindings: Env }>();
+const APP_PUBLIC_SELECT = '*, app_developers!inner(id, company_name, slug, logo_url, website_url, support_email, verified), app_categories!inner(id, name, slug, icon, group_name), app_pricing_plans(id, app_id, developer_id, plan_slug, name, description, pricing_model, billing_mode, currency, amount_minor, interval, trial_days, usage_meter, usage_unit, included_usage, usage_unit_amount_minor, features, limits, is_default, status, sort_order)';
+const AppAwardWriteSchema = z.object({
+    award_key: z.string().trim().min(2).max(80).regex(/^[a-z0-9][a-z0-9_-]*$/),
+    label: z.string().trim().min(2).max(120),
+    year: z.coerce.number().int().min(2020).max(2100).default(new Date().getFullYear()),
+    blurb: z.string().trim().max(500).optional().nullable(),
+    status: z.enum(['draft', 'published', 'archived']).default('published'),
+    metadata: z.record(z.string(), z.unknown()).optional(),
+});
+
+type AppStoreRecord = Record<string, unknown>;
+
+function normalizeSearchTerm(value: string | undefined): string {
+    return (value || '').trim().replace(/[%(),]/g, ' ').replace(/\s+/g, ' ').slice(0, 120);
+}
+
+function searchTokens(value: string): string[] {
+    return value
+        .toLowerCase()
+        .split(/\s+/)
+        .map((token) => token.trim())
+        .filter((token) => token.length >= 2)
+        .slice(0, 8);
+}
+
+function normalizePositiveInt(value: string | undefined, fallback: number, max: number): number {
+    const parsed = Number.parseInt(value || '', 10);
+    if (!Number.isFinite(parsed) || parsed < 1) return fallback;
+    return Math.min(parsed, max);
+}
+
+function normalizeRatingMin(value: string | undefined): number | null {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed) || parsed <= 0) return null;
+    return Math.max(1, Math.min(5, parsed));
+}
+
+function decorateAppRecord(app: AppStoreRecord): AppStoreRecord {
+    const category = app.app_categories;
+    if (category && typeof category === 'object' && !Array.isArray(category)) {
+        const categoryRecord = category as AppStoreRecord;
+        app.app_categories = {
+            ...categoryRecord,
+            group: categoryRecord.group ?? categoryRecord.group_name,
+        };
+    }
+    if (app.is_first_party_demo) {
+        app.discovery_label = 'First-party demo app';
+    }
+    return app;
+}
+
+function decorateAppRecords(apps: AppStoreRecord[] | null): AppStoreRecord[] {
+    return (apps || []).map((app) => decorateAppRecord({ ...app }));
+}
+
+function stringOrNull(value: unknown): string | null {
+    return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+function appDeveloperOwnerId(app: AppStoreRecord | null | undefined): string | null {
+    const developer = Array.isArray(app?.app_developers) ? app?.app_developers[0] : app?.app_developers;
+    if (!developer || typeof developer !== 'object') return null;
+    return stringOrNull((developer as AppStoreRecord).user_id);
+}
+
+function stringArray(value: unknown): string[] {
+    return Array.isArray(value)
+        ? value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+        : [];
+}
+
+function searchableField(value: unknown): string {
+    return typeof value === 'string' ? value.toLowerCase() : '';
+}
+
+function categoryName(app: AppStoreRecord): string {
+    const category = Array.isArray(app.app_categories) ? app.app_categories[0] : app.app_categories;
+    return category && typeof category === 'object'
+        ? searchableField((category as AppStoreRecord).name)
+        : '';
+}
+
+function weightedTextScore(field: string, tokens: string[], weight: number): number {
+    if (!field) return 0;
+    return tokens.reduce((score, token) => {
+        if (field === token) return score + weight * 5;
+        if (field.startsWith(token)) return score + weight * 3;
+        if (field.includes(token)) return score + weight;
+        return score;
+    }, 0);
+}
+
+function scoreMarketplaceSearchResult(app: AppStoreRecord, search: string): number {
+    const tokens = searchTokens(search);
+    if (tokens.length === 0) return 0;
+    const tags = stringArray(app.tags).join(' ').toLowerCase();
+    const compatibilityTags = stringArray(app.compatibility_tags).join(' ').toLowerCase();
+    const ratingAvg = Number(app.rating_avg || 0);
+    const reviewCount = Number(app.review_count || 0);
+    const installCount = Number(app.install_count || 0);
+
+    return [
+        weightedTextScore(searchableField(app.name), tokens, 24),
+        weightedTextScore(searchableField(app.tagline), tokens, 18),
+        weightedTextScore(categoryName(app), tokens, 14),
+        weightedTextScore(tags, tokens, 10),
+        weightedTextScore(compatibilityTags, tokens, 8),
+        weightedTextScore(searchableField(app.description), tokens, 4),
+        Math.min(18, ratingAvg * 2),
+        Math.min(14, Math.log10(Math.max(reviewCount, 0) + 1) * 4),
+        Math.min(18, Math.log10(Math.max(installCount, 0) + 1) * 4),
+    ].reduce((total, score) => total + score, 0);
+}
+
+function isSearchVectorUnavailableError(error: { code?: string; message?: string } | null | undefined): boolean {
+    const text = `${error?.code || ''} ${error?.message || ''}`.toLowerCase();
+    return text.includes('42703') || text.includes('search_vector') || text.includes('column');
+}
+
+function reviewFraudSignals(input: { rating: number; title?: unknown; body?: unknown }, duplicateBodyCount: number): {
+    fraud_score: number;
+    fraud_flags: string[];
+    status: 'published' | 'flagged';
+    moderation_reason: string | null;
+} {
+    const flags: string[] = [];
+    const body = stringOrNull(input.body) || '';
+    const title = stringOrNull(input.title) || '';
+    if (body.length > 0 && body.length < 24) flags.push('short_body');
+    if (title && body && title.toLowerCase() === body.toLowerCase()) flags.push('title_body_duplicate');
+    if (duplicateBodyCount > 0) flags.push('duplicate_body');
+    if (Number(input.rating) === 5 && duplicateBodyCount > 0) flags.push('duplicate_max_rating');
+
+    const fraud_score = Math.min(100, (flags.includes('duplicate_body') ? 55 : 0) + (flags.length * 15));
+    return {
+        fraud_score,
+        fraud_flags: flags,
+        status: fraud_score >= 70 ? 'flagged' : 'published',
+        moderation_reason: fraud_score >= 70 ? 'Automated review fraud controls flagged this review for moderation.' : null,
+    };
+}
 
 // GET /app-store/categories — List active app categories
 router.get('/categories', async (c) => {
-    const { data, error } = await getSupabaseAdmin(c)
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
         .from('app_categories')
-        .select('*')
+        .select('id, name, slug, description, icon, group_name, sort_order, is_active, seo_title, seo_description, seo_content, seo_faq, buyer_guidance')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
 
@@ -24,56 +188,633 @@ router.get('/categories', async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(success(data || []));
+    const categoryIds = (data || [])
+        .map((category) => typeof category.id === 'string' ? category.id : null)
+        .filter((id): id is string => Boolean(id));
+    const { data: appCategories, error: countError } = categoryIds.length > 0
+        ? await db
+            .from('marketplace_apps')
+            .select('category_id')
+            .eq('status', 'published')
+            .in('category_id', categoryIds)
+        : { data: [], error: null };
+
+    if (countError) {
+        return c.json({ error: { code: 'DB_ERROR', message: countError.message } }, 500);
+    }
+
+    const counts = new Map<string, number>();
+    for (const item of appCategories || []) {
+        if (typeof item.category_id === 'string') {
+            counts.set(item.category_id, (counts.get(item.category_id) || 0) + 1);
+        }
+    }
+
+    return c.json(success((data || []).map((category) => ({
+        ...category,
+        group: category.group_name,
+        count: typeof category.id === 'string' ? counts.get(category.id) || 0 : 0,
+    }))));
 });
 
 // GET /app-store/apps — List marketplace apps (public-like, filtered by status=published for non-owners)
 router.get('/apps', async (c) => {
     const category = c.req.query('category');
-    const search = c.req.query('search');
+    const collection = c.req.query('collection');
+    const search = normalizeSearchTerm(c.req.query('search'));
     const pricing = c.req.query('pricing');
+    const ratingMin = normalizeRatingMin(c.req.query('rating_min') || c.req.query('rating'));
     const siteType = c.req.query('site_type');
-    const sort = c.req.query('sort') || 'popular';
-    const page = parseInt(c.req.query('page') || '1');
-    const limit = Math.min(parseInt(c.req.query('limit') || '20'), 50);
+    const sort = c.req.query('sort') || (search ? 'relevance' : 'popular');
+    const page = normalizePositiveInt(c.req.query('page'), 1, 1000);
+    const limit = normalizePositiveInt(c.req.query('limit'), 20, 50);
     const offset = (page - 1) * limit;
+    const featuredOnly = ['1', 'true', 'yes'].includes((c.req.query('featured') || '').toLowerCase());
+    const builtForLetbuyyOnly = ['1', 'true', 'yes'].includes((c.req.query('built_for_letbuyy') || '').toLowerCase());
+    const featureHandles = normalizeFeatureHandles([
+        c.req.query('feature_handles'),
+        c.req.query('feature_handles[]'),
+        c.req.queries('feature_handles'),
+        c.req.queries('feature_handles[]'),
+    ]);
     const db = getSupabaseAdmin(c);
+    let collectionAppIds: string[] | null = null;
+    let featureAppIds: string[] | null = null;
 
-    let query = db
-        .from('marketplace_apps')
-        .select('*, app_developers!inner(company_name, slug, logo_url, verified), app_categories!inner(name, slug, icon)', { count: 'exact' })
-        .eq('status', 'published');
-
-    if (category) query = isUuid(category) ? query.eq('category_id', category) : query.eq('app_categories.slug', category);
-    if (pricing) query = query.eq('pricing_model', pricing);
-    if (siteType) query = query.contains('supported_site_types', [siteType]);
-    if (search) query = query.or(`name.ilike.%${search}%,tagline.ilike.%${search}%`);
-
-    switch (sort) {
-        case 'rating':
-            query = query.order('rating_avg', { ascending: false });
-            break;
-        case 'recent':
-            query = query.order('created_at', { ascending: false });
-            break;
-        case 'name':
-            query = query.order('name', { ascending: true });
-            break;
-        case 'popular':
-        default:
-            query = query.order('install_count', { ascending: false });
-            break;
+    if (collection) {
+        const { data: collectionRow, error: collectionError } = await db
+            .from('app_collections')
+            .select('id')
+            .eq('slug', collection)
+            .eq('status', 'published')
+            .is('deleted_at', null)
+            .maybeSingle();
+        if (collectionError) {
+            return c.json({ error: { code: 'DB_ERROR', message: collectionError.message } }, 500);
+        }
+        if (!collectionRow) {
+            return c.json(paginated([], 0, page, limit));
+        }
+        const { data: items, error: itemsError } = await db
+            .from('app_collection_items')
+            .select('app_id')
+            .eq('collection_id', collectionRow.id)
+            .is('deleted_at', null)
+            .order('sort_order', { ascending: true });
+        if (itemsError) {
+            return c.json({ error: { code: 'DB_ERROR', message: itemsError.message } }, 500);
+        }
+        collectionAppIds = (items || [])
+            .map((item) => typeof item.app_id === 'string' ? item.app_id : null)
+            .filter((id): id is string => Boolean(id));
+        if (collectionAppIds.length === 0) {
+            return c.json(paginated([], 0, page, limit));
+        }
     }
 
-    query = query.range(offset, offset + limit - 1);
+    try {
+        featureAppIds = await getFeatureFilteredAppIds(db, featureHandles);
+    } catch (facetError) {
+        return c.json({ error: { code: 'DB_ERROR', message: facetError instanceof Error ? facetError.message : 'Feature filter failed' } }, 500);
+    }
 
-    const { data, error, count } = await query;
+    if (featureAppIds && featureAppIds.length === 0) {
+        return c.json(paginated([], 0, page, limit));
+    }
+
+    const useRelevanceWindow = search && sort === 'relevance' && offset < 1000;
+    const relevanceWindowEnd = useRelevanceWindow
+        ? Math.min(999, Math.max(offset + limit - 1, limit * 4 - 1))
+        : offset + limit - 1;
+
+    const buildQuery = (useSearchVector: boolean) => {
+        let query = db
+            .from('marketplace_apps')
+            .select(APP_PUBLIC_SELECT, { count: 'exact' })
+            .eq('status', 'published')
+            .eq('app_pricing_plans.status', 'active')
+            .is('app_pricing_plans.deleted_at', null);
+
+        if (collectionAppIds) query = query.in('id', collectionAppIds);
+        if (featureAppIds) query = query.in('id', featureAppIds);
+        if (category) query = isUuid(category) ? query.eq('category_id', category) : query.eq('app_categories.slug', category);
+        if (pricing === 'paid') {
+            query = query.in('pricing_model', ['recurring', 'one_time', 'usage']);
+        } else if (pricing) {
+            query = query.eq('pricing_model', pricing);
+        }
+        if (ratingMin) query = query.gte('rating_avg', ratingMin);
+        if (featuredOnly) query = query.eq('is_featured', true);
+        if (builtForLetbuyyOnly) query = query.eq('built_for_letbuyy', true);
+        if (siteType) query = query.contains('supported_site_types', [siteType]);
+        if (search) {
+            query = useSearchVector
+                ? query.textSearch('search_vector', search, { type: 'websearch', config: 'simple' })
+                : query.or(`name.ilike.%${search}%,tagline.ilike.%${search}%,description.ilike.%${search}%`);
+        }
+
+        switch (sort) {
+            case 'rating':
+                query = query.order('rating_avg', { ascending: false });
+                break;
+            case 'recent':
+                query = query.order('created_at', { ascending: false });
+                break;
+            case 'name':
+                query = query.order('name', { ascending: true });
+                break;
+            case 'relevance':
+                query = query.order('install_count', { ascending: false }).order('rating_avg', { ascending: false });
+                break;
+            case 'popular':
+            default:
+                query = query.order('install_count', { ascending: false });
+                break;
+        }
+
+        return query.range(useRelevanceWindow ? 0 : offset, relevanceWindowEnd);
+    };
+
+    let result = await buildQuery(Boolean(search));
+    if (result.error && search && isSearchVectorUnavailableError(result.error)) {
+        result = await buildQuery(false);
+    }
+
+    const { data, error, count } = result;
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(paginated(data || [], count || 0, page, limit));
+    let records = decorateAppRecords((data || []) as AppStoreRecord[]);
+    if (useRelevanceWindow) {
+        records = records
+            .map((app) => ({ ...app, search_score: scoreMarketplaceSearchResult(app, search) }))
+            .sort((a, b) => Number(b.search_score || 0) - Number(a.search_score || 0))
+            .slice(offset, offset + limit);
+    }
+
+    const enrichedRecords = await decorateAppsWithParityData(db, records);
+    return c.json(paginated(enrichedRecords, count || 0, page, limit));
+});
+
+// GET /app-store/categories/:slug/features — Category feature facet groups and counts
+router.get('/categories/:slug/features', async (c) => {
+    const slug = c.req.param('slug');
+    const featureHandles = normalizeFeatureHandles([
+        c.req.query('feature_handles'),
+        c.req.query('feature_handles[]'),
+        c.req.queries('feature_handles'),
+        c.req.queries('feature_handles[]'),
+    ]);
+    const db = getSupabaseAdmin(c);
+
+    try {
+        const groups = await getCategoryFeatureGroups(db, slug, featureHandles);
+        return c.json(success(groups));
+    } catch (facetError) {
+        return c.json({ error: { code: 'DB_ERROR', message: facetError instanceof Error ? facetError.message : 'Feature facets failed' } }, 500);
+    }
+});
+
+// GET /app-store/collections — List published app collections
+router.get('/collections', async (c) => {
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('app_collections')
+        .select('id, slug, name, description, curation_type, disclosure, status, sort_order, created_at, updated_at')
+        .eq('status', 'published')
+        .is('deleted_at', null)
+        .order('sort_order', { ascending: true });
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    const collectionIds = (data || []).map((item) => item.id).filter((id): id is string => typeof id === 'string');
+    const { data: items, error: itemError } = collectionIds.length > 0
+        ? await db
+            .from('app_collection_items')
+            .select('collection_id')
+            .in('collection_id', collectionIds)
+            .is('deleted_at', null)
+        : { data: [], error: null };
+
+    if (itemError) {
+        return c.json({ error: { code: 'DB_ERROR', message: itemError.message } }, 500);
+    }
+
+    const counts = new Map<string, number>();
+    for (const item of items || []) {
+        if (typeof item.collection_id === 'string') {
+            counts.set(item.collection_id, (counts.get(item.collection_id) || 0) + 1);
+        }
+    }
+
+    const collections = (data || []).map((collection) => ({
+        ...collection,
+        count: counts.get(collection.id) || 0,
+    }));
+    try {
+        return c.json(success(await decorateCollectionsWithSections(db, collections as AppStoreRecord[])));
+    } catch (sectionError) {
+        return c.json({ error: { code: 'DB_ERROR', message: sectionError instanceof Error ? sectionError.message : 'Collection section lookup failed' } }, 500);
+    }
+});
+
+// GET /app-store/collections/:slug — Get a published collection and curated apps
+router.get('/collections/:slug', async (c) => {
+    const slug = c.req.param('slug');
+    const db = getSupabaseAdmin(c);
+    const { data: collection, error } = await db
+        .from('app_collections')
+        .select('id, slug, name, description, curation_type, disclosure, status, sort_order, created_at, updated_at')
+        .eq('slug', slug)
+        .eq('status', 'published')
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+    if (!collection) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Collection not found' } }, 404);
+    }
+
+    const { data: items, error: itemError } = await db
+        .from('app_collection_items')
+        .select('app_id, sort_order')
+        .eq('collection_id', collection.id)
+        .is('deleted_at', null)
+        .order('sort_order', { ascending: true });
+
+    if (itemError) {
+        return c.json({ error: { code: 'DB_ERROR', message: itemError.message } }, 500);
+    }
+
+    const appIds = (items || []).map((item) => item.app_id).filter((id): id is string => typeof id === 'string');
+    if (appIds.length === 0) {
+        return c.json(success(await decorateCollectionWithSections(db, { ...collection, count: 0, apps: [] } as AppStoreRecord)));
+    }
+
+    const { data: apps, error: appsError } = await db
+        .from('marketplace_apps')
+        .select(APP_PUBLIC_SELECT)
+        .eq('status', 'published')
+        .eq('app_pricing_plans.status', 'active')
+        .is('app_pricing_plans.deleted_at', null)
+        .in('id', appIds);
+
+    if (appsError) {
+        return c.json({ error: { code: 'DB_ERROR', message: appsError.message } }, 500);
+    }
+
+    const decoratedApps = await decorateAppsWithParityData(db, decorateAppRecords((apps || []) as AppStoreRecord[]));
+    const byId = new Map(decoratedApps.map((app) => [String(app.id), app]));
+    const orderedApps = appIds.map((id) => byId.get(id)).filter((app): app is AppStoreRecord => Boolean(app));
+    const collectionWithSections = await decorateCollectionWithSections(db, { ...collection, count: orderedApps.length, apps: orderedApps } as AppStoreRecord);
+    return c.json(success(collectionWithSections));
+});
+
+// GET /app-store/featured — List active featured app placements
+router.get('/featured', async (c) => {
+    const placement = c.req.query('placement') || 'home_featured';
+    const limit = normalizePositiveInt(c.req.query('limit'), 6, 24);
+    const now = new Date().toISOString();
+    const db = getSupabaseAdmin(c);
+    const { data: placements, error } = await db
+        .from('app_featured_placements')
+        .select('app_id, disclosure, priority')
+        .eq('placement_key', placement)
+        .eq('status', 'active')
+        .is('deleted_at', null)
+        .or(`starts_at.is.null,starts_at.lte.${now}`)
+        .or(`ends_at.is.null,ends_at.gte.${now}`)
+        .order('priority', { ascending: false })
+        .limit(limit);
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    const appIds = (placements || []).map((item) => item.app_id).filter((id): id is string => typeof id === 'string');
+    if (appIds.length === 0) {
+        return c.json(success([]));
+    }
+
+    const { data: apps, error: appsError } = await db
+        .from('marketplace_apps')
+        .select(APP_PUBLIC_SELECT)
+        .eq('status', 'published')
+        .eq('app_pricing_plans.status', 'active')
+        .is('app_pricing_plans.deleted_at', null)
+        .in('id', appIds);
+
+    if (appsError) {
+        return c.json({ error: { code: 'DB_ERROR', message: appsError.message } }, 500);
+    }
+
+    const disclosures = new Map((placements || []).map((item) => [String(item.app_id), item.disclosure]));
+    const decoratedApps = await decorateAppsWithParityData(db, decorateAppRecords((apps || []) as AppStoreRecord[]));
+    const byId = new Map<string, AppStoreRecord>(decoratedApps.map((app) => [String(app.id), {
+        ...app,
+        featured_disclosure: disclosures.get(String(app.id)) || null,
+    } as AppStoreRecord]));
+    return c.json(success(appIds.map((id) => byId.get(id)).filter((app): app is AppStoreRecord => Boolean(app))));
+});
+
+// GET /app-store/apps/:id/recommendations — Recommendations and alternatives for an app
+router.get('/apps/:id/recommendations', async (c) => {
+    const appId = c.req.param('id');
+    const db = getSupabaseAdmin(c);
+    let appQuery = db
+        .from('marketplace_apps')
+        .select('id, slug, category_id, tags, compatibility_tags')
+        .eq('status', 'published');
+    appQuery = isUuid(appId) ? appQuery.eq('id', appId) : appQuery.eq('slug', appId);
+    const { data: app, error } = await appQuery.maybeSingle();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+    if (!app) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'App not found' } }, 404);
+    }
+
+    const { data: alternatives, error: alternativesError } = await db
+        .from('marketplace_apps')
+        .select(APP_PUBLIC_SELECT)
+        .eq('status', 'published')
+        .eq('category_id', app.category_id)
+        .neq('id', app.id)
+        .eq('app_pricing_plans.status', 'active')
+        .is('app_pricing_plans.deleted_at', null)
+        .order('rating_avg', { ascending: false })
+        .order('install_count', { ascending: false })
+        .limit(3);
+
+    if (alternativesError) {
+        return c.json({ error: { code: 'DB_ERROR', message: alternativesError.message } }, 500);
+    }
+
+    const compatibilityTags = Array.isArray(app.compatibility_tags)
+        ? app.compatibility_tags.filter((tag): tag is string => typeof tag === 'string' && tag.length > 0)
+        : [];
+    const tagSeed = compatibilityTags.length > 0
+        ? compatibilityTags
+        : (Array.isArray(app.tags) ? app.tags.filter((tag): tag is string => typeof tag === 'string' && tag.length > 0) : []);
+
+    let alsoInstalled: AppStoreRecord[] = [];
+    if (tagSeed.length > 0) {
+        const { data: tagMatches, error: tagError } = await db
+            .from('marketplace_apps')
+            .select(APP_PUBLIC_SELECT)
+            .eq('status', 'published')
+            .neq('id', app.id)
+            .overlaps('compatibility_tags', tagSeed)
+            .eq('app_pricing_plans.status', 'active')
+            .is('app_pricing_plans.deleted_at', null)
+            .order('install_count', { ascending: false })
+            .limit(3);
+        if (tagError) {
+            return c.json({ error: { code: 'DB_ERROR', message: tagError.message } }, 500);
+        }
+        alsoInstalled = await decorateAppsWithParityData(db, decorateAppRecords((tagMatches || []) as AppStoreRecord[]));
+    }
+
+    return c.json(success({
+        app_id: app.id,
+        works_with: compatibilityTags,
+        alternatives: await decorateAppsWithParityData(db, decorateAppRecords((alternatives || []) as AppStoreRecord[])),
+        also_installed: alsoInstalled,
+    }));
+});
+
+// POST /app-store/discovery/events — Record discovery/search/click analytics
+router.post('/discovery/events', async (c) => {
+    const raw = await c.req.json().catch(() => null);
+    const parsed = AppDiscoveryEventInputSchema.safeParse(raw);
+    if (!parsed.success) {
+        return c.json({ error: { code: 'VALIDATION', message: parsed.error.issues[0]?.message || 'Invalid discovery event' } }, 400);
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('app_discovery_events')
+        .insert({
+            event_type: parsed.data.event_type,
+            site_id: parsed.data.site_id || null,
+            app_id: parsed.data.app_id || null,
+            category_id: parsed.data.category_id || null,
+            collection_id: parsed.data.collection_id || null,
+            search_query: parsed.data.search_query || null,
+            result_count: parsed.data.result_count ?? null,
+            request_id: parsed.data.request_id || c.req.header('X-Request-ID') || null,
+            metadata: parsed.data.metadata || {},
+        })
+        .select('id')
+        .single();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    if (data?.id) {
+        try {
+            const queued = await enqueueMarketplaceAnalyticsEvent({
+                db,
+                env: c.env,
+                executionCtx: c.executionCtx,
+                eventId: data.id,
+                eventType: `marketplace.discovery.${parsed.data.event_type}`,
+                siteId: parsed.data.site_id || null,
+                aggregateType: parsed.data.app_id
+                    ? 'marketplace_app'
+                    : parsed.data.collection_id
+                        ? 'app_collection'
+                        : parsed.data.category_id
+                            ? 'app_category'
+                            : 'marketplace_discovery',
+                aggregateId: parsed.data.app_id || parsed.data.collection_id || parsed.data.category_id || data.id,
+                requestId: parsed.data.request_id || c.req.header('X-Request-ID') || null,
+                idempotencyKey: `marketplace.discovery:${data.id}`,
+                payload: {
+                    discovery_event_id: data.id,
+                    event_type: parsed.data.event_type,
+                    app_id: parsed.data.app_id || null,
+                    category_id: parsed.data.category_id || null,
+                    collection_id: parsed.data.collection_id || null,
+                    search_query: parsed.data.search_query || null,
+                    result_count: parsed.data.result_count ?? null,
+                    source: 'app-marketplace',
+                    metadata: parsed.data.metadata || {},
+                },
+            });
+            return c.json(success({ accepted: true, id: data.id, queued }), 201);
+        } catch (queueError) {
+            return c.json({
+                error: {
+                    code: 'ANALYTICS_QUEUE_ERROR',
+                    message: queueError instanceof Error ? queueError.message : 'Discovery event queue enqueue failed',
+                },
+            }, 500);
+        }
+    }
+
+    return c.json(success({ accepted: true, id: null, queued: false }), 201);
+});
+
+// GET /app-store/review-policies/:slug — Published review/economics policy content
+router.get('/review-policies/:slug', async (c) => {
+    const slug = c.req.param('slug');
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('app_review_policies')
+        .select('id, slug, version, title, summary, sections, status, effective_at, created_at, updated_at')
+        .eq('slug', slug)
+        .eq('status', 'published')
+        .is('deleted_at', null)
+        .order('effective_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+    if (!data) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Review policy not found' } }, 404);
+    }
+
+    return c.json(success(data));
+});
+
+// GET /app-store/partners — Public approved partner directory
+router.get('/partners', async (c) => {
+    const limit = normalizePositiveInt(c.req.query('limit'), 50, 100);
+    const db = getSupabaseAdmin(c);
+    const { data: developers, error } = await db
+        .from('app_developers')
+        .select('id, company_name, slug, website_url, support_email, logo_url, description, verified, status, country, created_at')
+        .eq('status', 'approved')
+        .order('company_name', { ascending: true })
+        .limit(limit);
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    const developerIds = (developers || [])
+        .map((developer) => typeof developer.id === 'string' ? developer.id : null)
+        .filter((id): id is string => Boolean(id));
+    const { data: apps, error: appsError } = developerIds.length > 0
+        ? await db
+            .from('marketplace_apps')
+            .select('developer_id, built_for_letbuyy, status')
+            .eq('status', 'published')
+            .in('developer_id', developerIds)
+        : { data: [], error: null };
+
+    if (appsError) {
+        return c.json({ error: { code: 'DB_ERROR', message: appsError.message } }, 500);
+    }
+
+    const appCounts = new Map<string, { published_apps: number; built_for_letbuyy_apps: number }>();
+    for (const app of apps || []) {
+        if (typeof app.developer_id !== 'string') continue;
+        const current = appCounts.get(app.developer_id) || { published_apps: 0, built_for_letbuyy_apps: 0 };
+        current.published_apps += 1;
+        if (app.built_for_letbuyy === true) current.built_for_letbuyy_apps += 1;
+        appCounts.set(app.developer_id, current);
+    }
+
+    return c.json(success((developers || []).map((developer) => ({
+        ...developer,
+        ...(appCounts.get(developer.id) || { published_apps: 0, built_for_letbuyy_apps: 0 }),
+    }))));
+});
+
+// GET /app-store/reviews/moderation — Ops-only review moderation queue
+router.get('/reviews/moderation', authMiddleware, requireRoleCategory('ops'), requireSuperAdmin, async (c) => {
+    const status = c.req.query('status');
+    const limit = normalizePositiveInt(c.req.query('limit'), 50, 100);
+    const db = getSupabaseAdmin(c);
+    let query = db
+        .from('app_reviews')
+        .select('id, app_id, user_name, rating, title, body, status, fraud_score, fraud_flags, reported_count, moderation_reason, created_at, marketplace_apps(id, name, slug)')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+    if (status) {
+        query = query.eq('status', status);
+    } else {
+        query = query.or('status.eq.flagged,reported_count.gt.0');
+    }
+
+    const { data, error } = await query;
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    return c.json(success({ reviews: data || [] }));
+});
+
+// PATCH /app-store/reviews/:reviewId/moderation — Resolve a flagged or reported review
+router.patch('/reviews/:reviewId/moderation', authMiddleware, requireRoleCategory('ops'), requireSuperAdmin, async (c) => {
+    const auth = c.get('auth');
+    const reviewId = c.req.param('reviewId');
+    const raw = await c.req.json().catch(() => null);
+    const action = typeof raw?.action === 'string' ? raw.action : '';
+    const reason = stringOrNull(raw?.reason);
+    const statusByAction: Record<string, 'published' | 'rejected' | 'flagged'> = {
+        publish: 'published',
+        dismiss: 'published',
+        reject: 'rejected',
+        flag: 'flagged',
+    };
+    const nextStatus = statusByAction[action];
+    if (!nextStatus) {
+        return c.json({ error: { code: 'VALIDATION', message: 'Unknown moderation action' } }, 400);
+    }
+
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const { data, error } = await db
+        .from('app_reviews')
+        .update({
+            status: nextStatus,
+            moderation_reason: reason || (nextStatus === 'published' ? null : 'Marketplace moderation action applied.'),
+            moderated_by: customUser.id,
+            moderated_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+        })
+        .eq('id', reviewId)
+        .select('id, app_id, user_name, rating, title, body, status, fraud_score, fraud_flags, reported_count, moderation_reason, created_at')
+        .maybeSingle();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+    if (!data) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Review not found' } }, 404);
+    }
+
+    if (nextStatus !== 'flagged') {
+        await db
+            .from('app_review_reports')
+            .update({
+                status: nextStatus === 'published' ? 'dismissed' : 'actioned',
+                updated_by: customUser.id,
+                updated_at: new Date().toISOString(),
+            })
+            .eq('review_id', reviewId)
+            .eq('status', 'open');
+    }
+
+    return c.json(success(data));
 });
 
 // GET /app-store/apps/:id — Get app details
@@ -83,8 +824,12 @@ router.get('/apps/:id', async (c) => {
 
     let query = db
         .from('marketplace_apps')
-        .select('*, app_developers(id, company_name, slug, logo_url, website_url, support_email, verified), app_categories(name, slug, icon), app_extensions(*)')
-        .eq('status', 'published');
+        .select('*, app_developers(id, company_name, slug, logo_url, website_url, support_email, verified), app_categories(id, name, slug, icon, group_name), app_extensions(*), app_versions(id, app_id, developer_id, version, release_notes, changelog, rollout_percentage, rollout_cohort, status, submitted_at, released_at, created_at, updated_at), app_pricing_plans(id, app_id, developer_id, plan_slug, name, description, pricing_model, billing_mode, currency, amount_minor, interval, trial_days, usage_meter, usage_unit, included_usage, usage_unit_amount_minor, features, limits, is_default, status, sort_order)')
+        .eq('status', 'published')
+        .in('app_versions.status', ['released', 'approved', 'in_review'])
+        .is('app_versions.deleted_at', null)
+        .eq('app_pricing_plans.status', 'active')
+        .is('app_pricing_plans.deleted_at', null);
 
     query = isUuid(appId) ? query.eq('id', appId) : query.eq('slug', appId);
 
@@ -94,7 +839,8 @@ router.get('/apps/:id', async (c) => {
         return c.json({ error: { code: 'NOT_FOUND', message: 'App not found' } }, 404);
     }
 
-    return c.json(success(data));
+    const [enrichedApp] = await decorateAppsWithParityData(db, [decorateAppRecord({ ...(data as AppStoreRecord) })]);
+    return c.json(success(enrichedApp));
 });
 
 // GET /app-store/apps/:id/reviews — List reviews
@@ -107,7 +853,7 @@ router.get('/apps/:id/reviews', async (c) => {
 
     const { data, error, count } = await db
         .from('app_reviews')
-        .select('*', { count: 'exact' })
+        .select('*, app_review_proofs(id, review_id, app_id, site_id, installation_id, proof_type, proof_status, source, external_reference, metadata, created_at)', { count: 'exact' })
         .eq('app_id', appId)
         .eq('status', 'published')
         .order('created_at', { ascending: false })
@@ -117,7 +863,352 @@ router.get('/apps/:id/reviews', async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(paginated(data || [], count || 0, page, limit));
+    const enrichedReviews = await decorateReviewsWithProvenance(db, (data || []) as AppStoreRecord[]);
+    return c.json(paginated(enrichedReviews, count || 0, page, limit));
+});
+
+// POST /app-store/apps/:id/awards — ops-owned award writer for data-backed marketplace badges
+router.post('/apps/:id/awards', authMiddleware, requireRoleCategory('ops'), requireSuperAdmin, async (c) => {
+    const appId = c.req.param('id');
+    const raw = await c.req.json().catch(() => null);
+    const parsed = AppAwardWriteSchema.safeParse(raw);
+    if (!parsed.success) {
+        return c.json({ error: { code: 'VALIDATION', message: parsed.error.issues[0]?.message || 'Invalid award payload' } }, 400);
+    }
+
+    const db = getSupabaseAdmin(c);
+    let appQuery = db.from('marketplace_apps').select('id').is('deleted_at', null);
+    appQuery = isUuid(appId) ? appQuery.eq('id', appId) : appQuery.eq('slug', appId);
+    const { data: app, error: appError } = await appQuery.maybeSingle();
+    if (appError) {
+        return c.json({ error: { code: 'DB_ERROR', message: appError.message } }, 500);
+    }
+    if (!app) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'App not found' } }, 404);
+    }
+
+    const award = parsed.data;
+    const now = new Date().toISOString();
+    const { data, error } = await db
+        .from('app_awards')
+        .upsert(
+            {
+                app_id: app.id,
+                award_key: award.award_key,
+                label: award.label,
+                year: award.year,
+                blurb: award.blurb || null,
+                status: award.status,
+                awarded_at: award.status === 'published' ? now : null,
+                metadata: { ...(award.metadata || {}), source: 'ops_award_writer' },
+                deleted_at: null,
+            },
+            { onConflict: 'app_id,award_key,year' }
+        )
+        .select('id, app_id, award_key, label, year, blurb, status, awarded_at, created_at, updated_at')
+        .single();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    return c.json(success(data), 200);
+});
+
+// DELETE /app-store/apps/:id/awards/:awardKey — ops soft-archive for marketplace awards
+router.delete('/apps/:id/awards/:awardKey', authMiddleware, requireRoleCategory('ops'), requireSuperAdmin, async (c) => {
+    const appId = c.req.param('id');
+    const awardKey = c.req.param('awardKey');
+    const parsedAwardKey = z.string().trim().min(2).max(80).regex(/^[a-z0-9][a-z0-9_-]*$/).safeParse(awardKey);
+    const parsedYear = c.req.query('year') ? z.coerce.number().int().min(2020).max(2100).safeParse(c.req.query('year')) : null;
+    if (!parsedAwardKey.success || (parsedYear && !parsedYear.success)) {
+        return c.json({ error: { code: 'VALIDATION', message: 'Invalid award key or year' } }, 400);
+    }
+
+    const db = getSupabaseAdmin(c);
+    let appQuery = db.from('marketplace_apps').select('id').is('deleted_at', null);
+    appQuery = isUuid(appId) ? appQuery.eq('id', appId) : appQuery.eq('slug', appId);
+    const { data: app, error: appError } = await appQuery.maybeSingle();
+    if (appError) {
+        return c.json({ error: { code: 'DB_ERROR', message: appError.message } }, 500);
+    }
+    if (!app) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'App not found' } }, 404);
+    }
+
+    let updateQuery = db
+        .from('app_awards')
+        .update({ status: 'archived', deleted_at: new Date().toISOString() })
+        .eq('app_id', app.id)
+        .eq('award_key', parsedAwardKey.data)
+        .is('deleted_at', null)
+        .select('id, app_id, award_key, label, year, status, updated_at');
+
+    if (parsedYear?.success) {
+        updateQuery = updateQuery.eq('year', parsedYear.data);
+    }
+
+    const { data, error } = await updateQuery;
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+    if (!data || data.length === 0) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Award not found' } }, 404);
+    }
+
+    return c.json(success({ awards: data }));
+});
+
+// POST /app-store/apps/:id/review-summary/generate — ops hook for persisted merchant review summaries
+router.post('/apps/:id/review-summary/generate', authMiddleware, requireRoleCategory('ops'), requireSuperAdmin, async (c) => {
+    const appId = c.req.param('id');
+    const db = getSupabaseAdmin(c);
+
+    try {
+        const result = await buildReviewSummaryGenerationResult(db, appId);
+        if (!result) {
+            return c.json({ error: { code: 'NOT_FOUND', message: 'App not found' } }, 404);
+        }
+        return c.json(success(result), result.eligible ? 202 : 200);
+    } catch (summaryError) {
+        return c.json({ error: { code: 'DB_ERROR', message: summaryError instanceof Error ? summaryError.message : 'Review summary generation failed' } }, 500);
+    }
+});
+
+// POST /app-store/apps/:id/reviews/:reviewId/reply — Developer reply to a review
+router.post('/apps/:id/reviews/:reviewId/reply', authMiddleware, async (c) => {
+    const auth = c.get('auth');
+    const appId = c.req.param('id');
+    const reviewId = c.req.param('reviewId');
+    const raw = await c.req.json().catch(() => null);
+    const parsed = AppReviewReplyInputSchema.safeParse(raw);
+    if (!parsed.success) {
+        return c.json({ error: { code: 'VALIDATION', message: parsed.error.issues[0]?.message || 'Invalid reply' } }, 400);
+    }
+
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const { data: app, error: appError } = await db
+        .from('marketplace_apps')
+        .select('id, developer_id, app_developers(user_id, status)')
+        .eq('id', appId)
+        .maybeSingle();
+
+    if (appError) {
+        return c.json({ error: { code: 'DB_ERROR', message: appError.message } }, 500);
+    }
+    if (!app) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'App not found' } }, 404);
+    }
+    if (appDeveloperOwnerId(app as AppStoreRecord) !== customUser.id) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Only the app developer can reply to reviews' } }, 403);
+    }
+
+    const { data, error } = await db
+        .from('app_reviews')
+        .update({
+            developer_reply: parsed.data.developer_reply,
+            developer_replied_at: new Date().toISOString(),
+            developer_reply_by: customUser.id,
+            updated_at: new Date().toISOString(),
+        })
+        .eq('id', reviewId)
+        .eq('app_id', appId)
+        .eq('status', 'published')
+        .select()
+        .maybeSingle();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+    if (!data) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Review not found' } }, 404);
+    }
+
+    return c.json(success(data));
+});
+
+// POST /app-store/apps/:id/reviews/:reviewId/report — Report a review for moderation
+router.post('/apps/:id/reviews/:reviewId/report', authMiddleware, async (c) => {
+    const auth = c.get('auth');
+    const appId = c.req.param('id');
+    const reviewId = c.req.param('reviewId');
+    const raw = await c.req.json().catch(() => null);
+    const parsed = AppTrustReportInputSchema.safeParse(raw);
+    if (!parsed.success) {
+        return c.json({ error: { code: 'VALIDATION', message: parsed.error.issues[0]?.message || 'Invalid report' } }, 400);
+    }
+
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+    if (parsed.data.site_id) {
+        const ownsStore = await verifySiteOwnership(db, parsed.data.site_id, customUser.id, auth.user.storeId);
+        if (!ownsStore) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } }, 403);
+        }
+    }
+
+    const { data: review, error: reviewError } = await db
+        .from('app_reviews')
+        .select('id, app_id')
+        .eq('id', reviewId)
+        .eq('app_id', appId)
+        .maybeSingle();
+
+    if (reviewError) {
+        return c.json({ error: { code: 'DB_ERROR', message: reviewError.message } }, 500);
+    }
+    if (!review) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Review not found' } }, 404);
+    }
+
+    const { data: existing } = await db
+        .from('app_review_reports')
+        .select('id, status')
+        .eq('review_id', reviewId)
+        .eq('reported_by', customUser.id)
+        .eq('status', 'open')
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    let reportId = stringOrNull(existing?.id);
+    if (!reportId) {
+        const { data: report, error: insertError } = await db
+            .from('app_review_reports')
+            .insert({
+                app_id: appId,
+                review_id: reviewId,
+                site_id: parsed.data.site_id || null,
+                reported_by: customUser.id,
+                reason_code: parsed.data.reason_code,
+                reason_text: parsed.data.reason_text || null,
+                metadata: parsed.data.metadata || {},
+                created_by: customUser.id,
+                updated_by: customUser.id,
+            })
+            .select('id')
+            .single();
+
+        if (insertError) {
+            return c.json({ error: { code: 'DB_ERROR', message: insertError.message } }, 500);
+        }
+        reportId = report?.id || null;
+    }
+
+    const { data: reportRows } = await db
+        .from('app_review_reports')
+        .select('id')
+        .eq('review_id', reviewId)
+        .eq('status', 'open')
+        .is('deleted_at', null);
+    const reportedCount = reportRows?.length || 1;
+    await db
+        .from('app_reviews')
+        .update({
+            reported_count: reportedCount,
+            ...(reportedCount >= 3 ? { status: 'flagged', moderation_reason: 'Multiple review reports submitted.' } : {}),
+        })
+        .eq('id', reviewId);
+
+    if (parsed.data.site_id) {
+        await db.from('app_activity_events').insert({
+            site_id: parsed.data.site_id,
+            app_id: appId,
+            actor_id: customUser.id,
+            event_type: 'report_submitted',
+            summary: 'Review report submitted',
+            metadata: { review_id: reviewId, report_id: reportId, reason_code: parsed.data.reason_code },
+        });
+    }
+
+    return c.json(success({ accepted: true, report_id: reportId, status: 'open' }), 201);
+});
+
+// POST /app-store/apps/:id/report — Report a listing for moderation
+router.post('/apps/:id/report', authMiddleware, async (c) => {
+    const auth = c.get('auth');
+    const appId = c.req.param('id');
+    const raw = await c.req.json().catch(() => null);
+    const parsed = AppTrustReportInputSchema.safeParse(raw);
+    if (!parsed.success) {
+        return c.json({ error: { code: 'VALIDATION', message: parsed.error.issues[0]?.message || 'Invalid report' } }, 400);
+    }
+
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+    if (parsed.data.site_id) {
+        const ownsStore = await verifySiteOwnership(db, parsed.data.site_id, customUser.id, auth.user.storeId);
+        if (!ownsStore) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } }, 403);
+        }
+    }
+
+    const { data: app, error: appError } = await db
+        .from('marketplace_apps')
+        .select('id')
+        .eq('id', appId)
+        .maybeSingle();
+    if (appError) {
+        return c.json({ error: { code: 'DB_ERROR', message: appError.message } }, 500);
+    }
+    if (!app) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'App not found' } }, 404);
+    }
+
+    const { data: existing } = await db
+        .from('app_listing_reports')
+        .select('id, status')
+        .eq('app_id', appId)
+        .eq('reported_by', customUser.id)
+        .eq('status', 'open')
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    let reportId = stringOrNull(existing?.id);
+    if (!reportId) {
+        const { data: report, error: insertError } = await db
+            .from('app_listing_reports')
+            .insert({
+                app_id: appId,
+                site_id: parsed.data.site_id || null,
+                reported_by: customUser.id,
+                reason_code: parsed.data.reason_code,
+                reason_text: parsed.data.reason_text || null,
+                metadata: parsed.data.metadata || {},
+                created_by: customUser.id,
+                updated_by: customUser.id,
+            })
+            .select('id')
+            .single();
+
+        if (insertError) {
+            return c.json({ error: { code: 'DB_ERROR', message: insertError.message } }, 500);
+        }
+        reportId = report?.id || null;
+    }
+
+    if (parsed.data.site_id) {
+        await db.from('app_activity_events').insert({
+            site_id: parsed.data.site_id,
+            app_id: appId,
+            actor_id: customUser.id,
+            event_type: 'report_submitted',
+            summary: 'Listing report submitted',
+            metadata: { report_id: reportId, reason_code: parsed.data.reason_code },
+        });
+    }
+
+    return c.json(success({ accepted: true, report_id: reportId, status: 'open' }), 201);
 });
 
 // POST /app-store/apps/:id/reviews — Submit a review
@@ -147,7 +1238,7 @@ router.post('/apps/:id/reviews', authMiddleware, async (c) => {
     // (verified-install reviews only — no drive-by ratings).
     let installationQuery = db
         .from('app_installations')
-        .select('id')
+        .select('id, store_id')
         .eq('app_id', appId)
         .eq('installed_by', customUser.id)
         .eq('status', 'active');
@@ -161,6 +1252,20 @@ router.post('/apps/:id/reviews', authMiddleware, async (c) => {
     }
 
     const isVerified = true;
+    const reviewBody = stringOrNull(body.body);
+    const duplicateQuery = reviewBody
+        ? await db
+            .from('app_reviews')
+            .select('id')
+            .eq('app_id', appId)
+            .eq('body', reviewBody)
+            .neq('user_id', customUser.id)
+            .limit(5)
+        : { data: [], error: null };
+    if (duplicateQuery.error) {
+        return c.json({ error: { code: 'DB_ERROR', message: duplicateQuery.error.message } }, 500);
+    }
+    const fraud = reviewFraudSignals(body, duplicateQuery.data?.length || 0);
 
     const { data, error } = await db
         .from('app_reviews')
@@ -172,9 +1277,13 @@ router.post('/apps/:id/reviews', authMiddleware, async (c) => {
                 user_name: customUser.full_name || customUser.email.split('@')[0] || 'Anonymous',
                 rating: body.rating,
                 title: body.title || null,
-                body: body.body || null,
+                body: reviewBody,
                 is_verified: isVerified,
-                status: 'published',
+                verified_installation_id: installation[0]?.id || null,
+                status: fraud.status,
+                fraud_score: fraud.fraud_score,
+                fraud_flags: fraud.fraud_flags,
+                moderation_reason: fraud.moderation_reason,
             },
             { onConflict: 'app_id,user_id' }
         )
@@ -203,7 +1312,101 @@ router.post('/apps/:id/reviews', authMiddleware, async (c) => {
             .eq('id', appId);
     }
 
+    const eventSiteId = stringOrNull(body.store_id) || stringOrNull(installation[0]?.store_id);
+    const installId = stringOrNull(installation[0]?.id);
+    if (installId) {
+        const proofPayload = {
+            review_id: data.id,
+            app_id: appId,
+            site_id: eventSiteId || null,
+            installation_id: installId,
+            proof_type: 'verified_install',
+            proof_status: 'verified',
+            source: 'letbuyy_installation',
+            metadata: { store_id: eventSiteId || null, submitted_by: customUser.id },
+        };
+        const { data: existingProof } = await db
+            .from('app_review_proofs')
+            .select('id')
+            .eq('review_id', data.id)
+            .eq('installation_id', installId)
+            .maybeSingle();
+        if (existingProof?.id) {
+            await db
+                .from('app_review_proofs')
+                .update({ ...proofPayload, deleted_at: null, updated_at: new Date().toISOString() })
+                .eq('id', existingProof.id);
+        } else {
+            await db.from('app_review_proofs').insert(proofPayload);
+        }
+    }
+
+    if (eventSiteId) {
+        await db.from('app_activity_events').insert({
+            site_id: eventSiteId,
+            app_id: appId,
+            installation_id: installation[0]?.id || null,
+            actor_id: customUser.id,
+            event_type: 'review_submitted',
+            summary: fraud.status === 'flagged' ? 'Review submitted for moderation' : 'Review submitted',
+            metadata: {
+                review_id: data.id,
+                rating: body.rating,
+                fraud_score: fraud.fraud_score,
+                fraud_flags: fraud.fraud_flags,
+            },
+        });
+    }
+
     return c.json(success(data), 201);
+});
+
+// GET /app-store/installations/:id/activity — Merchant-facing app event history
+router.get('/installations/:id/activity', authMiddleware, async (c) => {
+    const auth = c.get('auth');
+    const installationId = c.req.param('id');
+    const requestedStoreId = c.req.query('store_id');
+    const limit = normalizePositiveInt(c.req.query('limit'), 50, 100);
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    let installQuery = db
+        .from('app_installations')
+        .select('id, app_id, store_id, installed_by')
+        .eq('id', installationId)
+        .eq('installed_by', customUser.id);
+    if (requestedStoreId) installQuery = installQuery.eq('store_id', requestedStoreId);
+
+    const { data: installation, error: installError } = await installQuery.maybeSingle();
+    if (installError) {
+        return c.json({ error: { code: 'DB_ERROR', message: installError.message } }, 500);
+    }
+    if (!installation) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Installation not found' } }, 404);
+    }
+
+    const ownsStore = await verifySiteOwnership(db, installation.store_id, customUser.id, auth.user.storeId);
+    if (!ownsStore) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } }, 403);
+    }
+
+    const { data, error } = await db
+        .from('app_activity_events')
+        .select('id, site_id, app_id, installation_id, actor_id, event_type, summary, metadata, created_at')
+        .eq('site_id', installation.store_id)
+        .eq('app_id', installation.app_id)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    return c.json(success({ events: data || [] }));
 });
 
 registerAppStoreExtensionRoutes(router);
@@ -214,6 +1417,12 @@ registerAppStoreInstallLifecycleRoutes(router);
 
 registerAppStoreComplianceRoutes(router);
 
+registerAppStoreAppLifecycleRoutes(router);
+
+registerAppStoreDeveloperToolingRoutes(router);
+
 registerAppStoreDeveloperRoutes(router);
+
+registerAppStoreGrowthRoutes(router);
 
 export default router;

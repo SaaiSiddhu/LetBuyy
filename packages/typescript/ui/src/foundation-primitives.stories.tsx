@@ -143,7 +143,7 @@ export function DisclosureAndAppShellPrimitives() {
         <StorySurface>
             <AppFrame
                 sidebar={(
-                    <Sidebar header={<strong>LetBuyy</strong>} footer={<Badge label="Admin" variant="accent" />}>
+                    <Sidebar header={<strong>LetBuyy</strong>} footer={<Badge label="Admin" />}>
                         <Navigation
                             items={[
                                 { id: 'dashboard', label: 'Dashboard', href: '#dashboard', icon: <MaterialIcon name="dashboard" />, active: true },

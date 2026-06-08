@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import '../../services/product_service.dart';
 import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import '../../widgets/shared/barcode_scanner_sheet.dart';
+import '../../widgets/shared/cached_merchant_image.dart';
 
 /// Product Form Screen for Store Builder
 /// Simplified product creation with essential fields
@@ -17,6 +22,8 @@ class ProductFormScreen extends StatefulWidget {
   @override
   State<ProductFormScreen> createState() => _ProductFormScreenState();
 }
+
+enum _ProductImageAction { camera, gallery, url }
 
 class _ProductFormScreenState extends State<ProductFormScreen> {
   static const _lastStepIndex = 4;
@@ -32,6 +39,10 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   final _originalPriceController = TextEditingController();
   final _stockController = TextEditingController();
   final _skuController = TextEditingController();
+  final _barcodeController = TextEditingController();
+  final _productTypeController = TextEditingController();
+  final _vendorController = TextEditingController();
+  final _tagsController = TextEditingController();
   final _handleController = TextEditingController();
   final _seoTitleController = TextEditingController();
   final _seoDescriptionController = TextEditingController();
@@ -64,6 +75,10 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       _originalPriceController.text = p.comparePrice?.toString() ?? '';
       _stockController.text = p.stock.toString();
       _skuController.text = p.sku ?? '';
+      _barcodeController.text = p.barcode ?? '';
+      _productTypeController.text = '${p['product_type'] ?? ''}';
+      _vendorController.text = '${p['vendor'] ?? ''}';
+      _tagsController.text = p.tags.join(', ');
       _handleController.text = '${p['url_handle'] ?? p.slug}';
       _seoTitleController.text = '${p['seo_title'] ?? ''}';
       _seoDescriptionController.text = '${p['seo_description'] ?? ''}';
@@ -92,6 +107,10 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     _originalPriceController.dispose();
     _stockController.dispose();
     _skuController.dispose();
+    _barcodeController.dispose();
+    _productTypeController.dispose();
+    _vendorController.dispose();
+    _tagsController.dispose();
     _handleController.dispose();
     _seoTitleController.dispose();
     _seoDescriptionController.dispose();
@@ -313,11 +332,12 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           height: 100,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            image: DecorationImage(image: NetworkImage(url), fit: BoxFit.cover),
             border: index == 0
                 ? Border.all(color: AppColors.primary, width: 2)
                 : null,
           ),
+          clipBehavior: Clip.antiAlias,
+          child: CachedMerchantImage(imageUrl: url, fit: BoxFit.cover),
         ),
         Positioned(
           top: 4,
@@ -360,7 +380,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
   Widget _buildAddImageButton() {
     return GestureDetector(
-      onTap: _showAddImageDialog,
+      onTap: () => _showAddImageDialog(),
       child: Container(
         width: 100,
         height: 100,
@@ -388,7 +408,91 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     );
   }
 
-  void _showAddImageDialog() {
+  Future<void> _showAddImageDialog() async {
+    final action = await showModalBottomSheet<_ProductImageAction>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Add product image',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 8),
+              ListTile(
+                leading: const Icon(Icons.photo_camera_outlined),
+                title: const Text('Take photo'),
+                onTap: () =>
+                    Navigator.pop(sheetContext, _ProductImageAction.camera),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text('Photo library'),
+                onTap: () =>
+                    Navigator.pop(sheetContext, _ProductImageAction.gallery),
+              ),
+              ListTile(
+                leading: const Icon(Icons.link_outlined),
+                title: const Text('Image URL'),
+                onTap: () =>
+                    Navigator.pop(sheetContext, _ProductImageAction.url),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    switch (action) {
+      case _ProductImageAction.camera:
+        await _pickAndUploadProductImage(ImageSource.camera);
+      case _ProductImageAction.gallery:
+        await _pickAndUploadProductImage(ImageSource.gallery);
+      case _ProductImageAction.url:
+        _showAddImageUrlDialog();
+      case null:
+        return;
+    }
+  }
+
+  Future<void> _pickAndUploadProductImage(ImageSource source) async {
+    if (_isLoading || _images.length >= 5) return;
+
+    final image = await ImagePicker().pickImage(
+      source: source,
+      maxWidth: 1600,
+      imageQuality: 88,
+    );
+    if (image == null) return;
+
+    setState(() => _isLoading = true);
+    try {
+      final imageUrl = await context.read<ProductService>().uploadProductImage(
+        File(image.path),
+      );
+      if (!mounted) return;
+      setState(() => _images.add(imageUrl));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Product image added.')));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not upload product image.')),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _showAddImageUrlDialog() {
     final urlController = TextEditingController();
 
     showDialog(
@@ -532,6 +636,20 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             ),
           ],
         ),
+        const SizedBox(height: 12),
+        TextFormField(
+          controller: _barcodeController,
+          decoration: InputDecoration(
+            labelText: 'Barcode',
+            hintText: '8901234567890',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            suffixIcon: IconButton(
+              tooltip: 'Scan barcode',
+              icon: const Icon(Icons.qr_code_scanner_rounded),
+              onPressed: _scanBaseBarcode,
+            ),
+          ),
+        ),
         const SizedBox(height: 16),
         if (_variants.isEmpty)
           Container(
@@ -637,10 +755,56 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     setState(() => _variants[index] = draft);
   }
 
+  Future<void> _scanBaseBarcode() async {
+    final barcode = await showBarcodeScannerSheet(
+      context,
+      title: 'Scan product barcode',
+    );
+    if (barcode == null || barcode.trim().isEmpty) return;
+    setState(() => _barcodeController.text = barcode.trim());
+  }
+
   Widget _buildDetailsStep() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          'Classification',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: mobile_tokens.LetbuyyColorTokens.slate900,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _productTypeController,
+          decoration: InputDecoration(
+            labelText: 'Product type',
+            hintText: 'T-shirt',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextFormField(
+          controller: _vendorController,
+          decoration: InputDecoration(
+            labelText: 'Vendor',
+            hintText: 'LetBuyy Basics',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextFormField(
+          controller: _tagsController,
+          decoration: InputDecoration(
+            labelText: 'Tags',
+            hintText: 'cotton, summer, handmade',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          maxLines: 2,
+        ),
+        const SizedBox(height: 24),
+
         // Badges
         const Text(
           'Badges',
@@ -874,12 +1038,19 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           'sku': _skuController.text.trim().isEmpty
               ? null
               : _skuController.text.trim(),
+          'barcode': _barcodeController.text.trim().isEmpty
+              ? null
+              : _barcodeController.text.trim(),
           'url_handle': _nullableTrim(_handleController.text),
           'seo_title': _nullableTrim(_seoTitleController.text),
           'seo_description': _nullableTrim(_seoDescriptionController.text),
           'category': _categoryId,
           'images': _images,
           'is_featured': _isFeatured,
+          'product_type': _nullableTrim(_productTypeController.text),
+          'vendor': _nullableTrim(_vendorController.text),
+          'tags': _tagValues(),
+          'metadata': _metadataPayload(),
           'variants': _variantPayloads(),
         });
       } else {
@@ -897,11 +1068,18 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           sku: _skuController.text.trim().isEmpty
               ? null
               : _skuController.text.trim(),
+          barcode: _barcodeController.text.trim().isEmpty
+              ? null
+              : _barcodeController.text.trim(),
           urlHandle: _nullableTrim(_handleController.text),
           seoTitle: _nullableTrim(_seoTitleController.text),
           seoDescription: _nullableTrim(_seoDescriptionController.text),
           images: _images,
           isFeatured: _isFeatured,
+          productType: _nullableTrim(_productTypeController.text),
+          vendor: _nullableTrim(_vendorController.text),
+          tags: _tagValues(),
+          metadata: _metadataPayload(),
           variants: _variants.isEmpty ? null : _variantPayloads(),
         );
       }
@@ -929,6 +1107,32 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     return _variants.map((variant) => variant.toJson()).toList(growable: false);
   }
 
+  List<String> _tagValues() {
+    final seen = <String>{};
+    final tags = <String>[];
+    for (final rawTag in _tagsController.text.split(RegExp(r'[,\n]'))) {
+      final tag = rawTag.trim();
+      if (tag.isEmpty) continue;
+      final dedupeKey = tag.toLowerCase();
+      if (!seen.add(dedupeKey)) continue;
+      tags.add(tag.length > 50 ? tag.substring(0, 50) : tag);
+      if (tags.length == 30) break;
+    }
+    return tags;
+  }
+
+  Map<String, dynamic> _metadataPayload() {
+    final metadata = Map<String, dynamic>.from(
+      widget.product?.metadata ?? const {},
+    );
+    if (_specifications.isEmpty) {
+      metadata.remove('specifications');
+    } else {
+      metadata['specifications'] = Map<String, String>.from(_specifications);
+    }
+    return metadata;
+  }
+
   String? _nullableTrim(String value) {
     final trimmed = value.trim();
     return trimmed.isEmpty ? null : trimmed;
@@ -939,6 +1143,7 @@ class _ProductVariantDraft {
   const _ProductVariantDraft({
     required this.title,
     required this.sku,
+    required this.barcode,
     required this.price,
     required this.comparePrice,
     required this.stock,
@@ -960,6 +1165,7 @@ class _ProductVariantDraft {
     return _ProductVariantDraft(
       title: contract.title,
       sku: contract.sku ?? '',
+      barcode: contract.barcode ?? '',
       price: contract.price,
       comparePrice: contract['compare_price'] is num
           ? (contract['compare_price'] as num).toDouble()
@@ -972,6 +1178,7 @@ class _ProductVariantDraft {
 
   final String title;
   final String sku;
+  final String barcode;
   final double? price;
   final double? comparePrice;
   final int stock;
@@ -981,6 +1188,7 @@ class _ProductVariantDraft {
   Map<String, dynamic> toJson() => {
     'title': title,
     if (sku.isNotEmpty) 'sku': sku,
+    if (barcode.isNotEmpty) 'barcode': barcode,
     if (price != null) 'price': price,
     if (comparePrice != null) 'compare_price': comparePrice,
     'stock': stock,
@@ -1004,6 +1212,7 @@ class _VariantDraftSheetState extends State<_VariantDraftSheet> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _skuController = TextEditingController();
+  final _barcodeController = TextEditingController();
   final _priceController = TextEditingController();
   final _comparePriceController = TextEditingController();
   final _stockController = TextEditingController();
@@ -1016,6 +1225,7 @@ class _VariantDraftSheetState extends State<_VariantDraftSheet> {
     final variant = widget.variant;
     _titleController.text = variant?.title ?? '';
     _skuController.text = variant?.sku ?? '';
+    _barcodeController.text = variant?.barcode ?? '';
     _priceController.text = variant?.price?.toString() ?? '';
     _comparePriceController.text = variant?.comparePrice?.toString() ?? '';
     _stockController.text = variant?.stock.toString() ?? '0';
@@ -1027,6 +1237,7 @@ class _VariantDraftSheetState extends State<_VariantDraftSheet> {
   void dispose() {
     _titleController.dispose();
     _skuController.dispose();
+    _barcodeController.dispose();
     _priceController.dispose();
     _comparePriceController.dispose();
     _stockController.dispose();
@@ -1044,6 +1255,7 @@ class _VariantDraftSheetState extends State<_VariantDraftSheet> {
       _ProductVariantDraft(
         title: title,
         sku: _skuController.text.trim(),
+        barcode: _barcodeController.text.trim(),
         price: double.tryParse(_priceController.text),
         comparePrice: double.tryParse(_comparePriceController.text),
         stock: int.tryParse(_stockController.text) ?? 0,
@@ -1111,6 +1323,18 @@ class _VariantDraftSheetState extends State<_VariantDraftSheet> {
               decoration: const InputDecoration(labelText: 'SKU'),
             ),
             const SizedBox(height: 12),
+            TextFormField(
+              controller: _barcodeController,
+              decoration: InputDecoration(
+                labelText: 'Barcode',
+                suffixIcon: IconButton(
+                  tooltip: 'Scan barcode',
+                  icon: const Icon(Icons.qr_code_scanner_rounded),
+                  onPressed: _scanVariantBarcode,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -1171,5 +1395,14 @@ class _VariantDraftSheetState extends State<_VariantDraftSheet> {
         ),
       ),
     );
+  }
+
+  Future<void> _scanVariantBarcode() async {
+    final barcode = await showBarcodeScannerSheet(
+      context,
+      title: 'Scan variant barcode',
+    );
+    if (barcode == null || barcode.trim().isEmpty) return;
+    setState(() => _barcodeController.text = barcode.trim());
   }
 }

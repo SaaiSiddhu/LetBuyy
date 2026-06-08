@@ -45,6 +45,12 @@ class StoreService extends ChangeNotifier {
         CacheService.storesKey,
         _stores.map((store) => store.toJson()).toList(growable: false),
       );
+      for (final store in _stores) {
+        await _cache?.writeJson(
+          CacheService.storeDetailKey(store.id),
+          _storeCachePayload(store),
+        );
+      }
       return _stores;
     } catch (e) {
       debugPrint('❌ fetchStores error: $e');
@@ -63,10 +69,117 @@ class StoreService extends ChangeNotifier {
 
   /// Get a single store by ID.
   Future<StoreModel> fetchStore(String id) async {
-    final store = StoreModel.fromJson(await _api.stores.get(id));
-    _currentStore = store;
-    notifyListeners();
-    return store;
+    try {
+      final store = StoreModel.fromJson(await _api.stores.get(id));
+      _currentStore = store;
+      await _cache?.writeJson(
+        CacheService.storeDetailKey(id),
+        _storeCachePayload(store),
+      );
+      notifyListeners();
+      return store;
+    } catch (e) {
+      debugPrint('❌ fetchStore error: $e');
+      final cached = _cache?.readJsonMap(CacheService.storeDetailKey(id));
+      if (cached != null) {
+        final store = StoreModel.fromJson(cached);
+        _currentStore = store;
+        notifyListeners();
+        return store;
+      }
+      rethrow;
+    }
+  }
+
+  Map<String, dynamic> _storeCachePayload(StoreModel store) => {
+    'id': store.id,
+    ...store.toJson(),
+  };
+
+  Future<Map<String, dynamic>> fetchStoreHealth(String id) async {
+    return _api.stores.health(id);
+  }
+
+  Future<StoreLocalizationSummary> fetchLocalization(String id) async {
+    return StoreLocalizationSummary.fromJson(
+      await _api.stores.localization(id),
+    );
+  }
+
+  Future<StoreLocalizationSummary> updateLocalization(
+    String id,
+    Map<String, dynamic> fields,
+  ) async {
+    return StoreLocalizationSummary.fromJson(
+      await _api.stores.updateLocalization(id, fields),
+    );
+  }
+
+  Future<StoreMarket> createMarket(
+    String storeId,
+    Map<String, dynamic> input,
+  ) async {
+    return StoreMarket.fromJson(await _api.stores.createMarket(storeId, input));
+  }
+
+  Future<StoreMarket> updateMarket(
+    String storeId,
+    String marketId,
+    Map<String, dynamic> input,
+  ) async {
+    return StoreMarket.fromJson(
+      await _api.stores.updateMarket(storeId, marketId, input),
+    );
+  }
+
+  Future<void> deleteMarket(String storeId, String marketId) async {
+    await _api.stores.deleteMarket(storeId, marketId);
+  }
+
+  Future<StorefrontLocale> createLocale(
+    String storeId,
+    Map<String, dynamic> input,
+  ) async {
+    return StorefrontLocale.fromJson(
+      await _api.stores.createLocale(storeId, input),
+    );
+  }
+
+  Future<StorefrontLocale> updateLocale(
+    String storeId,
+    String localeId,
+    Map<String, dynamic> input,
+  ) async {
+    return StorefrontLocale.fromJson(
+      await _api.stores.updateLocale(storeId, localeId, input),
+    );
+  }
+
+  Future<void> deleteLocale(String storeId, String localeId) async {
+    await _api.stores.deleteLocale(storeId, localeId);
+  }
+
+  Future<StorefrontTranslation> createTranslation(
+    String storeId,
+    Map<String, dynamic> input,
+  ) async {
+    return StorefrontTranslation.fromJson(
+      await _api.stores.createTranslation(storeId, input),
+    );
+  }
+
+  Future<StorefrontTranslation> updateTranslation(
+    String storeId,
+    String translationId,
+    Map<String, dynamic> input,
+  ) async {
+    return StorefrontTranslation.fromJson(
+      await _api.stores.updateTranslation(storeId, translationId, input),
+    );
+  }
+
+  Future<void> deleteTranslation(String storeId, String translationId) async {
+    await _api.stores.deleteTranslation(storeId, translationId);
   }
 
   // ── Create ───────────────────────────────────────────────
@@ -99,7 +212,27 @@ class StoreService extends ChangeNotifier {
     return store;
   }
 
+  Future<Map<String, dynamic>> saveMobileOnboardingProgress({
+    required String businessType,
+    required Iterable<String> channels,
+    required String productType,
+    required String category,
+    String siteType = 'store',
+  }) async {
+    return _api.onboarding.saveMobileProgress({
+      'site_type': siteType,
+      'business_type': businessType,
+      'channels': channels.toList(growable: false),
+      'product_type': productType,
+      'category': category,
+    });
+  }
+
   // ── Update ───────────────────────────────────────────────
+
+  Future<String> uploadStoreAsset(File file, {String folder = 'stores'}) {
+    return _api.uploadFile(file, folder: folder);
+  }
 
   /// Update store fields.
   Future<StoreModel> updateStore(String id, Map<String, dynamic> fields) async {
@@ -195,4 +328,161 @@ class StoreService extends ChangeNotifier {
   ) async {
     return updateStore(id, {'payment_settings': paymentSettings});
   }
+}
+
+class StoreLocalizationSummary {
+  const StoreLocalizationSummary({
+    required this.storeId,
+    required this.defaultLocale,
+    required this.currency,
+    required this.timezone,
+    required this.markets,
+    required this.locales,
+    required this.translations,
+    required this.schemaReady,
+  });
+
+  factory StoreLocalizationSummary.fromJson(Map<String, dynamic> json) {
+    return StoreLocalizationSummary(
+      storeId: json['store_id']?.toString() ?? '',
+      defaultLocale: json['default_locale']?.toString() ?? 'en-IN',
+      currency: json['currency']?.toString() ?? 'INR',
+      timezone: json['timezone']?.toString() ?? 'Asia/Kolkata',
+      markets: _jsonList(
+        json['markets'],
+      ).map(StoreMarket.fromJson).toList(growable: false),
+      locales: _jsonList(
+        json['locales'],
+      ).map(StorefrontLocale.fromJson).toList(growable: false),
+      translations: _jsonList(
+        json['translations'],
+      ).map(StorefrontTranslation.fromJson).toList(growable: false),
+      schemaReady: json['schema_ready'] != false,
+    );
+  }
+
+  final String storeId;
+  final String defaultLocale;
+  final String currency;
+  final String timezone;
+  final List<StoreMarket> markets;
+  final List<StorefrontLocale> locales;
+  final List<StorefrontTranslation> translations;
+  final bool schemaReady;
+}
+
+class StoreMarket {
+  const StoreMarket({
+    required this.id,
+    required this.name,
+    required this.countryCode,
+    required this.currency,
+    required this.locale,
+    required this.isPrimary,
+    required this.isActive,
+    required this.priceAdjustmentBps,
+    required this.roundingMode,
+  });
+
+  factory StoreMarket.fromJson(Map<String, dynamic> json) {
+    return StoreMarket(
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? 'Market',
+      countryCode: json['country_code']?.toString() ?? 'IN',
+      currency: json['currency']?.toString() ?? 'INR',
+      locale: json['locale']?.toString() ?? 'en-IN',
+      isPrimary: json['is_primary'] == true,
+      isActive: json['is_active'] != false,
+      priceAdjustmentBps: _intValue(json['price_adjustment_bps']),
+      roundingMode: json['rounding_mode']?.toString() ?? 'standard',
+    );
+  }
+
+  final String id;
+  final String name;
+  final String countryCode;
+  final String currency;
+  final String locale;
+  final bool isPrimary;
+  final bool isActive;
+  final int priceAdjustmentBps;
+  final String roundingMode;
+}
+
+class StorefrontLocale {
+  const StorefrontLocale({
+    required this.id,
+    required this.locale,
+    required this.name,
+    required this.status,
+    required this.isDefault,
+    this.publishedAt,
+  });
+
+  factory StorefrontLocale.fromJson(Map<String, dynamic> json) {
+    return StorefrontLocale(
+      id: json['id']?.toString() ?? '',
+      locale: json['locale']?.toString() ?? 'en-IN',
+      name: json['name']?.toString() ?? json['locale']?.toString() ?? 'Locale',
+      status: json['status']?.toString() ?? 'draft',
+      isDefault: json['is_default'] == true,
+      publishedAt: json['published_at']?.toString(),
+    );
+  }
+
+  final String id;
+  final String locale;
+  final String name;
+  final String status;
+  final bool isDefault;
+  final String? publishedAt;
+}
+
+class StorefrontTranslation {
+  const StorefrontTranslation({
+    required this.id,
+    required this.locale,
+    required this.resourceType,
+    required this.resourceId,
+    required this.field,
+    required this.translatedText,
+    required this.status,
+    this.sourceText,
+  });
+
+  factory StorefrontTranslation.fromJson(Map<String, dynamic> json) {
+    return StorefrontTranslation(
+      id: json['id']?.toString() ?? '',
+      locale: json['locale']?.toString() ?? 'en-IN',
+      resourceType: json['resource_type']?.toString() ?? 'store',
+      resourceId: json['resource_id']?.toString() ?? 'storefront',
+      field: json['field']?.toString() ?? 'title',
+      sourceText: json['source_text']?.toString(),
+      translatedText: json['translated_text']?.toString() ?? '',
+      status: json['status']?.toString() ?? 'draft',
+    );
+  }
+
+  final String id;
+  final String locale;
+  final String resourceType;
+  final String resourceId;
+  final String field;
+  final String? sourceText;
+  final String translatedText;
+  final String status;
+}
+
+List<Map<String, dynamic>> _jsonList(Object? value) {
+  if (value is! List) return const [];
+  return value
+      .whereType<Map>()
+      .map((row) => Map<String, dynamic>.from(row))
+      .toList(growable: false);
+}
+
+int _intValue(Object? value) {
+  if (value is int) return value;
+  if (value is num) return value.round();
+  return int.tryParse(value?.toString() ?? '') ?? 0;
 }

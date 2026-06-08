@@ -1,9 +1,14 @@
+// GENERATED FILE — DO NOT EDIT.
+// Source: packages/typescript/ui/src/mobile-tokens.ts
+// Regenerate: node scripts/generators/generate-mobile-tokens.mjs
+//
+// Canonical LetBuyy mobile color tokens. Brand and status values are derived
+// from the shared web design-system primitives, so web and mobile cannot drift.
+// Screens should reference these tokens (or theme-aware accessors backed by
+// them) instead of repeating raw brand hex values.
+
 import 'package:flutter/material.dart';
 
-/// Canonical LetBuyy mobile color tokens.
-///
-/// Screens should reference these tokens, or theme-aware accessors that are
-/// backed by these tokens, instead of repeating raw brand hex values.
 class LetbuyyColorTokens {
   LetbuyyColorTokens._();
 
@@ -38,6 +43,7 @@ class LetbuyyColorTokens {
   static const Color slate200 = Color(0xFFE2E8F0);
   static const Color slate100 = Color(0xFFF1F5F9);
   static const Color slate50 = Color(0xFFF8FAFC);
+
   static const Color white = Color(0xFFFFFFFF);
 }
 

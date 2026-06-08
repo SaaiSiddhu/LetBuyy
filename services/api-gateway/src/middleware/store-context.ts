@@ -4,6 +4,8 @@
 // ============================================================
 
 import { createMiddleware } from 'hono/factory';
+import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import { resolveStorefrontHost } from '@letbuyy/tenant-core';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin } from '../lib/supabase';
@@ -20,6 +22,22 @@ interface StoreContext {
     trial_ends_at: string | null;
     plan: string;
     currency: string;
+    custom_domain?: string | null;
+    custom_domain_status?: string | null;
+    access_mode?: string | null;
+    access_message?: string | null;
+    published?: boolean | null;
+}
+
+export interface StorefrontHostSiteContext {
+    id: string;
+    subdomain: string | null;
+    custom_domain: string | null;
+    custom_domain_status: string | null;
+    access_mode: string | null;
+    access_message: string | null;
+    published: boolean | null;
+    status: string | null;
 }
 
 declare module 'hono' {
@@ -27,6 +45,17 @@ declare module 'hono' {
         store: StoreContext;
         plan: string;
     }
+}
+
+function billingUpgradeUrl(env: Env): string {
+    const rawDomain = env.NEXT_PUBLIC_PLATFORM_DOMAIN || env.LETBUYY_PLATFORM_DOMAIN || env.PLATFORM_ROOT_DOMAIN || 'letbuyy.com';
+    const domain = rawDomain
+        .trim()
+        .replace(/^https?:\/\//, '')
+        .replace(/\/.*$/, '')
+        .replace(/^\.+|\.+$/g, '') || 'letbuyy.com';
+    const base = (env.NEXT_PUBLIC_ADMIN_URL || `https://admin.${domain}`).replace(/\/+$/, '');
+    return `${base}/billing`;
 }
 
 /**
@@ -107,7 +136,7 @@ export const storeContext = () =>
                         code: 'STORE_FROZEN',
                         message: 'Store is frozen. Please upgrade your plan to continue.',
                         status: 403,
-                        upgrade_url: 'https://admin.letbuyy.store/billing',
+                        upgrade_url: billingUpgradeUrl(c.env),
                     },
                 },
                 403
@@ -138,6 +167,11 @@ export const storeContext = () =>
             user_id: store.user_id,
             name: store.store_name || store.name || '',
             subdomain: store.subdomain,
+            custom_domain: store.custom_domain || null,
+            custom_domain_status: store.custom_domain_status || 'none',
+            access_mode: store.access_mode || 'public',
+            access_message: store.access_message || null,
+            published: Boolean(store.published),
             site_type: store.site_type,
             status: store.status,
             trial_status: store.trial_status,
@@ -159,3 +193,35 @@ export const storeContext = () =>
 
         await next();
     });
+
+export async function resolveStorefrontSiteByHost(
+    db: SupabaseClient,
+    host: string,
+    storeRootDomain: string | null | undefined,
+): Promise<StorefrontHostSiteContext | null> {
+    const parsed = resolveStorefrontHost(host, storeRootDomain);
+    const select = 'id, subdomain, custom_domain, custom_domain_status, access_mode, access_message, published, status';
+
+    if (parsed.kind === 'subdomain') {
+        const { data } = await db
+            .from('sites')
+            .select(select)
+            .eq('subdomain', parsed.subdomain)
+            .is('deleted_at', null)
+            .maybeSingle();
+        return (data as StorefrontHostSiteContext | null) || null;
+    }
+
+    if (parsed.kind === 'custom_domain') {
+        const { data } = await db
+            .from('sites')
+            .select(select)
+            .eq('custom_domain', parsed.domain)
+            .eq('custom_domain_status', 'active')
+            .is('deleted_at', null)
+            .maybeSingle();
+        return (data as StorefrontHostSiteContext | null) || null;
+    }
+
+    return null;
+}

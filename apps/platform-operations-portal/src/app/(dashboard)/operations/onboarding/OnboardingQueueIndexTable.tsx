@@ -1,12 +1,6 @@
 'use client';
 
-import {
-    Badge,
-    EmptyState,
-    IndexTable,
-    ProgressBar,
-    type IndexTableColumn,
-} from '@letbuyy/ui';
+import { Badge, EmptyState, Table, ProgressBar, type TableColumn } from '@letbuyy/ui';
 import type { OnboardingQueueRow } from './page';
 
 function bandVariant(band: OnboardingQueueRow['band']) {
@@ -15,7 +9,7 @@ function bandVariant(band: OnboardingQueueRow['band']) {
     return 'critical' as const;
 }
 
-const columns: IndexTableColumn<OnboardingQueueRow>[] = [
+const columns: TableColumn<OnboardingQueueRow>[] = [
     {
         key: 'merchant',
         header: 'Merchant',
@@ -83,7 +77,7 @@ const columns: IndexTableColumn<OnboardingQueueRow>[] = [
 
 export function OnboardingQueueIndexTable({ rows }: { rows: OnboardingQueueRow[] }) {
     return (
-        <IndexTable
+        <Table
             columns={columns}
             rows={rows}
             savedViews={[

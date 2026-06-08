@@ -63,24 +63,11 @@ class ErrorScreen extends StatelessWidget {
                 height: 56,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    // TODO: Deep link to Seller App
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Opening Seller App...')),
-                    );
+                    Navigator.pushReplacementNamed(context, AppRoutes.login);
                   },
-                  icon: const Icon(Icons.open_in_new_rounded),
-                  label: const Text('Open Seller App'),
+                  icon: const Icon(Icons.login_rounded),
+                  label: const Text('Back to Login'),
                 ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Back to login
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, AppRoutes.login);
-                },
-                child: const Text('Back to Login'),
               ),
             ],
           ),

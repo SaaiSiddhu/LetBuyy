@@ -1,114 +1,60 @@
+import type { InternalTrustSafetyCase, InternalTrustSafetyOverview } from '@letbuyy/api-client';
 import {
     ConsoleWorkspace,
     EmptyDataState,
     LeadershipMetric,
     MetricGrid,
     Panel,
-    SkipBackendPanel,
     StatusPill,
 } from '@/components/_local-ui/console-workspace';
 import { ConsoleApiErrorPanel } from '@/components/ConsoleDataTable';
-import {
-    fetchConsoleApi,
-    formatDateTime,
-    type ConsoleDataResponse,
-    type ConsolePaginatedResponse,
-} from '@/lib/console-api';
-
-type AuditLog = {
-    id: string;
-    actor_email: string | null;
-    actor_type: string | null;
-    action: string | null;
-    resource_type: string | null;
-    ip_address: string | null;
-    created_at: string | null;
-};
-
-type RuntimeOverview = {
-    security_events?: Array<{
-        enforcement_id: string;
-        control_name: string;
-        runtime_root: string;
-        status: string;
-        severity: string;
-        recorded_at?: string | null;
-    }>;
-    alerts?: Array<{
-        alert_name: string;
-        runtime_name: string;
-        severity: string;
-        firing: boolean;
-        evaluated_at?: string | null;
-    }>;
-};
+import { fetchConsoleApi, formatDateTime, type ConsoleDataResponse } from '@/lib/console-api';
 
 export default async function TrustSafetyPage() {
-    const [auditResult, runtimeResult] = await Promise.all([
-        fetchConsoleApi<ConsolePaginatedResponse<AuditLog>>('/internal/console/audit-logs', {
-            page: 1,
-            limit: 10,
-        }),
-        fetchConsoleApi<ConsoleDataResponse<RuntimeOverview>>('/operations/runtime/overview', {
-            limit: 20,
-        }),
-    ]);
-    const auditRows = auditResult.data?.data || [];
-    const overview = runtimeResult.data?.data;
-    const securityEvents = overview?.security_events || [];
-    const firingAlerts = (overview?.alerts || []).filter((alert) => alert.firing);
+    const result = await fetchConsoleApi<ConsoleDataResponse<InternalTrustSafetyOverview>>('/operations/trust-safety/overview');
+    const overview = result.data?.data;
+    const recentCases = overview?.recent_cases || [];
+    const activeTakedowns = overview?.active_takedowns || [];
+    const appeals = overview?.appeals || [];
+    const policies = overview?.policies || [];
 
     return (
         <ConsoleWorkspace
             eyebrow="Trust & Safety"
             title="Trust & Safety"
-            description="Read-only governance view for platform audit events, security enforcement projections, and unresolved safety gaps."
+            description="Case oversight for policy enforcement, appeals, takedowns, and immutable safety decisions."
         >
-            {auditResult.error ? <ConsoleApiErrorPanel title="Audit API unavailable" message={auditResult.error} /> : null}
-            {runtimeResult.error ? <ConsoleApiErrorPanel title="Runtime operations API unavailable" message={runtimeResult.error} /> : null}
+            {result.error ? <ConsoleApiErrorPanel title="Trust & Safety API unavailable" message={result.error} /> : null}
 
             <MetricGrid>
-                <LeadershipMetric label="Audit events loaded" value={String(auditRows.length)} />
-                <LeadershipMetric label="Security events" value={String(securityEvents.length)} />
-                <LeadershipMetric label="Firing alerts" value={String(firingAlerts.length)} tone={firingAlerts.length > 0 ? 'critical' : 'success'} />
-                <LeadershipMetric label="Critical controls" value={String(securityEvents.filter((event) => event.severity === 'critical').length)} tone="warning" />
+                <LeadershipMetric label="Open cases" value={String(overview?.counts.open_cases || 0)} tone={(overview?.counts.open_cases || 0) > 0 ? 'warning' : 'success'} />
+                <LeadershipMetric label="Active takedowns" value={String(overview?.counts.active_takedowns || 0)} tone={(overview?.counts.active_takedowns || 0) > 0 ? 'critical' : 'success'} />
+                <LeadershipMetric label="Pending appeals" value={String(overview?.counts.pending_appeals || 0)} tone={(overview?.counts.pending_appeals || 0) > 0 ? 'warning' : 'success'} />
+                <LeadershipMetric label="Case sample" value={String(overview?.counts.total_cases_sampled || 0)} />
             </MetricGrid>
 
-            <section className="grid gap-[var(--lb-space-5)] xl:grid-cols-2">
-                <Panel title="Recent Audit Activity" description="Latest platform audit records.">
-                    {auditRows.length === 0 ? (
-                        <EmptyDataState message="No audit events returned for the current filters." />
+            <section className="grid gap-[var(--lb-space-5)] xl:grid-cols-[1.2fr_0.8fr]">
+                <Panel title="Recent Cases" description="Latest Trust & Safety cases from the system of record.">
+                    {recentCases.length === 0 ? (
+                        <EmptyDataState message="No Trust & Safety cases have been opened yet." />
                     ) : (
                         <div className="divide-y divide-[var(--lb-color-border)]">
-                            {auditRows.map((row) => (
-                                <div key={row.id} className="flex items-start justify-between gap-[var(--lb-space-4)] py-[var(--lb-space-3)]">
-                                    <div className="min-w-0">
-                                        <p className="m-0 truncate text-sm font-medium text-[var(--lb-color-text)]">{row.action || 'unknown action'}</p>
-                                        <p className="m-0 mt-[var(--lb-space-1)] truncate text-xs text-[var(--lb-color-text-subdued)]">
-                                            {row.actor_email || row.actor_type || 'system'} on {row.resource_type || 'resource'}
-                                        </p>
-                                    </div>
-                                    <span className="shrink-0 text-xs text-[var(--lb-color-text-subdued)]">{formatDateTime(row.created_at)}</span>
-                                </div>
-                            ))}
+                            {recentCases.map((caseRow) => <CaseRow key={caseRow.id} caseRow={caseRow} />)}
                         </div>
                     )}
                 </Panel>
 
-                <Panel title="Security Enforcement" description="Runtime control evidence from operations overview.">
-                    {securityEvents.length === 0 ? (
-                        <EmptyDataState message="No security enforcement projections returned." />
+                <Panel title="Active Policies" description="Versioned default policies currently available to case reviewers.">
+                    {policies.length === 0 ? (
+                        <EmptyDataState message="No active Trust & Safety policies returned." />
                     ) : (
-                        <div className="divide-y divide-[var(--lb-color-border)]">
-                            {securityEvents.map((event) => (
-                                <div key={event.enforcement_id} className="flex items-start justify-between gap-[var(--lb-space-4)] py-[var(--lb-space-3)]">
-                                    <div className="min-w-0">
-                                        <p className="m-0 truncate text-sm font-medium text-[var(--lb-color-text)]">{event.control_name}</p>
-                                        <p className="m-0 mt-[var(--lb-space-1)] truncate text-xs text-[var(--lb-color-text-subdued)]">
-                                            {event.runtime_root} · {event.severity}
-                                        </p>
-                                    </div>
-                                    <StatusPill value={event.status} />
+                        <div className="grid gap-[var(--lb-space-3)]">
+                            {policies.map((policy) => (
+                                <div key={policy.id} className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] p-[var(--lb-space-3)]">
+                                    <p className="m-0 text-sm font-medium text-[var(--lb-color-text)]">{policy.title}</p>
+                                    <p className="m-0 mt-[var(--lb-space-1)] text-xs text-[var(--lb-color-text-subdued)]">
+                                        {policy.policy_key} · version {String(policy.version || 1)}
+                                    </p>
                                 </div>
                             ))}
                         </div>
@@ -116,9 +62,70 @@ export default async function TrustSafetyPage() {
                 </Panel>
             </section>
 
-            <SkipBackendPanel title="Case management, takedowns, and merchant risk scores" contract="/v1/internal/console/trust-safety">
-                Audit and security projections are readable. Case queues, merchant risk scores, takedowns, and dispute workflows need explicit backend ownership before UI actions can be enabled.
-            </SkipBackendPanel>
+            <section className="grid gap-[var(--lb-space-5)] xl:grid-cols-2">
+                <Panel title="Active Takedowns" description="Enforcement records retained for audit and appeal review.">
+                    {activeTakedowns.length === 0 ? (
+                        <EmptyDataState message="No active takedowns or suspensions." />
+                    ) : (
+                        <div className="divide-y divide-[var(--lb-color-border)]">
+                            {activeTakedowns.map((takedown) => (
+                                <div key={takedown.id} className="grid gap-[var(--lb-space-2)] py-[var(--lb-space-3)] md:grid-cols-[1fr_auto] md:items-center">
+                                    <div className="min-w-0">
+                                        <p className="m-0 truncate text-sm font-medium text-[var(--lb-color-text)]">{formatLabel(takedown.action_type)}</p>
+                                        <p className="m-0 mt-[var(--lb-space-1)] truncate text-xs text-[var(--lb-color-text-subdued)]">
+                                            {takedown.subject_type}:{takedown.subject_id}
+                                        </p>
+                                    </div>
+                                    <StatusPill value={takedown.status} tone={takedown.status === 'active' ? 'critical' : undefined} />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </Panel>
+
+                <Panel title="Appeals" description="Filed appeals and due dates requiring independent review.">
+                    {appeals.length === 0 ? (
+                        <EmptyDataState message="No appeals have been filed." />
+                    ) : (
+                        <div className="divide-y divide-[var(--lb-color-border)]">
+                            {appeals.map((appeal) => (
+                                <div key={appeal.id} className="grid gap-[var(--lb-space-2)] py-[var(--lb-space-3)] md:grid-cols-[1fr_auto] md:items-center">
+                                    <div className="min-w-0">
+                                        <p className="m-0 truncate text-sm font-medium text-[var(--lb-color-text)]">Case {appeal.case_id}</p>
+                                        <p className="m-0 mt-[var(--lb-space-1)] truncate text-xs text-[var(--lb-color-text-subdued)]">
+                                            Due {formatDateTime(appeal.due_at)}
+                                        </p>
+                                    </div>
+                                    <StatusPill value={appeal.status} />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </Panel>
+            </section>
         </ConsoleWorkspace>
     );
+}
+
+function CaseRow({ caseRow }: { caseRow: InternalTrustSafetyCase }) {
+    const tone = caseRow.severity === 'critical' || caseRow.severity === 'high' ? 'critical' : caseRow.severity === 'medium' ? 'warning' : 'success';
+
+    return (
+        <div className="grid gap-[var(--lb-space-2)] py-[var(--lb-space-3)] md:grid-cols-[1fr_auto_auto] md:items-center">
+            <div className="min-w-0">
+                <p className="m-0 truncate text-sm font-medium text-[var(--lb-color-text)]">{caseRow.title}</p>
+                <p className="m-0 mt-[var(--lb-space-1)] truncate text-xs text-[var(--lb-color-text-subdued)]">
+                    {caseRow.subject_type}:{caseRow.subject_id} · {formatDateTime(caseRow.created_at)}
+                </p>
+            </div>
+            <StatusPill value={caseRow.severity} tone={tone} />
+            <StatusPill value={caseRow.status} />
+        </div>
+    );
+}
+
+function formatLabel(value: string): string {
+    return value
+        .replace(/[._-]/g, ' ')
+        .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }

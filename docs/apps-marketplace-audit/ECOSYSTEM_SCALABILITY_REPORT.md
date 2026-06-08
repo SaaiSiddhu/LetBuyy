@@ -1,50 +1,49 @@
 # Ecosystem Scalability Report (Phase 15)
 
-Can LetBuyy realistically support 10 / 100 / 1,000 / 10,000 apps? What breaks first, and what prevents developer adoption? Parent: [Master Audit](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md).
+**Parent:** [`../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md`](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md) · **Date:** 2026-06-07
 
-## Summary
+**Question:** *Can LetBuyy realistically support 10 / 100 / 1,000 / 10,000 apps? What breaks first?* The constraints are **not primarily technical** (the Postgres/Hono/Next stack scales fine to mid-size); they are **operational and lifecycle** — the things that break first are the manual approval, the missing update path, and the unsettled payouts. Discovery and analytics break next; raw infrastructure breaks last.
 
-The **data model and platform plumbing scale to thousands** of apps without redesign. The **product and process scale poorly** — discovery, review throughput, and developer self-service break long before the technical layer does. The binding constraint is not infrastructure; it's **the absence of a self-service developer lifecycle and real discovery/governance.**
+## Stage analysis
 
-## By scale tier
+### 10 apps — *achievable now, with manual effort*
+- **Works:** catalog, search, install/uninstall, reviews, the consent flow. Denormalized counts via triggers are fine at this scale.
+- **Breaks first:** **manual developer approval** (no `pending→approved` endpoint, `rbac.ts:55`) and **manual review** (ops portal) are tolerable at 10 apps but already annoying. **No catalog seed** means even reaching 10 requires hand-onboarding.
+- **Verdict:** ✅ feasible as a curated, hand-run launch.
 
-### 10 apps — *reachable after content + economics fixes*
-- **Works:** schema, install/billing/OAuth, manual human review of ~10 submissions, a flat directory.
-- **Breaks:** there are **0 apps today** and no seed pipeline; the empty catalog and the 15%/20% contradiction block even this tier. Fake collections and dead filters look amateur at any size.
-- **Verdict:** achievable in weeks if you seed a curated catalog and fix economics + the visible bugs.
+### 100 apps — *operations start to hurt*
+- **Breaks:** (1) **No app update/versioning** — with 100 apps, the inability to ship v2 becomes a developer-retention crisis. (2) **Manual approval/review** doesn't scale — needs a self-serve queue + real automated checks (currently hardcoded passed, `developer-routes.ts:683`). (3) **Discovery is hardcoded** — 29 categories, 3 fake collections, 14 hidden in search, no recommendations; 100 apps need real curation/ranking. (4) **Payouts never settle** — at 100 paying apps this is a legal/financial liability, not a bug (`queue-execution.adapter.ts:474`).
+- **Verdict:** ⚠️ reachable only after the lifecycle + economics are built.
 
-### 100 apps — *blocked by discovery & developer lifecycle*
-- **Breaks first:**
-  1. **Discovery** — a flat `install_count`-sorted grid with `ILIKE` search and hard-coded categories can't help merchants find the right app among 100. No recommendations, no real collections, no ranking.
-  2. **Developer self-service** — with no edit/versioning, 100 developers cannot maintain their apps; every change is impossible, so apps rot or churn.
-  3. **Review throughput** — human-only decisions in the ops portal with rubber-stamp automation won't keep up, and there's no update re-review.
-- **Verdict:** not viable without V2 discovery + the developer lifecycle.
+### 1,000 apps — *platform + data gaps bind*
+- **Breaks:** (1) **Search/ranking** — no relevance ranking, no pagination on search (limit 20, `search/page.tsx:69`), client-only rating filter; 1,000 apps need real search infra (the reserved `services/search-service` is unimplemented). (2) **Analytics** — only a snapshot in `partnerDashboard`; 1,000 developers need self-serve time-series (`developer-routes.ts:517`). (3) **Rate limiting/quotas** — no per-app accounting; the coarse IP bucket and missing OAuth brute-force limits won't hold (`index.ts:543`). (4) **RLS** — 7 core tables rely on service-role-only isolation; at 1,000 apps × many stores, defense-in-depth matters (`000_baseline.sql:24311+`). (5) **Webhook delivery** — fire-and-forget dispatch (`shared.ts:553`) needs retries/DLQ at volume (reserved `services/notification-service`/`event-bus` unimplemented).
+- **Verdict:** ⚠️ needs the reserved services (search, analytics-pipeline, event-bus) actually built.
 
-### 1,000 apps — *blocked by governance, analytics, trust*
-- **Breaks first:**
-  1. **Quality governance** — no real review gates, no app-health/performance monitoring, no earned-badge program → quality variance becomes unmanageable and merchant trust collapses.
-  2. **Search relevance** — substring matching is unusable at 1,000 apps; needs ranked full-text (the trigram indexes exist but aren't used for ranking).
-  3. **Catalog performance** — public catalog reads have no stated caching/CDN; inner-join + count queries at scale need caching and read replicas.
-  4. **Support/abuse** — no moderation, anti-abuse, or dispute tooling.
-- **Technically:** Postgres + triggers + event/idempotency machinery can hold 1,000 apps; the failures are product/process.
+### 10,000 apps — *needs the full reserved architecture*
+- **Breaks:** everything above plus media/CDN for thousands of listings (reserved `services/media-service` unimplemented; upload is dead UI today), abuse/fraud at scale (reviews have only one-per-user + disabled reporting), a real featured/sponsored inventory model, partner tiers, and multi-region data placement. The denormalized `install_count`/`rating_avg` triggers (`000_baseline.sql:7812`) are fine, but hot-app contention and analytics fan-out need the event-bus/analytics-pipeline that are manifest-only placeholders.
+- **Verdict:** ❌ not supportable without building the reserved services and the lifecycle/economics layers.
 
-### 10,000 apps — *requires a different operating model*
-- Needs: automated + tiered review at scale, programmatic quality/performance enforcement (à la Built-for-Shopify gates), search/ranking infrastructure, recommendation systems, partner-tier programs, multi-region/multi-currency, and a mature billing/payout operation. None of these exist yet, though the data model wouldn't have to change fundamentally.
+## What breaks first — ranked
 
-## What breaks first (ordered)
+1. **Catalog seeding & manual onboarding** (breaks at 10) — can't fill the store.
+2. **App update/versioning** (breaks at ~50–100) — developers can't maintain apps. *Hard blocker.*
+3. **Payout settlement & one revenue rate** (breaks at first paid app) — can't run an economy. *Hard blocker.*
+4. **Self-serve approval + real automated review** (breaks at ~100) — ops can't keep up / safety gap.
+5. **Discovery substance** (breaks at ~100–500) — merchants can't find apps.
+6. **Search/ranking + pagination** (breaks at ~1,000).
+7. **Self-serve analytics** (breaks at ~1,000).
+8. **Rate-limit/quota accounting + OAuth limits + real RLS** (breaks at ~1,000).
+9. **Webhook delivery reliability (retries/DLQ)** (breaks at ~1,000).
+10. **Media/CDN, abuse/fraud, featured inventory, multi-region** (breaks at ~10,000).
 
-1. **Content** — empty catalog (S0).
-2. **Economics truthfulness** — 15% vs 20% (S0, kills developer trust at any scale).
-3. **Developer lifecycle** — no update/versioning (S0, prevents app maintenance past tier 1).
-4. **Discovery** — flat directory, fake collections, dead filters, weak search (S1 at 100+).
-5. **Review/governance** — rubber-stamp gates, no re-review, no health monitoring (S1 at 1,000+).
-6. **Catalog performance/caching** (S2 at 1,000+).
-7. **Trust/quality program** — unearned badges, no quality tiers (S1 for credibility).
+## What prevents developer adoption (independent of scale)
 
-## What prevents developer adoption (the demand-side constraint)
+Even at 10 apps, three things suppress adoption regardless of infrastructure: **no way to ship updates, no way to get paid, and no published economics/docs.** These are gating, not gradual — fixing infra without fixing these yields an empty, scalable shell.
 
-Even with infinite infra, developers won't come until: (1) there are merchants/revenue, (2) economics are clear and fair, (3) they can **edit and version** apps, (4) they get **analytics**, and (5) there's **documentation + SDK/CLI + dev stores**. Adoption is gated by product completeness, not capacity.
+## Infrastructure reality check
+
+The repo's `CLAUDE.md` lists `services/search-service`, `media-service`, `notification-service`, `event-bus`, `analytics-pipeline` as **reserved, not implemented**. The marketplace's 1k/10k-scale needs map almost exactly onto these unbuilt services. So scaling is gated on **(a)** building the lifecycle/economics (update, payout, approval, review) and **(b)** standing up the reserved platform services for search, media, events, and analytics.
 
 ## Recommendation
 
-Sequence the work as: **content + economics → developer lifecycle → discovery → governance/quality → scale infrastructure.** Don't invest in 10,000-app infrastructure before fixing the tier-10 blockers; the architecture already has room to grow.
+Treat scale in two tracks: **operational readiness** (update lifecycle, payout settlement, self-serve approval, real review checks, published economics — needed by 100 apps) and **platform readiness** (search, analytics, event-bus, media, quotas, RLS — needed by 1,000+). Do operational readiness first; it's the actual ceiling today. The target architecture is in [`LETBUYY_APPS_MARKETPLACE_V2.md`](LETBUYY_APPS_MARKETPLACE_V2.md).

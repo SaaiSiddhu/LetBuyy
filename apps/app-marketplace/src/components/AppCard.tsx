@@ -1,54 +1,63 @@
 import Link from 'next/link';
-import { BadgeCheck, Download, ShieldCheck, Star, Tag } from '@letbuyy/ui';
+import Image from 'next/image';
+import { BadgeCheck, Download, ShieldCheck, Sparkles, Tag } from '@letbuyy/ui';
 import type { MarketplaceApp } from '@letbuyy/shared-types';
+import { PricingTag } from './PricingTag';
+import { QualityBadge } from './QualityBadge';
+import { StarRating } from './StarRating';
 import {
-    getAppPriceDisplay,
     getAppRating,
     getCategoryName,
     getDeveloperName,
     getIconTone,
     getInstallCount,
+    getRecencyLabel,
     getReviewCount,
+    isBuiltForLetbuyy,
     isVerifiedDeveloper,
 } from '@/lib/marketplace-display';
 
 interface AppCardProps {
     app: MarketplaceApp;
+    onClick?: () => void;
+    variant?: 'grid' | 'row';
 }
 
 function getInitial(name: string): string {
     return name.trim().charAt(0).toUpperCase() || 'A';
 }
 
-function getFilledStarCount(rating: number): number {
-    return Math.max(0, Math.min(5, Math.round(rating)));
-}
-
-export function AppCard({ app }: AppCardProps) {
+export function AppCard({ app, onClick, variant = 'grid' }: AppCardProps) {
     const rating = getAppRating(app);
     const reviewCount = getReviewCount(app);
     const installCount = getInstallCount(app);
-    const price = getAppPriceDisplay(app);
     const verified = isVerifiedDeveloper(app);
     const iconTone = getIconTone(app.name);
     const categoryName = getCategoryName(app);
     const developerName = getDeveloperName(app);
-    const filledStars = getFilledStarCount(rating);
+    const builtForLetbuyy = isBuiltForLetbuyy(app);
+    const recencyLabel = getRecencyLabel(app);
+    const firstPartyDemo = Boolean(app.is_first_party_demo);
     const ratingLabel = `${rating.toFixed(1)} out of 5 stars from ${reviewCount.toLocaleString()} ${reviewCount === 1 ? 'review' : 'reviews'}`;
+    const cardClassName = `app-card app-card--${variant}`;
 
     return (
         <Link
             href={`/apps/${app.slug}`}
-            className="app-card"
-            aria-label={`${app.name}. ${categoryName}. ${price.label}. ${ratingLabel}.`}
+            className={cardClassName}
+            aria-label={`${app.name}. ${categoryName}. ${ratingLabel}.`}
+            onClick={onClick}
         >
             <div className="app-card__top">
                 <div className="app-card__icon" aria-hidden="true">
                     {app.icon_url ? (
-                        <img
+                        <Image
                             src={app.icon_url}
                             alt=""
                             className="app-card__icon-img"
+                            width={112}
+                            height={112}
+                            sizes="56px"
                         />
                     ) : (
                         <div className={`app-card__icon-placeholder app-icon-tone-${iconTone}`}>
@@ -59,10 +68,19 @@ export function AppCard({ app }: AppCardProps) {
 
                 <div className="app-card__content">
                     <div className="app-card__badges">
-                        <span className="marketplace-badge marketplace-badge--success">
-                            <ShieldCheck size={12} aria-hidden="true" />
-                            Built for LetBuyy
-                        </span>
+                        <QualityBadge compact show={builtForLetbuyy} />
+                        {firstPartyDemo && (
+                            <span className="marketplace-badge marketplace-badge--neutral">
+                                <Sparkles size={12} aria-hidden="true" />
+                                First-party demo
+                            </span>
+                        )}
+                        {recencyLabel && (
+                            <span className="marketplace-badge marketplace-badge--info">
+                                <Sparkles size={12} aria-hidden="true" />
+                                {recencyLabel}
+                            </span>
+                        )}
                         <span className="marketplace-badge marketplace-badge--neutral app-card__category-tag">
                             <Tag size={12} aria-hidden="true" />
                             {categoryName}
@@ -80,27 +98,12 @@ export function AppCard({ app }: AppCardProps) {
             </div>
 
             <div className="app-card__details">
-                <div className="app-card__rating" aria-label={ratingLabel}>
-                    <span className="app-card__stars" aria-hidden="true">
-                        {Array.from({ length: 5 }).map((_, index) => (
-                            <Star
-                                key={index}
-                                size={13}
-                                className={index < filledStars ? 'app-card__star app-card__star--filled' : 'app-card__star'}
-                                fill="currentColor"
-                                stroke="currentColor"
-                            />
-                        ))}
-                    </span>
-                    <span className="app-card__rating-value">{rating.toFixed(1)}</span>
-                    <span className="app-card__review-count">
-                        ({reviewCount.toLocaleString()})
-                    </span>
+                <div className="app-card__rating">
+                    <StarRating rating={rating} reviewCount={reviewCount} size={13} />
                 </div>
 
                 <div className="app-card__pricing-line">
-                    <span className="app-card__pricing">{price.label}</span>
-                    <span className="app-card__pricing-detail">{price.detail}</span>
+                    <PricingTag app={app} className="app-card__pricing" />
                 </div>
 
                 <div className="app-card__footer">

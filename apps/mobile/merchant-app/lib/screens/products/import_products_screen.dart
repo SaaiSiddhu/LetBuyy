@@ -8,6 +8,7 @@ import '../../services/store_service.dart';
 import '../../services/product_service.dart';
 import '../../models/store_model.dart';
 import '../../theme/app_theme_colors.dart';
+import '../../widgets/shared/cached_merchant_image.dart';
 import '../../widgets/shared/loading_overlay.dart';
 
 /// Import Products Screen
@@ -31,13 +32,17 @@ class _ImportProductsScreenState extends State<ImportProductsScreen> {
   Set<String> _selectedIds = {};
   bool _isLoading = true;
   bool _isSaving = false;
+  double _importProgress = 0;
+  String _importStatus = '';
   String _filter = 'all'; // all, notListed, listed
   late AppThemeColors colors;
 
   @override
   void initState() {
     super.initState();
-    _loadProducts();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _loadProducts();
+    });
   }
 
   Future<void> _loadProducts() async {
@@ -119,38 +124,67 @@ class _ImportProductsScreenState extends State<ImportProductsScreen> {
   Future<void> _addToStore() async {
     if (_selectedIds.isEmpty || _isSaving) return;
 
-    setState(() => _isSaving = true);
+    final selectedCount = _selectedIds.length;
+    setState(() {
+      _isSaving = true;
+      _importProgress = 0.25;
+      _importStatus = 'Preparing $selectedCount selected products';
+    });
     try {
       final storeService = context.read<StoreService>();
 
       // Combine existing + new selections
       final allIds = {...widget.alreadySelectedIds, ..._selectedIds}.toList();
+      if (mounted) {
+        setState(() {
+          _importProgress = 0.65;
+          _importStatus = 'Saving product selection';
+        });
+      }
       await storeService.updateSelectedProducts(widget.store.id, allIds);
 
+      if (!mounted) return;
+      setState(() {
+        _importProgress = 1;
+        _importStatus = '$selectedCount products added';
+      });
       HapticFeedback.heavyImpact();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${_selectedIds.length} products added to store!'),
-            backgroundColor: colors.success,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        );
-        Navigator.pop(context, true); // Return true to indicate changes
-      }
+      await _showImportResultDialog(selectedCount);
+      if (mounted) Navigator.pop(context, true);
     } catch (e) {
       if (mounted) {
+        setState(() {
+          _importProgress = 0;
+          _importStatus = 'Import failed';
+        });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: colors.error),
+          SnackBar(
+            content: const Text('Unable to import products. Try again.'),
+            backgroundColor: colors.error,
+          ),
         );
       }
     } finally {
-      setState(() => _isSaving = false);
+      if (mounted) setState(() => _isSaving = false);
     }
+  }
+
+  Future<void> _showImportResultDialog(int count) async {
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Import complete'),
+        content: Text(
+          '$count ${count == 1 ? 'product was' : 'products were'} added to your store.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Done'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -462,7 +496,10 @@ class _ImportProductsScreenState extends State<ImportProductsScreen> {
                       fit: StackFit.expand,
                       children: [
                         imageUrl != null
-                            ? Image.network(imageUrl, fit: BoxFit.cover)
+                            ? CachedMerchantImage(
+                                imageUrl: imageUrl,
+                                fit: BoxFit.cover,
+                              )
                             : Container(
                                 color: colors.card,
                                 child: Icon(
@@ -656,54 +693,110 @@ class _ImportProductsScreenState extends State<ImportProductsScreen> {
         color: colors.card,
         border: Border(top: BorderSide(color: colors.divider)),
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '${_selectedIds.length} products selected',
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  'Will be added to your store',
-                  style: TextStyle(color: colors.textSecondary, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 16),
-          ElevatedButton(
-            onPressed: _isSaving ? null : _addToStore,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.lavender,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: _isSaving
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
+          if (_isSaving) ...[
+            _buildImportProgress(),
+            const SizedBox(height: 14),
+          ],
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '${_selectedIds.length} products selected',
+                      style: TextStyle(
+                        color: colors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  )
-                : const Text(
-                    'Add to Store',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    Text(
+                      _isSaving
+                          ? 'Import in progress'
+                          : 'Will be added to your store',
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              ElevatedButton(
+                onPressed: _isSaving ? null : _addToStore,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.lavender,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 14,
                   ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: _isSaving
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Text(
+                        'Add to Store',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+              ),
+            ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildImportProgress() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.sync_rounded, color: AppColors.lavender, size: 18),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                _importStatus.isEmpty ? 'Importing products' : _importStatus,
+                style: TextStyle(
+                  color: colors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Text(
+              '${(_importProgress * 100).round()}%',
+              style: TextStyle(
+                color: colors.textSecondary,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        LinearProgressIndicator(
+          value: _importProgress.clamp(0.0, 1.0).toDouble(),
+          backgroundColor: colors.surfaceVariant,
+          color: AppColors.lavender,
+          minHeight: 6,
+          borderRadius: BorderRadius.circular(99),
+        ),
+      ],
     );
   }
 }

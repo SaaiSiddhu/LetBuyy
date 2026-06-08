@@ -39,13 +39,11 @@ class StoreSwitcherButton extends StatelessWidget {
             minimumSize: const Size(48, 48),
           ),
           icon: const Icon(Icons.storefront_outlined, size: 18),
-          label: Flexible(
-            child: Text(
-              store?.name ?? l10n.selectStore,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
+          label: Text(
+            store?.name ?? l10n.selectStore,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontWeight: FontWeight.w600),
           ),
         ),
       ),

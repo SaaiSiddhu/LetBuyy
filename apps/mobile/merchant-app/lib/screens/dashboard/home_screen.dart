@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
@@ -6,6 +8,9 @@ import '../../app/store_context.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../services/analytics_service.dart';
+import '../../services/app_badge_service.dart';
+import '../../services/home_widget_service.dart';
+import '../../services/money_service.dart';
 import '../../services/store_service.dart';
 import '../../services/store_auth_service.dart';
 import '../../models/store_model.dart';
@@ -31,6 +36,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   StoreModel? _store;
   StoreAnalytics? _analytics;
+  Map<String, dynamic>? _payoutSummary;
   bool _isLoading = true;
   bool _isPublishing = false;
   String _selectedPeriod = '30 Days';
@@ -43,27 +49,57 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadStore() async {
     setState(() => _isLoading = true);
+    final storeContext = context.read<StoreContext>();
+    final analyticsService = context.read<AnalyticsService>();
+    final appBadgeService = context.read<AppBadgeService>();
+    final moneyService = context.read<MoneyService>();
+    final homeWidgetService = context.read<HomeWidgetService>();
+
     try {
-      final store = await context.read<StoreContext>().ensureSelectedStore();
+      final store = await storeContext.ensureSelectedStore();
       StoreAnalytics? analytics;
+      Map<String, dynamic>? payoutSummary;
       if (store != null) {
         try {
-          analytics = await context.read<AnalyticsService>().getStoreAnalytics(
+          analytics = await analyticsService.getStoreAnalytics(
             store.id,
             period: _analyticsPeriod,
           );
         } catch (analyticsError) {
           debugPrint('Error loading dashboard analytics: $analyticsError');
         }
+        try {
+          payoutSummary = await moneyService.fetchPayoutSummary(store.id);
+        } catch (payoutError) {
+          debugPrint('Error loading dashboard payouts: $payoutError');
+          payoutSummary = null;
+        }
       }
+      if (!mounted) return;
       setState(() {
         _store = store;
         _analytics = analytics;
+        _payoutSummary = payoutSummary;
       });
+      if (store != null && analytics != null) {
+        unawaited(
+          homeWidgetService.publishDashboardSnapshot(
+            store: store,
+            analytics: analytics,
+          ),
+        );
+        unawaited(
+          appBadgeService.syncOpenOrderBadgeFromStatusCounts(
+            analytics.ordersByStatus,
+          ),
+        );
+      }
     } catch (e) {
       debugPrint('Error loading store: $e');
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -347,10 +383,26 @@ class _HomeScreenState extends State<HomeScreen> {
             // Revenue Chart
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: AnimatedRevenueChart(totalRevenue: revenue)
-                  .animate(delay: 200.ms)
-                  .fadeIn(duration: 400.ms)
-                  .slideY(begin: 0.1, end: 0),
+              child:
+                  AnimatedRevenueChart(
+                        totalRevenue: revenue,
+                        revenueData:
+                            analytics?.dailyStats
+                                .map((day) => day.revenue)
+                                .toList(growable: false) ??
+                            const <double>[],
+                      )
+                      .animate(delay: 200.ms)
+                      .fadeIn(duration: 400.ms)
+                      .slideY(begin: 0.1, end: 0),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Quick Actions & Activity Row
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildPayoutVisibilityCard(colors),
             ),
 
             const SizedBox(height: 24),
@@ -367,8 +419,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     child:
                         QuickActionsGrid(
                               productCount: _store!.selectedProductIds.length,
-                              onEditorTap: () => _showTabHint('Editor'),
-                              onProductsTap: () => _showTabHint('Products'),
+                              onEditorTap: () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.livePreview,
+                              ),
+                              onProductsTap: () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.products,
+                              ),
                               onOrdersTap: () => Navigator.pushNamed(
                                 context,
                                 AppRoutes.orders,
@@ -377,7 +435,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 context,
                                 AppRoutes.analytics,
                               ),
-                              onSettingsTap: () => _showTabHint('Settings'),
+                              onSettingsTap: () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.storeDetails,
+                              ),
                             )
                             .animate(delay: 300.ms)
                             .fadeIn(duration: 400.ms)
@@ -483,7 +544,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 size: 20,
                 color: colors.textSecondary,
               ),
-              onPressed: () {},
+              onPressed: () =>
+                  Navigator.pushNamed(context, AppRoutes.notifications),
             ),
           ),
         ],
@@ -496,20 +558,6 @@ class _HomeScreenState extends State<HomeScreen> {
     if (hour < 12) return 'Good Morning,';
     if (hour < 17) return 'Good Afternoon,';
     return 'Good Evening,';
-  }
-
-  void _showTabHint(String tabName) {
-    final colors = AppThemeColors.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Tap the $tabName tab below'),
-        duration: const Duration(seconds: 1),
-        backgroundColor: colors.elevation2,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-    );
   }
 
   void _showPeriodPicker(AppThemeColors colors) {
@@ -601,6 +649,85 @@ class _HomeScreenState extends State<HomeScreen> {
     return amount.toStringAsFixed(0);
   }
 
+  Widget _buildPayoutVisibilityCard(AppThemeColors colors) {
+    final next = _payoutSummary?['next_payout'];
+    final nextPayout = next is Map ? Map<String, dynamic>.from(next) : null;
+    final amountMinor = (nextPayout?['net_amount_minor'] as num?)?.toDouble();
+    final amount = amountMinor == null
+        ? 'No payout scheduled'
+        : '₹${_formatMoney(amountMinor / 100)}';
+    final subtitle = nextPayout == null
+        ? 'Paid orders will appear here when settlement is ready.'
+        : '${nextPayout['status'] ?? 'pending'} · ${nextPayout['available_on'] ?? 'available soon'}';
+
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, AppRoutes.money),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: colors.glassMedium,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+              alpha: 0.24,
+            ),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                  alpha: 0.12,
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.account_balance_wallet_outlined,
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Next payout',
+                    style: TextStyle(
+                      color: colors.textSecondary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    amount,
+                    style: TextStyle(
+                      color: colors.textPrimary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded, color: colors.textSecondary),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildCompactStatCard({
     required IconData icon,
     required String label,
@@ -635,20 +762,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: Icon(icon, color: color, size: 14),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: isPositive
-                      ? colors.success.withValues(alpha: 0.15)
-                      : colors.warning.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  trend,
-                  style: TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w600,
-                    color: isPositive ? colors.success : colors.warning,
+              const SizedBox(width: 6),
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isPositive
+                        ? colors.success.withValues(alpha: 0.15)
+                        : colors.warning.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    trend,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w600,
+                      color: isPositive ? colors.success : colors.warning,
+                    ),
                   ),
                 ),
               ),

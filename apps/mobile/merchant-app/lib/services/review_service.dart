@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 
 import 'api_client.dart';
-import 'skip_needs_backend_exception.dart';
 
 class ProductReviewContract {
   const ProductReviewContract({
@@ -18,6 +17,8 @@ class ProductReviewContract {
     required this.isVerified,
     required this.isApproved,
     required this.helpfulCount,
+    this.merchantReply,
+    this.merchantReplyAt,
     required this.createdAt,
   });
 
@@ -46,6 +47,12 @@ class ProductReviewContract {
       isVerified: _boolValue(json['is_verified'] ?? json['verified']),
       isApproved: status == 'approved' || _boolValue(json['is_approved']),
       helpfulCount: _intValue(json['helpful_count']),
+      merchantReply: _nullableStringValue(
+        json['merchant_reply'] ?? json['merchantReply'],
+      ),
+      merchantReplyAt: _nullableStringValue(
+        json['merchant_reply_at'] ?? json['merchantReplyAt'],
+      ),
       createdAt: _stringValue(json['created_at']),
     );
   }
@@ -63,6 +70,8 @@ class ProductReviewContract {
   final bool isVerified;
   final bool isApproved;
   final int helpfulCount;
+  final String? merchantReply;
+  final String? merchantReplyAt;
   final String createdAt;
 
   ProductReviewContract copyWith({String? status}) {
@@ -81,6 +90,8 @@ class ProductReviewContract {
       isVerified: isVerified,
       isApproved: nextStatus == 'approved',
       helpfulCount: helpfulCount,
+      merchantReply: merchantReply,
+      merchantReplyAt: merchantReplyAt,
       createdAt: createdAt,
     );
   }
@@ -102,8 +113,6 @@ class ReviewReplyInput {
 
 class ReviewService extends ChangeNotifier {
   ReviewService({required ApiClient api}) : _api = api;
-
-  static const missingReplyRouteId = 'MOBILE_REVIEW_REPLY_ROUTE';
 
   final ApiClient _api;
 
@@ -154,12 +163,15 @@ class ReviewService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> replyToReview(ReviewReplyInput input) async {
-    // [SKIP-NEEDS-BACKEND: MOBILE_REVIEW_REPLY_ROUTE]
-    throw const SkipNeedsBackendException(
-      missingReplyRouteId,
-      'Gateway reviews route has no merchant reply endpoint yet.',
+  Future<ProductReviewContract> replyToReview(ReviewReplyInput input) async {
+    final updated = ProductReviewContract.fromJson(
+      await _api.reviews.reply(input.reviewId, {'message': input.message}),
     );
+    _reviews = _reviews
+        .map((item) => item.id == updated.id ? updated : item)
+        .toList(growable: false);
+    notifyListeners();
+    return updated;
   }
 }
 
@@ -186,4 +198,9 @@ num _numValue(Object? value, {num fallback = 0}) {
 String _stringValue(Object? value, {String fallback = ''}) {
   final text = value?.toString().trim();
   return text == null || text.isEmpty ? fallback : text;
+}
+
+String? _nullableStringValue(Object? value) {
+  final text = value?.toString().trim();
+  return text == null || text.isEmpty ? null : text;
 }

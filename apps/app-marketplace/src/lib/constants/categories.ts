@@ -1,4 +1,4 @@
-// App categories from Doc 15 §4
+// Fallback-only category list. Runtime category names/counts come from the app-store API.
 
 import type { MarketplaceAppCategory } from '@letbuyy/shared-types';
 

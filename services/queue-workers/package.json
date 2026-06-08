@@ -6,17 +6,20 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
+    "dev": "wrangler dev --port 9013 --inspector-port 9113",
     "build": "tsc --noEmit",
     "deploy": "node ../../infrastructure/scripts/deploy/deploy-worker-runtime.mjs --config wrangler.toml",
     "typecheck": "tsc --noEmit",
     "test": "node --test --experimental-strip-types test/*.test.mjs"
   },
   "dependencies": {
+    "@letbuyy/billing-core": "workspace:*",
     "@letbuyy/event-core": "workspace:*",
     "@letbuyy/infrastructure": "workspace:*",
     "@letbuyy/notification-core": "workspace:*",
     "@letbuyy/orchestration": "workspace:*",
-    "@letbuyy/runtime-composition": "workspace:*"
+    "@letbuyy/runtime-composition": "workspace:*",
+    "@letbuyy/shared-types": "workspace:*"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260524.1",

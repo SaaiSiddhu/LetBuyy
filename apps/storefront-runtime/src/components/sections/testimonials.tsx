@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { SectionModel, TestimonialsSettings, ThemeSettings } from '@letbuyy/theme-engine';
-import { Star, ChevronLeft, ChevronRight, MessageSquare, Tag } from '@letbuyy/ui';
+import { Button, Star, ChevronLeft, ChevronRight, MessageSquare, Tag } from '@letbuyy/ui';
 
 interface Props {
     section: SectionModel;
@@ -90,7 +90,7 @@ export default function TestimonialsSection({ section, theme }: Props) {
     const pauseNav = () => { setIsPaused(true); setTimeout(() => setIsPaused(false), 8000); };
 
     return (
-        <section className="py-16 md:py-20 px-4 md:px-8 overflow-hidden bg-white text-black">
+        <section className="py-16 md:py-20 px-4 md:px-8 overflow-hidden bg-[var(--lb-color-surface)] text-black">
             <div className="max-w-screen-xl mx-auto">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-10 gap-3">
@@ -117,12 +117,12 @@ export default function TestimonialsSection({ section, theme }: Props) {
                     </div>
                     {/* Arrows — desktop */}
                     <div className="hidden md:flex items-center gap-2">
-                        <button onClick={() => { goPrev(); pauseNav(); }} className="w-10 h-10 rounded-full border border-black/15 flex items-center justify-center hover:bg-black/5 transition-colors" aria-label="Previous">
+                        <Button unstyled onClick={() => { goPrev(); pauseNav(); }} className="w-10 h-10 rounded-full border border-black/15 flex items-center justify-center hover:bg-black/5 transition-colors" aria-label="Previous">
                             <ChevronLeft size={16} />
-                        </button>
-                        <button onClick={() => { goNext(); pauseNav(); }} className="w-10 h-10 rounded-full border border-black/15 flex items-center justify-center hover:bg-black/5 transition-colors" aria-label="Next">
+                        </Button>
+                        <Button unstyled onClick={() => { goNext(); pauseNav(); }} className="w-10 h-10 rounded-full border border-black/15 flex items-center justify-center hover:bg-black/5 transition-colors" aria-label="Next">
                             <ChevronRight size={16} />
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
@@ -161,8 +161,8 @@ export default function TestimonialsSection({ section, theme }: Props) {
                                                     <Star
                                                         key={i}
                                                         size={14}
-                                                        fill={i < active.rating ? '#000' : 'none'}
-                                                        stroke={i < active.rating ? '#000' : 'rgba(0,0,0,0.15)'}
+                                                        fill={i < active.rating ? 'rgb(0 0 0)' : 'none'}
+                                                        stroke={i < active.rating ? 'rgb(0 0 0)' : 'rgba(0,0,0,0.15)'}
                                                         strokeWidth={i < active.rating ? 0 : 2}
                                                     />
                                                 ))}
@@ -206,7 +206,7 @@ export default function TestimonialsSection({ section, theme }: Props) {
                     {/* Mobile dots */}
                     <div className="flex items-center justify-center gap-1.5 mt-8 md:hidden">
                         {testimonials.map((_, i) => (
-                            <button
+                            <Button unstyled
                                 key={i}
                                 onClick={() => { goTo(i); pauseNav(); }}
                                 className={`h-1 rounded-full transition-all duration-300 ${i === activeIndex ? 'w-5 bg-black' : 'w-1.5 bg-black/20'}`}

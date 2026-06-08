@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Heart, Palette, Github, Twitter, Mail } from '@letbuyy/ui';
+import { Heart, Palette, Mail } from '@letbuyy/ui';
 
 const FOOTER_LINKS = {
     Product: [
@@ -9,22 +9,20 @@ const FOOTER_LINKS = {
         { label: 'Portfolio Themes', href: '/themes?category=portfolio' },
     ],
     Resources: [
-        { label: 'Documentation', href: '#' },
-        { label: 'Theme Development', href: '#' },
-        { label: 'API Reference', href: '#' },
-        { label: 'Changelog', href: '#' },
+        { label: 'Documentation', href: '/docs' },
+        { label: 'Theme Development', href: '/developer' },
+        { label: 'API Reference', href: '/docs/api' },
     ],
     Company: [
-        { label: 'About LetBuyy', href: '#' },
-        { label: 'Blog', href: '#' },
-        { label: 'Support', href: '#' },
-        { label: 'Contact', href: '#' },
+        { label: 'About LetBuyy', href: '/about' },
+        { label: 'Support', href: '/support' },
+        { label: 'Contact', href: '/contact' },
     ],
     Legal: [
-        { label: 'Privacy Policy', href: '#' },
-        { label: 'Terms of Service', href: '#' },
-        { label: 'Refund Policy', href: '#' },
-        { label: 'License Agreement', href: '#' },
+        { label: 'Privacy Policy', href: '/legal/privacy' },
+        { label: 'Terms of Service', href: '/legal/terms' },
+        { label: 'Refund Policy', href: '/legal/refund' },
+        { label: 'License Agreement', href: '/legal/license' },
     ],
 };
 
@@ -43,16 +41,10 @@ export default function Footer() {
                             <span className="text-base font-bold text-text-heading">LetBuyy Themes</span>
                         </Link>
                         <p className="text-sm text-text-muted max-w-xs mb-5">
-                            Beautiful, customizable themes for your online store, portfolio, and landing pages.
+                            Governed LetBuyy themes for stores, portfolios, resumes, SaaS pages, and landing pages.
                         </p>
                         <div className="flex items-center gap-3">
-                            <a href="#" className="p-2 rounded-lg bg-surface hover:bg-surface-hover text-text-muted hover:text-text-heading transition-all">
-                                <Twitter className="w-4 h-4" />
-                            </a>
-                            <a href="#" className="p-2 rounded-lg bg-surface hover:bg-surface-hover text-text-muted hover:text-text-heading transition-all">
-                                <Github className="w-4 h-4" />
-                            </a>
-                            <a href="#" className="p-2 rounded-lg bg-surface hover:bg-surface-hover text-text-muted hover:text-text-heading transition-all">
+                            <a href="mailto:support@letbuyy.com" className="p-2 rounded-lg bg-surface hover:bg-surface-hover text-text-muted hover:text-text-heading transition-all" aria-label="Email LetBuyy support">
                                 <Mail className="w-4 h-4" />
                             </a>
                         </div>
@@ -84,7 +76,7 @@ export default function Footer() {
                         © {new Date().getFullYear()} LetBuyy. All rights reserved.
                     </p>
                     <p className="inline-flex items-center gap-1 text-xs text-text-subtle">
-                        Built with <Heart className="h-3.5 w-3.5" aria-hidden="true" /> in India
+                        India-first theme marketplace <Heart className="h-3.5 w-3.5" aria-hidden="true" />
                     </p>
                 </div>
             </div>

@@ -1,11 +1,6 @@
 'use client';
 
-import {
-    Badge,
-    EmptyState,
-    IndexTable,
-    type IndexTableColumn,
-} from '@letbuyy/ui';
+import { Badge, EmptyState, Table, type TableColumn } from '@letbuyy/ui';
 
 type TicketStatus = 'open' | 'pending' | 'resolved' | 'backend_needed';
 type TicketPriority = 'low' | 'normal' | 'high' | 'urgent';
@@ -38,7 +33,7 @@ function priorityVariant(priority: TicketRow['priority']) {
     return 'default' as const;
 }
 
-const columns: IndexTableColumn<TicketRow>[] = [
+const columns: TableColumn<TicketRow>[] = [
     {
         key: 'ticket',
         header: 'Ticket',
@@ -94,7 +89,7 @@ const columns: IndexTableColumn<TicketRow>[] = [
 
 export function TicketIndexTable({ rows, backendNeeded }: { rows: TicketRow[]; backendNeeded: boolean }) {
     return (
-        <IndexTable
+        <Table
             columns={columns}
             rows={rows}
             savedViews={[

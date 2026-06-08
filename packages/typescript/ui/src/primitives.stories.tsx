@@ -15,7 +15,7 @@ import {
     ProgressBar,
     Section,
     Spinner,
-    TextStyle,
+    Text,
     type DateRangeValue,
     type LetbuyyDensity,
 } from './index';
@@ -95,14 +95,14 @@ export function ChecklistOverviewStory() {
                             items={[
                                 { term: 'Order', description: '#LB-1024' },
                                 { term: 'Payment', description: <Badge label="Paid" variant="success" /> },
-                                { term: 'Risk', description: <TextStyle variant="positive">Low</TextStyle> },
-                                { term: 'Sync event', description: <TextStyle variant="code">order.created</TextStyle> },
+                                { term: 'Risk', description: <Text variant="positive">Low</Text> },
+                                { term: 'Sync event', description: <Text variant="code">order.created</Text> },
                             ]}
                         />
                         <Divider />
                         <div className="flex items-center gap-[var(--lb-space-3)]">
                             <Spinner label="Refreshing orders" />
-                            <TextStyle variant="subdued">Refreshing order data</TextStyle>
+                            <Text variant="subdued">Refreshing order data</Text>
                         </div>
                     </div>
                 </Section>
@@ -135,7 +135,7 @@ export function DensityToggleStory() {
             <Section title="Table density" description="Density changes are surfaced as an explicit segmented control.">
                 <DensityToggle value={density} onChange={setDensity} />
                 <div className="text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
-                    Active density: <TextStyle variant="strong">{density}</TextStyle>
+                    Active density: <Text variant="strong">{density}</Text>
                 </div>
             </Section>
         </Card>,
@@ -210,12 +210,12 @@ export function DividerStory() {
             <Section title="Separators" description="Horizontal and vertical dividers use border tokens only.">
                 <div className="grid gap-[var(--lb-space-4)]">
                     <div className="flex items-center gap-[var(--lb-space-3)]">
-                        <TextStyle variant="strong">Orders</TextStyle>
+                        <Text variant="strong">Orders</Text>
                         <Divider orientation="vertical" />
-                        <TextStyle variant="subdued">Today</TextStyle>
+                        <Text variant="subdued">Today</Text>
                     </div>
                     <Divider />
-                    <TextStyle variant="subdued">Section content continues after the divider.</TextStyle>
+                    <Text variant="subdued">Section content continues after the divider.</Text>
                 </div>
             </Section>
         </Card>,
@@ -237,17 +237,17 @@ export function SpinnerStory() {
     );
 }
 
-export function TextStyleStory() {
+export function TextVariantsStory() {
     return storyWrapper(
         <Card>
             <Section title="Text styles" description="Common semantic text treatments without ad-hoc utility strings.">
                 <div className="grid gap-[var(--lb-space-2)]">
-                    <TextStyle>Default body text</TextStyle>
-                    <TextStyle variant="subdued">Subdued supporting text</TextStyle>
-                    <TextStyle variant="strong">Strong operational label</TextStyle>
-                    <TextStyle variant="positive">+12.5% conversion lift</TextStyle>
-                    <TextStyle variant="negative">-3 failed payouts</TextStyle>
-                    <TextStyle variant="code">storefront.sync.completed</TextStyle>
+                    <Text>Default body text</Text>
+                    <Text variant="subdued">Subdued supporting text</Text>
+                    <Text variant="strong">Strong operational label</Text>
+                    <Text variant="positive">+12.5% conversion lift</Text>
+                    <Text variant="negative">-3 failed payouts</Text>
+                    <Text variant="code">storefront.sync.completed</Text>
                 </div>
             </Section>
         </Card>,

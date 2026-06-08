@@ -3,6 +3,7 @@
 // ============================================================
 
 import { Hono } from 'hono';
+import { z } from 'zod';
 import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
 import { getSupabaseAdmin, success } from '../lib/supabase';
@@ -14,9 +15,39 @@ import {
     CheckSubdomainSchema,
     STEP_SCHEMAS,
 } from '../schemas/onboarding.schema';
-import { isLegacySiteType, legacySiteTypeCreationEnabled } from '@letbuyy/tenant-core';
+import { isComingSoonSiteType, isLegacySiteType, legacySiteTypeCreationEnabled } from '@letbuyy/tenant-core';
 
 const router = new Hono<{ Bindings: Env }>();
+
+const MobileOnboardingProgressSchema = z.object({
+    site_type: z.enum(['store', 'portfolio', 'resume', 'landing', 'blog']).default('store'),
+    business_type: z.enum(['new', 'existing']),
+    channels: z.array(z.string().trim().min(1).max(60)).max(12).default([]),
+    product_type: z.string().trim().min(1).max(80),
+    category: z.string().trim().min(1).max(80),
+});
+
+function platformDomain(env: Env): string {
+    return (env.NEXT_PUBLIC_PLATFORM_DOMAIN || env.LETBUYY_PLATFORM_DOMAIN || env.PLATFORM_ROOT_DOMAIN || 'letbuyy.com')
+        .trim()
+        .replace(/^https?:\/\//, '')
+        .replace(/\/.*$/, '')
+        .replace(/^\.+|\.+$/g, '') || 'letbuyy.com';
+}
+
+function adminUrl(env: Env, urlPath = ''): string {
+    const base = (env.NEXT_PUBLIC_ADMIN_URL || `https://admin.${platformDomain(env)}`).replace(/\/+$/, '');
+    return `${base}${urlPath.startsWith('/') ? urlPath : `/${urlPath}`}`;
+}
+
+function storefrontUrl(env: Env, subdomain: string): string {
+    const rootDomain = (env.NEXT_PUBLIC_STORE_ROOT_DOMAIN || env.STOREFRONT_ROOT_DOMAIN || platformDomain(env))
+        .trim()
+        .replace(/^https?:\/\//, '')
+        .replace(/\/.*$/, '')
+        .replace(/^\.+|\.+$/g, '') || 'letbuyy.com';
+    return `https://${subdomain}.${rootDomain}`;
+}
 
 function legacySiteTypeCreationAllowed(env: Env): boolean {
     return legacySiteTypeCreationEnabled(env.LETBUYY_ENABLE_LEGACY_SITE_TYPES);
@@ -28,6 +59,16 @@ function legacySiteTypeCreationResponse(siteType: string) {
         error: {
             code: 'LEGACY_SITE_TYPE_DISABLED',
             message: `${siteType} site creation is legacy-gated. Existing sites remain supported, but new portfolio/resume acquisition requires LETBUYY_ENABLE_LEGACY_SITE_TYPES=true.`,
+        },
+    };
+}
+
+function comingSoonSiteTypeCreationResponse(siteType: string) {
+    return {
+        success: false,
+        error: {
+            code: 'SITE_TYPE_COMING_SOON',
+            message: `${siteType} site creation is coming soon. Online Store is available today.`,
         },
     };
 }
@@ -69,6 +110,10 @@ router.post('/start', validate('json', StartOnboardingSchema), async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
+    if (isComingSoonSiteType(body.site_type)) {
+        return c.json(comingSoonSiteTypeCreationResponse(body.site_type), 403);
+    }
+
     if (isLegacySiteType(body.site_type) && !legacySiteTypeCreationAllowed(c.env)) {
         return c.json(legacySiteTypeCreationResponse(body.site_type), 403);
     }
@@ -93,6 +138,8 @@ router.post('/start', validate('json', StartOnboardingSchema), async (c) => {
         .from('onboarding_attempts')
         .insert({
             user_id: customUser.id,
+            requested_name: 'mobile-onboarding',
+            requested_subdomain: `mobile-${customUser.id.slice(0, 8)}`,
             site_type: body.site_type,
             current_step: 1,
             status: 'in_progress',
@@ -145,6 +192,83 @@ router.get('/status', async (c) => {
     return c.json(success({
         onboarding_completed: data.status === 'completed',
         attempt: data,
+    }));
+});
+
+// POST /onboarding/mobile-progress — Persist mobile wizard steps 1-4
+router.post('/mobile-progress', validate('json', MobileOnboardingProgressSchema), async (c) => {
+    const auth = c.get('auth');
+    const body = c.get('validatedBody') as z.infer<typeof MobileOnboardingProgressSchema>;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    if (isComingSoonSiteType(body.site_type)) {
+        return c.json(comingSoonSiteTypeCreationResponse(body.site_type), 403);
+    }
+
+    if (isLegacySiteType(body.site_type) && !legacySiteTypeCreationAllowed(c.env)) {
+        return c.json(legacySiteTypeCreationResponse(body.site_type), 403);
+    }
+
+    const surveyData = {
+        source: 'mobile-merchant-app',
+        business_type: body.business_type,
+        channels: body.channels,
+        product_type: body.product_type,
+        category: body.category,
+    };
+
+    const { data: existing } = await db
+        .from('onboarding_attempts')
+        .select('id')
+        .eq('user_id', customUser.id)
+        .eq('status', 'in_progress')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    const row = {
+        site_type: body.site_type,
+        current_step: 5,
+        completed_steps: [1, 2, 3, 4],
+        survey_data: surveyData,
+        last_activity_at: new Date().toISOString(),
+    };
+
+    const query = existing?.id
+        ? db
+            .from('onboarding_attempts')
+            .update(row)
+            .eq('id', existing.id)
+            .select('id, current_step, completed_steps, survey_data')
+            .single()
+        : db
+            .from('onboarding_attempts')
+            .insert({
+                ...row,
+                user_id: customUser.id,
+                requested_name: 'mobile-onboarding',
+                requested_subdomain: `mobile-${customUser.id.slice(0, 8)}`,
+                status: 'in_progress',
+            })
+            .select('id, current_step, completed_steps, survey_data')
+            .single();
+
+    const { data, error } = await query;
+
+    if (error) {
+        return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    return c.json(success({
+        attempt_id: data.id,
+        current_step: data.current_step,
+        completed_steps: data.completed_steps,
+        survey_data: data.survey_data,
     }));
 });
 
@@ -207,6 +331,9 @@ router.put('/:attemptId/step/:step', async (c) => {
     // Merge step-specific fields into the attempt
     if (stepNum === 1) {
         const nextSiteType = String(stepData.site_type || '');
+        if (isComingSoonSiteType(nextSiteType)) {
+            return c.json(comingSoonSiteTypeCreationResponse(nextSiteType), 403);
+        }
         if (isLegacySiteType(nextSiteType) && !legacySiteTypeCreationAllowed(c.env)) {
             return c.json(legacySiteTypeCreationResponse(nextSiteType), 403);
         }
@@ -262,6 +389,9 @@ router.post('/:attemptId/complete', async (c) => {
     }
 
     const attemptSiteType = String(attempt.site_type || 'store');
+    if (isComingSoonSiteType(attemptSiteType)) {
+        return c.json(comingSoonSiteTypeCreationResponse(attemptSiteType), 403);
+    }
     if (isLegacySiteType(attemptSiteType) && !legacySiteTypeCreationAllowed(c.env)) {
         return c.json(legacySiteTypeCreationResponse(attemptSiteType), 403);
     }
@@ -316,8 +446,8 @@ router.post('/:attemptId/complete', async (c) => {
     return c.json(success({
         store,
         urls: {
-            admin: `https://admin.letbuyy.store/stores/${store.id}`,
-            storefront: `https://${store.subdomain}.letbuyy.store`,
+            admin: adminUrl(c.env, `/stores/${store.id}`),
+            storefront: storefrontUrl(c.env, store.subdomain),
         },
     }), 201);
 });
@@ -344,7 +474,7 @@ router.get('/templates', async (c) => {
     const siteType = c.req.query('site_type') || 'store';
     const db = getSupabaseAdmin(c);
 
-    if (isLegacySiteType(siteType) && !legacySiteTypeCreationAllowed(c.env)) {
+    if (isComingSoonSiteType(siteType) || (isLegacySiteType(siteType) && !legacySiteTypeCreationAllowed(c.env))) {
         return c.json(success([]));
     }
 

@@ -1,6 +1,7 @@
+import Link from 'next/link';
 import {
     ConsoleWorkspace,
-    SkipBackendPanel,
+    Panel,
 } from '@/components/_local-ui/console-workspace';
 import {
     ConsoleApiErrorPanel,
@@ -42,7 +43,12 @@ const columns: Array<ConsoleDataColumn<ConsoleStore>> = [
         header: 'Store',
         cell: (row) => (
             <div>
-                <p className="font-medium text-zinc-100">{row.store_name || row.name || '-'}</p>
+                <Link
+                    href={`/merchants/${row.id}`}
+                    className="font-medium text-zinc-100 underline-offset-4 hover:text-white hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                >
+                    {row.store_name || row.name || '-'}
+                </Link>
                 <p className="mt-1 text-xs text-zinc-500">{row.subdomain ? `${row.subdomain}.letbuyy.store` : row.id}</p>
             </div>
         ),
@@ -115,9 +121,11 @@ export default async function StoresPage({ searchParams }: PageProps) {
                     getRowKey={(row) => row.id}
                 />
             )}
-            <SkipBackendPanel title="Merchant suspension actions" contract="/v1/internal/console/stores/:id/moderation">
-                Search and directory review are available. Freeze, unfreeze, risk score, and escalation actions need a mutation endpoint with idempotency and audit writes.
-            </SkipBackendPanel>
+            <Panel title="Merchant 360 actions" description="Open any merchant row to view risk, Trust & Safety, support, app, theme, audit, impersonation, and dual-control moderation context.">
+                <Link href="/merchants" className="text-sm font-medium text-[var(--lb-color-primary)] underline-offset-4 hover:underline">
+                    Open Merchant 360 search
+                </Link>
+            </Panel>
         </ConsoleWorkspace>
     );
 }

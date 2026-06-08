@@ -26,7 +26,12 @@
     "./pooled-sql-adapter": "./pooled-sql-adapter/index.ts",
     "./search-provider-adapter": "./search-provider-adapter/index.ts",
     "./logistics-adapter": "./logistics-adapter/index.ts",
-    "./provider-resilience-adapter": "./provider-resilience-adapter/index.ts"
+    "./payout-transfer-adapter": "./payout-transfer-adapter/index.ts",
+    "./kyc-verification-adapter": "./kyc-verification-adapter/index.ts",
+    "./provider-resilience-adapter": "./provider-resilience-adapter/index.ts",
+    "./ai-generation-adapter": "./ai-generation-adapter/index.ts",
+    "./ai-credit-purchase-adapter": "./ai-credit-purchase-adapter/index.ts",
+    "./whatsapp-commerce-adapter": "./whatsapp-commerce-adapter/index.ts"
   },
   "scripts": {
     "build": "tsc -b",

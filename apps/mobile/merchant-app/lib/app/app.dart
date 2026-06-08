@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/language_service.dart';
+import '../services/telemetry_service.dart';
 import '../theme/store_theme.dart';
 import '../services/theme_provider.dart';
 import 'routes.dart';
@@ -17,6 +18,7 @@ class StoreBuilderApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
     final languageService = context.watch<LanguageService>();
+    final telemetry = _maybeTelemetry(context);
 
     return MaterialApp(
       title: AppLocalizations.of(context).appTitle,
@@ -52,6 +54,17 @@ class StoreBuilderApp extends StatelessWidget {
       home:
           const AuthWrapper(), // Use home instead of initialRoute for stability
       onGenerateRoute: AppRoutes.generateRoute,
+      navigatorObservers: telemetry == null
+          ? const <NavigatorObserver>[]
+          : <NavigatorObserver>[TelemetryNavigatorObserver(telemetry)],
     );
+  }
+
+  TelemetryService? _maybeTelemetry(BuildContext context) {
+    try {
+      return context.read<TelemetryService>();
+    } on ProviderNotFoundException {
+      return null;
+    }
   }
 }

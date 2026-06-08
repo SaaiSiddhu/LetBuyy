@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
+import { BrandLogo } from '@/components/BrandLogo'
 import { Banner, Button, Input } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
@@ -117,16 +118,18 @@ export default function ForgotPasswordPage() {
     return (
         <main className="auth-container">
             <div className="auth-top-bar">
-                <button onClick={cycleLang} className="auth-lang-btn">
+                <Button unstyled onClick={cycleLang} className="auth-lang-btn">
                     {lang.toUpperCase()}
-                </button>
-                <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
+                </Button>
+                <Button unstyled onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
                     <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
-                </button>
+                </Button>
             </div>
 
             <div className="auth-card">
-                {/* No logo on forgot-password */}
+                <div className="auth-logo">
+                    <BrandLogo />
+                </div>
 
                 <div className="auth-icon"><AuthIcon name="lock" size={36} /></div>
 

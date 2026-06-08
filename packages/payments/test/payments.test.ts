@@ -2,9 +2,15 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   fromInrMinorUnits,
+  assertBalancedLedgerLines,
+  buildPaymentCaptureLedgerPosting,
+  buildMockPaymentSessionPlan,
+  buildReversalLedgerPosting,
   inrMoney,
+  livePaymentCredentialsAreRequired,
   normalizeIdempotencyKey,
   normalizePaymentMoney,
+  resolvePaymentProviderMode,
   toInrMinorUnits,
 } from '../src/index.ts';
 
@@ -27,4 +33,52 @@ test('payment side-effect idempotency keys are normalized and bounded', () => {
   assert.throws(() => normalizeIdempotencyKey('short'), /Idempotency key/);
   assert.throws(() => normalizeIdempotencyKey('order 123'), /Idempotency key/);
   assert.throws(() => normalizeIdempotencyKey('x'.repeat(201)), /Idempotency key/);
+});
+
+test('ledger posting helpers enforce double-entry balance and reversal-only correction', () => {
+  const posting = buildPaymentCaptureLedgerPosting({
+    siteId: '11111111-1111-4111-8111-111111111111',
+    orderId: '22222222-2222-4222-8222-222222222222',
+    providerPaymentId: 'pay_test_001',
+    grossAmountMinor: 10_000,
+    platformFeeMinor: 300,
+    gstMinor: 54,
+    idempotencyKey: 'payment:pay_test_001',
+  });
+
+  assert.equal(posting.lines.length, 4);
+  assert.doesNotThrow(() => assertBalancedLedgerLines(posting.lines));
+  assert.throws(
+    () => assertBalancedLedgerLines([
+      { accountCode: 'pa_clearing', side: 'debit', amountMinor: 10_000, currency: 'INR' },
+      { accountCode: 'merchant_payable', side: 'credit', amountMinor: 9_000, currency: 'INR' },
+    ]),
+    /must balance/,
+  );
+
+  const reversal = buildReversalLedgerPosting(posting, 'reversal-pay-test-001', 'reversal:pay_test_001');
+  assert.equal(reversal.sourceType, 'reversal');
+  assert.equal(reversal.lines[0]?.side, 'credit');
+  assert.doesNotThrow(() => assertBalancedLedgerLines(reversal.lines));
+});
+
+test('V1 payment session plans default to mock mode and live credentials are guarded', () => {
+  const plan = buildMockPaymentSessionPlan({
+    provider: 'upi',
+    orderId: 'order-123',
+    amount: inrMoney(12_500),
+    idempotencyKey: 'payment_session:order-123',
+    metadata: { channel: 'web' },
+  });
+
+  assert.equal(plan.mode, 'mock');
+  assert.equal(plan.provider, 'upi');
+  assert.equal(plan.clientAction, 'upi_collect');
+  assert.equal(plan.status, 'authorized');
+  assert.equal(plan.metadata.channel, 'web');
+  assert.equal(resolvePaymentProviderMode('LIVE'), 'live');
+  assert.throws(() => resolvePaymentProviderMode('production'), /mock, sandbox, or live/);
+  assert.equal(livePaymentCredentialsAreRequired({ provider: 'razorpay', mode: 'live' }), true);
+  assert.equal(livePaymentCredentialsAreRequired({ provider: 'razorpay', mode: 'sandbox' }), false);
+  assert.equal(livePaymentCredentialsAreRequired({ provider: 'razorpay', mode: 'live', merchantCredentialPresent: true }), false);
 });

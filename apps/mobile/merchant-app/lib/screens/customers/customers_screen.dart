@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../app/store_context.dart';
 
 import '../../app/routes.dart';
 import '../../services/customer_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import '../../widgets/shared/accessible_tap_region.dart';
 
 class CustomersScreen extends StatefulWidget {
   const CustomersScreen({super.key});
@@ -20,9 +22,11 @@ class _CustomersScreenState extends State<CustomersScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   List<CustomerContract> _customers = [];
+  List<CustomerSegmentContract> _segments = [];
   bool _isLoading = true;
   String? _storeId;
   String _query = '';
+  String? _selectedSegmentId;
   String? _error;
 
   late AppThemeColors colors;
@@ -52,18 +56,33 @@ class _CustomersScreenState extends State<CustomersScreen> {
         if (mounted) {
           setState(() {
             _customers = [];
+            _segments = [];
             _isLoading = false;
           });
         }
         return;
       }
 
-      final customers = await context.read<CustomerService>().fetchCustomers(
-        _storeId!,
-      );
+      final service = context.read<CustomerService>();
+      final results = await Future.wait<Object>([
+        _selectedSegmentId == null
+            ? service.fetchCustomers(_storeId!)
+            : service.fetchSegmentCustomers(
+                _selectedSegmentId!,
+                storeId: _storeId!,
+              ),
+        service.fetchSegments(_storeId!),
+      ]);
+      final customers = results[0] as List<CustomerContract>;
+      final segments = results[1] as List<CustomerSegmentContract>;
       if (mounted) {
         setState(() {
           _customers = customers;
+          _segments = segments;
+          if (_selectedSegmentId != null &&
+              !_segments.any((segment) => segment.id == _selectedSegmentId)) {
+            _selectedSegmentId = null;
+          }
           _isLoading = false;
         });
       }
@@ -75,6 +94,57 @@ class _CustomersScreenState extends State<CustomersScreen> {
         });
       }
     }
+  }
+
+  Future<void> _exportCustomers() async {
+    _storeId ??= (await context.read<StoreContext>().ensureSelectedStore())?.id;
+    final storeId = _storeId;
+    if (storeId == null) {
+      _showCustomerSnack('Select a store before exporting customers.');
+      return;
+    }
+
+    try {
+      final service = context.read<CustomerService>();
+      final result = await service.exportCustomers(storeId);
+      final job = result['job'] is Map ? result['job'] as Map : const {};
+      var latest = Map<String, dynamic>.from(job);
+      for (var attempt = 0; attempt < 5; attempt += 1) {
+        if (latest['status'] == 'completed' || latest['status'] == 'failed') {
+          break;
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 350));
+        final jobId = latest['id']?.toString();
+        if (jobId == null || jobId.isEmpty) break;
+        final detail = await service.fetchExportJob(jobId);
+        latest = detail['job'] is Map
+            ? Map<String, dynamic>.from(detail['job'] as Map)
+            : detail;
+      }
+
+      final status = latest['status']?.toString() ?? 'queued';
+      final downloadUrl = latest['download_url']?.toString();
+      if (status == 'completed' &&
+          downloadUrl != null &&
+          downloadUrl.isNotEmpty) {
+        await Share.share(
+          downloadUrl,
+          subject: latest['filename']?.toString() ?? 'customers.csv',
+        );
+        _showCustomerSnack('Customer CSV export ready to share.');
+      } else {
+        _showCustomerSnack('Customer CSV export $status. Try again shortly.');
+      }
+    } catch (_) {
+      _showCustomerSnack('Could not start customer export.');
+    }
+  }
+
+  void _showCustomerSnack(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   List<CustomerContract> get _filteredCustomers {
@@ -115,6 +185,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
             children: [
               _buildHeader(),
               _buildSearch(),
+              _buildSegments(),
               _buildStats(),
               Expanded(
                 child: _isLoading ? _buildLoading() : _buildCustomerList(),
@@ -154,6 +225,24 @@ class _CustomersScreenState extends State<CustomersScreen> {
             tooltip: 'Refresh customers',
             icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
             onPressed: _loadCustomers,
+          ),
+          IconButton(
+            tooltip: 'Export customers',
+            icon: Icon(Icons.download_rounded, color: colors.textSecondary),
+            onPressed: _exportCustomers,
+          ),
+          IconButton(
+            tooltip: 'Add customer',
+            icon: Icon(
+              Icons.person_add_alt_1_outlined,
+              color: colors.textSecondary,
+            ),
+            onPressed: _showCreateCustomerSheet,
+          ),
+          IconButton(
+            tooltip: 'Create segment',
+            icon: Icon(Icons.group_work_outlined, color: colors.textSecondary),
+            onPressed: _showCreateSegmentSheet,
           ),
         ],
       ),
@@ -197,6 +286,78 @@ class _CustomersScreenState extends State<CustomersScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSegments() {
+    return SizedBox(
+      height: 52,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+        scrollDirection: Axis.horizontal,
+        children: [
+          _segmentChip(
+            label: 'All customers',
+            selected: _selectedSegmentId == null,
+            count: _customers.length,
+            onTap: () {
+              if (_selectedSegmentId == null) return;
+              setState(() => _selectedSegmentId = null);
+              _loadCustomers();
+            },
+          ),
+          const SizedBox(width: 8),
+          ..._segments.map(
+            (segment) => Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: _segmentChip(
+                label: segment.name,
+                selected: _selectedSegmentId == segment.id,
+                count: segment.customerCount,
+                onTap: () {
+                  setState(() => _selectedSegmentId = segment.id);
+                  _loadCustomers();
+                },
+              ),
+            ),
+          ),
+          ActionChip(
+            avatar: const Icon(Icons.add_rounded, size: 18),
+            label: const Text('Segment'),
+            onPressed: _showCreateSegmentSheet,
+            backgroundColor: colors.surfaceVariant,
+            side: BorderSide(color: colors.divider),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _segmentChip({
+    required String label,
+    required bool selected,
+    required int count,
+    required VoidCallback onTap,
+  }) {
+    return ChoiceChip(
+      selected: selected,
+      label: Text('$label ($count)'),
+      onSelected: (_) => onTap(),
+      selectedColor: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+        alpha: 0.16,
+      ),
+      backgroundColor: colors.surfaceVariant,
+      side: BorderSide(
+        color: selected
+            ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+            : colors.divider,
+      ),
+      labelStyle: TextStyle(
+        color: selected
+            ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+            : colors.textSecondary,
+        fontWeight: FontWeight.w700,
       ),
     );
   }
@@ -270,6 +431,393 @@ class _CustomersScreenState extends State<CustomersScreen> {
     );
   }
 
+  Future<void> _showCreateSegmentSheet() async {
+    _storeId ??= (await context.read<StoreContext>().ensureSelectedStore())?.id;
+    final storeId = _storeId;
+    if (storeId == null || !mounted) return;
+
+    final nameController = TextEditingController();
+    final tagController = TextEditingController();
+    final ordersController = TextEditingController(text: '1');
+    final spendController = TextEditingController();
+    bool acceptsMarketing = false;
+    int? previewCount;
+    bool isSaving = false;
+
+    Map<String, dynamic> buildRules() {
+      final tags = tagController.text
+          .split(',')
+          .map((tag) => tag.trim())
+          .where((tag) => tag.isNotEmpty)
+          .toList(growable: false);
+      return {
+        if (acceptsMarketing) 'accepts_marketing': true,
+        if (tags.isNotEmpty) 'tags_any': tags,
+        if (int.tryParse(ordersController.text.trim()) != null)
+          'min_order_count': int.parse(ordersController.text.trim()),
+        if (double.tryParse(spendController.text.trim()) != null)
+          'min_total_spent': double.parse(spendController.text.trim()),
+      };
+    }
+
+    Future<void> refreshPreview(StateSetter setSheetState) async {
+      try {
+        final preview = await context.read<CustomerService>().previewSegment(
+          storeId: storeId,
+          rules: buildRules(),
+        );
+        setSheetState(() => previewCount = preview['customer_count'] as int?);
+      } catch (_) {
+        setSheetState(() => previewCount = null);
+      }
+    }
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: colors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return Padding(
+              padding: EdgeInsets.fromLTRB(
+                20,
+                16,
+                20,
+                MediaQuery.of(context).viewInsets.bottom + 20,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Create segment',
+                      style: TextStyle(
+                        color: colors.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: nameController,
+                      style: TextStyle(color: colors.textPrimary),
+                      decoration: const InputDecoration(
+                        labelText: 'Segment name',
+                        hintText: 'VIP customers',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: tagController,
+                      style: TextStyle(color: colors.textPrimary),
+                      decoration: const InputDecoration(
+                        labelText: 'Tags',
+                        hintText: 'vip, wholesale',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: ordersController,
+                            keyboardType: TextInputType.number,
+                            style: TextStyle(color: colors.textPrimary),
+                            decoration: const InputDecoration(
+                              labelText: 'Min orders',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextField(
+                            controller: spendController,
+                            keyboardType: TextInputType.number,
+                            style: TextStyle(color: colors.textPrimary),
+                            decoration: const InputDecoration(
+                              labelText: 'Min spend',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SwitchListTile.adaptive(
+                      value: acceptsMarketing,
+                      onChanged: (value) =>
+                          setSheetState(() => acceptsMarketing = value),
+                      title: const Text('Marketing opt-in only'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    Row(
+                      children: [
+                        TextButton.icon(
+                          onPressed: () => refreshPreview(setSheetState),
+                          icon: const Icon(Icons.visibility_outlined),
+                          label: const Text('Preview'),
+                        ),
+                        if (previewCount != null)
+                          Text(
+                            '$previewCount customers',
+                            style: TextStyle(
+                              color: colors.textSecondary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: isSaving
+                            ? null
+                            : () async {
+                                final name = nameController.text.trim();
+                                if (name.isEmpty) return;
+                                setSheetState(() => isSaving = true);
+                                try {
+                                  final segment = await context
+                                      .read<CustomerService>()
+                                      .createSegment(
+                                        storeId: storeId,
+                                        name: name,
+                                        rules: buildRules(),
+                                      );
+                                  if (!mounted) return;
+                                  Navigator.of(sheetContext).pop();
+                                  setState(
+                                    () => _selectedSegmentId = segment.id,
+                                  );
+                                  await _loadCustomers();
+                                } catch (_) {
+                                  setSheetState(() => isSaving = false);
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Could not save that segment.',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                        icon: isSaving
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.save_outlined),
+                        label: const Text('Save segment'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _showCreateCustomerSheet() async {
+    _storeId ??= (await context.read<StoreContext>().ensureSelectedStore())?.id;
+    final storeId = _storeId;
+    if (storeId == null || !mounted) return;
+
+    final nameController = TextEditingController();
+    final emailController = TextEditingController();
+    final phoneController = TextEditingController();
+    final tagsController = TextEditingController();
+    bool acceptsMarketing = false;
+    bool isSaving = false;
+    String? formError;
+
+    List<String> splitName(String fullName) {
+      final parts = fullName.trim().split(RegExp(r'\s+'));
+      return [
+        parts.isEmpty ? '' : parts.first,
+        parts.length <= 1 ? '' : parts.skip(1).join(' '),
+      ];
+    }
+
+    List<String> parseTags() => tagsController.text
+        .split(',')
+        .map((tag) => tag.trim())
+        .where((tag) => tag.isNotEmpty)
+        .toList(growable: false);
+
+    bool canSave() =>
+        nameController.text.trim().isNotEmpty &&
+        emailController.text.trim().contains('@');
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: colors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            void markChanged(String _) => setSheetState(() => formError = null);
+            return Padding(
+              padding: EdgeInsets.fromLTRB(
+                20,
+                16,
+                20,
+                MediaQuery.of(context).viewInsets.bottom + 20,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Add customer',
+                      style: TextStyle(
+                        color: colors.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      key: const Key('customer-name-field'),
+                      controller: nameController,
+                      onChanged: markChanged,
+                      textInputAction: TextInputAction.next,
+                      style: TextStyle(color: colors.textPrimary),
+                      decoration: const InputDecoration(
+                        labelText: 'Full name',
+                        hintText: 'Anu Buyer',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      key: const Key('customer-email-field'),
+                      controller: emailController,
+                      onChanged: markChanged,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      style: TextStyle(color: colors.textPrimary),
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        hintText: 'anu@example.com',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      key: const Key('customer-phone-field'),
+                      controller: phoneController,
+                      onChanged: markChanged,
+                      keyboardType: TextInputType.phone,
+                      textInputAction: TextInputAction.next,
+                      style: TextStyle(color: colors.textPrimary),
+                      decoration: const InputDecoration(
+                        labelText: 'Phone',
+                        hintText: '+91 98765 43210',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      key: const Key('customer-tags-field'),
+                      controller: tagsController,
+                      onChanged: markChanged,
+                      style: TextStyle(color: colors.textPrimary),
+                      decoration: const InputDecoration(
+                        labelText: 'Tags',
+                        hintText: 'vip, wholesale',
+                      ),
+                    ),
+                    SwitchListTile.adaptive(
+                      value: acceptsMarketing,
+                      onChanged: (value) =>
+                          setSheetState(() => acceptsMarketing = value),
+                      title: const Text('Accepts marketing'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    if (formError != null) ...[
+                      Text(formError!, style: TextStyle(color: colors.error)),
+                      const SizedBox(height: 10),
+                    ],
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: isSaving || !canSave()
+                            ? null
+                            : () async {
+                                setSheetState(() => isSaving = true);
+                                try {
+                                  final nameParts = splitName(
+                                    nameController.text,
+                                  );
+                                  final customer = await context
+                                      .read<CustomerService>()
+                                      .createCustomer(
+                                        storeId: storeId,
+                                        email: emailController.text,
+                                        firstName: nameParts[0],
+                                        lastName: nameParts[1],
+                                        phone: phoneController.text,
+                                        tags: parseTags(),
+                                        acceptsMarketing: acceptsMarketing,
+                                      );
+                                  if (!mounted) return;
+                                  Navigator.of(sheetContext).pop();
+                                  setState(() {
+                                    _selectedSegmentId = null;
+                                    _customers = [
+                                      customer,
+                                      ..._customers.where(
+                                        (row) =>
+                                            row.email?.trim().toLowerCase() !=
+                                            customer.email
+                                                ?.trim()
+                                                .toLowerCase(),
+                                      ),
+                                    ];
+                                  });
+                                  _showCustomerSnack('Customer added.');
+                                } catch (_) {
+                                  setSheetState(() {
+                                    isSaving = false;
+                                    formError = 'Could not save customer.';
+                                  });
+                                }
+                              },
+                        icon: isSaving
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.person_add_alt_1_outlined),
+                        label: const Text('Save customer'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildLoading() {
     return Center(
       child: CircularProgressIndicator(
@@ -296,7 +844,12 @@ class _CustomersScreenState extends State<CustomersScreen> {
       return _centerState(
         icon: Icons.people_outline_rounded,
         title: 'No customers yet',
-        subtitle: 'Customer profiles appear after the first order or signup.',
+        subtitle: 'Create a customer profile or wait for the first order.',
+        action: FilledButton.icon(
+          onPressed: _showCreateCustomerSheet,
+          icon: const Icon(Icons.person_add_alt_1_outlined),
+          label: const Text('Add customer'),
+        ),
       );
     }
 
@@ -322,93 +875,105 @@ class _CustomersScreenState extends State<CustomersScreen> {
 
   Widget _customerCard(CustomerContract customer) {
     final status = _status(customer);
-    return InkWell(
-      onTap: () {
-        final email = customer.email;
-        if (email == null || email.trim().isEmpty) return;
-        Navigator.pushNamed(
-          context,
-          AppRoutes.customerDetail,
-          arguments: {'email': email, 'customer': customer},
-        ).then((_) => _loadCustomers());
-      },
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: colors.card,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colors.cardBorder),
-        ),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 22,
-              backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary
-                  .withValues(alpha: 0.12),
-              child: Text(
-                _initials(customer),
-                style: TextStyle(
-                  color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                  fontWeight: FontWeight.w800,
+    final email = customer.email;
+    final canOpen = email != null && email.trim().isNotEmpty;
+    void openCustomer() {
+      if (!canOpen) return;
+      Navigator.pushNamed(
+        context,
+        AppRoutes.customerDetail,
+        arguments: {'email': email, 'customer': customer},
+      ).then((_) => _loadCustomers());
+    }
+
+    return AccessibleTapRegion(
+      label:
+          '${_customerName(customer)}, $status customer, ${customer.orderCount} orders, ${_money(customer.totalSpent)} spent',
+      hint: canOpen ? 'Open customer details' : 'Customer has no email address',
+      onTap: canOpen ? openCustomer : null,
+      child: InkWell(
+        onTap: canOpen ? openCustomer : null,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: colors.card,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: colors.cardBorder),
+          ),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary
+                    .withValues(alpha: 0.12),
+                child: Text(
+                  _initials(customer),
+                  style: TextStyle(
+                    color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          _customerName(customer),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: colors.textPrimary,
-                            fontWeight: FontWeight.w800,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            _customerName(customer),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: colors.textPrimary,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                         ),
+                        _statusChip(status),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      customer.email ?? customer.phone ?? 'No contact',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 12,
                       ),
-                      _statusChip(status),
-                    ],
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    customer.email ?? customer.phone ?? 'No contact',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: colors.textSecondary, fontSize: 12),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 6,
-                    children: [
-                      _miniMetric(
-                        Icons.shopping_bag_outlined,
-                        '${customer.orderCount} orders',
-                      ),
-                      _miniMetric(
-                        Icons.payments_outlined,
-                        _money(customer.totalSpent),
-                      ),
-                      if (_nonEmpty(customer['last_order_at']) != null)
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 6,
+                      children: [
                         _miniMetric(
-                          Icons.history_rounded,
-                          _shortDate(customer['last_order_at'].toString()),
+                          Icons.shopping_bag_outlined,
+                          '${customer.orderCount} orders',
                         ),
-                    ],
-                  ),
-                ],
+                        _miniMetric(
+                          Icons.payments_outlined,
+                          _money(customer.totalSpent),
+                        ),
+                        if (_nonEmpty(customer['last_order_at']) != null)
+                          _miniMetric(
+                            Icons.history_rounded,
+                            _shortDate(customer['last_order_at'].toString()),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Icon(Icons.chevron_right_rounded, color: colors.textTertiary),
-          ],
+              const SizedBox(width: 8),
+              Icon(Icons.chevron_right_rounded, color: colors.textTertiary),
+            ],
+          ),
         ),
       ),
     );

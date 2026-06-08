@@ -19,6 +19,7 @@ import {
     parseAppStoreJsonRecord as parseJsonRecord,
     type AppEngineJsonRecord,
 } from '@letbuyy/app-engine';
+import { createMobileAdminAppBridgeHostPolicy } from '@letbuyy/extension-host';
 import {
     apiBaseUrlFromRequest,
     appOAuthConfig,
@@ -375,12 +376,12 @@ export function registerAppStoreExtensionRoutes(router: Hono<{ Bindings: Env }>)
             return c.json({ error: { code: 'DB_ERROR', message: bridgeTokenError.message } }, 500);
         }
 
-        return c.json(success({
+        const session = {
             installation,
             embed,
             bridge: {
                 version: '2026-06-01',
-                token_type: 'Bearer',
+                token_type: 'Bearer' as const,
                 access_token: accessToken,
                 expires_at: expiresAt,
                 api_base_url: apiBaseUrlFromRequest(c.req.url),
@@ -390,6 +391,11 @@ export function registerAppStoreExtensionRoutes(router: Hono<{ Bindings: Env }>)
                 scopes,
                 capabilities: embed.capabilities,
             },
+        };
+
+        return c.json(success({
+            ...session,
+            mobile_host: createMobileAdminAppBridgeHostPolicy({ session }),
         }));
     });
 

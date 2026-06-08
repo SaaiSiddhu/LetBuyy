@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "next dev -p 9007",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -12,6 +13,7 @@
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",
     "@letbuyy/auth-core": "workspace:*",
+    "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/ui": "workspace:*",
     "lucide-react": "^0.562.0",
     "next": "16.1.6",

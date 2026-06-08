@@ -5,24 +5,23 @@ import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { CreateStoreSchema, PaymentConfigSchema, UpdateStoreSchema } from '../schemas/store.schema';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { readCustomDomainHealth } from '../lib/custom-domain-health';
 import { getRequestId } from '../lib/tenant-context';
-import { verifyRazorpayCredentials as verifyRazorpayCredentialsWithAdapter } from '@letbuyy/infrastructure/razorpay-adapter';
-import { isLegacySiteType, legacySiteTypeCreationEnabled } from '@letbuyy/tenant-core';
+import { healthPillar, type StoreHealthPillar } from '../lib/store-health';
+import {
+    defaultPaymentConfig,
+    encryptPaymentSecret,
+    isMissingSitesPaymentColumnError,
+    sanitizePaymentSettings,
+    verifyRazorpayCredentials,
+    type PaymentSettings,
+} from '../lib/store-payment-config';
+import { isComingSoonSiteType, isLegacySiteType, legacySiteTypeCreationEnabled } from '@letbuyy/tenant-core';
+import type { CustomDomainHealth } from '@letbuyy/shared-types';
+import { registerStoreLocalizationRoutes } from './stores-localization';
 
 const router = new Hono<{ Bindings: Env }>();
-
-type PaymentSettings = {
-    mode?: 'shared' | 'ownAccount';
-    gateways?: string[];
-    razorpay?: {
-        key_id?: string;
-        key_secret_ciphertext?: string;
-        test_mode?: boolean;
-        verified?: boolean;
-        connected_at?: string;
-        updated_at?: string;
-    };
-};
+registerStoreLocalizationRoutes(router);
 
 async function emitStoreCreatedEvent(
     db: ReturnType<typeof getSupabaseAdmin>,
@@ -51,81 +50,8 @@ async function emitStoreCreatedEvent(
     });
 }
 
-function base64EncodeBytes(bytes: Uint8Array): string {
-    let binary = '';
-    bytes.forEach((byte) => {
-        binary += String.fromCharCode(byte);
-    });
-    return btoa(binary);
-}
-
-function maskKeyId(keyId?: string): string | null {
-    if (!keyId) return null;
-    if (keyId.length <= 8) return keyId;
-    return `${keyId.slice(0, 8)}...${keyId.slice(-4)}`;
-}
-
-async function importPaymentEncryptionKey(secret: string): Promise<CryptoKey> {
-    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(secret));
-    return crypto.subtle.importKey('raw', digest, 'AES-GCM', false, ['encrypt']);
-}
-
-async function encryptPaymentSecret(secret: string, encryptionKey: string): Promise<string> {
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const key = await importPaymentEncryptionKey(encryptionKey);
-    const ciphertext = await crypto.subtle.encrypt(
-        { name: 'AES-GCM', iv },
-        key,
-        new TextEncoder().encode(secret)
-    );
-
-    return `${base64EncodeBytes(iv)}:${base64EncodeBytes(new Uint8Array(ciphertext))}`;
-}
-
-async function verifyRazorpayCredentials(keyId: string, keySecret: string): Promise<boolean> {
-    return verifyRazorpayCredentialsWithAdapter({ keyId, keySecret });
-}
-
-function sanitizePaymentSettings(settings: PaymentSettings | null | undefined) {
-    const razorpay = settings?.razorpay;
-
-    return {
-        mode: settings?.mode || 'shared',
-        gateways: settings?.gateways || ['razorpay'],
-        razorpay: razorpay
-            ? {
-                key_id: maskKeyId(razorpay.key_id),
-                test_mode: Boolean(razorpay.test_mode),
-                verified: Boolean(razorpay.verified),
-                connected_at: razorpay.connected_at || null,
-                updated_at: razorpay.updated_at || null,
-                secret_configured: Boolean(razorpay.key_secret_ciphertext),
-            }
-            : null,
-    };
-}
-
 function isMissingDeletedAtError(error: { message?: string } | null | undefined): boolean {
     return Boolean(error?.message?.includes('sites.deleted_at') && error.message.includes('does not exist'));
-}
-
-function isMissingSitesPaymentColumnError(error: { message?: string } | null | undefined): boolean {
-    const message = error?.message || '';
-    return (
-        message.includes('sites.payment_settings') ||
-        message.includes('sites.online_payment_enabled') ||
-        message.includes('sites.cod_enabled')
-    ) && message.includes('does not exist');
-}
-
-function defaultPaymentConfig(storeId: string) {
-    return {
-        store_id: storeId,
-        online_payment_enabled: true,
-        cod_enabled: true,
-        payment_settings: sanitizePaymentSettings(null),
-        schema_ready: false,
-    };
 }
 
 function legacySiteTypeCreationAllowed(env: Env): boolean {
@@ -139,6 +65,20 @@ function legacySiteTypeCreationResponse(siteType: string) {
             message: `${siteType} site creation is legacy-gated. Existing sites remain supported, but new portfolio/resume acquisition requires LETBUYY_ENABLE_LEGACY_SITE_TYPES=true.`,
         },
     };
+}
+
+function comingSoonSiteTypeCreationResponse(siteType: string) {
+    return {
+        error: {
+            code: 'SITE_TYPE_COMING_SOON',
+            message: `${siteType} site creation is coming soon. Online Store is available today.`,
+        },
+    };
+}
+
+function safeCount(result: { count?: number | null; error?: { message?: string } | null }): number | null {
+    if (result.error) return null;
+    return result.count ?? 0;
 }
 
 // GET /stores/:id/payment-config — Return masked tenant payment config
@@ -200,6 +140,206 @@ router.get('/:id/payment-config', async (c) => {
         online_payment_enabled: data.online_payment_enabled !== false,
         cod_enabled: data.cod_enabled !== false,
         payment_settings: sanitizePaymentSettings(data.payment_settings as PaymentSettings | null),
+    }));
+});
+
+// GET /stores/:id/health — Mobile Store Health score from real operational signals
+router.get('/:id/health', async (c) => {
+    const auth = c.get('auth');
+    const storeId = c.req.param('id');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const buildStoreQuery = (includeDeletedAtFilter: boolean) => {
+        const query = db
+            .from('sites')
+            .select('id,name,store_name,status,published_at,subdomain,custom_domain,custom_domain_status,custom_domain_verification_token,logo_url')
+            .eq('id', storeId)
+            .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`);
+
+        return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
+    };
+
+    let { data: store, error: storeError } = await buildStoreQuery(true).single();
+    if (isMissingDeletedAtError(storeError)) {
+        ({ data: store, error: storeError } = await buildStoreQuery(false).single());
+    }
+
+    if (storeError || !store) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+    }
+
+    const [
+        productResult,
+        lowStockResult,
+        orderResult,
+        openOrderResult,
+        pendingReviewResult,
+    ] = await Promise.all([
+        db.from('products').select('id', { count: 'exact', head: true }).eq('store_id', storeId).is('deleted_at', null),
+        db.from('products').select('id', { count: 'exact', head: true }).eq('store_id', storeId).lte('stock', 0).is('deleted_at', null),
+        db.from('orders').select('id', { count: 'exact', head: true }).eq('store_id', storeId).is('deleted_at', null),
+        db.from('orders').select('id', { count: 'exact', head: true }).eq('store_id', storeId).in('status', ['pending', 'pending_cod', 'confirmed', 'processing']).is('deleted_at', null),
+        db.from('product_reviews').select('id', { count: 'exact', head: true }).eq('store_id', storeId).eq('status', 'pending').is('deleted_at', null),
+    ]);
+
+    const productCount = safeCount(productResult);
+    const lowStockCount = safeCount(lowStockResult);
+    const orderCount = safeCount(orderResult);
+    const openOrderCount = safeCount(openOrderResult);
+    const pendingReviewCount = safeCount(pendingReviewResult);
+    const storeRecord = store as Record<string, unknown>;
+    const status = String(storeRecord.status || 'draft');
+    const isPublished = status === 'published' || Boolean(storeRecord.published_at);
+    const hasSubdomain = typeof storeRecord.subdomain === 'string' && storeRecord.subdomain.length > 0;
+    const customDomain = typeof storeRecord.custom_domain === 'string' ? storeRecord.custom_domain : '';
+    const customDomainStatus = typeof storeRecord.custom_domain_status === 'string'
+        ? storeRecord.custom_domain_status
+        : 'none';
+    const customDomainVerificationToken = typeof storeRecord.custom_domain_verification_token === 'string'
+        ? storeRecord.custom_domain_verification_token
+        : null;
+    const hasLogo = typeof storeRecord.logo_url === 'string' && storeRecord.logo_url.length > 0;
+    let domainHealth: CustomDomainHealth | null = null;
+    if (customDomain) {
+        try {
+            domainHealth = await readCustomDomainHealth(c.env, {
+                siteId: storeId,
+                domain: customDomain,
+                status: customDomainStatus,
+                verificationToken: customDomainVerificationToken,
+            });
+        } catch {
+            domainHealth = null;
+        }
+    }
+    const domainStatus = domainHealth?.status ?? customDomainStatus;
+    const domainDnsReady = domainHealth ? domainHealth.txt_verified && domainHealth.cname_verified : domainStatus === 'active';
+    const domainSslReady = domainHealth ? domainHealth.ssl_active : domainStatus === 'active';
+    const domainNeedsProvider = domainHealth?.provider_status === 'unavailable';
+    const domainScore = customDomain
+        ? domainDnsReady && domainSslReady
+            ? 100
+            : domainDnsReady
+                ? 72
+                : 58
+        : hasSubdomain ? 78 : 30;
+    const domainSummary = customDomain
+        ? domainDnsReady && domainSslReady
+            ? 'Custom domain DNS and SSL are healthy.'
+            : domainNeedsProvider
+                ? 'Custom domain DNS can be checked; SSL status is temporarily unavailable.'
+                : domainDnsReady
+                    ? 'DNS is connected; SSL or provider configuration still needs verification.'
+                    : 'Custom domain needs DNS verification.'
+        : hasSubdomain ? 'LetBuyy subdomain is ready; add a custom domain when needed.' : 'Set up a storefront domain.';
+
+    const pillars: StoreHealthPillar[] = [
+        healthPillar({
+            id: 'launch',
+            label: 'Launch readiness',
+            score: isPublished ? (hasLogo ? 100 : 88) : 45,
+            summary: isPublished
+                ? hasLogo ? 'Store is published with visible branding.' : 'Store is published; add a logo to improve trust.'
+                : 'Publish the store when setup is complete.',
+            action_label: isPublished && hasLogo ? null : 'Open store details',
+            route: '/store-details',
+            metrics: { status, has_logo: hasLogo },
+        }),
+        productCount === null ? healthPillar({
+            id: 'catalog',
+            label: 'Catalog and inventory',
+            score: 0,
+            status: 'unknown',
+            summary: 'Catalog signal is not available in this environment.',
+            action_label: 'Open products',
+            route: '/products',
+        }) : healthPillar({
+            id: 'catalog',
+            label: 'Catalog and inventory',
+            score: productCount === 0 ? 35 : lowStockCount && lowStockCount > 0 ? 72 : 100,
+            summary: productCount === 0
+                ? 'Add the first product before launch.'
+                : lowStockCount && lowStockCount > 0
+                    ? `${lowStockCount} product${lowStockCount === 1 ? '' : 's'} need inventory attention.`
+                    : 'Products are present and inventory has no zero-stock signal.',
+            action_label: productCount === 0 || (lowStockCount && lowStockCount > 0) ? 'Open products' : null,
+            route: '/products',
+            metrics: { product_count: productCount, low_stock_count: lowStockCount || 0 },
+        }),
+        orderCount === null ? healthPillar({
+            id: 'orders',
+            label: 'Orders',
+            score: 0,
+            status: 'unknown',
+            summary: 'Order signal is not available in this environment.',
+            action_label: 'Open orders',
+            route: '/orders',
+        }) : healthPillar({
+            id: 'orders',
+            label: 'Orders',
+            score: orderCount > 0 ? 100 : 70,
+            summary: openOrderCount && openOrderCount > 0
+                ? `${openOrderCount} open order${openOrderCount === 1 ? '' : 's'} need action.`
+                : orderCount > 0 ? 'Orders are flowing with no open action signal.' : 'Orders will appear here after checkout activity.',
+            action_label: openOrderCount && openOrderCount > 0 ? 'Open orders' : null,
+            route: '/orders',
+            metrics: { order_count: orderCount, open_order_count: openOrderCount || 0 },
+        }),
+        healthPillar({
+            id: 'domain',
+            label: 'Domain',
+            score: domainScore,
+            summary: domainSummary,
+            action_label: customDomain && domainDnsReady && domainSslReady ? null : 'Open domain settings',
+            route: '/domain-settings',
+            metrics: {
+                custom_domain: customDomain || null,
+                custom_domain_status: domainStatus,
+                dns_verified: domainDnsReady,
+                ssl_active: domainSslReady,
+                renewal_status: domainHealth?.renewal_status ?? null,
+                renewal_date: domainHealth?.renewal_date ?? null,
+            },
+        }),
+        pendingReviewCount === null ? healthPillar({
+            id: 'reviews',
+            label: 'Reviews',
+            score: 0,
+            status: 'unknown',
+            summary: 'Review moderation signal is not available in this environment.',
+            action_label: 'Open reviews',
+            route: '/reviews',
+        }) : healthPillar({
+            id: 'reviews',
+            label: 'Reviews',
+            score: pendingReviewCount > 0 ? 64 : 95,
+            summary: pendingReviewCount > 0
+                ? `${pendingReviewCount} review${pendingReviewCount === 1 ? '' : 's'} awaiting moderation.`
+                : 'No pending review moderation.',
+            action_label: pendingReviewCount > 0 ? 'Open reviews' : null,
+            route: '/reviews',
+            metrics: { pending_review_count: pendingReviewCount },
+        }),
+    ];
+
+    const scored = pillars.filter((pillar) => pillar.status !== 'unknown');
+    const score = scored.length === 0
+        ? 0
+        : Math.round(scored.reduce((total, pillar) => total + pillar.score, 0) / scored.length);
+
+    return c.json(success({
+        store_id: storeId,
+        score,
+        generated_at: new Date().toISOString(),
+        pillars,
+        metadata: {
+            source: 'api-gateway.stores.health',
+        },
     }));
 });
 
@@ -486,6 +626,10 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
+    if (isComingSoonSiteType(body.site_type)) {
+        return c.json(comingSoonSiteTypeCreationResponse(body.site_type), 403);
+    }
+
     if (isLegacySiteType(body.site_type) && !legacySiteTypeCreationAllowed(c.env)) {
         return c.json(legacySiteTypeCreationResponse(body.site_type), 403);
     }
@@ -551,6 +695,8 @@ router.patch('/:id', validate('json', UpdateStoreSchema), async (c) => {
         'refund_policy', 'privacy_policy', 'terms_of_service', 'shipping_policy',
         'seo_title', 'seo_description',
         'tax_inclusive',
+        'legal_name', 'gstin', 'gst_state_code', 'invoice_prefix',
+        'business_profile', 'invoice_address', 'invoice_footer', 'invoice_number_next',
     ];
     for (const key of allowed) {
         if (body[key] !== undefined) updates[key] = body[key];

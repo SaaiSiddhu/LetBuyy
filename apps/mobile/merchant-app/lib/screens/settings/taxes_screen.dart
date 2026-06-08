@@ -60,7 +60,7 @@ class _TaxesScreenState extends State<TaxesScreen> {
       });
     } catch (error) {
       if (!mounted) return;
-      setState(() => _error = 'Unable to load taxes: $error');
+      setState(() => _error = 'Tax settings could not load.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -86,7 +86,7 @@ class _TaxesScreenState extends State<TaxesScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() => _taxInclusive = store.taxInclusive);
-      _showMessage('$error', isError: true);
+      _showMessage('Tax settings could not be saved.', isError: true);
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -348,7 +348,9 @@ class _TaxesScreenState extends State<TaxesScreen> {
     try {
       await action();
     } catch (error) {
-      if (mounted) _showMessage('$error', isError: true);
+      if (mounted) {
+        _showMessage('Tax update could not be completed.', isError: true);
+      }
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }

@@ -320,6 +320,7 @@ export class OrderExecutionAdapter {
                 address: shippingAddress,
             },
             place_of_supply_state_code: recipientStateCode,
+            marketplace_tcs_bps: 0,
             lines,
         });
 

@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
 import { getSupabaseAdmin, success } from '../lib/supabase';
+import { authMiddleware } from '../middleware/auth';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -51,7 +52,7 @@ router.post('/', async (c) => {
 });
 
 // GET /contacts — Protected: list contacts for authenticated user's stores
-router.get('/', async (c) => {
+router.get('/', authMiddleware, async (c) => {
     const auth = c.get('auth');
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);

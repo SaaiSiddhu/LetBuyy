@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
+import { BrandLogo } from '@/components/BrandLogo'
 import { Badge, Banner, Button, Input, ProgressBar } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
@@ -184,16 +185,18 @@ function SetPasswordContent() {
     return (
         <main className="auth-container">
             <div className="auth-top-bar">
-                <button onClick={cycleLang} className="auth-lang-btn">
+                <Button unstyled onClick={cycleLang} className="auth-lang-btn">
                     {lang.toUpperCase()}
-                </button>
-                <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
+                </Button>
+                <Button unstyled onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
                     <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
-                </button>
+                </Button>
             </div>
 
             <div className="auth-card">
-                {/* No logo on set-password */}
+                <div className="auth-logo">
+                    <BrandLogo />
+                </div>
 
                 <div className="flex justify-center">
                     <Badge label={t.verified} variant="success" />
@@ -216,14 +219,14 @@ function SetPasswordContent() {
                         autoFocus
                         required
                         rightIcon={
-                            <button
+                            <Button unstyled
                                 type="button"
                                 className={visibilityButtonClass}
                                 onClick={() => setShowPassword(!showPassword)}
                                 aria-label={showPassword ? t.hidePassword : t.showPassword}
                             >
                                 <AuthIcon name={showPassword ? 'visibility_off' : 'visibility'} size={18} />
-                            </button>
+                            </Button>
                         }
                     />
 
@@ -246,14 +249,14 @@ function SetPasswordContent() {
                         error={confirmPassword && !passwordsMatch ? t.mismatch : undefined}
                         required
                         rightIcon={
-                            <button
+                            <Button unstyled
                                 type="button"
                                 className={visibilityButtonClass}
                                 onClick={() => setShowConfirm(!showConfirm)}
                                 aria-label={showConfirm ? t.hidePassword : t.showPassword}
                             >
                                 <AuthIcon name={showConfirm ? 'visibility_off' : 'visibility'} size={18} />
-                            </button>
+                            </Button>
                         }
                     />
 

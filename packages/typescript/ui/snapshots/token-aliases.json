@@ -5,32 +5,11 @@
   "themes": {
     "light": [
       {
-        "value": "#000000",
-        "variables": [
-          "--lb-color-primary-cta-active",
-          "--lb-component-button-primary-active",
-          "--lb-primitive-color-black",
-          "--lb-semantic-button-primary-active"
-        ]
-      },
-      {
-        "value": "#0F172A",
-        "variables": [
-          "--lb-color-primary-cta",
-          "--lb-component-button-primary-bg",
-          "--lb-component-button-primary-border",
-          "--lb-primitive-color-slate-900",
-          "--lb-semantic-button-primary-bg",
-          "--lb-semantic-button-primary-border"
-        ]
-      },
-      {
         "value": "#111827",
         "variables": [
           "--lb-color-background-dark",
           "--lb-color-surface-dark",
           "--lb-color-text",
-          "--lb-color-text-primary",
           "--lb-color-text-primary-light",
           "--lb-component-button-secondary-text",
           "--lb-component-card-text",
@@ -40,8 +19,7 @@
           "--lb-component-sidebar-active-text",
           "--lb-component-table-text",
           "--lb-primitive-color-gray-900",
-          "--lb-semantic-button-secondary-text",
-          "--lb-semantic-text-primary"
+          "--lb-semantic-button-secondary-text"
         ]
       },
       {
@@ -61,12 +39,10 @@
         ]
       },
       {
-        "value": "#1E293B",
+        "value": "#1F2937",
         "variables": [
-          "--lb-color-primary-cta-hover",
-          "--lb-component-button-primary-hover",
-          "--lb-primitive-color-slate-800",
-          "--lb-semantic-button-primary-hover"
+          "--lb-primitive-color-gray-800",
+          "--lb-primitive-color-slate-850"
         ]
       },
       {
@@ -97,37 +73,50 @@
         ]
       },
       {
+        "value": "#4C1D95",
+        "variables": [
+          "--lb-color-primary-cta-active",
+          "--lb-component-button-primary-active",
+          "--lb-primitive-color-purple-900",
+          "--lb-semantic-button-primary-active"
+        ]
+      },
+      {
         "value": "#5B21B6",
         "variables": [
           "--lb-color-focus-ring",
-          "--lb-semantic-focus-ring"
+          "--lb-color-primary-cta-hover",
+          "--lb-component-button-primary-hover",
+          "--lb-primitive-color-purple-800",
+          "--lb-semantic-button-primary-hover"
         ]
       },
       {
         "value": "#6B7280",
         "variables": [
           "--lb-color-text-muted",
-          "--lb-color-text-secondary",
           "--lb-color-text-secondary-light",
           "--lb-color-text-subdued",
           "--lb-component-empty-state-body",
           "--lb-component-input-placeholder",
           "--lb-component-sidebar-section-text",
           "--lb-component-table-text-secondary",
-          "--lb-primitive-color-gray-500",
-          "--lb-semantic-text-muted",
-          "--lb-semantic-text-secondary"
+          "--lb-primitive-color-gray-500"
         ]
       },
       {
         "value": "#6D28D9",
         "variables": [
           "--lb-color-primary-active",
+          "--lb-color-primary-cta",
           "--lb-color-primary-text",
           "--lb-component-badge-accent-text",
+          "--lb-component-button-primary-bg",
+          "--lb-component-button-primary-border",
           "--lb-primitive-color-purple-700",
           "--lb-semantic-accent-active",
-          "--lb-semantic-accent-text"
+          "--lb-semantic-button-primary-bg",
+          "--lb-semantic-button-primary-border"
         ]
       },
       {
@@ -148,8 +137,7 @@
           "--lb-component-badge-accent-border",
           "--lb-component-empty-state-illustration-ink",
           "--lb-component-input-focus-border",
-          "--lb-primitive-color-purple-500",
-          "--lb-semantic-accent-brand"
+          "--lb-primitive-color-purple-500"
         ]
       },
       {
@@ -161,11 +149,25 @@
         ]
       },
       {
+        "value": "#94A3B8",
+        "variables": [
+          "--lb-primitive-color-gray-400",
+          "--lb-primitive-color-slate-400"
+        ]
+      },
+      {
         "value": "#B91C1C",
         "variables": [
           "--lb-component-banner-danger-text",
           "--lb-primitive-color-red-700",
           "--lb-semantic-status-text-danger"
+        ]
+      },
+      {
+        "value": "#CBD5E1",
+        "variables": [
+          "--lb-color-text-secondary-dark",
+          "--lb-primitive-color-slate-300"
         ]
       },
       {
@@ -197,9 +199,7 @@
         "value": "#E5E7EB",
         "variables": [
           "--lb-color-border",
-          "--lb-color-border-default",
           "--lb-color-border-light",
-          "--lb-color-border-subtle",
           "--lb-component-button-secondary-border",
           "--lb-component-card-border",
           "--lb-component-empty-state-border",
@@ -216,7 +216,6 @@
         "value": "#EF4444",
         "variables": [
           "--lb-color-critical",
-          "--lb-color-danger",
           "--lb-component-banner-danger-border",
           "--lb-primitive-color-red-500",
           "--lb-semantic-status-danger"
@@ -324,6 +323,20 @@
         ]
       },
       {
+        "value": "1024px",
+        "variables": [
+          "--lb-bp-desktop",
+          "--lb-bp-lg"
+        ]
+      },
+      {
+        "value": "1280px",
+        "variables": [
+          "--lb-bp-wide",
+          "--lb-bp-xl"
+        ]
+      },
+      {
         "value": "12px",
         "variables": [
           "--lb-component-sidebar-item-radius",
@@ -352,6 +365,14 @@
           "--lb-font-size-body",
           "--lb-font-size-empty-state",
           "--lb-font-size-sidebar"
+        ]
+      },
+      {
+        "value": "150ms",
+        "variables": [
+          "--lb-motion-fast",
+          "--lb-motion-hover",
+          "--lb-motion-menu"
         ]
       },
       {
@@ -445,6 +466,13 @@
         ]
       },
       {
+        "value": "360px",
+        "variables": [
+          "--lb-bp-xs",
+          "--lb-size-command-palette-list-max-height"
+        ]
+      },
+      {
         "value": "36px",
         "variables": [
           "--lb-density-action-bar-height",
@@ -479,10 +507,24 @@
         ]
       },
       {
+        "value": "64px",
+        "variables": [
+          "--lb-density-header-height",
+          "--lb-space-10"
+        ]
+      },
+      {
         "value": "720px",
         "variables": [
           "--lb-size-command-palette-width",
           "--lb-size-content-measure"
+        ]
+      },
+      {
+        "value": "768px",
+        "variables": [
+          "--lb-bp-md",
+          "--lb-bp-tablet"
         ]
       },
       {
@@ -492,6 +534,13 @@
           "--lb-radius-md",
           "--lb-space-2",
           "--lb-space-sm"
+        ]
+      },
+      {
+        "value": "96px",
+        "variables": [
+          "--lb-size-metric-sparkline-width",
+          "--lb-space-11"
         ]
       },
       {
@@ -638,6 +687,7 @@
           "--lb-component-card-bg",
           "--lb-component-empty-state-bg",
           "--lb-component-table-bg",
+          "--lb-primitive-color-gray-800",
           "--lb-primitive-color-slate-850",
           "--lb-semantic-background-card",
           "--lb-semantic-background-raised",
@@ -660,8 +710,6 @@
         "variables": [
           "--lb-color-border",
           "--lb-color-border-dark",
-          "--lb-color-border-default",
-          "--lb-color-border-subtle",
           "--lb-component-button-secondary-border",
           "--lb-component-card-border",
           "--lb-component-empty-state-border",
@@ -702,41 +750,58 @@
         ]
       },
       {
+        "value": "#4C1D95",
+        "variables": [
+          "--lb-color-primary-cta-active",
+          "--lb-component-button-primary-active",
+          "--lb-primitive-color-purple-900",
+          "--lb-semantic-button-primary-active"
+        ]
+      },
+      {
+        "value": "#5B21B6",
+        "variables": [
+          "--lb-color-primary-cta-hover",
+          "--lb-component-button-primary-hover",
+          "--lb-primitive-color-purple-800",
+          "--lb-semantic-button-primary-hover"
+        ]
+      },
+      {
         "value": "#6B7280",
         "variables": [
           "--lb-color-text-muted",
           "--lb-color-text-secondary-light",
-          "--lb-primitive-color-gray-500",
-          "--lb-semantic-text-muted"
+          "--lb-primitive-color-gray-500"
         ]
       },
       {
         "value": "#6D28D9",
         "variables": [
           "--lb-color-primary-active",
-          "--lb-color-primary-cta-active",
-          "--lb-component-button-primary-active",
+          "--lb-color-primary-cta",
+          "--lb-component-button-primary-bg",
+          "--lb-component-button-primary-border",
           "--lb-primitive-color-purple-700",
           "--lb-semantic-accent-active",
-          "--lb-semantic-button-primary-active"
+          "--lb-semantic-button-primary-bg",
+          "--lb-semantic-button-primary-border"
         ]
       },
       {
         "value": "#7C3AED",
         "variables": [
-          "--lb-color-primary-cta-hover",
           "--lb-color-primary-hover",
           "--lb-color-secondary-action-hover",
-          "--lb-component-button-primary-hover",
           "--lb-primitive-color-purple-600",
-          "--lb-semantic-accent-hover",
-          "--lb-semantic-button-primary-hover"
+          "--lb-semantic-accent-hover"
         ]
       },
       {
         "value": "#7DD3FC",
         "variables": [
           "--lb-component-banner-info-text",
+          "--lb-primitive-color-blue-300",
           "--lb-semantic-status-text-info"
         ]
       },
@@ -746,18 +811,18 @@
           "--lb-color-brand-purple",
           "--lb-color-focus-ring",
           "--lb-color-primary",
-          "--lb-color-primary-cta",
           "--lb-color-secondary-action",
           "--lb-component-badge-accent-border",
-          "--lb-component-button-primary-bg",
-          "--lb-component-button-primary-border",
           "--lb-component-empty-state-illustration-ink",
           "--lb-component-input-focus-border",
-          "--lb-primitive-color-purple-500",
-          "--lb-semantic-accent-brand",
-          "--lb-semantic-button-primary-bg",
-          "--lb-semantic-button-primary-border",
-          "--lb-semantic-focus-ring"
+          "--lb-primitive-color-purple-500"
+        ]
+      },
+      {
+        "value": "#94A3B8",
+        "variables": [
+          "--lb-primitive-color-gray-400",
+          "--lb-primitive-color-slate-400"
         ]
       },
       {
@@ -765,21 +830,19 @@
         "variables": [
           "--lb-color-primary-text",
           "--lb-component-badge-accent-text",
-          "--lb-primitive-color-purple-300",
-          "--lb-semantic-accent-text"
+          "--lb-primitive-color-purple-300"
         ]
       },
       {
         "value": "#CBD5E1",
         "variables": [
-          "--lb-color-text-secondary",
           "--lb-color-text-secondary-dark",
           "--lb-color-text-subdued",
           "--lb-component-empty-state-body",
           "--lb-component-input-placeholder",
           "--lb-component-sidebar-section-text",
           "--lb-component-table-text-secondary",
-          "--lb-semantic-text-secondary"
+          "--lb-primitive-color-slate-300"
         ]
       },
       {
@@ -802,7 +865,6 @@
         "value": "#EF4444",
         "variables": [
           "--lb-color-critical",
-          "--lb-color-danger",
           "--lb-component-banner-danger-border",
           "--lb-primitive-color-red-500",
           "--lb-semantic-status-danger"
@@ -830,6 +892,7 @@
         "value": "#FCA5A5",
         "variables": [
           "--lb-component-banner-danger-text",
+          "--lb-primitive-color-red-300",
           "--lb-semantic-status-text-danger"
         ]
       },
@@ -839,7 +902,6 @@
           "--lb-color-primary-cta-text",
           "--lb-color-surface-light",
           "--lb-color-text",
-          "--lb-color-text-primary",
           "--lb-color-text-primary-dark",
           "--lb-component-button-primary-text",
           "--lb-component-button-secondary-text",
@@ -851,8 +913,7 @@
           "--lb-component-table-text",
           "--lb-primitive-color-white",
           "--lb-semantic-button-primary-text",
-          "--lb-semantic-button-secondary-text",
-          "--lb-semantic-text-primary"
+          "--lb-semantic-button-secondary-text"
         ]
       },
       {
@@ -868,6 +929,20 @@
           "--lb-component-card-shadow",
           "--lb-shadow-card",
           "--lb-shadow-card-dark"
+        ]
+      },
+      {
+        "value": "1024px",
+        "variables": [
+          "--lb-bp-desktop",
+          "--lb-bp-lg"
+        ]
+      },
+      {
+        "value": "1280px",
+        "variables": [
+          "--lb-bp-wide",
+          "--lb-bp-xl"
         ]
       },
       {
@@ -899,6 +974,14 @@
           "--lb-font-size-body",
           "--lb-font-size-empty-state",
           "--lb-font-size-sidebar"
+        ]
+      },
+      {
+        "value": "150ms",
+        "variables": [
+          "--lb-motion-fast",
+          "--lb-motion-hover",
+          "--lb-motion-menu"
         ]
       },
       {
@@ -992,6 +1075,13 @@
         ]
       },
       {
+        "value": "360px",
+        "variables": [
+          "--lb-bp-xs",
+          "--lb-size-command-palette-list-max-height"
+        ]
+      },
+      {
         "value": "36px",
         "variables": [
           "--lb-density-action-bar-height",
@@ -1026,10 +1116,24 @@
         ]
       },
       {
+        "value": "64px",
+        "variables": [
+          "--lb-density-header-height",
+          "--lb-space-10"
+        ]
+      },
+      {
         "value": "720px",
         "variables": [
           "--lb-size-command-palette-width",
           "--lb-size-content-measure"
+        ]
+      },
+      {
+        "value": "768px",
+        "variables": [
+          "--lb-bp-md",
+          "--lb-bp-tablet"
         ]
       },
       {
@@ -1039,6 +1143,13 @@
           "--lb-radius-md",
           "--lb-space-2",
           "--lb-space-sm"
+        ]
+      },
+      {
+        "value": "96px",
+        "variables": [
+          "--lb-size-metric-sparkline-width",
+          "--lb-space-11"
         ]
       },
       {

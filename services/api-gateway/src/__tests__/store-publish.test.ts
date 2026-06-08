@@ -27,29 +27,72 @@ test('store publish updates only owned sites to published with a timestamp', () 
     assert.match(routeSource, /Store not found or not owned by you/);
 });
 
+test('store health computes mobile readiness from real owned store signals', () => {
+    const routeSource = source('routes/stores.ts');
+
+    assert.match(routeSource, /router\.get\('\/:id\/health'/);
+    assert.match(routeSource, /\.or\(`custom_user_id\.eq\.\$\{customUser\.id\},user_id\.eq\.\$\{customUser\.id\}`\)/);
+    assert.match(routeSource, /\.from\('products'\)[\s\S]+\.select\('id',\s*\{ count: 'exact', head: true \}\)/);
+    assert.match(routeSource, /\.from\('orders'\)[\s\S]+\.in\('status',\s*\['pending', 'pending_cod', 'confirmed', 'processing'\]\)/);
+    assert.match(routeSource, /\.from\('product_reviews'\)[\s\S]+\.eq\('status',\s*'pending'\)/);
+    assert.match(routeSource, /api-gateway\.stores\.health/);
+    assert.doesNotMatch(routeSource, /Math\.random|fake|sample health/i);
+});
+
+test('store PATCH accepts business profile and invoice address fields', () => {
+    const routeSource = source('routes/stores.ts');
+    const tenantCoreSource = repositorySource('packages/tenant-core/src/index.ts');
+    const sharedTypesSource = repositorySource('packages/shared-types/src/index.ts');
+    const migrationSource = repositorySource('database/supabase/migrations/122_mobile_business_profile.sql');
+
+    assert.match(routeSource, /router\.patch\('\/:id'/);
+    for (const field of [
+        'legal_name',
+        'gstin',
+        'gst_state_code',
+        'invoice_prefix',
+        'business_profile',
+        'invoice_address',
+        'invoice_footer',
+        'invoice_number_next',
+    ]) {
+        assert.match(routeSource, new RegExp(`'${field}'`));
+    }
+    assert.match(routeSource, /\.update\(updates\)[\s\S]*\.eq\('id',\s*storeId\)/);
+    assert.match(routeSource, /\.or\(`custom_user_id\.eq\.\$\{customUser\.id\},user_id\.eq\.\$\{customUser\.id\}`\)/);
+    assert.match(tenantCoreSource, /business_profile:\s*BusinessProfileSchema\.optional\(\)\.nullable\(\)/);
+    assert.match(tenantCoreSource, /invoice_address:\s*AddressSchema\.partial\(\)\.passthrough\(\)\.optional\(\)\.nullable\(\)/);
+    assert.match(sharedTypesSource, /export const BusinessProfileSchema/);
+    assert.match(sharedTypesSource, /business_profile:\s*BusinessProfileSchema\.optional\(\)\.nullable\(\)/);
+    assert.match(migrationSource, /ALTER TABLE public\.sites[\s\S]*ADD COLUMN IF NOT EXISTS business_profile jsonb/);
+    assert.match(migrationSource, /ADD COLUMN IF NOT EXISTS invoice_address jsonb/);
+    assert.match(migrationSource, /sites_business_profile_object_check/);
+});
+
 test('public storefront resolver only exposes published stores by handle', () => {
     const routeSource = source('routes/storefront.ts');
+    const publicRouteSource = source('routes/storefront/public-routes.ts');
 
-    assert.match(routeSource, /function normalizeStoreHandle/);
+    assert.match(routeSource, /normalizeStorefrontHandle\(handle\)/);
     assert.match(routeSource, /\.or\(`subdomain\.eq\.\$\{normalized\},store_name\.eq\.\$\{normalized\}`\)/);
     assert.match(routeSource, /if \(options\.publishedOnly\) query = query\.eq\('status',\s*'published'\)/);
-    assert.match(routeSource, /router\.get\('\/:subdomain'/);
-    assert.match(routeSource, /loadSiteByHandle\(c,\s*c\.req\.param\('subdomain'\),\s*\{ publishedOnly:\s*true \}\)/);
+    assert.match(publicRouteSource, /router\.get\('\/:subdomain',\s*async \(c\) =>/);
+    assert.match(publicRouteSource, /loadSiteByHandle\(c,\s*c\.req\.param\('subdomain'\),\s*\{ publishedOnly:\s*true \}\)/);
 });
 
 test('merchant publish proxy requires session and encodes store ids', () => {
     const routeSource = repositorySource('apps/merchant-control-plane/src/app/api/themes/publish/route.ts');
 
-    assert.match(routeSource, /const encodedStoreId = encodeURIComponent\(storeId\)/);
-    assert.match(routeSource, /workerFetch\(`\/stores\/\$\{encodedStoreId\}\/publish`,\s*\{\s*method:\s*'POST',\s*requireSession:\s*true/);
-    assert.match(routeSource, /workerFetch\(`\/stores\/\$\{encodedStoreId\}`,\s*\{\s*method:\s*'PATCH',\s*requireSession:\s*true/);
+    assert.match(routeSource, /const api = createMerchantApiClient\(\)/);
+    assert.match(routeSource, /api\.stores\.publish\(storeId\)/);
+    assert.match(routeSource, /api\.stores\.update\(storeId,\s*\{\s*status:\s*'draft'\s*\}\)/);
 });
 
-test('storefront proxy rewrites deployed wildcard hosts into store routes', () => {
+test('storefront proxy rewrites resolved store hosts into store routes', () => {
     const proxySource = repositorySource('apps/storefront-runtime/src/proxy.ts');
 
-    assert.match(proxySource, /hostname\.endsWith\('\.letbuyy\.store'\)/);
-    assert.match(proxySource, /subdomain = parts\[0\]/);
-    assert.match(proxySource, /NextResponse\.rewrite\(new URL\(`\/store\/\$\{subdomain\}\$\{path\}`,\s*req\.url\)\)/);
-    assert.match(proxySource, /path\.startsWith\('\/store\/'\)/);
+    assert.match(proxySource, /normalizeRequestHost\(req\.headers\.get\('x-forwarded-host'\) \|\| req\.headers\.get\('host'\)\)/);
+    assert.match(proxySource, /resolveStorefrontHost\(host,\s*process\.env\.NEXT_PUBLIC_STORE_ROOT_DOMAIN\)/);
+    assert.match(proxySource, /destination\.pathname = `\/store\/\$\{subdomain\}\$\{destination\.pathname\}`/);
+    assert.match(proxySource, /NextResponse\.rewrite\(destination,\s*\{ request:\s*\{ headers:\s*requestHeaders \} \}\)/);
 });

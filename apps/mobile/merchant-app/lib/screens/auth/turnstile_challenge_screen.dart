@@ -18,16 +18,14 @@ class _TurnstileChallengeScreenState extends State<TurnstileChallengeScreen> {
   bool _isReady = false;
   String? _error;
 
-  bool get _hasConfiguredSiteKey =>
-      AppConfig.turnstileSiteKey.isNotEmpty &&
-      !AppConfig.turnstileSiteKey.startsWith('SKIP_NEEDS_HUMAN_');
+  bool get _hasConfiguredSiteKey => AppConfig.hasTurnstileSiteKey;
 
   @override
   void initState() {
     super.initState();
     if (!_hasConfiguredSiteKey) {
       _error =
-          'SKIP_NEEDS_HUMAN_MOBILE_TURNSTILE_SITE_KEY: configure TURNSTILE_SITE_KEY to render the mobile challenge.';
+          'Verification is temporarily unavailable. Please try again later.';
       return;
     }
 

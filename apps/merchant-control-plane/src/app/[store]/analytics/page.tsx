@@ -3,11 +3,10 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useParams } from 'next/navigation'
 import { formatInrCurrency } from '@letbuyy/ui/formatting'
-import {
+import { Button,
     Badge,
     Banner,
     BarChart3,
-    Button,
     Card,
     EmptyState,
     IndianRupee,

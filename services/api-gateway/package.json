@@ -3,10 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "dev": "wrangler dev --port 9010 --inspector-port 9110",
     "build": "tsc --noEmit",
     "deploy": "node ../../infrastructure/scripts/deploy/deploy-worker-runtime.mjs --config wrangler.toml",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test ../../tests/contracts/*.test.ts"
+    "test:unit": "cd ../.. && tsx --test services/api-gateway/src/__tests__/*.test.ts",
+    "test": "pnpm run test:unit && tsx --test ../../tests/contracts/*.test.ts"
   },
   "dependencies": {
     "@letbuyy/api-types": "workspace:*",
@@ -18,14 +20,17 @@
     "@letbuyy/cms-core": "workspace:*",
     "@letbuyy/commerce-core": "workspace:*",
     "@letbuyy/event-core": "workspace:*",
+    "@letbuyy/extension-host": "workspace:*",
     "@letbuyy/infrastructure": "workspace:*",
     "@letbuyy/notification-core": "workspace:*",
     "@letbuyy/orchestration": "workspace:*",
+    "@letbuyy/payments": "workspace:*",
     "@letbuyy/runtime-composition": "workspace:*",
     "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/tenant-core": "workspace:*",
     "@letbuyy/theme-engine": "workspace:*",
     "bcryptjs": "^3.0.3",
+    "hash-wasm": "^4.12.0",
     "hono": "^4.7.0",
     "zod": "^4.3.6"
   },

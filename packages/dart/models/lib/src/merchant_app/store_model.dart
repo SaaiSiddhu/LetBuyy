@@ -67,16 +67,27 @@ class StoreModel {
   final DateTime? domainConnectedAt;
   final String? domainConnectedBy;
   final String? customDomain; // e.g., "www.myfashion.com"
-  final String? customDomainStatus; // "pending" | "active" | "rejected"
+  final String? customDomainStatus; // "pending" | "review" | "active" | "error"
   final Map<String, dynamic>
   dnsConfig; // e.g., { "txtRecord": "...", "cname": "..." }
   final bool sslActive;
   final String? customDomainHeader; // For debugging/tracking
+  final String accessMode;
+  final String? accessMessage;
+  final bool published;
 
   // Payment Settings
   final bool codEnabled;
   final bool onlinePaymentEnabled;
   final bool taxInclusive;
+  final String? legalName;
+  final String? gstin;
+  final String? gstStateCode;
+  final String? invoicePrefix;
+  final Map<String, dynamic> businessProfile;
+  final Map<String, dynamic> invoiceAddress;
+  final String? invoiceFooter;
+  final int invoiceNumberNext;
 
   // Timestamps
   final DateTime createdAt;
@@ -122,9 +133,20 @@ class StoreModel {
     this.dnsConfig = const {},
     this.sslActive = false,
     this.customDomainHeader,
+    this.accessMode = 'public',
+    this.accessMessage,
+    this.published = false,
     this.codEnabled = true,
     this.onlinePaymentEnabled = true,
     this.taxInclusive = false,
+    this.legalName,
+    this.gstin,
+    this.gstStateCode,
+    this.invoicePrefix,
+    this.businessProfile = const {},
+    this.invoiceAddress = const {},
+    this.invoiceFooter,
+    this.invoiceNumberNext = 1,
     required this.createdAt,
     required this.updatedAt,
     this.publishedAt,
@@ -220,12 +242,28 @@ class StoreModel {
       sslActive: data['sslActive'] ?? data['ssl_active'] ?? false,
       customDomainHeader:
           data['customDomainHeader'] ?? data['custom_domain_header'],
+      accessMode: data['accessMode'] ?? data['access_mode'] ?? 'public',
+      accessMessage: data['accessMessage'] ?? data['access_message'],
+      published: data['published'] == true || data['status'] == 'published',
       codEnabled: data['codEnabled'] ?? data['cod_enabled'] ?? true,
       onlinePaymentEnabled:
           data['onlinePaymentEnabled'] ??
           data['online_payment_enabled'] ??
           true,
       taxInclusive: data['taxInclusive'] ?? data['tax_inclusive'] ?? false,
+      legalName: data['legalName'] ?? data['legal_name'],
+      gstin: data['gstin'],
+      gstStateCode: data['gstStateCode'] ?? data['gst_state_code'],
+      invoicePrefix: data['invoicePrefix'] ?? data['invoice_prefix'],
+      businessProfile: Map<String, dynamic>.from(
+        data['businessProfile'] ?? data['business_profile'] ?? {},
+      ),
+      invoiceAddress: Map<String, dynamic>.from(
+        data['invoiceAddress'] ?? data['invoice_address'] ?? {},
+      ),
+      invoiceFooter: data['invoiceFooter'] ?? data['invoice_footer'],
+      invoiceNumberNext:
+          data['invoiceNumberNext'] ?? data['invoice_number_next'] ?? 1,
       createdAt:
           _parseTimestamp(data['createdAt'] ?? data['created_at']) ??
           DateTime.now(),
@@ -283,9 +321,20 @@ class StoreModel {
       'dns_config': dnsConfig,
       'ssl_active': sslActive,
       'custom_domain_header': customDomainHeader,
+      'access_mode': accessMode,
+      'access_message': accessMessage,
+      'published': published,
       'cod_enabled': codEnabled,
       'online_payment_enabled': onlinePaymentEnabled,
       'tax_inclusive': taxInclusive,
+      'legal_name': legalName,
+      'gstin': gstin,
+      'gst_state_code': gstStateCode,
+      'invoice_prefix': invoicePrefix,
+      'business_profile': businessProfile,
+      'invoice_address': invoiceAddress,
+      'invoice_footer': invoiceFooter,
+      'invoice_number_next': invoiceNumberNext,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'published_at': publishedAt?.toIso8601String(),
@@ -332,9 +381,20 @@ class StoreModel {
     Map<String, dynamic>? dnsConfig,
     bool? sslActive,
     String? customDomainHeader,
+    String? accessMode,
+    String? accessMessage,
+    bool? published,
     bool? codEnabled,
     bool? onlinePaymentEnabled,
     bool? taxInclusive,
+    String? legalName,
+    String? gstin,
+    String? gstStateCode,
+    String? invoicePrefix,
+    Map<String, dynamic>? businessProfile,
+    Map<String, dynamic>? invoiceAddress,
+    String? invoiceFooter,
+    int? invoiceNumberNext,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? publishedAt,
@@ -378,9 +438,20 @@ class StoreModel {
       dnsConfig: dnsConfig ?? this.dnsConfig,
       sslActive: sslActive ?? this.sslActive,
       customDomainHeader: customDomainHeader ?? this.customDomainHeader,
+      accessMode: accessMode ?? this.accessMode,
+      accessMessage: accessMessage ?? this.accessMessage,
+      published: published ?? this.published,
       codEnabled: codEnabled ?? this.codEnabled,
       onlinePaymentEnabled: onlinePaymentEnabled ?? this.onlinePaymentEnabled,
       taxInclusive: taxInclusive ?? this.taxInclusive,
+      legalName: legalName ?? this.legalName,
+      gstin: gstin ?? this.gstin,
+      gstStateCode: gstStateCode ?? this.gstStateCode,
+      invoicePrefix: invoicePrefix ?? this.invoicePrefix,
+      businessProfile: businessProfile ?? this.businessProfile,
+      invoiceAddress: invoiceAddress ?? this.invoiceAddress,
+      invoiceFooter: invoiceFooter ?? this.invoiceFooter,
+      invoiceNumberNext: invoiceNumberNext ?? this.invoiceNumberNext,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       publishedAt: publishedAt ?? this.publishedAt,

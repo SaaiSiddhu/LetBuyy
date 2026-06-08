@@ -1,0 +1,11 @@
+{
+  "@@locale": "te",
+  "appTitle": "LetBuyy స్టోర్ బిల్డర్",
+  "selectStore": "స్టోర్ ఎంచుకోండి",
+  "switchStore": "స్టోర్ మార్చండి",
+  "storeSwitcherLabel": "ఎంచుకున్న స్టోర్ స్విచర్",
+  "noStoreSelected": "స్టోర్ ఎంచుకోలేదు",
+  "offlineMode": "ఆఫ్‌లైన్ మోడ్",
+  "cachedDataNotice": "నెట్‌వర్క్ అందుబాటులో లేదు, క్యాష్ డేటా చూపబడుతోంది.",
+  "deepLinkUnsupported": "ఈ లింక్ ఇంకా మొబైల్‌లో మద్దతు లేదు."
+}

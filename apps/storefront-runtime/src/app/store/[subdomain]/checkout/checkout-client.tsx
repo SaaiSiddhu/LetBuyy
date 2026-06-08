@@ -3,7 +3,7 @@
 import { useCart } from '@/context/cart-context';
 import { useEffect, useRef, useState } from 'react';
 import Image, { type ImageLoaderProps } from 'next/image';
-import {
+import { Button, Input,
     AlertCircle, ArrowLeft, CheckCircle, CreditCard, Loader2, Lock,
     ShieldCheck, MapPin, Truck, Clock, Package, User, Phone, Mail, Home
 } from '@letbuyy/ui';
@@ -185,7 +185,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const [errors, setErrors] = useState<Partial<FormData>>({});
 
     // Theme
-    const primaryColor = 'var(--primary, #6366f1)';
+    const primaryColor = 'var(--primary, rgb(99 102 241))';
 
     useEffect(() => {
         let isMounted = true;
@@ -489,7 +489,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                     subdomain,
                 },
                 theme: {
-                    color: '#6366f1',
+                    color: 'rgb(99 102 241)',
                 },
                 modal: {
                     ondismiss: function () {
@@ -592,7 +592,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-900 shadow-xl"
+                    className="w-full max-w-md rounded-2xl border border-slate-200 bg-[var(--lb-color-surface)] p-8 text-center text-slate-900 shadow-xl"
                 >
                     <motion.div
                         initial={{ scale: 0 }}
@@ -660,7 +660,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 onLoad={() => setRazorpayLoaded(true)}
             />
 
-            <div className="min-h-screen pt-20" style={{ backgroundColor: 'var(--background, #f9fafb)' }}>
+            <div className="min-h-screen pt-20" style={{ backgroundColor: 'var(--background, rgb(249 250 251))' }}>
                 <div className="container mx-auto px-4 max-w-5xl pb-8">
                     {/* Header */}
                     <div className="py-4">
@@ -736,15 +736,15 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             {savedAddresses.length > 0 && (
                                                 <div className="mt-3 flex flex-wrap gap-2">
                                                     {savedAddresses.map(address => (
-                                                        <button
+                                                        <Button unstyled
                                                             key={address.id}
                                                             type="button"
                                                             onClick={() => applySavedAddress(address)}
                                                             className="min-h-11 rounded-full border px-3 text-xs font-semibold capitalize"
-                                                            style={{ borderColor: 'var(--border, #E5E7EB)', color: primaryColor }}
+                                                            style={{ borderColor: 'var(--border, rgb(229 231 235))', color: primaryColor }}
                                                         >
                                                             {address.label || 'Address'}
-                                                        </button>
+                                                        </Button>
                                                     ))}
                                                 </div>
                                             )}
@@ -756,7 +756,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                     <label className="text-xs font-medium text-theme-secondary mb-1 block">Full Name *</label>
                                                     <div className="relative">
                                                         <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted" />
-                                                        <input
+                                                        <Input unstyled
                                                             type="text"
                                                             value={formData.name}
                                                             onChange={e => updateFormField('name', e.target.value)}
@@ -770,7 +770,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                     <label className="text-xs font-medium text-theme-secondary mb-1 block">Phone *</label>
                                                     <div className="relative">
                                                         <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted" />
-                                                        <input
+                                                        <Input unstyled
                                                             type="tel"
                                                             value={formData.phone}
                                                             onChange={e => updateFormField('phone', e.target.value)}
@@ -787,7 +787,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 <label className="text-xs font-medium text-theme-secondary mb-1 block">Email *</label>
                                                 <div className="relative">
                                                     <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted" />
-                                                    <input
+                                                    <Input unstyled
                                                         type="email"
                                                         value={formData.email}
                                                         onChange={e => updateFormField('email', e.target.value)}
@@ -816,7 +816,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                                                 <div>
                                                     <label className="text-xs font-medium text-theme-secondary mb-1 block">City *</label>
-                                                    <input
+                                                    <Input unstyled
                                                         type="text"
                                                         value={formData.city}
                                                         onChange={e => updateFormField('city', e.target.value)}
@@ -827,7 +827,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 </div>
                                                 <div>
                                                     <label className="text-xs font-medium text-theme-secondary mb-1 block">State *</label>
-                                                    <input
+                                                    <Input unstyled
                                                         type="text"
                                                         value={formData.state}
                                                         onChange={e => updateFormField('state', e.target.value)}
@@ -838,7 +838,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 </div>
                                                 <div>
                                                     <label className="text-xs font-medium text-theme-secondary mb-1 block">Pincode *</label>
-                                                    <input
+                                                    <Input unstyled
                                                         type="text"
                                                         maxLength={6}
                                                         value={formData.pincode}
@@ -870,7 +870,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 Delivery Speed
                                             </h3>
                                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                                <button
+                                                <Button unstyled
                                                     onClick={() => setDeliveryOption('standard')}
                                                     className={`min-h-11 p-3 rounded-lg border-2 text-left transition-all ${deliveryOption === 'standard' ? 'border-opacity-100' : 'border-card'}`}
                                                     style={{ borderColor: deliveryOption === 'standard' ? primaryColor : undefined }}
@@ -882,8 +882,8 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                     <p className="text-xs text-theme-secondary flex items-center gap-1">
                                                         <Clock size={12} /> 5-7 days
                                                     </p>
-                                                </button>
-                                                <button
+                                                </Button>
+                                                <Button unstyled
                                                     onClick={() => setDeliveryOption('express')}
                                                     className={`min-h-11 p-3 rounded-lg border-2 text-left transition-all ${deliveryOption === 'express' ? 'border-opacity-100' : 'border-card'}`}
                                                     style={{ borderColor: deliveryOption === 'express' ? primaryColor : undefined }}
@@ -895,7 +895,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                     <p className="text-xs text-theme-secondary flex items-center gap-1">
                                                         <Clock size={12} /> 2-3 days
                                                     </p>
-                                                </button>
+                                                </Button>
                                             </div>
                                         </div>
 
@@ -909,13 +909,13 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             className="mt-4 space-y-3"
                                         />
 
-                                        <button
+                                        <Button unstyled
                                             onClick={proceedToPayment}
                                             className="mt-6 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl py-3.5 font-semibold text-white"
                                             style={{ backgroundColor: primaryColor }}
                                         >
                                             Continue to Payment
-                                        </button>
+                                        </Button>
                                     </motion.div>
                                 )}
 
@@ -934,13 +934,13 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                     <MapPin size={16} style={{ color: primaryColor }} />
                                                     Delivering to
                                                 </h3>
-                                                <button
+                                                <Button unstyled
                                                     onClick={() => setStep(1)}
                                                     className="flex min-h-11 items-center text-xs font-medium"
                                                     style={{ color: primaryColor }}
                                                 >
                                                     Change
-                                                </button>
+                                                </Button>
                                             </div>
                                             <div className="text-sm text-theme-secondary">
                                                 <p className="font-semibold text-theme">{formData.name}</p>
@@ -990,7 +990,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all ${paymentMethod === 'online' ? 'border-indigo-500 bg-indigo-50' : 'border-card hover:bg-surface-hover'}`}
                                                         onClick={() => setPaymentMethod('online')}
                                                     >
-                                                        <input
+                                                        <Input unstyled
                                                             type="radio"
                                                             checked={paymentMethod === 'online'}
                                                             onChange={() => setPaymentMethod('online')}
@@ -1008,7 +1008,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all ${paymentMethod === 'stripe' ? 'border-purple-500 bg-purple-50' : 'border-card hover:bg-surface-hover'}`}
                                                         onClick={() => setPaymentMethod('stripe')}
                                                     >
-                                                        <input
+                                                        <Input unstyled
                                                             type="radio"
                                                             checked={paymentMethod === 'stripe'}
                                                             onChange={() => setPaymentMethod('stripe')}
@@ -1026,7 +1026,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all ${paymentMethod === 'paypal' ? 'border-blue-500 bg-blue-50' : 'border-card hover:bg-surface-hover'}`}
                                                         onClick={() => setPaymentMethod('paypal')}
                                                     >
-                                                        <input
+                                                        <Input unstyled
                                                             type="radio"
                                                             checked={paymentMethod === 'paypal'}
                                                             onChange={() => setPaymentMethod('paypal')}
@@ -1044,7 +1044,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all ${paymentMethod === 'cod' ? 'border-green-500 bg-green-50' : 'border-card hover:bg-surface-hover'}`}
                                                         onClick={() => setPaymentMethod('cod')}
                                                     >
-                                                        <input
+                                                        <Input unstyled
                                                             type="radio"
                                                             checked={paymentMethod === 'cod'}
                                                             onChange={() => setPaymentMethod('cod')}
@@ -1082,7 +1082,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                         />
 
                                         {/* Payment Button */}
-                                        <button
+                                        <Button unstyled
                                             onClick={
                                                 paymentMethod === 'paypal' ? handlePayPalCheckout :
                                                     paymentMethod === 'stripe' ? handleStripeCheckout :
@@ -1091,7 +1091,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             }
                                             disabled={!hasPaymentMethods || isProcessing || (paymentMethod === 'online' && !razorpayLoaded)}
                                             className="flex min-h-11 w-full items-center justify-center gap-3 rounded-xl py-4 text-lg font-bold text-white shadow-lg disabled:opacity-60"
-                                            style={{ backgroundColor: paymentMethod === 'cod' ? '#16a34a' : paymentMethod === 'paypal' ? '#0070ba' : paymentMethod === 'stripe' ? '#6366f1' : '#1a1a2e' }}
+                                            style={{ backgroundColor: paymentMethod === 'cod' ? 'rgb(22 163 74)' : paymentMethod === 'paypal' ? 'rgb(0 112 186)' : paymentMethod === 'stripe' ? 'rgb(99 102 241)' : 'rgb(26 26 46)' }}
                                         >
                                             {isProcessing ? (
                                                 <>
@@ -1114,7 +1114,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                     <CreditCard size={22} /> Pay ₹{totalAmount.toLocaleString('en-IN')}
                                                 </>
                                             )}
-                                        </button>
+                                        </Button>
 
                                         <div className="flex items-center justify-center gap-2 text-xs text-theme-muted">
                                             <Lock size={12} />
@@ -1173,18 +1173,18 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         : `₹${discountAmount.toLocaleString('en-IN')} off applied`}
                                                 </p>
                                             </div>
-                                            <button
+                                            <Button unstyled
                                                 type="button"
                                                 onClick={removeCoupon}
                                                 className="text-xs font-semibold text-green-700 hover:text-green-900"
                                             >
                                                 Remove
-                                            </button>
+                                            </Button>
                                         </div>
                                     ) : (
                                         <div className="space-y-2">
                                             <div className="flex gap-2">
-                                                <input
+                                                <Input unstyled
                                                     type="text"
                                                     value={couponInput}
                                                     onChange={e => {
@@ -1194,7 +1194,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                     placeholder="Coupon code"
                                                     className="min-h-11 min-w-0 flex-1 px-3 py-2 input-theme rounded-lg text-sm outline-none"
                                                 />
-                                                <button
+                                                <Button unstyled
                                                     type="button"
                                                     onClick={applyCoupon}
                                                     disabled={isCheckingCoupon}
@@ -1202,7 +1202,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                     style={{ backgroundColor: primaryColor }}
                                                 >
                                                     {isCheckingCoupon ? 'Checking' : 'Apply'}
-                                                </button>
+                                                </Button>
                                             </div>
                                             {couponError && <p className="text-xs text-red-500">{couponError}</p>}
                                         </div>

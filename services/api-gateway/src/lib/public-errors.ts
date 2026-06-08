@@ -13,6 +13,7 @@ export type ErrorResponsePayload = {
 };
 
 export const FIXED_PUBLIC_ERROR_MESSAGES: Record<string, string> = {
+    ANALYTICS_QUEUE_ERROR: 'Analytics event queue request failed',
     APP_BILLING_PROVIDER_ERROR: 'App billing provider request failed',
     AUTH_ERROR: 'Authentication failed',
     DB_ERROR: 'Database operation failed',

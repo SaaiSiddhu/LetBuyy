@@ -4,7 +4,8 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
-import { Badge, Banner, Button, ProgressBar } from '@letbuyy/ui'
+import { BrandLogo } from '@/components/BrandLogo'
+import { Banner, Button, ProgressBar } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -141,25 +142,25 @@ function CheckEmailContent() {
     return (
         <main className="auth-container">
             <div className="auth-top-bar">
-                <button onClick={cycleLang} className="auth-lang-btn">
+                <Button unstyled onClick={cycleLang} className="auth-lang-btn">
                     {lang.toUpperCase()}
-                </button>
-                <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
+                </Button>
+                <Button unstyled onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
                     <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
-                </button>
+                </Button>
             </div>
 
             <div className="auth-card">
-                {/* No logo on check-email */}
+                <div className="auth-logo">
+                    <BrandLogo />
+                </div>
 
                 <div className="auth-icon"><AuthIcon name="mail" size={36} /></div>
 
                 <h1 className="auth-title">{t.title}</h1>
 
                 <div className="grid gap-[var(--lb-space-3)]">
-                    <div className="flex justify-center">
-                        <Badge label={flowLabel} variant="info" />
-                    </div>
+                    <p className="auth-flow-label">{flowLabel}</p>
 
                     <Banner title={message} variant="info" className="text-left">
                         <strong>{email}</strong>

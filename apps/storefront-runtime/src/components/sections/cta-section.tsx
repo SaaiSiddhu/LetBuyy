@@ -25,7 +25,7 @@ export default function CtaSection({ section, theme }: Props) {
     const bgStyles: Record<string, React.CSSProperties> = {
         primary: { backgroundColor: theme.primaryColor },
         gradient: { background: `linear-gradient(135deg, ${theme.primaryColor}, ${theme.secondaryColor})` },
-        dark: { backgroundColor: '#0f172a' },
+        dark: { backgroundColor: 'rgb(15 23 42)' },
     };
 
     return (
@@ -46,7 +46,7 @@ export default function CtaSection({ section, theme }: Props) {
                         <motion.button
                             whileHover={{ scale: 1.03 }}
                             whileTap={{ scale: 0.97 }}
-                            className="inline-flex items-center gap-2 px-8 py-3.5 bg-white rounded-xl font-semibold text-sm shadow-lg hover:shadow-xl transition-shadow"
+                            className="inline-flex items-center gap-2 px-8 py-3.5 bg-[var(--lb-color-surface)] rounded-xl font-semibold text-sm shadow-lg hover:shadow-xl transition-shadow"
                             style={{ color: theme.primaryColor }}
                         >
                             {ctaText} <ArrowRight size={16} />

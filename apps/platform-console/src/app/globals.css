@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../../../../config/tailwind/letbuyy-tokens.css";
 @source "./**/*.{ts,tsx}";
 @source "../../packages/typescript/ui/src/**/*.{ts,tsx}";
 @source "../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
@@ -6,14 +7,14 @@
 :root {
   --font-system: var(--font-letbuyy-sans), Arial, Helvetica, sans-serif;
   --font-mono-premium: var(--font-letbuyy-mono), "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  --background: #ffffff;
-  --foreground: #171717;
-  --lb-color-brand-purple: #8B5CF6;
-  --lb-color-primary: #8B5CF6;
-  --lb-color-primary-hover: #7C3AED;
-  --lb-color-primary-active: #6D28D9;
+  --background: rgb(255 255 255);
+  --foreground: rgb(23 23 23);
+  --lb-color-brand-purple: rgb(139 92 246);
+  --lb-color-primary: rgb(139 92 246);
+  --lb-color-primary-hover: rgb(124 58 237);
+  --lb-color-primary-active: rgb(109 40 217);
   --lb-color-primary-subtle: rgba(139, 92, 246, 0.12);
-  --lb-color-focus-ring: #8B5CF6;
+  --lb-color-focus-ring: rgb(139 92 246);
 }
 
 @theme inline {
@@ -25,8 +26,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: rgb(10 10 10);
+    --foreground: rgb(237 237 237);
   }
 }
 

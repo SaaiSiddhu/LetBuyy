@@ -3,30 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useParams } from 'next/navigation'
-import {
-    Badge,
-    Banner,
-    Button,
-    Card,
-    ConfirmDialog,
-    EmptyState,
-    FileText,
-    IndexTable,
-    Input,
-    ListChecks,
-    Page,
-    PageHeader,
-    Plus,
-    RefreshCw,
-    SaveBar,
-    Section,
-    Select,
-    Skeleton,
-    Tabs,
-    Textarea,
-    Trash2,
-    useToast,
-} from '@letbuyy/ui'
+import { Button, Input, Table, Badge, Banner, Card, ConfirmDialog, EmptyState, FileText, ListChecks, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Select, Skeleton, Tabs, Textarea, Trash2, useToast } from '@letbuyy/ui'
 import { formatUsShortDate } from '@letbuyy/ui/formatting'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 
@@ -177,7 +154,7 @@ function CheckboxControl({
 }) {
     return (
         <label className="flex items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-            <input
+            <Input unstyled
                 type="checkbox"
                 checked={checked}
                 onChange={(event) => onChange(event.target.checked)}
@@ -621,7 +598,7 @@ export default function PagesPage() {
                 </Section>
             </Card>
 
-            <IndexTable
+            <Table
                 rows={visiblePages}
                 columns={pageColumns}
                 emptyState={(
@@ -681,7 +658,7 @@ export default function PagesPage() {
                 </Section>
             </Card>
 
-            <IndexTable
+            <Table
                 rows={policies}
                 columns={policyColumns}
                 emptyState={(

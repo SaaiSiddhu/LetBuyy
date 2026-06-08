@@ -5,6 +5,7 @@ import {
   Code2,
   Section,
   ShieldCheck,
+  Table,
   Zap,
   type StatusVariant
 } from "@letbuyy/ui";
@@ -95,7 +96,7 @@ export function EndpointTable({
     <Card className="docs-card">
       <Section title={title} description={description}>
         <div className="endpoint-table-wrap">
-          <table className="endpoint-table">
+          <Table tableClassName="endpoint-table">
             <thead>
               <tr>
                 <th>Method</th>
@@ -122,7 +123,7 @@ export function EndpointTable({
                 </tr>
               ))}
             </tbody>
-          </table>
+          </Table>
         </div>
       </Section>
     </Card>
@@ -132,7 +133,7 @@ export function EndpointTable({
 export function RouteGroupMatrix({ groups }: { groups: GatewayRouteGroup[] }) {
   return (
     <div className="endpoint-table-wrap">
-      <table className="route-matrix">
+      <Table tableClassName="route-matrix">
         <thead>
           <tr>
             <th>Surface</th>
@@ -155,7 +156,7 @@ export function RouteGroupMatrix({ groups }: { groups: GatewayRouteGroup[] }) {
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }
@@ -163,7 +164,7 @@ export function RouteGroupMatrix({ groups }: { groups: GatewayRouteGroup[] }) {
 export function SchemaFacadeMatrix({ facades }: { facades: SchemaFacade[] }) {
   return (
     <div className="endpoint-table-wrap">
-      <table className="schema-matrix">
+      <Table tableClassName="schema-matrix">
         <thead>
           <tr>
             <th>Facade</th>
@@ -186,7 +187,7 @@ export function SchemaFacadeMatrix({ facades }: { facades: SchemaFacade[] }) {
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }
@@ -194,7 +195,7 @@ export function SchemaFacadeMatrix({ facades }: { facades: SchemaFacade[] }) {
 export function ResponseContractMatrix({ contracts }: { contracts: GatewayResponseContract[] }) {
   return (
     <div className="endpoint-table-wrap">
-      <table className="response-contract-matrix">
+      <Table tableClassName="response-contract-matrix">
         <thead>
           <tr>
             <th>Response case</th>
@@ -213,7 +214,7 @@ export function ResponseContractMatrix({ contracts }: { contracts: GatewayRespon
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }
@@ -221,7 +222,7 @@ export function ResponseContractMatrix({ contracts }: { contracts: GatewayRespon
 export function PaymentSafetyMatrix({ contracts }: { contracts: PaymentSafetyDoc[] }) {
   return (
     <div className="endpoint-table-wrap">
-      <table className="payment-safety-matrix">
+      <Table tableClassName="payment-safety-matrix">
         <thead>
           <tr>
             <th>Surface</th>
@@ -240,7 +241,7 @@ export function PaymentSafetyMatrix({ contracts }: { contracts: PaymentSafetyDoc
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }
@@ -248,7 +249,7 @@ export function PaymentSafetyMatrix({ contracts }: { contracts: PaymentSafetyDoc
 export function AppQualityGateMatrix({ checks }: { checks: AppQualityGateDoc[] }) {
   return (
     <div className="endpoint-table-wrap">
-      <table className="app-quality-gate-matrix">
+      <Table tableClassName="app-quality-gate-matrix">
         <thead>
           <tr>
             <th>Check</th>
@@ -267,7 +268,7 @@ export function AppQualityGateMatrix({ checks }: { checks: AppQualityGateDoc[] }
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }
@@ -275,7 +276,7 @@ export function AppQualityGateMatrix({ checks }: { checks: AppQualityGateDoc[] }
 export function WebhookTopicMatrix({ topics }: { topics: WebhookTopicDoc[] }) {
   return (
     <div className="endpoint-table-wrap">
-      <table className="webhook-topic-matrix">
+      <Table tableClassName="webhook-topic-matrix">
         <thead>
           <tr>
             <th>Topic</th>
@@ -296,7 +297,7 @@ export function WebhookTopicMatrix({ topics }: { topics: WebhookTopicDoc[] }) {
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }
@@ -304,7 +305,7 @@ export function WebhookTopicMatrix({ topics }: { topics: WebhookTopicDoc[] }) {
 export function WebhookDeliveryRuleMatrix({ rules }: { rules: WebhookDeliveryRuleDoc[] }) {
   return (
     <div className="endpoint-table-wrap">
-      <table className="webhook-delivery-rule-matrix">
+      <Table tableClassName="webhook-delivery-rule-matrix">
         <thead>
           <tr>
             <th>Rule</th>
@@ -323,7 +324,7 @@ export function WebhookDeliveryRuleMatrix({ rules }: { rules: WebhookDeliveryRul
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }
@@ -331,7 +332,7 @@ export function WebhookDeliveryRuleMatrix({ rules }: { rules: WebhookDeliveryRul
 export function OAuthScopeMatrix({ scopes }: { scopes: OAuthScopeDoc[] }) {
   return (
     <div className="endpoint-table-wrap">
-      <table className="scope-matrix">
+      <Table tableClassName="scope-matrix">
         <thead>
           <tr>
             <th>Scope</th>
@@ -352,7 +353,7 @@ export function OAuthScopeMatrix({ scopes }: { scopes: OAuthScopeDoc[] }) {
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }
@@ -360,7 +361,7 @@ export function OAuthScopeMatrix({ scopes }: { scopes: OAuthScopeDoc[] }) {
 export function OAuthTokenLifecycleMatrix({ tokens }: { tokens: OAuthTokenLifecycleDoc[] }) {
   return (
     <div className="endpoint-table-wrap">
-      <table className="oauth-token-lifecycle-matrix">
+      <Table tableClassName="oauth-token-lifecycle-matrix">
         <thead>
           <tr>
             <th>Surface</th>
@@ -379,7 +380,7 @@ export function OAuthTokenLifecycleMatrix({ tokens }: { tokens: OAuthTokenLifecy
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }
@@ -387,7 +388,7 @@ export function OAuthTokenLifecycleMatrix({ tokens }: { tokens: OAuthTokenLifecy
 export function AppBridgeFetchRuleMatrix({ rules }: { rules: AppBridgeFetchRuleDoc[] }) {
   return (
     <div className="endpoint-table-wrap">
-      <table className="app-bridge-fetch-matrix">
+      <Table tableClassName="app-bridge-fetch-matrix">
         <thead>
           <tr>
             <th>Rule</th>
@@ -406,7 +407,7 @@ export function AppBridgeFetchRuleMatrix({ rules }: { rules: AppBridgeFetchRuleD
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }
@@ -414,7 +415,7 @@ export function AppBridgeFetchRuleMatrix({ rules }: { rules: AppBridgeFetchRuleD
 export function DashboardSurfaceMatrix({ surfaces }: { surfaces: DashboardSurfaceDoc[] }) {
   return (
     <div className="endpoint-table-wrap">
-      <table className="dashboard-surface-matrix">
+      <Table tableClassName="dashboard-surface-matrix">
         <thead>
           <tr>
             <th>Surface</th>
@@ -437,7 +438,7 @@ export function DashboardSurfaceMatrix({ surfaces }: { surfaces: DashboardSurfac
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }
@@ -445,7 +446,7 @@ export function DashboardSurfaceMatrix({ surfaces }: { surfaces: DashboardSurfac
 export function SdkContractMatrix({ rows }: { rows: SdkContractRow[] }) {
   return (
     <div className="endpoint-table-wrap">
-      <table className="sdk-contract-matrix">
+      <Table tableClassName="sdk-contract-matrix">
         <thead>
           <tr>
             <th>Contract</th>
@@ -464,7 +465,7 @@ export function SdkContractMatrix({ rows }: { rows: SdkContractRow[] }) {
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }
@@ -472,7 +473,7 @@ export function SdkContractMatrix({ rows }: { rows: SdkContractRow[] }) {
 export function ToolingGapMatrix({ gaps }: { gaps: ToolingGapDoc[] }) {
   return (
     <div className="endpoint-table-wrap">
-      <table className="tooling-gap-matrix">
+      <Table tableClassName="tooling-gap-matrix">
         <thead>
           <tr>
             <th>Capability</th>
@@ -491,7 +492,7 @@ export function ToolingGapMatrix({ gaps }: { gaps: ToolingGapDoc[] }) {
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }

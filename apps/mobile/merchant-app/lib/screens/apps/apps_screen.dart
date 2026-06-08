@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../services/app_marketplace_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import 'app_bridge_runtime_screen.dart';
 
 class AppsScreen extends StatefulWidget {
   const AppsScreen({super.key});
@@ -350,6 +351,10 @@ class _AppsScreenState extends State<AppsScreen> {
               ),
             ],
           ),
+          if (installed && installation != null) ...[
+            const SizedBox(height: 12),
+            _permissionsSection(installation),
+          ],
           const SizedBox(height: 12),
           Row(
             children: [
@@ -389,6 +394,89 @@ class _AppsScreenState extends State<AppsScreen> {
                 ),
               ],
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _permissionsSection(InstalledAppContract installation) {
+    final permissions = installation.permissions;
+    if (permissions.isEmpty) {
+      return Text(
+        'No store data permissions granted.',
+        style: TextStyle(color: colors.textSecondary, fontSize: 12),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Divider(color: colors.cardBorder),
+        Row(
+          children: [
+            Icon(
+              Icons.admin_panel_settings_outlined,
+              color: colors.textSecondary,
+              size: 16,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              'Permissions',
+              style: TextStyle(
+                color: colors.textPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ...permissions.map(_permissionRow),
+      ],
+    );
+  }
+
+  Widget _permissionRow(AppPermissionDisplay permission) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.check_circle_outline_rounded,
+            color: colors.textSecondary,
+            size: 16,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  permission.title,
+                  style: TextStyle(
+                    color: colors.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  permission.description,
+                  style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  permission.scope,
+                  style: TextStyle(
+                    color: colors.textTertiary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -506,29 +594,31 @@ class _AppsScreenState extends State<AppsScreen> {
     setState(() => _busyAppId = installation.appId);
     try {
       final service = context.read<AppMarketplaceService>();
-      final handoff = await service.createDesktopBridgeHandoff(
-        installation: installation,
+      final session = await service.openEmbeddedAppBridgeRuntime(installation);
+      if (!mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ChangeNotifierProvider.value(
+            value: service,
+            child: AppBridgeRuntimeScreen(session: session),
+          ),
+        ),
       );
-      final url = handoff.url.isNotEmpty
-          ? handoff.url
-          : installation.app.appUrl;
-      final uri = Uri.tryParse(url);
-      if (uri == null) {
-        _showSnack('App does not expose an admin URL.');
-        return;
-      }
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (error) {
-      final appUrl = installation.app.appUrl;
-      final uri = Uri.tryParse(appUrl);
-      if (uri != null) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-        return;
-      }
-      _showSnack('Could not open ${installation.app.name}: $error');
+      final opened = await _openInstalledExternally(installation);
+      if (!opened) _showSnack('Could not open ${installation.app.name}.');
     } finally {
       if (mounted) setState(() => _busyAppId = null);
     }
+  }
+
+  Future<bool> _openInstalledExternally(
+    InstalledAppContract installation,
+  ) async {
+    final appUrl = installation.app.appUrl;
+    final uri = Uri.tryParse(appUrl);
+    if (uri == null || !uri.hasScheme) return false;
+    return launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   Widget _loading() {

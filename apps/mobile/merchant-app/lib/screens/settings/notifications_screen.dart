@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
 
@@ -15,6 +16,8 @@ class NotificationsScreen extends StatefulWidget {
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   NotificationSettings? _settings;
+  List<MerchantNotification> _notifications = [];
+  int _unreadCount = 0;
   bool _isLoading = true;
   bool _isSaving = false;
   String? _storeId;
@@ -25,10 +28,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadSettings();
+    _loadNotifications();
   }
 
-  Future<void> _loadSettings() async {
+  Future<void> _loadNotifications() async {
     setState(() {
       _isLoading = true;
       _error = null;
@@ -41,18 +44,28 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         if (mounted) {
           setState(() {
             _settings = null;
+            _notifications = [];
+            _unreadCount = 0;
             _isLoading = false;
           });
         }
         return;
       }
 
-      final settings = await context
-          .read<NotificationSettingsService>()
-          .fetchSettings(_storeId!);
+      final service = context.read<NotificationSettingsService>();
+      final results = await Future.wait<Object>([
+        service.fetchSettings(_storeId!),
+        service.fetchInbox(limit: 20),
+        service.fetchUnreadCount(),
+      ]);
+      final settings = results[0] as NotificationSettings;
+      final notifications = results[1] as List<MerchantNotification>;
+      final unreadCount = results[2] as int;
       if (mounted) {
         setState(() {
           _settings = settings;
+          _notifications = notifications;
+          _unreadCount = unreadCount;
           _isLoading = false;
         });
       }
@@ -83,10 +96,75 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     } catch (error) {
       if (mounted) {
         _showSnackBar(error.toString(), isError: true);
-        _loadSettings();
+        _loadNotifications();
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _markNotificationRead(MerchantNotification notification) async {
+    if (notification.isRead) return;
+    try {
+      await context.read<NotificationSettingsService>().markRead(
+        notification.id,
+      );
+      if (mounted) {
+        setState(() {
+          _notifications = _notifications
+              .map(
+                (item) => item.id == notification.id
+                    ? item.copyWith(isRead: true)
+                    : item,
+              )
+              .toList(growable: false);
+          _unreadCount = _notifications.where((item) => !item.isRead).length;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        _showSnackBar('Notification could not be updated.', isError: true);
+      }
+    }
+  }
+
+  Future<void> _markAllRead() async {
+    if (_notifications.isEmpty || _unreadCount == 0) return;
+    try {
+      await context.read<NotificationSettingsService>().markAllRead();
+      if (mounted) {
+        setState(() {
+          _notifications = _notifications
+              .map((item) => item.copyWith(isRead: true))
+              .toList(growable: false);
+          _unreadCount = 0;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        _showSnackBar('Notifications could not be updated.', isError: true);
+      }
+    }
+  }
+
+  Future<void> _deleteNotification(MerchantNotification notification) async {
+    try {
+      await context.read<NotificationSettingsService>().deleteNotification(
+        notification.id,
+      );
+      if (mounted) {
+        setState(() {
+          _notifications = _notifications
+              .where((item) => item.id != notification.id)
+              .toList(growable: false);
+          _unreadCount = _notifications.where((item) => !item.isRead).length;
+        });
+        _showSnackBar('Notification deleted');
+      }
+    } catch (_) {
+      if (mounted) {
+        _showSnackBar('Notification could not be deleted.', isError: true);
+      }
     }
   }
 
@@ -128,16 +206,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   ),
                 ),
                 Text(
-                  _isSaving ? 'Saving...' : 'Channels and merchant alerts',
+                  _isSaving
+                      ? 'Saving...'
+                      : _unreadCount == 0
+                      ? 'Inbox and merchant alerts'
+                      : '$_unreadCount unread merchant alerts',
                   style: TextStyle(color: colors.textSecondary, fontSize: 12),
                 ),
               ],
             ),
           ),
           IconButton(
-            tooltip: 'Refresh notification settings',
+            tooltip: 'Refresh notifications',
             icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
-            onPressed: _loadSettings,
+            onPressed: _loadNotifications,
           ),
         ],
       ),
@@ -156,10 +238,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     if (_error != null) {
       return _centerState(
         icon: Icons.error_outline_rounded,
-        title: 'Could not load settings',
+        title: 'Could not load notifications',
         subtitle: _error!,
         action: TextButton.icon(
-          onPressed: _loadSettings,
+          onPressed: _loadNotifications,
           icon: const Icon(Icons.refresh_rounded),
           label: const Text('Retry'),
         ),
@@ -177,10 +259,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     return RefreshIndicator(
       color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-      onRefresh: _loadSettings,
+      onRefresh: _loadNotifications,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
+          _section(
+            title: 'Inbox',
+            action: _unreadCount == 0
+                ? null
+                : TextButton(
+                    onPressed: _markAllRead,
+                    child: const Text('Mark all read'),
+                  ),
+            child: _inboxList(),
+          ),
+          const SizedBox(height: 12),
           _section(
             title: 'Channels',
             child: Column(
@@ -273,7 +366,177 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
-  Widget _section({required String title, required Widget child}) {
+  Widget _inboxList() {
+    if (_notifications.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 18),
+        child: Column(
+          children: [
+            Icon(
+              Icons.notifications_none_rounded,
+              color: colors.textTertiary,
+              size: 36,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'No notifications yet',
+              style: TextStyle(
+                color: colors.textPrimary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'New order, customer, payout, and store alerts will appear here.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: colors.textSecondary, fontSize: 12),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        for (final notification in _notifications) ...[
+          _notificationTile(notification),
+          if (notification != _notifications.last)
+            Divider(height: 18, color: colors.divider),
+        ],
+      ],
+    );
+  }
+
+  Widget _notificationTile(MerchantNotification notification) {
+    final unread = !notification.isRead;
+    return InkWell(
+      onTap: () => _markNotificationRead(notification),
+      borderRadius: BorderRadius.circular(10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color:
+                    (unread
+                            ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                            : colors.textTertiary)
+                        .withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                _notificationIcon(notification.type),
+                color: unread
+                    ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                    : colors.textTertiary,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          notification.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: colors.textPrimary,
+                            fontSize: 14,
+                            fontWeight: unread
+                                ? FontWeight.w800
+                                : FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      if (unread)
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color:
+                                mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                    ],
+                  ),
+                  if (notification.message != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      notification.message!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 6),
+                  Text(
+                    DateFormat(
+                      'MMM d, h:mm a',
+                    ).format(notification.createdAt.toLocal()),
+                    style: TextStyle(color: colors.textTertiary, fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+            PopupMenuButton<String>(
+              tooltip: 'Notification actions',
+              icon: Icon(Icons.more_vert_rounded, color: colors.textTertiary),
+              onSelected: (value) {
+                if (value == 'read') {
+                  _markNotificationRead(notification);
+                } else if (value == 'delete') {
+                  _deleteNotification(notification);
+                }
+              },
+              itemBuilder: (context) => [
+                if (unread)
+                  const PopupMenuItem(
+                    value: 'read',
+                    child: Text('Mark as read'),
+                  ),
+                const PopupMenuItem(value: 'delete', child: Text('Delete')),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _notificationIcon(String type) {
+    return switch (type) {
+      'order_placed' ||
+      'order_shipped' ||
+      'order_delivered' => Icons.receipt_long_outlined,
+      'new_lead' || 'new_contact' => Icons.person_add_alt_1_outlined,
+      'plan_upgraded' => Icons.workspace_premium_outlined,
+      'store_published' => Icons.storefront_outlined,
+      'theme_purchased' || 'theme_review' => Icons.palette_outlined,
+      'app_installed' ||
+      'app_uninstalled' ||
+      'app_review' => Icons.extension_outlined,
+      _ => Icons.notifications_outlined,
+    };
+  }
+
+  Widget _section({
+    required String title,
+    required Widget child,
+    Widget? action,
+  }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -284,13 +547,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: colors.textPrimary,
-              fontSize: 15,
-              fontWeight: FontWeight.w800,
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: colors.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              if (action != null) action,
+            ],
           ),
           const SizedBox(height: 10),
           child,

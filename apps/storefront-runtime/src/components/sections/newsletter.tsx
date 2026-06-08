@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
 import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
-import { Mail, Send, CheckCircle } from '@letbuyy/ui';
+import { Button, Input, Mail, Send, CheckCircle } from '@letbuyy/ui';
 
 interface Props {
     section: SectionModel;
@@ -81,7 +81,7 @@ export default function NewsletterSection({ section, theme }: Props) {
                 </p>
 
                 <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                    <input
+                    <Input unstyled
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -93,7 +93,7 @@ export default function NewsletterSection({ section, theme }: Props) {
                         }}
                         required
                     />
-                    <button
+                    <Button unstyled
                         type="submit"
                         disabled={isSubmitted}
                         className="px-8 py-3 text-white rounded-full font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-70"
@@ -108,7 +108,7 @@ export default function NewsletterSection({ section, theme }: Props) {
                                 {buttonText} <Send size={16} />
                             </>
                         )}
-                    </button>
+                    </Button>
                 </form>
 
                 <p

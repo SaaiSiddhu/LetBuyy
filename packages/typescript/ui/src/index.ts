@@ -7,9 +7,6 @@ export type { ButtonProps } from './button';
 export { InlineError, Input, NumberField, Textarea } from './input';
 export type { InlineErrorProps, InputProps, NumberFieldProps, TextareaProps } from './input';
 
-export { DataTable, Badge } from './data-table';
-export type { DataTableProps, Column, BadgeProps } from './data-table';
-
 export { Table } from './table';
 export type { TableBulkAction, TableColumn, TableFilterChip, TableProps, TableSavedView } from './table';
 
@@ -26,11 +23,9 @@ export {
     letbuyyPageIdentityIcons,
     letbuyyPageIdentityOptions,
     Page,
-    PageActions,
     PageContent,
     PageHeader,
     PageHeaderActions,
-    PageShell,
     resolvePageIdentity,
     Section,
     Text,
@@ -50,13 +45,13 @@ export type {
     PageIdentity,
     PageIdentityOption,
     PageProps,
-    PageShellProps,
     SectionProps,
     SpaceScale,
     TextProps,
 } from './layout';
 
 export {
+    Badge,
     Banner,
     EmptyState,
     EmptyStateIllustration,
@@ -66,6 +61,7 @@ export {
     useToast,
 } from './feedback';
 export type {
+    BadgeProps,
     BannerProps,
     EmptyStateKind,
     EmptyStateIllustrationProps,
@@ -99,33 +95,15 @@ export type {
 export { AppFrame, Navigation, Sidebar } from './app-shell';
 export type { AppFrameProps, NavigationItem, NavigationProps, SidebarProps } from './app-shell';
 
-export { Avatar, CommandPalette, FilterBar, IndexTable, MetricCard, Pagination, TableFilterBar } from './productivity';
+export { Avatar, CommandPalette, FilterBar, MetricCard, Pagination } from './productivity';
 export type {
     AvatarProps,
     CommandPaletteAction,
     CommandPaletteProps,
     FilterBarProps,
-    IndexTableBulkAction,
-    IndexTableColumn,
-    IndexTableProps,
     MetricCardProps,
     PaginationProps,
 } from './productivity';
-
-/**
- * @deprecated since 0.0.2. Use `@letbuyy/ui/preview` for Storybook/design-token preview helpers.
- */
-export { ColorPreviewBlock, ColorPreviewButton, ColorPreviewSurface, ColorSwatch, RadiusPreview } from './visual';
-/**
- * @deprecated since 0.0.2. Use `@letbuyy/ui/preview` for Storybook/design-token preview helper types.
- */
-export type {
-    ColorPreviewBlockProps,
-    ColorPreviewButtonProps,
-    ColorPreviewSurfaceProps,
-    ColorSwatchProps,
-    RadiusPreviewProps,
-} from './visual';
 
 export {
     Breadcrumbs,
@@ -141,7 +119,6 @@ export {
     ProgressBar,
     SegmentedControl,
     Spinner,
-    TextStyle,
 } from './primitives';
 export type {
     AccordionItem,
@@ -164,8 +141,22 @@ export type {
     SegmentedControlOption,
     SegmentedControlProps,
     SpinnerProps,
-    TextStyleProps,
 } from './primitives';
+
+export {
+    ColorPreviewBlock,
+    ColorPreviewButton,
+    ColorPreviewSurface,
+    ColorSwatch,
+    RadiusPreview,
+} from './preview';
+export type {
+    ColorPreviewBlockProps,
+    ColorPreviewButtonProps,
+    ColorPreviewSurfaceProps,
+    ColorSwatchProps,
+    RadiusPreviewProps,
+} from './preview';
 
 export { DesignSystemRoot } from './design-system-root';
 export type { DesignSystemRootProps } from './design-system-root';

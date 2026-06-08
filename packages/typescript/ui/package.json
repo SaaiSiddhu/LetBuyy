@@ -1,6 +1,6 @@
 {
   "name": "@letbuyy/ui",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "private": true,
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -12,10 +12,33 @@
     "./preview": "./src/preview.tsx",
     "./tokens": "./src/tokens.ts"
   },
+  "files": [
+    "dist",
+    "src",
+    "eslint",
+    "codemods",
+    "assets",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+      "./formatting": { "types": "./dist/formatting.d.ts", "default": "./dist/formatting.js" },
+      "./logging": { "types": "./dist/logging.d.ts", "default": "./dist/logging.js" },
+      "./marketplace": { "types": "./dist/marketplace.d.ts", "default": "./dist/marketplace.js" },
+      "./preview": { "types": "./dist/preview.d.ts", "default": "./dist/preview.js" },
+      "./tokens": { "types": "./dist/tokens.d.ts", "default": "./dist/tokens.js" }
+    }
+  },
   "scripts": {
+    "dev": "storybook dev --port 9009 --no-open",
     "build": "tsc -b && tsc -p tsconfig.dist.json",
     "test": "vitest run --config vitest.config.ts",
     "test:codemods": "node codemods/dry-run.mjs",
+    "migrate": "node codemods/cli.mjs",
+    "generate:mobile-tokens": "node ../../../scripts/generators/generate-mobile-tokens.mjs",
     "test:eslint-rules": "node eslint/rules.test.mjs",
     "test:visual": "node tests/visual/storybook-visual-regression.mjs",
     "test:visual:update": "node tests/visual/storybook-visual-regression.mjs --update",
@@ -29,7 +52,9 @@
     "validate:ui": "pnpm test && pnpm test:eslint-rules && pnpm test:codemods && pnpm validate:api && pnpm validate:tokens && pnpm validate:aliases",
     "typecheck": "tsc --noEmit",
     "storybook": "storybook dev --port 6006 --no-open",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "lint:css": "stylelint \"src/**/*.css\"",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@tailwindcss/vite": "4.3.0",
@@ -50,8 +75,8 @@
     "@types/react-dom": "19.2.3",
     "jest-axe": "^10.0.0",
     "jsdom": "^29.1.1",
-    "react": "^19.2.7",
-    "react-dom": "19.2.7",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
     "storybook": "10.4.1",
     "tailwindcss": "4.3.0",
     "typescript": "^5.7.0",

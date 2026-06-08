@@ -37,11 +37,11 @@ test('app-store route registrations keep marketplace, installation, billing, OAu
         "router.post('/compliance/customers/data-request'",
         "router.post('/compliance/customers/redact'",
         "router.post('/compliance/shop/redact'",
+        "router.post('/partners/collaborator-code'",
         "router.get('/developers/me'",
         "router.post('/developers/register'",
         "router.get('/developers/apps'",
         "router.get('/partners/dashboard'",
-        "router.post('/partners/collaborator-code'",
         "router.post('/developers/apps'",
         "router.get('/developers/:id'",
     ]);
@@ -77,6 +77,7 @@ test('app-store route module registration order is explicit once split', () => {
         'registerAppStoreBillingOAuthRoutes(router)',
         'registerAppStoreInstallLifecycleRoutes(router)',
         'registerAppStoreComplianceRoutes(router)',
+        'registerAppStoreDeveloperToolingRoutes(router)',
         'registerAppStoreDeveloperRoutes(router)',
     ];
 

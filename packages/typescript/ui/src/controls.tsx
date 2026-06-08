@@ -591,6 +591,11 @@ export interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectE
     prefixContent?: React.ReactNode;
     controlSize?: 'sm' | 'md' | 'lg';
     hideLabel?: boolean;
+    /**
+     * Additive escape hatch: render a bare native <select> with the given
+     * className (no DS chrome/wrapper) for drop-in migration of raw <select>.
+     */
+    unstyled?: boolean;
 }
 
 const selectControlSizeStyles: Record<NonNullable<SelectProps['controlSize']>, string> = {
@@ -610,6 +615,7 @@ export function Select({
     prefixContent,
     controlSize = 'md',
     hideLabel = false,
+    unstyled = false,
     className = '',
     id,
     ...props
@@ -620,6 +626,29 @@ export function Select({
     const helperId = helperText && !error ? `${selectId}-helper` : undefined;
     const describedBy = [errorId, helperId, props['aria-describedby']].filter(Boolean).join(' ') || undefined;
     const hasPrefixContent = Boolean(prefixContent);
+
+    if (unstyled) {
+        return (
+            <select
+                id={selectId}
+                className={className}
+                aria-invalid={error ? true : undefined}
+                aria-describedby={describedBy}
+                {...props}
+            >
+                {placeholder && (
+                    <option value="" disabled>
+                        {placeholder}
+                    </option>
+                )}
+                {options.map((option) => (
+                    <option key={option.value} value={option.value} disabled={option.disabled}>
+                        {option.label}
+                    </option>
+                ))}
+            </select>
+        );
+    }
 
     return (
         <div className="flex flex-col gap-[var(--lb-space-2)]">

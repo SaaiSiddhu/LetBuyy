@@ -9,10 +9,9 @@ import type {
     SetupStatus,
     StoreInfo,
 } from './page'
-import {
+import { Button,
     Badge,
     Banner,
-    Button,
     Card,
     EmptyState,
     MaterialIcon,

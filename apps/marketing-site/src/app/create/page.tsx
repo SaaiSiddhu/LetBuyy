@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Check, FileText, MaterialIcon, Palette, Rocket, Store, X } from '@letbuyy/ui'
+import { Button, Check, FileText, Input, MaterialIcon, Palette, Rocket, Store, X } from '@letbuyy/ui'
 import { LETBUYY_PRODUCTION_API_BASE_URL, resolveLetbuyyApiBaseUrl } from '@letbuyy/api-client'
 
 const siteTypes = [
@@ -65,7 +65,7 @@ export default function CreateStorePage() {
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-zinc-50 p-4 dark:bg-zinc-950">
-            <div className="w-full max-w-2xl space-y-8 rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+            <div className="w-full max-w-2xl space-y-8 rounded-2xl border border-zinc-200 bg-[var(--lb-color-surface)] p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
                 {/* Header */}
                 <div className="text-center">
                     <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Create Your Site</h1>
@@ -102,7 +102,7 @@ export default function CreateStorePage() {
                                 const Icon = type.icon
 
                                 return (
-                                    <button
+                                    <Button unstyled
                                         key={type.id}
                                         onClick={() => {
                                             setSiteType(type.id)
@@ -117,7 +117,7 @@ export default function CreateStorePage() {
                                         <Icon className="h-8 w-8" aria-hidden="true" />
                                         <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">{type.title}</h3>
                                         <p className="text-xs text-zinc-600 dark:text-zinc-400">{type.description}</p>
-                                    </button>
+                                    </Button>
                                 )
                             })}
                         </div>
@@ -135,7 +135,7 @@ export default function CreateStorePage() {
                                 <label htmlFor="store-name" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
                                     Site Name
                                 </label>
-                                <input
+                                <Input unstyled
                                     id="store-name"
                                     type="text"
                                     value={storeName}
@@ -152,7 +152,7 @@ export default function CreateStorePage() {
                                     Subdomain
                                 </label>
                                 <div className="mt-1 flex items-center rounded-lg border border-zinc-300 dark:border-zinc-700 overflow-hidden">
-                                    <input
+                                    <Input unstyled
                                         id="subdomain"
                                         type="text"
                                         value={subdomain}
@@ -181,13 +181,13 @@ export default function CreateStorePage() {
                         </div>
 
                         <div className="flex gap-3">
-                            <button
+                            <Button unstyled
                                 onClick={() => setStep(1)}
                                 className="flex-1 rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
                             >
                                 Back
-                            </button>
-                            <button
+                            </Button>
+                            <Button unstyled
                                 onClick={handleCreate}
                                 disabled={!storeName || !subdomain || subdomainAvailable === false || loading}
                                 className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
@@ -198,7 +198,7 @@ export default function CreateStorePage() {
                                         <MaterialIcon name="arrow_forward" />
                                     </span>
                                 )}
-                            </button>
+                            </Button>
                         </div>
                     </>
                 )}

@@ -77,6 +77,17 @@ const planPermissions: Record<string, Permission[]> = {
     ],
 };
 
+function billingUpgradeUrl(env: Env): string {
+    const rawDomain = env.NEXT_PUBLIC_PLATFORM_DOMAIN || env.LETBUYY_PLATFORM_DOMAIN || env.PLATFORM_ROOT_DOMAIN || 'letbuyy.com';
+    const domain = rawDomain
+        .trim()
+        .replace(/^https?:\/\//, '')
+        .replace(/\/.*$/, '')
+        .replace(/^\.+|\.+$/g, '') || 'letbuyy.com';
+    const base = (env.NEXT_PUBLIC_ADMIN_URL || `https://admin.${domain}`).replace(/\/+$/, '');
+    return `${base}/billing`;
+}
+
 function getTenant(c: AppContext): TenantContext | null {
     try {
         return c.get('tenant') as TenantContext | null;
@@ -118,7 +129,7 @@ export const requirePermission = (...perms: Permission[]) =>
                         code: 'PLAN_UPGRADE_REQUIRED',
                         message: `Your plan (${plan}) does not include: ${missing.join(', ')}. Upgrade to unlock.`,
                         status: 403,
-                        upgrade_url: 'https://admin.letbuyy.store/billing',
+                        upgrade_url: billingUpgradeUrl(c.env),
                     },
                 },
                 403

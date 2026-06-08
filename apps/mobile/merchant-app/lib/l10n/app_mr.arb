@@ -1,0 +1,11 @@
+{
+  "@@locale": "mr",
+  "appTitle": "LetBuyy स्टोअर बिल्डर",
+  "selectStore": "स्टोअर निवडा",
+  "switchStore": "स्टोअर बदला",
+  "storeSwitcherLabel": "निवडलेला स्टोअर स्विचर",
+  "noStoreSelected": "कोणतेही स्टोअर निवडलेले नाही",
+  "offlineMode": "ऑफलाइन मोड",
+  "cachedDataNotice": "नेटवर्क उपलब्ध नाही, कॅशे डेटा दाखवला जात आहे.",
+  "deepLinkUnsupported": "ही लिंक अजून मोबाइलवर समर्थित नाही."
+}

@@ -184,7 +184,7 @@ export default function HeroSection({ section, theme }: Props) {
                             <motion.button
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
-                                className="flex min-h-11 items-center gap-2 rounded-lg bg-white px-6 py-3 text-base font-semibold shadow-lg"
+                                className="flex min-h-11 items-center gap-2 rounded-lg bg-[var(--lb-color-surface)] px-6 py-3 text-base font-semibold shadow-lg"
                                 style={{ color: colors.primaryColor }}
                             >
                                 {ctaText}

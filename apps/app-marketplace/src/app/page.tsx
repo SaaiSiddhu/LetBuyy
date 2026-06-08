@@ -3,258 +3,328 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { AppCard } from '@/components/AppCard';
 import { MarketplaceUnavailable } from '@/components/MarketplaceUnavailable';
-import { AppService, type AppFilters } from '@/lib/app-service';
-import { APP_CATEGORIES } from '@/lib/constants/categories';
+import { SectionHeader, ValueProp } from '@/components/MarketplaceEditorial';
+import { AppService } from '@/lib/app-service';
 import {
-    Card,
+    getAppRating,
+    getDeveloperName,
+    getInstallCount,
+    getLastUpdatedDate,
+    getReviewCount,
+    isBuiltForLetbuyy,
+} from '@/lib/marketplace-display';
+import type { MarketplaceApp } from '@letbuyy/shared-types';
+import {
+    Button,
+    ChevronRight,
     EmptyState,
-    LayoutGrid,
-    MaterialIcon,
     Page,
     PageContent,
-    PageHeader,
     Search,
-    Section,
-    Sparkles,
+    ShieldCheck,
     Star,
-    type MaterialIconName,
 } from '@letbuyy/ui';
 
-type MarketplacePageSearchParams = Promise<{
-    q?: string | string[];
-    category?: string | string[];
-    sort?: string | string[];
-}>;
+export const revalidate = 300;
 
-const SORT_OPTIONS: Array<{ value: NonNullable<AppFilters['sort']>; label: string }> = [
-    { value: 'popular', label: 'Most popular' },
-    { value: 'rating', label: 'Top rated' },
-    { value: 'recent', label: 'Newest' },
-    { value: 'name', label: 'A to Z' },
-];
-
-const HIGHLIGHT_CATEGORIES = APP_CATEGORIES.slice(0, 12);
-
-function firstParam(value: string | string[] | undefined): string {
-    if (Array.isArray(value)) return value[0] ?? '';
-    return value ?? '';
+function appScore(app: MarketplaceApp): number {
+    return (getInstallCount(app) * 2) + (getReviewCount(app) * 8) + (getAppRating(app) * 100);
 }
 
-function normalizeQuery(value: string | string[] | undefined): string {
-    return firstParam(value).trim().slice(0, 80);
+function uniqueApps(appGroups: MarketplaceApp[][]): MarketplaceApp[] {
+    const apps = new Map<string, MarketplaceApp>();
+
+    for (const group of appGroups) {
+        for (const app of group) {
+            if (app.id && !apps.has(app.id)) {
+                apps.set(app.id, app);
+            }
+        }
+    }
+
+    return Array.from(apps.values());
 }
 
-function normalizeCategory(value: string | string[] | undefined): string | undefined {
-    const category = firstParam(value);
-    return APP_CATEGORIES.some((item) => item.slug === category) ? category : undefined;
+function exactRail(apps: MarketplaceApp[], count: number): MarketplaceApp[] {
+    return apps.length >= count ? apps.slice(0, count) : [];
 }
 
-function normalizeSort(value: string | string[] | undefined): NonNullable<AppFilters['sort']> {
-    const sort = firstParam(value);
-    return SORT_OPTIONS.some((option) => option.value === sort) ? (sort as NonNullable<AppFilters['sort']>) : 'popular';
+function byPopularity(apps: MarketplaceApp[]): MarketplaceApp[] {
+    return [...apps].sort((a, b) => appScore(b) - appScore(a));
 }
 
-function getCategoryName(slug: string | undefined): string {
-    if (!slug) return 'All categories';
-    return APP_CATEGORIES.find((category) => category.slug === slug)?.name ?? 'All categories';
+function byRecency(apps: MarketplaceApp[]): MarketplaceApp[] {
+    return [...apps].sort((a, b) => {
+        const bDate = getLastUpdatedDate(b)?.getTime() ?? 0;
+        const aDate = getLastUpdatedDate(a)?.getTime() ?? 0;
+        return bDate - aDate;
+    });
 }
 
-function buildMarketplaceHref({
-    q,
-    category,
-    sort,
+function isFirstPartyApp(app: MarketplaceApp): boolean {
+    return getDeveloperName(app).toLowerCase().includes('letbuyy');
+}
+
+function AppRail({
+    actionHref,
+    actionLabel,
+    apps,
+    eyebrow,
+    minCards = 6,
+    title,
 }: {
-    q?: string;
-    category?: string;
-    sort?: NonNullable<AppFilters['sort']>;
-}): string {
-    const params = new URLSearchParams();
-    if (q) params.set('q', q);
-    if (category) params.set('category', category);
-    if (sort && sort !== 'popular') params.set('sort', sort);
-    const query = params.toString();
-    return query ? `/?${query}` : '/';
-}
-
-export default async function MarketplacePage({
-    searchParams,
-}: {
-    searchParams?: MarketplacePageSearchParams;
+    actionHref?: string;
+    actionLabel?: string;
+    apps: MarketplaceApp[];
+    eyebrow?: string;
+    minCards?: number;
+    title: string;
 }) {
-    const params = await searchParams;
-    const query = normalizeQuery(params?.q);
-    const category = normalizeCategory(params?.category);
-    const sort = normalizeSort(params?.sort);
-    const hasActiveFilters = Boolean(query || category || sort !== 'popular');
+    const railApps = exactRail(apps, minCards);
+    if (railApps.length === 0) return null;
 
-    const catalogResult = query
-        ? await AppService.searchApps(query, category, 24)
-        : await AppService.listApps({ category, sort, limit: 24 });
+    return (
+        <section className="appstore-home-section" aria-labelledby={`${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-title`}>
+            <SectionHeader
+                eyebrow={eyebrow}
+                title={title}
+                actionHref={actionHref}
+                actionLabel={actionLabel}
+            />
+            <div className="appstore-home-card-grid">
+                {railApps.map((app) => (
+                    <AppCard key={app.id} app={app} />
+                ))}
+            </div>
+        </section>
+    );
+}
 
-    const catalog = catalogResult.ok ? catalogResult.value : null;
-    const resultCount = catalog ? (catalog.total || catalog.apps.length) : 0;
-    const activeCategoryLabel = getCategoryName(category);
-    const resultSummary = `${resultCount.toLocaleString('en-IN')} ${resultCount === 1 ? 'app' : 'apps'}`;
+function EditorialSlot({
+    body,
+    title,
+}: {
+    body: string;
+    title: string;
+}) {
+    return (
+        <section className="appstore-home-section" aria-labelledby={`${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-slot-title`}>
+            <div className="appstore-home-editorial-slot">
+                <EmptyState kind="apps" title={title} body={body} />
+            </div>
+        </section>
+    );
+}
+
+function FeaturedApp({ app }: { app: MarketplaceApp | null }) {
+    if (!app) {
+        return (
+            <EditorialSlot
+                title="Featured app story not published yet"
+                body="A featured-app editorial slot is available, but no approved featured story is published in this environment."
+            />
+        );
+    }
+
+    return (
+        <section className="appstore-home-section" aria-labelledby="featured-app-title">
+            <SectionHeader eyebrow="Featured app" title="In focus this week" />
+            <article className="appstore-home-featured-app">
+                <div className="appstore-home-featured-app__copy">
+                    <p className="marketplace-eyebrow">Featured app</p>
+                    <h3 id="featured-app-title">{app.name}</h3>
+                    <p>{app.tagline || 'A marketplace app for LetBuyy merchants.'}</p>
+                    <Link href={`/apps/${app.slug}`} className="appstore-home-featured-app__link">
+                        View app
+                        <ChevronRight size={18} aria-hidden="true" />
+                    </Link>
+                </div>
+                <AppCard app={app} />
+            </article>
+        </section>
+    );
+}
+
+function MarketplaceHero({ apps }: { apps: MarketplaceApp[] }) {
+    return (
+        <section className="appstore-home-hero" aria-labelledby="appstore-home-hero-title">
+            <div className="appstore-home-hero__inner">
+                <div className="appstore-home-hero__copy">
+                    <p className="appstore-home-hero__eyebrow">LetBuyy App Store</p>
+                    <h1 id="appstore-home-hero-title">Get the best apps for your business with Built for LetBuyy</h1>
+                    <p className="appstore-home-hero__subtitle">
+                        Find commerce apps for marketing, operations, reviews, invoices, checkout, and storefront growth.
+                    </p>
+                    <div className="appstore-home-hero__actions">
+                        <Button asChild>
+                            <Link href="/search">
+                                Browse apps
+                                <Search size={16} aria-hidden="true" />
+                            </Link>
+                        </Button>
+                        <Button asChild variant="secondary">
+                            <Link href="/collections">
+                                View collections
+                                <ChevronRight size={16} aria-hidden="true" />
+                            </Link>
+                        </Button>
+                    </div>
+                </div>
+
+                {apps.length >= 3 ? (
+                    <div className="appstore-home-hero__apps" aria-label="Popular apps">
+                        {apps.slice(0, 6).map((app) => (
+                            <Link key={app.id} href={`/apps/${app.slug}`} className="appstore-home-hero-app" aria-label={app.name}>
+                                <span className={`appstore-home-hero-app__icon app-icon-tone-${appScore(app) % 6}`} aria-hidden="true">
+                                    {app.name.trim().charAt(0).toUpperCase() || 'A'}
+                                </span>
+                                <span className="appstore-home-hero-app__content">
+                                    <strong>{app.name}</strong>
+                                    <span className="appstore-home-hero-app__meta">
+                                        <Star size={14} fill="currentColor" stroke="currentColor" aria-hidden="true" />
+                                        {getAppRating(app).toFixed(1)}
+                                        <span aria-hidden="true">•</span>
+                                        {getReviewCount(app).toLocaleString('en-IN')} reviews
+                                    </span>
+                                    <span className="appstore-home-hero-app__tagline">{app.tagline || getDeveloperName(app)}</span>
+                                    {isBuiltForLetbuyy(app) ? (
+                                        <span className="appstore-home-hero-app__badge">
+                                            <ShieldCheck size={13} aria-hidden="true" />
+                                            Built for LetBuyy
+                                        </span>
+                                    ) : null}
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                ) : null}
+            </div>
+        </section>
+    );
+}
+
+function AppAdvantage() {
+    const props = [
+        {
+            icon: ShieldCheck,
+            title: 'Quality gates',
+            body: 'Badges and placement surfaces render from real review and award data only.',
+        },
+        {
+            icon: Star,
+            title: 'Review clarity',
+            body: 'Ratings stay paired with review counts so merchants can judge confidence quickly.',
+        },
+        {
+            icon: Search,
+            title: 'Focused discovery',
+            body: 'Category, search, and collection paths keep merchants close to the apps that fit their store.',
+        },
+    ];
+
+    return (
+        <section className="appstore-home-section appstore-home-section--advantage" aria-labelledby="app-advantage-title">
+            <SectionHeader eyebrow="LetBuyy app advantage" title="Choose apps with clearer signals" />
+            <div className="appstore-home-value-grid">
+                {props.map((item) => (
+                    <ValueProp key={item.title} icon={item.icon} title={item.title} body={item.body} />
+                ))}
+            </div>
+        </section>
+    );
+}
+
+function AddAppCta() {
+    return (
+        <section className="appstore-home-cta" aria-labelledby="add-app-title">
+            <div>
+                <p className="marketplace-eyebrow">For partners</p>
+                <h2 id="add-app-title">Want to add an app?</h2>
+                <p>Build for LetBuyy merchants and submit your app for marketplace review.</p>
+            </div>
+            <Button asChild>
+                <Link href="/developers/register">
+                    Start partner registration
+                    <ChevronRight size={16} aria-hidden="true" />
+                </Link>
+            </Button>
+        </section>
+    );
+}
+
+export default async function MarketplacePage() {
+    const catalogResult = await AppService.listApps({ sort: 'popular', limit: 48, offset: 0 });
+    const catalogApps = catalogResult.ok ? catalogResult.value.apps : [];
+    const featuredApps = await AppService.getFeaturedApps(8);
+    const newThisWeekApps = await AppService.getNewThisWeekApps(8);
+    const allApps = uniqueApps([featuredApps, newThisWeekApps, catalogApps]);
+
+    const builtForLetbuyyApps = byPopularity(allApps.filter(isBuiltForLetbuyy));
+    const popularApps = byPopularity(allApps);
+    const spotlightApps = byRecency(uniqueApps([newThisWeekApps, catalogApps]));
+    const firstPartyApps = byPopularity(allApps.filter(isFirstPartyApp));
+    const featuredApp = featuredApps[0] ?? null;
 
     return (
         <>
             <Header />
-            <Page className="appstore-main">
-                <PageHeader
-                    title="LetBuyy App Store"
-                    description="Find vetted apps for product sourcing, checkout, shipping, marketing, analytics, and store operations."
-                    eyebrow="Marketplace"
-                    identity="apps"
-                    showDescription
-                    showEyebrow
-                    primaryAction={{
-                        label: 'Browse categories',
-                        href: '/categories',
-                        icon: <LayoutGrid size={16} aria-hidden="true" />,
-                    }}
-                    secondaryActions={[
-                        {
-                            label: 'Developer portal',
-                            href: '/developers',
-                            icon: <Sparkles size={16} aria-hidden="true" />,
-                        },
-                    ]}
-                />
-
+            <MarketplaceHero apps={popularApps} />
+            <Page className="appstore-main appstore-main--home">
                 <PageContent>
-                    <Card>
-                        <Section
-                            title="Search and filter apps"
-                            description="Use URL-backed filters to keep marketplace discovery shareable and deterministic."
-                        >
-                            <form
-                                action="/"
-                                className="grid gap-[var(--lb-space-3)] md:grid-cols-[minmax(0,1.6fr)_minmax(180px,0.7fr)_minmax(160px,0.6fr)_auto] md:items-end"
-                            >
-                                <label className="grid min-w-0 gap-[var(--lb-space-1)]">
-                                    <span className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                        Search
-                                    </span>
-                                    <span className="flex h-[var(--lb-density-button-height-large)] min-w-0 items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] text-[color:var(--lb-color-text)] focus-within:border-[var(--lb-color-primary)] focus-within:ring-2 focus-within:ring-[var(--lb-color-focus-ring)]">
-                                        <Search size={16} aria-hidden="true" />
-                                        <input
-                                            name="q"
-                                            defaultValue={query}
-                                            placeholder="Search apps, integrations, categories..."
-                                            className="min-w-0 flex-1 border-0 bg-transparent text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] outline-none placeholder:text-[color:var(--lb-color-text-muted)]"
-                                        />
-                                    </span>
-                                </label>
+                    {!catalogResult.ok ? (
+                        <section className="appstore-home-section">
+                            <MarketplaceUnavailable />
+                        </section>
+                    ) : null}
 
-                                <label className="grid min-w-0 gap-[var(--lb-space-1)]">
-                                    <span className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                        Category
-                                    </span>
-                                    <select
-                                        name="category"
-                                        defaultValue={category ?? ''}
-                                        className="h-[var(--lb-density-button-height-large)] min-w-0 rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)] outline-none focus:border-[var(--lb-color-primary)] focus:ring-2 focus:ring-[var(--lb-color-focus-ring)]"
-                                    >
-                                        <option value="">All categories</option>
-                                        {APP_CATEGORIES.map((item) => (
-                                            <option key={item.slug} value={item.slug}>
-                                                {item.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </label>
+                    <AppRail
+                        eyebrow="Recommended"
+                        title="Built for LetBuyy apps"
+                        apps={builtForLetbuyyApps}
+                        actionHref="/search?program=built-for-letbuyy"
+                        actionLabel="View all"
+                    />
 
-                                <label className="grid min-w-0 gap-[var(--lb-space-1)]">
-                                    <span className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                        Sort
-                                    </span>
-                                    <select
-                                        name="sort"
-                                        defaultValue={sort}
-                                        className="h-[var(--lb-density-button-height-large)] min-w-0 rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)] outline-none focus:border-[var(--lb-color-primary)] focus:ring-2 focus:ring-[var(--lb-color-focus-ring)]"
-                                    >
-                                        {SORT_OPTIONS.map((option) => (
-                                            <option key={option.value} value={option.value}>
-                                                {option.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </label>
+                    <AppRail
+                        eyebrow="Popular"
+                        title="Popular with merchants across LetBuyy"
+                        apps={popularApps}
+                        actionHref="/search?sort=popular"
+                        actionLabel="Browse popular apps"
+                    />
 
-                                <button
-                                    type="submit"
-                                    className="inline-flex h-[var(--lb-density-button-height-large)] items-center justify-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-component-button-primary-border)] bg-[var(--lb-component-button-primary-bg)] px-[var(--lb-space-4)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-component-button-primary-text)] hover:bg-[var(--lb-component-button-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                >
-                                    <Search size={16} aria-hidden="true" />
-                                    Apply
-                                </button>
-                            </form>
+                    <EditorialSlot
+                        title="Editorial story not published yet"
+                        body="The story slot is ready for approved marketplace editorial content. It stays empty until a real story is published."
+                    />
 
-                            <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]" aria-label="Category quick filters">
-                                <Link
-                                    href={buildMarketplaceHref({ q: query, sort })}
-                                    className={`inline-flex min-h-[var(--lb-density-pill-height)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-3)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-badge)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-badge)] ${!category ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]' : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)]'}`}
-                                >
-                                    All categories
-                                </Link>
-                                {HIGHLIGHT_CATEGORIES.map((item) => {
-                                    const active = item.slug === category;
-                                    return (
-                                        <Link
-                                            key={item.slug}
-                                            href={buildMarketplaceHref({ q: query, category: item.slug, sort })}
-                                            className={`inline-flex min-h-[var(--lb-density-pill-height)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-3)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-badge)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-badge)] ${active ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]' : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)]'}`}
-                                        >
-                                            <MaterialIcon name={(item.icon ?? 'category') as MaterialIconName} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
-                                            {item.name}
-                                        </Link>
-                                    );
-                                })}
-                            </div>
-                        </Section>
-                    </Card>
+                    <AppRail
+                        eyebrow="Spotlight"
+                        title="In the spotlight"
+                        apps={spotlightApps}
+                        minCards={4}
+                        actionHref="/search?sort=recent"
+                        actionLabel="See newer apps"
+                    />
 
-                    <Card>
-                        <Section
-                            title={hasActiveFilters ? 'Filtered app results' : 'App directory'}
-                            description={`${resultSummary} shown for ${activeCategoryLabel}${query ? ` matching "${query}"` : ''}.`}
-                            action={
-                                hasActiveFilters ? (
-                                    <Link
-                                        href="/"
-                                        className="inline-flex h-[var(--lb-density-button-height)] items-center justify-center rounded-[var(--lb-radius-md)] border border-[var(--lb-component-button-secondary-border)] bg-[var(--lb-component-button-secondary-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-button-secondary-text)] hover:bg-[var(--lb-component-button-secondary-hover)]"
-                                    >
-                                        Clear filters
-                                    </Link>
-                                ) : (
-                                    <span className="inline-flex min-h-[var(--lb-density-pill-height)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-badge)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
-                                        <Star size={14} aria-hidden="true" />
-                                        Sorted by {SORT_OPTIONS.find((option) => option.value === sort)?.label}
-                                    </span>
-                                )
-                            }
-                        >
-                            {!catalog ? (
-                                <MarketplaceUnavailable />
-                            ) : catalog.apps.length > 0 ? (
-                                <div className="grid gap-[var(--lb-density-card-gap)] md:grid-cols-2 xl:grid-cols-3">
-                                    {catalog.apps.map((app) => (
-                                        <AppCard key={app.id} app={app} />
-                                    ))}
-                                </div>
-                            ) : (
-                                <EmptyState
-                                    kind="apps"
-                                    title={hasActiveFilters ? 'No matching apps yet' : 'App catalog data is not available yet'}
-                                    body={
-                                        hasActiveFilters
-                                            ? 'Try clearing filters or choosing another category. Live marketplace results will appear here when the app catalog API has data for this view.'
-                                            : 'The marketplace shell is ready, but the app catalog API returned no rows in this environment.'
-                                    }
-                                />
-                            )}
-                        </Section>
-                    </Card>
+                    <FeaturedApp app={featuredApp} />
+
+                    <EditorialSlot
+                        title="Merchant tech-stack stories not published yet"
+                        body="Merchant story callouts require approved editorial copy and media. The slot renders this empty state until that content exists."
+                    />
+
+                    <AppRail
+                        eyebrow="Made by LetBuyy"
+                        title="Made by LetBuyy"
+                        apps={firstPartyApps}
+                        minCards={3}
+                        actionHref="/search?q=LetBuyy"
+                        actionLabel="View first-party apps"
+                    />
+
+                    <AppAdvantage />
+                    <AddAppCta />
                 </PageContent>
             </Page>
             <Footer />

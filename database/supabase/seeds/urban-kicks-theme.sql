@@ -4,6 +4,275 @@
 -- templates, and the default preset for theme package version 1.0.0.
 -- ============================================================================
 
+INSERT INTO theme_packages (
+    slug,
+    name,
+    description,
+    author_name,
+    site_types,
+    status,
+    pricing_type,
+    price,
+    currency,
+    marketplace_metadata,
+    updated_at
+)
+VALUES (
+    'urban-kicks',
+    'Urban Kicks',
+    'First-party sneaker and streetwear storefront theme used as the canonical LetBuyy commerce sample.',
+    'LetBuyy',
+    ARRAY['store']::text[],
+    'active',
+    'free',
+    0,
+    'INR',
+    jsonb_build_object('source', 'database/supabase/seeds/urban-kicks-theme.sql', 'sample', true),
+    NOW()
+)
+ON CONFLICT (slug) DO UPDATE SET
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    author_name = EXCLUDED.author_name,
+    site_types = EXCLUDED.site_types,
+    status = EXCLUDED.status,
+    pricing_type = EXCLUDED.pricing_type,
+    price = EXCLUDED.price,
+    currency = EXCLUDED.currency,
+    marketplace_metadata = EXCLUDED.marketplace_metadata,
+    deleted_at = NULL,
+    updated_at = NOW();
+
+WITH urban_package AS (
+    SELECT id AS theme_package_id
+      FROM theme_packages
+     WHERE slug = 'urban-kicks'
+     LIMIT 1
+)
+INSERT INTO theme_package_versions (
+    theme_package_id,
+    version,
+    version_number,
+    release_status,
+    renderer_version,
+    schema_version,
+    compatibility_range,
+    package_manifest,
+    checksum,
+    published_at,
+    updated_at,
+    deleted_at
+)
+SELECT
+    theme_package_id,
+    '1.0.0',
+    1,
+    'published',
+    '1.0.0',
+    '1.0.0',
+    '>=1.0.0',
+    jsonb_build_object('themeSlug', 'urban-kicks', 'source', 'database/supabase/seeds/urban-kicks-theme.sql'),
+    'urban-kicks-local-seed',
+    NOW(),
+    NOW(),
+    NULL
+FROM urban_package
+ON CONFLICT (theme_package_id, version) DO UPDATE SET
+    version_number = EXCLUDED.version_number,
+    release_status = EXCLUDED.release_status,
+    renderer_version = EXCLUDED.renderer_version,
+    schema_version = EXCLUDED.schema_version,
+    compatibility_range = EXCLUDED.compatibility_range,
+    package_manifest = EXCLUDED.package_manifest,
+    checksum = EXCLUDED.checksum,
+    published_at = COALESCE(theme_package_versions.published_at, EXCLUDED.published_at),
+    deleted_at = NULL,
+    updated_at = NOW();
+
+INSERT INTO public.developer_profiles (
+    handle,
+    display_name,
+    bio,
+    support_email,
+    website_url,
+    verification_status,
+    support_sla,
+    metadata
+)
+VALUES (
+    'letbuyy-labs',
+    'LetBuyy Labs',
+    'First-party commerce theme author used to prove multi-author marketplace catalog, author profile, and review aggregation behavior.',
+    'support@letbuyy.com',
+    '/authors/letbuyy-labs',
+    'verified',
+    'Local/staging support through the LetBuyy support desk',
+    '{"program_terms":"local_15_percent_revenue_share"}'::jsonb
+)
+ON CONFLICT (handle) DO UPDATE
+   SET display_name = EXCLUDED.display_name,
+       bio = EXCLUDED.bio,
+       support_email = EXCLUDED.support_email,
+       website_url = EXCLUDED.website_url,
+       verification_status = EXCLUDED.verification_status,
+       support_sla = EXCLUDED.support_sla,
+       metadata = EXCLUDED.metadata,
+       updated_at = NOW();
+
+INSERT INTO themes (
+    slug,
+    name,
+    site_type,
+    category,
+    description,
+    long_description,
+    preview_url,
+    thumbnail_url,
+    is_premium,
+    price,
+    author,
+    author_handle,
+    version,
+    is_active,
+    sort_order,
+    install_count,
+    review_count,
+    rating_avg,
+    industry,
+    theme_preset_id,
+    letbuyy_pricing_type,
+    letbuyy_price_usd,
+    letbuyy_price_inr,
+    screenshots,
+    demo_url,
+    color_presets,
+    font_pairings,
+    features,
+    supported_site_types,
+    supported_platforms,
+    tags,
+    author_url,
+    author_verified,
+    performance_report,
+    accessibility_report,
+    default_template,
+    section_schemas,
+    block_schemas,
+    settings_schema,
+    renderer_manifest,
+    schema_version,
+    renderer_version,
+    updated_at
+)
+VALUES (
+    'urban-kicks',
+    'Urban Kicks',
+    'store',
+    'store',
+    'First-party sneaker and streetwear storefront theme with product storytelling, category navigation, and trust sections.',
+    'Urban Kicks is the canonical LetBuyy commerce sample theme. The seed keeps marketplace metrics honest at zero until real installs, purchases, and reviews exist.',
+    '/previews/urban-kicks-detail.png',
+    '/previews/urban-kicks-card.png',
+    false,
+    0,
+    'LetBuyy Labs',
+    'letbuyy-labs',
+    '1.0.0',
+    true,
+    1,
+    0,
+    0,
+    0,
+    ARRAY['fashion', 'footwear', 'streetwear']::text[],
+    'urban-kicks-default',
+    'free',
+    0,
+    0,
+    ARRAY['/previews/urban-kicks-detail.png', '/previews/urban-kicks-card.png'],
+    '/preview/urban-kicks?theme=urban-kicks',
+    jsonb_build_array(jsonb_build_object('name', 'Urban', 'colors', jsonb_build_object('primary', '#8B5CF6', 'accent', '#F59E0B', 'background', '#FFFFFF'))),
+    jsonb_build_array(jsonb_build_object('heading', 'Inter', 'body', 'Inter')),
+    ARRAY['Product storytelling', 'Category grid', 'Trust badges', 'Newsletter'],
+    ARRAY['store']::text[],
+    ARRAY['letbuyy', 'html', 'react']::text[],
+    ARRAY['sneakers', 'streetwear', 'retail']::text[],
+    '/authors/letbuyy-labs',
+    true,
+    jsonb_build_object('source', 'lhci-and-axe-local-ga', 'status', 'measured', 'measured', true, 'measured_at', '2026-06-07T22:25:00.000Z', 'lighthouse_performance', 63, 'first_contentful_paint_ms', 1400, 'largest_contentful_paint_ms', 8000, 'cumulative_layout_shift', 0.06),
+    jsonb_build_object('source', 'lhci-and-axe-local-ga', 'status', 'measured', 'measured', true, 'measured_at', '2026-06-07T22:25:00.000Z', 'lighthouse_accessibility', 100, 'serious_violations', 0, 'critical_violations', 0, 'axe_checked', true),
+    jsonb_build_object(
+        'themeId', 'urban-kicks',
+        'themeSettings', jsonb_build_object('primaryColor', '#8B5CF6', 'secondaryColor', '#3B82F6', 'accentColor', '#F59E0B', 'backgroundColor', '#FFFFFF', 'textColor', '#1F2937', 'fontFamily', 'Inter', 'headingFontFamily', 'Inter', 'borderRadius', 12, 'enableAnimations', true, 'enableShadows', true),
+        'sections', jsonb_build_object(
+            'header', jsonb_build_object('type', 'header', 'settings', jsonb_build_object('storeName', 'Urban Kicks', 'showSearch', true, 'showCart', true)),
+            'template', jsonb_build_array(
+                jsonb_build_object('id', 'hero-1', 'type', 'heroBanner', 'settings', jsonb_build_object('heading', 'Urban Kicks', 'subtitle', 'Streetwear storefront sample'), 'isVisible', true),
+                jsonb_build_object('id', 'categories-1', 'type', 'categoryGrid', 'settings', jsonb_build_object('title', 'Shop by category'), 'isVisible', true),
+                jsonb_build_object('id', 'products-1', 'type', 'productGrid', 'settings', jsonb_build_object('title', 'Featured drops'), 'isVisible', true),
+                jsonb_build_object('id', 'trust-1', 'type', 'trustBadges', 'settings', jsonb_build_object('title', 'Built for confident checkout'), 'isVisible', true)
+            ),
+            'footer', jsonb_build_object('type', 'footer', 'settings', jsonb_build_object('copyrightText', 'Urban Kicks'))
+        )
+    ),
+    jsonb_build_object(
+        'header', jsonb_build_object('type', 'header', 'name', 'Header'),
+        'heroBanner', jsonb_build_object('type', 'heroBanner', 'name', 'Hero banner'),
+        'categoryGrid', jsonb_build_object('type', 'categoryGrid', 'name', 'Category grid'),
+        'productGrid', jsonb_build_object('type', 'productGrid', 'name', 'Product grid'),
+        'trustBadges', jsonb_build_object('type', 'trustBadges', 'name', 'Trust badges'),
+        'footer', jsonb_build_object('type', 'footer', 'name', 'Footer')
+    ),
+    jsonb_build_object(
+        'category', jsonb_build_object('name', 'Category card'),
+        'badge', jsonb_build_object('name', 'Trust badge')
+    ),
+    jsonb_build_object('settings', jsonb_build_object('colors', jsonb_build_object('label', 'Colors'))),
+    jsonb_build_object('engine', 'theme-engine-v1', 'sections', ARRAY['header', 'heroBanner', 'categoryGrid', 'productGrid', 'trustBadges', 'footer'], 'sample', true),
+    '1.0.0',
+    '1.0.0',
+    NOW()
+)
+ON CONFLICT (slug) DO UPDATE SET
+    name = EXCLUDED.name,
+    site_type = EXCLUDED.site_type,
+    category = EXCLUDED.category,
+    description = EXCLUDED.description,
+    long_description = EXCLUDED.long_description,
+    preview_url = EXCLUDED.preview_url,
+    thumbnail_url = EXCLUDED.thumbnail_url,
+    is_premium = EXCLUDED.is_premium,
+       price = EXCLUDED.price,
+       author = EXCLUDED.author,
+       author_handle = EXCLUDED.author_handle,
+       version = EXCLUDED.version,
+    is_active = EXCLUDED.is_active,
+    sort_order = EXCLUDED.sort_order,
+    industry = EXCLUDED.industry,
+    theme_preset_id = EXCLUDED.theme_preset_id,
+    letbuyy_pricing_type = EXCLUDED.letbuyy_pricing_type,
+    letbuyy_price_usd = EXCLUDED.letbuyy_price_usd,
+    letbuyy_price_inr = EXCLUDED.letbuyy_price_inr,
+    screenshots = EXCLUDED.screenshots,
+    demo_url = EXCLUDED.demo_url,
+    color_presets = EXCLUDED.color_presets,
+    font_pairings = EXCLUDED.font_pairings,
+    features = EXCLUDED.features,
+    supported_site_types = EXCLUDED.supported_site_types,
+    supported_platforms = EXCLUDED.supported_platforms,
+    tags = EXCLUDED.tags,
+    author_url = EXCLUDED.author_url,
+    author_verified = EXCLUDED.author_verified,
+    performance_report = EXCLUDED.performance_report,
+    accessibility_report = EXCLUDED.accessibility_report,
+    default_template = EXCLUDED.default_template,
+    section_schemas = EXCLUDED.section_schemas,
+    block_schemas = EXCLUDED.block_schemas,
+    settings_schema = EXCLUDED.settings_schema,
+    renderer_manifest = EXCLUDED.renderer_manifest,
+    schema_version = EXCLUDED.schema_version,
+    renderer_version = EXCLUDED.renderer_version,
+    updated_at = NOW();
+
 WITH urban_version AS (
     SELECT tpv.id AS theme_package_version_id
     FROM theme_packages tp
@@ -70,8 +339,9 @@ SELECT
         'commerce.trust-badges'
     ],
     jsonb_build_object(
-        'thumbnail_url', '/images/banners/new-arrivals-1.png',
-        'preview_url', '/store/urban-kicks-demo'
+        'thumbnail_url', '/previews/urban-kicks-card.png',
+        'preview_url', '/preview/urban-kicks?theme=urban-kicks',
+        'detail_preview_url', '/previews/urban-kicks-detail.png'
     ),
     jsonb_build_object(
         'lcpMs', 2500,
@@ -469,8 +739,9 @@ SELECT
         )
     ),
     jsonb_build_object(
-        'thumbnail_url', '/images/banners/new-arrivals-1.png',
-        'preview_url', '/store/urban-kicks-demo'
+        'thumbnail_url', '/previews/urban-kicks-card.png',
+        'preview_url', '/preview/urban-kicks?theme=urban-kicks',
+        'detail_preview_url', '/previews/urban-kicks-detail.png'
     ),
     0,
     NOW(),

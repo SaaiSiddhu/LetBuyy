@@ -32,7 +32,7 @@ import {
     WandSparkles,
     X,
 } from 'lucide-react'
-import { Badge, ConfirmDialog, SaveBar, useToast } from '@letbuyy/ui'
+import { Button, Badge, ConfirmDialog, SaveBar, Select, letbuyyPrimitiveTokens, useToast } from '@letbuyy/ui'
 import {
     getDefaultStorefrontThemeTemplate,
     getSectionSchemas,
@@ -339,7 +339,7 @@ function defaultValueForField(field: SchemaField): unknown {
     if (field.default !== undefined) return field.default
     if (field.type === 'toggle') return false
     if (field.type === 'number' || field.type === 'range') return field.min ?? 0
-    if (field.type === 'color') return '#000000'
+    if (field.type === 'color') return letbuyyPrimitiveTokens.color.black
     return ''
 }
 
@@ -1279,9 +1279,9 @@ function ThemeEditorInner() {
                     <FileJson size={32} aria-hidden="true" />
                     <h1>Theme editor could not load</h1>
                     <p>{loadError}</p>
-                    <button className="theme-os-btn theme-os-btn--primary" type="button" onClick={() => void loadEditor()}>
+                    <Button unstyled className="theme-os-btn theme-os-btn--primary" type="button" onClick={() => void loadEditor()}>
                         Retry
-                    </button>
+                    </Button>
                 </section>
             </main>
         )
@@ -1294,30 +1294,30 @@ function ThemeEditorInner() {
                     <Link href={`/${store}/online-store/themes`} className="theme-os-icon-btn" aria-label="Back to themes">
                         <ArrowLeft size={17} aria-hidden="true" />
                     </Link>
-                    <button
+                    <Button unstyled
                         className={`theme-os-icon-btn ${panelMode === 'sections' ? 'theme-os-icon-btn--active' : ''}`}
                         type="button"
                         aria-label="Sections"
                         onClick={() => setPanelMode('sections')}
                     >
                         <Layers3 size={17} aria-hidden="true" />
-                    </button>
-                    <button
+                    </Button>
+                    <Button unstyled
                         className={`theme-os-icon-btn ${panelMode === 'settings' ? 'theme-os-icon-btn--active' : ''}`}
                         type="button"
                         aria-label="Theme settings"
                         onClick={() => setPanelMode('settings')}
                     >
                         <Settings size={17} aria-hidden="true" />
-                    </button>
-                    <button
+                    </Button>
+                    <Button unstyled
                         className={`theme-os-icon-btn ${panelMode === 'versions' ? 'theme-os-icon-btn--active' : ''}`}
                         type="button"
                         aria-label="Versions"
                         onClick={() => setPanelMode('versions')}
                     >
                         <FileJson size={17} aria-hidden="true" />
-                    </button>
+                    </Button>
                 </div>
 
                 <div className="theme-os-topbar__center">
@@ -1342,20 +1342,20 @@ function ThemeEditorInner() {
                 </div>
 
                 <div className="theme-os-topbar__right">
-                    <button className="theme-os-icon-btn" type="button" aria-label="Undo" disabled={!canUndo} onClick={undo}>
+                    <Button unstyled className="theme-os-icon-btn" type="button" aria-label="Undo" disabled={!canUndo} onClick={undo}>
                         <Undo2 size={17} aria-hidden="true" />
-                    </button>
-                    <button className="theme-os-icon-btn" type="button" aria-label="Redo" disabled={!canRedo} onClick={redo}>
+                    </Button>
+                    <Button unstyled className="theme-os-icon-btn" type="button" aria-label="Redo" disabled={!canRedo} onClick={redo}>
                         <Redo2 size={17} aria-hidden="true" />
-                    </button>
-                    <button className="theme-os-btn" type="button" onClick={() => void handleSave()} disabled={isSaving || isPublishing || !isDirty}>
+                    </Button>
+                    <Button unstyled className="theme-os-btn" type="button" onClick={() => void handleSave()} disabled={isSaving || isPublishing || !isDirty}>
                         {isSaving ? <Loader2 className="theme-os-spin" size={15} aria-hidden="true" /> : <Save size={15} aria-hidden="true" />}
                         Save
-                    </button>
-                    <button className="theme-os-btn theme-os-btn--primary" type="button" onClick={() => void handlePublish()} disabled={isSaving || isPublishing || isDirty}>
+                    </Button>
+                    <Button unstyled className="theme-os-btn theme-os-btn--primary" type="button" onClick={() => void handlePublish()} disabled={isSaving || isPublishing || isDirty}>
                         {isPublishing ? <Loader2 className="theme-os-spin" size={15} aria-hidden="true" /> : <Rocket size={15} aria-hidden="true" />}
                         Publish
-                    </button>
+                    </Button>
                 </div>
             </header>
 
@@ -1413,7 +1413,7 @@ function ThemeEditorInner() {
                             {PREVIEW_DEVICES.map((device) => {
                                 const Icon = device.icon
                                 return (
-                                    <button
+                                    <Button unstyled
                                         key={device.value}
                                         className={previewDevice === device.value ? 'theme-os-device-toggle__btn theme-os-device-toggle__btn--active' : 'theme-os-device-toggle__btn'}
                                         type="button"
@@ -1422,7 +1422,7 @@ function ThemeEditorInner() {
                                     >
                                         <Icon size={14} aria-hidden="true" />
                                         {device.label}
-                                    </button>
+                                    </Button>
                                 )
                             })}
                         </div>
@@ -1553,15 +1553,16 @@ function SectionTree({
                     />
                 ))}
                 <div className="theme-os-tree__add">
-                    <select value={addSectionType} onChange={(event) => onAddSectionTypeChange(event.target.value)}>
-                        {addableSections.map((section) => (
-                            <option key={section.type} value={section.type}>{section.name}</option>
-                        ))}
-                    </select>
-                    <button type="button" onClick={onAddSection} disabled={!addSectionType}>
+                    <Select
+                        unstyled
+                        value={addSectionType}
+                        onChange={(event) => onAddSectionTypeChange(event.target.value)}
+                        options={addableSections.map((section) => ({ label: section.name, value: section.type }))}
+                    />
+                    <Button unstyled type="button" onClick={onAddSection} disabled={!addSectionType}>
                         <Plus size={14} aria-hidden="true" />
                         Add
-                    </button>
+                    </Button>
                 </div>
             </TreeGroup>
 
@@ -1625,35 +1626,35 @@ function TreeSection({
 
     return (
         <div className={`theme-os-tree-section ${selected ? 'theme-os-tree-section--selected' : ''} ${!section.visible ? 'theme-os-tree-section--hidden' : ''}`}>
-            <button className="theme-os-tree-section__row" type="button" onClick={onSelect}>
+            <Button unstyled className="theme-os-tree-section__row" type="button" onClick={onSelect}>
                 <span className="theme-os-tree-section__handle" aria-hidden="true">
                     {pinned ? <PanelLeft size={14} /> : <GripVertical size={14} />}
                 </span>
                 <span>{schema?.name || labelFromKey(section.type)}</span>
                 {hasBlocks ? <ChevronDown size={13} aria-hidden="true" /> : null}
-            </button>
+            </Button>
             <div className="theme-os-tree-section__actions">
-                <button type="button" aria-label="Toggle visibility" onClick={onToggle}>
+                <Button unstyled type="button" aria-label="Toggle visibility" onClick={onToggle}>
                     <Eye size={13} aria-hidden="true" />
-                </button>
+                </Button>
                 {!pinned ? (
                     <>
-                        <button type="button" aria-label="Move up" onClick={onMoveUp} disabled={!canMoveUp}>
+                        <Button unstyled type="button" aria-label="Move up" onClick={onMoveUp} disabled={!canMoveUp}>
                             <ChevronRight className="theme-os-rotate-up" size={13} aria-hidden="true" />
-                        </button>
-                        <button type="button" aria-label="Move down" onClick={onMoveDown} disabled={!canMoveDown}>
+                        </Button>
+                        <Button unstyled type="button" aria-label="Move down" onClick={onMoveDown} disabled={!canMoveDown}>
                             <ChevronRight className="theme-os-rotate-down" size={13} aria-hidden="true" />
-                        </button>
-                        <button type="button" aria-label="Remove" onClick={onRemove}>
+                        </Button>
+                        <Button unstyled type="button" aria-label="Remove" onClick={onRemove}>
                             <Trash2 size={13} aria-hidden="true" />
-                        </button>
+                        </Button>
                     </>
                 ) : null}
             </div>
             {hasBlocks ? (
                 <div className="theme-os-tree-blocks">
                     {section.blocks.map((block) => (
-                        <button
+                        <Button unstyled
                             key={block.id}
                             className={`theme-os-tree-block ${blockSelection === block.id ? 'theme-os-tree-block--selected' : ''} ${!block.visible ? 'theme-os-tree-block--hidden' : ''}`}
                             type="button"
@@ -1661,7 +1662,7 @@ function TreeSection({
                         >
                             <span className="theme-os-tree-block__line" aria-hidden="true" />
                             <span>{schema?.blocks_schema?.[block.type]?.name || labelFromKey(block.type)}</span>
-                        </button>
+                        </Button>
                     ))}
                 </div>
             ) : null}
@@ -1682,7 +1683,7 @@ function ThemeSettingsTree({
         <div className="theme-os-tree">
             <TreeGroup label="Theme settings">
                 {groups.map(([groupKey, group]) => (
-                    <button
+                    <Button unstyled
                         key={groupKey}
                         className={`theme-os-settings-link ${selection.kind === 'theme' && selection.groupKey === groupKey ? 'theme-os-settings-link--active' : ''}`}
                         type="button"
@@ -1690,7 +1691,7 @@ function ThemeSettingsTree({
                     >
                         <Palette size={15} aria-hidden="true" />
                         <span>{group.label}</span>
-                    </button>
+                    </Button>
                 ))}
             </TreeGroup>
         </div>
@@ -1785,9 +1786,9 @@ function PropertyPanel({
                     <h2>{title}</h2>
                 </div>
                 {selection.kind === 'block' && selectedSection ? (
-                    <button className="theme-os-icon-btn" type="button" aria-label="Back to section" onClick={() => onSelectSection(selectedSection.id)}>
+                    <Button unstyled className="theme-os-icon-btn" type="button" aria-label="Back to section" onClick={() => onSelectSection(selectedSection.id)}>
                         <X size={15} aria-hidden="true" />
-                    </button>
+                    </Button>
                 ) : null}
             </div>
 
@@ -1797,18 +1798,18 @@ function PropertyPanel({
                         <Bot size={16} aria-hidden="true" />
                         <strong>AI hooks</strong>
                     </div>
-                    <button type="button" onClick={() => onAiHook('copy')}>
+                    <Button unstyled type="button" onClick={() => onAiHook('copy')}>
                         <WandSparkles size={14} aria-hidden="true" />
                         Copy
-                    </button>
-                    <button type="button" onClick={() => onAiHook('layout')}>
+                    </Button>
+                    <Button unstyled type="button" onClick={() => onAiHook('layout')}>
                         <Sparkles size={14} aria-hidden="true" />
                         Layout
-                    </button>
-                    <button type="button" onClick={() => onAiHook('blocks')}>
+                    </Button>
+                    <Button unstyled type="button" onClick={() => onAiHook('blocks')}>
                         <Plus size={14} aria-hidden="true" />
                         Block
-                    </button>
+                    </Button>
                 </section>
 
                 {selection.kind === 'theme' && selectedThemeGroup ? (
@@ -1838,10 +1839,10 @@ function PropertyPanel({
                             <div className="theme-os-block-tools">
                                 <p>Blocks</p>
                                 {Object.entries(selectedSectionSchema.blocks_schema).map(([blockType, blockSchema]) => (
-                                    <button key={blockType} type="button" onClick={() => onAddBlock(selectedSection.id, blockType)}>
+                                    <Button unstyled key={blockType} type="button" onClick={() => onAddBlock(selectedSection.id, blockType)}>
                                         <Plus size={14} aria-hidden="true" />
                                         Add {blockSchema.name}
-                                    </button>
+                                    </Button>
                                 ))}
                             </div>
                         ) : null}
@@ -1860,10 +1861,10 @@ function PropertyPanel({
                         ) : (
                             <p className="theme-os-muted">No schema exists for this block type.</p>
                         )}
-                        <button className="theme-os-danger-btn" type="button" onClick={() => onRemoveBlock(selectedSection.id, selectedBlock)}>
+                        <Button unstyled className="theme-os-danger-btn" type="button" onClick={() => onRemoveBlock(selectedSection.id, selectedBlock)}>
                             <Trash2 size={14} aria-hidden="true" />
                             Remove block
-                        </button>
+                        </Button>
                     </section>
                 ) : null}
             </div>

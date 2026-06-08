@@ -7,6 +7,7 @@ import '../../app/store_context.dart';
 
 import '../../models/store_model.dart';
 import '../../models/theme_editor_models.dart';
+import '../../services/ai_studio_service.dart';
 import '../../services/theme_service.dart';
 
 import '../../theme/app_theme_colors.dart';
@@ -34,6 +35,7 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
   List<SectionModel> _sections = [];
   bool _isLoading = true;
   bool _isSaving = false;
+  bool _isGeneratingHomepage = false;
   bool _hasChanges = false;
   String _themeSlug = 'minimal_modern';
   int? _baseVersion;
@@ -630,8 +632,10 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
 
       _showMessage('Draft saved', isSuccess: true);
       HapticFeedback.heavyImpact();
-    } catch (e) {
-      _showMessage('Error saving: $e', isError: true);
+    } on ThemeDraftConflictException catch (error) {
+      _showMessage(error.toString(), isError: true);
+    } catch (_) {
+      _showMessage('Draft could not be saved.', isError: true);
     } finally {
       setState(() => _isSaving = false);
     }
@@ -730,6 +734,87 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
       _pushHistory();
       _showMessage('${type.displayName} added');
       HapticFeedback.mediumImpact();
+    }
+  }
+
+  Future<void> _showAiHomepageSheet() async {
+    if (_store == null || _isGeneratingHomepage) return;
+    final prompt = await _AiHomepagePromptSheet.show(context);
+    if (prompt == null || prompt.trim().isEmpty) return;
+    await _generateAiHomepageDraft(prompt);
+  }
+
+  Future<void> _generateAiHomepageDraft(String prompt) async {
+    final store = _store;
+    if (store == null || _isGeneratingHomepage) return;
+
+    setState(() => _isGeneratingHomepage = true);
+    try {
+      final aiService = context.read<AiStudioService>();
+      final themeService = context.read<ThemeService>();
+      final currentTemplateConfig = _buildThemeDraftConfig();
+      final draft = await aiService.generateHomepageDraft(
+        storeId: store.id,
+        themeSlug: _themeSlug,
+        prompt: prompt,
+        templateConfig: currentTemplateConfig,
+        sectionCount: 4,
+      );
+      final normalizedConfig = Map<String, dynamic>.from(draft.templateConfig);
+      normalizedConfig['storeId'] = store.id;
+      normalizedConfig['themeId'] = draft.themeSlug;
+      normalizedConfig['themeSettings'] ??= _extractThemeSettings(
+        normalizedConfig,
+      );
+      normalizedConfig['sections'] = _normalizeSectionsForFlutter(
+        normalizedConfig['sections'],
+      );
+      final templateModel = StoreTemplateModel.fromMap(normalizedConfig);
+      final sections = _ensureRequiredSections(templateModel.sections);
+      final templateConfig = {
+        ...draft.templateConfig,
+        'storeId': store.id,
+        'themeId': draft.themeSlug,
+        'themeSettings': templateModel.themeSettings.toMap(),
+        'sections': _buildThemeEngineSections(sections),
+        'updatedAt': DateTime.now().toIso8601String(),
+      };
+      final saved = await themeService.saveDraft(
+        storeId: store.id,
+        themeSlug: draft.themeSlug,
+        templateConfig: templateConfig,
+        baseVersion: _baseVersion,
+      );
+      final updatedStore = store.copyWith(templateConfig: templateModel);
+
+      setState(() {
+        _store = updatedStore;
+        _sections = sections;
+        _themeSlug = draft.themeSlug;
+        _baseVersion = saved.version;
+        _templateConfigData = templateConfig;
+        _editorPayload = null;
+        _draftExists = true;
+        _selectedSection = null;
+        _showLayers = false;
+        _hasChanges = false;
+      });
+      _history
+        ..clear()
+        ..add(sections.map((s) => s.copyWith()).toList());
+      _historyIndex = 0;
+      await _refreshPreviewToken();
+      _showMessage('Homepage draft saved', isSuccess: true);
+      HapticFeedback.mediumImpact();
+    } on AiFeatureUnavailableException {
+      _showMessage(
+        'AI homepage generation is temporarily unavailable.',
+        isError: true,
+      );
+    } catch (_) {
+      _showMessage('Homepage draft could not be generated.', isError: true);
+    } finally {
+      if (mounted) setState(() => _isGeneratingHomepage = false);
     }
   }
 
@@ -850,6 +935,8 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
                   if (_selectedSection == null)
                     EditorToolbar(
                       onAddSection: _showAddSectionSheet,
+                      onGenerateHomepage: _showAiHomepageSheet,
+                      isGeneratingHomepage: _isGeneratingHomepage,
                       onShowLayers: () => setState(() => _showLayers = true),
                       onUndo: _undo,
                       onRedo: _redo,
@@ -969,6 +1056,144 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AiHomepagePromptSheet extends StatefulWidget {
+  const _AiHomepagePromptSheet();
+
+  static Future<String?> show(BuildContext context) {
+    return showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const _AiHomepagePromptSheet(),
+    );
+  }
+
+  @override
+  State<_AiHomepagePromptSheet> createState() => _AiHomepagePromptSheetState();
+}
+
+class _AiHomepagePromptSheetState extends State<_AiHomepagePromptSheet> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final prompt = _controller.text.trim();
+    if (prompt.length < 8) return;
+    Navigator.pop(context, prompt);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppThemeColors.of(context);
+    final bottom = MediaQuery.of(context).viewInsets.bottom;
+    return Padding(
+      padding: EdgeInsets.only(bottom: bottom),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+        decoration: BoxDecoration(
+          color: colors.card,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border.all(color: colors.cardBorder),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: colors.textTertiary,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Icon(
+                    Icons.auto_awesome_rounded,
+                    color: AppColors.primary,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Describe your homepage',
+                      style: TextStyle(
+                        color: colors.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Close',
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(
+                      Icons.close_rounded,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _controller,
+                minLines: 4,
+                maxLines: 6,
+                autofocus: true,
+                textInputAction: TextInputAction.newline,
+                style: TextStyle(color: colors.textPrimary),
+                decoration: InputDecoration(
+                  hintText:
+                      'Example: A clean homepage for handmade cotton kurtas with a warm hero, newest products, and a short brand story.',
+                  hintStyle: TextStyle(color: colors.textTertiary),
+                  filled: true,
+                  fillColor: colors.surfaceVariant,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: colors.cardBorder),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: colors.cardBorder),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: AppColors.primary,
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+                onSubmitted: (_) => _submit(),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: _submit,
+                  icon: const Icon(Icons.auto_awesome_rounded, size: 18),
+                  label: const Text('Generate draft'),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

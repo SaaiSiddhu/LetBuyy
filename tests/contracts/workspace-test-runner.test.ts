@@ -39,9 +39,9 @@ test('deployable workspaces run real test commands instead of no-op placeholders
 
 test('root and governance runners include workspace and TypeScript contract tests', () => {
     const rootPackageJson = readPackageJson('.');
-    assert.match(rootPackageJson.scripts?.test || '', /node --test tests\/\*\/\*\.test\.mjs/);
+    assert.match(rootPackageJson.scripts?.test || '', /node --test --test-concurrency=1 tests\/\*\/\*\.test\.mjs/);
     assert.match(rootPackageJson.scripts?.test || '', /test:contracts/);
-    assert.equal(rootPackageJson.scripts?.['test:behavioral'], 'node --test tests/*/*.test.mjs');
+    assert.equal(rootPackageJson.scripts?.['test:behavioral'], 'node --test --test-concurrency=1 tests/*/*.test.mjs');
     assert.match(rootPackageJson.scripts?.['test:workspaces'] || '', /turbo test/);
     assert.equal(rootPackageJson.scripts?.['test:contracts'], 'tsx --test tests/contracts/*.test.ts');
 });

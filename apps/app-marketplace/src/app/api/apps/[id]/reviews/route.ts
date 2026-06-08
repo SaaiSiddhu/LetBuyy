@@ -25,6 +25,36 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     try {
         const body = await request.json();
+        if (body?.action === 'report_review' && typeof body.review_id === 'string') {
+            const api = await createAppMarketplaceApiClient({ requireSession: true });
+            const data = await api.appStore.reportReview(id, body.review_id, {
+                reason_code: typeof body.reason_code === 'string' ? body.reason_code : 'merchant_report',
+                reason_text: typeof body.reason_text === 'string' ? body.reason_text : null,
+                site_id: typeof body.site_id === 'string' ? body.site_id : null,
+                metadata: {},
+            });
+            return NextResponse.json({ data }, { status: 201 });
+        }
+
+        if (body?.action === 'reply_review' && typeof body.review_id === 'string' && typeof body.developer_reply === 'string') {
+            const api = await createAppMarketplaceApiClient({ requireSession: true });
+            const data = await api.appStore.replyToReview(id, body.review_id, {
+                developer_reply: body.developer_reply,
+            });
+            return NextResponse.json({ data });
+        }
+
+        const moderationActions = ['publish', 'dismiss', 'reject', 'flag'] as const;
+        const moderationAction = moderationActions.find((item) => item === body?.moderation_action);
+        if (body?.action === 'moderate_review' && typeof body.review_id === 'string' && moderationAction) {
+            const api = await createAppMarketplaceApiClient({ requireSession: true });
+            const data = await api.appStore.moderateReview(body.review_id, {
+                action: moderationAction,
+                reason: typeof body.reason === 'string' ? body.reason : null,
+            });
+            return NextResponse.json({ data });
+        }
+
         const { rating, title, body: reviewBody, store_id } = body;
 
         if (!rating || rating < 1 || rating > 5) {

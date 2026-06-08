@@ -39,7 +39,7 @@
       },
       "routes": {
         "apiGateway": "api-staging.letbuyy.store",
-        "mobileBff": "bff-staging.letbuyy.store",
+        "mobileBff": "bff-staging.letbuyy.com",
         "webhookService": "webhooks-staging.letbuyy.store"
       }
     },
@@ -65,7 +65,7 @@
       },
       "routes": {
         "apiGateway": "api.letbuyy.store",
-        "mobileBff": "bff.letbuyy.store",
+        "mobileBff": "bff.letbuyy.com",
         "webhookService": "webhooks.letbuyy.store"
       }
     }

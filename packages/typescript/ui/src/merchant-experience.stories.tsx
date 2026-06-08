@@ -12,11 +12,8 @@ import {
     CommandPalette,
     Combobox,
     ConfirmDialog,
-    ColorPreviewButton,
-    ColorSwatch,
-    DataTable,
     EmptyState,
-    IndexTable,
+    Table,
     Input,
     MaterialIcon,
     MetricCard,
@@ -24,7 +21,6 @@ import {
     Page,
     PageHeader,
     Pagination,
-    RadiusPreview,
     SaveBar,
     Section,
     Select,
@@ -35,6 +31,7 @@ import {
     Tooltip,
     useToast,
 } from './index';
+import { ColorPreviewButton, ColorSwatch, RadiusPreview } from './preview';
 import { letbuyyTokens } from './tokens';
 
 interface ProductStoryRow extends Record<string, unknown> {
@@ -318,7 +315,7 @@ export function TablesAndProductivity() {
     return (
         <Page>
             <PageHeader title="Index table" description="Bulk actions, saved views, filters, sorting, and dense scanning." />
-            <IndexTable
+            <Table
                 rows={sampleRows}
                 savedViews={[
                     { label: 'All', value: 'all', count: 3 },
@@ -342,8 +339,8 @@ export function TablesAndProductivity() {
             />
             <Card>
                 <Section title="Data table compatibility">
-                    <DataTable
-                        data={sampleRows}
+                    <Table
+                        rows={sampleRows}
                         columns={[
                             { key: 'title', header: 'Product' },
                             { key: 'inventory', header: 'Inventory' },
@@ -383,7 +380,7 @@ export function StatusBadges() {
             <Badge label="Success" variant="success" />
             <Badge label="Warning" variant="warning" />
             <Badge label="Critical" variant="critical" />
-            <Badge label="Legacy danger alias" variant="danger" />
+            <Badge label="Legacy danger alias" variant="critical" />
             <CheckCircle2 className="h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] text-[color:var(--lb-color-success)]" aria-hidden="true" />
         </div>
     );

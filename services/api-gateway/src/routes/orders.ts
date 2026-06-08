@@ -7,16 +7,26 @@ import { OrderExecutionAdapter } from '../execution/order-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { resolveTenantContextForOrder, resolveTenantContextForOwnedSite } from '../lib/tenant-context';
+import { bytesToBase64, createSimplePdfBytes } from '../lib/simple-pdf';
+import { listOwnedStoreIds } from '../lib/order-ownership';
 import {
     CreateOrderSchema,
     UpdateOrderStatusSchema,
     FulfillOrderSchema,
+    UpdateOrderLineItemsSchema,
+    ListDraftOrdersQuery,
+    CreateDraftOrderSchema,
+    ConvertDraftOrderSchema,
     RefundOrderSchema,
     CompleteRefundSchema,
     ListOrdersQuery,
     type CreateOrderInput,
     type UpdateOrderStatusInput,
     type FulfillOrderInput,
+    type UpdateOrderLineItemsInput,
+    type ListDraftOrdersInput,
+    type CreateDraftOrderInput,
+    type ConvertDraftOrderInput,
     type RefundOrderInput,
     type CompleteRefundInput,
     type ListOrdersInput as ListOrdersQueryInput,
@@ -33,7 +43,17 @@ import {
 } from '@letbuyy/infrastructure/logistics-adapter';
 
 const router = new Hono<{ Bindings: Env }>();
-type OrderEventType = 'order.created' | 'order.paid' | 'order.fulfilled' | 'order.cancelled' | 'order.refunded';
+type OrderEventType =
+    | 'order.created'
+    | 'order.paid'
+    | 'order.confirmed_cod'
+    | 'order.fulfilled'
+    | 'order.delivered'
+    | 'order.cancelled'
+    | 'order.rto'
+    | 'order.returned'
+    | 'order.refunded'
+    | 'order.risk_assessed';
 
 const ORDER_LIST_COLUMNS = [
     'id',
@@ -74,6 +94,11 @@ const ORDER_LIST_COLUMNS = [
     'currency',
     'return_status',
     'refund_status',
+    'risk_score',
+    'risk_level',
+    'fulfillment_state',
+    'cod_confirmation_status',
+    'rto_status',
     'customer_gstin',
     'place_of_supply_state',
     'gst_invoice_number',
@@ -113,6 +138,68 @@ type OrderItemRelationRow = {
     image_url?: string | null;
     variant_title?: string | null;
     product_snapshot?: Record<string, unknown> | string | null;
+};
+
+type ProductSnapshotRow = {
+    id: string;
+    store_id?: string | null;
+    name?: string | null;
+    title?: string | null;
+    sku?: string | null;
+    price?: number | string | null;
+    sale_price?: number | string | null;
+    images?: unknown;
+};
+
+const DRAFT_ORDER_COLUMNS = [
+    'id',
+    'site_id',
+    'customer_email',
+    'customer_name',
+    'customer_phone',
+    'customer_gstin',
+    'shipping_address',
+    'payment_method',
+    'shipping_method',
+    'notes',
+    'coupon_code',
+    'gift_card_code',
+    'status',
+    'converted_order_id',
+    'idempotency_key',
+    'metadata',
+    'created_at',
+    'updated_at',
+].join(',');
+
+type DraftOrderRow = {
+    id: string;
+    site_id: string;
+    customer_email: string;
+    customer_name: string;
+    customer_phone?: string | null;
+    customer_gstin?: string | null;
+    shipping_address?: unknown;
+    payment_method?: string | null;
+    shipping_method?: string | null;
+    notes?: string | null;
+    coupon_code?: string | null;
+    gift_card_code?: string | null;
+    status: 'draft' | 'converted' | 'discarded';
+    converted_order_id?: string | null;
+    idempotency_key?: string | null;
+    metadata?: unknown;
+    created_at: string;
+    updated_at: string;
+};
+
+type DraftOrderLineRow = {
+    id: string;
+    draft_order_id: string;
+    site_id: string;
+    product_id: string;
+    variant_id?: string | null;
+    quantity: number | string | null;
 };
 
 function databaseErrorText(error: DatabaseErrorLike): string {
@@ -208,6 +295,15 @@ function numberValue(value: unknown): number | null {
     return null;
 }
 
+function htmlEscape(value: unknown): string {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 function orderTotalPayload(record: Record<string, unknown>): { amount_minor: number; currency: 'INR' } | undefined {
     const minorUnits = numberValue(record.total_minor) ?? numberValue(record.total_amount_minor) ?? numberValue(record.amount_minor);
     if (minorUnits !== null && Number.isInteger(minorUnits) && minorUnits >= 0) {
@@ -220,6 +316,68 @@ function orderTotalPayload(record: Record<string, unknown>): { amount_minor: num
     }
 
     return undefined;
+}
+
+function normalizeDraftOrderRecord(
+    draft: DraftOrderRow,
+    lines: DraftOrderLineRow[],
+): Record<string, unknown> {
+    return {
+        id: draft.id,
+        site_id: draft.site_id,
+        store_id: draft.site_id,
+        customer_email: draft.customer_email,
+        customer_name: draft.customer_name,
+        customer_phone: draft.customer_phone || null,
+        customer_gstin: draft.customer_gstin || null,
+        shipping_address: draft.shipping_address || {},
+        payment_method: draft.payment_method || 'cod',
+        shipping_method: draft.shipping_method || 'standard',
+        notes: draft.notes || null,
+        coupon_code: draft.coupon_code || null,
+        gift_card_code: draft.gift_card_code || null,
+        status: draft.status,
+        converted_order_id: draft.converted_order_id || null,
+        metadata: draft.metadata || {},
+        created_at: draft.created_at,
+        updated_at: draft.updated_at,
+        items: lines.map((line) => ({
+            id: line.id,
+            product_id: line.product_id,
+            variant_id: line.variant_id || null,
+            quantity: Math.max(1, Math.trunc(numberValue(line.quantity) || 1)),
+        })),
+    };
+}
+
+async function loadDraftOrder(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    draftId: string,
+): Promise<{ draft: DraftOrderRow; lines: DraftOrderLineRow[] } | null> {
+    const { data: draft, error } = await db
+        .from('draft_orders')
+        .select(DRAFT_ORDER_COLUMNS)
+        .eq('id', draftId)
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    if (error) throw new Error('Draft order lookup failed');
+    if (!draft) return null;
+
+    const { data: lines, error: linesError } = await db
+        .from('draft_order_lines')
+        .select('id,draft_order_id,site_id,product_id,variant_id,quantity')
+        .eq('draft_order_id', draftId)
+        .eq('site_id', (draft as unknown as DraftOrderRow).site_id)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true });
+
+    if (linesError) throw new Error('Draft order line lookup failed');
+
+    return {
+        draft: draft as unknown as DraftOrderRow,
+        lines: (lines || []) as DraftOrderLineRow[],
+    };
 }
 
 async function emitOrderEvent(
@@ -257,11 +415,38 @@ async function emitOrderEvent(
 }
 
 function orderEventsForStatus(status: UpdateOrderStatusInput['status']): OrderEventType[] {
-    if (status === 'delivered') return ['order.paid'];
+    if (status === 'delivered') return ['order.delivered', 'order.paid'];
     if (status === 'shipped') return ['order.fulfilled'];
     if (status === 'cancelled') return ['order.cancelled'];
-    if (status === 'refunded') return ['order.refunded'];
+    if (status === 'refunded') return ['order.returned', 'order.refunded'];
     return [];
+}
+
+function replayHttpStatus(statusCode: number): 200 | 201 | 202 {
+    if (statusCode === 201) return 201;
+    if (statusCode === 202) return 202;
+    return 200;
+}
+
+async function draftProductsBelongToSite(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    siteId: string,
+    items: CreateDraftOrderInput['items'],
+): Promise<boolean> {
+    const productIds = Array.from(new Set(items.map((item) => item.product_id)));
+    if (productIds.length === 0) return false;
+
+    const { data, error } = await db
+        .from('products')
+        .select('id')
+        .eq('store_id', siteId)
+        .in('id', productIds)
+        .is('deleted_at', null);
+
+    if (error) throw new Error('Draft order product lookup failed');
+
+    const found = new Set((data || []).map((row) => String((row as Record<string, unknown>).id)));
+    return productIds.every((productId) => found.has(productId));
 }
 
 function buildLogisticsDestination(order: FulfillmentOrderSnapshot): LogisticsAddress {
@@ -416,6 +601,312 @@ router.get('/', validate('query', ListOrdersQuery), async (c) => {
     }));
 });
 
+// GET /orders/drafts — List draft orders for the authenticated merchant
+router.get('/drafts', validate('query', ListDraftOrdersQuery), async (c) => {
+    const query = c.get('validatedQuery') as ListDraftOrdersInput;
+    const db = getSupabaseAdmin(c);
+    const tenant = await resolveTenantContextForOwnedSite(c, query.store_id);
+    const offset = (query.page - 1) * query.limit;
+
+    let draftQuery = db
+        .from('draft_orders')
+        .select(DRAFT_ORDER_COLUMNS, { count: 'exact' })
+        .eq('site_id', tenant.siteId)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .range(offset, offset + query.limit - 1);
+
+    if (query.status !== 'all') draftQuery = draftQuery.eq('status', query.status);
+
+    const { data, error, count } = await draftQuery;
+    if (error) return c.json(dbErrorBody(), 500);
+
+    const drafts = (data || []) as unknown as DraftOrderRow[];
+    const draftIds = drafts.map((draft) => draft.id);
+    let lines: DraftOrderLineRow[] = [];
+    if (draftIds.length > 0) {
+        const { data: lineData, error: lineError } = await db
+            .from('draft_order_lines')
+            .select('id,draft_order_id,site_id,product_id,variant_id,quantity')
+            .eq('site_id', tenant.siteId)
+            .in('draft_order_id', draftIds)
+            .is('deleted_at', null)
+            .order('created_at', { ascending: true });
+        if (lineError) return c.json(dbErrorBody(), 500);
+        lines = (lineData || []) as DraftOrderLineRow[];
+    }
+
+    const linesByDraft = new Map<string, DraftOrderLineRow[]>();
+    for (const line of lines) {
+        linesByDraft.set(line.draft_order_id, [
+            ...(linesByDraft.get(line.draft_order_id) || []),
+            line,
+        ]);
+    }
+
+    return c.json(paginated(
+        drafts.map((draft) => normalizeDraftOrderRecord(draft, linesByDraft.get(draft.id) || [])),
+        count || 0,
+        query.page,
+        query.limit,
+    ));
+});
+
+// POST /orders/drafts — Save a merchant draft order intent
+router.post('/drafts', validate('json', CreateDraftOrderSchema), async (c) => {
+    const body = c.get('validatedBody') as CreateDraftOrderInput;
+    const db = getSupabaseAdmin(c);
+    const tenant = await resolveTenantContextForOwnedSite(c, body.store_id);
+    const idempotency = new IdempotencyExecutionAdapter(db);
+    const claim = await idempotency.begin({
+        siteId: tenant.siteId,
+        key: body.idempotency_key,
+        scope: 'orders.drafts.create',
+        requestBody: body,
+        requestId: tenant.requestId,
+    });
+
+    if (claim.kind === 'replay') {
+        return c.json(recordValue(claim.responseBody), replayHttpStatus(claim.statusCode));
+    }
+
+    try {
+        const productsExist = await draftProductsBelongToSite(db, tenant.siteId, body.items);
+        if (!productsExist) {
+            await idempotency.fail(claim.id);
+            return c.json({ success: false, error: { code: 'PRODUCT_NOT_FOUND', message: 'One or more products were not found.' } }, 404);
+        }
+
+        const { data: draft, error } = await db
+            .from('draft_orders')
+            .insert({
+                site_id: tenant.siteId,
+                customer_email: body.customer_email,
+                customer_name: body.customer_name,
+                customer_phone: body.customer_phone || null,
+                customer_gstin: body.customer_gstin || null,
+                shipping_address: body.shipping_address || {},
+                payment_method: body.payment_method,
+                shipping_method: body.shipping_method,
+                notes: body.notes || null,
+                coupon_code: body.coupon_code || null,
+                gift_card_code: body.gift_card_code || null,
+                idempotency_key: body.idempotency_key,
+                created_by: tenant.userId,
+                updated_by: tenant.userId,
+            })
+            .select(DRAFT_ORDER_COLUMNS)
+            .single();
+
+        if (error || !draft) throw new Error('Draft order creation failed');
+
+        const draftRow = draft as unknown as DraftOrderRow;
+        const { error: lineError } = await db
+            .from('draft_order_lines')
+            .insert(body.items.map((item) => ({
+                draft_order_id: draftRow.id,
+                site_id: tenant.siteId,
+                product_id: item.product_id,
+                variant_id: item.variant_id || null,
+                quantity: item.quantity,
+            })));
+
+        if (lineError) {
+            await db
+                .from('draft_orders')
+                .update({ status: 'discarded', deleted_at: new Date().toISOString(), updated_by: tenant.userId })
+                .eq('id', draftRow.id)
+                .eq('site_id', tenant.siteId);
+            throw new Error('Draft order line creation failed');
+        }
+
+        const loaded = await loadDraftOrder(db, draftRow.id);
+        if (!loaded) throw new Error('Draft order reload failed');
+        const responseBody = success(normalizeDraftOrderRecord(loaded.draft, loaded.lines));
+        type IdempotencyResponseBody = Parameters<IdempotencyExecutionAdapter['complete']>[0]['responseBody'];
+        await idempotency.complete({
+            id: claim.id,
+            responseBody: responseBody as unknown as IdempotencyResponseBody,
+            statusCode: 201,
+            resourceType: 'draft_order',
+            resourceId: draftRow.id,
+        });
+
+        return c.json(responseBody, 201);
+    } catch (error) {
+        await idempotency.fail(claim.id);
+        throw error;
+    }
+});
+
+// POST /orders/drafts/:id/convert — Convert a draft order through the canonical order engine
+router.post('/drafts/:id/convert', validate('json', ConvertDraftOrderSchema), async (c) => {
+    const draftId = c.req.param('id');
+    const body = c.get('validatedBody') as ConvertDraftOrderInput;
+    const db = getSupabaseAdmin(c);
+    const loaded = await loadDraftOrder(db, draftId);
+    if (!loaded) {
+        return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Draft order not found' } }, 404);
+    }
+    if (loaded.draft.status !== 'draft') {
+        return c.json({ success: false, error: { code: 'INVALID_STATUS', message: 'Draft order is not editable.' } }, 409);
+    }
+    if (loaded.lines.length === 0) {
+        return c.json({ success: false, error: { code: 'EMPTY_DRAFT', message: 'Draft order has no items.' } }, 409);
+    }
+
+    const tenant = await resolveTenantContextForOwnedSite(c, loaded.draft.site_id);
+    const idempotency = new IdempotencyExecutionAdapter(db);
+    const claim = await idempotency.begin({
+        siteId: tenant.siteId,
+        key: body.idempotency_key,
+        scope: `orders.drafts.convert:${draftId}`,
+        requestBody: body,
+        requestId: tenant.requestId,
+    });
+
+    if (claim.kind === 'replay') {
+        return c.json(recordValue(claim.responseBody), replayHttpStatus(claim.statusCode));
+    }
+
+    const service = new OrderExecutionAdapter(db);
+    try {
+        const order = await service.createOrder(
+            {
+                customer_name: loaded.draft.customer_name,
+                customer_email: loaded.draft.customer_email,
+                customer_phone: loaded.draft.customer_phone || undefined,
+                shipping_address: recordValue(loaded.draft.shipping_address),
+                customer_gstin: loaded.draft.customer_gstin || undefined,
+                items: loaded.lines.map((line) => ({
+                    product_id: line.product_id,
+                    variant_id: line.variant_id || null,
+                    quantity: Math.max(1, Math.trunc(numberValue(line.quantity) || 1)),
+                })),
+                payment_method: loaded.draft.payment_method || 'cod',
+                shipping_method: loaded.draft.shipping_method === 'express' ? 'express' : 'standard',
+                notes: loaded.draft.notes || undefined,
+                coupon_code: loaded.draft.coupon_code || undefined,
+                gift_card_code: loaded.draft.gift_card_code || undefined,
+                idempotency_key: body.idempotency_key,
+            },
+            tenant,
+        );
+
+        const orderRecord = recordValue(order);
+        const orderId = textValue(orderRecord.id);
+        const { error: updateError } = await db
+            .from('draft_orders')
+            .update({
+                status: 'converted',
+                converted_order_id: orderId,
+                updated_by: tenant.userId,
+                updated_at: new Date().toISOString(),
+            })
+            .eq('id', draftId)
+            .eq('site_id', tenant.siteId);
+
+        if (updateError) throw new Error('Draft order conversion update failed');
+
+        await emitOrderEvent(db, {
+            eventType: 'order.created',
+            order,
+            siteId: tenant.siteId,
+            actorId: tenant.userId,
+            requestId: tenant.requestId,
+        });
+
+        const reloaded = await loadDraftOrder(db, draftId);
+        const responseBody = success({
+            draft_order: reloaded
+                ? normalizeDraftOrderRecord(reloaded.draft, reloaded.lines)
+                : normalizeDraftOrderRecord({ ...loaded.draft, status: 'converted', converted_order_id: orderId } as unknown as DraftOrderRow, loaded.lines),
+            order,
+        });
+        type IdempotencyResponseBody = Parameters<IdempotencyExecutionAdapter['complete']>[0]['responseBody'];
+        await idempotency.complete({
+            id: claim.id,
+            responseBody: responseBody as unknown as IdempotencyResponseBody,
+            statusCode: 201,
+            resourceType: 'order',
+            resourceId: orderId || undefined,
+        });
+
+        return c.json(responseBody, 201);
+    } catch (error) {
+        await idempotency.fail(claim.id);
+        throw error;
+    }
+});
+
+// GET /orders/:id/packing-slip — Server-rendered packing slip payload
+router.get('/:id/packing-slip', async (c) => {
+    const orderId = c.req.param('id');
+    const db = getSupabaseAdmin(c);
+    const tenant = await resolveTenantContextForOrder(c, orderId);
+
+    const { data: order, error } = await db
+        .from('orders')
+        .select(ORDER_LIST_COLUMNS_RELATIONAL)
+        .eq('id', orderId)
+        .eq('store_id', tenant.siteId)
+        .single();
+    if (error || !order) {
+        return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Order not found' } }, 404);
+    }
+
+    const rows = await hydrateOrderItems(db, [order as unknown as Record<string, unknown>]);
+    const normalized = normalizeOrderRecord(rows[0] as unknown as OrderSourceRow);
+    const normalizedRecord = normalized as unknown as Record<string, unknown>;
+    const items = Array.isArray(normalizedRecord.line_items)
+        ? normalizedRecord.line_items as Array<Record<string, unknown>>
+        : [];
+    const orderNumber = textValue(normalizedRecord.order_number) || orderId;
+    const customerName = textValue(normalizedRecord.customer_name) || 'Customer';
+    const customerEmail = textValue(normalizedRecord.customer_email) || '';
+    const total = numberValue(normalizedRecord.total) || 0;
+    const linesText = items.map((item) => {
+        const name = textValue(item.name) || textValue(item.title) || 'Item';
+        const quantity = numberValue(item.quantity) || 0;
+        const sku = textValue(item.sku);
+        return `${quantity} x ${name}${sku ? ` (${sku})` : ''}`;
+    });
+    const htmlRows = items.map((item) => {
+        const name = textValue(item.name) || textValue(item.title) || 'Item';
+        const quantity = numberValue(item.quantity) || 0;
+        const sku = textValue(item.sku) || '';
+        return `<tr><td>${htmlEscape(name)}${sku ? `<br><small>${htmlEscape(sku)}</small>` : ''}</td><td>${htmlEscape(quantity)}</td></tr>`;
+    }).join('');
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Packing slip ${htmlEscape(orderNumber)}</title></head><body><h1>Packing slip</h1><p><strong>Order:</strong> ${htmlEscape(orderNumber)}</p><p><strong>Customer:</strong> ${htmlEscape(customerName)} ${customerEmail ? `&lt;${htmlEscape(customerEmail)}&gt;` : ''}</p><table><thead><tr><th align="left">Item</th><th align="right">Qty</th></tr></thead><tbody>${htmlRows}</tbody></table><p><strong>Total:</strong> INR ${htmlEscape(total.toFixed(2))}</p></body></html>`;
+    const text = [
+        'Packing slip',
+        `Order: ${orderNumber}`,
+        `Customer: ${customerName}${customerEmail ? ` <${customerEmail}>` : ''}`,
+        '',
+        ...linesText,
+        '',
+        `Total: INR ${total.toFixed(2)}`,
+    ].join('\n');
+    const pdfBytes = createSimplePdfBytes(`Packing slip ${orderNumber}`, [
+        `Order: ${orderNumber}`,
+        `Customer: ${customerName}${customerEmail ? ` <${customerEmail}>` : ''}`,
+        '',
+        ...linesText,
+        '',
+        `Total: INR ${total.toFixed(2)}`,
+    ]);
+
+    return c.json(success({
+        order_id: orderId,
+        order_number: orderNumber,
+        filename: `packing-slip-${orderNumber}.pdf`,
+        content_type: 'application/pdf',
+        pdf_base64: bytesToBase64(pdfBytes),
+        html,
+        text,
+    }));
+});
+
 // GET /orders/:id
 router.get('/:id', async (c) => {
     const auth = c.get('auth');
@@ -454,6 +945,164 @@ router.get('/:id', async (c) => {
         : [order as unknown as Record<string, unknown>];
 
     return c.json(success(normalizeOrderRecord(rows[0] as unknown as OrderSourceRow)));
+});
+
+// PATCH /orders/:id/line-items — Edit line items and rebuild totals server-side
+router.patch('/:id/line-items', validate('json', UpdateOrderLineItemsSchema), async (c) => {
+    const orderId = c.req.param('id');
+    const body = c.get('validatedBody') as UpdateOrderLineItemsInput;
+    const db = getSupabaseAdmin(c);
+    const tenant = await resolveTenantContextForOrder(c, orderId);
+    const idempotency = new IdempotencyExecutionAdapter(db);
+    const claim = await idempotency.begin({
+        siteId: tenant.siteId,
+        key: body.idempotency_key,
+        scope: `orders.line_items:${orderId}`,
+        requestBody: body,
+        requestId: tenant.requestId,
+    });
+
+    if (claim.kind === 'replay') {
+        return c.json(claim.responseBody as any, claim.statusCode as any);
+    }
+
+    try {
+        const removals = new Set([
+            ...body.remove_line_item_ids,
+            ...body.lines.filter((line) => line.quantity === 0).map((line) => line.order_item_id),
+        ]);
+        const quantityPatches = body.lines.filter((line) => line.quantity > 0);
+
+        for (const line of quantityPatches) {
+            const { data: existing, error: existingError } = await db
+                .from('order_items')
+                .select('id, price, unit_price')
+                .eq('id', line.order_item_id)
+                .eq('order_id', orderId)
+                .is('deleted_at', null)
+                .maybeSingle();
+            if (existingError || !existing) {
+                return c.json({ success: false, error: { code: 'ORDER_LINE_NOT_FOUND', message: 'Order line not found.' } }, 404);
+            }
+            const unitPrice = numberValue((existing as Record<string, unknown>).unit_price) ?? numberValue((existing as Record<string, unknown>).price) ?? 0;
+            const { error } = await db
+                .from('order_items')
+                .update({
+                    quantity: line.quantity,
+                    unit_price: unitPrice,
+                    price: unitPrice,
+                    total: Math.round(unitPrice * line.quantity * 100) / 100,
+                    updated_at: new Date().toISOString(),
+                })
+                .eq('id', line.order_item_id)
+                .eq('order_id', orderId);
+            if (error) throw new Error('Order line update failed');
+        }
+
+        if (removals.size > 0) {
+            const { error } = await db
+                .from('order_items')
+                .update({ deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+                .in('id', Array.from(removals))
+                .eq('order_id', orderId);
+            if (error) throw new Error('Order line removal failed');
+        }
+
+        for (const item of body.add_items) {
+            const { data: product, error: productError } = await db
+                .from('products')
+                .select('id, store_id, name, title, sku, price, sale_price, images')
+                .eq('id', item.product_id)
+                .eq('store_id', tenant.siteId)
+                .is('deleted_at', null)
+                .maybeSingle();
+            if (productError || !product) {
+                return c.json({ success: false, error: { code: 'PRODUCT_NOT_FOUND', message: 'Product not found.' } }, 404);
+            }
+            const productRow = product as ProductSnapshotRow;
+            const unitPrice = numberValue(productRow.sale_price) ?? numberValue(productRow.price) ?? 0;
+            const name = textValue(productRow.name) || textValue(productRow.title) || 'Product';
+            const { error } = await db
+                .from('order_items')
+                .insert({
+                    order_id: orderId,
+                    product_id: item.product_id,
+                    variant_id: item.variant_id || null,
+                    name,
+                    title: name,
+                    sku: productRow.sku || null,
+                    quantity: item.quantity,
+                    price: unitPrice,
+                    unit_price: unitPrice,
+                    total: Math.round(unitPrice * item.quantity * 100) / 100,
+                    product_snapshot: productRow,
+                });
+            if (error) throw new Error('Order line insert failed');
+        }
+
+        const { data: activeLines, error: linesError } = await db
+            .from('order_items')
+            .select('total')
+            .eq('order_id', orderId)
+            .is('deleted_at', null);
+        if (linesError) throw new Error('Order line total lookup failed');
+
+        const subtotal = ((activeLines || []) as Array<Record<string, unknown>>)
+            .reduce((sum, line) => sum + (numberValue(line.total) || 0), 0);
+        const { data: orderForTotals, error: orderError } = await db
+            .from('orders')
+            .select('shipping_cost, tax, discount')
+            .eq('id', orderId)
+            .eq('store_id', tenant.siteId)
+            .maybeSingle();
+        if (orderError || !orderForTotals) throw new Error('Order total lookup failed');
+
+        const total = Math.max(
+            0,
+            subtotal +
+            (numberValue((orderForTotals as Record<string, unknown>).shipping_cost) || 0) +
+            (numberValue((orderForTotals as Record<string, unknown>).tax) || 0) -
+            (numberValue((orderForTotals as Record<string, unknown>).discount) || 0),
+        );
+
+        const { error: updateOrderError } = await db
+            .from('orders')
+            .update({
+                subtotal: Math.round(subtotal * 100) / 100,
+                total: Math.round(total * 100) / 100,
+                notes: body.notes || undefined,
+                updated_at: new Date().toISOString(),
+                updated_by: tenant.userId,
+            })
+            .eq('id', orderId)
+            .eq('store_id', tenant.siteId);
+        if (updateOrderError) throw new Error('Order total update failed');
+
+        const { data: order, error: loadError } = await db
+            .from('orders')
+            .select(orderItemsRelationalReadsEnabled(c.env) ? ORDER_LIST_COLUMNS_RELATIONAL : '*')
+            .eq('id', orderId)
+            .eq('store_id', tenant.siteId)
+            .single();
+        if (loadError || !order) throw new Error('Order reload failed');
+
+        const rows = orderItemsRelationalReadsEnabled(c.env)
+            ? await hydrateOrderItems(db, [order as unknown as Record<string, unknown>])
+            : [order as unknown as Record<string, unknown>];
+        const responseBody = success(normalizeOrderRecord(rows[0] as unknown as OrderSourceRow));
+        type IdempotencyResponseBody = Parameters<IdempotencyExecutionAdapter['complete']>[0]['responseBody'];
+        await idempotency.complete({
+            id: claim.id,
+            responseBody: responseBody as unknown as IdempotencyResponseBody,
+            statusCode: 200,
+            resourceType: 'order',
+            resourceId: orderId,
+        });
+        return c.json(responseBody);
+    } catch (error) {
+        await idempotency.fail(claim.id);
+        throw error;
+    }
 });
 
 // PATCH /orders/:id — Update order status (with state machine)
@@ -692,24 +1341,5 @@ router.post('/:id/refund', validate('json', RefundOrderSchema), async (c) => {
         throw error;
     }
 });
-
-async function listOwnedStoreIds(
-    db: ReturnType<typeof getSupabaseAdmin>,
-    userId: string,
-    sessionStoreId?: string
-) {
-    let query = db
-        .from('sites')
-        .select('id')
-        .or(`custom_user_id.eq.${userId},user_id.eq.${userId}`)
-        .is('deleted_at', null);
-
-    if (sessionStoreId) query = query.eq('id', sessionStoreId);
-
-    const { data, error } = await query;
-    if (error) throw new Error(`Store ownership lookup failed: ${error.message}`);
-
-    return (data || []).map((store) => store.id as string);
-}
 
 export default router;

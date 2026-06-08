@@ -1,6 +1,7 @@
 'use client';
 
 import { MarketplaceUnavailable as SharedMarketplaceUnavailable } from '@letbuyy/ui/marketplace';
+import { t } from '@/lib/i18n/messages';
 import { useRouter } from 'next/navigation';
 
 /**
@@ -16,27 +17,20 @@ export function MarketplaceUnavailable({
     title?: string;
     body?: string;
     onRetry?: () => void;
-}) {
+    }) {
     const router = useRouter();
     const handleRetry = onRetry ?? (() => router.refresh());
+    const retryLabel = t('marketplace.error.retry') || 'Try again';
     return (
         <SharedMarketplaceUnavailable
             title={title}
             body={body}
-            buttonLabel="Try again"
+            buttonLabel={retryLabel}
             onRetry={handleRetry}
-            style={{ textAlign: 'center', padding: '48px 16px' }}
-            headingStyle={{ fontSize: 18, fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)' }}
-            bodyStyle={{ fontSize: 14, color: 'var(--text-tertiary)', marginBottom: 16, maxWidth: 420, marginInline: 'auto' }}
-            buttonStyle={{
-                padding: '8px 18px',
-                borderRadius: 8,
-                border: '1px solid var(--lb-color-border, #d0d0d0)',
-                background: 'var(--lb-color-surface, #fff)',
-                color: 'var(--text-primary, inherit)',
-                fontWeight: 600,
-                cursor: 'pointer',
-            }}
+            className="marketplace-unavailable"
+            headingClassName="marketplace-unavailable-heading"
+            bodyClassName="marketplace-unavailable-body"
+            buttonClassName="appstore-header-btn"
         />
     );
 }

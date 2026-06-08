@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { RuntimeEventEnvelope } from '@letbuyy/event-core';
+import { MarketplaceAppPricingModelSchema } from '@letbuyy/shared-types';
 
 export type SubscriptionTier = 'free' | 'starter' | 'business' | 'enterprise';
 export type BillingCycle = 'monthly' | 'annual';
@@ -44,12 +45,28 @@ export const MerchantApprovedUsageChargeSchema = z.object({
   idempotency_key: z.string().min(8).max(200),
 });
 
+export const CreateAppUsageEventSchema = z.object({
+  meter_name: z.string().trim().min(1).max(120),
+  quantity: z.number().positive(),
+  idempotency_key: z.string().trim().min(8).max(200),
+  source: z.string().trim().min(1).max(80).default('app_api'),
+  resource_type: z.string().trim().min(1).max(80).optional(),
+  resource_id: z.string().trim().min(1).max(200).optional(),
+  metadata: z.record(z.string(), z.unknown()).default({}),
+});
+
 export const CreateSubscriptionOrderSchema = z.object({
   store_id: z.string().uuid(),
   plan_slug: z.string().min(1),
   billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
   site_type: z.string().min(1),
   approved_usage_charges: z.array(MerchantApprovedUsageChargeSchema).max(20).default([]),
+});
+
+export const RecoverSubscriptionPaymentSchema = z.object({
+  store_id: z.string().uuid(),
+  billing_period: z.enum(['monthly', 'yearly']).optional(),
+  idempotency_key: z.string().trim().min(8).max(200).optional(),
 });
 
 export const VerifySubscriptionSchema = z.object({
@@ -66,24 +83,68 @@ export const VerifySubscriptionSchema = z.object({
   path: ['razorpay_order_id'],
 });
 
-export const AppChargeBillingModeSchema = z.enum(['recurring', 'usage']);
+export const AppChargeBillingModeSchema = z.enum(['recurring', 'one_time', 'usage']);
 export const AppChargeStatusSchema = z.enum([
   'pending_merchant_approval',
   'approved',
+  'trialing',
   'active',
   'cancelled',
   'failed',
 ]);
 export const IndiaPayoutRailSchema = z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']);
 export const AppChargeProviderModeSchema = z.enum(['test', 'live']);
+export const SettlementRailSchema = z.enum(['pa_split', 'cod_remittance']);
+export const SettlementProviderSchema = z.enum(['razorpay_route', 'cashfree', 'cod', 'manual']);
+export const SettlementProviderModeSchema = z.enum(['mock', 'sandbox', 'live']);
+export const BillingProviderModeSchema = z.enum(['mock', 'sandbox', 'live']);
+export const BillingMandateSchema = z.object({
+  store_id: z.string().uuid(),
+  plan_slug: z.enum(['free', 'starter', 'business', 'enterprise']).default('starter'),
+  billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
+  provider_mode: BillingProviderModeSchema.default('mock'),
+  upi_vpa: z.string().trim().min(3).max(120).optional(),
+  idempotency_key: z.string().trim().min(8).max(200),
+  metadata: z.record(z.string(), z.unknown()).default({}),
+});
+export const BillingSubscribeSchema = z.object({
+  store_id: z.string().uuid(),
+  plan_slug: z.enum(['free', 'starter', 'business', 'enterprise']),
+  billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
+  mandate_id: z.string().uuid().optional(),
+  idempotency_key: z.string().trim().min(8).max(200),
+  mock_payment_status: z.enum(['paid', 'failed']).default('paid'),
+  metadata: z.record(z.string(), z.unknown()).default({}),
+});
+export const BillingInvoiceQuerySchema = z.object({
+  store_id: z.string().uuid(),
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+});
+export const SettlementIngestSchema = z.object({
+  store_id: z.string().uuid(),
+  settlement_reference: z.string().trim().min(3).max(200),
+  idempotency_key: z.string().trim().min(8).max(200),
+  rail: SettlementRailSchema.default('pa_split'),
+  provider: SettlementProviderSchema.default('razorpay_route'),
+  provider_mode: SettlementProviderModeSchema.default('mock'),
+  currency: z.enum(['INR']).default('INR'),
+  gross_amount_minor: z.number().int().nonnegative(),
+  platform_fee_minor: z.number().int().nonnegative().default(0),
+  gst_minor: z.number().int().nonnegative().default(0),
+  net_amount_minor: z.number().int().nonnegative().optional(),
+  reserve_minor: z.number().int().nonnegative().default(0),
+  metadata: z.record(z.string(), z.unknown()).default({}),
+});
 
 export const CreateAppBillingChargeSchema = z.object({
   store_id: z.string().uuid(),
   installation_id: z.string().uuid(),
+  pricing_plan_id: z.string().uuid().optional(),
   billing_mode: AppChargeBillingModeSchema.default('recurring'),
   name: z.string().trim().min(1).max(160),
   amount_minor: z.number().int().positive(),
   currency: z.enum(['INR']).default('INR'),
+  trial_days: z.number().int().min(0).max(365).default(0),
   idempotency_key: z.string().trim().min(8).max(200),
   return_url: z.string().url().optional(),
   metadata: z.record(z.string(), z.unknown()).default({}),
@@ -97,6 +158,13 @@ export const ApproveAppBillingChargeSchema = z.object({
   provider_payment_id: z.string().trim().min(1).max(200).optional(),
   provider_signature: z.string().trim().min(1).max(500).optional(),
   provider_mode: AppChargeProviderModeSchema.default('test'),
+});
+
+export const CancelAppBillingChargeSchema = z.object({
+  store_id: z.string().uuid(),
+  charge_id: z.string().uuid(),
+  idempotency_key: z.string().trim().min(8).max(200),
+  reason: z.string().trim().max(500).optional(),
 });
 
 export interface BillingPlan {
@@ -145,6 +213,20 @@ export interface MerchantApprovedUsageCharge {
   amount_minor: number;
   quantity: number;
   idempotency_key: string;
+}
+
+export interface AppUsageBillingPeriod {
+  period_start: string;
+  period_end: string;
+}
+
+export interface AppUsageMeteringPlan {
+  quantity: number;
+  included_quantity: number;
+  billable_quantity: number;
+  unit_amount_minor: number;
+  amount_minor: number;
+  billing_status: 'metered' | 'trial_included';
 }
 
 export interface BillingPlanCatalogRecord {
@@ -197,9 +279,62 @@ export interface StoreBillingTierDefinition extends BillingTierEntitlementSnapsh
 
 export type MerchantBillingCheckoutMode = 'free_activation' | 'razorpay_subscription' | 'razorpay_order';
 export type AppChargeBillingMode = z.infer<typeof AppChargeBillingModeSchema>;
+export type AppPricingModel = z.infer<typeof MarketplaceAppPricingModelSchema>;
 export type AppChargeStatus = z.infer<typeof AppChargeStatusSchema>;
 export type IndiaPayoutRail = z.infer<typeof IndiaPayoutRailSchema>;
 export type AppChargeProviderMode = z.infer<typeof AppChargeProviderModeSchema>;
+export type SettlementRail = z.infer<typeof SettlementRailSchema>;
+export type SettlementProvider = z.infer<typeof SettlementProviderSchema>;
+export type SettlementProviderMode = z.infer<typeof SettlementProviderModeSchema>;
+export type BillingProviderMode = z.infer<typeof BillingProviderModeSchema>;
+export type BillingMandateInput = z.infer<typeof BillingMandateSchema>;
+export type BillingSubscribeInput = z.infer<typeof BillingSubscribeSchema>;
+export type BillingInvoiceQueryInput = z.infer<typeof BillingInvoiceQuerySchema>;
+export type SettlementIngestInput = z.infer<typeof SettlementIngestSchema>;
+
+export type SettlementLedgerAccountCode =
+  | 'pa_clearing'
+  | 'merchant_payable'
+  | 'platform_revenue'
+  | 'gst_payable'
+  | 'cod_receivable'
+  | 'reserve';
+
+export interface SettlementLedgerLine {
+  account_code: SettlementLedgerAccountCode;
+  side: 'debit' | 'credit';
+  amount_minor: number;
+  memo: string;
+}
+
+export interface SettlementLedgerPlan {
+  source_type: 'settlement' | 'cod_remittance';
+  currency: 'INR';
+  gross_amount_minor: number;
+  platform_fee_minor: number;
+  gst_minor: number;
+  net_amount_minor: number;
+  reserve_minor: number;
+  recon_break_minor: number;
+  lines: SettlementLedgerLine[];
+}
+
+export interface BillingMandatePlan {
+  provider: 'upi_autopay';
+  provider_mode: BillingProviderMode;
+  status: 'active' | 'pending_provider';
+  amount_minor: number;
+  currency: 'INR';
+  external_mandate_id: string;
+  mock: boolean;
+}
+
+export interface BillingDunningPlan {
+  status: 'none' | 'past_due';
+  dunning_attempts: number;
+  next_dunning_at: string | null;
+  event_type: 'billing.charged' | 'billing.failed';
+}
 
 export interface MerchantBillingCheckoutPlan {
   mode: MerchantBillingCheckoutMode;
@@ -244,20 +379,68 @@ export interface AppBillingChargePayoutPlan {
   provider_mode: AppChargeProviderMode;
 }
 
+export type AppPayoutSettlementStatus = 'processing' | 'released' | 'failed';
+
+export interface AppPayoutTransferRequest {
+  ledgerEntryId: string;
+  partnerId: string;
+  amountMinor: number;
+  currency: 'INR';
+  rail: IndiaPayoutRail;
+  providerMode: AppChargeProviderMode;
+  idempotencyKey: string;
+  requestedAt?: string;
+}
+
+export interface AppPayoutTransferStatement {
+  ledger_entry_id: string;
+  partner_id: string;
+  amount_minor: number;
+  currency: 'INR';
+  rail: IndiaPayoutRail;
+  provider_mode: AppChargeProviderMode;
+  idempotency_key: string;
+  provider_reference: string | null;
+  settled_at: string | null;
+  dry_run: boolean;
+}
+
+export interface AppPayoutTransferResult {
+  status: AppPayoutSettlementStatus;
+  provider_reference: string | null;
+  statement: AppPayoutTransferStatement;
+  failure_reason?: string;
+}
+
 export interface AppBillingChargePlan {
   app_id: string;
   installation_id: string;
   store_id: string;
   partner_id: string;
+  pricing_plan_id?: string | null;
   billing_mode: AppChargeBillingMode;
   status: 'pending_merchant_approval';
   name: string;
   amount_minor: number;
   currency: 'INR';
+  trial_days: number;
+  trial_starts_at: string | null;
+  trial_ends_at: string | null;
+  billing_starts_at: string | null;
   idempotency_key: string;
   approval_url: string;
   payout: AppBillingChargePayoutPlan;
   metadata: Record<string, unknown>;
+}
+
+export interface AppBillingTrialWindow {
+  trial_days: number;
+  trial_starts_at: string | null;
+  trial_ends_at: string | null;
+  billing_starts_at: string;
+  status: 'trialing' | 'active';
+  activated_at: string | null;
+  activation_event_type: 'app.charge.activated' | null;
 }
 
 export const INDIA_APP_PAYOUT_RAILS: readonly IndiaPayoutRail[] = [
@@ -266,8 +449,218 @@ export const INDIA_APP_PAYOUT_RAILS: readonly IndiaPayoutRail[] = [
   'upi',
   'manual',
 ];
-export const DEFAULT_APP_REVENUE_SHARE_BPS = 8000;
+export const DEFAULT_APP_REVENUE_SHARE_BPS = 8500;
+export const DEFAULT_APP_PLATFORM_FEE_BPS = 10_000 - DEFAULT_APP_REVENUE_SHARE_BPS;
 export const DEFAULT_PARTNER_GST_BPS = 1800;
+
+export function appRevenueSharePolicy(input?: { revenueShareBps?: number | null }) {
+  const partnerShareBps = clampBillingBps(input?.revenueShareBps, DEFAULT_APP_REVENUE_SHARE_BPS);
+  const platformFeeBps = 10_000 - partnerShareBps;
+  return {
+    partner_share_bps: partnerShareBps,
+    platform_fee_bps: platformFeeBps,
+    partner_share_percent: partnerShareBps / 100,
+    platform_fee_percent: platformFeeBps / 100,
+  };
+}
+
+export function appBillingModeForPricingModel(pricingModel: unknown): AppChargeBillingMode | null {
+  const parsed = MarketplaceAppPricingModelSchema.safeParse(pricingModel);
+  if (!parsed.success) return null;
+  if (parsed.data === 'one_time') return 'one_time';
+  if (parsed.data === 'usage') return 'usage';
+  if (parsed.data === 'recurring') return 'recurring';
+  return null;
+}
+
+export function normalizeAppTrialDays(value: unknown): number {
+  const parsed = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(parsed)) return 0;
+  return Math.max(0, Math.min(365, Math.round(parsed)));
+}
+
+export function planAppBillingTrialWindow(input?: {
+  trialDays?: number | string | null;
+  nowMs?: number;
+}): AppBillingTrialWindow {
+  const trialDays = normalizeAppTrialDays(input?.trialDays);
+  const now = new Date(input?.nowMs ?? Date.now());
+
+  if (trialDays <= 0) {
+    const billingStartsAt = now.toISOString();
+    return {
+      trial_days: 0,
+      trial_starts_at: null,
+      trial_ends_at: null,
+      billing_starts_at: billingStartsAt,
+      status: 'active',
+      activated_at: billingStartsAt,
+      activation_event_type: 'app.charge.activated',
+    };
+  }
+
+  const trialEndsAt = new Date(now.getTime() + trialDays * 24 * 60 * 60 * 1000).toISOString();
+  return {
+    trial_days: trialDays,
+    trial_starts_at: now.toISOString(),
+    trial_ends_at: trialEndsAt,
+    billing_starts_at: trialEndsAt,
+    status: 'trialing',
+    activated_at: null,
+    activation_event_type: null,
+  };
+}
+
+export function isAppBillingTrialExpired(input: {
+  status?: string | null;
+  trialEndsAt?: string | null;
+  nowMs?: number;
+}): boolean {
+  if (input.status !== 'trialing' || !input.trialEndsAt) return false;
+  const endsAtMs = Date.parse(input.trialEndsAt);
+  if (!Number.isFinite(endsAtMs)) return false;
+  return endsAtMs <= (input.nowMs ?? Date.now());
+}
+
+export function planSandboxAppPayoutTransfer(input: AppPayoutTransferRequest): AppPayoutTransferResult {
+  const dryRun = input.providerMode !== 'live';
+  const requestedAt = input.requestedAt || new Date().toISOString();
+  const providerReference = dryRun ? `sandbox_payout_${input.ledgerEntryId}` : null;
+
+  return {
+    status: dryRun ? 'released' : 'processing',
+    provider_reference: providerReference,
+    statement: {
+      ledger_entry_id: input.ledgerEntryId,
+      partner_id: input.partnerId,
+      amount_minor: Math.max(0, billingInteger(input.amountMinor)),
+      currency: input.currency,
+      rail: input.rail,
+      provider_mode: input.providerMode,
+      idempotency_key: input.idempotencyKey,
+      provider_reference: providerReference,
+      settled_at: dryRun ? requestedAt : null,
+      dry_run: dryRun,
+    },
+  };
+}
+
+export function planSettlementLedgerPosting(input: SettlementIngestInput): SettlementLedgerPlan {
+  const grossAmountMinor = billingInteger(input.gross_amount_minor);
+  const platformFeeMinor = billingInteger(input.platform_fee_minor);
+  const gstMinor = billingInteger(input.gst_minor);
+  const reserveMinor = billingInteger(input.reserve_minor);
+  const inferredNetAmountMinor = Math.max(0, grossAmountMinor - platformFeeMinor - gstMinor - reserveMinor);
+  const netAmountMinor = input.net_amount_minor === undefined
+    ? inferredNetAmountMinor
+    : billingInteger(input.net_amount_minor);
+  const declaredCreditMinor = netAmountMinor + platformFeeMinor + gstMinor + reserveMinor;
+  const reconBreakMinor = grossAmountMinor - declaredCreditMinor;
+  const sourceAccount: SettlementLedgerAccountCode = input.rail === 'cod_remittance' ? 'cod_receivable' : 'pa_clearing';
+  const lines: SettlementLedgerLine[] = [
+    {
+      account_code: sourceAccount,
+      side: 'debit',
+      amount_minor: grossAmountMinor,
+      memo: `${input.provider} ${input.rail} settlement ${input.settlement_reference}`,
+    },
+  ];
+
+  if (netAmountMinor > 0) {
+    lines.push({
+      account_code: 'merchant_payable',
+      side: 'credit',
+      amount_minor: netAmountMinor,
+      memo: `Merchant payable settlement ${input.settlement_reference}`,
+    });
+  }
+  if (platformFeeMinor > 0) {
+    lines.push({
+      account_code: 'platform_revenue',
+      side: 'credit',
+      amount_minor: platformFeeMinor,
+      memo: `Platform fee settlement ${input.settlement_reference}`,
+    });
+  }
+  if (gstMinor > 0) {
+    lines.push({
+      account_code: 'gst_payable',
+      side: 'credit',
+      amount_minor: gstMinor,
+      memo: `GST payable settlement ${input.settlement_reference}`,
+    });
+  }
+  if (reserveMinor > 0) {
+    lines.push({
+      account_code: 'reserve',
+      side: 'credit',
+      amount_minor: reserveMinor,
+      memo: `Reserve hold settlement ${input.settlement_reference}`,
+    });
+  }
+  if (reconBreakMinor > 0) {
+    lines.push({
+      account_code: 'reserve',
+      side: 'credit',
+      amount_minor: reconBreakMinor,
+      memo: `Explained settlement suspense ${input.settlement_reference}`,
+    });
+  } else if (reconBreakMinor < 0) {
+    lines.push({
+      account_code: 'reserve',
+      side: 'debit',
+      amount_minor: Math.abs(reconBreakMinor),
+      memo: `Explained settlement over-credit ${input.settlement_reference}`,
+    });
+  }
+
+  const debitTotal = lines
+    .filter((line) => line.side === 'debit')
+    .reduce((sum, line) => sum + line.amount_minor, 0);
+  const creditTotal = lines
+    .filter((line) => line.side === 'credit')
+    .reduce((sum, line) => sum + line.amount_minor, 0);
+  if (lines.length < 2 || debitTotal !== creditTotal) {
+    throw new Error(`Settlement ledger posting must balance: debit=${debitTotal} credit=${creditTotal}`);
+  }
+
+  return {
+    source_type: input.rail === 'cod_remittance' ? 'cod_remittance' : 'settlement',
+    currency: 'INR',
+    gross_amount_minor: grossAmountMinor,
+    platform_fee_minor: platformFeeMinor,
+    gst_minor: gstMinor,
+    net_amount_minor: netAmountMinor,
+    reserve_minor: reserveMinor,
+    recon_break_minor: reconBreakMinor,
+    lines,
+  };
+}
+
+export function planPayoutReleaseLedgerPosting(input: {
+  payoutReference: string;
+  amountMinor: number;
+}): SettlementLedgerLine[] {
+  const amountMinor = billingInteger(input.amountMinor);
+  if (amountMinor <= 0) {
+    throw new Error('Payout release amount must be positive');
+  }
+
+  return [
+    {
+      account_code: 'merchant_payable',
+      side: 'debit',
+      amount_minor: amountMinor,
+      memo: `Merchant payable released ${input.payoutReference}`,
+    },
+    {
+      account_code: 'pa_clearing',
+      side: 'credit',
+      amount_minor: amountMinor,
+      memo: `PA split payout released ${input.payoutReference}`,
+    },
+  ];
+}
 
 // Interim India-native tier contract for local/test wiring. Final production
 // price points remain an owner policy decision and are recorded in the ledger.
@@ -283,7 +676,7 @@ export const STORE_BILLING_TIER_DEFINITIONS: readonly StoreBillingTierDefinition
     requires_contact: false,
     price_monthly_inr: 0,
     price_yearly_inr: 0,
-    gmv_percentage: 2.5,
+    gmv_percentage: 0,
     trial_days: 0,
     features: ['storefront', 'products', 'orders'],
     limits: {
@@ -320,7 +713,7 @@ export const STORE_BILLING_TIER_DEFINITIONS: readonly StoreBillingTierDefinition
     requires_contact: false,
     price_monthly_inr: 39900,
     price_yearly_inr: 31900,
-    gmv_percentage: 2,
+    gmv_percentage: 0,
     trial_days: 7,
     features: ['storefront', 'products', 'orders', 'custom_domain', 'basic_analytics', 'webhooks'],
     limits: {
@@ -357,7 +750,7 @@ export const STORE_BILLING_TIER_DEFINITIONS: readonly StoreBillingTierDefinition
     requires_contact: false,
     price_monthly_inr: 99900,
     price_yearly_inr: 79900,
-    gmv_percentage: 1.2,
+    gmv_percentage: 0,
     trial_days: 7,
     features: ['storefront', 'products', 'orders', 'custom_domain', 'advanced_analytics', 'webhooks', 'multi_location_inventory', 'advanced_promotions'],
     limits: {
@@ -394,7 +787,7 @@ export const STORE_BILLING_TIER_DEFINITIONS: readonly StoreBillingTierDefinition
     requires_contact: true,
     price_monthly_inr: 0,
     price_yearly_inr: 0,
-    gmv_percentage: 0.8,
+    gmv_percentage: 0,
     trial_days: 7,
     features: ['storefront', 'products', 'orders', 'custom_domain', 'enterprise_analytics', 'webhooks', 'multi_location_inventory', 'advanced_promotions', 'dedicated_support'],
     limits: {
@@ -493,7 +886,7 @@ export function applyStorePlanTierDefaults(plan: BillingPlanCatalogRecord): Bill
     is_popular: typeof plan.is_popular === 'boolean' ? plan.is_popular : tier.is_popular,
     price_monthly_inr: plan.price_monthly_inr ?? tier.price_monthly_inr,
     price_yearly_inr: plan.price_yearly_inr ?? tier.price_yearly_inr,
-    gmv_percentage: plan.gmv_percentage ?? tier.gmv_percentage,
+    gmv_percentage: 0,
     products_limit: plan.products_limit ?? tier.limits.products,
     orders_limit: plan.orders_limit ?? tier.limits.orders_monthly,
     storage_mb: plan.storage_mb ?? tier.limits.storage_mb,
@@ -548,6 +941,50 @@ export function planBillingAmountMinor(
   };
 }
 
+export function planMockUpiAutopayMandate(input: {
+  plan: BillingPlanCatalogRecord;
+  billingPeriod: SubscriptionBillingPeriod;
+  providerMode?: BillingProviderMode;
+  idempotencyKey: string;
+}): BillingMandatePlan {
+  const amount = planBillingAmountMinor(input.plan, input.billingPeriod);
+  const providerMode = input.providerMode || 'mock';
+  return {
+    provider: 'upi_autopay',
+    provider_mode: providerMode,
+    status: providerMode === 'live' ? 'pending_provider' : 'active',
+    amount_minor: Math.max(0, amount.amountMinor),
+    currency: 'INR',
+    external_mandate_id: `${providerMode}_upi_autopay_${input.idempotencyKey.replace(/[^a-zA-Z0-9_-]+/g, '_').slice(0, 80)}`,
+    mock: providerMode !== 'live',
+  };
+}
+
+export function planBillingDunning(input: {
+  paymentStatus: 'paid' | 'failed';
+  previousAttempts?: number;
+  nowMs?: number;
+}): BillingDunningPlan {
+  if (input.paymentStatus === 'paid') {
+    return {
+      status: 'none',
+      dunning_attempts: 0,
+      next_dunning_at: null,
+      event_type: 'billing.charged',
+    };
+  }
+
+  const attempts = Math.max(1, billingInteger(input.previousAttempts || 0) + 1);
+  const now = new Date(input.nowMs ?? Date.now());
+  const next = new Date(now.getTime() + Math.min(7, attempts * 2) * 24 * 60 * 60 * 1000);
+  return {
+    status: 'past_due',
+    dunning_attempts: attempts,
+    next_dunning_at: next.toISOString(),
+    event_type: 'billing.failed',
+  };
+}
+
 export function selectRazorpayPlanId(
   plan: BillingPlanCatalogRecord,
   billingPeriod: SubscriptionBillingPeriod,
@@ -564,6 +1001,40 @@ export function normalizeMerchantApprovedUsageCharges(value: unknown): MerchantA
     .map((item) => MerchantApprovedUsageChargeSchema.safeParse(item))
     .filter((result): result is { success: true; data: MerchantApprovedUsageCharge } => result.success)
     .map((result) => result.data);
+}
+
+export function appUsageBillingPeriod(input?: { nowMs?: number }): AppUsageBillingPeriod {
+  const now = new Date(input?.nowMs ?? Date.now());
+  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0));
+  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 0, 0, 0));
+  return {
+    period_start: start.toISOString(),
+    period_end: end.toISOString(),
+  };
+}
+
+export function planAppUsageMetering(input: {
+  quantity: number;
+  previousQuantity?: number | null;
+  includedQuantity?: number | null;
+  unitAmountMinor?: number | null;
+  trialing?: boolean | null;
+}): AppUsageMeteringPlan {
+  const quantity = Math.max(0, Number.isFinite(input.quantity) ? input.quantity : 0);
+  const previousQuantity = Math.max(0, Number(input.previousQuantity || 0));
+  const includedQuantity = Math.max(0, Number(input.includedQuantity || 0));
+  const unitAmountMinor = Math.max(0, billingInteger(input.unitAmountMinor || 0));
+  const billableBefore = Math.max(0, previousQuantity - includedQuantity);
+  const billableAfter = Math.max(0, previousQuantity + quantity - includedQuantity);
+  const billableQuantity = input.trialing ? 0 : Math.max(0, billableAfter - billableBefore);
+  return {
+    quantity,
+    included_quantity: includedQuantity,
+    billable_quantity: billableQuantity,
+    unit_amount_minor: unitAmountMinor,
+    amount_minor: Math.round(billableQuantity * unitAmountMinor),
+    billing_status: input.trialing ? 'trial_included' : 'metered',
+  };
 }
 
 export function planIndiaAppChargePayout(input: {
@@ -603,9 +1074,11 @@ export function planAppBillingCharge(input: {
   installationId: string;
   storeId: string;
   partnerId: string;
+  pricingPlanId?: string | null;
   billingMode: AppChargeBillingMode;
   name: string;
   amountMinor: number;
+  trialDays?: number | string | null;
   idempotencyKey: string;
   approvalUrl: string;
   metadata?: Record<string, unknown>;
@@ -627,11 +1100,16 @@ export function planAppBillingCharge(input: {
     installation_id: input.installationId,
     store_id: input.storeId,
     partner_id: input.partnerId,
+    pricing_plan_id: input.pricingPlanId || null,
     billing_mode: input.billingMode,
     status: 'pending_merchant_approval',
     name: input.name,
     amount_minor: payout.amount_minor,
     currency: 'INR',
+    trial_days: normalizeAppTrialDays(input.trialDays),
+    trial_starts_at: null,
+    trial_ends_at: null,
+    billing_starts_at: null,
     idempotency_key: input.idempotencyKey,
     approval_url: input.approvalUrl,
     payout,
@@ -669,7 +1147,7 @@ export function planMerchantRazorpayBillingCheckout(input: {
     promo_price_inr: plan.promo_price_inr,
     promo_months: plan.promo_months,
     promo_label: plan.promo_label,
-    gmv_percentage: plan.gmv_percentage,
+    gmv_percentage: 0,
     limits: plan.limits || resolvePlanEntitlementSnapshot(plan.slug).limits,
     entitlements: plan.entitlements || resolvePlanEntitlementSnapshot(plan.slug).entitlements,
     razorpay_plan_id_configured: Boolean(selectRazorpayPlanId(plan, input.billingPeriod)),
@@ -759,6 +1237,8 @@ export type PlanListQueryInput = z.infer<typeof PlanListQuerySchema>;
 export type CancelSubscriptionInput = z.infer<typeof CancelSubscriptionSchema>;
 export type MerchantApprovedUsageChargeInput = z.infer<typeof MerchantApprovedUsageChargeSchema>;
 export type CreateSubscriptionOrderInput = z.infer<typeof CreateSubscriptionOrderSchema>;
+export type RecoverSubscriptionPaymentInput = z.infer<typeof RecoverSubscriptionPaymentSchema>;
 export type VerifySubscriptionInput = z.infer<typeof VerifySubscriptionSchema>;
 export type CreateAppBillingChargeInput = z.infer<typeof CreateAppBillingChargeSchema>;
 export type ApproveAppBillingChargeInput = z.infer<typeof ApproveAppBillingChargeSchema>;
+export type CancelAppBillingChargeInput = z.infer<typeof CancelAppBillingChargeSchema>;

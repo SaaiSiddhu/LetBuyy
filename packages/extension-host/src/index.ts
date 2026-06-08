@@ -1,10 +1,16 @@
 import type {
+  AdminAppEmbedSurface,
   AdminAppBridgeSession,
   AppBridgeCapability,
   AppExtensionRegistration,
+  MobileAdminAppBridgeHostPolicy,
 } from '@letbuyy/shared-types';
 
 export const LETBUYY_EXTENSION_HOST_VERSION = '2026-06-05.ws13.x2' as const;
+export const MOBILE_ADMIN_EXTENSION_HOST_VERSION = '2026-06-08.mobile-app-bridge.v1' as const;
+export const MOBILE_ADMIN_EXTENSION_MESSAGE_CHANNEL = 'LetBuyyAppBridge' as const;
+export const MOBILE_ADMIN_EXTENSION_JS_NAMESPACE = 'LetBuyyAppBridge' as const;
+export const MOBILE_ADMIN_EXTENSION_BRIDGE_FETCH_PATH = '/app-store/bridge/fetch' as const;
 
 export const ADMIN_UI_EXTENSION_TARGETS = [
   'admin.dashboard.widget',
@@ -277,6 +283,30 @@ export function createCheckoutUiExtensionFramePolicy(): CheckoutUiExtensionFrame
     sandbox: CHECKOUT_EXTENSION_IFRAME_SANDBOX,
     allow: CHECKOUT_EXTENSION_IFRAME_ALLOW,
     referrerPolicy: 'no-referrer',
+  };
+}
+
+export function createMobileAdminAppBridgeHostPolicy(input: {
+  session: Pick<AdminAppBridgeSession, 'embed' | 'bridge'>;
+  embed?: AdminAppEmbedSurface;
+}): MobileAdminAppBridgeHostPolicy {
+  const embed = input.embed || input.session.embed;
+  const allowedOrigins = [...new Set([
+    embed.origin,
+    new URL(embed.url).origin,
+  ].filter(Boolean))];
+
+  return {
+    platform: 'mobile_webview',
+    host_version: MOBILE_ADMIN_EXTENSION_HOST_VERSION,
+    allowed_origin: embed.origin,
+    allowed_navigation_origins: allowedOrigins,
+    js_namespace: MOBILE_ADMIN_EXTENSION_JS_NAMESPACE,
+    message_channel: MOBILE_ADMIN_EXTENSION_MESSAGE_CHANNEL,
+    bridge_fetch_path: MOBILE_ADMIN_EXTENSION_BRIDGE_FETCH_PATH,
+    token_transport: 'native_bridge',
+    capabilities: input.session.bridge.capabilities,
+    expires_at: input.session.bridge.expires_at,
   };
 }
 

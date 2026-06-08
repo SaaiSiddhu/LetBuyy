@@ -6,6 +6,20 @@ export type LetbuyySurface = 'admin' | 'marketplace' | 'storefront' | 'identity'
 
 type CssVariableMap = Record<`--${string}`, string>;
 
+const deprecatedTokenAliasVariables = new Set<string>([
+    '--lb-color-text-primary',
+    '--lb-color-text-secondary',
+    '--lb-color-border-default',
+    '--lb-color-border-subtle',
+    '--lb-color-danger',
+    '--lb-semantic-focus-ring',
+    '--lb-semantic-accent-brand',
+    '--lb-semantic-accent-text',
+    '--lb-semantic-text-primary',
+    '--lb-semantic-text-secondary',
+    '--lb-semantic-text-muted',
+]);
+
 export interface LetbuyyBrandOverrides {
     primary: string;
     primaryText?: string;
@@ -33,10 +47,15 @@ export interface LetbuyyBrandContrastCheck {
 export const letbuyyPrimitiveTokens = {
     color: {
         purple: {
+            100: '#EDE9FE',
+            200: '#DDD6FE',
             300: '#C4B5FD',
+            400: '#A78BFA',
             500: '#8B5CF6',
             600: '#7C3AED',
             700: '#6D28D9',
+            800: '#5B21B6',
+            900: '#4C1D95',
         },
         gray: {
             50: '#F9FAFB',
@@ -45,11 +64,19 @@ export const letbuyyPrimitiveTokens = {
             150: '#EFEFF1',
             175: '#F1F2F4',
             200: '#E5E7EB',
+            300: '#D1D5DB',
             400: '#94A3B8',
             500: '#6B7280',
+            600: '#4B5563',
+            700: '#374151',
+            800: '#1F2937',
             900: '#111827',
         },
         slate: {
+            200: '#E2E8F0',
+            300: '#CBD5E1',
+            400: '#94A3B8',
+            600: '#475569',
             700: '#334155',
             800: '#1E293B',
             850: '#1F2937',
@@ -72,6 +99,7 @@ export const letbuyyPrimitiveTokens = {
         },
         red: {
             100: '#FEE2E2',
+            300: '#FCA5A5',
             500: '#EF4444',
             600: '#DC2626',
             700: '#B91C1C',
@@ -79,6 +107,7 @@ export const letbuyyPrimitiveTokens = {
         },
         blue: {
             100: '#E0F2FE',
+            300: '#7DD3FC',
             500: '#3B82F6',
             700: '#1D4ED8',
             950: '#082F49',
@@ -94,6 +123,8 @@ export const letbuyyPrimitiveTokens = {
 const primitive = letbuyyPrimitiveTokens;
 
 export const letbuyyBreakpointTokens = {
+    xs: '360px',
+    mobile: '480px',
     sm: '640px',
     md: '768px',
     lg: '1024px',
@@ -101,6 +132,8 @@ export const letbuyyBreakpointTokens = {
 } as const;
 
 export const letbuyyTailwindScreens = {
+    xs: letbuyyBreakpointTokens.xs,
+    mobile: letbuyyBreakpointTokens.mobile,
     sm: letbuyyBreakpointTokens.sm,
     md: letbuyyBreakpointTokens.md,
     lg: letbuyyBreakpointTokens.lg,
@@ -140,7 +173,7 @@ export const letbuyyColorTokens = {
     textPrimaryLight: primitive.color.gray[900],
     textPrimaryDark: primitive.color.white,
     textSecondaryLight: primitive.color.gray[500],
-    textSecondaryDark: '#CBD5E1',
+    textSecondaryDark: primitive.color.slate[300],
     textMuted: primitive.color.gray[500],
     borderLight: primitive.color.gray[200],
     borderDark: primitive.color.slate[700],
@@ -163,11 +196,11 @@ export const letbuyySemanticTokens = {
         },
         button: {
             primary: {
-                bg: primitive.color.slate[900],
-                hover: primitive.color.slate[800],
-                active: primitive.color.black,
+                bg: primitive.color.purple[700],
+                hover: primitive.color.purple[800],
+                active: primitive.color.purple[900],
                 text: primitive.color.white,
-                border: primitive.color.slate[900],
+                border: primitive.color.purple[700],
             },
             secondary: {
                 bg: 'transparent',
@@ -212,7 +245,7 @@ export const letbuyySemanticTokens = {
             danger: primitive.color.red[100],
             info: primitive.color.blue[100],
         },
-        focusRing: '#5B21B6',
+        focusRing: primitive.color.purple[800],
         overlay: primitive.opacity.overlayLight,
     },
     dark: {
@@ -227,11 +260,11 @@ export const letbuyySemanticTokens = {
         },
         button: {
             primary: {
-                bg: letbuyyColorTokens.primary,
-                hover: letbuyyColorTokens.primaryHover,
-                active: letbuyyColorTokens.primaryActive,
+                bg: primitive.color.purple[700],
+                hover: primitive.color.purple[800],
+                active: primitive.color.purple[900],
                 text: primitive.color.white,
-                border: letbuyyColorTokens.primary,
+                border: primitive.color.purple[700],
             },
             secondary: {
                 bg: letbuyyColorTokens.surfaceDark,
@@ -267,8 +300,8 @@ export const letbuyySemanticTokens = {
         statusText: {
             success: letbuyyColorTokens.success,
             warning: letbuyyColorTokens.warning,
-            danger: '#FCA5A5',
-            info: '#7DD3FC',
+            danger: primitive.color.red[300],
+            info: primitive.color.blue[300],
         },
         statusSoft: {
             success: primitive.color.green[950],
@@ -643,6 +676,9 @@ export const letbuyyTokens = {
             mono: letbuyyFontStacks.mono,
         },
         fontSize: {
+            displayFluid: 'clamp(2.75rem, 2.1rem + 2vw, 3.5rem)',
+            h1Fluid: 'clamp(1.75rem, 1.45rem + 0.9vw, 2rem)',
+            h2Fluid: 'clamp(1.375rem, 1.18rem + 0.5vw, 1.5rem)',
             display: '32px',
             h1: '28px',
             h2: '24px',
@@ -663,6 +699,9 @@ export const letbuyyTokens = {
             heading: '18px',
         },
         lineHeight: {
+            displayFluid: '1.1',
+            h1Fluid: '1.2',
+            h2Fluid: '1.25',
             display: '40px',
             h1: '36px',
             h2: '32px',
@@ -699,6 +738,9 @@ export const letbuyyTokens = {
         '2xl': '24px',
         '3xl': '32px',
         '4xl': '40px',
+        '5xl': '48px',
+        '6xl': '64px',
+        '7xl': '96px',
     },
     radius: {
         sm: '4px',
@@ -710,6 +752,9 @@ export const letbuyyTokens = {
     shadow: letbuyyShadowTokens,
     motion: {
         duration: {
+            hover: '150ms',
+            menu: '150ms',
+            carousel: '300ms',
             fast: '150ms',
             normal: '180ms',
             slow: '200ms',
@@ -732,6 +777,7 @@ export const letbuyyTokens = {
         iconInline: 'var(--lb-density-action-icon-size)',
         pageHeaderHeight: 'var(--lb-density-header-height)',
         pageMax: '1440px',
+        marketplaceContainer: '1200px',
         contentMeasure: '720px',
         emptyStateMeasure: '440px',
         saveBarWidth: '920px',
@@ -799,6 +845,9 @@ const sharedCssVariables: CssVariableMap = {
     '--lb-font-family-mono': letbuyyTokens.typography.fontFamily.mono,
     // Canonical type variables are role-based (`page-title`, `section-title`, `body`, etc.). Heading aliases (`h1`-`h4`) stay public for existing consumers.
     '--lb-font-size-display': letbuyyTokens.typography.fontSize.display,
+    '--lb-font-size-display-fluid': letbuyyTokens.typography.fontSize.displayFluid,
+    '--lb-font-size-h1-fluid': letbuyyTokens.typography.fontSize.h1Fluid,
+    '--lb-font-size-h2-fluid': letbuyyTokens.typography.fontSize.h2Fluid,
     '--lb-font-size-h1': letbuyyTokens.typography.fontSize.h1,
     '--lb-font-size-h2': letbuyyTokens.typography.fontSize.h2,
     '--lb-font-size-h3': letbuyyTokens.typography.fontSize.h3,
@@ -817,6 +866,9 @@ const sharedCssVariables: CssVariableMap = {
     '--lb-font-size-caption': letbuyyTokens.typography.fontSize.caption,
     '--lb-font-size-badge': letbuyyTokens.typography.fontSize.badge,
     '--lb-line-height-display': letbuyyTokens.typography.lineHeight.display,
+    '--lb-line-height-display-fluid': letbuyyTokens.typography.lineHeight.displayFluid,
+    '--lb-line-height-h1-fluid': letbuyyTokens.typography.lineHeight.h1Fluid,
+    '--lb-line-height-h2-fluid': letbuyyTokens.typography.lineHeight.h2Fluid,
     '--lb-line-height-h1': letbuyyTokens.typography.lineHeight.h1,
     '--lb-line-height-h2': letbuyyTokens.typography.lineHeight.h2,
     '--lb-line-height-h3': letbuyyTokens.typography.lineHeight.h3,
@@ -848,15 +900,23 @@ const sharedCssVariables: CssVariableMap = {
     '--lb-space-6': letbuyyTokens.space['2xl'],
     '--lb-space-7': letbuyyTokens.space['3xl'],
     '--lb-space-8': letbuyyTokens.space['4xl'],
+    '--lb-space-9': letbuyyTokens.space['5xl'],
+    '--lb-space-10': letbuyyTokens.space['6xl'],
+    '--lb-space-11': letbuyyTokens.space['7xl'],
     '--lb-space-xs': letbuyyTokens.space.xs,
     '--lb-space-sm': letbuyyTokens.space.sm,
     '--lb-space-md': letbuyyTokens.space.md,
     '--lb-space-lg': letbuyyTokens.space.lg,
     '--lb-space-xl': letbuyyTokens.space.xl,
     '--lb-bp-sm': letbuyyTokens.breakpoint.sm,
+    '--lb-bp-xs': letbuyyTokens.breakpoint.xs,
+    '--lb-bp-mobile': letbuyyTokens.breakpoint.mobile,
     '--lb-bp-md': letbuyyTokens.breakpoint.md,
     '--lb-bp-lg': letbuyyTokens.breakpoint.lg,
     '--lb-bp-xl': letbuyyTokens.breakpoint.xl,
+    '--lb-bp-tablet': letbuyyTokens.breakpoint.md,
+    '--lb-bp-desktop': letbuyyTokens.breakpoint.lg,
+    '--lb-bp-wide': letbuyyTokens.breakpoint.xl,
     '--lb-radius-sm': letbuyyTokens.radius.sm,
     '--lb-radius-md': letbuyyTokens.radius.md,
     '--lb-radius-lg': letbuyyTokens.radius.lg,
@@ -875,6 +935,9 @@ const sharedCssVariables: CssVariableMap = {
     '--lb-z-toast': letbuyyZIndexTokens.toast,
     '--lb-z-tooltip': letbuyyZIndexTokens.tooltip,
     '--lb-motion-fast': letbuyyTokens.motion.duration.fast,
+    '--lb-motion-hover': letbuyyTokens.motion.duration.hover,
+    '--lb-motion-menu': letbuyyTokens.motion.duration.menu,
+    '--lb-motion-carousel': letbuyyTokens.motion.duration.carousel,
     '--lb-motion-normal': letbuyyTokens.motion.duration.normal,
     '--lb-motion-slow': letbuyyTokens.motion.duration.slow,
     '--lb-ease-standard': letbuyyTokens.motion.easing.standard,
@@ -889,6 +952,7 @@ const sharedCssVariables: CssVariableMap = {
     '--lb-size-icon-inline': letbuyyTokens.size.iconInline,
     '--lb-size-page-header-height': letbuyyTokens.size.pageHeaderHeight,
     '--lb-size-page-max': letbuyyTokens.size.pageMax,
+    '--lb-size-marketplace-container': letbuyyTokens.size.marketplaceContainer,
     '--lb-size-content-measure': letbuyyTokens.size.contentMeasure,
     '--lb-size-empty-state-measure': letbuyyTokens.size.emptyStateMeasure,
     '--lb-size-save-bar-width': letbuyyTokens.size.saveBarWidth,
@@ -955,13 +1019,9 @@ function colorVariables(theme: LetbuyyTheme): CssVariableMap {
         '--lb-card-bg': colors.card,
         '--lb-color-header': colors.header,
         '--lb-color-border': colors.border,
-        '--lb-color-border-subtle': colors.borderSubtle,
-        '--lb-color-border-default': colors.borderDefault,
         '--lb-color-border-strong': colors.borderStrong,
         '--lb-color-text': colors.text,
-        '--lb-color-text-primary': colors.text,
         '--lb-color-text-subdued': colors.textSubdued,
-        '--lb-color-text-secondary': colors.textSecondary,
         '--lb-color-text-muted': colors.textMuted,
         '--lb-color-text-inverse': colors.textInverse,
         '--lb-color-primary': colors.primary,
@@ -977,7 +1037,6 @@ function colorVariables(theme: LetbuyyTheme): CssVariableMap {
         '--lb-color-secondary-action': colors.secondaryAction,
         '--lb-color-secondary-action-hover': colors.secondaryActionHover,
         '--lb-color-secondary-action-subtle': colors.secondaryActionSubtle,
-        '--lb-color-danger': colors.danger,
         '--lb-color-critical': colors.critical,
         '--lb-color-critical-hover': colors.criticalHover,
         '--lb-color-critical-soft': colors.criticalSoft,
@@ -995,6 +1054,9 @@ function colorVariables(theme: LetbuyyTheme): CssVariableMap {
     appendTokenVariables(variables, ['lb', 'primitive'], letbuyyTokens.primitive);
     appendTokenVariables(variables, ['lb', 'semantic'], semantic);
     appendTokenVariables(variables, ['lb', 'component'], component);
+    deprecatedTokenAliasVariables.forEach((alias) => {
+        delete variables[alias as `--${string}`];
+    });
 
     return variables;
 }
@@ -1016,12 +1078,8 @@ function surfaceVariables(theme: LetbuyyTheme): CssVariableMap {
         '--lb-sidebar-bg': colors.sidebar,
         '--lb-color-header': colors.header,
         '--lb-color-border': colors.border,
-        '--lb-color-border-subtle': colors.borderSubtle,
-        '--lb-color-border-default': colors.borderDefault,
         '--lb-color-text': colors.text,
-        '--lb-color-text-primary': colors.text,
         '--lb-color-text-subdued': colors.textSubdued,
-        '--lb-color-text-secondary': colors.textSecondary,
         '--lb-color-primary': colors.primary,
         '--lb-color-primary-text': colors.primaryText,
         '--lb-color-primary-hover': colors.primaryHover,
@@ -1157,8 +1215,6 @@ export function createLetbuyyBrandVariables(brand?: LetbuyyBrandInput): CssVaria
         '--lb-color-primary-cta-hover': primaryCtaHover,
         '--lb-color-primary-cta-active': primaryCtaActive,
         '--lb-color-primary-cta-text': primaryCtaText,
-        '--lb-semantic-accent-brand': primary,
-        '--lb-semantic-accent-text': primaryText,
         '--lb-semantic-accent-hover': primaryHover,
         '--lb-semantic-accent-active': primaryActive,
         '--lb-semantic-accent-subtle': primarySubtle,
@@ -1304,6 +1360,9 @@ export const letbuyyTokenCss = [
     '@media (prefers-reduced-motion: reduce) {',
     '  [data-letbuyy-design-system="true"] {',
     '    --lb-motion-fast: 0ms;',
+    '    --lb-motion-hover: 0ms;',
+    '    --lb-motion-menu: 0ms;',
+    '    --lb-motion-carousel: 0ms;',
     '    --lb-motion-normal: 0ms;',
     '    --lb-motion-slow: 0ms;',
     '    --lb-motion-hover-lift: 0px;',

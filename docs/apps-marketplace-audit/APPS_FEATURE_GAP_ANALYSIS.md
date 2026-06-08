@@ -1,50 +1,71 @@
 # Apps Feature Gap Analysis (Phase 7)
 
-Classifies marketplace features as **Critical Missing**, **Important Missing**, or **Nice to Have**, benchmarked against Shopify. "Backend exists?" distinguishes a *product* gap (API present, no UI) from a *platform* gap (nothing at all). Parent: [Master Audit](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md).
+**Parent:** [`../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md`](../LETBUYY_APPS_MARKETPLACE_MASTER_AUDIT.md) · **Date:** 2026-06-07
 
-## CRITICAL MISSING (blocks a functioning ecosystem)
+Gaps vs. a production app ecosystem (Shopify-class), classified **CRITICAL MISSING / IMPORTANT MISSING / NICE-TO-HAVE**. A key distinction runs through this report: **"backend exists, no UI"** (cheap to close — wire the SDK method) vs **"nothing exists"** (real build). Of 26 `appStore` SDK methods, **10 are never called by the front-end** — much of the "missing" surface is actually un-wired, not un-built.
 
-| Feature | Backend exists? | Reality | Fix |
-|---|---|---|---|
-| **Catalog content / seed** | n/a | 0 seeded apps; homepage admits empty (`000_baseline.sql`, `app/page.tsx`) | Seed categories + launch-partner apps; gate launch on live-app count |
-| **App update / versioning** | ❌ No | No `PATCH/PUT /developers/apps/:id`; no edit page | Add update endpoint + version records + re-review on scope change |
-| **Billing UX (plan select, charge approval, usage, trials)** | ◐ charge+approve only | No UI; trials/yearly/usage rendered but not settable; `usage_based` rejected by DB | Hosted plan page + charge-approval surface + plan config in submit |
-| **Truthful revenue share** | ✅ but wrong default | UI 15% vs code 20% (`revenue_share_bps=8000`) | Reconcile + publish one rate |
-| **OAuth consent flow in UI** | ✅ unused | Install posts scopes directly; `/oauth/authorize` never called | Route install through OAuth; granular + re-consent |
-| **Earned trust program** | ❌ | "Built for LetBuyy" hard-coded on all apps | Criteria-gated badge (installs, reviews, perf, design) |
-| **Real review gating** | ◐ records only | automated_checks always pass; human-only decision | Static scan, scope justification, manifest lint, URL/TLS checks |
-| **Developer per-app analytics** | ❌ | Aggregate tiles only | Build install/charge event analytics |
-| **App health / API usage / rate-limit monitoring** | ❌ | None surfaced | Request volume, error rate, p95 (cf. BFS perf gates) |
-| **Developer app management (edit/configure/media/keys)** | ◐ key+manifest API | Submit-once; no manage; upload zones decorative; key/manifest UI absent | App detail console + media uploads + key rotation UI |
+## A. Backend-exists / UI-missing (cheapest wins)
 
-## IMPORTANT MISSING (limits trust, conversion, retention)
+These have working gateway endpoints **and** `@letbuyy/api-client` methods, but no marketplace UI calls them:
 
-| Feature | Backend exists? | Reality | Fix |
-|---|---|---|---|
-| Review write UI (verified reviewer) | ✅ POST reviews | No composer in product | Add on `/my-apps` per active install |
-| Developer reply to reviews | ❌ | None | Reply model + UI |
-| Rating distribution histogram | ❌ | Stars only | 1–5 breakdown |
-| Featured / editorial / curated collections | ❌ (fake) | Re-sorts of same query | Curation tables + trending math |
-| Recommendations / "similar apps" | ◐ same-category sample | No rec engine | Recommendation service |
-| Compare apps | ❌ | None | Compare tray |
-| Data-handling / privacy disclosure on listing | ❌ | None | Required disclosure |
-| Changelog / release notes | ❌ | None | Per-version notes |
-| Post-install onboarding/setup | ❌ | Drops to iframe | Setup checklist + deep link |
-| Notifications (review decision, payout, new review) | ◐ events emitted | No UI/inbox | In-app + email |
-| Webhooks/extension/dev-store management UI | ◐ APIs exist | None | Console surfaces |
-| Manifest validation UI | ✅ endpoint | None | Pre-submit validator |
-| Refund / dispute / chargeback | ❌ | None | Billing dispute flow |
-| Payout statements / GST invoices / export | ◐ ledger | No statements | Monthly statements + CSV + GST invoice |
-| Developer profile page | ◐ link only | `/developers/:slug` referenced, page depth unclear | Build profile + dev's other apps |
-| Private/internal app distribution | ◐ `type` in schema | No UI | Private install links |
-| Pagination on directory | ❌ | limit 24, no pager | Pagination/infinite scroll |
-| Localization / multi-currency | ❌ | en + INR | i18n + currency per geo |
-| Mobile navigation | ❌ | Nav hidden <768/<640px | Mobile menu |
+| Capability | SDK method → endpoint | Status |
+|---|---|---|
+| OAuth install/authorize | `oauthAuthorize`,`oauthToken`,`oauthTokenExchange` → `billing-oauth-routes.ts:530,725,920` | UI never calls; flag-on path **throws** |
+| App billing charges | `createCharge`,`approveCharge` → `billing-oauth-routes.ts:62,208` | **No charge UI anywhere** |
+| Extension/function management | `extensionRegistry`,`updateExtensionRegistration`,`updateFunctionRegistration` → `extension-routes.ts:73,149,223` | UI is a 22-line stub |
+| Embedded admin session | `embedSession` → `extension-routes.ts:297` | `embedUrl` hardcoded null |
+| Scoped data bridge | `bridgeFetch` → `extension-routes.ts:397` | unused |
+| Public developer profile | `developer-routes.ts:842` (`GET /developers/:id`) | page is a placeholder |
 
-## NICE TO HAVE
+**These six clusters are the highest-leverage fixes in the entire marketplace:** the platform already does the hard part.
 
-- Screenshot lightbox, video/demo support, app activity log for merchants, uninstall-reason capture, partner directory, listing preview before submit, draft autosave, SEO structured data (JSON-LD/sitemaps), A/B experimentation, status page, synonyms in search, multi-tag categories, "works with" compatibility.
+## B. CRITICAL MISSING (nothing exists; blocks launch)
 
-## Backend-ahead-of-product summary
+| Gap | Evidence | Impact |
+|---|---|---|
+| **App update / versioning** — no endpoint, no `app_versions` table; `version` never bumped | `dashboard:309`; schema | Developers can never ship v2; merchants never get fixes |
+| **Payout settlement** — ledger only ever `pending`; no transfer execution | `queue-execution.adapter.ts:474` | Developers never get paid |
+| **Single revenue-share rate** — code 20% vs docs 15% vs UI "pending" | `billing-core:269` | Economics undefined; legal/financial risk |
+| **Self-serve developer approval** — no `pending→approved` endpoint | `rbac.ts:55` | Onboarding requires manual DB edits |
+| **Catalog seed / launch partners** — empty catalog | `page.tsx:274` | No reason for either side to show up |
+| **Real submission checks** — automated checks hardcoded to passed | `developer-routes.ts:683` | No safety gate before human review |
+| **Working app media upload** — icon/screenshot boxes are dead UI | `apps/new:233-246` | Listings can't have required media |
+| **Registration data integrity** — GSTIN + consent dropped client-side | `register:46-52` | Can't pay (no tax id) or prove consent |
 
-The unusual shape here: **most "missing" features are missing only in the UI.** OAuth, billing, extensions, manifest validation, API keys, embed/App Bridge, compliance, and payouts already exist server-side. The highest-leverage work is **wiring the existing API into the product**, not building new platform capability. The genuine *platform* gaps are narrower: **app update/versioning**, **real review gating/scanning**, **per-app analytics**, and **app health monitoring**.
+## C. IMPORTANT MISSING (degrades the ecosystem materially)
+
+| Gap | Evidence |
+|---|---|
+| Install/revenue **analytics** (time-series, per-app, funnel) — only a snapshot in `partnerDashboard` | `developer-routes.ts:517` |
+| **Pricing plans/tiers** — flat price only; no named plans, no feature gating | schema (`pricing_model`+price only) |
+| **Usage metering** endpoint for `usage` billing mode | `billing-core:69` (mode exists, no meter) |
+| **Trial** support in app billing | `billing-core:80` |
+| **Developer webhook management** (register/list/update/delete) | `app_webhooks` read-only, no writer |
+| **Review replies** by developers; **abuse reporting** (buttons disabled) | `apps/[slug]:493,617` |
+| **Compare apps** / alternatives / recommendations | none |
+| **Real collections/curation** + `/collections` index | `collections/[slug]:13` |
+| **All categories visible** in search (14 hidden) | `search/page.tsx:154` |
+| **"Built for LetBuyy" quality program** (perf/design/integration) + backing column | `marketplace-display.ts:49` |
+| **Security scanning** of submissions | none |
+| **Agency/collaborator** model (code is non-functional) | `shared.ts:242` |
+| **Granted-scope review & revocation** post-install for merchants | `my-apps` lacks it |
+| **App health/status** surfaced to merchants | `status_url` read but not featured |
+| **Rate-limit accounting** per app/install + dedicated OAuth brute-force limit | `index.ts:543` |
+| **Real RLS** on the 7 core tables (currently service-role blanket only) | `000_baseline.sql:24311+` |
+| **Support/ticketing** between merchants and developers | none |
+
+## D. NICE-TO-HAVE
+
+Saved/wishlist apps; recently-viewed; partner tiers/badges; app bundles & multi-app discounts; merchant spend caps/alerts; uninstall-reason capture; demo/sandbox stores; multi-currency display; real experiment framework (current `experiments.ts` ignores its argument); editorial "new this week"; cross-store review proof; deeper i18n (only 5 strings today).
+
+## E. Schema gaps behind the features
+
+Confirmed absent (grep over `database/`): `app_versions`/release history; install/usage **event** analytics tables; rate-limit/quota accounting; `app_pricing_plans`/tiers; support/ticketing; persisted OAuth codes/tokens. Note also: `app_webhooks` has **no writer** (effectively dead), and `partner_payout_ledger_entries.charge_id`/`source_event_id` are `NOT NULL` but carry **no FK** (integrity gap).
+
+## F. Prioritized close-out
+
+1. **Wire what already exists (A):** charge UI, extension management, OAuth install, embed session, public developer profile, bridge. Days-to-weeks, not months.
+2. **Build the CRITICAL eight (B):** update/versioning, payout settlement, one revenue rate, self-serve approval, catalog seed, real submission checks, media upload, registration integrity.
+3. **Then the IMPORTANT set (C),** roughly in the order: analytics → pricing plans → usage metering/trials → webhook mgmt → reviews/abuse → discovery (compare/collections/categories) → quality program → security → RLS hardening.
+
+The single most important realization: **LetBuyy's gap is less "build a platform" and more "finish wiring and operationalizing the platform you already built."**

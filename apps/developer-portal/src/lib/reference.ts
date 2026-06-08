@@ -376,7 +376,7 @@ export const themeBundleExample = `{
         "brand": {
           "label": "Brand",
           "fields": {
-            "accent": { "type": "color", "label": "Accent", "default": "#0f766e" }
+            "accent": { "type": "color", "label": "Accent", "default": "rgb(15 118 110)" }
           }
         }
       }

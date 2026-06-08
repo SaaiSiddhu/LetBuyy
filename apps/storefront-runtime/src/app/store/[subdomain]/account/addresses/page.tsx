@@ -6,7 +6,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import type { CustomerAddress } from '@letbuyy/shared-types';
-import {
+import { Button, Input,
     MapPin, Plus, Trash2, Edit3, Star, Loader2, X, Home, Briefcase, Check,
 } from '@letbuyy/ui';
 import { StorefrontEmptyState, StorefrontListLoadingState } from '@/components/storefront/storefront-states';
@@ -138,14 +138,14 @@ export default function AddressesPage() {
         <div>
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold">Addresses</h1>
-                <button
+                <Button unstyled
                     onClick={openAdd}
                     className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-semibold transition-opacity hover:opacity-90"
                     style={{ backgroundColor: 'var(--primary)' }}
                 >
                     <Plus size={16} />
                     Add Address
-                </button>
+                </Button>
             </div>
 
             {/* ── Address Cards ────────────────────────── */}
@@ -165,7 +165,7 @@ export default function AddressesPage() {
                                 key={addr.id}
                                 className="rounded-2xl border p-4 relative transition-shadow hover:shadow-md"
                                 style={{
-                                    borderColor: addr.is_default ? 'var(--primary)' : 'var(--border, #E5E7EB)',
+                                    borderColor: addr.is_default ? 'var(--primary)' : 'var(--border, rgb(229 231 235))',
                                     borderWidth: addr.is_default ? 2 : 1,
                                 }}
                             >
@@ -174,8 +174,8 @@ export default function AddressesPage() {
                                 <span
                                     className="flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full capitalize"
                                     style={{
-                                        backgroundColor: 'var(--surface, #F3F4F6)',
-                                        color: 'var(--text-secondary, #6B7280)',
+                                        backgroundColor: 'var(--surface, rgb(243 244 246))',
+                                        color: 'var(--text-secondary, rgb(107 114 128))',
                                     }}
                                 >
                                     {LABEL_ICONS[label] || LABEL_ICONS.other}
@@ -193,46 +193,46 @@ export default function AddressesPage() {
                             </div>
 
                             <p className="font-semibold text-sm">{addr.full_name}</p>
-                            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                 {addr.address_line1}
                                 {addr.address_line2 && <>, {addr.address_line2}</>}
                             </p>
-                            <p className="text-sm" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                            <p className="text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                 {addr.city}, {addr.state} {addr.postal_code}
                             </p>
                             {addr.landmark && (
-                                <p className="text-xs mt-1" style={{ color: 'var(--text-muted, #9CA3AF)' }}>
+                                <p className="text-xs mt-1" style={{ color: 'var(--text-muted, rgb(156 163 175))' }}>
                                     Landmark: {addr.landmark}
                                 </p>
                             )}
 
                             {/* Action buttons */}
-                            <div className="flex items-center gap-2 mt-4 pt-3 border-t" style={{ borderColor: 'var(--border, #E5E7EB)' }}>
-                                <button
+                            <div className="flex items-center gap-2 mt-4 pt-3 border-t" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
+                                <Button unstyled
                                     onClick={() => openEdit(addr)}
                                     className="flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors hover:opacity-80"
                                     style={{ color: 'var(--primary)' }}
                                 >
                                     <Edit3 size={12} /> Edit
-                                </button>
+                                </Button>
                                 {!addr.is_default && (
-                                    <button
+                                    <Button unstyled
                                         onClick={() => setDefault(addr.id)}
                                         className="flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors hover:opacity-80"
-                                        style={{ color: 'var(--text-secondary, #6B7280)' }}
+                                        style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}
                                     >
                                         <Star size={12} /> Set Default
-                                    </button>
+                                    </Button>
                                 )}
-                                <button
+                                <Button unstyled
                                     onClick={() => handleDelete(addr.id)}
                                     disabled={deletingId === addr.id}
                                     className="flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors hover:opacity-80 ml-auto"
-                                    style={{ color: '#EF4444' }}
+                                    style={{ color: 'rgb(239 68 68)' }}
                                 >
                                     {deletingId === addr.id ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
                                     Delete
-                                </button>
+                                </Button>
                             </div>
                             </div>
                         );
@@ -244,88 +244,88 @@ export default function AddressesPage() {
             {showForm && (
                 <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50">
                     <div
-                        className="bg-white dark:bg-gray-900 w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-y-auto"
-                        style={{ backgroundColor: 'var(--card-bg, #fff)' }}
+                        className="bg-[var(--lb-color-surface)] dark:bg-gray-900 w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-y-auto"
+                        style={{ backgroundColor: 'var(--card-bg, rgb(255 255 255))' }}
                     >
-                        <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'var(--border, #E5E7EB)' }}>
+                        <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
                             <h2 className="font-bold text-lg">
                                 {editingId ? 'Edit Address' : 'New Address'}
                             </h2>
-                            <button onClick={() => { setShowForm(false); setEditingId(null); }}>
-                                <X size={20} style={{ color: 'var(--text-secondary, #6B7280)' }} />
-                            </button>
+                            <Button unstyled onClick={() => { setShowForm(false); setEditingId(null); }}>
+                                <X size={20} style={{ color: 'var(--text-secondary, rgb(107 114 128))' }} />
+                            </Button>
                         </div>
 
                         <form onSubmit={handleSave} className="p-4 space-y-4">
                             {/* Label selector */}
                             <div className="flex gap-2">
                                 {['home', 'work', 'other'].map(l => (
-                                    <button
+                                    <Button unstyled
                                         key={l}
                                         type="button"
                                         onClick={() => setForm(f => ({ ...f, label: l }))}
                                         className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium capitalize transition-colors"
                                         style={{
-                                            backgroundColor: form.label === l ? 'var(--primary)' : 'var(--surface, #F3F4F6)',
-                                            color: form.label === l ? '#FFFFFF' : 'var(--text, inherit)',
+                                            backgroundColor: form.label === l ? 'var(--primary)' : 'var(--surface, rgb(243 244 246))',
+                                            color: form.label === l ? 'rgb(255 255 255)' : 'var(--text, inherit)',
                                         }}
                                     >
                                         {LABEL_ICONS[l]} {l}
-                                    </button>
+                                    </Button>
                                 ))}
                             </div>
 
-                            <input
+                            <Input unstyled
                                 required
                                 value={form.full_name}
                                 onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
                                 placeholder="Full Name *"
                                 className="w-full px-4 py-3 rounded-xl text-sm border outline-none focus:ring-2"
-                                style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
+                                style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
                             />
-                            <input
+                            <Input unstyled
                                 value={form.phone}
                                 onChange={e => setForm(f => ({ ...f, phone: e.target.value.replace(/[^\d+\-\s]/g, '') }))}
                                 placeholder="+91 98765 43210"
                                 inputMode="tel"
                                 className="w-full px-4 py-3 rounded-xl text-sm border outline-none focus:ring-2"
-                                style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
+                                style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
                             />
-                            <input
+                            <Input unstyled
                                 required
                                 value={form.address_line1}
                                 onChange={e => setForm(f => ({ ...f, address_line1: e.target.value }))}
                                 placeholder="Address Line 1 *"
                                 className="w-full px-4 py-3 rounded-xl text-sm border outline-none focus:ring-2"
-                                style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
+                                style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
                             />
-                            <input
+                            <Input unstyled
                                 value={form.address_line2}
                                 onChange={e => setForm(f => ({ ...f, address_line2: e.target.value }))}
                                 placeholder="Address Line 2"
                                 className="w-full px-4 py-3 rounded-xl text-sm border outline-none focus:ring-2"
-                                style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
+                                style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
                             />
                             <div className="grid grid-cols-2 gap-3">
-                                <input
+                                <Input unstyled
                                     required
                                     value={form.city}
                                     onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
                                     placeholder="City *"
                                     className="w-full px-4 py-3 rounded-xl text-sm border outline-none focus:ring-2"
-                                    style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
+                                    style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
                                 />
-                                <input
+                                <Input unstyled
                                     required
                                     value={form.state}
                                     onChange={e => setForm(f => ({ ...f, state: e.target.value }))}
                                     placeholder="State *"
                                     className="w-full px-4 py-3 rounded-xl text-sm border outline-none focus:ring-2"
-                                    style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
+                                    style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-3">
-                                <input
+                                <Input unstyled
                                     required
                                     value={form.postal_code}
                                     onChange={e => setForm(f => ({ ...f, postal_code: e.target.value.replace(/\D/g, '').slice(0, 6) }))}
@@ -334,18 +334,18 @@ export default function AddressesPage() {
                                     pattern="[0-9]{6}"
                                     maxLength={6}
                                     className="w-full px-4 py-3 rounded-xl text-sm border outline-none focus:ring-2"
-                                    style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
+                                    style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
                                 />
-                                <input
+                                <Input unstyled
                                     value={form.landmark}
                                     onChange={e => setForm(f => ({ ...f, landmark: e.target.value }))}
                                     placeholder="Landmark"
                                     className="w-full px-4 py-3 rounded-xl text-sm border outline-none focus:ring-2"
-                                    style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
+                                    style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
                                 />
                             </div>
                             {form.postal_code.length > 0 && (
-                                <p className="text-xs" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                                <p className="text-xs" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                     {pinCodeComplete
                                         ? 'PIN code captured. City/state lookup needs backend support, so confirm those fields before saving.'
                                         : 'Enter a 6-digit India PIN code.'}
@@ -353,7 +353,7 @@ export default function AddressesPage() {
                             )}
 
                             <label className="flex items-center gap-2 cursor-pointer">
-                                <input
+                                <Input unstyled
                                     type="checkbox"
                                     checked={form.is_default}
                                     onChange={e => setForm(f => ({ ...f, is_default: e.target.checked }))}
@@ -362,7 +362,7 @@ export default function AddressesPage() {
                                 <span className="text-sm font-medium">Set as default address</span>
                             </label>
 
-                            <button
+                            <Button unstyled
                                 type="submit"
                                 disabled={saving}
                                 className="w-full py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50"
@@ -373,7 +373,7 @@ export default function AddressesPage() {
                                 ) : (
                                     <><Check size={18} /> {editingId ? 'Update Address' : 'Save Address'}</>
                                 )}
-                            </button>
+                            </Button>
                         </form>
                     </div>
                 </div>

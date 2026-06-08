@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, CSSProperties } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import {
+import { Button, Input,
     Banner,
     ChevronDown,
     ConfirmDialog,
@@ -20,6 +20,7 @@ import {
     Store,
     Upload,
     XCircle,
+    letbuyyPrimitiveTokens,
     useToast,
 } from '@letbuyy/ui'
 import { getStorefrontStoreUrl, getThemeMarketplaceUrl } from '@/lib/public-urls'
@@ -86,7 +87,13 @@ function getThemePalette(theme?: ThemeRecord | null) {
 
     return palette.length > 0
         ? palette.slice(0, 5)
-        : ['#111827', '#4F7FF0', '#F2A93B', '#F7F7F5', '#D9D9D6']
+        : [
+            letbuyyPrimitiveTokens.color.gray[900],
+            'rgb(79 127 240)',
+            'rgb(242 169 59)',
+            'rgb(247 247 245)',
+            'rgb(217 217 214)',
+        ]
 }
 
 function themePreviewVars(palette: string[]): CSSProperties {
@@ -94,8 +101,8 @@ function themePreviewVars(palette: string[]): CSSProperties {
         '--themes-preview-a': palette[0],
         '--themes-preview-b': palette[1] || palette[0],
         '--themes-preview-c': palette[2] || palette[1] || palette[0],
-        '--themes-preview-d': palette[3] || '#f8fafc',
-        '--themes-preview-e': palette[4] || '#111827',
+        '--themes-preview-d': palette[3] || letbuyyPrimitiveTokens.color.gray[50],
+        '--themes-preview-e': palette[4] || letbuyyPrimitiveTokens.color.gray[900],
     } as CSSProperties
 }
 
@@ -330,13 +337,13 @@ export default function ThemesPage() {
                     <a className="themes-button themes-button-muted" href={storefrontUrl} target="_blank" rel="noreferrer">
                         View store
                     </a>
-                    <button className="themes-icon-button" type="button" aria-label="More online store actions">
+                    <Button unstyled className="themes-icon-button" type="button" aria-label="More online store actions">
                         <MoreHorizontal className="letbuyy-icon" aria-hidden="true" />
-                    </button>
+                    </Button>
                 </div>
             </header>
 
-            <input
+            <Input unstyled
                 ref={bundleInputRef}
                 type="file"
                 accept="application/json,.json"
@@ -370,9 +377,9 @@ export default function ThemesPage() {
                                 <span>Password protected: to remove the password, pick a plan</span>
                             </div>
                             <div className="themes-password-actions">
-                                <button type="button" className="themes-text-button">
+                                <Button unstyled type="button" className="themes-text-button">
                                     Edit password
-                                </button>
+                                </Button>
                                 <a className="themes-button themes-button-secondary" href={`/${store}/settings/plan`}>
                                     Pick a plan
                                 </a>
@@ -384,7 +391,7 @@ export default function ThemesPage() {
                         <div className="themes-current-copy">
                             <h2>{heroTheme?.name || 'No theme selected'}</h2>
                             <p>{heroTheme ? 'Added: Today' : 'Add a theme from the library below.'}</p>
-                            <button
+                            <Button unstyled
                                 type="button"
                                 className="themes-version-button"
                                 onClick={() => setVersionOpen((current) => !current)}
@@ -393,7 +400,7 @@ export default function ThemesPage() {
                             >
                                 Version {heroTheme?.version || '1.0.0'}
                                 <ChevronDown className="letbuyy-icon" aria-hidden="true" />
-                            </button>
+                            </Button>
                             {versionOpen && heroTheme && (
                                 <div className="themes-version-popover">
                                     <strong>You&apos;re up to date.</strong>
@@ -403,10 +410,10 @@ export default function ThemesPage() {
                         </div>
 
                         <div className="themes-current-actions">
-                            <button className="themes-icon-button themes-card-more" type="button" aria-label="More theme actions">
+                            <Button unstyled className="themes-icon-button themes-card-more" type="button" aria-label="More theme actions">
                                 <MoreHorizontal className="letbuyy-icon" aria-hidden="true" />
-                            </button>
-                            <button
+                            </Button>
+                            <Button unstyled
                                 className="themes-button themes-button-primary"
                                 type="button"
                                 onClick={openThemeEditor}
@@ -414,20 +421,20 @@ export default function ThemesPage() {
                             >
                                 <Edit3 className="letbuyy-icon" aria-hidden="true" />
                                 Edit theme
-                            </button>
-                            <button
+                            </Button>
+                            <Button unstyled
                                 className="themes-button themes-button-secondary"
                                 type="button"
                                 onClick={() => window.open(storefrontUrl, '_blank', 'noopener,noreferrer')}
                             >
                                 <Eye className="letbuyy-icon" aria-hidden="true" />
                                 Preview
-                            </button>
-                            <button className="themes-button themes-button-secondary" type="button" disabled>
+                            </Button>
+                            <Button unstyled className="themes-button themes-button-secondary" type="button" disabled>
                                 <Copy className="letbuyy-icon" aria-hidden="true" />
                                 Duplicate
-                            </button>
-                            <button
+                            </Button>
+                            <Button unstyled
                                 className="themes-button themes-button-primary"
                                 type="button"
                                 disabled={!storeId}
@@ -437,7 +444,7 @@ export default function ThemesPage() {
                                     ? <XCircle className="letbuyy-icon" aria-hidden="true" />
                                     : <Rocket className="letbuyy-icon" aria-hidden="true" />}
                                 {publishing ? 'Saving...' : isPublished ? 'Unpublish' : 'Publish'}
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </section>
@@ -450,7 +457,7 @@ export default function ThemesPage() {
                         <a className="themes-button themes-button-muted" href={themeStoreUrl} target="_blank" rel="noreferrer">
                             Visit Theme Store
                         </a>
-                        <button
+                        <Button unstyled
                             className="themes-button themes-button-muted"
                             type="button"
                             onClick={() => bundleInputRef.current?.click()}
@@ -458,7 +465,7 @@ export default function ThemesPage() {
                         >
                             {uploadingBundle ? 'Importing...' : 'Import'}
                             <ChevronDown className="letbuyy-icon" aria-hidden="true" />
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
@@ -591,24 +598,24 @@ function ThemeLibraryCard({
 
     return (
         <article className="themes-library-card" style={vars}>
-            <button className="themes-library-preview" type="button" onClick={onPreview} aria-label={`Preview ${theme.name}`}>
+            <Button unstyled className="themes-library-preview" type="button" onClick={onPreview} aria-label={`Preview ${theme.name}`}>
                 <ThemePreviewArtwork theme={theme} />
-            </button>
+            </Button>
             <div className="themes-library-body">
                 <div className="themes-library-copy">
-                    <button type="button" className="themes-library-title" onClick={onPreview}>
+                    <Button unstyled type="button" className="themes-library-title" onClick={onPreview}>
                         {theme.name}
-                    </button>
+                    </Button>
                     <span>{formatThemeMeta(theme)}</span>
                 </div>
-                <button
+                <Button unstyled
                     type="button"
                     className="themes-button themes-button-secondary"
                     onClick={onAdd}
                     disabled={installing || theme.installed}
                 >
                     {installing ? 'Adding...' : buttonLabel}
-                </button>
+                </Button>
             </div>
         </article>
     )

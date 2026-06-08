@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { UuidSchema, type AdminAppEmbedSurface, type AppBridgeCapability } from '@letbuyy/shared-types';
+import {
+  UuidSchema,
+  type AdminAppEmbedSurface,
+  type AppBridgeCapability,
+} from '@letbuyy/shared-types';
 
 export const GenerateContentSchema = z.object({
   store_id: UuidSchema,
@@ -7,7 +11,9 @@ export const GenerateContentSchema = z.object({
     'product_description',
     'seo_meta',
     'blog_post',
+    'social_copy',
     'social_caption',
+    'email_campaign',
     'email_template',
     'ad_copy',
     'brand_tagline',
@@ -40,6 +46,23 @@ export const AiChatSchema = z.object({
   context_type: z.enum(['general', 'analytics', 'marketing', 'support']).default('general'),
 });
 
+export const AiOperatorCommandSchema = z.object({
+  store_id: UuidSchema,
+  message: z.string().min(2).max(2000),
+  conversation_id: UuidSchema.optional(),
+  execute: z.boolean().default(true),
+  context: z.record(z.string(), z.unknown()).default({}),
+});
+
+export const AiHomepageGenerationSchema = z.object({
+  store_id: UuidSchema,
+  prompt: z.string().trim().min(8).max(2000),
+  theme_slug: z.string().trim().min(1).max(120).optional().nullable(),
+  section_count: z.number().int().min(1).max(5).default(3),
+  locale: z.string().trim().min(2).max(12).default('en'),
+  template_config: z.record(z.string(), z.unknown()).default({}),
+});
+
 export const CheckCreditsSchema = z.object({
   store_id: UuidSchema,
   operation: z.enum(['text', 'image', 'chat']),
@@ -48,6 +71,8 @@ export const CheckCreditsSchema = z.object({
 export type GenerateContentInput = z.infer<typeof GenerateContentSchema>;
 export type GenerateImageInput = z.infer<typeof GenerateImageSchema>;
 export type AiChatInput = z.infer<typeof AiChatSchema>;
+export type AiOperatorCommandInput = z.infer<typeof AiOperatorCommandSchema>;
+export type AiHomepageGenerationInput = z.infer<typeof AiHomepageGenerationSchema>;
 export type CheckCreditsInput = z.infer<typeof CheckCreditsSchema>;
 
 export type AppEngineJsonRecord = Record<string, unknown>;
@@ -85,6 +110,14 @@ export interface AppDeveloperRegistrationInsert {
   support_email: string;
   description: string | null;
   country: string;
+  tax_id: string | null;
+  agreed_tos: boolean;
+  agreed_privacy: boolean;
+  tos_policy_version: string;
+  privacy_policy_version: string;
+  consented_at: string;
+  approval_requested_at: string;
+  kyc_status: 'pending';
   status: 'pending';
   verified: false;
 }
@@ -104,10 +137,54 @@ export interface MarketplaceAppSubmissionInsert {
   install_count: 0;
   rating_avg: 0;
   review_count: 0;
+  icon_url?: string | null;
+  screenshots?: string[];
+  data_handling?: AppEngineJsonRecord;
+  support_sla?: string | null;
+  support_sla_response_minutes?: number | null;
+  status_url?: string | null;
+  works_with?: string[];
+  conflict_app_ids?: string[];
   oauth_client_id?: string;
   oauth_redirect_uris?: string[];
   api_scopes?: string[];
   version?: string;
+}
+
+export interface MarketplaceAppUpdatePlan {
+  update: {
+    name?: string;
+    tagline?: string;
+    description?: string;
+    category_id?: string;
+    app_url?: string;
+    privacy_policy_url?: string;
+    terms_url?: string | null;
+    documentation_url?: string | null;
+    pricing_model?: string;
+    version?: string;
+    api_scopes?: string[];
+  };
+  version: {
+    version: string;
+    release_notes: string;
+    changelog: string[];
+    rollout_percentage: number;
+    rollout_cohort: string | null;
+    manifest: LetbuyyAppManifest | null;
+  } | null;
+  requiresReview: boolean;
+}
+
+export interface MarketplaceAppSubmissionCheck {
+  name: string;
+  status: 'passed' | 'warning' | 'failed';
+  message: string;
+}
+
+export interface MarketplaceAppSubmissionCheckResult {
+  checks: MarketplaceAppSubmissionCheck[];
+  hardFailed: boolean;
 }
 
 export interface MarketplaceAppLifecycleRecord {
@@ -192,6 +269,8 @@ export type AppEnginePlanResult<T> =
   | { ok: false; message: string };
 
 export const LETBUYY_APP_MANIFEST_SCHEMA_VERSION = '2026-06-05.ws13' as const;
+export const LETBUYY_APP_DEVELOPER_TERMS_VERSION = '2026-06-07.marketplace-developer-terms' as const;
+export const LETBUYY_APP_DEVELOPER_PRIVACY_VERSION = '2026-06-07.marketplace-developer-privacy' as const;
 
 export const LETBUYY_APP_MANIFEST_EXTENSION_SURFACES = [
   'admin.ui',
@@ -1697,6 +1776,10 @@ export function planAppDeveloperRegistration(
     return { ok: false, message: 'company_name and support_email are required' };
   }
 
+  if (body.agreed_tos !== true || body.agreed_privacy !== true) {
+    return { ok: false, message: 'Developer terms and privacy acknowledgement are required' };
+  }
+
   const slug = appStoreSlugify(companyName);
   if (!slug) {
     return { ok: false, message: 'company_name must contain letters or numbers' };
@@ -1712,6 +1795,14 @@ export function planAppDeveloperRegistration(
       support_email: supportEmail,
       description: appStoreStringOrNull(body.description || body.bio),
       country: appStoreStringOrNull(body.country) || 'IN',
+      tax_id: appStoreStringOrNull(body.tax_id || body.gstin),
+      agreed_tos: true,
+      agreed_privacy: true,
+      tos_policy_version: LETBUYY_APP_DEVELOPER_TERMS_VERSION,
+      privacy_policy_version: LETBUYY_APP_DEVELOPER_PRIVACY_VERSION,
+      consented_at: new Date().toISOString(),
+      approval_requested_at: new Date().toISOString(),
+      kyc_status: 'pending',
       status: 'pending',
       verified: false,
     },
@@ -1768,6 +1859,18 @@ export function planMarketplaceAppSubmission(
   if (manifest?.ok && manifest.value.app.slug !== slug) {
     return { ok: false, message: 'manifest app.slug must match the submitted app slug' };
   }
+  const screenshots = appStoreStringArray(body.screenshots || body.screenshot_urls || body.screenshotUrls).slice(0, 10);
+  if (body.save_as_draft !== true && screenshots.length === 0) {
+    return { ok: false, message: 'At least one real screenshot is required before app review submission' };
+  }
+  const dataHandlingInput = parseAppStoreJsonRecord(body.data_handling || body.dataHandling);
+  const dataCollected = appStoreStringArray(body.data_collected || body.dataCollected).slice(0, 20);
+  const dataHandlingSummary = appStoreStringOrNull(body.data_handling_summary || body.dataHandlingSummary || dataHandlingInput.summary);
+  const dataHandlingRetention = appStoreStringOrNull(body.data_retention || body.dataRetention || dataHandlingInput.retention);
+  const supportSlaMinutes = Number(body.support_sla_response_minutes || body.supportSlaResponseMinutes || 0);
+  if (body.save_as_draft !== true && !dataHandlingSummary) {
+    return { ok: false, message: 'Data handling summary is required before app review submission' };
+  }
 
   return {
     ok: true,
@@ -1786,10 +1889,196 @@ export function planMarketplaceAppSubmission(
       install_count: 0,
       rating_avg: 0,
       review_count: 0,
+      icon_url: appStoreStringOrNull(body.icon_url),
+      screenshots,
+      data_handling: {
+        ...dataHandlingInput,
+        ...(dataHandlingSummary ? { summary: dataHandlingSummary } : {}),
+        ...(dataCollected.length > 0 ? { data_collected: dataCollected } : {}),
+        ...(dataHandlingRetention ? { retention: dataHandlingRetention } : {}),
+      },
+      support_sla: appStoreStringOrNull(body.support_sla || body.supportSla),
+      support_sla_response_minutes: Number.isFinite(supportSlaMinutes) && supportSlaMinutes > 0 ? Math.round(supportSlaMinutes) : null,
+      status_url: appStoreStringOrNull(body.status_url || body.statusUrl),
+      works_with: appStoreStringArray(body.works_with || body.worksWith).slice(0, 30),
+      conflict_app_ids: appStoreStringArray(body.conflict_app_ids || body.conflictAppIds).filter(isAppStoreUuid).slice(0, 20),
       ...(manifest?.ok ? {
         api_scopes: manifest.value.scopes,
         version: manifest.value.app.version,
       } : {}),
+    },
+  };
+}
+
+function isHttpsPublicUrl(value: string | null): boolean {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    const hostname = url.hostname.toLowerCase();
+    return url.protocol === 'https:'
+      && hostname !== 'localhost'
+      && !hostname.endsWith('.local')
+      && !/^127\./.test(hostname)
+      && !/^10\./.test(hostname)
+      && !/^192\.168\./.test(hostname)
+      && !/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname);
+  } catch {
+    return false;
+  }
+}
+
+export function buildMarketplaceAppSubmissionChecks(input: {
+  submission: MarketplaceAppSubmissionInsert;
+  manifest?: LetbuyyAppManifest | null;
+  redirectUris?: string[];
+  developerStatus?: string | null;
+}): MarketplaceAppSubmissionCheckResult {
+  const manifest = input.manifest || null;
+  const redirectUris = input.redirectUris || [];
+  const checks: MarketplaceAppSubmissionCheck[] = [
+    {
+      name: 'developer_approval',
+      status: input.developerStatus === 'approved' ? 'passed' : 'failed',
+      message: input.developerStatus === 'approved'
+        ? 'Developer profile is approved for app review submission.'
+        : 'Developer profile approval is required before app review submission.',
+    },
+    {
+      name: 'app_url_https',
+      status: isHttpsPublicUrl(input.submission.app_url) ? 'passed' : 'failed',
+      message: 'App URL must be a public HTTPS URL.',
+    },
+    {
+      name: 'privacy_url_https',
+      status: isHttpsPublicUrl(input.submission.privacy_policy_url) ? 'passed' : 'failed',
+      message: 'Privacy policy URL must be a public HTTPS URL.',
+    },
+    {
+      name: 'oauth_redirects_https',
+      status: redirectUris.length === 0 || redirectUris.every(isHttpsPublicUrl) ? 'passed' : 'failed',
+      message: 'OAuth redirect URIs must be public HTTPS URLs.',
+    },
+    {
+      name: 'manifest_validation',
+      status: manifest ? 'passed' : 'warning',
+      message: manifest ? 'Manifest schema, slug, scopes, extensions, and functions validated.' : 'No app manifest was submitted with this listing.',
+    },
+    {
+      name: 'scope_declaration',
+      status: (input.submission.api_scopes || []).length <= 80 ? 'passed' : 'failed',
+      message: 'Declared API scopes must fit the marketplace scope limit.',
+    },
+    {
+      name: 'security_static_scan',
+      status: manifest && manifest.functions.some((fn) => !isHttpsPublicUrl(fn.wasm.module_url)) ? 'failed' : 'passed',
+      message: 'Manifest function modules must use public HTTPS module URLs.',
+    },
+  ];
+
+  return {
+    checks,
+    hardFailed: checks.some((check) => check.status === 'failed'),
+  };
+}
+
+function appVersionString(value: unknown): string | null {
+  const version = appStoreStringOrNull(value);
+  if (!version) return null;
+  if (!/^[0-9A-Za-z][0-9A-Za-z._-]{0,59}$/.test(version)) return null;
+  return version;
+}
+
+function normalizedChangelog(value: unknown, releaseNotes: string | null): string[] {
+  const raw = Array.isArray(value) ? value : [];
+  const entries = raw
+    .map((item) => appStoreStringOrNull(item))
+    .filter((item): item is string => Boolean(item))
+    .map((item) => item.slice(0, 500));
+  if (entries.length > 0) return entries.slice(0, 20);
+  return releaseNotes ? [releaseNotes.slice(0, 500)] : [];
+}
+
+export function planMarketplaceAppUpdate(
+  body: AppEngineJsonRecord,
+  current: {
+    slug: string;
+    name: string;
+    version?: string | null;
+    status?: string | null;
+  },
+): AppEnginePlanResult<MarketplaceAppUpdatePlan> {
+  const update: MarketplaceAppUpdatePlan['update'] = {};
+  const stringFields: Array<[keyof MarketplaceAppUpdatePlan['update'], string, number]> = [
+    ['name', 'name', 200],
+    ['tagline', 'tagline', 300],
+    ['description', 'description', 50000],
+    ['category_id', 'category_id', 120],
+    ['app_url', 'app_url', 500],
+    ['privacy_policy_url', 'privacy_policy_url', 500],
+    ['terms_url', 'terms_url', 500],
+    ['documentation_url', 'documentation_url', 500],
+    ['pricing_model', 'pricing_model', 80],
+  ];
+
+  for (const [target, source, max] of stringFields) {
+    if (!(source in body)) continue;
+    const value = appStoreStringOrNull(body[source]);
+    if (!value && target !== 'terms_url' && target !== 'documentation_url') {
+      return { ok: false, message: `${source} cannot be blank` };
+    }
+    if (value && value.length > max) {
+      return { ok: false, message: `${source} is too long` };
+    }
+    (update as Record<string, unknown>)[target] = value || null;
+  }
+
+  const manifestInput = body.manifest || body.app_manifest || body.appManifest || parseAppStoreJsonRecord(body.config).manifest;
+  const manifest = manifestInput ? normalizeLetbuyyAppManifest(manifestInput) : null;
+  if (manifest && !manifest.ok) {
+    return { ok: false, message: manifest.message };
+  }
+  if (manifest?.ok && manifest.value.app.slug !== current.slug) {
+    return { ok: false, message: 'manifest app.slug must match the app slug' };
+  }
+  if (manifest?.ok) {
+    update.api_scopes = manifest.value.scopes;
+  }
+
+  const requestedVersion = appVersionString(body.version || body.app_version || (manifest?.ok ? manifest.value.app.version : null));
+  const releaseNotes = appStoreStringOrNull(body.release_notes || body.releaseNotes);
+  const hasVersionPayload = Boolean(requestedVersion || releaseNotes || manifest?.ok || Array.isArray(body.changelog));
+  let version: MarketplaceAppUpdatePlan['version'] = null;
+
+  if (hasVersionPayload) {
+    const nextVersion = requestedVersion || current.version || '1.0.0';
+    if (!nextVersion) {
+      return { ok: false, message: 'version is required for a new app version' };
+    }
+    const rolloutPercentageRaw = Number(body.rollout_percentage ?? body.rolloutPercentage ?? 100);
+    const rolloutPercentage = Number.isFinite(rolloutPercentageRaw)
+      ? Math.max(0, Math.min(100, Math.round(rolloutPercentageRaw)))
+      : 100;
+    version = {
+      version: nextVersion,
+      release_notes: releaseNotes || `Version ${nextVersion}`,
+      changelog: normalizedChangelog(body.changelog, releaseNotes),
+      rollout_percentage: rolloutPercentage,
+      rollout_cohort: appStoreStringOrNull(body.rollout_cohort || body.rolloutCohort),
+      manifest: manifest?.ok ? manifest.value : null,
+    };
+    update.version = nextVersion;
+  }
+
+  if (Object.keys(update).length === 0 && !version) {
+    return { ok: false, message: 'No app update fields were provided' };
+  }
+
+  return {
+    ok: true,
+    value: {
+      update,
+      version,
+      requiresReview: String(current.status || '').toLowerCase() !== 'draft',
     },
   };
 }

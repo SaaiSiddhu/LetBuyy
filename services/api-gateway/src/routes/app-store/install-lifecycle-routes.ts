@@ -32,6 +32,8 @@ import {
     revokeAppExtensionRegistry,
 } from './shared';
 
+const INSTALL_PRICING_PLAN_SELECT = 'id, app_id, developer_id, plan_slug, name, description, pricing_model, billing_mode, currency, amount_minor, interval, trial_days, usage_meter, usage_unit, included_usage, usage_unit_amount_minor, features, limits, is_default, status, sort_order';
+
 export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: Env }>): void {
     // POST /app-store/apps/:id/install — Install an app
     router.post('/apps/:id/install', authMiddleware, async (c) => {
@@ -82,13 +84,37 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
         // Verify app exists and is published
         const { data: app } = await db
             .from('marketplace_apps')
-            .select('id, name, api_scopes, app_webhooks(id, event, url, secret, is_active)')
+            .select('id, name, api_scopes, conflict_app_ids, app_webhooks(id, event, url, secret, is_active)')
             .eq('id', appId)
             .eq('status', 'published')
             .single();
 
         if (!app) {
             return c.json({ error: { code: 'NOT_FOUND', message: 'App not found or not available' } }, 404);
+        }
+
+        const conflictAppIds = stringArray(app.conflict_app_ids);
+        if (conflictAppIds.length > 0) {
+            const { data: activeConflicts, error: conflictError } = await db
+                .from('app_installations')
+                .select('app_id, marketplace_apps(id, name, slug)')
+                .eq('store_id', storeId)
+                .eq('status', 'active')
+                .in('app_id', conflictAppIds);
+
+            if (conflictError) {
+                return c.json({ error: { code: 'DB_ERROR', message: conflictError.message } }, 500);
+            }
+
+            if (activeConflicts && activeConflicts.length > 0) {
+                return c.json({
+                    error: {
+                        code: 'APP_CONFLICT',
+                        message: 'This app conflicts with an app already installed on this store.',
+                    },
+                    conflicts: activeConflicts,
+                }, 409);
+            }
         }
 
         const scopes = normalizeAppInstallScopes(body.scopes, app.api_scopes || []);
@@ -99,6 +125,36 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
         const appSecret = appPlatformTokenSecret(c.env);
         if (!appSecret) {
             return c.json({ error: { code: 'SERVER_MISCONFIGURED', message: 'App OAuth token secret is not configured' } }, 500);
+        }
+
+        const requestedPricingPlanId = stringOrNull(body.pricing_plan_id || body.pricingPlanId);
+        const pricingPlanQuery = db
+            .from('app_pricing_plans')
+            .select(INSTALL_PRICING_PLAN_SELECT)
+            .eq('app_id', appId)
+            .eq('status', 'active')
+            .is('deleted_at', null)
+            .order('is_default', { ascending: false })
+            .order('sort_order', { ascending: true })
+            .limit(1);
+        const { data: pricingPlans, error: pricingPlanError } = requestedPricingPlanId
+            ? await db
+                .from('app_pricing_plans')
+                .select(INSTALL_PRICING_PLAN_SELECT)
+                .eq('id', requestedPricingPlanId)
+                .eq('app_id', appId)
+                .eq('status', 'active')
+                .is('deleted_at', null)
+                .limit(1)
+            : await pricingPlanQuery;
+
+        if (pricingPlanError) {
+            return c.json({ error: { code: 'DB_ERROR', message: pricingPlanError.message } }, 500);
+        }
+
+        const selectedPricingPlan = Array.isArray(pricingPlans) ? (pricingPlans[0] || null) : pricingPlans;
+        if (requestedPricingPlanId && !selectedPricingPlan) {
+            return c.json({ error: { code: 'VALIDATION', message: 'Selected pricing plan is not available for this app' } }, 400);
         }
 
         // Upsert installation
@@ -152,6 +208,10 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
             defaultSigningSecret,
         });
         const insertedSubscriptions = await insertAppWebhookSubscriptions(db, webhookSubscriptions);
+        const durableWebhookSubscriptions = webhookSubscriptions.map((subscription, index) => ({
+            ...subscription,
+            id: insertedSubscriptions[index]?.id,
+        }));
         const registry = await registerAppExtensionRegistry(db, {
             body,
             appId: app.id,
@@ -178,6 +238,13 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
             webhooks: {
                 subscription_ids: insertedSubscriptions.map((subscription) => subscription.id),
             },
+            ...(selectedPricingPlan ? {
+                billing: {
+                    selected_plan_id: selectedPricingPlan.id,
+                    selected_plan_slug: selectedPricingPlan.plan_slug,
+                    selected_plan_snapshot: selectedPricingPlan,
+                },
+            } : {}),
             ...(registryConfig ? { extension_registry: registryConfig } : {}),
         };
         const { data: finalInstallation, error: updateError } = await db
@@ -200,12 +267,29 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
             requestId,
         });
 
+        await db.from('app_activity_events').insert({
+            site_id: storeId,
+            app_id: appId,
+            installation_id: data.id,
+            actor_id: customUser.id,
+            event_type: 'installed',
+            summary: `${app.name || 'App'} installed`,
+            metadata: {
+                request_id: requestId,
+                scopes: scopes.value,
+                pricing_plan_id: selectedPricingPlan?.id || null,
+            },
+        });
+
         await dispatchAppLifecycleSubscriptions(c.env, {
+            db,
             eventType: 'app.installed',
             installationId: data.id,
+            siteId: storeId,
+            actorId: customUser.id,
             payload: lifecyclePayload,
             requestId,
-            subscriptions: webhookSubscriptions,
+            subscriptions: durableWebhookSubscriptions,
         });
 
         // Increment install count (best-effort, non-blocking)
@@ -238,6 +322,7 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
                 signing_secret: defaultSigningSecret,
             },
             extension_registry: registry.value,
+            pricing_plan: selectedPricingPlan,
         });
         if (idempotency && idempotencyClaimId) {
             await idempotency.complete({ id: idempotencyClaimId, responseBody: installResponse as any, statusCode: 201, resourceType: 'app_installation', resourceId: data.id });
@@ -258,10 +343,13 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
         const auth = c.get('auth');
         const appId = c.req.param('id');
         const storeId = c.req.query('store_id');
+        const body = await c.req.json().catch(() => ({})) as AppEngineJsonRecord;
         const db = getSupabaseAdmin(c);
         const customUser = await resolveCustomUser(db, auth.user);
         const requestId = getRequestId(c);
         const now = new Date();
+        const reasonCode = stringOrNull(body.reason_code || body.reasonCode);
+        const reasonText = stringOrNull(body.reason_text || body.reasonText || body.feedback);
 
         if (!customUser) {
             return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
@@ -287,7 +375,7 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
                 siteId: resolvedStoreId,
                 key: idempotencyKey,
                 scope: 'app-store.uninstall',
-                requestBody: { app_id: appId, store_id: resolvedStoreId },
+                requestBody: { app_id: appId, store_id: resolvedStoreId, reason_code: reasonCode, reason_text: reasonText },
                 requestId,
             });
             if (claim.kind === 'replay') {
@@ -307,6 +395,7 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
             .maybeSingle();
 
         const installConfig = parseJsonRecord(installation?.config);
+        let feedbackPersisted = false;
         const revokedConfig = {
             ...installConfig,
             oauth: {
@@ -331,9 +420,24 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
         }
 
         if (installation?.id) {
+            if (reasonCode || reasonText) {
+                const { error: feedbackError } = await db
+                    .from('app_uninstall_feedback')
+                    .insert({
+                        site_id: resolvedStoreId,
+                        app_id: appId,
+                        installation_id: installation.id,
+                        reason_code: reasonCode ? reasonCode.slice(0, 80) : null,
+                        reason_text: reasonText ? reasonText.slice(0, 1000) : null,
+                        submitted_by: customUser.id,
+                        metadata: { request_id: requestId },
+                    });
+                feedbackPersisted = !feedbackError;
+            }
+
             const { data: appWebhookSubscriptions } = await db
                 .from('webhook_subscriptions')
-                .select('target_url, signing_secret, event_types')
+                .select('id, target_url, signing_secret, event_types')
                 .eq('site_id', resolvedStoreId)
                 .eq('status', 'active')
                 .contains('metadata', { app_id: appId, installation_id: installation.id });
@@ -342,8 +446,11 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
 
             if (activeSubscriptions.length > 0 && c.env.WEBHOOK_SERVICE && c.env.INTERNAL_API_SECRET) {
                 await dispatchAppLifecycleSubscriptions(c.env, {
+                    db,
                     eventType: 'shop/redact',
                     installationId: installation.id,
+                    siteId: resolvedStoreId,
+                    actorId: customUser.id,
                     eventIdPrefix: appComplianceWebhookEventIdPrefix({
                         eventType: 'shop/redact',
                         storeId: resolvedStoreId,
@@ -406,16 +513,33 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
                 requestId,
             });
 
+            await db.from('app_activity_events').insert({
+                site_id: resolvedStoreId,
+                app_id: appId,
+                installation_id: installation.id,
+                actor_id: customUser.id,
+                event_type: 'uninstalled',
+                summary: `${stringOrNull(appRecord.name) || 'App'} uninstalled`,
+                metadata: {
+                    request_id: requestId,
+                    reason_code: reasonCode,
+                    feedback_persisted: feedbackPersisted,
+                },
+            });
+
             await dispatchAppLifecycleSubscriptions(c.env, {
+                db,
                 eventType: 'app.uninstalled',
                 installationId: installation.id,
+                siteId: resolvedStoreId,
+                actorId: customUser.id,
                 payload: lifecyclePayload,
                 requestId,
                 subscriptions: activeSubscriptions,
             });
         }
 
-        const uninstallResponse = { data: { uninstalled: true } };
+        const uninstallResponse = { data: { uninstalled: true, feedback_persisted: feedbackPersisted } };
         if (idempotency && idempotencyClaimId) {
             await idempotency.complete({ id: idempotencyClaimId, responseBody: uninstallResponse, statusCode: 200, resourceType: 'app_installation' });
             idempotencyCompleted = true;

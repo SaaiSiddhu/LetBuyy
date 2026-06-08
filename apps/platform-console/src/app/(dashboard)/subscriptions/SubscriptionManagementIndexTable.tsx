@@ -1,11 +1,6 @@
 'use client';
 
-import {
-    Badge,
-    EmptyState,
-    IndexTable,
-    type IndexTableColumn,
-} from '@letbuyy/ui';
+import { Badge, EmptyState, Table, type TableColumn } from '@letbuyy/ui';
 import { formatIndiaDateTime as formatDateTime } from '@letbuyy/ui/formatting';
 
 export type ConsoleSubscription = {
@@ -29,7 +24,7 @@ type SubscriptionManagementIndexTableProps = {
     filterChipLabels: string[];
 };
 
-const columns: Array<IndexTableColumn<ConsoleSubscription>> = [
+const columns: Array<TableColumn<ConsoleSubscription>> = [
     {
         key: 'plan',
         header: 'Plan',
@@ -87,7 +82,7 @@ const columns: Array<IndexTableColumn<ConsoleSubscription>> = [
 
 export function SubscriptionManagementIndexTable({ rows, filterChipLabels }: SubscriptionManagementIndexTableProps) {
     return (
-        <IndexTable
+        <Table
             columns={columns}
             rows={rows}
             emptyState={(

@@ -124,7 +124,7 @@
   "domains": {
     "staging": {
       "api": "api-staging.letbuyy.store",
-      "bff": "bff-staging.letbuyy.store",
+      "bff": "bff-staging.letbuyy.com",
       "webhooks": "webhooks-staging.letbuyy.store",
       "storefront": "store-staging.letbuyy.store",
       "accounts": "accounts-staging.letbuyy.store",
@@ -136,7 +136,7 @@
     },
     "production": {
       "api": "api.letbuyy.store",
-      "bff": "bff.letbuyy.store",
+      "bff": "bff.letbuyy.com",
       "webhooks": "webhooks.letbuyy.store",
       "storefront": "store.letbuyy.store",
       "accounts": "accounts.letbuyy.store",

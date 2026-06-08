@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import fs from "node:fs";
 import path from "node:path";
 
 const validators = [
@@ -53,6 +54,7 @@ const validators = [
   "undeclared-import-validator.mjs",
   "dependency-graph-validator.mjs",
   "circular-import-validator.mjs",
+  "cycle-budget-validator.mjs",
   "package-export-validator.mjs",
   "provider-isolation-validator.mjs",
   "supply-chain-validator.mjs",
@@ -68,6 +70,20 @@ const validators = [
   "provider-evidence-validator.mjs",
   "env-isolation-validator.mjs",
   "environment-honesty-validator.mjs",
+  "cookie-realm-validator.mjs",
+  "reserved-subdomain-single-source-validator.mjs",
+  "storefront-access-gate-validator.mjs",
+  "custom-domain-target-validator.mjs",
+  "vercel-domain-automation-validator.mjs",
+  "custom-domain-abuse-screening-validator.mjs",
+  "custom-domain-reconciler-validator.mjs",
+  "shopper-identity-seam-validator.mjs",
+  "registrar-provider-validator.mjs",
+  "merchant-domains-settings-validator.mjs",
+  "mobile-domain-parity-validator.mjs",
+  "storefront-seo-access-validator.mjs",
+  "platform-domain-literal-validator.mjs",
+  "route-ownership-validator.mjs",
   "legacy-site-type-validator.mjs",
   "app-utils-service-role-edge-validator.mjs",
   "migration-safety-validator.mjs",
@@ -161,7 +177,46 @@ const validators = [
   "tooling-governance-validator.mjs",
 ];
 
+const generatedDirectoryNames = new Set([
+  "node_modules",
+  ".next",
+  ".turbo",
+  "dist",
+  ".dart_tool",
+  "build",
+  "coverage",
+  ".cache",
+  ".wrangler",
+  ".vercel",
+  ".symlinks",
+  "Pods",
+]);
+
+function removeGeneratedArtifactDirectories(startDirs = ["apps", "packages", "services"]) {
+  function walk(absDir) {
+    if (!fs.existsSync(absDir)) return;
+
+    for (const entry of fs.readdirSync(absDir, { withFileTypes: true })) {
+      const absPath = path.join(absDir, entry.name);
+      if (!entry.isDirectory()) continue;
+
+      if (generatedDirectoryNames.has(entry.name)) {
+        fs.rmSync(absPath, { recursive: true, force: true });
+        continue;
+      }
+
+      walk(absPath);
+    }
+  }
+
+  for (const dir of startDirs) walk(path.join(process.cwd(), dir));
+}
+
 for (const validator of validators) {
+  if (validator === "stale-artifact-validator.mjs") {
+    removeGeneratedArtifactDirectories();
+  }
+
   const script = path.posix.join("scripts/validators", validator);
   const result = spawnSync(process.execPath, [script], {
     cwd: process.cwd(),

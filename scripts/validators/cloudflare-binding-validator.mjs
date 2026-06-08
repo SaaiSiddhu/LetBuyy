@@ -73,6 +73,17 @@ for (const worker of manifest?.workers || []) {
       reporter.assert(new RegExp(`^\\s*${escapeRegExp(variable)}\\s*=`, "m").test(envSection), `Wrangler env missing governed var ${variable}: ${worker.config} ${environment}`);
     }
 
+    for (const secret of expected?.secrets || []) {
+      reporter.assert(
+        !new RegExp(`^\\s*${escapeRegExp(secret)}\\s*=`, "m").test(envSection),
+        `Wrangler env must not commit governed secret ${secret} as a plaintext var: ${worker.config} ${environment}`,
+      );
+      reporter.assert(
+        new RegExp(`wrangler secret put ${escapeRegExp(secret)}\\s+--env ${escapeRegExp(environment)}`).test(envSection),
+        `Wrangler env missing governed secret provisioning command ${secret}: ${worker.config} ${environment}`,
+      );
+    }
+
     const producerBlocks = arrayTableBlocks(envSection, `env.${environment}.queues.producers`);
     for (const binding of expected?.queueProducers || []) {
       reporter.assert(

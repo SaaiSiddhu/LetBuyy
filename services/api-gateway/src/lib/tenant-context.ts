@@ -2,14 +2,30 @@ import type { Context } from 'hono';
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import type { Env } from '../index';
 import { ForbiddenError, NotFoundError } from './errors';
-import { resolveCustomUser, verifySiteOwnership } from './auth-user';
+import { resolveCustomUser, verifySiteOwnership, type CustomUser, type WorkerAuthUser } from './auth-user';
 import { getSupabaseAdmin } from './supabase';
 import { SaasExecutionAdapter } from '../execution/saas-execution.adapter';
-import type { RuntimeTenantContext } from '@letbuyy/tenant-core';
+import {
+    TENANT_SITE_GUC,
+    requireSiteIdPredicate,
+    tenantGucSetLocalStatement,
+    type RuntimeTenantContext,
+    type TenantGucSetLocalStatement,
+    type TenantScopedQueryRequirement,
+} from '@letbuyy/tenant-core';
 
 export type TenantContext = RuntimeTenantContext;
 
 type AppContext = Context<{ Bindings: Env }>;
+
+export interface OwnedStoreScope {
+    siteId: string;
+    storeId: string;
+    db: SupabaseClient;
+    authUser: WorkerAuthUser;
+    customUser: CustomUser;
+    tenant: TenantContext;
+}
 
 interface MembershipRow {
     id: string;
@@ -35,6 +51,16 @@ declare module 'hono' {
 
 export function getRequestId(c: AppContext): string {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
+}
+
+export { TENANT_SITE_GUC };
+
+export function tenantSetLocalStatement(siteId: string): TenantGucSetLocalStatement {
+    return tenantGucSetLocalStatement(siteId);
+}
+
+export function assertTenantScopedQuery(requirement: TenantScopedQueryRequirement): void {
+    requireSiteIdPredicate(requirement);
 }
 
 async function loadPlan(db: SupabaseClient, siteId: string): Promise<string> {
@@ -147,16 +173,14 @@ export async function resolveTenantAccessProfile(
     };
 }
 
-export async function resolveTenantContextForOwnedSite(c: AppContext, siteId: string): Promise<TenantContext> {
-    const auth = c.get('auth');
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        throw new ForbiddenError('User profile not found');
-    }
-
-    const ownsStore = await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId);
+async function buildOwnedTenantContext(
+    c: AppContext,
+    db: SupabaseClient,
+    siteId: string,
+    customUser: CustomUser,
+    authUser: WorkerAuthUser
+): Promise<TenantContext> {
+    const ownsStore = await verifySiteOwnership(db, siteId, customUser.id, authUser.storeId);
     if (!ownsStore) {
         throw new ForbiddenError('Not authorized for this store');
     }
@@ -165,7 +189,7 @@ export async function resolveTenantContextForOwnedSite(c: AppContext, siteId: st
         db,
         siteId,
         customUser.id,
-        auth.user.role ? [auth.user.role] : ['owner'],
+        authUser.role ? [authUser.role] : ['owner'],
         ['store:owner']
     );
 
@@ -182,6 +206,30 @@ export async function resolveTenantContextForOwnedSite(c: AppContext, siteId: st
 
     c.set('tenant', tenant);
     return tenant;
+}
+
+export async function resolveOwnedStoreScope(c: AppContext, siteId: string): Promise<OwnedStoreScope> {
+    const auth = c.get('auth');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        throw new ForbiddenError('User profile not found');
+    }
+
+    const tenant = await buildOwnedTenantContext(c, db, siteId, customUser, auth.user);
+    return {
+        siteId,
+        storeId: siteId,
+        db,
+        authUser: auth.user,
+        customUser,
+        tenant,
+    };
+}
+
+export async function resolveTenantContextForOwnedSite(c: AppContext, siteId: string): Promise<TenantContext> {
+    return (await resolveOwnedStoreScope(c, siteId)).tenant;
 }
 
 export async function resolveTenantContextForOrder(c: AppContext, orderId: string): Promise<TenantContext> {

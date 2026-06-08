@@ -2,6 +2,7 @@ import type { Context, Hono } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../../index';
 import { findFirstOwnedSiteId, resolveCustomUser, verifySiteOwnership } from '../../lib/auth-user';
+import { upsertDataSubjectRequestFromComplianceWebhook } from '../../lib/internal-compliance';
 import { getSupabaseAdmin, success } from '../../lib/supabase';
 import { authMiddleware } from '../../middleware/auth';
 import {
@@ -9,6 +10,7 @@ import {
     appStoreStringOrNull as stringOrNull,
     type MandatoryComplianceWebhookTopic,
 } from '@letbuyy/app-engine';
+import type { ComplianceDataSubjectSource } from '@letbuyy/shared-types';
 import {
     appComplianceWebhookEventIdPrefix,
     buildAppComplianceWebhookPayload,
@@ -29,6 +31,11 @@ const AppComplianceWebhookRequestSchema = z.object({
 type AppComplianceWebhookInput = z.infer<typeof AppComplianceWebhookRequestSchema>;
 
 const COMPLIANCE_TOPIC_SET = new Set<string>(MANDATORY_COMPLIANCE_WEBHOOK_TOPICS);
+type AppComplianceTriggerSource = 'merchant' | 'customer' | 'app_uninstall' | 'system';
+
+export type AppComplianceDispatchResult =
+    | { ok: true; subscriptionCount: number; dispatchedCount: number; dataSubjectRequestId?: string | null }
+    | { ok: false; status: 500 | 503; code: string; message: string };
 
 export function isAppComplianceWebhookTopic(value: unknown): value is MandatoryComplianceWebhookTopic {
     return typeof value === 'string' && COMPLIANCE_TOPIC_SET.has(value);
@@ -43,6 +50,102 @@ function complianceWebhookBodyError(eventType: MandatoryComplianceWebhookTopic, 
         return 'customer_id or customer_email is required for customer compliance webhooks';
     }
     return null;
+}
+
+export async function dispatchStoreAppComplianceWebhook(
+    c: Context<{ Bindings: Env }>,
+    input: {
+        eventType: MandatoryComplianceWebhookTopic;
+        storeId: string;
+        idempotencyKey: string;
+        triggerSource: AppComplianceTriggerSource;
+        actorId?: string | null;
+        customerId?: string | null;
+        customerEmail?: string | null;
+        reason?: string | null;
+        requestedAt?: string | null;
+        failClosed?: boolean;
+    },
+): Promise<AppComplianceDispatchResult> {
+    const db = getSupabaseAdmin(c);
+    const requestId = getRequestId(c);
+    const now = new Date();
+    const eventType = input.eventType;
+    const payload = buildAppComplianceWebhookPayload({
+        eventType,
+        storeId: input.storeId,
+        occurredAt: stringOrNull(input.requestedAt) || now.toISOString(),
+        requestId,
+        triggerSource: input.triggerSource,
+        actorId: input.actorId || null,
+        customerId: input.customerId || null,
+        customerEmail: input.customerEmail || null,
+        reason: input.reason || null,
+    });
+
+    const { data: subscriptions, error } = await db
+        .from('webhook_subscriptions')
+        .select('id, target_url, signing_secret, event_types, metadata')
+        .eq('site_id', input.storeId)
+        .eq('status', 'active')
+        .contains('event_types', [eventType])
+        .contains('metadata', { source: 'app-platform' });
+
+    if (error) {
+        return { ok: false, status: 500, code: 'DB_ERROR', message: 'Database operation failed' };
+    }
+
+    let dataSubjectRequestId: string | null = null;
+    try {
+        const dataSubjectRequest = await upsertDataSubjectRequestFromComplianceWebhook(db, {
+            eventType: eventType as ComplianceDataSubjectSource,
+            siteId: input.storeId,
+            idempotencyKey: input.idempotencyKey,
+            requestedAt: input.requestedAt || now.toISOString(),
+            actorId: input.actorId || null,
+            customerId: input.customerId || null,
+            customerEmail: input.customerEmail || null,
+            reason: input.reason || null,
+            requestId,
+            payload,
+        });
+        dataSubjectRequestId = typeof dataSubjectRequest.id === 'string' ? dataSubjectRequest.id : null;
+    } catch {
+        if (input.failClosed) {
+            return { ok: false, status: 500, code: 'DB_ERROR', message: 'Database operation failed' };
+        }
+    }
+
+    const appSubscriptions = Array.isArray(subscriptions) ? subscriptions : [];
+    const deliveryConfigured = Boolean(c.env.WEBHOOK_SERVICE && c.env.INTERNAL_API_SECRET);
+    if (appSubscriptions.length > 0 && !deliveryConfigured) {
+        const unavailable = {
+            ok: false as const,
+            status: 503 as const,
+            code: 'SERVER_MISCONFIGURED',
+            message: 'App compliance webhook delivery is not configured',
+        };
+        if (input.failClosed) return unavailable;
+        return { ok: true, subscriptionCount: appSubscriptions.length, dispatchedCount: 0, dataSubjectRequestId };
+    }
+
+    const delivered = await dispatchAppLifecycleSubscriptions(c.env, {
+        db,
+        eventType,
+        installationId: input.storeId,
+        siteId: input.storeId,
+        actorId: input.actorId || null,
+        eventIdPrefix: appComplianceWebhookEventIdPrefix({
+            eventType,
+            storeId: input.storeId,
+            idempotencyKey: input.idempotencyKey,
+        }),
+        payload,
+        requestId,
+        subscriptions: appSubscriptions,
+    });
+
+    return { ok: true, subscriptionCount: appSubscriptions.length, dispatchedCount: delivered, dataSubjectRequestId };
 }
 
 async function emitAppComplianceWebhook(
@@ -68,8 +171,6 @@ async function emitAppComplianceWebhook(
 
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
-    const requestId = getRequestId(c);
-    const now = new Date();
 
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
@@ -85,49 +186,29 @@ async function emitAppComplianceWebhook(
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } }, 403);
     }
 
-    const { data: subscriptions, error } = await db
-        .from('webhook_subscriptions')
-        .select('id, target_url, signing_secret, event_types, metadata')
-        .eq('site_id', storeId)
-        .eq('status', 'active')
-        .contains('event_types', [eventType])
-        .contains('metadata', { source: 'app-platform' });
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    const appSubscriptions = Array.isArray(subscriptions) ? subscriptions : [];
-    if (appSubscriptions.length > 0 && (!c.env.WEBHOOK_SERVICE || !c.env.INTERNAL_API_SECRET)) {
-        return c.json({ error: { code: 'SERVER_MISCONFIGURED', message: 'App compliance webhook delivery is not configured' } }, 503);
-    }
-
-    const payload = buildAppComplianceWebhookPayload({
+    const dispatch = await dispatchStoreAppComplianceWebhook(c, {
         eventType,
         storeId,
-        occurredAt: stringOrNull(parsed.data.requested_at) || now.toISOString(),
-        requestId,
+        idempotencyKey,
         triggerSource: parsed.data.trigger_source || 'merchant',
         actorId: customUser.id,
         customerId: parsed.data.customer_id || null,
         customerEmail: parsed.data.customer_email || null,
         reason: parsed.data.reason || null,
+        requestedAt: parsed.data.requested_at || null,
+        failClosed: true,
     });
-    const delivered = await dispatchAppLifecycleSubscriptions(c.env, {
-        eventType,
-        installationId: storeId,
-        eventIdPrefix: appComplianceWebhookEventIdPrefix({ eventType, storeId, idempotencyKey }),
-        payload,
-        requestId,
-        subscriptions: appSubscriptions,
-    });
+    if (!dispatch.ok) {
+        return c.json({ error: { code: dispatch.code, message: dispatch.message } }, dispatch.status);
+    }
 
     return c.json(success({
         event_type: eventType,
         store_id: storeId,
         idempotency_key: idempotencyKey,
-        subscription_count: appSubscriptions.length,
-        dispatched_count: delivered,
+        subscription_count: dispatch.subscriptionCount,
+        dispatched_count: dispatch.dispatchedCount,
+        data_subject_request_id: dispatch.dataSubjectRequestId || null,
     }), 202);
 }
 

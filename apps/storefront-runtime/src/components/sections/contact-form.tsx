@@ -2,7 +2,7 @@
 
 import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
 import { motion } from 'framer-motion';
-import { Send, Loader2, CheckCircle, Mail, Phone, MapPin } from '@letbuyy/ui';
+import { Button, Input, Send, Loader2, CheckCircle, Mail, Phone, MapPin } from '@letbuyy/ui';
 import { useState } from 'react';
 
 interface Props {
@@ -114,7 +114,7 @@ export default function ContactForm({ section, theme }: Props) {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label className="text-xs font-medium text-theme-secondary mb-1 block">Name *</label>
-                                <input
+                                <Input unstyled
                                     type="text"
                                     value={form.name}
                                     onChange={e => setForm({ ...form, name: e.target.value })}
@@ -125,7 +125,7 @@ export default function ContactForm({ section, theme }: Props) {
                             </div>
                             <div>
                                 <label className="text-xs font-medium text-theme-secondary mb-1 block">Email *</label>
-                                <input
+                                <Input unstyled
                                     type="email"
                                     value={form.email}
                                     onChange={e => setForm({ ...form, email: e.target.value })}
@@ -146,7 +146,7 @@ export default function ContactForm({ section, theme }: Props) {
                                 required
                             />
                         </div>
-                        <button
+                        <Button unstyled
                             type="submit"
                             disabled={status !== 'idle'}
                             className="w-full py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-60"
@@ -159,7 +159,7 @@ export default function ContactForm({ section, theme }: Props) {
                             ) : (
                                 <><Send size={16} /> Send Message</>
                             )}
-                        </button>
+                        </Button>
                     </motion.form>
                 </div>
             </div>

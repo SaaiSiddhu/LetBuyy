@@ -1,9 +1,15 @@
 # Pass these as --dart-define values in local or CI builds.
 SUPABASE_URL=https://example.supabase.co
 SUPABASE_ANON_KEY=replace-with-public-anon-key
-API_BASE_URL=https://api.example.com/v1
+BFF_BASE_URL=https://bff.letbuyy.com/v1
+API_BASE_URL=https://bff.letbuyy.com/v1
+IDENTITY_BASE_URL=https://accounts.letbuyy.com
+STOREFRONT_BASE_URL=https://letbuyy.com
+MOBILE_PUSH_DEVICE_TOKEN=
 GEMINI_API_KEY=replace-with-mobile-ai-api-key
 GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent
 GEMINI_MODEL=gemini-2.5-flash
 RAZORPAY_KEY_ID=replace-with-public-key-id
+SENTRY_DSN=SKIP_NEEDS_HUMAN_MOBILE_SENTRY_DSN
+APP_RELEASE=letbuyy-merchant-mobile@1.0.0+1
 ENVIRONMENT=local

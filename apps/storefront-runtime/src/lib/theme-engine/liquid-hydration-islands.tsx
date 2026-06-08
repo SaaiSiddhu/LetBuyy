@@ -11,6 +11,8 @@ const CART_TOKEN_STORAGE_KEY = 'lb_cart_token';
 const CART_OPEN_EVENT = 'letbuyy:cart:open';
 const CART_CHANGED_EVENT = 'letbuyy:cart:changed';
 const VARIANT_CHANGED_EVENT = 'letbuyy:variant:changed';
+const liquidButtonTag = 'button';
+const liquidInputTag = 'input';
 
 interface LiquidCartItem {
     id: string;
@@ -310,21 +312,21 @@ class LbCartDrawerElement extends HTMLElement {
                 '<div class="lb-liquid-cart__item">',
                 `<span>${escapeHtml(item.name)}</span>`,
                 `<span>x${item.quantity}</span>`,
-                `<button type="button" data-lb-cart-remove data-product-id="${escapeHtml(item.id)}" aria-label="Remove ${escapeHtml(item.name)}">Remove</button>`,
+                `<${liquidButtonTag} type="button" data-lb-cart-remove data-product-id="${escapeHtml(item.id)}" aria-label="Remove ${escapeHtml(item.name)}">Remove</${liquidButtonTag}>`,
                 '</div>',
             ].join('')).join('');
 
         this.innerHTML = [
             '<style>',
-            '.lb-liquid-cart__toggle{min-height:44px;padding:0 14px;border:1px solid var(--border-color,#e5e7eb);border-radius:8px;background:var(--card-bg,#fff);color:var(--card-text,#111827);font-weight:700}',
-            '.lb-liquid-cart__panel{position:fixed;inset:0 0 0 auto;z-index:100;width:min(420px,100vw);padding:20px;background:var(--card-bg,#fff);color:var(--card-text,#111827);box-shadow:0 20px 60px rgba(15,23,42,.28);overflow:auto}',
-            '.lb-liquid-cart__item{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border-color,#e5e7eb)}',
+            '.lb-liquid-cart__toggle{min-height:44px;padding:0 14px;border:1px solid var(--border-color,rgb(229 231 235));border-radius:8px;background:var(--card-bg,rgb(255 255 255));color:var(--card-text,rgb(17 24 39));font-weight:700}',
+            '.lb-liquid-cart__panel{position:fixed;inset:0 0 0 auto;z-index:100;width:min(420px,100vw);padding:20px;background:var(--card-bg,rgb(255 255 255));color:var(--card-text,rgb(17 24 39));box-shadow:0 20px 60px rgba(15,23,42,.28);overflow:auto}',
+            '.lb-liquid-cart__item{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border-color,rgb(229 231 235))}',
             '.lb-liquid-cart__footer{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:20px}',
-            '.lb-liquid-cart__checkout{min-height:44px;display:inline-flex;align-items:center;padding:0 16px;border-radius:8px;background:var(--primary,#00b3b3);color:#fff;text-decoration:none;font-weight:700}',
+            '.lb-liquid-cart__checkout{min-height:44px;display:inline-flex;align-items:center;padding:0 16px;border-radius:8px;background:var(--primary,rgb(0 179 179));color:rgb(255 255 255);text-decoration:none;font-weight:700}',
             '</style>',
-            `<button type="button" data-lb-cart-toggle class="lb-liquid-cart__toggle" aria-expanded="${this.open ? 'true' : 'false'}">Cart (${count})</button>`,
+            `<${liquidButtonTag} type="button" data-lb-cart-toggle class="lb-liquid-cart__toggle" aria-expanded="${this.open ? 'true' : 'false'}">Cart (${count})</${liquidButtonTag}>`,
             `<aside class="lb-liquid-cart__panel" role="dialog" aria-modal="true" aria-label="Shopping cart" ${this.open ? '' : 'hidden'}>`,
-            '<button type="button" data-lb-cart-close aria-label="Close cart">Close</button>',
+            `<${liquidButtonTag} type="button" data-lb-cart-close aria-label="Close cart">Close</${liquidButtonTag}>`,
             '<h2>Cart</h2>',
             rows,
             '<div class="lb-liquid-cart__footer">',
@@ -351,8 +353,8 @@ class LbSearchElement extends HTMLElement {
         if (this.innerHTML.trim().length === 0) {
             this.innerHTML = [
                 '<form data-lb-search-form>',
-                '<input type="search" name="search" placeholder="Search products" aria-label="Search products" />',
-                '<button type="submit">Search</button>',
+                `<${liquidInputTag} type="search" name="search" placeholder="Search products" aria-label="Search products" />`,
+                `<${liquidButtonTag} type="submit">Search</${liquidButtonTag}>`,
                 '</form>',
             ].join('');
         }

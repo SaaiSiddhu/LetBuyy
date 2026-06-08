@@ -2,27 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
-    Avatar,
-    Badge,
-    Banner,
-    Button,
-    Card,
-    ConfirmDialog,
-    EmptyState,
-    IndexTable,
-    Input,
-    Mail,
-    Plus,
-    Section,
-    Select,
-    ShieldCheck,
-    Skeleton,
-    Trash2,
-    Users,
-    type IndexTableColumn,
-    useToast,
-} from '@letbuyy/ui'
+import { Button, Input, Table, Avatar, Badge, Banner, Card, ConfirmDialog, EmptyState, Mail, Plus, Section, Select, ShieldCheck, Skeleton, Trash2, Users, type TableColumn, useToast } from '@letbuyy/ui'
 import { formatUsShortDate } from '@letbuyy/ui/formatting'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 
@@ -287,7 +267,7 @@ export default function UsersSettingsPage() {
         }
     }, [employeeToRemove, notify, removingId, store])
 
-    const staffColumns = useMemo<IndexTableColumn<Employee>[]>(() => [
+    const staffColumns = useMemo<TableColumn<Employee>[]>(() => [
         {
             key: 'email',
             header: 'Staff member',
@@ -503,7 +483,7 @@ export default function UsersSettingsPage() {
                             </Button>
                         )}
                     >
-                        <IndexTable
+                        <Table
                             columns={staffColumns}
                             rows={employees}
                             emptyState={(

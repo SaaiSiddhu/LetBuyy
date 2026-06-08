@@ -105,26 +105,26 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
                 {/* Greeting + Create */}
                 <div className="all-stores-header">
                     <h1 className="all-stores-greeting">Welcome back, {firstName}</h1>
-                    <button className="all-stores-create-btn" onClick={handleCreateStore}>
+                    <Button unstyled className="all-stores-create-btn" onClick={handleCreateStore}>
                         <MaterialIcon name="add" size={18} />
                         Create store
-                    </button>
+                    </Button>
                 </div>
 
                 {/* Tabs */}
                 <div className="all-stores-tabs">
-                    <button
+                    <Button unstyled
                         className={`all-stores-tab ${tab === 'active' ? 'active' : ''}`}
                         onClick={() => setTab('active')}
                     >
                         Active ({activeStores.length})
-                    </button>
-                    <button
+                    </Button>
+                    <Button unstyled
                         className={`all-stores-tab ${tab === 'inactive' ? 'active' : ''}`}
                         onClick={() => setTab('inactive')}
                     >
                         Inactive ({inactiveStores.length})
-                    </button>
+                    </Button>
                 </div>
 
                 {/* Store list */}
@@ -144,7 +144,7 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
                         />
                     ) : (
                         filtered.map((store) => (
-                            <button
+                            <Button unstyled
                                 key={store.id}
                                 className="all-stores-card"
                                 onClick={() => handleOpenStore(store.subdomain)}
@@ -165,7 +165,7 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
                                 <span className={`all-stores-card-status ${store.status === 'active' ? 'active' : 'inactive'}`}>
                                     {store.status}
                                 </span>
-                            </button>
+                            </Button>
                         ))
                     )}
                 </div>

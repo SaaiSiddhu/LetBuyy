@@ -28,6 +28,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   String _loadingStatus = 'Initializing...';
   String? _errorTitle;
   String? _errorMessage;
+  String? _loginNotice;
 
   StreamSubscription<AuthState>? _authSub;
 
@@ -60,10 +61,15 @@ class _AuthWrapperState extends State<AuthWrapper> {
       final event = authState.event;
       final session = authState.session;
 
-      if (event == AuthChangeEvent.signedOut || session == null) {
+      if (event == AuthChangeEvent.signedOut ||
+          event == AuthChangeEvent.sessionExpired ||
+          session == null) {
         unawaited(context.read<StoreContext>().clearSelection());
         setState(() {
           _authState = _AuthState.login;
+          _loginNotice = event == AuthChangeEvent.sessionExpired
+              ? 'Your session expired. Please sign in again.'
+              : null;
         });
       } else if (event == AuthChangeEvent.signedIn ||
           event == AuthChangeEvent.tokenRefreshed ||
@@ -140,7 +146,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
           ),
         );
       case _AuthState.login:
-        return const LoginScreen();
+        return LoginScreen(sessionNotice: _loginNotice);
       case _AuthState.wizard:
         return const CreateStoreWizard();
       case _AuthState.main:

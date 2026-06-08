@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/app_theme_colors.dart';
+import '../shared/accessible_tap_region.dart';
 
 /// Simple Settings tile - No Card, No Ripple
 class SettingsTile extends StatelessWidget {
@@ -28,57 +29,61 @@ class SettingsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    final effectiveColor = isDestructive 
-        ? const Color(0xFFEF4444) 
+    final effectiveColor = isDestructive
+        ? const Color(0xFFEF4444)
         : (iconColor ?? colors.textSecondary);
+    final tile = Padding(
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 0),
+      child: Row(
+        children: [
+          Icon(icon, color: effectiveColor, size: 22),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 15,
+                color: isDestructive
+                    ? const Color(0xFFEF4444)
+                    : colors.textPrimary,
+              ),
+            ),
+          ),
+          if (trailing != null)
+            trailing!
+          else if (subtitle != null)
+            Text(
+              subtitle!,
+              style: TextStyle(fontSize: 13, color: colors.textTertiary),
+            )
+          else if (showArrow)
+            Icon(
+              Icons.chevron_right_rounded,
+              color: colors.textTertiary,
+              size: 20,
+            ),
+        ],
+      ),
+    );
 
+    if (onTap == null) {
+      return tile;
+    }
+
+    final semanticsLabel = subtitle == null ? title : '$title, $subtitle';
     return GestureDetector(
       onTap: () {
         HapticFeedback.selectionClick();
         onTap?.call();
       },
       behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 0),
-        child: Row(
-          children: [
-            // Simple icon
-            Icon(
-              icon,
-              color: effectiveColor,
-              size: 22,
-            ),
-            const SizedBox(width: 16),
-            // Text
-            Expanded(
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 15,
-                  color: isDestructive ? const Color(0xFFEF4444) : colors.textPrimary,
-                ),
-              ),
-            ),
-            // Trailing
-            if (trailing != null)
-              trailing!
-            else if (subtitle != null)
-              Text(
-                subtitle!,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: colors.textTertiary,
-                ),
-              )
-            else if (showArrow)
-              Icon(
-                Icons.chevron_right_rounded,
-                color: colors.textTertiary,
-                size: 20,
-              ),
-          ],
-        ),
+      child: AccessibleTapRegion(
+        label: semanticsLabel,
+        hint: 'Open $title',
+        onTap: onTap,
+        excludeChildSemantics: true,
+        child: tile,
       ),
     );
   }
@@ -98,15 +103,12 @@ class SettingsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Section divider line
-        Container(
-          height: 8,
-          color: colors.bgStart.withValues(alpha: 0.5),
-        ),
+        Container(height: 8, color: colors.bgStart.withValues(alpha: 0.5)),
         // Section title
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
@@ -128,4 +130,3 @@ class SettingsSection extends StatelessWidget {
     );
   }
 }
-

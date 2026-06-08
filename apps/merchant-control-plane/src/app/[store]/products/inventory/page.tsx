@@ -2,26 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
-    Avatar,
-    Badge,
-    Banner,
-    Button,
-    Card,
-    EmptyState,
-    IndexTable,
-    Input,
-    Package,
-    Page,
-    PageHeader,
-    Pencil,
-    RefreshCw,
-    SaveBar,
-    Search,
-    Section,
-    Skeleton,
-    useToast,
-} from '@letbuyy/ui'
+import { Button, Input, Table, Avatar, Badge, Banner, Card, EmptyState, Package, Page, PageHeader, Pencil, RefreshCw, SaveBar, Search, Section, Skeleton, useToast } from '@letbuyy/ui'
 import { formatDisplayDate } from '@letbuyy/ui/formatting'
 import type { InventoryLevel } from '@letbuyy/shared-types'
 
@@ -362,7 +343,7 @@ export default function InventoryPage() {
                                 leftIcon={<Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             />
 
-                            <IndexTable
+                            <Table
                                 rows={filtered}
                                 columns={columns}
                                 filterChips={searchQuery ? [{ label: `Search: ${searchQuery}`, onRemove: () => setSearchQuery('') }] : []}

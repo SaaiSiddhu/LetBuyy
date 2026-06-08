@@ -2,15 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button, Input,
     Badge,
     Banner,
-    Button,
     Card,
     ConfirmDialog,
     EmptyState,
     Gauge,
-    Input,
     ListChecks,
     Page,
     PageHeader,
@@ -359,7 +357,7 @@ export default function SkillsPage() {
                                     </label>
                                     <Badge label={`${normalizedFormProficiency}%`} variant={proficiencyVariant(normalizedFormProficiency)} />
                                 </div>
-                                <input
+                                <Input unstyled
                                     id="skill-proficiency"
                                     type="range"
                                     min="0"

@@ -21,6 +21,14 @@ function isProtectedPath(pathname: string) {
     return pathname === '/' || protectedPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
+function getAccountsUrl(): string {
+    const configured = process.env.NEXT_PUBLIC_ACCOUNTS_URL?.trim();
+    if (!configured) {
+        throw new Error('NEXT_PUBLIC_ACCOUNTS_URL is not configured; refusing to use a hardcoded accounts host');
+    }
+    return configured.replace(/\/+$/, '');
+}
+
 export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     const session = await readConsoleSession(request.cookies.get(CONSOLE_SESSION_COOKIE)?.value);
@@ -55,8 +63,7 @@ export async function proxy(request: NextRequest) {
 
     if (!session) {
         if (!merchantSession.accepted) {
-            const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.store';
-            const loginUrl = new URL('/lookup', accountsUrl);
+            const loginUrl = new URL('/lookup', getAccountsUrl());
             loginUrl.searchParams.set('return_to', request.url);
             return NextResponse.redirect(loginUrl);
         }

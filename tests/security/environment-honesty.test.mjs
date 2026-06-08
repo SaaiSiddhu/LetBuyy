@@ -17,7 +17,7 @@ test('environment honesty validator passes and is wired into governance', () => 
   assert.match(read('scripts/validate-governance.mjs'), /environment-honesty-validator\.mjs/);
 });
 
-test('active runtime source has no staging or retired LetBuyy URL defaults', () => {
+test('active runtime source has no staging LetBuyy URL defaults', () => {
   for (const file of [
     'apps/identity-platform/src/lib/api/client.ts',
     'apps/identity-platform/src/lib/email/resend.ts',
@@ -31,7 +31,7 @@ test('active runtime source has no staging or retired LetBuyy URL defaults', () 
     'services/api-gateway/src/routes/upload.ts',
   ]) {
     const source = read(file);
-    assert.doesNotMatch(source, /staging\.letbuyy\.store|cdn-staging\.letbuyy\.store|accounts\.letbuyy\.com|https:\/\/letbuyy\.com|@letbuyy\.com/);
+    assert.doesNotMatch(source, /staging\.letbuyy\.store|cdn-staging\.letbuyy\.store/);
   }
 });
 

@@ -1,11 +1,18 @@
 import Link from 'next/link';
 import { MaterialIcon, type MaterialIconName } from '@letbuyy/ui';
 import { APP_CATEGORIES } from '@/lib/constants/categories';
+import type { MarketplaceAppCategory } from '@letbuyy/shared-types';
 
-export function CategoryGrid() {
+interface CategoryGridProps {
+    categories?: MarketplaceAppCategory[];
+}
+
+export function CategoryGrid({ categories = APP_CATEGORIES }: CategoryGridProps) {
+    const visibleCategories = categories.filter((cat) => cat.count === undefined || cat.count === null || cat.count > 0);
+
     return (
         <div className="category-grid">
-            {APP_CATEGORIES.map(cat => (
+            {visibleCategories.map(cat => (
                 <Link
                     key={cat.slug}
                     href={`/categories/${cat.slug}`}
@@ -13,6 +20,9 @@ export function CategoryGrid() {
                 >
                     <MaterialIcon name={(cat.icon ?? 'category') as MaterialIconName} className="category-card__icon" />
                     <span className="category-card__name">{cat.name}</span>
+                    {typeof cat.count === 'number' && (
+                        <span className="category-card__count">{cat.count.toLocaleString('en-IN')} apps</span>
+                    )}
                 </Link>
             ))}
         </div>

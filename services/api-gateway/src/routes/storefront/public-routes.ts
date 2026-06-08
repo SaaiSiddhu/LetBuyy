@@ -10,6 +10,7 @@ import { registerStorefrontCheckoutPaymentRoutes } from './checkout-payment-rout
 import { registerStorefrontCustomerEngagementRoutes } from './customer-engagement-routes';
 import { planCouponValidation, storefrontCouponValidationError, type CouponRecord } from '@letbuyy/checkout-core';
 import { mapPublicStorePayload, normalizeStorefrontHandle, type PublishedStoreRecord, type StorefrontSiteRecord, type StorefrontThemeReleaseRecord } from '@letbuyy/tenant-core';
+import { StorefrontAnalyticsBeaconSchema, type StorefrontAnalyticsBeacon } from '@letbuyy/shared-types';
 import type { AppBlockInstance } from '@letbuyy/app-engine';
 
 type AppContext = Context<{ Bindings: Env }>;
@@ -17,6 +18,7 @@ type SqlRecord = Record<string, unknown>;
 type PublicProductRow = SqlRecord;
 type StorefrontProductDetail = { id: string; slug?: string | null };
 type DatabaseErrorLike = { message?: string; details?: string; hint?: string } | null | undefined;
+type StorefrontAnalyticsBeaconEventType = StorefrontAnalyticsBeacon['event_type'];
 const STOREFRONT_SITE_SELECT: string =
     'id,store_name,name,description,site_type,status,subdomain,custom_domain,domain,is_published,is_active,is_password_protected,coming_soon_enabled,tagline,logo_url,cover_image,primary_color,secondary_color,published_at,created_at,updated_at,seo_title,seo_description,seo_keywords,og_image_url,twitter_handle,settings,theme_settings,currency,timezone,language,theme_id,theme_config';
 const STOREFRONT_SITE_RELEASE_SELECT: string =
@@ -28,9 +30,74 @@ const STOREFRONT_SITE_RELEASE_COMPAT_SELECT: string =
 const PRODUCT_SELECT_FULL: string =
     'id,store_id,name,slug,description,short_description,price,compare_at_price,cost_price,sku,barcode,category_id,brand,product_type,tags,images,featured_image,inventory_quantity,track_inventory,is_active,is_featured,weight,dimensions,seo_title,seo_description,created_at,updated_at,variants';
 const PRODUCT_SELECT_FULL_RELATIONAL: string = PRODUCT_SELECT_FULL.replace(',variants', '');
+const STOREFRONT_BEACON_EVENT_TYPES: Record<StorefrontAnalyticsBeaconEventType, string> = {
+    session_started: 'storefront.session_started',
+    page_view: 'storefront.page_view',
+    product_view: 'storefront.product_view',
+    cart_add: 'storefront.cart_add',
+    checkout_started: 'storefront.checkout_started',
+};
 
 function storefrontCacheTags(storeId: string, handle: string, ...tags: string[]): string[] {
     return [`storefront:${storeId}`, `storefront:${handle}`, ...tags];
+}
+
+function textOrNull(value: unknown, max = 240): string | null {
+    return typeof value === 'string' && value.trim().length > 0 ? value.trim().slice(0, max) : null;
+}
+
+function sourceFromReferrer(referrer: string | null): string {
+    if (!referrer) return 'direct';
+    try {
+        const host = new URL(referrer).hostname.toLowerCase().replace(/^www\./, '');
+        if (!host) return 'direct';
+        if (host.includes('google.')) return 'google';
+        if (host.includes('instagram.')) return 'instagram';
+        if (host.includes('facebook.') || host.includes('fb.')) return 'facebook';
+        if (host.includes('whatsapp.')) return 'whatsapp';
+        if (host.includes('youtube.')) return 'youtube';
+        return host.slice(0, 120);
+    } catch {
+        return 'direct';
+    }
+}
+
+function normalizeTrafficSource(explicitSource: unknown, referrer: string | null): string {
+    const source = textOrNull(explicitSource, 120);
+    return source ? source.toLowerCase().replace(/\s+/g, '_') : sourceFromReferrer(referrer);
+}
+
+function deviceFromUserAgent(userAgent: string | null): 'desktop' | 'mobile' | 'tablet' | 'unknown' {
+    const value = (userAgent || '').toLowerCase();
+    if (!value) return 'unknown';
+    if (/(ipad|tablet|kindle|silk)/.test(value)) return 'tablet';
+    if (/(mobi|iphone|android|phone)/.test(value)) return 'mobile';
+    return 'desktop';
+}
+
+function analyticsSampleRate(value: string | undefined): number {
+    const parsed = Number(value ?? '1');
+    if (!Number.isFinite(parsed)) return 1;
+    return Math.min(1, Math.max(0, parsed));
+}
+
+function shouldSampleAnalytics(rate: number): boolean {
+    if (rate <= 0) return false;
+    if (rate >= 1) return true;
+    const random = new Uint32Array(1);
+    crypto.getRandomValues(random);
+    return (random[0] || 0) / 0xffffffff < rate;
+}
+
+function analyticsBeaconIdempotencyKey(storeId: string, beacon: StorefrontAnalyticsBeacon): string {
+    const fallback = sha256Hex([
+        storeId,
+        beacon.event_type,
+        beacon.session_id,
+        beacon.path || '/',
+        beacon.occurred_at || '',
+    ].join(':'));
+    return `storefront.analytics:${storeId}:${beacon.event_id || fallback}`;
 }
 
 type PublicProductQueryOptions = {
@@ -547,6 +614,125 @@ export function registerStorefrontPublicRoutes(
             created_at: store.created_at || null,
             updated_at: store.updated_at || null,
         }));
+    });
+
+    // POST /storefront/:subdomain/analytics/beacon — Public storefront session/source beacon.
+    router.post('/:subdomain/analytics/beacon', async (c) => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+
+        const body = await c.req.json().catch(() => null);
+        const parsed = StorefrontAnalyticsBeaconSchema.safeParse(body);
+        if (!parsed.success) {
+            return c.json({
+                success: false,
+                error: { code: 'VALIDATION', message: 'Invalid analytics beacon' },
+            }, 400);
+        }
+
+        const beacon = parsed.data;
+        const eventId = beacon.event_id || crypto.randomUUID();
+        const occurredAt = beacon.occurred_at || new Date().toISOString();
+        const requestId = dependencies.getRequestId(c);
+        const referrer = textOrNull(beacon.referrer, 2000) || textOrNull(c.req.header('Referer'), 2000);
+        const source = normalizeTrafficSource(beacon.source, referrer);
+        const device = beacon.device || deviceFromUserAgent(c.req.header('User-Agent') || null);
+        const country = textOrNull(beacon.country, 2) || textOrNull(c.req.header('CF-IPCountry'), 2);
+        const sampleRate = analyticsSampleRate(c.env.STOREFRONT_VIEW_SAMPLE_RATE);
+        const sampled = shouldSampleAnalytics(sampleRate);
+        const generatedAt = new Date().toISOString();
+
+        if (!sampled) {
+            return c.json(success({
+                accepted: true,
+                queued: false,
+                sampled: false,
+                event_id: eventId,
+                store_id: store.id,
+                source,
+                generated_at: generatedAt,
+            }), 202);
+        }
+
+        const sampleWeight = sampleRate > 0 ? Math.max(1, Math.round(1 / sampleRate)) : 1;
+        const aggregateId = beacon.product_id || beacon.cart_id || beacon.checkout_id || beacon.session_id;
+        const { error } = await getSupabaseAdmin(c)
+            .from('platform_queue_jobs')
+            .upsert(
+                {
+                    site_id: store.id,
+                    event_id: eventId,
+                    queue_name: 'analytics-events',
+                    job_type: STOREFRONT_BEACON_EVENT_TYPES[beacon.event_type],
+                    payload: {
+                        id: eventId,
+                        type: STOREFRONT_BEACON_EVENT_TYPES[beacon.event_type],
+                        site_id: store.id,
+                        aggregate: {
+                            type: beacon.product_id
+                                ? 'product'
+                                : beacon.cart_id
+                                    ? 'cart'
+                                    : beacon.checkout_id
+                                        ? 'checkout'
+                                        : 'storefront_session',
+                            id: aggregateId,
+                        },
+                        occurred_at: occurredAt,
+                        request_id: requestId,
+                        idempotency_key: analyticsBeaconIdempotencyKey(store.id, beacon),
+                        schema_version: 1,
+                        payload: {
+                            storefront_event_type: beacon.event_type,
+                            session_id: beacon.session_id,
+                            visitor_id: beacon.visitor_id || null,
+                            path: beacon.path || '/',
+                            page_title: beacon.page_title || null,
+                            source,
+                            referrer,
+                            medium: beacon.medium || null,
+                            campaign: beacon.campaign || null,
+                            product_id: beacon.product_id || null,
+                            product_slug: beacon.product_slug || null,
+                            cart_id: beacon.cart_id || null,
+                            checkout_id: beacon.checkout_id || null,
+                            device,
+                            country,
+                            sample_rate: sampleRate,
+                            sample_weight: sampleWeight,
+                            source_runtime: 'storefront-runtime',
+                        },
+                    },
+                    idempotency_key: analyticsBeaconIdempotencyKey(store.id, beacon),
+                    request_id: requestId,
+                    schema_version: 1,
+                },
+                { onConflict: 'queue_name,idempotency_key', ignoreDuplicates: true },
+            )
+            .select('id')
+            .maybeSingle();
+
+        if (error) {
+            return c.json(success({
+                accepted: true,
+                queued: false,
+                sampled: true,
+                event_id: eventId,
+                store_id: store.id,
+                source,
+                generated_at: generatedAt,
+            }), 202);
+        }
+
+        return c.json(success({
+            accepted: true,
+            queued: true,
+            sampled: true,
+            event_id: eventId,
+            store_id: store.id,
+            source,
+            generated_at: generatedAt,
+        }), 202);
     });
 
     // POST /storefront/:subdomain/orders — Public checkout order creation.

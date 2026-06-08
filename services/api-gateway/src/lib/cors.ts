@@ -1,22 +1,64 @@
 export type CredentialCorsEnv = {
     CORS_CREDENTIAL_ORIGINS?: string;
+    /**
+     * Apex domain the platform credentialed origins are generated from. Defaults
+     * to `DEFAULT_PLATFORM_CREDENTIAL_DOMAIN` (`letbuyy.store`). Point this at a
+     * new apex (e.g. `letbuyy.com`) to move the whole credentialed allowlist and
+     * default origin in one config change — no source edit required.
+     */
+    LETBUYY_PLATFORM_DOMAIN?: string;
 };
 
+/** Current platform apex; the future `letbuyy.com` cutover overrides this via env. */
+export const DEFAULT_PLATFORM_CREDENTIAL_DOMAIN = 'letbuyy.store';
+
+/** Backwards-compatible static fallback origin (the `letbuyy.store` apex). */
 export const DEFAULT_CREDENTIAL_ORIGIN = 'https://letbuyy.store';
 
-export const PLATFORM_CREDENTIAL_ORIGINS = [
-    DEFAULT_CREDENTIAL_ORIGIN,
-    'https://accounts.letbuyy.store',
-    'https://merchant.letbuyy.store',
-    'https://storefront.letbuyy.store',
-    'https://apps.letbuyy.store',
-    'https://themes.letbuyy.store',
-    'https://console.letbuyy.store',
-    'https://operations.letbuyy.store',
-    'https://developers.letbuyy.store',
-    'https://admin.letbuyy.store',
-    'https://team.letbuyy.store',
+/**
+ * Subdomain labels (alongside the bare apex) that receive credentialed CORS. The
+ * allowlist is generated from the configured apex so adding a new apex later is a
+ * config change rather than a code change.
+ */
+export const PLATFORM_CREDENTIAL_SUBDOMAINS = [
+    'accounts',
+    'merchant',
+    'storefront',
+    'apps',
+    'themes',
+    'console',
+    'operations',
+    'developers',
+    'admin',
+    'team',
 ] as const;
+
+function normalizePlatformCredentialDomain(value: string | undefined): string {
+    const trimmed = (value ?? '')
+        .trim()
+        .toLowerCase()
+        .replace(/^https?:\/\//, '')
+        .replace(/\/.*$/, '')
+        .replace(/^\.+|\.+$/g, '');
+    return trimmed || DEFAULT_PLATFORM_CREDENTIAL_DOMAIN;
+}
+
+/** Build the credentialed origin allowlist (apex first) for a given apex domain. */
+export function buildPlatformCredentialOrigins(domain: string | undefined = DEFAULT_PLATFORM_CREDENTIAL_DOMAIN): string[] {
+    const apex = normalizePlatformCredentialDomain(domain);
+    return [
+        `https://${apex}`,
+        ...PLATFORM_CREDENTIAL_SUBDOMAINS.map((label) => `https://${label}.${apex}`),
+    ];
+}
+
+/** Default credentialed origin (apex). Env-overridable via `LETBUYY_PLATFORM_DOMAIN`. */
+export function resolveDefaultCredentialOrigin(env: CredentialCorsEnv = {}): string {
+    return `https://${normalizePlatformCredentialDomain(env.LETBUYY_PLATFORM_DOMAIN)}`;
+}
+
+/** Backwards-compatible static allowlist for the default (`letbuyy.store`) apex. */
+export const PLATFORM_CREDENTIAL_ORIGINS = buildPlatformCredentialOrigins(DEFAULT_PLATFORM_CREDENTIAL_DOMAIN);
 
 export function normalizeCredentialOrigin(value: string): string | null {
     const trimmed = value.trim();
@@ -49,15 +91,16 @@ export function parseCredentialOrigins(value: string | undefined): string[] {
 }
 
 export function resolveCredentialedCorsOrigin(origin: string | undefined, env: CredentialCorsEnv): string {
-    if (!origin) return DEFAULT_CREDENTIAL_ORIGIN;
+    const defaultOrigin = resolveDefaultCredentialOrigin(env);
+    if (!origin) return defaultOrigin;
 
     const normalizedOrigin = normalizeCredentialOrigin(origin);
-    if (!normalizedOrigin) return DEFAULT_CREDENTIAL_ORIGIN;
+    if (!normalizedOrigin) return defaultOrigin;
 
     const allowedOrigins = new Set<string>([
-        ...PLATFORM_CREDENTIAL_ORIGINS,
+        ...buildPlatformCredentialOrigins(env.LETBUYY_PLATFORM_DOMAIN),
         ...parseCredentialOrigins(env.CORS_CREDENTIAL_ORIGINS),
     ]);
 
-    return allowedOrigins.has(normalizedOrigin) ? normalizedOrigin : DEFAULT_CREDENTIAL_ORIGIN;
+    return allowedOrigins.has(normalizedOrigin) ? normalizedOrigin : defaultOrigin;
 }

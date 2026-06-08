@@ -2,6 +2,12 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { Hono } from 'hono'
 import type { Env } from '../index'
+import {
+    KmsHumanRequiredError,
+    decryptFieldWithKms,
+    encryptFieldWithKms,
+    resolveKmsProviderFromEnv,
+} from '../lib/crypto'
 import { customerAuthRateLimit } from '../middleware/rateLimit'
 import { csrfProtection, extractTurnstileToken, verifyTurnstileToken } from '../middleware/security'
 
@@ -118,4 +124,28 @@ test('customer auth limiter throttles the sixth store-email attempt', async () =
     assert.equal(response.status, 429)
     const payload = await response.json<ErrorPayload>()
     assert.equal(payload.error.code, 'CUSTOMER_AUTH_RATE_LIMITED')
+})
+
+test('mock KMS envelope encrypts PII fields and round-trips without exposing plaintext', async () => {
+    const provider = resolveKmsProviderFromEnv({
+        LETBUYY_KMS_MODE: 'mock',
+        LETBUYY_KMS_KEY_ID: 'mock-foundation-key',
+        LETBUYY_KMS_MOCK_SECRET: 'foundation-test-secret',
+    })
+
+    const token = await encryptFieldWithKms(provider, 'buyer@example.com')
+
+    assert.match(token, /^kms\./)
+    assert.equal(token.includes('buyer@example.com'), false)
+    assert.equal(await decryptFieldWithKms(provider, token), 'buyer@example.com')
+})
+
+test('live KMS mode is guarded as HUMAN-REQUIRED until credentials are installed', () => {
+    assert.throws(
+        () => resolveKmsProviderFromEnv({
+            LETBUYY_KMS_MODE: 'live',
+            LETBUYY_KMS_KEY_ID: 'SKIP_NEEDS_HUMAN_KMS_KEY_ID',
+        }),
+        KmsHumanRequiredError,
+    )
 })

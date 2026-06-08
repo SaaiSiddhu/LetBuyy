@@ -97,6 +97,7 @@ export async function dispatchLetBuyyWebhook(
                 "X-LetBuyy-Request-ID": input.request_id || "",
                 "X-LetBuyy-Trace-ID": input.trace_id || "",
                 "X-LetBuyy-Timestamp": timestamp,
+                "X-LetBuyy-Nonce": input.event_id,
                 [LETBUYY_WEBHOOK_HMAC_HEADER]: versionedSignature,
                 [LETBUYY_WEBHOOK_LEGACY_SIGNATURE_HEADER]: versionedSignature,
             },

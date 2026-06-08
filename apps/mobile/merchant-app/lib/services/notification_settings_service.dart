@@ -224,6 +224,80 @@ class NotificationSettings {
   }
 }
 
+class MerchantNotification {
+  const MerchantNotification({
+    required this.id,
+    required this.userId,
+    required this.type,
+    required this.title,
+    required this.message,
+    required this.data,
+    required this.actionUrl,
+    required this.isRead,
+    required this.createdAt,
+  });
+
+  factory MerchantNotification.fromJson(Map<String, dynamic> json) {
+    return MerchantNotification(
+      id: _stringValue(json['id']),
+      userId: _stringValue(json['user_id']),
+      type: _stringValue(json['type'], fallback: 'system'),
+      title: _stringValue(json['title'], fallback: 'Notification'),
+      message: _nullableString(json['message']),
+      data: _mapValue(json['data']),
+      actionUrl: _nullableString(json['action_url']),
+      isRead: _boolValue(json['is_read']),
+      createdAt:
+          DateTime.tryParse(_stringValue(json['created_at'])) ??
+          DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+    );
+  }
+
+  final String id;
+  final String userId;
+  final String type;
+  final String title;
+  final String? message;
+  final Map<String, dynamic> data;
+  final String? actionUrl;
+  final bool isRead;
+  final DateTime createdAt;
+
+  MerchantNotification copyWith({bool? isRead}) {
+    return MerchantNotification(
+      id: id,
+      userId: userId,
+      type: type,
+      title: title,
+      message: message,
+      data: data,
+      actionUrl: actionUrl,
+      isRead: isRead ?? this.isRead,
+      createdAt: createdAt,
+    );
+  }
+
+  static Map<String, dynamic> _mapValue(Object? value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return const {};
+  }
+
+  static bool _boolValue(Object? value, {bool fallback = false}) {
+    return value is bool ? value : fallback;
+  }
+
+  static String? _nullableString(Object? value) {
+    final text = value?.toString().trim();
+    return text == null || text.isEmpty ? null : text;
+  }
+
+  static String _stringValue(Object? value, {String fallback = ''}) {
+    final text = value?.toString() ?? '';
+    return text.isEmpty ? fallback : text;
+  }
+}
+
 class NotificationSettingsService extends ChangeNotifier {
   NotificationSettingsService({required ApiClient api}) : _api = api;
 
@@ -231,6 +305,13 @@ class NotificationSettingsService extends ChangeNotifier {
 
   NotificationSettings? _settings;
   NotificationSettings? get settings => _settings;
+
+  List<MerchantNotification> _notifications = [];
+  List<MerchantNotification> get notifications =>
+      List.unmodifiable(_notifications);
+
+  int _unreadCount = 0;
+  int get unreadCount => _unreadCount;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -252,6 +333,64 @@ class NotificationSettingsService extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<List<MerchantNotification>> fetchInbox({
+    bool? isRead,
+    int page = 1,
+    int limit = 20,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final response = await _api.notifications.list(
+        isRead: isRead,
+        page: page,
+        limit: limit,
+      );
+      _notifications = response.data
+          .map(MerchantNotification.fromJson)
+          .toList(growable: false);
+      _unreadCount = _notifications.where((item) => !item.isRead).length;
+      return _notifications;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<int> fetchUnreadCount() async {
+    _unreadCount = await _api.notifications.unreadCount();
+    notifyListeners();
+    return _unreadCount;
+  }
+
+  Future<void> markRead(String id) async {
+    await _api.notifications.markRead(id);
+    _notifications = _notifications
+        .map((item) => item.id == id ? item.copyWith(isRead: true) : item)
+        .toList(growable: false);
+    _unreadCount = _notifications.where((item) => !item.isRead).length;
+    notifyListeners();
+  }
+
+  Future<void> markAllRead() async {
+    await _api.notifications.markAllRead();
+    _notifications = _notifications
+        .map((item) => item.copyWith(isRead: true))
+        .toList(growable: false);
+    _unreadCount = 0;
+    notifyListeners();
+  }
+
+  Future<void> deleteNotification(String id) async {
+    await _api.notifications.remove(id);
+    _notifications = _notifications
+        .where((item) => item.id != id)
+        .toList(growable: false);
+    _unreadCount = _notifications.where((item) => !item.isRead).length;
+    notifyListeners();
   }
 
   Future<NotificationSettings> updateSettings(

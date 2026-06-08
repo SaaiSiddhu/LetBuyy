@@ -48,7 +48,7 @@ export default function CategoryGrid({ section, basePath }: CategoryGridProps) {
             : 'sm:grid-cols-2 lg:grid-cols-3';
 
     return (
-        <section className="py-10 md:py-14 px-4 md:px-8 bg-white">
+        <section className="py-10 md:py-14 px-4 md:px-8 bg-[var(--lb-color-surface)]">
             <div className="max-w-screen-xl mx-auto">
                 <div className="flex items-end justify-between gap-4 mb-6">
                     <div>
@@ -74,7 +74,7 @@ export default function CategoryGrid({ section, basePath }: CategoryGridProps) {
                         <Link
                             key={category.slug}
                             href={`${basePath}/shop?category=${encodeURIComponent(category.slug)}`}
-                            className="storefront-collection-card group relative block aspect-[3/4] md:aspect-[4/3] rounded-xl overflow-hidden bg-gray-100"
+                            className="storefront-collection-card group relative block aspect-[3/4] md:aspect-[4/3] rounded-xl overflow-hidden bg-[var(--lb-color-surface-subdued)]"
                         >
                             {category.image ? (
                                 <Image
@@ -102,7 +102,7 @@ export default function CategoryGrid({ section, basePath }: CategoryGridProps) {
                                     <span className="text-white/55 text-[10px] md:text-xs">
                                         {category.count ? `${category.count} Products` : 'Explore'}
                                     </span>
-                                    <span className="hidden md:flex items-center justify-center w-7 h-7 rounded-full bg-white text-black group-hover:scale-110 transition-transform duration-300">
+                                    <span className="hidden md:flex items-center justify-center w-7 h-7 rounded-full bg-[var(--lb-color-surface)] text-black group-hover:scale-110 transition-transform duration-300">
                                         <ArrowRight size={13} />
                                     </span>
                                 </div>

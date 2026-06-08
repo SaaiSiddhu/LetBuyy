@@ -5,6 +5,7 @@ import '../../app/store_context.dart';
 import '../../services/inventory_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import '../../widgets/shared/barcode_scanner_sheet.dart';
 
 class PurchaseOrdersScreen extends StatefulWidget {
   const PurchaseOrdersScreen({super.key});
@@ -448,12 +449,29 @@ class _PurchaseOrderFormState extends State<_PurchaseOrderForm> {
 
   Future<void> _scanBarcode() async {
     try {
-      _productId.text = await widget.service.scanBarcode();
+      final barcode = await showBarcodeScannerSheet(context);
+      if (!mounted || barcode == null || barcode.trim().isEmpty) return;
+      final lookup = await widget.service.lookupBarcode(
+        storeId: widget.storeId,
+        barcode: barcode,
+      );
+      if (!mounted) return;
+      if (lookup == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No product found for that barcode.')),
+        );
+        return;
+      }
+      _productId.text = lookup.productId;
+      if (lookup.variantId.isNotEmpty) _variantId.text = lookup.variantId;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Matched ${lookup.label}')));
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(error.toString())));
+      ).showSnackBar(const SnackBar(content: Text('Barcode lookup failed.')));
     }
   }
 

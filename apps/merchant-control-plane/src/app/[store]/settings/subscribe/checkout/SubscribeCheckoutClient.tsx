@@ -4,19 +4,16 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SubscriptionPlanView } from '@/lib/billing/plan-ui'
 import { SettingsPane } from '@/components/settings/SettingsPane'
-import {
+import { Button, Input,
     Badge,
     Banner,
-    Button,
     Card,
     CheckCircle2,
     CreditCard,
     IndianRupee,
-    Input,
     Lock,
     Section,
     Select,
-    Tag,
 } from '@letbuyy/ui'
 
 declare global {
@@ -80,7 +77,7 @@ function checkoutThemeColor() {
     return (
         rootStyle.getPropertyValue('--lb-color-primary').trim() ||
         rootStyle.getPropertyValue('--primary').trim() ||
-        '#2563eb'
+        'rgb(37 99 235)'
     )
 }
 
@@ -128,7 +125,7 @@ function PaymentMethodOption({ value, selected, title, description, onSelect }: 
                     : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] hover:bg-[var(--lb-color-surface-subdued)]',
             )}
         >
-            <input
+            <Input unstyled
                 type="radio"
                 name="payment-method"
                 value={value}
@@ -361,7 +358,7 @@ export default function SubscribeCheckoutClient({
                                                     : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] hover:bg-[var(--lb-color-surface-subdued)]',
                                             )}
                                         >
-                                            <input
+                                            <Input unstyled
                                                 type="radio"
                                                 name="billing-period"
                                                 checked={billingPeriod === period}
@@ -523,20 +520,6 @@ export default function SubscribeCheckoutClient({
                                     </div>
                                 ))}
                             </div>
-
-                            {plan.gmv_percentage > 0 && (
-                                <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
-                                    <div className="mb-[var(--lb-space-2)] flex items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                                        <Tag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                        Included benefits
-                                    </div>
-                                    <ul className="m-0 grid list-none gap-[var(--lb-space-2)] p-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                        <li>Transaction fee: {plan.gmv_percentage}% of GMV</li>
-                                        <li>7-day free trial included</li>
-                                    </ul>
-                                </div>
-                            )}
-
                             {error && (
                                 <Banner variant="critical" title="Subscription checkout needs attention">
                                     {error}

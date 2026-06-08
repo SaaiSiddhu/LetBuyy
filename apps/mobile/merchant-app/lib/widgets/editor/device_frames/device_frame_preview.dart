@@ -84,9 +84,9 @@ class _DeviceFramePreviewState extends State<DeviceFramePreview> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Device Switcher (icon only)
-            _DeviceIconButton(
+            _DeviceModeButton(
               icon: Icons.phone_iphone_rounded,
+              label: 'Mobile',
               isActive: widget.deviceMode == 'phone',
               onTap: () => widget.onDeviceChange('phone'),
             ),
@@ -97,13 +97,15 @@ class _DeviceFramePreviewState extends State<DeviceFramePreview> {
               _buildPhoneModelDropdown(),
             ],
 
-            _DeviceIconButton(
+            _DeviceModeButton(
               icon: Icons.tablet_mac_rounded,
+              label: 'Tablet',
               isActive: widget.deviceMode == 'tablet',
               onTap: () => widget.onDeviceChange('tablet'),
             ),
-            _DeviceIconButton(
+            _DeviceModeButton(
               icon: Icons.laptop_mac_rounded,
+              label: 'Desktop',
               isActive: widget.deviceMode == 'laptop',
               onTap: () => widget.onDeviceChange('laptop'),
             ),
@@ -234,14 +236,15 @@ class _DeviceFramePreviewState extends State<DeviceFramePreview> {
   }
 }
 
-/// Device icon button (icon only, no label)
-class _DeviceIconButton extends StatelessWidget {
+class _DeviceModeButton extends StatelessWidget {
   final IconData icon;
+  final String label;
   final bool isActive;
   final VoidCallback onTap;
 
-  const _DeviceIconButton({
+  const _DeviceModeButton({
     required this.icon,
+    required this.label,
     required this.isActive,
     required this.onTap,
   });
@@ -249,25 +252,42 @@ class _DeviceIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.selectionClick();
-        onTap();
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.all(8),
-        margin: const EdgeInsets.only(right: 4),
-        decoration: BoxDecoration(
-          color: isActive
-              ? mobile_tokens.LetbuyyColorTokens.brandPrimary
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(
-          icon,
-          size: 18,
-          color: isActive ? Colors.white : colors.textSecondary,
+    return Tooltip(
+      message: '$label preview',
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          onTap();
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          margin: const EdgeInsets.only(right: 4),
+          decoration: BoxDecoration(
+            color: isActive
+                ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 18,
+                color: isActive ? Colors.white : colors.textSecondary,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isActive ? Colors.white : colors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

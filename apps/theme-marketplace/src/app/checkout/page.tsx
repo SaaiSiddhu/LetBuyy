@@ -4,8 +4,8 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Card, CreditCard, Shield, ArrowLeft, Lock, Skeleton, useToast } from '@letbuyy/ui';
-import { formatPrice, cn } from '@/lib/utils';
+import { Button, Card, Input, Shield, ArrowLeft, Lock, Skeleton, useToast } from '@letbuyy/ui';
+import { formatPrice } from '@/lib/utils';
 
 type CheckoutTheme = {
     slug: string;
@@ -115,9 +115,26 @@ function displayPrice(theme: CheckoutTheme): string {
         : formatPrice(theme.letbuyy_price_usd);
 }
 
+function gstAmount(theme: CheckoutTheme): number {
+    if (theme.letbuyy_price_inr <= 0) return 0;
+    return Math.round(theme.letbuyy_price_inr * 18 / 118);
+}
+
+function subtotalAmount(theme: CheckoutTheme): number {
+    return Math.max(0, theme.letbuyy_price_inr - gstAmount(theme));
+}
+
+function formatInrAmount(amount: number): string {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0,
+    }).format(amount);
+}
+
 function checkoutErrorMessage<TData>(payload: CheckoutApiEnvelope<TData>, fallback: string): string {
     if (payload.error?.code === 'PAYMENT_UNAVAILABLE') {
-        return 'Theme payments are not configured for this environment.';
+        return 'Theme checkout is unavailable for this environment.';
     }
 
     return payload.error?.message || fallback;
@@ -173,10 +190,9 @@ function CheckoutContent() {
     const { notify } = useToast();
     const [theme, setTheme] = useState<CheckoutTheme | null>(null);
     const [loading, setLoading] = useState(Boolean(themeSlug));
-    const [paymentMethod] = useState<'razorpay'>('razorpay');
-    const [coupon, setCoupon] = useState('');
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
+    const [paymentMethod] = useState<'razorpay'>('razorpay');
     const [purchasePending, setPurchasePending] = useState(false);
     const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
@@ -209,14 +225,6 @@ function CheckoutContent() {
         };
     }, [notify, themeSlug]);
 
-    function handleApplyCoupon() {
-        notify({
-            title: 'Theme coupons are not configured',
-            description: 'The current theme purchase contract does not accept coupon codes yet.',
-            variant: 'warning',
-        });
-    }
-
     async function verifyRazorpayPayment(themeSlugValue: string, response: RazorpayPaymentResponse): Promise<VerifyPurchaseData> {
         const verifyResponse = await fetch(`/api/themes/${themeSlugValue}`, {
             method: 'POST',
@@ -248,7 +256,7 @@ function CheckoutContent() {
         const amount = order.amount;
         const currency = order.currency;
         if (!key || !orderId || !amount || !currency) {
-            throw new Error('Theme payments are not configured for this environment.');
+            throw new Error('Theme checkout provider returned an unsupported payment session.');
         }
 
         await new Promise<void>((resolve, reject) => {
@@ -303,6 +311,7 @@ function CheckoutContent() {
                 body: JSON.stringify({
                     action: 'purchase',
                     currency: 'INR',
+                    payment_method: paymentMethod,
                     idempotency_key: `theme_${theme.slug}_${crypto.randomUUID()}`,
                 }),
             });
@@ -319,7 +328,7 @@ function CheckoutContent() {
             }
 
             if (order.provider !== 'razorpay') {
-                throw new Error('Theme payments are not configured for this environment.');
+                throw new Error('Theme checkout provider returned an unsupported payment session.');
             }
 
             await openRazorpay(theme, order);
@@ -349,6 +358,9 @@ function CheckoutContent() {
         );
     }
 
+    const gst = gstAmount(theme);
+    const subtotal = subtotalAmount(theme);
+
     return (
         <div className="container-main py-10 md:py-16 max-w-4xl mx-auto">
             <Link href={`/themes/${theme.slug}`} className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text-heading mb-8">
@@ -362,42 +374,26 @@ function CheckoutContent() {
 
                     <div>
                         <h3 className="text-sm font-semibold text-text-heading mb-3">Payment Method</h3>
-                        <div className="grid grid-cols-2 gap-3">
-                            <button
-                                disabled
-                                className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-4 text-center opacity-60"
-                                type="button"
-                            >
-                                <CreditCard className="w-5 h-5 mx-auto mb-2 text-text-subtle" />
-                                <p className="text-sm font-medium text-text-heading">Stripe</p>
-                                <p className="text-[10px] text-text-subtle">Not configured</p>
-                            </button>
-                            <button
-                                className={cn(
-                                    'rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-4 text-center transition-all',
-                                    paymentMethod === 'razorpay' ? 'ring-2 ring-primary/60 border-primary/40' : '',
-                                )}
-                                type="button"
-                                aria-pressed={paymentMethod === 'razorpay'}
-                            >
+                        <div className="rounded-[var(--lb-radius-lg)] border border-primary/40 bg-[var(--lb-color-surface)] p-4 text-center ring-2 ring-primary/30">
+                            <div>
                                 <Shield className="w-5 h-5 mx-auto mb-2 text-secondary" />
-                                <p className="text-sm font-medium text-text-heading">Razorpay</p>
-                                <p className="text-[10px] text-text-subtle">UPI, Netbanking, Cards</p>
-                            </button>
+                                <p className="text-sm font-medium text-text-heading">INR checkout</p>
+                                <p className="text-[10px] text-text-subtle">Razorpay in production, local mock provider in development</p>
+                            </div>
                         </div>
                     </div>
 
                     <div>
                         <h3 className="text-sm font-semibold text-text-heading mb-3">Billing Information</h3>
                         <div className="space-y-3">
-                            <input
+                            <Input unstyled
                                 type="email"
                                 placeholder="Email address"
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
                                 className="w-full px-4 py-3 rounded-lg bg-bg-card border border-border text-text-heading placeholder-text-subtle text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                             />
-                            <input
+                            <Input unstyled
                                 type="text"
                                 placeholder="Full name"
                                 value={name}
@@ -407,38 +403,24 @@ function CheckoutContent() {
                         </div>
                     </div>
 
-                    <div>
-                        <h3 className="text-sm font-semibold text-text-heading mb-3">Coupon Code</h3>
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                placeholder="Enter coupon code"
-                                value={coupon}
-                                onChange={e => setCoupon(e.target.value)}
-                                className="flex-grow px-4 py-3 rounded-lg bg-bg-card border border-border text-text-heading placeholder-text-subtle text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-                            />
-                            <button type="button" onClick={handleApplyCoupon} className="btn-secondary text-sm py-3 px-5">Apply</button>
-                        </div>
-                    </div>
-
                     {purchaseError && (
                         <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-component-banner-critical-border)] bg-[var(--lb-component-banner-critical-bg)] p-4 text-sm text-[color:var(--lb-component-banner-critical-text)]">
                             {purchaseError}
                         </div>
                     )}
 
-                    <button
+                    <Button unstyled
                         type="button"
                         onClick={handlePurchase}
                         disabled={purchasePending}
-                        className="btn-primary w-full text-center py-4 flex items-center justify-center gap-2 text-base disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="btn-primary w-full text-center py-4 flex items-center justify-center gap-2 text-base disabled:cursor-not-allowed disabled:border-border disabled:bg-surface disabled:text-text-muted"
                     >
                         <Lock className="w-4 h-4" />
                         {purchasePending ? 'Starting secure checkout...' : `Pay ${displayPrice(theme)}`}
-                    </button>
+                    </Button>
 
                     <p className="text-xs text-text-subtle text-center">
-                        Secure checkout - provider-verified payment before license issue
+                        Provider-verified INR checkout before backend license issue
                     </p>
                 </div>
 
@@ -465,11 +447,11 @@ function CheckoutContent() {
                         <div className="space-y-2 mb-4">
                             <div className="flex items-center justify-between text-sm">
                                 <span className="text-text-muted">Subtotal</span>
-                                <span className="text-text-heading">{displayPrice(theme)}</span>
+                                <span className="text-text-heading">{theme.letbuyy_price_inr > 0 ? formatPrice(subtotal, 'INR') : displayPrice(theme)}</span>
                             </div>
                             <div className="flex items-center justify-between text-sm">
-                                <span className="text-text-muted">Tax</span>
-                                <span className="text-text-heading">Calculated by provider</span>
+                                <span className="text-text-muted">GST included</span>
+                                <span className="text-text-heading">{formatInrAmount(gst)}</span>
                             </div>
                         </div>
 

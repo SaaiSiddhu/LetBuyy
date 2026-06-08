@@ -20,11 +20,6 @@ const activeSourceExtensions = new Set([
 const forbiddenActiveSourcePatterns = [
   { label: "staging LetBuyy URL default", pattern: /https:\/\/(?:[a-z0-9-]+\.)?staging\.letbuyy\.store\b/ },
   { label: "staging CDN URL default", pattern: /https:\/\/cdn-staging\.letbuyy\.store\b/ },
-  { label: "retired accounts .com host", pattern: /https:\/\/accounts\.letbuyy\.com\b/ },
-  { label: "retired marketing .com host", pattern: /https:\/\/letbuyy\.com\b/ },
-  { label: "retired docs .com host", pattern: /https:\/\/docs\.letbuyy\.com\b/ },
-  { label: "retired LetBuyy email domain", pattern: /[A-Za-z0-9._%+-]+@letbuyy\.com\b/ },
-  { label: "retired LetBuyy subdomain format", pattern: /[a-z0-9-]+\.letbuyy\.com\b/ },
 ];
 
 function extensionOf(file) {

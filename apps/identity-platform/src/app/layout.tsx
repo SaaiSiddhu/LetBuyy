@@ -26,10 +26,21 @@ const letbuyyMono = localFont({
 
 const fontVariables = `${letbuyySans.variable} ${letbuyyDisplay.variable} ${letbuyyMono.variable}`;
 
+function getAccountsMetadataBase(): URL {
+  const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL?.trim();
+  if (!accountsUrl) {
+    throw new Error("NEXT_PUBLIC_ACCOUNTS_URL is not configured; refusing to use a hardcoded accounts host");
+  }
+  return new URL(accountsUrl);
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_ACCOUNTS_URL || "https://accounts.letbuyy.store"),
+  metadataBase: getAccountsMetadataBase(),
   title: "LetBuyy - Create Your Online Store",
   description: "Build beautiful online stores, blogs, and landing pages with LetBuyy Store Builder",
+  // Authentication surfaces must never be indexed (login, signup, OTP, OAuth,
+  // password, onboarding). They carry no SEO value and can leak query params.
+  robots: { index: false, follow: false },
   icons: {
     icon: "/icons/app_icon.png",
     apple: "/icons/app_icon.png",
@@ -68,8 +79,8 @@ export default function RootLayout({
         <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: themeScript }} />
         <style suppressHydrationWarning dangerouslySetInnerHTML={{
           __html: `
-          html { background: #FFFFFF; }
-          html.dark { background: #0A0F1A; }
+          html { background: var(--lb-color-bg, white); }
+          html.dark { background: var(--lb-color-bg, rgb(10 15 26)); }
         `}} />
       </head>
       <body className="antialiased">

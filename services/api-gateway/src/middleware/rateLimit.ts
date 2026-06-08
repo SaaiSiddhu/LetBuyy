@@ -364,6 +364,36 @@ function customerAuthClientIp(c: Context<{ Bindings: Env }>): string {
         || 'anonymous';
 }
 
+async function appOAuthClientKey(c: Context<{ Bindings: Env }>): Promise<string> {
+    const url = new URL(c.req.url);
+    const appId = c.req.path.match(/\/app-store\/apps\/([^/]+)\/oauth\/authorize/)?.[1] || null;
+    const body = c.req.method === 'POST'
+        ? await c.req.raw.clone().json().catch(() => null) as Record<string, unknown> | null
+        : null;
+    const bodyClientId = typeof body?.client_id === 'string'
+        ? body.client_id
+        : typeof body?.clientId === 'string'
+            ? body.clientId
+            : null;
+    const bodyAppId = typeof body?.app_id === 'string'
+        ? body.app_id
+        : typeof body?.appId === 'string'
+            ? body.appId
+            : null;
+    const bridgeStoreId = c.req.path.endsWith('/bridge/fetch') && typeof body?.store_id === 'string'
+        ? body.store_id
+        : null;
+    const clientId = normalizeRateLimitPart(
+        url.searchParams.get('client_id')
+        || c.req.header('X-App-Client-ID')
+        || bodyClientId
+        || bodyAppId
+        || bridgeStoreId
+        || appId,
+    ) || 'unknown-client';
+    return `${clientId}:${customerAuthClientIp(c)}`;
+}
+
 function customerAuthIdentityKey(identity: CustomerAuthRateLimitIdentity): string | null {
     const storeId = normalizeRateLimitPart(identity.storeId);
     const identifier = normalizeRateLimitPart(identity.email) || normalizeRateLimitPart(identity.contact);
@@ -714,6 +744,63 @@ async function checkRedisQueryCostLimit(
     }
 }
 
+// ─── Fail-open helpers ──────────────────────────────────────────────
+//
+// A rate limiter is a guardrail, not a gate. When NEITHER Upstash Redis NOR the
+// always-present CACHE KV namespace can service a check in production, the limiter
+// degrades to fail-OPEN (allow the request) instead of fail-CLOSED (503). Taking
+// down 100% of traffic to enforce a guardrail is strictly worse than briefly not
+// rate-limiting. A single throttled warning is emitted rather than a per-request
+// log flood.
+
+let lastFailOpenWarnAt = 0;
+
+function warnRateLimitFailOpen(reason: string): void {
+    const now = Date.now();
+    if (now - lastFailOpenWarnAt < 60_000) return;
+    lastFailOpenWarnAt = now;
+    console.warn(JSON.stringify({
+        level: 'warn',
+        service: 'letbuyy-api',
+        route: 'middleware.rate_limit',
+        reason,
+        message: 'Rate limit backends unavailable (Redis + KV); failing open to preserve availability',
+    }));
+}
+
+function failOpenRateLimitResult(
+    check: DirectRateLimitCheckOptions,
+    windowMs: number,
+): RateLimitBatchResult {
+    const max = check.max || 60;
+    return {
+        key: check.key,
+        max,
+        scope: check.scope,
+        allowed: true,
+        remaining: max,
+        resetAt: Date.now() + (check.windowMs || windowMs),
+        unavailable: false,
+    };
+}
+
+function failOpenQueryCostResult(
+    cost: number,
+    pointsPerSecond: number,
+    capacity: number,
+): QueryCostRateLimitResult {
+    return {
+        allowed: true,
+        remaining: capacity,
+        resetAt: Date.now(),
+        unavailable: false,
+        cost,
+        limit: capacity,
+        policy: `${capacity};w=leaky;rate=${pointsPerSecond}`,
+        retryAfterMs: 0,
+    };
+}
+
 export async function checkRateLimitKey(
     env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE' | 'RATE_LIMIT_KV_FALLBACK'>,
     options: DirectRateLimitOptions
@@ -739,22 +826,22 @@ async function checkRateLimitKeys(
         return checkRedisRateLimitBatch(redisUrl, redisToken, checks);
     }
 
-    if (isProduction) {
-        return checks.map((check) => ({
-            key: check.key,
-            max: check.max || 60,
-            scope: check.scope,
-            allowed: false,
-            remaining: 0,
-            resetAt: Date.now() + (check.windowMs || windowMs),
-            unavailable: true,
-        }));
-    }
+    // Upstash Redis is not provisioned. Degrade gracefully to the always-present
+    // CACHE KV namespace (best-effort fixed-window counter — KV is eventually
+    // consistent, which is acceptable for a guardrail). In production this is the
+    // primary fallback; in non-production it stays opt-in so the beta free-tier
+    // keeps KV writes off unless RATE_LIMIT_KV_FALLBACK is enabled.
+    const useKvFallback = Boolean(env.CACHE) && (isProduction || kvRateLimitFallbackEnabled(env));
 
-    if (env.CACHE && kvRateLimitFallbackEnabled(env)) {
+    if (useKvFallback) {
         return Promise.all(checks.map(async (check) => {
             const fullKey = `${check.prefix || prefix}:${check.key}`;
             const result = await checkKvRateLimit(env.CACHE as KVNamespace, fullKey, check.windowMs || windowMs, check.max || 60);
+            if (result.unavailable && isProduction) {
+                // KV itself failed in production — fail OPEN rather than 503 every request.
+                warnRateLimitFailOpen('kv_unavailable');
+                return failOpenRateLimitResult(check, windowMs);
+            }
             return {
                 ...result,
                 key: check.key,
@@ -762,6 +849,13 @@ async function checkRateLimitKeys(
                 scope: check.scope,
             };
         }));
+    }
+
+    if (isProduction) {
+        // Neither Redis nor KV is available in production. Fail OPEN (allow) so a
+        // single missing secret cannot 503 every request; emit one throttled warning.
+        warnRateLimitFailOpen('no_backend');
+        return checks.map((check) => failOpenRateLimitResult(check, windowMs));
     }
 
     return checks.map((check) => {
@@ -792,32 +886,38 @@ export async function checkQueryCostRateLimitKey(
     const useRedis = Boolean(redisUrl && redisToken);
     const isProduction = isProductionRuntime(env);
 
-    if (isProduction && !useRedis) {
-        return {
-            allowed: false,
-            remaining: 0,
-            resetAt: Date.now() + 1000,
-            unavailable: true,
-            cost,
-            limit: capacity,
-            policy: `${capacity};w=leaky;rate=${pointsPerSecond}`,
-            retryAfterMs: 1000,
-        };
+    // Upstash Redis is the preferred backend. When it is configured, preserve the
+    // existing behavior exactly (including the non-production in-memory fallback).
+    if (useRedis) {
+        const result = await checkRedisQueryCostLimit(redisUrl, redisToken, fullKey, cost, pointsPerSecond, capacity);
+        if (result.unavailable && !isProduction) {
+            return checkMemoryQueryCostLimit(fullKey, cost, pointsPerSecond, capacity);
+        }
+        return result;
     }
 
-    if (!useRedis && env.CACHE && kvRateLimitFallbackEnabled(env)) {
-        return checkKvQueryCostLimit(env.CACHE, fullKey, cost, pointsPerSecond, capacity);
+    // Redis is not provisioned. Degrade to the always-present CACHE KV namespace
+    // (opt-in for non-production so the beta free-tier keeps KV writes off unless
+    // RATE_LIMIT_KV_FALLBACK is enabled).
+    const useKvFallback = Boolean(env.CACHE) && (isProduction || kvRateLimitFallbackEnabled(env));
+
+    if (useKvFallback) {
+        const result = await checkKvQueryCostLimit(env.CACHE as KVNamespace, fullKey, cost, pointsPerSecond, capacity);
+        if (result.unavailable && isProduction) {
+            // KV failed in production — fail OPEN rather than 503 every request.
+            warnRateLimitFailOpen('query_cost_kv_unavailable');
+            return failOpenQueryCostResult(cost, pointsPerSecond, capacity);
+        }
+        return result;
     }
 
-    const result = useRedis
-        ? await checkRedisQueryCostLimit(redisUrl, redisToken, fullKey, cost, pointsPerSecond, capacity)
-        : checkMemoryQueryCostLimit(fullKey, cost, pointsPerSecond, capacity);
-
-    if (result.unavailable && !isProduction) {
-        return checkMemoryQueryCostLimit(fullKey, cost, pointsPerSecond, capacity);
+    if (isProduction) {
+        // Neither Redis nor KV available in production — fail OPEN (guardrail, not a gate).
+        warnRateLimitFailOpen('query_cost_no_backend');
+        return failOpenQueryCostResult(cost, pointsPerSecond, capacity);
     }
 
-    return result;
+    return checkMemoryQueryCostLimit(fullKey, cost, pointsPerSecond, capacity);
 }
 
 // ─── Middleware Factory ─────────────────────────────────────────────
@@ -1009,6 +1109,54 @@ export const authRateLimit = rateLimit({
     windowMs: 300_000,
     max: 20,
     prefix: 'rl:auth',
+});
+
+/** 12 requests per minute per app client/IP — for app OAuth and bridge token surfaces */
+export const appOAuthRateLimit = createMiddleware<{ Bindings: Env }>(async (c, next) => {
+    const windowMs = 60_000;
+    const max = 12;
+    if (isLocalRuntime(c.env)) {
+        await next();
+        return;
+    }
+
+    const result = await checkRateLimitKey(c.env, {
+        key: await appOAuthClientKey(c),
+        windowMs,
+        max,
+        prefix: 'rl:app-oauth',
+    });
+
+    c.header('X-RateLimit-Limit', max.toString());
+    c.header('X-RateLimit-Remaining', result.remaining.toString());
+    c.header('X-RateLimit-Reset', Math.ceil(result.resetAt / 1000).toString());
+
+    if (result.unavailable && isProductionRuntime(c.env)) {
+        return c.json(
+            {
+                error: {
+                    code: 'RATE_LIMIT_UNAVAILABLE',
+                    message: 'Rate limiting infrastructure is unavailable',
+                },
+            },
+            503,
+        );
+    }
+
+    if (!result.allowed) {
+        c.header('Retry-After', Math.max(1, Math.ceil((result.resetAt - Date.now()) / 1000)).toString());
+        return c.json(
+            {
+                error: {
+                    code: 'APP_OAUTH_RATE_LIMITED',
+                    message: 'Too many app OAuth attempts, please try again later',
+                },
+            },
+            429,
+        );
+    }
+
+    await next();
 });
 
 /** 5 requests per minute — for password reset, OTP */

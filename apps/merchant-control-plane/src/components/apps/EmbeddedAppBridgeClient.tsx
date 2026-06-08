@@ -8,7 +8,7 @@ import {
 } from '@letbuyy/extension-host'
 import type { AdminUiExtensionHostRegistration } from '@letbuyy/extension-host'
 import type { AdminAppBridgeSession, AppExtensionRegistration } from '@letbuyy/shared-types'
-import { MaterialIcon, useToast } from '@letbuyy/ui'
+import { Button, MaterialIcon, useToast } from '@letbuyy/ui'
 
 interface EmbeddedAppBridgeClientProps {
     session: AdminAppBridgeSession
@@ -231,7 +231,7 @@ export default function EmbeddedAppBridgeClient({ session, store, adminExtension
                     {registeredAdminExtensions.map((extension) => {
                         const selected = activeExtension?.id === extension.id
                         return (
-                            <button
+                            <Button unstyled
                                 key={extension.id}
                                 type="button"
                                 role="tab"
@@ -244,7 +244,7 @@ export default function EmbeddedAppBridgeClient({ session, store, adminExtension
                             >
                                 <MaterialIcon name="view_in_ar" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
                                 {extension.title}
-                            </button>
+                            </Button>
                         )
                     })}
                 </div>

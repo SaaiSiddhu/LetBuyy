@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/app_theme_colors.dart';
 import '../dashboard/home_screen.dart';
-import '../editor/section_editor_screen.dart';
-import '../customize/theme_screen.dart';
+import '../orders/orders_screen.dart';
 import '../products/products_screen.dart';
+import '../customers/customers_screen.dart';
 import '../settings/settings_screen.dart';
+import '../../widgets/shared/ai_operator_sheet.dart';
 
 /// Main screen with 5-tab bottom navigation
-/// Tabs: Home, Editor, Theme, Products, Settings
+/// Tabs: Home, Orders, Products, Customers, More
 class StoreMainScreen extends StatefulWidget {
   const StoreMainScreen({super.key});
 
@@ -32,10 +33,6 @@ class StoreMainScreen extends StatefulWidget {
 class StoreMainScreenState extends State<StoreMainScreen> {
   int _currentIndex = 0;
 
-  // Global keys for child screens
-  final GlobalKey<SectionEditorScreenState> _editorKey =
-      GlobalKey<SectionEditorScreenState>();
-
   @override
   void initState() {
     super.initState();
@@ -54,10 +51,6 @@ class StoreMainScreenState extends State<StoreMainScreen> {
   void switchToTab(int index) {
     if (index >= 0 && index < 5) {
       setState(() => _currentIndex = index);
-      // Reload editor data when switching to editor tab
-      if (index == 1) {
-        _editorKey.currentState?.reloadStore();
-      }
     }
   }
 
@@ -65,7 +58,7 @@ class StoreMainScreenState extends State<StoreMainScreen> {
   void goToHome() => switchToTab(0);
 
   /// Navigate to editor tab (convenience method)
-  void goToEditor() => switchToTab(1);
+  void goToEditor() => switchToTab(4);
 
   final List<_NavItem> _navItems = const [
     _NavItem(
@@ -74,14 +67,9 @@ class StoreMainScreenState extends State<StoreMainScreen> {
       label: 'Home',
     ),
     _NavItem(
-      icon: Icons.layers_outlined,
-      activeIcon: Icons.layers_rounded,
-      label: 'Editor',
-    ),
-    _NavItem(
-      icon: Icons.palette_outlined,
-      activeIcon: Icons.palette_rounded,
-      label: 'Theme',
+      icon: Icons.receipt_long_outlined,
+      activeIcon: Icons.receipt_long_rounded,
+      label: 'Orders',
     ),
     _NavItem(
       icon: Icons.inventory_2_outlined,
@@ -89,9 +77,14 @@ class StoreMainScreenState extends State<StoreMainScreen> {
       label: 'Products',
     ),
     _NavItem(
-      icon: Icons.settings_outlined,
-      activeIcon: Icons.settings_rounded,
-      label: 'Settings',
+      icon: Icons.people_outline_rounded,
+      activeIcon: Icons.people_rounded,
+      label: 'Customers',
+    ),
+    _NavItem(
+      icon: Icons.more_horiz_rounded,
+      activeIcon: Icons.more_horiz_rounded,
+      label: 'More',
     ),
   ];
 
@@ -102,11 +95,16 @@ class StoreMainScreenState extends State<StoreMainScreen> {
         index: _currentIndex,
         children: [
           const HomeScreen(),
-          SectionEditorScreen(key: _editorKey),
-          const ThemeScreen(),
+          const OrdersScreen(),
           const ProductsScreen(),
+          const CustomersScreen(),
           const SettingsScreen(),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'AI store operator',
+        onPressed: () => showAiOperatorSheet(context),
+        child: const Icon(Icons.auto_awesome_rounded),
       ),
       bottomNavigationBar: _buildBottomNav(),
     );

@@ -2,17 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button, Input, Table,
     Badge,
     Banner,
     BookOpen,
-    Button,
     Card,
     ConfirmDialog,
-    DataTable,
     EmptyState,
     FileText,
-    Input,
     Page,
     PageHeader,
     Pencil,
@@ -28,7 +25,7 @@ import {
     useToast,
 } from '@letbuyy/ui'
 import { formatIndiaDate } from '@letbuyy/ui/formatting'
-import type { Column } from '@letbuyy/ui'
+import type { TableColumn } from '@letbuyy/ui'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 
 type PostStatus = 'draft' | 'published' | 'archived'
@@ -290,11 +287,11 @@ export default function PostsPage() {
         }
     }, [deleting, loadPosts, notify, postToDelete, store])
 
-    const columns = useMemo<Array<Column<Post>>>(() => [
+    const columns = useMemo<Array<TableColumn<Post>>>(() => [
         {
             key: 'title',
             header: 'Post',
-            render: (_, post) => (
+            render: (post) => (
                 <div className="min-w-0">
                     <p className="m-0 truncate font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">{post.title}</p>
                     {post.excerpt && (
@@ -309,12 +306,12 @@ export default function PostsPage() {
         {
             key: 'status',
             header: 'Status',
-            render: (_, post) => <Badge label={statusLabel(post.status)} variant={statusVariant(post.status)} />,
+            render: (post) => <Badge label={statusLabel(post.status)} variant={statusVariant(post.status)} />,
         },
         {
             key: 'published_at',
             header: 'Date',
-            render: (_, post) => (
+            render: (post) => (
                 <span className="text-[var(--lb-color-text-subdued)]">
                     {formatIndiaDate(post.published_at || post.created_at, { emptyValue: 'Not published' })}
                 </span>
@@ -323,7 +320,7 @@ export default function PostsPage() {
         {
             key: 'actions',
             header: 'Actions',
-            render: (_, post) => (
+            render: (post) => (
                 <div className="flex flex-wrap justify-end gap-[var(--lb-space-2)]">
                     <Button variant="secondary" size="sm" onClick={() => startEdit(post)}>
                         <Pencil className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
@@ -347,7 +344,7 @@ export default function PostsPage() {
                 primaryAction={<Button onClick={startCreate}><Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />New post</Button>}
             />
         ) : (
-            <DataTable columns={columns} data={items} />
+            <Table columns={columns} rows={items} />
         )
     ), [columns, startCreate])
 

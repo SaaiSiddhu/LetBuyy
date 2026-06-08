@@ -1,4 +1,4 @@
-import { KeyRound, ShieldAlert } from '@letbuyy/ui';
+import { Button, Input, KeyRound, ShieldAlert } from '@letbuyy/ui';
 import { requireConsoleSession } from '@/lib/console-auth-server';
 
 type MfaSearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -47,7 +47,8 @@ export default async function MFAPage({ searchParams }: { searchParams: MfaSearc
                         <label htmlFor="code" className="block text-sm font-medium text-zinc-300">
                             Authenticator code
                         </label>
-                        <input
+                        <Input
+                            unstyled
                             id="code"
                             name="code"
                             type="text"
@@ -60,13 +61,14 @@ export default async function MFAPage({ searchParams }: { searchParams: MfaSearc
                             className="mt-1 h-12 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 text-center font-mono text-lg text-zinc-100 outline-none focus:border-[var(--lb-color-primary)] focus:ring-2 focus:ring-[var(--lb-color-primary-subtle)]"
                         />
                     </div>
-                    <button
+                    <Button
+                        unstyled
                         type="submit"
                         className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[var(--lb-color-primary)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--lb-color-primary-hover)] active:bg-[var(--lb-color-primary-active)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lb-color-focus-ring)]"
                     >
                         <KeyRound size={16} />
                         Verify
-                    </button>
+                    </Button>
                 </form>
 
                 <p className="text-center text-sm text-zinc-500">

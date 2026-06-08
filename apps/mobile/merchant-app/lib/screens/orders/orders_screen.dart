@@ -3,16 +3,23 @@
 // Enhanced order management with toolbar, filters, and bulk actions
 // ============================================================
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../app/store_context.dart';
 import '../../app/routes.dart';
 import '../../services/order_service.dart';
+import '../../services/product_service.dart';
 import '../../theme/app_theme_colors.dart';
+import '../../widgets/shared/accessible_tap_region.dart';
 import 'package:intl/intl.dart';
 
 class OrdersScreen extends StatefulWidget {
@@ -249,6 +256,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
         } else {
           return;
         }
+      } else if (newStatus == 'cancelled') {
+        final reason = await _showCancelReasonDialog(order);
+        if (reason == null) return;
+        await _orderService.cancelOrder(order.id, reason: reason);
       } else {
         await _orderService.updateOrderStatus(order.id, status: newStatus);
       }
@@ -266,6 +277,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 
   void _exportOrders() async {
+    final storeId = _storeId;
+    if (storeId == null) {
+      _showSnackBar('Select a store before exporting orders.', isError: true);
+      return;
+    }
+
     final format = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: colors.card,
@@ -290,15 +307,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
             _buildExportOption(
               icon: Icons.table_chart_rounded,
               title: 'Export as CSV',
-              subtitle: 'Spreadsheet format',
+              subtitle: 'Spreadsheet format from your orders',
               onTap: () => Navigator.pop(context, 'csv'),
-            ),
-            const SizedBox(height: 12),
-            _buildExportOption(
-              icon: Icons.picture_as_pdf_rounded,
-              title: 'Export as PDF',
-              subtitle: 'Print-ready report',
-              onTap: () => Navigator.pop(context, 'pdf'),
             ),
             const SizedBox(height: 16),
           ],
@@ -306,9 +316,369 @@ class _OrdersScreenState extends State<OrdersScreen> {
       ),
     );
 
-    if (format != null) {
-      _showSnackBar('Export to $format coming soon!');
+    if (format == 'csv') {
+      try {
+        final result = await _orderService.exportOrders(
+          storeId,
+          status: _statusFilter == 'all' ? null : _statusFilter,
+        );
+        final job = result['job'] is Map ? result['job'] as Map : const {};
+        var latest = Map<String, dynamic>.from(job);
+        for (var attempt = 0; attempt < 5; attempt += 1) {
+          if (latest['status'] == 'completed' || latest['status'] == 'failed') {
+            break;
+          }
+          await Future<void>.delayed(const Duration(milliseconds: 350));
+          final jobId = latest['id']?.toString();
+          if (jobId == null || jobId.isEmpty) break;
+          final detail = await _orderService.fetchExportJob(jobId);
+          latest = detail['job'] is Map
+              ? Map<String, dynamic>.from(detail['job'] as Map)
+              : detail;
+        }
+
+        final status = latest['status']?.toString() ?? 'queued';
+        final downloadUrl = latest['download_url']?.toString();
+        if (status == 'completed' &&
+            downloadUrl != null &&
+            downloadUrl.isNotEmpty) {
+          await Share.share(
+            downloadUrl,
+            subject: latest['filename']?.toString() ?? 'orders.csv',
+          );
+          _showSnackBar('Order CSV export ready to share.');
+        } else {
+          _showSnackBar('Order CSV export $status. Try again shortly.');
+        }
+      } catch (_) {
+        _showSnackBar('Could not start order export.', isError: true);
+      }
     }
+  }
+
+  Future<void> _createDraftOrder() async {
+    if (_storeId == null) {
+      _showSnackBar('Select a store before creating a draft.', isError: true);
+      return;
+    }
+
+    List<Map<String, dynamic>> products;
+    try {
+      products = await context.read<ProductService>().fetchProducts(
+        _storeId!,
+        limit: 50,
+      );
+    } catch (_) {
+      if (mounted) {
+        _showSnackBar(
+          'Unable to load products for draft order.',
+          isError: true,
+        );
+      }
+      return;
+    }
+
+    if (!mounted) return;
+    if (products.isEmpty) {
+      _showSnackBar(
+        'Add a product before creating a draft order.',
+        isError: true,
+      );
+      return;
+    }
+
+    final nameController = TextEditingController();
+    final emailController = TextEditingController();
+    final phoneController = TextEditingController();
+    final notesController = TextEditingController();
+    String selectedProductId = products.first['id'].toString();
+    int quantity = 1;
+    bool convertNow = false;
+
+    final submitted = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) => AlertDialog(
+          backgroundColor: colors.card,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'New draft order',
+            style: TextStyle(color: colors.textPrimary),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  style: TextStyle(color: colors.textPrimary),
+                  decoration: InputDecoration(
+                    labelText: 'Customer name',
+                    labelStyle: TextStyle(color: colors.textSecondary),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  style: TextStyle(color: colors.textPrimary),
+                  decoration: InputDecoration(
+                    labelText: 'Customer email',
+                    labelStyle: TextStyle(color: colors.textSecondary),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: phoneController,
+                  keyboardType: TextInputType.phone,
+                  style: TextStyle(color: colors.textPrimary),
+                  decoration: InputDecoration(
+                    labelText: 'Phone',
+                    labelStyle: TextStyle(color: colors.textSecondary),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  value: selectedProductId,
+                  dropdownColor: colors.card,
+                  decoration: InputDecoration(
+                    labelText: 'Product',
+                    labelStyle: TextStyle(color: colors.textSecondary),
+                  ),
+                  style: TextStyle(color: colors.textPrimary),
+                  items: products
+                      .map(
+                        (product) => DropdownMenuItem<String>(
+                          value: product['id'].toString(),
+                          child: Text(_productLabel(product)),
+                        ),
+                      )
+                      .toList(growable: false),
+                  onChanged: (value) {
+                    if (value == null) return;
+                    setDialogState(() => selectedProductId = value);
+                  },
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Quantity',
+                        style: TextStyle(color: colors.textSecondary),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: quantity <= 1
+                          ? null
+                          : () => setDialogState(() => quantity -= 1),
+                      icon: const Icon(Icons.remove_circle_outline_rounded),
+                    ),
+                    Text(
+                      '$quantity',
+                      style: TextStyle(
+                        color: colors.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: quantity >= 999
+                          ? null
+                          : () => setDialogState(() => quantity += 1),
+                      icon: const Icon(Icons.add_circle_outline_rounded),
+                    ),
+                  ],
+                ),
+                TextField(
+                  controller: notesController,
+                  maxLines: 2,
+                  style: TextStyle(color: colors.textPrimary),
+                  decoration: InputDecoration(
+                    labelText: 'Notes',
+                    labelStyle: TextStyle(color: colors.textSecondary),
+                  ),
+                ),
+                SwitchListTile.adaptive(
+                  contentPadding: EdgeInsets.zero,
+                  value: convertNow,
+                  activeColor: AppColors.lavender,
+                  title: Text(
+                    'Create order now',
+                    style: TextStyle(color: colors.textPrimary),
+                  ),
+                  onChanged: (value) =>
+                      setDialogState(() => convertNow = value),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: colors.textSecondary),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final name = nameController.text.trim();
+                final email = emailController.text.trim();
+                if (name.isEmpty || email.isEmpty || !email.contains('@')) {
+                  return;
+                }
+                Navigator.pop(dialogContext, true);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.lavender,
+              ),
+              child: const Text('Save draft'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (submitted != true) {
+      nameController.dispose();
+      emailController.dispose();
+      phoneController.dispose();
+      notesController.dispose();
+      return;
+    }
+
+    try {
+      final draft = await _orderService.createDraftOrder(
+        storeId: _storeId!,
+        customerName: nameController.text,
+        customerEmail: emailController.text,
+        customerPhone: phoneController.text,
+        notes: notesController.text,
+        items: [
+          {'product_id': selectedProductId, 'quantity': quantity},
+        ],
+      );
+
+      if (convertNow) {
+        final draftId = draft['id']?.toString();
+        if (draftId == null || draftId.isEmpty) {
+          throw StateError('Draft response did not include an id.');
+        }
+        await _orderService.convertDraftOrder(draftId);
+        if (mounted) {
+          _showSnackBar('Draft converted to order');
+          _loadOrders();
+        }
+      } else if (mounted) {
+        _showSnackBar('Draft order saved');
+      }
+    } catch (_) {
+      if (mounted) {
+        _showSnackBar('Unable to save draft order.', isError: true);
+      }
+    } finally {
+      nameController.dispose();
+      emailController.dispose();
+      phoneController.dispose();
+      notesController.dispose();
+    }
+  }
+
+  String _productLabel(Map<String, dynamic> product) {
+    final name = (product['name'] ?? product['title'] ?? 'Product').toString();
+    final sku = product['sku']?.toString();
+    return sku == null || sku.isEmpty ? name : '$name ($sku)';
+  }
+
+  Future<void> _printPackingSlip() async {
+    OrderContract? order;
+    if (_selectedOrderIds.isNotEmpty) {
+      for (final candidate in _orders) {
+        if (candidate.id == _selectedOrderIds.first) {
+          order = candidate;
+          break;
+        }
+      }
+    } else if (_orders.isNotEmpty) {
+      order = _orders.first;
+    }
+
+    if (order == null) {
+      _showSnackBar('Select an order to print.', isError: true);
+      return;
+    }
+
+    try {
+      final slip = await _orderService.fetchPackingSlip(order.id);
+      if (!mounted) return;
+      await _showPackingSlipDialog(slip);
+    } catch (_) {
+      if (mounted) _showSnackBar('Unable to load packing slip.', isError: true);
+    }
+  }
+
+  Future<void> _showPackingSlipDialog(Map<String, dynamic> slip) {
+    final title = (slip['order_number'] ?? 'Order').toString();
+    final text = (slip['text'] ?? '').toString();
+    final pdfBase64 = (slip['pdf_base64'] ?? '').toString();
+    final filename = (slip['filename'] ?? 'packing-slip.pdf').toString();
+    return showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Packing slip $title',
+          style: TextStyle(color: colors.textPrimary),
+        ),
+        content: SingleChildScrollView(
+          child: SelectableText(
+            text.isEmpty ? 'Packing slip unavailable.' : text,
+            style: TextStyle(color: colors.textPrimary),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Close', style: TextStyle(color: colors.textSecondary)),
+          ),
+          TextButton.icon(
+            onPressed: text.isEmpty
+                ? null
+                : () async {
+                    await Clipboard.setData(ClipboardData(text: text));
+                    if (context.mounted) Navigator.pop(context);
+                    if (mounted) _showSnackBar('Packing slip copied');
+                  },
+            icon: const Icon(Icons.copy_rounded, size: 18),
+            label: const Text('Copy'),
+          ),
+          TextButton.icon(
+            onPressed: pdfBase64.isEmpty
+                ? null
+                : () async {
+                    await _sharePackingSlipPdf(pdfBase64, filename);
+                    if (context.mounted) Navigator.pop(context);
+                  },
+            icon: const Icon(Icons.ios_share_rounded, size: 18),
+            label: const Text('Share PDF'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _sharePackingSlipPdf(String pdfBase64, String filename) async {
+    final bytes = base64Decode(pdfBase64);
+    final tempDir = await getTemporaryDirectory();
+    final safeName = filename.endsWith('.pdf') ? filename : '$filename.pdf';
+    final file = File('${tempDir.path}/$safeName');
+    await file.writeAsBytes(bytes, flush: true);
+    await Share.shareXFiles([
+      XFile(file.path, mimeType: 'application/pdf'),
+    ], subject: safeName);
   }
 
   Widget _buildExportOption({
@@ -317,47 +687,56 @@ class _OrdersScreenState extends State<OrdersScreen> {
     required String subtitle,
     required VoidCallback onTap,
   }) {
-    return InkWell(
+    return AccessibleTapRegion(
+      label: title,
+      hint: subtitle,
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: colors.surfaceVariant,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colors.divider),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppColors.lavender.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+      excludeChildSemantics: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colors.surfaceVariant,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: colors.divider),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.lavender.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: AppColors.lavender, size: 22),
               ),
-              child: Icon(icon, color: AppColors.lavender, size: 22),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w600,
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: colors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: TextStyle(color: colors.textSecondary, fontSize: 12),
-                  ),
-                ],
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Icon(Icons.chevron_right, color: colors.textTertiary),
-          ],
+              Icon(Icons.chevron_right, color: colors.textTertiary),
+            ],
+          ),
         ),
       ),
     );
@@ -454,6 +833,73 @@ class _OrdersScreenState extends State<OrdersScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<String?> _showCancelReasonDialog(OrderContract order) {
+    final reasonController = TextEditingController();
+    final orderNumber = _orderNumber(order);
+    return showDialog<String>(
+      context: context,
+      builder: (context) {
+        var reason = '';
+        return StatefulBuilder(
+          builder: (context, setDialogState) => AlertDialog(
+            backgroundColor: colors.card,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Text(
+              'Cancel $orderNumber?',
+              style: TextStyle(color: colors.textPrimary),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Add a cancellation reason for the order timeline.',
+                  style: TextStyle(color: colors.textSecondary),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: reasonController,
+                  autofocus: true,
+                  maxLines: 3,
+                  maxLength: 500,
+                  onChanged: (value) =>
+                      setDialogState(() => reason = value.trim()),
+                  decoration: InputDecoration(
+                    labelText: 'Cancellation reason',
+                    hintText: 'Customer requested cancellation',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Keep order',
+                  style: TextStyle(color: colors.textSecondary),
+                ),
+              ),
+              TextButton(
+                onPressed: reason.isEmpty
+                    ? null
+                    : () => Navigator.pop(context, reason),
+                child: Text(
+                  'Cancel order',
+                  style: TextStyle(color: colors.error),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -607,9 +1053,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
           ),
           _buildToolbarDivider(),
           _buildToolbarButton(
+            icon: Icons.note_add_rounded,
+            label: 'Draft',
+            onTap: _createDraftOrder,
+          ),
+          _buildToolbarDivider(),
+          _buildToolbarButton(
             icon: Icons.print_rounded,
             label: 'Print',
-            onTap: () => _showSnackBar('Print coming soon!'),
+            onTap: _printPackingSlip,
           ),
           _buildToolbarDivider(),
           _buildToolbarButton(
@@ -637,25 +1089,31 @@ class _OrdersScreenState extends State<OrdersScreen> {
         : isActive
         ? AppColors.lavender
         : colors.textSecondary;
-    return InkWell(
+    return AccessibleTapRegion(
+      label: label,
+      hint: isActive ? '$label active' : null,
       onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: color, size: 22),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: color,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
+      excludeChildSemantics: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: color, size: 22),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -897,27 +1355,36 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   Widget _buildFilterChip(String label, String value) {
     final isActive = _statusFilter == value;
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.selectionClick();
-        setState(() => _statusFilter = value);
-      },
-      child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: isActive ? AppColors.lavender : colors.surfaceVariant,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isActive ? AppColors.lavender : colors.divider,
+    void applyFilter() {
+      HapticFeedback.selectionClick();
+      setState(() => _statusFilter = value);
+    }
+
+    return AccessibleTapRegion(
+      label: '$label orders filter',
+      hint: isActive ? 'Current filter' : 'Show $label orders',
+      onTap: applyFilter,
+      selected: isActive,
+      excludeChildSemantics: true,
+      child: GestureDetector(
+        onTap: applyFilter,
+        child: Container(
+          margin: const EdgeInsets.only(right: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: isActive ? AppColors.lavender : colors.surfaceVariant,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isActive ? AppColors.lavender : colors.divider,
+            ),
           ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isActive ? Colors.white : colors.textSecondary,
-            fontSize: 12,
-            fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+          child: Text(
+            label,
+            style: TextStyle(
+              color: isActive ? Colors.white : colors.textSecondary,
+              fontSize: 12,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+            ),
           ),
         ),
       ),
@@ -1100,6 +1567,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             fontSize: 11,
                           ),
                         ),
+                        if (_hasRiskSignal(order)) ...[
+                          const SizedBox(height: 6),
+                          _buildRiskBadge(order),
+                        ],
                       ],
                     ),
                   ),
@@ -1229,6 +1700,63 @@ class _OrdersScreenState extends State<OrdersScreen> {
   String _orderStatus(OrderContract order) {
     final status = order.status.trim().toLowerCase();
     return status.isEmpty ? 'unknown' : status;
+  }
+
+  Widget _buildRiskBadge(OrderContract order) {
+    final color = _riskColor(order);
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: color.withValues(alpha: 0.24)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.shield_outlined, color: color, size: 12),
+            const SizedBox(width: 4),
+            Text(
+              '${_riskLabel(order)} risk',
+              style: TextStyle(
+                color: color,
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  bool _hasRiskSignal(OrderContract order) {
+    final level = order.riskLevel.trim().toLowerCase();
+    return order.riskScore > 0 ||
+        level == 'medium' ||
+        level == 'high' ||
+        (order.fulfillmentState ?? '').trim().toLowerCase() == 'hold' ||
+        (order.codConfirmationStatus ?? '').trim().toLowerCase() ==
+            'requested' ||
+        (order.rtoStatus ?? '').trim().toLowerCase() == 'at_risk';
+  }
+
+  String _riskLabel(OrderContract order) {
+    final level = order.riskLevel.trim().toLowerCase();
+    return switch (level) {
+      'high' => 'High',
+      'medium' => 'Medium',
+      _ => 'Low',
+    };
+  }
+
+  Color _riskColor(OrderContract order) {
+    final level = order.riskLevel.trim().toLowerCase();
+    if (level == 'high') return colors.error;
+    if (level == 'medium') return colors.warning;
+    return colors.accentBlue;
   }
 
   String _orderNumber(OrderContract order) {
@@ -1383,20 +1911,29 @@ class _OrdersScreenState extends State<OrdersScreen> {
       child: Row(
         children: [
           // Selection info
-          GestureDetector(
+          AccessibleTapRegion(
+            label: '${_selectedOrderIds.length} orders selected',
+            hint: 'Select all visible orders',
             onTap: _selectAll,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppColors.lavender.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                '${_selectedOrderIds.length} selected',
-                style: TextStyle(
-                  color: AppColors.lavender,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
+            excludeChildSemantics: true,
+            child: GestureDetector(
+              onTap: _selectAll,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.lavender.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '${_selectedOrderIds.length} selected',
+                  style: TextStyle(
+                    color: AppColors.lavender,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
                 ),
               ),
             ),
@@ -1416,10 +1953,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
             () => _bulkUpdateStatus('shipped'),
             color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
           ),
-          const SizedBox(width: 8),
-          _buildBulkButton(Icons.more_horiz, 'More', () {
-            _showSnackBar('More actions coming soon');
-          }),
         ],
       ),
     );
@@ -1432,29 +1965,34 @@ class _OrdersScreenState extends State<OrdersScreen> {
     Color? color,
   }) {
     final buttonColor = color ?? colors.textSecondary;
-    return InkWell(
+    return AccessibleTapRegion(
+      label: label,
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: buttonColor.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 18, color: buttonColor),
-            const SizedBox(width: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: buttonColor,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
+      excludeChildSemantics: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: buttonColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 18, color: buttonColor),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  color: buttonColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

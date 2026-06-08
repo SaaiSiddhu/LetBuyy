@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SubscriptionPlanView } from '@/lib/billing/plan-ui'
-import { MaterialIcon } from '@letbuyy/ui'
+import { Button, MaterialIcon } from '@letbuyy/ui'
 
 interface SelectPlanClientProps {
     plans: SubscriptionPlanView[]
@@ -96,7 +96,7 @@ export default function SelectPlanClient({
 
                 <div className="select-plan-toggle" role="group" aria-label="Billing period">
                     {(['monthly', 'yearly'] as const).map(period => (
-                        <button
+                        <Button unstyled
                             key={period}
                             type="button"
                             className={cx('select-plan-toggle-button', billingPeriod === period && 'is-active')}
@@ -105,7 +105,7 @@ export default function SelectPlanClient({
                         >
                             {period === 'monthly' ? 'Monthly' : 'Annual'}
                             {period === 'yearly' && <span className="select-plan-save-badge">Save 20%</span>}
-                        </button>
+                        </Button>
                     ))}
                 </div>
             </section>
@@ -153,13 +153,9 @@ export default function SelectPlanClient({
                                             <span className="select-plan-price-period">/month</span>
                                         )}
                                     </div>
-
-                                    {plan.gmv_percentage > 0 && (
-                                        <p className="select-plan-fee-note">+ {plan.gmv_percentage}% transaction fee</p>
-                                    )}
                                 </div>
 
-                                <button
+                                <Button unstyled
                                     type="button"
                                     onClick={() => handleSelectPlan(plan.slug)}
                                     disabled={isCurrent}
@@ -171,7 +167,7 @@ export default function SelectPlanClient({
                                     )}
                                 >
                                     {isCurrent ? 'Current plan' : plan.requires_contact ? 'Contact sales' : isFree ? 'Start free' : 'Start free trial'}
-                                </button>
+                                </Button>
 
                                 <div className="select-plan-feature-list">
                                     <p className="select-plan-feature-eyebrow">What&apos;s included</p>
@@ -199,7 +195,7 @@ export default function SelectPlanClient({
             {compareFeatures.length > 0 && (
                 <section className="select-plan-compare-section">
                     <div className="select-plan-compare-toggle">
-                        <button
+                        <Button unstyled
                             type="button"
                             onClick={() => setShowCompare(!showCompare)}
                             className="select-plan-secondary-button"
@@ -207,7 +203,7 @@ export default function SelectPlanClient({
                         >
                             <MaterialIcon name={showCompare ? 'expand_less' : 'compare'} size={18} />
                             {showCompare ? 'Hide comparison' : 'Compare all features'}
-                        </button>
+                        </Button>
                     </div>
 
                     {showCompare && (

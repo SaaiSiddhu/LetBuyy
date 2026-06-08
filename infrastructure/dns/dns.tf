@@ -126,6 +126,27 @@ resource "cloudflare_record" "storefront_wildcard" {
   comment = "Wildcard — *.letbuyy.store (user storefronts)"
 }
 
+# ─── Custom-domain CNAME target owned by LetBuyy ─────────────
+resource "cloudflare_record" "connect" {
+  zone_id = var.cloudflare_zone_id
+  name    = "connect"
+  content = "cname.vercel-dns.com"
+  type    = "CNAME"
+  proxied = false
+  comment = "LetBuyy custom-domain target — connect.letbuyy.store"
+}
+
+# Reserved for future shopper OIDC. Do not activate until the
+# @letbuyy/auth-core ShopperIdentityProvider seam is replaced by a central issuer.
+# resource "cloudflare_record" "shopper_identity_id" {
+#   zone_id = var.cloudflare_zone_id
+#   name    = "id"
+#   content = "cname.vercel-dns.com"
+#   type    = "CNAME"
+#   proxied = false
+#   comment = "Reserved — id.letbuyy.store shopper identity"
+# }
+
 # ────────────────────────────────────────────────────────────
 # WAF — block vulnerability-scanner traffic at the edge
 # ────────────────────────────────────────────────────────────

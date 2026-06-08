@@ -30,13 +30,14 @@ test('theme marketplace checkout no longer links directly to fake success', () =
     assert.match(source, /router\.push\(`\/checkout\/success\?theme=\$\{theme\.slug\}&purchase=/);
 });
 
-test('theme marketplace checkout displays honest unconfigured and unsupported-coupon states', () => {
+test('theme marketplace checkout uses the working local payment default and has no dead coupon control', () => {
     const source = read(checkoutPagePath);
 
     assert.match(source, /PAYMENT_UNAVAILABLE/);
-    assert.match(source, /Theme payments are not configured/);
-    assert.match(source, /function handleApplyCoupon/);
-    assert.match(source, /Theme coupons are not configured/);
+    assert.match(source, /Theme checkout is unavailable/);
+    assert.match(source, /local mock provider in development/);
+    assert.doesNotMatch(source, /function handleApplyCoupon/);
+    assert.doesNotMatch(source, /Theme coupons are not configured/);
     assert.match(source, /paymentMethod\] = useState<'razorpay'>\('razorpay'\)/);
     assert.doesNotMatch(source, /setPaymentMethod\('stripe'\)/);
 });

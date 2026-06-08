@@ -20,10 +20,11 @@ import {
     type AppWebhookSubscriptionInsert,
     type MandatoryComplianceWebhookTopic,
 } from '@letbuyy/app-engine';
-import type {
-    AppChargeBillingMode,
-    AppChargeProviderMode,
-    IndiaPayoutRail,
+import {
+    DEFAULT_APP_REVENUE_SHARE_BPS,
+    type AppChargeBillingMode,
+    type AppChargeProviderMode,
+    type IndiaPayoutRail,
 } from '@letbuyy/billing-core';
 
 export type AppLifecycleEventType = 'app.installed' | 'app.uninstalled';
@@ -49,17 +50,39 @@ export interface BridgeApiRequest {
     storeId?: string | null;
 }
 
+export interface MarketplaceAnalyticsEventInput {
+    db: ReturnType<typeof getSupabaseAdmin>;
+    env: Env;
+    executionCtx?: ExecutionContext;
+    eventId: string;
+    eventType: string;
+    siteId?: string | null;
+    aggregateType?: string | null;
+    aggregateId?: string | null;
+    occurredAt?: string | null;
+    requestId?: string | null;
+    traceId?: string | null;
+    idempotencyKey?: string | null;
+    payload: Record<string, unknown>;
+    createdBy?: string | null;
+}
+
 export interface AppBillingChargeRecord {
     id: string;
     site_id: string;
     app_id: string;
     partner_id: string;
     installation_id: string;
+    pricing_plan_id?: string | null;
     billing_mode: AppChargeBillingMode;
     status: string;
     name: string;
     amount_minor: number;
     currency: 'INR';
+    trial_days?: number | null;
+    trial_starts_at?: string | null;
+    trial_ends_at?: string | null;
+    billing_starts_at?: string | null;
     idempotency_key: string;
     provider_reference?: string | null;
     provider_mode?: 'test' | 'live' | string | null;
@@ -103,6 +126,79 @@ export interface AppComplianceWebhookPayload extends Record<string, unknown> {
 
 export function getRequestId(c: { req: { header(name: string): string | undefined }; res: { headers: Headers } }): string {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
+}
+
+function marketplaceAnalyticsEventType(value: string): string {
+    return value
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9_.-]/g, '_')
+        .replace(/_+/g, '_')
+        .slice(0, 120) || 'marketplace.event';
+}
+
+export async function enqueueMarketplaceAnalyticsEvent(input: MarketplaceAnalyticsEventInput): Promise<boolean> {
+    const siteId = stringOrNull(input.siteId);
+    if (!siteId) return false;
+
+    const eventType = marketplaceAnalyticsEventType(input.eventType);
+    const occurredAt = input.occurredAt || new Date().toISOString();
+    const idempotencyKey = stringOrNull(input.idempotencyKey) || `${eventType}:${input.eventId}`;
+    const requestId = stringOrNull(input.requestId);
+    const envelope = {
+        id: input.eventId,
+        type: eventType,
+        site_id: siteId,
+        aggregate: {
+            type: stringOrNull(input.aggregateType) || 'marketplace',
+            id: stringOrNull(input.aggregateId) || input.eventId,
+        },
+        occurred_at: occurredAt,
+        request_id: requestId,
+        trace_id: stringOrNull(input.traceId),
+        idempotency_key: idempotencyKey,
+        schema_version: 1,
+        payload: input.payload,
+    };
+    const row = {
+        site_id: siteId,
+        outbox_event_id: null,
+        event_id: input.eventId,
+        queue_name: 'analytics-events',
+        job_type: eventType,
+        payload: envelope,
+        request_id: requestId,
+        trace_id: stringOrNull(input.traceId),
+        idempotency_key: idempotencyKey,
+        schema_version: 1,
+        created_by: stringOrNull(input.createdBy),
+        updated_by: stringOrNull(input.createdBy),
+    };
+
+    const { error } = await input.db
+        .from('platform_queue_jobs')
+        .upsert(row, { onConflict: 'queue_name,idempotency_key', ignoreDuplicates: true });
+
+    if (error) {
+        throw new Error(`Marketplace analytics queue enqueue failed: ${error.message}`);
+    }
+
+    const queue = input.env.ANALYTICS_QUEUE;
+    if (queue && input.executionCtx) {
+        input.executionCtx.waitUntil(queue.send({
+            messageId: idempotencyKey,
+            queueName: 'analytics-events',
+            jobType: eventType,
+            siteId,
+            idempotencyKey,
+            requestId: requestId || undefined,
+            correlationId: requestId || idempotencyKey,
+            payload: envelope,
+            attempts: 0,
+        }).then(() => undefined, () => undefined));
+    }
+
+    return true;
 }
 
 export function appPlatformTokenSecret(env: Env): string | undefined {
@@ -211,7 +307,9 @@ export function firstRelatedRecord(value: unknown): AppEngineJsonRecord {
 }
 
 export function appBillingMode(value: unknown): AppChargeBillingMode {
-    return value === 'usage' ? 'usage' : 'recurring';
+    if (value === 'usage') return 'usage';
+    if (value === 'one_time') return 'one_time';
+    return 'recurring';
 }
 
 export function appChargeProviderMode(value: unknown): AppChargeProviderMode {
@@ -498,7 +596,7 @@ export async function insertAppChargeOutbox(
             payout_rail: stringOrNull(indiaPayout.payout_rail) || 'razorpay_route',
             provider_reference: stringOrNull(input.charge.provider_reference) || undefined,
             provider_mode: input.charge.provider_mode === 'live' ? 'live' : 'test',
-            revenue_share_bps: Number(indiaPayout.revenue_share_bps || 8000),
+            revenue_share_bps: Number(indiaPayout.revenue_share_bps || DEFAULT_APP_REVENUE_SHARE_BPS),
             partner_gst_bps: Number(indiaPayout.partner_gst_bps || 1800),
             partner_gst_minor: Number(indiaPayout.partner_gst_minor || 0),
         },
@@ -554,20 +652,78 @@ export async function dispatchAppLifecycleThroughWebhookService(env: Env, input:
 }
 
 export async function dispatchAppLifecycleSubscriptions(env: Env, input: {
+    db?: ReturnType<typeof getSupabaseAdmin>;
     eventType: AppWebhookEventType;
     installationId: string;
+    siteId?: string | null;
+    actorId?: string | null;
     eventIdPrefix?: string;
     payload: Record<string, unknown>;
     requestId: string;
     subscriptions: Array<{
+        id?: string;
         target_url: string;
         signing_secret: string;
         event_types?: unknown;
     }>;
 }): Promise<number> {
     const targets = input.subscriptions.filter((subscription) => stringArray(subscription.event_types).includes(input.eventType));
+    const siteId = stringOrNull(input.siteId) || stringOrNull(input.payload.store_id);
+    const durableTargets = targets.filter((subscription) => input.db && siteId && stringOrNull(subscription.id));
+    const directTargets = targets.filter((subscription) => !input.db || !siteId || !stringOrNull(subscription.id));
 
-    await Promise.all(targets.map((subscription, index) => dispatchAppLifecycleThroughWebhookService(env, {
+    if (input.db && siteId && durableTargets.length > 0) {
+        const deliveries = durableTargets.map((subscription, index) => {
+            const eventKey = input.eventIdPrefix
+                ? `${input.eventIdPrefix}:${index}`
+                : `${input.eventType}:${input.installationId}:${stringOrNull(subscription.id) || index}`;
+            return {
+                site_id: siteId,
+                subscription_id: stringOrNull(subscription.id),
+                event_id: crypto.randomUUID(),
+                event_type: input.eventType,
+                target_url: subscription.target_url,
+                payload: {
+                    ...input.payload,
+                    letbuyy_delivery: {
+                        event_key: eventKey,
+                        installation_id: input.installationId,
+                    },
+                },
+                request_id: input.requestId,
+                trace_id: null,
+                idempotency_key: eventKey,
+                schema_version: 1,
+                created_by: stringOrNull(input.actorId),
+                updated_by: stringOrNull(input.actorId),
+            };
+        });
+        const keys = deliveries.map((delivery) => delivery.idempotency_key);
+        const { data: existing, error: existingError } = await input.db
+            .from('webhook_deliveries')
+            .select('idempotency_key')
+            .in('idempotency_key', keys)
+            .is('deleted_at', null);
+
+        if (existingError) {
+            throw new Error(`App lifecycle webhook delivery lookup failed: ${existingError.message}`);
+        }
+
+        const existingKeys = new Set((Array.isArray(existing) ? existing : [])
+            .map((row) => stringOrNull(row.idempotency_key))
+            .filter((key): key is string => Boolean(key)));
+        const newDeliveries = deliveries.filter((delivery) => !existingKeys.has(delivery.idempotency_key));
+
+        const { error } = newDeliveries.length > 0
+            ? await input.db.from('webhook_deliveries').insert(newDeliveries)
+            : { error: null };
+
+        if (error) {
+            throw new Error(`App lifecycle webhook delivery enqueue failed: ${error.message}`);
+        }
+    }
+
+    await Promise.all(directTargets.map((subscription, index) => dispatchAppLifecycleThroughWebhookService(env, {
         eventId: input.eventIdPrefix ? `${input.eventIdPrefix}:${index}` : `${input.eventType}:${input.installationId}:${index}`,
         eventType: input.eventType,
         payload: input.payload,

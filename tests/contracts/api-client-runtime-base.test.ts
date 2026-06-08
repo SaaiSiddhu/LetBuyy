@@ -20,13 +20,13 @@ function read(relativePath: string): string {
 }
 
 test('api-client owns framework-free API base URL normalization', () => {
-    assert.equal(LETBUYY_PRODUCTION_API_BASE_URL, 'https://api.letbuyy.store/v1');
-    assert.equal(normalizeLetbuyyApiBaseUrl('https://api.letbuyy.store'), 'https://api.letbuyy.store/v1');
-    assert.equal(normalizeLetbuyyApiBaseUrl('https://api.letbuyy.store/v1/'), 'https://api.letbuyy.store/v1');
-    assert.equal(normalizeLetbuyyApiBaseUrl('https://api.letbuyy.store/api'), 'https://api.letbuyy.store/api/v1');
+    assert.equal(LETBUYY_PRODUCTION_API_BASE_URL, 'https://api.letbuyy.com/v1');
+    assert.equal(normalizeLetbuyyApiBaseUrl('https://api.letbuyy.com'), 'https://api.letbuyy.com/v1');
+    assert.equal(normalizeLetbuyyApiBaseUrl('https://api.letbuyy.com/v1/'), 'https://api.letbuyy.com/v1');
+    assert.equal(normalizeLetbuyyApiBaseUrl('https://api.letbuyy.com/api'), 'https://api.letbuyy.com/api/v1');
     assert.equal(
-        normalizeLetbuyyApiBaseUrl('https://api.letbuyy.store/api/v1', { includeVersionPath: false }),
-        'https://api.letbuyy.store/api',
+        normalizeLetbuyyApiBaseUrl('https://api.letbuyy.com/api/v1', { includeVersionPath: false }),
+        'https://api.letbuyy.com/api',
     );
     assert.equal(
         resolveLetbuyyApiBaseUrl([undefined, ''], { fallback: LETBUYY_PRODUCTION_API_BASE_URL }),
@@ -40,11 +40,11 @@ test('api-client owns framework-free API base URL normalization', () => {
 
 test('api-client path conversion strips the configured versioned base path', () => {
     assert.equal(
-        apiClientInputToLetbuyyApiPath('https://api.letbuyy.store/v1/products?limit=10', 'https://api.letbuyy.store/v1'),
+        apiClientInputToLetbuyyApiPath('https://api.letbuyy.com/v1/products?limit=10', 'https://api.letbuyy.com/v1'),
         '/products?limit=10',
     );
     assert.equal(
-        apiClientInputToLetbuyyApiPath('https://api.letbuyy.store/api/v1/orders', 'https://api.letbuyy.store/api/v1'),
+        apiClientInputToLetbuyyApiPath('https://api.letbuyy.com/api/v1/orders', 'https://api.letbuyy.com/api/v1'),
         '/orders',
     );
 });
@@ -53,7 +53,6 @@ test('active app API wrappers import shared base and path helpers', () => {
     const baseWrapperFiles = [
         'apps/merchant-control-plane/src/lib/api/client.ts',
         'apps/storefront-runtime/src/lib/api/client.ts',
-        'apps/storefront-runtime/src/lib/api/browser-client.ts',
         'apps/identity-platform/src/lib/api/client.ts',
         'apps/app-marketplace/src/lib/api/client.ts',
         'apps/theme-marketplace/src/lib/api/client.ts',
@@ -78,6 +77,12 @@ test('active app API wrappers import shared base and path helpers', () => {
         assert.match(source, /apiClientInputToLetbuyyApiPath/);
         assert.doesNotMatch(source, /\bfunction\s+apiClientInputTo[A-Za-z]+ApiPath\b/);
     }
+
+    const browserClient = read('apps/storefront-runtime/src/lib/api/browser-client.ts');
+    assert.match(browserClient, /apiClientInputToLetbuyyApiPath/);
+    assert.match(browserClient, /resolveLetbuyyApiBaseUrl/);
+    assert.match(browserClient, /`\/api\/storefront\/\$\{encodeURIComponent\(subdomain\)\}\$\{apiPath\}`/);
+    assert.doesNotMatch(browserClient, /NEXT_PUBLIC_API_BASE_URL|NEXT_PUBLIC_API_URL|LETBUYY_PRODUCTION_API_BASE_URL/);
 });
 
 test('api-client base helper validator is wired into governance', () => {

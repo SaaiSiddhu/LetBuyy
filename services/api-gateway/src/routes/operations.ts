@@ -1,24 +1,22 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { Env } from '../index';
-import { getSupabaseAdmin, success } from '../lib/supabase';
+import { getSupabaseAdmin, shouldReturnEmptyForMissingLocalSchema, success } from '../lib/supabase';
 import { ValidationError } from '../lib/errors';
 import { getRequestId } from '../lib/tenant-context';
-import { requireRoleCategory, requireSuperAdmin } from '../middleware/rbac';
-import { OutboxExecutionAdapter } from '../execution/outbox-execution.adapter';
-import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import {
-    MARKETPLACE_REVIEW_RECORD_COLUMNS,
-    type MarketplaceReviewDecision,
-    type MarketplaceReviewRecord,
-} from '../lib/marketplace-review-records';
+    checkSegregationOfDuty,
+    requirePermission,
+    requireRoleCategory,
+    requireSuperAdmin,
+    validateSensitiveReason,
+} from '../middleware/rbac';
+import { OutboxExecutionAdapter } from '../execution/outbox-execution.adapter';
 import {
     ConsumeQueueJobsSchema,
     CreateWebhookSubscriptionSchema,
     DispatchOutboxSchema,
     DispatchWebhookDeliveriesSchema,
-    MarketplaceReviewDecisionSchema,
-    MarketplaceReviewListQuerySchema,
     OperationsListQuerySchema,
     AuthorizeRuntimeReplaySchema,
     RecordChaosExperimentSchema,
@@ -44,7 +42,6 @@ import {
     ArchiveDistributedEventsSchema,
     type DispatchOutboxInput,
     type DispatchWebhookDeliveriesInput,
-    type MarketplaceReviewListQuery,
     type OperationsListQuery,
 } from '../schemas/operations.schema';
 import { SaasExecutionAdapter } from '../execution/saas-execution.adapter';
@@ -64,6 +61,11 @@ function dispatcherId(prefix: string): string {
 function actorId(c: AppContext): string {
     const auth = c.get('auth');
     return auth.user.id;
+}
+
+function actorEmail(c: AppContext): string | null {
+    const auth = c.get('auth');
+    return auth.user.email || null;
 }
 
 async function readOptionalJson<T>(c: AppContext, fallback: T): Promise<T> {
@@ -104,283 +106,31 @@ function parseLimit(c: AppContext, fallback = 50): number {
     return parsed.data.limit;
 }
 
-function parseMarketplaceReviewListQuery(c: AppContext): MarketplaceReviewListQuery {
-    const parsed = MarketplaceReviewListQuerySchema.safeParse({
-        status: c.req.query('status') || undefined,
-        submission_type: c.req.query('submission_type') || undefined,
-        limit: c.req.query('limit') || undefined,
-    });
-
-    if (!parsed.success) {
-        throw new ValidationError('Invalid marketplace review list query', parsed.error.flatten());
-    }
-
-    return parsed.data;
-}
-
-function asReviewRecord(value: unknown): MarketplaceReviewRecord {
-    return value as unknown as MarketplaceReviewRecord;
-}
-
-function asJsonRecord(value: unknown): JsonRecord {
-    return value && typeof value === 'object' && !Array.isArray(value)
-        ? value as JsonRecord
-        : {};
-}
-
-function stringOrNull(value: unknown): string | null {
-    return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
-}
-
-function marketplaceAppStatusForDecision(decision: MarketplaceReviewDecision): 'published' | 'rejected' | 'in_review' {
-    if (decision === 'approved') return 'published';
-    if (decision === 'rejected') return 'rejected';
-    return 'in_review';
-}
-
-function themePackageStatusForDecision(decision: MarketplaceReviewDecision): 'active' | 'disabled' | 'draft' {
-    if (decision === 'approved') return 'active';
-    if (decision === 'rejected') return 'disabled';
-    return 'draft';
-}
-
-function themeVersionStatusForDecision(decision: MarketplaceReviewDecision): 'published' | 'revoked' | 'draft' {
-    if (decision === 'approved') return 'published';
-    if (decision === 'rejected') return 'revoked';
-    return 'draft';
-}
-
-function eventTypeForMarketplaceReview(
-    record: MarketplaceReviewRecord,
-    decision: MarketplaceReviewDecision,
-): 'app.approved' | 'app.rejected' | 'theme.approved' | 'theme.rejected' | null {
-    if (record.submission_type === 'app' && decision === 'approved') return 'app.approved';
-    if (record.submission_type === 'app' && decision === 'rejected') return 'app.rejected';
-    if (record.submission_type === 'theme' && decision === 'approved') return 'theme.approved';
-    if (record.submission_type === 'theme' && decision === 'rejected') return 'theme.rejected';
-    return null;
-}
-
-async function publishMarketplaceAppReviewDecision(
-    db: OperationsDb,
-    record: MarketplaceReviewRecord,
-    decision: MarketplaceReviewDecision,
-): Promise<JsonRecord> {
-    const { data, error } = await db
-        .from('marketplace_apps')
-        .update({ status: marketplaceAppStatusForDecision(decision) })
-        .eq('id', record.resource_id)
-        .select('id, developer_id, slug, name, status')
-        .single();
-
-    if (error || !data) {
-        throw new Error(`Marketplace app review decision failed: ${error?.message || 'app not found'}`);
-    }
-
-    return asJsonRecord(data);
-}
-
-async function publishThemeReviewDecision(
-    db: OperationsDb,
-    record: MarketplaceReviewRecord,
-    decision: MarketplaceReviewDecision,
-    reviewedAt: string,
-): Promise<JsonRecord> {
-    const { data: themePackage, error: packageError } = await db
-        .from('theme_packages')
-        .update({ status: themePackageStatusForDecision(decision) })
-        .eq('id', record.resource_id)
-        .select('id, slug, name, status, legacy_theme_id')
-        .single();
-
-    if (packageError || !themePackage) {
-        throw new Error(`Theme package review decision failed: ${packageError?.message || 'theme package not found'}`);
-    }
-
-    const { data: latestVersion, error: versionLookupError } = await db
-        .from('theme_package_versions')
-        .select('id, version, version_number')
-        .eq('theme_package_id', record.resource_id)
-        .is('deleted_at', null)
-        .order('version_number', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-    if (versionLookupError || !latestVersion) {
-        throw new Error(`Theme package version lookup failed: ${versionLookupError?.message || 'theme version not found'}`);
-    }
-
-    const { data: version, error: versionError } = await db
-        .from('theme_package_versions')
-        .update({
-            release_status: themeVersionStatusForDecision(decision),
-            published_at: decision === 'approved' ? reviewedAt : null,
-        })
-        .eq('id', stringOrNull(asJsonRecord(latestVersion).id) || '')
-        .select('id, version, version_number, release_status, published_at')
-        .single();
-
-    if (versionError || !version) {
-        throw new Error(`Theme package version review decision failed: ${versionError?.message || 'theme version not found'}`);
-    }
-
-    const legacyThemeId = stringOrNull(asJsonRecord(themePackage).legacy_theme_id);
-    if (legacyThemeId) {
-        const { error: legacyThemeError } = await db
-            .from('themes')
-            .update({ is_active: decision === 'approved' })
-            .eq('id', legacyThemeId);
-
-        if (legacyThemeError) {
-            throw new Error(`Theme legacy listing update failed: ${legacyThemeError.message}`);
-        }
-    }
-
-    return {
-        ...asJsonRecord(themePackage),
-        version: asJsonRecord(version),
-    };
-}
-
-async function emitMarketplaceReviewDecisionEvent(
+async function writeOperationsAudit(
     db: OperationsDb,
     input: {
-        record: MarketplaceReviewRecord;
-        resource: JsonRecord;
-        eventType: 'app.approved' | 'app.rejected' | 'theme.approved' | 'theme.rejected';
         actorId: string;
-        requestId: string;
+        actorEmail: string | null;
+        action: string;
+        resourceType: string;
+        resourceId?: string | null;
+        reason: string;
+        metadata?: JsonRecord;
     },
-): Promise<void> {
-    if (input.record.submission_type === 'app') {
-        const appId = stringOrNull(input.resource.id) || input.record.resource_id;
-        const partnerId = stringOrNull(input.resource.developer_id) || input.record.app_developer_id;
-        if (!partnerId) throw new Error('Marketplace app review event requires a partner id');
-
-        await new EventExecutionAdapter(db).emitDomainEvent({
-            storeId: null,
-            aggregateType: 'app',
-            aggregateId: appId,
-            eventType: input.eventType,
-            payload: {
-                app_id: appId,
-                partner_id: partnerId,
-                review_id: input.record.id,
-                reviewer_id: input.actorId,
-            },
-            idempotencyKey: `${input.eventType}:${input.record.id}`,
-            requestId: input.requestId,
-            actorId: input.actorId,
-        });
-        return;
-    }
-
-    const version = asJsonRecord(input.resource.version);
-    const themeVersionId = stringOrNull(version.id);
-    if (!themeVersionId) throw new Error('Theme review event requires a theme version id');
-
-    await new EventExecutionAdapter(db).emitDomainEvent({
-        storeId: null,
-        aggregateType: 'theme',
-        aggregateId: input.record.resource_id,
-        eventType: input.eventType,
-        payload: {
-            theme_package_id: input.record.resource_id,
-            theme_version_id: themeVersionId,
-            partner_id: input.record.partner_user_id,
-            review_id: input.record.id,
-            reviewer_id: input.actorId,
+) {
+    await db.from('audit_logs').insert({
+        actor_id: input.actorId,
+        actor_type: 'employee',
+        actor_email: input.actorEmail,
+        action: input.action,
+        resource_type: input.resourceType,
+        resource_id: input.resourceId || null,
+        metadata: {
+            ...(input.metadata || {}),
+            reason: input.reason,
         },
-        idempotencyKey: `${input.eventType}:${input.record.id}:${themeVersionId}`,
-        requestId: input.requestId,
-        actorId: input.actorId,
     });
 }
-
-router.get('/marketplace-reviews', async (c) => {
-    const query = parseMarketplaceReviewListQuery(c);
-    const db = getSupabaseAdmin(c);
-
-    let request = db
-        .from('marketplace_review_records')
-        .select(MARKETPLACE_REVIEW_RECORD_COLUMNS)
-        .is('deleted_at', null)
-        .order('submitted_at', { ascending: false })
-        .limit(query.limit);
-
-    if (query.status) request = request.eq('status', query.status);
-    if (query.submission_type) request = request.eq('submission_type', query.submission_type);
-
-    const { data, error } = await request;
-    if (error) throw new Error(`Marketplace review list failed: ${error.message}`);
-
-    return c.json(success({ review_records: (data || []) as unknown as MarketplaceReviewRecord[] }));
-});
-
-router.post('/marketplace-reviews/:id/decision', async (c) => {
-    const body = await readOptionalJson<unknown>(c, {});
-    const parsed = MarketplaceReviewDecisionSchema.safeParse(body);
-
-    if (!parsed.success) {
-        throw new ValidationError('Invalid marketplace review decision request', parsed.error.flatten());
-    }
-
-    const reviewId = c.req.param('id');
-    const db = getSupabaseAdmin(c);
-    const reviewerId = actorId(c);
-    const reviewedAt = new Date().toISOString();
-
-    const { data: recordData, error: recordError } = await db
-        .from('marketplace_review_records')
-        .select(MARKETPLACE_REVIEW_RECORD_COLUMNS)
-        .eq('id', reviewId)
-        .is('deleted_at', null)
-        .single();
-
-    if (recordError || !recordData) {
-        return c.json({ error: { code: 'NOT_FOUND', message: 'Marketplace review record not found' } }, 404);
-    }
-
-    const record = asReviewRecord(recordData);
-    const resource = record.submission_type === 'app'
-        ? await publishMarketplaceAppReviewDecision(db, record, parsed.data.decision)
-        : await publishThemeReviewDecision(db, record, parsed.data.decision, reviewedAt);
-
-    const { data: updatedRecord, error: updateError } = await db
-        .from('marketplace_review_records')
-        .update({
-            status: parsed.data.decision,
-            reviewed_by: reviewerId,
-            reviewed_at: reviewedAt,
-            review_notes: parsed.data.reason || null,
-            updated_by: reviewerId,
-        })
-        .eq('id', record.id)
-        .select(MARKETPLACE_REVIEW_RECORD_COLUMNS)
-        .single();
-
-    if (updateError || !updatedRecord) {
-        throw new Error(`Marketplace review update failed: ${updateError?.message || 'record not found'}`);
-    }
-
-    const reviewRecord = asReviewRecord(updatedRecord);
-    const eventType = eventTypeForMarketplaceReview(reviewRecord, parsed.data.decision);
-    if (eventType) {
-        await emitMarketplaceReviewDecisionEvent(db, {
-            record: reviewRecord,
-            resource,
-            eventType,
-            actorId: reviewerId,
-            requestId: getRequestId(c),
-        });
-    }
-
-    return c.json(success({
-        review_record: reviewRecord,
-        resource,
-        event_type: eventType,
-    }));
-});
 
 router.post('/outbox/dispatch', async (c) => {
     const body = await readOptionalJson<DispatchOutboxInput>(c, {});
@@ -832,7 +582,30 @@ router.get('/runtime/overview', async (c) => {
     ]);
 
     for (const result of [health, queues, alerts, incidents, deployments, deploymentHealth, failover, chaos, load, slo, readiness, eventIntegrity, dashboards, errorBudgets, security, regionalOverrides, certificationReports]) {
-        if (result.error) throw new Error(`Runtime overview query failed: ${result.error.message}`);
+        if (result.error) {
+            if (shouldReturnEmptyForMissingLocalSchema(c.env, result.error)) {
+                return c.json(success({
+                    health: [],
+                    queues: [],
+                    alerts: [],
+                    incidents: [],
+                    deployments: [],
+                    deployment_health_gates: [],
+                    failover_drills: [],
+                    chaos_experiments: [],
+                    load_tests: [],
+                    slos: [],
+                    readiness_gates: [],
+                    event_store_integrity: [],
+                    dashboards: [],
+                    error_budgets: [],
+                    security_events: [],
+                    regional_routing_overrides: [],
+                    certification_reports: [],
+                }));
+            }
+            throw new Error(`Runtime overview query failed: ${result.error.message}`);
+        }
     }
 
     return c.json(success({
@@ -976,7 +749,7 @@ router.post('/runtime/replays/:replayId/authorize', async (c) => {
     return c.json(success({ replay: data }));
 });
 
-router.get('/runtime/control-commands', async (c) => {
+router.get('/runtime/control-commands', requirePermission('incident:view'), async (c) => {
     const db = getSupabaseAdmin(c);
     const { data, error } = await db
         .from('runtime_control_commands')
@@ -985,12 +758,17 @@ router.get('/runtime/control-commands', async (c) => {
         .order('created_at', { ascending: false })
         .limit(parseLimit(c));
 
-    if (error) throw new Error(`Runtime control command list failed: ${error.message}`);
+    if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            return c.json(success({ commands: [] }));
+        }
+        throw new Error(`Runtime control command list failed: ${error.message}`);
+    }
 
     return c.json(success({ commands: data || [] }));
 });
 
-router.post('/runtime/control-commands', async (c) => {
+router.post('/runtime/control-commands', requirePermission('incident:command'), async (c) => {
     const body = await readOptionalJson<unknown>(c, {});
     const parsed = SubmitRuntimeControlCommandSchema.safeParse(body);
 
@@ -998,9 +776,28 @@ router.post('/runtime/control-commands', async (c) => {
         throw new ValidationError('Invalid runtime control command request', parsed.error.flatten());
     }
 
+    const reason = validateSensitiveReason(parsed.data.reason);
+    if (!reason) {
+        return c.json({ error: { code: 'REASON_REQUIRED', message: 'A reason is required.' } }, 400);
+    }
+
     const db = getSupabaseAdmin(c);
     const requestId = getRequestId(c);
     const authUserId = actorId(c);
+    const segregation = checkSegregationOfDuty({
+        actorId: authUserId,
+        targetAction: 'runtime.control-command',
+        secondaryApproverId: parsed.data.secondary_approver_id || null,
+    });
+    if (!segregation.ok) {
+        return c.json({
+            error: {
+                code: segregation.code || 'DUAL_CONTROL_REQUIRED',
+                message: segregation.message || 'This runtime command requires dual control.',
+            },
+        }, 403);
+    }
+
     const { data, error } = await db
         .from('runtime_control_commands')
         .insert({
@@ -1009,22 +806,45 @@ router.post('/runtime/control-commands', async (c) => {
             target_type: parsed.data.target_type,
             target_id: parsed.data.target_id,
             requested_by: authUserId,
-            reason: parsed.data.reason,
+            reason,
+            result: {
+                approval: {
+                    dual_control: true,
+                    secondary_approver_id: parsed.data.secondary_approver_id || null,
+                    approved_at: new Date().toISOString(),
+                },
+            },
             request_id: requestId,
             correlation_id: requestId,
             trace_id: c.req.header('X-Trace-ID') || null,
             created_by: authUserId,
             updated_by: authUserId,
         })
-        .select('command_id, operation, target_type, target_id, status, created_at')
+        .select('id, command_id, operation, target_type, target_id, status, created_at')
         .single();
 
     if (error) throw new Error(`Runtime control command submission failed: ${error.message}`);
 
+    await writeOperationsAudit(db, {
+        actorId: authUserId,
+        actorEmail: actorEmail(c),
+        action: 'incident.runtime_control_command.submit',
+        resourceType: 'runtime_control_command',
+        resourceId: data.id,
+        reason,
+        metadata: {
+            command_id: parsed.data.command_id,
+            operation: parsed.data.operation,
+            target_type: parsed.data.target_type,
+            target_id: parsed.data.target_id,
+            secondary_approver_id: parsed.data.secondary_approver_id || null,
+        },
+    });
+
     return c.json(success({ command: data }), 201);
 });
 
-router.get('/runtime/incidents', async (c) => {
+router.get('/runtime/incidents', requirePermission('incident:view'), async (c) => {
     const db = getSupabaseAdmin(c);
     const { data, error } = await db
         .from('production_incidents')
@@ -1038,12 +858,17 @@ router.get('/runtime/incidents', async (c) => {
     return c.json(success({ incidents: data || [] }));
 });
 
-router.post('/runtime/incidents', async (c) => {
+router.post('/runtime/incidents', requirePermission('incident:command'), async (c) => {
     const body = await readOptionalJson<unknown>(c, {});
     const parsed = RecordProductionIncidentSchema.safeParse(body);
 
     if (!parsed.success) {
         throw new ValidationError('Invalid production incident request', parsed.error.flatten());
+    }
+
+    const reason = validateSensitiveReason(parsed.data.reason || parsed.data.customer_impact);
+    if (!reason) {
+        return c.json({ error: { code: 'REASON_REQUIRED', message: 'A reason is required.' } }, 400);
     }
 
     const db = getSupabaseAdmin(c);
@@ -1055,15 +880,32 @@ router.post('/runtime/incidents', async (c) => {
         p_affected_regions: parsed.data.affected_regions,
         p_customer_impact: parsed.data.customer_impact,
         p_commander_id: actorId(c),
-        p_metadata: parsed.data.metadata,
+        p_metadata: {
+            ...parsed.data.metadata,
+            reason,
+        },
     });
 
     if (error) throw new Error(`Production incident creation failed: ${error.message}`);
 
+    await writeOperationsAudit(db, {
+        actorId: actorId(c),
+        actorEmail: actorEmail(c),
+        action: 'incident.create',
+        resourceType: 'production_incident',
+        reason,
+        metadata: {
+            incident_id: parsed.data.incident_id,
+            severity: parsed.data.severity,
+            affected_runtimes: parsed.data.affected_runtimes,
+            affected_regions: parsed.data.affected_regions,
+        },
+    });
+
     return c.json(success({ incident: data }), 201);
 });
 
-router.patch('/runtime/incidents/:incidentId/status', async (c) => {
+router.patch('/runtime/incidents/:incidentId/status', requirePermission('incident:command'), async (c) => {
     const body = await readOptionalJson<unknown>(c, {});
     const parsed = UpdateProductionIncidentStatusSchema.safeParse(body);
 
@@ -1071,16 +913,69 @@ router.patch('/runtime/incidents/:incidentId/status', async (c) => {
         throw new ValidationError('Invalid production incident status request', parsed.error.flatten());
     }
 
+    const reason = validateSensitiveReason(parsed.data.summary);
+    if (!reason) {
+        return c.json({ error: { code: 'REASON_REQUIRED', message: 'A status change summary of at least 8 characters is required.' } }, 400);
+    }
+
     const db = getSupabaseAdmin(c);
+    const incidentId = c.req.param('incidentId');
+    if (parsed.data.status === 'closed') {
+        const { data: incident, error: incidentError } = await db
+            .from('production_incidents')
+            .select('severity')
+            .eq('incident_id', incidentId)
+            .is('deleted_at', null)
+            .maybeSingle();
+
+        if (incidentError) throw new Error(`Production incident lookup failed: ${incidentError.message}`);
+        if (!incident) {
+            return c.json({ error: { code: 'NOT_FOUND', message: 'Incident not found' } }, 404);
+        }
+
+        if (incident.severity === 'sev1' || incident.severity === 'sev2') {
+            const { data: postmortem, error: postmortemError } = await db
+                .from('incident_postmortems')
+                .select('id, status')
+                .eq('incident_id', incidentId)
+                .in('status', ['accepted', 'closed'])
+                .is('deleted_at', null)
+                .maybeSingle();
+
+            if (postmortemError) throw new Error(`Incident postmortem close-gate lookup failed: ${postmortemError.message}`);
+            if (!postmortem) {
+                return c.json({
+                    error: {
+                        code: 'POSTMORTEM_REQUIRED',
+                        message: 'SEV-1 and SEV-2 incidents require an accepted postmortem before closure.',
+                    },
+                }, 409);
+            }
+        }
+    }
+
     const { data, error } = await db.rpc('update_production_incident_status', {
-        p_incident_id: c.req.param('incidentId'),
+        p_incident_id: incidentId,
         p_status: parsed.data.status,
         p_actor_id: actorId(c),
-        p_summary: parsed.data.summary,
+        p_summary: reason,
         p_details: parsed.data.details,
     });
 
     if (error) throw new Error(`Production incident status update failed: ${error.message}`);
+
+    await writeOperationsAudit(db, {
+        actorId: actorId(c),
+        actorEmail: actorEmail(c),
+        action: 'incident.status.update',
+        resourceType: 'production_incident',
+        reason,
+        metadata: {
+            incident_id: incidentId,
+            status: parsed.data.status,
+            details: parsed.data.details,
+        },
+    });
 
     return c.json(success({ incident: data }));
 });

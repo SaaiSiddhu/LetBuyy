@@ -76,11 +76,26 @@ export const DOMAIN_EVENT_TYPES = [
   'product.created',
   'product.updated',
   'product.deleted',
+  'cart.created',
+  'cart.email_captured',
+  'cart.abandoned',
+  'checkout.started',
+  'checkout.completed',
+  'checkout.failed',
   'order.created',
   'order.paid',
+  'order.confirmed_cod',
   'order.fulfilled',
+  'order.delivered',
   'order.cancelled',
+  'order.rto',
+  'order.returned',
   'order.refunded',
+  'order.risk_assessed',
+  'cod.confirmation_requested',
+  'cod.confirmed',
+  'payment.authorized',
+  'payment.pending',
   'app.installed',
   'app.uninstalled',
   'app.submitted',
@@ -98,8 +113,40 @@ export const DOMAIN_EVENT_TYPES = [
   'theme.draft.discarded',
   'payment.captured',
   'payment.failed',
+  'payment.refunded',
   'refund.created',
+  'inventory.reserved',
+  'inventory.committed',
+  'inventory.released',
+  'inventory.low',
+  'shipment.created',
+  'shipment.out_for_delivery',
+  'shipment.delivered',
+  'shipment.rto',
+  'discount.redeemed',
+  'tax.invoice_generated',
+  'notification.sent',
+  'notification.failed',
+  'email.delivered',
+  'email.bounced',
+  'email.complained',
+  'wa.message_received',
+  'wa.cod_confirmed',
+  'settlement.recorded',
+  'settlement.recon.break_detected',
+  'payout.scheduled',
+  'payout.paid',
   'payment.subscription.activated',
+  'billing.charged',
+  'billing.failed',
+  'billing.plan_changed',
+  'auth.login',
+  'auth.stepup',
+  'customer.created',
+  'customer.updated',
+  'customer.dsr_requested',
+  'media.processed',
+  'audit.recorded',
   'payout.ledger_entry.created',
   'payout.released',
   'payout.failed',
@@ -130,7 +177,33 @@ export interface DomainEventContract {
   schemaVersion: 1;
   producer: DomainEventProducer;
   consumers: readonly DomainEventConsumer[];
-  aggregateType: 'store' | 'product' | 'order' | 'app' | 'app_charge' | 'theme' | 'theme_purchase' | 'theme_draft' | 'subscription' | 'payout';
+  aggregateType:
+    | 'store'
+    | 'product'
+    | 'cart'
+    | 'checkout'
+    | 'order'
+    | 'payment'
+    | 'inventory'
+    | 'shipment'
+    | 'discount'
+    | 'tax'
+    | 'notification'
+    | 'email'
+    | 'whatsapp'
+    | 'settlement'
+    | 'billing'
+    | 'customer'
+    | 'auth'
+    | 'media'
+    | 'audit'
+    | 'app'
+    | 'app_charge'
+    | 'theme'
+    | 'theme_purchase'
+    | 'theme_draft'
+    | 'subscription'
+    | 'payout';
   payloadSchema: z.ZodType<unknown>;
   implementationStatus?: 'active' | 'reserved-human-gated';
   reservedReason?: string;
@@ -158,6 +231,73 @@ const OrderPayloadSchema = z.object({
   total: InrMinorUnitsSchema.optional(),
 });
 
+const GenericSiteEventPayloadSchema = z.object({
+  site_id: UuidSchema,
+}).passthrough();
+
+const CartPayloadSchema = GenericSiteEventPayloadSchema.extend({
+  cart_id: UuidSchema,
+  channel: z.enum(['web', 'whatsapp', 'instagram', 'pos', 'api']).optional(),
+});
+
+const CheckoutPayloadSchema = GenericSiteEventPayloadSchema.extend({
+  checkout_id: UuidSchema,
+  cart_id: UuidSchema.optional(),
+});
+
+const InventoryPayloadSchema = GenericSiteEventPayloadSchema.extend({
+  variant_id: UuidSchema.optional(),
+  reservation_id: UuidSchema.optional(),
+  quantity: z.number().int().optional(),
+});
+
+const ShipmentPayloadSchema = GenericSiteEventPayloadSchema.extend({
+  shipment_id: UuidSchema,
+  order_id: UuidSchema.optional(),
+  awb: z.string().trim().min(1).max(160).optional(),
+});
+
+const NotificationPayloadSchema = GenericSiteEventPayloadSchema.extend({
+  notification_id: UuidSchema,
+  channel: z.enum(['email', 'sms', 'whatsapp', 'push', 'webhook']).optional(),
+});
+
+const EmailPayloadSchema = GenericSiteEventPayloadSchema.extend({
+  email_id: UuidSchema,
+  template_key: z.string().trim().min(1).max(160),
+  provider: z.string().trim().min(1).max(80).optional(),
+  recipient_hash: z.string().trim().min(1).max(160).optional(),
+});
+
+const WhatsappPayloadSchema = GenericSiteEventPayloadSchema.extend({
+  message_id: z.string().trim().min(1).max(200).optional(),
+  order_id: UuidSchema.optional(),
+});
+
+const SettlementPayloadSchema = GenericSiteEventPayloadSchema.extend({
+  settlement_id: UuidSchema.optional(),
+  payout_id: UuidSchema.optional(),
+  amount: InrMinorUnitsSchema.optional(),
+});
+
+const BillingPayloadSchema = GenericSiteEventPayloadSchema.extend({
+  subscription_id: UuidSchema.optional(),
+  invoice_id: UuidSchema.optional(),
+  amount: InrMinorUnitsSchema.optional(),
+});
+
+const CustomerPayloadSchema = GenericSiteEventPayloadSchema.extend({
+  customer_id: UuidSchema,
+});
+
+const MediaPayloadSchema = GenericSiteEventPayloadSchema.extend({
+  media_id: UuidSchema,
+  asset_id: UuidSchema.optional(),
+  object_key: z.string().trim().min(1).max(512).optional(),
+  content_type: z.string().trim().min(1).max(160).optional(),
+  size_bytes: z.number().int().nonnegative().optional(),
+});
+
 const AppInstallationPayloadSchema = z.object({
   site_id: UuidSchema,
   app_id: UuidSchema,
@@ -178,12 +318,12 @@ const AppChargePayloadSchema = z.object({
   app_id: UuidSchema,
   installation_id: UuidSchema,
   charge_id: UuidSchema,
-  billing_mode: z.enum(['recurring', 'usage']),
+  billing_mode: z.enum(['recurring', 'one_time', 'usage']),
   amount: InrMinorUnitsSchema,
   payout_rail: z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']).default('razorpay_route'),
   provider_reference: z.string().trim().min(1).max(200).optional(),
   provider_mode: z.enum(['test', 'live']).default('test'),
-  revenue_share_bps: z.number().int().min(0).max(10000).default(8000),
+  revenue_share_bps: z.number().int().min(0).max(10000).default(8500),
   partner_gst_bps: z.number().int().min(0).max(10000).default(1800),
   partner_gst_minor: z.number().int().nonnegative().default(0),
 });
@@ -240,7 +380,7 @@ const PaymentOrderPayloadSchema = z.object({
   provider_event_type: z.string().trim().min(1).max(240).optional(),
   order_id: UuidSchema,
   payment_id: z.string().trim().min(1).max(240).nullable().optional(),
-  payment_status: z.enum(['paid', 'failed']).optional(),
+  payment_status: z.enum(['authorized', 'pending', 'paid', 'failed', 'refunded']).optional(),
   reason: z.string().trim().max(500).nullable().optional(),
 });
 
@@ -270,6 +410,22 @@ const PayoutPayloadSchema = z.object({
   amount: InrMinorUnitsSchema,
   rail: z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']).default('manual'),
 });
+
+function activeGatewayContract(
+  eventType: DomainEventType,
+  aggregateType: DomainEventContract['aggregateType'],
+  payloadSchema: z.ZodType<unknown> = GenericSiteEventPayloadSchema,
+  consumers: readonly DomainEventConsumer[] = ['analytics', 'notifications', 'webhook-service'],
+): DomainEventContract {
+  return {
+    eventType,
+    schemaVersion: 1,
+    producer: 'api-gateway',
+    consumers,
+    aggregateType,
+    payloadSchema,
+  };
+}
 
 export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract> = {
   'store.created': {
@@ -304,6 +460,12 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
     aggregateType: 'product',
     payloadSchema: ProductPayloadSchema,
   },
+  'cart.created': activeGatewayContract('cart.created', 'cart', CartPayloadSchema),
+  'cart.email_captured': activeGatewayContract('cart.email_captured', 'cart', CartPayloadSchema),
+  'cart.abandoned': activeGatewayContract('cart.abandoned', 'cart', CartPayloadSchema),
+  'checkout.started': activeGatewayContract('checkout.started', 'checkout', CheckoutPayloadSchema),
+  'checkout.completed': activeGatewayContract('checkout.completed', 'checkout', CheckoutPayloadSchema),
+  'checkout.failed': activeGatewayContract('checkout.failed', 'checkout', CheckoutPayloadSchema),
   'order.created': {
     eventType: 'order.created',
     schemaVersion: 1,
@@ -320,6 +482,7 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
     aggregateType: 'order',
     payloadSchema: OrderPayloadSchema,
   },
+  'order.confirmed_cod': activeGatewayContract('order.confirmed_cod', 'order', OrderPayloadSchema),
   'order.fulfilled': {
     eventType: 'order.fulfilled',
     schemaVersion: 1,
@@ -328,6 +491,7 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
     aggregateType: 'order',
     payloadSchema: OrderPayloadSchema,
   },
+  'order.delivered': activeGatewayContract('order.delivered', 'order', OrderPayloadSchema),
   'order.cancelled': {
     eventType: 'order.cancelled',
     schemaVersion: 1,
@@ -336,6 +500,8 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
     aggregateType: 'order',
     payloadSchema: OrderPayloadSchema,
   },
+  'order.rto': activeGatewayContract('order.rto', 'order', OrderPayloadSchema),
+  'order.returned': activeGatewayContract('order.returned', 'order', OrderPayloadSchema),
   'order.refunded': {
     eventType: 'order.refunded',
     schemaVersion: 1,
@@ -344,6 +510,11 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
     aggregateType: 'order',
     payloadSchema: OrderPayloadSchema,
   },
+  'order.risk_assessed': activeGatewayContract('order.risk_assessed', 'order', OrderPayloadSchema),
+  'cod.confirmation_requested': activeGatewayContract('cod.confirmation_requested', 'order', GenericSiteEventPayloadSchema),
+  'cod.confirmed': activeGatewayContract('cod.confirmed', 'order', GenericSiteEventPayloadSchema),
+  'payment.authorized': activeGatewayContract('payment.authorized', 'order', PaymentOrderPayloadSchema),
+  'payment.pending': activeGatewayContract('payment.pending', 'order', PaymentOrderPayloadSchema),
   'app.installed': {
     eventType: 'app.installed',
     schemaVersion: 1,
@@ -480,6 +651,7 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
     aggregateType: 'order',
     payloadSchema: PaymentOrderPayloadSchema,
   },
+  'payment.refunded': activeGatewayContract('payment.refunded', 'order', PaymentOrderPayloadSchema),
   'refund.created': {
     eventType: 'refund.created',
     schemaVersion: 1,
@@ -488,6 +660,27 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
     aggregateType: 'order',
     payloadSchema: RefundPayloadSchema,
   },
+  'inventory.reserved': activeGatewayContract('inventory.reserved', 'inventory', InventoryPayloadSchema, ['analytics', 'webhook-service']),
+  'inventory.committed': activeGatewayContract('inventory.committed', 'inventory', InventoryPayloadSchema, ['analytics', 'webhook-service']),
+  'inventory.released': activeGatewayContract('inventory.released', 'inventory', InventoryPayloadSchema, ['analytics', 'webhook-service']),
+  'inventory.low': activeGatewayContract('inventory.low', 'inventory', InventoryPayloadSchema),
+  'shipment.created': activeGatewayContract('shipment.created', 'shipment', ShipmentPayloadSchema),
+  'shipment.out_for_delivery': activeGatewayContract('shipment.out_for_delivery', 'shipment', ShipmentPayloadSchema),
+  'shipment.delivered': activeGatewayContract('shipment.delivered', 'shipment', ShipmentPayloadSchema),
+  'shipment.rto': activeGatewayContract('shipment.rto', 'shipment', ShipmentPayloadSchema),
+  'discount.redeemed': activeGatewayContract('discount.redeemed', 'discount', GenericSiteEventPayloadSchema, ['analytics', 'webhook-service']),
+  'tax.invoice_generated': activeGatewayContract('tax.invoice_generated', 'tax', GenericSiteEventPayloadSchema, ['analytics', 'webhook-service']),
+  'notification.sent': activeGatewayContract('notification.sent', 'notification', NotificationPayloadSchema, ['analytics', 'webhook-service']),
+  'notification.failed': activeGatewayContract('notification.failed', 'notification', NotificationPayloadSchema, ['analytics', 'webhook-service']),
+  'email.delivered': activeGatewayContract('email.delivered', 'email', EmailPayloadSchema, ['analytics', 'webhook-service']),
+  'email.bounced': activeGatewayContract('email.bounced', 'email', EmailPayloadSchema, ['analytics', 'webhook-service']),
+  'email.complained': activeGatewayContract('email.complained', 'email', EmailPayloadSchema, ['analytics', 'webhook-service']),
+  'wa.message_received': activeGatewayContract('wa.message_received', 'whatsapp', WhatsappPayloadSchema),
+  'wa.cod_confirmed': activeGatewayContract('wa.cod_confirmed', 'whatsapp', WhatsappPayloadSchema),
+  'settlement.recorded': activeGatewayContract('settlement.recorded', 'settlement', SettlementPayloadSchema, ['analytics', 'notifications', 'payout-ledger', 'webhook-service']),
+  'settlement.recon.break_detected': activeGatewayContract('settlement.recon.break_detected', 'settlement', SettlementPayloadSchema),
+  'payout.scheduled': activeGatewayContract('payout.scheduled', 'payout', PayoutPayloadSchema),
+  'payout.paid': activeGatewayContract('payout.paid', 'payout', PayoutPayloadSchema),
   'payment.subscription.activated': {
     eventType: 'payment.subscription.activated',
     schemaVersion: 1,
@@ -496,6 +689,16 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
     aggregateType: 'subscription',
     payloadSchema: PaymentSubscriptionActivatedPayloadSchema,
   },
+  'billing.charged': activeGatewayContract('billing.charged', 'billing', BillingPayloadSchema),
+  'billing.failed': activeGatewayContract('billing.failed', 'billing', BillingPayloadSchema),
+  'billing.plan_changed': activeGatewayContract('billing.plan_changed', 'billing', BillingPayloadSchema),
+  'auth.login': activeGatewayContract('auth.login', 'auth', GenericSiteEventPayloadSchema),
+  'auth.stepup': activeGatewayContract('auth.stepup', 'auth', GenericSiteEventPayloadSchema),
+  'customer.created': activeGatewayContract('customer.created', 'customer', CustomerPayloadSchema),
+  'customer.updated': activeGatewayContract('customer.updated', 'customer', CustomerPayloadSchema),
+  'customer.dsr_requested': activeGatewayContract('customer.dsr_requested', 'customer', CustomerPayloadSchema),
+  'media.processed': activeGatewayContract('media.processed', 'media', MediaPayloadSchema, ['analytics', 'webhook-service']),
+  'audit.recorded': activeGatewayContract('audit.recorded', 'audit', GenericSiteEventPayloadSchema, ['analytics', 'webhook-service']),
   'payout.ledger_entry.created': {
     eventType: 'payout.ledger_entry.created',
     schemaVersion: 1,
@@ -649,6 +852,7 @@ export const SubmitRuntimeControlCommandSchema = z.object({
   ]),
   target_id: z.string().trim().min(1).max(200),
   reason: z.string().trim().min(8).max(500),
+  secondary_approver_id: z.string().uuid().nullable().optional(),
 });
 
 export const RecordProductionIncidentSchema = z.object({
@@ -659,6 +863,7 @@ export const RecordProductionIncidentSchema = z.object({
   affected_regions: z.array(z.string().trim().min(1).max(80)).max(20).default([]),
   customer_impact: z.string().trim().min(8).max(1000),
   metadata: JsonRecordSchema.default({}),
+  reason: z.string().trim().min(8).max(500).optional(),
 });
 
 export const UpdateProductionIncidentStatusSchema = z.object({
@@ -847,6 +1052,94 @@ export interface RuntimeEventEnvelope<TPayload = Record<string, unknown>> {
   payload: TPayload;
   request_id?: string;
   idempotency_key?: string;
+}
+
+export interface WriteWithOutboxEventInput {
+  event_id?: string;
+  event_type: DomainEventType;
+  source_runtime: DomainEventProducer;
+  site_id?: string;
+  aggregate_type: DomainEventContract['aggregateType'];
+  aggregate_id: string;
+  payload: Record<string, unknown>;
+  request_id?: string | null;
+  actor_id?: string | null;
+  idempotency_key: string;
+  occurred_at?: string;
+}
+
+export interface OutboxInsertResult {
+  id: string;
+  event_type: string;
+  status: string;
+}
+
+export interface OutboxWritableTransaction {
+  from(table: string): {
+    insert(row: Record<string, unknown>): {
+      select(columns: string): {
+        single(): Promise<{ data: unknown; error: { message?: string } | null }>;
+      };
+    };
+  };
+}
+
+export interface WriteWithOutboxResult<TResult> {
+  result: TResult;
+  outbox: OutboxInsertResult;
+}
+
+function generatedEventId(): string {
+  return `evt_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`;
+}
+
+export async function writeWithOutbox<TResult>(
+  tx: OutboxWritableTransaction,
+  domainWrite: (tx: OutboxWritableTransaction) => Promise<TResult>,
+  event: WriteWithOutboxEventInput,
+): Promise<WriteWithOutboxResult<TResult>> {
+  const result = await domainWrite(tx);
+  const envelope = validateDomainEventEnvelope({
+    event_id: event.event_id || generatedEventId(),
+    event_type: event.event_type,
+    source_runtime: event.source_runtime,
+    site_id: event.site_id,
+    aggregate_type: event.aggregate_type,
+    aggregate_id: event.aggregate_id,
+    occurred_at: event.occurred_at || new Date().toISOString(),
+    payload: event.payload,
+    request_id: event.request_id || undefined,
+    idempotency_key: event.idempotency_key,
+    schema_version: 1,
+  });
+
+  const { data, error } = await tx
+    .from('outbox_events')
+    .insert({
+      site_id: envelope.site_id || null,
+      store_id: envelope.site_id || null,
+      event_id: envelope.event_id,
+      aggregate_type: envelope.aggregate_type,
+      aggregate_id: envelope.aggregate_id,
+      event_type: envelope.event_type,
+      payload: envelope.payload,
+      idempotency_key: event.idempotency_key,
+      request_id: event.request_id || null,
+      actor_id: event.actor_id || null,
+      schema_version: 1,
+      status: 'queued',
+    })
+    .select('id, event_type, status')
+    .single();
+
+  if (error) {
+    throw new Error(`Transactional outbox write failed: ${error.message || 'unknown error'}`);
+  }
+
+  return {
+    result,
+    outbox: data as OutboxInsertResult,
+  };
 }
 
 export type DispatchOutboxInput = z.infer<typeof DispatchOutboxSchema>;

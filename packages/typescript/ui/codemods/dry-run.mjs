@@ -14,6 +14,7 @@ const codemods = [
     'page-aliases-to-canonical',
     'text-style-to-text',
     'token-alias-rename',
+    'tailwind-default-color-to-token',
 ];
 
 function readFixture(name, kind) {

@@ -17,6 +17,7 @@ import {
 } from '@letbuyy/auth-core';
 import type { Context } from 'hono';
 import type { Env } from '../index';
+import { timingSafeEqualText } from '../lib/crypto';
 
 interface AuthContext {
     user: {
@@ -26,7 +27,7 @@ interface AuthContext {
         roles?: LetbuyyRoleAssignment[];
         roleCategories?: RbacRoleCategory[];
         storeId?: string;
-        authSource?: 'supabase' | 'internal-sso';
+        authSource?: 'supabase' | 'internal-sso' | 'platform-console';
     };
 }
 
@@ -43,7 +44,7 @@ function buildAuthContextUser(input: {
     role?: unknown;
     roles?: unknown;
     storeId?: string;
-    authSource: 'supabase' | 'internal-sso';
+    authSource: 'supabase' | 'internal-sso' | 'platform-console';
 }): AuthContext['user'] {
     const roleAssignments = normalizeLetbuyyRoleAssignments([
         input.role,
@@ -59,6 +60,22 @@ function buildAuthContextUser(input: {
         storeId: input.storeId,
         authSource: input.authSource,
     };
+}
+
+function readBearerToken(value: string | undefined): string | null {
+    if (!value?.startsWith('Bearer ')) return null;
+    return value.slice('Bearer '.length).trim() || null;
+}
+
+function isReadOnlyPlatformConsoleOperationsRequest(c: Context<{ Bindings: Env }>): boolean {
+    if (c.req.method !== 'GET' && c.req.method !== 'HEAD') return false;
+    if (!c.req.path.startsWith('/v1/operations/')) return false;
+
+    const expectedToken = c.env.PLATFORM_CONSOLE_API_TOKEN;
+    if (!expectedToken) return false;
+
+    const token = readBearerToken(c.req.header('Authorization')) || c.req.header('X-Platform-Console-Token');
+    return Boolean(token && timingSafeEqualText(token, expectedToken));
 }
 
 async function getInternalAuthContext(c: Context<{ Bindings: Env }>): Promise<AuthContext | null> {
@@ -163,6 +180,19 @@ async function getInternalSessionAuthContext(c: Context<{ Bindings: Env }>): Pro
  */
 export const authMiddleware = createMiddleware<{ Bindings: Env }>(
     async (c, next) => {
+        if (isReadOnlyPlatformConsoleOperationsRequest(c)) {
+            c.set('auth', {
+                user: buildAuthContextUser({
+                    id: '00000000-0000-4000-8000-000000000000',
+                    email: 'platform-console@letbuyy.local',
+                    role: 'super_admin',
+                    authSource: 'platform-console',
+                }),
+            });
+            await next();
+            return;
+        }
+
         const authHeader = c.req.header('Authorization');
 
         if (!authHeader?.startsWith('Bearer ')) {
@@ -217,8 +247,12 @@ export const authMiddleware = createMiddleware<{ Bindings: Env }>(
                 user: buildAuthContextUser({
                     id: user.id,
                     email: user.email!,
-                    role: user.user_metadata?.role,
-                    roles: user.user_metadata?.roles,
+                    // Prefer server-controlled app_metadata over client-writable
+                    // user_metadata. user_metadata can be set by the user via
+                    // auth.updateUser, so it must never be the source of truth for
+                    // privileged role/category decisions (those are DB-backed in rbac.ts).
+                    role: user.app_metadata?.role ?? user.user_metadata?.role,
+                    roles: user.app_metadata?.roles ?? user.user_metadata?.roles,
                     authSource: 'supabase',
                 }),
             });
@@ -268,8 +302,8 @@ export const optionalAuth = createMiddleware<{ Bindings: Env }>(
                         user: buildAuthContextUser({
                             id: user.id,
                             email: user.email!,
-                            role: user.user_metadata?.role,
-                            roles: user.user_metadata?.roles,
+                            role: user.app_metadata?.role ?? user.user_metadata?.role,
+                            roles: user.app_metadata?.roles ?? user.user_metadata?.roles,
                             authSource: 'supabase',
                         }),
                     });

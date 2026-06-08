@@ -1,10 +1,21 @@
 'use client';
 
-import React, { useId, useRef, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from './icons';
 import { Button } from './button';
 import { cx } from './utils';
-import { useDismiss, useFocusTrap } from './overlay-hooks';
+import { useAnchoredPosition, useDismiss, useFocusTrap, useScrollLock } from './overlay-hooks';
+
+function OverlayPortal({ children }: { children: React.ReactNode }) {
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+        return () => setMounted(false);
+    }, []);
+    if (!mounted || typeof document === 'undefined') return null;
+    return createPortal(children, document.body);
+}
 
 export type OverlayTriggerProps = {
     onClick?: React.MouseEventHandler<HTMLElement>;
@@ -86,14 +97,21 @@ export function Drawer({ open, title, description, children, onClose, side = 'ri
     const descriptionId = useId();
     const overlayRef = useRef<HTMLDivElement>(null);
     const panelRef = useRef<HTMLElement>(null);
+    const [overlayElement, setOverlayElement] = useState<HTMLDivElement | null>(null);
+    const setOverlayNode = React.useCallback((node: HTMLDivElement | null) => {
+        overlayRef.current = node;
+        setOverlayElement(node);
+    }, []);
 
-    useFocusTrap(overlayRef, { active: open });
+    useFocusTrap(overlayRef, { active: open && overlayElement !== null });
     useDismiss(panelRef, { active: open, onDismiss: onClose });
+    useScrollLock(open);
 
     if (!open) return null;
 
     return (
-        <div ref={overlayRef} className="fixed inset-0 z-[var(--lb-z-modal)]" role="presentation">
+        <OverlayPortal>
+        <div ref={setOverlayNode} className="fixed inset-0 z-[var(--lb-z-modal)]" role="presentation">
             <button
                 type="button"
                 tabIndex={-1}
@@ -137,6 +155,7 @@ export function Drawer({ open, title, description, children, onClose, side = 'ri
                 )}
             </section>
         </div>
+        </OverlayPortal>
     );
 }
 
@@ -151,24 +170,22 @@ export interface PopoverProps {
     className?: string;
 }
 
-const popoverPlacementStyles: Record<NonNullable<PopoverProps['placement']>, string> = {
-    'bottom-start': 'left-0 top-[calc(100%+var(--lb-space-2))]',
-    'bottom-end': 'right-0 top-[calc(100%+var(--lb-space-2))]',
-    'top-start': 'bottom-[calc(100%+var(--lb-space-2))] left-0',
-    'top-end': 'bottom-[calc(100%+var(--lb-space-2))] right-0',
-};
+// Popover/Dropdown panels are portaled to <body> and positioned via
+// useAnchoredPosition so they cannot be clipped by overflow/transform ancestors.
 
 export function Popover({ trigger, open, defaultOpen = false, onOpenChange, children, placement = 'bottom-start', ariaLabel = 'Popover', className = '' }: PopoverProps) {
     const popoverId = useId();
     const wrapperRef = useRef<HTMLSpanElement>(null);
+    const floatingRef = useRef<HTMLDivElement>(null);
     const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
     const actualOpen = open ?? internalOpen;
     const setOpen = (nextOpen: boolean) => {
         setInternalOpen(nextOpen);
         onOpenChange?.(nextOpen);
     };
+    const position = useAnchoredPosition(wrapperRef, { active: actualOpen, placement });
 
-    useDismiss(wrapperRef, { active: actualOpen, onDismiss: () => setOpen(false) });
+    useDismiss(wrapperRef, { active: actualOpen, onDismiss: () => setOpen(false), secondaryRef: floatingRef });
 
     return (
         <span ref={wrapperRef} className="relative inline-flex">
@@ -182,18 +199,21 @@ export function Popover({ trigger, open, defaultOpen = false, onOpenChange, chil
                 },
             })}
             {actualOpen && (
-                <div
-                    id={popoverId}
-                    role="dialog"
-                    aria-label={ariaLabel}
-                    className={cx(
-                        'absolute z-[var(--lb-z-dropdown)] w-[min(320px,calc(100vw-var(--lb-space-6)))] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] text-[color:var(--lb-color-text)] shadow-[var(--lb-shadow-lg)]',
-                        popoverPlacementStyles[placement],
-                        className,
-                    )}
-                >
-                    {children}
-                </div>
+                <OverlayPortal>
+                    <div
+                        ref={floatingRef}
+                        id={popoverId}
+                        role="dialog"
+                        aria-label={ariaLabel}
+                        style={position}
+                        className={cx(
+                            'z-[var(--lb-z-dropdown)] w-[min(320px,calc(100vw-var(--lb-space-6)))] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] text-[color:var(--lb-color-text)] shadow-[var(--lb-shadow-lg)]',
+                            className,
+                        )}
+                    >
+                        {children}
+                    </div>
+                </OverlayPortal>
             )}
         </span>
     );
@@ -223,6 +243,7 @@ export interface DropdownProps {
 export function Dropdown({ trigger, items, open, defaultOpen = false, onOpenChange, align = 'start', ariaLabel = 'Menu', className = '' }: DropdownProps) {
     const menuId = useId();
     const wrapperRef = useRef<HTMLSpanElement>(null);
+    const floatingRef = useRef<HTMLDivElement>(null);
     const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
     const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
     const actualOpen = open ?? internalOpen;
@@ -232,7 +253,9 @@ export function Dropdown({ trigger, items, open, defaultOpen = false, onOpenChan
     };
     const enabledItems = items.map((item, index) => ({ item, index })).filter(({ item }) => !item.disabled);
 
-    useDismiss(wrapperRef, { active: actualOpen, onDismiss: () => setOpen(false) });
+    const position = useAnchoredPosition(wrapperRef, { active: actualOpen, placement: align === 'end' ? 'bottom-end' : 'bottom-start' });
+
+    useDismiss(wrapperRef, { active: actualOpen, onDismiss: () => setOpen(false), secondaryRef: floatingRef });
 
     const focusItem = (index: number) => {
         itemRefs.current[index]?.focus();
@@ -275,13 +298,15 @@ export function Dropdown({ trigger, items, open, defaultOpen = false, onOpenChan
                 },
             })}
             {actualOpen && (
+                <OverlayPortal>
                 <div
+                    ref={floatingRef}
                     id={menuId}
                     role="menu"
                     aria-label={ariaLabel}
+                    style={position}
                     className={cx(
-                        'absolute top-[calc(100%+var(--lb-space-2))] z-[var(--lb-z-dropdown)] min-w-[220px] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-1)] text-[color:var(--lb-color-text)] shadow-[var(--lb-shadow-lg)]',
-                        align === 'end' ? 'right-0' : 'left-0',
+                        'z-[var(--lb-z-dropdown)] min-w-[220px] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-1)] text-[color:var(--lb-color-text)] shadow-[var(--lb-shadow-lg)]',
                         className,
                     )}
                 >
@@ -339,6 +364,7 @@ export function Dropdown({ trigger, items, open, defaultOpen = false, onOpenChan
                         </button>
                     ))}
                 </div>
+                </OverlayPortal>
             )}
         </span>
     );
@@ -361,14 +387,21 @@ export function Modal({ open, title, description, children, onClose, footer, cla
     const descriptionId = useId();
     const overlayRef = useRef<HTMLDivElement>(null);
     const dialogRef = useRef<HTMLElement>(null);
+    const [overlayElement, setOverlayElement] = useState<HTMLDivElement | null>(null);
+    const setOverlayNode = React.useCallback((node: HTMLDivElement | null) => {
+        overlayRef.current = node;
+        setOverlayElement(node);
+    }, []);
 
-    useFocusTrap(overlayRef, { active: open });
+    useFocusTrap(overlayRef, { active: open && overlayElement !== null });
     useDismiss(dialogRef, { active: open, onDismiss: onClose });
+    useScrollLock(open);
 
     if (!open) return null;
 
     return (
-        <div ref={overlayRef} className="fixed inset-0 z-[var(--lb-z-modal)] flex items-stretch justify-stretch p-[var(--lb-space-0)] sm:items-center sm:justify-center sm:p-[var(--lb-space-4)]" role="presentation">
+        <OverlayPortal>
+        <div ref={setOverlayNode} className="fixed inset-0 z-[var(--lb-z-modal)] flex items-stretch justify-stretch p-[var(--lb-space-0)] sm:items-center sm:justify-center sm:p-[var(--lb-space-4)]" role="presentation">
             <div
                 className="absolute inset-0 bg-[var(--lb-color-overlay)]"
                 onClick={onClose}
@@ -413,6 +446,7 @@ export function Modal({ open, title, description, children, onClose, footer, cla
                 )}
             </section>
         </div>
+        </OverlayPortal>
     );
 }
 

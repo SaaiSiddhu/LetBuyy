@@ -3,7 +3,7 @@ import { Footer } from '@/components/Footer';
 import { InstalledAppsGrid } from '@/components/InstalledAppsGrid';
 import { LetbuyyApiError } from '@letbuyy/api-client';
 import { createAppMarketplaceApiClient } from '@/lib/api/client';
-import { Package } from '@letbuyy/ui';
+import { KeyRound, Package } from '@letbuyy/ui';
 import Link from 'next/link';
 
 export const metadata = {
@@ -29,14 +29,16 @@ export default async function MyAppsPage() {
             <Header />
             <main className="appstore-main">
                 <section className="appstore-section">
-                    <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 8 }}>My Apps</h1>
-                    <p style={{ fontSize: 14, color: 'var(--text-tertiary)', marginBottom: 28 }}>
-                        Manage the apps installed on your store.
-                    </p>
+                    <div className="marketplace-page-header">
+                        <h1 className="marketplace-page-title">My Apps</h1>
+                        <p className="marketplace-page-subtitle">Manage the apps installed on your store.</p>
+                    </div>
 
                     {!isAuthenticated ? (
                         <div className="empty-state">
-                            <div className="empty-state-icon">🔑</div>
+                            <div className="empty-state-icon">
+                                <KeyRound size={32} aria-hidden="true" />
+                            </div>
                             <h3>Sign in required</h3>
                             <p>Please sign in to view your installed apps.</p>
                         </div>

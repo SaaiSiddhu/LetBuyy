@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { MaterialIcon, Search } from '@letbuyy/ui'
+import { Button, Input, MaterialIcon, Search } from '@letbuyy/ui'
 import { getMerchantCommandItems, normalizeSiteType, type MerchantCommandItem } from './merchantNavigation'
 
 interface CommandPaletteProps {
@@ -108,7 +108,7 @@ export default function CommandPalette({ store, storeName, siteType, onClose }: 
                 <div className="admin-cmd-header">
                     <div className="admin-cmd-input-wrapper">
                         <MaterialIcon name="search" />
-                        <input
+                        <Input unstyled
                             ref={inputRef}
                             className="admin-cmd-input"
                             type="text"
@@ -124,17 +124,17 @@ export default function CommandPalette({ store, storeName, siteType, onClose }: 
                             }}
                             autoComplete="off"
                         />
-                        <button className="admin-cmd-filter" type="button" aria-label="Filter search">
+                        <Button unstyled className="admin-cmd-filter" type="button" aria-label="Filter search">
                             <MaterialIcon name="filter_list" />
-                        </button>
-                        <button className="admin-cmd-close-mobile" type="button" onClick={onClose} aria-label="Close search">
+                        </Button>
+                        <Button unstyled className="admin-cmd-close-mobile" type="button" onClick={onClose} aria-label="Close search">
                             <MaterialIcon name="close" />
-                        </button>
+                        </Button>
                     </div>
 
                     <div className="admin-cmd-chips" aria-label="Search categories">
                         {searchChips.map((chip) => (
-                            <button
+                            <Button unstyled
                                 key={chip}
                                 type="button"
                                 className="admin-cmd-chip"
@@ -145,7 +145,7 @@ export default function CommandPalette({ store, storeName, siteType, onClose }: 
                                 }}
                             >
                                 {chip}
-                            </button>
+                            </Button>
                         ))}
                     </div>
                 </div>

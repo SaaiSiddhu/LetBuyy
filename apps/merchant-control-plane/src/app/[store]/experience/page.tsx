@@ -2,16 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button, Input,
     Badge,
     Banner,
     Briefcase,
-    Button,
     Calendar,
     Card,
     ConfirmDialog,
     EmptyState,
-    Input,
     MapPin,
     Page,
     PageHeader,
@@ -368,7 +366,7 @@ export default function ExperiencePage() {
                                 onChange={(event) => setFormData((current) => ({ ...current, location: event.target.value }))}
                             />
                             <label className="flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] self-end rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                                <input
+                                <Input unstyled
                                     type="checkbox"
                                     className="h-[var(--lb-space-4)] w-[var(--lb-space-4)] accent-[var(--lb-color-primary)]"
                                     checked={formData.is_current}

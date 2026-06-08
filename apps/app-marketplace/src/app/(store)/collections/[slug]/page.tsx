@@ -3,30 +3,10 @@ import { Footer } from '@/components/Footer';
 import { AppCard } from '@/components/AppCard';
 import { AppService } from '@/lib/app-service';
 import { MarketplaceUnavailable } from '@/components/MarketplaceUnavailable';
-import { Flame, MapPin, Star, type LucideIcon } from '@letbuyy/ui';
-import Link from 'next/link';
+import { MarketplaceBreadcrumbs } from '@/components/MarketplaceBreadcrumbs';
+import { MarketplaceCollectionSections } from '@/components/MarketplaceCollectionSections';
+import { LayoutGrid } from '@letbuyy/ui';
 import { notFound } from 'next/navigation';
-
-const COLLECTIONS: Record<string, { name: string; description: string; icon: LucideIcon; sort?: 'popular' | 'rating' | 'recent' }> = {
-    'staff-picks': {
-        name: 'Staff Picks',
-        description: 'Hand-picked by the LetBuyy team for quality and reliability.',
-        icon: Star,
-        sort: 'rating',
-    },
-    'trending': {
-        name: 'Trending This Week',
-        description: 'The most installed and talked-about apps right now.',
-        icon: Flame,
-        sort: 'popular',
-    },
-    'made-in-india': {
-        name: 'Made in India',
-        description: 'Apps built by Indian developers, optimized for Indian merchants.',
-        icon: MapPin,
-        sort: 'recent',
-    },
-};
 
 interface CollectionPageProps {
     params: Promise<{ slug: string }>;
@@ -34,53 +14,61 @@ interface CollectionPageProps {
 
 export async function generateMetadata({ params }: CollectionPageProps) {
     const { slug } = await params;
-    const collection = COLLECTIONS[slug];
+    const collection = await AppService.getCollection(slug);
     if (!collection) return { title: 'Collection Not Found' };
     return {
-        title: `${collection.name} — LetBuyy App Store`,
-        description: collection.description,
+        title: `${collection.name} - LetBuyy App Store`,
+        description: collection.description || `Apps in the ${collection.name} collection.`,
     };
 }
 
 export default async function CollectionPage({ params }: CollectionPageProps) {
     const { slug } = await params;
-    const collection = COLLECTIONS[slug];
+    const collection = await AppService.getCollection(slug);
     if (!collection) notFound();
-    const CollectionIcon = collection.icon;
-
-    const listResult = await AppService.listApps({
-        sort: collection.sort || 'popular',
-        limit: 12,
-    });
-    const unavailable = !listResult.ok;
-    const displayApps = listResult.ok ? listResult.value.apps : [];
+    const apps = collection.apps || [];
 
     return (
         <>
             <Header />
             <main className="appstore-main">
                 <section className="appstore-section">
-                    <div style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 16 }}>
-                        <Link href="/" style={{ color: 'var(--text-hint)', textDecoration: 'none' }}>Home</Link>
-                        {' › '}
-                        <span style={{ color: 'var(--text-primary)' }}>{collection.name}</span>
-                    </div>
+                    <MarketplaceBreadcrumbs
+                        items={[
+                            { label: 'Home', href: '/' },
+                            { label: 'Collections', href: '/collections' },
+                            { label: collection.name },
+                        ]}
+                    />
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                        <CollectionIcon size={32} aria-hidden="true" />
-                        <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)' }}>
-                            {collection.name}
-                        </h1>
+                    <div className="marketplace-title-row">
+                        <LayoutGrid size={32} aria-hidden="true" />
+                        <h1>{collection.name}</h1>
                     </div>
-                    <p style={{ fontSize: 14, color: 'var(--text-tertiary)', marginBottom: 28 }}>
-                        {collection.description}
+                    <p className="marketplace-page-subtitle marketplace-section-intro">
+                        {collection.description || 'Curated marketplace collection.'}
                     </p>
+                    {collection.disclosure && (
+                        <div className="marketplace-banner marketplace-banner--info">
+                            <strong>Curation note</strong>
+                            <span>{collection.disclosure}</span>
+                        </div>
+                    )}
 
-                    {unavailable ? (
-                        <MarketplaceUnavailable />
+                    <MarketplaceCollectionSections
+                        sections={collection.sections}
+                        emptyTitle="Collection body not published yet"
+                        emptyBody="The collection body type is available, but approved editorial sections are not published in this environment."
+                    />
+
+                    {apps.length === 0 ? (
+                        <MarketplaceUnavailable
+                            title="No apps in this collection yet"
+                            body="This collection is published, but it does not currently contain active app listings."
+                        />
                     ) : (
                         <div className="app-card-grid">
-                            {displayApps.map((app) => (
+                            {apps.map((app) => (
                                 <AppCard key={app.id} app={app} />
                             ))}
                         </div>

@@ -5,8 +5,9 @@ export const dynamic = 'force-dynamic'
 import { useState, useEffect, useCallback } from 'react'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
+import { BrandLogo } from '@/components/BrandLogo'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
-import { Badge, Banner, Button, DescriptionList, Input, ProgressBar } from '@letbuyy/ui'
+import { Badge, Banner, Button, DescriptionList, Input } from '@letbuyy/ui'
 
 /* ——————————————————————————————————————
    Types
@@ -42,6 +43,11 @@ const translations: Record<Lang, Record<string, string>> = {
         stepType: 'Type',
         stepDetails: 'Details',
         stepReview: 'Review',
+        availableNow: 'Available now',
+        comingSoon: 'Coming soon',
+        lockedType: 'This format is locked for launch.',
+        onlineStoreOnly: 'Online Store is available today. Landing pages and blogs are coming soon.',
+        storeIncludes: 'Products, checkout, orders, themes',
         smartDefaults: 'India commerce defaults',
         smartDefaultsDesc: 'We will start your site with INR currency, GST-ready tax settings, and COD-friendly launch guidance.',
         currencyDefault: 'INR currency',
@@ -122,6 +128,11 @@ const translations: Record<Lang, Record<string, string>> = {
         stepType: 'प्रकार',
         stepDetails: 'विवरण',
         stepReview: 'समीक्षा',
+        availableNow: 'अभी उपलब्ध',
+        comingSoon: 'जल्द आ रहा है',
+        lockedType: 'यह फॉर्मेट लॉन्च के लिए लॉक है।',
+        onlineStoreOnly: 'आज Online Store उपलब्ध है। Landing pages और blogs जल्द आ रहे हैं।',
+        storeIncludes: 'Products, checkout, orders, themes',
         smartDefaults: 'भारत कॉमर्स डिफॉल्ट',
         smartDefaultsDesc: 'हम INR मुद्रा, GST-ready टैक्स सेटिंग्स और COD-friendly लॉन्च मार्गदर्शन से शुरुआत करेंगे।',
         currencyDefault: 'INR मुद्रा',
@@ -198,6 +209,11 @@ const translations: Record<Lang, Record<string, string>> = {
         stepType: 'வகை',
         stepDetails: 'விவரம்',
         stepReview: 'சரிபார்',
+        availableNow: 'இப்போது கிடைக்கிறது',
+        comingSoon: 'விரைவில்',
+        lockedType: 'இந்த வடிவம் வெளியீட்டிற்கு பூட்டப்பட்டுள்ளது.',
+        onlineStoreOnly: 'Online Store இன்று கிடைக்கிறது. Landing pages மற்றும் blogs விரைவில்.',
+        storeIncludes: 'Products, checkout, orders, themes',
         smartDefaults: 'இந்தியா வர்த்தக இயல்புகள்',
         smartDefaultsDesc: 'INR நாணயம், GST-ready வரி அமைப்புகள், COD-friendly வெளியீட்டு வழிகாட்டுதலுடன் தொடங்குவோம்.',
         currencyDefault: 'INR நாணயம்',
@@ -271,15 +287,25 @@ const translations: Record<Lang, Record<string, string>> = {
    Constants
    —————————————————————————————————————— */
 
-const SITE_TYPES: { id: SiteType; nameKey: string; icon: AuthIconName; descKey: string }[] = [
-    { id: 'store', nameKey: 'store', icon: 'shopping_cart', descKey: 'storeDesc' },
-    { id: 'landing', nameKey: 'landing', icon: 'rocket_launch', descKey: 'landingDesc' },
-    { id: 'blog', nameKey: 'blog', icon: 'edit_note', descKey: 'blogDesc' },
+type SiteTypeAvailability = 'available' | 'coming-soon' | 'locked'
+
+type SiteTypeOption = {
+    id: SiteType
+    nameKey: string
+    icon: AuthIconName
+    descKey: string
+    availability: SiteTypeAvailability
+}
+
+const SITE_TYPES: SiteTypeOption[] = [
+    { id: 'store', nameKey: 'store', icon: 'shopping_cart', descKey: 'storeDesc', availability: 'available' },
+    { id: 'landing', nameKey: 'landing', icon: 'rocket_launch', descKey: 'landingDesc', availability: 'coming-soon' },
+    { id: 'blog', nameKey: 'blog', icon: 'edit_note', descKey: 'blogDesc', availability: 'coming-soon' },
 ]
 
-const LEGACY_SITE_TYPES: { id: SiteType; nameKey: string; icon: AuthIconName; descKey: string }[] = [
-    { id: 'portfolio', nameKey: 'portfolio', icon: 'work', descKey: 'portfolioDesc' },
-    { id: 'resume', nameKey: 'resume', icon: 'article', descKey: 'resumeDesc' },
+const LEGACY_SITE_TYPES: SiteTypeOption[] = [
+    { id: 'portfolio', nameKey: 'portfolio', icon: 'work', descKey: 'portfolioDesc', availability: 'locked' },
+    { id: 'resume', nameKey: 'resume', icon: 'article', descKey: 'resumeDesc', availability: 'locked' },
 ]
 
 const ACQUISITION_SITE_TYPES =
@@ -298,6 +324,14 @@ const TEMPLATES: { id: TemplateId; nameKey: string; descKey: string; icon: AuthI
 
 const TOTAL_STEPS = 3
 const SMART_DEFAULT_KEYS = ['currencyDefault', 'gstDefault', 'codDefault'] as const
+
+function isSiteTypeAvailable(type: SiteTypeOption) {
+    return type.availability === 'available'
+}
+
+function siteTypeStatusLabel(type: SiteTypeOption, t: Record<string, string>) {
+    return type.availability === 'available' ? t.availableNow : t.comingSoon
+}
 
 /* ——————————————————————————————————————
    Component
@@ -339,7 +373,10 @@ export default function OnboardingPage() {
     /* ——— Initialize theme & language from localStorage ——— */
     useEffect(() => {
         const savedTheme = localStorage.getItem('letbuyy_theme')
-        setIsDark(savedTheme === 'dark')
+        const dark = savedTheme === 'dark'
+        setIsDark(dark)
+        document.documentElement.classList.toggle('dark', dark)
+        document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
 
         const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
         setLang(savedLang)
@@ -506,9 +543,9 @@ export default function OnboardingPage() {
     if (authLoading) {
         return (
             <div className="auth-container">
-                <div className="auth-card">
+                <div className="auth-card onboard-card">
                     <div className="auth-logo">
-                        <img src="/icons/app_icon.png" alt="LetBuyy" width={48} height={48} />
+                        <BrandLogo />
                     </div>
                     <div className="onboard-spinner" />
                     <p className="auth-subtitle">Loading...</p>
@@ -520,15 +557,15 @@ export default function OnboardingPage() {
     if (!user) {
         return (
             <div className="auth-container">
-                <div className="auth-card">
+                <div className="auth-card onboard-card">
                     <div className="auth-logo">
-                        <img src="/icons/app_icon.png" alt="LetBuyy" width={48} height={48} />
+                        <BrandLogo />
                     </div>
                     <h1 className="auth-title">Sign in to continue</h1>
                     <p className="auth-subtitle">Your session expired. Log in again to create your site.</p>
-                    <button className="auth-btn-primary" onClick={() => { window.location.href = '/lookup' }}>
+                    <Button unstyled className="auth-btn-primary" onClick={() => { window.location.href = '/lookup' }}>
                         Log in
-                    </button>
+                    </Button>
                 </div>
             </div>
         )
@@ -554,9 +591,9 @@ export default function OnboardingPage() {
                     onLogout={handleLogout}
                 />
 
-                <div className="auth-card">
+                <div className="auth-card onboard-card">
                     <div className="auth-logo">
-                        <img src="/icons/app_icon.png" alt="LetBuyy" width={48} height={48} />
+                        <BrandLogo />
                     </div>
                     <div className="onboard-success">
                         <Badge label={t.successBadge} variant="success" />
@@ -605,28 +642,26 @@ export default function OnboardingPage() {
                 onLogout={handleLogout}
             />
 
-            <div className="auth-card">
+            <div className="auth-card onboard-card">
                 {/* Logo */}
                 <div className="auth-logo">
-                    <img src="/icons/app_icon.png" alt="LetBuyy" width={48} height={48} />
+                    <BrandLogo />
                 </div>
 
-                {/* Progress bar */}
-                <div className="mb-[var(--lb-space-5)] grid gap-[var(--lb-space-3)]">
-                    <div className="flex items-center justify-between gap-[var(--lb-space-3)]">
-                        <Badge label={t.guidedSetup} variant="info" />
-                        <span className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
-                            Step {Math.min(step, TOTAL_STEPS)} of {TOTAL_STEPS}
+                <div className="onboard-progress-card">
+                    <div className="onboard-progress-row">
+                        <span className="onboard-guided-pill">
+                            <AuthIcon name="info" size={15} />
+                            {t.guidedSetup}
                         </span>
+                        <span className="onboard-step-count">Step {Math.min(step, TOTAL_STEPS)} of {TOTAL_STEPS}</span>
                     </div>
-                    <ProgressBar
-                        value={Math.min(step, TOTAL_STEPS)}
-                        max={TOTAL_STEPS}
-                        label={step === 1 ? t.stepType : step === 2 ? t.stepDetails : t.stepReview}
-                    />
-                    <div className="grid grid-cols-3 gap-[var(--lb-space-2)] text-center text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
+                    <div className="onboard-progress-track" aria-label={step === 1 ? t.stepType : step === 2 ? t.stepDetails : t.stepReview}>
+                        <span className={`onboard-progress-fill step-${Math.min(step, TOTAL_STEPS)}`} />
+                    </div>
+                    <div className="onboard-progress-labels">
                         {[t.stepType, t.stepDetails, t.stepReview].map((label, index) => (
-                            <span key={label} className={index + 1 === Math.min(step, TOTAL_STEPS) ? 'text-[color:var(--lb-color-text)]' : undefined}>
+                            <span key={label} className={index + 1 === Math.min(step, TOTAL_STEPS) ? 'active' : undefined}>
                                 {label}
                             </span>
                         ))}
@@ -647,25 +682,51 @@ export default function OnboardingPage() {
                         <h1 className="auth-title">{t.whatBuild}</h1>
                         <p className="auth-subtitle">{t.chooseSite}</p>
 
-                        <div className="onboard-type-grid">
+                        <div className="onboard-bento-grid">
                             {ACQUISITION_SITE_TYPES.map((type) => (
-                                <button
+                                <Button unstyled
                                     key={type.id}
-                                    className={`onboard-type-card ${siteType === type.id ? 'selected' : ''}`}
+                                    type="button"
+                                    className={[
+                                        'onboard-bento-card',
+                                        type.id === 'store' ? 'primary' : 'compact',
+                                        siteType === type.id ? 'selected' : '',
+                                        !isSiteTypeAvailable(type) ? 'locked' : '',
+                                    ].filter(Boolean).join(' ')}
+                                    aria-disabled={!isSiteTypeAvailable(type)}
+                                    disabled={!isSiteTypeAvailable(type)}
                                     onClick={() => {
+                                        if (!isSiteTypeAvailable(type)) {
+                                            return
+                                        }
+
+                                        setError(null)
                                         setSiteType(type.id)
-                                        setGoal(type.id === 'store' ? 'sell' : type.id === 'landing' ? 'leads' : type.id === 'blog' ? 'blog' : 'showcase')
+                                        setGoal('sell')
                                         setTeamSize('solo')
-                                        setTemplate(type.id === 'store' ? 'modern' : 'blank')
+                                        setTemplate('modern')
                                         setStep(2)
                                     }}
                                 >
-                                    <span className="onboard-type-icon">
-                                        <AuthIcon name={type.icon} size={28} />
+                                    <span className="onboard-bento-topline">
+                                        <span className="onboard-type-icon">
+                                            <AuthIcon name={type.icon} size={type.id === 'store' ? 30 : 24} />
+                                        </span>
+                                        <span className={`onboard-type-status ${type.availability}`}>
+                                            {type.availability !== 'available' && <AuthIcon name="lock" size={13} />}
+                                            {siteTypeStatusLabel(type, t)}
+                                        </span>
                                     </span>
                                     <span className="onboard-type-name">{t[type.nameKey]}</span>
-                                    <span className="onboard-type-desc">{t[type.descKey]}</span>
-                                </button>
+                                    <span className="onboard-type-desc">
+                                        {isSiteTypeAvailable(type) ? t[type.descKey] : t.lockedType}
+                                    </span>
+                                    {type.id === 'store' && (
+                                        <span className="onboard-store-includes">
+                                            {t.storeIncludes}
+                                        </span>
+                                    )}
+                                </Button>
                             ))}
                         </div>
                     </>
@@ -711,7 +772,7 @@ export default function OnboardingPage() {
                                     : ''
                                     }`}
                             >
-                                <input
+                                <Input unstyled
                                     type="text"
                                     className="onboard-subdomain-input"
                                     placeholder={t.subdomainPlaceholder}
@@ -753,21 +814,21 @@ export default function OnboardingPage() {
 
                         {/* Buttons */}
                         <div className="onboard-btn-row">
-                            <button
+                            <Button unstyled
                                 className="auth-btn-secondary"
                                 onClick={() => setStep(1)}
                             >
                                 <AuthIcon name="arrow_back" size={18} style={{ marginRight: 4 }} />
                                 {t.back}
-                            </button>
-                            <button
+                            </Button>
+                            <Button unstyled
                                 className="auth-btn"
                                 onClick={() => validation?.valid && setStep(3)}
                                 disabled={!validation?.valid}
                             >
                                 {t.next}
                                 <AuthIcon name="arrow_forward" size={18} style={{ marginLeft: 4 }} />
-                            </button>
+                            </Button>
                         </div>
                     </>
                 )}
@@ -803,10 +864,10 @@ export default function OnboardingPage() {
                         />
 
                         <div className="onboard-btn-row">
-                            <button className="auth-btn-secondary" onClick={() => setStep(2)}>
+                            <Button unstyled className="auth-btn-secondary" onClick={() => setStep(2)}>
                                 <AuthIcon name="arrow_back" size={18} style={{ marginRight: 4 }} />
                                 {t.back}
-                            </button>
+                            </Button>
                             <Button
                                 type="button"
                                 loading={loading}
@@ -840,7 +901,7 @@ export default function OnboardingPage() {
                                     { id: 'leads', label: t.goalGenerate, icon: 'contact_page' },
                                     { id: 'blog', label: t.goalBlog, icon: 'edit_note' },
                                 ] as { id: string; label: string; icon: AuthIconName }[]).map((g) => (
-                                    <button
+                                    <Button unstyled
                                         key={g.id}
                                         className={`onboard-type-card ${goal === g.id ? 'selected' : ''}`}
                                         onClick={() => setGoal(g.id)}
@@ -848,7 +909,7 @@ export default function OnboardingPage() {
                                     >
                                         <AuthIcon name={g.icon} size={20} style={{ marginRight: 8 }} />
                                         <span style={{ fontSize: 13 }}>{g.label}</span>
-                                    </button>
+                                    </Button>
                                 ))}
                             </div>
                         </div>
@@ -863,27 +924,27 @@ export default function OnboardingPage() {
                                     { id: 'medium', label: t.teamMedium },
                                     { id: 'large', label: t.teamLarge },
                                 ].map((ts) => (
-                                    <button
+                                    <Button unstyled
                                         key={ts.id}
                                         className={`onboard-type-card ${teamSize === ts.id ? 'selected' : ''}`}
                                         onClick={() => setTeamSize(ts.id)}
                                         style={{ padding: '10px 16px', fontSize: 13 }}
                                     >
                                         {ts.label}
-                                    </button>
+                                    </Button>
                                 ))}
                             </div>
                         </div>
 
                         <div className="onboard-btn-row">
-                            <button className="auth-btn-secondary" onClick={() => setStep(3)}>
+                            <Button unstyled className="auth-btn-secondary" onClick={() => setStep(3)}>
                                 <AuthIcon name="arrow_back" size={18} style={{ marginRight: 4 }} />
                                 {t.back}
-                            </button>
-                            <button className="auth-btn" onClick={() => setStep(5)}>
+                            </Button>
+                            <Button unstyled className="auth-btn" onClick={() => setStep(5)}>
                                 {t.next}
                                 <AuthIcon name="arrow_forward" size={18} style={{ marginLeft: 4 }} />
-                            </button>
+                            </Button>
                         </div>
                     </>
                 )}
@@ -907,17 +968,17 @@ export default function OnboardingPage() {
                         </div>
 
                         <div className="onboard-btn-row">
-                            <button className="auth-btn-secondary" onClick={() => setStep(4)}>
+                            <Button unstyled className="auth-btn-secondary" onClick={() => setStep(4)}>
                                 <AuthIcon name="arrow_back" size={18} style={{ marginRight: 4 }} />
                                 {t.back}
-                            </button>
-                            <button className="auth-btn-secondary" onClick={() => setStep(6)}>
+                            </Button>
+                            <Button unstyled className="auth-btn-secondary" onClick={() => setStep(6)}>
                                 {t.aiSkip}
-                            </button>
-                            <button className="auth-btn" onClick={() => setStep(6)} disabled={!aiDescription.trim()}>
+                            </Button>
+                            <Button unstyled className="auth-btn" onClick={() => setStep(6)} disabled={!aiDescription.trim()}>
                                 {t.aiGenerate}
                                 <AuthIcon name="auto_awesome" size={18} style={{ marginLeft: 4 }} />
-                            </button>
+                            </Button>
                         </div>
                     </>
                 )}
@@ -953,18 +1014,18 @@ export default function OnboardingPage() {
                         </div>
 
                         <div className="onboard-btn-row">
-                            <button className="auth-btn-secondary" onClick={() => setStep(5)}>
+                            <Button unstyled className="auth-btn-secondary" onClick={() => setStep(5)}>
                                 <AuthIcon name="arrow_back" size={18} style={{ marginRight: 4 }} />
                                 {t.back}
-                            </button>
-                            <button
+                            </Button>
+                            <Button unstyled
                                 className="auth-btn"
                                 onClick={handleSubmit}
                                 disabled={loading}
                             >
                                 {loading ? (
                                     <>
-                                        <span className="onboard-spinner" style={{ borderTopColor: '#fff' }} />
+                                        <span className="onboard-spinner" style={{ borderTopColor: 'white' }} />
                                         {t.creating}
                                     </>
                                 ) : (
@@ -973,7 +1034,7 @@ export default function OnboardingPage() {
                                         <AuthIcon name="rocket_launch" size={18} style={{ marginLeft: 4 }} />
                                     </>
                                 )}
-                            </button>
+                            </Button>
                         </div>
                     </>
                 )}
@@ -1000,26 +1061,26 @@ interface TopBarProps {
 function TopBar({ lang, isDark, user, showUserMenu, onCycleLang, onToggleTheme, onToggleUserMenu, onLogout }: TopBarProps) {
     return (
         <div className="auth-top-bar">
-            <button onClick={onCycleLang} className="auth-lang-btn">
+            <Button unstyled onClick={onCycleLang} className="auth-lang-btn">
                 {lang.toUpperCase()}
-            </button>
-            <button onClick={onToggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
+            </Button>
+            <Button unstyled onClick={onToggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
                 <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
-            </button>
+            </Button>
             <div className="auth-user-container">
-                <button onClick={onToggleUserMenu} className="auth-user-btn" aria-label="User menu">
+                <Button unstyled onClick={onToggleUserMenu} className="auth-user-btn" aria-label="User menu">
                     <AuthIcon name="account_circle" size={20} />
-                </button>
+                </Button>
                 {showUserMenu && (
                     <div className="auth-user-dropdown">
                         <div className="auth-user-dropdown-email">
                             <AuthIcon name="mail" size={20} />
                             <span>{user.email}</span>
                         </div>
-                        <button className="auth-user-dropdown-logout" onClick={onLogout}>
+                        <Button unstyled className="auth-user-dropdown-logout" onClick={onLogout}>
                             <AuthIcon name="logout" size={18} />
                             Log out
-                        </button>
+                        </Button>
                     </div>
                 )}
             </div>

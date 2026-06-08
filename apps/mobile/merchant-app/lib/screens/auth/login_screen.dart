@@ -18,7 +18,9 @@ import '../../config/app_config.dart';
 import '../../app/routes.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.sessionNotice});
+
+  final String? sessionNotice;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -41,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen>
   bool _passwordFocused = false;
   bool _confirmPasswordFocused = false;
   String? _errorMessage;
+  String? _sessionNotice;
 
   /// Whether we're in sign-up mode (show confirm password).
   bool _isSignUpMode = false;
@@ -67,6 +70,7 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
     _loadSavedEmail();
+    _sessionNotice = widget.sessionNotice;
     _initAnimations();
     _listenAuthState();
   }
@@ -105,6 +109,14 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(covariant LoginScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.sessionNotice != widget.sessionNotice) {
+      _sessionNotice = widget.sessionNotice;
+    }
+  }
+
   Future<void> _loadSavedEmail() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -126,6 +138,7 @@ class _LoginScreenState extends State<LoginScreen>
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _sessionNotice = null;
     });
 
     try {
@@ -199,9 +212,8 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Future<String?> _resolveTurnstileToken() async {
-    final configured = AppConfig.turnstileToken.trim();
-    if (configured.isNotEmpty && !configured.startsWith('SKIP_NEEDS_HUMAN_')) {
-      return configured;
+    if (AppConfig.hasTurnstileToken) {
+      return AppConfig.turnstileToken.trim();
     }
     return Navigator.pushNamed<String>(context, AppRoutes.turnstileChallenge);
   }
@@ -348,29 +360,17 @@ class _LoginScreenState extends State<LoginScreen>
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
       elevation: 6,
-      itemBuilder: (context) => [
-        _buildLanguageItem(
-          AppLanguage.english,
-          'English',
-          '🇬🇧',
-          langService,
-          isDark,
-        ),
-        _buildLanguageItem(
-          AppLanguage.tamil,
-          'தமிழ்',
-          '🇮🇳',
-          langService,
-          isDark,
-        ),
-        _buildLanguageItem(
-          AppLanguage.hindi,
-          'हिंदी',
-          '🇮🇳',
-          langService,
-          isDark,
-        ),
-      ],
+      itemBuilder: (context) => AppLanguage.values
+          .map(
+            (language) => _buildLanguageItem(
+              language,
+              langService.languageNameFor(language),
+              langService.languageFlagFor(language),
+              langService,
+              isDark,
+            ),
+          )
+          .toList(growable: false),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
@@ -557,6 +557,7 @@ class _LoginScreenState extends State<LoginScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (_sessionNotice != null) _buildSessionNoticeBanner(),
             if (_errorMessage != null) _buildErrorBanner(),
             _buildInputField(
               controller: _emailController,
@@ -668,6 +669,45 @@ class _LoginScreenState extends State<LoginScreen>
                 color: Color(0xFFEF4444),
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSessionNoticeBanner() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 24),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.lock_clock_rounded,
+              color: AppColors.primary,
+              size: 16,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              _sessionNotice!,
+              style: TextStyle(
+                color: AppColors.primary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),

@@ -12,7 +12,7 @@ import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver'
 import { StorefrontSectionGroupRenderer } from '@/lib/theme-engine/composition-engine';
 import type { SectionRenderData } from '@/lib/theme-engine/types';
 import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
-import { buildStoreMetadata } from '@/lib/seo';
+import { buildStoreMetadata, isStorefrontIndexable } from '@/lib/seo';
 
 export const revalidate = 60;
 
@@ -45,6 +45,7 @@ export async function generateMetadata({ params }: { params: Promise<{ subdomain
         return {
             title: `${store.name} — Coming Soon`,
             description: `${store.name} is launching soon on LetBuyy!`,
+            robots: { index: false, follow: false },
         };
     }
 
@@ -53,6 +54,7 @@ export async function generateMetadata({ params }: { params: Promise<{ subdomain
             title: store.seoTitle || store.name,
             description: store.seoDescription || store.tagline || `Shop at ${store.name}`,
             path: '/',
+            noIndex: !isStorefrontIndexable(store),
         }),
         icons: {
             icon: store.logoUrl || '/favicon.ico',
@@ -114,9 +116,9 @@ export default async function StoreLayout({ children, params }: Props) {
     const isDark = Boolean(ts.isDark);
     const fontCss = FONT_MAP[ts.fontFamily] || FONT_MAP['Inter'];
     const headingFontCss = FONT_MAP[ts.headingFontFamily] || fontCss;
-    const backgroundColor = ts.backgroundColor || (isDark ? ts.primaryColor : '#FFFFFF');
-    const textColor = ts.textColor || (isDark ? '#FFFFFF' : '#1A1A2E');
-    const surfaceColor = ts.surfaceColor || (isDark ? '#1e293b' : '#f9fafb');
+    const backgroundColor = ts.backgroundColor || (isDark ? ts.primaryColor : 'rgb(255 255 255)');
+    const textColor = ts.textColor || (isDark ? 'rgb(255 255 255)' : 'rgb(26 26 46)');
+    const surfaceColor = ts.surfaceColor || (isDark ? 'rgb(30 41 59)' : 'rgb(249 250 251)');
 
     return (
         <>
@@ -137,22 +139,22 @@ export default async function StoreLayout({ children, params }: Props) {
           --text-secondary: ${isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)'};
           --text-muted: ${isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)'};
           --text-hint: ${isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'};
-          --text-inverse: ${isDark ? '#000000' : '#FFFFFF'};
+          --text-inverse: ${isDark ? 'rgb(0 0 0)' : 'rgb(255 255 255)'};
           --border-color: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
           --surface: ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)'};
           --surface-hover: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'};
-          --card-bg: ${isDark ? surfaceColor : '#ffffff'};
+          --card-bg: ${isDark ? surfaceColor : 'rgb(255 255 255)'};
           --card-bg-secondary: ${isDark ? 'rgba(255,255,255,0.08)' : surfaceColor};
-          --card-text: ${isDark ? '#f8fafc' : '#111827'};
-          --card-text-muted: ${isDark ? '#94a3b8' : '#6b7280'};
-          --card-border: ${isDark ? 'rgba(255,255,255,0.1)' : '#e5e7eb'};
-          --header-bg-scrolled: ${isDark ? surfaceColor : '#ffffff'};
+          --card-text: ${isDark ? 'rgb(248 250 252)' : 'rgb(17 24 39)'};
+          --card-text-muted: ${isDark ? 'rgb(148 163 184)' : 'rgb(107 114 128)'};
+          --card-border: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgb(229 231 235)'};
+          --header-bg-scrolled: ${isDark ? surfaceColor : 'rgb(255 255 255)'};
           --header-shadow: ${isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.05)'};
-          --footer-bg: ${isDark ? backgroundColor : '#0f172a'};
-          --footer-text: ${isDark ? textColor : '#ffffff'};
+          --footer-bg: ${isDark ? backgroundColor : 'rgb(15 23 42)'};
+          --footer-text: ${isDark ? textColor : 'rgb(255 255 255)'};
           --footer-text-muted: ${isDark ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.6)'};
-          --input-bg: ${isDark ? 'rgba(255,255,255,0.05)' : '#f9fafb'};
-          --input-border: ${isDark ? 'rgba(255,255,255,0.1)' : '#e5e7eb'};
+          --input-bg: ${isDark ? 'rgba(255,255,255,0.05)' : 'rgb(249 250 251)'};
+          --input-border: ${isDark ? 'rgba(255,255,255,0.1)' : 'rgb(229 231 235)'};
           --input-text: ${textColor};
           --input-placeholder: ${isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)'};
         }
@@ -196,7 +198,7 @@ export default async function StoreLayout({ children, params }: Props) {
         input, textarea, select {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #FFFFFF;
+            color: rgb(255 255 255);
         }
         input::placeholder, textarea::placeholder {
             color: rgba(255, 255, 255, 0.5);

@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
 
 import '../../services/review_service.dart';
-import '../../services/skip_needs_backend_exception.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
 
@@ -510,8 +509,6 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
         ReviewReplyInput(reviewId: review.id, message: message),
       );
       _showSnack('Reply sent.');
-    } on SkipNeedsBackendException catch (error) {
-      _showSnack(error.toString());
     } catch (error) {
       _showSnack('Could not send reply: $error');
     }

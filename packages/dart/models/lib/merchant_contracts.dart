@@ -3,6 +3,7 @@ library;
 
 export 'shared_contracts.dart';
 export 'src/merchant_app/order_model.dart';
+export 'src/merchant_app/mobile_telemetry_model.dart';
 export 'src/merchant_app/store_auth_request_model.dart';
 export 'src/merchant_app/store_model.dart';
 export 'src/merchant_app/store_theme_model.dart';

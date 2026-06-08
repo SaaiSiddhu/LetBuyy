@@ -2,17 +2,15 @@
 
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
+import { Button, Input,
     Badge,
     Banner,
-    Button,
     Card,
     ClipboardList,
     ConfirmDialog,
     EmptyState,
     Globe,
     IndianRupee,
-    Input,
     Plus,
     Section,
     ShieldCheck,
@@ -482,7 +480,7 @@ export default function TaxesSettingsPage() {
                         description="India is the default tax region for this store. Choose whether product prices already include taxes."
                     >
                         <label className="flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]">
-                            <input
+                            <Input unstyled
                                 type="checkbox"
                                 checked={taxData.tax_inclusive}
                                 onChange={(event) => handleTaxInclusiveChange(event.target.checked)}
@@ -547,7 +545,7 @@ export default function TaxesSettingsPage() {
                             </div>
                             <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
                                 <label className="flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)]">
-                                    <input
+                                    <Input unstyled
                                         type="checkbox"
                                         checked={formCompound}
                                         onChange={(event) => setFormCompound(event.target.checked)}
@@ -563,7 +561,7 @@ export default function TaxesSettingsPage() {
                                     </span>
                                 </label>
                                 <label className="flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)]">
-                                    <input
+                                    <Input unstyled
                                         type="checkbox"
                                         checked={formShipping}
                                         onChange={(event) => setFormShipping(event.target.checked)}
@@ -579,7 +577,7 @@ export default function TaxesSettingsPage() {
                                     </span>
                                 </label>
                                 <label className="flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)]">
-                                    <input
+                                    <Input unstyled
                                         type="checkbox"
                                         checked={formActive}
                                         onChange={(event) => setFormActive(event.target.checked)}

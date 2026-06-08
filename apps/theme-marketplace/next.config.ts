@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { createSecurityHeaders } from "../../config/security/next-security-headers";
 
 const nextConfig: NextConfig = {
     output: 'standalone',
@@ -40,6 +41,10 @@ const nextConfig: NextConfig = {
     async headers() {
         const isDev = process.env.NODE_ENV === 'development';
         return [
+            {
+                source: '/:path*',
+                headers: createSecurityHeaders(),
+            },
             {
                 source: '/_next/static/:path*',
                 headers: [

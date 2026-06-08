@@ -19,6 +19,9 @@ export default function TeamDashboardLayout({
                     <TeamNavLink href="/crm" label="CRM" icon="customers" />
                     <TeamNavLink href="/tickets" label="Tickets" icon="support" />
                     <TeamNavLink href="/merchant-health" label="Merchant Health" icon="store" />
+                    <TeamNavLink href="/risk" label="Risk Decisions" icon="shield_lock" />
+                    <TeamNavLink href="/trust-safety" label="Trust & Safety" icon="rate_review" />
+                    <TeamNavLink href="/developers" label="Developer 360" icon="deployed_code" />
                     <TeamNavLink href="/retention" label="Retention" icon="trending_up" />
                     <TeamNavLink href="/campaigns" label="Campaigns" icon="marketing" />
                     <TeamNavLink href="/communications" label="Communications" icon="chat" />

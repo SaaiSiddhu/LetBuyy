@@ -1,16 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import {
-    Palette, Menu, X, Search, Sun, Moon, ChevronRight,
-    LayoutDashboard, LayoutGrid, Tag, Sparkles, ArrowRight, Bell, Settings,
-    Download, Star, LogOut, User as UserIcon, CreditCard, Package,
-    BookOpen, MessageCircle, Flame, ChevronDown, Command,
+    Button, Palette, Search, Sun, Moon, ChevronRight,
+    LayoutDashboard, LayoutGrid, Tag, Sparkles, ArrowRight, Settings,
+    Download, Star, LogOut, Package,
+    BookOpen, Input, ChevronDown, Command,
 } from '@letbuyy/ui';
 import { useTheme } from '@/components/theme-provider';
 import { useAuth } from '@/hooks/useAuth';
-import { cn } from '@/lib/utils';
+import { cn, isCommandSearchShortcut } from '@/lib/utils';
 import { getAccountsUrl } from '@/lib/public-urls';
 
 /* ─── Constants ─── */
@@ -56,7 +57,7 @@ function NavLink({ href, label }: { href: string; label: string }) {
         >
             <span className="relative z-10">{label}</span>
             {/* Hover background glow */}
-            <div className="absolute inset-0 rounded-xl bg-white/[0.04] opacity-0 group-hover:opacity-100 transition-all duration-300" />
+            <div className="absolute inset-0 rounded-xl bg-[var(--lb-color-surface)]/[0.04] opacity-0 group-hover:opacity-100 transition-all duration-300" />
             {/* Animated underline */}
             <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 h-[2px] w-0 group-hover:w-3/4 bg-gradient-to-r from-transparent via-primary to-transparent transition-all duration-300 rounded-full" />
         </Link>
@@ -68,22 +69,22 @@ function NavLink({ href, label }: { href: string; label: string }) {
    ═══════════════════════════════════════════════ */
 function SearchTrigger({ onClick }: { onClick: () => void }) {
     return (
-        <button
+        <Button unstyled
             onClick={onClick}
             className={cn(
-                'flex items-center gap-2.5 px-3.5 py-2 text-sm rounded-xl',
+                'flex min-h-11 items-center gap-2.5 px-3.5 py-2 text-sm rounded-xl',
                 'text-text-muted hover:text-text-heading',
-                'bg-white/[0.04] hover:bg-white/[0.08]',
+                'bg-[var(--lb-color-surface)]/[0.04] hover:bg-[var(--lb-color-surface)]/[0.08]',
                 'border border-white/[0.06] hover:border-white/[0.12]',
                 'transition-all duration-300 group'
             )}
         >
             <Search className="w-4 h-4 group-hover:text-primary transition-colors duration-300" />
             <span className="hidden lg:inline text-text-subtle group-hover:text-text-muted transition-colors">Search</span>
-            <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] bg-white/[0.06] text-text-subtle rounded-md border border-white/[0.08] font-mono">
+            <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] bg-[var(--lb-color-surface)]/[0.06] text-text-subtle rounded-md border border-white/[0.08] font-mono">
                 <Command className="w-2.5 h-2.5" />K
             </kbd>
-        </button>
+        </Button>
     );
 }
 
@@ -95,12 +96,12 @@ function ThemeToggle() {
     const isDark = resolvedTheme === 'dark';
 
     return (
-        <button
+        <Button unstyled
             onClick={() => setTheme(isDark ? 'light' : 'dark')}
             className={cn(
-                'relative p-2.5 rounded-xl transition-all duration-300',
+                'relative min-h-11 min-w-11 p-2.5 rounded-xl transition-all duration-300',
                 'text-text-muted hover:text-amber-400',
-                'hover:bg-white/[0.06] active:scale-90',
+                'hover:bg-[var(--lb-color-surface)]/[0.06] active:scale-90',
                 'group'
             )}
             aria-label="Toggle theme"
@@ -114,7 +115,7 @@ function ThemeToggle() {
                     <Moon className="w-[18px] h-[18px] transition-transform duration-500 group-hover:-rotate-12" />
                 )}
             </div>
-        </button>
+        </Button>
     );
 }
 
@@ -138,8 +139,15 @@ function SearchModal({ onClose }: { onClose: () => void }) {
         { label: 'Browse All Themes', href: '/themes', icon: Sparkles },
         { label: 'View Pricing', href: '/pricing', icon: Tag },
         { label: 'Go to Dashboard', href: '/dashboard', icon: LayoutDashboard },
-        { label: 'Documentation', href: '#', icon: BookOpen },
+        { label: 'Documentation', href: '/docs', icon: BookOpen },
     ];
+
+    const submitSearch = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const trimmed = query.trim();
+        window.location.href = trimmed ? `/themes?q=${encodeURIComponent(trimmed)}` : '/themes';
+        onClose();
+    };
 
     return (
         <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[15vh]">
@@ -151,27 +159,29 @@ function SearchModal({ onClose }: { onClose: () => void }) {
 
             {/* Modal */}
             <div
-                className="relative w-full max-w-xl mx-4 rounded-2xl border border-white/10 shadow-2xl shadow-primary/10 overflow-hidden animate-in slide-in-from-top-4 fade-in duration-300"
-                style={{ backgroundColor: 'var(--color-bg-secondary)' }}
+                className="relative w-full max-w-xl mx-4 rounded-2xl border border-white/10 bg-[var(--color-bg-secondary)] shadow-2xl shadow-primary/10 overflow-hidden animate-in slide-in-from-top-4 fade-in duration-300"
             >
                 {/* Top glow accent */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
 
                 {/* Search Input */}
-                <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
+                <form onSubmit={submitSearch} className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
                     <Search className="w-5 h-5 text-primary flex-shrink-0" />
-                    <input
+                    <Input unstyled
                         ref={inputRef}
-                        type="text"
+                        type="search"
                         value={query}
                         onChange={e => setQuery(e.target.value)}
-                        placeholder="Search themes, categories, docs..."
+                        placeholder="Search themes and categories"
                         className="flex-1 bg-transparent text-base text-text-heading placeholder:text-text-subtle outline-none"
                     />
-                    <kbd className="px-2 py-1 text-xs bg-white/[0.06] text-text-muted rounded-lg border border-white/[0.08] font-mono">
+                    <Button unstyled type="submit" className="rounded-lg bg-[var(--lb-color-surface)]/[0.06] px-3 py-2 text-xs font-semibold text-text-heading hover:bg-[var(--lb-color-surface)]/[0.1]">
+                        Search
+                    </Button>
+                    <kbd className="px-2 py-1 text-xs bg-[var(--lb-color-surface)]/[0.06] text-text-muted rounded-lg border border-white/[0.08] font-mono">
                         ESC
                     </kbd>
-                </div>
+                </form>
 
                 {/* Quick Actions */}
                 <div className="p-3">
@@ -185,9 +195,9 @@ function SearchModal({ onClose }: { onClose: () => void }) {
                                 key={action.href}
                                 href={action.href}
                                 onClick={onClose}
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-text-body hover:text-text-heading hover:bg-white/[0.04] transition-all group"
+                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-text-body hover:text-text-heading hover:bg-[var(--lb-color-surface)]/[0.04] transition-all group"
                             >
-                                <div className="w-8 h-8 rounded-lg bg-white/[0.04] group-hover:bg-primary/10 flex items-center justify-center group-hover:text-primary transition-all duration-300">
+                                <div className="w-8 h-8 rounded-lg bg-[var(--lb-color-surface)]/[0.04] group-hover:bg-primary/10 flex items-center justify-center group-hover:text-primary transition-all duration-300">
                                     <Icon className="w-4 h-4" />
                                 </div>
                                 <span>{action.label}</span>
@@ -231,18 +241,21 @@ function UserMenu() {
 
     return (
         <div ref={ref} className="relative">
-            <button
+            <Button unstyled
                 onClick={() => setOpen(!open)}
                 className={cn(
-                    'flex items-center gap-2 p-1.5 pr-3 rounded-xl transition-all duration-200',
-                    'hover:bg-white/[0.06] active:scale-[0.97]',
-                    open && 'bg-white/[0.06]'
+                    'flex min-h-11 items-center gap-2 p-1.5 pr-3 rounded-xl transition-all duration-200',
+                    'hover:bg-[var(--lb-color-surface)]/[0.06] active:scale-[0.97]',
+                    open && 'bg-[var(--lb-color-surface)]/[0.06]'
                 )}
             >
                 {avatarUrl ? (
-                    <img
+                    <Image
                         src={avatarUrl}
                         alt={displayName}
+                        width={32}
+                        height={32}
+                        unoptimized
                         className="w-8 h-8 rounded-lg object-cover ring-2 ring-white/10"
                     />
                 ) : (
@@ -254,7 +267,7 @@ function UserMenu() {
                     'w-3.5 h-3.5 text-text-muted transition-transform duration-200',
                     open && 'rotate-180'
                 )} />
-            </button>
+            </Button>
 
             {/* Dropdown */}
             <div
@@ -262,13 +275,13 @@ function UserMenu() {
                     'absolute right-0 top-full mt-2 z-[100] w-64',
                     'rounded-2xl overflow-hidden',
                     'border border-white/10',
+                    'bg-[var(--color-bg-secondary)]',
                     'shadow-xl shadow-black/20',
                     'transition-all duration-200 origin-top-right',
                     open
                         ? 'opacity-100 scale-100 translate-y-0'
                         : 'opacity-0 scale-95 -translate-y-1 pointer-events-none'
                 )}
-                style={{ backgroundColor: 'var(--color-bg-secondary)' }}
             >
                 {/* Top glow */}
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
@@ -288,7 +301,7 @@ function UserMenu() {
                                 key={item.href}
                                 href={item.href}
                                 onClick={() => setOpen(false)}
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-text-body hover:text-text-heading hover:bg-white/[0.04] transition-all"
+                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-text-body hover:text-text-heading hover:bg-[var(--lb-color-surface)]/[0.04] transition-all"
                             >
                                 <Icon className="w-4 h-4 text-text-muted" />
                                 <span>{item.label}</span>
@@ -299,53 +312,16 @@ function UserMenu() {
 
                 {/* Sign Out */}
                 <div className="p-1.5 border-t border-white/[0.06]">
-                    <button
+                    <Button unstyled
                         onClick={() => { signOut(); setOpen(false); }}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-400 hover:bg-red-500/10 transition-all"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-700 hover:bg-red-50 transition-all"
                     >
                         <LogOut className="w-4 h-4" />
                         <span>Sign Out</span>
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>
-    );
-}
-
-/* ═══════════════════════════════════════════════
-   NOTIFICATION BELL — with animated pulse
-   ═══════════════════════════════════════════════ */
-function NotificationBell() {
-    const [notificationCount, setNotificationCount] = useState(0);
-
-    useEffect(() => {
-        fetch('/api/notifications/count')
-            .then(res => res.ok ? res.json() : { count: 0 })
-            .then(data => setNotificationCount(data.count || 0))
-            .catch(() => setNotificationCount(0));
-    }, []);
-
-    return (
-        <button
-            className={cn(
-                'relative p-2.5 rounded-xl transition-all duration-300 group',
-                'text-text-muted hover:text-text-heading',
-                'hover:bg-white/[0.06] active:scale-95'
-            )}
-            aria-label="Notifications"
-        >
-            <Bell className="w-[18px] h-[18px] group-hover:rotate-12 transition-transform duration-300" />
-            {notificationCount > 0 && (
-                <>
-                    {/* Pulse ring */}
-                    <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-red-500/30 animate-ping" />
-                    {/* Badge */}
-                    <span className="absolute top-1.5 right-1.5 w-4 h-4 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-[var(--color-bg-secondary)]">
-                        {notificationCount > 9 ? '9+' : notificationCount}
-                    </span>
-                </>
-            )}
-        </button>
     );
 }
 
@@ -375,7 +351,7 @@ function DrawerItem({
     return (
         <Link
             href={href}
-            className="flex items-center gap-3 px-5 py-3 text-[15px] font-medium text-text-body hover:text-text-heading hover:bg-white/5 transition-all duration-200 group"
+            className="flex min-h-11 items-center gap-3 px-5 py-3 text-[15px] font-medium text-text-body hover:text-text-heading hover:bg-[var(--lb-color-surface)]/5 transition-all duration-200 group"
             onClick={onClick}
         >
             <Icon className="w-[18px] h-[18px] text-text-muted group-hover:text-primary transition-colors" />
@@ -415,7 +391,7 @@ export default function Navbar() {
     // ⌘K shortcut for search
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            if (isCommandSearchShortcut(e)) {
                 e.preventDefault();
                 setSearchOpen(prev => !prev);
             }
@@ -497,12 +473,24 @@ export default function Navbar() {
 
                         {/* ── Auth-dependent actions ── */}
                         {isLoading ? (
-                            <div className="w-24 h-9 rounded-xl bg-white/[0.04] animate-pulse" />
+                            <div className="w-24 h-9 rounded-xl bg-[var(--lb-color-surface)]/[0.04] animate-pulse" />
+                        ) : isAuthenticated && user ? (
+                            <UserMenu />
                         ) : isAuthenticated ? (
-                            <>
-                                <NotificationBell />
-                                <UserMenu />
-                            </>
+                            <div className="flex items-center gap-2.5">
+                                <Link
+                                    href="/dashboard"
+                                    className="px-4 py-2 text-sm font-medium rounded-xl text-text-body hover:text-text-heading border border-white/[0.08] hover:border-white/[0.16] hover:bg-[var(--lb-color-surface)]/[0.04] transition-all duration-300"
+                                >
+                                    Dashboard
+                                </Link>
+                                <Button unstyled
+                                    onClick={() => { void signOut(); }}
+                                    className="px-4 py-2 text-sm font-medium rounded-xl text-red-700 hover:bg-red-50 transition-all duration-300"
+                                >
+                                    Sign Out
+                                </Button>
+                            </div>
                         ) : (
                             <div className="flex items-center gap-2.5">
                                 {/* Login button — ghost style */}
@@ -512,7 +500,7 @@ export default function Navbar() {
                                         'px-4 py-2 text-sm font-medium rounded-xl',
                                         'text-text-body hover:text-text-heading',
                                         'border border-white/[0.08] hover:border-white/[0.16]',
-                                        'hover:bg-white/[0.04]',
+                                        'hover:bg-[var(--lb-color-surface)]/[0.04]',
                                         'transition-all duration-300'
                                     )}
                                 >
@@ -532,13 +520,12 @@ export default function Navbar() {
 
                     {/* ─── Mobile: Actions + Hamburger ─── */}
                     <div className="md:hidden flex items-center gap-1.5">
-                        {isAuthenticated && <NotificationBell />}
                         <ThemeToggle />
-                        <button
+                        <Button unstyled
                             className={cn(
-                                'relative p-2.5 rounded-xl transition-all duration-300',
+                                'relative min-h-11 min-w-11 p-2.5 rounded-xl transition-all duration-300',
                                 'text-text-body hover:text-text-heading',
-                                'hover:bg-white/[0.06] active:scale-90',
+                                'hover:bg-[var(--lb-color-surface)]/[0.06] active:scale-90',
                             )}
                             onClick={() => setMobileOpen(!mobileOpen)}
                             aria-label="Menu"
@@ -558,7 +545,7 @@ export default function Navbar() {
                                     mobileOpen ? 'top-[9px] -rotate-45' : 'top-[15px] rotate-0'
                                 )} />
                             </div>
-                        </button>
+                        </Button>
                     </div>
                 </nav>
             </header>
@@ -587,6 +574,7 @@ export default function Navbar() {
                         'absolute top-[72px] left-0 right-0',
                         'max-h-[calc(100dvh-72px)]',
                         'rounded-b-3xl',
+                        'bg-[var(--color-bg-secondary)]',
                         'shadow-2xl shadow-primary/10',
                         'flex flex-col',
                         'transition-all duration-300 ease-out origin-top',
@@ -595,7 +583,6 @@ export default function Navbar() {
                             ? 'opacity-100 translate-y-0 scale-y-100'
                             : 'opacity-0 -translate-y-4 scale-y-95 pointer-events-none'
                     )}
-                    style={{ backgroundColor: 'var(--color-bg-secondary)' }}
                 >
                     {/* Top gradient accent */}
                     <div className="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
@@ -606,9 +593,12 @@ export default function Navbar() {
                         {isAuthenticated && user && (
                             <div className="flex items-center gap-3 px-5 pb-3 border-b border-white/5">
                                 {avatarUrl ? (
-                                    <img
+                                    <Image
                                         src={avatarUrl}
                                         alt={displayName}
+                                        width={36}
+                                        height={36}
+                                        unoptimized
                                         className="w-9 h-9 rounded-full object-cover ring-2 ring-primary/30"
                                     />
                                 ) : (
@@ -639,7 +629,7 @@ export default function Navbar() {
                             <DrawerSectionLabel>Explore</DrawerSectionLabel>
                             <DrawerItem href="/themes" icon={LayoutGrid} label="Browse All" onClick={closeMobile} />
                             <DrawerItem href="/pricing" icon={Tag} label="Pricing" onClick={closeMobile} />
-                            <DrawerItem href="/themes" icon={Flame} label="Trending" onClick={closeMobile} />
+                            <DrawerItem href="/themes?sort=popular" icon={Star} label="Popular" onClick={closeMobile} />
                         </div>
 
                         {/* ── Authenticated: Manage ── */}
@@ -653,18 +643,18 @@ export default function Navbar() {
                     {/* Drawer Footer */}
                     <div className="px-5 pb-5 pt-3 border-t border-white/5 flex-shrink-0 space-y-2.5">
                         {isAuthenticated ? (
-                            <button
+                            <Button unstyled
                                 onClick={() => { signOut(); closeMobile(); }}
-                                className="flex items-center justify-center gap-2 w-full py-3 text-sm font-semibold text-red-400 rounded-2xl border border-red-500/15 hover:bg-red-500/10 active:scale-[0.98] transition-all duration-200"
+                                className="flex items-center justify-center gap-2 w-full py-3 text-sm font-semibold text-red-700 rounded-2xl border border-red-700/30 hover:bg-red-50 active:scale-[0.98] transition-all duration-200"
                             >
                                 <LogOut className="w-4 h-4" />
                                 Sign Out
-                            </button>
+                            </Button>
                         ) : (
                             <>
                                 <a
                                     href={loginUrl}
-                                    className="flex items-center justify-center gap-2 w-full py-3 text-sm font-semibold text-text-heading rounded-2xl border border-white/[0.08] hover:bg-white/[0.04] active:scale-[0.98] transition-all duration-200"
+                                    className="flex items-center justify-center gap-2 w-full py-3 text-sm font-semibold text-text-heading rounded-2xl border border-white/[0.08] hover:bg-[var(--lb-color-surface)]/[0.04] active:scale-[0.98] transition-all duration-200"
                                     onClick={closeMobile}
                                 >
                                     Login

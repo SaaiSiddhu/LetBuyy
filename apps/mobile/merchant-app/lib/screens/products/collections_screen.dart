@@ -4,9 +4,9 @@ import '../../app/store_context.dart';
 
 import '../../models/store_model.dart';
 import '../../services/product_service.dart';
-import '../../services/skip_needs_backend_exception.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../theme/letbuyy_color_tokens.dart';
+import '../../widgets/shared/cached_merchant_image.dart';
 
 class CollectionsScreen extends StatefulWidget {
   const CollectionsScreen({super.key});
@@ -99,8 +99,6 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
             .where((item) => item.id != collection.id)
             .toList(growable: false);
       });
-    } on SkipNeedsBackendException catch (error) {
-      _showSnackBar(error.toString());
     } catch (error) {
       _showSnackBar('Could not delete collection: $error');
     }
@@ -112,8 +110,6 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
         collection.id,
         ProductCollectionInput.fromContract(collection),
       );
-    } on SkipNeedsBackendException catch (error) {
-      _showSnackBar(error.toString());
     } catch (error) {
       _showSnackBar('Could not update collection: $error');
     }
@@ -358,13 +354,11 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
       decoration: BoxDecoration(
         color: LetbuyyColorTokens.brandPrimary.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(14),
-        image: imageUrl == null || imageUrl.isEmpty
-            ? null
-            : DecorationImage(image: NetworkImage(imageUrl), fit: BoxFit.cover),
       ),
+      clipBehavior: Clip.antiAlias,
       child: imageUrl == null || imageUrl.isEmpty
           ? Icon(Icons.category_rounded, color: LetbuyyColorTokens.brandPrimary)
-          : null,
+          : CachedMerchantImage(imageUrl: imageUrl, fit: BoxFit.cover),
     );
   }
 
@@ -467,8 +461,6 @@ class _CollectionFormSheetState extends State<_CollectionFormSheet> {
           : await service.updateCollection(widget.collection!.id, input);
       if (!mounted) return;
       Navigator.of(context).pop(collection);
-    } on SkipNeedsBackendException catch (error) {
-      _showSnackBar(error.toString());
     } catch (error) {
       _showSnackBar('Could not save collection: $error');
     } finally {

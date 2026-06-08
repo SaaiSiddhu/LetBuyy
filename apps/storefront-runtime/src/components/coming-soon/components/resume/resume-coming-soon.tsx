@@ -1,4 +1,5 @@
 'use client';
+import { Button, Input } from '@letbuyy/ui';
 import { useEffect, useState, useCallback, useMemo, type CSSProperties } from 'react';
 interface Props { storeName: string; tagline?: string; logoUrl?: string; launchDate?: string; }
 
@@ -12,7 +13,7 @@ const PARTICLE_STYLES: CSSProperties[] = Array.from({ length: 35 }, (_, i) => ({
     width: 1 + seededUnit(i, 12.9898) * 1.5,
     height: 1 + seededUnit(i, 78.233) * 1.5,
     borderRadius: '50%',
-    background: '#fff',
+    background: 'rgb(255 255 255)',
     opacity: .06 + seededUnit(i, 37.719) * .1,
     top: `${seededUnit(i, 19.19) * 100}%`,
     left: `${seededUnit(i, 47.47) * 100}%`,
@@ -28,10 +29,10 @@ function useCountdown(td?: string) {
 }
 
 const SKILLS = [
-    { name: 'React / Next.js', level: 95, color: '#3b82f6' },
-    { name: 'TypeScript', level: 90, color: '#0ea5e9' },
-    { name: 'Node.js', level: 85, color: '#10b981' },
-    { name: 'UI/UX Design', level: 80, color: '#8b5cf6' },
+    { name: 'React / Next.js', level: 95, color: 'rgb(59 130 246)' },
+    { name: 'TypeScript', level: 90, color: 'rgb(14 165 233)' },
+    { name: 'Node.js', level: 85, color: 'rgb(16 185 129)' },
+    { name: 'UI/UX Design', level: 80, color: 'rgb(139 92 246)' },
 ];
 
 const EXPERIENCE = [
@@ -53,7 +54,7 @@ export default function ResumeComingSoon({ storeName, tagline, logoUrl, launchDa
     const px = (mx - 0.5) * 15, py = (my - 0.5) * 15;
 
     return (
-        <div style={{ height: '100dvh', width: '100vw', display: 'flex', flexDirection: 'column', background: '#030014', color: '#fff', overflow: 'hidden', position: 'relative', fontFamily: "'Inter',-apple-system,sans-serif" }}>
+        <div style={{ height: '100dvh', width: '100vw', display: 'flex', flexDirection: 'column', background: 'rgb(3 0 20)', color: 'rgb(255 255 255)', overflow: 'hidden', position: 'relative', fontFamily: "'Inter',-apple-system,sans-serif" }}>
             <div style={{ position: 'absolute', inset: 0, zIndex: 0, opacity: .025, pointerEvents: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundSize: '128px' }} />
             <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', width: '150%', height: '150%', top: '-25%', left: '-25%', background: `radial-gradient(600px at ${28 + px * .4}% ${18 + py * .4}%,rgba(59,130,246,.18),transparent 60%),radial-gradient(500px at ${72 - px * .3}% ${55 - py * .3}%,rgba(14,165,233,.12),transparent 60%),radial-gradient(400px at ${50 + px * .2}% ${82 + py * .2}%,rgba(16,185,129,.08),transparent 60%)`, transition: 'background .4s ease-out' }} />
@@ -66,21 +67,21 @@ export default function ResumeComingSoon({ storeName, tagline, logoUrl, launchDa
                 {/* NAV */}
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'clamp(8px,1.5dvh,16px) clamp(12px,3vw,24px)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px,1vw,10px)' }}>
-                        {logoUrl ? <img src={logoUrl} alt="" style={{ width: 'clamp(24px,3.5vw,32px)', height: 'clamp(24px,3.5vw,32px)', borderRadius: 8, objectFit: 'cover' }} /> : <div style={{ width: 'clamp(24px,3.5vw,32px)', height: 'clamp(24px,3.5vw,32px)', borderRadius: 8, background: 'linear-gradient(135deg,#3b82f6,#0ea5e9)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'clamp(10px,1.5vw,14px)', fontWeight: 800 }}>{storeName.charAt(0)}</div>}
+                        {logoUrl ? <img src={logoUrl} alt="" style={{ width: 'clamp(24px,3.5vw,32px)', height: 'clamp(24px,3.5vw,32px)', borderRadius: 8, objectFit: 'cover' }} /> : <div style={{ width: 'clamp(24px,3.5vw,32px)', height: 'clamp(24px,3.5vw,32px)', borderRadius: 8, background: 'linear-gradient(135deg,rgb(59 130 246),rgb(14 165 233))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'clamp(10px,1.5vw,14px)', fontWeight: 800 }}>{storeName.charAt(0)}</div>}
                         <span style={{ fontWeight: 700, fontSize: 'clamp(11px,1.5vw,14px)', letterSpacing: '-.02em' }}>{storeName}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: 'clamp(3px,.5dvh,6px) clamp(8px,1.5vw,14px)', borderRadius: 999, background: 'rgba(59,130,246,.1)', border: '1px solid rgba(59,130,246,.2)' }}>
-                        <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#3b82f6', animation: 'pulse 2s ease-in-out infinite' }} />
-                        <span style={{ fontSize: 'clamp(8px,1.1vw,11px)', fontWeight: 600, color: '#93c5fd', letterSpacing: '.06em', textTransform: 'uppercase' }}>Resume</span>
+                        <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgb(59 130 246)', animation: 'pulse 2s ease-in-out infinite' }} />
+                        <span style={{ fontSize: 'clamp(8px,1.1vw,11px)', fontWeight: 600, color: 'rgb(147 197 253)', letterSpacing: '.06em', textTransform: 'uppercase' }}>Resume</span>
                     </div>
                 </div>
 
-                <h1 style={{ fontSize: 'clamp(2rem,7vw,4.5rem)', fontWeight: 900, lineHeight: 1, textAlign: 'center', letterSpacing: '-.04em', background: 'linear-gradient(135deg,#fff 0%,#bfdbfe 40%,#3b82f6 80%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', filter: 'drop-shadow(0 2px 12px rgba(59,130,246,.15))', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .1s both' : 'none' }}>{storeName}</h1>
+                <h1 style={{ fontSize: 'clamp(2rem,7vw,4.5rem)', fontWeight: 900, lineHeight: 1, textAlign: 'center', letterSpacing: '-.04em', background: 'linear-gradient(135deg,rgb(255 255 255) 0%,rgb(191 219 254) 40%,rgb(59 130 246) 80%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', filter: 'drop-shadow(0 2px 12px rgba(59,130,246,.15))', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .1s both' : 'none' }}>{storeName}</h1>
                 <p style={{ fontSize: 'clamp(.78rem,1.8vw,1.1rem)', color: 'rgba(255,255,255,.5)', lineHeight: 1.6, textAlign: 'center', maxWidth: 420, animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .2s both' : 'none' }}>{tagline || 'Professional resume & career profile launching soon.'}</p>
 
                 {/* COUNTDOWN */}
                 <div style={{ display: 'flex', gap: 'clamp(4px,1vw,10px)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .3s both' : 'none' }}>
-                    {[{ v: t.d, l: 'DAYS' }, { v: t.h, l: 'HRS' }, { v: t.m, l: 'MIN' }, { v: t.s, l: 'SEC' }].map((x, i) => (<div key={x.l} style={{ display: 'contents' }}><div style={{ minWidth: 'clamp(48px,8vw,72px)', padding: 'clamp(6px,1.2dvh,14px) clamp(4px,.8vw,8px)', borderRadius: 'clamp(10px,1.5dvh,16px)', textAlign: 'center', background: 'rgba(255,255,255,.025)', border: '1px solid rgba(255,255,255,.05)', backdropFilter: 'blur(8px)' }}><div style={{ fontSize: 'clamp(1.1rem,3vw,2rem)', fontWeight: 800, lineHeight: 1, fontVariantNumeric: 'tabular-nums', marginBottom: 'clamp(1px,.3dvh,4px)', background: 'linear-gradient(135deg,#bfdbfe,#3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{String(x.v).padStart(2, '0')}</div><div style={{ fontSize: 'clamp(7px,1vw,10px)', fontWeight: 600, letterSpacing: '.08em', color: 'rgba(255,255,255,.3)' }}>{x.l}</div></div>{i < 3 && <span style={{ fontSize: 'clamp(.8rem,1.5vw,1.3rem)', fontWeight: 200, color: 'rgba(255,255,255,.12)', alignSelf: 'center' }}>:</span>}</div>))}
+                    {[{ v: t.d, l: 'DAYS' }, { v: t.h, l: 'HRS' }, { v: t.m, l: 'MIN' }, { v: t.s, l: 'SEC' }].map((x, i) => (<div key={x.l} style={{ display: 'contents' }}><div style={{ minWidth: 'clamp(48px,8vw,72px)', padding: 'clamp(6px,1.2dvh,14px) clamp(4px,.8vw,8px)', borderRadius: 'clamp(10px,1.5dvh,16px)', textAlign: 'center', background: 'rgba(255,255,255,.025)', border: '1px solid rgba(255,255,255,.05)', backdropFilter: 'blur(8px)' }}><div style={{ fontSize: 'clamp(1.1rem,3vw,2rem)', fontWeight: 800, lineHeight: 1, fontVariantNumeric: 'tabular-nums', marginBottom: 'clamp(1px,.3dvh,4px)', background: 'linear-gradient(135deg,rgb(191 219 254),rgb(59 130 246))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{String(x.v).padStart(2, '0')}</div><div style={{ fontSize: 'clamp(7px,1vw,10px)', fontWeight: 600, letterSpacing: '.08em', color: 'rgba(255,255,255,.3)' }}>{x.l}</div></div>{i < 3 && <span style={{ fontSize: 'clamp(.8rem,1.5vw,1.3rem)', fontWeight: 200, color: 'rgba(255,255,255,.12)', alignSelf: 'center' }}>:</span>}</div>))}
                 </div>
 
                 {/* SKILLS BARS */}
@@ -102,7 +103,7 @@ export default function ResumeComingSoon({ storeName, tagline, logoUrl, launchDa
                 <div style={{ display: 'flex', gap: 'clamp(6px,1vw,14px)', justifyContent: 'center', flexWrap: 'wrap', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .5s both' : 'none' }}>
                     {EXPERIENCE.map((e, i) => (
                         <div key={i} style={{ padding: 'clamp(6px,.8dvh,10px) clamp(10px,1.5vw,16px)', borderRadius: 'clamp(10px,1.3dvh,14px)', background: 'rgba(255,255,255,.025)', border: '1px solid rgba(255,255,255,.05)', textAlign: 'center', minWidth: 'clamp(90px,18vw,130px)' }}>
-                            <div style={{ fontSize: 'clamp(8px,1.1vw,11px)', fontWeight: 700, color: '#93c5fd', marginBottom: 2 }}>{e.role}</div>
+                            <div style={{ fontSize: 'clamp(8px,1.1vw,11px)', fontWeight: 700, color: 'rgb(147 197 253)', marginBottom: 2 }}>{e.role}</div>
                             <div style={{ fontSize: 'clamp(7px,.9vw,10px)', fontWeight: 500, color: 'rgba(255,255,255,.4)' }}>{e.company}</div>
                             <div style={{ fontSize: 'clamp(6px,.8vw,9px)', fontWeight: 600, color: 'rgba(255,255,255,.25)', marginTop: 2, letterSpacing: '.04em' }}>{e.years}</div>
                         </div>
@@ -111,10 +112,10 @@ export default function ResumeComingSoon({ storeName, tagline, logoUrl, launchDa
 
                 {/* EMAIL */}
                 <div style={{ width: '100%', maxWidth: 'min(420px,90vw)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .55s both' : 'none' }}>
-                    {done ? <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 'clamp(8px,1.2dvh,12px)', borderRadius: 14, background: 'rgba(34,197,94,.08)', border: '1px solid rgba(34,197,94,.2)', color: '#86efac', fontSize: 'clamp(11px,1.4vw,14px)', fontWeight: 600 }}>Connected!</div> : (
+                    {done ? <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 'clamp(8px,1.2dvh,12px)', borderRadius: 14, background: 'rgba(34,197,94,.08)', border: '1px solid rgba(34,197,94,.2)', color: 'rgb(134 239 172)', fontSize: 'clamp(11px,1.4vw,14px)', fontWeight: 600 }}>Connected!</div> : (
                         <form onSubmit={submit} style={{ display: 'flex', gap: 'clamp(4px,.6vw,8px)', padding: 'clamp(3px,.4dvh,5px)', borderRadius: 'clamp(12px,1.5dvh,16px)', background: 'rgba(255,255,255,.025)', border: '1px solid rgba(255,255,255,.06)' }}>
-                            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" required style={{ flex: 1, padding: 'clamp(8px,1dvh,12px) clamp(10px,2vw,16px)', borderRadius: 'clamp(10px,1.2dvh,14px)', border: 'none', background: 'transparent', color: '#fff', fontSize: 'clamp(11px,1.4vw,14px)', outline: 'none', fontFamily: 'inherit', minWidth: 0 }} />
-                            <button type="submit" style={{ padding: 'clamp(8px,1dvh,12px) clamp(12px,2.5vw,24px)', borderRadius: 'clamp(10px,1.2dvh,14px)', border: 'none', background: 'linear-gradient(135deg,#3b82f6,#0ea5e9)', color: '#fff', fontWeight: 700, fontSize: 'clamp(10px,1.3vw,13px)', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', boxShadow: '0 6px 20px rgba(59,130,246,.3)' }}>Connect</button>
+                            <Input unstyled type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" required style={{ flex: 1, padding: 'clamp(8px,1dvh,12px) clamp(10px,2vw,16px)', borderRadius: 'clamp(10px,1.2dvh,14px)', border: 'none', background: 'transparent', color: 'rgb(255 255 255)', fontSize: 'clamp(11px,1.4vw,14px)', outline: 'none', fontFamily: 'inherit', minWidth: 0 }} />
+                            <Button unstyled type="submit" style={{ padding: 'clamp(8px,1dvh,12px) clamp(12px,2.5vw,24px)', borderRadius: 'clamp(10px,1.2dvh,14px)', border: 'none', background: 'linear-gradient(135deg,rgb(59 130 246),rgb(14 165 233))', color: 'rgb(255 255 255)', fontWeight: 700, fontSize: 'clamp(10px,1.3vw,13px)', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', boxShadow: '0 6px 20px rgba(59,130,246,.3)' }}>Connect</Button>
                         </form>
                     )}
                 </div>
