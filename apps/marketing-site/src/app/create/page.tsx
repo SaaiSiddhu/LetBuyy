@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Button, Check, FileText, Input, MaterialIcon, Palette, Rocket, Store, X } from '@letbuyy/ui'
 import { LETBUYY_PRODUCTION_API_BASE_URL, resolveLetbuyyApiBaseUrl } from '@letbuyy/api-client'
+import { getAccountsUrl } from '@/lib/public-urls'
 
 const siteTypes = [
     { id: 'store', title: 'E-commerce Store', description: 'Sell products with cart, checkout, and payments', icon: Store },
@@ -53,14 +54,13 @@ export default function CreateStorePage() {
         setError(null)
 
         // Redirect to accounts signup with store creation params
-        const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.store'
         const params = new URLSearchParams({
             site_type: siteType,
             name: storeName,
             subdomain,
             next: 'onboarding',
         })
-        window.location.href = `${accountsUrl}/signup?${params.toString()}`
+        window.location.href = `${getAccountsUrl('/signup')}?${params.toString()}`
     }
 
     return (

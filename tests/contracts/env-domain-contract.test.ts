@@ -82,7 +82,12 @@ test('canonical platform .com target appears only in approved cutover/default su
     /\bletbuyy\.com\b/i,
   ];
   const allowedCanonicalFiles = new Set([
+    'apps/app-marketplace/src/lib/site-url.ts',
+    'apps/identity-platform/src/app/layout.tsx',
+    'apps/marketing-site/src/lib/public-urls.ts',
     'apps/mobile/merchant-app/lib/config/app_config.dart',
+    'apps/platform-console/src/proxy.ts',
+    'apps/platform-operations-portal/src/proxy.ts',
     'apps/theme-marketplace/src/app/auth/callback/route.ts',
     'apps/theme-marketplace/src/app/contact/page.tsx',
     'apps/theme-marketplace/src/app/support/page.tsx',

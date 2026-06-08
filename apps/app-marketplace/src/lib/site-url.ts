@@ -15,6 +15,27 @@ const PUBLIC_URLS: Record<PublicUrlKey, { envName: string; value: string | undef
     themeMarketplace: { envName: 'NEXT_PUBLIC_THEME_MARKETPLACE_URL', value: process.env.NEXT_PUBLIC_THEME_MARKETPLACE_URL },
 };
 
+const PLATFORM_ROOT_DOMAINS = ['letbuyy.com', 'letbuyy.store'] as const;
+const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com';
+
+const LOCAL_BROWSER_URLS: Record<PublicUrlKey, string> = {
+    accounts: 'http://127.0.0.1:9001',
+    admin: 'http://127.0.0.1:9002',
+    appMarketplace: 'http://127.0.0.1:9003',
+    developerPortal: 'http://127.0.0.1:9004',
+    marketing: 'http://127.0.0.1:9006',
+    themeMarketplace: 'http://127.0.0.1:9005',
+};
+
+const PLATFORM_SUBDOMAINS: Record<PublicUrlKey, string | null> = {
+    accounts: 'accounts',
+    admin: 'admin',
+    appMarketplace: 'apps',
+    developerPortal: 'developer',
+    marketing: null,
+    themeMarketplace: 'themes',
+};
+
 function trimTrailingSlash(value: string): string {
     return value.replace(/\/+$/, '');
 }
@@ -32,8 +53,6 @@ function normalizeOrigin(rawValue: string | undefined): string | null {
 }
 
 function getVercelDeploymentOrigin(): string | null {
-    if (typeof window !== 'undefined') return window.location.origin;
-
     const vercelEnv = process.env.VERCEL_ENV?.trim();
     const productionOrigin = normalizeOrigin(process.env.VERCEL_PROJECT_PRODUCTION_URL);
     const branchOrigin = normalizeOrigin(process.env.VERCEL_BRANCH_URL);
@@ -46,6 +65,42 @@ function getVercelDeploymentOrigin(): string | null {
     return branchOrigin ?? deploymentOrigin ?? productionOrigin;
 }
 
+function getKnownPlatformRoot(hostname: string): string | null {
+    const normalized = hostname.toLowerCase().replace(/^www\./, '');
+    return PLATFORM_ROOT_DOMAINS.find((root) => normalized === root || normalized.endsWith(`.${root}`)) ?? null;
+}
+
+function getConfiguredPlatformRootDomain(): string {
+    return (
+        process.env.NEXT_PUBLIC_PLATFORM_ROOT_DOMAIN?.trim()
+        || process.env.PLATFORM_ROOT_DOMAIN?.trim()
+        || DEFAULT_PLATFORM_ROOT_DOMAIN
+    );
+}
+
+function getPlatformOrigin(key: PublicUrlKey, rootDomain: string, protocol = 'https:'): string {
+    const subdomain = PLATFORM_SUBDOMAINS[key];
+    return subdomain ? `${protocol}//${subdomain}.${rootDomain}` : `${protocol}//${rootDomain}`;
+}
+
+function getBrowserPublicOrigin(key: PublicUrlKey): string | null {
+    if (typeof window === 'undefined') return null;
+
+    const { hostname, origin, protocol } = window.location;
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') {
+        return LOCAL_BROWSER_URLS[key];
+    }
+
+    const platformRoot = getKnownPlatformRoot(hostname);
+    if (platformRoot) return getPlatformOrigin(key, platformRoot, protocol);
+
+    return key === 'appMarketplace' ? origin : null;
+}
+
+function getServerPublicOrigin(key: PublicUrlKey): string {
+    return getPlatformOrigin(key, getConfiguredPlatformRootDomain());
+}
+
 function appendPath(base: string, path: string): string {
     if (!path) return base;
     return `${base}${path.startsWith('/') ? path : `/${path}`}`;
@@ -53,7 +108,12 @@ function appendPath(base: string, path: string): string {
 
 export function getConfiguredPublicUrl(key: PublicUrlKey, path = ''): string {
     const config = PUBLIC_URLS[key];
-    const configured = config.value?.trim() || getVercelDeploymentOrigin();
+    const configured = (
+        config.value?.trim()
+        || getBrowserPublicOrigin(key)
+        || (key === 'appMarketplace' ? getVercelDeploymentOrigin() : null)
+        || getServerPublicOrigin(key)
+    );
     if (!configured) {
         throw new Error(`${config.envName} is not configured; refusing to use a hardcoded public host`);
     }

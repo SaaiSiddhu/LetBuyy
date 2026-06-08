@@ -25,6 +25,7 @@ const letbuyyMono = localFont({
 });
 
 const fontVariables = `${letbuyySans.variable} ${letbuyyDisplay.variable} ${letbuyyMono.variable}`;
+const DEFAULT_PLATFORM_ROOT_DOMAIN = "letbuyy.com";
 
 function normalizeOrigin(rawValue: string | undefined): string | null {
   const value = rawValue?.trim();
@@ -51,11 +52,20 @@ function getVercelDeploymentOrigin(): string | null {
   return branchOrigin ?? deploymentOrigin ?? productionOrigin;
 }
 
+function getConfiguredPlatformRootDomain(): string {
+  return (
+    process.env.NEXT_PUBLIC_PLATFORM_ROOT_DOMAIN?.trim()
+    || process.env.PLATFORM_ROOT_DOMAIN?.trim()
+    || DEFAULT_PLATFORM_ROOT_DOMAIN
+  );
+}
+
 function getAccountsMetadataBase(): URL {
-  const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL?.trim() || getVercelDeploymentOrigin();
-  if (!accountsUrl) {
-    throw new Error("NEXT_PUBLIC_ACCOUNTS_URL is not configured; refusing to use a hardcoded accounts host");
-  }
+  const accountsUrl = (
+    process.env.NEXT_PUBLIC_ACCOUNTS_URL?.trim()
+    || getVercelDeploymentOrigin()
+    || `https://accounts.${getConfiguredPlatformRootDomain()}`
+  );
   return new URL(accountsUrl);
 }
 

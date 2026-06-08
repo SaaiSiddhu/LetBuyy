@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect } from 'react'
+import { getAccountsUrl } from '@/lib/public-urls'
 
 export default function SignupPage() {
     useEffect(() => {
         // Landing app doesn't handle auth — redirect to accounts app
-        const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.store'
-        window.location.href = `${accountsUrl}/signup`
+        window.location.href = getAccountsUrl('/signup')
     }, [])
 
     return (
