@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { getMarketingSiteUrl } from '@/lib/public-urls'
+import { getPlatformSitemapUrls } from '@/lib/platform-links'
 
 export default function robots(): MetadataRoute.Robots {
     return {
@@ -10,6 +10,6 @@ export default function robots(): MetadataRoute.Robots {
                 disallow: ['/signup'],
             },
         ],
-        sitemap: getMarketingSiteUrl('/sitemap.xml'),
+        sitemap: getPlatformSitemapUrls(),
     }
 }

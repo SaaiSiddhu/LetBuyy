@@ -54,3 +54,36 @@ test('marketing signup route is a redirect shim to the identity platform', () =>
   assert.equal(packageJson.dependencies['@letbuyy/auth-core'], undefined);
   assert.equal(packageJson.dependencies['jose'], undefined);
 });
+
+test('marketing site exposes crawlable platform app navigation and sitemaps', () => {
+  const header = read(join(appRoot, 'src/components/Header.tsx'));
+  const footer = read(join(appRoot, 'src/components/Footer.tsx'));
+  const layout = read(join(appRoot, 'src/app/layout.tsx'));
+  const robots = read(join(appRoot, 'src/app/robots.ts'));
+  const sitemap = read(join(appRoot, 'src/app/sitemap.ts'));
+  const sitemapPage = read(join(appRoot, 'src/app/sitemap/page.tsx'));
+  const directory = read(join(appRoot, 'src/components/PlatformDirectory.tsx'));
+  const platformLinks = read(join(appRoot, 'src/lib/platform-links.ts'));
+  const publicUrls = read(join(appRoot, 'src/lib/public-urls.ts'));
+
+  for (const marker of [
+    'NEXT_PUBLIC_THEME_MARKETPLACE_URL',
+    'NEXT_PUBLIC_APP_MARKETPLACE_URL',
+    'NEXT_PUBLIC_DEVELOPER_PORTAL_URL',
+  ]) {
+    assert.match(publicUrls, new RegExp(marker));
+  }
+
+  assert.match(platformLinks, /getThemeMarketplaceUrl\('\/sitemap\.xml'\)/);
+  assert.match(platformLinks, /getAppMarketplaceUrl\('\/sitemap\.xml'\)/);
+  assert.match(platformLinks, /getDeveloperPortalUrl\('\/sitemap\.xml'\)/);
+  assert.match(robots, /getPlatformSitemapUrls/);
+  assert.match(sitemap, /\/sitemap/);
+  assert.match(layout, /SiteNavigationElement/);
+  assert.match(header, /label: 'Themes'/);
+  assert.match(header, /label: 'Apps'/);
+  assert.match(header, /label: 'Developers'/);
+  assert.match(footer, /getPlatformNavigationLinks/);
+  assert.match(directory, /platform-directory/);
+  assert.match(sitemapPage, /XML sitemaps/);
+});

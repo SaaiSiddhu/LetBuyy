@@ -34,7 +34,12 @@ import {
     X,
 } from '@letbuyy/ui'
 import BrandLogo from './BrandLogo'
-import { getAccountsUrl } from '../lib/public-urls'
+import {
+    getAccountsUrl,
+    getAppMarketplaceUrl,
+    getDeveloperPortalUrl,
+    getThemeMarketplaceUrl,
+} from '../lib/public-urls'
 
 type DropdownKey = 'why' | 'products'
 
@@ -60,11 +65,17 @@ type MenuSection = {
     items: MenuItem[]
 }
 
+const themeMarketplaceUrl = getThemeMarketplaceUrl('/themes')
+const appMarketplaceUrl = getAppMarketplaceUrl('/')
+const developerPortalUrl = getDeveloperPortalUrl('/docs')
+
 const navLinks: NavLink[] = [
     { label: 'Why LetBuyy', menu: 'why' },
     { label: 'Products', menu: 'products' },
+    { href: themeMarketplaceUrl, label: 'Themes' },
+    { href: appMarketplaceUrl, label: 'Apps' },
+    { href: developerPortalUrl, label: 'Developers' },
     { href: '#pricing', label: 'Pricing' },
-    { href: '#how-it-works', label: 'Enterprise' },
 ]
 
 const whyCards: MenuItem[] = [
@@ -114,7 +125,7 @@ const productSections: MenuSection[] = [
         eyebrow: 'Build your website',
         items: [
             { href: '#capabilities', icon: LayoutDashboard, label: 'Store Builder' },
-            { href: '#features', icon: Palette, label: 'Themes' },
+            { href: themeMarketplaceUrl, icon: Palette, label: 'Themes' },
             { href: '#features', icon: Globe, label: 'Domains' },
             { href: '#capabilities', icon: FileText, label: 'Pages & Blogs' },
             { href: '#features', icon: Users, label: 'Customer Accounts' },
@@ -125,7 +136,7 @@ const productSections: MenuSection[] = [
         items: [
             { href: '#features', icon: Store, label: 'Online Store' },
             { href: '#features', icon: Smartphone, label: 'Mobile Commerce' },
-            { href: '#features', icon: ShoppingBag, label: 'App Marketplace' },
+            { href: appMarketplaceUrl, icon: ShoppingBag, label: 'App Marketplace' },
             { href: '#features', icon: Megaphone, label: 'Social & Marketplaces' },
             { href: '#features', icon: Globe, label: 'Global + India-first' },
         ],
@@ -158,9 +169,9 @@ const productSections: MenuSection[] = [
     {
         eyebrow: 'Customize & extend LetBuyy',
         items: [
-            { href: '#features', icon: Palette, label: 'Theme Marketplace', description: 'Reusable storefront looks.' },
-            { href: '#features', icon: Puzzle, label: 'App Marketplace', description: 'Install extension workflows.' },
-            { href: '#features', icon: Code2, label: 'Developer Platform', description: 'APIs, webhooks and worker runtime.' },
+            { href: themeMarketplaceUrl, icon: Palette, label: 'Theme Marketplace', description: 'Reusable storefront looks.' },
+            { href: appMarketplaceUrl, icon: Puzzle, label: 'App Marketplace', description: 'Install extension workflows.' },
+            { href: developerPortalUrl, icon: Code2, label: 'Developer Platform', description: 'APIs, webhooks and worker runtime.' },
         ],
     },
 ]

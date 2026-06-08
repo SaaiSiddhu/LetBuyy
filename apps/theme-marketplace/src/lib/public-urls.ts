@@ -2,7 +2,7 @@ function trimTrailingSlash(value: string): string {
     return value.replace(/\/+$/, '')
 }
 
-type PublicUrlTarget = 'accounts' | 'admin' | 'storefront'
+type PublicUrlTarget = 'accounts' | 'admin' | 'storefront' | 'themeMarketplace'
 
 const PLATFORM_ROOT_DOMAINS = ['letbuyy.com', 'letbuyy.store'] as const
 const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com'
@@ -12,12 +12,20 @@ const PUBLIC_URL_ENV_NAMES: Record<PublicUrlTarget, string> = {
     accounts: 'NEXT_PUBLIC_ACCOUNTS_URL',
     admin: 'NEXT_PUBLIC_ADMIN_URL',
     storefront: 'NEXT_PUBLIC_STOREFRONT_URL',
+    themeMarketplace: 'NEXT_PUBLIC_THEME_MARKETPLACE_URL',
 }
 
 const LOCAL_BROWSER_URLS: Record<PublicUrlTarget, string> = {
     accounts: 'http://127.0.0.1:9001',
     admin: 'http://127.0.0.1:9002',
     storefront: 'http://127.0.0.1:9007',
+    themeMarketplace: 'http://127.0.0.1:9005',
+}
+
+const PLATFORM_SUBDOMAINS: Record<Exclude<PublicUrlTarget, 'storefront'>, string> = {
+    accounts: 'accounts',
+    admin: 'admin',
+    themeMarketplace: 'themes',
 }
 
 function getKnownPlatformRoot(hostname: string): string | null {
@@ -64,7 +72,7 @@ function getBrowserPublicOrigin(target: PublicUrlTarget): string {
         return `${protocol}//store.${getConfiguredStorefrontRootDomain()}`
     }
 
-    return `${protocol}//${target}.${platformRoot}`
+    return `${protocol}//${PLATFORM_SUBDOMAINS[target]}.${platformRoot}`
 }
 
 function getServerPublicOrigin(target: PublicUrlTarget): string {
@@ -72,7 +80,7 @@ function getServerPublicOrigin(target: PublicUrlTarget): string {
         return `https://store.${getConfiguredStorefrontRootDomain()}`
     }
 
-    return `https://${target}.${getConfiguredPlatformRootDomain()}`
+    return `https://${PLATFORM_SUBDOMAINS[target]}.${getConfiguredPlatformRootDomain()}`
 }
 
 function readRequiredPublicUrl(target: PublicUrlTarget, label: string): string {
@@ -93,6 +101,13 @@ export function getAccountsUrl(path = ''): string {
 
 export function getAdminUrl(path = ''): string {
     const baseUrl = readRequiredPublicUrl('admin', 'admin')
+    if (!path) return baseUrl
+
+    return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`
+}
+
+export function getThemeMarketplaceUrl(path = ''): string {
+    const baseUrl = readRequiredPublicUrl('themeMarketplace', 'theme marketplace')
     if (!path) return baseUrl
 
     return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`

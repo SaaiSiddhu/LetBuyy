@@ -2,8 +2,13 @@ function trimTrailingSlash(value: string): string {
     return value.replace(/\/+$/, '')
 }
 
-type RequiredPublicUrlName = 'NEXT_PUBLIC_ACCOUNTS_URL' | 'NEXT_PUBLIC_MARKETING_URL'
-type PublicUrlTarget = 'accounts' | 'marketing'
+type RequiredPublicUrlName =
+    | 'NEXT_PUBLIC_ACCOUNTS_URL'
+    | 'NEXT_PUBLIC_MARKETING_URL'
+    | 'NEXT_PUBLIC_THEME_MARKETPLACE_URL'
+    | 'NEXT_PUBLIC_APP_MARKETPLACE_URL'
+    | 'NEXT_PUBLIC_DEVELOPER_PORTAL_URL'
+type PublicUrlTarget = 'accounts' | 'marketing' | 'themeMarketplace' | 'appMarketplace' | 'developerPortal'
 
 const PLATFORM_ROOT_DOMAINS = ['letbuyy.com', 'letbuyy.store'] as const
 const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com'
@@ -11,11 +16,25 @@ const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com'
 const LOCAL_BROWSER_URLS: Record<PublicUrlTarget, string> = {
     accounts: 'http://127.0.0.1:9001',
     marketing: 'http://127.0.0.1:9006',
+    themeMarketplace: 'http://127.0.0.1:9005',
+    appMarketplace: 'http://127.0.0.1:9003',
+    developerPortal: 'http://127.0.0.1:9004',
 }
 
 const PUBLIC_URL_ENV_NAMES: Record<PublicUrlTarget, RequiredPublicUrlName> = {
     accounts: 'NEXT_PUBLIC_ACCOUNTS_URL',
     marketing: 'NEXT_PUBLIC_MARKETING_URL',
+    themeMarketplace: 'NEXT_PUBLIC_THEME_MARKETPLACE_URL',
+    appMarketplace: 'NEXT_PUBLIC_APP_MARKETPLACE_URL',
+    developerPortal: 'NEXT_PUBLIC_DEVELOPER_PORTAL_URL',
+}
+
+const PLATFORM_SUBDOMAINS: Record<PublicUrlTarget, string | null> = {
+    accounts: 'accounts',
+    marketing: null,
+    themeMarketplace: 'themes',
+    appMarketplace: 'apps',
+    developerPortal: 'developer',
 }
 
 function normalizeOrigin(rawValue: string | undefined): string | null {
@@ -59,11 +78,7 @@ function getBrowserPublicOrigin(target: PublicUrlTarget): string | null {
     const platformRoot = getKnownPlatformRoot(hostname)
     if (!platformRoot) return target === 'marketing' ? origin : null
 
-    if (target === 'marketing') {
-        return `${protocol}//${platformRoot}`
-    }
-
-    return `${protocol}//accounts.${platformRoot}`
+    return getPlatformOrigin(target, platformRoot, protocol)
 }
 
 function getConfiguredPlatformRootDomain(): string {
@@ -74,10 +89,14 @@ function getConfiguredPlatformRootDomain(): string {
     )
 }
 
+function getPlatformOrigin(target: PublicUrlTarget, rootDomain: string, protocol = 'https:'): string {
+    const subdomain = PLATFORM_SUBDOMAINS[target]
+    return subdomain ? `${protocol}//${subdomain}.${rootDomain}` : `${protocol}//${rootDomain}`
+}
+
 function getServerPlatformOrigin(target: PublicUrlTarget): string | null {
     const platformRoot = getConfiguredPlatformRootDomain()
-    if (target === 'marketing') return `https://${platformRoot}`
-    return `https://accounts.${platformRoot}`
+    return getPlatformOrigin(target, platformRoot)
 }
 
 function requiredPublicUrl(target: PublicUrlTarget, rawValue: string | undefined): string {
@@ -113,6 +132,27 @@ export function getAccountsUrl(path = ''): string {
 
 export function getMarketingSiteUrl(path = ''): string {
     const baseUrl = trimTrailingSlash(requiredPublicUrl('marketing', process.env.NEXT_PUBLIC_MARKETING_URL))
+    if (!path) return baseUrl
+
+    return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`
+}
+
+export function getThemeMarketplaceUrl(path = ''): string {
+    const baseUrl = trimTrailingSlash(requiredPublicUrl('themeMarketplace', process.env.NEXT_PUBLIC_THEME_MARKETPLACE_URL))
+    if (!path) return baseUrl
+
+    return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`
+}
+
+export function getAppMarketplaceUrl(path = ''): string {
+    const baseUrl = trimTrailingSlash(requiredPublicUrl('appMarketplace', process.env.NEXT_PUBLIC_APP_MARKETPLACE_URL))
+    if (!path) return baseUrl
+
+    return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`
+}
+
+export function getDeveloperPortalUrl(path = ''): string {
+    const baseUrl = trimTrailingSlash(requiredPublicUrl('developerPortal', process.env.NEXT_PUBLIC_DEVELOPER_PORTAL_URL))
     if (!path) return baseUrl
 
     return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`

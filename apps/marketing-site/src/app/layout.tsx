@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { getMarketingSiteUrl, getSupportEmail } from "@/lib/public-urls";
+import { getPlatformNavigationLinks } from "@/lib/platform-links";
 import { DesignSystemRoot } from "@letbuyy/ui";
 
 const letbuyySans = localFont({
@@ -120,6 +121,7 @@ export const metadata: Metadata = {
 
 const orgId = `${siteUrl}/#organization`;
 const websiteId = `${siteUrl}/#website`;
+const platformNavigationLinks = getPlatformNavigationLinks();
 
 const organizationNode = {
   "@type": "Organization",
@@ -164,7 +166,23 @@ const websiteNode = {
   url: siteUrl,
   inLanguage: "en-IN",
   publisher: { "@id": orgId },
+  hasPart: platformNavigationLinks
+    .filter((link) => link.label !== "Log in")
+    .map((link) => ({
+      "@type": "WebPage",
+      name: link.label,
+      url: link.href,
+      description: link.description,
+    })),
 };
+
+const navigationNodes = platformNavigationLinks.map((link) => ({
+  "@type": "SiteNavigationElement",
+  name: link.label,
+  url: link.href,
+  description: link.description,
+  isPartOf: { "@id": websiteId },
+}));
 
 const softwareNode = {
   "@type": "SoftwareApplication",
@@ -185,7 +203,7 @@ const softwareNode = {
 const structuredData = [
   {
     "@context": "https://schema.org",
-    "@graph": [organizationNode, websiteNode, softwareNode],
+    "@graph": [organizationNode, websiteNode, softwareNode, ...navigationNodes],
   },
 ];
 

@@ -17,6 +17,10 @@ import {
 } from '@letbuyy/ui'
 import BrandLogo from './BrandLogo'
 import { getAssetPublicUrl } from '@/lib/public-urls'
+import { getPlatformNavigationLinks } from '@/lib/platform-links'
+
+const platformLinks = getPlatformNavigationLinks()
+const platformHref = (label: string) => platformLinks.find((link) => link.label === label)?.href ?? '/'
 
 const footerColumns = [
     {
@@ -25,37 +29,33 @@ const footerColumns = [
             { label: 'What is LetBuyy?', href: '/' },
             { label: 'Pricing', href: '/pricing' },
             { label: 'Start your store', href: '/create' },
-            { label: 'India commerce', href: '/pricing#india' },
+            { label: 'Platform sitemap', href: '/sitemap' },
         ],
     },
     {
         title: 'Ecosystem',
         links: [
-            { label: 'Developer Docs', href: '/developers' },
-            { label: 'Theme Marketplace', href: '/themes' },
-            { label: 'App Marketplace', href: '/apps' },
-            { label: 'Partners', href: '/partners' },
-            { label: 'Affiliates', href: '/affiliates' },
+            { label: 'Theme Marketplace', href: platformHref('Themes') },
+            { label: 'App Marketplace', href: platformHref('Apps') },
+            { label: 'Developer Docs', href: platformHref('Developers') },
+            { label: 'Merchant login', href: platformHref('Log in') },
         ],
     },
     {
         title: 'Resources',
         links: [
-            { label: 'Blog', href: '/blog' },
-            { label: 'Compare LetBuyy', href: '/compare' },
-            { label: 'Guides', href: '/guides' },
-            { label: 'Courses', href: '/courses' },
-            { label: 'Free Tools', href: '/tools' },
-            { label: 'Changelog', href: '/changelog' },
+            { label: 'Theme catalog', href: platformHref('Themes') },
+            { label: 'App categories', href: platformHref('Apps') },
+            { label: 'API reference', href: platformHref('Developers').replace(/\/docs$/, '/api-reference') },
+            { label: 'SDK docs', href: platformHref('Developers').replace(/\/docs$/, '/sdks') },
         ],
     },
     {
         title: 'Support',
         links: [
-            { label: 'Help Center', href: '/help' },
-            { label: 'Community Forum', href: '/community' },
-            { label: 'Hire a Partner', href: '/partners/hire' },
-            { label: 'Service Status', href: '/status' },
+            { label: 'Developer webhooks', href: platformHref('Developers').replace(/\/docs$/, '/webhooks') },
+            { label: 'Account access', href: platformHref('Log in') },
+            { label: 'Public sitemap', href: '/sitemap' },
         ],
     },
 ]
@@ -64,7 +64,7 @@ const legalLinks = [
     { label: 'Terms of Service', href: '/terms' },
     { label: 'Legal', href: '/legal' },
     { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Sitemap', href: '/sitemap.xml' },
+    { label: 'Sitemap', href: '/sitemap' },
 ]
 
 const socialLinks = [
