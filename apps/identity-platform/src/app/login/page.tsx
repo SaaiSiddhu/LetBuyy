@@ -87,6 +87,8 @@ function LoginContent() {
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
     const turnstileTokenRef = useRef<string | null>(null)
     const turnstileRef = useRef<TurnstileHandle>(null)
+    const turnstileEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
+        || process.env.NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true'
     const t = translations[lang]
 
     // Initialize theme and language
@@ -166,7 +168,7 @@ function LoginContent() {
         e.preventDefault()
         if (!password) return
 
-        if (features.turnstile && !turnstileTokenRef.current) {
+        if (turnstileEnabled && !turnstileTokenRef.current) {
             setError('Please complete the verification')
             return
         }
@@ -181,7 +183,7 @@ function LoginContent() {
                 body: JSON.stringify({
                     email: email.trim(),
                     password,
-                    turnstileToken: features.turnstile ? turnstileTokenRef.current : undefined,
+                    turnstileToken: turnstileTokenRef.current || undefined,
                     redirect: redirectTo || undefined,
                 }),
             })
@@ -204,7 +206,7 @@ function LoginContent() {
         } finally {
             setLoading(false)
         }
-    }, [email, password, redirectTo, t.invalidCredentials])
+    }, [email, password, redirectTo, t.invalidCredentials, turnstileEnabled])
 
     const handleOAuth = useCallback(async (provider: 'google' | 'apple') => {
         setError(`${provider === 'google' ? 'Google' : 'Apple'} sign-in is not configured. Use email sign-in.`)
@@ -346,7 +348,7 @@ function LoginContent() {
                             <Button unstyled
                                 type="submit"
                                 className="auth-btn-primary"
-                                disabled={loading || !password}
+                                disabled={loading || !password || (turnstileEnabled && !turnstileToken)}
                             >
                                 {loading ? '...' : t.logInBtn}
                             </Button>
@@ -371,7 +373,7 @@ function LoginContent() {
                     </>
                 )}
 
-                {/* Invisible Turnstile widget */}
+                {/* Visible Turnstile widget */}
                 <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />
             </div>
         </main>

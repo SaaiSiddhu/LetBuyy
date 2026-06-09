@@ -546,11 +546,13 @@ body {
 .auth-turnstile {
   display: flex;
   justify-content: center;
-  margin-top: 12px;
+  width: 100%;
+  min-height: 65px;
+  margin: 14px 0 2px;
 }
 
-.auth-turnstile:empty {
-  display: none;
+.auth-turnstile iframe {
+  max-width: 100%;
 }
 
 /* --- Coming Soon OAuth Button --- */

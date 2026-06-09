@@ -137,6 +137,8 @@ function LookupContent() {
     const [showPasswordVisible, setShowPasswordVisible] = useState(false)
     const [isFromSignup, setIsFromSignup] = useState(false)
     const [returnTo, setReturnTo] = useState<string | null>(null)
+    const turnstileEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
+        || process.env.NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true'
 
     const t = translations[lang]
 
@@ -284,13 +286,16 @@ function LookupContent() {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
+        const currentToken = turnstileTokenRef.current || turnstileToken
+        if (turnstileEnabled && !currentToken) {
+            setError(t.botFailed)
+            return
+        }
+
         setLoading(true)
         setError(null)
 
         try {
-            // Use the ref value to get the latest token (avoids stale closures)
-            const currentToken = turnstileTokenRef.current || turnstileToken
-
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: getAuthHeaders(),
@@ -330,6 +335,12 @@ function LookupContent() {
     }
 
     const handleSendMagicLink = async () => {
+        const currentToken = turnstileTokenRef.current || turnstileToken
+        if (turnstileEnabled && !currentToken) {
+            setError(t.botFailed)
+            return
+        }
+
         setLoading(true)
         setError(null)
 
@@ -339,7 +350,7 @@ function LookupContent() {
                 headers: getAuthHeaders(),
                 body: JSON.stringify({
                     email: email.trim(),
-                    turnstileToken,
+                    turnstileToken: currentToken,
                 }),
             })
 
@@ -600,7 +611,7 @@ function LookupContent() {
                             <Button unstyled
                                 type="submit"
                                 className="auth-btn-primary"
-                                disabled={loading || !password}
+                                disabled={loading || !password || (turnstileEnabled && !turnstileToken)}
                             >
                                 {loading ? '...' : t.logInBtn}
                             </Button>
@@ -614,7 +625,7 @@ function LookupContent() {
                             <Button unstyled
                                 className="auth-btn-secondary"
                                 onClick={handleSendMagicLink}
-                                disabled={loading}
+                                disabled={loading || (turnstileEnabled && !turnstileToken)}
                             >
                                 <AuthIcon name="mail" size={18} style={{ marginRight: 6 }} /> {t.emailMeLink}
                             </Button>
@@ -626,7 +637,7 @@ function LookupContent() {
                     </>
                 )}
 
-                {/* Invisible Turnstile widget */}
+                {/* Visible Turnstile widget */}
                 <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />
             </div>
         </main>

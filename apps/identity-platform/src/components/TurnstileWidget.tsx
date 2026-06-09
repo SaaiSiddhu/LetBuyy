@@ -69,7 +69,7 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
                 sitekey: siteKey,
                 size: 'flexible',
                 theme: 'auto',
-                appearance: 'interaction-only',
+                appearance: 'always',
                 callback: (token: string) => onVerifyRef.current(token),
                 'expired-callback': () => {
                     // Token expired — clear it and reset widget for a fresh token

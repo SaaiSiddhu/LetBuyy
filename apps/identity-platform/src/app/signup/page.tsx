@@ -175,6 +175,8 @@ function SignupContent() {
     const [isDark, setIsDark] = useState(false)
     const [lang, setLang] = useState<Lang>('en')
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+    const turnstileEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
+        || process.env.NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true'
 
     // OTP state
     const [otp, setOtp] = useState(['', '', '', '', '', ''])
@@ -253,6 +255,10 @@ function SignupContent() {
         e.preventDefault()
         setEmailTouched(true)
         if (!trimmedEmail || !emailFormatValid) return
+        if (turnstileEnabled && !turnstileToken) {
+            setError('Please complete the verification')
+            return
+        }
 
         setLoading(true)
         setError(null)
@@ -392,6 +398,10 @@ function SignupContent() {
 
     const handleResendOtp = async () => {
         if (!canResend) return
+        if (turnstileEnabled && !turnstileToken) {
+            setError('Please complete the verification')
+            return
+        }
         setCanResend(false)
         setResendTimer(60)
         setError(null)
@@ -523,7 +533,7 @@ function SignupContent() {
                             <Button unstyled
                                 type="submit"
                                 className="auth-btn-primary"
-                                disabled={loading || !emailFormatValid}
+                                disabled={loading || !emailFormatValid || (turnstileEnabled && !turnstileToken)}
                             >
                                 {loading ? '...' : t.continue}
                             </Button>
