@@ -2,7 +2,18 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
+const args = new Set(process.argv.slice(2));
+const laneArg = [...args].find((arg) => arg.startsWith("--lane="));
+const lane = laneArg ? laneArg.slice("--lane=".length) : "gate";
+const validLanes = new Set(["gate", "report", "all"]);
+
+if (!validLanes.has(lane)) {
+  console.error(`Invalid governance lane: ${lane}. Expected one of: ${[...validLanes].join(", ")}`);
+  process.exit(1);
+}
+
 const validators = [
+  "foundation-antifabrication-gate.mjs",
   "architecture-validator.mjs",
   "runtime-validator.mjs",
   "runtime-manifest-validator.mjs",
@@ -177,6 +188,35 @@ const validators = [
   "tooling-governance-validator.mjs",
 ];
 
+const reportValidators = [
+  "foundation-stepup-report-validator.mjs",
+];
+
+const criticalGateValidators = [
+  "dependency-manifest-validator.mjs",
+  "undeclared-import-validator.mjs",
+  "package-export-validator.mjs",
+  "dependency-graph-validator.mjs",
+  "circular-import-validator.mjs",
+];
+
+const demotedValidators = [];
+
+for (const validator of criticalGateValidators) {
+  if (!validators.includes(validator)) {
+    console.error(`Critical validator must stay in the gate lane: ${validator}`);
+    process.exit(1);
+  }
+}
+
+if (demotedValidators.length) {
+  console.error(`Validator demotions are forbidden without a Wave 0 governance entry: ${demotedValidators.join(", ")}`);
+  process.exit(1);
+}
+
+const selectedValidators =
+  lane === "report" ? reportValidators : lane === "all" ? [...validators, ...reportValidators] : validators;
+
 const generatedDirectoryNames = new Set([
   "node_modules",
   ".next",
@@ -212,7 +252,7 @@ function removeGeneratedArtifactDirectories(startDirs = ["apps", "packages", "se
   for (const dir of startDirs) walk(path.join(process.cwd(), dir));
 }
 
-for (const validator of validators) {
+for (const validator of selectedValidators) {
   if (validator === "stale-artifact-validator.mjs") {
     removeGeneratedArtifactDirectories();
   }
@@ -228,4 +268,4 @@ for (const validator of validators) {
   }
 }
 
-console.log(`Governance validation passed (${validators.length} validators).`);
+console.log(`Governance ${lane} lane passed (${selectedValidators.length} validators).`);

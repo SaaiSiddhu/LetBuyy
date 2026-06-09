@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Temporary Wave-owned allowlist for pre-existing fabrication debt. New entries require a wave owner and must be burned down before the final acceptance gate.",
+  "entries": [
+    {
+      "id": "W1-PAYOUT-ADAPTER-SYNTHETIC-UTR",
+      "rule": "synthetic-utr",
+      "path": "packages/infrastructure/payout-transfer-adapter/index.ts",
+      "ownerWave": "Wave 1.4",
+      "reason": "Pre-existing payout adapter fabricates a UTR in sandbox flow; Wave 1.4 replaces this with a real provider interface and unavailable-provider failure.",
+      "snippets": [
+        "utr: `UTR${referenceToken.slice(0, 16)}`"
+      ]
+    },
+    {
+      "id": "W1-PAYOUT-ADAPTER-HARDCODED-RELEASED",
+      "rule": "hardcoded-payout-released",
+      "path": "packages/infrastructure/payout-transfer-adapter/index.ts",
+      "ownerWave": "Wave 1.3",
+      "reason": "Pre-existing payout adapter returns released without provider confirmation; Wave 1.3 adds locking, balance checks, idempotency, and state guards.",
+      "snippets": [
+        "status: 'released'"
+      ]
+    },
+    {
+      "id": "W1-PAYMENT-CAPTURE-SYNTHETIC-PROVIDER-ID",
+      "rule": "synthetic-provider-transaction-id",
+      "path": "services/api-gateway/src/routes/payments.ts",
+      "ownerWave": "Wave 1.2",
+      "reason": "Pre-existing capture route synthesizes provider payment ids from local payment ids; Wave 1.2 makes capture ledger posting provider-authoritative.",
+      "snippets": [
+        "const providerPaymentId = body.provider_payment_id || payment.provider_payment_id || `${payment.provider}_${payment.mode}_capture_${payment.id}`;"
+      ]
+    },
+    {
+      "id": "W3-DOMAIN-MOCK-REGISTRAR-RAW",
+      "rule": "mock-true-runtime-payload",
+      "path": "services/api-gateway/src/lib/registrar/index.ts",
+      "ownerWave": "Wave 3",
+      "reason": "Mock registrar is currently non-production gated; Wave 3 production safety keeps external DNS/provider actions gated off with human-run credentials.",
+      "snippets": [
+        "raw: { mock: true }",
+        "REGISTRAR_MOCK_ENABLED !== 'true'"
+      ]
+    },
+    {
+      "id": "W4-IDENTITY-OIDC-MOCK-SKELETON",
+      "rule": "mock-true-runtime-payload",
+      "path": "apps/identity-platform/src/lib/identity-foundation/oidc-disabled.ts",
+      "ownerWave": "Wave 4",
+      "reason": "OIDC is out of scope and feature-gated; Wave 4 session security/Wave 7 beta readiness must keep it honest-disabled rather than returning mock identity success.",
+      "snippets": [
+        "mock: true",
+        "FEATURE_IDENTITY_PROVIDER"
+      ]
+    }
+  ]
+}

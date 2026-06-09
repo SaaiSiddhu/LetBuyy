@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "mode": "build-and-prove-not-live-action",
+  "logicalBackup": {
+    "requiredBeforeSharedMigration": true,
+    "currentProductionWorkflowStep": ".github/workflows/production-deploy.yml#Capture encrypted production logical backup",
+    "artifactEncryption": "gpg AES256 with human-owned passphrase secret",
+    "codexMayRun": false
+  },
+  "pointInTimeRecovery": {
+    "status": "human-required-paid-tier",
+    "skipId": "SKIP-W0-PITR-TIER",
+    "defaultEnabledByCodex": false,
+    "resumeEvidence": [
+      "provider PITR enabled for the project",
+      "RPO/RTO target recorded",
+      "restore timestamp tested in a non-production clone"
+    ]
+  },
+  "restoreDrill": {
+    "script": "scripts/foundation/restore-drill.mjs",
+    "codexDefaultMode": "plan",
+    "executeScope": "local Postgres URLs only",
+    "sharedEnvironmentAction": "SKIP-DEPLOY human runbook"
+  }
+}

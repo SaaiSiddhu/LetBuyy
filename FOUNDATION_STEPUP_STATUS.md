@@ -9,8 +9,8 @@ Baseline commit: `41b6ea49c5da30a1409d4cc587d989d459288e45`
 | Phase/Wave | State | Resume marker | Completed commit |
 |---|---|---|---|
 | PHASE A — Repo Truth Audit | complete | `phase-a:committed` | `ff8f96c4` |
-| PHASE A.5 — Risk Matrix | complete | `phase-a5:committed` | `pending-this-commit` |
-| Wave 0 — Truth Harness | pending | `wave-0:branch-from-stepup-main` | — |
+| PHASE A.5 — Risk Matrix | complete | `phase-a5:committed` | `c259e424` |
+| Wave 0 — Truth Harness | complete | `wave-0:checkpoint-green` | pending branch commit |
 | Wave 1 — Money Fixes | pending | — | — |
 | Wave 2 — Tenant Isolation | pending | — | — |
 | Wave 3 — Production Safety | pending | — | — |
@@ -25,3 +25,4 @@ Baseline commit: `41b6ea49c5da30a1409d4cc587d989d459288e45`
 - No previous `FOUNDATION_STEPUP_STATUS.md` existed at session start.
 - `stepup/main` was created from `41b6ea49c5da30a1409d4cc587d989d459288e45`, which matched `develop`, `HEAD`, and `origin/main` at start.
 - Pre-existing dirty worktree changes remain user-owned and unstaged.
+- Wave 0 checkpoint is green on `stepup/wave-0-truth-harness`: `pnpm run build`, `pnpm run validate:dependencies`, `pnpm run test:foundation:wave0`, and `pnpm run validate:anti-fabrication` passed. Docker access was required only for the local ephemeral Postgres fixture.

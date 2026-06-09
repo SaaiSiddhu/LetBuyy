@@ -6,15 +6,15 @@
 ## Run summary
 - **Mission:** `FOUNDATION_STEPUP_MISSION_V2.md` · **Integration branch:** `stepup/main`
 - **Overall status:** ◐ IN PROGRESS
-- **Current wave:** Wave 0 — Truth Harness
-- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 0 · **CLASS-B STOPs:** 0
-- **Last updated:** 2026-06-09T19:29:00Z (UTC) by Codex
+- **Current wave:** Wave 0 — Truth Harness checkpoint green; pending branch commit/merge
+- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 1 · **CLASS-B STOPs:** 0
+- **Last updated:** 2026-06-09T19:38:30Z (UTC) by Codex
 
 | Phase/Wave | Status | Build | Tests | Dep-graph | Branch | Migrations | SKIPs | Blockers |
 |---|---|:--:|:--:|:--:|---|:--:|:--:|:--:|
 | PHASE A — Repo Truth Audit | ✅ complete | — | — | — | `stepup/main` | 0 | 0 | 0 |
 | PHASE A.5 — Risk Matrix | ✅ complete | — | — | — | `stepup/main` | 0 | 0 | 0 |
-| Wave 0 — Truth Harness | ☐ pending | — | — | — | — | 0 | 0 | 0 |
+| Wave 0 — Truth Harness | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-0-truth-harness` | 0 | 1 | 0 |
 | Wave 1 — Money Fixes | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | Wave 2 — Tenant Isolation | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | Wave 3 — Production Safety | ☐ pending | — | — | — | — | 0 | 0 | 0 |
@@ -62,7 +62,22 @@ Output: FOUNDATION_RISK_MATRIX.md (verified against PHASE A current state)
 Gate: every S0 has a named mitigation; committed before Wave 0.
 ```
 
-*(Wave 0 … Wave 7, WAVE FINAL blocks appended here by Codex as it executes — one per wave, using the TEMPLATE.)*
+### Wave 0 — Truth Harness
+```
+Status:        complete-with-SKIPs
+Started:       2026-06-09T19:33:00Z
+Completed:     2026-06-09T19:38:30Z
+Branch:        stepup/wave-0-truth-harness (merged to stepup/main: no)
+Build:         green (pnpm run build)
+Tests:         green (pnpm run test:foundation:wave0; planted fake UTR fails gate; real Postgres ledger test executes post_ledger_transaction)
+Dependency-graph: green (pnpm run validate:dependencies)
+Files changed: 15 Wave 0-owned files, plus dashboard/status/ledger/SKIP artifacts
+Migrations added: none
+SKIPs:         SKIP-W0-PITR-TIER
+Blockers:      none
+Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
+Next wave:     Wave 1 — Money Fixes (precondition met after merge: yes)
+```
 
 ---
 

@@ -11,7 +11,10 @@
         "build": "turbo build",
         "lint": "turbo lint",
         "validate:architecture": "node scripts/validate-architecture.mjs",
-        "validate:governance": "node scripts/validate-governance.mjs",
+        "validate:governance": "node scripts/validate-governance.mjs --lane=gate",
+        "validate:governance:gate": "node scripts/validate-governance.mjs --lane=gate",
+        "validate:governance:report": "node scripts/validate-governance.mjs --lane=report",
+        "validate:anti-fabrication": "node scripts/validators/foundation-antifabrication-gate.mjs",
         "validate:design-system": "node scripts/validators/validate-design-system.mjs",
         "validate:design-system:update": "node scripts/validators/validate-design-system.mjs --update",
         "validate:mobile-tokens": "node scripts/generators/generate-mobile-tokens.mjs --check",
@@ -53,6 +56,7 @@
         "certify:production:provider": "node infrastructure/scripts/operations/run-provider-production-certification.mjs --environment=production --mode=auto",
         "certify:production:plan-report": "node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan",
         "test": "node --test --test-concurrency=1 tests/*/*.test.mjs && pnpm run test:contracts",
+        "test:foundation:wave0": "node --test tests/governance/foundation-wave0.test.mjs && node scripts/foundation/ephemeral-postgres.mjs start && node --test tests/executable/money-ledger-postgres.test.mjs",
         "test:governance": "pnpm run test:behavioral && pnpm run test:contracts",
         "test:behavioral": "node --test --test-concurrency=1 tests/*/*.test.mjs",
         "test:contracts": "tsx --test tests/contracts/*.test.ts",
@@ -63,7 +67,10 @@
         "chaos:plan": "node chaos/run-chaos-evidence.mjs --mode=plan",
         "chaos:execute": "node chaos/run-chaos-evidence.mjs --mode=execute",
         "survivability:plan": "node infrastructure/scripts/operations/run-survivability-suite.mjs --environment=production --mode=plan",
-        "typecheck": "turbo typecheck"
+        "typecheck": "turbo typecheck",
+        "foundation:pg:start": "node scripts/foundation/ephemeral-postgres.mjs start",
+        "foundation:pg:stop": "node scripts/foundation/ephemeral-postgres.mjs stop",
+        "foundation:restore-drill:plan": "node scripts/foundation/restore-drill.mjs --plan"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "4.20260525.1",
