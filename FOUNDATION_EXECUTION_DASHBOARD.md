@@ -152,7 +152,7 @@ Next wave:     Wave 5 — Design Governance (precondition met: yes)
 Status:        complete-with-SKIPs
 Started:       2026-06-09T21:01:00Z
 Completed:     2026-06-09T21:10:39Z
-Branch:        stepup/wave-5-design-governance (merged to stepup/main: pending)
+Branch:        stepup/wave-5-design-governance (merged to stepup/main: yes, aa763b76)
 Build:         green (pnpm run build)
 Tests:         green (pnpm run test:foundation:wave5; validates design ratchet pass/fail behavior, marketing exile, no local workspace shell implementation, and mobile token parity)
 Dependency-graph: green (pnpm run validate:dependencies)
@@ -161,7 +161,7 @@ Migrations added: none
 SKIPs:         SKIP-W5-TOKEN-MIGRATION-PRODUCT-CALL
 Blockers:      none
 Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
-Next wave:     Wave 6 — Theme Governance (precondition met after merge: pending)
+Next wave:     Wave 6 — Theme Governance (precondition met after merge: yes)
 ```
 
 ---
