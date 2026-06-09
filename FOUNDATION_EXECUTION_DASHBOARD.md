@@ -6,9 +6,9 @@
 ## Run summary
 - **Mission:** `FOUNDATION_STEPUP_MISSION_V2.md` · **Integration branch:** `stepup/main`
 - **Overall status:** ◐ IN PROGRESS
-- **Current wave:** Wave 2 — Tenant Isolation
+- **Current wave:** Wave 3 — Production Safety
 - **Open blockers:** 0 · **Open CLASS-A SKIPs:** 2 · **CLASS-B STOPs:** 0
-- **Last updated:** 2026-06-09T20:17:38Z (UTC) by Codex
+- **Last updated:** 2026-06-09T20:20:30Z (UTC) by Codex
 
 | Phase/Wave | Status | Build | Tests | Dep-graph | Branch | Migrations | SKIPs | Blockers |
 |---|---|:--:|:--:|:--:|---|:--:|:--:|:--:|
@@ -101,7 +101,7 @@ Next wave:     Wave 2 — Tenant Isolation (precondition met: yes)
 Status:        complete
 Started:       2026-06-09T20:03:00Z
 Completed:     2026-06-09T20:17:38Z
-Branch:        stepup/wave-2-tenant-isolation (merged to stepup/main: pending fast-forward)
+Branch:        stepup/wave-2-tenant-isolation (merged to stepup/main: yes, 49741343)
 Build:         green (pnpm run build)
 Tests:         green (pnpm run test:foundation:wave2; exhaustive registry fail-closed test over 261 tenant tables, scoped mutation proof, and tenant-isolation validator)
 Dependency-graph: green (pnpm run validate:dependencies)
@@ -110,7 +110,7 @@ Migrations added: none
 SKIPs:         none
 Blockers:      none
 Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
-Next wave:     Wave 3 — Production Safety (precondition met: yes after fast-forward merge)
+Next wave:     Wave 3 — Production Safety (precondition met: yes)
 ```
 
 ---
