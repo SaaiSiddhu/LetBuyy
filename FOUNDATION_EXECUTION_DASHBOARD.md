@@ -6,14 +6,14 @@
 ## Run summary
 - **Mission:** `FOUNDATION_STEPUP_MISSION_V2.md` · **Integration branch:** `stepup/main`
 - **Overall status:** ◐ IN PROGRESS
-- **Current wave:** PHASE A.5 — Risk Matrix
+- **Current wave:** Wave 0 — Truth Harness
 - **Open blockers:** 0 · **Open CLASS-A SKIPs:** 0 · **CLASS-B STOPs:** 0
-- **Last updated:** 2026-06-09T19:21:18Z (UTC) by Codex
+- **Last updated:** 2026-06-09T19:29:00Z (UTC) by Codex
 
 | Phase/Wave | Status | Build | Tests | Dep-graph | Branch | Migrations | SKIPs | Blockers |
 |---|---|:--:|:--:|:--:|---|:--:|:--:|:--:|
 | PHASE A — Repo Truth Audit | ✅ complete | — | — | — | `stepup/main` | 0 | 0 | 0 |
-| PHASE A.5 — Risk Matrix | ☐ pending | — | — | — | `stepup/main` | 0 | 0 | 0 |
+| PHASE A.5 — Risk Matrix | ✅ complete | — | — | — | `stepup/main` | 0 | 0 | 0 |
 | Wave 0 — Truth Harness | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | Wave 1 — Money Fixes | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | Wave 2 — Tenant Isolation | ☐ pending | — | — | — | — | 0 | 0 | 0 |
@@ -57,7 +57,7 @@ Gate: complete when this dashboard/status update and the four PHASE A artifacts 
 
 ### PHASE A.5 — Risk Matrix
 ```
-Status: pending
+Status: complete
 Output: FOUNDATION_RISK_MATRIX.md (verified against PHASE A current state)
 Gate: every S0 has a named mitigation; committed before Wave 0.
 ```

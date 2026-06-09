@@ -8,9 +8,9 @@ Baseline commit: `41b6ea49c5da30a1409d4cc587d989d459288e45`
 
 | Phase/Wave | State | Resume marker | Completed commit |
 |---|---|---|---|
-| PHASE A — Repo Truth Audit | complete | `phase-a:committed` | `pending-this-commit` |
-| PHASE A.5 — Risk Matrix | pending | `phase-a5:verify-risk-matrix` | — |
-| Wave 0 — Truth Harness | pending | — | — |
+| PHASE A — Repo Truth Audit | complete | `phase-a:committed` | `ff8f96c4` |
+| PHASE A.5 — Risk Matrix | complete | `phase-a5:committed` | `pending-this-commit` |
+| Wave 0 — Truth Harness | pending | `wave-0:branch-from-stepup-main` | — |
 | Wave 1 — Money Fixes | pending | — | — |
 | Wave 2 — Tenant Isolation | pending | — | — |
 | Wave 3 — Production Safety | pending | — | — |
