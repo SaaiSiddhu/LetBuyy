@@ -2,6 +2,9 @@ import { cache } from 'react'
 import { LetbuyyApiError } from '@letbuyy/api-client'
 import { MerchantApiRequestError, createMerchantApiClient } from '@/lib/api/client'
 
+const QUERY_COST_RATE_LIMITED = 'QUERY_COST_RATE_LIMITED'
+const QUERY_COST_RETRY_DELAYS_MS = [250, 750, 1_500] as const
+
 /**
  * Extract the HTTP status code carried by a typed API error.
  * Returns null for non-HTTP failures (network, timeout, unexpected throws),
@@ -13,6 +16,51 @@ function apiErrorStatus(error: unknown): number | null {
     return null
 }
 
+function apiErrorCode(error: unknown): string | null {
+    if (error instanceof LetbuyyApiError) return error.code
+    if (error instanceof MerchantApiRequestError) {
+        const payload = error.payload
+        if (
+            payload &&
+            typeof payload === 'object' &&
+            'error' in payload &&
+            payload.error &&
+            typeof payload.error === 'object' &&
+            'code' in payload.error &&
+            typeof payload.error.code === 'string'
+        ) {
+            return payload.error.code
+        }
+    }
+    return null
+}
+
+export function isQueryCostRateLimited(error: unknown): boolean {
+    return apiErrorStatus(error) === 429 && apiErrorCode(error) === QUERY_COST_RATE_LIMITED
+}
+
+async function wait(ms: number): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function retryMerchantRead<T>(operation: () => Promise<T>): Promise<T> {
+    let attempt = 0
+
+    while (true) {
+        try {
+            return await operation()
+        } catch (error) {
+            const delay = QUERY_COST_RETRY_DELAYS_MS[attempt]
+            if (!isQueryCostRateLimited(error) || delay === undefined) {
+                throw error
+            }
+
+            attempt += 1
+            await wait(delay)
+        }
+    }
+}
+
 export interface SessionUser {
     id: string
     email: string
@@ -22,7 +70,7 @@ export interface SessionUser {
 
 export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
     try {
-        const payload = await createMerchantApiClient().auth.session()
+        const payload = await retryMerchantRead(() => createMerchantApiClient().auth.session())
 
         if (!payload.authenticated || !payload.user) return null
 
@@ -59,7 +107,7 @@ export const getStoreForUser = cache(async (
     custom_domain: string | null
 } | null> => {
     try {
-        const data = await createMerchantApiClient().stores.getByHandle(storeName)
+        const data = await retryMerchantRead(() => createMerchantApiClient().stores.getByHandle(storeName))
 
         if (!data) return null
 
@@ -97,7 +145,7 @@ export const getUserStores = cache(async (
     status: string
 }>> => {
     try {
-        const payload = await createMerchantApiClient().stores.list({ limit: 50 })
+        const payload = await retryMerchantRead(() => createMerchantApiClient().stores.list({ limit: 50 }))
 
         return payload.data.map((store) => ({
             id: store.id,

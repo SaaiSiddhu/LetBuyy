@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { getSessionUser, getStoreForUser, getUserStores } from "@/lib/auth/session";
+import { getSessionUser, getStoreForUser, getUserStores, isQueryCostRateLimited } from "@/lib/auth/session";
 import AdminShell from "@/components/AdminShell";
 import { getAccountsUrl } from "@/lib/public-urls";
 
@@ -27,8 +27,22 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
         notFound();
     }
 
-    // Get all user's stores for store switcher
-    const userStores = await getUserStores(user.id);
+    // The switcher list is useful but not required for the current store page.
+    // If the shared query-cost bucket is draining, keep the merchant workflow open.
+    const userStores = await getUserStores(user.id).catch((error) => {
+        if (!isQueryCostRateLimited(error)) {
+            throw error;
+        }
+
+        return [{
+            id: storeData.id,
+            name: storeData.name,
+            store_name: storeData.store_name,
+            subdomain: storeData.subdomain,
+            site_type: storeData.site_type,
+            status: storeData.status,
+        }];
+    });
 
     return (
         <AdminShell
