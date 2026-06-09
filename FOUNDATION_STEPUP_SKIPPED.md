@@ -63,3 +63,19 @@ BLOCKED BY: Product/security approval for Liquid rendering semantics, app-block 
 GATED AT: `packages/theme-engine/src/theme-governance.ts` keeps `THEME_LIQUID_RENDERING_DEFAULT_ENABLED` false by default, and `apps/storefront-runtime/src/lib/theme-engine/template-resolver.ts` resolves Liquid bundles only when an explicit runtime option enables them. Unknown or unapproved section types are audited through the renderer registry and render a fallback placeholder rather than disappearing.
 
 TO RESUME: Approve the Liquid/app-block product scope, sandbox and migration policy, enable the runtime explicitly in a non-production storefront path, run renderer/schema migration tests against saved stores, then record apply/verify/rollback evidence before allowing shared traffic.
+
+## SKIP-W7-MOBILE-TURNSTILE-SECRET · Wave 7 · Mobile Cloudflare Turnstile secret provisioning · CLASS-A
+
+BLOCKED BY: Human-owned Cloudflare Turnstile project/site-secret provisioning and provider secret-store mutation for the mobile BFF worker.
+
+GATED AT: `services/mobile-bff/src/index.ts` verifies mobile Turnstile tokens through Cloudflare siteverify only when `TURNSTILE_SECRET_KEY` is configured; unset or `SKIP_NEEDS_HUMAN_*` values fail closed with `TURNSTILE_NOT_CONFIGURED`. `services/mobile-bff/wrangler.toml` and `config/env/templates/worker.env.example` document the secret as human-owned. Codex did not provision or rotate provider secrets.
+
+TO RESUME: Create the approved mobile Turnstile site in Cloudflare, store the secret in the target Worker environment with `wrangler secret put TURNSTILE_SECRET_KEY`, run a non-production mobile login challenge against the BFF verifier, and attach apply/verify/rollback evidence before enabling production mobile login traffic.
+
+## SKIP-W7-WHATSAPP-LIVE-CREDS · Wave 7 · Live WhatsApp/Twilio COD lifecycle credentials · CLASS-A
+
+BLOCKED BY: Human-owned WABA/BSP or Twilio WhatsApp credentials, approved HSM templates, webhook secret setup, and provider compliance approval.
+
+GATED AT: COD confirmation requests use the honest `letbuyy_sandbox` provider and `mode: 'sandbox'`; live WhatsApp rails remain gated by the existing `HR-WHATSAPP-LIVE` marker and the worker env template keeps Twilio credentials as `SKIP_NEEDS_HUMAN_*`. Codex did not send live WhatsApp traffic or configure provider credentials.
+
+TO RESUME: Provision approved WABA/BSP or Twilio credentials, configure templates and webhook secret in a non-production Worker environment, run COD confirmation and order lifecycle notification probes with provider evidence, then record apply/verify/rollback steps before enabling live WhatsApp delivery.

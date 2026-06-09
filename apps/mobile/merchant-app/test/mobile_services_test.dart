@@ -4464,6 +4464,60 @@ void main() {
       expect(requests.last.headers['X-CSRF-Token'], 'csrf_123');
     });
 
+    test('verifies Turnstile with the mobile BFF before password login', () async {
+      final requests = <http.Request>[];
+      final auth = StoreAuthService(
+        api: _FakeApiClient(),
+        identityBaseUrl: 'https://accounts.test',
+        mobileBffBaseUrl: 'https://bff.test/v1',
+        turnstileTokenProvider: () => 'turnstile_token',
+        httpClient: MockClient((request) async {
+          requests.add(request);
+          switch (request.url.host) {
+            case 'bff.test':
+              expect(request.url.path, '/v1/auth/mobile/turnstile/verify');
+              expect(request.body, contains('turnstile_token'));
+              return http.Response('{"success":true}', 200);
+            case 'accounts.test':
+              if (request.url.path == '/login') {
+                return http.Response(
+                  '',
+                  200,
+                  headers: {'set-cookie': 'letbuyy_csrf=csrf_123; Path=/;'},
+                );
+              }
+              if (request.url.path == '/api/auth/login') {
+                return http.Response(
+                  '{"success":true}',
+                  200,
+                  headers: {'set-cookie': 'lb_session=session_123; Path=/;'},
+                );
+              }
+              if (request.url.path == '/api/auth/session') {
+                return http.Response(
+                  '{"authenticated":true,"user":{"id":"user_1","email":"m@example.com"}}',
+                  200,
+                );
+              }
+          }
+          return http.Response('not found', 404);
+        }),
+      );
+
+      final user = await auth.signInWithPassword(
+        'M@Example.COM',
+        'Password123',
+      );
+
+      expect(user?.email, 'm@example.com');
+      expect(requests.map((request) => request.url.host), [
+        'accounts.test',
+        'bff.test',
+        'accounts.test',
+        'accounts.test',
+      ]);
+    });
+
     test('verifies OTP, sets password, and persists lb_session', () async {
       final auth = StoreAuthService(
         api: _FakeApiClient(),

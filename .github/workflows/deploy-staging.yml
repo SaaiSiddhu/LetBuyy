@@ -43,6 +43,7 @@ jobs:
       - name: Build active workers
         run: |
           pnpm turbo build --filter=@letbuyy/api-gateway
+          pnpm turbo build --filter=@letbuyy/mobile-bff
           pnpm turbo build --filter=@letbuyy/webhook-service
           pnpm turbo build --filter=@letbuyy/queue-workers
 
@@ -58,6 +59,14 @@ jobs:
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
         run: pnpm exec wrangler deploy --env staging
         working-directory: services/webhook-service
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy mobile-bff staging
+        if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
+        run: pnpm exec wrangler deploy --env staging
+        working-directory: services/mobile-bff
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

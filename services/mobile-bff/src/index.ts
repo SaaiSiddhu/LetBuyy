@@ -4,6 +4,7 @@ import { Hono } from 'hono';
 export interface Env {
   API_GATEWAY_SERVICE: Fetcher;
   INTERNAL_API_SECRET?: string;
+  TURNSTILE_SECRET_KEY?: string;
   ENVIRONMENT?: string;
   APP_ENV?: string;
   NODE_ENV?: string;
@@ -20,6 +21,7 @@ const app = new Hono<{ Bindings: Env }>();
 const VERSIONED_PREFIX = '/v1';
 const SESSION_COOKIE_NAME = 'lb_session';
 const PLACEHOLDER_PREFIX = 'SKIP_NEEDS_HUMAN_';
+const TURNSTILE_SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const ALLOWED_PREFIXES = [
   '/v1/auth',
   '/v1/stores',
@@ -76,6 +78,7 @@ function jsonResponse(body: unknown, status = 200): Response {
 function healthResponse(env: Env) {
   const secret = env.INTERNAL_API_SECRET;
   const secretConfigured = Boolean(secret && !secret.startsWith(PLACEHOLDER_PREFIX));
+  const turnstileConfigured = isConfiguredSecret(env.TURNSTILE_SECRET_KEY);
 
   return {
     status: secretConfigured ? 'healthy' : 'degraded',
@@ -84,6 +87,65 @@ function healthResponse(env: Env) {
     version: '1.0.0',
     gateway_binding_configured: Boolean(env.API_GATEWAY_SERVICE),
     internal_session_secret_configured: secretConfigured,
+    mobile_turnstile_secret_configured: turnstileConfigured,
+  };
+}
+
+function isConfiguredSecret(value: string | undefined): boolean {
+  const trimmed = value?.trim();
+  return Boolean(trimmed && !trimmed.startsWith(PLACEHOLDER_PREFIX) && !trimmed.includes('replace-with'));
+}
+
+function clientIp(request: Request): string | null {
+  return request.headers.get('CF-Connecting-IP')
+    || request.headers.get('X-Forwarded-For')?.split(',')[0]?.trim()
+    || null;
+}
+
+export interface MobileTurnstileVerificationResult {
+  ok: boolean;
+  status: 'verified' | 'invalid' | 'unavailable';
+  code?: string;
+}
+
+export async function verifyMobileTurnstileToken(input: {
+  token: string;
+  env: Pick<Env, 'TURNSTILE_SECRET_KEY'>;
+  remoteIp?: string | null;
+  fetcher?: typeof fetch;
+}): Promise<MobileTurnstileVerificationResult> {
+  const token = input.token.trim();
+  if (!token || token.startsWith(PLACEHOLDER_PREFIX)) {
+    return { ok: false, status: 'invalid', code: 'TURNSTILE_TOKEN_REQUIRED' };
+  }
+
+  const secret = input.env.TURNSTILE_SECRET_KEY;
+  if (!isConfiguredSecret(secret)) {
+    return { ok: false, status: 'unavailable', code: 'TURNSTILE_NOT_CONFIGURED' };
+  }
+
+  const body = new URLSearchParams({
+    secret: secret!.trim(),
+    response: token,
+  });
+  if (input.remoteIp) body.set('remoteip', input.remoteIp);
+
+  const response = await (input.fetcher || fetch)(TURNSTILE_SITEVERIFY_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body,
+  });
+
+  if (!response.ok) {
+    return { ok: false, status: 'unavailable', code: 'TURNSTILE_PROVIDER_UNAVAILABLE' };
+  }
+
+  const payload = await response.json().catch(() => null) as { success?: boolean; 'error-codes'?: string[] } | null;
+  if (payload?.success === true) return { ok: true, status: 'verified' };
+  return {
+    ok: false,
+    status: 'invalid',
+    code: payload?.['error-codes']?.[0] || 'TURNSTILE_INVALID',
   };
 }
 
@@ -213,6 +275,30 @@ async function proxyToGateway(request: Request, env: Env): Promise<Response> {
 
 app.get('/health', (c) => jsonResponse(healthResponse(c.env), healthResponse(c.env).status === 'healthy' ? 200 : 503));
 app.get('/v1/health', (c) => jsonResponse(healthResponse(c.env), healthResponse(c.env).status === 'healthy' ? 200 : 503));
+app.post('/v1/auth/mobile/turnstile/verify', async (c) => {
+  const body = await c.req.json().catch(() => ({})) as { token?: unknown };
+  const token = typeof body.token === 'string' ? body.token : '';
+  const result = await verifyMobileTurnstileToken({
+    token,
+    env: c.env,
+    remoteIp: clientIp(c.req.raw),
+  });
+
+  if (result.ok) {
+    return c.json({ success: true, verification: { provider: 'cloudflare_turnstile', status: result.status } });
+  }
+
+  const status = result.status === 'unavailable' ? 503 : 403;
+  return c.json({
+    success: false,
+    error: {
+      code: result.code || 'TURNSTILE_VERIFICATION_FAILED',
+      message: result.status === 'unavailable'
+        ? 'Mobile verification is temporarily unavailable.'
+        : 'Mobile verification failed.',
+    },
+  }, status);
+});
 app.all('/v1/*', (c) => proxyToGateway(c.req.raw, c.env));
 app.all('*', (c) => proxyToGateway(c.req.raw, c.env));
 

@@ -33,6 +33,9 @@ FAILOVER_REGION = "ap-southeast-1"
 #   wrangler secret put INTERNAL_API_SECRET --env production
 # Do NOT commit it as a plaintext [vars] value. The runtime fails closed (HTTP 500)
 # if it is unset or still equals the old SKIP_NEEDS_HUMAN placeholder.
+# TURNSTILE_SECRET_KEY is also a Worker SECRET. Mobile Turnstile verification
+# fails closed while it is unset; production key provisioning is a Wave 7
+# human-owned SKIP-DEPLOY action.
 
 [env.staging]
 name = "letbuyy-mobile-bff-staging"
@@ -68,6 +71,9 @@ FAILOVER_REGION = "ap-southeast-1"
 #   wrangler secret put INTERNAL_API_SECRET --env production
 # Do NOT commit it as a plaintext [vars] value. The runtime fails closed (HTTP 500)
 # if it is unset or still equals the old SKIP_NEEDS_HUMAN placeholder.
+# TURNSTILE_SECRET_KEY is also a Worker SECRET. Mobile Turnstile verification
+# fails closed while it is unset; production key provisioning is a Wave 7
+# human-owned SKIP-DEPLOY action.
 
 [[env.staging.services]]
 binding = "API_GATEWAY_SERVICE"
@@ -113,6 +119,9 @@ FAILOVER_REGION = "ap-southeast-1"
 #   wrangler secret put INTERNAL_API_SECRET --env production
 # Do NOT commit it as a plaintext [vars] value. The runtime fails closed (HTTP 500)
 # if it is unset or still equals the old SKIP_NEEDS_HUMAN placeholder.
+# TURNSTILE_SECRET_KEY is also a Worker SECRET. Mobile Turnstile verification
+# fails closed while it is unset; production key provisioning is a Wave 7
+# human-owned SKIP-DEPLOY action.
 
 [[env.production.services]]
 binding = "API_GATEWAY_SERVICE"

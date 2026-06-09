@@ -9,15 +9,19 @@ import {
     assertBrandingIsDataOnly,
     normalizeCheckoutChannel,
     planCheckoutStateTransition,
+    type CreateCheckoutOrderCommand,
     type CheckoutSessionState,
     type StoreBrandingInput,
 } from '@letbuyy/checkout-core';
 import type { Env } from '../index';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
+import { OrderExecutionAdapter } from '../execution/order-execution.adapter';
+import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { hmacSha256Hex, timingSafeEqualHex } from '../lib/crypto';
 import { getSupabaseAdmin, success } from '../lib/supabase';
+import { createPublicStorefrontTenantContext } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
 
 type AppContext = Context<{ Bindings: Env }>;
@@ -48,6 +52,8 @@ type CheckoutSessionRow = {
     buyer_phone?: string | null;
     buyer_gstin?: string | null;
     shipping_address?: JsonRecord | null;
+    shipping_method?: string | null;
+    payment_method?: string | null;
     delivery_quote?: JsonRecord | null;
     payment_intent?: JsonRecord | null;
     inventory_reservation_ids?: string[] | null;
@@ -57,7 +63,7 @@ type CheckoutSessionRow = {
     metadata?: JsonRecord | null;
 };
 
-type VerifiedHandoff = {
+export type VerifiedHandoff = {
     siteId: string;
     cartId: string;
     cartToken: string;
@@ -66,6 +72,7 @@ type VerifiedHandoff = {
 };
 
 type StepTarget = 'contact' | 'delivery' | 'payment_intent' | 'completed' | 'failed';
+type HostedCheckoutPaymentProvider = 'razorpay' | 'stripe' | 'paypal' | 'cashfree' | 'cod';
 
 const checkoutRouter = new Hono<{ Bindings: Env }>();
 export const publicStoreBrandingRouter = new Hono<{ Bindings: Env }>();
@@ -124,6 +131,83 @@ function cartLines(cart: CartRow): JsonRecord[] {
     return Array.isArray(cart.items)
         ? cart.items.filter((line): line is JsonRecord => Boolean(line) && typeof line === 'object' && !Array.isArray(line))
         : [];
+}
+
+function stringValue(value: unknown): string | undefined {
+    return typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined;
+}
+
+function normalizeHostedCheckoutPaymentProvider(value: unknown): HostedCheckoutPaymentProvider | null {
+    const provider = stringValue(value)?.toLowerCase();
+    if (provider === 'razorpay' || provider === 'stripe' || provider === 'paypal' || provider === 'cashfree' || provider === 'cod') {
+        return provider;
+    }
+    return null;
+}
+
+function checkoutPaymentProvider(session: CheckoutSessionRow): HostedCheckoutPaymentProvider | null {
+    const intent = session.payment_intent;
+    return normalizeHostedCheckoutPaymentProvider(intent?.provider)
+        || normalizeHostedCheckoutPaymentProvider(session.payment_method)
+        || null;
+}
+
+function checkoutShippingMethod(session: CheckoutSessionRow): 'standard' | 'express' {
+    const method = stringValue(session.shipping_method)
+        || stringValue(session.delivery_quote?.shipping_method)
+        || stringValue(session.delivery_quote?.method);
+    return method === 'express' ? 'express' : 'standard';
+}
+
+function checkoutOrderItems(cart: CartRow): CreateCheckoutOrderCommand['items'] {
+    return cartLines(cart).map((line) => ({
+        product_id: stringValue(line.product_id) || stringValue(line.productId) || '',
+        variant_id: stringValue(line.variant_id) || stringValue(line.variantId) || null,
+        quantity: Number(line.quantity || 0),
+    })).filter((line) => line.product_id && Number.isInteger(line.quantity) && line.quantity > 0);
+}
+
+export function buildHostedCheckoutOrderCommand(
+    handoff: Pick<VerifiedHandoff, 'siteId' | 'cartId' | 'cart'>,
+    session: CheckoutSessionRow,
+    idempotencyKey: string,
+): { ok: true; provider: HostedCheckoutPaymentProvider; command: CreateCheckoutOrderCommand } | { ok: false; code: string; message: string } {
+    const provider = checkoutPaymentProvider(session);
+    if (!provider) {
+        return {
+            ok: false,
+            code: 'CHECKOUT_PAYMENT_METHOD_UNSUPPORTED',
+            message: 'Checkout payment method is not supported for hosted confirmation.',
+        };
+    }
+
+    const items = checkoutOrderItems(handoff.cart);
+    if (items.length === 0) {
+        return { ok: false, code: 'CHECKOUT_CART_EMPTY', message: 'Cart has no valid order items.' };
+    }
+
+    const email = stringValue(session.customer_email) || stringValue(handoff.cart.buyer_email);
+    const name = stringValue(session.buyer_name) || email;
+    if (!email || !name) {
+        return { ok: false, code: 'CHECKOUT_CUSTOMER_REQUIRED', message: 'Checkout customer details are incomplete.' };
+    }
+
+    return {
+        ok: true,
+        provider,
+        command: {
+            customer_name: name,
+            customer_email: email,
+            customer_phone: stringValue(session.buyer_phone),
+            customer_gstin: stringValue(session.buyer_gstin),
+            shipping_address: session.shipping_address || {},
+            items,
+            payment_method: provider,
+            shipping_method: checkoutShippingMethod(session),
+            coupon_code: stringValue(handoff.cart.coupon_code),
+            idempotency_key: `hosted-checkout:${handoff.cartId}:${idempotencyKey}`,
+        },
+    };
 }
 
 function paymentIntentId(session: CheckoutSessionRow): string | null {
@@ -463,6 +547,48 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
 
         const revalidation = await revalidateConfirmInputs(c, verified.handoff, existing);
         const forcedFailure = body.simulate_order_failure === true;
+        const orderPlan = buildHostedCheckoutOrderCommand(verified.handoff, existing, body.idempotency_key);
+        if (!orderPlan.ok) {
+            return {
+                body: {
+                    success: false,
+                    error: { code: orderPlan.code, message: orderPlan.message },
+                },
+                status: 400,
+                resourceId: existing.id,
+            };
+        }
+
+        const requestedPaymentIntentId = stringValue(body.payment_intent_id);
+        const expectedPaymentIntentId = paymentIntentId(existing);
+        if (requestedPaymentIntentId && expectedPaymentIntentId && requestedPaymentIntentId !== expectedPaymentIntentId) {
+            return {
+                body: {
+                    success: false,
+                    error: {
+                        code: 'CHECKOUT_PAYMENT_INTENT_MISMATCH',
+                        message: 'Payment intent does not match this checkout session.',
+                    },
+                },
+                status: 409,
+                resourceId: existing.id,
+            };
+        }
+
+        if (orderPlan.provider !== 'cod' && !stringValue(body.provider_payment_id)) {
+            return {
+                body: {
+                    success: false,
+                    error: {
+                        code: 'CHECKOUT_PROVIDER_PAYMENT_REQUIRED',
+                        message: 'Provider payment proof is required before checkout confirmation.',
+                    },
+                },
+                status: 400,
+                resourceId: existing.id,
+            };
+        }
+
         if (!revalidation.ok || forcedFailure) {
             const reason = forcedFailure
                 ? 'order_create_failed'
@@ -474,7 +600,7 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
             await recordCheckoutCompensation(c, {
                 siteId: verified.handoff.siteId,
                 checkoutId: failedSession.id,
-                paymentIntentId: body.payment_intent_id || paymentIntentId(existing),
+                paymentIntentId: requestedPaymentIntentId || expectedPaymentIntentId,
                 idempotencyKey: `checkout.confirm.compensate:${failedSession.id}:${body.idempotency_key}`,
                 reason,
             });
@@ -489,12 +615,40 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
             return { body: { success: false, error: { code: 'CHECKOUT_CONFIRM_FAILED', message: 'Checkout could not be confirmed.' } }, status: 409, resourceId: failedSession.id };
         }
 
+        const db = getSupabaseAdmin(c);
+        const tenant = await createPublicStorefrontTenantContext(c, verified.handoff.siteId);
+        const order = await new OrderExecutionAdapter(db).createOrder(orderPlan.command, tenant) as JsonRecord;
+        const orderId = stringValue(order.id);
+        if (!orderId) {
+            throw new Error('Hosted checkout order creation returned no order id');
+        }
+
+        let paidOrder: unknown = order;
+        if (orderPlan.provider !== 'cod') {
+            paidOrder = await new PaymentExecutionAdapter(db).confirmPayment({
+                orderId,
+                provider: orderPlan.provider,
+                providerPaymentId: stringValue(body.provider_payment_id)!,
+                providerOrderId: requestedPaymentIntentId || expectedPaymentIntentId,
+                providerEventId: `hosted_checkout:${orderPlan.provider}:${stringValue(body.provider_payment_id)}`,
+                requestId: getRequestId(c),
+                idempotencyKey: `checkout.confirm.capture:${orderId}:${body.idempotency_key}`,
+            });
+        }
+
         const session = await persistCheckoutStep(c, verified.handoff, 'completed', {
+            order_id: orderId,
+            payment_method: orderPlan.provider,
             confirmed_at: new Date().toISOString(),
+            metadata: {
+                ...(existing.metadata || {}),
+                order_id: orderId,
+                payment_provider: orderPlan.provider,
+                capture_posted_to_ledger: orderPlan.provider !== 'cod',
+            },
         });
         if (!session) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout cannot be confirmed.' } }, status: 409 };
 
-        const db = getSupabaseAdmin(c);
         await db
             .from('carts')
             .update({ status: 'converted' })
@@ -506,10 +660,10 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
             checkoutId: session.id,
             eventType: 'checkout.completed',
             idempotencyKey: `checkout.completed:${session.id}:${body.idempotency_key}`,
-            payload: { channel: session.channel || 'web' },
+            payload: { channel: session.channel || 'web', order_id: orderId },
         });
 
-        return { body: success({ checkout: sessionPayload(session) }), status: 200, resourceId: session.id };
+        return { body: success({ checkout: sessionPayload(session), order: paidOrder }), status: 200, resourceId: session.id };
     });
 });
 

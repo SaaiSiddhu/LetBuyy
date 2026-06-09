@@ -93,11 +93,15 @@ class StoreAuthService extends ChangeNotifier {
   StoreAuthService({
     required ApiClient api,
     required String identityBaseUrl,
+    String? mobileBffBaseUrl,
     TurnstileTokenProvider? turnstileTokenProvider,
     FlutterSecureStorage? secureStorage,
     http.Client? httpClient,
   }) : _api = api,
        _identityBaseUrl = _trimTrailingSlash(identityBaseUrl),
+       _mobileBffBaseUrl = mobileBffBaseUrl == null
+           ? null
+           : _trimTrailingSlash(mobileBffBaseUrl),
        _turnstileTokenProvider = turnstileTokenProvider,
        _secureStorage = secureStorage ?? const FlutterSecureStorage(),
        _http = httpClient ?? http.Client();
@@ -110,6 +114,7 @@ class StoreAuthService extends ChangeNotifier {
 
   final ApiClient _api;
   final String _identityBaseUrl;
+  final String? _mobileBffBaseUrl;
   final TurnstileTokenProvider? _turnstileTokenProvider;
   final FlutterSecureStorage _secureStorage;
   final http.Client _http;
@@ -371,7 +376,21 @@ class StoreAuthService extends ChangeNotifier {
         'Verification is temporarily unavailable. Please try again later.',
       );
     }
+    await _verifyTurnstileWithBff(token);
     return token;
+  }
+
+  Future<void> _verifyTurnstileWithBff(String token) async {
+    final baseUrl = _mobileBffBaseUrl;
+    if (baseUrl == null || baseUrl.isEmpty) return;
+
+    final response = await _http.post(
+      Uri.parse('$baseUrl/auth/mobile/turnstile/verify'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'token': token}),
+    );
+    if (response.statusCode >= 200 && response.statusCode < 300) return;
+    throw Exception(_errorMessage(response, 'Mobile verification failed'));
   }
 
   Future<String> _fetchCsrfCookie() async {

@@ -147,7 +147,7 @@ test('Task 010 notification migration logs, suppressions, webhooks, tenant RLS, 
       'order.paid',
       '{"phone":"+919999999999"}'::jsonb,
       'sent',
-      'mock_whatsapp',
+      'letbuyy_sandbox',
       'notify-proof-001'
     );
     INSERT INTO public.notification_suppressions (

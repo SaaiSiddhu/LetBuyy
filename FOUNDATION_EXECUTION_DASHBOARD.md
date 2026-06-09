@@ -6,9 +6,9 @@
 ## Run summary
 - **Mission:** `FOUNDATION_STEPUP_MISSION_V2.md` · **Integration branch:** `stepup/main`
 - **Overall status:** ◐ IN PROGRESS
-- **Current wave:** Wave 7 — Beta Readiness
-- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 8 · **CLASS-B STOPs:** 0
-- **Last updated:** 2026-06-09T21:25:49Z (UTC) by Codex
+- **Current wave:** WAVE FINAL — Final Audit
+- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 10 · **CLASS-B STOPs:** 0
+- **Last updated:** 2026-06-09T21:45:14Z (UTC) by Codex
 
 | Phase/Wave | Status | Build | Tests | Dep-graph | Branch | Migrations | SKIPs | Blockers |
 |---|---|:--:|:--:|:--:|---|:--:|:--:|:--:|
@@ -21,7 +21,7 @@
 | Wave 4 — Session Security | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-4-session-security` | 1 | 2 | 0 |
 | Wave 5 — Design Governance | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-5-design-governance` | 0 | 1 | 0 |
 | Wave 6 — Theme Governance | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-6-theme-governance` | 0 | 1 | 0 |
-| Wave 7 — Beta Readiness | ☐ pending | — | — | — | — | 0 | 0 | 0 |
+| Wave 7 — Beta Readiness | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-7-beta-readiness` | 0 | 2 | 0 |
 | WAVE FINAL — Final Audit | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 
 Status legend: ☐ pending · ◐ in-progress · ✅ complete · ⛔ blocked (CLASS-B STOP) · ⚠ complete-with-SKIPs.
@@ -179,6 +179,23 @@ SKIPs:         SKIP-W6-LIQUID-PRODUCT-DECISION
 Blockers:      none
 Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
 Next wave:     Wave 7 — Beta Readiness (precondition met: yes)
+```
+
+### Wave 7 — Beta Readiness
+```
+Status:        complete-with-SKIPs
+Started:       2026-06-09T21:26:00Z
+Completed:     2026-06-09T21:45:14Z
+Branch:        stepup/wave-7-beta-readiness (merged to stepup/main: no, pending commit)
+Build:         green (pnpm run build; Flutter debug APK build also green)
+Tests:         green (pnpm run test:foundation:wave7; validates mobile Turnstile BFF verification, hosted checkout order/capture posting, sandbox COD/WhatsApp, focused Flutter login test, and beta-readiness validator)
+Dependency-graph: green (pnpm run validate:dependencies)
+Files changed: 22 Wave 7-owned source/config/test/governance files, plus dashboard/status/ledger/SKIP artifacts
+Migrations added: none
+SKIPs:         SKIP-W7-MOBILE-TURNSTILE-SECRET, SKIP-W7-WHATSAPP-LIVE-CREDS
+Blockers:      none
+Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
+Next wave:     WAVE FINAL — Final Audit (precondition met after merge: pending)
 ```
 
 ---

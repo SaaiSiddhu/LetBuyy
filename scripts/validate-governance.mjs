@@ -20,6 +20,7 @@ const validators = [
   "validate-design-system.mjs",
   "mobile-token-validator.mjs",
   "theme-governance-validator.mjs",
+  "beta-readiness-validator.mjs",
   "architecture-validator.mjs",
   "runtime-validator.mjs",
   "runtime-manifest-validator.mjs",

@@ -169,7 +169,7 @@ test('Task 005 order migration applies, enforces immutable checkout fields, isol
       ${sqlString(orderId)}::uuid,
       'cod-proof-001',
       'requested',
-      'mock_whatsapp'
+      'letbuyy_sandbox'
     );
     INSERT INTO public.fulfillment_orders (site_id, order_id, idempotency_key)
     VALUES (${sqlString(siteId)}::uuid, ${sqlString(orderId)}::uuid, 'fulfillment-proof-001');

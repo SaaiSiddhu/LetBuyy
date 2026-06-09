@@ -73,6 +73,7 @@ void main() {
       authService = StoreAuthService(
         api: apiClient,
         identityBaseUrl: AppConfig.identityBaseUrl,
+        mobileBffBaseUrl: AppConfig.bffBaseUrl,
         turnstileTokenProvider: () => AppConfig.turnstileToken,
       );
       final pushService = PushService(

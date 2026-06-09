@@ -45,14 +45,9 @@ const replacements = {
 
 const workerDirs = [
   "services/api-gateway",
+  "services/mobile-bff",
   "services/webhook-service",
   "services/queue-workers",
-  "services/checkout-runtime",
-  "services/notification-service",
-  "services/search-service",
-  "services/media-service",
-  "services/analytics-pipeline",
-  "services/event-bus",
 ];
 
 let updated = 0;

@@ -24,16 +24,18 @@ test('Task 005 order/risk routes are mounted in the monolith only', () => {
     assert.match(orderRiskSource, /orderCodRouter\.post\('\/:id\/cod\/timeout'/);
 });
 
-test('Task 005 risk is heuristic and COD confirmation is mock WhatsApp gated', () => {
+test('Task 005 risk is heuristic and COD confirmation is sandbox WhatsApp gated', () => {
     assert.match(checkoutCoreSource, /export function assessOrderRisk/);
     assert.match(checkoutCoreSource, /prior_rto/);
     assert.match(checkoutCoreSource, /request_cod_confirmation/);
-    assert.match(orderRiskSource, /mock_whatsapp/);
+    assert.match(orderRiskSource, /letbuyy_sandbox/);
+    assert.match(orderRiskSource, /mode:\s*'sandbox'/);
     assert.match(orderRiskSource, /HR-WHATSAPP-LIVE/);
     assert.match(orderRiskSource, /cod\.confirmation_requested/);
     assert.match(orderRiskSource, /order\.confirmed_cod/);
     assert.match(humanRequiredSource, /HR-WHATSAPP-LIVE/);
     assert.doesNotMatch(orderRiskSource, /fraudMl|fraud_ml|model_provider/i);
+    assert.doesNotMatch(orderRiskSource, /mock_whatsapp/);
 });
 
 test('Task 005 order schemas expose risk and COD contracts through the gateway facade', () => {

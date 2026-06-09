@@ -273,6 +273,9 @@
     "PAYMENT_CONFIG_ENCRYPTION_KEY": {
       "type": "string"
     },
+    "TURNSTILE_SECRET_KEY": {
+      "type": "string"
+    },
     "VERCEL_API_TOKEN": {
       "type": "string"
     },

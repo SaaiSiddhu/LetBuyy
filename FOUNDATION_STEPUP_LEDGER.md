@@ -307,3 +307,50 @@ GOVERNANCE:
 SKIPS:
 
 - `SKIP-W6-LIQUID-PRODUCT-DECISION`
+
+# WAVE 7 — Beta Readiness — 2026-06-09
+
+CHANGES:
+
+- `services/mobile-bff/src/index.ts` and `services/mobile-bff/test/session-token.test.ts` → added mobile Turnstile verification through Cloudflare siteverify, fail-closed handling for missing sentinel secrets, a `/v1/auth/mobile/turnstile/verify` endpoint, and source tests for both unavailable and provider-success paths.
+- `apps/mobile/merchant-app/lib/services/store_auth_service.dart`, `apps/mobile/merchant-app/lib/main.dart`, and `apps/mobile/merchant-app/test/mobile_services_test.dart` → mobile login now verifies the Turnstile token with the BFF before password login when a BFF URL is configured.
+- `services/api-gateway/src/routes/checkout.ts` and `services/api-gateway/src/__tests__/checkout.test.ts` → hosted checkout confirm now creates the server-authoritative order through `OrderExecutionAdapter`, requires provider payment proof for non-COD methods, posts provider capture through `PaymentExecutionAdapter`, and records `capture_posted_to_ledger`.
+- `services/api-gateway/src/routes/order-risk.ts`, `orders-v1.test.ts`, and executable fixtures → COD confirmation now records the honest `letbuyy_sandbox` provider and `mode: 'sandbox'`; live WhatsApp remains human-gated by `HR-WHATSAPP-LIVE`.
+- `.github/workflows/deploy-staging.yml`, `.github/workflows/staging-runtime-deployment.yml`, and `scripts/cloudflare/update-wrangler-ids.mjs` → active mobile BFF worker is included in staging/runtime handling while reserved paper service/mobile roots remain excluded from deploy lists.
+- `scripts/validators/beta-readiness-validator.mjs`, `scripts/validate-governance.mjs`, and `package.json` → added Wave 7 governance validation and test script coverage for mobile Turnstile, checkout capture, WhatsApp/COD sandbox gating, OIDC honesty, deploy exclusions, and quarantine proof.
+- `config/env/templates/worker.env.example`, `config/env/schemas/worker.schema.json`, `services/mobile-bff/wrangler.toml`, and `FOUNDATION_STEPUP_SKIPPED.md` → documented human-owned mobile Turnstile and WhatsApp/Twilio secret provisioning as gated CLASS-A skips.
+
+TESTS:
+
+- `pnpm run test:foundation:wave7` → PASS with tsx/Flutter escalation; validates BFF Turnstile verifier tests, targeted gateway checkout/orders/WhatsApp tests, focused Flutter mobile login Turnstile test, and beta-readiness validator.
+- `pnpm --filter @letbuyy/mobile-bff run typecheck` → PASS.
+- `pnpm --filter @letbuyy/api-gateway run typecheck` → PASS.
+- `flutter build apk --debug --dart-define-from-file=dart-defines/staging.json` → PASS with Flutter SDK cache escalation; built `build/app/outputs/flutter-apk/app-debug.apk`, then generated artifacts were removed.
+- `pnpm run validate:dependencies` → PASS; dependency manifest, undeclared import, package export, dependency graph, and circular import gates green.
+- `pnpm run build` → PASS; turbo build completed 71/71 tasks.
+- `pnpm run validate:governance:report` → PASS.
+- `node scripts/validators/stale-artifact-validator.mjs` → PASS after removing generated `.next`, `.turbo`, `dist`, Flutter `build`, `.dart_tool`, and Worker `.wrangler` artifact directories.
+
+MIGRATIONS:
+
+- None. Wave 7 is source/config/test governance only; no database schema was applied to shared/staging/prod.
+
+ROLLBACK:
+
+- Revert the Wave 7 commit from `stepup/main`.
+- If reverting manually, remove the mobile BFF Turnstile endpoint/helper/tests, remove the merchant mobile BFF verification hook/test, restore hosted checkout confirm to its previous behavior, restore COD confirmation provider labels, remove `beta-readiness-validator.mjs`, remove Wave 7 scripts, and restore deploy/resource updater lists.
+- No database/provider rollback is required because Wave 7 adds no migration and performs no production, shared-env, provider, DNS, Turnstile, WhatsApp/Twilio, or live deploy action.
+
+GOVERNANCE:
+
+- Anti-fabrication: COD confirmation no longer labels the active sandbox request as `mock_whatsapp` or `mode: 'mock'`; non-COD checkout confirmation requires real provider payment proof before ledger capture posting.
+- Mobile auth: Turnstile verification fails closed until a human provisions `TURNSTILE_SECRET_KEY`; the merchant app can build and test with the feature gated.
+- Quarantine: package quarantine targets remain un-moved because PHASE A/IMPORT_GRAPH zero-importer proof fails for all six package targets; reserved paper services/mobile roots are excluded from deploy paths instead of being activated.
+- OIDC: identity OIDC remains honest-disabled (`implemented: false`, HTTP 501) and out of scope.
+- Frozen-file check: Wave 7 did not edit frozen identity cookie/switch paths. Pre-existing dirty frozen auth/migration changes remain user-owned and unstaged.
+- Test-scope note: an initial full API gateway unit sweep failed on unrelated source-regex assertions in pre-existing dirty auth/session/settlement surfaces; the Wave 7 gate was narrowed to the touched gateway tests, all of which passed.
+
+SKIPs:
+
+- `SKIP-W7-MOBILE-TURNSTILE-SECRET`
+- `SKIP-W7-WHATSAPP-LIVE-CREDS`

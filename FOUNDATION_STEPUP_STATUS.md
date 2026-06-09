@@ -17,7 +17,7 @@ Baseline commit: `41b6ea49c5da30a1409d4cc587d989d459288e45`
 | Wave 4 — Session Security | complete | `wave-4:merged` | `8ceb83d1` |
 | Wave 5 — Design Governance | complete | `wave-5:merged` | `aa763b76` |
 | Wave 6 — Theme Governance | complete | `wave-6:merged` | `86de8653` |
-| Wave 7 — Beta Readiness | pending | — | — |
+| Wave 7 — Beta Readiness | complete | `wave-7:checkpoint-green` | pending commit |
 | WAVE FINAL — Final Audit | pending | — | — |
 
 ## Current Notes
@@ -38,4 +38,6 @@ Baseline commit: `41b6ea49c5da30a1409d4cc587d989d459288e45`
 - Wave 5 checkpoint is green and merged to `stepup/main` at `aa763b76`: `pnpm run test:foundation:wave5`, `pnpm --filter @letbuyy/ui run typecheck`, `pnpm run validate:dependencies`, and `pnpm run build` passed. The design-system gate now scores all app source themable surfaces except exiled `apps/marketing-site`, fails drift increases for raw hex/inline style/arbitrary radius/shadow counts, and hard-fails local workspace shell implementations. Mobile tokens remain generated and in sync. `SKIP-W5-TOKEN-MIGRATION-PRODUCT-CALL` is Class-A and gated off; no product token migration, Flutter theme-file deletion, shared/staging/prod deploy, or provider action was taken.
 - Wave 6 branch `stepup/wave-6-theme-governance` was created from `stepup/main` after Wave 5 merge/status correction.
 - Wave 6 checkpoint is green and merged to `stepup/main` at `86de8653`: `pnpm run test:foundation:wave6`, `pnpm --filter @letbuyy/theme-engine run typecheck`, `pnpm --filter @letbuyy/storefront-runtime run typecheck`, `pnpm run validate:dependencies`, `pnpm run build`, and `pnpm run validate:governance:report` passed. Theme governance now has all 24 built-in section schemas, WARN-default renderer registry audits, an ENFORCE assertion path, schema migration proof for saved sections, fallback governance for unknown sections, and Liquid rendering default-off. `SKIP-W6-LIQUID-PRODUCT-DECISION` is Class-A and gated off; no Liquid/app-block runtime enablement, shared/staging/prod deploy, provider action, or frozen registry edit was performed.
-- Wave 7 is the active resume point. Create `stepup/wave-7-beta-readiness` from `stepup/main` before edits.
+- Wave 7 branch `stepup/wave-7-beta-readiness` was created from `stepup/main` after Wave 6 merge/status correction.
+- Wave 7 checkpoint is green pending commit/merge to `stepup/main`: `pnpm run test:foundation:wave7`, `pnpm --filter @letbuyy/mobile-bff run typecheck`, `pnpm --filter @letbuyy/api-gateway run typecheck`, `flutter build apk --debug --dart-define-from-file=dart-defines/staging.json`, `pnpm run validate:dependencies`, `pnpm run build`, `pnpm run validate:governance:report`, and `node scripts/validators/stale-artifact-validator.mjs` passed. Mobile Turnstile verification now fails closed behind a human-owned secret; hosted checkout confirm creates an order and posts provider capture to the ledger for non-COD; COD/WhatsApp lifecycle is sandbox-first and live creds remain gated. `SKIP-W7-MOBILE-TURNSTILE-SECRET` and `SKIP-W7-WHATSAPP-LIVE-CREDS` are Class-A and gated off; no provider secret, shared/staging/prod deploy, DNS, or shared DB action was taken.
+- WAVE FINAL is the next resume point after Wave 7 is committed and merged.

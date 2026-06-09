@@ -35,6 +35,25 @@ test('Task 003 checkout verifies signed handoff, uses idempotency, and compensat
     assert.match(routeSource, /eventType:\s*'checkout\.failed'/);
 });
 
+test('Wave 7 checkout confirm creates server order and posts provider capture to ledger', () => {
+    assert.match(routeSource, /import \{ OrderExecutionAdapter \} from '\.\.\/execution\/order-execution\.adapter'/);
+    assert.match(routeSource, /import \{ PaymentExecutionAdapter \} from '\.\.\/execution\/payment-execution\.adapter'/);
+    assert.match(routeSource, /createPublicStorefrontTenantContext/);
+    assert.match(routeSource, /export function buildHostedCheckoutOrderCommand/);
+    assert.match(routeSource, /new OrderExecutionAdapter\(db\)\.createOrder\(orderPlan\.command,\s*tenant\)/);
+    assert.match(routeSource, /CHECKOUT_PROVIDER_PAYMENT_REQUIRED/);
+    assert.match(routeSource, /new PaymentExecutionAdapter\(db\)\.confirmPayment\(\{/);
+    assert.match(routeSource, /idempotencyKey:\s*`checkout\.confirm\.capture:\$\{orderId\}:\$\{body\.idempotency_key\}`/);
+    assert.match(routeSource, /capture_posted_to_ledger:\s*orderPlan\.provider !== 'cod'/);
+    assert.match(routeSource, /payload:\s*\{ channel: session\.channel \|\| 'web', order_id: orderId \}/);
+});
+
+test('Wave 7 checkout confirm fails closed for unsupported hosted payment methods', () => {
+    assert.match(routeSource, /CHECKOUT_PAYMENT_METHOD_UNSUPPORTED/);
+    assert.match(routeSource, /normalizeHostedCheckoutPaymentProvider/);
+    assert.doesNotMatch(routeSource, /upi['"]\s*:\s*['"]razorpay/);
+});
+
 test('Task 003 checkout core exposes lifecycle schemas and data-only branding', () => {
     assert.match(checkoutCoreSource, /export const CheckoutSessionStateSchema/);
     assert.match(checkoutCoreSource, /export const CheckoutContactSchema/);

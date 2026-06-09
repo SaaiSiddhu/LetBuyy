@@ -106,7 +106,7 @@ function resetDatabase() {
       site_id uuid NOT NULL REFERENCES public.sites(id) ON DELETE CASCADE,
       order_id uuid NOT NULL REFERENCES public.orders(id) ON DELETE CASCADE,
       status text NOT NULL DEFAULT 'requested',
-      provider text NOT NULL DEFAULT 'mock_whatsapp',
+      provider text NOT NULL DEFAULT 'letbuyy_sandbox',
       idempotency_key text NOT NULL,
       request_payload jsonb NOT NULL DEFAULT '{}'::jsonb,
       response_payload jsonb NOT NULL DEFAULT '{}'::jsonb,

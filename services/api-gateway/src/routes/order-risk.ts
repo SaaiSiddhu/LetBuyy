@@ -127,7 +127,7 @@ async function emitCodConfirmationRequestedEvent(
     },
 ) {
     // [HUMAN-REQUIRED] HR-WHATSAPP-LIVE: live WABA/BSP credentials and
-    // approved HSM templates are required before this mock request sends on
+    // approved HSM templates are required before this sandbox request sends on
     // live WhatsApp rails.
     await new EventExecutionAdapter(db).emitDomainEvent({
         storeId: input.siteId,
@@ -138,7 +138,7 @@ async function emitCodConfirmationRequestedEvent(
             site_id: input.siteId,
             order_id: input.orderId,
             channel: 'whatsapp',
-            mode: 'mock',
+            mode: 'sandbox',
         },
         idempotencyKey: input.idempotencyKey,
         requestId: input.requestId,
@@ -237,9 +237,9 @@ orderRiskRouter.post('/assess', validate('json', OrderRiskAssessmentSchema), asy
                         site_id: tenant.siteId,
                         order_id: input.order_id,
                         status: 'requested',
-                        provider: 'mock_whatsapp',
+                        provider: 'letbuyy_sandbox',
                         idempotency_key: `cod-confirm:${input.order_id}:${idempotencyKey}`,
-                        request_payload: { mode: 'mock', risk_score: plan.risk_score, risk_level: plan.risk_level },
+                        request_payload: { mode: 'sandbox', risk_score: plan.risk_score, risk_level: plan.risk_level },
                         expires_at: updates.cod_expires_at as string,
                         request_id: tenant.requestId,
                         created_by: tenant.userId,
