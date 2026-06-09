@@ -3,7 +3,7 @@ function trimTrailingSlash(value: string): string {
 }
 
 const PLATFORM_ROOT_DOMAINS = ['letbuyy.com', 'letbuyy.store'] as const;
-const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com';
+const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.store';
 const LOCAL_DEVELOPER_PORTAL_URL = 'http://127.0.0.1:9004';
 
 function normalizeOrigin(rawValue: string | undefined): string | null {

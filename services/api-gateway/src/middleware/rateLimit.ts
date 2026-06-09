@@ -774,33 +774,29 @@ async function checkRedisQueryCostLimit(
     }
 }
 
-// ─── Fail-open helpers ──────────────────────────────────────────────
+// ─── Fail-closed helpers ────────────────────────────────────────────
 //
-// A rate limiter is a guardrail, not a gate. When NEITHER Upstash Redis NOR the
-// always-present CACHE KV namespace can service a check in production, the limiter
-// degrades to fail-OPEN (allow the request) instead of fail-CLOSED (503). Taking
-// down 100% of traffic to enforce a guardrail is strictly worse than briefly not
-// rate-limiting. A single throttled warning is emitted rather than a per-request
-// log flood. Query-cost checks are high-volume guardrails; when Redis is not
-// provisioned and KV fallback is intentionally disabled, they fail open without
-// warning so normal traffic does not become noisy provider logs.
+// In production, rate limiting is a safety gate. When neither Upstash Redis nor
+// the CACHE KV namespace can service a check, the limiter reports unavailable so
+// the middleware returns RATE_LIMIT_UNAVAILABLE instead of silently allowing
+// unbounded traffic.
 
-let lastFailOpenWarnAt = 0;
+let lastFailClosedWarnAt = 0;
 
-function warnRateLimitFailOpen(reason: string): void {
+function warnRateLimitFailClosed(reason: string): void {
     const now = Date.now();
-    if (now - lastFailOpenWarnAt < 60_000) return;
-    lastFailOpenWarnAt = now;
+    if (now - lastFailClosedWarnAt < 60_000) return;
+    lastFailClosedWarnAt = now;
     console.warn(JSON.stringify({
         level: 'warn',
         service: 'letbuyy-api',
         route: 'middleware.rate_limit',
         reason,
-        message: 'Rate limit backends unavailable (Redis + KV); failing open to preserve availability',
+        message: 'Rate limit backends unavailable (Redis + KV); failing closed',
     }));
 }
 
-function failOpenRateLimitResult(
+function unavailableRateLimitResult(
     check: DirectRateLimitCheckOptions,
     windowMs: number,
 ): RateLimitBatchResult {
@@ -809,27 +805,27 @@ function failOpenRateLimitResult(
         key: check.key,
         max,
         scope: check.scope,
-        allowed: true,
-        remaining: max,
+        allowed: false,
+        remaining: 0,
         resetAt: Date.now() + (check.windowMs || windowMs),
-        unavailable: false,
+        unavailable: true,
     };
 }
 
-function failOpenQueryCostResult(
+function unavailableQueryCostResult(
     cost: number,
     pointsPerSecond: number,
     capacity: number,
 ): QueryCostRateLimitResult {
     return {
-        allowed: true,
-        remaining: capacity,
-        resetAt: Date.now(),
-        unavailable: false,
+        allowed: false,
+        remaining: 0,
+        resetAt: Date.now() + 1000,
+        unavailable: true,
         cost,
         limit: capacity,
         policy: `${capacity};w=leaky;rate=${pointsPerSecond}`,
-        retryAfterMs: 0,
+        retryAfterMs: 1000,
     };
 }
 
@@ -868,9 +864,11 @@ async function checkRateLimitKeys(
             const fullKey = `${check.prefix || prefix}:${check.key}`;
             const result = await checkKvRateLimit(env.CACHE as KVNamespace, fullKey, check.windowMs || windowMs, check.max || 60);
             if (result.unavailable && isProduction) {
-                // KV itself failed in production — fail OPEN rather than 503 every request.
-                warnRateLimitFailOpen('kv_unavailable');
-                return failOpenRateLimitResult(check, windowMs);
+                warnRateLimitFailClosed('kv_unavailable');
+                return {
+                    ...unavailableRateLimitResult(check, windowMs),
+                    resetAt: result.resetAt,
+                };
             }
             return {
                 ...result,
@@ -882,10 +880,8 @@ async function checkRateLimitKeys(
     }
 
     if (isProduction) {
-        // Neither Redis nor KV is available in production. Fail OPEN (allow) so a
-        // single missing secret cannot 503 every request; emit one throttled warning.
-        warnRateLimitFailOpen('no_backend');
-        return checks.map((check) => failOpenRateLimitResult(check, windowMs));
+        warnRateLimitFailClosed('no_backend');
+        return checks.map((check) => unavailableRateLimitResult(check, windowMs));
     }
 
     return checks.map((check) => {
@@ -934,18 +930,15 @@ export async function checkQueryCostRateLimitKey(
     if (useKvFallback) {
         const result = await checkKvQueryCostLimit(env.CACHE as KVNamespace, fullKey, cost, pointsPerSecond, capacity);
         if (result.unavailable && isProduction) {
-            // KV failed in production — fail OPEN rather than 503 every request.
-            warnRateLimitFailOpen('query_cost_kv_unavailable');
-            return failOpenQueryCostResult(cost, pointsPerSecond, capacity);
+            warnRateLimitFailClosed('query_cost_kv_unavailable');
+            return result;
         }
         return result;
     }
 
     if (isProduction) {
-        // Neither Redis nor explicitly enabled KV is available in production.
-        // This is an intentional availability mode for the high-volume query-cost
-        // guardrail, so keep logs quiet and fail OPEN.
-        return failOpenQueryCostResult(cost, pointsPerSecond, capacity);
+        warnRateLimitFailClosed('query_cost_no_backend');
+        return unavailableQueryCostResult(cost, pointsPerSecond, capacity);
     }
 
     return checkMemoryQueryCostLimit(fullKey, cost, pointsPerSecond, capacity);

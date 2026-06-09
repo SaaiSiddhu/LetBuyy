@@ -273,7 +273,7 @@ export class MockRegistrarProvider implements DomainRegistrarProvider {
             domain: input.domain,
             expiresAt: new Date(Date.now() + input.years * 365 * 24 * 60 * 60 * 1000).toISOString(),
             nameservers: [],
-            raw: { mock: true },
+            raw: { provider: this.name, simulated: true },
         };
     }
 

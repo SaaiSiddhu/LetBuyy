@@ -7,8 +7,8 @@
 - **Mission:** `FOUNDATION_STEPUP_MISSION_V2.md` · **Integration branch:** `stepup/main`
 - **Overall status:** ◐ IN PROGRESS
 - **Current wave:** Wave 3 — Production Safety
-- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 2 · **CLASS-B STOPs:** 0
-- **Last updated:** 2026-06-09T20:20:30Z (UTC) by Codex
+- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 4 · **CLASS-B STOPs:** 0
+- **Last updated:** 2026-06-09T20:28:15Z (UTC) by Codex
 
 | Phase/Wave | Status | Build | Tests | Dep-graph | Branch | Migrations | SKIPs | Blockers |
 |---|---|:--:|:--:|:--:|---|:--:|:--:|:--:|
@@ -17,7 +17,7 @@
 | Wave 0 — Truth Harness | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-0-truth-harness` | 0 | 1 | 0 |
 | Wave 1 — Money Fixes | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-1-money` | 1 | 1 | 0 |
 | Wave 2 — Tenant Isolation | ✅ complete | ✅ | ✅ | ✅ | `stepup/wave-2-tenant-isolation` | 0 | 0 | 0 |
-| Wave 3 — Production Safety | ☐ pending | — | — | — | — | 0 | 0 | 0 |
+| Wave 3 — Production Safety | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-3-production-safety` | 0 | 2 | 0 |
 | Wave 4 — Session Security | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | Wave 5 — Design Governance | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | Wave 6 — Theme Governance | ☐ pending | — | — | — | — | 0 | 0 | 0 |
@@ -111,6 +111,23 @@ SKIPs:         none
 Blockers:      none
 Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
 Next wave:     Wave 3 — Production Safety (precondition met: yes)
+```
+
+### Wave 3 — Production Safety
+```
+Status:        complete-with-SKIPs
+Started:       2026-06-09T20:20:45Z
+Completed:     2026-06-09T20:28:15Z
+Branch:        stepup/wave-3-production-safety (merged to stepup/main: no, checkpoint green)
+Build:         green (pnpm run build)
+Tests:         green (pnpm run test:foundation:wave3; validates rate-limit fail-closed behavior, mock registrar gating, shared-env preflight, and .store public URL defaults)
+Dependency-graph: green (pnpm run validate:dependencies)
+Files changed: 18 Wave 3-owned source/config/test/governance files, plus dashboard/status/ledger artifacts
+Migrations added: none
+SKIPs:         SKIP-W3-SENTRY-DSN, SKIP-W3-DNS-CUTOVER
+Blockers:      none
+Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
+Next wave:     Wave 4 — Session Security (precondition met after merge: yes)
 ```
 
 ---

@@ -11,7 +11,7 @@ type RequiredPublicUrlName =
 type PublicUrlTarget = 'accounts' | 'marketing' | 'themeMarketplace' | 'appMarketplace' | 'developerPortal'
 
 const PLATFORM_ROOT_DOMAINS = ['letbuyy.com', 'letbuyy.store'] as const
-const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com'
+const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.store'
 
 const LOCAL_BROWSER_URLS: Record<PublicUrlTarget, string> = {
     accounts: 'http://127.0.0.1:9001',

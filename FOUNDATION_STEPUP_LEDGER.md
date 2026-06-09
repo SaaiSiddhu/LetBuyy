@@ -130,3 +130,46 @@ GOVERNANCE:
 SKIPS:
 
 - None.
+
+# WAVE 3 — Production Safety — 2026-06-09
+
+CHANGES:
+
+- `services/api-gateway/src/middleware/rateLimit.ts` → production rate-limit and query-cost checks now fail closed when Redis/KV backends are unavailable instead of permitting traffic; unavailable results return `RATE_LIMIT_UNAVAILABLE` through the existing middleware path.
+- `services/api-gateway/src/lib/registrar/index.ts` → mock registrar remains disabled in production and no longer emits `raw: { mock: true }`; local simulation payloads are explicit provider simulations.
+- `scripts/foundation/production-safety-preflight.mjs`, `config/runtime/production-safety-preflight.json`, and `docs/runbooks/foundation-wave3-shared-env-apply.md` → added shared-env preflight and `SKIP-DEPLOY` runbook requiring real secrets, rate-limit backend evidence, runtime telemetry evidence, and money-ledger reconciliation alert evidence before any human shared-env apply.
+- `scripts/validators/production-safety-validator.mjs`, `scripts/validate-governance.mjs`, `package.json`, and `tests/governance/foundation-wave3-production-safety.test.ts` → added Wave 3 validator/test wiring to enforce fail-closed rate limiting, mock registrar hygiene, shared-env evidence flags, skip records, and domain defaults.
+- `apps/marketing-site/src/lib/public-urls.ts`, `apps/theme-marketplace/src/lib/public-urls.ts`, `apps/app-marketplace/src/lib/site-url.ts`, and `apps/developer-portal/src/lib/site-url.ts` → public platform default root domain is now `letbuyy.store`; both `.store` and `.com` remain recognized for request-context origin detection.
+- `config/governance/anti-fabrication-allowlist.json` and `FOUNDATION_STEPUP_SKIPPED.md` → removed Wave 3 mock-registrar fabrication debt from the allowlist and logged the Class-A observability/DNS skips.
+
+TESTS:
+
+- `pnpm run test:foundation:wave3` → PASS with tsx IPC escalation; proves production rate limiting fails closed without a backend, mock registrar is production-gated and no longer emits `mock:true`, shared-env preflight rejects sentinel secrets and missing evidence, and public URL defaults remain on `letbuyy.store`.
+- `pnpm run validate:production-safety` → PASS; source/config validator checks rate-limit fail-closed wiring, registrar payload hygiene, shared-env preflight evidence, SKIP entries, and domain defaults.
+- `pnpm run validate:anti-fabrication` → PASS; Wave 3 allowlist entry removed, only one temporary Wave 4 identity/OIDC entry remains tracked.
+- `pnpm run validate:dependencies` → PASS; dependency manifest, undeclared import, package export, dependency graph, and circular import gates green.
+- `pnpm run build` → PASS; turbo build completed 71/71 tasks.
+- `pnpm run validate:governance:report` → PASS; report lane remains advisory and green.
+
+MIGRATIONS:
+
+- None. Wave 3 adds source/config/runbook/test governance only; no database schema was applied to shared/staging/prod.
+
+ROLLBACK:
+
+- Revert the Wave 3 commit from `stepup/main`.
+- If reverting manually, restore the prior rate-limit unavailable behavior, registrar raw payload shape, `.com` public URL defaults, remove `production-safety-preflight` config/script/runbook, remove the Wave 3 validator/test/package scripts, and restore the Wave 3 anti-fabrication allowlist entry.
+- No database rollback is required because Wave 3 adds no migration and applies nothing to shared/staging/prod.
+- No provider rollback is required because Codex performed no Sentry, DNS, Cloudflare, Vercel, registrar, secret-store, or deployment action.
+
+GOVERNANCE:
+
+- Production safety: production rate limiting fails closed until a real backend is available; shared-env preflight rejects `SKIP_NEEDS_HUMAN_*` sentinels and requires runtime telemetry plus money-ledger reconciliation alert evidence before human cutover.
+- Anti-fabrication: mock registrar payloads no longer use `mock:true`, and the Wave 3 anti-fabrication allowlist entry was removed.
+- No production action: Sentry/telemetry DSN provisioning and DNS/custom-hostname cutover are Class-A external actions, logged as skips and gated by the `SKIP-DEPLOY` runbook.
+- Frozen-file check: no Wave 3 edits were made to frozen paths in `FOUNDATION_REPO_LOCKS.md`; pre-existing frozen auth/migration edits remain user-owned and unstaged.
+
+SKIPS:
+
+- `SKIP-W3-SENTRY-DSN`
+- `SKIP-W3-DNS-CUTOVER`

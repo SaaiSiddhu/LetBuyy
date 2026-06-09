@@ -3,17 +3,6 @@
   "purpose": "Temporary Wave-owned allowlist for pre-existing fabrication debt. New entries require a wave owner and must be burned down before the final acceptance gate.",
   "entries": [
     {
-      "id": "W3-DOMAIN-MOCK-REGISTRAR-RAW",
-      "rule": "mock-true-runtime-payload",
-      "path": "services/api-gateway/src/lib/registrar/index.ts",
-      "ownerWave": "Wave 3",
-      "reason": "Mock registrar is currently non-production gated; Wave 3 production safety keeps external DNS/provider actions gated off with human-run credentials.",
-      "snippets": [
-        "raw: { mock: true }",
-        "REGISTRAR_MOCK_ENABLED !== 'true'"
-      ]
-    },
-    {
       "id": "W4-IDENTITY-OIDC-MOCK-SKELETON",
       "rule": "mock-true-runtime-payload",
       "path": "apps/identity-platform/src/lib/identity-foundation/oidc-disabled.ts",

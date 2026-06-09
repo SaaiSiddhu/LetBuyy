@@ -15,6 +15,7 @@ if (!validLanes.has(lane)) {
 const validators = [
   "foundation-antifabrication-gate.mjs",
   "tenant-isolation-validator.mjs",
+  "production-safety-validator.mjs",
   "architecture-validator.mjs",
   "runtime-validator.mjs",
   "runtime-manifest-validator.mjs",

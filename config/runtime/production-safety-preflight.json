@@ -1,0 +1,42 @@
+{
+  "$schema": "config/runtime/production-safety-preflight.schema.json",
+  "version": 1,
+  "mode": "build-and-prove",
+  "codexProductionActionPolicy": "SKIP-DEPLOY",
+  "sharedEnvironmentPreconditions": [
+    {
+      "id": "secret-sentinels",
+      "rule": "required shared-env secrets must not be empty or start with SKIP_NEEDS_HUMAN_",
+      "enforcedBy": "scripts/foundation/production-safety-preflight.mjs"
+    },
+    {
+      "id": "rate-limit-fail-closed",
+      "rule": "Upstash Redis rate limit backend evidence must be ready before shared-env cutover",
+      "evidenceFlag": "RATE_LIMIT_BACKEND_READY"
+    },
+    {
+      "id": "runtime-telemetry-live",
+      "rule": "runtime telemetry/observability must be live before Wave 1 cutovers run in a shared env",
+      "evidenceFlag": "RUNTIME_TELEMETRY_READY"
+    },
+    {
+      "id": "money-reconciliation-alert-live",
+      "rule": "money ledger reconciliation-break alerting must be live before Wave 1 cutovers run in a shared env",
+      "evidenceFlag": "MONEY_LEDGER_RECONCILIATION_ALERT_READY"
+    }
+  ],
+  "classASkips": [
+    {
+      "id": "SKIP-W0-PITR-TIER",
+      "reason": "Supabase PITR activation is a provider console/tier action."
+    },
+    {
+      "id": "SKIP-W3-SENTRY-DSN",
+      "reason": "Sentry project/DSN provisioning is a human-owned external integration."
+    },
+    {
+      "id": "SKIP-W3-DNS-CUTOVER",
+      "reason": ".store to .com DNS and custom-hostname cutover requires human-owned Cloudflare/Vercel authority."
+    }
+  ]
+}
