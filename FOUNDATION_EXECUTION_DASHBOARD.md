@@ -6,9 +6,9 @@
 ## Run summary
 - **Mission:** `FOUNDATION_STEPUP_MISSION_V2.md` · **Integration branch:** `stepup/main`
 - **Overall status:** ◐ IN PROGRESS
-- **Current wave:** Wave 4 — Session Security (checkpoint green; merge pending)
+- **Current wave:** Wave 5 — Design Governance
 - **Open blockers:** 0 · **Open CLASS-A SKIPs:** 6 · **CLASS-B STOPs:** 0
-- **Last updated:** 2026-06-09T20:56:00Z (UTC) by Codex
+- **Last updated:** 2026-06-09T21:00:51Z (UTC) by Codex
 
 | Phase/Wave | Status | Build | Tests | Dep-graph | Branch | Migrations | SKIPs | Blockers |
 |---|---|:--:|:--:|:--:|---|:--:|:--:|:--:|
@@ -135,7 +135,7 @@ Next wave:     Wave 4 — Session Security (precondition met after merge: yes)
 Status:        complete-with-SKIPs
 Started:       2026-06-09T20:31:00Z
 Completed:     2026-06-09T20:56:00Z
-Branch:        stepup/wave-4-session-security (merged to stepup/main: pending)
+Branch:        stepup/wave-4-session-security (merged to stepup/main: yes, 8ceb83d1)
 Build:         green (pnpm run build)
 Tests:         green (pnpm run test:foundation:wave4; validates dedicated internal signing/JTI, fail-closed internal perimeter, session migration apply/down, session rotation/reuse revocation, MFA/per-principal TOTP governance)
 Dependency-graph: green (pnpm run validate:dependencies)
@@ -144,7 +144,7 @@ Migrations added: 161_foundation_session_security.sql (additive expand/contract;
 SKIPs:         SKIP-W4-LIVE-SECRET-ROTATION, SKIP-W4-MTLS-CF-ACCESS
 Blockers:      none
 Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
-Next wave:     Wave 5 — Design Governance (precondition met after merge: pending)
+Next wave:     Wave 5 — Design Governance (precondition met: yes)
 ```
 
 ---
