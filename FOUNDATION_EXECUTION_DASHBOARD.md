@@ -186,7 +186,7 @@ Next wave:     Wave 7 — Beta Readiness (precondition met: yes)
 Status:        complete-with-SKIPs
 Started:       2026-06-09T21:26:00Z
 Completed:     2026-06-09T21:45:14Z
-Branch:        stepup/wave-7-beta-readiness (merged to stepup/main: no, pending commit)
+Branch:        stepup/wave-7-beta-readiness (merged to stepup/main: yes, 68192089)
 Build:         green (pnpm run build; Flutter debug APK build also green)
 Tests:         green (pnpm run test:foundation:wave7; validates mobile Turnstile BFF verification, hosted checkout order/capture posting, sandbox COD/WhatsApp, focused Flutter login test, and beta-readiness validator)
 Dependency-graph: green (pnpm run validate:dependencies)
@@ -195,7 +195,7 @@ Migrations added: none
 SKIPs:         SKIP-W7-MOBILE-TURNSTILE-SECRET, SKIP-W7-WHATSAPP-LIVE-CREDS
 Blockers:      none
 Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
-Next wave:     WAVE FINAL — Final Audit (precondition met after merge: pending)
+Next wave:     WAVE FINAL — Final Audit (precondition met: yes)
 ```
 
 ---
