@@ -22,6 +22,11 @@ interface TurnstileWidgetProps {
     onExpire?: () => void;
 }
 
+function canUseClientDevAuthBypass() {
+    return process.env.NODE_ENV === 'development'
+        && process.env.NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true';
+}
+
 const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
     function TurnstileWidget({ onVerify, onExpire }, ref) {
         const containerRef = useRef<HTMLDivElement>(null);
@@ -47,9 +52,10 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
                 widgetIdRef.current = null;
             }
 
+            const useDevBypass = canUseClientDevAuthBypass();
             const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-            if (!siteKey) {
-                onVerifyRef.current('dev-bypass-token');
+            if (useDevBypass || !siteKey) {
+                onVerifyRef.current(useDevBypass ? 'dev-bypass-token' : '');
                 return;
             }
 
@@ -87,9 +93,10 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
         }), [renderWidget]);
 
         useEffect(() => {
+            const useDevBypass = canUseClientDevAuthBypass();
             const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-            if (!siteKey) {
-                onVerifyRef.current('dev-bypass-token');
+            if (useDevBypass || !siteKey) {
+                onVerifyRef.current(useDevBypass ? 'dev-bypass-token' : '');
                 return;
             }
 

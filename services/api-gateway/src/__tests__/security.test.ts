@@ -9,7 +9,7 @@ import {
     resolveKmsProviderFromEnv,
 } from '../lib/crypto'
 import { customerAuthRateLimit } from '../middleware/rateLimit'
-import { csrfProtection, extractTurnstileToken, verifyTurnstileToken } from '../middleware/security'
+import { csrfProtection, extractTurnstileToken, inputValidation, verifyTurnstileToken } from '../middleware/security'
 
 type ErrorPayload = {
     error: {
@@ -79,6 +79,24 @@ test('CSRF middleware still allows safe methods and preflight', async () => {
     assert.equal((await app.request('/mutate', { method: 'GET' })).status, 200)
     assert.equal((await app.request('/mutate', { method: 'HEAD' })).status, 200)
     assert.equal((await app.request('/mutate', { method: 'OPTIONS' })).status, 200)
+})
+
+test('input validation does not consume JSON request bodies before route handlers', async () => {
+    const app = new Hono<{ Bindings: Env }>()
+    app.use('*', inputValidation)
+    app.patch('/stores/:id', async (c) => {
+        const body = await c.req.json<{ published?: boolean }>()
+        return c.json({ id: c.req.param('id'), published: body.published === true })
+    })
+
+    const response = await app.request('/stores/store-1', {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ published: true }),
+    })
+
+    assert.equal(response.status, 200)
+    assert.deepEqual(await response.json(), { id: 'store-1', published: true })
 })
 
 test('Turnstile token extraction accepts canonical and compatibility fields', () => {

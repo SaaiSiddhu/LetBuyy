@@ -68,12 +68,12 @@ const appEngine = loadTypeScriptModule(APP_ENGINE_SOURCE, {
 const extensionHost = loadTypeScriptModule(EXTENSION_HOST_SOURCE, {});
 
 test('admin app bridge resolves installed app embed surfaces safely', () => {
-  const stagingUrl = 'https://merchant.staging.letbuyy.store/example-app-bridge.html';
+  const stagingUrl = 'https://admin-staging.letbuyy.store/example-app-bridge.html';
   const exampleInstallation = appEngine.createExampleAdminAppInstallation(stagingUrl);
   const stagingSurface = appEngine.normalizeAppAdminEmbedSurface(exampleInstallation);
 
   assert.equal(stagingSurface.url, stagingUrl);
-  assert.equal(stagingSurface.origin, 'https://merchant.staging.letbuyy.store');
+  assert.equal(stagingSurface.origin, 'https://admin-staging.letbuyy.store');
   assert.equal(stagingSurface.title, 'Example App');
   assert.deepEqual(Array.from(stagingSurface.capabilities), ['api.fetch', 'toast', 'resize']);
 

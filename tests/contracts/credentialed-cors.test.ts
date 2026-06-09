@@ -34,15 +34,15 @@ test('credentialed CORS reflects only exact platform or configured tenant origin
         'https://merchant.example.com',
     );
     assert.equal(
-        resolveCredentialedCorsOrigin('https://accounts.staging.letbuyy.store', {}),
+        resolveCredentialedCorsOrigin('https://accounts-staging.letbuyy.store', {}),
         DEFAULT_CREDENTIAL_ORIGIN,
         'staging origins must be configured by environment, not hardcoded into production source',
     );
     assert.equal(
-        resolveCredentialedCorsOrigin('https://accounts.staging.letbuyy.store', {
-            CORS_CREDENTIAL_ORIGINS: 'https://accounts.staging.letbuyy.store',
+        resolveCredentialedCorsOrigin('https://accounts-staging.letbuyy.store', {
+            CORS_CREDENTIAL_ORIGINS: 'https://accounts-staging.letbuyy.store',
         }),
-        'https://accounts.staging.letbuyy.store',
+        'https://accounts-staging.letbuyy.store',
     );
     assert.equal(
         resolveCredentialedCorsOrigin('https://random-store.letbuyy.store', {}),
@@ -74,7 +74,7 @@ test('credentialed CORS configuration is present in env contracts and governance
     const schema = read(workerSchemaPath);
     const governance = read(securityGovernancePath);
 
-    assert.match(template, /CORS_CREDENTIAL_ORIGINS=https:\/\/accounts\.staging\.letbuyy\.store,https:\/\/merchant\.staging\.letbuyy\.store/);
+    assert.match(template, /CORS_CREDENTIAL_ORIGINS=https:\/\/accounts-staging\.letbuyy\.store,https:\/\/admin-staging\.letbuyy\.store,https:\/\/store-staging\.letbuyy\.store/);
     assert.match(schema, /"CORS_CREDENTIAL_ORIGINS"/);
     assert.match(governance, /CORS_CREDENTIAL_ORIGINS/);
     assert.match(governance, /credentialed CORS/i);

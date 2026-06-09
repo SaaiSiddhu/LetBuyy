@@ -138,7 +138,7 @@ export const inputValidation = createMiddleware<{ Bindings: Env }>(
             const contentType = c.req.header('content-type');
             if (contentType?.includes('application/json')) {
                 try {
-                    const body = await c.req.text();
+                    const body = await c.req.raw.clone().text();
 
                     // Reject excessively large payloads (1MB limit)
                     if (body.length > 1_048_576) {
