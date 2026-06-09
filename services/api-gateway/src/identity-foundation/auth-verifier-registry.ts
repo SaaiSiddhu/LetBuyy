@@ -3,7 +3,6 @@ import type { Env } from '../index';
 import { isIdentityFoundationFlagEnabled } from './feature-flags';
 
 export type AuthVerifierName =
-  | 'platform-console-token'
   | 'internal-session-hmac'
   | 'internal-identity-hmac'
   | 'supabase-bearer'
@@ -18,13 +17,6 @@ export interface AuthVerifierRegistration {
 }
 
 export const AUTH_VERIFIER_REGISTRY: AuthVerifierRegistration[] = [
-  {
-    name: 'platform-console-token',
-    activeByDefault: true,
-    order: 10,
-    realm: 'admin',
-    description: 'Read-only platform console operations token branch.',
-  },
   {
     name: 'internal-session-hmac',
     activeByDefault: true,

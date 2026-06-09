@@ -90,3 +90,43 @@ GOVERNANCE:
 SKIPS:
 
 - `SKIP-W1-PA-PAYOUT-PROVIDER`
+
+# WAVE 2 — Tenant Isolation — 2026-06-09
+
+CHANGES:
+
+- `scripts/governance/tenant-registry-common.mjs`, `scripts/generators/generate-tenant-table-registry.mjs`, and `services/api-gateway/src/tenant/tenant-tables.registry.ts` → added schema-derived tenant-table registry generation from the migration chain; current registry contains 261 tenant-owned tables.
+- `services/api-gateway/src/tenant/tenant-scoped.ts` and `services/api-gateway/src/lib/supabase.ts` → added a guarded service-role Supabase client that rejects execution against registry tables unless a tenant/owner predicate or scoped insert/upsert payload is present.
+- `scripts/validators/tenant-isolation-validator.mjs`, `scripts/validate-governance.mjs`, and `package.json` → added Wave 2 tenant-isolation validation to the governance gate and package scripts.
+- API gateway service-role call sites in app-function runtime, checkout, storefront, storefront cart/public routes, and themes were normalized away from direct `getSupabaseAdmin(c).from(...)` expressions so the guard is the single enforced service-role boundary.
+- `services/api-gateway/src/middleware/auth.ts`, `services/api-gateway/src/middleware/rbac.ts`, `services/api-gateway/src/identity-foundation/auth-verifier-registry.ts`, and `services/api-gateway/src/identity-foundation/shadow-compare.ts` → removed the static `platform-console-token` super-admin verifier path; RBAC role checks now resolve from server-side persistence instead of JWT role metadata.
+- `tests/governance/foundation-wave2-tenant.test.ts` and identity-foundation snapshots → added exhaustive registry fail-closed tests and updated verifier-registry expectations.
+
+TESTS:
+
+- `pnpm run test:foundation:wave2` → PASS with tsx IPC escalation; proves generated registry presence, unscoped rejection for all 261 tenant tables, scoped query allowance, scoped mutation allowance, unscoped insert rejection, and the tenant-isolation validator.
+- `pnpm run validate:anti-fabrication` → PASS; only Wave 3/Wave 4 temporary entries remain tracked.
+- `pnpm run validate:dependencies` → PASS; dependency manifest, undeclared import, package export, dependency graph, and circular import gates green.
+- `node --test tests/identity-foundation/production-parity.test.mjs tests/identity-foundation/remaining-scaffolds.test.mjs` → PASS; updated auth verifier snapshots are green with the platform-console token branch removed.
+- `pnpm run build` → PASS; turbo build completed 71/71 tasks after generated registry map typing was corrected.
+
+MIGRATIONS:
+
+- None. Wave 2 is runtime/source governance plus generated registry only; no schema was applied to shared/staging/prod.
+
+ROLLBACK:
+
+- Revert the Wave 2 commit from `stepup/main`.
+- If reverting manually, remove `services/api-gateway/src/tenant/*`, the tenant registry generator/common/validator scripts, the `validate:tenant-isolation` and `test:foundation:wave2` scripts, the `validate-governance` tenant validator entry, and restore the prior auth/RBAC verifier snapshots.
+- No database rollback is required because Wave 2 adds no migration and applies nothing to shared/staging/prod.
+
+GOVERNANCE:
+
+- Tenant truth: `tenant-isolation-validator` derives the registry from the migration chain and fails if generated registry drift, duplicate entries, missing service-role guard wrapping, or direct service-role tenant-table bypasses appear.
+- Fail-closed: guarded service-role table builders reject unscoped execution for every registry entry; the Wave 2 behavioral test iterates the full generated registry.
+- Auth/RBAC: the static platform-console super-admin principal and RBAC platform-token bypasses were removed; `requireRole` resolves roles from persisted allowlist/employee rows rather than JWT role claims.
+- Frozen-file check: no Wave 2 edits were made to frozen paths in `FOUNDATION_REPO_LOCKS.md`; pre-existing frozen auth/migration edits remain user-owned and unstaged.
+
+SKIPS:
+
+- None.

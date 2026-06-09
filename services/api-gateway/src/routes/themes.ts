@@ -99,7 +99,8 @@ function getRequestId(c: Context<{ Bindings: Env }>): string {
 }
 
 async function purgeThemeStorefrontCache(c: Context<{ Bindings: Env }>, storeId: string): Promise<void> {
-    const { data } = await getSupabaseAdmin(c)
+    const db = getSupabaseAdmin(c);
+    const { data } = await db
         .from('sites')
         .select('subdomain,store_name,custom_domain')
         .eq('id', storeId)

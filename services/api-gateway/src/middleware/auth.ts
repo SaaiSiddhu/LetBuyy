@@ -18,7 +18,6 @@ import {
     AUTH_VERIFIER_REGISTRY,
     type AuthVerifierName,
 } from '../identity-foundation/auth-verifier-registry';
-import { timingSafeEqualText } from '../lib/crypto';
 import { verifyInternalSessionHeaders, verifySignedPayload } from '../lib/internal-auth';
 
 interface AuthContext {
@@ -29,7 +28,7 @@ interface AuthContext {
         roles?: LetbuyyRoleAssignment[];
         roleCategories?: RbacRoleCategory[];
         storeId?: string;
-        authSource?: 'supabase' | 'internal-sso' | 'platform-console';
+        authSource?: 'supabase' | 'internal-sso';
     };
 }
 
@@ -54,7 +53,7 @@ function buildAuthContextUser(input: {
     role?: unknown;
     roles?: unknown;
     storeId?: string;
-    authSource: 'supabase' | 'internal-sso' | 'platform-console';
+    authSource: 'supabase' | 'internal-sso';
 }): AuthContext['user'] {
     const roleAssignments = normalizeLetbuyyRoleAssignments([
         input.role,
@@ -72,25 +71,9 @@ function buildAuthContextUser(input: {
     };
 }
 
-function readBearerToken(value: string | undefined): string | null {
-    if (!value?.startsWith('Bearer ')) return null;
-    return value.slice('Bearer '.length).trim() || null;
-}
-
 function readSupabaseBearerToken(value: string | undefined): string | null {
     if (!value?.startsWith('Bearer ')) return null;
     return value.slice('Bearer '.length);
-}
-
-function isReadOnlyPlatformConsoleOperationsRequest(c: Context<{ Bindings: Env }>): boolean {
-    if (c.req.method !== 'GET' && c.req.method !== 'HEAD') return false;
-    if (!c.req.path.startsWith('/v1/operations/')) return false;
-
-    const expectedToken = c.env.PLATFORM_CONSOLE_API_TOKEN;
-    if (!expectedToken) return false;
-
-    const token = readBearerToken(c.req.header('Authorization')) || c.req.header('X-Platform-Console-Token');
-    return Boolean(token && timingSafeEqualText(token, expectedToken));
 }
 
 async function getInternalAuthContext(c: Context<{ Bindings: Env }>): Promise<AuthContext | null> {
@@ -214,21 +197,6 @@ async function getSupabaseBearerAuthContext(
 }
 
 export const legacyGatewayAuthVerifiers: GatewayAuthVerifier[] = [
-    {
-        name: 'platform-console-token',
-        shouldAttempt: (c) => isReadOnlyPlatformConsoleOperationsRequest(c),
-        async verify(c) {
-            if (!isReadOnlyPlatformConsoleOperationsRequest(c)) return null;
-            return {
-                user: buildAuthContextUser({
-                    id: '00000000-0000-4000-8000-000000000000',
-                    email: 'platform-console@letbuyy.local',
-                    role: 'super_admin',
-                    authSource: 'platform-console',
-                }),
-            };
-        },
-    },
     {
         name: 'internal-session-hmac',
         shouldAttempt: (_c, authHeader) => !authHeader?.startsWith('Bearer '),

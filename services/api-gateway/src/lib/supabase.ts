@@ -5,12 +5,13 @@ import {
 } from '@letbuyy/infrastructure/supabase-adapter';
 import type { Env } from '../index';
 import type { Context } from 'hono';
+import { createTenantGuardedSupabaseClient } from '../tenant/tenant-scoped';
 
 /**
  * Create a Supabase Admin client (service role — bypasses RLS)
  */
 export function getSupabaseAdminFromEnv(env: Env): SupabaseClient {
-    return createSupabaseServiceClient(env);
+    return createTenantGuardedSupabaseClient(createSupabaseServiceClient(env));
 }
 
 export function getSupabaseAdmin(c: Context<{ Bindings: Env }>): SupabaseClient {

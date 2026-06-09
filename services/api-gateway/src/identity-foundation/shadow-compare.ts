@@ -29,7 +29,7 @@ export function compareShadowDecision(legacy: ShadowDecision, candidate: ShadowD
 }
 
 export interface LegacyPathCounter {
-  verifier: 'platform-console-token' | 'internal-session-hmac' | 'internal-identity-hmac' | 'supabase-bearer' | 'customer-session';
+  verifier: 'internal-session-hmac' | 'internal-identity-hmac' | 'supabase-bearer' | 'customer-session';
   count: number;
 }
 

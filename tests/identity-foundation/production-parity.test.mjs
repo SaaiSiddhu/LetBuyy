@@ -57,13 +57,13 @@ test('gateway auth middleware keeps the legacy branch order snapshot', () => {
     source.indexOf('legacyGatewayAuthVerifiers'),
     source.indexOf('legacyGatewayAuthVerifierNames'),
   );
-  const platform = registry.indexOf("name: 'platform-console-token'");
   const internalSession = registry.indexOf("name: 'internal-session-hmac'");
   const internalIdentity = registry.indexOf("name: 'internal-identity-hmac'");
   const supabase = registry.indexOf("name: 'supabase-bearer'");
 
-  assert.ok(platform > -1);
-  assert.ok(internalSession > platform);
+  assert.equal(registry.includes("name: 'platform-console-token'"), false);
+  assert.equal(source.includes('platform-console@letbuyy.local'), false);
+  assert.ok(internalSession > -1);
   assert.ok(internalIdentity > internalSession);
   assert.ok(supabase > internalIdentity);
   assert.match(source, /shouldAttempt: \(_c, authHeader\) => !authHeader\?\.startsWith\('Bearer '\)/);

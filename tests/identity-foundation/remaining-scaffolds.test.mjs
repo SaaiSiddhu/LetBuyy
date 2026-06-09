@@ -75,7 +75,6 @@ test('OIDC skeleton exposes disabled routes plus callback and consent placeholde
 test('gateway verifier registry preserves legacy branch order and keeps OIDC dormant by default', () => {
   const source = read('services/api-gateway/src/identity-foundation/auth-verifier-registry.ts');
   const legacyOrder = [
-    'platform-console-token',
     'internal-session-hmac',
     'internal-identity-hmac',
     'supabase-bearer',

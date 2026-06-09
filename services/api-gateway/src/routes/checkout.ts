@@ -163,7 +163,8 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string): Promise<
         return { ok: false, response: invalidHandoff(c) };
     }
 
-    const { data: cart, error } = await getSupabaseAdmin(c)
+    const db = getSupabaseAdmin(c);
+    const { data: cart, error } = await db
         .from('carts')
         .select('id, store_id, session_id, items, coupon_code, buyer_email, channel, status')
         .eq('id', cartId)
@@ -319,7 +320,8 @@ async function recordCheckoutCompensation(
     },
 ): Promise<void> {
     if (!input.paymentIntentId) return;
-    await getSupabaseAdmin(c)
+    const db = getSupabaseAdmin(c);
+    await db
         .from('compensation_actions')
         .upsert({
             site_id: input.siteId,
@@ -492,7 +494,8 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
         });
         if (!session) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout cannot be confirmed.' } }, status: 409 };
 
-        await getSupabaseAdmin(c)
+        const db = getSupabaseAdmin(c);
+        await db
             .from('carts')
             .update({ status: 'converted' })
             .eq('store_id', verified.handoff.siteId)
@@ -516,7 +519,8 @@ checkoutRouter.get('/:id', async (c) => {
     const cartToken = c.req.query('cart_token');
     if (!siteId) return c.json({ success: false, error: { code: 'VALIDATION', message: 'site_id required' } }, 400);
 
-    let query = getSupabaseAdmin(c)
+    const db = getSupabaseAdmin(c);
+    let query = db
         .from('checkout_sessions')
         .select('*')
         .eq('site_id', siteId)
@@ -542,7 +546,8 @@ function defaultBranding(siteId: string) {
 
 publicStoreBrandingRouter.get('/:storeId/branding', async (c) => {
     const storeId = c.req.param('storeId');
-    const { data } = await getSupabaseAdmin(c)
+    const db = getSupabaseAdmin(c);
+    const { data } = await db
         .from('store_branding')
         .select('site_id, logo_url, favicon_url, primary_color, accent_color, checkout_theme, tokens')
         .eq('site_id', storeId)

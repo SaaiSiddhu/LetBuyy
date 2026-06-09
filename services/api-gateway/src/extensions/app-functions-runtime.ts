@@ -468,7 +468,8 @@ export async function loadEnabledAppFunctionRegistrations(
     siteId: string,
     hook: LetbuyyAppFunctionHook,
 ): Promise<AppFunctionRegistrationRow[]> {
-    const { data, error } = await getSupabaseAdmin(c)
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
         .from('app_function_registrations')
         .select('id, site_id, installation_id, app_id, function_handle, name, hooks, runtime, wasm_module_url, wasm_sha256, wasm_entrypoint, timeout_ms, memory_limit_kb, input_schema, output_schema, config, manifest_schema_version, app_version, created_at, updated_at')
         .eq('site_id', siteId)

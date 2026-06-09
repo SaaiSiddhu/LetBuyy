@@ -195,7 +195,8 @@ function cartFromRow(row: DbRecord): StorefrontServerCart {
 }
 
 async function loadCartByToken(c: AppContext, storeId: string, cartToken: string): Promise<{ cart: StorefrontServerCart | null; error: unknown }> {
-    const { data, error } = await getSupabaseAdmin(c)
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
         .from('carts')
         .select(CART_SELECT)
         .eq('store_id', storeId)
@@ -552,7 +553,8 @@ export function registerStorefrontCartRoutes(
         checkoutUrl.searchParams.set('expires_at', expiresAt);
         checkoutUrl.searchParams.set('signature', signature);
 
-        await getSupabaseAdmin(c)
+        const db = getSupabaseAdmin(c);
+        await db
             .from('carts')
             .update({
                 checkout_handoff: {
@@ -579,7 +581,8 @@ export function registerStorefrontCartRoutes(
         const cartToken = normalizePublicRouteToken(c.req.param('cartToken'));
         if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
 
-        const { data, error } = await getSupabaseAdmin(c)
+        const db = getSupabaseAdmin(c);
+        const { data, error } = await db
             .from('carts')
             .update({
                 items: [],

@@ -397,7 +397,8 @@ export function registerStorefrontPublicRoutes(
         const store = await loadSiteByHandle(c, c.req.param('subdomain'), { publishedOnly: true });
         if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
 
-        const { data, error } = await getSupabaseAdmin(c)
+        const db = getSupabaseAdmin(c);
+        const { data, error } = await db
             .from('app_extension_registrations')
             .select('id, site_id, app_id, installation_id, extension_handle, extension_type, surface, target, renderer, source_url, source_entrypoint, scopes, capabilities, settings, manifest_schema_version, app_version, status, enabled_at, disabled_at, revoked_at, sort_order, created_at, updated_at')
             .eq('site_id', store.id)
@@ -656,7 +657,8 @@ export function registerStorefrontPublicRoutes(
 
         const sampleWeight = sampleRate > 0 ? Math.max(1, Math.round(1 / sampleRate)) : 1;
         const aggregateId = beacon.product_id || beacon.cart_id || beacon.checkout_id || beacon.session_id;
-        const { error } = await getSupabaseAdmin(c)
+        const db = getSupabaseAdmin(c);
+        const { error } = await db
             .from('platform_queue_jobs')
             .upsert(
                 {

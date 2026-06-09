@@ -8,7 +8,7 @@
 - **Overall status:** ◐ IN PROGRESS
 - **Current wave:** Wave 2 — Tenant Isolation
 - **Open blockers:** 0 · **Open CLASS-A SKIPs:** 2 · **CLASS-B STOPs:** 0
-- **Last updated:** 2026-06-09T20:00:36Z (UTC) by Codex
+- **Last updated:** 2026-06-09T20:17:38Z (UTC) by Codex
 
 | Phase/Wave | Status | Build | Tests | Dep-graph | Branch | Migrations | SKIPs | Blockers |
 |---|---|:--:|:--:|:--:|---|:--:|:--:|:--:|
@@ -16,7 +16,7 @@
 | PHASE A.5 — Risk Matrix | ✅ complete | — | — | — | `stepup/main` | 0 | 0 | 0 |
 | Wave 0 — Truth Harness | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-0-truth-harness` | 0 | 1 | 0 |
 | Wave 1 — Money Fixes | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-1-money` | 1 | 1 | 0 |
-| Wave 2 — Tenant Isolation | ☐ pending | — | — | — | — | 0 | 0 | 0 |
+| Wave 2 — Tenant Isolation | ✅ complete | ✅ | ✅ | ✅ | `stepup/wave-2-tenant-isolation` | 0 | 0 | 0 |
 | Wave 3 — Production Safety | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | Wave 4 — Session Security | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | Wave 5 — Design Governance | ☐ pending | — | — | — | — | 0 | 0 | 0 |
@@ -84,7 +84,7 @@ Next wave:     Wave 1 — Money Fixes (precondition met after merge: yes)
 Status:        complete-with-SKIPs
 Started:       2026-06-09T19:40:53Z
 Completed:     2026-06-09T20:00:36Z
-Branch:        stepup/wave-1-money (merged to stepup/main: pending fast-forward)
+Branch:        stepup/wave-1-money (merged to stepup/main: yes, 8f7a7cfa)
 Build:         green (pnpm run build)
 Tests:         green (pnpm run test:foundation:wave1; validates capture/refund ledger posting contracts, wallet backfill/reconciliation, payout claim safety, and rollback on fixture)
 Dependency-graph: green (pnpm run validate:dependencies)
@@ -93,7 +93,24 @@ Migrations added: 160_foundation_money_ledger_authority.sql (additive expand/con
 SKIPs:         SKIP-W1-PA-PAYOUT-PROVIDER
 Blockers:      none
 Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
-Next wave:     Wave 2 — Tenant Isolation (precondition met: yes after fast-forward merge)
+Next wave:     Wave 2 — Tenant Isolation (precondition met: yes)
+```
+
+### Wave 2 — Tenant Isolation
+```
+Status:        complete
+Started:       2026-06-09T20:03:00Z
+Completed:     2026-06-09T20:17:38Z
+Branch:        stepup/wave-2-tenant-isolation (merged to stepup/main: pending fast-forward)
+Build:         green (pnpm run build)
+Tests:         green (pnpm run test:foundation:wave2; exhaustive registry fail-closed test over 261 tenant tables, scoped mutation proof, and tenant-isolation validator)
+Dependency-graph: green (pnpm run validate:dependencies)
+Files changed: 21 Wave 2-owned source/test/governance files, plus dashboard/status/ledger artifacts
+Migrations added: none
+SKIPs:         none
+Blockers:      none
+Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
+Next wave:     Wave 3 — Production Safety (precondition met: yes after fast-forward merge)
 ```
 
 ---

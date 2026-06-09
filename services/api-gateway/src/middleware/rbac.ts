@@ -13,7 +13,6 @@ import {
 } from '@letbuyy/shared-types';
 import type { RbacRoleCategory } from '@letbuyy/auth-core';
 import type { Env } from '../index';
-import { timingSafeEqualText } from '../lib/crypto';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin } from '../lib/supabase';
 
@@ -67,24 +66,6 @@ function isJsonRecord(value: unknown): value is JsonRecord {
     return Boolean(value && typeof value === 'object' && !Array.isArray(value));
 }
 
-function readBearerToken(value: string | undefined): string | null {
-    if (!value?.startsWith('Bearer ')) return null;
-    return value.slice('Bearer '.length).trim() || null;
-}
-
-function isReadOnlyRequest(method: string): boolean {
-    return method === 'GET' || method === 'HEAD';
-}
-
-export function isPlatformConsoleTokenRequest(c: Context<{ Bindings: Env }>): boolean {
-    if (!isReadOnlyRequest(c.req.method)) return false;
-    const expectedToken = c.env.PLATFORM_CONSOLE_API_TOKEN;
-    if (!expectedToken) return false;
-
-    const token = readBearerToken(c.req.header('Authorization')) || c.req.header('X-Platform-Console-Token');
-    return Boolean(token && timingSafeEqualText(token, expectedToken));
-}
-
 function normalizePermissionScope(value: unknown): InternalEffectivePermissionScope | null {
     if (typeof value !== 'string') return null;
     const trimmed = value.trim();
@@ -112,6 +93,21 @@ function collectJsonPermissionScopes(value: unknown): InternalEffectivePermissio
     return candidates
         .map(normalizePermissionScope)
         .filter((scope): scope is InternalEffectivePermissionScope => Boolean(scope));
+}
+
+function normalizeRole(value: unknown): string | null {
+    if (typeof value !== 'string') return null;
+    const trimmed = value.trim().toLowerCase();
+    return trimmed || null;
+}
+
+function appendRole(target: Set<string>, value: unknown): void {
+    const role = normalizeRole(value);
+    if (role) target.add(role);
+}
+
+function hasAnyRequiredRole(granted: ReadonlySet<string>, required: readonly string[]): boolean {
+    return required.map(normalizeRole).some((role) => Boolean(role && granted.has(role)));
 }
 
 export function scopeMatches(granted: InternalEffectivePermissionScope, required: InternalPermissionScope): boolean {
@@ -327,11 +323,6 @@ export async function loadEffectivePermissionScopes(
 
 export function requirePermission(...requiredScopes: InternalPermissionScope[]) {
     return createMiddleware<{ Bindings: Env }>(async (c, next) => {
-        if (isPlatformConsoleTokenRequest(c)) {
-            await next();
-            return;
-        }
-
         const auth = c.get('auth');
 
         if (!auth?.user) {
@@ -411,7 +402,7 @@ export async function logSensitiveRead(
 
 /**
  * Requires the authenticated user to have one of the specified roles.
- * Roles are checked from user_metadata set during signup.
+ * Roles are resolved from server-side persistence, never from JWT metadata.
  */
 export function requireRole(...roles: string[]) {
     return createMiddleware<{ Bindings: Env }>(async (c, next) => {
@@ -424,9 +415,18 @@ export function requireRole(...roles: string[]) {
             );
         }
 
-        const userRole = auth.user.role || 'seller';
+        const db = getSupabaseAdmin(c);
+        const grantedRoles = new Set<string>();
 
-        if (!roles.includes(userRole)) {
+        if (await hasOpsAllowlistEntry(db, auth.user.id, auth.user.email)) {
+            grantedRoles.add('super_admin');
+            grantedRoles.add('admin');
+        }
+
+        const employee = await activeEmployeeForUser(db, auth.user.id);
+        appendRole(grantedRoles, employee?.role);
+
+        if (!hasAnyRequiredRole(grantedRoles, roles)) {
             return c.json(
                 {
                     error: {
@@ -448,11 +448,6 @@ export function requireRole(...roles: string[]) {
  */
 export function requireRoleCategory(...categories: RbacRoleCategory[]) {
     return createMiddleware<{ Bindings: Env }>(async (c, next) => {
-        if (isPlatformConsoleTokenRequest(c) && categories.includes('ops')) {
-            await next();
-            return;
-        }
-
         const auth = c.get('auth');
 
         if (!auth?.user) {
@@ -543,11 +538,6 @@ export function requireStoreOwner() {
  */
 export const requireSuperAdmin = createMiddleware<{ Bindings: Env }>(
     async (c, next) => {
-        if (isPlatformConsoleTokenRequest(c)) {
-            await next();
-            return;
-        }
-
         const auth = c.get('auth');
         const db = getSupabaseAdmin(c);
 

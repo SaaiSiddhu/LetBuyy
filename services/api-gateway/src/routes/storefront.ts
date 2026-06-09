@@ -930,7 +930,8 @@ async function loadPublicStorefrontAppBlocks(c: AppContext, storeId: string): Pr
 }
 
 async function loadRegisteredThemeAppBlocks(c: AppContext, storeId: string): Promise<AppBlockInstance[]> {
-    const { data, error } = await getSupabaseAdmin(c)
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
         .from('app_extension_registrations')
         .select('id, site_id, app_id, installation_id, extension_handle, extension_type, surface, target, renderer, source_url, source_entrypoint, scopes, capabilities, settings, manifest_schema_version, app_version, status, sort_order, created_at, updated_at')
         .eq('site_id', storeId)
@@ -950,7 +951,8 @@ async function loadRegisteredThemeAppBlocks(c: AppContext, storeId: string): Pro
 }
 
 async function loadLegacyStorefrontAppBlocks(c: AppContext, storeId: string): Promise<AppBlockInstance[]> {
-    const { data, error } = await getSupabaseAdmin(c)
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
         .from('app_installations')
         .select('id, app_id, store_id, config, marketplace_apps(id, name, slug, app_url, app_extensions(id, type, target, label, config, sort_order))')
         .eq('store_id', storeId)
