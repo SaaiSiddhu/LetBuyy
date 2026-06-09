@@ -7,9 +7,9 @@ import {
     type LetbuyyRequestOptions,
 } from '@letbuyy/api-client'
 import {
+    createLetbuyyInternalAppHeaders,
     createLetbuyyInternalSessionHeaders,
     getLetbuyyInternalAuthSecret,
-    hmacSha256Hex,
 } from '@letbuyy/auth-core'
 import { getSessionCookie } from '../auth/cookies'
 
@@ -65,7 +65,7 @@ export function getIdentityApiFailureMessage(payload: unknown, fallback: string)
     const error = getApiError(payload)
 
     if (process.env.NODE_ENV !== 'production' && error?.code === 'SERVER_MISCONFIGURED') {
-        return 'Auth service is not configured locally. Set INTERNAL_API_SECRET or AUTH_SECRET for the identity app and API worker, then restart the dev server.'
+        return 'Auth service is not configured locally. Set INTERNAL_API_SECRET for the identity app and API worker, then restart the dev server.'
     }
 
     return fallback
@@ -116,7 +116,7 @@ export async function identityApiRequest<T = unknown>(
 
     const secret = getLetbuyyInternalAuthSecret({
         INTERNAL_API_SECRET: process.env.INTERNAL_API_SECRET,
-        AUTH_SECRET: process.env.AUTH_SECRET,
+        LETBUYY_INTERNAL_API_SECRET: process.env.LETBUYY_INTERNAL_API_SECRET,
     })
     if (!secret) {
         return responseFromPayload({
@@ -140,14 +140,17 @@ export async function identityApiRequest<T = unknown>(
 
         Object.entries(headerPlan.headers).forEach(([key, value]) => headers.set(key, value))
     } else {
-        const timestamp = Date.now().toString()
-        const app = 'accounts'
-        const payload = `app.${app}.${timestamp}`
-        const signature = await hmacSha256Hex(secret, payload)
+        const headerPlan = await createLetbuyyInternalAppHeaders({ app: 'accounts', secret })
+        if (!headerPlan.ok || !headerPlan.headers) {
+            return responseFromPayload({
+                ok: false,
+                status: 500,
+                statusText: headerPlan.reason || 'Internal auth secret is not configured',
+                payload: { error: { code: 'SERVER_MISCONFIGURED', message: headerPlan.reason || 'Internal auth secret is not configured' } } as T,
+            })
+        }
 
-        headers.set('X-LetBuyy-Internal-App', app)
-        headers.set('X-LetBuyy-Internal-Timestamp', timestamp)
-        headers.set('X-LetBuyy-Internal-Signature', signature)
+        Object.entries(headerPlan.headers).forEach(([key, value]) => headers.set(key, value))
     }
 
     const api = createLetbuyyApiClient({

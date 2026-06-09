@@ -11,6 +11,9 @@ import { dbErrorBody, errorBody, getSupabaseAdmin, shouldReturnEmptyForMissingLo
 import { checkRateLimitKey } from '../middleware/rateLimit';
 import { validate } from '../middleware/validation';
 import { hashMerchantPassword, verifyMerchantPassword } from '../lib/merchant-password';
+import { validateMerchantSessionToken } from '../lib/merchant-session';
+import { decryptTextAesGcm } from '../lib/crypto';
+import { verifyTotpCode } from '../lib/totp';
 import {
     AUTH_OTP_EXPIRY_MS,
     AUTH_SESSION_DURATION_MS,
@@ -77,6 +80,7 @@ type LocalAuthSession = {
     user_id: string;
     device_id: string | null;
     expires_at: string;
+    last_active: string;
 };
 
 const localAuthUsersByEmail = new Map<string, LocalAuthUser>();
@@ -124,6 +128,76 @@ function isLocalEmailProviderFailure(error: string | undefined): boolean {
 
 function isAuthRateLimitEndpoint(endpoint: string): endpoint is keyof typeof AUTH_RATE_LIMITS {
     return endpoint in AUTH_RATE_LIMITS;
+}
+
+function configuredTotpEncryptionSecret(env: import('../index').Env): string | null {
+    const secret = env.TOTP_ENCRYPTION_KEY;
+    if (!secret || secret.startsWith('SKIP_NEEDS_HUMAN_') || secret.includes('replace-with')) return null;
+    return secret;
+}
+
+async function enforceMerchantMfaIfEnrolled(
+    c: Context<{ Bindings: import('../index').Env }>,
+    db: ReturnType<typeof getSupabaseAdmin>,
+    userId: string,
+    rawCode: unknown,
+) {
+    const { data, error } = await db
+        .from('merchant_2fa_factors')
+        .select('id, secret_ciphertext')
+        .eq('custom_user_id', userId)
+        .eq('factor_type', 'totp')
+        .eq('status', 'active')
+        .is('deleted_at', null)
+        .limit(1);
+
+    if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) return null;
+        return c.json(dbErrorBody(), 500);
+    }
+
+    const factor = Array.isArray(data) ? data[0] as { id: string; secret_ciphertext: string } | undefined : undefined;
+    if (!factor) return null;
+
+    const code = typeof rawCode === 'string' ? rawCode.trim() : '';
+    if (!code) {
+        return c.json({
+            error: {
+                code: 'MFA_REQUIRED',
+                message: 'Enter your authenticator code to continue',
+            },
+            mfa_required: true,
+        }, 403);
+    }
+
+    const encryptionSecret = configuredTotpEncryptionSecret(c.env);
+    if (!encryptionSecret) {
+        return c.json({
+            error: {
+                code: 'MFA_UNAVAILABLE',
+                message: 'Two-factor verification is temporarily unavailable',
+            },
+        }, 503);
+    }
+
+    const totpSecret = await decryptTextAesGcm(encryptionSecret, factor.secret_ciphertext);
+    const accepted = await verifyTotpCode({ secret: totpSecret, code });
+    if (!accepted) {
+        return c.json({
+            error: {
+                code: 'MFA_INVALID',
+                message: 'Authenticator code is invalid',
+            },
+            mfa_required: true,
+        }, 401);
+    }
+
+    await db
+        .from('merchant_2fa_factors')
+        .update({ last_verified_at: new Date().toISOString() })
+        .eq('id', factor.id);
+
+    return null;
 }
 
 function randomHex(byteCount: number): string {
@@ -289,6 +363,7 @@ auth.get('/custom/session', async (c) => {
 
         const localUser = findLocalAuthUserById(localSession.user_id);
         if (localUser) {
+            localSession.last_active = new Date().toISOString();
             return c.json({
                 authenticated: true,
                 user: {
@@ -303,38 +378,20 @@ auth.get('/custom/session', async (c) => {
     }
 
     const db = getSupabaseAdmin(c);
-    const { data: session, error: sessionError } = await db
-        .from('sessions')
-        .select('id, user_id, expires_at')
-        .eq('token', token)
-        .maybeSingle();
-
-    if (sessionError) {
-        if (shouldReturnEmptyForMissingLocalSchema(c.env, sessionError)) {
-            return c.json({ authenticated: false, local_schema_missing: true, devOnly: true }, 401);
-        }
+    const session = await validateMerchantSessionToken(db, token, { rotate: true });
+    if (session.status === 'error') {
         return c.json(dbErrorBody(), 500);
     }
 
-    if (!session) {
-        return c.json({ authenticated: false }, 401);
+    if (!session.accepted || !session.userId) {
+        return c.json({ authenticated: false, reason: session.status }, 401);
     }
 
-    if (new Date(session.expires_at).getTime() < Date.now()) {
-        await db.from('sessions').delete().eq('id', session.id);
-        return c.json({ authenticated: false }, 401);
-    }
-
-    const customUser = await resolveCustomUser(db, { id: session.user_id, email: '' });
+    const customUser = await resolveCustomUser(db, { id: session.userId, email: '' });
 
     if (!customUser) {
         return c.json({ authenticated: false }, 401);
     }
-
-    await db
-        .from('sessions')
-        .update({ last_active: new Date().toISOString() })
-        .eq('id', session.id);
 
     return c.json({
         authenticated: true,
@@ -343,7 +400,8 @@ auth.get('/custom/session', async (c) => {
             email: customUser.email,
             fullName: customUser.full_name || null,
         },
-        expires_at: session.expires_at,
+        expires_at: session.expiresAt,
+        rotated_session_token: session.rotated ? session.token : undefined,
     });
 });
 
@@ -467,6 +525,14 @@ auth.post('/custom/users/authenticate', async (c) => {
     if (!user.email_verified) {
         return c.json({ error: { code: 'EMAIL_NOT_VERIFIED', message: 'Please verify your email first' } }, 403);
     }
+
+    const mfaResponse = await enforceMerchantMfaIfEnrolled(
+        c,
+        db,
+        String(user.id),
+        rawBody.mfa_code ?? rawBody.totp_code,
+    );
+    if (mfaResponse) return mfaResponse;
 
     return c.json({
         data: {
@@ -1045,6 +1111,7 @@ auth.post('/custom/sessions/create', async (c) => {
                 user_id: userId,
                 device_id: deviceId,
                 expires_at: expiresAt,
+                last_active: new Date().toISOString(),
             });
 
             return c.json({

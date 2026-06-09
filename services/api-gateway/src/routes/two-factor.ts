@@ -52,8 +52,8 @@ interface SessionRow extends Record<string, unknown> {
 }
 
 function configuredSecret(env: Env): string | null {
-    const secret = env.AUTH_SECRET || env.INTERNAL_API_SECRET;
-    if (!secret || secret.startsWith('SKIP_NEEDS_HUMAN_')) return null;
+    const secret = env.TOTP_ENCRYPTION_KEY;
+    if (!secret || secret.startsWith('SKIP_NEEDS_HUMAN_') || secret.includes('replace-with')) return null;
     return secret;
 }
 

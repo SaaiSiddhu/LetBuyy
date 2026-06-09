@@ -204,7 +204,7 @@ export async function enqueueMarketplaceAnalyticsEvent(input: MarketplaceAnalyti
 export function appPlatformTokenSecret(env: Env): string | undefined {
     return getLetbuyyInternalAuthSecret({
         INTERNAL_API_SECRET: env.INTERNAL_API_SECRET,
-        AUTH_SECRET: env.AUTH_SECRET,
+        LETBUYY_INTERNAL_API_SECRET: env.LETBUYY_INTERNAL_API_SECRET,
     });
 }
 

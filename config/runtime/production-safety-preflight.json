@@ -23,6 +23,11 @@
       "id": "money-reconciliation-alert-live",
       "rule": "money ledger reconciliation-break alerting must be live before Wave 1 cutovers run in a shared env",
       "evidenceFlag": "MONEY_LEDGER_RECONCILIATION_ALERT_READY"
+    },
+    {
+      "id": "session-security-secrets-live",
+      "rule": "dedicated internal and TOTP secrets plus internal gateway allowlist must be configured before shared-env Wave 4 cutover",
+      "enforcedBy": "scripts/foundation/production-safety-preflight.mjs"
     }
   ],
   "classASkips": [
@@ -37,6 +42,14 @@
     {
       "id": "SKIP-W3-DNS-CUTOVER",
       "reason": ".store to .com DNS and custom-hostname cutover requires human-owned Cloudflare/Vercel authority."
+    },
+    {
+      "id": "SKIP-W4-LIVE-SECRET-ROTATION",
+      "reason": "Live internal/TOTP/session secret rotation requires human-owned provider secret-store action."
+    },
+    {
+      "id": "SKIP-W4-MTLS-CF-ACCESS",
+      "reason": "mTLS or Cloudflare Access provider perimeter setup requires human-owned provider authority."
     }
   ]
 }

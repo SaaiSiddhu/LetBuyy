@@ -14,7 +14,7 @@ Baseline commit: `41b6ea49c5da30a1409d4cc587d989d459288e45`
 | Wave 1 — Money Fixes | complete | `wave-1:merged` | `8f7a7cfa` |
 | Wave 2 — Tenant Isolation | complete | `wave-2:merged` | `49741343` |
 | Wave 3 — Production Safety | complete | `wave-3:merged` | `57977e74` |
-| Wave 4 — Session Security | pending | — | — |
+| Wave 4 — Session Security | checkpoint-green | `wave-4:checkpoint-green` | pending merge |
 | Wave 5 — Design Governance | pending | — | — |
 | Wave 6 — Theme Governance | pending | — | — |
 | Wave 7 — Beta Readiness | pending | — | — |
@@ -32,4 +32,5 @@ Baseline commit: `41b6ea49c5da30a1409d4cc587d989d459288e45`
 - Wave 2 checkpoint is green and merged to `stepup/main` at `49741343`: `pnpm run test:foundation:wave2`, `pnpm run validate:anti-fabrication`, `pnpm run validate:dependencies`, `node --test tests/identity-foundation/production-parity.test.mjs tests/identity-foundation/remaining-scaffolds.test.mjs`, and `pnpm run build` passed. The generated registry contains 261 tenant tables; unscoped service-role access fails closed through the guarded client; the static platform-console super-admin verifier was removed.
 - Wave 3 branch `stepup/wave-3-production-safety` was created from `stepup/main` after Wave 2 merge/status correction.
 - Wave 3 checkpoint is green and merged to `stepup/main` at `57977e74`: `pnpm run test:foundation:wave3`, `pnpm run validate:anti-fabrication`, `pnpm run validate:dependencies`, `pnpm run validate:production-safety`, `pnpm run build`, and `pnpm run validate:governance:report` passed. Rate limiting now fails closed in production when no backend is ready; mock registrar payloads no longer emit `mock:true`; shared-env preflight blocks sentinel secrets and requires telemetry/reconciliation evidence; public URL defaults now use `letbuyy.store`. `SKIP-W3-SENTRY-DSN` and `SKIP-W3-DNS-CUTOVER` are Class-A and gated off; no production/provider/DNS action was taken.
-- Wave 4 is the active resume point. Create `stepup/wave-4-session-security` from `stepup/main` before edits.
+- Wave 4 branch `stepup/wave-4-session-security` was created from `stepup/main` after Wave 3 merge/status correction.
+- Wave 4 checkpoint is green and merge is pending: `pnpm run test:foundation:wave4`, `pnpm run validate:session-security`, `pnpm run validate:anti-fabrication`, `pnpm run validate:production-safety`, `pnpm run validate:migrations`, `pnpm run validate:dependencies`, `pnpm run build`, and `pnpm run validate:governance:report` passed. Internal auth no longer falls back to `AUTH_SECRET`; signed internal requests carry JTI/replay protection; merchant sessions rotate/revoke through migration `161`; enrolled merchant MFA and per-principal console TOTP are enforced; `/internal/*` has a production fail-closed perimeter. `SKIP-W4-LIVE-SECRET-ROTATION` and `SKIP-W4-MTLS-CF-ACCESS` are Class-A and gated off; no provider secret, mTLS/Cloudflare Access, shared/staging/prod deploy, or shared DB action was taken.

@@ -4,7 +4,10 @@ import {
     bytesToHex,
     getLetbuyyInternalAuthSecret,
     hmacSha256Hex,
+    internalAppSigningPayload,
+    internalIdentitySigningPayload,
     isFreshLetbuyyInternalTimestamp,
+    isSafeLetbuyyInternalJti,
     timingSafeEqualHex,
     verifyLetbuyyInternalSessionHeaders,
     verifyLetbuyySignedPayload,
@@ -17,6 +20,8 @@ export function getInternalAuthSecret(env: Env): string | undefined {
 export function getInternalAuthSecrets(env: Env): string[] {
     const secrets = [
         getLetbuyyInternalAuthSecret(env),
+        env.INTERNAL_API_SECRET_PREVIOUS,
+        env.LETBUYY_INTERNAL_API_SECRET_PREVIOUS,
         env.WORKER_INTERNAL_API_SECRET,
     ].filter((secret): secret is string => Boolean(secret));
 
@@ -37,12 +42,40 @@ export async function verifySignedPayload(env: Env, payload: string, signature: 
     return false;
 }
 
+const consumedInternalJtis = new Map<string, number>();
+
+function consumeInternalJti(input: {
+    kind: string;
+    jti: string | null | undefined;
+    signature: string | null | undefined;
+    nowMs?: number;
+    maxAgeMs?: number;
+}): boolean {
+    if (!isSafeLetbuyyInternalJti(input.jti) || !input.signature) return false;
+
+    const now = input.nowMs ?? Date.now();
+    const maxAgeMs = input.maxAgeMs ?? 5 * 60_000;
+    for (const [key, expiresAt] of consumedInternalJtis.entries()) {
+        if (expiresAt <= now) consumedInternalJtis.delete(key);
+    }
+
+    const key = `${input.kind}:${input.jti}:${input.signature}`;
+    if (consumedInternalJtis.has(key)) return false;
+    consumedInternalJtis.set(key, now + maxAgeMs);
+    return true;
+}
+
+export function _testResetInternalAuthReplayCache(): void {
+    consumedInternalJtis.clear();
+}
+
 export async function verifyInternalSessionHeaders(
     env: Env,
     input: {
         sessionToken?: string | null;
         timestamp?: string | null;
         signature?: string | null;
+        jti?: string | null;
     },
 ) {
     let lastVerification: Awaited<ReturnType<typeof verifyLetbuyyInternalSessionHeaders>> | null = null;
@@ -52,7 +85,21 @@ export async function verifyInternalSessionHeaders(
             ...input,
             secret,
         });
-        if (verification.accepted) return verification;
+        if (verification.accepted) {
+            if (!consumeInternalJti({
+                kind: 'session',
+                jti: input.jti,
+                signature: input.signature,
+            })) {
+                return {
+                    accepted: false,
+                    status: 'replayed' as const,
+                    kind: 'merchant' as const,
+                    reason: 'Internal session signature replay was rejected',
+                };
+            }
+            return verification;
+        }
         lastVerification = verification;
     }
 
@@ -67,11 +114,39 @@ export async function verifyInternalSessionHeaders(
 export async function verifyInternalAppRequest(c: Context<{ Bindings: Env }>, expectedApp: string): Promise<boolean> {
     const app = c.req.header('X-LetBuyy-Internal-App');
     const timestamp = c.req.header('X-LetBuyy-Internal-Timestamp');
+    const jti = c.req.header('X-LetBuyy-Internal-JTI');
     const signature = c.req.header('X-LetBuyy-Internal-Signature');
 
-    if (app !== expectedApp || !isFreshInternalTimestamp(timestamp)) {
+    if (app !== expectedApp || !isFreshInternalTimestamp(timestamp) || !isSafeLetbuyyInternalJti(jti)) {
         return false;
     }
 
-    return verifySignedPayload(c.env, `app.${app}.${timestamp}`, signature);
+    const signed = await verifySignedPayload(c.env, internalAppSigningPayload(app, String(timestamp), jti), signature);
+    return signed && consumeInternalJti({ kind: `app:${app}`, jti, signature });
+}
+
+export async function verifyInternalIdentityPayload(
+    env: Env,
+    input: {
+        userId: string;
+        email: string;
+        storeId?: string;
+        timestamp?: string;
+        jti?: string;
+        signature?: string;
+    },
+): Promise<boolean> {
+    if (!isFreshInternalTimestamp(input.timestamp) || !isSafeLetbuyyInternalJti(input.jti)) {
+        return false;
+    }
+
+    const payload = internalIdentitySigningPayload(
+        input.userId,
+        input.email,
+        input.storeId || '',
+        String(input.timestamp),
+        input.jti,
+    );
+    const signed = await verifySignedPayload(env, payload, input.signature);
+    return signed && consumeInternalJti({ kind: 'identity', jti: input.jti, signature: input.signature });
 }

@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server'
 import { features } from '@/lib/config/features'
 
-const MOCK_JWKS = {
+const DISABLED_JWKS = {
     keys: [
         {
             kty: 'EC',
-            kid: 'mock-merchant-active-es256-v1',
+            kid: 'identity-provider-disabled-es256-v1',
             use: 'sig',
             alg: 'ES256',
             crv: 'P-256',
-            x: 'mock-x-coordinate',
-            y: 'mock-y-coordinate',
+            x: 'disabled-x-coordinate',
+            y: 'disabled-y-coordinate',
         },
     ],
 }
@@ -63,7 +63,7 @@ export function oidcSkeletonResponse(endpoint: string, request?: Request): NextR
                 response_types_supported: ['code'],
                 grant_types_supported: ['authorization_code', 'refresh_token', 'client_credentials', 'urn:ietf:params:oauth:grant-type:device_code'],
                 code_challenge_methods_supported: ['S256'],
-                mock: true,
+                implemented: false,
             },
             {
                 headers: {
@@ -76,8 +76,8 @@ export function oidcSkeletonResponse(endpoint: string, request?: Request): NextR
     if (endpoint === 'jwks' && features.identityFoundation.FEATURE_NEW_KEY_SERVICE) {
         return NextResponse.json(
             {
-                ...MOCK_JWKS,
-                mock: true,
+                ...DISABLED_JWKS,
+                implemented: false,
             },
             {
                 headers: {

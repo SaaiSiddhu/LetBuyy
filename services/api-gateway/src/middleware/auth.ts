@@ -6,7 +6,6 @@ import {
 import {
     getLetbuyyRoleCategories,
     isAuthUuid,
-    isFreshLetbuyyInternalTimestamp,
     isSafeAuthEmail,
     normalizeLetbuyyRoleAssignments,
     type LetbuyyRoleAssignment,
@@ -18,7 +17,8 @@ import {
     AUTH_VERIFIER_REGISTRY,
     type AuthVerifierName,
 } from '../identity-foundation/auth-verifier-registry';
-import { verifyInternalSessionHeaders, verifySignedPayload } from '../lib/internal-auth';
+import { verifyInternalIdentityPayload, verifyInternalSessionHeaders } from '../lib/internal-auth';
+import { validateMerchantSessionToken } from '../lib/merchant-session';
 
 interface AuthContext {
     user: {
@@ -81,9 +81,10 @@ async function getInternalAuthContext(c: Context<{ Bindings: Env }>): Promise<Au
     const email = c.req.header('X-LetBuyy-Internal-Email');
     const storeId = c.req.header('X-LetBuyy-Internal-Store-ID') || undefined;
     const timestampHeader = c.req.header('X-LetBuyy-Internal-Timestamp');
+    const jti = c.req.header('X-LetBuyy-Internal-JTI');
     const signature = c.req.header('X-LetBuyy-Internal-Signature');
 
-    if (!userId || !isAuthUuid(userId) || !isSafeAuthEmail(email) || !timestampHeader || !signature) {
+    if (!userId || !isAuthUuid(userId) || !isSafeAuthEmail(email) || !timestampHeader || !jti || !signature) {
         return null;
     }
 
@@ -91,12 +92,14 @@ async function getInternalAuthContext(c: Context<{ Bindings: Env }>): Promise<Au
         return null;
     }
 
-    if (!isFreshLetbuyyInternalTimestamp(timestampHeader)) {
-        return null;
-    }
-
-    const payload = `${userId}.${email}.${storeId || ''}.${timestampHeader}`;
-    if (!(await verifySignedPayload(c.env, payload, signature))) {
+    if (!(await verifyInternalIdentityPayload(c.env, {
+        userId,
+        email,
+        storeId,
+        timestamp: timestampHeader,
+        jti,
+        signature,
+    }))) {
         return null;
     }
 
@@ -113,10 +116,12 @@ async function getInternalAuthContext(c: Context<{ Bindings: Env }>): Promise<Au
 async function getInternalSessionAuthContext(c: Context<{ Bindings: Env }>): Promise<AuthContext | null> {
     const sessionToken = c.req.header('X-LetBuyy-Internal-Session-Token');
     const timestampHeader = c.req.header('X-LetBuyy-Internal-Timestamp');
+    const jti = c.req.header('X-LetBuyy-Internal-JTI');
     const signature = c.req.header('X-LetBuyy-Internal-Signature');
     const sessionVerification = await verifyInternalSessionHeaders(c.env, {
         sessionToken,
         timestamp: timestampHeader,
+        jti,
         signature,
     });
 
@@ -126,35 +131,20 @@ async function getInternalSessionAuthContext(c: Context<{ Bindings: Env }>): Pro
 
     const supabase = createSupabaseServiceClient(c.env);
 
-    const { data: session } = await supabase
-        .from('sessions')
-        .select('id, user_id, expires_at')
-        .eq('token', sessionVerification.token)
-        .maybeSingle();
-
-    if (!session) {
-        return null;
-    }
-
-    if (new Date(session.expires_at).getTime() < Date.now()) {
-        await supabase.from('sessions').delete().eq('id', session.id);
+    const session = await validateMerchantSessionToken(supabase, sessionVerification.token, { rotate: false });
+    if (!session.accepted || !session.userId) {
         return null;
     }
 
     const { data: user } = await supabase
         .from('users_custom')
         .select('id, email')
-        .eq('id', session.user_id)
+        .eq('id', session.userId)
         .maybeSingle();
 
     if (!user || !isSafeAuthEmail(user.email)) {
         return null;
     }
-
-    await supabase
-        .from('sessions')
-        .update({ last_active: new Date().toISOString() })
-        .eq('id', session.id);
 
     return {
         user: buildAuthContextUser({

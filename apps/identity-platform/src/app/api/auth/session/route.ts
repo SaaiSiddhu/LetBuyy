@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { identityApiRequest } from '@/lib/api/client'
+import { setSessionCookie } from '@/lib/auth/cookies'
 
 /**
  * GET /api/auth/session
@@ -17,7 +18,14 @@ export async function GET() {
             return NextResponse.json({ authenticated: false })
         }
 
-        const payload = await response.json()
+        const payload = await response.json() as {
+            rotated_session_token?: string
+            [key: string]: unknown
+        } | null
+        if (payload?.rotated_session_token) {
+            await setSessionCookie(payload.rotated_session_token)
+            delete payload.rotated_session_token
+        }
         return NextResponse.json(payload)
     } catch (error) {
         console.error('Session check error:', error)

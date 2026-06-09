@@ -174,6 +174,7 @@ export type LetbuyySessionVerificationStatus =
   | 'malformed'
   | 'expired'
   | 'invalid_signature'
+  | 'replayed'
   | 'misconfigured';
 
 export interface LetbuyySessionVerificationResult<TPayload = unknown> {
@@ -191,7 +192,15 @@ export interface LetbuyyInternalSessionHeaderPlan {
   headers?: Record<string, string>;
   signature?: string;
   timestamp?: string;
+  jti?: string;
   reason?: string;
+}
+
+export interface LetbuyyInternalAppHeaderInput {
+  app: string;
+  secret: string | null | undefined;
+  nowMs?: number;
+  jti?: string;
 }
 
 export interface LetbuyyInternalIdentityHeaderInput {
@@ -206,6 +215,7 @@ export interface LetbuyyInternalSessionHeaderInput {
   sessionToken?: string | null;
   timestamp?: string | null;
   signature?: string | null;
+  jti?: string | null;
   secret?: string | null;
   nowMs?: number;
   maxAgeMs?: number;
@@ -446,9 +456,9 @@ export function normalizeAuthEmail(value: unknown): string {
 
 export function getLetbuyyInternalAuthSecret(env: {
   INTERNAL_API_SECRET?: string | null;
-  AUTH_SECRET?: string | null;
+  LETBUYY_INTERNAL_API_SECRET?: string | null;
 }): string | undefined {
-  return env.INTERNAL_API_SECRET || env.AUTH_SECRET || undefined;
+  return env.INTERNAL_API_SECRET || env.LETBUYY_INTERNAL_API_SECRET || undefined;
 }
 
 export function isAuthUuid(value: string): boolean {
@@ -569,6 +579,10 @@ export function isFreshLetbuyyInternalTimestamp(
   return Number.isFinite(timestamp) && Math.abs(nowMs - timestamp) <= maxAgeMs;
 }
 
+export function isSafeLetbuyyInternalJti(value: string | null | undefined): value is string {
+  return Boolean(value && /^[A-Za-z0-9._~-]{16,128}$/.test(value));
+}
+
 export function bytesToHex(bytes: ArrayBuffer | Uint8Array): string {
   const view = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
   return [...view].map((byte) => byte.toString(16).padStart(2, '0')).join('');
@@ -614,16 +628,53 @@ export async function createLetbuyyInternalSessionHeaders(
   }
 
   const timestamp = nowMs.toString();
-  const signature = await hmacSha256Hex(secret, internalSessionSigningPayload(verification.token, timestamp));
+  const jti = randomInternalJti();
+  const signature = await hmacSha256Hex(secret, internalSessionSigningPayload(verification.token, timestamp, jti));
 
   return {
     ok: true,
     status: 'accepted',
     timestamp,
+    jti,
     signature,
     headers: {
       [`${INTERNAL_SESSION_HEADER_PREFIX}-Session-Token`]: verification.token,
       [`${INTERNAL_SESSION_HEADER_PREFIX}-Timestamp`]: timestamp,
+      [`${INTERNAL_SESSION_HEADER_PREFIX}-JTI`]: jti,
+      [`${INTERNAL_SESSION_HEADER_PREFIX}-Signature`]: signature,
+    },
+  };
+}
+
+export async function createLetbuyyInternalAppHeaders(
+  input: LetbuyyInternalAppHeaderInput,
+): Promise<LetbuyyInternalSessionHeaderPlan> {
+  if (!/^[a-z][a-z0-9-]{1,40}$/.test(input.app)) {
+    return { ok: false, status: 'malformed', reason: 'Internal app name is malformed' };
+  }
+
+  if (!input.secret) {
+    return { ok: false, status: 'misconfigured', reason: 'Internal auth secret is not configured' };
+  }
+
+  const timestamp = (input.nowMs ?? Date.now()).toString();
+  const jti = input.jti || randomInternalJti();
+  if (!isSafeLetbuyyInternalJti(jti)) {
+    return { ok: false, status: 'malformed', reason: 'Internal auth replay id is malformed' };
+  }
+
+  const signature = await hmacSha256Hex(input.secret, internalAppSigningPayload(input.app, timestamp, jti));
+
+  return {
+    ok: true,
+    status: 'accepted',
+    timestamp,
+    jti,
+    signature,
+    headers: {
+      [`${INTERNAL_SESSION_HEADER_PREFIX}-App`]: input.app,
+      [`${INTERNAL_SESSION_HEADER_PREFIX}-Timestamp`]: timestamp,
+      [`${INTERNAL_SESSION_HEADER_PREFIX}-JTI`]: jti,
       [`${INTERNAL_SESSION_HEADER_PREFIX}-Signature`]: signature,
     },
   };
@@ -646,17 +697,20 @@ export async function createLetbuyyInternalIdentityHeaders(
   }
 
   const timestamp = (input.nowMs ?? Date.now()).toString();
-  const signature = await hmacSha256Hex(input.secret, `${input.userId}.${input.email}.${storeId}.${timestamp}`);
+  const jti = randomInternalJti();
+  const signature = await hmacSha256Hex(input.secret, internalIdentitySigningPayload(input.userId, input.email, storeId, timestamp, jti));
 
   return {
     ok: true,
     status: 'accepted',
     timestamp,
+    jti,
     signature,
     headers: {
       [`${INTERNAL_SESSION_HEADER_PREFIX}-User-ID`]: input.userId,
       [`${INTERNAL_SESSION_HEADER_PREFIX}-Email`]: normalizeAuthEmail(input.email),
       [`${INTERNAL_SESSION_HEADER_PREFIX}-Timestamp`]: timestamp,
+      [`${INTERNAL_SESSION_HEADER_PREFIX}-JTI`]: jti,
       [`${INTERNAL_SESSION_HEADER_PREFIX}-Signature`]: signature,
       ...(storeId ? { [`${INTERNAL_SESSION_HEADER_PREFIX}-Store-ID`]: storeId } : {}),
     },
@@ -677,9 +731,13 @@ export async function verifyLetbuyyInternalSessionHeaders(
     return { accepted: false, status: 'expired', kind: 'merchant', reason: 'Internal session signature timestamp is stale' };
   }
 
+  if (!isSafeLetbuyyInternalJti(input.jti)) {
+    return { accepted: false, status: 'malformed', kind: 'merchant', reason: 'Internal session replay id is missing or malformed' };
+  }
+
   const signed = await verifyLetbuyySignedPayload(
     input.secret,
-    internalSessionSigningPayload(verification.token, String(input.timestamp)),
+    internalSessionSigningPayload(verification.token, String(input.timestamp), input.jti),
     input.signature,
   );
 
@@ -1094,8 +1152,22 @@ export async function verifyAppScopedAccessToken(
   };
 }
 
-function internalSessionSigningPayload(sessionToken: string, timestamp: string): string {
-  return `session.${sessionToken}.${timestamp}`;
+export function internalAppSigningPayload(app: string, timestamp: string, jti: string): string {
+  return `app.${app}.${timestamp}.${jti}`;
+}
+
+export function internalIdentitySigningPayload(userId: string, email: string, storeId: string, timestamp: string, jti: string): string {
+  return `${userId}.${normalizeAuthEmail(email)}.${storeId}.${timestamp}.${jti}`;
+}
+
+function internalSessionSigningPayload(sessionToken: string, timestamp: string, jti: string): string {
+  return `session.${sessionToken}.${timestamp}.${jti}`;
+}
+
+function randomInternalJti(): string {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return bytesToHex(bytes);
 }
 
 export async function sha256Hex(payload: string): Promise<string> {

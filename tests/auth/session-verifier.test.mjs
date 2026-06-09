@@ -109,6 +109,7 @@ test('internal session forwarding signatures round-trip through the shared verif
   const accepted = await authCore.verifyLetbuyyInternalSessionHeaders({
     sessionToken: plan.headers['X-LetBuyy-Internal-Session-Token'],
     timestamp: plan.headers['X-LetBuyy-Internal-Timestamp'],
+    jti: plan.headers['X-LetBuyy-Internal-JTI'],
     signature: plan.headers['X-LetBuyy-Internal-Signature'],
     secret: 'test-secret',
     nowMs: 1_000,
@@ -118,6 +119,7 @@ test('internal session forwarding signatures round-trip through the shared verif
   const stale = await authCore.verifyLetbuyyInternalSessionHeaders({
     sessionToken,
     timestamp: plan.headers['X-LetBuyy-Internal-Timestamp'],
+    jti: plan.headers['X-LetBuyy-Internal-JTI'],
     signature: plan.headers['X-LetBuyy-Internal-Signature'],
     secret: 'test-secret',
     nowMs: 1_000 + authCore.LETBUYY_INTERNAL_AUTH_MAX_AGE_MS + 1,
@@ -127,11 +129,52 @@ test('internal session forwarding signatures round-trip through the shared verif
   const tampered = await authCore.verifyLetbuyyInternalSessionHeaders({
     sessionToken,
     timestamp: plan.headers['X-LetBuyy-Internal-Timestamp'],
+    jti: plan.headers['X-LetBuyy-Internal-JTI'],
     signature: '0'.repeat(64),
     secret: 'test-secret',
     nowMs: 1_000,
   });
   assert.equal(tampered.status, 'invalid_signature');
+});
+
+test('internal auth secrets are isolated from AUTH_SECRET and app headers carry a JTI', async () => {
+  assert.equal(authCore.getLetbuyyInternalAuthSecret({ AUTH_SECRET: 'legacy-auth-secret' }), undefined);
+  assert.equal(
+    authCore.getLetbuyyInternalAuthSecret({
+      INTERNAL_API_SECRET: 'internal-secret',
+      AUTH_SECRET: 'legacy-auth-secret',
+    }),
+    'internal-secret',
+  );
+  assert.equal(
+    authCore.getLetbuyyInternalAuthSecret({
+      LETBUYY_INTERNAL_API_SECRET: 'dedicated-secret',
+      AUTH_SECRET: 'legacy-auth-secret',
+    }),
+    'dedicated-secret',
+  );
+
+  const plan = await authCore.createLetbuyyInternalAppHeaders({
+    app: 'accounts',
+    secret: 'dedicated-secret',
+    nowMs: 1_000,
+  });
+
+  assert.equal(plan.ok, true);
+  assert.equal(plan.headers['X-LetBuyy-Internal-App'], 'accounts');
+  assert.ok(authCore.isSafeLetbuyyInternalJti(plan.headers['X-LetBuyy-Internal-JTI']));
+  assert.equal(
+    await authCore.verifyLetbuyySignedPayload(
+      'dedicated-secret',
+      authCore.internalAppSigningPayload(
+        'accounts',
+        plan.headers['X-LetBuyy-Internal-Timestamp'],
+        plan.headers['X-LetBuyy-Internal-JTI'],
+      ),
+      plan.headers['X-LetBuyy-Internal-Signature'],
+    ),
+    true,
+  );
 });
 
 test('customer session JWTs are signed and verified only by auth-core', async () => {

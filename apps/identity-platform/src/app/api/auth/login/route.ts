@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
         }
 
-        const { email, password, turnstileToken } = await request.json()
+        const { email, password, turnstileToken, mfaCode } = await request.json()
 
         if (!email || !password) {
             return NextResponse.json({ error: 'Email and password are required' }, { status: 400 })
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
         const userResponse = await identityApiRequest('/auth/custom/users/authenticate', {
             method: 'POST',
-            body: JSON.stringify({ email: normalizedEmail, password }),
+            body: JSON.stringify({ email: normalizedEmail, password, mfa_code: mfaCode || undefined }),
         })
         const userPayload = await userResponse.json().catch(() => null) as {
             data?: {
@@ -62,9 +62,16 @@ export async function POST(request: NextRequest) {
                 code?: string
                 message?: string
             }
+            mfa_required?: boolean
         } | null
 
         if (!userResponse.ok) {
+            if (userPayload?.mfa_required || userPayload?.error?.code === 'MFA_REQUIRED') {
+                return NextResponse.json({
+                    error: userPayload?.error?.message || 'Enter your authenticator code to continue',
+                    mfaRequired: true,
+                }, { status: 403 })
+            }
             const fallback = userResponse.status === 401
                 ? 'Invalid email or password'
                 : userResponse.status === 403

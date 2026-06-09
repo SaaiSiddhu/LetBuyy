@@ -52,7 +52,7 @@ export async function createPlatformOperationsApiClient(
             sessionToken,
             getLetbuyyInternalAuthSecret({
                 INTERNAL_API_SECRET: process.env.INTERNAL_API_SECRET,
-                AUTH_SECRET: process.env.AUTH_SECRET,
+                LETBUYY_INTERNAL_API_SECRET: process.env.LETBUYY_INTERNAL_API_SECRET,
             }),
         );
 

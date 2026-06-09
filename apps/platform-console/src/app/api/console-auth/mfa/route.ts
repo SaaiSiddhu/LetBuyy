@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         code: formData.get('code'),
     });
 
-    if (!parsed.success || !verifyConsoleTotp(parsed.data.code)) {
+    if (!parsed.success || !verifyConsoleTotp(parsed.data.code, session.email)) {
         return redirectWithError(request, 'invalid_code');
     }
 

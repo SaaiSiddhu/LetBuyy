@@ -31,3 +31,19 @@ BLOCKED BY: Human-owned Cloudflare/Vercel DNS credentials, domain ownership appr
 GATED AT: public URL helpers default to `letbuyy.store` without performing DNS mutation, and `docs/runbooks/foundation-wave3-shared-env-apply.md` records `SKIP-DEPLOY` DNS/custom-hostname apply, verify, and rollback steps. Codex did not mutate Cloudflare, Vercel, or registrar state.
 
 TO RESUME: Verify zone ownership and target records, run the human DNS/custom-hostname apply in the approved provider consoles or IaC path, confirm TLS and takeover-prevention checks, then attach rollback evidence before promoting traffic.
+
+## SKIP-W4-LIVE-SECRET-ROTATION · Wave 4 · Live internal/TOTP/session secret rotation · CLASS-A
+
+BLOCKED BY: Human-owned Vercel/Cloudflare/Supabase secret stores, live session invalidation policy, and operator approval for shared-env rotation.
+
+GATED AT: code now supports dedicated `LETBUYY_INTERNAL_API_SECRET`, previous-secret dual accept, dedicated `TOTP_ENCRYPTION_KEY`, JTI replay protection, session rotation/revocation, and `scripts/foundation/production-safety-preflight.mjs` requires Wave 4 shared-env values before any shared apply. Codex did not mutate provider secrets or invalidate live sessions.
+
+TO RESUME: Use `docs/runbooks/foundation-wave4-session-security-apply.md` in the approved operator shell, set new and previous secrets in the provider secret stores, verify dual-accept and session rotation in non-production, then remove previous secrets after the agreed TTL.
+
+## SKIP-W4-MTLS-CF-ACCESS · Wave 4 · mTLS or Cloudflare Access internal perimeter · CLASS-A
+
+BLOCKED BY: Human-owned Cloudflare Access/mTLS configuration, certificate issuance, DNS/provider credentials, and live ingress policy authority.
+
+GATED AT: `services/api-gateway/src/middleware/internal-perimeter.ts` enforces a default production IP allowlist and internal credential presence for `/internal/*`; shared-env templates require `INTERNAL_GATEWAY_IP_ALLOWLIST`. Codex did not configure Cloudflare Access, mTLS, certificates, or provider network policy.
+
+TO RESUME: Configure the approved Cloudflare Access or mTLS policy, set the internal gateway allowlist to the verified ingress ranges, run perimeter probes from allowed and denied sources, and attach rollback evidence before shared traffic promotion.

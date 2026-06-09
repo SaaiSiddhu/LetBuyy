@@ -1,17 +1,5 @@
 {
   "schemaVersion": 1,
   "purpose": "Temporary Wave-owned allowlist for pre-existing fabrication debt. New entries require a wave owner and must be burned down before the final acceptance gate.",
-  "entries": [
-    {
-      "id": "W4-IDENTITY-OIDC-MOCK-SKELETON",
-      "rule": "mock-true-runtime-payload",
-      "path": "apps/identity-platform/src/lib/identity-foundation/oidc-disabled.ts",
-      "ownerWave": "Wave 4",
-      "reason": "OIDC is out of scope and feature-gated; Wave 4 session security/Wave 7 beta readiness must keep it honest-disabled rather than returning mock identity success.",
-      "snippets": [
-        "mock: true",
-        "FEATURE_IDENTITY_PROVIDER"
-      ]
-    }
-  ]
+  "entries": []
 }

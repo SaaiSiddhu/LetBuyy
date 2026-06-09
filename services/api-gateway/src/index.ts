@@ -7,6 +7,7 @@ import { securityHeaders, inputValidation, requestId, errorResponseSanitizer, cs
 import { protectedMutationIdempotency } from './middleware/idempotency';
 import { featureGate } from './middleware/featureFlags';
 import { observability } from './middleware/observability';
+import { internalPerimeter } from './middleware/internal-perimeter';
 import { AppError, formatAppError } from './lib/errors';
 import { getSupabaseAdminFromEnv } from './lib/supabase';
 import { resolveCredentialedCorsOrigin } from './lib/cors';
@@ -130,6 +131,7 @@ export interface Env {
     TWILIO_AUTH_TOKEN?: string;
     TWILIO_WHATSAPP_FROM?: string;
     PAYMENT_CONFIG_ENCRYPTION_KEY?: string;
+    TOTP_ENCRYPTION_KEY?: string;
     STRIPE_SECRET_KEY: string;
     PAYPAL_CLIENT_ID?: string;
     PAYPAL_CLIENT_SECRET?: string;
@@ -181,7 +183,11 @@ export interface Env {
     LETBUYY_AI_MODEL_MODE?: 'mock' | 'live';
     MEDIA_UPLOAD_SIGNING_SECRET?: string;
     INTERNAL_API_SECRET?: string;
+    INTERNAL_API_SECRET_PREVIOUS?: string;
+    LETBUYY_INTERNAL_API_SECRET?: string;
+    LETBUYY_INTERNAL_API_SECRET_PREVIOUS?: string;
     WORKER_INTERNAL_API_SECRET?: string;
+    INTERNAL_GATEWAY_IP_ALLOWLIST?: string;
     PLATFORM_CONSOLE_API_TOKEN?: string;
     ASSET_PUBLIC_BASE_URL?: string;
     R2_BUCKET?: R2Bucket;
@@ -682,6 +688,7 @@ api.route('/app-store', appStoreRouter);
 api.route('/app', appApiRouter);
 api.route('/whatsapp/inbound', whatsappInboundRouter);
 api.route('/wa/webhook', whatsappInboundRouter);
+api.use('/internal/*', internalPerimeter);
 api.route('/internal/console', internalConsoleRouter);
 api.route('/internal/billing', internalBillingRouter);
 api.route('/internal/events', internalEventsRouter);

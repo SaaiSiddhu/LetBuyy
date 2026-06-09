@@ -16,6 +16,7 @@ const validators = [
   "foundation-antifabrication-gate.mjs",
   "tenant-isolation-validator.mjs",
   "production-safety-validator.mjs",
+  "session-security-validator.mjs",
   "architecture-validator.mjs",
   "runtime-validator.mjs",
   "runtime-manifest-validator.mjs",

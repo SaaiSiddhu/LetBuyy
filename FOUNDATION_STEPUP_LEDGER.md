@@ -173,3 +173,55 @@ SKIPS:
 
 - `SKIP-W3-SENTRY-DSN`
 - `SKIP-W3-DNS-CUTOVER`
+
+# WAVE 4 — Session Security — 2026-06-09
+
+CHANGES:
+
+- `packages/auth-core/src/index.ts` → internal request signing now uses a dedicated `INTERNAL_API_SECRET`/`LETBUYY_INTERNAL_API_SECRET` contract, adds JTI to app/session/identity signatures, and no longer accepts `AUTH_SECRET` as an internal-auth fallback.
+- `services/api-gateway/src/lib/internal-auth.ts`, `services/api-gateway/src/lib/internal-secret.ts`, and `services/api-gateway/src/middleware/internal-perimeter.ts` → added previous-secret dual accept, JTI replay cache, identity/app/session replay rejection, and a production fail-closed `/internal/*` perimeter requiring an IP allowlist plus internal credential presence.
+- Runtime API clients in identity, storefront, merchant control-plane, app marketplace, theme marketplace, and operations portal now use the dedicated internal secret path; identity/storefront app calls use the shared JTI signer.
+- `database/supabase/migrations/161_foundation_session_security.sql` + rollback → added merchant session revocation columns, token-rotation event table, and `validate_and_rotate_merchant_session(...)` with `FOR UPDATE`, idle timeout, rotation, old-token reuse detection, and tested down script.
+- `services/api-gateway/src/lib/merchant-session.ts`, `services/api-gateway/src/middleware/auth.ts`, and `services/api-gateway/src/routes/auth.ts` → gateway auth validates merchant sessions through the DB RPC, rotates eligible session tokens, rejects idle/revoked/reused sessions, and enforces enrolled merchant TOTP during password login.
+- `services/api-gateway/src/routes/two-factor.ts` → TOTP secrets now use dedicated `TOTP_ENCRYPTION_KEY`, not auth/internal secrets.
+- `apps/identity-platform/src/app/api/auth/login/route.ts` and `apps/identity-platform/src/app/api/auth/session/route.ts` → login forwards MFA codes and the app route writes rotated merchant session cookies without exposing replacement tokens in the JSON body.
+- `apps/platform-console/src/lib/console-auth-server.ts` and MFA route → production console TOTP now resolves per principal from `PLATFORM_CONSOLE_TOTP_SECRETS`; the old shared secret remains non-production fallback only.
+- `apps/identity-platform/src/lib/identity-foundation/oidc-disabled.ts` and `config/governance/anti-fabrication-allowlist.json` → OIDC scaffold now returns honest `implemented: false` payloads and the final anti-fabrication allowlist entry was removed.
+- Env templates, shared-env preflight, Wave 4 runbook, SKIP log, validator, and tests were updated for secret rotation placeholders, internal allowlist requirements, Class-A skips, and session-security evidence.
+
+TESTS:
+
+- `pnpm run test:foundation:wave4` → PASS with tsx IPC/Docker escalation; proves auth-core internal JTI signatures, no `AUTH_SECRET` internal fallback, production internal perimeter fail-closed behavior, source validator, and Postgres migration apply/down with rotation/reuse revocation.
+- `pnpm run validate:session-security` → PASS; checks internal secret isolation, replay JTI, session rotation/revocation, MFA enforcement, per-principal console TOTP, perimeter, env templates, OIDC honesty, and Wave 4 skips.
+- `pnpm run validate:anti-fabrication` → PASS; active source scan has zero temporary allowlist entries.
+- `pnpm run validate:production-safety` → PASS; Wave 3 safety remains green after adding Wave 4 shared-env prerequisites.
+- `pnpm run validate:migrations` → PASS; migration history remains replay-safe.
+- `pnpm run validate:dependencies` → PASS; dependency manifest, undeclared import, package export, dependency graph, and circular import gates green.
+- `pnpm run build` → PASS; turbo build completed 71/71 tasks after gateway/session typing fixes.
+- `pnpm run validate:governance:report` → PASS; report lane remains green.
+
+MIGRATIONS:
+
+- Added `161_foundation_session_security.sql`.
+- Expand/contract: additive columns/table/function only; no live session column type was changed.
+- Fixture verification: `tests/executable/foundation-wave4-session-postgres.test.mjs` created a minimal local schema, applied migration `161`, rotated a merchant session, rejected reuse of the old token with revocation, then applied `161` rollback and verified function/table/columns were removed.
+
+ROLLBACK:
+
+- Apply `database/supabase/rollback/161_foundation_session_security.rollback.sql` only to the local/ephemeral fixture or a human-approved clone. Do not apply to shared/staging/prod without a fresh backup and forward-fix decision.
+- Code rollback: revert the Wave 4 commit to restore the previous internal-signing/session/MFA behavior.
+- Provider rollback: none by Codex. Live secret rotation, mTLS/Cloudflare Access, shared-env deploys, and provider secret-store changes remain human `SKIP-DEPLOY` actions.
+
+GOVERNANCE:
+
+- Secret isolation: internal auth no longer falls back to `AUTH_SECRET`; dedicated current/previous internal secrets are supported for code/config rotation.
+- Session safety: merchant session reads now flow through a DB `FOR UPDATE` RPC with idle timeout, rotation, reuse detection, and revocation semantics.
+- MFA: enrolled merchant TOTP is enforced on password login; console production TOTP is per-principal only.
+- Perimeter: production `/internal/*` requests fail closed without `INTERNAL_GATEWAY_IP_ALLOWLIST` and require an internal credential before router-level authorization.
+- Anti-fabrication: OIDC out-of-scope responses are honest-disabled; `config/governance/anti-fabrication-allowlist.json` is empty.
+- Frozen-file check: Wave 4 did not edit frozen identity cookie/switch paths. Pre-existing frozen auth changes remain user-owned and unstaged.
+
+SKIPS:
+
+- `SKIP-W4-LIVE-SECRET-ROTATION`
+- `SKIP-W4-MTLS-CF-ACCESS`

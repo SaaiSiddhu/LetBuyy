@@ -6,9 +6,9 @@
 ## Run summary
 - **Mission:** `FOUNDATION_STEPUP_MISSION_V2.md` · **Integration branch:** `stepup/main`
 - **Overall status:** ◐ IN PROGRESS
-- **Current wave:** Wave 4 — Session Security
-- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 4 · **CLASS-B STOPs:** 0
-- **Last updated:** 2026-06-09T20:30:00Z (UTC) by Codex
+- **Current wave:** Wave 4 — Session Security (checkpoint green; merge pending)
+- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 6 · **CLASS-B STOPs:** 0
+- **Last updated:** 2026-06-09T20:56:00Z (UTC) by Codex
 
 | Phase/Wave | Status | Build | Tests | Dep-graph | Branch | Migrations | SKIPs | Blockers |
 |---|---|:--:|:--:|:--:|---|:--:|:--:|:--:|
@@ -18,7 +18,7 @@
 | Wave 1 — Money Fixes | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-1-money` | 1 | 1 | 0 |
 | Wave 2 — Tenant Isolation | ✅ complete | ✅ | ✅ | ✅ | `stepup/wave-2-tenant-isolation` | 0 | 0 | 0 |
 | Wave 3 — Production Safety | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-3-production-safety` | 0 | 2 | 0 |
-| Wave 4 — Session Security | ☐ pending | — | — | — | — | 0 | 0 | 0 |
+| Wave 4 — Session Security | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-4-session-security` | 1 | 2 | 0 |
 | Wave 5 — Design Governance | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | Wave 6 — Theme Governance | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | Wave 7 — Beta Readiness | ☐ pending | — | — | — | — | 0 | 0 | 0 |
@@ -128,6 +128,23 @@ SKIPs:         SKIP-W3-SENTRY-DSN, SKIP-W3-DNS-CUTOVER
 Blockers:      none
 Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
 Next wave:     Wave 4 — Session Security (precondition met after merge: yes)
+```
+
+### Wave 4 — Session Security
+```
+Status:        complete-with-SKIPs
+Started:       2026-06-09T20:31:00Z
+Completed:     2026-06-09T20:56:00Z
+Branch:        stepup/wave-4-session-security (merged to stepup/main: pending)
+Build:         green (pnpm run build)
+Tests:         green (pnpm run test:foundation:wave4; validates dedicated internal signing/JTI, fail-closed internal perimeter, session migration apply/down, session rotation/reuse revocation, MFA/per-principal TOTP governance)
+Dependency-graph: green (pnpm run validate:dependencies)
+Files changed: 42 Wave 4-owned source/config/test/governance files, plus dashboard/status/ledger artifacts
+Migrations added: 161_foundation_session_security.sql (additive expand/contract; fixture apply/down green)
+SKIPs:         SKIP-W4-LIVE-SECRET-ROTATION, SKIP-W4-MTLS-CF-ACCESS
+Blockers:      none
+Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
+Next wave:     Wave 5 — Design Governance (precondition met after merge: pending)
 ```
 
 ---

@@ -21,7 +21,7 @@ type ConsoleAuditAction =
 
 const textEncoder = new TextEncoder();
 
-function configured(value: string | undefined) {
+function configured(value: string | undefined): value is string {
     if (!value) return false;
     if (value.includes('replace-with')) return false;
     if (value.startsWith('dev-only-placeholder')) return false;
@@ -43,6 +43,41 @@ export function isConsoleEmailAllowed(email: string) {
     const allowedEmails = getAllowedConsoleEmails();
     if (allowedEmails.length === 0) return false;
     return allowedEmails.includes(normalizeConsoleEmail(email));
+}
+
+function parsePerPrincipalTotpSecrets(): Record<string, string> {
+    const raw = process.env.PLATFORM_CONSOLE_TOTP_SECRETS || '';
+    if (!raw.trim()) return {};
+
+    try {
+        const parsed = JSON.parse(raw) as Record<string, unknown>;
+        return Object.fromEntries(
+            Object.entries(parsed)
+                .map(([email, secret]) => [normalizeConsoleEmail(email), typeof secret === 'string' ? secret.trim() : ''])
+                .filter(([, secret]) => configured(secret)),
+        );
+    } catch {
+        return Object.fromEntries(
+            raw.split(',')
+                .map((entry) => entry.split(':'))
+                .filter((parts) => parts.length >= 2)
+                .map(([email, ...secretParts]) => [normalizeConsoleEmail(email || ''), secretParts.join(':').trim()])
+                .filter(([email, secret]) => Boolean(email && configured(secret))),
+        );
+    }
+}
+
+export function getConsoleTotpSecretForPrincipal(email: string): string | null {
+    const secrets = parsePerPrincipalTotpSecrets();
+    const perPrincipal = secrets[normalizeConsoleEmail(email)];
+    if (perPrincipal) return perPrincipal;
+
+    if (!isProductionConsoleRuntime()) {
+        const devFallback = process.env.PLATFORM_CONSOLE_TOTP_SECRET;
+        return configured(devFallback) ? devFallback : null;
+    }
+
+    return null;
 }
 
 export async function getConsoleSessionFromCookies() {
@@ -147,7 +182,7 @@ function canUseConsoleDevMfaBypass() {
         && process.env.LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true';
 }
 
-export function verifyConsoleTotp(code: string) {
+export function verifyConsoleTotp(code: string, email: string) {
     const normalizedCode = code.trim();
     const devCode = process.env.PLATFORM_CONSOLE_DEV_MFA_CODE;
 
@@ -155,7 +190,7 @@ export function verifyConsoleTotp(code: string) {
         return true;
     }
 
-    const secret = process.env.PLATFORM_CONSOLE_TOTP_SECRET;
+    const secret = getConsoleTotpSecretForPrincipal(email);
     if (!secret || !/^\d{6}$/.test(normalizedCode)) return false;
 
     const secretBytes = decodeBase32(secret);
