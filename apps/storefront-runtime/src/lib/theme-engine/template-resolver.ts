@@ -1,5 +1,6 @@
 import {
     LiquidThemePackageBundleSchema,
+    THEME_LIQUID_RENDERING_DEFAULT_ENABLED,
     isLiquidAppBlockType,
     type LiquidThemePackageBundle,
     type SectionModel,
@@ -183,12 +184,18 @@ function coerceLiquidTemplate(
     };
 }
 
+export interface StorefrontTemplateResolverOptions {
+    liquidEnabled?: boolean;
+}
+
 export function resolveStorefrontTemplate(
     store: StoreModel,
     route: StorefrontRouteContext,
+    options: StorefrontTemplateResolverOptions = {},
 ): StorefrontRenderPlan {
     const templateKey = resolveTemplateKey(route.type);
-    const liquidBundle = resolveLiquidBundle(store);
+    const liquidEnabled = options.liquidEnabled ?? THEME_LIQUID_RENDERING_DEFAULT_ENABLED;
+    const liquidBundle = liquidEnabled ? resolveLiquidBundle(store) : undefined;
     if (liquidBundle) {
         const liquidTemplateKey = resolveLiquidTemplateKey(liquidBundle, route, route.type);
         const liquidTemplate = coerceLiquidTemplate(liquidBundle, liquidTemplateKey, route.type);

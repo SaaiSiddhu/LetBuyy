@@ -55,3 +55,11 @@ BLOCKED BY: Product-owned design migration decision for the exiled marketing-sit
 GATED AT: `scripts/validators/validate-design-system.mjs` excludes `apps/marketing-site` from the scored themable-surface baseline, fails any increase in scored raw hex/inline-style/arbitrary-radius drift, and hard-fails local workspace shell implementations. `scripts/generators/generate-mobile-tokens.mjs --check` remains green and is wired through `scripts/validators/mobile-token-validator.mjs` in the governance gate.
 
 TO RESUME: Approve a product migration for marketing-site tokens and Flutter theme accessors, replace legacy Dart imports with generated-token-backed theme APIs using the quarantine protocol, run Flutter visual/regression checks, then lower the Wave 5 ratchet baseline after verified deletion.
+
+## SKIP-W6-LIQUID-PRODUCT-DECISION · Wave 6 · Liquid rendering and app-block runtime enablement · CLASS-A
+
+BLOCKED BY: Product/security approval for Liquid rendering semantics, app-block runtime support, sandbox policy, and merchant-facing compatibility promises. The foundation can validate saved theme sections and render fallbacks, but it cannot honestly enable a template language/runtime without an approved product and security decision.
+
+GATED AT: `packages/theme-engine/src/theme-governance.ts` keeps `THEME_LIQUID_RENDERING_DEFAULT_ENABLED` false by default, and `apps/storefront-runtime/src/lib/theme-engine/template-resolver.ts` resolves Liquid bundles only when an explicit runtime option enables them. Unknown or unapproved section types are audited through the renderer registry and render a fallback placeholder rather than disappearing.
+
+TO RESUME: Approve the Liquid/app-block product scope, sandbox and migration policy, enable the runtime explicitly in a non-production storefront path, run renderer/schema migration tests against saved stores, then record apply/verify/rollback evidence before allowing shared traffic.

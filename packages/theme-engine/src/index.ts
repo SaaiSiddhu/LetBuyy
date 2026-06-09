@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { SlugSchema, UuidSchema } from '@letbuyy/shared-types';
+import { BUILT_IN_SECTION_SCHEMAS } from './built-in-section-schemas';
 import {
   getDefaultStorefrontThemeTemplate,
   hasRenderableThemeTemplate,
@@ -10,7 +11,9 @@ import {
 import type { LiquidThemePackageBundle } from './theme-bundle';
 
 export * from './theme-registry';
+export * from './built-in-section-schemas';
 export * from './execution-runtime';
+export * from './theme-governance';
 export * from './theme-bundle';
 export * from './theme-renderer';
 
@@ -711,7 +714,11 @@ export function collectThemeTemplateValidationIssues(input: {
     issues.push(`themeId must match ${input.themeSlug}`);
   }
 
-  const { sectionSchemas, settingsSchema } = input.runtime;
+  const { settingsSchema } = input.runtime;
+  const sectionSchemas = {
+    ...BUILT_IN_SECTION_SCHEMAS,
+    ...input.runtime.sectionSchemas,
+  };
   const sections = asThemeRecord(input.templateConfig.sections);
   const templates = asThemeRecord(input.templateConfig.templates);
   const hasPortableTemplates = Object.keys(templates).length > 0;

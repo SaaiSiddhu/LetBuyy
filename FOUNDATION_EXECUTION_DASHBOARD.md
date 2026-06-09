@@ -6,9 +6,9 @@
 ## Run summary
 - **Mission:** `FOUNDATION_STEPUP_MISSION_V2.md` · **Integration branch:** `stepup/main`
 - **Overall status:** ◐ IN PROGRESS
-- **Current wave:** Wave 6 — Theme Governance
-- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 7 · **CLASS-B STOPs:** 0
-- **Last updated:** 2026-06-09T21:10:39Z (UTC) by Codex
+- **Current wave:** Wave 6 — Theme Governance (checkpoint green, pending merge)
+- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 8 · **CLASS-B STOPs:** 0
+- **Last updated:** 2026-06-09T21:22:35Z (UTC) by Codex
 
 | Phase/Wave | Status | Build | Tests | Dep-graph | Branch | Migrations | SKIPs | Blockers |
 |---|---|:--:|:--:|:--:|---|:--:|:--:|:--:|
@@ -20,7 +20,7 @@
 | Wave 3 — Production Safety | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-3-production-safety` | 0 | 2 | 0 |
 | Wave 4 — Session Security | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-4-session-security` | 1 | 2 | 0 |
 | Wave 5 — Design Governance | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-5-design-governance` | 0 | 1 | 0 |
-| Wave 6 — Theme Governance | ☐ pending | — | — | — | — | 0 | 0 | 0 |
+| Wave 6 — Theme Governance | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-6-theme-governance` | 0 | 1 | 0 |
 | Wave 7 — Beta Readiness | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | WAVE FINAL — Final Audit | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 
@@ -162,6 +162,23 @@ SKIPs:         SKIP-W5-TOKEN-MIGRATION-PRODUCT-CALL
 Blockers:      none
 Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
 Next wave:     Wave 6 — Theme Governance (precondition met after merge: yes)
+```
+
+### Wave 6 — Theme Governance
+```
+Status:        complete-with-SKIPs
+Started:       2026-06-09T21:13:00Z
+Completed:     2026-06-09T21:22:35Z
+Branch:        stepup/wave-6-theme-governance (merged to stepup/main: no, pending checkpoint commit)
+Build:         green (pnpm run build)
+Tests:         green (pnpm run test:foundation:wave6; validates 24 built-in section schemas, WARN/ENFORCE registry audit, schema migration runner, fallback governance, and Liquid default-off)
+Dependency-graph: green (pnpm run validate:dependencies)
+Files changed: 8 Wave 6-owned source/test/governance files, plus dashboard/status/ledger/SKIP artifacts
+Migrations added: none
+SKIPs:         SKIP-W6-LIQUID-PRODUCT-DECISION
+Blockers:      none
+Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
+Next wave:     Wave 7 — Beta Readiness (precondition met after merge: yes)
 ```
 
 ---

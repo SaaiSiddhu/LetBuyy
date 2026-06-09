@@ -265,3 +265,45 @@ GOVERNANCE:
 SKIPS:
 
 - `SKIP-W5-TOKEN-MIGRATION-PRODUCT-CALL`
+
+# WAVE 6 — Theme Governance — 2026-06-09
+
+CHANGES:
+
+- `packages/theme-engine/src/built-in-section-schemas.ts` → added explicit built-in section schema authority for all 24 built-in section types without editing the frozen registry model.
+- `packages/theme-engine/src/theme-governance.ts` → added WARN-default renderer registry audits, ENFORCE assertion path, schema migration runner, and Liquid default-off governance constants.
+- `packages/theme-engine/src/index.ts` → wired built-in schemas into template validation so saved sections are checked even when runtime schemas omit built-ins.
+- `apps/storefront-runtime/src/lib/theme-engine/template-resolver.ts` → gated Liquid bundle resolution behind an explicit `liquidEnabled` runtime option; default remains off.
+- `packages/theme-engine/test/theme-engine.test.ts`, `scripts/validators/theme-governance-validator.mjs`, `scripts/validate-governance.mjs`, and `package.json` → added Wave 6 tests and governance validation for schema coverage, WARN mode, fallback rendering, Liquid default-off, and schema migration proof.
+- `FOUNDATION_STEPUP_SKIPPED.md` → logged `SKIP-W6-LIQUID-PRODUCT-DECISION` for product/security-owned Liquid/app-block runtime enablement.
+
+TESTS:
+
+- `pnpm run test:foundation:wave6` → PASS with tsx IPC escalation; validates 24 built-in schemas, WARN/ENFORCE renderer registry behavior, schema migration of a saved section, and the theme-governance validator.
+- `pnpm --filter @letbuyy/theme-engine run typecheck` → PASS; theme governance and schema exports typecheck.
+- `pnpm --filter @letbuyy/storefront-runtime run typecheck` → PASS; storefront template resolver Liquid gate typechecks.
+- `pnpm run validate:dependencies` → PASS; dependency manifest, undeclared import, package export, dependency graph, and circular import gates green.
+- `pnpm run build` → PASS; turbo build completed 71/71 tasks.
+- `pnpm run validate:governance:report` → PASS; report lane remains green after Wave 6 docs/status updates.
+
+MIGRATIONS:
+
+- None. Wave 6 is theme governance/source enforcement only; no database schema was applied to shared/staging/prod.
+
+ROLLBACK:
+
+- Revert the Wave 6 commit from `stepup/main`.
+- If reverting manually, remove `built-in-section-schemas.ts`, `theme-governance.ts`, the package exports, the template resolver `liquidEnabled` option, `theme-governance-validator.mjs`, and the `test:foundation:wave6` script, then restore the previous theme-engine tests.
+- No database/provider rollback is required because Wave 6 adds no migration and performs no production, shared-env, provider, DNS, or live storefront deploy action.
+
+GOVERNANCE:
+
+- Renderer registry: audits default to WARN mode and can be switched to ENFORCE only when unresolved section/renderer/schema mismatches are zero.
+- Schema coverage: all 24 built-in section types now have schema authority; schema validation is available without relying on app-local runtime schema injection.
+- No blank sections: the storefront renderer already emits `UnknownSectionFallback` with `data-theme-section-fallback`; the validator now guards that fallback path.
+- Liquid honesty: Liquid rendering remains default-off until product/security approve the runtime and migration path.
+- Frozen-file check: Wave 6 did not edit frozen `packages/theme-engine/src/theme-registry.ts`; governance was added around it. Pre-existing dirty frozen auth/migration changes remain user-owned and unstaged.
+
+SKIPS:
+
+- `SKIP-W6-LIQUID-PRODUCT-DECISION`
