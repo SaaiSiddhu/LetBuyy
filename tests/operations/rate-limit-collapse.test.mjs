@@ -49,7 +49,7 @@ test('production rate limiting prefers Redis, then explicit KV, then logged fail
   const fixedWindowKvFallbackIndex = fixedWindowBlock.indexOf('const useKvFallback = Boolean(env.CACHE) && (isProduction || kvRateLimitFallbackEnabled(env))');
   const fixedWindowFailOpenIndex = fixedWindowBlock.indexOf("warnRateLimitFailOpen('no_backend')");
   const queryCostRedisIndex = queryCostBlock.indexOf('if (useRedis)');
-  const queryCostKvFallbackIndex = queryCostBlock.indexOf('const useKvFallback = Boolean(env.CACHE) && (isProduction || kvRateLimitFallbackEnabled(env))');
+  const queryCostKvFallbackIndex = queryCostBlock.indexOf('const useKvFallback = Boolean(env.CACHE) && kvRateLimitFallbackEnabled(env)');
   const queryCostFailOpenIndex = queryCostBlock.indexOf("warnRateLimitFailOpen('query_cost_no_backend')");
 
   assert.notEqual(fixedWindowRedisIndex, -1, 'fixed-window limits must check Redis first');

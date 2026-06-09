@@ -37,4 +37,8 @@ test('query-cost KV failures are short-circuited and throttled after quota exhau
     assert.match(rateLimitSource, /now < queryCostKvUnavailableUntil/);
     assert.match(rateLimitSource, /lastQueryCostKvUnavailableLogAt/);
     assert.match(rateLimitSource, /suppressed_until/);
+    assert.match(rateLimitSource, /const useKvFallback = Boolean\(env\.CACHE\) && \(isProduction \|\| kvRateLimitFallbackEnabled\(env\)\)/);
+    assert.match(rateLimitSource, /query-cost checks only use KV when explicitly enabled/);
+    assert.match(rateLimitSource, /query-cost checks write on every request/);
+    assert.match(rateLimitSource, /const useKvFallback = Boolean\(env\.CACHE\) && kvRateLimitFallbackEnabled\(env\)/);
 });

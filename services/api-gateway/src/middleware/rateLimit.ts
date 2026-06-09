@@ -66,8 +66,10 @@ function isProductionRuntime(env: RuntimeEnvironmentFlags): boolean {
     return env.NODE_ENV?.toLowerCase() === 'production';
 }
 
-// Beta free-tier: non-production rate limiting uses in-memory by default (zero KV writes).
-// Set RATE_LIMIT_KV_FALLBACK=on to restore the Cloudflare KV fallback for staging/dev.
+// Beta/free-tier safety: Cloudflare KV has a daily write quota. It remains the
+// production fallback for low-volume fixed-window guards, but high-volume
+// query-cost checks only use KV when explicitly enabled.
+// Set RATE_LIMIT_KV_FALLBACK=on to enable KV for high-volume query-cost checks.
 function kvRateLimitFallbackEnabled(env: Pick<Env, 'RATE_LIMIT_KV_FALLBACK'>): boolean {
     return ['1', 'true', 'yes', 'on'].includes(
         String(env.RATE_LIMIT_KV_FALLBACK || '').trim().toLowerCase(),
@@ -855,10 +857,8 @@ async function checkRateLimitKeys(
     }
 
     // Upstash Redis is not provisioned. Degrade gracefully to the always-present
-    // CACHE KV namespace (best-effort fixed-window counter — KV is eventually
-    // consistent, which is acceptable for a guardrail). In production this is the
-    // primary fallback; in non-production it stays opt-in so the beta free-tier
-    // keeps KV writes off unless RATE_LIMIT_KV_FALLBACK is enabled.
+    // CACHE KV namespace for fixed-window guards. These protect sensitive flows
+    // and remain fail-closed when the backend is unavailable.
     const useKvFallback = Boolean(env.CACHE) && (isProduction || kvRateLimitFallbackEnabled(env));
 
     if (useKvFallback) {
@@ -924,10 +924,10 @@ export async function checkQueryCostRateLimitKey(
         return result;
     }
 
-    // Redis is not provisioned. Degrade to the always-present CACHE KV namespace
-    // (opt-in for non-production so the beta free-tier keeps KV writes off unless
-    // RATE_LIMIT_KV_FALLBACK is enabled).
-    const useKvFallback = Boolean(env.CACHE) && (isProduction || kvRateLimitFallbackEnabled(env));
+    // Redis is not provisioned. KV is only used when explicitly enabled because
+    // query-cost checks write on every request and can exhaust Cloudflare KV's
+    // daily write quota.
+    const useKvFallback = Boolean(env.CACHE) && kvRateLimitFallbackEnabled(env);
 
     if (useKvFallback) {
         const result = await checkKvQueryCostLimit(env.CACHE as KVNamespace, fullKey, cost, pointsPerSecond, capacity);
