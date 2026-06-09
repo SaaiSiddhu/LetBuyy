@@ -55,7 +55,7 @@ type OrderEventType =
     | 'order.refunded'
     | 'order.risk_assessed';
 
-const ORDER_LIST_COLUMNS = [
+const ORDER_LIST_COLUMN_NAMES = [
     'id',
     'store_id',
     'site_id',
@@ -103,9 +103,9 @@ const ORDER_LIST_COLUMNS = [
     'place_of_supply_state',
     'gst_invoice_number',
     'gst_invoice',
-].join(',');
-const ORDER_LIST_COLUMNS_RELATIONAL = ORDER_LIST_COLUMNS
-    .split(',')
+] as const;
+const ORDER_LIST_COLUMNS = ORDER_LIST_COLUMN_NAMES.join(',');
+const ORDER_LIST_COLUMNS_RELATIONAL = ORDER_LIST_COLUMN_NAMES
     .filter((column) => column !== 'items')
     .join(',');
 
@@ -206,6 +206,15 @@ function databaseErrorText(error: DatabaseErrorLike): string {
     return [error?.message, error?.details, error?.hint].filter(Boolean).join(' ').toLowerCase();
 }
 
+function missingColumnFromError(error: DatabaseErrorLike): string | null {
+    const text = databaseErrorText(error);
+    const quotedColumn = text.match(/column\s+(?:[a-z0-9_]+\.)?([a-z0-9_]+)\s+does not exist/i)?.[1];
+    if (quotedColumn) return quotedColumn;
+    const schemaCacheColumn = text.match(/could not find (?:the )?'?([a-z0-9_]+)'? column/i)?.[1];
+    if (schemaCacheColumn) return schemaCacheColumn;
+    return null;
+}
+
 function isMissingColumnError(error: DatabaseErrorLike, columnName: string): boolean {
     const text = databaseErrorText(error);
     return text.includes(columnName.toLowerCase()) && (
@@ -227,6 +236,13 @@ function isMissingOrderItemsRelation(error: DatabaseErrorLike): boolean {
 
 function orderItemsRelationalReadsEnabled(env: Pick<Env, 'ORDER_ITEMS_RELATIONAL_READS'>): boolean {
     return (env.ORDER_ITEMS_RELATIONAL_READS || 'on').trim().toLowerCase() !== 'off';
+}
+
+function orderListColumns(env: Pick<Env, 'ORDER_ITEMS_RELATIONAL_READS'>, omittedColumns: Set<string>): string {
+    return ORDER_LIST_COLUMN_NAMES
+        .filter((column) => !omittedColumns.has(column))
+        .filter((column) => orderItemsRelationalReadsEnabled(env) ? column !== 'items' : true)
+        .join(',');
 }
 
 function recordValue(value: unknown): Record<string, unknown> {
@@ -546,10 +562,11 @@ router.get('/', validate('query', ListOrdersQuery), async (c) => {
         return c.json(paginated([], 0, query.page, query.limit));
     }
 
+    const omittedColumns = new Set<string>();
     const buildOrdersQuery = (includeDeletedAtFilter: boolean) => {
         let dbQuery = db
             .from('orders')
-            .select(orderItemsRelationalReadsEnabled(c.env) ? ORDER_LIST_COLUMNS_RELATIONAL : ORDER_LIST_COLUMNS, query.withCount ? { count: 'exact' } : undefined)
+            .select(orderListColumns(c.env, omittedColumns), query.withCount ? { count: 'exact' } : undefined)
             .in('store_id', ownedStoreIds)
             .order(query.sort, { ascending: query.order === 'asc' })
             .order('id', { ascending: query.order === 'asc' });
@@ -573,10 +590,24 @@ router.get('/', validate('query', ListOrdersQuery), async (c) => {
         return dbQuery.range(offset, offset + query.limit);
     };
 
-    let { data, error, count } = await buildOrdersQuery(true);
+    let includeDeletedAtFilter = true;
+    let { data, error, count } = await buildOrdersQuery(includeDeletedAtFilter);
 
-    if (isMissingColumnError(error, 'deleted_at')) {
-        ({ data, error, count } = await buildOrdersQuery(false));
+    for (let attempts = 0; error && attempts < ORDER_LIST_COLUMN_NAMES.length + 1; attempts += 1) {
+        if (isMissingColumnError(error, 'deleted_at') && includeDeletedAtFilter) {
+            includeDeletedAtFilter = false;
+            ({ data, error, count } = await buildOrdersQuery(includeDeletedAtFilter));
+            continue;
+        }
+
+        const missingColumn = missingColumnFromError(error);
+        if (missingColumn && ORDER_LIST_COLUMN_NAMES.includes(missingColumn as typeof ORDER_LIST_COLUMN_NAMES[number]) && !omittedColumns.has(missingColumn)) {
+            omittedColumns.add(missingColumn);
+            ({ data, error, count } = await buildOrdersQuery(includeDeletedAtFilter));
+            continue;
+        }
+
+        break;
     }
 
     if (error) {

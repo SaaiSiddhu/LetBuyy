@@ -30,9 +30,17 @@ import {
     getFeatureFilteredAppIds,
     normalizeFeatureHandles,
 } from './app-store/parity-data';
+import {
+    APP_CATEGORY_COLUMN_NAMES,
+    appDetailSelect,
+    appPublicSelect,
+    isMissingAppPricingPlansRelation,
+    isMissingColumnError,
+    missingColumnFromError,
+} from './app-store/schema-drift';
+import { scoreMarketplaceSearchResult } from './app-store/search-score';
 
 const router = new Hono<{ Bindings: Env }>();
-const APP_PUBLIC_SELECT = '*, app_developers!inner(id, company_name, slug, logo_url, website_url, support_email, verified), app_categories!inner(id, name, slug, icon, group_name), app_pricing_plans(id, app_id, developer_id, plan_slug, name, description, pricing_model, billing_mode, currency, amount_minor, interval, trial_days, usage_meter, usage_unit, included_usage, usage_unit_amount_minor, features, limits, is_default, status, sort_order)';
 const AppAwardWriteSchema = z.object({
     award_key: z.string().trim().min(2).max(80).regex(/^[a-z0-9][a-z0-9_-]*$/),
     label: z.string().trim().min(2).max(120),
@@ -46,15 +54,6 @@ type AppStoreRecord = Record<string, unknown>;
 
 function normalizeSearchTerm(value: string | undefined): string {
     return (value || '').trim().replace(/[%(),]/g, ' ').replace(/\s+/g, ' ').slice(0, 120);
-}
-
-function searchTokens(value: string): string[] {
-    return value
-        .toLowerCase()
-        .split(/\s+/)
-        .map((token) => token.trim())
-        .filter((token) => token.length >= 2)
-        .slice(0, 8);
 }
 
 function normalizePositiveInt(value: string | undefined, fallback: number, max: number): number {
@@ -98,55 +97,6 @@ function appDeveloperOwnerId(app: AppStoreRecord | null | undefined): string | n
     return stringOrNull((developer as AppStoreRecord).user_id);
 }
 
-function stringArray(value: unknown): string[] {
-    return Array.isArray(value)
-        ? value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
-        : [];
-}
-
-function searchableField(value: unknown): string {
-    return typeof value === 'string' ? value.toLowerCase() : '';
-}
-
-function categoryName(app: AppStoreRecord): string {
-    const category = Array.isArray(app.app_categories) ? app.app_categories[0] : app.app_categories;
-    return category && typeof category === 'object'
-        ? searchableField((category as AppStoreRecord).name)
-        : '';
-}
-
-function weightedTextScore(field: string, tokens: string[], weight: number): number {
-    if (!field) return 0;
-    return tokens.reduce((score, token) => {
-        if (field === token) return score + weight * 5;
-        if (field.startsWith(token)) return score + weight * 3;
-        if (field.includes(token)) return score + weight;
-        return score;
-    }, 0);
-}
-
-function scoreMarketplaceSearchResult(app: AppStoreRecord, search: string): number {
-    const tokens = searchTokens(search);
-    if (tokens.length === 0) return 0;
-    const tags = stringArray(app.tags).join(' ').toLowerCase();
-    const compatibilityTags = stringArray(app.compatibility_tags).join(' ').toLowerCase();
-    const ratingAvg = Number(app.rating_avg || 0);
-    const reviewCount = Number(app.review_count || 0);
-    const installCount = Number(app.install_count || 0);
-
-    return [
-        weightedTextScore(searchableField(app.name), tokens, 24),
-        weightedTextScore(searchableField(app.tagline), tokens, 18),
-        weightedTextScore(categoryName(app), tokens, 14),
-        weightedTextScore(tags, tokens, 10),
-        weightedTextScore(compatibilityTags, tokens, 8),
-        weightedTextScore(searchableField(app.description), tokens, 4),
-        Math.min(18, ratingAvg * 2),
-        Math.min(14, Math.log10(Math.max(reviewCount, 0) + 1) * 4),
-        Math.min(18, Math.log10(Math.max(installCount, 0) + 1) * 4),
-    ].reduce((total, score) => total + score, 0);
-}
-
 function isSearchVectorUnavailableError(error: { code?: string; message?: string } | null | undefined): boolean {
     const text = `${error?.code || ''} ${error?.message || ''}`.toLowerCase();
     return text.includes('42703') || text.includes('search_vector') || text.includes('column');
@@ -178,17 +128,40 @@ function reviewFraudSignals(input: { rating: number; title?: unknown; body?: unk
 // GET /app-store/categories — List active app categories
 router.get('/categories', async (c) => {
     const db = getSupabaseAdmin(c);
-    const { data, error } = await db
+    const omittedColumns = new Set<string>();
+    const categoryColumns = () => APP_CATEGORY_COLUMN_NAMES
+        .filter((column) => !omittedColumns.has(column))
+        .join(', ');
+
+    const buildCategoryQuery = () => db
         .from('app_categories')
-        .select('id, name, slug, description, icon, group_name, sort_order, is_active, seo_title, seo_description, seo_content, seo_faq, buyer_guidance')
+        .select(categoryColumns())
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
+
+    let result = await buildCategoryQuery();
+    for (let attempts = 0; result.error && attempts < APP_CATEGORY_COLUMN_NAMES.length; attempts += 1) {
+        const missingColumn = missingColumnFromError(result.error);
+        if (
+            missingColumn &&
+            APP_CATEGORY_COLUMN_NAMES.includes(missingColumn as typeof APP_CATEGORY_COLUMN_NAMES[number]) &&
+            !omittedColumns.has(missingColumn)
+        ) {
+            omittedColumns.add(missingColumn);
+            result = await buildCategoryQuery();
+            continue;
+        }
+        break;
+    }
+
+    const { data, error } = result;
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    const categoryIds = (data || [])
+    const categories = (data || []) as unknown as AppStoreRecord[];
+    const categoryIds = categories
         .map((category) => typeof category.id === 'string' ? category.id : null)
         .filter((id): id is string => Boolean(id));
     const { data: appCategories, error: countError } = categoryIds.length > 0
@@ -204,15 +177,15 @@ router.get('/categories', async (c) => {
     }
 
     const counts = new Map<string, number>();
-    for (const item of appCategories || []) {
+    for (const item of (appCategories || []) as unknown as AppStoreRecord[]) {
         if (typeof item.category_id === 'string') {
             counts.set(item.category_id, (counts.get(item.category_id) || 0) + 1);
         }
     }
 
-    return c.json(success((data || []).map((category) => ({
+    return c.json(success(categories.map((category) => ({
         ...category,
-        group: category.group_name,
+        group: 'group_name' in category ? category.group_name : null,
         count: typeof category.id === 'string' ? counts.get(category.id) || 0 : 0,
     }))));
 });
@@ -288,12 +261,18 @@ router.get('/apps', async (c) => {
         : offset + limit - 1;
 
     const buildQuery = (useSearchVector: boolean) => {
+        const includePricingPlans = !appListFallbacks.pricingPlans;
+        const includeCategoryGroupName = !appListFallbacks.categoryGroupName;
         let query = db
             .from('marketplace_apps')
-            .select(APP_PUBLIC_SELECT, { count: 'exact' })
-            .eq('status', 'published')
-            .eq('app_pricing_plans.status', 'active')
-            .is('app_pricing_plans.deleted_at', null);
+            .select(appPublicSelect({ includePricingPlans, includeCategoryGroupName }), { count: 'exact' })
+            .eq('status', 'published');
+
+        if (includePricingPlans) {
+            query = query
+                .eq('app_pricing_plans.status', 'active')
+                .is('app_pricing_plans.deleted_at', null);
+        }
 
         if (collectionAppIds) query = query.in('id', collectionAppIds);
         if (featureAppIds) query = query.in('id', featureAppIds);
@@ -305,8 +284,8 @@ router.get('/apps', async (c) => {
         }
         if (ratingMin) query = query.gte('rating_avg', ratingMin);
         if (featuredOnly) query = query.eq('is_featured', true);
-        if (builtForLetbuyyOnly) query = query.eq('built_for_letbuyy', true);
-        if (siteType) query = query.contains('supported_site_types', [siteType]);
+        if (builtForLetbuyyOnly && !appListFallbacks.builtForLetbuyy) query = query.eq('built_for_letbuyy', true);
+        if (siteType && !appListFallbacks.supportedSiteTypes) query = query.contains('supported_site_types', [siteType]);
         if (search) {
             query = useSearchVector
                 ? query.textSearch('search_vector', search, { type: 'websearch', config: 'simple' })
@@ -335,9 +314,42 @@ router.get('/apps', async (c) => {
         return query.range(useRelevanceWindow ? 0 : offset, relevanceWindowEnd);
     };
 
-    let result = await buildQuery(Boolean(search));
-    if (result.error && search && isSearchVectorUnavailableError(result.error)) {
-        result = await buildQuery(false);
+    const appListFallbacks = {
+        pricingPlans: false,
+        categoryGroupName: false,
+        builtForLetbuyy: false,
+        supportedSiteTypes: false,
+        searchVector: !search,
+    };
+
+    let result = await buildQuery(!appListFallbacks.searchVector);
+    for (let attempts = 0; result.error && attempts < 6; attempts += 1) {
+        if (!appListFallbacks.searchVector && search && isSearchVectorUnavailableError(result.error)) {
+            appListFallbacks.searchVector = true;
+            result = await buildQuery(false);
+            continue;
+        }
+        if (!appListFallbacks.pricingPlans && isMissingAppPricingPlansRelation(result.error)) {
+            appListFallbacks.pricingPlans = true;
+            result = await buildQuery(!appListFallbacks.searchVector);
+            continue;
+        }
+        if (!appListFallbacks.categoryGroupName && isMissingColumnError(result.error, 'group_name')) {
+            appListFallbacks.categoryGroupName = true;
+            result = await buildQuery(!appListFallbacks.searchVector);
+            continue;
+        }
+        if (!appListFallbacks.builtForLetbuyy && isMissingColumnError(result.error, 'built_for_letbuyy')) {
+            appListFallbacks.builtForLetbuyy = true;
+            result = await buildQuery(!appListFallbacks.searchVector);
+            continue;
+        }
+        if (!appListFallbacks.supportedSiteTypes && isMissingColumnError(result.error, 'supported_site_types')) {
+            appListFallbacks.supportedSiteTypes = true;
+            result = await buildQuery(!appListFallbacks.searchVector);
+            continue;
+        }
+        break;
     }
 
     const { data, error, count } = result;
@@ -346,7 +358,7 @@ router.get('/apps', async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    let records = decorateAppRecords((data || []) as AppStoreRecord[]);
+    let records = decorateAppRecords((data || []) as unknown as AppStoreRecord[]);
     if (useRelevanceWindow) {
         records = records
             .map((app) => ({ ...app, search_score: scoreMarketplaceSearchResult(app, search) }))
@@ -355,7 +367,10 @@ router.get('/apps', async (c) => {
     }
 
     const enrichedRecords = await decorateAppsWithParityData(db, records);
-    return c.json(paginated(enrichedRecords, count || 0, page, limit));
+    const visibleRecords = builtForLetbuyyOnly && appListFallbacks.builtForLetbuyy
+        ? enrichedRecords.filter((record) => record.built_for_letbuyy !== false)
+        : enrichedRecords;
+    return c.json(paginated(visibleRecords, count || 0, page, limit));
 });
 
 // GET /app-store/categories/:slug/features — Category feature facet groups and counts
@@ -459,17 +474,15 @@ router.get('/collections/:slug', async (c) => {
 
     const { data: apps, error: appsError } = await db
         .from('marketplace_apps')
-        .select(APP_PUBLIC_SELECT)
+        .select(appPublicSelect({ includePricingPlans: false, includeCategoryGroupName: false }))
         .eq('status', 'published')
-        .eq('app_pricing_plans.status', 'active')
-        .is('app_pricing_plans.deleted_at', null)
         .in('id', appIds);
 
     if (appsError) {
         return c.json({ error: { code: 'DB_ERROR', message: appsError.message } }, 500);
     }
 
-    const decoratedApps = await decorateAppsWithParityData(db, decorateAppRecords((apps || []) as AppStoreRecord[]));
+    const decoratedApps = await decorateAppsWithParityData(db, decorateAppRecords((apps || []) as unknown as AppStoreRecord[]));
     const byId = new Map(decoratedApps.map((app) => [String(app.id), app]));
     const orderedApps = appIds.map((id) => byId.get(id)).filter((app): app is AppStoreRecord => Boolean(app));
     const collectionWithSections = await decorateCollectionWithSections(db, { ...collection, count: orderedApps.length, apps: orderedApps } as AppStoreRecord);
@@ -504,10 +517,8 @@ router.get('/featured', async (c) => {
 
     const { data: apps, error: appsError } = await db
         .from('marketplace_apps')
-        .select(APP_PUBLIC_SELECT)
+        .select(appPublicSelect({ includePricingPlans: false, includeCategoryGroupName: false }))
         .eq('status', 'published')
-        .eq('app_pricing_plans.status', 'active')
-        .is('app_pricing_plans.deleted_at', null)
         .in('id', appIds);
 
     if (appsError) {
@@ -515,7 +526,7 @@ router.get('/featured', async (c) => {
     }
 
     const disclosures = new Map((placements || []).map((item) => [String(item.app_id), item.disclosure]));
-    const decoratedApps = await decorateAppsWithParityData(db, decorateAppRecords((apps || []) as AppStoreRecord[]));
+    const decoratedApps = await decorateAppsWithParityData(db, decorateAppRecords((apps || []) as unknown as AppStoreRecord[]));
     const byId = new Map<string, AppStoreRecord>(decoratedApps.map((app) => [String(app.id), {
         ...app,
         featured_disclosure: disclosures.get(String(app.id)) || null,
@@ -543,12 +554,10 @@ router.get('/apps/:id/recommendations', async (c) => {
 
     const { data: alternatives, error: alternativesError } = await db
         .from('marketplace_apps')
-        .select(APP_PUBLIC_SELECT)
+        .select(appPublicSelect({ includePricingPlans: false, includeCategoryGroupName: false }))
         .eq('status', 'published')
         .eq('category_id', app.category_id)
         .neq('id', app.id)
-        .eq('app_pricing_plans.status', 'active')
-        .is('app_pricing_plans.deleted_at', null)
         .order('rating_avg', { ascending: false })
         .order('install_count', { ascending: false })
         .limit(3);
@@ -568,24 +577,22 @@ router.get('/apps/:id/recommendations', async (c) => {
     if (tagSeed.length > 0) {
         const { data: tagMatches, error: tagError } = await db
             .from('marketplace_apps')
-            .select(APP_PUBLIC_SELECT)
+            .select(appPublicSelect({ includePricingPlans: false, includeCategoryGroupName: false }))
             .eq('status', 'published')
             .neq('id', app.id)
             .overlaps('compatibility_tags', tagSeed)
-            .eq('app_pricing_plans.status', 'active')
-            .is('app_pricing_plans.deleted_at', null)
             .order('install_count', { ascending: false })
             .limit(3);
         if (tagError) {
             return c.json({ error: { code: 'DB_ERROR', message: tagError.message } }, 500);
         }
-        alsoInstalled = await decorateAppsWithParityData(db, decorateAppRecords((tagMatches || []) as AppStoreRecord[]));
+        alsoInstalled = await decorateAppsWithParityData(db, decorateAppRecords((tagMatches || []) as unknown as AppStoreRecord[]));
     }
 
     return c.json(success({
         app_id: app.id,
         works_with: compatibilityTags,
-        alternatives: await decorateAppsWithParityData(db, decorateAppRecords((alternatives || []) as AppStoreRecord[])),
+        alternatives: await decorateAppsWithParityData(db, decorateAppRecords((alternatives || []) as unknown as AppStoreRecord[])),
         also_installed: alsoInstalled,
     }));
 });
@@ -706,24 +713,33 @@ router.get('/partners', async (c) => {
     const developerIds = (developers || [])
         .map((developer) => typeof developer.id === 'string' ? developer.id : null)
         .filter((id): id is string => Boolean(id));
-    const { data: apps, error: appsError } = developerIds.length > 0
-        ? await db
-            .from('marketplace_apps')
-            .select('developer_id, built_for_letbuyy, status')
-            .eq('status', 'published')
-            .in('developer_id', developerIds)
+    let includeBuiltForLetbuyy = true;
+    const buildDeveloperAppsQuery = () => db
+        .from('marketplace_apps')
+        .select(includeBuiltForLetbuyy ? 'developer_id, built_for_letbuyy, status' : 'developer_id, status')
+        .eq('status', 'published')
+        .in('developer_id', developerIds);
+    let appsResult = developerIds.length > 0
+        ? await buildDeveloperAppsQuery()
         : { data: [], error: null };
+
+    if (appsResult.error && includeBuiltForLetbuyy && isMissingColumnError(appsResult.error, 'built_for_letbuyy')) {
+        includeBuiltForLetbuyy = false;
+        appsResult = await buildDeveloperAppsQuery();
+    }
+
+    const { data: apps, error: appsError } = appsResult;
 
     if (appsError) {
         return c.json({ error: { code: 'DB_ERROR', message: appsError.message } }, 500);
     }
 
     const appCounts = new Map<string, { published_apps: number; built_for_letbuyy_apps: number }>();
-    for (const app of apps || []) {
+    for (const app of (apps || []) as unknown as AppStoreRecord[]) {
         if (typeof app.developer_id !== 'string') continue;
         const current = appCounts.get(app.developer_id) || { published_apps: 0, built_for_letbuyy_apps: 0 };
         current.published_apps += 1;
-        if (app.built_for_letbuyy === true) current.built_for_letbuyy_apps += 1;
+        if (includeBuiltForLetbuyy && app.built_for_letbuyy === true) current.built_for_letbuyy_apps += 1;
         appCounts.set(app.developer_id, current);
     }
 
@@ -821,25 +837,53 @@ router.patch('/reviews/:reviewId/moderation', authMiddleware, requireRoleCategor
 router.get('/apps/:id', async (c) => {
     const appId = c.req.param('id');
     const db = getSupabaseAdmin(c);
+    const detailFallbacks = {
+        pricingPlans: false,
+        categoryGroupName: false,
+    };
 
-    let query = db
-        .from('marketplace_apps')
-        .select('*, app_developers(id, company_name, slug, logo_url, website_url, support_email, verified), app_categories(id, name, slug, icon, group_name), app_extensions(*), app_versions(id, app_id, developer_id, version, release_notes, changelog, rollout_percentage, rollout_cohort, status, submitted_at, released_at, created_at, updated_at), app_pricing_plans(id, app_id, developer_id, plan_slug, name, description, pricing_model, billing_mode, currency, amount_minor, interval, trial_days, usage_meter, usage_unit, included_usage, usage_unit_amount_minor, features, limits, is_default, status, sort_order)')
-        .eq('status', 'published')
-        .in('app_versions.status', ['released', 'approved', 'in_review'])
-        .is('app_versions.deleted_at', null)
-        .eq('app_pricing_plans.status', 'active')
-        .is('app_pricing_plans.deleted_at', null);
+    const buildDetailQuery = () => {
+        let query = db
+            .from('marketplace_apps')
+            .select(appDetailSelect({
+                includePricingPlans: !detailFallbacks.pricingPlans,
+                includeCategoryGroupName: !detailFallbacks.categoryGroupName,
+            }))
+            .eq('status', 'published')
+            .in('app_versions.status', ['released', 'approved', 'in_review'])
+            .is('app_versions.deleted_at', null);
 
-    query = isUuid(appId) ? query.eq('id', appId) : query.eq('slug', appId);
+        if (!detailFallbacks.pricingPlans) {
+            query = query
+                .eq('app_pricing_plans.status', 'active')
+                .is('app_pricing_plans.deleted_at', null);
+        }
 
-    const { data, error } = await query.single();
+        return isUuid(appId) ? query.eq('id', appId) : query.eq('slug', appId);
+    };
+
+    let result = await buildDetailQuery().single();
+    for (let attempts = 0; result.error && attempts < 2; attempts += 1) {
+        if (!detailFallbacks.pricingPlans && isMissingAppPricingPlansRelation(result.error)) {
+            detailFallbacks.pricingPlans = true;
+            result = await buildDetailQuery().single();
+            continue;
+        }
+        if (!detailFallbacks.categoryGroupName && isMissingColumnError(result.error, 'group_name')) {
+            detailFallbacks.categoryGroupName = true;
+            result = await buildDetailQuery().single();
+            continue;
+        }
+        break;
+    }
+
+    const { data, error } = result;
 
     if (error || !data) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'App not found' } }, 404);
     }
 
-    const [enrichedApp] = await decorateAppsWithParityData(db, [decorateAppRecord({ ...(data as AppStoreRecord) })]);
+    const [enrichedApp] = await decorateAppsWithParityData(db, [decorateAppRecord({ ...(data as unknown as AppStoreRecord) })]);
     return c.json(success(enrichedApp));
 });
 

@@ -39,6 +39,8 @@ export interface QueryCostRateLimitResult extends RateLimitResult {
 const memoryStore = new Map<string, RateLimitEntry>();
 const queryCostMemoryStore = new Map<string, QueryCostLimitEntry>();
 let lastCleanupAt = 0;
+let queryCostKvUnavailableUntil = 0;
+let lastQueryCostKvUnavailableLogAt = 0;
 
 type RuntimeEnvironmentFlags = Pick<Env, 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV'>;
 
@@ -570,6 +572,32 @@ function checkMemoryQueryCostLimit(
     return result;
 }
 
+function queryCostKvBackoffMs(err: unknown): number {
+    const message = err instanceof Error ? err.message.toLowerCase() : String(err || '').toLowerCase();
+    if (message.includes('limit exceeded') || message.includes('quota')) {
+        return 10 * 60_000;
+    }
+    return 60_000;
+}
+
+function queryCostUnavailableResult(
+    now: number,
+    cost: number,
+    pointsPerSecond: number,
+    capacity: number,
+): QueryCostRateLimitResult {
+    return {
+        allowed: false,
+        remaining: 0,
+        resetAt: now + 1000,
+        unavailable: true,
+        cost,
+        limit: capacity,
+        policy: `${capacity};w=leaky;rate=${pointsPerSecond}`,
+        retryAfterMs: 1000,
+    };
+}
+
 async function checkKvQueryCostLimit(
     cache: KVNamespace,
     key: string,
@@ -579,6 +607,10 @@ async function checkKvQueryCostLimit(
 ): Promise<QueryCostRateLimitResult> {
     const now = Date.now();
     const storageKey = compactStorageKey(key);
+
+    if (now < queryCostKvUnavailableUntil) {
+        return queryCostUnavailableResult(now, cost, pointsPerSecond, capacity);
+    }
 
     try {
         const rawEntry = await cache.get(storageKey);
@@ -590,24 +622,20 @@ async function checkKvQueryCostLimit(
 
         return result;
     } catch (err) {
-        console.error(JSON.stringify({
-            level: 'error',
-            service: 'letbuyy-api',
-            route: 'middleware.query_cost_rate_limit',
-            status_code: 503,
-            reason: 'kv_unavailable',
-            error: err instanceof Error ? err.message : 'KV query cost rate limit request failed',
-        }));
-        return {
-            allowed: false,
-            remaining: 0,
-            resetAt: now + 1000,
-            unavailable: true,
-            cost,
-            limit: capacity,
-            policy: `${capacity};w=leaky;rate=${pointsPerSecond}`,
-            retryAfterMs: 1000,
-        };
+        queryCostKvUnavailableUntil = Math.max(queryCostKvUnavailableUntil, now + queryCostKvBackoffMs(err));
+        if (now - lastQueryCostKvUnavailableLogAt >= 60_000) {
+            lastQueryCostKvUnavailableLogAt = now;
+            console.error(JSON.stringify({
+                level: 'error',
+                service: 'letbuyy-api',
+                route: 'middleware.query_cost_rate_limit',
+                status_code: 503,
+                reason: 'kv_unavailable',
+                suppressed_until: new Date(queryCostKvUnavailableUntil).toISOString(),
+                error: err instanceof Error ? err.message : 'KV query cost rate limit request failed',
+            }));
+        }
+        return queryCostUnavailableResult(now, cost, pointsPerSecond, capacity);
     }
 }
 

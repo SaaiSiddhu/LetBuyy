@@ -33,7 +33,7 @@ type ListProductsQueryInput = ListProductsInput;
 type ProductEventType = 'product.created' | 'product.updated' | 'product.deleted';
 const SAMPLE_PRODUCT_SKU = 'LETBUYY-SAMPLE-PRODUCT';
 
-const PRODUCT_LIST_COLUMNS = [
+const PRODUCT_LIST_COLUMN_NAMES = [
     'id',
     'store_id',
     'site_id',
@@ -75,9 +75,9 @@ const PRODUCT_LIST_COLUMNS = [
     'hs_code',
     'hsn_code',
     'version',
-].join(',');
-const PRODUCT_LIST_COLUMNS_RELATIONAL = PRODUCT_LIST_COLUMNS
-    .split(',')
+] as const;
+const PRODUCT_LIST_COLUMNS = PRODUCT_LIST_COLUMN_NAMES.join(',');
+const PRODUCT_LIST_COLUMNS_RELATIONAL = PRODUCT_LIST_COLUMN_NAMES
     .filter((column) => column !== 'variants')
     .join(',');
 
@@ -117,6 +117,15 @@ function databaseErrorText(error: DatabaseErrorLike): string {
     return [error?.message, error?.details, error?.hint].filter(Boolean).join(' ').toLowerCase();
 }
 
+function missingColumnFromError(error: DatabaseErrorLike): string | null {
+    const text = databaseErrorText(error);
+    const quotedColumn = text.match(/column\s+(?:[a-z0-9_]+\.)?([a-z0-9_]+)\s+does not exist/i)?.[1];
+    if (quotedColumn) return quotedColumn;
+    const schemaCacheColumn = text.match(/could not find (?:the )?'?([a-z0-9_]+)'? column/i)?.[1];
+    if (schemaCacheColumn) return schemaCacheColumn;
+    return null;
+}
+
 function isMissingColumnError(error: DatabaseErrorLike, columnName: string): boolean {
     const text = databaseErrorText(error);
     return text.includes(columnName.toLowerCase()) && (
@@ -145,6 +154,13 @@ function isMissingTableError(error: DatabaseErrorLike, tableName: string): boole
 
 function productVariantRelationalReadsEnabled(env: Pick<Env, 'PRODUCT_VARIANTS_RELATIONAL_READS'>): boolean {
     return (env.PRODUCT_VARIANTS_RELATIONAL_READS || 'on').trim().toLowerCase() !== 'off';
+}
+
+function productListColumns(env: Pick<Env, 'PRODUCT_VARIANTS_RELATIONAL_READS'>, omittedColumns: Set<string>): string {
+    return PRODUCT_LIST_COLUMN_NAMES
+        .filter((column) => !omittedColumns.has(column))
+        .filter((column) => productVariantRelationalReadsEnabled(env) ? column !== 'variants' : true)
+        .join(',');
 }
 
 function stringOrNull(value: unknown): string | null {
@@ -450,10 +466,11 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         return c.json(paginated([], 0, query.page, query.limit));
     }
 
+    const omittedColumns = new Set<string>();
     const buildProductsQuery = (includeDeletedAtFilter: boolean) => {
         let dbQuery = db
             .from('products')
-            .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : PRODUCT_LIST_COLUMNS, query.withCount ? { count: 'exact' } : undefined)
+            .select(productListColumns(c.env, omittedColumns), query.withCount ? { count: 'exact' } : undefined)
             .in('store_id', ownedStoreIds);
 
         if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
@@ -475,10 +492,24 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         return dbQuery.range(offset, offset + query.limit);
     };
 
-    let { data, error, count } = await buildProductsQuery(true);
+    let includeDeletedAtFilter = true;
+    let { data, error, count } = await buildProductsQuery(includeDeletedAtFilter);
 
-    if (isMissingDeletedAtError(error)) {
-        ({ data, error, count } = await buildProductsQuery(false));
+    for (let attempts = 0; error && attempts < PRODUCT_LIST_COLUMN_NAMES.length + 1; attempts += 1) {
+        if (isMissingDeletedAtError(error) && includeDeletedAtFilter) {
+            includeDeletedAtFilter = false;
+            ({ data, error, count } = await buildProductsQuery(includeDeletedAtFilter));
+            continue;
+        }
+
+        const missingColumn = missingColumnFromError(error);
+        if (missingColumn && PRODUCT_LIST_COLUMN_NAMES.includes(missingColumn as typeof PRODUCT_LIST_COLUMN_NAMES[number]) && !omittedColumns.has(missingColumn)) {
+            omittedColumns.add(missingColumn);
+            ({ data, error, count } = await buildProductsQuery(includeDeletedAtFilter));
+            continue;
+        }
+
+        break;
     }
 
     if (error) {
