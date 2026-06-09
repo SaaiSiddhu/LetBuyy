@@ -6,9 +6,9 @@
 ## Run summary
 - **Mission:** `FOUNDATION_STEPUP_MISSION_V2.md` · **Integration branch:** `stepup/main`
 - **Overall status:** ◐ IN PROGRESS
-- **Current wave:** Wave 3 — Production Safety
+- **Current wave:** Wave 4 — Session Security
 - **Open blockers:** 0 · **Open CLASS-A SKIPs:** 4 · **CLASS-B STOPs:** 0
-- **Last updated:** 2026-06-09T20:28:15Z (UTC) by Codex
+- **Last updated:** 2026-06-09T20:30:00Z (UTC) by Codex
 
 | Phase/Wave | Status | Build | Tests | Dep-graph | Branch | Migrations | SKIPs | Blockers |
 |---|---|:--:|:--:|:--:|---|:--:|:--:|:--:|
@@ -118,7 +118,7 @@ Next wave:     Wave 3 — Production Safety (precondition met: yes)
 Status:        complete-with-SKIPs
 Started:       2026-06-09T20:20:45Z
 Completed:     2026-06-09T20:28:15Z
-Branch:        stepup/wave-3-production-safety (merged to stepup/main: no, checkpoint green)
+Branch:        stepup/wave-3-production-safety (merged to stepup/main: yes, 57977e74)
 Build:         green (pnpm run build)
 Tests:         green (pnpm run test:foundation:wave3; validates rate-limit fail-closed behavior, mock registrar gating, shared-env preflight, and .store public URL defaults)
 Dependency-graph: green (pnpm run validate:dependencies)
