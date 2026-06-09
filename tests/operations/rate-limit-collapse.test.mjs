@@ -42,7 +42,7 @@ test('Redis query-cost limiter uses a single atomic script instead of read-then-
   assert.doesNotMatch(redisQueryBlock, /writeResponse/);
 });
 
-test('production rate limiting prefers Redis, then explicit KV, then logged fail-open', () => {
+test('production rate limiting prefers Redis, then explicit KV, then controlled fail-open', () => {
   const fixedWindowBlock = blockAfter(rateLimitSource, 'async function checkRateLimitKeys');
   const queryCostBlock = blockAfter(rateLimitSource, 'export async function checkQueryCostRateLimitKey');
   const fixedWindowRedisIndex = fixedWindowBlock.indexOf('if (useRedis)');
@@ -50,7 +50,7 @@ test('production rate limiting prefers Redis, then explicit KV, then logged fail
   const fixedWindowFailOpenIndex = fixedWindowBlock.indexOf("warnRateLimitFailOpen('no_backend')");
   const queryCostRedisIndex = queryCostBlock.indexOf('if (useRedis)');
   const queryCostKvFallbackIndex = queryCostBlock.indexOf('const useKvFallback = Boolean(env.CACHE) && kvRateLimitFallbackEnabled(env)');
-  const queryCostFailOpenIndex = queryCostBlock.indexOf("warnRateLimitFailOpen('query_cost_no_backend')");
+  const queryCostFailOpenIndex = queryCostBlock.indexOf('return failOpenQueryCostResult(cost, pointsPerSecond, capacity)');
 
   assert.notEqual(fixedWindowRedisIndex, -1, 'fixed-window limits must check Redis first');
   assert.notEqual(fixedWindowKvFallbackIndex, -1, 'fixed-window KV fallback must stay explicitly guarded');
@@ -70,6 +70,11 @@ test('production rate limiting prefers Redis, then explicit KV, then logged fail
   );
   assert.ok(
     queryCostKvFallbackIndex < queryCostFailOpenIndex,
-    'query-cost limits should only fail open after Redis and KV are unavailable',
+    'query-cost limits should only fail open after Redis and explicit KV are unavailable',
+  );
+  assert.equal(
+    queryCostBlock.indexOf("warnRateLimitFailOpen('query_cost_no_backend')"),
+    -1,
+    'query-cost no-backend mode should not emit provider log noise',
   );
 });

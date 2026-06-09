@@ -781,7 +781,9 @@ async function checkRedisQueryCostLimit(
 // degrades to fail-OPEN (allow the request) instead of fail-CLOSED (503). Taking
 // down 100% of traffic to enforce a guardrail is strictly worse than briefly not
 // rate-limiting. A single throttled warning is emitted rather than a per-request
-// log flood.
+// log flood. Query-cost checks are high-volume guardrails; when Redis is not
+// provisioned and KV fallback is intentionally disabled, they fail open without
+// warning so normal traffic does not become noisy provider logs.
 
 let lastFailOpenWarnAt = 0;
 
@@ -940,8 +942,9 @@ export async function checkQueryCostRateLimitKey(
     }
 
     if (isProduction) {
-        // Neither Redis nor KV available in production — fail OPEN (guardrail, not a gate).
-        warnRateLimitFailOpen('query_cost_no_backend');
+        // Neither Redis nor explicitly enabled KV is available in production.
+        // This is an intentional availability mode for the high-volume query-cost
+        // guardrail, so keep logs quiet and fail OPEN.
         return failOpenQueryCostResult(cost, pointsPerSecond, capacity);
     }
 
