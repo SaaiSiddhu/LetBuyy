@@ -6,9 +6,9 @@
 ## Run summary
 - **Mission:** `FOUNDATION_STEPUP_MISSION_V2.md` · **Integration branch:** `stepup/main`
 - **Overall status:** ◐ IN PROGRESS
-- **Current wave:** Wave 6 — Theme Governance (checkpoint green, pending merge)
+- **Current wave:** Wave 7 — Beta Readiness
 - **Open blockers:** 0 · **Open CLASS-A SKIPs:** 8 · **CLASS-B STOPs:** 0
-- **Last updated:** 2026-06-09T21:22:35Z (UTC) by Codex
+- **Last updated:** 2026-06-09T21:25:49Z (UTC) by Codex
 
 | Phase/Wave | Status | Build | Tests | Dep-graph | Branch | Migrations | SKIPs | Blockers |
 |---|---|:--:|:--:|:--:|---|:--:|:--:|:--:|
@@ -169,7 +169,7 @@ Next wave:     Wave 6 — Theme Governance (precondition met after merge: yes)
 Status:        complete-with-SKIPs
 Started:       2026-06-09T21:13:00Z
 Completed:     2026-06-09T21:22:35Z
-Branch:        stepup/wave-6-theme-governance (merged to stepup/main: no, pending checkpoint commit)
+Branch:        stepup/wave-6-theme-governance (merged to stepup/main: yes, 86de8653)
 Build:         green (pnpm run build)
 Tests:         green (pnpm run test:foundation:wave6; validates 24 built-in section schemas, WARN/ENFORCE registry audit, schema migration runner, fallback governance, and Liquid default-off)
 Dependency-graph: green (pnpm run validate:dependencies)
@@ -178,7 +178,7 @@ Migrations added: none
 SKIPs:         SKIP-W6-LIQUID-PRODUCT-DECISION
 Blockers:      none
 Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
-Next wave:     Wave 7 — Beta Readiness (precondition met after merge: yes)
+Next wave:     Wave 7 — Beta Readiness (precondition met: yes)
 ```
 
 ---
