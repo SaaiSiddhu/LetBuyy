@@ -6,9 +6,9 @@
 ## Run summary
 - **Mission:** `FOUNDATION_STEPUP_MISSION_V2.md` · **Integration branch:** `stepup/main`
 - **Overall status:** ◐ IN PROGRESS
-- **Current wave:** Wave 5 — Design Governance
-- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 6 · **CLASS-B STOPs:** 0
-- **Last updated:** 2026-06-09T21:00:51Z (UTC) by Codex
+- **Current wave:** Wave 6 — Theme Governance
+- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 7 · **CLASS-B STOPs:** 0
+- **Last updated:** 2026-06-09T21:10:39Z (UTC) by Codex
 
 | Phase/Wave | Status | Build | Tests | Dep-graph | Branch | Migrations | SKIPs | Blockers |
 |---|---|:--:|:--:|:--:|---|:--:|:--:|:--:|
@@ -19,7 +19,7 @@
 | Wave 2 — Tenant Isolation | ✅ complete | ✅ | ✅ | ✅ | `stepup/wave-2-tenant-isolation` | 0 | 0 | 0 |
 | Wave 3 — Production Safety | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-3-production-safety` | 0 | 2 | 0 |
 | Wave 4 — Session Security | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-4-session-security` | 1 | 2 | 0 |
-| Wave 5 — Design Governance | ☐ pending | — | — | — | — | 0 | 0 | 0 |
+| Wave 5 — Design Governance | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-5-design-governance` | 0 | 1 | 0 |
 | Wave 6 — Theme Governance | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | Wave 7 — Beta Readiness | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | WAVE FINAL — Final Audit | ☐ pending | — | — | — | — | 0 | 0 | 0 |
@@ -145,6 +145,23 @@ SKIPs:         SKIP-W4-LIVE-SECRET-ROTATION, SKIP-W4-MTLS-CF-ACCESS
 Blockers:      none
 Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
 Next wave:     Wave 5 — Design Governance (precondition met: yes)
+```
+
+### Wave 5 — Design Governance
+```
+Status:        complete-with-SKIPs
+Started:       2026-06-09T21:01:00Z
+Completed:     2026-06-09T21:10:39Z
+Branch:        stepup/wave-5-design-governance (merged to stepup/main: pending)
+Build:         green (pnpm run build)
+Tests:         green (pnpm run test:foundation:wave5; validates design ratchet pass/fail behavior, marketing exile, no local workspace shell implementation, and mobile token parity)
+Dependency-graph: green (pnpm run validate:dependencies)
+Files changed: 14 Wave 5-owned source/test/governance files, plus dashboard/status/ledger/SKIP artifacts
+Migrations added: none
+SKIPs:         SKIP-W5-TOKEN-MIGRATION-PRODUCT-CALL
+Blockers:      none
+Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
+Next wave:     Wave 6 — Theme Governance (precondition met after merge: pending)
 ```
 
 ---

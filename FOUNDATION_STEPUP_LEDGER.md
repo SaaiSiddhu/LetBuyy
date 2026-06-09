@@ -225,3 +225,43 @@ SKIPS:
 
 - `SKIP-W4-LIVE-SECRET-ROTATION`
 - `SKIP-W4-MTLS-CF-ACCESS`
+
+# WAVE 5 — Design Governance — 2026-06-09
+
+CHANGES:
+
+- `scripts/validators/validate-design-system.mjs` + `scripts/validators/design-system-baseline.json` → converted the design gate to Wave 5 scope: themable app source surfaces exclude `apps/marketing-site`, current CSS/TSX drift is a ratchet baseline, inline styles/raw TSX hex/arbitrary radius/shadow are counted, and local workspace shell implementations are hard failures.
+- `scripts/validators/mobile-token-validator.mjs`, `scripts/validate-governance.mjs`, and `package.json` → wired design-system and mobile-token checks into governance/test scripts; `test:foundation:wave5` proves the current gate and planted ratchet failure path.
+- `packages/typescript/ui/src/internal-workspace.tsx` and public exports → added shared internal workspace primitives for leadership/operations shells, metrics, panels, module cards, status pills, skip panels, and empty data states.
+- `apps/platform-console/src/components/_local-ui/console-workspace.tsx` and `apps/platform-operations-portal/src/components/_local-ui/ops-workspace.tsx` → replaced duplicated shell implementations with compatibility wrappers around `@letbuyy/ui` primitives.
+- `tests/governance/foundation-wave5-design-governance.test.mjs` → added Wave 5 behavioral proof for current gate pass, mobile token parity, marketing-site exile, no local workspace implementation, and arbitrary-radius ratchet failure.
+- `FOUNDATION_STEPUP_SKIPPED.md` → logged `SKIP-W5-TOKEN-MIGRATION-PRODUCT-CALL` for product-owned marketing token migration and active Flutter theme-file retirement.
+
+TESTS:
+
+- `pnpm run test:foundation:wave5` → PASS; validates design-system gate, mobile-token parity, planted arbitrary-radius ratchet failure, marketing-site exile, and no local workspace shell implementation.
+- `pnpm --filter @letbuyy/ui run typecheck` → PASS; shared internal workspace primitive exports typecheck.
+- `pnpm run validate:dependencies` → PASS; dependency manifest, undeclared import, package export, dependency graph, and circular import gates green.
+- `pnpm run build` → PASS; turbo build completed 71/71 tasks with platform console, operations portal, and `@letbuyy/ui` rebuilt.
+
+MIGRATIONS:
+
+- None. Wave 5 is design governance/source enforcement only; no database schema was applied to shared/staging/prod.
+
+ROLLBACK:
+
+- Revert the Wave 5 commit from `stepup/main`.
+- If reverting manually, restore the prior local console/operations workspace implementations, remove `packages/typescript/ui/src/internal-workspace.tsx` exports, remove `mobile-token-validator.mjs`, remove `test:foundation:wave5`, restore the previous design-system validator/baseline, and remove the Wave 5 SKIP entry.
+- No database/provider rollback is required because Wave 5 adds no migration and performs no production, shared-env, provider, DNS, or live UI deployment action.
+
+GOVERNANCE:
+
+- Design score: scored themable surfaces are all app source TS/TSX/CSS except `apps/marketing-site`; marketing remains a product-owned token migration skip instead of silent debt.
+- Ratchet: current baseline is `appCssRawHex=0`, `tsxRawHex=0`, `tsxInlineStyles=638`, `tsxArbitraryRadius=328`, `tsxArbitraryShadow=8`; any increase fails CI, with a recorded 10% per-wave burn-down target.
+- Workspace duplication: console and operations workspace implementation now lives in `@letbuyy/ui`; app-local files are wrappers and the validator hard-fails local `<main>/<article>/<section>` shell implementations.
+- Mobile parity: generated Flutter token output remains synchronized with `packages/typescript/ui/src/mobile-tokens.ts`; legacy Dart theme-file deletion is skipped pending product migration because those files are active import hubs.
+- Frozen-file check: Wave 5 did not edit `packages/typescript/ui/src/tokens.ts` or frozen identity/auth files. Pre-existing dirty frozen auth/migration changes remain user-owned and unstaged.
+
+SKIPS:
+
+- `SKIP-W5-TOKEN-MIGRATION-PRODUCT-CALL`

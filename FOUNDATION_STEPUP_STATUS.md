@@ -15,7 +15,7 @@ Baseline commit: `41b6ea49c5da30a1409d4cc587d989d459288e45`
 | Wave 2 — Tenant Isolation | complete | `wave-2:merged` | `49741343` |
 | Wave 3 — Production Safety | complete | `wave-3:merged` | `57977e74` |
 | Wave 4 — Session Security | complete | `wave-4:merged` | `8ceb83d1` |
-| Wave 5 — Design Governance | pending | — | — |
+| Wave 5 — Design Governance | complete | `wave-5:checkpoint-green` | pending merge |
 | Wave 6 — Theme Governance | pending | — | — |
 | Wave 7 — Beta Readiness | pending | — | — |
 | WAVE FINAL — Final Audit | pending | — | — |
@@ -34,4 +34,6 @@ Baseline commit: `41b6ea49c5da30a1409d4cc587d989d459288e45`
 - Wave 3 checkpoint is green and merged to `stepup/main` at `57977e74`: `pnpm run test:foundation:wave3`, `pnpm run validate:anti-fabrication`, `pnpm run validate:dependencies`, `pnpm run validate:production-safety`, `pnpm run build`, and `pnpm run validate:governance:report` passed. Rate limiting now fails closed in production when no backend is ready; mock registrar payloads no longer emit `mock:true`; shared-env preflight blocks sentinel secrets and requires telemetry/reconciliation evidence; public URL defaults now use `letbuyy.store`. `SKIP-W3-SENTRY-DSN` and `SKIP-W3-DNS-CUTOVER` are Class-A and gated off; no production/provider/DNS action was taken.
 - Wave 4 branch `stepup/wave-4-session-security` was created from `stepup/main` after Wave 3 merge/status correction.
 - Wave 4 checkpoint is green and merged to `stepup/main` at `8ceb83d1`: `pnpm run test:foundation:wave4`, `pnpm run validate:session-security`, `pnpm run validate:anti-fabrication`, `pnpm run validate:production-safety`, `pnpm run validate:migrations`, `pnpm run validate:dependencies`, `pnpm run build`, and `pnpm run validate:governance:report` passed. Internal auth no longer falls back to `AUTH_SECRET`; signed internal requests carry JTI/replay protection; merchant sessions rotate/revoke through migration `161`; enrolled merchant MFA and per-principal console TOTP are enforced; `/internal/*` has a production fail-closed perimeter. `SKIP-W4-LIVE-SECRET-ROTATION` and `SKIP-W4-MTLS-CF-ACCESS` are Class-A and gated off; no provider secret, mTLS/Cloudflare Access, shared/staging/prod deploy, or shared DB action was taken.
-- Wave 5 is the active resume point. Create `stepup/wave-5-design-governance` from `stepup/main` before edits.
+- Wave 5 branch `stepup/wave-5-design-governance` was created from `stepup/main` after Wave 4 merge/status correction.
+- Wave 5 checkpoint is green on the branch: `pnpm run test:foundation:wave5`, `pnpm --filter @letbuyy/ui run typecheck`, `pnpm run validate:dependencies`, and `pnpm run build` passed. The design-system gate now scores all app source themable surfaces except exiled `apps/marketing-site`, fails drift increases for raw hex/inline style/arbitrary radius/shadow counts, and hard-fails local workspace shell implementations. Mobile tokens remain generated and in sync. `SKIP-W5-TOKEN-MIGRATION-PRODUCT-CALL` is Class-A and gated off; no product token migration, Flutter theme-file deletion, shared/staging/prod deploy, or provider action was taken.
+- Wave 6 is the next resume point after merging Wave 5 to `stepup/main`. Create `stepup/wave-6-theme-governance` from `stepup/main` before edits.

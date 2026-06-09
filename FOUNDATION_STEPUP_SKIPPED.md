@@ -47,3 +47,11 @@ BLOCKED BY: Human-owned Cloudflare Access/mTLS configuration, certificate issuan
 GATED AT: `services/api-gateway/src/middleware/internal-perimeter.ts` enforces a default production IP allowlist and internal credential presence for `/internal/*`; shared-env templates require `INTERNAL_GATEWAY_IP_ALLOWLIST`. Codex did not configure Cloudflare Access, mTLS, certificates, or provider network policy.
 
 TO RESUME: Configure the approved Cloudflare Access or mTLS policy, set the internal gateway allowlist to the verified ingress ranges, run perimeter probes from allowed and denied sources, and attach rollback evidence before shared traffic promotion.
+
+## SKIP-W5-TOKEN-MIGRATION-PRODUCT-CALL · Wave 5 · Marketing/mobile token migration and Dart theme-file retirement · CLASS-A
+
+BLOCKED BY: Product-owned design migration decision for the exiled marketing-site token system and the active Flutter theme hub retirement plan. The five legacy Dart theme files under `apps/mobile/merchant-app/lib/theme/` are still imported across the merchant app, so deleting them without a product migration would be broad UI behavior work rather than foundation enforcement.
+
+GATED AT: `scripts/validators/validate-design-system.mjs` excludes `apps/marketing-site` from the scored themable-surface baseline, fails any increase in scored raw hex/inline-style/arbitrary-radius drift, and hard-fails local workspace shell implementations. `scripts/generators/generate-mobile-tokens.mjs --check` remains green and is wired through `scripts/validators/mobile-token-validator.mjs` in the governance gate.
+
+TO RESUME: Approve a product migration for marketing-site tokens and Flutter theme accessors, replace legacy Dart imports with generated-token-backed theme APIs using the quarantine protocol, run Flutter visual/regression checks, then lower the Wave 5 ratchet baseline after verified deletion.

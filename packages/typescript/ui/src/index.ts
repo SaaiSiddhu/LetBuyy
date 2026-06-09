@@ -98,6 +98,19 @@ export type {
 export { AppFrame, Navigation, Sidebar, AppNavigation, isNavItemActive } from './navigation';
 export type { AppFrameProps, NavigationItem, NavigationProps, SidebarProps, AppNavigationProps, AppNavigationSection } from './navigation';
 
+export {
+    InternalEmptyDataState,
+    InternalMetric,
+    InternalMetricGrid,
+    InternalModuleCard,
+    InternalModuleGrid,
+    InternalPanel,
+    InternalSkipBackendPanel,
+    InternalStatusPill,
+    InternalWorkspace,
+} from './internal-workspace';
+export type { InternalMetricProps, InternalModuleCardProps, InternalPanelProps, InternalTone, InternalWorkspaceProps } from './internal-workspace';
+
 export { Avatar, CommandPalette, FilterBar, MetricCard, Pagination } from './productivity';
 export type {
     AvatarProps,

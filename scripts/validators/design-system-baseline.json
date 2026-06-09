@@ -1,12 +1,25 @@
 {
   "_comment": "Design-system drift ratchet. Counts may only DECREASE. Regenerate with --update only when intentionally lowering.",
-  "generatedAt": "2026-06-08",
+  "generatedAt": "2026-06-09",
+  "scope": {
+    "themableSurfaces": "apps/*/src/**/*.{ts,tsx,css}",
+    "exiledApps": [
+      "apps/marketing-site"
+    ],
+    "inlineStyleCap": 638,
+    "ratchetPerWavePercent": 10
+  },
   "metrics": {
-    "appCssRawHex": 25,
-    "appCssNakedRgbHsl": 763,
-    "tailwindPaletteClasses": 680,
+    "appCssRawHex": 0,
+    "appCssNakedRgbHsl": 573,
+    "tailwindPaletteClasses": 606,
     "appLocalLbTokenRedefs": 112,
-    "rawPxFontSize": 665,
-    "rawPxSpacing": 1752
+    "rawPxFontSize": 536,
+    "rawPxSpacing": 1382,
+    "tsxInlineStyles": 638,
+    "tsxRawHex": 0,
+    "tsxArbitraryRadius": 328,
+    "tsxArbitraryShadow": 8,
+    "localWorkspaceImplementations": 0
   }
 }

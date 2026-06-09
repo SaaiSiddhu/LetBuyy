@@ -64,6 +64,7 @@
     "test:foundation:wave2": "tsx --test tests/governance/foundation-wave2-tenant.test.ts && pnpm run validate:tenant-isolation",
     "test:foundation:wave3": "tsx --test tests/governance/foundation-wave3-production-safety.test.ts && pnpm run validate:production-safety",
     "test:foundation:wave4": "node --test tests/auth/session-verifier.test.mjs && tsx --test tests/governance/foundation-wave4-session-security.test.ts && node scripts/foundation/ephemeral-postgres.mjs start && node --test tests/executable/foundation-wave4-session-postgres.test.mjs && pnpm run validate:session-security",
+    "test:foundation:wave5": "node --test tests/governance/foundation-wave5-design-governance.test.mjs && pnpm run validate:design-system && pnpm run validate:mobile-tokens",
     "test:governance": "pnpm run test:behavioral && pnpm run test:contracts",
         "test:behavioral": "node --test --test-concurrency=1 tests/*/*.test.mjs",
         "test:contracts": "tsx --test tests/contracts/*.test.ts",

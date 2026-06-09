@@ -17,9 +17,15 @@
  *     • no bespoke theme-provider files in apps (single provider lives in @letbuyy/ui)
  *
  *   RATCHET invariants (baselined in design-system-baseline.json — counts may only
- *   go DOWN; any increase fails CI). These cover the pre-existing CSS drift that is
- *   being burned down (raw hex / naked rgb()/hsl() / Tailwind-palette classes /
- *   app-local --lb-* redefinitions / raw px font-size / raw px spacing).
+ *   go DOWN; any increase fails CI). These cover the pre-existing CSS/TSX drift
+ *   that is being burned down (raw hex / naked rgb()/hsl() / Tailwind-palette
+ *   classes / app-local --lb-* redefinitions / raw px font-size / raw px spacing /
+ *   inline styles / arbitrary radius-shadow classes).
+ *
+ * Scope:
+ *   Themable surfaces are app source TS/TSX/CSS files, except apps/marketing-site,
+ *   which is intentionally exiled from the Wave 5 score until a product-owned token
+ *   migration decision is made.
  *
  * Usage:
  *   node scripts/validators/validate-design-system.mjs            # check (CI)
@@ -32,7 +38,8 @@ import { dirname, join, relative } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const APPS_DIR = join(ROOT, 'apps');
-const BASELINE_PATH = join(ROOT, 'scripts', 'validators', 'design-system-baseline.json');
+const DEFAULT_BASELINE_PATH = join(ROOT, 'scripts', 'validators', 'design-system-baseline.json');
+const BASELINE_PATH = process.env.LETBUYY_DESIGN_SYSTEM_BASELINE_PATH || DEFAULT_BASELINE_PATH;
 const UPDATE = process.argv.includes('--update');
 
 /** Directories that are allowed to declare raw values (the token source-of-truth). */
@@ -41,6 +48,7 @@ const TOKEN_LAYER = [
     'config/tailwind',
 ];
 
+const EXILED_APP_ROOTS = new Set(['apps/marketing-site']);
 const SKIP_DIRS = new Set(['node_modules', '.next', '.turbo', 'dist', 'build', 'coverage', 'storybook-screenshots', '.git']);
 
 function walk(dir, exts, out = []) {
@@ -56,12 +64,20 @@ function walk(dir, exts, out = []) {
 }
 
 const rel = (p) => relative(ROOT, p).split('\\').join('/');
-const isMobileMerchant = false; // web only
+const isExiledAppFile = (filePath) => {
+    const normalized = rel(filePath);
+    return [...EXILED_APP_ROOTS].some((root) => normalized === root || normalized.startsWith(`${root}/`));
+};
 
 // ── Collect target files ──────────────────────────────────────────────────────
-const cssFiles = walk(APPS_DIR, ['.css']);
-const tsxFiles = walk(APPS_DIR, ['.tsx', '.ts']);
-const layoutFiles = tsxFiles.filter((f) => /\/app\/layout\.tsx$/.test(rel(f)));
+const cssFiles = walk(APPS_DIR, ['.css']).filter((f) => !isExiledAppFile(f));
+const appSourceFiles = walk(APPS_DIR, ['.tsx', '.ts']).filter((f) => !isExiledAppFile(f));
+const tsxSurfaceFiles = appSourceFiles.filter((f) => f.endsWith('.tsx'));
+const layoutFiles = appSourceFiles.filter((f) => /\/app\/layout\.tsx$/.test(rel(f)));
+const localWorkspaceFiles = [
+    join(ROOT, 'apps', 'platform-console', 'src', 'components', '_local-ui', 'console-workspace.tsx'),
+    join(ROOT, 'apps', 'platform-operations-portal', 'src', 'components', '_local-ui', 'ops-workspace.tsx'),
+].filter(existsSync);
 
 // ── Regexes ───────────────────────────────────────────────────────────────────
 const HEX = /(^|[^\w-])#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})(?![\w-])/;
@@ -70,6 +86,9 @@ const NAKED_RGB = /(?:color|background(?:-color)?|border(?:-[a-z]+)?|box-shadow|
 const LB_REDEFINE = /--lb-[a-z0-9-]+\s*:/i;
 const PX_FONT = /font-size\s*:\s*\d+px/;
 const PX_SPACE = /\b(?:padding|margin|gap)(?:-(?:top|right|bottom|left|inline|block))?\s*:\s*\d+px/;
+const INLINE_STYLE = /\bstyle\s*=\s*\{\s*\{/;
+const ARBITRARY_RADIUS = /\brounded-\[[^\]]+\]/;
+const ARBITRARY_SHADOW = /\bshadow-\[[^\]]+\]/;
 
 function countMatches(files, re, perLine = true) {
     let n = 0;
@@ -96,26 +115,46 @@ for (const f of layoutFiles) {
     if (/<DesignSystemRoot\b/.test(t)) hard.push(`${rel(f)}: app layout uses <DesignSystemRoot> directly — wrap in <LetbuyyThemeProvider> instead`);
     if (/theme=["']auto["']/.test(t)) hard.push(`${rel(f)}: theme="auto" found — the provider must feed a resolved theme`);
 }
-const legacyKeyHits = countMatches(tsxFiles, /letbuyy_theme|theme-marketplace-theme/);
+const legacyKeyHits = countMatches(appSourceFiles, /letbuyy_theme|theme-marketplace-theme/);
 if (legacyKeyHits.n > 0) hard.push(`legacy theme storage key(s) found (${legacyKeyHits.n}) e.g. ${legacyKeyHits.samples.join(', ')} — use the canonical "letbuyy-theme" via @letbuyy/ui useTheme()`);
-const bespokeProviders = tsxFiles.filter((f) => /theme-?provider/i.test(rel(f)) && /createContext/.test(readFileSync(f, 'utf8')));
+const bespokeProviders = appSourceFiles.filter((f) => /theme-?provider/i.test(rel(f)) && /createContext/.test(readFileSync(f, 'utf8')));
 for (const f of bespokeProviders) hard.push(`${rel(f)}: bespoke theme provider — the single provider is @letbuyy/ui LetbuyyThemeProvider`);
+const localWorkspaceImplementations = localWorkspaceFiles.filter((f) => {
+    const t = readFileSync(f, 'utf8');
+    return /<(?:main|article|section)\s+className=/.test(t);
+});
+for (const f of localWorkspaceImplementations) hard.push(`${rel(f)}: local workspace shell implementation found — use @letbuyy/ui internal workspace primitives`);
 
 // ── RATCHET metrics ─────────────────────────────────────────────────────────--
 const metrics = {
     appCssRawHex: countMatches(cssFiles, HEX).n,
     appCssNakedRgbHsl: countMatches(cssFiles, NAKED_RGB).n,
-    tailwindPaletteClasses: countMatches([...cssFiles, ...tsxFiles], TAILWIND_PALETTE).n,
+    tailwindPaletteClasses: countMatches([...cssFiles, ...appSourceFiles], TAILWIND_PALETTE).n,
     appLocalLbTokenRedefs: countMatches(cssFiles, LB_REDEFINE).n,
     rawPxFontSize: countMatches(cssFiles, PX_FONT).n,
     rawPxSpacing: countMatches(cssFiles, PX_SPACE).n,
+    tsxInlineStyles: countMatches(tsxSurfaceFiles, INLINE_STYLE).n,
+    tsxRawHex: countMatches(tsxSurfaceFiles, HEX).n,
+    tsxArbitraryRadius: countMatches(tsxSurfaceFiles, ARBITRARY_RADIUS).n,
+    tsxArbitraryShadow: countMatches(tsxSurfaceFiles, ARBITRARY_SHADOW).n,
+    localWorkspaceImplementations: localWorkspaceImplementations.length,
 };
 
 if (UPDATE) {
     writeFileSync(
         BASELINE_PATH,
         JSON.stringify(
-            { _comment: 'Design-system drift ratchet. Counts may only DECREASE. Regenerate with --update only when intentionally lowering.', generatedAt: new Date().toISOString().slice(0, 10), metrics },
+            {
+                _comment: 'Design-system drift ratchet. Counts may only DECREASE. Regenerate with --update only when intentionally lowering.',
+                generatedAt: new Date().toISOString().slice(0, 10),
+                scope: {
+                    themableSurfaces: 'apps/*/src/**/*.{ts,tsx,css}',
+                    exiledApps: [...EXILED_APP_ROOTS],
+                    inlineStyleCap: metrics.tsxInlineStyles,
+                    ratchetPerWavePercent: 10,
+                },
+                metrics,
+            },
             null,
             2,
         ) + '\n',
