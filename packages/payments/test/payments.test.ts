@@ -4,9 +4,11 @@ import {
   fromInrMinorUnits,
   assertBalancedLedgerLines,
   buildPaymentCaptureLedgerPosting,
+  buildPaymentRefundLedgerPosting,
   buildMockPaymentSessionPlan,
   buildReversalLedgerPosting,
   inrMoney,
+  isProductionRuntime,
   livePaymentCredentialsAreRequired,
   normalizeIdempotencyKey,
   normalizePaymentMoney,
@@ -60,9 +62,26 @@ test('ledger posting helpers enforce double-entry balance and reversal-only corr
   assert.equal(reversal.sourceType, 'reversal');
   assert.equal(reversal.lines[0]?.side, 'credit');
   assert.doesNotThrow(() => assertBalancedLedgerLines(reversal.lines));
+
+  const refund = buildPaymentRefundLedgerPosting({
+    siteId: '11111111-1111-4111-8111-111111111111',
+    paymentId: 'payrow_001',
+    providerRefundId: 'rfnd_test_001',
+    refundAmountMinor: 1_250,
+    idempotencyKey: 'refund:rfnd_test_001',
+  });
+  assert.equal(refund.sourceType, 'refund');
+  assert.deepEqual(
+    refund.lines.map((line) => [line.accountCode, line.side, line.amountMinor]),
+    [
+      ['merchant_payable', 'debit', 1_250],
+      ['refund_clearing', 'credit', 1_250],
+    ],
+  );
+  assert.doesNotThrow(() => assertBalancedLedgerLines(refund.lines));
 });
 
-test('V1 payment session plans default to mock mode and live credentials are guarded', () => {
+test('V1 payment session plans default to sandbox mode and production rejects mock', () => {
   const plan = buildMockPaymentSessionPlan({
     provider: 'upi',
     orderId: 'order-123',
@@ -71,12 +90,16 @@ test('V1 payment session plans default to mock mode and live credentials are gua
     metadata: { channel: 'web' },
   });
 
-  assert.equal(plan.mode, 'mock');
+  assert.equal(plan.mode, 'sandbox');
   assert.equal(plan.provider, 'upi');
   assert.equal(plan.clientAction, 'upi_collect');
-  assert.equal(plan.status, 'authorized');
+  assert.equal(plan.status, 'pending');
   assert.equal(plan.metadata.channel, 'web');
   assert.equal(resolvePaymentProviderMode('LIVE'), 'live');
+  assert.equal(resolvePaymentProviderMode(), 'sandbox');
+  assert.equal(resolvePaymentProviderMode(null, { productionRuntime: true }), 'live');
+  assert.equal(isProductionRuntime({ nodeEnv: 'production' }), true);
+  assert.throws(() => resolvePaymentProviderMode('mock', { productionRuntime: true }), /not allowed in production/);
   assert.throws(() => resolvePaymentProviderMode('production'), /mock, sandbox, or live/);
   assert.equal(livePaymentCredentialsAreRequired({ provider: 'razorpay', mode: 'live' }), true);
   assert.equal(livePaymentCredentialsAreRequired({ provider: 'razorpay', mode: 'sandbox' }), false);

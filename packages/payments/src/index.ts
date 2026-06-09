@@ -73,6 +73,7 @@ export interface PaymentIntentResult {
 export interface PaymentSessionPlanInput {
   provider: V1PaymentSessionProvider;
   mode?: string | null;
+  productionRuntime?: boolean;
   orderId: string;
   amount: PaymentMoney;
   idempotencyKey: IdempotencyKey | string;
@@ -254,9 +255,31 @@ export function normalizePaymentMoney(value: PaymentMoney): PaymentMoney {
   return inrMoney(value.amountMinor);
 }
 
-export function resolvePaymentProviderMode(value?: string | null): PaymentProviderMode {
-  const normalized = (value || 'mock').trim().toLowerCase();
+export function isProductionRuntime(input?: {
+  environment?: string | null;
+  nodeEnv?: string | null;
+  vercelEnv?: string | null;
+  mode?: string | null;
+} | null): boolean {
+  const values = [
+    input?.environment,
+    input?.nodeEnv,
+    input?.vercelEnv,
+    input?.mode,
+  ].map((value) => String(value || '').trim().toLowerCase());
+
+  return values.some((value) => value === 'production' || value === 'prod' || value === 'live');
+}
+
+export function resolvePaymentProviderMode(
+  value?: string | null,
+  options?: { productionRuntime?: boolean },
+): PaymentProviderMode {
+  const normalized = (value || (options?.productionRuntime ? 'live' : 'sandbox')).trim().toLowerCase();
   if (normalized === 'mock' || normalized === 'sandbox' || normalized === 'live') {
+    if (normalized === 'mock' && options?.productionRuntime) {
+      throw new Error('Mock payment provider mode is not allowed in production runtime');
+    }
     return normalized;
   }
   throw new Error('Payment provider mode must be mock, sandbox, or live');
@@ -280,7 +303,7 @@ export function livePaymentCredentialsAreRequired(input: {
 
 export function buildMockPaymentSessionPlan(input: PaymentSessionPlanInput): PaymentSessionPlan {
   const provider = input.provider;
-  const mode = resolvePaymentProviderMode(input.mode);
+  const mode = resolvePaymentProviderMode(input.mode, { productionRuntime: input.productionRuntime });
   const amount = normalizePaymentMoney(input.amount);
   const idempotencyKey = normalizeIdempotencyKey(String(input.idempotencyKey));
   const providerOrderId = `${provider}_${mode}_${input.orderId}`;
@@ -349,6 +372,14 @@ export interface PaymentCaptureLedgerPostingInput {
   grossAmountMinor: number;
   platformFeeMinor: number;
   gstMinor: number;
+  idempotencyKey: IdempotencyKey | string;
+}
+
+export interface PaymentRefundLedgerPostingInput {
+  siteId: string;
+  paymentId: string;
+  providerRefundId: string;
+  refundAmountMinor: number;
   idempotencyKey: IdempotencyKey | string;
 }
 
@@ -465,6 +496,35 @@ export function buildPaymentCaptureLedgerPosting(input: PaymentCaptureLedgerPost
     currency: INR_CURRENCY,
     sourceType: 'payment_capture',
     sourceId: input.providerPaymentId,
+    idempotencyKey: normalizeIdempotencyKey(String(input.idempotencyKey)),
+    lines: assertBalancedLedgerLines(lines, INR_CURRENCY),
+  };
+}
+
+export function buildPaymentRefundLedgerPosting(input: PaymentRefundLedgerPostingInput): LedgerPostingPlan {
+  const refundAmountMinor = assertInrMinorUnits(input.refundAmountMinor);
+  const lines: LedgerPostingLine[] = [
+    {
+      accountCode: 'merchant_payable',
+      side: 'debit',
+      amountMinor: refundAmountMinor,
+      currency: INR_CURRENCY,
+      memo: `Merchant payable refund ${input.paymentId}`,
+    },
+    {
+      accountCode: 'refund_clearing',
+      side: 'credit',
+      amountMinor: refundAmountMinor,
+      currency: INR_CURRENCY,
+      memo: `Provider refund ${input.providerRefundId}`,
+    },
+  ];
+
+  return {
+    siteId: input.siteId,
+    currency: INR_CURRENCY,
+    sourceType: 'refund',
+    sourceId: input.providerRefundId,
     idempotencyKey: normalizeIdempotencyKey(String(input.idempotencyKey)),
     lines: assertBalancedLedgerLines(lines, INR_CURRENCY),
   };

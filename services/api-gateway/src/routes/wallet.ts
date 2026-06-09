@@ -41,6 +41,15 @@ interface CanonicalLedgerEntryRow extends Record<string, unknown> {
     ledger_accounts?: { account_code?: string | null } | null;
 }
 
+interface LedgerReconciliationRow extends Record<string, unknown> {
+    site_id: string;
+    status: 'verified' | 'mismatch';
+    wallet_available_minor: number | string;
+    ledger_merchant_payable_minor: number | string;
+    variance_minor: number | string;
+    verified_at?: string | null;
+}
+
 function serializeEntry(row: WalletLedgerRow) {
     return {
         id: row.id,
@@ -117,6 +126,24 @@ async function loadCanonicalLedgerSummary(
     return balances;
 }
 
+async function loadLedgerReconciliation(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    siteId: string,
+): Promise<LedgerReconciliationRow | null> {
+    const { data, error } = await db
+        .from('money_ledger_site_reconciliations')
+        .select('*')
+        .eq('site_id', siteId)
+        .maybeSingle();
+
+    if (error) {
+        if (error.message.includes('money_ledger_site_reconciliations') && error.message.includes('schema cache')) return null;
+        throw new Error(`Wallet ledger reconciliation lookup failed: ${error.message}`);
+    }
+
+    return data as unknown as LedgerReconciliationRow | null;
+}
+
 router.get('/', validate('query', WalletQuerySchema), async (c) => {
     const query = c.get('validatedQuery') as WalletQuery;
     const db = getSupabaseAdmin(c);
@@ -130,10 +157,31 @@ router.get('/', validate('query', WalletQuerySchema), async (c) => {
         .limit(query.limit);
 
     if (error) throw new Error(`Wallet ledger lookup failed: ${error.message}`);
+    const canonicalLedger = await loadCanonicalLedgerSummary(db, tenant.siteId);
+    const reconciliation = await loadLedgerReconciliation(db, tenant.siteId);
+
+    if (
+        !canonicalLedger
+        || !reconciliation
+        || reconciliation.status !== 'verified'
+        || Number(reconciliation.variance_minor || 0) !== 0
+    ) {
+        return c.json({
+            success: false,
+            error: {
+                code: 'LEDGER_RECONCILIATION_REQUIRED',
+                message: 'Wallet balance is unavailable until canonical ledger reconciliation is verified for this store.',
+            },
+        }, 409);
+    }
+
+    const compatibilitySummary = summarize(tenant.siteId, (data || []) as unknown as WalletLedgerRow[]);
 
     return c.json(success({
-        ...summarize(tenant.siteId, (data || []) as unknown as WalletLedgerRow[]),
-        canonical_ledger: await loadCanonicalLedgerSummary(db, tenant.siteId),
+        ...compatibilitySummary,
+        available_minor: Number(canonicalLedger.merchant_payable || 0),
+        canonical_ledger: canonicalLedger,
+        ledger_reconciliation: reconciliation,
     }));
 });
 

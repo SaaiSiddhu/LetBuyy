@@ -49,11 +49,15 @@ import {
     type PaymentVoidInput,
 } from '../schemas/payment.schema';
 import {
+    buildPaymentCaptureLedgerPosting,
+    buildPaymentRefundLedgerPosting,
     buildMockPaymentSessionPlan,
     inrMoney,
+    isProductionRuntime,
     livePaymentCredentialsAreRequired,
     normalizeV1PaymentSessionProvider,
     resolvePaymentProviderMode,
+    type LedgerPostingPlan,
     type PaymentProviderMode,
     type V1PaymentSessionProvider,
 } from '@letbuyy/payments';
@@ -100,6 +104,10 @@ type PaymentSessionRow = {
     provider_session_id?: string | null;
     idempotency_key: string;
     client_action?: string | null;
+    capture_ledger_transaction_id?: string | null;
+    refund_ledger_transaction_id?: string | null;
+    refunded_amount_minor?: number | null;
+    refunded_at?: string | null;
     metadata?: JsonRecord | null;
 };
 
@@ -123,11 +131,16 @@ function getRequestId(c: AppContext): string {
 }
 
 function paymentProviderMode(c: AppContext, provider: V1PaymentSessionProvider, requested?: PaymentProviderMode): PaymentProviderMode {
-    if (requested) return resolvePaymentProviderMode(requested);
-
     const envRecord = c.env as Env & Record<string, string | undefined>;
+    const productionRuntime = isProductionRuntime({
+        environment: envRecord.ENVIRONMENT || envRecord.APP_ENV || envRecord.NODE_ENV,
+        vercelEnv: envRecord.VERCEL_ENV,
+        mode: envRecord.LETBUYY_RUNTIME_MODE,
+    });
+    if (requested) return resolvePaymentProviderMode(requested, { productionRuntime });
+
     const providerKey = `LETBUYY_${provider.toUpperCase()}_MODE`;
-    return resolvePaymentProviderMode(envRecord[providerKey] || c.env.LETBUYY_PAYMENT_MODE || 'mock');
+    return resolvePaymentProviderMode(envRecord[providerKey] || c.env.LETBUYY_PAYMENT_MODE, { productionRuntime });
 }
 
 async function activeMerchantPaymentCredential(
@@ -209,6 +222,37 @@ async function emitPaymentEvent(
         requestId: input.requestId,
         actorId: input.actorId || null,
     });
+}
+
+function toPaymentLedgerRpcLines(lines: LedgerPostingPlan['lines']) {
+    return lines.map((line) => ({
+        account_code: line.accountCode,
+        side: line.side,
+        amount_minor: line.amountMinor,
+        memo: line.memo,
+    }));
+}
+
+async function postPaymentLedger(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    plan: LedgerPostingPlan,
+    metadata: JsonRecord,
+    requestId: string,
+): Promise<string> {
+    const { data, error } = await db.rpc('post_settlement_ledger_transaction', {
+        p_site_id: plan.siteId,
+        p_source_type: plan.sourceType,
+        p_source_id: plan.sourceId,
+        p_idempotency_key: String(plan.idempotencyKey),
+        p_lines: toPaymentLedgerRpcLines(plan.lines),
+        p_metadata: metadata,
+        p_request_id: requestId,
+    });
+
+    if (error || !data) {
+        throw new Error(`Payment canonical ledger post failed: ${error?.message || 'unknown error'}`);
+    }
+    return String(data);
 }
 
 async function loadOwnedPaymentSession(
@@ -583,7 +627,7 @@ router.post('/sessions', validate('json', CreatePaymentSessionSchema), async (c)
     }
 });
 
-// POST /payments/:id/capture — capture a V1 payment session in mock/sandbox/live-shaped mode
+// POST /payments/:id/capture — capture a V1 payment session after provider proof and canonical ledger posting
 router.post('/:paymentId/capture', validate('json', PaymentCaptureSchema), async (c) => {
     const auth = c.get('auth');
     const body = c.get('validatedBody') as PaymentCaptureInput;
@@ -594,19 +638,24 @@ router.post('/:paymentId/capture', validate('json', PaymentCaptureSchema), async
     if (!customUser) throw new ForbiddenError('User profile not found');
 
     const payment = await loadOwnedPaymentSession(c, c.req.param('paymentId'), customUser.id, auth.user.storeId);
-    if (payment.status === 'captured') {
+    if (payment.status === 'captured' && payment.capture_ledger_transaction_id) {
         return c.json({ data: { captured: true, payment } });
     }
     if (payment.status === 'voided' || payment.status === 'refunded' || payment.status === 'failed') {
         throw new ConflictError('Payment cannot be captured in its current state');
     }
 
-    const providerPaymentId = body.provider_payment_id || payment.provider_payment_id || `${payment.provider}_${payment.mode}_capture_${payment.id}`;
+    const captureScope = ['payment.capture', payment.id].join(':');
+    const captureLedgerKey = ['payment.capture', payment.id, body.idempotency_key].join(':');
+    const providerPaymentId = body.provider_payment_id || payment.provider_payment_id || null;
+    if (!providerPaymentId) {
+        throw new ConflictError('Provider payment id is required before capture can be recorded');
+    }
     const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: payment.site_id,
         key: body.idempotency_key,
-        scope: `payment.capture:${payment.id}`,
+        scope: captureScope,
         requestBody: body,
         requestId,
     });
@@ -615,73 +664,102 @@ router.post('/:paymentId/capture', validate('json', PaymentCaptureSchema), async
         return c.json(claim.responseBody as never, claim.statusCode as never);
     }
 
-    const { data: updated, error } = await db
-        .from('payments')
-        .update({
-            status: 'captured',
-            provider_payment_id: providerPaymentId,
-            captured_at: new Date().toISOString(),
-            metadata: { ...(payment.metadata || {}), ...(body.metadata || {}) },
-            request_id: requestId,
-            updated_by: customUser.id,
-        })
-        .eq('id', payment.id)
-        .select('*')
-        .single();
+    try {
+        const ledgerTransactionId = await postPaymentLedger(
+            db,
+            buildPaymentCaptureLedgerPosting({
+                siteId: payment.site_id,
+                orderId: payment.order_id,
+                providerPaymentId,
+                grossAmountMinor: payment.amount_minor,
+                platformFeeMinor: 0,
+                gstMinor: 0,
+                idempotencyKey: captureLedgerKey,
+            }),
+            {
+                payment_id: payment.id,
+                provider: payment.provider,
+                provider_mode: payment.mode,
+                provider_order_id: payment.provider_order_id || null,
+                provider_payment_id: providerPaymentId,
+                fee_assessment: 'deferred_to_payout_statement',
+            },
+            requestId,
+        );
 
-    if (error || !updated) {
-        await idempotency.fail(claim.id);
-        return c.json(dbErrorBody('Failed to capture payment'), 500);
-    }
+        const { data: updated, error } = await db
+            .from('payments')
+            .update({
+                status: 'captured',
+                provider_payment_id: providerPaymentId,
+                captured_at: new Date().toISOString(),
+                capture_ledger_transaction_id: ledgerTransactionId,
+                metadata: { ...(payment.metadata || {}), ...(body.metadata || {}) },
+                request_id: requestId,
+                updated_by: customUser.id,
+            })
+            .eq('id', payment.id)
+            .select('*')
+            .single();
 
-    await db.from('payment_attempts').insert({
-        site_id: payment.site_id,
-        order_id: payment.order_id,
-        payment_id: payment.id,
-        provider: payment.provider,
-        attempt_type: 'capture',
-        status: 'succeeded',
-        amount: payment.amount_minor / 100,
-        currency: payment.currency,
-        provider_order_id: payment.provider_order_id,
-        provider_payment_id: providerPaymentId,
-        provider_session_id: payment.provider_session_id,
-        idempotency_key: body.idempotency_key,
-        request_id: requestId,
-        metadata: body.metadata,
-        created_by: customUser.id,
-        updated_by: customUser.id,
-    });
+        if (error || !updated) {
+            await idempotency.fail(claim.id);
+            return c.json(dbErrorBody('Failed to capture payment'), 500);
+        }
 
-    await emitPaymentEvent(db, {
-        siteId: payment.site_id,
-        paymentId: payment.id,
-        orderId: payment.order_id,
-        eventType: 'payment.captured',
-        payload: {
+        await db.from('payment_attempts').insert({
+            site_id: payment.site_id,
+            order_id: payment.order_id,
+            payment_id: payment.id,
             provider: payment.provider,
-            provider_event_id: providerPaymentId,
-            payment_status: 'paid',
-            mode: payment.mode,
-            provider_payment_id: providerPaymentId,
-            amount_minor: payment.amount_minor,
+            attempt_type: 'capture',
+            status: 'succeeded',
+            amount: payment.amount_minor / 100,
             currency: payment.currency,
-        },
-        actorId: customUser.id,
-        requestId,
-        idempotencyKey: `payment.capture:${payment.id}:${body.idempotency_key}`,
-    });
+            provider_order_id: payment.provider_order_id,
+            provider_payment_id: providerPaymentId,
+            provider_session_id: payment.provider_session_id,
+            idempotency_key: body.idempotency_key,
+            request_id: requestId,
+            metadata: body.metadata,
+            created_by: customUser.id,
+            updated_by: customUser.id,
+        });
 
-    const responseBody = { data: { captured: true, payment: updated } };
-    await idempotency.complete({
-        id: claim.id,
-        responseBody,
-        statusCode: 200,
-        resourceType: 'payment',
-        resourceId: payment.id,
-    });
+        await emitPaymentEvent(db, {
+            siteId: payment.site_id,
+            paymentId: payment.id,
+            orderId: payment.order_id,
+            eventType: 'payment.captured',
+            payload: {
+                provider: payment.provider,
+                provider_event_id: providerPaymentId,
+                payment_status: 'paid',
+                mode: payment.mode,
+                provider_payment_id: providerPaymentId,
+                amount_minor: payment.amount_minor,
+                currency: payment.currency,
+                ledger_transaction_id: ledgerTransactionId,
+            },
+            actorId: customUser.id,
+            requestId,
+            idempotencyKey: captureLedgerKey,
+        });
 
-    return c.json(responseBody);
+        const responseBody = { data: { captured: true, payment: updated } };
+        await idempotency.complete({
+            id: claim.id,
+            responseBody,
+            statusCode: 200,
+            resourceType: 'payment',
+            resourceId: payment.id,
+        });
+
+        return c.json(responseBody);
+    } catch (error) {
+        await idempotency.fail(claim.id);
+        throw error;
+    }
 });
 
 // POST /payments/:id/void — void a V1 payment session without mutating ledger truth
@@ -759,7 +837,7 @@ router.post('/:paymentId/void', validate('json', PaymentVoidSchema), async (c) =
     return c.json({ data: { voided: true, payment: updated } });
 });
 
-// POST /payments/:id/refund — record a refund request; settlement posts canonical F6 ledger entries
+// POST /payments/:id/refund — record a provider-confirmed refund and canonical F6 ledger entry
 router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (c) => {
     const auth = c.get('auth');
     const body = c.get('validatedBody') as PaymentRefundInput;
@@ -774,10 +852,20 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
         throw new ConflictError('Only captured payments can be refunded');
     }
 
-    const refundAmountMinor = body.amount_minor || payment.amount_minor;
-    if (refundAmountMinor > payment.amount_minor) {
+    const providerRefundId = body.provider_refund_id || stringOrNull(body.metadata?.provider_refund_id) || null;
+    if (!providerRefundId) {
+        throw new ConflictError('Provider refund id is required before refund can be recorded');
+    }
+    const alreadyRefundedMinor = Math.max(0, Number(payment.refunded_amount_minor || 0));
+    const refundAmountMinor = body.amount_minor || (payment.amount_minor - alreadyRefundedMinor);
+    if (refundAmountMinor <= 0) {
+        throw new ConflictError('Refund amount must be positive');
+    }
+    const cumulativeRefundMinor = alreadyRefundedMinor + refundAmountMinor;
+    if (cumulativeRefundMinor > payment.amount_minor) {
         throw new ConflictError('Refund amount cannot exceed captured amount');
     }
+    const fullyRefunded = cumulativeRefundMinor === payment.amount_minor;
 
     const stepUp = verifySensitiveActionStepUp({
         action: 'refund.approve',
@@ -790,69 +878,129 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
         return c.json(stepUpErrorBody(stepUp), 428);
     }
 
-    const { data: updated, error } = await db
-        .from('payments')
-        .update({
-            status: 'refunded',
-            refunded_at: new Date().toISOString(),
-            metadata: {
-                ...(payment.metadata || {}),
-                ...(body.metadata || {}),
-                ...stepUp.metadata,
-                refund_amount_minor: refundAmountMinor,
-                refund_reason: body.reason || null,
-            },
-            request_id: requestId,
-            updated_by: customUser.id,
-        })
-        .eq('id', payment.id)
-        .select('*')
-        .single();
+    const idempotency = new IdempotencyExecutionAdapter(db);
+    const claim = await idempotency.begin({
+        siteId: payment.site_id,
+        key: body.idempotency_key,
+        scope: `payment.refund:${payment.id}`,
+        requestBody: body,
+        requestId,
+    });
 
-    if (error || !updated) {
-        return c.json(dbErrorBody('Failed to refund payment'), 500);
+    if (claim.kind === 'replay') {
+        return c.json(claim.responseBody as never, claim.statusCode as never);
     }
 
-    await db.from('payment_attempts').insert({
-        site_id: payment.site_id,
-        order_id: payment.order_id,
-        payment_id: payment.id,
-        provider: payment.provider,
-        attempt_type: 'refund',
-        status: 'succeeded',
-        amount: refundAmountMinor / 100,
-        currency: payment.currency,
-        provider_order_id: payment.provider_order_id,
-        provider_payment_id: payment.provider_payment_id,
-        provider_session_id: payment.provider_session_id,
-        idempotency_key: body.idempotency_key,
-        request_id: requestId,
-        failure_reason: body.reason || null,
-        metadata: { ...(body.metadata || {}), ...stepUp.metadata },
-        created_by: customUser.id,
-        updated_by: customUser.id,
-    });
+    try {
+        const ledgerTransactionId = await postPaymentLedger(
+            db,
+            buildPaymentRefundLedgerPosting({
+                siteId: payment.site_id,
+                paymentId: payment.id,
+                providerRefundId,
+                refundAmountMinor,
+                idempotencyKey: `payment.refund:${payment.id}:${body.idempotency_key}`,
+            }),
+            {
+                payment_id: payment.id,
+                provider: payment.provider,
+                provider_mode: payment.mode,
+                provider_payment_id: payment.provider_payment_id || null,
+                provider_refund_id: providerRefundId,
+                refund_amount_minor: refundAmountMinor,
+                cumulative_refund_amount_minor: cumulativeRefundMinor,
+            },
+            requestId,
+        );
 
-    await emitPaymentEvent(db, {
-        siteId: payment.site_id,
-        paymentId: payment.id,
-        orderId: payment.order_id,
-        eventType: 'payment.refunded',
-        payload: {
+        const { data: updated, error } = await db
+            .from('payments')
+            .update({
+                status: fullyRefunded ? 'refunded' : 'captured',
+                refunded_at: fullyRefunded ? new Date().toISOString() : payment.refunded_at || null,
+                refunded_amount_minor: cumulativeRefundMinor,
+                refund_ledger_transaction_id: ledgerTransactionId,
+                metadata: {
+                    ...(payment.metadata || {}),
+                    ...(body.metadata || {}),
+                    ...stepUp.metadata,
+                    provider_refund_id: providerRefundId,
+                    refund_amount_minor: refundAmountMinor,
+                    cumulative_refund_amount_minor: cumulativeRefundMinor,
+                    refund_reason: body.reason || null,
+                },
+                request_id: requestId,
+                updated_by: customUser.id,
+            })
+            .eq('id', payment.id)
+            .select('*')
+            .single();
+
+        if (error || !updated) {
+            await idempotency.fail(claim.id);
+            return c.json(dbErrorBody('Failed to refund payment'), 500);
+        }
+
+        await db.from('payment_attempts').insert({
+            site_id: payment.site_id,
+            order_id: payment.order_id,
+            payment_id: payment.id,
             provider: payment.provider,
-            provider_event_id: `payment.refund:${payment.id}`,
-            payment_status: 'refunded',
-            mode: payment.mode,
-            amount_minor: refundAmountMinor,
+            attempt_type: 'refund',
+            status: 'succeeded',
+            amount: refundAmountMinor / 100,
             currency: payment.currency,
-            reason: body.reason || null,
-        },
-        actorId: customUser.id,
-        requestId,
-        idempotencyKey: `payment.refund:${payment.id}:${body.idempotency_key}`,
-    });
+            provider_order_id: payment.provider_order_id,
+            provider_payment_id: payment.provider_payment_id,
+            provider_session_id: payment.provider_session_id,
+            idempotency_key: body.idempotency_key,
+            request_id: requestId,
+            failure_reason: body.reason || null,
+            metadata: {
+                ...(body.metadata || {}),
+                ...stepUp.metadata,
+                provider_refund_id: providerRefundId,
+                ledger_transaction_id: ledgerTransactionId,
+            },
+            created_by: customUser.id,
+            updated_by: customUser.id,
+        });
 
-    return c.json({ data: { refunded: true, payment: updated } });
+        await emitPaymentEvent(db, {
+            siteId: payment.site_id,
+            paymentId: payment.id,
+            orderId: payment.order_id,
+            eventType: 'payment.refunded',
+            payload: {
+                provider: payment.provider,
+                provider_event_id: providerRefundId,
+                payment_status: fullyRefunded ? 'refunded' : 'partially_refunded',
+                mode: payment.mode,
+                amount_minor: refundAmountMinor,
+                cumulative_refund_amount_minor: cumulativeRefundMinor,
+                currency: payment.currency,
+                reason: body.reason || null,
+                ledger_transaction_id: ledgerTransactionId,
+            },
+            actorId: customUser.id,
+            requestId,
+            idempotencyKey: `payment.refund:${payment.id}:${body.idempotency_key}`,
+        });
+
+        const responseBody = { data: { refunded: true, fully_refunded: fullyRefunded, payment: updated } };
+        await idempotency.complete({
+            id: claim.id,
+            responseBody,
+            statusCode: 200,
+            resourceType: 'payment',
+            resourceId: payment.id,
+        });
+
+        return c.json(responseBody);
+    } catch (error) {
+        await idempotency.fail(claim.id);
+        throw error;
+    }
 });
 
 // GET /payments/subscription — Store-scoped billing state for merchant admin

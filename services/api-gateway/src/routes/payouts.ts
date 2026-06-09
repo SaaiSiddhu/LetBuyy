@@ -7,12 +7,12 @@ import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
 import {
     createPayoutTransferAdapter,
+    PayoutProviderUnavailable,
     type MerchantPayoutRail,
     type PayoutTransferMode,
 } from '@letbuyy/infrastructure/payout-transfer-adapter';
 import {
     planPayoutReleaseLedgerPosting,
-    planSettlementLedgerPosting,
     type SettlementLedgerLine,
 } from '@letbuyy/billing-core';
 
@@ -117,7 +117,17 @@ function payoutMode(env: Env): PayoutTransferMode {
 }
 
 function payoutRail(): MerchantPayoutRail {
-    return 'razorpay_route';
+    return 'razorpayx';
+}
+
+function payoutProviderConfigured(env: Env): boolean {
+    const envRecord = env as Env & Record<string, string | undefined>;
+    return Boolean(
+        env.RAZORPAY_KEY_ID
+        && (env.RAZORPAY_ROUTE_KEY_SECRET || env.RAZORPAY_KEY_SECRET)
+        && env.RAZORPAY_ROUTE_ACCOUNT_ID
+        && envRecord.RAZORPAY_ROUTE_PROVIDER_ENABLED === 'true',
+    );
 }
 
 function statementNumber(siteId: string, now: Date): string {
@@ -188,6 +198,51 @@ async function postCanonicalPayoutLedger(
 
     if (error || !data) throw new Error(`Payout canonical ledger post failed: ${error?.message || 'unknown error'}`);
     return String(data);
+}
+
+function payoutProviderUnavailableBody(error: PayoutProviderUnavailable) {
+    return {
+        success: false,
+        error: {
+            code: error.code,
+            message: error.message,
+        },
+    };
+}
+
+function planPayoutFeeAssessmentLedger(input: {
+    statementNumber: string;
+    platformFeeMinor: number;
+    taxMinor: number;
+}): SettlementLedgerLine[] {
+    const totalFeeMinor = Number(input.platformFeeMinor || 0) + Number(input.taxMinor || 0);
+    if (totalFeeMinor <= 0) return [];
+
+    const lines: SettlementLedgerLine[] = [
+        {
+            account_code: 'merchant_payable',
+            side: 'debit',
+            amount_minor: totalFeeMinor,
+            memo: `Merchant fee assessment ${input.statementNumber}`,
+        },
+    ];
+    if (input.platformFeeMinor > 0) {
+        lines.push({
+            account_code: 'platform_revenue',
+            side: 'credit',
+            amount_minor: input.platformFeeMinor,
+            memo: `Platform fee assessment ${input.statementNumber}`,
+        });
+    }
+    if (input.taxMinor > 0) {
+        lines.push({
+            account_code: 'gst_payable',
+            side: 'credit',
+            amount_minor: input.taxMinor,
+            memo: `GST fee assessment ${input.statementNumber}`,
+        });
+    }
+    return lines;
 }
 
 function summarize(siteId: string, rows: PayoutStatementRow[]) {
@@ -382,7 +437,7 @@ router.post('/', validate('json', CreatePayoutStatementSchema), async (c) => {
     if (error || !inserted) throw new Error(`Payout statement create failed: ${error?.message || 'unknown error'}`);
     const statement = inserted as unknown as PayoutStatementRow;
 
-    const { data: walletCredit, error: walletCreditError } = await db.from('wallet_ledger_entries').insert({
+    const { error: walletCreditError } = await db.from('wallet_ledger_entries').insert({
         site_id: tenant.siteId,
         payout_statement_id: statement.id,
         entry_type: 'payout_credit',
@@ -401,39 +456,29 @@ router.post('/', validate('json', CreatePayoutStatementSchema), async (c) => {
     }).select('id').single();
     if (walletCreditError) throw new Error(`Payout wallet credit failed: ${walletCreditError.message}`);
 
-    const ledgerPlan = planSettlementLedgerPosting({
-        store_id: tenant.siteId,
-        settlement_reference: statement.statement_number,
-        idempotency_key: body.idempotency_key,
-        rail: 'pa_split',
-        provider: 'razorpay_route',
-        provider_mode: mode,
-        currency: 'INR',
-        gross_amount_minor: grossAmountMinor,
-        platform_fee_minor: platformFeeMinor,
-        gst_minor: taxMinor,
-        net_amount_minor: netAmountMinor,
-        reserve_minor: 0,
-        metadata: { source_order_ids: sourceOrderIds },
+    let canonicalLedgerTransactionId: string | null = null;
+    const feeAssessmentLines = planPayoutFeeAssessmentLedger({
+        statementNumber: statement.statement_number,
+        platformFeeMinor,
+        taxMinor,
     });
-    const canonicalLedgerTransactionId = await postCanonicalPayoutLedger(db, {
-        siteId: tenant.siteId,
-        sourceType: 'settlement',
-        sourceId: statement.id,
-        idempotencyKey: `payout-statement:${statement.id}`,
-        lines: ledgerPlan.lines,
-        metadata: { compatibility_table: 'payout_statements', statement_number: statement.statement_number },
-    });
-    await db
-        .from('payout_statements')
-        .update({ canonical_ledger_transaction_id: canonicalLedgerTransactionId, updated_by: tenant.userId })
-        .eq('id', statement.id)
-        .eq('site_id', tenant.siteId);
-    if (walletCredit?.id) {
+    if (feeAssessmentLines.length > 0) {
+        canonicalLedgerTransactionId = await postCanonicalPayoutLedger(db, {
+            siteId: tenant.siteId,
+            sourceType: 'settlement',
+            sourceId: statement.id,
+            idempotencyKey: `payout-fee-assessment:${statement.id}`,
+            lines: feeAssessmentLines,
+            metadata: {
+                compatibility_table: 'payout_statements',
+                statement_number: statement.statement_number,
+                ledger_role: 'fee_assessment',
+            },
+        });
         await db
-            .from('wallet_ledger_entries')
+            .from('payout_statements')
             .update({ canonical_ledger_transaction_id: canonicalLedgerTransactionId, updated_by: tenant.userId })
-            .eq('id', walletCredit.id)
+            .eq('id', statement.id)
             .eq('site_id', tenant.siteId);
     }
 
@@ -495,12 +540,11 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
         return c.json(stepUpErrorBody(stepUp), 428);
     }
 
-    const processingAt = new Date().toISOString();
-    await db
-        .from('payout_statements')
-        .update({ status: 'processing', processing_at: processingAt, updated_by: tenant.userId, updated_at: processingAt })
-        .eq('id', statement.id)
-        .eq('site_id', tenant.siteId);
+    if (!payoutProviderConfigured(c.env)) {
+        return c.json(payoutProviderUnavailableBody(
+            new PayoutProviderUnavailable('RazorpayX Route payout provider is gated off until PA credentials and provider client are configured'),
+        ), 503);
+    }
 
     const adapter = createPayoutTransferAdapter({
         mode: payoutMode(c.env),
@@ -511,13 +555,35 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
             accountId: c.env.RAZORPAY_ROUTE_ACCOUNT_ID,
         },
     });
+
+    const { data: claimed, error: claimError } = await db.rpc('claim_payout_statement_release', {
+        p_site_id: tenant.siteId,
+        p_statement_id: statement.id,
+        p_idempotency_key: body.idempotency_key,
+        p_actor_id: tenant.userId,
+    });
+    if (claimError || !claimed) {
+        return c.json({
+            success: false,
+            error: {
+                code: 'PAYOUT_RELEASE_REJECTED',
+                message: claimError?.message || 'Payout release could not be claimed.',
+            },
+        }, 409);
+    }
+
+    const claimedStatement = claimed as unknown as PayoutStatementRow;
+    if (claimedStatement.status === 'released') {
+        return c.json(success(serializePayout(claimedStatement)));
+    }
+
     const transfer = await adapter.initiateTransfer({
-        statementId: statement.id,
+        statementId: claimedStatement.id,
         siteId: tenant.siteId,
-        amountMinor: statement.net_amount_minor,
-        currency: statement.currency || 'INR',
+        amountMinor: claimedStatement.net_amount_minor,
+        currency: claimedStatement.currency || 'INR',
         idempotencyKey: body.idempotency_key,
-        metadata: { statement_number: statement.statement_number },
+        metadata: { statement_number: claimedStatement.statement_number },
     });
     const now = transfer.processedAt;
     const nextStatus = transfer.status === 'released' ? 'released' : transfer.status === 'failed' ? 'failed' : 'processing';
@@ -530,11 +596,11 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
             provider_reference: transfer.providerReference,
             utr: transfer.utr,
             failure_reason: transfer.failureReason,
-            metadata: { ...(statement.metadata || {}), ...stepUp.metadata },
+            metadata: { ...(claimedStatement.metadata || {}), ...stepUp.metadata },
             updated_by: tenant.userId,
             updated_at: now,
         })
-        .eq('id', statement.id)
+        .eq('id', claimedStatement.id)
         .eq('site_id', tenant.siteId)
         .select('*')
         .single();
@@ -545,31 +611,31 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
         const releaseLedgerTransactionId = await postCanonicalPayoutLedger(db, {
             siteId: tenant.siteId,
             sourceType: 'payout',
-            sourceId: statement.id,
-            idempotencyKey: `payout-release:${statement.id}`,
+            sourceId: claimedStatement.id,
+            idempotencyKey: `payout-release:${claimedStatement.id}`,
             lines: planPayoutReleaseLedgerPosting({
-                payoutReference: statement.statement_number,
-                amountMinor: statement.net_amount_minor,
+                payoutReference: claimedStatement.statement_number,
+                amountMinor: claimedStatement.net_amount_minor,
             }),
-            metadata: { compatibility_table: 'payout_statements', statement_number: statement.statement_number },
+            metadata: { compatibility_table: 'payout_statements', statement_number: claimedStatement.statement_number },
         });
         await db
             .from('payout_statements')
             .update({ release_ledger_transaction_id: releaseLedgerTransactionId, updated_by: tenant.userId })
-            .eq('id', statement.id)
+            .eq('id', claimedStatement.id)
             .eq('site_id', tenant.siteId);
         await db.from('wallet_ledger_entries').insert({
             site_id: tenant.siteId,
-            payout_statement_id: statement.id,
+            payout_statement_id: claimedStatement.id,
             entry_type: 'payout_debit',
             direction: 'debit',
             status: 'posted',
-            currency: statement.currency || 'INR',
-            amount_minor: statement.net_amount_minor,
+            currency: claimedStatement.currency || 'INR',
+            amount_minor: claimedStatement.net_amount_minor,
             reference_type: 'payout_statement',
-            reference_id: statement.id,
-            description: `Payout ${statement.statement_number} released`,
-            idempotency_key: `payout-debit:${statement.id}`,
+            reference_id: claimedStatement.id,
+            description: `Payout ${claimedStatement.statement_number} released`,
+            idempotency_key: `payout-debit:${claimedStatement.id}`,
             canonical_ledger_transaction_id: releaseLedgerTransactionId,
             metadata: { provider_reference: transfer.providerReference, utr: transfer.utr },
             created_by: tenant.userId,

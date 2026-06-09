@@ -325,7 +325,7 @@ router.post('/reconcile', validate('json', ReconcileCommissionSchema), async (c)
                 idempotency_key: entry.idempotency_key ? String(entry.idempotency_key) : `commission:${entry.id}`,
                 rail: 'pa_split',
                 provider: 'manual',
-                provider_mode: 'mock',
+                provider_mode: 'sandbox',
                 currency: 'INR',
                 gross_amount_minor: Number(entry.gross_amount_minor || 0),
                 platform_fee_minor: Number(entry.commission_amount_minor || 0),

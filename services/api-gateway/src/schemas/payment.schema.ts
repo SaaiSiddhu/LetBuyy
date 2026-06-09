@@ -28,6 +28,7 @@ export const PaymentVoidSchema = z.object({
 
 export const PaymentRefundSchema = z.object({
     idempotency_key: z.string().min(8).max(200),
+    provider_refund_id: z.string().min(1).max(200).optional(),
     amount_minor: z.number().int().positive().optional(),
     reason: z.string().max(500).optional(),
     metadata: PaymentSessionMetadataSchema,

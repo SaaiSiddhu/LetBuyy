@@ -6,16 +6,16 @@
 ## Run summary
 - **Mission:** `FOUNDATION_STEPUP_MISSION_V2.md` · **Integration branch:** `stepup/main`
 - **Overall status:** ◐ IN PROGRESS
-- **Current wave:** Wave 0 — Truth Harness checkpoint green; pending branch commit/merge
-- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 1 · **CLASS-B STOPs:** 0
-- **Last updated:** 2026-06-09T19:38:30Z (UTC) by Codex
+- **Current wave:** Wave 2 — Tenant Isolation
+- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 2 · **CLASS-B STOPs:** 0
+- **Last updated:** 2026-06-09T20:00:36Z (UTC) by Codex
 
 | Phase/Wave | Status | Build | Tests | Dep-graph | Branch | Migrations | SKIPs | Blockers |
 |---|---|:--:|:--:|:--:|---|:--:|:--:|:--:|
 | PHASE A — Repo Truth Audit | ✅ complete | — | — | — | `stepup/main` | 0 | 0 | 0 |
 | PHASE A.5 — Risk Matrix | ✅ complete | — | — | — | `stepup/main` | 0 | 0 | 0 |
 | Wave 0 — Truth Harness | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-0-truth-harness` | 0 | 1 | 0 |
-| Wave 1 — Money Fixes | ☐ pending | — | — | — | — | 0 | 0 | 0 |
+| Wave 1 — Money Fixes | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-1-money` | 1 | 1 | 0 |
 | Wave 2 — Tenant Isolation | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | Wave 3 — Production Safety | ☐ pending | — | — | — | — | 0 | 0 | 0 |
 | Wave 4 — Session Security | ☐ pending | — | — | — | — | 0 | 0 | 0 |
@@ -67,7 +67,7 @@ Gate: every S0 has a named mitigation; committed before Wave 0.
 Status:        complete-with-SKIPs
 Started:       2026-06-09T19:33:00Z
 Completed:     2026-06-09T19:38:30Z
-Branch:        stepup/wave-0-truth-harness (merged to stepup/main: no)
+Branch:        stepup/wave-0-truth-harness (merged to stepup/main: yes, 92d1a9fa)
 Build:         green (pnpm run build)
 Tests:         green (pnpm run test:foundation:wave0; planted fake UTR fails gate; real Postgres ledger test executes post_ledger_transaction)
 Dependency-graph: green (pnpm run validate:dependencies)
@@ -77,6 +77,23 @@ SKIPs:         SKIP-W0-PITR-TIER
 Blockers:      none
 Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
 Next wave:     Wave 1 — Money Fixes (precondition met after merge: yes)
+```
+
+### Wave 1 — Money Fixes
+```
+Status:        complete-with-SKIPs
+Started:       2026-06-09T19:40:53Z
+Completed:     2026-06-09T20:00:36Z
+Branch:        stepup/wave-1-money (merged to stepup/main: pending fast-forward)
+Build:         green (pnpm run build)
+Tests:         green (pnpm run test:foundation:wave1; validates capture/refund ledger posting contracts, wallet backfill/reconciliation, payout claim safety, and rollback on fixture)
+Dependency-graph: green (pnpm run validate:dependencies)
+Files changed: 22 Wave 1-owned files, plus dashboard/status/ledger/SKIP artifacts
+Migrations added: 160_foundation_money_ledger_authority.sql (additive expand/contract; fixture apply/down green)
+SKIPs:         SKIP-W1-PA-PAYOUT-PROVIDER
+Blockers:      none
+Reports:       impl ✅ / rollback ✅ / governance ✅ (FOUNDATION_STEPUP_LEDGER.md)
+Next wave:     Wave 2 — Tenant Isolation (precondition met: yes after fast-forward merge)
 ```
 
 ---

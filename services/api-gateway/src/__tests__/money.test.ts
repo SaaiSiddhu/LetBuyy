@@ -88,11 +88,12 @@ test('COD reconciliation migration declares tenant RLS, triggers, and wallet rem
     assert.match(codMigrationSource, /idx_cod_reconciliation_site_order/);
 });
 
-test('payout transfer adapter is sandbox-first and credential-gated for live rails', () => {
+test('payout transfer adapter is provider-gated and cannot fabricate release proof', () => {
     assert.match(adapterSource, /export function createPayoutTransferAdapter/);
-    assert.match(adapterSource, /mode === 'sandbox'/);
-    assert.match(adapterSource, /status: 'released'/);
-    assert.match(adapterSource, /live payout mode requires provider credentials/);
+    assert.match(adapterSource, /PayoutProviderUnavailable/);
+    assert.match(adapterSource, /provider client is not configured/);
+    assert.doesNotMatch(adapterSource, /status:\s*'released'/);
+    assert.doesNotMatch(adapterSource, /UTR\$\{/);
 });
 
 test('executable foundation ledger migration is append-only, balanced, tenant-GUC scoped, and settlement-owned', () => {

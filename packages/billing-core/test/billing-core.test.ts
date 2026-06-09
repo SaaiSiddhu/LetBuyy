@@ -155,7 +155,7 @@ test('subscription verification requires provider proof for order or subscriptio
   assert.throws(() => razorpayBillingSignaturePayload({ paymentId: CHARGE_ID }), /order id or subscription id/);
 });
 
-test('settlement ledger plan balances PA split and explains breaks through reserve', () => {
+test('settlement ledger plan surfaces breaks without reserve auto-plugging', () => {
   const plan = planSettlementLedgerPosting({
     store_id: STORE_ID,
     settlement_reference: 'setl_001',
@@ -174,6 +174,12 @@ test('settlement ledger plan balances PA split and explains breaks through reser
 
   assert.equal(plan.source_type, 'settlement');
   assert.equal(plan.recon_break_minor, 46);
+  assert.equal(plan.balanced, false);
+  assert.deepEqual(plan.reconciliation_alert, {
+    status: 'open',
+    amount_minor: 46,
+    message: 'Settlement setl_001 has an unposted reconciliation break; no reserve auto-plug was created.',
+  });
   assert.deepEqual(
     plan.lines.map((line) => [line.account_code, line.side, line.amount_minor]),
     [
@@ -181,7 +187,6 @@ test('settlement ledger plan balances PA split and explains breaks through reser
       ['merchant_payable', 'credit', 9_600],
       ['platform_revenue', 'credit', 300],
       ['gst_payable', 'credit', 54],
-      ['reserve', 'credit', 46],
     ],
   );
 });
@@ -204,6 +209,8 @@ test('settlement ledger plan models COD remittance and payout release', () => {
 
   assert.equal(cod.source_type, 'cod_remittance');
   assert.equal(cod.recon_break_minor, 0);
+  assert.equal(cod.balanced, true);
+  assert.equal(cod.reconciliation_alert.status, 'none');
   assert.equal(cod.lines[0]?.account_code, 'cod_receivable');
 
   assert.deepEqual(

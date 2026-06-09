@@ -232,41 +232,46 @@ router.post('/ingest', validate('json', SettlementIngestSchema), async (c) => {
 
     if (insertError || !settlement) throw new Error(`Settlement create failed: ${insertError?.message || 'unknown error'}`);
     const settlementRow = settlement as unknown as SettlementRow;
-    const ledgerTransactionId = await postSettlementLedgerTransaction(db, {
-        siteId: tenant.siteId,
-        sourceType: plan.source_type,
-        sourceId: settlementRow.id,
-        idempotencyKey: `settlement:${body.idempotency_key}`,
-        lines: plan.lines,
-        metadata: {
-            provider: body.provider,
-            provider_mode: body.provider_mode,
-            rail: body.rail,
-            settlement_reference: body.settlement_reference,
-            no_custody: true,
-        },
-        requestId: c.req.header('X-Request-ID') || null,
-    });
+    let ledgerTransactionId: string | null = null;
+    let updatedSettlement: SettlementRow = settlementRow;
+    if (plan.recon_break_minor === 0 && plan.balanced) {
+        ledgerTransactionId = await postSettlementLedgerTransaction(db, {
+            siteId: tenant.siteId,
+            sourceType: plan.source_type,
+            sourceId: settlementRow.id,
+            idempotencyKey: `settlement:${body.idempotency_key}`,
+            lines: plan.lines,
+            metadata: {
+                provider: body.provider,
+                provider_mode: body.provider_mode,
+                rail: body.rail,
+                settlement_reference: body.settlement_reference,
+                no_custody: true,
+            },
+            requestId: c.req.header('X-Request-ID') || null,
+        });
 
-    const updated = await db
-        .from('settlements')
-        .update({ ledger_transaction_id: ledgerTransactionId, updated_by: tenant.userId })
-        .eq('id', settlementRow.id)
-        .eq('site_id', tenant.siteId)
-        .select('*')
-        .single();
-    if (updated.error || !updated.data) throw new Error(`Settlement ledger link failed: ${updated.error?.message || 'unknown error'}`);
+        const updated = await db
+            .from('settlements')
+            .update({ ledger_transaction_id: ledgerTransactionId, updated_by: tenant.userId })
+            .eq('id', settlementRow.id)
+            .eq('site_id', tenant.siteId)
+            .select('*')
+            .single();
+        if (updated.error || !updated.data) throw new Error(`Settlement ledger link failed: ${updated.error?.message || 'unknown error'}`);
+        updatedSettlement = updated.data as unknown as SettlementRow;
+    }
 
     if (plan.recon_break_minor !== 0) {
         const { error: breakError } = await db.from('recon_breaks').insert({
             site_id: tenant.siteId,
             settlement_id: settlementRow.id,
             break_type: 'amount_mismatch',
-            status: 'explained',
+            status: 'open',
             currency: 'INR',
             amount_minor: Math.abs(plan.recon_break_minor),
             suspense_account_code: 'reserve',
-            explanation: 'Explained through reserve suspense account in the canonical settlement ledger posting.',
+            explanation: 'Canonical settlement ledger posting skipped until the provider mismatch is reconciled.',
             metadata: { recon_break_minor: plan.recon_break_minor },
             created_by: tenant.userId,
             updated_by: tenant.userId,
@@ -275,7 +280,7 @@ router.post('/ingest', validate('json', SettlementIngestSchema), async (c) => {
     }
 
     let payout: JsonRecord | null = null;
-    if (plan.net_amount_minor > 0 && body.rail === 'pa_split') {
+    if (plan.recon_break_minor === 0 && plan.net_amount_minor > 0 && body.rail === 'pa_split') {
         const { data: payoutRow, error: payoutError } = await db
             .from('payouts')
             .insert({
@@ -350,7 +355,7 @@ router.post('/ingest', validate('json', SettlementIngestSchema), async (c) => {
     }
 
     return c.json(success({
-        settlement: serializeSettlement(updated.data as unknown as SettlementRow),
+        settlement: serializeSettlement(updatedSettlement),
         ledger_transaction_id: ledgerTransactionId,
         payout,
         recon_break_minor: plan.recon_break_minor,

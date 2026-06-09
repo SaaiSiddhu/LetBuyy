@@ -126,7 +126,7 @@ export const SettlementIngestSchema = z.object({
   idempotency_key: z.string().trim().min(8).max(200),
   rail: SettlementRailSchema.default('pa_split'),
   provider: SettlementProviderSchema.default('razorpay_route'),
-  provider_mode: SettlementProviderModeSchema.default('mock'),
+  provider_mode: SettlementProviderModeSchema.default('sandbox'),
   currency: z.enum(['INR']).default('INR'),
   gross_amount_minor: z.number().int().nonnegative(),
   platform_fee_minor: z.number().int().nonnegative().default(0),
@@ -316,6 +316,12 @@ export interface SettlementLedgerPlan {
   net_amount_minor: number;
   reserve_minor: number;
   recon_break_minor: number;
+  balanced: boolean;
+  reconciliation_alert: {
+    status: 'none' | 'open';
+    amount_minor: number;
+    message: string | null;
+  };
   lines: SettlementLedgerLine[];
 }
 
@@ -598,29 +604,14 @@ export function planSettlementLedgerPosting(input: SettlementIngestInput): Settl
       memo: `Reserve hold settlement ${input.settlement_reference}`,
     });
   }
-  if (reconBreakMinor > 0) {
-    lines.push({
-      account_code: 'reserve',
-      side: 'credit',
-      amount_minor: reconBreakMinor,
-      memo: `Explained settlement suspense ${input.settlement_reference}`,
-    });
-  } else if (reconBreakMinor < 0) {
-    lines.push({
-      account_code: 'reserve',
-      side: 'debit',
-      amount_minor: Math.abs(reconBreakMinor),
-      memo: `Explained settlement over-credit ${input.settlement_reference}`,
-    });
-  }
-
   const debitTotal = lines
     .filter((line) => line.side === 'debit')
     .reduce((sum, line) => sum + line.amount_minor, 0);
   const creditTotal = lines
     .filter((line) => line.side === 'credit')
     .reduce((sum, line) => sum + line.amount_minor, 0);
-  if (lines.length < 2 || debitTotal !== creditTotal) {
+  const balanced = debitTotal === creditTotal;
+  if (lines.length < 2 || (reconBreakMinor === 0 && !balanced)) {
     throw new Error(`Settlement ledger posting must balance: debit=${debitTotal} credit=${creditTotal}`);
   }
 
@@ -633,6 +624,14 @@ export function planSettlementLedgerPosting(input: SettlementIngestInput): Settl
     net_amount_minor: netAmountMinor,
     reserve_minor: reserveMinor,
     recon_break_minor: reconBreakMinor,
+    balanced,
+    reconciliation_alert: reconBreakMinor === 0
+      ? { status: 'none', amount_minor: 0, message: null }
+      : {
+        status: 'open',
+        amount_minor: Math.abs(reconBreakMinor),
+        message: `Settlement ${input.settlement_reference} has an unposted reconciliation break; no reserve auto-plug was created.`,
+      },
     lines,
   };
 }
