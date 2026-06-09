@@ -61,11 +61,11 @@
         "certify:production:provider": "node infrastructure/scripts/operations/run-provider-production-certification.mjs --environment=production --mode=auto",
         "certify:production:plan-report": "node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan",
         "test": "node --test --test-concurrency=1 tests/*/*.test.mjs && pnpm run test:contracts",
-        "test:foundation:wave0": "node --test tests/governance/foundation-wave0.test.mjs && node scripts/foundation/ephemeral-postgres.mjs start && node --test tests/executable/money-ledger-postgres.test.mjs",
-    "test:foundation:wave1": "tsx --test packages/payments/test/payments.test.ts packages/billing-core/test/billing-core.test.ts services/api-gateway/src/__tests__/money.test.ts && node scripts/foundation/ephemeral-postgres.mjs start && node --test tests/executable/foundation-wave1-money-postgres.test.mjs",
+        "test:foundation:wave0": "node --test tests/governance/foundation-wave0.test.mjs && node scripts/governance/foundation-ephemeral-postgres.mjs start && node --test tests/executable/money-ledger-postgres.test.mjs",
+    "test:foundation:wave1": "tsx --test packages/payments/test/payments.test.ts packages/billing-core/test/billing-core.test.ts services/api-gateway/src/__tests__/money.test.ts && node scripts/governance/foundation-ephemeral-postgres.mjs start && node --test tests/executable/foundation-wave1-money-postgres.test.mjs",
     "test:foundation:wave2": "tsx --test tests/governance/foundation-wave2-tenant.test.ts && pnpm run validate:tenant-isolation",
     "test:foundation:wave3": "tsx --test tests/governance/foundation-wave3-production-safety.test.ts && pnpm run validate:production-safety",
-    "test:foundation:wave4": "node --test tests/auth/session-verifier.test.mjs && tsx --test tests/governance/foundation-wave4-session-security.test.ts && node scripts/foundation/ephemeral-postgres.mjs start && node --test tests/executable/foundation-wave4-session-postgres.test.mjs && pnpm run validate:session-security",
+    "test:foundation:wave4": "node --test tests/auth/session-verifier.test.mjs && tsx --test tests/governance/foundation-wave4-session-security.test.ts && node scripts/governance/foundation-ephemeral-postgres.mjs start && node --test tests/executable/foundation-wave4-session-postgres.test.mjs && pnpm run validate:session-security",
     "test:foundation:wave5": "node --test tests/governance/foundation-wave5-design-governance.test.mjs && pnpm run validate:design-system && pnpm run validate:mobile-tokens",
     "test:foundation:wave6": "pnpm --filter @letbuyy/theme-engine run test && pnpm run validate:theme-governance",
     "test:foundation:wave7": "pnpm --filter @letbuyy/mobile-bff run test && tsx --test services/api-gateway/src/__tests__/checkout.test.ts services/api-gateway/src/__tests__/orders-v1.test.ts services/api-gateway/src/__tests__/whatsapp.test.ts && cd apps/mobile/merchant-app && flutter test test/mobile_services_test.dart --plain-name \"verifies Turnstile with the mobile BFF before password login\" && cd ../../.. && pnpm run validate:beta-readiness",
@@ -80,9 +80,9 @@
         "chaos:execute": "node chaos/run-chaos-evidence.mjs --mode=execute",
         "survivability:plan": "node infrastructure/scripts/operations/run-survivability-suite.mjs --environment=production --mode=plan",
         "typecheck": "turbo typecheck",
-        "foundation:pg:start": "node scripts/foundation/ephemeral-postgres.mjs start",
-        "foundation:pg:stop": "node scripts/foundation/ephemeral-postgres.mjs stop",
-        "foundation:restore-drill:plan": "node scripts/foundation/restore-drill.mjs --plan"
+        "foundation:pg:start": "node scripts/governance/foundation-ephemeral-postgres.mjs start",
+        "foundation:pg:stop": "node scripts/governance/foundation-ephemeral-postgres.mjs stop",
+        "foundation:restore-drill:plan": "node scripts/governance/foundation-restore-drill.mjs --plan"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "4.20260525.1",

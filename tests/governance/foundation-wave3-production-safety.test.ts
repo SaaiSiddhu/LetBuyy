@@ -11,7 +11,7 @@ import {
 } from '../../services/api-gateway/src/lib/registrar/index.ts';
 import {
   evaluateProductionSafetyPreflight,
-} from '../../scripts/foundation/production-safety-preflight.mjs';
+} from '../../scripts/governance/foundation-production-safety-preflight.mjs';
 
 test('production rate limiting fails closed when no backend is ready', async () => {
   const env = { ENVIRONMENT: 'production' };

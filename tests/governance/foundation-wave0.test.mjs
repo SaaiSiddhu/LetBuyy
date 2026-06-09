@@ -55,9 +55,9 @@ test('Wave 0 backup policy and restore drill are staged as build-and-prove only'
   const policy = JSON.parse(readFileSync('config/runtime/database-recovery-policy.json', 'utf8'));
   assert.equal(policy.mode, 'build-and-prove-not-live-action');
   assert.equal(policy.pointInTimeRecovery.skipId, 'SKIP-W0-PITR-TIER');
-  assert.equal(policy.restoreDrill.script, 'scripts/foundation/restore-drill.mjs');
+  assert.equal(policy.restoreDrill.script, 'scripts/governance/foundation-restore-drill.mjs');
 
-  const plan = runNode(['scripts/foundation/restore-drill.mjs', '--plan']);
+  const plan = runNode(['scripts/governance/foundation-restore-drill.mjs', '--plan']);
   assert.equal(plan.status, 0, plan.stderr || plan.stdout);
   assert.match(plan.stdout, /no production\/shared DB action/i);
 });

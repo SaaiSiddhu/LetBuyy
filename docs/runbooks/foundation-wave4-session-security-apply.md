@@ -4,7 +4,7 @@ Status: `SKIP-DEPLOY`. Codex must not execute this against staging or production
 
 ## Preconditions
 
-- Run `node scripts/foundation/production-safety-preflight.mjs` in the approved operator shell for the target shared environment.
+- Run `node scripts/governance/foundation-production-safety-preflight.mjs` in the approved operator shell for the target shared environment.
 - Confirm `INTERNAL_API_SECRET`, `LETBUYY_INTERNAL_API_SECRET`, `TOTP_ENCRYPTION_KEY`, and `INTERNAL_GATEWAY_IP_ALLOWLIST` are configured in the provider secret store.
 - Confirm `INTERNAL_API_SECRET_PREVIOUS` and `LETBUYY_INTERNAL_API_SECRET_PREVIOUS` are empty before the first rotation window, or set only to the immediately previous values during a bounded rotation.
 - Confirm the session migration has been applied only through the governed migration workflow after fixture apply/down is green.

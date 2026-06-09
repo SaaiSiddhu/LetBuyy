@@ -18,7 +18,7 @@
     ]
   },
   "restoreDrill": {
-    "script": "scripts/foundation/restore-drill.mjs",
+    "script": "scripts/governance/foundation-restore-drill.mjs",
     "codexDefaultMode": "plan",
     "executeScope": "local Postgres URLs only",
     "sharedEnvironmentAction": "SKIP-DEPLOY human runbook"

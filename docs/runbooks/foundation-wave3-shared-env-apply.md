@@ -4,7 +4,7 @@ Status: `SKIP-DEPLOY`. Codex must not execute this against staging or production
 
 ## Preconditions
 
-- Run `node scripts/foundation/production-safety-preflight.mjs` in the approved operator shell for the target shared environment.
+- Run `node scripts/governance/foundation-production-safety-preflight.mjs` in the approved operator shell for the target shared environment.
 - Confirm `RATE_LIMIT_BACKEND_READY=true`, `RUNTIME_TELEMETRY_READY=true`, and `MONEY_LEDGER_RECONCILIATION_ALERT_READY=true`.
 - Confirm every required secret is provisioned in the provider secret store and no required value is a `SKIP_NEEDS_HUMAN_*` sentinel.
 

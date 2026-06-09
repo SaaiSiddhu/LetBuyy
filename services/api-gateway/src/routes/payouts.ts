@@ -567,7 +567,7 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
             success: false,
             error: {
                 code: 'PAYOUT_RELEASE_REJECTED',
-                message: claimError?.message || 'Payout release could not be claimed.',
+                message: 'Payout release could not be claimed.',
             },
         }, 409);
     }

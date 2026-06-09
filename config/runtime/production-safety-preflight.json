@@ -7,7 +7,7 @@
     {
       "id": "secret-sentinels",
       "rule": "required shared-env secrets must not be empty or start with SKIP_NEEDS_HUMAN_",
-      "enforcedBy": "scripts/foundation/production-safety-preflight.mjs"
+      "enforcedBy": "scripts/governance/foundation-production-safety-preflight.mjs"
     },
     {
       "id": "rate-limit-fail-closed",
@@ -27,7 +27,7 @@
     {
       "id": "session-security-secrets-live",
       "rule": "dedicated internal and TOTP secrets plus internal gateway allowlist must be configured before shared-env Wave 4 cutover",
-      "enforcedBy": "scripts/foundation/production-safety-preflight.mjs"
+      "enforcedBy": "scripts/governance/foundation-production-safety-preflight.mjs"
     }
   ],
   "classASkips": [

@@ -29,7 +29,7 @@ reporter.assert(
   'Wave 3 anti-fabrication allowlist entries must be burned down',
 );
 
-const preflightSource = readFile('scripts/foundation/production-safety-preflight.mjs');
+const preflightSource = readFile('scripts/governance/foundation-production-safety-preflight.mjs');
 for (const fragment of [
   "startsWith('SKIP_NEEDS_HUMAN_')",
   'RATE_LIMIT_BACKEND_READY',

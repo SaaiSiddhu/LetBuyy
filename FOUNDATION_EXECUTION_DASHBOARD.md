@@ -5,10 +5,10 @@
 
 ## Run summary
 - **Mission:** `FOUNDATION_STEPUP_MISSION_V2.md` · **Integration branch:** `stepup/main`
-- **Overall status:** ◐ IN PROGRESS
+- **Overall status:** ⛔ BLOCKED
 - **Current wave:** WAVE FINAL — Final Audit
-- **Open blockers:** 0 · **Open CLASS-A SKIPs:** 10 · **CLASS-B STOPs:** 0
-- **Last updated:** 2026-06-09T21:45:14Z (UTC) by Codex
+- **Open blockers:** 1 · **Open CLASS-A SKIPs:** 10 · **CLASS-B STOPs:** 1
+- **Last updated:** 2026-06-09T22:02:26Z (UTC) by Codex
 
 | Phase/Wave | Status | Build | Tests | Dep-graph | Branch | Migrations | SKIPs | Blockers |
 |---|---|:--:|:--:|:--:|---|:--:|:--:|:--:|
@@ -22,7 +22,7 @@
 | Wave 5 — Design Governance | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-5-design-governance` | 0 | 1 | 0 |
 | Wave 6 — Theme Governance | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-6-theme-governance` | 0 | 1 | 0 |
 | Wave 7 — Beta Readiness | ⚠ complete-with-SKIPs | ✅ | ✅ | ✅ | `stepup/wave-7-beta-readiness` | 0 | 2 | 0 |
-| WAVE FINAL — Final Audit | ☐ pending | — | — | — | — | 0 | 0 | 0 |
+| WAVE FINAL — Final Audit | ⛔ blocked | ✅ | ✅ | ✅ | `stepup/main` | 0 | 0 | 1 |
 
 Status legend: ☐ pending · ◐ in-progress · ✅ complete · ⛔ blocked (CLASS-B STOP) · ⚠ complete-with-SKIPs.
 
@@ -200,6 +200,23 @@ Next wave:     WAVE FINAL — Final Audit (precondition met: yes)
 
 ---
 
+### WAVE FINAL — Final Audit
+```
+Status:        blocked
+Started:       2026-06-09T21:45:14Z
+Completed:     —
+Branch:        stepup/main
+Build:         green (pnpm run build; 71/71 tasks)
+Tests:         green for final automated gates (pnpm run validate:governance:gate; focused payment/tooling tests; prior Wave 7 Flutter build green)
+Dependency-graph: green (pnpm run validate:dependencies)
+Files changed: final-gate fixes in payment route support, payout public error sanitization, canonical Step-Up script locations, and final audit/status docs
+Migrations added: none
+SKIPs:         none added
+Blockers:      BLOCK-FINAL-AUDIT-DRIFT
+Reports:       final audit ✅ written with NOT COMPLETE verdict
+Next wave:     none; resume requires resolving the final-audit blocker or human acceptance-contract update
+```
+
 ## Blocker log (append-only)
 ```
 ## BLOCK-<id> · Wave <n> · <date>
@@ -208,6 +225,12 @@ WHY IT'S CLASS-B: <correctness/safety on a P0 path>
 NEEDS: <exact human decision/input to resume>
 STATE: open | resolved (<date>, by <who>)
 ```
+
+## BLOCK-FINAL-AUDIT-DRIFT · Wave FINAL · 2026-06-09
+WHAT: WAVE FINAL could not prove zero-importer quarantine/build-closure and still found raw `USING(true)` SQL residue.
+WHY IT'S CLASS-B: V2 §8 requires every quarantine to have HEAD 0-importer proof, a shrunk build graph, and `FOUNDATION_FINAL_AUDIT.md` all-green before mission completion. Continuing would fabricate final acceptance.
+NEEDS: Human architecture decision plus implementation plan to either remove active app/service/package references to `app-engine`, `extension-host`, `distributed-runtime`, `orchestration`, `projection-runtime`, and `application-services`, or update the frozen acceptance contract if these packages are no longer quarantine targets. Then re-run final dependency/import/build/tenant/ledger/frozen audits.
+STATE: open
 
 ## SKIP log pointer
 Full SKIP entries live in `FOUNDATION_STEPUP_SKIPPED.md`; this dashboard only counts them per wave.

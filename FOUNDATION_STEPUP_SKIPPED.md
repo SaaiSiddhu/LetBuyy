@@ -6,7 +6,7 @@ BLOCKED BY: Human-owned Supabase project tier/credential decision and provider c
 
 GATED AT: `config/runtime/database-recovery-policy.json` keeps `pointInTimeRecovery.defaultEnabledByCodex` false and marks shared restore execution as human `SKIP-DEPLOY`.
 
-TO RESUME: Enable provider PITR on the intended non-production/shared project, record RPO/RTO evidence, then run `scripts/foundation/restore-drill.mjs --execute` against a non-production local/clone target and attach the restore report.
+TO RESUME: Enable provider PITR on the intended non-production/shared project, record RPO/RTO evidence, then run `scripts/governance/foundation-restore-drill.mjs --execute` against a non-production local/clone target and attach the restore report.
 
 ## SKIP-W1-PA-PAYOUT-PROVIDER · Wave 1 · RazorpayX Route payout execution · CLASS-A
 
@@ -36,7 +36,7 @@ TO RESUME: Verify zone ownership and target records, run the human DNS/custom-ho
 
 BLOCKED BY: Human-owned Vercel/Cloudflare/Supabase secret stores, live session invalidation policy, and operator approval for shared-env rotation.
 
-GATED AT: code now supports dedicated `LETBUYY_INTERNAL_API_SECRET`, previous-secret dual accept, dedicated `TOTP_ENCRYPTION_KEY`, JTI replay protection, session rotation/revocation, and `scripts/foundation/production-safety-preflight.mjs` requires Wave 4 shared-env values before any shared apply. Codex did not mutate provider secrets or invalidate live sessions.
+GATED AT: code now supports dedicated `LETBUYY_INTERNAL_API_SECRET`, previous-secret dual accept, dedicated `TOTP_ENCRYPTION_KEY`, JTI replay protection, session rotation/revocation, and `scripts/governance/foundation-production-safety-preflight.mjs` requires Wave 4 shared-env values before any shared apply. Codex did not mutate provider secrets or invalidate live sessions.
 
 TO RESUME: Use `docs/runbooks/foundation-wave4-session-security-apply.md` in the approved operator shell, set new and previous secrets in the provider secret stores, verify dual-accept and session rotation in non-production, then remove previous secrets after the agreed TTL.
 

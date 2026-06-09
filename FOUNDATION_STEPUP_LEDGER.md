@@ -6,8 +6,8 @@ CHANGES:
 - `scripts/validators/foundation-antifabrication-gate.mjs` + `config/governance/anti-fabrication-allowlist.json` → added planted-failure-capable anti-fabrication gate with Wave-owned temporary entries for existing payout/payment/identity/domain debt.
 - `scripts/validators/foundation-stepup-report-validator.mjs` → added advisory report lane output.
 - `scripts/validators/frozen-path-override-gate.mjs`, `scripts/git-hooks/pre-commit`, `scripts/git-hooks/commit-msg` → added locked-path staging and commit-message trailer protection.
-- `scripts/foundation/ephemeral-postgres.mjs` → added local Docker Postgres fixture starter for executable acceptance tests.
-- `scripts/foundation/restore-drill.mjs` + `config/runtime/database-recovery-policy.json` → staged local restore-drill plan and documented no-production-action recovery policy.
+- `scripts/governance/foundation-ephemeral-postgres.mjs` → added local Docker Postgres fixture starter for executable acceptance tests.
+- `scripts/governance/foundation-restore-drill.mjs` + `config/runtime/database-recovery-policy.json` → staged local restore-drill plan and documented no-production-action recovery policy.
 - `docs/governance/flag-truth.md` → documented flag truth rules: disabled flags do not return mock success, external integrations default OFF, production-like runtime checks fail closed.
 - `tests/governance/foundation-wave0.test.mjs` → added Wave 0 behavioral tests for planted fake UTR failure, lane split, backup/restore staging, and frozen-path gate wiring.
 - `package.json` → added `validate:governance:gate`, `validate:governance:report`, `validate:anti-fabrication`, `test:foundation:wave0`, fixture, and restore-drill scripts.
@@ -16,7 +16,7 @@ TESTS:
 
 - `pnpm run validate:anti-fabrication` → PASS; scans active source and tracks five temporary Wave-owned fabrication-debt entries.
 - `node --test tests/governance/foundation-wave0.test.mjs` → PASS; proves planted fake UTR fails, lanes are split, restore drill is staged, and frozen hook wiring exists.
-- `node scripts/foundation/ephemeral-postgres.mjs start` → PASS with Docker access; fixture `letbuyy-executable-pg` / `letbuyy_executable` started.
+- `node scripts/governance/foundation-ephemeral-postgres.mjs start` → PASS with Docker access; fixture `letbuyy-executable-pg` / `letbuyy_executable` started.
 - `node --test tests/executable/money-ledger-postgres.test.mjs` → PASS; executes `public.post_ledger_transaction`, verifies append-only ledger behavior, idempotency, tenant GUC scoping, balance breaks, and rollback.
 - `pnpm run test:foundation:wave0` → PASS with Docker access; packaged Wave 0 acceptance path starts fixture and runs the real ledger proof.
 - `pnpm run validate:dependencies` → PASS; dependency manifest, undeclared import, package export, dependency graph, and circular import gates green.
@@ -137,7 +137,7 @@ CHANGES:
 
 - `services/api-gateway/src/middleware/rateLimit.ts` → production rate-limit and query-cost checks now fail closed when Redis/KV backends are unavailable instead of permitting traffic; unavailable results return `RATE_LIMIT_UNAVAILABLE` through the existing middleware path.
 - `services/api-gateway/src/lib/registrar/index.ts` → mock registrar remains disabled in production and no longer emits `raw: { mock: true }`; local simulation payloads are explicit provider simulations.
-- `scripts/foundation/production-safety-preflight.mjs`, `config/runtime/production-safety-preflight.json`, and `docs/runbooks/foundation-wave3-shared-env-apply.md` → added shared-env preflight and `SKIP-DEPLOY` runbook requiring real secrets, rate-limit backend evidence, runtime telemetry evidence, and money-ledger reconciliation alert evidence before any human shared-env apply.
+- `scripts/governance/foundation-production-safety-preflight.mjs`, `config/runtime/production-safety-preflight.json`, and `docs/runbooks/foundation-wave3-shared-env-apply.md` → added shared-env preflight and `SKIP-DEPLOY` runbook requiring real secrets, rate-limit backend evidence, runtime telemetry evidence, and money-ledger reconciliation alert evidence before any human shared-env apply.
 - `scripts/validators/production-safety-validator.mjs`, `scripts/validate-governance.mjs`, `package.json`, and `tests/governance/foundation-wave3-production-safety.test.ts` → added Wave 3 validator/test wiring to enforce fail-closed rate limiting, mock registrar hygiene, shared-env evidence flags, skip records, and domain defaults.
 - `apps/marketing-site/src/lib/public-urls.ts`, `apps/theme-marketplace/src/lib/public-urls.ts`, `apps/app-marketplace/src/lib/site-url.ts`, and `apps/developer-portal/src/lib/site-url.ts` → public platform default root domain is now `letbuyy.store`; both `.store` and `.com` remain recognized for request-context origin detection.
 - `config/governance/anti-fabrication-allowlist.json` and `FOUNDATION_STEPUP_SKIPPED.md` → removed Wave 3 mock-registrar fabrication debt from the allowlist and logged the Class-A observability/DNS skips.
@@ -354,3 +354,50 @@ SKIPs:
 
 - `SKIP-W7-MOBILE-TURNSTILE-SECRET`
 - `SKIP-W7-WHATSAPP-LIVE-CREDS`
+
+# WAVE FINAL — Final Audit — 2026-06-09
+
+CHANGES:
+
+- `services/api-gateway/src/routes/payments.ts` and `services/api-gateway/src/lib/payment-route-support.ts` → extracted payment helper logic from the route so the route line-count gate stays below 1500 lines without changing payment behavior.
+- `services/api-gateway/src/__tests__/payments.test.ts` → updated source-assertion tests to inspect the extracted payment helper for replay guards, amount mismatch payloads, and live PSP human-required markers.
+- `services/api-gateway/src/routes/payouts.ts` → removed a raw `claimError.message` public response for `PAYOUT_RELEASE_REJECTED`; the route now returns a stable public rejection message.
+- `scripts/governance/foundation-ephemeral-postgres.mjs`, `scripts/governance/foundation-production-safety-preflight.mjs`, and `scripts/governance/foundation-restore-drill.mjs` → moved Step-Up helper scripts from the non-canonical `scripts/foundation/` directory into the canonical tooling tree and updated package/test/config references.
+- `docs/governance/foundation-stepup-archive/` → archived root CODEX mission prompt residue so source-ledger residue governance remains green.
+- `FOUNDATION_FINAL_AUDIT.md`, `FOUNDATION_EXECUTION_DASHBOARD.md`, and `FOUNDATION_STEPUP_STATUS.md` → recorded `BLOCK-FINAL-AUDIT-DRIFT` and the NOT COMPLETE final verdict.
+
+TESTS:
+
+- `pnpm exec tsx --test services/api-gateway/src/__tests__/payments.test.ts` → PASS; focused payment source-safety test green after helper extraction.
+- `pnpm --filter @letbuyy/api-gateway run typecheck` → PASS after payment helper extraction and payout response sanitization.
+- `node scripts/validators/route-line-count-validator.mjs` → PASS; 84 API gateway route files checked at <=1500 lines.
+- `node scripts/validators/raw-error-message-validator.mjs` → PASS; 30 raw error-message response files checked.
+- `node scripts/validators/tooling-governance-validator.mjs` → PASS after canonical script move.
+- `node scripts/governance/identity-security-gate.mjs` → PASS in the dirty workspace after moving the untracked user-owned script to a canonical path.
+- `node --test tests/governance/foundation-wave0.test.mjs` → PASS after path updates.
+- `pnpm exec tsx --test tests/governance/foundation-wave3-production-safety.test.ts` → PASS after path updates.
+- `pnpm run validate:governance:gate` → PASS; 180 validators green.
+- `pnpm run validate:dependencies` → PASS; dependency manifest, package export, dependency graph, and circular import gates green.
+- `pnpm run build` → PASS; turbo completed 71/71 tasks.
+- `node scripts/validators/generated-artifact-validator.mjs` and `node scripts/validators/stale-artifact-validator.mjs` → PASS after generated build artifacts were removed.
+
+MIGRATIONS:
+
+- None. WAVE FINAL added no database schema and performed no shared/staging/prod database action.
+
+ROLLBACK:
+
+- Revert the WAVE FINAL gate-fix commit from `stepup/main`.
+- If reverting manually, move the three `scripts/governance/foundation-*` scripts back only if tooling governance is also updated, restore `payments.ts` helper code inline, remove `payment-route-support.ts`, restore the previous payout claim error response, and restore the previous package/test/config script paths.
+- No provider, DNS, Cloudflare, Vercel, payment, or database rollback is required because WAVE FINAL made no production/shared-env action.
+
+GOVERNANCE:
+
+- Automated final gate is green: governance gate, dependency gate, build, route line-count, raw-error, tooling, generated-artifact, and stale-artifact validators all passed.
+- Final acceptance remains blocked: `FOUNDATION_FINAL_AUDIT.md` is not all-green because explicit quarantine 0-importer/build-closure proof fails for `app-engine`, `extension-host`, `distributed-runtime`, `orchestration`, `projection-runtime`, and `application-services`; `tsconfig.workspace.json` still references all six package targets.
+- Raw SQL audit also still finds legacy/service-role/public-read `USING(true)` policy residue. This was recorded as final-audit debt, not silently marked complete.
+- No CLASS-A SKIP was added in WAVE FINAL. The open issue is `BLOCK-FINAL-AUDIT-DRIFT`, a CLASS-B final acceptance blocker.
+
+SKIPs:
+
+- None added.

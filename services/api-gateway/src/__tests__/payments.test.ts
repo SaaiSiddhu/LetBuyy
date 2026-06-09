@@ -19,6 +19,7 @@ function repositorySource(path: string): string {
 test('razorpay order creation rejects stale client amounts and recalculates totals server-side', () => {
     const internalPaymentSource = source('routes/storefront/internal-payment-routes.ts');
     const paymentsSource = source('routes/payments.ts');
+    const paymentSupportSource = source('lib/payment-route-support.ts');
     const checkoutSchemaSource = repositorySource('packages/checkout-core/src/index.ts');
 
     assert.match(checkoutSchemaSource, /StorefrontRazorpayOrderSchema[\s\S]*amountMinorUnits/);
@@ -27,7 +28,7 @@ test('razorpay order creation rejects stale client amounts and recalculates tota
     assert.match(paymentsSource, /const order = await loadPayableOrder\(c,\s*body\.order_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(paymentsSource, /const amountMinorUnits = Math\.round\(order\.total \* 100\)/);
     assert.match(paymentsSource, /requestedMinorUnits !== null && requestedMinorUnits !== amountMinorUnits/);
-    assert.match(paymentsSource, /code:\s*'AMOUNT_MISMATCH'/);
+    assert.match(paymentSupportSource, /code:\s*'AMOUNT_MISMATCH'/);
 });
 
 test('razorpay order creation stores idempotency before provider calls', () => {
@@ -47,6 +48,7 @@ test('razorpay order creation stores idempotency before provider calls', () => {
 
 test('razorpay payment verification validates signatures before confirming payment', () => {
     const paymentsSource = source('routes/payments.ts');
+    const paymentSupportSource = source('lib/payment-route-support.ts');
     const hardeningMigration = repositorySource('database/supabase/migrations/107_security_rls_hardening_and_payment_uniqueness.sql');
 
     assert.match(paymentsSource, /crypto\.subtle\.importKey\(/);
@@ -55,12 +57,12 @@ test('razorpay payment verification validates signatures before confirming payme
     assert.match(paymentsSource, /crypto\.subtle\.sign\('HMAC',\s*key,\s*encoder\.encode\(payload\)\)/);
     assert.match(paymentsSource, /!timingSafeEqualHex\(expectedSig,\s*body\.razorpay_signature\)/);
     assert.match(paymentsSource, /if \(!order\.payment_id \|\| order\.payment_id !== body\.razorpay_order_id\)/);
-    assert.match(paymentsSource, /async function assertProviderPaymentNotReplayed/);
-    assert.match(paymentsSource, /\.from\('payment_transactions'\)/);
-    assert.match(paymentsSource, /\.eq\('gateway',\s*params\.provider\)/);
-    assert.match(paymentsSource, /\.eq\('provider_payment_id',\s*params\.providerPaymentId\)/);
-    assert.match(paymentsSource, /replay\.order_id && replay\.order_id !== params\.orderId/);
-    assert.match(paymentsSource, /Payment already verified for another order/);
+    assert.match(paymentSupportSource, /export async function assertProviderPaymentNotReplayed/);
+    assert.match(paymentSupportSource, /\.from\('payment_transactions'\)/);
+    assert.match(paymentSupportSource, /\.eq\('gateway',\s*params\.provider\)/);
+    assert.match(paymentSupportSource, /\.eq\('provider_payment_id',\s*params\.providerPaymentId\)/);
+    assert.match(paymentSupportSource, /replay\.order_id && replay\.order_id !== params\.orderId/);
+    assert.match(paymentSupportSource, /Payment already verified for another order/);
     assert.match(paymentsSource, /await assertProviderPaymentNotReplayed\(db,\s*\{/);
     assert.match(paymentsSource, /paymentService\.confirmPayment\(\{/);
     assert.match(hardeningMigration, /CREATE UNIQUE INDEX IF NOT EXISTS idx_payment_transactions_provider_payment_global/);
@@ -152,6 +154,7 @@ test('payment provider adapters implement the unified payments contract', () => 
 
 test('Task 004 generic payment sessions are persisted, tenant-scoped, mock-first, and live-gated', () => {
     const paymentsSource = source('routes/payments.ts');
+    const paymentSupportSource = source('lib/payment-route-support.ts');
     const paymentPackage = repositorySource('packages/payments/src/index.ts');
     const migration = repositorySource('database/supabase/migrations/142_executable_payment_sessions.sql');
     const rollback = repositorySource('database/supabase/rollback/142_executable_payment_sessions.rollback.sql');
@@ -166,7 +169,7 @@ test('Task 004 generic payment sessions are persisted, tenant-scoped, mock-first
     assert.match(paymentsSource, /router\.post\('\/:paymentId\/void'/);
     assert.match(paymentsSource, /router\.post\('\/:paymentId\/refund'/);
     assert.match(paymentsSource, /requireLivePaymentCredential/);
-    assert.match(paymentsSource, /HR-MERCHANT-PSP-LIVE/);
+    assert.match(paymentSupportSource, /HR-MERCHANT-PSP-LIVE/);
     assert.match(paymentsSource, /paymentSetupRequiredResponse/);
     assert.match(paymentsSource, /buildMockPaymentSessionPlan/);
     assert.match(paymentsSource, /new IdempotencyExecutionAdapter\(db\)/);
