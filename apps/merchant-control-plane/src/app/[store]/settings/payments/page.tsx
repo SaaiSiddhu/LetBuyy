@@ -68,7 +68,7 @@ function normalizePaymentConfig(value: unknown): PaymentConfig {
         store_id: readString(data.store_id),
         online_payment_enabled: data.online_payment_enabled === true,
         cod_enabled: data.cod_enabled === true,
-        provider_mode: normalizeProviderMode(data.provider_mode) || 'mock',
+        provider_mode: normalizeProviderMode(data.provider_mode) || 'sandbox',
         payment_settings: {
             mode: settings.mode === 'ownAccount' ? 'ownAccount' : 'shared',
             gateways: Array.isArray(settings.gateways) ? settings.gateways.filter((gateway): gateway is string => typeof gateway === 'string') : [],

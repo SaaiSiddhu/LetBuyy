@@ -74,7 +74,7 @@ export function paymentConfigProviderMode(input: {
     settings?: PaymentSettings | null;
 }): ProviderMode {
     const razorpay = input.settings?.razorpay;
-    if (input.onlinePaymentEnabled === false || !razorpay?.key_secret_ciphertext) return 'mock';
+    if (input.onlinePaymentEnabled === false || !razorpay?.key_secret_ciphertext) return 'sandbox';
     return razorpay.test_mode === false ? 'live' : 'sandbox';
 }
 
@@ -92,7 +92,7 @@ export function defaultPaymentConfig(storeId: string) {
         store_id: storeId,
         online_payment_enabled: true,
         cod_enabled: true,
-        provider_mode: 'mock' as ProviderMode,
+        provider_mode: 'sandbox' as ProviderMode,
         payment_settings: sanitizePaymentSettings(null),
         schema_ready: false,
     };
