@@ -12,7 +12,7 @@ export default function DocsPage() {
       <SectionHeading
         kicker="OAuth and webhooks"
         title="Install apps and trust lifecycle events"
-        description="These docs match the active app-store routes, app-engine scope planning, auth-core token contracts, and webhook-service HMAC dispatcher."
+        description="These docs match the active app-store routes, app-platform scope contracts, auth-core token contracts, and webhook-service HMAC dispatcher."
       />
 
       <section className="developer-grid three">

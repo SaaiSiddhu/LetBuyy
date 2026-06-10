@@ -7,7 +7,7 @@ export default function SdkPage() {
       <SectionHeading
         kicker="Theme SDK and App SDK"
         title="Quick-starts for the contracts that exist now"
-        description="Theme packages use the theme-engine JSON-contract bundle with LiquidJS rendering support. Apps use app-engine registration, app extension, app block, checkout-function, OAuth scope, webhook contracts, and the minimal createLetbuyyAppSdk wrapper in @letbuyy/api-client. CLI and full browser bridge SDKs remain planned."
+        description="Theme packages use the theme-engine JSON-contract bundle with LiquidJS rendering support. Apps use gateway app-store registration, app-platform manifest contracts, OAuth scope, webhook contracts, and the minimal createLetbuyyAppSdk wrapper in @letbuyy/api-client. CLI, browser bridge SDKs, and extension execution remain planned."
       />
 
       <section className="developer-two-column">
@@ -43,7 +43,7 @@ export default function SdkPage() {
           </article>
           <article className="developer-card">
             <h3>2. App</h3>
-            <p>Register a developer profile, validate and submit a marketplace app manifest, copy the show-once credentials, then install through app OAuth authorization code flow. Checkout Functions can advise coupons, shipping, payment method availability, and validation only.</p>
+            <p>Register a developer profile, validate and submit a marketplace app manifest, copy the show-once credentials, then install through app OAuth authorization code flow. Extension execution stays a recorded capability seam until its runtime is deliberately scoped.</p>
           </article>
           <article className="developer-card">
             <h3>3. Webhooks</h3>

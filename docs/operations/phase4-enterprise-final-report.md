@@ -1,103 +1,71 @@
-# Phase 4 Enterprise Final Report
+# Phase 4 Operations Readiness Report
 
-Generated on 2026-05-25. This report is repository evidence, not live production certification.
+Generated on 2026-05-25 and retargeted on 2026-06-11. This report is repository evidence, not live production certification.
 
 ## 1. Staging Development Lifecycle
 
-Implemented through the staging lifecycle in `config/runtime/environment-lifecycle.json`, staging templates under `config/env/`, Cloudflare/Vercel/GitHub/Supabase secret stores, and `scripts/staging/seed.mjs`.
+Staging remains the non-production integration environment. It uses isolated routes, secrets, queues, storage, telemetry configuration, feature flags, provider accounts, and certification evidence.
 
 ## 2. Retired Development Environment Lifecycle
 
-The former development environment is retired. Staging now owns integration validation with isolated secrets, DB, queues, event store, telemetry, providers, feature flags, rollback, replay, and queue gates.
+The former development environment is retired. Staging owns integration validation through `config/runtime/environment-lifecycle.json`, staging templates under `config/env/`, Cloudflare/Vercel/GitHub/Supabase secret stores, and `scripts/staging/seed.mjs`.
 
-## 3. Staging Lifecycle
+## 3. Runtime Topology
 
-Defined as a production topology mirror with isolated traffic, data, secrets, telemetry, providers, queues, replay, migration rehearsal, load, chaos, failover, rollback, and observability gates.
+The active topology is one region (`ap-south-1`) with the modular monolith and canonical satellites defined in `config/runtime/production-topology.json`. This report does not certify multi-region, event-store, replay, chaos, or failover architecture.
 
 ## 4. Feature Flag System
 
-Added shared SDK schemas/evaluator in `packages/shared-types/src/index.ts` and persistence contracts in migration `065_enterprise_sdlc_lifecycle.sql`.
+Shared SDK schemas/evaluator live in `packages/shared-types/src/index.ts`, with persistence contracts in migration `065_enterprise_sdlc_lifecycle.sql`.
 
-## 5. Canary Deployment System
+## 5. Rollout System
 
-Rollout lifecycle requires 1, 5, 25, 50, and 100 percent promotion with queue, replay, latency, CPU, DB, lag, and SLO gates.
+Rollout lifecycle keeps 1, 5, 25, 50, and 100 percent promotion with runtime compatibility, schema compatibility, shadow consistency, and rollback switchback checks. Region-scoped rollout authority is not active.
 
-## 6. Blue/Green Deployment System
+## 6. Sandbox Provider System
 
-Rollout lifecycle now requires dual-color compatibility, health-gated switch, shadow consistency, and rollback switchback evidence.
+Sandbox provider contracts define isolated non-production provider validation. Live provider execution remains credential-gated and must not be claimed from repository-only evidence.
 
-## 7. Shadow Traffic System
+## 7. Observability Operationalization
 
-Shadow traffic governance and `shadow_traffic_comparison_runs` persistence define side-effect-free mirroring and consistency scoring.
+OpenTelemetry, Prometheus, Grafana, Loki, and Tempo configuration exists for plan-mode validation. End-to-end alerting remains a recorded capability backlog item until emitters, SDKs, and delivery routes are built.
 
-## 8. Sandbox Provider System
+## 8. DB Safety Engineering
 
-Local WireMock/Mailpit/ElasticMQ and `sandbox_provider_contracts` define provider isolation. Live providers remain execute-mode only.
+Migration `065` is additive, RLS-enabled, uses `update_updated_at()`, and adds verification SQL for operational lifecycle tables.
 
-## 9. Observability Operationalization
+## 9. Environment Isolation
 
-Local OTel, Prometheus, Grafana, Loki, and Tempo are configured. Existing production observability scripts and dashboards remain provider-gated.
+`environment-lifecycle.json` hard-codes separate secrets, databases, queues, telemetry backends, feature flag stores, provider accounts, deployment credentials, and certification evidence for staging and production.
 
-## 10. Chaos Engineering Operationalization
+## 10. Deployment Gates
 
-Chaos governance is documented and execute-mode evidence remains tied to `chaos_experiment_runs`.
+`operational-lifecycle-validator.mjs` and `production-readiness-validator.mjs` are wired into governance. They assert plan-ready contracts and explicitly keep live certification credential-gated.
 
-## 11. DB Safety Engineering
+## 11. Incident Response Operationalization
 
-Migration `065` is additive, RLS-enabled, uses `update_updated_at()`, and adds verification SQL.
+Incident routes, runbooks, and evidence contracts remain required for execute mode. Live incident drill evidence must be recorded through the operations control plane.
 
-## 12. Environment Isolation
+## 12. Control-Plane Operationalization
 
-`environment-lifecycle.json` hard-codes separate secrets, databases, queues, telemetry, feature flags, providers, deployment credentials, and evidence.
+Operations API contracts remain the control-plane authority; rollout and feature-flag evidence tables extend that model.
 
-## 13. Deployment Gates
+## 13. Security Operationalization
 
-`operational-lifecycle-validator.mjs` is wired into governance and rollout/certification workflows.
+Provider isolation, feature flag auditing, SBOM, secret-rotation contracts, and security gates are repository-checkable. Live secret rotation remains a human/credential seam.
 
-## 14. Incident Response Operationalization
+## 14. Governance Operationalization
 
-Existing incident routes, runbooks, and certification evidence contracts remain required for execute mode.
+Governance validation includes operational lifecycle drift, staging lifecycle contracts, rollout controls, stale certification evidence, and environment isolation. Certification categories are limited to deployment, Cloudflare, Supabase, observability, incident, security, dashboards, and control-plane.
 
-## 15. Multi-Region Operationalization
+## 15. Live Provider Execution
 
-Staging and production lifecycle contracts declare India, APAC failover, US, and EU readiness. This is not live multi-region certification until execute-mode evidence exists.
+Not certified in this repository state. Execute mode remains credential-gated and must not be claimed until Cloudflare, Supabase, observability, Vercel/deployment, security, dashboard, incident, and operations evidence runs succeed.
 
-## 16. Control-Plane Operationalization
+## 16. Operational Certification
 
-Existing operations API contracts remain the control-plane authority; new rollout and feature-flag evidence tables extend that model.
+`operational-certification-policy.json` requires hard fail, 10/10 scores, required lean categories, and 24-hour evidence freshness.
 
-## 17. SRE Operationalization
+## 17. Remaining Future Work
 
-SRE certification remains evidence-backed through SLO/error-budget projections and non-expired certification reports.
-
-## 18. Load/Scaling Operationalization
-
-Load suite now supports k6, Locust, and Gatling command paths. Execute mode requires the tools and operation token.
-
-## 19. Security Operationalization
-
-Provider isolation, feature flag auditing, and certification hard-fail policy were added. Existing unresolved secret rotation work remains a blocker for live claims.
-
-## 20. Governance Operationalization
-
-Governance validation now includes operational lifecycle drift, staging lifecycle contracts, rollout controls, stale certification evidence, and environment isolation.
-
-## 21. Live Provider Execution
-
-Not certified in this repository state. Execute mode remains credential-gated and must not be claimed until Cloudflare, Supabase, observability, Vercel, load, security, and operations evidence runs succeed.
-
-## 22. Operational Certification
-
-`operational-certification-policy.json` requires hard fail, 10/10 scores, required categories, and 24-hour evidence freshness.
-
-## 23. Validator Hardening
-
-`operational-lifecycle-validator.mjs` hard-fails missing lifecycle files, stale live certification evidence, missing rollout controls, missing load tooling paths, and missing staging lifecycle contracts.
-
-## 24. Remaining Future Work
-
-Rotate historical secrets, purge secret history, run staging execute-mode rehearsal, run production execute-mode certification, record fresh evidence, and only then move certification mode to `live-certified`.
-
-## 25. Phase 5 Readiness Assessment
-
-Repository maturity is contract-ready for Phase 5 operational work. Live operational maturity remains unclaimed until real execute-mode evidence exists.
+Rotate live secrets, run staging execute-mode rehearsal, run production execute-mode certification, record fresh evidence, and only then move certification mode to `live-certified`.

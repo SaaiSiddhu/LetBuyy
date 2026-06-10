@@ -34,7 +34,7 @@ export function PortalFooter() {
   return (
     <footer className="developer-footer">
       <div className="developer-container">
-        Accurate to the tracked LetBuyy gateway, app-engine, theme-engine, auth-core, and webhook-service contracts. Planned or absent surfaces are marked as skips.
+        Accurate to the tracked LetBuyy gateway, app-platform shared contract, theme-engine, auth-core, and webhook-service contracts. Planned or absent surfaces are marked as skips.
       </div>
     </footer>
   );

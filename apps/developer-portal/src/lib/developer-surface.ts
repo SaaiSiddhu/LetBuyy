@@ -868,7 +868,7 @@ export const appStoreEndpoints: EndpointDoc[] = [
     path: "/v1/app-store/developers/apps/manifest/validate",
     auth: "merchant session",
     status: "available",
-    summary: "Validates a LetBuyy app manifest against app-engine, returning normalized extension and function registration plans without creating an app.",
+    summary: "Validates a LetBuyy app manifest against the app-platform shared contract and gateway validator, returning normalized extension and function registration plans without creating an app.",
     source: "services/api-gateway/src/routes/app-store/developer-routes.ts"
   },
   {
@@ -1992,13 +1992,13 @@ export const appBridgeCapabilities: SdkContractRow[] = [
   },
   {
     item: "toast",
-    currentContract: "Default app bridge capability listed by app-engine.",
+    currentContract: "Default app bridge capability listed by the app-platform shared contract.",
     notes: "There is no published browser app SDK package in this branch.",
     source: "packages/shared-types/src/app-platform.ts:190"
   },
   {
     item: "resize",
-    currentContract: "Default app bridge capability listed by app-engine.",
+    currentContract: "Default app bridge capability listed by the app-platform shared contract.",
     notes: "Runtime behavior for resize is not exposed as a standalone gateway route.",
     source: "packages/shared-types/src/app-platform.ts:190"
   },

@@ -13,7 +13,7 @@ Infrastructure recovery covers drift detection, rollback-safe provisioning, secr
 ## Required Drills
 
 - Queue redrive and DLQ recovery.
-- Regional failover with replay verification.
+- Cloudflare Worker rollback and provider recovery inside the one-region topology.
 - Cloudflare Worker rollback.
 - Supabase verification SQL and point-in-time recovery rehearsal.
 - Observability degradation and dashboard recovery.

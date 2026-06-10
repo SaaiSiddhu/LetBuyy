@@ -20,9 +20,9 @@ Infrastructure adapters live in `packages/infrastructure` and are the only TypeS
 
 ## Rules
 
-- Apps must not import infrastructure adapters directly; use runtime-composition adapters or service API contracts.
+- Apps must not import infrastructure adapters directly; use service API contracts or package-owned client facades that do not expose provider SDKs.
 - Services may import adapter functions for execution bootstrapping, but must not import provider SDK packages.
-- Runtime-composition may expose app-safe adapters that delegate to infrastructure without exposing provider SDKs to apps.
+- App-safe facades may expose provider-neutral DTOs only; provider execution stays in services or `packages/infrastructure`.
 - Provider credentials are passed from runtime env or worker bindings into adapters.
 - Provider errors must be normalized before reaching application services.
 - Retry and idempotency policies must be explicit for mutating provider calls.

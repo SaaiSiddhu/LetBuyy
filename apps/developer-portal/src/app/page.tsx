@@ -29,7 +29,7 @@ export default function HomePage() {
         <SectionHeading
           kicker="Contract status"
           title="Truth source, not aspirational docs"
-          description="Every page in this portal is backed by the tracked gateway, webhook service, auth-core, app-engine, or theme-engine source. Missing data and tooling are visible as skips."
+          description="Every page in this portal is backed by the tracked gateway, webhook service, auth-core, app-platform shared contract, or theme-engine source. Missing data and tooling are visible as skips."
         />
         <div className="developer-grid three">
           <ContractStat label="Gateway" value="/v1 Hono API" />

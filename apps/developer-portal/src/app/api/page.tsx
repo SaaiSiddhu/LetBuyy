@@ -37,7 +37,7 @@ export default function ApiReferencePage() {
             <Badge label="Auth" variant="info" />
             <h3>Authentication</h3>
           </div>
-          <p>Protected routes use gateway auth middleware. Merchant routes accept Supabase bearer tokens or signed internal LetBuyy session headers; app OAuth routes mint scoped app tokens through app-engine/auth-core contracts.</p>
+          <p>Protected routes use gateway auth middleware. Merchant routes accept Supabase bearer tokens or signed internal LetBuyy session headers; app OAuth routes mint scoped app tokens through gateway app-store and auth-core contracts.</p>
           <ul>
             <li>Merchant session cookie name is `lb_session` in auth-core.</li>
             <li>App access tokens carry normalized scopes and installation/store identity.</li>

@@ -262,14 +262,14 @@ export const sdkGuides: GuideCard[] = [
   },
   {
     title: "App manifest and extensions",
-    status: "Live contract",
-    body: "App-engine publishes manifest schema `2026-06-05.ws13`, the extension registry, and lifecycle contract `2026-06-05.ws13.lifecycle` for Admin UI, Checkout UI, theme app blocks, and Wasm Functions.",
+    status: "SKIP - EXTENSION EXECUTION",
+    body: "The gateway app-store routes and `@letbuyy/shared-types` publish manifest schema `2026-06-05.ws13`, extension registry shapes, and lifecycle contract `2026-06-05.ws13.lifecycle`; live extension execution remains a recorded capability seam.",
     bullets: [
       "`POST /v1/app-store/developers/apps/manifest/validate` validates and normalizes manifests without creating an app.",
       "Admin UI and Checkout UI extensions render through `@letbuyy/shared-types` sandbox policies.",
       "Theme app blocks install as WS11 portable Liquid app blocks and require no storefront source changes.",
-      "Checkout Functions are advisory only: they can apply discount codes, select shipping methods, restrict payment methods, and return validation errors; they cannot set arbitrary totals, taxes, line prices, or payment amounts.",
-      "Wasm Functions use HTTPS module URLs, SHA-256 verification, no imports, typed JSON I/O, and 1-5ms budgets.",
+      "Checkout Functions are advisory-only in contract and remain blocked from arbitrary totals, taxes, line prices, or payment amounts.",
+      "Wasm/function execution is not presented as launch-ready; it remains recorded under the checkout extension capability seam.",
       "Per-store registry rows expose `enabled`, `disabled`, and `revoked` lifecycle state.",
     ],
   },

@@ -1217,7 +1217,7 @@ export function createAppExtensionReviewChecklist(): AppExtensionReviewChecklist
     {
       key: 'sandboxed_admin_ui',
       label: 'Admin UI extensions',
-      requirement: 'Admin UI extensions must render inside the extension-host sandbox and use scoped App Bridge tokens.',
+      requirement: 'Admin UI extensions must render inside the scoped app extension sandbox and use scoped App Bridge tokens.',
       evidence: 'packages/shared-types/src/app-platform.ts and /v1/app-store/installations/:id/extensions',
     },
     {
@@ -1234,8 +1234,8 @@ export function createAppExtensionReviewChecklist(): AppExtensionReviewChecklist
     },
     {
       key: 'deterministic_wasm_functions',
-      label: 'Wasm Functions',
-      requirement: 'Functions must be deterministic Wasm modules with SHA-256 verification, no imports, and 1-5ms execution budgets.',
+      label: 'App Functions',
+      requirement: 'Function execution remains advisory-only and must be deterministic, hash-verified, import-free, and bounded before it can be treated as live.',
       evidence: 'services/api-gateway/src/extensions/app-functions-runtime.ts',
     },
     {
@@ -2146,7 +2146,7 @@ export function planMarketplaceAppUpdate(
 }
 
 
-// Extension host contracts consolidated from the quarantined extension-host package.
+// Extension contracts consolidated from the quarantined extension runtime package.
 export const LETBUYY_EXTENSION_HOST_VERSION = '2026-06-05.ws13.x2' as const;
 export const MOBILE_ADMIN_EXTENSION_HOST_VERSION = '2026-06-08.mobile-app-bridge.v1' as const;
 export const MOBILE_ADMIN_EXTENSION_MESSAGE_CHANNEL = 'LetBuyyAppBridge' as const;

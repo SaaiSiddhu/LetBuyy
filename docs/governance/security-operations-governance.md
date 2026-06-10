@@ -6,7 +6,7 @@ Security operations cover secrets, RBAC, audit, deployment signing, scanning, an
 
 - Secrets live in Cloudflare Worker secrets, Vercel environment stores, Supabase settings, or CI secrets.
 - Production deployments require signed release provenance and SBOM generation.
-- Replay, redrive, failover, provider override, tenant throttle, cache invalidation, and deployment rollback require platform-operator authorization.
+- Redrive, provider override, tenant throttle, cache invalidation, and deployment rollback require platform-operator authorization.
 - Security events must be audit logged through `execution_audit_trail`, `runtime_control_commands`, or `security_enforcement_events`.
 - Cookie-backed mutating worker requests require CSRF double-submit validation.
 - Provider webhooks must persist signature verification evidence before side effects.
