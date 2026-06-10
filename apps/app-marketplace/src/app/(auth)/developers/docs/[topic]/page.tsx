@@ -18,7 +18,7 @@ const topics: DocTopic[] = [
     {
         slug: 'getting-started',
         title: 'Getting started',
-        description: 'Create, submit, publish, and operate a LetBuyy marketplace app.',
+        description: 'Create and submit a LetBuyy app record for retained private/sandbox review flows.',
         sections: [
             {
                 heading: 'Developer flow',
@@ -26,7 +26,7 @@ const topics: DocTopic[] = [
                     'Register with business, tax, support, and consent details.',
                     'Create an app with URLs, manifest, OAuth redirects, scopes, pricing, media, support SLA, and data-handling disclosure.',
                     'Submit for automated checks and marketplace review.',
-                    'Use Partner Console for versions, pricing plans, webhooks, analytics, usage metrics, and payout status.',
+                    'Use Partner Console scaffolding for versions, pricing metadata, webhooks, analytics, usage metrics, and payout-status review.',
                 ],
             },
             {
@@ -71,7 +71,7 @@ const topics: DocTopic[] = [
                 heading: 'Required fields',
                 items: [
                     'Name, slug, version, app URL, privacy URL, OAuth redirect URLs, and requested scopes.',
-                    'Extension and function declarations when the app exposes configurable or executable platform capabilities.',
+                    'Extension and function declarations as review metadata while live execution remains frozen.',
                     'Version and release-note data when shipping an update.',
                 ],
             },
@@ -81,7 +81,7 @@ const topics: DocTopic[] = [
                     'Submitted slug must match the manifest slug.',
                     'URLs must be HTTPS and redirect URLs must match the submitted manifest.',
                     'Requested scopes must be known platform scopes and match the app use case.',
-                    'Function/module URLs are checked by automated security checks before review.',
+                    'Function/module URLs are review metadata only until `SKIP-CAP-CHECKOUT-WASM-RETIREMENT` is resolved or formally re-scoped.',
                 ],
             },
         ],
@@ -94,15 +94,15 @@ const topics: DocTopic[] = [
             {
                 heading: 'Revenue share',
                 items: [
-                    'Current default partner share is 85%.',
-                    'Current default LetBuyy platform fee is 15%.',
-                    'Pricing supports free, freemium, recurring, one-time, and usage models.',
+                    'Pricing rows are retained as schema metadata.',
+                    'Public app monetization is not launch-approved.',
+                    'Pricing metadata supports free, freemium, recurring, one-time, and usage models for approved future activation.',
                 ],
             },
             {
                 heading: 'Billing lifecycle',
                 items: [
-                    'Merchants review and approve paid app charges.',
+                    'Merchants must review and approve paid app charges before any approved future activation.',
                     'Trials and usage metering are captured in app billing records.',
                     'Payout status follows the payout ledger state, not only the charge state.',
                 ],
@@ -118,14 +118,14 @@ const topics: DocTopic[] = [
                 heading: 'App review checks',
                 items: [
                     'Developer approval, manifest integrity, scope clarity, redirect URLs, privacy URL, pricing, support, data handling, and media completeness.',
-                    'Submitted app updates create version records and can require review before publication.',
-                    'Apps with hard automated-check failures do not enter public catalog surfaces.',
+                    'Submitted app updates create version records and can require review before any approved publication.',
+                    'Apps with hard automated-check failures cannot enter any approved catalog surface.',
                 ],
             },
             {
                 heading: 'Merchant reviews',
                 items: [
-                    'Published reviews require verified active installation proof.',
+                    'Published-review scaffolding requires verified active installation proof before any approved public surface.',
                     'Developers can reply to reviews.',
                     'Reports and fraud signals route reviews to moderation before public trust signals are affected.',
                 ],

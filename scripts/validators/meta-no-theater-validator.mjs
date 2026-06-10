@@ -63,4 +63,43 @@ assertNoOffenders(
   activeIdentityDocOffenders,
   "Active identity docs must describe one-region provider-HA operations, not rejected topology",
 );
-reporter.finish("governance gate and active identity doc theater fragments checked");
+
+const marketplaceFrozenSources = [
+  "docs/apps-marketplace-developer/getting-started.md",
+  "docs/apps-marketplace-developer/manifest-spec.md",
+  "docs/apps-marketplace-developer/api-reference.md",
+  "apps/app-marketplace/src/app/(auth)/developers/page.tsx",
+  "apps/app-marketplace/src/app/(auth)/developers/docs/page.tsx",
+  "apps/app-marketplace/src/app/(auth)/developers/docs/[topic]/page.tsx",
+];
+for (const sourcePath of marketplaceFrozenSources) {
+  const source = readFile(sourcePath);
+  reporter.assert(
+    source.includes("frozen") ||
+      source.includes("Frozen") ||
+      source.includes("human-approved") ||
+      source.includes("SKIP-CAP-CHECKOUT-WASM-RETIREMENT"),
+    `${sourcePath} must disclose the app-marketplace frozen seam before describing developer flows`,
+  );
+}
+const marketplaceLaunchFragments = [
+  "goes live in the App Store",
+  "Reach thousands of Indian",
+  "public app-store launch",
+];
+const marketplaceLaunchOffenders = [];
+for (const sourcePath of marketplaceFrozenSources) {
+  const source = readFile(sourcePath);
+  for (const fragment of marketplaceLaunchFragments) {
+    if (source.includes(fragment)) {
+      marketplaceLaunchOffenders.push(`${sourcePath}: active marketplace developer surface contains launch phrase "${fragment}"`);
+    }
+  }
+}
+assertNoOffenders(
+  reporter,
+  marketplaceLaunchOffenders,
+  "Active marketplace developer surfaces must be frozen-seam docs, not public launch marketing",
+);
+
+reporter.finish("governance gate, active identity doc, and marketplace frozen-seam fragments checked");

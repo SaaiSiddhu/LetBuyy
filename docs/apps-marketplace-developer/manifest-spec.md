@@ -1,6 +1,6 @@
-# LetBuyy App Manifest Specification
+# LetBuyy App Manifest Specification (Frozen Seam)
 
-This scaffold records the manifest fields enforced by the current app submission checks.
+This scaffold records the manifest fields enforced by current app submission checks. It does not activate a public third-party app marketplace or live checkout-function execution.
 
 ## Required Fields
 
@@ -11,15 +11,15 @@ This scaffold records the manifest fields enforced by the current app submission
 - `privacy_url`: HTTPS privacy policy URL.
 - `oauth.redirect_urls`: HTTPS redirect URLs used by OAuth install.
 - `scopes`: Requested platform scopes.
-- `extensions`: Declared extension surfaces when the app provides merchant configuration or embedded/admin surfaces.
-- `functions`: Declared function registrations when the app provides executable platform functions.
+- `extensions`: Declared extension surfaces for review metadata and future approved surfaces.
+- `functions`: Declared function registrations for review metadata only while live execution remains frozen.
 
 ## Validation Rules
 
 - App URL, privacy URL, and redirect URLs must use HTTPS.
 - Requested scopes must be known platform scopes and must match the declared use case.
 - Redirect URLs must match the submitted manifest and listing payload.
-- Wasm/function module URLs are checked by the in-house static security scan before review.
+- Function module URLs are review metadata only; live Wasm/function execution remains recorded under `SKIP-CAP-CHECKOUT-WASM-RETIREMENT`.
 - Submission creates automated check results; hard failures block the review queue.
 
 ## Versioning

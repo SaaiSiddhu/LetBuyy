@@ -5,17 +5,17 @@ import { Code2, DollarSign, Users, Zap, BookOpen, Shield } from '@letbuyy/ui';
 
 export const metadata = {
     title: 'Developer Portal — LetBuyy App Store',
-    description: 'Build apps for the LetBuyy platform and reach thousands of Indian merchants.',
+    description: 'Review the retained app-marketplace contracts for future approved LetBuyy integrations.',
 };
 
 export default function DeveloperPortalPage() {
     const benefits = [
-        { icon: <Users size={24} />, title: 'Reach Merchants', desc: 'Access thousands of Indian e-commerce merchants on the LetBuyy platform.' },
-        { icon: <DollarSign size={24} />, title: 'Earn Revenue', desc: 'Monetize your apps with free, freemium, recurring, one-time, or usage-based pricing.' },
-        { icon: <Zap size={24} />, title: 'Powerful APIs', desc: 'Build with our comprehensive REST APIs, webhooks, and extension points.' },
+        { icon: <Users size={24} />, title: 'Private Contracts', desc: 'Review retained OAuth, webhook, review, and app-token contracts before public activation.' },
+        { icon: <DollarSign size={24} />, title: 'Commercial Metadata', desc: 'Model pricing and payout metadata without treating marketplace monetization as launched.' },
+        { icon: <Zap size={24} />, title: 'Gateway APIs', desc: 'Build against source-backed REST, webhook, and app-store contracts in approved sandbox flows.' },
         { icon: <Shield size={24} />, title: 'OAuth 2.0', desc: 'Secure authentication with OAuth 2.0 — users grant specific permissions to your app.' },
-        { icon: <Code2 size={24} />, title: 'Extension APIs', desc: 'Build storefront, checkout, admin, and embedded app surfaces as platform capabilities become available in-product.' },
-        { icon: <BookOpen size={24} />, title: 'Documentation', desc: 'Comprehensive guides, API references, and code examples to get you started fast.' },
+        { icon: <Code2 size={24} />, title: 'Frozen Extensions', desc: 'Extension and function declarations remain review metadata until the recorded capability seam is retired or re-scoped.' },
+        { icon: <BookOpen size={24} />, title: 'Documentation', desc: 'Read the retained contracts and human-approval boundaries before building against them.' },
     ];
 
     return (
@@ -24,15 +24,16 @@ export default function DeveloperPortalPage() {
             <main className="appstore-main">
                 <div className="dev-portal">
                     <div className="dev-portal-hero">
-                        <h1>Build for LetBuyy</h1>
+                        <h1>LetBuyy app contracts</h1>
                         <p>
-                            Create powerful apps and integrations for India&apos;s fastest-growing
-                            e-commerce platform. Reach thousands of merchants and grow your business.
+                            The third-party app marketplace is frozen pending the named demand trigger
+                            and ARB approval. These pages document retained private contracts, not
+                            production activation.
                         </p>
                         <div className="dev-portal-actions">
                             <Link href="/developers/register" className="dev-portal-cta">
                                 <Code2 size={18} />
-                                Start Building
+                                Review Contracts
                             </Link>
                             <Link href="/developers/docs" className="dev-portal-cta dev-portal-cta--secondary">
                                 <BookOpen size={18} />
@@ -55,10 +56,10 @@ export default function DeveloperPortalPage() {
                         <h2 className="dev-how-title">How it works</h2>
                         <div className="dev-how-grid">
                             {[
-                                { step: '1', title: 'Register', desc: 'Create your developer account and verify your identity.' },
-                                { step: '2', title: 'Build', desc: 'Use our APIs and documentation to create your app.' },
-                                { step: '3', title: 'Submit', desc: 'Submit your app for review by our team.' },
-                                { step: '4', title: 'Publish', desc: 'Once approved, your app goes live in the App Store.' },
+                                { step: '1', title: 'Register', desc: 'Create a developer account record for private review flows.' },
+                                { step: '2', title: 'Build', desc: 'Use source-backed APIs and docs only in approved sandbox/private flows.' },
+                                { step: '3', title: 'Submit', desc: 'Submit an app record for automated checks and human review.' },
+                                { step: '4', title: 'Activate', desc: 'Public catalog activation requires human ARB/product approval and is not claimed here.' },
                             ].map((s, i) => (
                                 <div key={i} className="dev-step-card">
                                     <div className="dev-step-card__number">{s.step}</div>
@@ -70,10 +71,10 @@ export default function DeveloperPortalPage() {
                     </section>
 
                     <div className="dev-cta-panel">
-                        <h2>Ready to get started?</h2>
-                        <p>Join the LetBuyy developer community today.</p>
+                        <h2>Review the frozen seam</h2>
+                        <p>Use these contracts for approved private work only until public activation is approved.</p>
                         <Link href="/developers/register" className="dev-portal-cta">
-                            Create Developer Account →
+                            Create Review Account →
                         </Link>
                     </div>
                 </div>

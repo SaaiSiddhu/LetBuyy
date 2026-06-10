@@ -5,31 +5,31 @@ import { Footer } from '@/components/Footer';
 
 export const metadata = {
     title: 'Developer docs — LetBuyy App Store',
-    description: 'App marketplace developer documentation for getting started, manifests, APIs, economics, and review requirements.',
+    description: 'Frozen app-marketplace developer contracts for retained private/sandbox integration flows.',
 };
 
 const docCards = [
     {
         title: 'Getting started',
-        description: 'Register, get approved, create an app, submit for review, and operate from Partner Console.',
+        description: 'Register, create an app record, submit for review, and keep activation human-approved.',
         href: '/developers/docs/getting-started',
         icon: BookOpen,
     },
     {
         title: 'API reference',
-        description: 'Use app-token APIs, OAuth install, usage metering, webhooks, and marketplace developer endpoints.',
+        description: 'Review app-token APIs, OAuth install, usage metering, webhooks, and private developer endpoints.',
         href: '/developers/docs/api-reference',
         icon: Code2,
     },
     {
         title: 'Manifest spec',
-        description: 'Declare app URLs, OAuth redirects, scopes, extensions, functions, and version metadata.',
+        description: 'Declare app URLs, OAuth redirects, scopes, extension metadata, function metadata, and version data.',
         href: '/developers/docs/manifest-spec',
         icon: FileText,
     },
     {
         title: 'Economics',
-        description: 'Current in-code default is 85% partner share and 15% LetBuyy platform fee.',
+        description: 'Review schema-backed pricing metadata; public marketplace pricing is not launch-approved.',
         href: '/developers/docs/economics',
         icon: DollarSign,
     },
@@ -50,7 +50,7 @@ export default function DeveloperDocsPage() {
                     <div className="marketplace-section-header">
                         <h1>Developer docs</h1>
                         <p>
-                            Build, submit, publish, and operate marketplace apps with the current LetBuyy app platform contracts.
+                            Review retained app-platform contracts for approved private/sandbox flows. Public marketplace activation is frozen until the human-approved trigger.
                         </p>
                     </div>
                     <div className="dev-benefits-grid">
@@ -70,7 +70,7 @@ export default function DeveloperDocsPage() {
                     <div className="marketplace-banner marketplace-banner--info">
                         <strong>Current contracts</strong>
                         <span>
-                            These docs reflect the current app submission, install, billing, review, and trust contracts available in the marketplace foundation.
+                            These docs reflect retained source-backed app submission, install, billing metadata, review, and trust contracts. They are not public launch documentation.
                         </span>
                     </div>
                 </section>
