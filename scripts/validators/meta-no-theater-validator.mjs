@@ -71,6 +71,12 @@ const marketplaceFrozenSources = [
   "apps/app-marketplace/src/app/(auth)/developers/page.tsx",
   "apps/app-marketplace/src/app/(auth)/developers/docs/page.tsx",
   "apps/app-marketplace/src/app/(auth)/developers/docs/[topic]/page.tsx",
+  "apps/app-marketplace/src/app/(auth)/developers/dashboard/page.tsx",
+  "apps/app-marketplace/src/app/(auth)/developers/register/page.tsx",
+  "apps/app-marketplace/src/app/(auth)/developers/apps/new/page.tsx",
+  "apps/developer-portal/src/app/page.tsx",
+  "apps/developer-portal/src/lib/developer-surface.ts",
+  "apps/developer-portal/src/lib/reference.ts",
 ];
 for (const sourcePath of marketplaceFrozenSources) {
   const source = readFile(sourcePath);
@@ -78,6 +84,8 @@ for (const sourcePath of marketplaceFrozenSources) {
     source.includes("frozen") ||
       source.includes("Frozen") ||
       source.includes("human-approved") ||
+      source.includes("approval-gated") ||
+      source.includes("recorded") ||
       source.includes("SKIP-CAP-CHECKOUT-WASM-RETIREMENT"),
     `${sourcePath} must disclose the app-marketplace frozen seam before describing developer flows`,
   );
@@ -86,6 +94,10 @@ const marketplaceLaunchFragments = [
   "goes live in the App Store",
   "Reach thousands of Indian",
   "public app-store launch",
+  "platform fee is",
+  "platform fee, and GST",
+  "runtime replay/recovery",
+  "certification reports",
 ];
 const marketplaceLaunchOffenders = [];
 for (const sourcePath of marketplaceFrozenSources) {

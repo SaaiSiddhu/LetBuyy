@@ -10,13 +10,13 @@ export default function HomePage() {
         <div className="developer-hero-grid">
           <div className="developer-band">
             <span className="developer-kicker">developers.letbuyy.com</span>
-            <h1 className="developer-title">Build apps, themes, and automations on the real LetBuyy platform.</h1>
+            <h1 className="developer-title">Review LetBuyy platform contracts.</h1>
             <p className="developer-lede">
-              The developer portal is a docs-first workbench for the current `/v1` gateway, app OAuth, lifecycle webhooks, Liquid plus JSON-contract themes, GraphQL rollout status, and partner dashboard contracts.
+              The developer portal is a docs-first workbench for the current `/v1` gateway, app OAuth seams, lifecycle webhooks, Liquid plus JSON-contract themes, recorded GraphQL/extension seams, and partner dashboard contracts.
             </p>
             <div className="developer-actions">
               <Link className="developer-action primary" href="/api">Read API reference</Link>
-              <Link className="developer-action" href="/sdk">Start a theme or app</Link>
+              <Link className="developer-action" href="/sdk">Review SDK contracts</Link>
             </div>
           </div>
           <CodePanel label="App OAuth install request" code={appInstallExample} />

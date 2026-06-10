@@ -647,8 +647,8 @@ export const schemaFacades: SchemaFacade[] = [
     module: "operations.schema.ts",
     routeSurface: "/v1/operations",
     canonicalSource: "@letbuyy/event-core",
-    currentExports: "Outbox, webhook delivery dispatch, queue jobs, review decisions, webhook subscriptions, usage, runtime replay/recovery, incident, readiness, and certification schemas.",
-    developerMeaning: "Operational webhook subscription schemas exist, but public developer webhook management UI and sender tooling are still skipped.",
+    currentExports: "Outbox, webhook delivery dispatch, queue jobs, review decisions, webhook subscriptions, usage, queue diagnostics, incident, and readiness schemas.",
+    developerMeaning: "Operational webhook subscription schemas exist, but public developer webhook management UI, sender tooling, and app-extension activation remain recorded seams.",
     source: "services/api-gateway/src/schemas/operations.schema.ts:1"
   }
 ];

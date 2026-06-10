@@ -13,7 +13,7 @@ import Image from 'next/image';
 
 const DRAFT_KEY = 'letbuyy_app_submission_draft_v1';
 const REVENUE_POLICY = appRevenueSharePolicy();
-const APP_REVENUE_SHARE_COPY = `Partners keep ${REVENUE_POLICY.partner_share_percent}% of app charges; LetBuyy's platform fee is ${REVENUE_POLICY.platform_fee_percent}%.`;
+const APP_REVENUE_SHARE_COPY = `App-charge pricing metadata uses the ${REVENUE_POLICY.partner_share_percent}/${REVENUE_POLICY.platform_fee_percent} schema split, but public monetization remains human-approved.`;
 
 export default function NewAppPage() {
     const router = useRouter();

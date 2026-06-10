@@ -202,7 +202,7 @@ export default function DeveloperRegisterPage() {
                                     <h3>Developer Agreement Summary</h3>
                                     <ul>
                                         <li>You retain full ownership of your app&apos;s code and IP.</li>
-                                        <li>Paid app payouts use the {REVENUE_POLICY.partner_share_percent}% partner share and {REVENUE_POLICY.platform_fee_percent}% LetBuyy platform fee.</li>
+                                        <li>Paid app commercial terms remain schema metadata until public marketplace activation is human-approved.</li>
                                         <li>Apps must comply with our security and quality guidelines.</li>
                                         <li>India payouts use supported bank transfer or UPI rails after approval.</li>
                                         <li>You are responsible for providing support to merchants using your app.</li>

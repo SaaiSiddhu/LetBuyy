@@ -147,7 +147,7 @@ export const apiRouteGroups: RouteGroup[] = [
     title: "Operations and Webhook Admin",
     source: "services/api-gateway/src/routes/operations.ts",
     status: "Live",
-    summary: "Operational APIs expose outbox, webhook deliveries/subscriptions, runtime queues, incidents, deployment gates, security events, dashboards, and certification reports.",
+    summary: "Operational APIs expose outbox, webhook deliveries/subscriptions, queue diagnostics, incidents, deployment gates, security events, dashboards, and readiness reports.",
     routes: [
       "GET /v1/operations/webhook-deliveries",
       "GET|POST /v1/operations/webhook-subscriptions",
