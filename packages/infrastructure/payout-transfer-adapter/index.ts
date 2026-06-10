@@ -1,4 +1,4 @@
-export type MerchantPayoutRail = 'razorpay_route' | 'razorpayx' | 'upi' | 'manual';
+export type MerchantPayoutRail = 'razorpay_route' | 'upi' | 'manual';
 export type PayoutTransferMode = 'sandbox' | 'live';
 export type PayoutTransferStatus = 'processing' | 'released' | 'failed';
 

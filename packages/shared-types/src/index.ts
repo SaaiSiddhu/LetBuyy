@@ -710,7 +710,7 @@ export const MoneyAmountSchema = z.object({
 });
 
 export const MerchantPayoutStatusSchema = z.enum(['pending', 'processing', 'released', 'failed']);
-export const MerchantPayoutRailSchema = z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']);
+export const MerchantPayoutRailSchema = z.enum(['razorpay_route', 'upi', 'manual']);
 export const MerchantPayoutModeSchema = z.enum(['sandbox', 'live']);
 export const WalletLedgerEntryTypeSchema = z.enum(['payout_credit', 'payout_debit', 'adjustment', 'hold', 'release', 'cod_remittance_credit']);
 export const WalletLedgerDirectionSchema = z.enum(['credit', 'debit']);
@@ -3902,7 +3902,7 @@ export const AppBillingChargeStatusSchema = z.enum([
   'cancelled',
   'failed',
 ]);
-export const AppBillingIndiaPayoutRailSchema = z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']);
+export const AppBillingIndiaPayoutRailSchema = z.enum(['razorpay_route', 'upi', 'manual']);
 export const AppBillingChargeProviderModeSchema = z.enum(['sandbox', 'live']);
 
 export const AppBillingChargeSchema = z.object({

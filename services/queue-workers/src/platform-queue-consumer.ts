@@ -154,7 +154,7 @@ interface AppChargeEventPayload {
     amount_minor?: number;
     currency?: 'INR';
   };
-  payout_rail?: 'razorpay_route' | 'razorpayx' | 'upi' | 'manual';
+  payout_rail?: 'razorpay_route' | 'upi' | 'manual';
   provider_reference?: string;
   provider_mode?: 'sandbox' | 'live';
   revenue_share_bps?: number;
@@ -240,10 +240,9 @@ function clampBps(value: unknown, fallback: number): number {
   return Math.max(0, Math.min(10000, numberValue));
 }
 
-function payoutRail(value: unknown): 'razorpay_route' | 'razorpayx' | 'upi' | 'manual' {
+function payoutRail(value: unknown): 'razorpay_route' | 'upi' | 'manual' {
   switch (value) {
     case 'razorpay_route':
-    case 'razorpayx':
     case 'upi':
     case 'manual':
       return value;

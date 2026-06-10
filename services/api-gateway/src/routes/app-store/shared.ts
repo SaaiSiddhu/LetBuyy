@@ -320,7 +320,6 @@ export function appChargeProviderMode(value: unknown): AppChargeProviderMode {
 export function appPayoutRail(value: unknown): IndiaPayoutRail | null {
     switch (value) {
         case 'razorpay_route':
-        case 'razorpayx':
         case 'upi':
         case 'manual':
             return value;

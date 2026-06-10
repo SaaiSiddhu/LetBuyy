@@ -320,7 +320,7 @@ const AppChargePayloadSchema = z.object({
   charge_id: UuidSchema,
   billing_mode: z.enum(['recurring', 'one_time', 'usage']),
   amount: InrMinorUnitsSchema,
-  payout_rail: z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']).default('razorpay_route'),
+  payout_rail: z.enum(['razorpay_route', 'upi', 'manual']).default('razorpay_route'),
   provider_reference: z.string().trim().min(1).max(200).optional(),
   provider_mode: z.enum(['sandbox', 'live']).default('sandbox'),
   revenue_share_bps: z.number().int().min(0).max(10000).default(8500),
@@ -408,7 +408,7 @@ const PayoutPayloadSchema = z.object({
   payout_id: UuidSchema,
   ledger_entry_id: UuidSchema.optional(),
   amount: InrMinorUnitsSchema,
-  rail: z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']).default('manual'),
+  rail: z.enum(['razorpay_route', 'upi', 'manual']).default('manual'),
 });
 
 function activeGatewayContract(

@@ -763,7 +763,7 @@ export interface InternalPartnerPayoutLedgerEntry extends JsonRecord {
   partner_amount_minor: number;
   platform_fee_minor?: number;
   status: 'pending' | 'processing' | 'released' | 'failed' | 'cancelled';
-  rail?: 'razorpay_route' | 'razorpayx' | 'upi' | 'manual';
+  rail?: 'razorpay_route' | 'upi' | 'manual';
   held_at?: string | null;
   hold_reason?: string | null;
   metadata?: JsonRecord;

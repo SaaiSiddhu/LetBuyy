@@ -92,7 +92,7 @@ export const AppChargeStatusSchema = z.enum([
   'cancelled',
   'failed',
 ]);
-export const IndiaPayoutRailSchema = z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']);
+export const IndiaPayoutRailSchema = z.enum(['razorpay_route', 'upi', 'manual']);
 export const AppChargeProviderModeSchema = z.enum(['sandbox', 'live']);
 export const SettlementRailSchema = z.enum(['pa_split', 'cod_remittance']);
 export const SettlementProviderSchema = z.enum(['razorpay_route', 'cashfree', 'cod', 'manual']);
@@ -381,7 +381,7 @@ export interface AppBillingChargePayoutPlan {
   partner_gst_bps: number;
   partner_gst_minor: number;
   payout_rail: IndiaPayoutRail;
-  provider: 'razorpay_route' | 'razorpayx' | 'upi' | 'manual';
+  provider: IndiaPayoutRail;
   provider_mode: AppChargeProviderMode;
 }
 
@@ -451,7 +451,6 @@ export interface AppBillingTrialWindow {
 
 export const INDIA_APP_PAYOUT_RAILS: readonly IndiaPayoutRail[] = [
   'razorpay_route',
-  'razorpayx',
   'upi',
   'manual',
 ];
