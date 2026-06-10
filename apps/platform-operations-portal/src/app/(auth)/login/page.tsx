@@ -1,4 +1,4 @@
-import { Button, Input } from '@letbuyy/ui';
+import { Button } from '@letbuyy/ui';
 
 export default function TeamLoginPage() {
     return (
@@ -11,40 +11,19 @@ export default function TeamLoginPage() {
                     </p>
                 </div>
 
-                {/* TODO: Employee login with email allowlist through the shared identity session. */}
-                <form className="space-y-4">
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                            Work Email
-                        </label>
-                        <Input
-                            unstyled
-                            id="email"
-                            type="email"
-                            placeholder="you@letbuyy.com"
-                            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm outline-none focus:border-[var(--lb-color-primary)] focus:ring-2 focus:ring-[var(--lb-color-primary-subtle)] dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                            Password
-                        </label>
-                        <Input
-                            unstyled
-                            id="password"
-                            type="password"
-                            placeholder="••••••••"
-                            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm outline-none focus:border-[var(--lb-color-primary)] focus:ring-2 focus:ring-[var(--lb-color-primary-subtle)] dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
-                        />
-                    </div>
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
+                    This frozen portal is not the active ops login. The survivor fold-in remains recorded under
+                    SKIP-GATE-OPS-SURVIVOR-ARB, and per-operator identity remains recorded under SKIP-OPS-SSO-IDP.
+                </div>
+                <div className="space-y-4">
                     <Button
                         unstyled
-                        type="submit"
-                        className="w-full rounded-lg bg-[var(--lb-color-primary)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--lb-color-primary-hover)] active:bg-[var(--lb-color-primary-active)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lb-color-focus-ring)]"
+                        disabled
+                        className="w-full cursor-not-allowed rounded-lg bg-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
                     >
-                        Sign in
+                        Sign in unavailable
                     </Button>
-                </form>
+                </div>
             </div>
         </div>
     );

@@ -190,6 +190,23 @@ assertRecordedCapabilityGap(
   'SKIP-CAP-ALERTING-END-TO-END',
   'Alerting must remain recorded as an end-to-end capability gap; DSN presence alone is not live alert delivery',
 );
+for (const file of [
+  'services/api-gateway/src/routes/admin.ts',
+  'services/api-gateway/src/routes/employee.ts',
+  'services/api-gateway/src/routes/contacts.ts',
+]) {
+  assertIncludes(
+    file,
+    'SKIP-CAP-TRANSACTIONAL-EMAILS',
+    `${file} must record transactional email delivery as a capability seam while persistence succeeds without sends`,
+  );
+  assertNotIncludes(file, 'TODO: Send', `${file} must not carry loose transactional email TODOs`);
+}
+assertRecordedCapabilityGap(
+  'CAP-C14',
+  'SKIP-CAP-TRANSACTIONAL-EMAILS',
+  'Transactional invite/contact email delivery must remain recorded until queue/provider-backed sends are wired',
+);
 
 const packageJson = readFile('package.json');
 for (const fragment of [

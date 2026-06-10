@@ -46,7 +46,7 @@ router.post('/', async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    // TODO: Send notification to store owner via Resend
+    // HUMAN-REQUIRED: SKIP-CAP-TRANSACTIONAL-EMAILS — contact persistence is live, owner notification delivery is not claimed.
 
     return c.json(success(data), 201);
 });

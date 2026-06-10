@@ -32,4 +32,14 @@ reporter.assert(
   `Active authority/docs must not be scan-generated: ${generatedActiveFiles.slice(0, 10).join(", ")}`,
 );
 
+const frozenManifestOnlyOffenders = activeFiles.filter((file) => {
+  if (!file.endsWith("AGENTS.md")) return false;
+  return readFile(file).includes("Reserved and frozen roots must stay manifest-only");
+});
+
+reporter.assert(
+  frozenManifestOnlyOffenders.length === 0,
+  `Active AGENTS.md files must distinguish reserved manifest-only roots from frozen source-kept roots: ${frozenManifestOnlyOffenders.join(", ")}`,
+);
+
 reporter.finish("active AGENTS and generated documentation are hand-authored or archived");

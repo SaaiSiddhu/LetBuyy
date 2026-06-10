@@ -294,7 +294,7 @@ router.post('/employees/invite', async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    // TODO: Send invite email via Resend
+    // HUMAN-REQUIRED: SKIP-CAP-TRANSACTIONAL-EMAILS — invite persistence is live, email delivery is not claimed.
 
     return c.json(success(data), 201);
 });

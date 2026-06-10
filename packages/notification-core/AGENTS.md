@@ -15,7 +15,7 @@ Purpose: Local operating rules for `packages/notification-core`. This file is ha
 ## Runtime Authority
 
 - This boundary does not override root topology, runtime, package, migration, security, or deletion law.
-- Reserved and frozen roots must stay manifest-only unless the Constitution and ARB explicitly activate them.
+- Reserved roots must stay manifest-only. Frozen roots are source-kept and de-deployed unless the Constitution and ARB explicitly activate them; do not add production deploy targets, public launch copy, or live marketplace/portal operation by default.
 - Provider secrets, service-role credentials, and generated artifacts are never source authority.
 
 ## Migration Notes
