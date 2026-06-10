@@ -149,7 +149,7 @@ function buildProductTool(storeId: string, message: string): AiOperatorToolCall 
 
 router.get('/seam', async (c) => {
     const seam = createAiCapabilitySeam({
-        mode: c.env.LETBUYY_AI_MODEL_MODE || 'mock',
+        mode: c.env.LETBUYY_AI_MODEL_MODE === 'live' ? 'live' : 'sandbox',
         provider: c.env.AI_PROVIDER,
         model: c.env.AI_PROVIDER_MODEL,
     });

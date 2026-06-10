@@ -40,13 +40,13 @@ export interface AiGenerationAdapter {
 }
 
 export interface AiCapabilitySeamInput {
-  mode?: 'mock' | 'live' | string | null;
+  mode?: 'sandbox' | 'live' | string | null;
   provider?: string | null;
   model?: string | null;
 }
 
 export interface AiCapabilitySeam {
-  mode: 'mock' | 'live';
+  mode: 'sandbox' | 'live';
   provider: 'none' | 'human_required';
   modelCallsEnabled: false;
   model: null;
@@ -213,7 +213,7 @@ export function createAiGenerationAdapter(credentials: AiGenerationCredentials):
 }
 
 export function createAiCapabilitySeam(input: AiCapabilitySeamInput = {}): AiCapabilitySeam {
-  const mode = input.mode === 'live' ? 'live' : 'mock';
+  const mode = input.mode === 'live' ? 'live' : 'sandbox';
   if (mode === 'live') {
     return {
       mode,

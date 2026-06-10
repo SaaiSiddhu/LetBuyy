@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { createAiCreditPurchaseAdapter } from '@letbuyy/infrastructure/ai-credit-purchase-adapter';
-import { createAiGenerationAdapter } from '@letbuyy/infrastructure/ai-generation-adapter';
+import { createAiCapabilitySeam, createAiGenerationAdapter } from '@letbuyy/infrastructure/ai-generation-adapter';
 
 const indexSource = readFileSync(new URL('../index.ts', import.meta.url), 'utf8');
 const aiRouteSource = readFileSync(new URL('../routes/ai.ts', import.meta.url), 'utf8');
@@ -40,6 +40,8 @@ test('merchant AI route is mounted, mobile allowlisted, and provider-backed', ()
     assert.match(aiRouteSource, /AI_HOMEPAGE_GENERATOR_UNAVAILABLE/);
     assert.match(aiRouteSource, /\.from\('ai_credits'\)[\s\S]*\.update/);
     assert.match(aiRouteSource, /purchase_available/);
+    assert.match(aiRouteSource, /LETBUYY_AI_MODEL_MODE === 'live' \? 'live' : 'sandbox'/);
+    assert.doesNotMatch(aiRouteSource, /LETBUYY_AI_MODEL_MODE \|\| 'mock'/);
     assert.doesNotMatch(aiRouteSource, /\.from\('products'\)[^\n]*\.insert/);
     assert.doesNotMatch(aiRouteSource, /\.from\('coupons'\)[^\n]*\.insert/);
     assert.doesNotMatch(aiRouteSource, /AI generation is not configured for this environment/);
@@ -73,6 +75,16 @@ test('AI provider configuration is sandbox-first and live credential-gated', asy
 
     assert.equal(liveAdapter.available, false);
     assert.match(liveAdapter.unavailableReason || '', /credentials and model/);
+
+    const sandboxSeam = createAiCapabilitySeam({});
+    assert.equal(sandboxSeam.mode, 'sandbox');
+    assert.equal(sandboxSeam.modelCallsEnabled, false);
+    assert.equal(sandboxSeam.status, 'ready_for_interface');
+
+    const liveSeam = createAiCapabilitySeam({ mode: 'live' });
+    assert.equal(liveSeam.mode, 'live');
+    assert.equal(liveSeam.modelCallsEnabled, false);
+    assert.equal(liveSeam.status, 'human_required');
 });
 
 test('AI credit purchase is sandbox-first and live Razorpay credential-gated', async () => {

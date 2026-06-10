@@ -51,6 +51,8 @@ const storePaymentConfig = readFile("services/api-gateway/src/lib/store-payment-
 const merchantPaymentsPage = readFile("apps/merchant-control-plane/src/app/[store]/settings/payments/page.tsx");
 const notificationCore = readFile("packages/notification-core/src/index.ts");
 const emailRoute = readFile("services/api-gateway/src/routes/email.ts");
+const aiRoute = readFile("services/api-gateway/src/routes/ai.ts");
+const aiAdapter = readFile("packages/infrastructure/ai-generation-adapter/index.ts");
 reporter.assert(!kycAdapter.includes("live_provider_stub"), "KYC adapter must not turn sandbox verification into live-provider success");
 reporter.assert(kycAdapter.includes("KYC_LIVE_PROVIDER_UNAVAILABLE"), "KYC adapter must fail closed while live provider integration is absent");
 reporter.assert(capabilityBacklog.includes("CAP-C15"), "CAPABILITY_BACKLOG.md missing CAP-C15 live KYC provider gap");
@@ -95,6 +97,17 @@ for (const fragment of [
 }
 reporter.assert(notificationCore.includes("sandbox_resend"), "notification-core must expose sandbox ESP providers");
 reporter.assert(emailRoute.includes("email_sandbox_"), "email route must emit sandbox provider message ids");
+for (const fragment of [
+  "LETBUYY_AI_MODEL_MODE || 'mock'",
+  "mode?: 'mock'",
+  "mode: 'mock'",
+  "const mode = input.mode === 'live' ? 'live' : 'mock'",
+]) {
+  reporter.assert(!aiRoute.includes(fragment), `AI route seam must not use mock model-mode labels: ${fragment}`);
+  reporter.assert(!aiAdapter.includes(fragment), `AI generation adapter seam must not use mock model-mode labels: ${fragment}`);
+}
+reporter.assert(aiRoute.includes("LETBUYY_AI_MODEL_MODE === 'live' ? 'live' : 'sandbox'"), "AI seam route must default model mode to sandbox");
+reporter.assert(aiAdapter.includes("mode: 'sandbox' | 'live'"), "AI capability seam must expose sandbox/live modes");
 reporter.assert(!exists("packages/infrastructure/identity-otp-adapter/index.ts"), "retired identity OTP mock adapter must not exist");
 reporter.assert(!readFile("packages/infrastructure/src/index.ts").includes("identity-otp-adapter"), "infrastructure barrel must not export retired identity OTP mock adapter");
 reporter.assert(!readFile("packages/infrastructure/package.json").includes("identity-otp-adapter"), "infrastructure package must not expose retired identity OTP mock adapter");
