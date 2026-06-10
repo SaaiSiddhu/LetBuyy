@@ -129,8 +129,8 @@ All contracts are proposed by the app-marketplace task and require implementatio
 - Proposed interface: `POST /v1/app-store/installations/:id/embed-session -> { launch_url, session_token, expires_at, bridge_origin }`.
 - Marketplace flag: `NEXT_PUBLIC_MP_EMBED_SESSION` (default off)
 - FE behavior when absent: Embedded surfaces use the existing safe sandbox and do not enable `allow-same-origin` with `allow-scripts` for third-party content.
-- Acceptance: Installed app launch uses a signed short-lived session and passes browser sandbox/security tests.
-- Status: PROPOSED
+- Acceptance: Approved private activation uses a signed short-lived session and passes browser sandbox/security tests.
+- Status: PROPOSED; public app activation remains frozen and human-approved.
 
 ### CONTRACT C-031 — Data Handling Disclosure Field
 - Needed by issue(s): #31

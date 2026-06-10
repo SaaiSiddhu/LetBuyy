@@ -74,6 +74,9 @@ const marketplaceFrozenSources = [
   "apps/app-marketplace/src/app/(auth)/developers/dashboard/page.tsx",
   "apps/app-marketplace/src/app/(auth)/developers/register/page.tsx",
   "apps/app-marketplace/src/app/(auth)/developers/apps/new/page.tsx",
+  "apps/app-marketplace/CROSS_BOUNDARY_CONTRACTS.md",
+  "apps/app-marketplace/AGENTS.md",
+  "apps/developer-portal/AGENTS.md",
   "apps/developer-portal/src/app/page.tsx",
   "apps/developer-portal/src/lib/developer-surface.ts",
   "apps/developer-portal/src/lib/reference.ts",
@@ -98,6 +101,8 @@ const marketplaceLaunchFragments = [
   "platform fee, and GST",
   "runtime replay/recovery",
   "certification reports",
+  "Installed app launch uses",
+  "frozen roots must stay manifest-only",
 ];
 const marketplaceLaunchOffenders = [];
 for (const sourcePath of marketplaceFrozenSources) {
