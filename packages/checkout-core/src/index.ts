@@ -692,7 +692,7 @@ export interface GeneratedGstInvoice {
   marketplace_tcs_bps: number;
   tcs_amount_minor: number;
   irp: {
-    mode: 'mock';
+    mode: 'sandbox';
     irn: string;
     qr_payload: string;
     acknowledged_at: string;
@@ -761,10 +761,10 @@ function stableTaxHash(input: string): string {
   return (hash >>> 0).toString(16).padStart(8, '0');
 }
 
-function buildMockIrpAcknowledgement(invoiceNumber: string, orderId: string, invoiceDate: string) {
-  const irn = `MOCK-IRN-${stableTaxHash(`${invoiceNumber}:${orderId}:${invoiceDate}`).toUpperCase()}`;
+function buildSandboxIrpAcknowledgement(invoiceNumber: string, orderId: string, invoiceDate: string) {
+  const irn = `SANDBOX-IRN-${stableTaxHash(`${invoiceNumber}:${orderId}:${invoiceDate}`).toUpperCase()}`;
   return {
-    mode: 'mock' as const,
+    mode: 'sandbox' as const,
     irn,
     qr_payload: `letbuyy://gst-invoice/${encodeURIComponent(irn)}`,
     acknowledged_at: invoiceDate,
@@ -874,7 +874,7 @@ export function generateGstInvoice(input: GenerateGstInvoiceInput): GeneratedGst
     ...totals,
     marketplace_tcs_bps: marketplaceTcsBps,
     tcs_amount_minor: tcsAmountMinor,
-    irp: buildMockIrpAcknowledgement(invoiceNumber, input.order_id, invoiceDate),
+    irp: buildSandboxIrpAcknowledgement(invoiceNumber, input.order_id, invoiceDate),
   };
 }
 

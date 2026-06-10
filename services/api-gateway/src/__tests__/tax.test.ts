@@ -26,11 +26,12 @@ test('Task 008 tax route uses checkout-core GST calculation and guards live IRP 
     assert.doesNotMatch(routeSource, /S-0[0-9]{2}|SKIP-NEEDS-BACKEND|backend contract/i);
 });
 
-test('Task 008 checkout-core exposes TCS and mock IRP metadata on the tax calculation contract', () => {
+test('Task 008 checkout-core exposes TCS and sandbox IRP metadata on the tax calculation contract', () => {
     assert.match(checkoutCoreSource, /export const CalculateTaxSchema = GenerateGstInvoiceSchema\.extend/);
     assert.match(checkoutCoreSource, /marketplace_tcs_bps/);
     assert.match(checkoutCoreSource, /tcs_amount_minor/);
-    assert.match(checkoutCoreSource, /MOCK-IRN-/);
+    assert.match(checkoutCoreSource, /SANDBOX-IRN-/);
+    assert.doesNotMatch(checkoutCoreSource, /MOCK-IRN-/);
     assert.match(checkoutCoreSource, /letbuyy:\/\/gst-invoice/);
 });
 

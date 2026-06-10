@@ -92,7 +92,7 @@ test('GST invoice generation separates intra-state CGST/SGST from inter-state IG
   });
   assert.equal(tcsInvoice.tcs_amount_minor, 200);
   assert.equal(tcsInvoice.marketplace_tcs_bps, 100);
-  assert.match(tcsInvoice.irp.irn, /^MOCK-IRN-/);
+  assert.match(tcsInvoice.irp.irn, /^SANDBOX-IRN-/);
   assert.match(tcsInvoice.irp.qr_payload, /^letbuyy:\/\/gst-invoice\//);
 });
 

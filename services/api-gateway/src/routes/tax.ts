@@ -61,8 +61,8 @@ function taxSetupError(c: Context<{ Bindings: Env }>) {
     }, 503);
 }
 
-function assertMockIrpMode(env: Env) {
-    const mode = env.LETBUYY_GST_IRP_MODE || 'mock';
+function assertSandboxIrpMode(env: Env) {
+    const mode = env.LETBUYY_GST_IRP_MODE || 'sandbox';
     if (mode === 'live') {
         // [HUMAN-REQUIRED] HR-GST-IRP-LIVE: install IRP/e-way credentials and approve legal/provider policy before live e-invoice calls.
         throw new HumanRequiredError('[HUMAN-REQUIRED] GST IRP live credentials and policy approval are required.');
@@ -86,7 +86,7 @@ function normalizeInvoiceRow(row: GstInvoiceRow) {
 
 router.post('/calculate', validate('json', CalculateTaxSchema), async (c) => {
     try {
-        assertMockIrpMode(c.env);
+        assertSandboxIrpMode(c.env);
     } catch (error) {
         if (error instanceof HumanRequiredError) return taxSetupError(c);
         throw error;
@@ -110,7 +110,7 @@ router.post('/calculate', validate('json', CalculateTaxSchema), async (c) => {
     const invoice = generateGstInvoice(body);
     return c.json(success({
         calculation: invoice,
-        irp_mode: 'mock',
+        irp_mode: 'sandbox',
         irn: invoice.irp.irn,
         qr_payload: invoice.irp.qr_payload,
     }));
