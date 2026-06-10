@@ -7,7 +7,7 @@ Runtime boundary: `services/api-gateway`.
 Allowed dependencies:
 
 - Shared TypeScript packages from `packages/typescript/*`.
-- Domain, application-service, service-local event helpers, service-owned read planners, and infrastructure adapter packages declared in `runtime.manifest.json`.
+- Domain, service-owned workflow, service-local event helpers, service-owned read planners, and infrastructure adapter packages declared in `runtime.manifest.json`.
 - Durable service-local execution adapters under `services/api-gateway/src/execution`.
 - Provider integrations only through `packages/infrastructure` adapters wired to worker environment bindings.
 
@@ -25,7 +25,7 @@ Execution rules:
 - Route modules own transport, validation handoff, context construction, and response formatting.
 - Business workflow sequencing belongs in `service-local execution contracts`.
 - Event, outbox, retry, dead-letter, and correlation primitives belong in `service-local event helpers`.
-- Execution adapters may bridge service runtime bindings to application-service contracts.
+- Execution adapters may bridge service runtime bindings to service-owned workflow contracts.
 
 Tenant rules:
 

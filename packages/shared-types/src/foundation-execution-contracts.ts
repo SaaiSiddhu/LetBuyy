@@ -47,9 +47,9 @@ export interface WorkflowExecutionStep {
 
 export interface WorkflowExecutionPipeline {
     workflow: ApplicationWorkflowDescriptor;
-    executionBoundary: 'application-service';
-    transactionBoundary: 'application-service-declared' | 'database-rpc' | 'runtime-adapter';
-    retryBoundary: 'application-service' | 'orchestration-runtime' | 'provider-adapter' | 'none';
+    executionBoundary: 'service-owned-workflow';
+    transactionBoundary: 'service-owned-workflow' | 'database-rpc' | 'runtime-adapter';
+    retryBoundary: 'service-owned-workflow' | 'queue-worker' | 'provider-adapter' | 'none';
     asyncBoundary: 'outbox' | 'queue' | 'webhook' | 'inline' | 'none';
     observabilityBoundary: 'correlation-required' | 'trace-required' | 'audit-required';
     steps: WorkflowExecutionStep[];
@@ -107,9 +107,9 @@ function pipeline(
 ): WorkflowExecutionPipeline {
     return {
         workflow: workflowDescriptor,
-        executionBoundary: 'application-service',
+        executionBoundary: 'service-owned-workflow',
         transactionBoundary: options.transaction ?? 'database-rpc',
-        retryBoundary: options.retry ?? 'orchestration-runtime',
+        retryBoundary: options.retry ?? 'queue-worker',
         asyncBoundary: options.async ?? 'outbox',
         observabilityBoundary: options.observability ?? 'correlation-required',
         steps: [
@@ -131,8 +131,8 @@ export const AUTH_APPLICATION_WORKFLOWS = defineApplicationWorkflows({
 });
 
 export const AUTH_EXECUTION_PIPELINES = defineExecutionPipelines({
-    resolveActorSession: pipeline(AUTH_APPLICATION_WORKFLOWS.resolveActorSession, { transaction: 'application-service-declared', retry: 'none', async: 'inline' }),
-    evaluatePermissions: pipeline(AUTH_APPLICATION_WORKFLOWS.evaluatePermissions, { transaction: 'application-service-declared', retry: 'none', async: 'inline' }),
+    resolveActorSession: pipeline(AUTH_APPLICATION_WORKFLOWS.resolveActorSession, { transaction: 'service-owned-workflow', retry: 'none', async: 'inline' }),
+    evaluatePermissions: pipeline(AUTH_APPLICATION_WORKFLOWS.evaluatePermissions, { transaction: 'service-owned-workflow', retry: 'none', async: 'inline' }),
     executeIdempotentCommand: pipeline(AUTH_APPLICATION_WORKFLOWS.executeIdempotentCommand),
 });
 
@@ -193,9 +193,9 @@ export const SEARCH_APPLICATION_WORKFLOWS = defineApplicationWorkflows({
 });
 
 export const SEARCH_EXECUTION_PIPELINES = defineExecutionPipelines({
-    query: pipeline(SEARCH_APPLICATION_WORKFLOWS.query, { transaction: 'application-service-declared', retry: 'none', async: 'inline' }),
-    indexDocument: pipeline(SEARCH_APPLICATION_WORKFLOWS.indexDocument, { transaction: 'application-service-declared', async: 'queue', observability: 'trace-required' }),
-    rebuildTenantIndex: pipeline(SEARCH_APPLICATION_WORKFLOWS.rebuildTenantIndex, { transaction: 'application-service-declared', async: 'queue', observability: 'audit-required' }),
+    query: pipeline(SEARCH_APPLICATION_WORKFLOWS.query, { transaction: 'service-owned-workflow', retry: 'none', async: 'inline' }),
+    indexDocument: pipeline(SEARCH_APPLICATION_WORKFLOWS.indexDocument, { transaction: 'service-owned-workflow', async: 'queue', observability: 'trace-required' }),
+    rebuildTenantIndex: pipeline(SEARCH_APPLICATION_WORKFLOWS.rebuildTenantIndex, { transaction: 'service-owned-workflow', async: 'queue', observability: 'audit-required' }),
 });
 
 export const THEME_APPLICATION_WORKFLOWS = defineApplicationWorkflows({
@@ -208,7 +208,7 @@ export const THEME_APPLICATION_WORKFLOWS = defineApplicationWorkflows({
 });
 
 export const THEME_EXECUTION_PIPELINES = defineExecutionPipelines({
-    resolveRuntimeSchema: pipeline(THEME_APPLICATION_WORKFLOWS.resolveRuntimeSchema, { transaction: 'application-service-declared', retry: 'none', async: 'inline' }),
+    resolveRuntimeSchema: pipeline(THEME_APPLICATION_WORKFLOWS.resolveRuntimeSchema, { transaction: 'service-owned-workflow', retry: 'none', async: 'inline' }),
     installTheme: pipeline(THEME_APPLICATION_WORKFLOWS.installTheme),
     saveDraft: pipeline(THEME_APPLICATION_WORKFLOWS.saveDraft),
     publishRelease: pipeline(THEME_APPLICATION_WORKFLOWS.publishRelease),
