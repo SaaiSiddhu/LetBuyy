@@ -1,7 +1,6 @@
 export * from '../stripe-adapter/index';
 export * from '../razorpay-adapter/index';
 export * from '../cashfree-adapter/index';
-export * from '../phonepe-adapter/index';
 export * from '../upi-adapter/index';
 export * from '../cod-adapter/index';
 export * from '../paypal-adapter/index';

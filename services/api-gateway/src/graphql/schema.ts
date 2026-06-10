@@ -317,7 +317,6 @@ enum FulfillmentStatus {
 enum PaymentProvider {
   RAZORPAY
   CASHFREE
-  PHONEPE
   UPI
   COD
   STRIPE

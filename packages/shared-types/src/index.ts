@@ -655,7 +655,6 @@ export const FulfillmentStatusSchema = z.enum([
 export const PaymentProviderSchema = z.enum([
   'razorpay',
   'cashfree',
-  'phonepe',
   'upi',
   'cod',
   'stripe',
