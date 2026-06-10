@@ -13,8 +13,8 @@ const exportRoutePath = join(repoRoot, 'services/api-gateway/src/routes/export.t
 const appAuthPath = join(repoRoot, 'services/api-gateway/src/middleware/app-auth.ts');
 const extensionRoutesPath = join(repoRoot, 'services/api-gateway/src/routes/app-store/extension-routes.ts');
 const billingOauthPath = join(repoRoot, 'services/api-gateway/src/routes/app-store/billing-oauth-routes.ts');
-const ledgerPath = join(repoRoot, 'CODEX_FOUNDATION_HARDENING_LEDGER.md');
-const statusPath = join(repoRoot, 'CODEX_FOUNDATION_HARDENING_STATUS.md');
+const skippedDecisionsPath = join(repoRoot, 'SKIPPED_HUMAN_DECISIONS.md');
+const executionLedgerPath = join(repoRoot, 'EXECUTION_LEDGER.md');
 
 function read(path: string): string {
     assert.equal(existsSync(path), true, `${path} must exist`);
@@ -30,7 +30,8 @@ test('internal console and internal API secrets use timing-safe text comparison'
     assert.match(crypto, /export function timingSafeEqualText/);
     assert.match(internalConsole, /timingSafeEqualText\(token,\s*expectedToken\)/);
     assert.doesNotMatch(internalConsole, /token\s*!==\s*expectedToken/);
-    assert.match(internalSecret, /timingSafeEqualText\(req\.header\('X-Internal-API-Secret'\),\s*secret\)/);
+    assert.match(internalSecret, /const provided = req\.header\('X-Internal-API-Secret'\)/);
+    assert.match(internalSecret, /secrets\.some\(\(secret\) => timingSafeEqualText\(provided,\s*secret\)\)/);
     assert.doesNotMatch(internalSecret, /header\('X-Internal-API-Secret'\)\s*===\s*secret/);
     assert.match(exportRoute, /timingSafeEqualText\(token,\s*expected\)/);
     assert.doesNotMatch(exportRoute, /function safeEqual/);
@@ -57,12 +58,12 @@ test('stored app OAuth token hashes and authorization-code hashes use timing-saf
     assert.doesNotMatch(billingOauth, /expectedCodeHash\s*!==\s*codeHash/);
 });
 
-test('H-16 per-operator ops identity remainder is explicitly human-gated', () => {
-    const ledger = read(ledgerPath);
-    const status = read(statusPath);
+test('per-operator ops identity remainder is explicitly human-gated', () => {
+    const skipped = read(skippedDecisionsPath);
+    const ledger = read(executionLedgerPath);
 
-    assert.match(ledger, /\| H-16 \| SKIPPED -- NEEDS HUMAN: ops SSO\/IdP/);
-    assert.match(ledger, /F4\.2/);
-    assert.match(status, /F4\.2 ops-plane timing-safe compare evidence/);
-    assert.match(status, /SKIPPED -- NEEDS HUMAN: ops SSO\/IdP/);
+    assert.match(skipped, /SKIP-OPS-SSO-IDP/);
+    assert.match(skipped, /[Pp]er-operator gateway-side ops identity/);
+    assert.match(skipped, /static-token path remains timing-safe hardened/);
+    assert.match(ledger, /STEPUP-OPS-SSO-IDP-SEAM/);
 });
