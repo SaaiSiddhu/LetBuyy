@@ -3,7 +3,7 @@ import {
   phaseBEntries,
   pushRegexOffenders,
 } from "./phase-b-common.mjs";
-import { createReporter } from "./governance-common.mjs";
+import { createReporter, readFile } from "./governance-common.mjs";
 
 const reporter = createReporter("No self-custody rail validator");
 const offenders = [];
@@ -20,4 +20,17 @@ for (const entry of phaseBEntries(["apps", "services", "packages", "config"])) {
 }
 
 assertNoOffenders(reporter, offenders, "Self-custody payout rails must not be hardcoded as defaults");
-reporter.finish("self-custody payout rail defaults checked");
+
+const residualRazorpayxEntries = phaseBEntries(["apps", "services", "packages", "database"], {
+  includeTests: true,
+}).filter((entry) => entry.text.includes("razorpayx"));
+
+if (residualRazorpayxEntries.length > 0) {
+  const skippedHumanDecisions = readFile("SKIPPED_HUMAN_DECISIONS.md");
+  reporter.assert(
+    skippedHumanDecisions.includes("SKIP-RAZORPAYX-ENUM-PURGE"),
+    "Residual razorpayx contract/database values must carry the enum/check purge seam",
+  );
+}
+
+reporter.finish("self-custody payout rail defaults and purge seam checked");

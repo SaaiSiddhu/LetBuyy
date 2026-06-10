@@ -3,7 +3,7 @@ import {
   phaseBEntries,
   pushRegexOffenders,
 } from "./phase-b-common.mjs";
-import { createReporter } from "./governance-common.mjs";
+import { createReporter, readFile } from "./governance-common.mjs";
 
 const reporter = createReporter("Identity sole issuer validator");
 
@@ -37,4 +37,28 @@ for (const entry of phaseBEntries(["apps", "services", "packages"])) {
 }
 
 assertNoOffenders(reporter, offenders, "Identity Platform must remain the only token issuer");
-reporter.finish("identity issuer ratchet checked");
+
+const skippedHumanDecisions = readFile("SKIPPED_HUMAN_DECISIONS.md");
+const capabilityBacklog = readFile("CAPABILITY_BACKLOG.md");
+const gatewayAuthRoute = readFile("services/api-gateway/src/routes/auth.ts");
+const legacyAuthCore = readFile("packages/auth-core/src/index.ts");
+const gatewayIdentityMock = readFile("services/api-gateway/src/identity-foundation/mock-key-service.ts");
+
+const legacySessionResidue =
+  gatewayAuthRoute.includes("randomHex(32)") ||
+  gatewayAuthRoute.includes("localAuthSessions") ||
+  legacyAuthCore.includes("HS256") ||
+  gatewayIdentityMock.includes("AUTH_SECRET");
+
+if (legacySessionResidue) {
+  reporter.assert(
+    skippedHumanDecisions.includes("SKIP-IDN-R2-DRAIN-TELEMETRY"),
+    "Residual gateway/HS256 identity scaffolding must carry the IDN-R2 drain telemetry seam before deletion",
+  );
+  reporter.assert(
+    capabilityBacklog.includes("CAP-C07"),
+    "Residual gateway/HS256 identity scaffolding must remain visible in CAP-C07 until OIDC/revocation/HS256 drain ships",
+  );
+}
+
+reporter.finish("identity issuer ratchet and drain seam checked");

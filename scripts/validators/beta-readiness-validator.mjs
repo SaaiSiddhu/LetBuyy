@@ -16,6 +16,14 @@ function assertNotIncludes(file, fragment, message) {
   reporter.assert(!readFile(file).includes(fragment), message || `${file} must not include ${fragment}`);
 }
 
+const skippedHumanDecisions = readFile('SKIPPED_HUMAN_DECISIONS.md');
+const capabilityBacklog = readFile('CAPABILITY_BACKLOG.md');
+
+function assertRecordedCapabilityGap(gapId, skipId, message) {
+  reporter.assert(capabilityBacklog.includes(gapId), `${message}: CAPABILITY_BACKLOG.md missing ${gapId}`);
+  reporter.assert(skippedHumanDecisions.includes(skipId), `${message}: SKIPPED_HUMAN_DECISIONS.md missing ${skipId}`);
+}
+
 const mobileBff = readFile('services/mobile-bff/src/index.ts');
 for (const fragment of [
   'TURNSTILE_SECRET_KEY?: string',
@@ -42,6 +50,16 @@ for (const fragment of [
   '/auth/mobile/turnstile/verify',
 ]) {
   reporter.assert(mobileAuthService.includes(fragment), `merchant mobile Turnstile BFF flow missing: ${fragment}`);
+}
+if (
+  mobileAuthService.includes('_verifyTurnstileWithBff(token)') &&
+  mobileAuthService.includes("'turnstileToken': await _requireTurnstileToken(turnstileToken)")
+) {
+  assertRecordedCapabilityGap(
+    'CAP-C09',
+    'SKIP-CAP-MOBILE-TURNSTILE-DOUBLE-SPEND',
+    'Mobile Turnstile double-spend residue must remain recorded while BFF preverify and identity login consume the same token',
+  );
 }
 assertIncludes(
   'apps/mobile/merchant-app/lib/main.dart',
@@ -71,6 +89,18 @@ for (const fragment of [
   'buildHostedCheckoutOrderCommand',
 ]) {
   reporter.assert(checkoutRoute.includes(fragment), `hosted checkout confirm missing: ${fragment}`);
+}
+const checkoutPaymentRoute = readFile('services/api-gateway/src/routes/storefront/checkout-payment-routes.ts');
+const checkoutExtensionHost = readFile('apps/storefront-runtime/src/components/checkout-extensions/CheckoutExtensionHost.tsx');
+if (
+  checkoutPaymentRoute.includes('evaluateCheckoutAppFunctions') ||
+  checkoutExtensionHost.includes('CheckoutExtensionHost')
+) {
+  assertRecordedCapabilityGap(
+    'CAP-C13',
+    'SKIP-CAP-CHECKOUT-WASM-RETIREMENT',
+    'Residual checkout app-functions/Wasm live path must remain recorded until ARB/product scoping and deletion are complete',
+  );
 }
 assertIncludes(
   'services/api-gateway/src/__tests__/checkout.test.ts',
@@ -148,6 +178,18 @@ const skipped = readFile('SKIPPED_HUMAN_DECISIONS.md');
 for (const skipId of ['SKIP-W7-MOBILE-TURNSTILE-SECRET', 'SKIP-W7-WHATSAPP-LIVE-CREDS']) {
   reporter.assert(skipped.includes(skipId), `SKIPPED_HUMAN_DECISIONS.md missing ${skipId}`);
 }
+if (exists('apps/mobile/merchant-app/lib/widgets/editor/website_preview.dart')) {
+  assertRecordedCapabilityGap(
+    'CAP-C12',
+    'SKIP-CAP-STORE-PUBLISH-PIPELINE',
+    'Residual mobile/editor preview surface must remain recorded until store-publish writes canonical theme runtime state',
+  );
+}
+assertRecordedCapabilityGap(
+  'CAP-C10',
+  'SKIP-CAP-ALERTING-END-TO-END',
+  'Alerting must remain recorded as an end-to-end capability gap; DSN presence alone is not live alert delivery',
+);
 
 const packageJson = readFile('package.json');
 for (const fragment of [
@@ -157,4 +199,4 @@ for (const fragment of [
   reporter.assert(packageJson.includes(fragment), `package.json missing Wave 7 script: ${fragment}`);
 }
 
-reporter.finish('mobile Turnstile, checkout capture, sandbox COD/WhatsApp, OIDC honesty, deploy exclusions, and D11 package deletion checked');
+reporter.finish('mobile Turnstile, checkout capture, sandbox COD/WhatsApp, OIDC honesty, deploy exclusions, D11 package deletion, and recorded capability gaps checked');
