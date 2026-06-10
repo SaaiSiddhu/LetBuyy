@@ -257,7 +257,7 @@ router.put('/preferences', async (c) => {
     return c.json(success(data));
 });
 
-// POST /notifications/send — V1 mock-default notification router
+// POST /notifications/send — V1 sandbox-default notification router
 router.post('/send', validate('json', NotificationSendSchema), async (c) => {
     const auth = c.get('auth');
     const body = c.get('validatedBody') as NotificationSendInput;

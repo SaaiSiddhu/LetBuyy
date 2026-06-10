@@ -69,7 +69,7 @@ const ALLOWED_PREFIXES = [
   '/v1/admin/graphql',
 ];
 
-type ProviderMode = 'mock' | 'sandbox' | 'live';
+type ProviderMode = 'sandbox' | 'live';
 
 type GatewayFanInResult =
   | { ok: true; key: string; data: unknown; providerMode: ProviderMode | null }
@@ -232,7 +232,7 @@ function unwrapGatewayPayload(value: unknown): unknown {
 }
 
 function normalizeProviderMode(value: unknown): ProviderMode | null {
-  if (value !== 'mock' && value !== 'sandbox' && value !== 'live' && value !== 'test') return null;
+  if (value !== 'sandbox' && value !== 'live' && value !== 'test') return null;
   return value === 'test' ? 'sandbox' : value;
 }
 

@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS public.gst_invoices (
   total_amount_minor bigint NOT NULL CHECK (total_amount_minor >= 0),
   marketplace_tcs_bps integer NOT NULL DEFAULT 0 CHECK (marketplace_tcs_bps >= 0 AND marketplace_tcs_bps <= 1000),
   tcs_amount_minor bigint NOT NULL DEFAULT 0 CHECK (tcs_amount_minor >= 0),
-  irp_mode text NOT NULL DEFAULT 'mock' CHECK (irp_mode IN ('mock', 'live')),
+  irp_mode text NOT NULL DEFAULT 'sandbox' CHECK (irp_mode IN ('sandbox', 'live')),
   irn text NOT NULL,
   qr_payload text NOT NULL,
   provider_ack jsonb NOT NULL DEFAULT '{}'::jsonb,

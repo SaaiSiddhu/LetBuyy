@@ -11654,7 +11654,7 @@ CREATE TABLE public.sandbox_provider_contracts (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     deleted_at timestamp with time zone,
     CONSTRAINT sandbox_provider_contracts_environment_check CHECK ((environment = ANY (ARRAY['local'::text, 'development'::text, 'staging'::text, 'production'::text]))),
-    CONSTRAINT sandbox_provider_contracts_mode_check CHECK ((mode = ANY (ARRAY['mock'::text, 'sandbox'::text, 'live'::text]))),
+    CONSTRAINT sandbox_provider_contracts_mode_check CHECK ((mode = ANY (ARRAY['sandbox'::text, 'live'::text]))),
     CONSTRAINT sandbox_provider_contracts_provider_check CHECK ((provider = ANY (ARRAY['stripe'::text, 'razorpay'::text, 'paypal'::text, 'email'::text, 'sms'::text, 'queue'::text, 'search'::text, 'storage'::text]))),
     CONSTRAINT sandbox_provider_contracts_secret_scope_check CHECK ((secret_scope = ANY (ARRAY['local-template'::text, 'development-secret-store'::text, 'staging-secret-store'::text, 'production-secret-store'::text]))),
     CONSTRAINT sandbox_provider_contracts_side_effect_policy_check CHECK ((side_effect_policy = ANY (ARRAY['none'::text, 'sandbox-only'::text, 'governed-live'::text])))
@@ -12105,7 +12105,7 @@ CREATE TABLE public.domain_orders (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     deleted_at timestamp with time zone,
-    CONSTRAINT domain_orders_provider_check CHECK ((provider = ANY (ARRAY['resellerclub'::text, 'opensrs'::text, 'mock'::text]))),
+    CONSTRAINT domain_orders_provider_check CHECK ((provider = ANY (ARRAY['resellerclub'::text, 'opensrs'::text, 'sandbox'::text]))),
     CONSTRAINT domain_orders_status_check CHECK ((status = ANY (ARRAY['created'::text, 'registering'::text, 'provisioning'::text, 'active'::text, 'failed'::text])))
 );
 

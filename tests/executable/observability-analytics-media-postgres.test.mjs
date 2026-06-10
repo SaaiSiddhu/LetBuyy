@@ -177,7 +177,7 @@ test('Task 016 migration builds commerce MV, media signed-upload metadata, AI se
     );
 
     INSERT INTO public.ai_capability_seams (site_id, feature_key, mode, status, provider)
-    VALUES (${sqlString(siteId)}::uuid, 'analytics_context', 'mock', 'ready_for_interface', 'none');
+    VALUES (${sqlString(siteId)}::uuid, 'analytics_context', 'sandbox', 'ready_for_interface', 'none');
   `);
 
   const mvRow = psql(`

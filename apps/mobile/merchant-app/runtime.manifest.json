@@ -99,6 +99,6 @@
   "productionOwnership": "Delegates production execution to service APIs, provider platforms, deployment topology, and runtime manifests while owning presentation availability.",
   "deploymentPipelineOwnership": "Delegates deployment pipeline gates through infrastructure/deployment, production-rollout workflow, health gates, rollback runbooks, and production topology validation.",
   "telemetryInfrastructureOwnership": "Delegates telemetry infrastructure integration through OpenTelemetry, runtime telemetry tables, Prometheus alerts, and dashboard projections.",
-  "dashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local mock data.",
-  "operationalDashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local mock data."
+  "dashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local fixture data.",
+  "operationalDashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local fixture data."
 }

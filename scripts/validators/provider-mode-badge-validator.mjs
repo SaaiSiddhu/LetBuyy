@@ -73,12 +73,22 @@ const checkoutRoute = readFile("services/api-gateway/src/routes/checkout.ts");
 const storefrontCartRoutes = readFile("services/api-gateway/src/routes/storefront/cart-routes.ts");
 const mediaRoute = readFile("services/api-gateway/src/routes/media.ts");
 const shippingRoute = readFile("services/api-gateway/src/routes/shipping.ts");
+const workerEnvSchema = readFile("config/env/schemas/worker.schema.json");
+const baselineMigration = readFile("database/supabase/migrations/000_baseline.sql");
+const customDomainsMigration = readFile("database/supabase/migrations/090_custom_domains_and_store_access.sql");
+const taxInvoiceMigration = readFile("database/supabase/migrations/144_executable_tax_gst_invoices.sql");
+const settlementMigration = readFile("database/supabase/migrations/151_executable_settlement_ledger.sql");
+const billingAutopayMigration = readFile("database/supabase/migrations/152_executable_billing_autopay.sql");
+const aiSeamMigration = readFile("database/supabase/migrations/154_executable_analytics_media_ai_seam.sql");
+const moneyAuthorityRollback = readFile("database/supabase/rollback/160_foundation_money_ledger_authority.rollback.sql");
 reporter.assert(!kycAdapter.includes("live_provider_stub"), "KYC adapter must not turn sandbox verification into live-provider success");
 reporter.assert(kycAdapter.includes("KYC_LIVE_PROVIDER_UNAVAILABLE"), "KYC adapter must fail closed while live provider integration is absent");
 reporter.assert(capabilityBacklog.includes("CAP-C15"), "CAPABILITY_BACKLOG.md missing CAP-C15 live KYC provider gap");
 reporter.assert(skippedHumanDecisions.includes("SKIP-CAP-KYC-LIVE-PROVIDER"), "SKIPPED_HUMAN_DECISIONS.md missing SKIP-CAP-KYC-LIVE-PROVIDER");
 reporter.assert(checkoutCore.includes("SANDBOX-IRN-"), "GST/IRP invoice generation must use sandbox IRN labels while live IRP is human-gated");
 reporter.assert(!checkoutCore.includes("MOCK-IRN-"), "GST/IRP invoice generation must not emit MOCK-IRN labels");
+reporter.assert(!checkoutCore.includes("z.enum(['mock', 'sandbox', 'live'])"), "checkout payment intent schema must not accept mock payment modes");
+reporter.assert(checkoutCore.includes("mode: z.enum(['sandbox', 'live']).default('sandbox')"), "checkout payment intent schema must accept sandbox/live only");
 reporter.assert(taxRoute.includes("irp_mode: 'sandbox'"), "tax route must expose sandbox IRP mode, not mock IRP mode");
 reporter.assert(!taxRoute.includes("irp_mode: 'mock'"), "tax route must not expose mock IRP mode");
 reporter.assert(queueWorker.includes("sandbox_send"), "WhatsApp queue-worker dispatch metadata must expose sandbox_send");
@@ -213,6 +223,29 @@ reporter.assert(registrarSource.includes("SandboxRegistrarProvider"), "registrar
 reporter.assert(registrarSource.includes("REGISTRAR_SANDBOX_ENABLED"), "registrar sandbox provider must be explicitly gated");
 reporter.assert(sharedTypes.includes("DomainRegistrarProviderSchema = z.enum(['resellerclub', 'opensrs', 'sandbox'])"), "shared domain registrar schema must use sandbox, not mock");
 reporter.assert(sharedTypes.includes("provider_mode: z.enum(['sandbox', 'live']).default('sandbox')"), "store payment config schema must use sandbox/live provider modes");
+reporter.assert(!bff.includes("type ProviderMode = 'mock'"), "mobile BFF provider mode union must not accept mock");
+reporter.assert(!bff.includes("value !== 'mock'"), "mobile BFF provider mode parser must not accept mock");
+reporter.assert(bff.includes("type ProviderMode = 'sandbox' | 'live'"), "mobile BFF provider mode union must be sandbox/live only");
+reporter.assert(!workerEnvSchema.includes('"mock"'), "worker env schema must not allow mock registrar provider");
+reporter.assert(workerEnvSchema.includes('"sandbox"'), "worker env schema must allow sandbox registrar provider");
+for (const [label, source] of [
+  ["baseline migration", baselineMigration],
+  ["custom domains migration", customDomainsMigration],
+  ["tax invoice migration", taxInvoiceMigration],
+  ["settlement migration", settlementMigration],
+  ["billing autopay migration", billingAutopayMigration],
+  ["AI seam migration", aiSeamMigration],
+  ["money authority rollback", moneyAuthorityRollback],
+]) {
+  reporter.assert(!source.includes("DEFAULT 'mock'"), `${label} must not replay mock defaults`);
+  reporter.assert(!source.includes("DEFAULT 'mock'::text"), `${label} must not replay mock text defaults`);
+  reporter.assert(!source.includes("IN ('mock'"), `${label} must not allow mock provider modes`);
+  reporter.assert(!source.includes("'mock'::text"), `${label} must not allow mock text enum values`);
+}
+reporter.assert(settlementMigration.includes("provider_mode text NOT NULL DEFAULT 'sandbox'"), "settlement migration must default provider modes to sandbox");
+reporter.assert(billingAutopayMigration.includes("provider_mode text NOT NULL DEFAULT 'sandbox'"), "billing AutoPay migration must default provider mode to sandbox");
+reporter.assert(aiSeamMigration.includes("mode text NOT NULL DEFAULT 'sandbox'"), "AI seam migration must default mode to sandbox");
+reporter.assert(taxInvoiceMigration.includes("irp_mode text NOT NULL DEFAULT 'sandbox' CHECK (irp_mode IN ('sandbox', 'live'))"), "tax invoice migration must default IRP mode to sandbox/live");
 for (const [label, source] of [
   ["checkout route", checkoutRoute],
   ["storefront cart route", storefrontCartRoutes],

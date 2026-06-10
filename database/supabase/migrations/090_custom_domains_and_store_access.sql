@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS public.domain_orders (
   deleted_at timestamp with time zone,
   CONSTRAINT domain_orders_pkey PRIMARY KEY (id),
   CONSTRAINT domain_orders_idempotency_key UNIQUE (idempotency_key),
-  CONSTRAINT domain_orders_provider_check CHECK (provider = ANY (ARRAY['resellerclub'::text, 'opensrs'::text, 'mock'::text])),
+  CONSTRAINT domain_orders_provider_check CHECK (provider = ANY (ARRAY['resellerclub'::text, 'opensrs'::text, 'sandbox'::text])),
   CONSTRAINT domain_orders_status_check CHECK (status = ANY (ARRAY['created'::text, 'registering'::text, 'provisioning'::text, 'active'::text, 'failed'::text]))
 );
 

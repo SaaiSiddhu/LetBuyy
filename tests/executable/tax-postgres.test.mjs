@@ -150,9 +150,9 @@ test('Task 008 tax migration applies, isolates immutable GST invoices, and rolls
       11800,
       100,
       100,
-      'MOCK-IRN-TAXPROOF',
-      'letbuyy://gst-invoice/MOCK-IRN-TAXPROOF',
-      '{"mode":"mock"}'::jsonb,
+      'SANDBOX-IRN-TAXPROOF',
+      'letbuyy://gst-invoice/SANDBOX-IRN-TAXPROOF',
+      '{"mode":"sandbox"}'::jsonb,
       '{"invoice_number":"LBY-LB-1001","tax_amount_minor":1800}'::jsonb
     );
   `);

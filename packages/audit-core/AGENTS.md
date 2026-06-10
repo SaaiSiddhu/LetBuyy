@@ -28,4 +28,4 @@ Canonical source boundary: `packages/audit-core`.
 ## Migration Notes
 
 - Audit dual-write must be additive: legacy rows remain authoritative and canonical `audit_events` writes must never replace them during this phase.
-- Hash-chain anchoring remains mock-only until live KMS approval is recorded.
+- Hash-chain anchoring remains sandbox-only until live KMS approval is recorded.

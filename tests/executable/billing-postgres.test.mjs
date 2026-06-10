@@ -151,7 +151,7 @@ function resetDatabase() {
   `);
 }
 
-test('Task 014 billing migration removes GMV rake, enforces tenant RLS, supports mock AutoPay rows, and rolls back', () => {
+test('Task 014 billing migration removes GMV rake, enforces tenant RLS, supports sandbox AutoPay rows, and rolls back', () => {
   resetDatabase();
 
   const userId = '11111111-1111-4111-8111-111111111111';
@@ -174,7 +174,7 @@ test('Task 014 billing migration removes GMV rake, enforces tenant RLS, supports
       external_mandate_id, upi_vpa_hash, idempotency_key
     ) VALUES (
       ${sqlString(siteId)}::uuid,
-      'mock',
+      'sandbox',
       'active',
       'business',
       'monthly',

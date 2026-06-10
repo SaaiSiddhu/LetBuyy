@@ -50,13 +50,13 @@ ALTER TABLE public.payments
   DROP COLUMN IF EXISTS refunded_amount_minor;
 
 ALTER TABLE public.payments
-  ALTER COLUMN mode SET DEFAULT 'mock';
+  ALTER COLUMN mode SET DEFAULT 'sandbox';
 
 ALTER TABLE public.payment_credentials
-  ALTER COLUMN mode SET DEFAULT 'mock';
+  ALTER COLUMN mode SET DEFAULT 'sandbox';
 
 ALTER TABLE public.settlements
-  ALTER COLUMN provider_mode SET DEFAULT 'mock';
+  ALTER COLUMN provider_mode SET DEFAULT 'sandbox';
 
 ALTER TABLE public.payouts
-  ALTER COLUMN provider_mode SET DEFAULT 'mock';
+  ALTER COLUMN provider_mode SET DEFAULT 'sandbox';

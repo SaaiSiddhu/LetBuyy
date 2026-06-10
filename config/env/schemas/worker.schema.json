@@ -309,7 +309,7 @@
       "enum": [
         "resellerclub",
         "opensrs",
-        "mock"
+        "sandbox"
       ]
     },
     "REGISTRAR_API_URL": {

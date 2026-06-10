@@ -105,7 +105,7 @@ export const CheckoutDeliverySchema = z.object({
 export const CheckoutPaymentIntentSchema = z.object({
   idempotency_key: z.string().min(8).max(200),
   provider: z.enum(['razorpay', 'cashfree', 'upi', 'cod']).default('cod'),
-  mode: z.enum(['mock', 'sandbox', 'live']).default('sandbox'),
+  mode: z.enum(['sandbox', 'live']).default('sandbox'),
   tokenize: z.boolean().default(false),
   metadata: z.record(z.string(), z.unknown()).default({}),
 }).strict();

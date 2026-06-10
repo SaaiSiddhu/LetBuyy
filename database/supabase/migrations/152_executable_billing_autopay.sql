@@ -1,5 +1,5 @@
 -- LetBuyy Executable Architecture V1 Task 014.
--- Billing module: mock UPI AutoPay mandates, merchant GST invoices, dunning,
+-- Billing module: sandbox UPI AutoPay mandates, merchant GST invoices, dunning,
 -- usage metering, and permanent removal of the store-plan GMV rake.
 
 UPDATE public.plans
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS public.billing_mandates (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   site_id uuid NOT NULL REFERENCES public.sites(id) ON DELETE CASCADE,
   provider text NOT NULL DEFAULT 'upi_autopay',
-  provider_mode text NOT NULL DEFAULT 'mock',
+  provider_mode text NOT NULL DEFAULT 'sandbox',
   status text NOT NULL DEFAULT 'pending_provider',
   plan_slug text NOT NULL,
   billing_period text NOT NULL DEFAULT 'monthly',
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS public.billing_mandates (
   updated_at timestamptz NOT NULL DEFAULT now(),
   deleted_at timestamptz,
   CONSTRAINT billing_mandates_provider_check CHECK (provider IN ('upi_autopay')),
-  CONSTRAINT billing_mandates_provider_mode_check CHECK (provider_mode IN ('mock', 'sandbox', 'live')),
+  CONSTRAINT billing_mandates_provider_mode_check CHECK (provider_mode IN ('sandbox', 'live')),
   CONSTRAINT billing_mandates_status_check CHECK (status IN ('pending_provider', 'active', 'revoked', 'failed')),
   CONSTRAINT billing_mandates_billing_period_check CHECK (billing_period IN ('monthly', 'yearly')),
   CONSTRAINT billing_mandates_currency_check CHECK (currency = 'INR'),

@@ -1,6 +1,6 @@
 -- LetBuyy Executable Architecture V1 Task 015.
 -- Identity/security kernel: DPDP consent and DSR evidence, store credit scoped
--- to a single site, mock step-up challenge records, maker-checker approvals,
+-- to a single site, sandbox step-up challenge records, maker-checker approvals,
 -- PII encryption columns, and tenant-GUC RLS/FORCE hardening.
 
 CREATE TABLE IF NOT EXISTS public.consents (
