@@ -75,7 +75,7 @@ The recovery's hard constraint throughout: **the monorepo must stay green** (com
 **Recommendation.** Let CI run `turbo build`/`turbo typecheck` across the 9 apps on this branch; the changes are mechanical layout/import edits plus additive package exports.
 
 ## D10 WhatsApp — BSP/WABA/HSM approval remains human-gated
-**Decision.** Scoped WhatsApp order lifecycle and COD confirmation flows stay on the `letbuyy_sandbox` mock adapter until a platform operator completes BSP/Meta WABA onboarding and template approval.
+**Decision.** Scoped WhatsApp order lifecycle and COD confirmation flows stay on the `letbuyy_sandbox` provider until a platform operator completes BSP/Meta WABA onboarding and template approval.
 **Reason.** Live WhatsApp sender approval, HSM/template review, business verification, webhook secret provisioning, and provider credentials are external-provider actions that cannot be fabricated in source.
-**Impact.** The repository can plan, consent-gate, persist, mirror, and audit WhatsApp lifecycle/COD sends, but the default send is mock/sandbox-badged and does not reach real shoppers.
+**Impact.** The repository can plan, consent-gate, persist, mirror, and audit WhatsApp lifecycle/COD sends, but the default send is sandbox-badged and does not reach real shoppers.
 **Recommendation.** Complete `SKIP-D10-WHATSAPP-BSP-WABA-HSM` in `SKIPPED_HUMAN_DECISIONS.md`, then run live smoke evidence for `order_paid`, `order_shipped`, `order_delivered`, and `cod_confirmation`.

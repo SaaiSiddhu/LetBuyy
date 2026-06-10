@@ -45,6 +45,7 @@ const skippedHumanDecisions = readFile("SKIPPED_HUMAN_DECISIONS.md");
 const kycAdapter = readFile("packages/infrastructure/kyc-verification-adapter/index.ts");
 const checkoutCore = readFile("packages/checkout-core/src/index.ts");
 const taxRoute = readFile("services/api-gateway/src/routes/tax.ts");
+const queueWorker = readFile("services/queue-workers/src/platform-queue-consumer.ts");
 reporter.assert(!kycAdapter.includes("live_provider_stub"), "KYC adapter must not turn sandbox verification into live-provider success");
 reporter.assert(kycAdapter.includes("KYC_LIVE_PROVIDER_UNAVAILABLE"), "KYC adapter must fail closed while live provider integration is absent");
 reporter.assert(capabilityBacklog.includes("CAP-C15"), "CAPABILITY_BACKLOG.md missing CAP-C15 live KYC provider gap");
@@ -53,6 +54,8 @@ reporter.assert(checkoutCore.includes("SANDBOX-IRN-"), "GST/IRP invoice generati
 reporter.assert(!checkoutCore.includes("MOCK-IRN-"), "GST/IRP invoice generation must not emit MOCK-IRN labels");
 reporter.assert(taxRoute.includes("irp_mode: 'sandbox'"), "tax route must expose sandbox IRP mode, not mock IRP mode");
 reporter.assert(!taxRoute.includes("irp_mode: 'mock'"), "tax route must not expose mock IRP mode");
+reporter.assert(queueWorker.includes("sandbox_send"), "WhatsApp queue-worker dispatch metadata must expose sandbox_send");
+reporter.assert(!queueWorker.includes("mock_send"), "WhatsApp queue-worker dispatch metadata must not expose mock_send");
 reporter.assert(!exists("packages/infrastructure/identity-otp-adapter/index.ts"), "retired identity OTP mock adapter must not exist");
 reporter.assert(!readFile("packages/infrastructure/src/index.ts").includes("identity-otp-adapter"), "infrastructure barrel must not export retired identity OTP mock adapter");
 reporter.assert(!readFile("packages/infrastructure/package.json").includes("identity-otp-adapter"), "infrastructure package must not expose retired identity OTP mock adapter");

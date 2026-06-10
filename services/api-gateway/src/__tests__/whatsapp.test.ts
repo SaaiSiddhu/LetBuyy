@@ -143,7 +143,7 @@ test('Task 012 scoped WhatsApp lifecycle, consent, COD, and V1 /wa aliases are i
     assert.match(task012RollbackSource, /DROP TABLE IF EXISTS public\.wa_optins/);
 });
 
-test('D10 WhatsApp lifecycle and COD notifications are outbox-planned, consent-gated, and mock-badged', () => {
+test('D10 WhatsApp lifecycle and COD notifications are outbox-planned, consent-gated, and sandbox-badged', () => {
     assert.match(notificationCoreSource, /planWhatsAppNotificationForEvent/);
     assert.match(notificationCoreSource, /case 'order\.paid'[\s\S]*template_key: 'order_paid'/);
     assert.match(notificationCoreSource, /case 'order\.fulfilled'[\s\S]*template_key: 'order_shipped'/);
@@ -159,7 +159,8 @@ test('D10 WhatsApp lifecycle and COD notifications are outbox-planned, consent-g
     assert.match(queueWorkerSource, /\.from\('whatsapp_messages'\)/);
     assert.match(queueWorkerSource, /\.from\('wa_sessions'\)/);
     assert.match(queueWorkerSource, /\.from\('notification_logs'\)/);
-    assert.match(queueWorkerSource, /mock_send/);
+    assert.match(queueWorkerSource, /sandbox_send/);
+    assert.doesNotMatch(queueWorkerSource, /mock_send/);
     assert.match(queueWorkerSource, /bsp_template_approval/);
     assert.match(queueWorkerSource, /letbuyy_sandbox/);
     assert.match(queueWorkerSource, /expireDueCodConfirmations/);

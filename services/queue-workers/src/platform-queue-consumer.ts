@@ -754,7 +754,7 @@ class PlatformQueueConsumer {
         idempotencyKey,
         metadata: {
           provider_mode: adapter.mode,
-          mock_send: adapter.provider === 'letbuyy_sandbox',
+          sandbox_send: adapter.provider === 'letbuyy_sandbox',
         },
       });
       return;
@@ -782,7 +782,7 @@ class PlatformQueueConsumer {
         idempotencyKey,
         metadata: {
           provider_mode: adapter.mode,
-          mock_send: adapter.provider === 'letbuyy_sandbox',
+          sandbox_send: adapter.provider === 'letbuyy_sandbox',
         },
       });
       return;
@@ -792,7 +792,7 @@ class PlatformQueueConsumer {
     const metadata = {
       ...result.metadata,
       provider_mode: result.providerMode,
-      mock_send: result.sandbox,
+      sandbox_send: result.sandbox,
       queue_job_id: job.id,
       event_id: event.event_id,
       consent_ledger: 'wa_optins',
