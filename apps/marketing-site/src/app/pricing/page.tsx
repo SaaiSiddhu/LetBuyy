@@ -8,7 +8,7 @@ import Footer from '@/components/Footer'
 export const metadata: Metadata = {
     title: 'Pricing',
     description:
-        'Compare LetBuyy Free, Basic, Pro and Enterprise packaging. Paid pricing, fee policy and commercial terms remain pending human approval.',
+        'Compare LetBuyy Free, Basic, Pro and Enterprise packaging. Transaction and platform fees stay 0%; paid pricing and commercial terms remain pending human approval.',
     alternates: {
         canonical: '/pricing',
     },
