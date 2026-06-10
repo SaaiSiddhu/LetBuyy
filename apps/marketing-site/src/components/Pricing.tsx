@@ -98,7 +98,7 @@ const matrixRows: MatrixRow[] = [
     },
     {
         feature: 'Transaction or platform fees',
-        values: { free: 'Needs approval', basic: 'Needs approval', pro: 'Needs approval', enterprise: 'Contracted' },
+        values: { free: '0%', basic: '0%', pro: '0%', enterprise: '0%' },
     },
 ]
 
@@ -130,7 +130,7 @@ export default function Pricing() {
                     <p className="section-label">Pricing</p>
                     <h2 className="section-title">Plan comparison without invented prices</h2>
                     <p className="section-subtitle">
-                        Free, Basic, Pro and Enterprise packaging is mapped below. Exact paid pricing, discounts, transaction fees and contractual terms stay pending human approval.
+                        Free, Basic, Pro and Enterprise packaging is mapped below. Exact paid pricing, discounts, support terms and contractual terms stay pending human approval; transaction and platform fees stay 0%.
                     </p>
                 </div>
 
@@ -139,7 +139,7 @@ export default function Pricing() {
                     <div>
                         <p className="pricing-approval-title">Pricing approval required</p>
                         <p className="pricing-approval-copy">
-                            This grid is ready for the approved commercial numbers. Paid plan amounts and fee policies are intentionally not fabricated.
+                            This grid is ready for the approved commercial numbers. Paid plan amounts, discounts and support policies are intentionally not fabricated.
                         </p>
                     </div>
                 </div>
