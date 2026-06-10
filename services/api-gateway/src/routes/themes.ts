@@ -166,6 +166,11 @@ function envString(c: Context<{ Bindings: Env }>, key: string): string | null {
     return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
 }
 
+function isProductionLikeRuntime(c: Context<{ Bindings: Env }>): boolean {
+    return ['ENVIRONMENT', 'APP_ENV', 'NODE_ENV', 'VERCEL_ENV']
+        .some((key) => envString(c, key)?.toLowerCase() === 'production');
+}
+
 function themeMarketplaceSellerGstin(c: Context<{ Bindings: Env }>): string {
     return envString(c, 'THEME_MARKETPLACE_GSTIN') || envString(c, 'GSTIN') || THEME_MARKETPLACE_DEV_GSTIN;
 }
@@ -1105,13 +1110,15 @@ router.post('/:slug/purchase', validate('json', ThemePurchaseOrderSchema), async
         }), 201);
     }
 
-    const paymentProviderMode = envString(c, 'PAYMENTS_PROVIDER') || 'mock';
-    const shouldUseMockPayment = paymentProviderMode === 'mock' || (!c.env.RAZORPAY_KEY_ID && !c.env.RAZORPAY_KEY_SECRET);
+    const paymentProviderMode = envString(c, 'PAYMENTS_PROVIDER') || 'sandbox';
+    const hasRazorpayKeys = Boolean(c.env.RAZORPAY_KEY_ID && c.env.RAZORPAY_KEY_SECRET);
+    const productionLike = isProductionLikeRuntime(c);
+    const shouldUseSandboxPayment = !productionLike && (paymentProviderMode === 'sandbox' || !hasRazorpayKeys);
 
-    if (shouldUseMockPayment) {
+    if (shouldUseSandboxPayment) {
         const issuedLicenseKey = licenseKey();
-        const mockPaymentId = `theme_mock_${crypto.randomUUID().replace(/-/g, '').slice(0, 18)}`;
-        const { data: mockPurchase, error } = await db
+        const sandboxPaymentId = `theme_sandbox_${crypto.randomUUID().replace(/-/g, '').slice(0, 18)}`;
+        const { data: sandboxPurchase, error } = await db
             .from('theme_purchases')
             .upsert(
                 {
@@ -1120,11 +1127,11 @@ router.post('/:slug/purchase', validate('json', ThemePurchaseOrderSchema), async
                     price_paid_inr: priceInr,
                     price_paid_usd: purchasableTheme.letbuyy_price_usd || 0,
                     currency: body.currency,
-                    payment_method: 'mock',
-                    payment_provider: 'mock',
-                    payment_id: mockPaymentId,
-                    provider_order_id: `theme_mock_order_${purchasableTheme.id.slice(0, 8)}`,
-                    provider_payment_id: mockPaymentId,
+                    payment_method: 'sandbox',
+                    payment_provider: 'sandbox',
+                    payment_id: sandboxPaymentId,
+                    provider_order_id: `theme_sandbox_order_${purchasableTheme.id.slice(0, 8)}`,
+                    provider_payment_id: sandboxPaymentId,
                     payment_idempotency_key: body.idempotency_key || null,
                     status: 'completed',
                     payment_processed_at: new Date().toISOString(),
@@ -1135,30 +1142,30 @@ router.post('/:slug/purchase', validate('json', ThemePurchaseOrderSchema), async
             .select('id, status, provider_payment_id, price_paid_inr, currency, license_key')
             .single();
 
-        if (error || !mockPurchase) {
-            throw new Error('Unable to record local theme purchase');
+        if (error || !sandboxPurchase) {
+            throw new Error('Unable to record sandbox theme purchase');
         }
 
-        const amountInr = Number(mockPurchase.price_paid_inr || 0);
+        const amountInr = Number(sandboxPurchase.price_paid_inr || 0);
         const gstAmountInr = themeMarketplaceGstAmount(amountInr);
         const { data: receipt } = await db
             .from('theme_purchase_receipts')
             .upsert(
                 {
-                    purchase_id: mockPurchase.id,
-                    receipt_number: receiptNumber(String(mockPurchase.id)),
-                    invoice_number: invoiceNumber(String(mockPurchase.id)),
-                    license_key: mockPurchase.license_key || issuedLicenseKey,
+                    purchase_id: sandboxPurchase.id,
+                    receipt_number: receiptNumber(String(sandboxPurchase.id)),
+                    invoice_number: invoiceNumber(String(sandboxPurchase.id)),
+                    license_key: sandboxPurchase.license_key || issuedLicenseKey,
                     amount_inr: amountInr,
-                    currency: mockPurchase.currency || 'INR',
+                    currency: sandboxPurchase.currency || 'INR',
                     gst_rate: THEME_MARKETPLACE_GST_RATE,
                     gst_amount_inr: gstAmountInr,
                     seller_gstin: themeMarketplaceSellerGstin(c),
                     invoice_json: themeMarketplaceInvoiceJson(c, {
-                        purchaseId: String(mockPurchase.id),
+                        purchaseId: String(sandboxPurchase.id),
                         themeSlug: slug,
-                        provider: 'mock',
-                        providerPaymentId: String(mockPurchase.provider_payment_id || mockPaymentId),
+                        provider: 'sandbox',
+                        providerPaymentId: String(sandboxPurchase.provider_payment_id || sandboxPaymentId),
                         amountInr,
                     }),
                     created_by: customUser.id,
@@ -1187,33 +1194,33 @@ router.post('/:slug/purchase', validate('json', ThemePurchaseOrderSchema), async
         await new EventExecutionAdapter(db).emitDomainEvent({
             storeId: null,
             aggregateType: 'theme_purchase',
-            aggregateId: String(mockPurchase.id),
+            aggregateId: String(sandboxPurchase.id),
             eventType: 'theme.purchase.completed',
-            idempotencyKey: `theme.purchase.completed:mock:${mockPurchase.id}`,
+            idempotencyKey: `theme.purchase.completed:sandbox:${sandboxPurchase.id}`,
             requestId,
             actorId: customUser.id,
             payload: {
                 theme_id: purchasableTheme.id,
                 theme_slug: slug,
-                provider: 'mock',
-                provider_payment_id: mockPurchase.provider_payment_id || mockPaymentId,
+                provider: 'sandbox',
+                provider_payment_id: sandboxPurchase.provider_payment_id || sandboxPaymentId,
                 dev_default: true,
             },
         });
 
         return c.json(success({
-            purchase_id: mockPurchase.id,
+            purchase_id: sandboxPurchase.id,
             theme: purchasableTheme.name,
             status: 'completed',
-            provider: 'mock',
+            provider: 'sandbox',
             payment_required: false,
-            license_key: mockPurchase.license_key || issuedLicenseKey,
+            license_key: sandboxPurchase.license_key || issuedLicenseKey,
             receipt,
         }), 201);
     }
 
-    if (!c.env.RAZORPAY_KEY_ID || !c.env.RAZORPAY_KEY_SECRET) {
-        return c.json({ error: { code: 'PAYMENT_UNAVAILABLE', message: 'Razorpay test keys are required when PAYMENTS_PROVIDER is not mock' } }, 503);
+    if (!hasRazorpayKeys) {
+        return c.json({ error: { code: 'PAYMENT_UNAVAILABLE', message: 'Razorpay keys are required when theme payments are not sandbox.' } }, 503);
     }
 
     if (

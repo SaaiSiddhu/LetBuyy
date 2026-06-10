@@ -46,6 +46,7 @@ const kycAdapter = readFile("packages/infrastructure/kyc-verification-adapter/in
 const checkoutCore = readFile("packages/checkout-core/src/index.ts");
 const taxRoute = readFile("services/api-gateway/src/routes/tax.ts");
 const queueWorker = readFile("services/queue-workers/src/platform-queue-consumer.ts");
+const themesRoute = readFile("services/api-gateway/src/routes/themes.ts");
 reporter.assert(!kycAdapter.includes("live_provider_stub"), "KYC adapter must not turn sandbox verification into live-provider success");
 reporter.assert(kycAdapter.includes("KYC_LIVE_PROVIDER_UNAVAILABLE"), "KYC adapter must fail closed while live provider integration is absent");
 reporter.assert(capabilityBacklog.includes("CAP-C15"), "CAPABILITY_BACKLOG.md missing CAP-C15 live KYC provider gap");
@@ -56,6 +57,18 @@ reporter.assert(taxRoute.includes("irp_mode: 'sandbox'"), "tax route must expose
 reporter.assert(!taxRoute.includes("irp_mode: 'mock'"), "tax route must not expose mock IRP mode");
 reporter.assert(queueWorker.includes("sandbox_send"), "WhatsApp queue-worker dispatch metadata must expose sandbox_send");
 reporter.assert(!queueWorker.includes("mock_send"), "WhatsApp queue-worker dispatch metadata must not expose mock_send");
+for (const fragment of [
+  "payment_provider: 'mock'",
+  "provider: 'mock'",
+  "theme_mock",
+  "theme.purchase.completed:mock",
+  "PAYMENTS_PROVIDER is not mock",
+]) {
+  reporter.assert(!themesRoute.includes(fragment), `theme marketplace paid purchase must not use mock payment labels: ${fragment}`);
+}
+reporter.assert(themesRoute.includes("payment_provider: 'sandbox'"), "theme marketplace local paid purchase must be sandbox-labelled");
+reporter.assert(themesRoute.includes("provider: 'sandbox'"), "theme marketplace paid purchase response/event must be sandbox-labelled");
+reporter.assert(themesRoute.includes("isProductionLikeRuntime"), "theme marketplace sandbox purchase fallback must fail closed in production-like runtimes");
 reporter.assert(!exists("packages/infrastructure/identity-otp-adapter/index.ts"), "retired identity OTP mock adapter must not exist");
 reporter.assert(!readFile("packages/infrastructure/src/index.ts").includes("identity-otp-adapter"), "infrastructure barrel must not export retired identity OTP mock adapter");
 reporter.assert(!readFile("packages/infrastructure/package.json").includes("identity-otp-adapter"), "infrastructure package must not expose retired identity OTP mock adapter");
