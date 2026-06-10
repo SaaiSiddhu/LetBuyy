@@ -153,6 +153,13 @@ enum AppRouteId {
 
 typedef AppRouteWidgetBuilder = Widget Function(RouteSettings settings);
 
+class MobileDeepLinkTarget {
+  const MobileDeepLinkTarget(this.routeName, {this.arguments = const {}});
+
+  final String routeName;
+  final Map<String, Object?> arguments;
+}
+
 class AppRouteSpec {
   const AppRouteSpec({
     required this.id,
@@ -235,6 +242,33 @@ class AppRoutes {
   static const String twoFactor = '/two-factor';
   static const String pricing = '/pricing';
   static const String connectRazorpay = '/connect-razorpay';
+
+  static MobileDeepLinkTarget? resolveDeepLink(Uri uri) {
+    final segments = uri.pathSegments;
+    if (segments.length >= 2 && segments.first == 'orders') {
+      return MobileDeepLinkTarget(
+        orderDetail,
+        arguments: {'orderId': segments[1]},
+      );
+    }
+    if (segments.isNotEmpty && segments.first == 'payment-return') {
+      return MobileDeepLinkTarget(
+        pricing,
+        arguments: Map<String, Object?>.from(uri.queryParameters),
+      );
+    }
+    if (segments.length >= 2 && segments.first == 'share') {
+      return MobileDeepLinkTarget(
+        livePreview,
+        arguments: {
+          'storeId': segments[1],
+          'storeUrl': uri.queryParameters['url'] ?? '',
+          'storeName': uri.queryParameters['name'] ?? 'Store',
+        },
+      );
+    }
+    return null;
+  }
 
   static final List<AppRouteSpec> _primaryRouteSpecs = [
     AppRouteSpec(

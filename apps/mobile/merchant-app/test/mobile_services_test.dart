@@ -8,7 +8,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:letbuyy_store/app/deep_link_router.dart';
 import 'package:letbuyy_store/app/routes.dart';
 import 'package:letbuyy_store/app/store_context.dart';
 import 'package:letbuyy_store/l10n/app_localizations.dart';
@@ -3788,13 +3787,13 @@ void main() {
     );
 
     test('P4 deep links and localization bundles resolve mobile targets', () {
-      final orderTarget = AppDeepLinkRouter.resolve(
+      final orderTarget = AppRoutes.resolveDeepLink(
         Uri.parse('letbuyy://merchant/orders/order_123'),
       );
-      final paymentTarget = AppDeepLinkRouter.resolve(
+      final paymentTarget = AppRoutes.resolveDeepLink(
         Uri.parse('letbuyy://merchant/payment-return?status=success'),
       );
-      final shareTarget = AppDeepLinkRouter.resolve(
+      final shareTarget = AppRoutes.resolveDeepLink(
         Uri.parse(
           'letbuyy://merchant/share/store_1?name=Demo&url=https://demo.letbuyy.com',
         ),
