@@ -228,6 +228,9 @@ importers:
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
       '@letbuyy/ui':
         specifier: workspace:*
         version: link:../../packages/typescript/ui

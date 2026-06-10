@@ -12,11 +12,13 @@
  * Keep this file dependency-free (pure constants) so it is safe to import from
  * both server and client components.
  *
- * VALUES MARKED `TODO` MUST BE CONFIRMED BY A HUMAN before public launch. Empty
+ * Values marked `HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS` must be confirmed by a
+ * human before public launch. Empty
  * strings are intentionally filtered out of emitted structured data, so it is
- * always safe to ship this file with TODOs unfilled — nothing fabricated will be
- * published. See docs/seo/LETBUYY_ENTITY_AND_SEO_MASTER_PLAYBOOK.md ("Entity
- * Data Sheet") for the exact values to drop in.
+ * safe to ship this file with human-required values unfilled — nothing
+ * fabricated will be published. See
+ * docs/seo/LETBUYY_ENTITY_AND_SEO_MASTER_PLAYBOOK.md ("Entity Data Sheet") for
+ * the exact values to drop in.
  */
 
 /**
@@ -107,28 +109,28 @@ export const BRAND_ALTERNATE_NAMES = ['Let Buyy', 'Letbuyy', 'LetBuyy Commerce']
  */
 export const BRAND_PROFILES = {
   /** Step 1 — paste the Wikidata item URL once it exists (https://www.wikidata.org/wiki/Q…). */
-  wikidata: '', // TODO
+  wikidata: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS
   /** Step 1 — Crunchbase organization URL (https://www.crunchbase.com/organization/letbuyy). */
-  crunchbase: '', // TODO
-  linkedin: '', // TODO e.g. https://www.linkedin.com/company/letbuyy
-  instagram: '', // TODO e.g. https://www.instagram.com/letbuyy
-  x: '', // TODO e.g. https://x.com/letbuyy
-  youtube: '', // TODO
-  facebook: '', // TODO
-  github: '', // TODO e.g. https://github.com/letbuyy
-  producthunt: '', // TODO Step 4 launch URL
+  crunchbase: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS
+  linkedin: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS e.g. https://www.linkedin.com/company/letbuyy
+  instagram: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS e.g. https://www.instagram.com/letbuyy
+  x: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS e.g. https://x.com/letbuyy
+  youtube: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS
+  facebook: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS
+  github: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS e.g. https://github.com/letbuyy
+  producthunt: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS Step 4 launch URL
 } as const;
 
 /** Founder identity. Fixes the "wrong CEO" hallucination by stating it explicitly. */
 export const BRAND_FOUNDER = {
-  /** TODO — the legal name you want associated publicly with LetBuyy. */
+  /** HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS — legal name to associate publicly with LetBuyy. */
   name: '',
   jobTitle: 'Founder & CEO',
 } as const;
 
 export const BRAND = {
   name: 'LetBuyy',
-  /** TODO — registered legal entity name if different (e.g. "LetBuyy Technologies Pvt Ltd"). */
+  /** HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS — registered legal entity name if different. */
   legalName: 'LetBuyy',
   alternateName: BRAND_ALTERNATE_NAMES,
   tagline: 'India-first commerce operating system',
@@ -142,7 +144,7 @@ export const BRAND = {
   logo: `${DEFAULT_PLATFORM_ORIGIN}/icons/letbuyy-logo-512.png`,
   /** Default social share image. */
   ogImage: `${DEFAULT_PLATFORM_ORIGIN}/og/letbuyy-default.png`,
-  /** TODO — public founding year (YYYY) or full date (YYYY-MM-DD). Left blank = omitted. */
+  /** HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS — public founding year (YYYY) or full date (YYYY-MM-DD). Left blank = omitted. */
   foundingDate: '',
   founder: BRAND_FOUNDER,
   country: 'IN',

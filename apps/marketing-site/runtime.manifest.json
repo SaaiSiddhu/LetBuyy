@@ -32,6 +32,7 @@
     "workspacePackages": [
       "@letbuyy/api-client",
       "@letbuyy/api-types",
+      "@letbuyy/shared-types",
       "@letbuyy/ui"
     ],
     "runtimeImports": []

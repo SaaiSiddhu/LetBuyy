@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { getMarketingSiteUrl, getSupportEmail } from "@/lib/public-urls";
 import { getPlatformNavigationLinks } from "@/lib/platform-links";
+import { BRAND, buildBrandSameAs } from "@letbuyy/shared-types";
 import { LetbuyyThemeProvider, ThemeScript } from "@letbuyy/ui";
 
 const letbuyySans = localFont({
@@ -35,22 +36,6 @@ const siteDescription =
   "Launch stores, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.";
 const socialImage = "/og/letbuyy-default.png";
 const logoImage = "/icons/letbuyy-logo-512.png";
-
-// ── Entity identity ─────────────────────────────────────────────────────────
-// Single place to wire LetBuyy's authoritative external profiles. Fill each in as
-// you create it (Steps 1, 3 & 4 of docs/seo/LETBUYY_ENTITY_AND_SEO_MASTER_PLAYBOOK.md
-// → "Entity Data Sheet"). Empty entries are filtered out, so it is safe to ship
-// with these blank — nothing fabricated is published.
-const BRAND_SAME_AS = [
-  "", // https://www.wikidata.org/wiki/Q……               (Step 1 — Wikidata)
-  "", // https://www.crunchbase.com/organization/letbuyy   (Step 1 — Crunchbase)
-  "", // https://www.linkedin.com/company/letbuyy
-  "", // https://www.instagram.com/letbuyy
-  "", // https://x.com/letbuyy
-  "", // https://www.youtube.com/@letbuyy
-].filter(Boolean);
-const FOUNDER_NAME = ""; // TODO — legal name to publish (fixes the "wrong CEO" hallucination)
-const FOUNDING_YEAR = ""; // TODO — e.g. "2025"
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -121,15 +106,16 @@ export const metadata: Metadata = {
 const orgId = `${siteUrl}/#organization`;
 const websiteId = `${siteUrl}/#website`;
 const platformNavigationLinks = getPlatformNavigationLinks();
+const brandSameAs = buildBrandSameAs();
 
 const organizationNode = {
   "@type": "Organization",
   "@id": orgId,
-  name: "LetBuyy",
-  legalName: "LetBuyy",
+  name: BRAND.name,
+  legalName: BRAND.legalName,
   // Alternate SPELLINGS of our own name only — never a competitor's, which would
   // tell Google the two are the same entity (the opposite of disambiguation).
-  alternateName: ["Let Buyy", "Letbuyy", "LetBuyy Commerce"],
+  alternateName: [...BRAND.alternateName],
   url: siteUrl,
   logo: {
     "@type": "ImageObject",
@@ -139,7 +125,7 @@ const organizationNode = {
   },
   image: `${siteUrl}${socialImage}`,
   description: siteDescription,
-  slogan: "India-first commerce operating system",
+  slogan: BRAND.tagline,
   email: supportEmail,
   foundingLocation: { "@type": "Country", name: "India" },
   areaServed: { "@type": "Country", name: "India" },
@@ -151,11 +137,11 @@ const organizationNode = {
     areaServed: "IN",
     availableLanguage: ["en", "hi"],
   },
-  ...(FOUNDER_NAME
-    ? { founder: { "@type": "Person", name: FOUNDER_NAME, jobTitle: "Founder & CEO" } }
+  ...(BRAND.founder.name
+    ? { founder: { "@type": "Person", name: BRAND.founder.name, jobTitle: BRAND.founder.jobTitle } }
     : {}),
-  ...(FOUNDING_YEAR ? { foundingDate: FOUNDING_YEAR } : {}),
-  ...(BRAND_SAME_AS.length ? { sameAs: BRAND_SAME_AS } : {}),
+  ...(BRAND.foundingDate ? { foundingDate: BRAND.foundingDate } : {}),
+  ...(brandSameAs.length ? { sameAs: brandSameAs } : {}),
 };
 
 const websiteNode = {

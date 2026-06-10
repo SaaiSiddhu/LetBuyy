@@ -15,12 +15,14 @@ const workspaceModules = resolve(workspaceRoot, "node_modules/.pnpm/node_modules
 const workspacePackages = [
   "@letbuyy/api-client",
   "@letbuyy/api-types",
+  "@letbuyy/shared-types",
   "@letbuyy/ui",
 ];
 
 const workspacePackageAliases = {
   "@letbuyy/api-client": resolve(appRoot, "../../packages/typescript/api-client/src/index.ts"),
   "@letbuyy/api-types": resolve(appRoot, "../../packages/typescript/api-types/src/index.ts"),
+  "@letbuyy/shared-types": resolve(appRoot, "../../packages/shared-types/src/index.ts"),
   "@letbuyy/ui": resolve(appRoot, "../../packages/typescript/ui/src/index.ts"),
   "@letbuyy/ui/formatting": resolve(appRoot, "../../packages/typescript/ui/src/formatting.ts"),
   "tailwind-merge": resolve(appRoot, "../../node_modules/.pnpm/node_modules/tailwind-merge"),

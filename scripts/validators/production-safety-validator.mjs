@@ -53,6 +53,29 @@ for (const skipId of ['SKIP-W3-SENTRY-DSN', 'SKIP-W3-DNS-CUTOVER']) {
   reporter.assert(skipped.includes(skipId), `SKIPPED_HUMAN_DECISIONS.md missing ${skipId}`);
 }
 
+const brandSource = readFile('packages/shared-types/src/brand.ts');
+const marketingLayout = readFile('apps/marketing-site/src/app/layout.tsx');
+const brandHasUnfilledHumanFacts =
+  brandSource.includes("name: ''") ||
+  brandSource.includes("foundingDate: ''") ||
+  brandSource.includes("wikidata: ''");
+reporter.assert(
+  !brandHasUnfilledHumanFacts || skipped.includes('SKIP-BRAND-LEGAL-FACTS'),
+  'Blank public brand founder/profile/founding facts must be paired with SKIP-BRAND-LEGAL-FACTS',
+);
+reporter.assert(
+  brandSource.includes('HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS'),
+  'Brand source must label unfilled public identity facts as human-required',
+);
+reporter.assert(!brandSource.includes('TODO'), 'Brand source must not carry loose public identity TODOs');
+reporter.assert(
+  marketingLayout.includes('from "@letbuyy/shared-types"') &&
+    marketingLayout.includes('buildBrandSameAs()') &&
+    !marketingLayout.includes('const FOUNDER_NAME') &&
+    !marketingLayout.includes('const FOUNDING_YEAR'),
+  'Marketing structured data must consume canonical shared brand constants instead of local founder/profile duplicates',
+);
+
 for (const file of [
   'apps/marketing-site/src/lib/public-urls.ts',
   'apps/theme-marketplace/src/lib/public-urls.ts',
