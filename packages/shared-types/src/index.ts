@@ -1,6 +1,14 @@
 import { z } from 'zod';
 
 export * from './brand';
+export * from './app-platform';
+export * from './foundation-execution-contracts';
+export {
+  AiChatSchema,
+  CheckCreditsSchema,
+  GenerateContentSchema,
+  GenerateImageSchema,
+} from './app-platform';
 
 export const UuidSchema = z.string().uuid('Must be a valid UUID');
 

@@ -17,7 +17,7 @@ Canonical source boundary: `packages/typescript/api-types`.
 - Package: @letbuyy/api-types
 - File: packages/typescript/api-types/package.json
 - Scripts: build, typecheck
-- Runtime dependencies: @letbuyy/app-engine, @letbuyy/auth-core, @letbuyy/billing-core, @letbuyy/checkout-core, @letbuyy/cms-core, @letbuyy/commerce-core, @letbuyy/event-core, @letbuyy/notification-core, @letbuyy/payments, @letbuyy/search-core, @letbuyy/shared-types, @letbuyy/tenant-core, @letbuyy/theme-engine
+- Runtime dependencies: @letbuyy/auth-core, @letbuyy/billing-core, @letbuyy/checkout-core, @letbuyy/cms-core, @letbuyy/commerce-core, @letbuyy/event-core, @letbuyy/notification-core, @letbuyy/payments, @letbuyy/search-core, @letbuyy/shared-types, @letbuyy/tenant-core, @letbuyy/theme-engine
 - Dev dependencies: typescript
 - Peer dependencies: none declared
 

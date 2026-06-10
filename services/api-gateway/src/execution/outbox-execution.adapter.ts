@@ -3,14 +3,14 @@ import {
     NOTIFICATION_APPLICATION_WORKFLOWS,
     NOTIFICATION_EXECUTION_PIPELINES,
     defineRuntimeBridge,
-} from '@letbuyy/application-services';
+} from '@letbuyy/shared-types';
 import { isValidWebhookTarget } from '@letbuyy/notification-core';
 import {
     buildDomainEventEnvelope,
     eventMatchesSubscription,
     eventRetryDelaySeconds,
     queueNamesForEvent,
-} from '@letbuyy/orchestration';
+} from '@letbuyy/event-core';
 
 type JsonObject = Record<string, unknown>;
 

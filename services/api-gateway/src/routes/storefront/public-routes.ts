@@ -11,7 +11,7 @@ import { registerStorefrontCustomerEngagementRoutes } from './customer-engagemen
 import { planCouponValidation, storefrontCouponValidationError, type CouponRecord } from '@letbuyy/checkout-core';
 import { mapPublicStorePayload, normalizeStorefrontHandle, type PublishedStoreRecord, type StorefrontSiteRecord, type StorefrontThemeReleaseRecord } from '@letbuyy/tenant-core';
 import { StorefrontAnalyticsBeaconSchema, type StorefrontAnalyticsBeacon } from '@letbuyy/shared-types';
-import type { AppBlockInstance } from '@letbuyy/app-engine';
+import type { AppBlockInstance } from '@letbuyy/shared-types';
 
 type AppContext = Context<{ Bindings: Env }>;
 type SqlRecord = Record<string, unknown>;

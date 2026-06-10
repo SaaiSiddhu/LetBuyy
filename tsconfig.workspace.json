@@ -1,35 +1,77 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/shared-types" },
-    { "path": "./packages/event-core" },
-    { "path": "./packages/commerce-core" },
-    { "path": "./packages/theme-engine" },
-    { "path": "./packages/auth-core" },
-    { "path": "./packages/audit-core" },
-    { "path": "./packages/identity-core" },
-    { "path": "./packages/organization-core" },
-    { "path": "./packages/permission-core" },
-    { "path": "./packages/session-core" },
-    { "path": "./packages/token-core" },
-    { "path": "./packages/cms-core" },
-    { "path": "./packages/search-core" },
-    { "path": "./packages/app-engine" },
-    { "path": "./packages/extension-host" },
-    { "path": "./packages/checkout-core" },
-    { "path": "./packages/payments" },
-    { "path": "./packages/billing-core" },
-    { "path": "./packages/notification-core" },
-    { "path": "./packages/tenant-core" },
-    { "path": "./packages/distributed-runtime" },
-    { "path": "./packages/orchestration" },
-    { "path": "./packages/projection-runtime" },
-    { "path": "./packages/application-services" },
-    { "path": "./packages/infrastructure" },
-    { "path": "./packages/runtime-composition" },
-    { "path": "./packages/typescript/api-client" },
-    { "path": "./packages/typescript/api-types" },
-    { "path": "./packages/typescript/ui" },
-    { "path": "./packages/typescript/utils" }
+    {
+      "path": "./packages/shared-types"
+    },
+    {
+      "path": "./packages/event-core"
+    },
+    {
+      "path": "./packages/commerce-core"
+    },
+    {
+      "path": "./packages/theme-engine"
+    },
+    {
+      "path": "./packages/auth-core"
+    },
+    {
+      "path": "./packages/audit-core"
+    },
+    {
+      "path": "./packages/identity-core"
+    },
+    {
+      "path": "./packages/organization-core"
+    },
+    {
+      "path": "./packages/permission-core"
+    },
+    {
+      "path": "./packages/session-core"
+    },
+    {
+      "path": "./packages/token-core"
+    },
+    {
+      "path": "./packages/cms-core"
+    },
+    {
+      "path": "./packages/search-core"
+    },
+    {
+      "path": "./packages/checkout-core"
+    },
+    {
+      "path": "./packages/payments"
+    },
+    {
+      "path": "./packages/billing-core"
+    },
+    {
+      "path": "./packages/notification-core"
+    },
+    {
+      "path": "./packages/tenant-core"
+    },
+    {
+      "path": "./packages/infrastructure"
+    },
+    {
+      "path": "./packages/runtime-composition"
+    },
+    {
+      "path": "./packages/typescript/api-client"
+    },
+    {
+      "path": "./packages/typescript/api-types"
+    },
+    {
+      "path": "./packages/typescript/ui"
+    },
+    {
+      "path": "./packages/typescript/utils"
+    }
   ]
 }

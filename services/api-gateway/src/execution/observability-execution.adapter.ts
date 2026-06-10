@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import type { CorrelationContext } from '@letbuyy/orchestration';
-import { defineRuntimeBridge } from '@letbuyy/application-services';
+import type { CorrelationContext } from '@letbuyy/shared-types';
+import { defineRuntimeBridge } from '@letbuyy/shared-types';
 
 type Metadata = Record<string, unknown>;
 

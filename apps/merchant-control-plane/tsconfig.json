@@ -26,9 +26,6 @@
       "@/*": [
         "./src/*"
       ],
-      "@letbuyy/app-engine": [
-        "../../packages/app-engine/src/index.ts"
-      ],
       "@letbuyy/auth-core": [
         "../../packages/auth-core/src/index.ts"
       ],

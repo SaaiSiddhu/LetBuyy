@@ -1,5 +1,5 @@
 import type { StoreModel, SiteType, PaymentGateway, NavPage, StoreNavigation } from '@letbuyy/tenant-core';
-import { normalizeAppBlockInstances, type AppBlockInstance } from '@letbuyy/app-engine';
+import { normalizeAppBlockInstances, type AppBlockInstance } from '@letbuyy/shared-types';
 import { DEFAULT_THEME_SETTINGS, LiquidThemePackageBundleSchema } from '@letbuyy/theme-engine';
 import type { ThemeSettings, SectionModel, SectionType, BlockModel, StorefrontSectionGroupConfig, StorefrontTemplateConfig } from '@letbuyy/theme-engine';
 import { createStorefrontApiClient, storefrontReadInit } from './api/client';

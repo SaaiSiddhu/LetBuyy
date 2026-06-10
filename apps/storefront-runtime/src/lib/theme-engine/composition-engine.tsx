@@ -1,7 +1,7 @@
 import {
     normalizeAppBlockInstances,
     type AppBlockInstance,
-} from '@letbuyy/app-engine';
+} from '@letbuyy/shared-types';
 import type { StoreModel } from '@letbuyy/tenant-core';
 import {
     createThemeRenderer,

@@ -8,7 +8,7 @@ const indexSource = readFileSync(new URL('../index.ts', import.meta.url), 'utf8'
 const aiRouteSource = readFileSync(new URL('../routes/ai.ts', import.meta.url), 'utf8');
 const bffSource = readFileSync(new URL('../../../mobile-bff/src/index.ts', import.meta.url), 'utf8');
 const wranglerSource = readFileSync(new URL('../../wrangler.toml', import.meta.url), 'utf8');
-const appEngineSource = readFileSync(new URL('../../../../packages/app-engine/src/index.ts', import.meta.url), 'utf8');
+const appEngineSource = readFileSync(new URL('../../../../packages/shared-types/src/app-platform.ts', import.meta.url), 'utf8');
 const mobileAiServiceSource = readFileSync(
     new URL('../../../../apps/mobile/merchant-app/lib/services/ai_studio_service.dart', import.meta.url),
     'utf8'

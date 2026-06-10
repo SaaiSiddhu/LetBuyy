@@ -8,7 +8,7 @@ import {
     appStoreStringOrNull as stringOrNull,
     parseAppStoreJsonRecord as parseJsonRecord,
     type AppEngineJsonRecord,
-} from '@letbuyy/app-engine';
+} from '@letbuyy/shared-types';
 import { enqueueMarketplaceAnalyticsEvent } from './shared';
 import {
     AppTelemetryEventInputSchema,

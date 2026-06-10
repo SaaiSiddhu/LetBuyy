@@ -54,7 +54,7 @@ import {
     type StorefrontSiteRecord,
     type StorefrontThemeReleaseRecord,
 } from '@letbuyy/tenant-core';
-import { normalizeAppBlockInstance, type AppBlockInstance } from '@letbuyy/app-engine';
+import { normalizeAppBlockInstance, type AppBlockInstance } from '@letbuyy/shared-types';
 
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;

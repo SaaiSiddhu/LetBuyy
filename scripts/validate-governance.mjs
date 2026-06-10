@@ -171,6 +171,7 @@ const validators = [
   "gateway-events-client-validator.mjs",
   "no-orphan-webhook-delivery-queue-validator.mjs",
   "source-ledger-residue-validator.mjs",
+  "foundation-sql-policy-residue-validator.mjs",
   "dead-residue-validator.mjs",
   "repository-intelligence-validator.mjs",
   "mobile-topology-honesty-validator.mjs",

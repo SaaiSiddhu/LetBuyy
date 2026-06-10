@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { THEME_APPLICATION_WORKFLOWS, THEME_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/application-services';
+import { THEME_APPLICATION_WORKFLOWS, THEME_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/shared-types';
 import {
     asThemeRecord as asRecord,
     collectThemeTemplateValidationIssues,

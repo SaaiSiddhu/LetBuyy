@@ -149,7 +149,7 @@ export const evidenceSources: EvidenceSource[] = [
   },
   {
     label: "App scopes, embed surface, app blocks, webhook topics",
-    path: "packages/app-engine/src/index.ts"
+    path: "packages/shared-types/src/app-platform.ts"
   },
   {
     label: "Theme package JSON-contract schema",
@@ -283,49 +283,49 @@ export const appQualityGateChecks: AppQualityGateDoc[] = [
     check: "Submission contract",
     currentRule: "Required fields are name, tagline, description, category_id, app_url, and privacy_url or privacy_policy_url. slug is generated from slug or name.",
     evidenceFields: "name, tagline, description, category_id, app_url, privacy_url, privacy_policy_url, slug",
-    source: "packages/app-engine/src/index.ts:753"
+    source: "packages/shared-types/src/app-platform.ts:753"
   },
   {
     check: "Evidence aliases",
     currentRule: "Built-for-LetBuyy evidence is parsed from quality_gate, built_for_letbuyy, or builtForLetBuyy. The gate runs only when evidence exists and save_as_draft is not true.",
     evidenceFields: "quality_gate, built_for_letbuyy, builtForLetBuyy, save_as_draft",
-    source: "packages/app-engine/src/index.ts:779"
+    source: "packages/shared-types/src/app-platform.ts:779"
   },
   {
     check: "Performance",
     currentRule: "Lighthouse performance score must be at least 70 before listing.",
     evidenceFields: "performance_score, performanceScore, lighthouse_performance",
-    source: "packages/app-engine/src/index.ts:666"
+    source: "packages/shared-types/src/app-platform.ts:666"
   },
   {
     check: "Reviews",
     currentRule: "At least one qualifying published review and rating average of 4.0 or higher are required for the badge gate.",
     evidenceFields: "review_count, reviews_count, rating_avg, average_rating, avg_rating",
-    source: "packages/app-engine/src/index.ts:669 + services/api-gateway/src/routes/app-store.ts:623"
+    source: "packages/shared-types/src/app-platform.ts:669 + services/api-gateway/src/routes/app-store.ts:623"
   },
   {
     check: "Installs",
     currentRule: "At least one successful install signal is required for the badge gate.",
     evidenceFields: "install_count, installs",
-    source: "packages/app-engine/src/index.ts:671 + services/api-gateway/src/routes/app-store.ts:1617"
+    source: "packages/shared-types/src/app-platform.ts:671 + services/api-gateway/src/routes/app-store.ts:1617"
   },
   {
     check: "Storefront app block",
     currentRule: "At least one extension must be typed storefront_block, app-block, or app_block.",
     evidenceFields: "app_extensions, extensions, app_blocks",
-    source: "packages/app-engine/src/index.ts:654"
+    source: "packages/shared-types/src/app-platform.ts:654"
   },
   {
     check: "Privacy and app URLs",
     currentRule: "App and privacy URLs must be HTTPS. localhost and 127.0.0.1 HTTP are accepted only for local testing.",
     evidenceFields: "privacy_policy_url, privacy_url, app_url, embedded_url, website_url",
-    source: "packages/app-engine/src/index.ts:640 + :673"
+    source: "packages/shared-types/src/app-platform.ts:640 + :673"
   },
   {
     check: "Failure behavior",
     currentRule: "A non-draft submission with failed evidence returns a validation error naming the failed check keys. Draft submissions store as draft and skip the gate.",
     evidenceFields: "failed check keys, save_as_draft",
-    source: "packages/app-engine/src/index.ts:789 + :808"
+    source: "packages/shared-types/src/app-platform.ts:789 + :808"
   },
   {
     check: "Review record",
@@ -657,7 +657,7 @@ export const contractCards: ContractCard[] = [
   {
     title: "Developer registration request",
     status: "available",
-    source: "packages/app-engine/src/index.ts:721",
+    source: "packages/shared-types/src/app-platform.ts:721",
     points: [
       "Required body fields: company_name and support_email.",
       "Optional aliases/fields: contact_email, website_url or website, description or bio, and country.",
@@ -668,7 +668,7 @@ export const contractCards: ContractCard[] = [
   {
     title: "Marketplace app submission request",
     status: "available",
-    source: "packages/app-engine/src/index.ts:753",
+    source: "packages/shared-types/src/app-platform.ts:753",
     points: [
       "Required body fields: name, tagline, description, category_id, app_url, and privacy_url or privacy_policy_url.",
       "slug is optional; when absent it is generated from name. save_as_draft=true creates draft, otherwise status becomes in_review.",
@@ -679,7 +679,7 @@ export const contractCards: ContractCard[] = [
   {
     title: "Built-for-LetBuyy quality gate",
     status: "available",
-    source: "packages/app-engine/src/index.ts:666",
+    source: "packages/shared-types/src/app-platform.ts:666",
     points: [
       "Quality evidence may arrive as quality_gate, built_for_letbuyy, or builtForLetBuyy.",
       "Checks require performance score >= 70, at least one review with 4.0+ rating, at least one install, at least one storefront app block, and HTTPS app/privacy URLs.",
@@ -1454,7 +1454,7 @@ export const oauthScopeMatrix: OAuthScopeDoc[] = [
     currentUse: "Accepted install/OAuth scope and required for app bridge reads whose first path segment is products.",
     bridgeAccess: "GET /v1/products through POST /v1/app-store/bridge/fetch.",
     notes: "Requested scopes are checked against marketplace_apps.api_scopes; unsupported scopes are rejected.",
-    source: "services/api-gateway/src/routes/app-store.ts:278 + packages/app-engine/src/index.ts:349"
+    source: "services/api-gateway/src/routes/app-store.ts:278 + packages/shared-types/src/app-platform.ts:349"
   },
   {
     scope: "read_orders",
@@ -1594,14 +1594,14 @@ export const webhookTopics: WebhookTopicDoc[] = [
     category: "mandatory compliance",
     deliveryRule: "App webhook subscriptions always include this topic in event_types; POST /v1/app-store/compliance/customers/data-request emits it to active app-platform subscriptions for the store.",
     partnerAction: "Respond to the merchant/customer data export request through the partner app's compliance workflow.",
-    source: "services/api-gateway/src/routes/app-store/compliance-routes.ts:129 + packages/app-engine/src/index.ts:150"
+    source: "services/api-gateway/src/routes/app-store/compliance-routes.ts:129 + packages/shared-types/src/app-platform.ts:150"
   },
   {
     topic: "customers/redact",
     category: "mandatory compliance",
     deliveryRule: "App webhook subscriptions always include this topic in event_types; POST /v1/app-store/compliance/customers/redact emits it to active app-platform subscriptions for the store.",
     partnerAction: "Delete or anonymize customer personal data held by the partner app.",
-    source: "services/api-gateway/src/routes/app-store/compliance-routes.ts:131 + packages/app-engine/src/index.ts:150"
+    source: "services/api-gateway/src/routes/app-store/compliance-routes.ts:131 + packages/shared-types/src/app-platform.ts:150"
   },
   {
     topic: "shop/redact",
@@ -1659,7 +1659,7 @@ export const webhookDeliveryRules: WebhookDeliveryRuleDoc[] = [
     rule: "Subscription event filter",
     currentBehavior: "Lifecycle and compliance dispatch sends only to subscriptions whose event_types include the current event. Planned app subscriptions append mandatory compliance topics to every configured webhook.",
     developerAction: "Register the lifecycle topics your app needs and implement the mandatory compliance topics emitted by the platform.",
-    source: "services/api-gateway/src/routes/app-store/shared.ts:484 + packages/app-engine/src/index.ts:1430"
+    source: "services/api-gateway/src/routes/app-store/shared.ts:484 + packages/shared-types/src/app-platform.ts:1430"
   },
   {
     rule: "Compliance producer routes",
@@ -1988,31 +1988,31 @@ export const appBridgeCapabilities: SdkContractRow[] = [
     item: "api.fetch",
     currentContract: "Default app bridge capability. The current route is POST /v1/app-store/bridge/fetch and only proxies scoped GET reads.",
     notes: "Write-capable bridge calls remain [SKIP — NEEDS BACKEND/SDK].",
-    source: "packages/app-engine/src/index.ts:190 + services/api-gateway/src/routes/app-store.ts:781"
+    source: "packages/shared-types/src/app-platform.ts:190 + services/api-gateway/src/routes/app-store.ts:781"
   },
   {
     item: "toast",
     currentContract: "Default app bridge capability listed by app-engine.",
     notes: "There is no published browser app SDK package in this branch.",
-    source: "packages/app-engine/src/index.ts:190"
+    source: "packages/shared-types/src/app-platform.ts:190"
   },
   {
     item: "resize",
     currentContract: "Default app bridge capability listed by app-engine.",
     notes: "Runtime behavior for resize is not exposed as a standalone gateway route.",
-    source: "packages/app-engine/src/index.ts:190"
+    source: "packages/shared-types/src/app-platform.ts:190"
   },
   {
     item: "navigation.redirect",
     currentContract: "Optional capability accepted by app bridge capability normalization when configured.",
     notes: "It is not part of the default capability list.",
-    source: "packages/app-engine/src/index.ts:251"
+    source: "packages/shared-types/src/app-platform.ts:251"
   },
   {
     item: "admin embed surface",
     currentContract: "Embed URL is resolved from install config, extension config, extension target, or app_url; localhost is only allowed when configured for local development.",
     notes: "Capabilities can be supplied through admin embed config, extension config, or install bridge_capabilities.",
-    source: "packages/app-engine/src/index.ts:270"
+    source: "packages/shared-types/src/app-platform.ts:270"
   }
 ];
 

@@ -20,7 +20,7 @@ Actual source root: `apps/merchant-control-plane`.
 - Package: @letbuyy/merchant-control-plane
 - File: apps/merchant-control-plane/package.json
 - Scripts: dev, build, start, lint, typecheck, test
-- Runtime dependencies: @letbuyy/api-client, @letbuyy/auth-core, @letbuyy/cms-core, @letbuyy/extension-host, @letbuyy/shared-types, @letbuyy/theme-engine, @letbuyy/ui, lucide-react, next, react, react-dom
+- Runtime dependencies: @letbuyy/api-client, @letbuyy/auth-core, @letbuyy/cms-core, @letbuyy/shared-types, @letbuyy/theme-engine, @letbuyy/ui, lucide-react, next, react, react-dom
 - Dev dependencies: @tailwindcss/postcss, @types/node, @types/react, @types/react-dom, eslint, eslint-config-next, tailwindcss, typescript
 - Peer dependencies: none declared
 

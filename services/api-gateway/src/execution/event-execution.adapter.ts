@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { NOTIFICATION_APPLICATION_WORKFLOWS, NOTIFICATION_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/application-services';
+import { NOTIFICATION_APPLICATION_WORKFLOWS, NOTIFICATION_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/shared-types';
 import { getDomainEventContract, parseDomainEventPayload } from '@letbuyy/event-core';
 
 type JsonRecord = Record<string, unknown>;

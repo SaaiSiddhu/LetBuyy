@@ -16,7 +16,7 @@ import {
     parseAppStoreJsonRecord as parseJsonRecord,
     planAppWebhookSubscriptions,
     type AppEngineJsonRecord,
-} from '@letbuyy/app-engine';
+} from '@letbuyy/shared-types';
 import {
     createAppAuthorizationCode,
     sha256Hex,

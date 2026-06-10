@@ -21,8 +21,8 @@ export const sourceFiles = [
   "services/api-gateway/src/middleware/rateLimit.ts",
   "services/webhook-service/src/app-lifecycle-dispatch.ts",
   "packages/auth-core/src/index.ts",
-  "packages/app-engine/src/index.ts",
-  "packages/extension-host/src/index.ts",
+  "packages/shared-types/src/app-platform.ts",
+  "packages/shared-types/src/app-platform.ts",
   "packages/theme-engine/src/theme-bundle.ts",
 ];
 
@@ -266,7 +266,7 @@ export const sdkGuides: GuideCard[] = [
     body: "App-engine publishes manifest schema `2026-06-05.ws13`, the extension registry, and lifecycle contract `2026-06-05.ws13.lifecycle` for Admin UI, Checkout UI, theme app blocks, and Wasm Functions.",
     bullets: [
       "`POST /v1/app-store/developers/apps/manifest/validate` validates and normalizes manifests without creating an app.",
-      "Admin UI and Checkout UI extensions render through `@letbuyy/extension-host` sandbox policies.",
+      "Admin UI and Checkout UI extensions render through `@letbuyy/shared-types` sandbox policies.",
       "Theme app blocks install as WS11 portable Liquid app blocks and require no storefront source changes.",
       "Checkout Functions are advisory only: they can apply discount codes, select shipping methods, restrict payment methods, and return validation errors; they cannot set arbitrary totals, taxes, line prices, or payment amounts.",
       "Wasm Functions use HTTPS module URLs, SHA-256 verification, no imports, typed JSON I/O, and 1-5ms budgets.",

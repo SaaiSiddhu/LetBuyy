@@ -3,7 +3,7 @@ import {
     BILLING_APPLICATION_WORKFLOWS,
     BILLING_EXECUTION_PIPELINES,
     defineRuntimeBridge,
-} from '@letbuyy/application-services';
+} from '@letbuyy/shared-types';
 import {
     normalizeBillingObject,
     normalizeBillingStringArray,

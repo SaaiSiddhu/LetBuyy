@@ -11,15 +11,11 @@ const reporter = createReporter("Domain boundary validator");
 const domainPackages = {
   "packages/shared-types": {
     packageName: "@letbuyy/shared-types",
-    requiredExports: ["UuidSchema", "PaginationQuery", "AddressSchema", "ApiResponse", "PaginatedResponse"],
+    requiredExports: ["UuidSchema", "PaginationQuery", "AddressSchema", "ApiResponse", "PaginatedResponse", "GenerateContentSchema", "GenerateImageSchema", "AiChatSchema", "CheckCreditsSchema"],
   },
   "packages/tenant-core": {
     packageName: "@letbuyy/tenant-core",
     requiredExports: ["SiteTypeSchema", "SubdomainSchema", "CreateStoreSchema", "RuntimeTenantContext", "StoreModel", "TenantContext", "validateSubdomainFormat"],
-  },
-  "packages/app-engine": {
-    packageName: "@letbuyy/app-engine",
-    requiredExports: ["GenerateContentSchema", "GenerateImageSchema", "AiChatSchema", "CheckCreditsSchema"],
   },
   "packages/commerce-core": {
     packageName: "@letbuyy/commerce-core",
@@ -92,7 +88,7 @@ const extractedSchemaFacades = {
   "services/api-gateway/src/schemas/form-submission.schema.ts": "@letbuyy/cms-core",
   "services/api-gateway/src/schemas/media.schema.ts": "@letbuyy/cms-core",
   "services/api-gateway/src/schemas/review.schema.ts": "@letbuyy/commerce-core",
-  "services/api-gateway/src/schemas/ai.schema.ts": "@letbuyy/app-engine",
+  "services/api-gateway/src/schemas/ai.schema.ts": "@letbuyy/shared-types",
   "services/api-gateway/src/schemas/theme.schema.ts": "@letbuyy/theme-engine",
   "services/api-gateway/src/schemas/operations.schema.ts": "@letbuyy/event-core",
 };

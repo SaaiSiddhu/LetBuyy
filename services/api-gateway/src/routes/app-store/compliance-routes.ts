@@ -9,7 +9,7 @@ import {
     MANDATORY_COMPLIANCE_WEBHOOK_TOPICS,
     appStoreStringOrNull as stringOrNull,
     type MandatoryComplianceWebhookTopic,
-} from '@letbuyy/app-engine';
+} from '@letbuyy/shared-types';
 import type { ComplianceDataSubjectSource } from '@letbuyy/shared-types';
 import {
     appComplianceWebhookEventIdPrefix,

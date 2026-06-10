@@ -5,7 +5,7 @@ import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { authMiddleware } from '../middleware/auth';
 import { requireRoleCategory, requireSuperAdmin } from '../middleware/rbac';
-import { isAppStoreUuid as isUuid } from '@letbuyy/app-engine';
+import { isAppStoreUuid as isUuid } from '@letbuyy/shared-types';
 import {
     AppDiscoveryEventInputSchema,
     AppReviewReplyInputSchema,

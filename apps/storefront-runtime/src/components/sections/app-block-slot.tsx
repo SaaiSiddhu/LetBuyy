@@ -1,7 +1,7 @@
 import {
     normalizeAppBlockInstances,
     type AppBlockInstance,
-} from '@letbuyy/app-engine';
+} from '@letbuyy/shared-types';
 import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
 import type { CSSProperties } from 'react';
 

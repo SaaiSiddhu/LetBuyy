@@ -4,7 +4,7 @@ import {
     NOTIFICATION_EXECUTION_PIPELINES,
     SEARCH_EXECUTION_PIPELINES,
     defineRuntimeBridge,
-} from '@letbuyy/application-services';
+} from '@letbuyy/shared-types';
 import {
     normalizeQueueEnvelope,
     planAnalyticsEventStreamRecord,
@@ -14,7 +14,7 @@ import {
     planOrderSearchProjectionDocument,
     planProductSearchProjectionDocument,
 } from '@letbuyy/runtime-composition';
-import { eventRetryDelaySeconds } from '@letbuyy/orchestration';
+import { eventRetryDelaySeconds } from '@letbuyy/event-core';
 import { getDomainEventContract, type RuntimeEventEnvelope } from '@letbuyy/event-core';
 import { planInAppNotificationForEvent } from '@letbuyy/notification-core';
 import { EventExecutionAdapter } from './event-execution.adapter';

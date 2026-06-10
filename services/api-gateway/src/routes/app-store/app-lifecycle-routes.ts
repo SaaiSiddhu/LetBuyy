@@ -15,7 +15,7 @@ import {
     parseAppStoreJsonRecord as parseJsonRecord,
     planMarketplaceAppUpdate,
     type AppEngineJsonRecord,
-} from '@letbuyy/app-engine';
+} from '@letbuyy/shared-types';
 import { getRequestId } from './shared';
 
 const APP_VERSION_SELECT = [

@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { CHECKOUT_APPLICATION_WORKFLOWS, CHECKOUT_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/application-services';
+import { CHECKOUT_APPLICATION_WORKFLOWS, CHECKOUT_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/shared-types';
 import { ConflictError, NotFoundError } from '../lib/errors';
 
 type PayableOrder = {

@@ -7,7 +7,7 @@ import {
     CHECKOUT_APPLICATION_WORKFLOWS,
     CHECKOUT_EXECUTION_PIPELINES,
     defineRuntimeBridge,
-} from '@letbuyy/application-services';
+} from '@letbuyy/shared-types';
 import { NotFoundError, ForbiddenError, ValidationError } from '../lib/errors';
 import type { TenantContext } from '../lib/tenant-context';
 import { SaasExecutionAdapter } from './saas-execution.adapter';

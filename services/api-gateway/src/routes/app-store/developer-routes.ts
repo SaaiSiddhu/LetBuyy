@@ -23,7 +23,7 @@ import {
     planMarketplaceAppSubmission,
     type AppEngineJsonRecord,
     type AppManifestRegistrationPlan,
-} from '@letbuyy/app-engine';
+} from '@letbuyy/shared-types';
 import { sha256Hex } from '@letbuyy/auth-core';
 import {
     appBillingModeForPricingModel,

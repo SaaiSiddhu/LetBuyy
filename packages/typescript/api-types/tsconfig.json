@@ -6,9 +6,6 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "@letbuyy/app-engine": [
-        "../../app-engine/src/index.ts"
-      ],
       "@letbuyy/auth-core": [
         "../../auth-core/src/index.ts"
       ],

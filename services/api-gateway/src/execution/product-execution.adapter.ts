@@ -7,7 +7,7 @@ import {
     COMMERCE_APPLICATION_WORKFLOWS,
     COMMERCE_EXECUTION_PIPELINES,
     defineRuntimeBridge,
-} from '@letbuyy/application-services';
+} from '@letbuyy/shared-types';
 import { NotFoundError, ForbiddenError, ValidationError } from '../lib/errors';
 import { verifySiteOwnership } from '../lib/auth-user';
 import { SaasExecutionAdapter } from './saas-execution.adapter';

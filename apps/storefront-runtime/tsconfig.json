@@ -29,9 +29,6 @@
       "@letbuyy/auth-core": [
         "../../packages/auth-core/src/index.ts"
       ],
-      "@letbuyy/app-engine": [
-        "../../packages/app-engine/src/index.ts"
-      ],
       "@letbuyy/billing-core": [
         "../../packages/billing-core/src/index.ts"
       ],
@@ -44,17 +41,11 @@
       "@letbuyy/commerce-core": [
         "../../packages/commerce-core/src/index.ts"
       ],
-      "@letbuyy/distributed-runtime": [
-        "../../packages/distributed-runtime/src/index.ts"
-      ],
       "@letbuyy/event-core": [
         "../../packages/event-core/src/index.ts"
       ],
       "@letbuyy/notification-core": [
         "../../packages/notification-core/src/index.ts"
-      ],
-      "@letbuyy/projection-runtime": [
-        "../../packages/projection-runtime/src/index.ts"
       ],
       "@letbuyy/runtime-composition/*": [
         "../../packages/runtime-composition/*/index.ts"

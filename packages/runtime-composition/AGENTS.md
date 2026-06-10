@@ -17,7 +17,7 @@ Canonical source boundary: `packages/runtime-composition`.
 - Package: @letbuyy/runtime-composition
 - File: packages/runtime-composition/package.json
 - Scripts: build, typecheck
-- Runtime dependencies: @letbuyy/application-services, @letbuyy/checkout-core, @letbuyy/cms-core, @letbuyy/commerce-core, @letbuyy/infrastructure, @letbuyy/projection-runtime, @letbuyy/search-core, @letbuyy/shared-types, @letbuyy/tenant-core, @letbuyy/theme-engine
+- Runtime dependencies: @letbuyy/checkout-core, @letbuyy/cms-core, @letbuyy/commerce-core, @letbuyy/infrastructure, @letbuyy/search-core, @letbuyy/shared-types, @letbuyy/tenant-core, @letbuyy/theme-engine
 - Dev dependencies: typescript
 - Peer dependencies: none declared
 

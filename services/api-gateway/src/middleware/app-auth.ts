@@ -11,7 +11,7 @@ import {
     appStoreStringArray as stringArray,
     appStoreStringOrNull as stringOrNull,
     parseAppStoreJsonRecord as parseJsonRecord,
-} from '@letbuyy/app-engine';
+} from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import { getSupabaseAdmin } from '../lib/supabase';
 

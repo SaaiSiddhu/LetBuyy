@@ -1,5 +1,10 @@
-import { getDomainEventContract, parseDomainEventPayload, type DomainEventType, type RuntimeEventEnvelope } from '@letbuyy/event-core';
-import { eventRetryDelaySeconds } from '@letbuyy/orchestration';
+import {
+  eventRetryDelaySeconds,
+  getDomainEventContract,
+  parseDomainEventPayload,
+  type DomainEventType,
+  type RuntimeEventEnvelope,
+} from '@letbuyy/event-core';
 import {
   normalizeQueueEnvelope,
   planAnalyticsEventStreamRecord,

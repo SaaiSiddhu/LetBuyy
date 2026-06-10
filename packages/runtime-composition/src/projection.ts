@@ -1,11 +1,27 @@
-import type {
-  ProjectionCachePolicy,
-  ProjectionFreshnessMetadata,
-  ProjectionIdentity,
-  ProjectionStoreRecord,
-} from '@letbuyy/projection-runtime';
+export interface RuntimeProjectionTenantScope {
+  tenantPartitionKey?: string;
+  tenantId?: string;
+  siteId?: string;
+  [key: string]: unknown;
+}
 
-export interface RuntimeProjectionCachePolicy extends ProjectionCachePolicy {
+export interface RuntimeProjectionIdentity {
+  projectionName: string;
+  projectionVersion: number;
+  tenant?: RuntimeProjectionTenantScope | null;
+  objectType: string;
+  objectId: string;
+}
+
+export interface RuntimeProjectionFreshnessMetadata {
+  sourceEventId?: string | null;
+  sourceGlobalPosition?: number | null;
+  sourceStreamPosition?: number | null;
+  projectedAt: string;
+  staleAfter?: string | null;
+}
+
+export interface RuntimeProjectionCachePolicy {
   key: string;
   tenantScoped: boolean;
   ttlSeconds: number;
@@ -17,9 +33,14 @@ export interface RuntimeProjection<TData = Record<string, unknown>> {
   projectionName: string;
   projectionVersion: number;
   cachePolicy?: RuntimeProjectionCachePolicy;
-  freshness?: ProjectionFreshnessMetadata;
+  freshness?: RuntimeProjectionFreshnessMetadata;
   data: TData;
 }
 
-export type RuntimeProjectionIdentity = ProjectionIdentity;
-export type RuntimeProjectionStoreRecord<TData = Record<string, unknown>> = ProjectionStoreRecord<TData>;
+export interface RuntimeProjectionStoreRecord<TData = Record<string, unknown>> {
+  identity: RuntimeProjectionIdentity;
+  readModel: TData;
+  freshness: RuntimeProjectionFreshnessMetadata;
+  cachePolicy?: RuntimeProjectionCachePolicy;
+  lifecycleStatus: 'active' | 'stale' | 'rebuilding' | 'invalidated' | 'deleted';
+}

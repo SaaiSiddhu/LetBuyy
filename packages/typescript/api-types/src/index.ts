@@ -86,7 +86,7 @@ export * from '@letbuyy/commerce-core';
 export * from '@letbuyy/checkout-core';
 export * from '@letbuyy/auth-core';
 export * from '@letbuyy/cms-core';
-export * from '@letbuyy/app-engine';
+export * from '@letbuyy/shared-types';
 export * from '@letbuyy/event-core';
 export * from '@letbuyy/notification-core';
 export * from '@letbuyy/search-core';

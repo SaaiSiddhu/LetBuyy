@@ -19,7 +19,7 @@ import {
     type AppWebhookDefinition,
     type AppWebhookSubscriptionInsert,
     type MandatoryComplianceWebhookTopic,
-} from '@letbuyy/app-engine';
+} from '@letbuyy/shared-types';
 import {
     DEFAULT_APP_REVENUE_SHARE_BPS,
     type AppChargeBillingMode,

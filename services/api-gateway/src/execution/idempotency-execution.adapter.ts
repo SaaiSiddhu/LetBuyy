@@ -3,8 +3,8 @@ import {
     AUTH_APPLICATION_WORKFLOWS,
     AUTH_EXECUTION_PIPELINES,
     defineRuntimeBridge,
-} from '@letbuyy/application-services';
-import { canonicalizeExecutionPayload } from '@letbuyy/orchestration';
+} from '@letbuyy/shared-types';
+import { canonicalizeExecutionPayload } from '@letbuyy/event-core';
 import { ConflictError, ValidationError } from '../lib/errors';
 import { redactReplayableSecrets } from '../lib/replayable-secret-redaction';
 

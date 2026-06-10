@@ -17,7 +17,6 @@
     "@letbuyy/event-core": "workspace:*",
     "@letbuyy/infrastructure": "workspace:*",
     "@letbuyy/notification-core": "workspace:*",
-    "@letbuyy/orchestration": "workspace:*",
     "@letbuyy/runtime-composition": "workspace:*",
     "@letbuyy/shared-types": "workspace:*"
   },

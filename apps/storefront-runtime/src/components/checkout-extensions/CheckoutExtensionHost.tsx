@@ -8,7 +8,7 @@ import {
     listEnabledCheckoutUiExtensions,
     type CheckoutUiExtensionHostRegistration,
     type CheckoutUiExtensionTarget,
-} from '@letbuyy/extension-host';
+} from '@letbuyy/shared-types';
 
 interface CheckoutExtensionHostProps {
     extensions: AppExtensionRegistration[];

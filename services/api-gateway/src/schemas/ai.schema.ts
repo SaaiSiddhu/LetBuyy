@@ -11,4 +11,4 @@ export {
   type AiHomepageGenerationInput,
   type AiOperatorCommandInput,
   type CheckCreditsInput,
-} from '@letbuyy/app-engine';
+} from '@letbuyy/shared-types';

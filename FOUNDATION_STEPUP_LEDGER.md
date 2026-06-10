@@ -401,3 +401,51 @@ GOVERNANCE:
 SKIPs:
 
 - None added.
+
+# WAVE FINAL — Final Audit Resolution — 2026-06-10
+
+CHANGES:
+
+- `@letbuyy/app-engine` and `@letbuyy/extension-host` active runtime contracts were consolidated into `@letbuyy/shared-types` via `packages/shared-types/src/app-platform.ts`; active app/service imports now resolve through shared-types.
+- Step-Up execution metadata was moved to `packages/shared-types/src/foundation-execution-contracts.ts`; API gateway execution adapters now import the metadata from the shared contract package.
+- Deterministic event queue/retry/envelope helpers moved to `@letbuyy/event-core`; active services no longer import the quarantined orchestration package for those runtime helpers.
+- Active app/service/facade manifests, lockfile entries, runtime manifests, and TypeScript aliases/project references were pruned so the final build closure excludes `app-engine`, `extension-host`, `distributed-runtime`, `orchestration`, `projection-runtime`, and `application-services`.
+- `scripts/validators/foundation-sql-policy-residue-validator.mjs` was added and wired into `scripts/validate-governance.mjs`; raw SQL true-policy residues are now classified as baseline legacy, service-role-only, or intentional public/global policy instead of being left as untracked audit debt.
+- `FOUNDATION_FINAL_AUDIT.md`, `FOUNDATION_EXECUTION_DASHBOARD.md`, and `FOUNDATION_STEPUP_STATUS.md` were updated from blocked to complete after re-verification.
+
+TESTS:
+
+- `pnpm --filter @letbuyy/shared-types build` → PASS.
+- `pnpm --filter @letbuyy/event-core build` → PASS.
+- `pnpm --filter @letbuyy/api-gateway build` → PASS.
+- `pnpm --filter @letbuyy/runtime-composition build` → PASS.
+- `node scripts/validators/execution-layer-validator.mjs` → PASS.
+- `node scripts/validators/cycle-budget-validator.mjs` → PASS.
+- `node scripts/validators/typescript-governance-validator.mjs` → PASS.
+- `node scripts/validators/domain-boundary-validator.mjs` → PASS.
+- `node scripts/validators/foundation-sql-policy-residue-validator.mjs` → PASS; 130 SQL true-policy residues classified.
+- `node scripts/validators/runtime-manifest-validator.mjs` → PASS.
+- `pnpm run validate:dependencies` → PASS.
+- Active app/service/facade quarantine scans for `@letbuyy/(app-engine|extension-host|application-services|orchestration|projection-runtime|distributed-runtime)` and `packages/(app-engine|extension-host|application-services|orchestration|projection-runtime|distributed-runtime)` → PASS with no matches.
+- `pnpm run build` → PASS; turbo completed 67/67 tasks after build-closure pruning.
+- `pnpm run validate:governance:gate` → PASS; 181 validators green after generated artifacts were removed.
+
+MIGRATIONS:
+
+- None. This resolution is source/config/governance only; no database schema was applied to shared/staging/prod.
+
+ROLLBACK:
+
+- Revert the final-audit resolution commit from `stepup/main`.
+- If reverting manually, restore the prior active runtime imports and package dependencies, restore the root TypeScript references and aliases, remove `packages/shared-types/src/app-platform.ts`, remove `packages/shared-types/src/foundation-execution-contracts.ts`, remove the event-core helper exports added for active runtimes, remove `foundation-sql-policy-residue-validator.mjs` from the governance gate, and restore the final audit/dashboard/status to the blocked state.
+- No provider, DNS, Cloudflare, Vercel, payment, or database rollback is required because no production/shared-env action was taken.
+
+GOVERNANCE:
+
+- `BLOCK-FINAL-AUDIT-DRIFT` is resolved: active app/service/facade quarantine imports are empty, `tsconfig.workspace.json` excludes the quarantine package set, the build graph shrank from 71 to 67 tasks, and the final audit is all-green.
+- SQL residue governance is now explicit and automated; the raw baseline/service-role/public-global true-policy text remains classified instead of silently accepted.
+- No CLASS-A SKIP was added during the resolution. All existing SKIPs remain CLASS-A and gated OFF.
+
+SKIPs:
+
+- None added.

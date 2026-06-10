@@ -18,8 +18,8 @@ import {
     appStoreStringOrNull as stringOrNull,
     parseAppStoreJsonRecord as parseJsonRecord,
     type AppEngineJsonRecord,
-} from '@letbuyy/app-engine';
-import { createMobileAdminAppBridgeHostPolicy } from '@letbuyy/extension-host';
+} from '@letbuyy/shared-types';
+import { createMobileAdminAppBridgeHostPolicy } from '@letbuyy/shared-types';
 import {
     apiBaseUrlFromRequest,
     appOAuthConfig,

@@ -762,6 +762,111 @@ export function getDomainEventContract(eventType: string): DomainEventContract |
     : null;
 }
 
+export const RUNTIME_QUEUE_NAMES = [
+  'payment-events',
+  'inventory-jobs',
+  'webhook-deliveries',
+  'analytics-events',
+  'search-indexing',
+  'fulfillment-jobs',
+  'bulk-admin-jobs',
+] as const;
+
+export type RuntimeQueueName = (typeof RUNTIME_QUEUE_NAMES)[number];
+
+export interface DomainEventEnvelopeInput {
+  event_id: string;
+  event_type: string;
+  site_id: string | null;
+  aggregate_type: string;
+  aggregate_id: string;
+  created_at: string;
+  request_id: string | null;
+  trace_id: string | null;
+  idempotency_key: string;
+  schema_version: number;
+  payload: Record<string, unknown>;
+}
+
+export function canonicalizeExecutionPayload(value: unknown): string {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map((item) => canonicalizeExecutionPayload(item)).join(',')}]`;
+
+  const record = value as Record<string, unknown>;
+  return `{${Object.keys(record)
+    .sort()
+    .map((key) => `${JSON.stringify(key)}:${canonicalizeExecutionPayload(record[key])}`)
+    .join(',')}}`;
+}
+
+export function eventRetryDelaySeconds(attempt: number, baseSeconds = 30): number {
+  const exponent = Math.max(0, Math.min(attempt - 1, 8));
+  return Math.min(3600, baseSeconds * 2 ** exponent);
+}
+
+export function eventMatchesSubscription(eventType: string, eventTypes: string[]): boolean {
+  return eventTypes.some((candidate) => {
+    if (candidate === '*') return true;
+    if (candidate === eventType) return true;
+    if (!candidate.endsWith('.*')) return false;
+    return eventType.startsWith(candidate.slice(0, -1));
+  });
+}
+
+export function queueNamesForEvent(eventType: string): RuntimeQueueName[] {
+  const queues = new Set<RuntimeQueueName>();
+  const contract = getDomainEventContract(eventType);
+
+  if (contract) {
+    for (const consumer of contract.consumers) {
+      const queueName = queueNameForDomainEventConsumer(consumer);
+      if (queueName) queues.add(queueName);
+    }
+
+    return [...queues];
+  }
+
+  if (eventType.startsWith('payment.') || eventType.startsWith('refund.')) queues.add('payment-events');
+  if (eventType.startsWith('inventory.') || eventType.startsWith('po.') || eventType.startsWith('transfer.')) queues.add('inventory-jobs');
+  if (eventType.startsWith('fulfillment.') || eventType.startsWith('shipment.') || eventType.startsWith('return.') || eventType.includes('.fulfillment.')) queues.add('fulfillment-jobs');
+  if (eventType.startsWith('product.') || eventType.startsWith('collection.') || eventType.startsWith('category.') || eventType.startsWith('customer.') || eventType.startsWith('order.') || eventType.startsWith('theme.')) queues.add('search-indexing');
+
+  queues.add('analytics-events');
+  return [...queues];
+}
+
+function queueNameForDomainEventConsumer(consumer: DomainEventConsumer): RuntimeQueueName | null {
+  switch (consumer) {
+    case 'analytics':
+      return 'analytics-events';
+    case 'search-indexing':
+      return 'search-indexing';
+    case 'payout-ledger':
+      return 'payment-events';
+    case 'webhook-service':
+    case 'notifications':
+      return null;
+  }
+}
+
+export function buildDomainEventEnvelope(event: DomainEventEnvelopeInput): Record<string, unknown> {
+  return {
+    id: event.event_id,
+    type: event.event_type,
+    site_id: event.site_id,
+    aggregate: {
+      type: event.aggregate_type,
+      id: event.aggregate_id,
+    },
+    occurred_at: event.created_at,
+    request_id: event.request_id,
+    trace_id: event.trace_id,
+    idempotency_key: event.idempotency_key,
+    schema_version: event.schema_version,
+    payload: event.payload,
+  };
+}
+
 export function parseDomainEventPayload(eventType: DomainEventType, payload: unknown): Record<string, unknown> {
   const parsed = DOMAIN_EVENT_CONTRACTS[eventType].payloadSchema.parse(payload);
   return JsonRecordSchema.parse(parsed);

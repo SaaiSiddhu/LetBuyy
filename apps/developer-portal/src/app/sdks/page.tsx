@@ -83,7 +83,7 @@ Authorization: Bearer <app_token>
             </Section>
           </Card>
           <Card className="docs-card">
-            <Section title="App Bridge Capabilities" description="Capabilities normalized by @letbuyy/app-engine. This is not a published SDK package.">
+            <Section title="App Bridge Capabilities" description="Capabilities normalized by @letbuyy/shared-types. This is not a published SDK package.">
               <SdkContractMatrix rows={appBridgeCapabilities} />
             </Section>
           </Card>

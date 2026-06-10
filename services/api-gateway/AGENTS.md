@@ -23,8 +23,8 @@ Forbidden dependencies:
 Execution rules:
 
 - Route modules own transport, validation handoff, context construction, and response formatting.
-- Business workflow sequencing belongs in `packages/application-services`.
-- Event, outbox, retry, dead-letter, and correlation primitives belong in `packages/orchestration`.
+- Business workflow sequencing belongs in `service-local execution contracts`.
+- Event, outbox, retry, dead-letter, and correlation primitives belong in `service-local event helpers`.
 - Execution adapters may bridge service runtime bindings to application-service contracts.
 
 Tenant rules:

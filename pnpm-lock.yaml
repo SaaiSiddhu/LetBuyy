@@ -280,9 +280,6 @@ importers:
       '@letbuyy/cms-core':
         specifier: workspace:*
         version: link:../../packages/cms-core
-      '@letbuyy/extension-host':
-        specifier: workspace:*
-        version: link:../../packages/extension-host
       '@letbuyy/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
@@ -445,9 +442,6 @@ importers:
       '@letbuyy/api-client':
         specifier: workspace:*
         version: link:../../packages/typescript/api-client
-      '@letbuyy/app-engine':
-        specifier: workspace:*
-        version: link:../../packages/app-engine
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core
@@ -460,9 +454,6 @@ importers:
       '@letbuyy/commerce-core':
         specifier: workspace:*
         version: link:../../packages/commerce-core
-      '@letbuyy/extension-host':
-        specifier: workspace:*
-        version: link:../../packages/extension-host
       '@letbuyy/runtime-composition':
         specifier: workspace:*
         version: link:../../packages/runtime-composition
@@ -928,9 +919,6 @@ importers:
 
   packages/runtime-composition:
     dependencies:
-      '@letbuyy/application-services':
-        specifier: workspace:*
-        version: link:../application-services
       '@letbuyy/checkout-core':
         specifier: workspace:*
         version: link:../checkout-core
@@ -943,9 +931,6 @@ importers:
       '@letbuyy/infrastructure':
         specifier: workspace:*
         version: link:../infrastructure
-      '@letbuyy/projection-runtime':
-        specifier: workspace:*
-        version: link:../projection-runtime
       '@letbuyy/search-core':
         specifier: workspace:*
         version: link:../search-core
@@ -1062,9 +1047,6 @@ importers:
 
   packages/typescript/api-types:
     dependencies:
-      '@letbuyy/app-engine':
-        specifier: workspace:*
-        version: link:../../app-engine
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../auth-core
@@ -1175,12 +1157,6 @@ importers:
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
-      '@letbuyy/app-engine':
-        specifier: workspace:*
-        version: link:../../packages/app-engine
-      '@letbuyy/application-services':
-        specifier: workspace:*
-        version: link:../../packages/application-services
       '@letbuyy/audit-core':
         specifier: workspace:*
         version: link:../../packages/audit-core
@@ -1202,9 +1178,6 @@ importers:
       '@letbuyy/event-core':
         specifier: workspace:*
         version: link:../../packages/event-core
-      '@letbuyy/extension-host':
-        specifier: workspace:*
-        version: link:../../packages/extension-host
       '@letbuyy/identity-core':
         specifier: workspace:*
         version: link:../../packages/identity-core
@@ -1214,9 +1187,6 @@ importers:
       '@letbuyy/notification-core':
         specifier: workspace:*
         version: link:../../packages/notification-core
-      '@letbuyy/orchestration':
-        specifier: workspace:*
-        version: link:../../packages/orchestration
       '@letbuyy/organization-core':
         specifier: workspace:*
         version: link:../../packages/organization-core
@@ -1309,9 +1279,6 @@ importers:
       '@letbuyy/notification-core':
         specifier: workspace:*
         version: link:../../packages/notification-core
-      '@letbuyy/orchestration':
-        specifier: workspace:*
-        version: link:../../packages/orchestration
       '@letbuyy/runtime-composition':
         specifier: workspace:*
         version: link:../../packages/runtime-composition

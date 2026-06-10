@@ -5,8 +5,8 @@ import {
     createAdminUiExtensionBridgeContext,
     createAdminUiExtensionFramePolicy,
     listEnabledAdminUiExtensions,
-} from '@letbuyy/extension-host'
-import type { AdminUiExtensionHostRegistration } from '@letbuyy/extension-host'
+} from '@letbuyy/shared-types'
+import type { AdminUiExtensionHostRegistration } from '@letbuyy/shared-types'
 import type { AdminAppBridgeSession, AppExtensionRegistration } from '@letbuyy/shared-types'
 import { Button, MaterialIcon, useToast } from '@letbuyy/ui'
 

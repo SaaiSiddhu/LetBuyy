@@ -181,8 +181,9 @@ for (const file of executionAdapters) {
   );
   reporter.assert(
     !/\b(?:queueNamesForEvent|eventMatchesSubscription|eventRetryDelaySeconds|buildDomainEventEnvelope)\b/.test(content) ||
-      content.includes("@letbuyy/orchestration"),
-    `Execution adapter event routing, retry, and envelope helpers must come from packages/orchestration: ${file}`,
+      content.includes("@letbuyy/orchestration") ||
+      content.includes("@letbuyy/event-core"),
+    `Execution adapter event routing, retry, and envelope helpers must come from package-owned event/runtime contracts: ${file}`,
   );
 }
 

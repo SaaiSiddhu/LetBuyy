@@ -19,12 +19,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@letbuyy/application-services": "workspace:*",
     "@letbuyy/checkout-core": "workspace:*",
     "@letbuyy/cms-core": "workspace:*",
     "@letbuyy/commerce-core": "workspace:*",
     "@letbuyy/infrastructure": "workspace:*",
-    "@letbuyy/projection-runtime": "workspace:*",
     "@letbuyy/search-core": "workspace:*",
     "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/tenant-core": "workspace:*",

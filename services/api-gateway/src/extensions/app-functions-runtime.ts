@@ -11,7 +11,7 @@ import {
     type AppFunctionRuntimeInput,
     type AppFunctionRuntimeOutput,
     type LetbuyyAppFunctionHook,
-} from '@letbuyy/app-engine';
+} from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import { ObservabilityExecutionAdapter } from '../execution/observability-execution.adapter';
 import { getSupabaseAdmin } from '../lib/supabase';
