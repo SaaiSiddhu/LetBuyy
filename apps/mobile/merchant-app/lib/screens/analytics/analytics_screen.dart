@@ -6,7 +6,7 @@ import '../../app/store_context.dart';
 import '../../services/analytics_service.dart';
 
 import '../../models/store_model.dart';
-import '../../widgets/home/stats_row.dart';
+import '../../widgets/dashboard/stats_row.dart';
 
 /// Analytics screen
 class AnalyticsScreen extends StatefulWidget {
