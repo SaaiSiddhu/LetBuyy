@@ -1,78 +1,41 @@
 # Runtime Manifest Governance
 
-Runtime manifests are the machine-readable authority for active LetBuyy runtime ownership.
+Runtime manifests describe deployable and reserved roots. They are topology metadata, not permission to create new runtimes.
 
-## Required Manifest
+## Authority
 
-Every canonical app and service runtime must contain `runtime.manifest.json`.
+- Supreme authority remains `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`.
+- Operating authority remains root `AGENTS.md`.
+- Runtime winner authority remains `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md`.
+- Manifests must conform to the one-region modular-monolith topology and must not reintroduce distributed, CQRS, replay, failover, chaos, or multi-region ownership fields.
 
-Required fields:
+## Required Shape
 
-- `runtimeName`
-- `runtimeRoot`
-- `actorType`
-- `runtimeCategory`
-- `runtimeClassification`
-- `ownership`
-- `allowedDependencies`
-- `forbiddenDependencies`
-- `orchestrationAuthority`
-- `eventAuthority`
-- `workflowAuthority`
-- `queryAuthority`
-- `compositionAuthority`
-- `executionOwnership`
-- `distributedExecutionOwnership`
-- `queueOwnership`
-- `providerOwnership`
-- `executionBoundaries`
-- `asyncExecutionOwnership`
-- `observabilityOwnership`
-- `telemetryOwnership`
-- `workflowRecoveryOwnership`
-- `recoveryOwnership`
-- `replayOwnership`
-- `checkpointOwnership`
-- `projectionOwnership`
-- `cqrsOwnership`
-- `cacheOwnership`
-- `coordinationOwnership`
-- `resilienceOwnership`
-- `regionalOwnership`
-- `tenantScalingOwnership`
-- `auditOwnership`
-- `deploymentAuthority`
-- `environmentAuthority`
-- `observabilityAuthority`
+Each active runtime manifest must declare:
 
-## Canonical Runtime Authority
+- `runtimeName`, `runtimeRoot`, `actorType`, `runtimeCategory`, and `runtimeClassification`.
+- `ownership.sourceAuthority` and current `ownership.governanceDocs`.
+- `allowedDependencies.workspacePackages` and `allowedDependencies.runtimeImports`.
+- `forbiddenDependencies`.
+- `executionOwnership`, `providerOwnership`, `executionBoundaries`, `securityOwnership`, `productionOwnership`, and `deploymentOwnership`.
+- `deploymentAuthority`, `environmentAuthority`, and `observabilityAuthority`.
 
-- Apps under `apps/` own user-facing runtime composition, rendering, routing, presentation adapters, and transport hooks only.
-- Mobile apps under `apps/mobile/` own native actor surfaces.
-- Services under `services/` own backend execution containers: APIs, workers, schedulers, queues, webhooks, event handlers, and runtime bootstrapping.
-- Application workflow authority belongs to service-owned execution adapters backed by domain packages. Event contracts belong to `packages/event-core`; notification contracts belong to `packages/notification-core`; queue execution belongs to `services/queue-workers`; API execution belongs to `services/api-gateway`; provider SDK execution belongs to `packages/infrastructure`.
-- Recovery, replay, async, observability, telemetry, queue, checkpoint, cache, coordination, resilience, regional, audit, and tenant-scaling ownership fields must match actual runtime behavior. Apps must delegate these authorities; services may execute containers only when an owned runtime contract describes the work.
-- Runtime manifests do not create runtime source authority by themselves; they describe and constrain existing canonical roots.
+Reserved runtime manifests must additionally declare `implementationStatus.status = "reserved-not-implemented"` and stay manifest-only.
 
-## Enforcement
+## Forbidden Drift
 
-`scripts/validators/runtime-manifest-validator.mjs` fails governance when:
+- Do not add `distributedExecutionOwnership`, `cqrsOwnership`, `regionalOwnership`, replay ownership, failover ownership, chaos ownership, or load-testing ownership fields.
+- Do not point `governanceDocs` at archived theater documents or rejected multi-region governance.
+- Do not mark reserved services as production deployables.
+- Do not use runtime manifests to justify app-to-app imports, service-to-app imports, direct provider SDK ownership, or new runtime roots.
 
-- a canonical runtime root is missing a manifest
-- a manifest root does not match its directory
-- actor classification is missing
-- environment schema ownership is invalid
-- governance docs referenced by the manifest do not exist
-- declared internal workspace package dependencies do not match `allowedDependencies.workspacePackages`
-- execution ownership fields are missing or do not match app/service runtime category
-- queue, checkpoint, cache, coordination, CQRS, telemetry, audit, resilience, regional, tenant scaling, replay, recovery, or projection ownership drifts from the package-owned execution model
-- platform console and platform operations portal actor boundaries blur
-- runtime topology drifts from queue lifecycle, replay evolution, projection recovery, or rollback lineage manifests
+## Validation
 
-## Change Process
+- `scripts/validators/runtime-manifest-validator.mjs` checks manifest existence, dependency honesty, governance doc existence, and reserved-root honesty.
+- `scripts/validators/runtime-validator.mjs` checks canonical runtime roots and reserved-root source constraints.
+- `scripts/validators/no-reserved-service-activation-validator.mjs` fails if reserved roots gain deployable source.
+- `scripts/validators/whole-repo-end-state-validator.mjs` checks reserved services are represented as non-deployable in production topology.
 
-1. Update the source tree only after the canonical runtime decision is documented.
-2. Add or update the runtime manifest.
-3. Update `docs/governance/runtime-boundaries.md` and related governance docs.
-4. Update validators if the canonical root set changes.
-5. Run `node scripts/validate-governance.mjs`.
+## Migration Notes
+
+The previous manifest schema contained fields for distributed execution, CQRS, replay, failover, chaos, and multi-region ownership. Those fields described the rejected architecture and were removed from the active schema. Historical copies belong only under `docs/archive/**`.
