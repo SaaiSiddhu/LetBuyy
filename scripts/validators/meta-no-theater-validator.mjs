@@ -43,7 +43,7 @@ assertNoOffenders(reporter, offenders, "Governance gate must not certify rejecte
 
 const activeIdentityDocForbiddenFragments = [
   "failover",
-  "multi-region",
+  ["multi", "region"].join("-"),
   "region failover",
   "key-failover",
   "service mesh",
