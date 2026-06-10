@@ -8,7 +8,7 @@
     "topologyVersion",
     "environment",
     "queueProvider",
-    "eventStoreProvider",
+    "outboxProvider",
     "cacheProviders",
     "observabilityStack",
     "deploymentPipeline",
@@ -16,97 +16,183 @@
     "liveCertification",
     "operationalDashboards",
     "runbooks",
-    "chaosEngineering",
-    "loadTesting",
     "regions",
     "runtimes"
   ],
   "properties": {
-    "$schema": { "type": "string" },
-    "topologyVersion": { "type": "integer", "minimum": 1 },
-    "environment": { "const": "production" },
+    "$schema": {
+      "type": "string"
+    },
+    "topologyVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "environment": {
+      "const": "production"
+    },
     "queueProvider": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["provider", "terraform", "producerConfig", "consumerConfig", "validationScript", "queues"],
+      "required": [
+        "provider",
+        "terraform",
+        "producerConfig",
+        "consumerConfig",
+        "validationScript",
+        "queues"
+      ],
       "properties": {
-        "provider": { "const": "cloudflare-queues" },
-        "terraform": { "type": "string", "minLength": 1 },
-        "producerConfig": { "type": "string", "minLength": 1 },
-        "consumerConfig": { "type": "string", "minLength": 1 },
-        "validationScript": { "type": "string", "minLength": 1 },
+        "provider": {
+          "const": "cloudflare-queues"
+        },
+        "terraform": {
+          "type": "string",
+          "minLength": 1
+        },
+        "producerConfig": {
+          "type": "string",
+          "minLength": 1
+        },
+        "consumerConfig": {
+          "type": "string",
+          "minLength": 1
+        },
+        "validationScript": {
+          "type": "string",
+          "minLength": 1
+        },
         "queues": {
           "type": "array",
-          "items": { "type": "string", "minLength": 1 },
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
           "minItems": 1,
           "uniqueItems": true
         }
       }
     },
-    "eventStoreProvider": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["provider", "migrations", "verificationSql", "verificationScript", "retentionPolicy"],
-      "properties": {
-        "provider": { "const": "supabase-postgres-append-only" },
-        "verificationSql": { "type": "string", "minLength": 1 },
-        "verificationScript": { "type": "string", "minLength": 1 },
-        "migrations": {
-          "type": "array",
-          "items": { "type": "string", "minLength": 1 },
-          "minItems": 1,
-          "uniqueItems": true
-        },
-        "retentionPolicy": { "type": "string", "minLength": 1 }
-      }
-    },
     "cacheProviders": {
       "type": "array",
-      "items": { "enum": ["upstash-redis", "cloudflare-kv", "vercel-edge-cache"] },
+      "items": {
+        "enum": [
+          "upstash-redis",
+          "cloudflare-kv",
+          "vercel-edge-cache"
+        ]
+      },
       "minItems": 1,
       "uniqueItems": true
     },
     "observabilityStack": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["collector", "metrics", "traces", "logs", "dashboards", "alerts", "validationScript"],
+      "required": [
+        "collector",
+        "metrics",
+        "traces",
+        "logs",
+        "dashboards",
+        "alerts",
+        "validationScript"
+      ],
       "properties": {
-        "collector": { "type": "string", "minLength": 1 },
-        "metrics": { "const": "prometheus" },
-        "traces": { "const": "tempo" },
-        "logs": { "const": "loki" },
+        "collector": {
+          "type": "string",
+          "minLength": 1
+        },
+        "metrics": {
+          "const": "prometheus"
+        },
+        "traces": {
+          "const": "tempo"
+        },
+        "logs": {
+          "const": "loki"
+        },
         "dashboards": {
           "type": "array",
-          "items": { "type": "string", "minLength": 1 },
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
           "minItems": 1,
           "uniqueItems": true
         },
-        "alerts": { "type": "string", "minLength": 1 },
-        "validationScript": { "type": "string", "minLength": 1 }
+        "alerts": {
+          "type": "string",
+          "minLength": 1
+        },
+        "validationScript": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "deploymentPipeline": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["workflow", "releasePromotion", "deployScript", "rollbackScript", "healthGateScript", "ultimateValidationScript"],
+      "required": [
+        "workflow",
+        "releasePromotion",
+        "deployScript",
+        "rollbackScript",
+        "healthGateScript",
+        "ultimateValidationScript"
+      ],
       "properties": {
-        "workflow": { "type": "string", "minLength": 1 },
-        "releasePromotion": { "type": "string", "minLength": 1 },
-        "deployScript": { "type": "string", "minLength": 1 },
-        "rollbackScript": { "type": "string", "minLength": 1 },
-        "healthGateScript": { "type": "string", "minLength": 1 },
-        "ultimateValidationScript": { "type": "string", "minLength": 1 }
+        "workflow": {
+          "type": "string",
+          "minLength": 1
+        },
+        "releasePromotion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "deployScript": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rollbackScript": {
+          "type": "string",
+          "minLength": 1
+        },
+        "healthGateScript": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ultimateValidationScript": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "securityOperations": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["controls", "securityGateScript", "secretRotationScript", "secretRotationRunbook"],
+      "required": [
+        "controls",
+        "securityGateScript",
+        "secretRotationScript",
+        "secretRotationRunbook"
+      ],
       "properties": {
-        "controls": { "type": "string", "minLength": 1 },
-        "securityGateScript": { "type": "string", "minLength": 1 },
-        "secretRotationScript": { "type": "string", "minLength": 1 },
-        "secretRotationRunbook": { "type": "string", "minLength": 1 }
+        "controls": {
+          "type": "string",
+          "minLength": 1
+        },
+        "securityGateScript": {
+          "type": "string",
+          "minLength": 1
+        },
+        "secretRotationScript": {
+          "type": "string",
+          "minLength": 1
+        },
+        "secretRotationRunbook": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "liveCertification": {
@@ -123,16 +209,40 @@
         "evidenceGovernanceDocs"
       ],
       "properties": {
-        "workflow": { "type": "string", "minLength": 1 },
-        "certificationConfig": { "type": "string", "minLength": 1 },
-        "certificationScript": { "type": "string", "minLength": 1 },
-        "operationsVerificationScript": { "type": "string", "minLength": 1 },
-        "drillScript": { "type": "string", "minLength": 1 },
-        "reportScript": { "type": "string", "minLength": 1 },
-        "certificationDoc": { "type": "string", "minLength": 1 },
+        "workflow": {
+          "type": "string",
+          "minLength": 1
+        },
+        "certificationConfig": {
+          "type": "string",
+          "minLength": 1
+        },
+        "certificationScript": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operationsVerificationScript": {
+          "type": "string",
+          "minLength": 1
+        },
+        "drillScript": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reportScript": {
+          "type": "string",
+          "minLength": 1
+        },
+        "certificationDoc": {
+          "type": "string",
+          "minLength": 1
+        },
         "evidenceGovernanceDocs": {
           "type": "array",
-          "items": { "type": "string", "minLength": 1 },
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
           "minItems": 1,
           "uniqueItems": true
         }
@@ -140,54 +250,40 @@
     },
     "operationalDashboards": {
       "type": "array",
-      "items": { "type": "string", "minLength": 1 },
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "minItems": 1,
       "uniqueItems": true
     },
     "runbooks": {
       "type": "array",
-      "items": { "type": "string", "minLength": 1 },
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "minItems": 1,
       "uniqueItems": true
-    },
-    "chaosEngineering": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["runner", "experiments"],
-      "properties": {
-        "runner": { "type": "string", "minLength": 1 },
-        "experiments": {
-          "type": "array",
-          "items": { "type": "string", "minLength": 1 },
-          "minItems": 1,
-          "uniqueItems": true
-        }
-      }
-    },
-    "loadTesting": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["runner", "scripts"],
-      "properties": {
-        "runner": { "type": "string", "minLength": 1 },
-        "scripts": {
-          "type": "array",
-          "items": { "type": "string", "minLength": 1 },
-          "minItems": 1,
-          "uniqueItems": true
-        }
-      }
     },
     "regions": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["primary", "failover", "edge"],
+      "required": [
+        "primary",
+        "edge"
+      ],
       "properties": {
-        "primary": { "type": "string", "minLength": 1 },
-        "failover": { "type": "string", "minLength": 1 },
+        "primary": {
+          "type": "string",
+          "minLength": 1
+        },
         "edge": {
           "type": "array",
-          "items": { "type": "string", "minLength": 1 },
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
           "minItems": 1,
           "uniqueItems": true
         }
@@ -205,43 +301,92 @@
           "deploymentManifests",
           "observability",
           "queueProvider",
-          "eventStore",
-          "failover",
           "incident",
           "security",
-          "chaos",
-          "loadTesting",
           "deploymentPipeline",
           "operationalDashboard",
-          "sre",
-          "replayOperations",
-          "controlPlane",
-          "regionalRouting"
+          "controlPlane"
         ],
         "properties": {
-          "runtimeName": { "type": "string", "minLength": 1 },
-          "runtimeRoot": { "type": "string", "minLength": 1 },
-          "environment": { "const": "production" },
+          "runtimeName": {
+            "type": "string",
+            "minLength": 1
+          },
+          "runtimeRoot": {
+            "type": "string",
+            "minLength": 1
+          },
+          "environment": {
+            "const": "production"
+          },
           "deploymentManifests": {
             "type": "array",
-            "items": { "type": "string", "minLength": 1 },
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
             "minItems": 1,
             "uniqueItems": true
           },
-          "observability": { "type": "string", "minLength": 1 },
-          "queueProvider": { "type": "string", "minLength": 1 },
-          "eventStore": { "type": "string", "minLength": 1 },
-          "failover": { "type": "string", "minLength": 1 },
-          "incident": { "type": "string", "minLength": 1 },
-          "security": { "type": "string", "minLength": 1 },
-          "chaos": { "type": "string", "minLength": 1 },
-          "loadTesting": { "type": "string", "minLength": 1 },
-          "deploymentPipeline": { "type": "string", "minLength": 1 },
-          "operationalDashboard": { "type": "string", "minLength": 1 },
-          "sre": { "type": "string", "minLength": 1 },
-          "replayOperations": { "type": "string", "minLength": 1 },
-          "controlPlane": { "type": "string", "minLength": 1 },
-          "regionalRouting": { "type": "string", "minLength": 1 }
+          "observability": {
+            "type": "string",
+            "minLength": 1
+          },
+          "queueProvider": {
+            "type": "string",
+            "minLength": 1
+          },
+          "incident": {
+            "type": "string",
+            "minLength": 1
+          },
+          "security": {
+            "type": "string",
+            "minLength": 1
+          },
+          "deploymentPipeline": {
+            "type": "string",
+            "minLength": 1
+          },
+          "operationalDashboard": {
+            "type": "string",
+            "minLength": 1
+          },
+          "controlPlane": {
+            "type": "string",
+            "minLength": 1
+          },
+          "outbox": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "outboxProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "migrations",
+        "retentionPolicy"
+      ],
+      "properties": {
+        "provider": {
+          "const": "supabase-postgres-transactional-outbox"
+        },
+        "migrations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "retentionPolicy": {
+          "type": "string",
+          "minLength": 1
         }
       }
     }

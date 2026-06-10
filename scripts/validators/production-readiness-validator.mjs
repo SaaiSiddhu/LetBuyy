@@ -157,8 +157,6 @@ for (const file of [
   productionTopology?.queueProvider?.producerConfig,
   productionTopology?.queueProvider?.consumerConfig,
   productionTopology?.queueProvider?.validationScript,
-  productionTopology?.eventStoreProvider?.verificationSql,
-  productionTopology?.eventStoreProvider?.verificationScript,
   productionTopology?.observabilityStack?.collector,
   productionTopology?.observabilityStack?.alerts,
   productionTopology?.observabilityStack?.validationScript,
@@ -183,7 +181,7 @@ for (const file of [
   ...(productionTopology?.operationalDashboards || []),
   ...(productionTopology?.runbooks || []),
   ...(productionTopology?.liveCertification?.evidenceGovernanceDocs || []),
-  ...(productionTopology?.eventStoreProvider?.migrations || []),
+  ...(productionTopology?.outboxProvider?.migrations || []),
 ].filter(Boolean)) {
   reporter.assert(exists(file), `Production topology references missing source file: ${file}`);
 }
@@ -596,13 +594,10 @@ for (const ciFragment of [
 
 const liveCi = readFile(".github/workflows/live-production-certification.yml");
 for (const ciFragment of [
-  "run-provider-production-certification.mjs",
+  "phase4-live-certify.mjs",
   "phase4-live-certification-report.json",
-  "Setup k6",
   "ROTATE_SECRET_SUPABASE_SERVICE_ROLE_KEY",
   "LETBUYY_OPERATIONS_TOKEN",
-  "LETBUYY_PROVIDER_CERTIFICATION_APPROVED",
-  "LETBUYY_PROVIDER_MUTATION_APPROVED",
   "attest-build-provenance",
   "Generate SBOM",
 ]) {

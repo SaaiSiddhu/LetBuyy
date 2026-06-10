@@ -26,13 +26,7 @@ const requiredTestFiles = [
   "tests/contracts/event-contracts.test.mjs",
   "tests/queues/queue-recovery.test.mjs",
   "tests/feature-flags/feature-flag-governance.test.mjs",
-  "tests/chaos/degraded-mode.test.mjs",
   "tests/security/execution-mode.test.mjs",
-  "tests/survivability/survivability-governance.test.mjs",
-  "tests/survivability/operational-proof-surface.test.mjs",
-  "tests/survivability/operational-certification-harness.test.mjs",
-  "tests/survivability/persistence-certification.test.mjs",
-  "tests/production-certification/provider-production-certification.test.mjs",
 ];
 
 for (const file of requiredTestFiles) {

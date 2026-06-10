@@ -77,9 +77,8 @@ for (const fragment of [
   "pnpm run validate:cloudflare",
   "pnpm run test",
   "pnpm run typecheck",
-  "run-provider-production-certification.mjs",
-  "LETBUYY_PROVIDER_CERTIFICATION_APPROVED",
-  "LETBUYY_PROVIDER_MUTATION_APPROVED",
+  "phase4-live-certify.mjs",
+  "phase4-live-certification-report.json",
   "attest-build-provenance",
 ]) {
   reporter.assert(certification.includes(fragment), `Live certification CI must include ${fragment}`);

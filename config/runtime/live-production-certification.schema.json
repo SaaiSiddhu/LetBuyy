@@ -16,26 +16,57 @@
     "evidenceCategories"
   ],
   "properties": {
-    "$schema": { "type": "string" },
-    "certificationVersion": { "type": "integer", "minimum": 1 },
-    "environment": { "const": "production" },
-    "certificationMode": { "enum": ["credential-gated-plan-ready", "live-certified"] },
-    "workflow": { "type": "string", "minLength": 1 },
+    "$schema": {
+      "type": "string"
+    },
+    "certificationVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "environment": {
+      "const": "production"
+    },
+    "certificationMode": {
+      "enum": [
+        "credential-gated-plan-ready",
+        "live-certified"
+      ]
+    },
+    "workflow": {
+      "type": "string",
+      "minLength": 1
+    },
     "modeDetection": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["script", "modes", "executeRequires"],
+      "required": [
+        "script",
+        "modes",
+        "executeRequires"
+      ],
       "properties": {
-        "script": { "type": "string", "minLength": 1 },
+        "script": {
+          "type": "string",
+          "minLength": 1
+        },
         "modes": {
           "type": "array",
-          "items": { "enum": ["auto", "plan", "execute"] },
+          "items": {
+            "enum": [
+              "auto",
+              "plan",
+              "execute"
+            ]
+          },
           "minItems": 3,
           "uniqueItems": true
         },
         "executeRequires": {
           "type": "array",
-          "items": { "type": "string", "minLength": 1 },
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
           "minItems": 1,
           "uniqueItems": true
         }
@@ -46,7 +77,6 @@
       "additionalProperties": false,
       "required": [
         "certification",
-        "providerCertification",
         "deployment",
         "operationsVerification",
         "drills",
@@ -54,45 +84,105 @@
         "security",
         "observability",
         "database",
-        "cloudflare",
-        "load"
+        "cloudflare"
       ],
       "properties": {
-        "certification": { "type": "string", "minLength": 1 },
-        "providerCertification": { "type": "string", "minLength": 1 },
-        "deployment": { "type": "string", "minLength": 1 },
-        "operationsVerification": { "type": "string", "minLength": 1 },
-        "drills": { "type": "string", "minLength": 1 },
-        "report": { "type": "string", "minLength": 1 },
-        "security": { "type": "string", "minLength": 1 },
-        "observability": { "type": "string", "minLength": 1 },
-        "database": { "type": "string", "minLength": 1 },
-        "cloudflare": { "type": "string", "minLength": 1 },
-        "load": { "type": "string", "minLength": 1 }
+        "certification": {
+          "type": "string",
+          "minLength": 1
+        },
+        "deployment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operationsVerification": {
+          "type": "string",
+          "minLength": 1
+        },
+        "drills": {
+          "type": "string",
+          "minLength": 1
+        },
+        "report": {
+          "type": "string",
+          "minLength": 1
+        },
+        "security": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observability": {
+          "type": "string",
+          "minLength": 1
+        },
+        "database": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cloudflare": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "certificationRuntime": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["reportScript", "reportApi", "reportProjection", "evidenceExpirationHours", "minimumLiveScore", "minimumRepositoryScore"],
+      "required": [
+        "reportScript",
+        "reportApi",
+        "reportProjection",
+        "evidenceExpirationHours",
+        "minimumLiveScore",
+        "minimumRepositoryScore"
+      ],
       "properties": {
-        "reportScript": { "type": "string", "minLength": 1 },
-        "reportApi": { "type": "string", "minLength": 1 },
-        "reportProjection": { "type": "string", "minLength": 1 },
-        "evidenceExpirationHours": { "type": "integer", "minimum": 1 },
-        "minimumLiveScore": { "type": "number", "minimum": 0, "maximum": 10 },
-        "minimumRepositoryScore": { "type": "number", "minimum": 0, "maximum": 10 }
+        "reportScript": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reportApi": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reportProjection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidenceExpirationHours": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "minimumLiveScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "minimumRepositoryScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        }
       }
     },
     "evidenceStore": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["api", "projectionTables"],
+      "required": [
+        "api",
+        "projectionTables"
+      ],
       "properties": {
-        "api": { "type": "string", "minLength": 1 },
+        "api": {
+          "type": "string",
+          "minLength": 1
+        },
         "projectionTables": {
           "type": "array",
-          "items": { "type": "string", "minLength": 1 },
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
           "minItems": 1,
           "uniqueItems": true
         }
@@ -107,31 +197,35 @@
         "supabase",
         "observability",
         "incident",
-        "failover",
-        "chaos",
-        "load",
         "security",
         "dashboards",
-        "control-plane",
-        "sre",
-        "event-store",
-        "multi-region"
+        "control-plane"
       ],
       "properties": {
-        "deployment": { "$ref": "#/$defs/evidenceCategory" },
-        "cloudflare": { "$ref": "#/$defs/evidenceCategory" },
-        "supabase": { "$ref": "#/$defs/evidenceCategory" },
-        "observability": { "$ref": "#/$defs/evidenceCategory" },
-        "incident": { "$ref": "#/$defs/evidenceCategory" },
-        "failover": { "$ref": "#/$defs/evidenceCategory" },
-        "chaos": { "$ref": "#/$defs/evidenceCategory" },
-        "load": { "$ref": "#/$defs/evidenceCategory" },
-        "security": { "$ref": "#/$defs/evidenceCategory" },
-        "dashboards": { "$ref": "#/$defs/evidenceCategory" },
-        "control-plane": { "$ref": "#/$defs/evidenceCategory" },
-        "sre": { "$ref": "#/$defs/evidenceCategory" },
-        "event-store": { "$ref": "#/$defs/evidenceCategory" },
-        "multi-region": { "$ref": "#/$defs/evidenceCategory" }
+        "deployment": {
+          "$ref": "#/$defs/evidenceCategory"
+        },
+        "cloudflare": {
+          "$ref": "#/$defs/evidenceCategory"
+        },
+        "supabase": {
+          "$ref": "#/$defs/evidenceCategory"
+        },
+        "observability": {
+          "$ref": "#/$defs/evidenceCategory"
+        },
+        "incident": {
+          "$ref": "#/$defs/evidenceCategory"
+        },
+        "security": {
+          "$ref": "#/$defs/evidenceCategory"
+        },
+        "dashboards": {
+          "$ref": "#/$defs/evidenceCategory"
+        },
+        "control-plane": {
+          "$ref": "#/$defs/evidenceCategory"
+        }
       }
     }
   },
@@ -139,14 +233,36 @@
     "evidenceCategory": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["required", "planMode", "executeMode", "source"],
+      "required": [
+        "required",
+        "planMode",
+        "executeMode",
+        "source"
+      ],
       "properties": {
-        "required": { "const": true },
-        "planMode": { "type": "string", "minLength": 1 },
-        "executeMode": { "type": "string", "minLength": 1 },
-        "source": { "type": "string", "minLength": 1 },
-        "lastVerifiedAt": { "type": "string", "format": "date-time" },
-        "evidenceId": { "type": "string", "minLength": 1 }
+        "required": {
+          "const": true
+        },
+        "planMode": {
+          "type": "string",
+          "minLength": 1
+        },
+        "executeMode": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lastVerifiedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidenceId": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     }
   }

@@ -17,15 +17,14 @@
       "docs/governance/deployment-governance.md",
       "docs/governance/observability-infrastructure-governance.md",
       "docs/governance/incident-response-governance.md",
-      "docs/governance/failover-governance.md",
-      "docs/governance/chaos-engineering-governance.md",
       "docs/governance/sre-governance.md",
       "docs/governance/queue-provider-governance.md",
-      "docs/governance/event-store-governance.md",
       "docs/governance/security-operations-governance.md",
       "docs/governance/deployment-pipeline-governance.md",
       "docs/governance/runtime-observability-governance.md",
-      "docs/governance/operational-dashboard-governance.md"
+      "docs/governance/operational-dashboard-governance.md",
+      "docs/governance/runtime-manifest-governance.md",
+      "docs/governance/operational-evidence-governance.md"
     ]
   },
   "allowedDependencies": {

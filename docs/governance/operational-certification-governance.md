@@ -9,7 +9,7 @@ Rules:
 - Certification reports expire after the configured evidence window and must be regenerated from live evidence.
 - Report persistence requires the operations control-plane and service-role-backed runtime projections.
 - CI artifacts may contain reports, but source authority remains the operations projection table.
-- `config/runtime/operational-certification-policy.json` requires hard-fail behavior, 10/10 repository and live scores, and fresh evidence across deployment, observability, failover, chaos, load, security, SRE, event-store, multi-region, and replay categories.
+- `config/runtime/operational-certification-policy.json` requires hard-fail behavior, 10/10 repository and live scores, and fresh evidence across deployment, Cloudflare, Supabase, observability, incident, security, dashboards, and control-plane categories.
 - `credential-gated-plan-ready` is not a live certification.
 - Dev certification reports are allowed only as non-production SDLC evidence. A dev report must use `environment=dev`, isolated dev Cloudflare routes/resources, and must not set or imply production live certification.
-- Repository validators and governance tests are certification prerequisites, not live certification evidence. Live certification still requires execute-mode provider evidence for deployment, observability, load, failover, chaos, replay, security, and rollback checks.
+- Repository validators and governance tests are certification prerequisites, not live certification evidence. Live certification still requires execute-mode evidence for deployment, observability, incident response, security, operations control-plane, and dashboard checks.

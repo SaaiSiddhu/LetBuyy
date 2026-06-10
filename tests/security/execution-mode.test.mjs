@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 
-test("live certification execute mode fails closed without provider capabilities", () => {
+test("live certification execute mode fails closed without live capabilities", () => {
   const result = spawnSync(process.execPath, [
     "infrastructure/scripts/operations/phase4-live-certify.mjs",
     "--environment=staging",

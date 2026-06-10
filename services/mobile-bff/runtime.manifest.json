@@ -16,7 +16,9 @@
       "docs/governance/mobile-governance.md",
       "docs/governance/security-operations-governance.md",
       "docs/governance/deployment-governance.md",
-      "docs/governance/observability-governance.md"
+      "docs/governance/observability-governance.md",
+      "docs/governance/runtime-manifest-governance.md",
+      "docs/governance/operational-evidence-governance.md"
     ]
   },
   "allowedDependencies": {

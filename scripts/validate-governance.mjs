@@ -17,6 +17,7 @@ const validators = [
   "tenant-isolation-validator.mjs",
   "production-safety-validator.mjs",
   "session-security-validator.mjs",
+  "operational-lifecycle-validator.mjs",
   "validate-design-system.mjs",
   "mobile-token-validator.mjs",
   "theme-governance-validator.mjs",

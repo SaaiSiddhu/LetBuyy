@@ -4,12 +4,11 @@
   "featureFlags": {
     "sdk": "packages/shared-types/src/index.ts",
     "adminControlPlane": "apps/platform-console operations surfaces backed by /v1/operations",
-    "runtimeEvaluation": "deterministic tenant, actor, region, environment, internal, and percentage evaluation",
+    "runtimeEvaluation": "deterministic tenant, actor, environment, internal, and percentage evaluation",
     "scopes": [
       "tenant",
       "percentage",
       "internal",
-      "region",
       "environment"
     ],
     "instantDisablement": "kill_switch overrides all rollout rules",
@@ -29,13 +28,11 @@
     "minimumObservationMinutes": 30,
     "gates": [
       "queue-health",
-      "replay-health",
       "p95-latency",
       "error-rate",
       "cpu",
       "database-saturation",
-      "queue-lag",
-      "SLO-burn-rate"
+      "queue-lag"
     ],
     "automaticRollback": true,
     "evidence": [
@@ -53,7 +50,7 @@
       "health-gates",
       "rollback-switchback"
     ],
-    "rollback": "switch traffic to previous color and preserve replay/queue cursor state",
+    "rollback": "switch traffic to previous color and preserve queue cursor state",
     "evidence": [
       "deployment_promotion_runs",
       "deployment_health_gate_results"
@@ -63,10 +60,8 @@
     "strategy": "silent production traffic mirroring without side effects",
     "sideEffectPolicy": "shadow events, queues, provider calls, and writes must be tagged and non-mutating",
     "uses": [
-      "replay runtime upgrades",
       "provider migration",
       "queue migration",
-      "event-store evolution",
       "infrastructure migration"
     ],
     "comparison": [
@@ -74,12 +69,10 @@
       "latency",
       "error-rate",
       "event-count",
-      "queue-lag",
-      "projection-drift"
+      "queue-lag"
     ],
     "evidence": [
       "shadow_traffic_comparison_runs",
-      "event_store_integrity_checks",
       "operational_dashboard_snapshots"
     ]
   },
@@ -97,14 +90,10 @@
     "typecheck",
     "tests",
     "governance",
-    "topology-drift",
-    "replay-validation",
     "queue-validation",
     "telemetry-validation",
-    "load-validation",
     "observability-validation",
     "migration-validation",
-    "failover-validation",
     "security-validation",
     "staging-rehearsal",
     "live-certification"

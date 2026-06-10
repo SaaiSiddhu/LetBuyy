@@ -19,21 +19,11 @@
       "letbuyy-production-dead-letter-queue"
     ]
   },
-  "eventStoreProvider": {
-    "provider": "supabase-postgres-append-only",
-    "migrations": [
-      "database/supabase/migrations/000_baseline.sql"
-    ],
-    "retentionPolicy": "single-region append-only outbox and ledger evidence"
-  },
   "regions": {
     "primary": "ap-south-1",
     "edge": [
       "global-edge"
-    ],
-    "replayIntegrity": {
-      "failClosedOnDivergence": true
-    }
+    ]
   },
   "runtimes": [
     {
@@ -43,7 +33,8 @@
       "status": "active",
       "deploymentManifests": [
         "database/supabase/migrations/000_baseline.sql"
-      ]
+      ],
+      "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "API Gateway",
@@ -53,7 +44,8 @@
       "deploymentKind": "cloudflare-worker",
       "deploymentManifests": [
         "services/api-gateway/wrangler.toml"
-      ]
+      ],
+      "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Queue Workers",
@@ -63,7 +55,8 @@
       "deploymentKind": "queue-worker",
       "deploymentManifests": [
         "services/queue-workers/wrangler.toml"
-      ]
+      ],
+      "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Mobile BFF",
@@ -73,7 +66,8 @@
       "deploymentKind": "cloudflare-worker",
       "deploymentManifests": [
         "services/mobile-bff/wrangler.toml"
-      ]
+      ],
+      "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Webhook Service",
@@ -83,7 +77,8 @@
       "deploymentKind": "cloudflare-worker",
       "deploymentManifests": [
         "services/webhook-service/wrangler.toml"
-      ]
+      ],
+      "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Identity Platform",
@@ -93,7 +88,8 @@
       "deploymentKind": "vercel-next",
       "deploymentManifests": [
         "apps/identity-platform/vercel.json"
-      ]
+      ],
+      "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Storefront Runtime",
@@ -103,7 +99,8 @@
       "deploymentKind": "vercel-next",
       "deploymentManifests": [
         "apps/storefront-runtime/vercel.json"
-      ]
+      ],
+      "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Merchant Control Plane",
@@ -113,7 +110,8 @@
       "deploymentKind": "vercel-next",
       "deploymentManifests": [
         "apps/merchant-control-plane/vercel.json"
-      ]
+      ],
+      "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Marketing Site",
@@ -123,7 +121,8 @@
       "deploymentKind": "vercel-next",
       "deploymentManifests": [
         "apps/marketing-site/vercel.json"
-      ]
+      ],
+      "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Platform Console",
@@ -133,7 +132,8 @@
       "deploymentKind": "vercel-next",
       "deploymentManifests": [
         "apps/platform-console/vercel.json"
-      ]
+      ],
+      "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Mobile Merchant App",
@@ -143,7 +143,8 @@
       "deploymentKind": "mobile-app",
       "deploymentManifests": [
         "apps/mobile/merchant-app/pubspec.yaml"
-      ]
+      ],
+      "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "checkout-runtime",
@@ -225,5 +226,12 @@
       "deploymentKind": "not-deployed",
       "deploymentManifests": []
     }
-  ]
+  ],
+  "outboxProvider": {
+    "provider": "supabase-postgres-transactional-outbox",
+    "migrations": [
+      "database/supabase/migrations/000_baseline.sql"
+    ],
+    "retentionPolicy": "single-region transactional outbox and ledger evidence"
+  }
 }

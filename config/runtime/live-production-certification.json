@@ -18,15 +18,11 @@
       "LetBuyy operations API token",
       "Vercel deployment credentials",
       "Wrangler secret rotation payloads",
-      "Provider production certification approval and provider mutation approval",
-      "Node.js >=22.0.0 for Wrangler v4 provider execution",
-      "terraform, psql, pnpm, k6, locust, and gatling local tools",
-      "LETBUYY_SURVIVABILITY_EXECUTION_APPROVED=true for survivability-suite execute mode"
+      "Node.js >=22.0.0, terraform, psql, and pnpm local tools"
     ]
   },
   "scripts": {
     "certification": "infrastructure/scripts/operations/phase4-live-certify.mjs",
-    "providerCertification": "infrastructure/scripts/operations/run-provider-production-certification.mjs",
     "deployment": "infrastructure/scripts/deploy/production-deploy.mjs",
     "operationsVerification": "infrastructure/scripts/operations/verify-live-operations.mjs",
     "drills": "infrastructure/scripts/operations/run-live-drills.mjs",
@@ -34,9 +30,7 @@
     "security": "infrastructure/scripts/security/verify-security-gates.mjs",
     "observability": "infrastructure/scripts/observability/verify-observability-rollout.mjs",
     "database": "infrastructure/scripts/database/verify-supabase-operations.mjs",
-    "cloudflare": "infrastructure/scripts/cloudflare/verify-provider-contracts.mjs",
-    "load": "infrastructure/scripts/load/run-load-suite.mjs",
-    "survivability": "infrastructure/scripts/operations/run-survivability-suite.mjs"
+    "cloudflare": "infrastructure/scripts/cloudflare/verify-provider-contracts.mjs"
   },
   "certificationRuntime": {
     "reportScript": "infrastructure/scripts/operations/generate-certification-report.mjs",
@@ -53,14 +47,8 @@
       "deployment_health_gate_results",
       "production_incidents",
       "production_incident_events",
-      "failover_drill_runs",
-      "chaos_experiment_runs",
-      "load_test_runs",
       "operational_dashboard_snapshots",
-      "sre_error_budget_snapshots",
       "security_enforcement_events",
-      "event_store_integrity_checks",
-      "regional_routing_overrides",
       "runtime_control_commands",
       "operational_certification_reports"
     ]
@@ -96,24 +84,6 @@
       "executeMode": "Record incident drill timelines and recovery verification through operations API.",
       "source": "production_incidents"
     },
-    "failover": {
-      "required": true,
-      "planMode": "Validate regional, provider, queue, cache, telemetry, and database drill contracts.",
-      "executeMode": "Record active/passive failover drill evidence with RTO/RPO measurements.",
-      "source": "failover_drill_runs"
-    },
-    "chaos": {
-      "required": true,
-      "planMode": "Validate executable chaos plans and guardrails.",
-      "executeMode": "Run approved chaos experiments and record recovery evidence.",
-      "source": "chaos_experiment_runs"
-    },
-    "load": {
-      "required": true,
-      "planMode": "Validate k6, Locust, and Gatling queue, replay, and checkout load scripts.",
-      "executeMode": "Run k6, Locust, and Gatling load suite and record throughput, latency, and error-rate evidence.",
-      "source": "load_test_runs"
-    },
     "security": {
       "required": true,
       "planMode": "Validate webhook signatures, CSRF, auth rate limits, SBOM, audit, and secret rotation contracts.",
@@ -128,27 +98,9 @@
     },
     "control-plane": {
       "required": true,
-      "planMode": "Validate replay, queue, failover, deployment, tenant, and cache command schemas.",
+      "planMode": "Validate deployment, tenant, queue, and runtime command schemas.",
       "executeMode": "Execute authorized control commands and record runtime audit evidence.",
       "source": "runtime_control_commands"
-    },
-    "sre": {
-      "required": true,
-      "planMode": "Validate SLO, SLA, error-budget, readiness, and maturity scoring contracts.",
-      "executeMode": "Record SRE certification evidence and error-budget snapshots.",
-      "source": "sre_error_budget_snapshots"
-    },
-    "event-store": {
-      "required": true,
-      "planMode": "Validate append-only, replay-safe, retention, archival, and integrity contracts.",
-      "executeMode": "Run event stream consistency checks and record integrity evidence.",
-      "source": "event_store_integrity_checks"
-    },
-    "multi-region": {
-      "required": true,
-      "planMode": "Validate region affinity, queue ownership, cache routing, and disaster recovery contracts.",
-      "executeMode": "Record regional routing, failover, and replication health evidence.",
-      "source": "regional_routing_overrides"
     }
   }
 }

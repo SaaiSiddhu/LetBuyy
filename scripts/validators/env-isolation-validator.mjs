@@ -16,8 +16,6 @@ for (const resource of [
   "secrets",
   "databases",
   "queues",
-  "event stores",
-  "replay checkpoints",
   "telemetry backends",
   "provider accounts",
   "deployment credentials",

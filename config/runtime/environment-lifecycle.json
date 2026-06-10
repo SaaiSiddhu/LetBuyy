@@ -10,8 +10,6 @@
       "secrets",
       "databases",
       "queues",
-      "event stores",
-      "replay checkpoints",
       "telemetry backends",
       "feature flag stores",
       "provider accounts",
@@ -22,7 +20,7 @@
       "sharing production secrets with lower environments",
       "sending lower-environment traffic to production providers",
       "promoting code without staging rehearsal evidence",
-      "marking live certification without fresh provider execution evidence"
+      "marking live certification without fresh credential-gated production evidence"
     ]
   },
   "environments": [
@@ -32,10 +30,7 @@
       "credentialsMode": "isolated staging secret store",
       "dataIsolation": "staging-only traffic, data, queues, telemetry, providers, and feature flags",
       "regions": [
-        "ap-south-1",
-        "ap-southeast-1",
-        "us-east-1",
-        "eu-west-1"
+        "ap-south-1"
       ],
       "topology": {
         "mirrorProductionTopology": true,
@@ -53,8 +48,6 @@
         "r2Bucket": "letbuyy-media-staging",
         "d1Database": "letbuyy-staging-d1",
         "telemetryDataset": "letbuyy-staging-telemetry",
-        "eventStore": "staging append-only event store",
-        "replayRuntime": "staging replay workers",
         "observability": "staging Prometheus/Grafana/Tempo/Loki",
         "controlPlane": "/v1/operations scoped to staging"
       },
@@ -70,7 +63,7 @@
       },
       "featureFlags": {
         "store": "staging feature flag namespace",
-        "defaultRollout": "canary, tenant, region, and percentage rehearsals",
+        "defaultRollout": "canary, tenant, and percentage rehearsals",
         "auditing": true
       },
       "observability": {
@@ -80,7 +73,6 @@
           "structured logs",
           "SLO burn rates",
           "queue lag",
-          "replay integrity",
           "deployment scoring"
         ],
         "alerts": "paging rehearsal alerts"
@@ -92,13 +84,10 @@
           "typecheck",
           "tests",
           "migration-rehearsal",
-          "load-test",
-          "chaos-drill",
-          "failover-drill",
           "rollback-validation",
           "observability-validation"
         ],
-        "rollback": "blue/green switchback and replay-safe queue cursor restore"
+        "rollback": "blue/green switchback"
       },
       "evidence": {
         "mode": "staging-certification-evidence",
@@ -106,12 +95,7 @@
         "requiredRecords": [
           "production_readiness_gate_runs",
           "deployment_health_gate_results",
-          "failover_drill_runs",
-          "chaos_experiment_runs",
-          "load_test_runs",
-          "event_store_integrity_checks",
-          "operational_dashboard_snapshots",
-          "sre_error_budget_snapshots"
+          "operational_dashboard_snapshots"
         ]
       }
     },
@@ -119,12 +103,9 @@
       "name": "production",
       "stability": "customer-facing-live",
       "credentialsMode": "production secret stores only",
-      "dataIsolation": "production data, queues, event store, telemetry, providers, and feature flags only",
+      "dataIsolation": "production data, queues, telemetry, providers, and feature flags only",
       "regions": [
-        "ap-south-1",
-        "ap-southeast-1",
-        "us-east-1",
-        "eu-west-1"
+        "ap-south-1"
       ],
       "topology": {
         "source": "config/runtime/production-topology.json",
@@ -142,8 +123,6 @@
         "r2Bucket": "letbuyy-media-production",
         "d1Database": "letbuyy-production-d1",
         "telemetryDataset": "letbuyy-production-telemetry",
-        "eventStore": "production append-only event store",
-        "replayRuntime": "production replay workers",
         "observability": "production telemetry stack",
         "controlPlane": "/v1/operations scoped to production"
       },
@@ -170,7 +149,6 @@
           "structured logs",
           "SLO burn rates",
           "queue lag",
-          "replay integrity",
           "deployment scoring",
           "incident timelines"
         ],
@@ -184,14 +162,10 @@
           "tests",
           "security",
           "migration",
-          "load",
-          "chaos",
-          "failover",
           "observability",
-          "SLO",
           "live-certification"
         ],
-        "rollback": "automated production rollback plus evidence recording"
+        "rollback": "automated production rollback with evidence recording"
       },
       "evidence": {
         "mode": "fresh-live-execution-evidence",
@@ -199,13 +173,8 @@
         "requiredRecords": [
           "production_readiness_gate_runs",
           "deployment_health_gate_results",
-          "failover_drill_runs",
-          "chaos_experiment_runs",
-          "load_test_runs",
           "security_enforcement_events",
-          "event_store_integrity_checks",
           "operational_dashboard_snapshots",
-          "sre_error_budget_snapshots",
           "operational_certification_reports"
         ]
       }

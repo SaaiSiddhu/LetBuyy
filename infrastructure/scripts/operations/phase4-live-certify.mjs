@@ -22,11 +22,6 @@ const requiredSecretNames = [
 
 const capabilityGroups = [
   {
-    name: "operator-approval",
-    env: ["LETBUYY_SURVIVABILITY_EXECUTION_APPROVED"],
-    validator: () => process.env.LETBUYY_SURVIVABILITY_EXECUTION_APPROVED === "true",
-  },
-  {
     name: "cloudflare",
     env: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID", "TF_VAR_cloudflare_api_token", "TF_VAR_cloudflare_account_id"],
     tools: ["pnpm", "terraform"],
@@ -53,10 +48,6 @@ const capabilityGroups = [
     name: "secret-rotation",
     env: requiredSecretNames.map((secretName) => `ROTATE_SECRET_${secretName}`),
     tools: ["pnpm"],
-  },
-  {
-    name: "load-testing",
-    tools: ["k6", "locust", "gatling"],
   },
 ];
 

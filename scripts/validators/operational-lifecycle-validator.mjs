@@ -21,8 +21,6 @@ const requiredFiles = [
   "config/runtime/operational-certification-policy.schema.json",
   "config/runtime/operational-certification-policy.json",
   "scripts/staging/seed.mjs",
-  "infrastructure/scripts/load/locust-checkout-concurrency.py",
-  "infrastructure/scripts/load/gatling/CheckoutConcurrencySimulation.scala",
   activeSupabaseSchemaMigrationPath,
   "database/supabase/verification/065_enterprise_sdlc_lifecycle.sql",
   ".github/workflows/environment-lifecycle.yml",
@@ -32,7 +30,6 @@ const requiredFiles = [
   "docs/governance/feature-flag-governance.md",
   "docs/governance/shadow-traffic-governance.md",
   "docs/governance/sandbox-provider-governance.md",
-  "docs/governance/chaos-governance.md",
   "docs/runbooks/staging-rehearsal.md",
   "docs/runbooks/feature-flag-rollback.md",
   "docs/operations/phase4-enterprise-final-report.md",
@@ -63,7 +60,6 @@ for (const separated of [
   "secrets",
   "databases",
   "queues",
-  "event stores",
   "telemetry backends",
   "feature flag stores",
   "provider accounts",
@@ -79,20 +75,25 @@ reporter.assert(
   environments.get("staging")?.topology?.mirrorProductionTopology === true,
   "Staging lifecycle must mirror production topology",
 );
-for (const region of ["ap-south-1", "ap-southeast-1", "us-east-1", "eu-west-1"]) {
+for (const environmentName of ["staging", "production"]) {
+  const regions = environments.get(environmentName)?.regions || [];
   reporter.assert(
-    environments.get("staging")?.regions?.includes(region) && environments.get("production")?.regions?.includes(region),
-    `Staging and production lifecycle must declare regional readiness contract for ${region}`,
+    regions.length === 1 && regions[0] === "ap-south-1",
+    `${environmentName} lifecycle must declare the one-region ap-south-1 data plane`,
   );
 }
 
 const rolloutLifecycle = readJson("config/runtime/rollout-lifecycle.json");
-for (const scope of ["tenant", "percentage", "internal", "region", "environment"]) {
+for (const scope of ["tenant", "percentage", "internal", "environment"]) {
   reporter.assert(
     rolloutLifecycle?.featureFlags?.scopes?.includes(scope),
     `Feature flag lifecycle must support ${scope} scope`,
   );
 }
+reporter.assert(
+  !rolloutLifecycle?.featureFlags?.scopes?.includes("region"),
+  "Feature flag lifecycle must not reintroduce region-scoped rollout authority",
+);
 for (const step of [1, 5, 25, 50, 100]) {
   reporter.assert(rolloutLifecycle?.canary?.steps?.includes(step), `Canary lifecycle must include ${step}% rollout`);
 }
@@ -117,19 +118,23 @@ reporter.assert(
 );
 for (const category of [
   "deployment",
+  "cloudflare",
+  "supabase",
   "observability",
-  "failover",
-  "chaos",
-  "load",
   "security",
-  "sre",
-  "event-store",
-  "multi-region",
-  "replay-runtime",
+  "incident",
+  "dashboards",
+  "control-plane",
 ]) {
   reporter.assert(
     certificationPolicy?.requiredCategories?.includes(category),
     `Operational certification policy must require ${category}`,
+  );
+}
+for (const retiredCategory of ["failover", "chaos", "load", "sre", "event-store", "multi-region", "replay-runtime"]) {
+  reporter.assert(
+    !certificationPolicy?.requiredCategories?.includes(retiredCategory),
+    `Operational certification policy must not require retired category ${retiredCategory}`,
   );
 }
 
@@ -205,14 +210,9 @@ for (const functionName of ["record_operational_feature_flag_exposure", "record_
 
 const productionTopology = readJson("config/runtime/production-topology.json");
 reporter.assert(
-  productionTopology?.eventStoreProvider?.migrations?.includes(activeSupabaseSchemaMigrationPath),
-  "Production topology must include the active Supabase baseline migration",
+  productionTopology?.outboxProvider?.migrations?.includes(activeSupabaseSchemaMigrationPath),
+  "Production topology must include the active Supabase baseline migration for the transactional outbox",
 );
-
-const loadSuite = readFile("infrastructure/scripts/load/run-load-suite.mjs");
-for (const tool of ["k6", "locust", "gatling"]) {
-  reporter.assert(loadSuite.includes(tool), `Load suite must support ${tool}`);
-}
 
 const environmentWorkflow = readFile(".github/workflows/environment-lifecycle.yml");
 for (const workflowFragment of [

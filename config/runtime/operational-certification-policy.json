@@ -13,30 +13,25 @@
     "supabase",
     "observability",
     "incident",
-    "failover",
-    "chaos",
-    "load",
     "security",
     "dashboards",
-    "control-plane",
-    "sre",
-    "event-store",
-    "multi-region",
-    "replay-runtime"
+    "control-plane"
   ],
   "staleEvidencePolicy": "Any live-certified category with missing, expired, or unlinked evidence is a hard failure. Plan-ready contracts are not live certifications and must remain explicitly labeled credential-gated.",
   "certificationModes": {
     "plan": "Executable workflows and evidence contracts exist, but live operational maturity is not certified.",
-    "execute": "Provider credentials, tools, telemetry, drills, load tests, security gates, and evidence recording must complete successfully before certification.",
+    "execute": "Provider credentials, telemetry, deployment, operations, security, and evidence recording must complete successfully before certification.",
     "staging": "Non-production staging evidence validates isolated routes, queues, storage, telemetry, secrets, rollback, and promotion readiness only."
   },
   "evidenceSources": {
     "deployment": "deployment_health_gate_results",
-    "failover": "failover_drill_runs",
-    "chaos": "chaos_experiment_runs",
-    "load": "load_test_runs",
+    "cloudflare": "infrastructure/scripts/cloudflare/verify-provider-contracts.mjs",
+    "supabase": "database/supabase/verification/065_enterprise_sdlc_lifecycle.sql",
+    "observability": "infrastructure/scripts/observability/verify-observability-rollout.mjs",
+    "incident": "production_incidents",
     "security": "security_enforcement_events",
-    "sre": "sre_error_budget_snapshots",
+    "dashboards": "operational_dashboard_snapshots",
+    "control-plane": "runtime_control_commands",
     "certification": "operational_certification_reports"
   }
 }

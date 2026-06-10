@@ -4,7 +4,7 @@ Operational evidence is authoritative only when stored in runtime projection tab
 
 Rules:
 
-- Evidence categories are deployment, Cloudflare, Supabase, observability, incident, failover, chaos, load, security, dashboards, control-plane, SRE, event-store, and multi-region.
+- Evidence categories are deployment, Cloudflare, Supabase, observability, incident, security, dashboards, and control-plane.
 - Markdown may document state, but it must not replace operations control-plane evidence.
 - Evidence recording requires `LETBUYY_OPERATIONS_TOKEN`.
 - Evidence records must include runtime, environment, status, and a traceable run identifier.

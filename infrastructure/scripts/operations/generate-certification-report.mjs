@@ -11,11 +11,6 @@ const output = valueFor("--output");
 
 const capabilityGroups = [
   {
-    name: "operator-approval",
-    env: ["LETBUYY_SURVIVABILITY_EXECUTION_APPROVED"],
-    validator: () => process.env.LETBUYY_SURVIVABILITY_EXECUTION_APPROVED === "true",
-  },
-  {
     name: "cloudflare",
     env: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID", "TF_VAR_cloudflare_api_token", "TF_VAR_cloudflare_account_id"],
     tools: ["pnpm", "terraform"],
@@ -37,10 +32,6 @@ const capabilityGroups = [
     name: "vercel",
     env: ["VERCEL_TOKEN", "VERCEL_ORG_ID"],
     tools: ["pnpm"],
-  },
-  {
-    name: "load-testing",
-    tools: ["k6", "locust", "gatling"],
   },
 ];
 
@@ -159,31 +150,30 @@ function summarizeEvidence(name, records, maxAgeHours) {
   };
 }
 
-async function liveEvidenceSummary(maxAgeHours) {
+async function liveEvidenceSummary(maxAgeHours, categories) {
   const overview = (await operationsRequest("GET", "/runtime/overview?limit=50"))?.data || {};
   const incidents = (await operationsRequest("GET", "/runtime/incidents?limit=50"))?.data?.incidents || [];
-  const replays = (await operationsRequest("GET", "/runtime/replays?limit=50"))?.data?.replays || [];
   const commands = (await operationsRequest("GET", "/runtime/control-commands?limit=50"))?.data?.commands || [];
   const certificationReports = (await operationsRequest("GET", "/runtime/certification-reports?limit=50"))?.data?.reports || [];
 
-  return {
+  const available = {
     deployment: summarizeEvidence("deployment", [...(overview.readiness_gates || []), ...(overview.deployment_health_gates || [])], maxAgeHours),
     cloudflare: summarizeEvidence("cloudflare", overview.deployment_health_gates || [], maxAgeHours),
-    supabase: summarizeEvidence("supabase", overview.event_store_integrity || [], maxAgeHours),
+    supabase: summarizeEvidence("supabase", overview.database_verifications || [], maxAgeHours),
     observability: summarizeEvidence("observability", overview.dashboards || [], maxAgeHours),
     incident: summarizeEvidence("incident", incidents, maxAgeHours),
-    failover: summarizeEvidence("failover", overview.failover_drills || [], maxAgeHours),
-    chaos: summarizeEvidence("chaos", overview.chaos_experiments || [], maxAgeHours),
-    load: summarizeEvidence("load", overview.load_tests || [], maxAgeHours),
     security: summarizeEvidence("security", overview.security_events || [], maxAgeHours),
     dashboards: summarizeEvidence("dashboards", overview.dashboards || [], maxAgeHours),
     "control-plane": summarizeEvidence("control-plane", commands, maxAgeHours),
-    sre: summarizeEvidence("sre", overview.error_budgets || [], maxAgeHours),
-    "event-store": summarizeEvidence("event-store", overview.event_store_integrity || [], maxAgeHours),
-    "multi-region": summarizeEvidence("multi-region", overview.regional_routing_overrides || [], maxAgeHours),
-    "replay-runtime": summarizeEvidence("replay-runtime", replays, maxAgeHours),
     certification: summarizeEvidence("certification", certificationReports, maxAgeHours),
   };
+
+  return Object.fromEntries(
+    Object.keys(categories).map((name) => [
+      name,
+      available[name] || summarizeEvidence(name, [], maxAgeHours),
+    ]),
+  );
 }
 
 function planEvidenceSummary(categories) {
@@ -214,7 +204,7 @@ const missingCapabilities = capabilities
   .map((capability) => `${capability.name}: env=[${capability.missingEnv.join(",") || "ok"}] tools=[${capability.missingTools.join(",") || "ok"}] approval=${capability.approval}`);
 const maxAgeHours = certification.certificationRuntime?.evidenceExpirationHours || 24;
 const evidenceSummary = requestedMode === "execute"
-  ? await liveEvidenceSummary(maxAgeHours)
+  ? await liveEvidenceSummary(maxAgeHours, certification.evidenceCategories)
   : planEvidenceSummary(certification.evidenceCategories);
 const requiredEvidence = Object.values(evidenceSummary).filter((item) => item.name !== "certification");
 const passedEvidence = requiredEvidence.filter((item) => item.status === "passed").length;

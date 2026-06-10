@@ -46,21 +46,13 @@ const dashboardSource = read("apps/platform-console/src/app/(dashboard)/operatio
 for (const routeFragment of [
   "/runtime/overview",
   "/runtime/queues/:queueName",
-  "/runtime/replays",
   "/runtime/control-commands",
   "/runtime/incidents",
-  "/runtime/failover-drills",
-  "/runtime/chaos-experiments",
-  "/runtime/load-tests",
   "/runtime/deployments",
   "/runtime/readiness-gates",
   "/runtime/deployment-health-gates",
-  "/runtime/event-store/integrity",
-  "/runtime/event-store/archive",
   "/runtime/dashboards",
-  "/runtime/sre/error-budgets",
   "/runtime/security/enforcement-events",
-  "/runtime/regional-routing-overrides",
   "/runtime/certification-reports",
 ]) {
   assert(routeSource.includes(routeFragment), `Operations API is missing live route ${routeFragment}`);
@@ -91,24 +83,14 @@ if (execute) {
     "incidents",
     "deployments",
     "deployment_health_gates",
-    "event_store_integrity",
     "security_events",
-    "error_budgets",
-    "regional_routing_overrides",
     "alerts",
-    "failover_drills",
-    "chaos_experiments",
-    "load_tests",
-    "slos",
     "readiness_gates",
     "dashboards",
     "certification_reports",
   ]) {
     assert(Array.isArray(data[key]), `Operations overview live response is missing array field ${key}`);
   }
-
-  await getOperations("/runtime/replays?limit=10");
-  await getOperations("/runtime/event-store/integrity?stream_name=letbuyy-runtime-certification&limit=100");
 }
 
 console.log(`[live-operations] ${environment} ${execute ? "execute" : "plan"} operations verification passed`);

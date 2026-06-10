@@ -6,7 +6,7 @@ LetBuyy production runtime authority is split across Vercel web apps, Cloudflare
 
 - Runtime source remains under `apps/*`, `services/*`, and `packages/*`; deployment infrastructure remains under `infrastructure/*`.
 - Every production runtime must appear in `config/runtime/production-topology.json`.
-- Every runtime manifest must declare Phase 4 ownership fields for production, deployment, deployment pipeline, observability infrastructure, telemetry infrastructure, operational dashboards, queue provider, event store, replay operations, failover, incident, security, chaos, load testing, control-plane, SRE, and regional routing ownership.
+- Every runtime manifest must declare Phase 4 ownership fields for production, deployment, deployment pipeline, observability infrastructure, telemetry infrastructure, operational dashboards, queue provider, incident, security, and control-plane ownership.
 - Production commands must enter through `/v1/operations/runtime/*` and must create `runtime_control_commands` or the relevant operational record.
 - Production readiness is false if governance validation, production-readiness validation, runtime manifests, queue bindings, observability config, runbooks, or deployment topology are missing.
 
@@ -23,4 +23,4 @@ LetBuyy production runtime authority is split across Vercel web apps, Cloudflare
 - Deployment execution is owned by `.github/workflows/production-rollout.yml` and `infrastructure/scripts/deploy/production-deploy.mjs`.
 - Production operational projections are persisted in the active baseline and exposed through `/v1/operations/runtime/*`.
 - Platform Console and Grafana dashboards may only render live operations API or telemetry projection data.
-- Security evidence, SRE budgets, deployment health gates, event-store integrity checks, and regional overrides are mandatory production evidence.
+- Security evidence, deployment health gates, incident records, operational dashboard snapshots, and control-plane audit records are mandatory production evidence.

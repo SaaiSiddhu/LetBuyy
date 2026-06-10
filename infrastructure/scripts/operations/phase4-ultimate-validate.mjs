@@ -52,7 +52,6 @@ const validationCommands = [
   ["node", ["infrastructure/scripts/database/verify-supabase-operations.mjs", `--environment=${environment}`, ...(execute ? ["--execute"] : [])]],
   ["node", ["infrastructure/scripts/observability/verify-observability-rollout.mjs", `--environment=${environment}`, ...(execute ? ["--execute"] : [])]],
   ["node", ["infrastructure/scripts/security/verify-security-gates.mjs"]],
-  ["node", ["infrastructure/scripts/load/run-load-suite.mjs", `--environment=${environment}`, ...(execute ? ["--execute"] : [])]],
   ["node", ["infrastructure/scripts/operations/verify-live-operations.mjs", `--environment=${environment}`, ...(execute ? ["--execute"] : [])]],
   ["node", ["infrastructure/scripts/operations/run-live-drills.mjs", `--environment=${environment}`, `--version=${version}`, ...(execute ? ["--execute"] : [])]],
   ["node", ["infrastructure/scripts/deploy/verify-health-gates.mjs", `--environment=${environment}`, ...(execute ? [] : ["--preflight"])]],
@@ -95,10 +94,8 @@ if (execute) {
     panels: [
       { name: "runtime", status: "validated" },
       { name: "queue", status: "validated" },
-      { name: "replay", status: "validated" },
       { name: "incident", status: "validated" },
       { name: "deployment", status: "validated" },
-      { name: "sre", status: "validated" },
     ],
   });
   await postOperations("/runtime/security/enforcement-events", {

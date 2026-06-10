@@ -55,8 +55,9 @@ for (const edge of deploymentTopology?.dependencies || []) {
 reporter.assert(productionTopology?.environment === "production", "Production topology must declare production environment");
 reporter.assert(productionTopology?.queueProvider?.producerConfig === "services/api-gateway/wrangler.toml", "Production topology must bind API Gateway as queue producer");
 reporter.assert(productionTopology?.queueProvider?.consumerConfig === "services/queue-workers/wrangler.toml", "Production topology must bind Queue Workers as queue consumers");
-reporter.assert(productionTopology?.eventStoreProvider?.provider === "supabase-postgres-append-only", "Production event store must be append-only Supabase/Postgres");
-reporter.assert(productionTopology?.regions?.replayIntegrity?.failClosedOnDivergence === true, "Production topology must fail closed on replay divergence");
+reporter.assert(productionTopology?.outboxProvider?.provider === "supabase-postgres-transactional-outbox", "Production outbox must be Supabase/Postgres transactional outbox");
+reporter.assert(productionTopology?.regions?.primary === "ap-south-1", "Production topology must use ap-south-1 as the single data-plane region");
+reporter.assert(!productionTopology?.regions?.failover, "Production topology must not declare a data-plane failover region");
 
 for (const queue of [
   "letbuyy-events-production",
