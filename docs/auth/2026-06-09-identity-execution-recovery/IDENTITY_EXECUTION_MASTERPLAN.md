@@ -20,7 +20,7 @@ One issuer (`id.letbuyy.com`), three realms (merchant/customer/admin), OIDC/OAut
 | AuthZ | app-layer predicates over BYPASSRLS; dead RLS | Wave 1 guard → Wave 8 RLS layer |
 | MFA/passkey/consent/recovery | absent | Waves 4/5 |
 | Front end | shadow DS, 6/10 pages non-DS, 8 surfaces missing | Wave 2 + build-as-you-go |
-| Keys | single-region, mock | Wave 5 (real) → Wave 8 (multi-region) |
+| Keys | mock/not provisioned | Wave 5 (real) → Wave 8 (KMS-backed rotation + offline-validation window inside the one-region topology) |
 | Secrets | shared `AUTH_SECRET`/HMAC | Wave 5 (per-realm) → Wave 8 (mTLS) |
 | Governance | no CI gates | Waves 1/2 (gate stack) |
 
@@ -39,7 +39,7 @@ Evaluated for: Merchant App · Storefront · Checkout · Marketplace · Theme Ma
 |---|:--:|:--:|---|
 | **Architecture** | 80 | 90 | design is strong + standards-aligned; A-1 boundary unratified; customer-realm authz only added in enhancement |
 | **Security** | **52** | 85 | 3 live S0s + BYPASSRLS + shared HMAC drag the *as-built* score far below the design |
-| **Scalability** | 60 | 85 | ReBAC caching/agency-fanout/audit-volume/multi-region keys designed in enhancement but unbuilt |
+| **Scalability** | 60 | 85 | ReBAC caching/agency-fanout/audit-volume/key-rotation operations designed in enhancement but unbuilt |
 | **Governance** | 46 | 85 | gates designed, none enforced yet; "172 validators" is breadth |
 | **Developer Experience** | **40** | 80 | no safe OIDC local `dev-auth-bypass`/RP-SDK dev mode (readiness G-9); shared HMAC headers; duplicated primitives confuse contributors |
 | **Maintainability** | 40 | 85 | ~18–20% duplication, 1,986-LOC shadow CSS, base64url ×10/timingSafeEqual ×28 |
@@ -74,7 +74,7 @@ Evaluated for: Merchant App · Storefront · Checkout · Marketplace · Theme Ma
 - **Authz:** check-API p99 ≤ 15ms cached, ≥95% hit-rate (`PERMISSION_ARCHITECTURE §4`).
 - **Design system:** compliance ≥95%; `globals.css` ≤ ~300 LOC; 0 `unstyled` on DS components; WCAG 2.1 AA on all surfaces.
 - **Tenant:** RLS second layer live; 0 `service_role` for tenant-scoped reads; 0 cross-tenant alerts in canary.
-- **Operational:** readiness ≥75 before Wave 5; key-failover + audit chain-verification drilled.
+- **Operational:** readiness ≥75 before Wave 5; key-rotation/restore + audit chain-verification drilled.
 
 ## 10. Definition of Done (the frozen target, restated as acceptance)
 One issuer host with three realms, each with real per-realm JWKS + discovery (no mock). Gateway has **zero** code paths trusting app-asserted identity headers; no raw access/refresh tokens in any JSON body. Every session is server-revocable; refresh rotates with reuse detection. Merchant MFA + passkeys + account-recovery + consent shipped. `users`/`users_custom` collapsed to one `principals` directory; legacy Supabase path deleted; single CSRF mechanism; per-realm asymmetric keys (shared HMAC retired). Identity UI is 100% DS-native (shadow stylesheet deleted) and is the published reference UX. Every audit finding has a CI gate preventing its return. Foundation composite ≥ 85/100.

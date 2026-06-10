@@ -1,6 +1,7 @@
 import {
   assertNoOffenders,
   phaseBExtraEntries,
+  phaseBEntries,
 } from "./phase-b-common.mjs";
 import { createReporter, readFile } from "./governance-common.mjs";
 
@@ -39,4 +40,26 @@ for (const entry of gateSources) {
 }
 
 assertNoOffenders(reporter, offenders, "Governance gate must not certify rejected never-build capabilities");
-reporter.finish("governance gate theater fragments checked");
+
+const activeIdentityDocForbiddenFragments = [
+  "multi-region",
+  "region failover",
+  "key-failover",
+  "service mesh",
+  "Chaos/DR",
+];
+const activeIdentityDocOffenders = [];
+for (const entry of phaseBEntries(["docs/auth"])) {
+  for (const fragment of activeIdentityDocForbiddenFragments) {
+    if (entry.text.includes(fragment)) {
+      activeIdentityDocOffenders.push(`${entry.path}: active identity doc contains rejected topology phrase "${fragment}"`);
+    }
+  }
+}
+
+assertNoOffenders(
+  reporter,
+  activeIdentityDocOffenders,
+  "Active identity docs must describe one-region provider-HA operations, not rejected topology",
+);
+reporter.finish("governance gate and active identity doc theater fragments checked");

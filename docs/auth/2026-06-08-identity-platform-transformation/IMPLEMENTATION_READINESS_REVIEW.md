@@ -6,7 +6,7 @@ Role: independent Staff+/Principal review across the entire Identity Platform do
 
 > **Scope reviewed.** The authoritative audit pair (`AUTH_AUDIT_REPORT.md`, `CURRENT_AUTH_ARCHITECTURE.md`) and the target set: `AUTH_SYSTEM_MAP`, `AUTHORITY_MATRIX`, `TARGET_AUTH_ARCHITECTURE`, `REALM_ARCHITECTURE`, `OIDC_DECISION_RECORD`, `OIDC_CLIENT_INVENTORY`, `SSO_ARCHITECTURE`, `SESSION_MANAGEMENT`, `TOKEN_STRATEGY`, `AUTHENTICATOR_STRATEGY`, `THREAT_MODEL`, `ZERO_TRUST_ARCHITECTURE`, `MIGRATION_PLAN`, `FOUNDATION_REFACTOR_PLAN`, and the four Phase-16 documents (`ORGANIZATION_ARCHITECTURE`, `PERMISSION_MODEL`, `IDENTITY_DATA_MODEL`, `AUDIT_LOG_ARCHITECTURE`).
 
-> **Verdict up front.** The architecture is **strong, standards-based, and internally coherent** — design-complete enough to start the foundation (Wave 0) and additive work. But it is **not yet safe to begin the migration waves**, for four reasons that are *operational and regulatory*, not architectural: (1) the Identity Platform becomes a **platform-wide availability single point of failure** with no HA/degradation design; (2) **operational readiness** (Hydra + KMS + audit pipeline + mesh) far outruns current ops maturity; (3) **customer-credential migration at millions-scale** is undesigned; (4) **India SMS-OTP (DLT) + DPDP data-residency** are undesigned yet sit on the customer realm's primary auth path. These are the gate-blockers.
+> **Verdict up front.** The architecture is **strong, standards-based, and internally coherent** — design-complete enough to start the foundation (Wave 0) and additive work. But it is **not yet safe to begin the migration waves**, for four reasons that are *operational and regulatory*, not architectural: (1) the Identity Platform becomes a **platform-wide availability single point of failure** with no HA/degradation design; (2) **operational readiness** (Hydra + KMS + audit pipeline + alerting/runbooks) far outruns current ops maturity; (3) **customer-credential migration at millions-scale** is undesigned; (4) **India SMS-OTP (DLT) + DPDP data-residency** are undesigned yet sit on the customer realm's primary auth path. These are the gate-blockers.
 
 ---
 
@@ -51,8 +51,8 @@ Role: independent Staff+/Principal review across the entire Identity Platform do
 ## 3. Risk findings (Critical / High / Medium / Low)
 
 ### CRITICAL
-- **C-1 (G-1) IdP single point of failure.** *Before* migration waves, design: multi-AZ/region Hydra + identity service, replicated session/key stores, JWKS caching with a defined offline-validation window (so the gateway tolerates a brief IdP outage by trusting cached JWKS + not-yet-expired tokens), and a documented degradation mode (read-only/limited auth). Without this, the transformation *increases* availability risk versus today's distributed cookie model.
-- **C-2 Operational readiness vs. ambition.** The target stands up ORY Hydra, KMS/HSM, an async audit pipeline, a search index, WORM storage, and (Wave 8) a service mesh. Project memory and the audit describe current maturity as low ("governance theater," ~2/5). **Gate condition:** an explicit Ops plan (on-call, runbooks, DR drills, key-rotation drills, capacity) must exist before Wave 1, or the program ships fragile.
+- **C-1 (G-1) IdP single point of failure.** *Before* migration waves, design: provider-HA Hydra + identity service in the approved India region, replicated session/key stores within that residency boundary, JWKS caching with a defined offline-validation window (so the gateway tolerates a brief IdP outage by trusting cached JWKS + not-yet-expired tokens), and a documented degradation mode (read-only/limited auth). Without this, the transformation *increases* availability risk versus today's distributed cookie model.
+- **C-2 Operational readiness vs. ambition.** The target stands up ORY Hydra, KMS/HSM, an async audit pipeline, a search index, WORM storage, and production alerting/runbooks. Project memory and the audit describe current maturity as low ("governance theater," ~2/5). **Gate condition:** an explicit Ops plan (on-call, runbooks, DR drills, key-rotation drills, capacity) must exist before Wave 1, or the program ships fragile.
 - **C-3 (G-2) Customer credential migration.** Design hash-compatibility (verify legacy hash on login, transparently rehash to Argon2id), bulk import, and a dual-run before W5. Mass lockout of shoppers is an existential, conversion-killing event.
 - **C-4 (G-3) India SMS-OTP DLT + DPDP residency.** Design DLT-registered template flows, an SMS/email provider strategy with deliverability, and in-region data residency for customer identity *before* any OTP/magic-link-dependent customer flow ships.
 
@@ -75,7 +75,7 @@ Role: independent Staff+/Principal review across the entire Identity Platform do
 - **L-1 Enum drift.** Reconcile `app_installations` (active/paused/uninstalled) vs `site_api_clients` (active/paused/revoked) → canonical set.
 - **L-2 ID duality** (`site_id`/`store_id`) — accepted; document to reduce confusion.
 - **L-3 SCIM** deferred — acceptable.
-- **L-4 Cross-region JWKS latency** — minor with caching; note in ops.
+- **L-4 Remote JWKS latency** — minor with caching; note in ops.
 
 ---
 

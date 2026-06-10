@@ -71,11 +71,11 @@
 - **Effort: L.**
 
 ## Wave 8 — Production Rollout
-- **Goals:** mTLS workload identity (retire shared HMAC, SEC-H4 complete); decompose `service_role` → least-privilege DB principals + RLS as real second layer (SEC-H1 complete); enforce merchant MFA + step-up + privilege-change rotation + device-revoke; **multi-region keys + JWKS HA + offline-validation window**; audit chain-verification + Merkle anchoring live; org-model GA (`org` claim populated); SOC2 evidence window. Close SEC-H4, TEN-1, KEY-1, AUD-1.
-- **Files:** `services/api-gateway/src/lib/internal-auth.ts` (retire); `supabase-adapter` (per-domain principals); key service (multi-region); audit pipeline; enforcement middleware.
+- **Goals:** mTLS workload identity (retire shared HMAC, SEC-H4 complete); decompose `service_role` → least-privilege DB principals + RLS as real second layer (SEC-H1 complete); enforce merchant MFA + step-up + privilege-change rotation + device-revoke; **KMS-backed keys + JWKS HA + offline-validation window inside the one-region topology**; audit chain-verification + Merkle anchoring live; org-model GA (`org` claim populated); SOC2 evidence window. Close SEC-H4, TEN-1, KEY-1, AUD-1.
+- **Files:** `services/api-gateway/src/lib/internal-auth.ts` (retire); `supabase-adapter` (per-domain principals); key service (KMS-backed in the approved India region); audit pipeline; enforcement middleware.
 - **Dependencies:** all prior waves.
 - **Risks:** broad blast radius (mTLS, DB principals).
-- **Rollback:** per-control flags; staged by service/region.
+- **Rollback:** per-control flags; staged by service/cohort.
 - **Effort: L.**
 
 ---

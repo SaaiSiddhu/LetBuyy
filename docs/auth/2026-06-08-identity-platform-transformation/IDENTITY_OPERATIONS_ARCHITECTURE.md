@@ -37,7 +37,7 @@ Three deployment options, scored for this team:
 
 ```mermaid
 flowchart TB
-  subgraph edge["Edge / serverless (provider-HA, multi-region)"]
+  subgraph edge["Edge / serverless (provider-managed HA edge)"]
     VERCEL["Vercel: identity-platform login/consent UI + RP apps"]
     CFW["Cloudflare Workers: api-gateway (PEP) + mobile-bff"]
   end
@@ -75,14 +75,14 @@ flowchart TB
 
 | Layer | HA mechanism | Target |
 |-------|--------------|--------|
-| Login/consent UI (Vercel) | provider multi-region edge; stateless | 99.99% |
+| Login/consent UI (Vercel) | provider-managed HA edge; stateless | 99.99% |
 | Gateway PEP (Workers) | Cloudflare global edge; stateless; **caches JWKS** | 99.99% |
 | **Hydra** | ≥2 instances, multi-AZ, autoscale, health-checked, rolling deploys | 99.95% |
 | **Identity service** | ≥2 instances, multi-AZ, stateless behind LB | 99.95% |
-| **Postgres** | primary + synchronous standby (multi-AZ), automated failover, PITR | 99.99% (managed) |
+| **Postgres** | primary + synchronous standby (multi-AZ), managed standby promotion, PITR | 99.99% (managed) |
 | Revocation cache (Redis) | managed, multi-AZ, AOF; **soft dependency** (cache-miss ⇒ fall back to introspection) | degrade-safe |
 | KMS | provider multi-AZ; keys replicated/re-wrappable cross-region | 99.999% (managed) |
-| Providers (Resend/Twilio) | multi-provider fallback (email↔WhatsApp↔SMS) | no single channel SPOF |
+| Providers (Resend/Twilio) | alternate-channel fallback (email/WhatsApp/SMS) | no single channel SPOF |
 
 **Design principle:** keep the **verification path independent of the issuance path**. Token *verification* (the per-request hot path) depends only on **cached JWKS** at the Workers edge — not on Hydra being up. So an Hydra/Identity outage stops *new logins* but does **not** stop *already-authenticated traffic*. This is the structural answer to the SPOF finding.
 
@@ -106,10 +106,10 @@ flowchart TD
 |---------|----------|-----------|
 | Hydra down, JWKS cached | existing sessions keep working until access-token TTL; new logins fail gracefully | verification ≠ issuance |
 | Identity service down | refresh + session create fail; verification continues | bounded blast radius |
-| Postgres primary down | automated failover (seconds–minutes); brief write pause | managed HA |
+| Postgres primary down | managed standby promotion (seconds-minutes); brief write pause | managed HA |
 | Revocation cache down | gateway falls back to introspection or fails-safe per route class | cache is a soft dependency |
 | KMS unreachable | **cannot sign new tokens**; verification continues via cached JWKS | signing is the hard dependency — keep KMS HA + key caching window |
-| Email/WhatsApp down | failover to alternate channel (WhatsApp↔email↔SMS) | no single OTP channel SPOF |
+| Email/WhatsApp down | fall back to alternate channel (WhatsApp/email/SMS) | no single OTP channel SPOF |
 
 **JWKS offline-validation window:** the gateway caches each realm's JWKS with a TTL (e.g. 24h) and **continues to validate** signatures during an IdP outage. Combined with short access tokens, the user-visible impact of a total IdP outage is "you can't log in or refresh," not "you're logged out." Document the window and the max tolerable IdP downtime (≈ access-token TTL for active users).
 
@@ -119,13 +119,13 @@ flowchart TD
 
 | Asset | Backup | RPO | RTO | Restore runbook |
 |-------|--------|-----|-----|-----------------|
-| Postgres (identity + hydra) | continuous WAL + PITR; daily snapshots cross-region | **≤ 5 min** | **≤ 30 min** | restore PITR → repoint Hydra/Identity → verify JWKS/login smoke test |
-| Signing keys | KMS-managed; key material never exported; **cross-region replica or re-wrap** | 0 (managed) | minutes | promote replica region keys; publish JWKS from DR region |
-| Audit ledger (WORM) | immutable object store, cross-region replication | ≤ 15 min | n/a (read) | independent of identity restore |
+| Postgres (identity + hydra) | continuous WAL + PITR; daily snapshots in the approved India backup target | **≤ 5 min** | **≤ 30 min** | restore PITR → repoint Hydra/Identity → verify JWKS/login smoke test |
+| Signing keys | KMS-managed; key material never exported; same-region replica or re-wrap | 0 (managed) | minutes | promote approved backup key material; publish JWKS from the restored identity environment |
+| Audit ledger (WORM) | immutable object store with approved in-region replication | ≤ 15 min | n/a (read) | independent of identity restore |
 | Config/secrets | IaC + secret manager, versioned | 0 | minutes | redeploy from IaC |
-| Hydra/Identity runtime | stateless containers from images | 0 | minutes | redeploy image to DR region |
+| Hydra/Identity runtime | stateless containers from images | 0 | minutes | redeploy image to the approved `ap-south` environment |
 
-**Region failover:** primary `ap-south-1`; DR plan must keep data **in-region** (DPDP — see `COMPLIANCE_ARCHITECTURE.md`). If a second India AZ/region is unavailable from the chosen provider, multi-AZ within `ap-south-1` is the floor; document the residency-vs-DR tradeoff explicitly. **Quarterly DR drills** (restore-from-backup + region failover + key-promotion) are a Wave-0 deliverable.
+**Disaster recovery boundary:** primary `ap-south-1`; DR must keep data in the approved India residency boundary (DPDP — see `COMPLIANCE_ARCHITECTURE.md`). Multi-AZ within `ap-south-1` is the floor; document the residency-vs-DR tradeoff explicitly. Quarterly restore drills (restore-from-backup + standby promotion + key-promotion) are a Wave-0 deliverable.
 
 ---
 
@@ -151,7 +151,7 @@ Error budgets gate releases: burn-rate alerts (fast + slow) on each SLO; budget 
 | Metrics | RED per endpoint; login success/fail; token issue/verify/refresh; reuse-detections; revocations; JWKS cache hit ratio; queue depth (OTP) |
 | Tracing | distributed trace with `correlation_id` (ties to `AUDIT_LOG_ARCHITECTURE.md`) across Vercel → Workers → Hydra → Identity → PG |
 | Logs | structured, PII-redacted; separate from the audit ledger |
-| Synthetic checks | continuous login/refresh/verify probes per realm + per region |
+| Synthetic checks | continuous login/refresh/verify probes per realm and environment |
 | Alerts | SLO burn-rate; reuse-detection spikes; KMS errors; Hydra/PG health; OTP delivery failure; abnormal denial rate |
 | Dashboards | per-realm auth health; migration shadow-compare parity (Phase 13); DR readiness |
 
@@ -165,10 +165,10 @@ Before Wave 1 may begin, these must exist:
 |---|-------------|-------|
 | O1 | Hydra deployment decision (A/B) ratified + provisioned in `ap-south-1` | Platform/Infra |
 | O2 | **Staging identity environment** (full realms, test JWKS, seed data, safe `dev-auth-bypass`) mirroring prod | Identity |
-| O3 | Runbooks: key rotation, key compromise, incident response, break-glass, region failover, OTP-provider failover | Identity/SRE |
+| O3 | Runbooks: key rotation, key compromise, incident response, break-glass, managed standby promotion, OTP-provider fallback | Identity/SRE |
 | O4 | On-call rotation + escalation + paging for identity SLOs | SRE |
 | O5 | Load + soak test of login/verify/refresh at projected peak (festival-season India peaks) | Identity |
-| O6 | Chaos/DR drill executed once (restore + failover + key promotion) | SRE |
+| O6 | Restore/DR drill executed once (restore + standby promotion + key promotion) | SRE |
 | O7 | Observability stack live (metrics/traces/alerts/synthetics) | SRE |
 | O8 | Capacity model (Hydra instances, PG sizing, Redis, OTP throughput) + autoscale policies | Infra |
 | O9 | Backpressure + rate-limit + abuse controls on auth endpoints (ties to Threat Model) | Identity |
