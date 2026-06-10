@@ -68,7 +68,7 @@ function rollupNumber(value: number | string | null | undefined): number {
 }
 
 function warehouseReadiness(env: Pick<Env, 'LETBUYY_WAREHOUSE_MODE'>) {
-    const mode = (env.LETBUYY_WAREHOUSE_MODE || 'mock').trim().toLowerCase();
+    const mode = env.LETBUYY_WAREHOUSE_MODE?.trim().toLowerCase() === 'live' ? 'live' : 'sandbox';
     if (mode === 'live') {
         // [HUMAN-REQUIRED] HR-WAREHOUSE-LIVE: warehouse/replica credentials and data contracts are not activated in V1 local mode.
         return {
@@ -79,7 +79,7 @@ function warehouseReadiness(env: Pick<Env, 'LETBUYY_WAREHOUSE_MODE'>) {
     }
 
     return {
-        mode: 'mock',
+        mode: 'sandbox',
         status: 'deferred',
         message: 'Dashboards read from in-DB rollups in this release.',
     };

@@ -53,6 +53,7 @@ const notificationCore = readFile("packages/notification-core/src/index.ts");
 const emailRoute = readFile("services/api-gateway/src/routes/email.ts");
 const aiRoute = readFile("services/api-gateway/src/routes/ai.ts");
 const aiAdapter = readFile("packages/infrastructure/ai-generation-adapter/index.ts");
+const analyticsRoute = readFile("services/api-gateway/src/routes/analytics.ts");
 reporter.assert(!kycAdapter.includes("live_provider_stub"), "KYC adapter must not turn sandbox verification into live-provider success");
 reporter.assert(kycAdapter.includes("KYC_LIVE_PROVIDER_UNAVAILABLE"), "KYC adapter must fail closed while live provider integration is absent");
 reporter.assert(capabilityBacklog.includes("CAP-C15"), "CAPABILITY_BACKLOG.md missing CAP-C15 live KYC provider gap");
@@ -108,6 +109,13 @@ for (const fragment of [
 }
 reporter.assert(aiRoute.includes("LETBUYY_AI_MODEL_MODE === 'live' ? 'live' : 'sandbox'"), "AI seam route must default model mode to sandbox");
 reporter.assert(aiAdapter.includes("mode: 'sandbox' | 'live'"), "AI capability seam must expose sandbox/live modes");
+for (const fragment of [
+  "LETBUYY_WAREHOUSE_MODE || 'mock'",
+  "mode: 'mock'",
+]) {
+  reporter.assert(!analyticsRoute.includes(fragment), `analytics warehouse seam must not use mock labels: ${fragment}`);
+}
+reporter.assert(analyticsRoute.includes("mode: 'sandbox'"), "analytics warehouse seam must default to sandbox while live warehouse is human-gated");
 reporter.assert(!exists("packages/infrastructure/identity-otp-adapter/index.ts"), "retired identity OTP mock adapter must not exist");
 reporter.assert(!readFile("packages/infrastructure/src/index.ts").includes("identity-otp-adapter"), "infrastructure barrel must not export retired identity OTP mock adapter");
 reporter.assert(!readFile("packages/infrastructure/package.json").includes("identity-otp-adapter"), "infrastructure package must not expose retired identity OTP mock adapter");

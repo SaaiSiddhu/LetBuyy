@@ -181,7 +181,7 @@ export interface Env {
     LETBUYY_KMS_MODE?: 'mock' | 'live';
     LETBUYY_KMS_MOCK_SECRET?: string;
     LETBUYY_KMS_KEY_ID?: string;
-    LETBUYY_WAREHOUSE_MODE?: 'mock' | 'live';
+    LETBUYY_WAREHOUSE_MODE?: 'sandbox' | 'live';
     LETBUYY_AI_MODEL_MODE?: 'sandbox' | 'live';
     MEDIA_UPLOAD_SIGNING_SECRET?: string;
     INTERNAL_API_SECRET?: string;

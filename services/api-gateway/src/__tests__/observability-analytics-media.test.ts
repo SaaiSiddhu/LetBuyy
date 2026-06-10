@@ -23,11 +23,13 @@ test('Task 016 analytics reads are in-monolith and backed by in-DB rollups', () 
     const rollback = repositorySource('database/supabase/rollback/154_executable_analytics_media_ai_seam.rollback.sql');
 
     assert.match(indexSource, /api\.route\('\/analytics', analyticsRouter\)/);
-    assert.match(indexSource, /LETBUYY_WAREHOUSE_MODE\?: 'mock' \| 'live'/);
+    assert.match(indexSource, /LETBUYY_WAREHOUSE_MODE\?: 'sandbox' \| 'live'/);
     assert.match(analyticsRoute, /router\.get\('\/:site\/summary'/);
     assert.match(analyticsRoute, /commerce_analytics_daily_mv/);
     assert.match(analyticsRoute, /warehouseReadiness/);
     assert.match(analyticsRoute, /HR-WAREHOUSE-LIVE/);
+    assert.match(analyticsRoute, /mode:\s*'sandbox'/);
+    assert.doesNotMatch(analyticsRoute, /LETBUYY_WAREHOUSE_MODE \|\| 'mock'|mode:\s*'mock'/);
     assert.doesNotMatch(analyticsRoute, /analytics-pipeline/);
 
     assert.match(migration, /CREATE MATERIALIZED VIEW public\.commerce_analytics_daily_mv/);
