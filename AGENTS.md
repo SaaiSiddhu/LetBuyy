@@ -377,7 +377,7 @@ On any conflict, the higher number's document does **not** win — the **lower o
   5. A deletion's validation gate cannot be made green, or a "dead" table has unknown live writers (`DEL-R5`).
   6. Any item still flagged **UNVERIFIED** in the evidence base must be resolved as a *decision* or recorded as a genuine live/vendor probe, not assumed (`ARCH-R10`).
   7. A money/identity/tenancy change would weaken a fail-closed default or an S0 fix (`SEC-S0`, `PAY`, `IDN`).
-- **AGENT-R16 — Read-before-edit.** MUST read the root + local `AGENTS.md`, `memory/lessons.md`, and `tasks/todo.md` before edits; MUST inspect the actual source before architecture/doc decisions (do not trust stale archived docs over source); MUST treat a dirty worktree as user-owned and never revert changes you did not make; MUST run governance validation before handoff.
+- **AGENT-R16 — Read-before-edit.** MUST read the root + local `AGENTS.md`, the Constitution stack, and the relevant canonical systems / legacy-elimination documents before edits; MUST inspect the actual source before architecture/doc decisions (do not trust stale archived docs over source); MUST treat a dirty worktree as user-owned and never revert changes you did not make; MUST run governance validation before handoff.
 
 ---
 

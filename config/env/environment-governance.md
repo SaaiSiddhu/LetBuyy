@@ -30,7 +30,7 @@
 - Staging and production are the only deployment targets and the only supported execution environments.
 - Staging values must stay isolated from production values. Never reuse production secrets in staging.
 - Promote variable names through code review; promote values through provider secret stores.
-- Rotate secrets after accidental exposure and record the rotation task in `tasks/todo.md`.
+- Rotate secrets after accidental exposure and record the rotation task in `SKIPPED_HUMAN_DECISIONS.md` and `EXECUTION_LEDGER.md`.
 - Historical `all.env` references are treated as incident memory. The file must remain ignored and must not be regenerated with real values.
 - Runtime source must not use staging hosts as implicit fallbacks. Staging URLs belong in staging env templates/provider configuration, while production public links default only to canonical `.store` hosts and server/API/provider-backed paths fail loudly when env is missing outside production.
 - Mobile `GEMINI_API_KEY`, `GEMINI_BASE_URL`, and `GEMINI_MODEL` are build-time defines. Treat the key as mobile-exposed and restrict it in the provider console; do not place unrestricted AI/provider secrets in mobile builds.

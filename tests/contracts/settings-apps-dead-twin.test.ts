@@ -29,7 +29,7 @@ test('settings apps route renders the live client and the old content twin is ar
 });
 
 test('active app platform audit names the live apps settings component', () => {
-    const audit = read('docs/audits/apps-platform/06-merchant-integration-audit.md');
+    const audit = read('docs/archive/historical-audits-2026-06-10/apps-platform/06-merchant-integration-audit.md');
 
     assert.match(audit, /AppsSettingsClient\.tsx/);
     assert.doesNotMatch(audit, /AppsSettingsContent\.tsx/);

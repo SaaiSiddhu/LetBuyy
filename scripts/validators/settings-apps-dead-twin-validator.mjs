@@ -35,7 +35,7 @@ reporter.assert(
   `runtime source must not reference archived AppsSettingsContent: ${appSourceRefs.join(", ")}`,
 );
 
-const activeAudit = readFile("docs/audits/apps-platform/06-merchant-integration-audit.md");
+const activeAudit = readFile("docs/archive/historical-audits-2026-06-10/apps-platform/06-merchant-integration-audit.md");
 reporter.assert(
   activeAudit.includes("AppsSettingsClient.tsx") && !activeAudit.includes("AppsSettingsContent.tsx"),
   "active app-platform audit must reference the live apps settings implementation",

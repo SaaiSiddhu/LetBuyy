@@ -35,9 +35,9 @@ file_size_limit = "50MiB"
 enabled = true
 site_url = "http://localhost:3000"
 additional_redirect_urls = [
-  "https://letbuyy.store",
-  "https://accounts.letbuyy.store",
-  "https://admin.letbuyy.store",
+  "https://letbuyy.com",
+  "https://accounts.letbuyy.com",
+  "https://admin.letbuyy.com",
   "http://localhost:3001",
   "http://localhost:3002",
   "http://localhost:3003",

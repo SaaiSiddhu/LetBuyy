@@ -15,5 +15,5 @@ LetBuyy is a governed multi-tenant commerce and site-builder SaaS. Runtime bound
 
 The storefront runtime is tested through deployed staging routes:
 
-- Path route: `https://storefront.staging.letbuyy.store/store/teststore`
-- Host route: `https://teststore.staging.letbuyy.store`
+- Path route: `https://storefront.staging.letbuyy.com/store/teststore`
+- Host route: `https://teststore.staging.letbuyy.com`
