@@ -186,18 +186,9 @@ jobs:
           - app: storefront-runtime
             project_id: STAGING_STOREFRONT_PROJECT_ID
             app_url: https://store-staging.letbuyy.com
-          - app: theme-marketplace
-            project_id: STAGING_THEME_MARKETPLACE_PROJECT_ID
-            app_url: https://themes-staging.letbuyy.com
-          - app: app-marketplace
-            project_id: STAGING_APP_MARKETPLACE_PROJECT_ID
-            app_url: https://apps-staging.letbuyy.com
           - app: platform-console
             project_id: STAGING_PLATFORM_CONSOLE_PROJECT_ID
             app_url: https://console-staging.letbuyy.com
-          - app: platform-operations-portal
-            project_id: STAGING_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID
-            app_url: https://ops-staging.letbuyy.com
     steps:
       - uses: actions/checkout@v4
 

@@ -96,10 +96,7 @@ jobs:
           - { name: merchant-control-plane, project_secret: STAGING_MERCHANT_PROJECT_ID }
           - { name: storefront-runtime, project_secret: STAGING_STOREFRONT_PROJECT_ID }
           - { name: marketing-site, project_secret: STAGING_MARKETING_PROJECT_ID }
-          - { name: app-marketplace, project_secret: STAGING_APP_MARKETPLACE_PROJECT_ID }
-          - { name: theme-marketplace, project_secret: STAGING_THEME_MARKETPLACE_PROJECT_ID }
           - { name: platform-console, project_secret: STAGING_PLATFORM_CONSOLE_PROJECT_ID }
-          - { name: platform-operations-portal, project_secret: STAGING_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID }
 
     steps:
       - name: Checkout
@@ -173,18 +170,12 @@ jobs:
           fi
           echo "Admin staging healthy"
 
-      - name: Federated app health checks
+      - name: Platform console health check
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' && env.HAS_VERCEL_CREDS == 'true' }}
         run: |
-          for URL in \
-            "https://apps-staging.letbuyy.com" \
-            "https://themes-staging.letbuyy.com" \
-            "https://console-staging.letbuyy.com" \
-            "https://ops-staging.letbuyy.com"; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
-            if [ "$STATUS" != "200" ] && [ "$STATUS" != "302" ]; then
-              echo "$URL failed: $STATUS"
-              exit 1
-            fi
-            echo "$URL staging healthy"
-          done
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://console-staging.letbuyy.com)
+          if [ "$STATUS" != "200" ] && [ "$STATUS" != "302" ]; then
+            echo "Console staging health check failed: $STATUS"
+            exit 1
+          fi
+          echo "Console staging healthy"
