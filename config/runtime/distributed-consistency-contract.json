@@ -3,7 +3,7 @@
   "manifestVersion": 1,
   "mode": "governance-contract-not-live-evidence",
   "consistencyModel": {
-    "engineSource": "packages/distributed-runtime/src/distributed-consistency-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "authoritativeOwnershipRules": {
       "event-store": ["source-events", "global-position", "stream-position"],
       "replay-runtime": ["replay-checkpoints", "event-ordering"],

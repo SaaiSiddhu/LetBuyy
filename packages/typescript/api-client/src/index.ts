@@ -267,7 +267,7 @@ function readProductionApiBaseUrlOverride(): string | undefined {
 /**
  * Silent production fallback for the API base URL. Overridable via the
  * `LETBUYY_PRODUCTION_API_BASE_URL` env var; defaults to the canonical
- * `letbuyy.com` apex. `letbuyy.store` remains a legacy routing alias during
+ * `letbuyy.com` apex. `letbuyy.com` remains a legacy routing alias during
  * launch cutover.
  */
 export const LETBUYY_PRODUCTION_API_BASE_URL =
@@ -2668,6 +2668,10 @@ export type ShippingLabelRate = {
   service_level: string;
   estimated_delivery_days: number;
   test_mode: boolean;
+  provider_mode: 'sandbox' | 'live';
+};
+export type ShippingLabelProviderModeResponse = {
+  provider_mode: 'sandbox' | 'live';
 };
 export type CreatePayoutStatementInput = {
   store_id: string;
@@ -4127,7 +4131,9 @@ export class LetbuyyApiClient {
 
   readonly shippingLabels = {
     rates: (input: ShippingLabelRateInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<{ rates: ShippingLabelRate[] }>('/shipping/labels/rates', { ...options, method: 'POST', body: input }),
+      this.requestData<{ provider_mode: ShippingLabelProviderModeResponse['provider_mode']; rates: ShippingLabelRate[] }>('/shipping/labels/rates', { ...options, method: 'POST', body: input }),
+    providerMode: (query: { store_id: string }, options?: LetbuyyRequestOptions) =>
+      this.requestData<ShippingLabelProviderModeResponse>('/shipping/labels/provider-mode', { ...options, query }),
     buy: (input: ShippingLabelBuyInput, options?: LetbuyyRequestOptions) =>
       this.requestData<{ label: ShippingLabelRecord }>('/shipping/labels', { ...options, method: 'POST', body: input }),
     void: (id: string, options?: LetbuyyRequestOptions) =>

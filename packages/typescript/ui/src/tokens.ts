@@ -73,9 +73,12 @@ export const letbuyyPrimitiveTokens = {
             900: '#111827',
         },
         slate: {
+            50: '#F8FAFC',
+            100: '#F1F5F9',
             200: '#E2E8F0',
             300: '#CBD5E1',
             400: '#94A3B8',
+            500: '#64748B',
             600: '#475569',
             700: '#334155',
             800: '#1E293B',
@@ -105,12 +108,28 @@ export const letbuyyPrimitiveTokens = {
             700: '#B91C1C',
             950: '#451A1A',
         },
+        pink: {
+            300: '#F9A8D4',
+            400: '#F472B6',
+            500: '#EC4899',
+            600: '#DB2777',
+            700: '#BE185D',
+        },
         blue: {
             100: '#E0F2FE',
             300: '#7DD3FC',
             500: '#3B82F6',
             700: '#1D4ED8',
             950: '#082F49',
+        },
+        cyan: {
+            500: '#06B6D4',
+        },
+        teal: {
+            500: '#14B8A6',
+        },
+        emerald: {
+            500: '#10B981',
         },
     },
     opacity: {
@@ -730,7 +749,9 @@ export const letbuyyTokens = {
     },
     space: {
         none: '0',
+        '2xs': '2px',
         xs: '4px',
+        'xs-plus': '6px',
         sm: '8px',
         md: '12px',
         lg: '16px',

@@ -3,7 +3,7 @@
   "manifestVersion": 1,
   "mode": "governance-contract-not-live-evidence",
   "engine": {
-    "engineSource": "packages/distributed-runtime/src/runtime-causality-graph-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "compiler": "compileRuntimeCausalityGraph",
     "validator": "assertRuntimeCausalityGraph",
     "checksum": "causalityChecksum",

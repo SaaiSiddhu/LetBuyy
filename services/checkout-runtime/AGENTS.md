@@ -1,6 +1,6 @@
 # Checkout Runtime Governance
 
-Purpose: Reserved independent checkout runtime for future dedicated cart, pricing, inventory reservation, payment orchestration, and order finalization workflows.
+Purpose: Reserved independent checkout runtime for future dedicated cart, pricing, inventory reservation, payment service-local event helpers, and order finalization workflows.
 
 Runtime boundary: `services/checkout-runtime`.
 

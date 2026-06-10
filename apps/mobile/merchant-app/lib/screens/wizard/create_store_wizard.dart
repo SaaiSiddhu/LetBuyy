@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
@@ -9,7 +9,7 @@ import '../../services/store_auth_service.dart';
 
 import '../../services/theme_provider.dart';
 import '../../services/language_service.dart';
-import '../../theme/store_admin_colors.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../models/store_theme_model.dart';
 import '../../app/routes.dart';
@@ -178,12 +178,12 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: StoreAdminColors.error.withValues(alpha: 0.1),
+                  color: LetbuyyColorTokens.error.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(
                   Icons.logout_rounded,
-                  color: StoreAdminColors.error,
+                  color: LetbuyyColorTokens.error,
                   size: 28,
                 ),
               ),
@@ -244,7 +244,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(
-                          color: StoreAdminColors.error,
+                          color: LetbuyyColorTokens.error,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -786,7 +786,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isSelected
-                ? StoreAdminColors.primary
+                ? LetbuyyColorTokens.brandPrimary
                 : (_isDark
                       ? Colors.white.withValues(alpha: 0.08)
                       : Colors.grey.withValues(alpha: 0.2)),
@@ -805,7 +805,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: isSelected
-                      ? [StoreAdminColors.primary, StoreAdminColors.accent]
+                      ? [LetbuyyColorTokens.brandPrimary, LetbuyyColorTokens.accentPink]
                       : (_isDark
                             ? [
                                 Colors.white.withValues(alpha: 0.12),
@@ -885,11 +885,11 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: showError
-                          ? StoreAdminColors.error
+                          ? LetbuyyColorTokens.error
                           : (isValid
-                                ? StoreAdminColors.success
+                                ? LetbuyyColorTokens.successStrong
                                 : (hasFocus
-                                      ? StoreAdminColors.primary
+                                      ? LetbuyyColorTokens.brandPrimary
                                       : _borderColor)),
                       width: hasFocus || text.isNotEmpty ? 1.5 : 1,
                     ),
@@ -897,7 +897,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                   child: TextField(
                     controller: _nameController,
                     focusNode: _nameFocusNode,
-                    cursorColor: StoreAdminColors.primary,
+                    cursorColor: LetbuyyColorTokens.brandPrimary,
                     style: TextStyle(
                       color: _textPrimary,
                       fontSize: 16,
@@ -933,13 +933,13 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                   Icon(
                     Icons.info_outline_rounded,
                     size: 14,
-                    color: StoreAdminColors.error,
+                    color: LetbuyyColorTokens.error,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     'Minimum 4 characters required',
                     style: TextStyle(
-                      color: StoreAdminColors.error,
+                      color: LetbuyyColorTokens.error,
                       fontSize: 12,
                     ),
                   ),
@@ -954,13 +954,13 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                   Icon(
                     Icons.check_circle_rounded,
                     size: 14,
-                    color: StoreAdminColors.success,
+                    color: LetbuyyColorTokens.successStrong,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     'Great store name!',
                     style: TextStyle(
-                      color: StoreAdminColors.success,
+                      color: LetbuyyColorTokens.successStrong,
                       fontSize: 12,
                     ),
                   ),
@@ -1042,11 +1042,11 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: _isSubdomainAvailable
-                          ? StoreAdminColors.success
+                          ? LetbuyyColorTokens.successStrong
                           : (_subdomainError != null
-                                ? StoreAdminColors.error
+                                ? LetbuyyColorTokens.error
                                 : (hasFocus
-                                      ? StoreAdminColors.primary
+                                      ? LetbuyyColorTokens.brandPrimary
                                       : _borderColor)),
                       width: hasFocus || _isSubdomainAvailable ? 1.5 : 1,
                     ),
@@ -1058,7 +1058,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                         child: TextField(
                           controller: _subdomainController,
                           focusNode: _subdomainFocusNode,
-                          cursorColor: StoreAdminColors.primary,
+                          cursorColor: LetbuyyColorTokens.brandPrimary,
                           style: TextStyle(
                             color: _textPrimary,
                             fontSize: 16,
@@ -1109,9 +1109,9 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                           ),
                         ),
                         child: Text(
-                          '.letbuyy.store',
+                          '.letbuyy.com',
                           style: TextStyle(
-                            color: StoreAdminColors.primary,
+                            color: LetbuyyColorTokens.brandPrimary,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -1136,7 +1136,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        StoreAdminColors.primary,
+                        LetbuyyColorTokens.brandPrimary,
                       ),
                     ),
                   ),
@@ -1155,25 +1155,25 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: StoreAdminColors.success.withValues(alpha: 0.15),
+                  color: LetbuyyColorTokens.successStrong.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: StoreAdminColors.success.withValues(alpha: 0.3),
+                    color: LetbuyyColorTokens.successStrong.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       Icons.check_circle_rounded,
-                      color: StoreAdminColors.success,
+                      color: LetbuyyColorTokens.successStrong,
                       size: 20,
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Available! Your store will be at:\nhttps://${_subdomainController.text}.letbuyy.store',
+                        'Available! Your store will be at:\nhttps://${_subdomainController.text}.letbuyy.com',
                         style: TextStyle(
-                          color: StoreAdminColors.success,
+                          color: LetbuyyColorTokens.successStrong,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
@@ -1190,17 +1190,17 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: StoreAdminColors.error.withValues(alpha: 0.15),
+                  color: LetbuyyColorTokens.error.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: StoreAdminColors.error.withValues(alpha: 0.3),
+                    color: LetbuyyColorTokens.error.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       Icons.error_rounded,
-                      color: StoreAdminColors.error,
+                      color: LetbuyyColorTokens.error,
                       size: 20,
                     ),
                     const SizedBox(width: 10),
@@ -1208,7 +1208,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                       child: Text(
                         'This domain is already taken.\nPlease choose a different name.',
                         style: TextStyle(
-                          color: StoreAdminColors.error,
+                          color: LetbuyyColorTokens.error,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
@@ -1340,7 +1340,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: isSelected
-              ? Border.all(color: StoreAdminColors.primary, width: 2)
+              ? Border.all(color: LetbuyyColorTokens.brandPrimary, width: 2)
               : Border.all(color: _borderColor, width: 1),
           boxShadow: isSelected
               ? [
@@ -1497,7 +1497,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           border: isSelected
-              ? Border.all(color: StoreAdminColors.primary, width: 2.5)
+              ? Border.all(color: LetbuyyColorTokens.brandPrimary, width: 2.5)
               : Border.all(color: _borderColor, width: 1),
           boxShadow: isSelected
               ? [
@@ -1707,7 +1707,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
           ),
           borderRadius: BorderRadius.circular(12),
           border: isSelected
-              ? Border.all(color: StoreAdminColors.primary, width: 2.5)
+              ? Border.all(color: LetbuyyColorTokens.brandPrimary, width: 2.5)
               : Border.all(color: _borderColor, width: 1),
           boxShadow: isSelected
               ? [
@@ -1768,10 +1768,10 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
         decoration: BoxDecoration(
           color: isSelected
               ? color.withValues(alpha: 0.08)
-              : StoreAdminColors.slate50,
+              : LetbuyyColorTokens.slate50,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? color : StoreAdminColors.slate200,
+            color: isSelected ? color : LetbuyyColorTokens.slate200,
             width: isSelected ? 2 : 1,
           ),
         ),

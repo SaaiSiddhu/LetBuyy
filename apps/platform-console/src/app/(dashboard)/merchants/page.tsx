@@ -37,7 +37,7 @@ const columns: Array<ConsoleDataColumn<InternalMerchantSearchResult>> = [
                     {row.store_name || row.name || row.subdomain || row.id}
                 </Link>
                 <p className="mt-1 truncate text-xs text-zinc-500">
-                    {row.custom_domain || (row.subdomain ? `${row.subdomain}.letbuyy.store` : row.id)}
+                    {row.custom_domain || (row.subdomain ? `${row.subdomain}.letbuyy.com` : row.id)}
                 </p>
             </div>
         ),

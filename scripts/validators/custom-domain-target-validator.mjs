@@ -17,13 +17,13 @@ const merchant = readFile("apps/merchant-control-plane/src/app/[store]/settings/
 const mobile = readFile("apps/mobile/merchant-app/lib/services/custom_domains.dart");
 
 for (const fragment of [
-  "CUSTOM_DOMAIN_CNAME_TARGET=connect.letbuyy.store",
-  "NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET=connect.letbuyy.store",
+  "CUSTOM_DOMAIN_CNAME_TARGET=connect.letbuyy.com",
+  "NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET=connect.letbuyy.com",
 ]) {
   reporter.assert(workerTemplate.includes(fragment), `worker template missing ${fragment}`);
 }
 reporter.assert(
-  nextTemplate.includes("NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET=connect.letbuyy.store"),
+  nextTemplate.includes("NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET=connect.letbuyy.com"),
   "next app template must document NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET",
 );
 reporter.assert(

@@ -120,7 +120,7 @@ export default function ResumeComingSoon({ storeName, tagline, logoUrl, launchDa
                     )}
                 </div>
 
-                <p style={{ fontSize: 'clamp(8px,1.1vw,11px)', color: 'rgba(255,255,255,.18)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .65s both' : 'none' }}>Powered by <a href="https://letbuyy.store" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(147,197,253,.45)', textDecoration: 'none', fontWeight: 700 }}>LetBuyy</a></p>
+                <p style={{ fontSize: 'clamp(8px,1.1vw,11px)', color: 'rgba(255,255,255,.18)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .65s both' : 'none' }}>Powered by <a href="https://letbuyy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(147,197,253,.45)', textDecoration: 'none', fontWeight: 700 }}>LetBuyy</a></p>
             </div>
 
             <style>{`

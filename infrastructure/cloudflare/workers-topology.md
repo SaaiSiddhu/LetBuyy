@@ -40,8 +40,8 @@ Staging and production use explicit Wrangler environments. Queue producer and co
 
 | Environment | API route | Webhook route | Queue suffix | KV namespace | R2 bucket | D1 database | Telemetry dataset |
 |---|---|---|---|---|---|---|---|
-| staging | `api.staging.letbuyy.store` | `webhooks.staging.letbuyy.store` | `-staging` | `letbuyy-runtime-cache-staging` | `letbuyy-media-staging` | `letbuyy-staging-d1` | `letbuyy-staging-telemetry` |
-| production | `api.letbuyy.store` | `webhooks.letbuyy.store` | `-production` for workload queues | `letbuyy-runtime-cache-production` | `letbuyy-media-production` | `letbuyy-production-d1` | `letbuyy-production-telemetry` |
+| staging | `api.staging.letbuyy.com` | `webhooks.staging.letbuyy.com` | `-staging` | `letbuyy-runtime-cache-staging` | `letbuyy-media-staging` | `letbuyy-staging-d1` | `letbuyy-staging-telemetry` |
+| production | `api.letbuyy.com` | `webhooks.letbuyy.com` | `-production` for workload queues | `letbuyy-runtime-cache-production` | `letbuyy-media-production` | `letbuyy-production-d1` | `letbuyy-production-telemetry` |
 
 ## Edge Storage
 

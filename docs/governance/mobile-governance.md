@@ -16,7 +16,6 @@ Reserved mobile roots are not deployable runtimes, do not participate in deploym
 
 - `packages/dart/core`: foundation constants, config, helpers, and platform utilities. It must not depend on other internal Dart packages.
 - `packages/dart/models`: typed domain models and DTOs. It may depend on core.
-- `packages/dart/services`: API, auth, payment, analytics, storage, notification, and data services. It may depend on core and models, but not UI kit.
 - `packages/dart/ui_kit`: Flutter visual primitives, themes, states, and widgets. It may depend on core and models.
 
 ## Forbidden Mobile Patterns
@@ -24,7 +23,7 @@ Reserved mobile roots are not deployable runtimes, do not participate in deploym
 - Flutter apps importing another Flutter app.
 - Dart packages importing mobile app source.
 - Mobile app `lib/models` files defining shared domain classes or enums directly.
-- Core/services packages depending on UI kit.
+- Core/model packages depending on UI kit.
 - Provider secret keys embedded in Flutter source or tracked `.env` files.
 - Tracked `.dart_tool`, `build`, `ios/Pods`, `android/.gradle`, APK, AAB, IPA, `.dill`, or generated platform caches.
 

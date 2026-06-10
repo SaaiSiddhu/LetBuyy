@@ -62,6 +62,7 @@ CREATE INDEX IF NOT EXISTS idx_site_preview_links_active
   ON public.site_preview_links (site_id, jti)
   WHERE revoked_at IS NULL AND deleted_at IS NULL;
 
+DROP TRIGGER IF EXISTS update_site_preview_links_updated_at ON public.site_preview_links;
 CREATE TRIGGER update_site_preview_links_updated_at
   BEFORE UPDATE ON public.site_preview_links
   FOR EACH ROW
@@ -69,6 +70,7 @@ CREATE TRIGGER update_site_preview_links_updated_at
 
 ALTER TABLE public.site_preview_links ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "site_preview_links service role only" ON public.site_preview_links;
 CREATE POLICY "site_preview_links service role only"
   ON public.site_preview_links
   FOR ALL
@@ -94,6 +96,7 @@ CREATE INDEX IF NOT EXISTS idx_site_gate_attempts_rate
 CREATE INDEX IF NOT EXISTS idx_site_gate_attempts_site_ts
   ON public.site_gate_attempts (site_id, ts DESC);
 
+DROP TRIGGER IF EXISTS update_site_gate_attempts_updated_at ON public.site_gate_attempts;
 CREATE TRIGGER update_site_gate_attempts_updated_at
   BEFORE UPDATE ON public.site_gate_attempts
   FOR EACH ROW
@@ -101,6 +104,7 @@ CREATE TRIGGER update_site_gate_attempts_updated_at
 
 ALTER TABLE public.site_gate_attempts ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "site_gate_attempts service role only" ON public.site_gate_attempts;
 CREATE POLICY "site_gate_attempts service role only"
   ON public.site_gate_attempts
   FOR ALL
@@ -135,6 +139,7 @@ CREATE INDEX IF NOT EXISTS idx_site_domain_reviews_status
   ON public.site_domain_reviews (status, risk_tier, created_at DESC)
   WHERE deleted_at IS NULL;
 
+DROP TRIGGER IF EXISTS update_site_domain_reviews_updated_at ON public.site_domain_reviews;
 CREATE TRIGGER update_site_domain_reviews_updated_at
   BEFORE UPDATE ON public.site_domain_reviews
   FOR EACH ROW
@@ -142,6 +147,7 @@ CREATE TRIGGER update_site_domain_reviews_updated_at
 
 ALTER TABLE public.site_domain_reviews ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "site_domain_reviews service role only" ON public.site_domain_reviews;
 CREATE POLICY "site_domain_reviews service role only"
   ON public.site_domain_reviews
   FOR ALL
@@ -185,6 +191,7 @@ CREATE INDEX IF NOT EXISTS idx_domain_orders_domain
   ON public.domain_orders (lower(domain))
   WHERE deleted_at IS NULL;
 
+DROP TRIGGER IF EXISTS update_domain_orders_updated_at ON public.domain_orders;
 CREATE TRIGGER update_domain_orders_updated_at
   BEFORE UPDATE ON public.domain_orders
   FOR EACH ROW
@@ -192,6 +199,7 @@ CREATE TRIGGER update_domain_orders_updated_at
 
 ALTER TABLE public.domain_orders ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "domain_orders service role only" ON public.domain_orders;
 CREATE POLICY "domain_orders service role only"
   ON public.domain_orders
   FOR ALL

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="128" viewBox="0 0 192 128" fill="none" role="img" aria-label="LetBuyy domains empty-state illustration">
+  <defs>
+    <filter id="lbShadow-domains-dark" x="-20%" y="-20%" width="140%" height="160%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <rect x="18" y="18" width="156" height="92" rx="16" fill="#2C2F4E"/>
+  <rect x="34" y="32" width="124" height="64" rx="12" stroke="#8B5CF6" stroke-width="2" opacity="0.2"/>
+  <path d="M40 102C56 90 74 90 96 102C118 114 142 114 162 96" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" opacity="0.22"/>
+  <g>
+      <circle cx="92" cy="64" r="30" stroke="#8B5CF6" stroke-width="2" opacity="0.58"/>
+      <path d="M62 64H122M92 34C102 48 102 80 92 94M92 34C82 48 82 80 92 94" stroke="#8B5CF6" stroke-width="2" opacity="0.32"/>
+      <circle cx="132" cy="44" r="8" fill="#8B5CF6" opacity="0.12" data-lb-empty-float="secondary"/>
+  </g>
+  <g filter="url(#lbShadow-domains-dark)">
+    <rect x="73" y="41" width="46" height="46" rx="14" fill="#1F2937" stroke="#334155" stroke-width="1.5"/>
+  </g>
+  <g transform="translate(84,52)" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c3 4 3 13 0 17M12 3.5c-3 4-3 13 0 17"/>
+  </g>
+</svg>

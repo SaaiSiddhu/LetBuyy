@@ -14,7 +14,7 @@ void main() {
 
     final baseUrl =
         Platform.environment['LETBUYY_API_BASE_URL'] ??
-        'https://api.staging.letbuyy.store/v1';
+        'https://api.staging.letbuyy.com/v1';
     final subdomain =
         Platform.environment['LETBUYY_API_CLIENT_SUBDOMAIN'] ??
         'urban-kicks-demo';

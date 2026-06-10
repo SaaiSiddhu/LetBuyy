@@ -5,7 +5,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/store_service.dart';
-import '../../theme/store_admin_colors.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../app/routes.dart';
 
 /// Store Published Screen with Enhanced 6-Stage Animated Progression
@@ -207,7 +207,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                       key: ValueKey(_currentStageIndex),
                       style: const TextStyle(
                         fontSize: 15,
-                        color: StoreAdminColors.primary,
+                        color: LetbuyyColorTokens.brandPrimary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -249,7 +249,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: StoreAdminColors.primary.withValues(alpha: 0.25),
+                    color: LetbuyyColorTokens.brandPrimary.withValues(alpha: 0.25),
                     blurRadius: 40,
                     spreadRadius: 10,
                   ),
@@ -285,7 +285,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                   strokeCap: StrokeCap.round,
                   backgroundColor: Colors.transparent,
                   valueColor: const AlwaysStoppedAnimation(
-                    StoreAdminColors.primary,
+                    LetbuyyColorTokens.brandPrimary,
                   ),
                 ),
               ),
@@ -363,8 +363,8 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                   gradient: isCompleted || isActive
                       ? LinearGradient(
                           colors: [
-                            StoreAdminColors.primary,
-                            StoreAdminColors.accent,
+                            LetbuyyColorTokens.brandPrimary,
+                            LetbuyyColorTokens.accentPink,
                           ],
                         )
                       : null,
@@ -375,7 +375,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                   boxShadow: isActive
                       ? [
                           BoxShadow(
-                            color: StoreAdminColors.primary.withValues(
+                            color: LetbuyyColorTokens.brandPrimary.withValues(
                               alpha: 0.4,
                             ),
                             blurRadius: 12,
@@ -432,7 +432,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: StoreAdminColors.success.withValues(alpha: 0.2),
+                    color: LetbuyyColorTokens.successStrong.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: const Text(
@@ -440,12 +440,12 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
-                      color: StoreAdminColors.success,
+                      color: LetbuyyColorTokens.successStrong,
                     ),
                   ),
                 )
               else if (isActive)
-                Text('...', style: TextStyle(color: StoreAdminColors.primary))
+                Text('...', style: TextStyle(color: LetbuyyColorTokens.brandPrimary))
                     .animate(onPlay: (c) => c.repeat())
                     .fadeIn()
                     .fadeOut(duration: 500.ms),
@@ -459,7 +459,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
             height: 12,
             decoration: BoxDecoration(
               color: isCompleted
-                  ? StoreAdminColors.primary.withValues(alpha: 0.5)
+                  ? LetbuyyColorTokens.brandPrimary.withValues(alpha: 0.5)
                   : Colors.white.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(1),
             ),
@@ -469,7 +469,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
   }
 
   Widget _buildSuccessScreen() {
-    final storeUrl = 'https://${widget.subdomain}.letbuyy.store';
+    final storeUrl = 'https://${widget.subdomain}.letbuyy.com';
 
     return Scaffold(
       body: Container(
@@ -480,7 +480,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
             colors: [
               const Color(0xFF0A0E1A),
               const Color(0xFF0F1929),
-              StoreAdminColors.success.withValues(alpha: 0.1),
+              LetbuyyColorTokens.successStrong.withValues(alpha: 0.1),
             ],
           ),
         ),
@@ -501,13 +501,13 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              StoreAdminColors.success,
-                              StoreAdminColors.success.withValues(alpha: 0.8),
+                              LetbuyyColorTokens.successStrong,
+                              LetbuyyColorTokens.successStrong.withValues(alpha: 0.8),
                             ],
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: StoreAdminColors.success.withValues(
+                              color: LetbuyyColorTokens.successStrong.withValues(
                                 alpha: 0.4,
                               ),
                               blurRadius: 40,
@@ -569,7 +569,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                       color: Colors.white.withValues(alpha: 0.06),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: StoreAdminColors.success.withValues(alpha: 0.3),
+                        color: LetbuyyColorTokens.successStrong.withValues(alpha: 0.3),
                         width: 1.5,
                       ),
                     ),
@@ -581,14 +581,14 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                             Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
-                                color: StoreAdminColors.success.withValues(
+                                color: LetbuyyColorTokens.successStrong.withValues(
                                   alpha: 0.2,
                                 ),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: const Icon(
                                 Icons.verified_rounded,
-                                color: StoreAdminColors.success,
+                                color: LetbuyyColorTokens.successStrong,
                                 size: 16,
                               ),
                             ),
@@ -604,7 +604,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                         ),
                         const SizedBox(height: 14),
                         Text(
-                          '${widget.subdomain}.letbuyy.store',
+                          '${widget.subdomain}.letbuyy.com',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
@@ -688,7 +688,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
             colors: [
               const Color(0xFF0A0E1A),
               const Color(0xFF1A1520),
-              StoreAdminColors.error.withValues(alpha: 0.1),
+              LetbuyyColorTokens.error.withValues(alpha: 0.1),
             ],
           ),
         ),
@@ -703,13 +703,13 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                     width: 90,
                     height: 90,
                     decoration: BoxDecoration(
-                      color: StoreAdminColors.error.withValues(alpha: 0.15),
+                      color: LetbuyyColorTokens.error.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
                       Icons.error_outline_rounded,
                       size: 44,
-                      color: StoreAdminColors.error,
+                      color: LetbuyyColorTokens.error,
                     ),
                   ),
 
@@ -743,7 +743,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
-                      foregroundColor: StoreAdminColors.error,
+                      foregroundColor: LetbuyyColorTokens.error,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 32,
                         vertical: 14,
@@ -769,7 +769,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('Store URL copied!'),
-        backgroundColor: StoreAdminColors.success,
+        backgroundColor: LetbuyyColorTokens.successStrong,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

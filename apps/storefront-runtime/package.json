@@ -16,7 +16,6 @@
     "@letbuyy/checkout-core": "workspace:*",
     "@letbuyy/cms-core": "workspace:*",
     "@letbuyy/commerce-core": "workspace:*",
-    "@letbuyy/runtime-composition": "workspace:*",
     "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/tenant-core": "workspace:*",
     "@letbuyy/theme-engine": "workspace:*",

@@ -6,7 +6,7 @@ import '../../models/store_model.dart';
 import '../../services/shipping_tax_service.dart';
 import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
-import '../../theme/letbuyy_color_tokens.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 class TaxesScreen extends StatefulWidget {
   const TaxesScreen({super.key});

@@ -3,8 +3,8 @@
   "manifestVersion": 1,
   "mode": "governance-contract-not-live-evidence",
   "reconciliationIntelligence": {
-    "engineSource": "packages/distributed-runtime/src/reconciliation-convergence-runtime.ts",
-    "baseReconciliationEngine": "packages/distributed-runtime/src/runtime-reconciliation-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
+    "baseReconciliationEngine": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "graphCompiler": "compileRuntimeResourceGraph",
     "convergencePlanner": "planRuntimeConvergence",
     "deterministicOrdering": ["environment", "resourceKind", "resourceName"],
@@ -13,8 +13,8 @@
     "checksumGovernance": "convergenceChecksum-per-step-and-planChecksum"
   },
   "rollbackIntelligence": {
-    "engineSource": "packages/distributed-runtime/src/rollback-intelligence-runtime.ts",
-    "baseRollbackEngine": "packages/distributed-runtime/src/rollback-orchestration-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
+    "baseRollbackEngine": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "dagCompiler": "compileRollbackDag",
     "simulationEngine": "simulateRollback",
     "convergenceValidator": "assertRollbackDagSafe",
@@ -26,8 +26,8 @@
     "blastRadiusDimensions": ["replay", "projection", "queue", "migration", "deployment-lineage", "worker-traffic"]
   },
   "runtimeTransitions": {
-    "engineSource": "packages/distributed-runtime/src/runtime-transition-lineage-runtime.ts",
-    "stateMachineSource": "packages/distributed-runtime/src/runtime-state-machine-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
+    "stateMachineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "journalFunction": "appendRuntimeTransitionJournal",
     "recoveryFunction": "recoverRuntimeTransition",
     "auditChain": "previousChecksum-to-checkpointChecksum",
@@ -35,7 +35,7 @@
     "checkpointGovernance": "every-transition-has-gates-causation-and-checksum"
   },
   "queueConvergence": {
-    "engineSource": "packages/distributed-runtime/src/queue-convergence-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "queueLifecycleManifest": "config/runtime/queue-lifecycle-manifest.json",
     "convergenceFunction": "planQueueConvergence",
     "assertionFunction": "assertQueueConvergence",
@@ -45,7 +45,7 @@
     "eventualConvergencePolicy": "redrive-or-rebuild-until-hashes-align"
   },
   "projectionRebuildIntelligence": {
-    "engineSource": "packages/projection-runtime/src/projection-rebuild-planner-runtime.ts",
+    "engineSource": "services/queue-workers/src/queue-projection-plans.ts",
     "projectionRecoveryManifest": "config/runtime/projection-recovery-manifest.json",
     "planner": "planSelectiveProjectionRebuild",
     "boundedAssertion": "assertProjectionRebuildPlanBounded",
@@ -64,7 +64,7 @@
     "rebuildPolicy": "selective-window-before-full-rebuild"
   },
   "manifestProvenance": {
-    "engineSource": "packages/distributed-runtime/src/manifest-provenance-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "lineageManifest": "config/runtime/manifest-lineage.json",
     "checksumAlgorithm": "sha256",
     "snapshotFunction": "compileManifestProvenance",
@@ -94,7 +94,7 @@
     ]
   },
   "replaySimulation": {
-    "engineSource": "packages/distributed-runtime/src/replay-simulation-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "replayEvolutionManifest": "config/runtime/replay-evolution-manifest.json",
     "timelineFunction": "simulateReplayTimelines",
     "assertionFunction": "assertReplayTimelineStable",
@@ -127,7 +127,7 @@
     ]
   },
   "deploymentIntelligence": {
-    "engineSource": "packages/distributed-runtime/src/deployment-intelligence-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "topologyManifest": "config/runtime/deployment-topology.json",
     "dagCompiler": "compileDeploymentDag",
     "deterministicAssertion": "assertDeploymentDagDeterministic",
@@ -136,7 +136,7 @@
     "blastRadiusPolicy": "runtime-dependencies-compiled-before-activation"
   },
   "cloudflareResourceLineage": {
-    "engineSource": "packages/distributed-runtime/src/cloudflare-resource-lineage-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "bindingOwnershipManifest": "config/runtime/cloudflare-binding-ownership.json",
     "compiler": "compileCloudflareResourceLineage",
     "assertionFunction": "assertCloudflareResourceLineage",

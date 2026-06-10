@@ -18,7 +18,7 @@ export const options = {
   }
 };
 
-const baseUrl = __ENV.LETBUYY_API_BASE_URL || "https://api.letbuyy.store";
+const baseUrl = __ENV.LETBUYY_API_BASE_URL || "https://api.letbuyy.com";
 
 export default function () {
   const response = http.get(`${baseUrl}/v1/health`, {

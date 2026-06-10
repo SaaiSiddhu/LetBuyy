@@ -198,7 +198,7 @@ Map<String, dynamic> _storeJson() => {
   'name': 'Demo Store India',
   'tagline': 'Everyday essentials',
   'subdomain': 'demo',
-  'store_url': 'https://demo.letbuyy.store',
+  'store_url': 'https://demo.letbuyy.com',
   'theme_id': 'modern',
   'tax_inclusive': false,
   'dns_config': const {},

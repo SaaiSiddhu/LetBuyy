@@ -132,7 +132,7 @@ function storeDisplayName(row: ConsoleStore): string {
 
 function storeDomain(row: ConsoleStore): string {
     if (row.custom_domain) return row.custom_domain;
-    if (row.subdomain) return `${row.subdomain}.letbuyy.store`;
+    if (row.subdomain) return `${row.subdomain}.letbuyy.com`;
     return row.id;
 }
 

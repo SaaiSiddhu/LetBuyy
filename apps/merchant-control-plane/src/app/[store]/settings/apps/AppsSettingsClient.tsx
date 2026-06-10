@@ -23,7 +23,7 @@ interface AppsSettingsClientProps {
     onUninstall: (appId: string) => Promise<{ ok: boolean; message: string }>
 }
 
-const APP_MARKETPLACE_URL = 'https://apps.letbuyy.store'
+const APP_MARKETPLACE_URL = 'https://apps.letbuyy.com'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return Boolean(value && typeof value === 'object' && !Array.isArray(value))

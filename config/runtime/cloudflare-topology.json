@@ -38,9 +38,9 @@
         "queueWorkers": "letbuyy-queue-workers-staging"
       },
       "routes": {
-        "apiGateway": "api-staging.letbuyy.store",
+        "apiGateway": "api-staging.letbuyy.com",
         "mobileBff": "bff-staging.letbuyy.com",
-        "webhookService": "webhooks-staging.letbuyy.store"
+        "webhookService": "webhooks-staging.letbuyy.com"
       }
     },
     "production": {
@@ -64,9 +64,9 @@
         "queueWorkers": "letbuyy-queue-workers"
       },
       "routes": {
-        "apiGateway": "api.letbuyy.store",
+        "apiGateway": "api.letbuyy.com",
         "mobileBff": "bff.letbuyy.com",
-        "webhookService": "webhooks.letbuyy.store"
+        "webhookService": "webhooks.letbuyy.com"
       }
     }
   },

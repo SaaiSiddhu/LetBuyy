@@ -123,28 +123,28 @@
   },
   "domains": {
     "staging": {
-      "api": "api-staging.letbuyy.store",
+      "api": "api-staging.letbuyy.com",
       "bff": "bff-staging.letbuyy.com",
-      "webhooks": "webhooks-staging.letbuyy.store",
-      "storefront": "store-staging.letbuyy.store",
-      "accounts": "accounts-staging.letbuyy.store",
-      "admin": "admin-staging.letbuyy.store",
-      "console": "console-staging.letbuyy.store",
-      "apps": "apps-staging.letbuyy.store",
-      "themes": "themes-staging.letbuyy.store",
-      "ops": "ops-staging.letbuyy.store"
+      "webhooks": "webhooks-staging.letbuyy.com",
+      "storefront": "store-staging.letbuyy.com",
+      "accounts": "accounts-staging.letbuyy.com",
+      "admin": "admin-staging.letbuyy.com",
+      "console": "console-staging.letbuyy.com",
+      "apps": "apps-staging.letbuyy.com",
+      "themes": "themes-staging.letbuyy.com",
+      "ops": "ops-staging.letbuyy.com"
     },
     "production": {
-      "api": "api.letbuyy.store",
+      "api": "api.letbuyy.com",
       "bff": "bff.letbuyy.com",
-      "webhooks": "webhooks.letbuyy.store",
-      "storefront": "store.letbuyy.store",
-      "accounts": "accounts.letbuyy.store",
-      "admin": "admin.letbuyy.store",
-      "console": "console.letbuyy.store",
-      "apps": "apps.letbuyy.store",
-      "themes": "themes.letbuyy.store",
-      "ops": "ops.letbuyy.store"
+      "webhooks": "webhooks.letbuyy.com",
+      "storefront": "store.letbuyy.com",
+      "accounts": "accounts.letbuyy.com",
+      "admin": "admin.letbuyy.com",
+      "console": "console.letbuyy.com",
+      "apps": "apps.letbuyy.com",
+      "themes": "themes.letbuyy.com",
+      "ops": "ops.letbuyy.com"
     }
   }
 }

@@ -13,6 +13,7 @@ import {
     type TenantGucSetLocalStatement,
     type TenantScopedQueryRequirement,
 } from '@letbuyy/tenant-core';
+import { withTenantTx, type TenantTxCallback } from './tenant-transaction';
 
 export type TenantContext = RuntimeTenantContext;
 
@@ -61,6 +62,14 @@ export function tenantSetLocalStatement(siteId: string): TenantGucSetLocalStatem
 
 export function assertTenantScopedQuery(requirement: TenantScopedQueryRequirement): void {
     requireSiteIdPredicate(requirement);
+}
+
+export function withResolvedTenantTx<T>(
+    c: AppContext,
+    tenant: Pick<TenantContext, 'siteId' | 'requestId'>,
+    callback: TenantTxCallback<T>,
+): Promise<T> {
+    return withTenantTx(c.env, tenant, callback);
 }
 
 async function loadPlan(db: SupabaseClient, siteId: string): Promise<string> {

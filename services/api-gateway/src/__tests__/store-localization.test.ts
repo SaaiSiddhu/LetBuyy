@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
 function source(path: string): string {
@@ -50,7 +50,6 @@ test('clients and mobile app expose localization without the S-025 blocked seam'
   const service = source('apps/mobile/merchant-app/lib/services/store_service.dart');
   const screen = source('apps/mobile/merchant-app/lib/screens/settings/localization_markets_screen.dart');
   const blocked = source('apps/mobile/merchant-app/lib/services/platform_blocked_service.dart');
-  const features = source('apps/mobile/merchant-app/lib/screens/parity/merchant_feature_definitions.dart');
 
   assert.match(bff, /'\/v1\/stores'/);
   assert.match(tsClient, /localization: \{/);
@@ -62,7 +61,8 @@ test('clients and mobile app expose localization without the S-025 blocked seam'
   assert.match(service, /fetchLocalization/);
   assert.match(service, /StoreLocalizationSummary/);
   assert.match(routes, /LocalizationMarketsScreen/);
+  assert.match(routes, /path:\s*'\/features\/localization-markets'/);
   assert.match(screen, /Localization & Markets/);
   assert.doesNotMatch(blocked, /MOBILE_LOCALIZATION_MARKETS|S-025/);
-  assert.match(features, /stores\/:id\/localization/);
+  assert.equal(existsSync('apps/mobile/merchant-app/lib/screens/parity/merchant_feature_definitions.dart'), false);
 });

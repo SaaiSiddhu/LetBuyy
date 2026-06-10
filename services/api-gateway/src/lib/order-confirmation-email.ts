@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import type { Env } from '../index';
+import { signQueueTenantEnvelope } from './queue-tenant-envelope';
 
 type OrderRow = {
     id: string;
@@ -90,7 +91,7 @@ function configuredResend(env: Pick<Env, 'RESEND_API_KEY'>): boolean {
 }
 
 export async function enqueueOrderConfirmationEmail(
-    env: Pick<Env, 'EMAIL_QUEUE' | 'RESEND_API_KEY' | 'RESEND_FROM_EMAIL' | 'ENVIRONMENT'>,
+    env: Pick<Env, 'EMAIL_QUEUE' | 'RESEND_API_KEY' | 'RESEND_FROM_EMAIL' | 'ENVIRONMENT' | 'INTERNAL_API_SECRET' | 'QUEUE_TENANT_ENVELOPE_SECRET'>,
     db: SupabaseClient,
     input: { orderId: string; storeId: string; requestId: string; idempotencyKey: string },
 ): Promise<void> {
@@ -124,7 +125,7 @@ export async function enqueueOrderConfirmationEmail(
     };
 
     if (env.EMAIL_QUEUE) {
-        await env.EMAIL_QUEUE.send(queueBody);
+        await env.EMAIL_QUEUE.send(await signQueueTenantEnvelope(env, queueBody));
         return;
     }
 

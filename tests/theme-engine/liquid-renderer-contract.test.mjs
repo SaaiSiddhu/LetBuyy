@@ -15,6 +15,7 @@ test('LiquidRenderer uses LiquidJS behind the ThemeRenderer seam', () => {
   assert.match(source, /export class LiquidRenderer implements ThemeRenderer/);
   assert.match(source, /status: 'rendered'/);
   assert.match(source, /liquid\?: LiquidRenderedTheme/);
+  assert.match(source, /outputEscape:\s*'escape'/);
 });
 
 test('LiquidRenderer renders blocks before sections and strips schema tags', () => {
@@ -34,4 +35,13 @@ test('LiquidRenderer keeps app blocks as explicit injectable slots', () => {
   assert.match(source, /typeof block\.settings\.slot === 'string' \? block\.settings\.slot : ''/);
   assert.match(source, /data-letbuyy-app-block/);
   assert.match(source, /rendererKey: isLiquidAppBlockType\(block\.type\) \? 'liquid\.app-block'/);
+});
+
+test('LiquidRenderer sanitizes rendered HTML through DOMPurify instead of regex replacement', () => {
+  const source = read(THEME_RENDERER_SOURCE);
+  const sanitizer = source.match(/export async function sanitizeRenderedHtml[\s\S]*?\n}/)?.[0] || '';
+
+  assert.match(source, /LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG/);
+  assert.match(source, /import\('dompurify'\)/);
+  assert.doesNotMatch(sanitizer, /\.replace\(/);
 });

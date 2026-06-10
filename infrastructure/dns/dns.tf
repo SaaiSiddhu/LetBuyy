@@ -2,7 +2,7 @@
 # LetBuyy DNS Configuration — Cloudflare-managed zones
 # ────────────────────────────────────────────────────────────
 #
-# This Terraform file manages DNS records for letbuyy.store
+# This Terraform file manages DNS records for letbuyy.com
 # using Cloudflare as the DNS provider.
 #
 # Usage:
@@ -12,7 +12,7 @@
 #
 # Prerequisites:
 #   - Cloudflare API token with Zone:DNS:Edit permissions
-#   - Zone ID for letbuyy.store
+#   - Zone ID for letbuyy.com
 #
 # ────────────────────────────────────────────────────────────
 
@@ -24,7 +24,7 @@ variable "cloudflare_api_token" {
 
 variable "cloudflare_zone_id" {
   type        = string
-  description = "Cloudflare zone ID for letbuyy.store"
+  description = "Cloudflare zone ID for letbuyy.com"
 }
 
 terraform {
@@ -47,14 +47,14 @@ resource "cloudflare_record" "root_a" {
   content = "76.76.21.21"
   type    = "A"
   proxied = false
-  comment = "Vercel — letbuyy.store (landing)"
+  comment = "Vercel — letbuyy.com (landing)"
 }
 
 # ─── WWW → Root redirect ────────────────────────────────────
 resource "cloudflare_record" "www" {
   zone_id = var.cloudflare_zone_id
   name    = "www"
-  content = "letbuyy.store"
+  content = "letbuyy.com"
   type    = "CNAME"
   proxied = false
   comment = "www redirect"
@@ -67,7 +67,7 @@ resource "cloudflare_record" "admin" {
   content = "cname.vercel-dns.com"
   type    = "CNAME"
   proxied = false
-  comment = "Vercel — admin.letbuyy.store"
+  comment = "Vercel — admin.letbuyy.com"
 }
 
 resource "cloudflare_record" "accounts" {
@@ -76,7 +76,7 @@ resource "cloudflare_record" "accounts" {
   content = "cname.vercel-dns.com"
   type    = "CNAME"
   proxied = false
-  comment = "Vercel — accounts.letbuyy.store"
+  comment = "Vercel — accounts.letbuyy.com"
 }
 
 resource "cloudflare_record" "console" {
@@ -85,7 +85,7 @@ resource "cloudflare_record" "console" {
   content = "cname.vercel-dns.com"
   type    = "CNAME"
   proxied = false
-  comment = "Vercel — console.letbuyy.store"
+  comment = "Vercel — console.letbuyy.com"
 }
 
 resource "cloudflare_record" "team" {
@@ -94,7 +94,7 @@ resource "cloudflare_record" "team" {
   content = "cname.vercel-dns.com"
   type    = "CNAME"
   proxied = false
-  comment = "Vercel — team.letbuyy.store"
+  comment = "Vercel — team.letbuyy.com"
 }
 
 # ─── API → Cloudflare Workers ────────────────────────────────
@@ -104,7 +104,7 @@ resource "cloudflare_record" "api" {
   content = "100::"
   type    = "AAAA"
   proxied = true
-  comment = "Cloudflare Workers — api.letbuyy.store"
+  comment = "Cloudflare Workers — api.letbuyy.com"
 }
 
 resource "cloudflare_record" "webhooks" {
@@ -113,7 +113,7 @@ resource "cloudflare_record" "webhooks" {
   content = "100::"
   type    = "AAAA"
   proxied = true
-  comment = "Cloudflare Workers — webhooks.letbuyy.store"
+  comment = "Cloudflare Workers — webhooks.letbuyy.com"
 }
 
 # ─── Wildcard for User Storefronts ───────────────────────────
@@ -123,7 +123,7 @@ resource "cloudflare_record" "storefront_wildcard" {
   content = "cname.vercel-dns.com"
   type    = "CNAME"
   proxied = false
-  comment = "Wildcard — *.letbuyy.store (user storefronts)"
+  comment = "Wildcard — *.letbuyy.com (user storefronts)"
 }
 
 # ─── Custom-domain CNAME target owned by LetBuyy ─────────────
@@ -133,7 +133,7 @@ resource "cloudflare_record" "connect" {
   content = "cname.vercel-dns.com"
   type    = "CNAME"
   proxied = false
-  comment = "LetBuyy custom-domain target — connect.letbuyy.store"
+  comment = "LetBuyy custom-domain target — connect.letbuyy.com"
 }
 
 # Reserved for future shopper OIDC. Do not activate until the
@@ -144,7 +144,7 @@ resource "cloudflare_record" "connect" {
 #   content = "cname.vercel-dns.com"
 #   type    = "CNAME"
 #   proxied = false
-#   comment = "Reserved — id.letbuyy.store shopper identity"
+#   comment = "Reserved — id.letbuyy.com shopper identity"
 # }
 
 # ────────────────────────────────────────────────────────────
@@ -154,7 +154,7 @@ resource "cloudflare_record" "connect" {
 # wp-*, *.php, /.env and /.git probe is pure noise. Blocking these at the
 # edge stops bot scans before they ever invoke a Worker or touch KV —
 # protecting the free-tier budget. (These scans were the Netherlands
-# traffic hammering api-staging.letbuyy.store in the observability logs.)
+# traffic hammering api-staging.letbuyy.com in the observability logs.)
 #
 # NOTE: the API token must also carry Zone WAF / Firewall Services edit
 #       permission (the DNS-only token is not sufficient). A zone holds at

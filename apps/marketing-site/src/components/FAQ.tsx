@@ -11,7 +11,7 @@ const faqs = [
     },
     {
         question: 'Can I use a custom domain?',
-        answer: 'Absolutely! You can connect your own domain to your LetBuyy site. Free plans get a yoursite.letbuyy.store subdomain, while paid plans support custom domains like yourbrand.com.',
+        answer: 'Absolutely! You can connect your own domain to your LetBuyy site. Free plans get a yoursite.letbuyy.com subdomain, while paid plans support custom domains like yourbrand.com.',
     },
     {
         question: 'Do you take transaction fees?',

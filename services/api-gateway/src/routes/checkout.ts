@@ -7,6 +7,8 @@ import {
     CheckoutPaymentIntentSchema,
     StoreBrandingSchema,
     assertBrandingIsDataOnly,
+    canonicalCheckoutCartBinding,
+    canonicalCheckoutHandoffPayload,
     normalizeCheckoutChannel,
     planCheckoutStateTransition,
     type CreateCheckoutOrderCommand,
@@ -19,7 +21,7 @@ import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.
 import { OrderExecutionAdapter } from '../execution/order-execution.adapter';
 import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { hmacSha256Hex, timingSafeEqualHex } from '../lib/crypto';
+import { hmacSha256Hex, sha256Hex, timingSafeEqualHex } from '../lib/crypto';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { createPublicStorefrontTenantContext } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
@@ -223,10 +225,11 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string): Promise<
     const siteId = c.req.query('site_id');
     const cartToken = c.req.query('cart_token');
     const expiresAt = c.req.query('expires_at');
+    const cartDigest = c.req.query('cart_digest');
     const signature = c.req.query('signature');
     const channel = normalizeCheckoutChannel(c.req.query('channel'));
 
-    if (!siteId || !cartToken || !expiresAt || !signature) {
+    if (!siteId || !cartToken || !expiresAt || !cartDigest || !signature) {
         return { ok: false, response: invalidHandoff(c) };
     }
 
@@ -240,11 +243,6 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string): Promise<
         // [HUMAN-REQUIRED] HR-DNS-CHECKOUT: production checkout origin/signing
         // secrets, DNS, and certificate cutover must be installed by a human.
         return { ok: false, response: setupRequired(c) };
-    }
-
-    const expected = await hmacSha256Hex(secret, `${siteId}:${cartId}:${cartToken}:${channel}:${expiresAt}`);
-    if (!timingSafeEqualHex(expected, signature)) {
-        return { ok: false, response: invalidHandoff(c) };
     }
 
     const db = getSupabaseAdmin(c);
@@ -261,6 +259,34 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string): Promise<
         return { ok: false, response: invalidHandoff(c, 'Cart is unavailable for checkout.') };
     }
 
+    const cartRow = cart as CartRow;
+    const expectedCartDigest = await sha256Hex(canonicalCheckoutCartBinding({
+        siteId,
+        cartId,
+        cartToken,
+        channel,
+        expiresAt,
+        couponCodes: cartRow.coupon_code ? [cartRow.coupon_code] : [],
+        lines: cartLines(cartRow),
+    }));
+    if (!timingSafeEqualHex(expectedCartDigest, cartDigest)) {
+        return { ok: false, response: invalidHandoff(c) };
+    }
+
+    const expected = await hmacSha256Hex(secret, canonicalCheckoutHandoffPayload({
+        siteId,
+        cartId,
+        cartToken,
+        channel,
+        expiresAt,
+        cartContentDigest: expectedCartDigest,
+        couponCodes: cartRow.coupon_code ? [cartRow.coupon_code] : [],
+        lines: cartLines(cartRow),
+    }));
+    if (!timingSafeEqualHex(expected, signature)) {
+        return { ok: false, response: invalidHandoff(c) };
+    }
+
     return {
         ok: true,
         handoff: {
@@ -268,7 +294,7 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string): Promise<
             cartId,
             cartToken,
             channel,
-            cart: cart as CartRow,
+            cart: cartRow,
         },
     };
 }

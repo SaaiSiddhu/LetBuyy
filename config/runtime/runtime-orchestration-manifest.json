@@ -3,7 +3,7 @@
   "manifestVersion": 1,
   "mode": "governance-contract-not-live-evidence",
   "runtimeReconciliation": {
-    "engineSource": "packages/distributed-runtime/src/runtime-reconciliation-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "topologyManifest": "config/runtime/deployment-topology.json",
     "desiredResourceSources": [
       {
@@ -54,7 +54,7 @@
     "cleanAssertion": "assertRuntimeReconciliationClean"
   },
   "deploymentOrchestration": {
-    "engineSource": "packages/distributed-runtime/src/deployment-orchestration-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "promotionOrder": [
       "staging",
       "production"
@@ -105,7 +105,7 @@
     ]
   },
   "rollbackOrchestration": {
-    "engineSource": "packages/distributed-runtime/src/rollback-orchestration-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "lineageManifest": "config/runtime/deployment-lineage-manifest.json",
     "requiresPreviousVersionId": true,
     "requiresReason": true,
@@ -171,7 +171,7 @@
     ]
   },
   "projectionReconciliation": {
-    "engineSource": "packages/projection-runtime/src/projection-reconciliation-runtime.ts",
+    "engineSource": "services/queue-workers/src/queue-projection-plans.ts",
     "recoveryManifest": "config/runtime/projection-recovery-manifest.json",
     "ownerRuntime": "services/queue-workers",
     "requiredActions": [
@@ -184,7 +184,7 @@
     "checkpointValidation": "sourceGlobalPosition-required"
   },
   "queueRecovery": {
-    "engineSource": "packages/distributed-runtime/src/queue-recovery-orchestration-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "lifecycleManifest": "config/runtime/queue-lifecycle-manifest.json",
     "requiredActions": [
       "none",
@@ -228,7 +228,7 @@
     ]
   },
   "replayRecovery": {
-    "engineSource": "packages/distributed-runtime/src/replay-recovery-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "evolutionManifest": "config/runtime/replay-evolution-manifest.json",
     "orderingPolicy": "global-position-and-stream-position-strictly-increasing",
     "checksumPolicy": "event-checksum-must-match-replay-evolution-fixture",

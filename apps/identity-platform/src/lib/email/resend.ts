@@ -1,7 +1,7 @@
 import { identityApiRequest } from '../api/client'
 import { getAccountsUrl } from '../config/urls'
 
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@letbuyy.store'
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@letbuyy.com'
 const emailTableTag = 'table'
 
 interface SendEmailOptions {
@@ -229,7 +229,7 @@ export async function sendStoreCreatedEmail(
         </div>
 
         <p style="font-size: 12px; color: rgb(156 163 175); margin: 32px 0 0; text-align: center;">
-          © LetBuyy · <a href="https://letbuyy.store/support" style="color: rgb(139 92 246);">Support</a>
+          © LetBuyy · <a href="https://letbuyy.com/support" style="color: rgb(139 92 246);">Support</a>
         </p>
       </div>
     `,
@@ -288,7 +288,7 @@ export async function sendStoreCreationFailedEmail(
         </a>
 
         <p style="font-size: 13px; color: rgb(153 153 153); margin: 24px 0 0; text-align: center;">
-          Need help? <a href="https://letbuyy.store/support" style="color: rgb(139 92 246);">Contact Support</a>
+          Need help? <a href="https://letbuyy.com/support" style="color: rgb(139 92 246);">Contact Support</a>
         </p>
       </div>
     `,

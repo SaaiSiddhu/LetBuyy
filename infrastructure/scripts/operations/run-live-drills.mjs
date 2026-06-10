@@ -15,9 +15,9 @@ function assert(condition, message) {
 
 function apiBase() {
   if (process.env.LETBUYY_API_BASE_URL) return process.env.LETBUYY_API_BASE_URL.replace(/\/$/, "");
-  if (environment === "production") return "https://api.letbuyy.store";
-  if (environment === "staging") return "https://api.staging.letbuyy.store";
-  return "https://api.staging.letbuyy.store";
+  if (environment === "production") return "https://api.letbuyy.com";
+  if (environment === "staging") return "https://api.staging.letbuyy.com";
+  return "https://api.staging.letbuyy.com";
 }
 
 async function sendOperations(method, path, body) {

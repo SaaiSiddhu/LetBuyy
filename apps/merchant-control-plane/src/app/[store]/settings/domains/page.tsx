@@ -114,7 +114,7 @@ export default function DomainSettingsPage() {
     const [searchingDomain, setSearchingDomain] = useState(false)
     const [buyingDomain, setBuyingDomain] = useState(false)
 
-    const primaryDomain = `${storeData.subdomain}.letbuyy.store`
+    const primaryDomain = `${storeData.subdomain}.letbuyy.com`
     const previewHost = useMemo(() => customDomain.trim() || primaryDomain, [customDomain, primaryDomain])
     const cnameTarget = records.cname?.value || process.env.NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET || 'Generated after Connect'
 

@@ -2,6 +2,13 @@ import { Resend } from 'resend';
 
 let resendClient: Resend | null = null;
 
+function readProcessEnv(name: string): string | undefined {
+  const processLike = (globalThis as typeof globalThis & {
+    process?: { env?: Record<string, string | undefined> };
+  }).process;
+  return processLike?.env?.[name];
+}
+
 export interface ResendEmailInput {
   apiKey?: string;
   from: string;
@@ -11,7 +18,7 @@ export interface ResendEmailInput {
   text?: string;
 }
 
-export function getResendClient(apiKey = process.env.RESEND_API_KEY): Resend {
+export function getResendClient(apiKey = readProcessEnv('RESEND_API_KEY')): Resend {
   if (!resendClient) {
     if (!apiKey) throw new Error('[Resend] RESEND_API_KEY is not configured.');
     resendClient = new Resend(apiKey);

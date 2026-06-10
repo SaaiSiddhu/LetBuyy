@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui';
@@ -319,7 +319,7 @@ class _HeroStoreCardState extends State<HeroStoreCard>
               const SizedBox(width: 4),
               Flexible(
                 child: Text(
-                  '${widget.store.subdomain}.letbuyy.store',
+                  '${widget.store.subdomain}.letbuyy.com',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
@@ -969,7 +969,7 @@ class _QRCodeBottomSheetState extends State<_QRCodeBottomSheet> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          '${widget.subdomain}.letbuyy.store',
+                          '${widget.subdomain}.letbuyy.com',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,

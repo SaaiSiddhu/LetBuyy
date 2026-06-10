@@ -47,12 +47,6 @@
       "@letbuyy/notification-core": [
         "../../packages/notification-core/src/index.ts"
       ],
-      "@letbuyy/runtime-composition/*": [
-        "../../packages/runtime-composition/*/index.ts"
-      ],
-      "@letbuyy/search-core": [
-        "../../packages/search-core/src/index.ts"
-      ],
       "@letbuyy/shared-types": [
         "../../packages/shared-types/src/index.ts"
       ],

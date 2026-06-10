@@ -43,7 +43,7 @@ function getSiteTypeLabel(type: string): string {
     }
 }
 
-export default function HeaderBar({
+export default function MerchantHeaderBar({
     store,
     storeData,
     user,

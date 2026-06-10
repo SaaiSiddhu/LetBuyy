@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'dart:ui';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_theme_colors.dart';

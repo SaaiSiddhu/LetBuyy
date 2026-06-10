@@ -9,7 +9,7 @@ function read(path) {
 const reference = read('apps/developer-portal/src/lib/reference.ts');
 const homePage = read('apps/developer-portal/src/app/page.tsx');
 const sdkPage = read('apps/developer-portal/src/app/sdk/page.tsx');
-const appEngine = read('packages/app-engine/src/index.ts');
+const appEngine = read('packages/shared-types/src/app-platform.ts');
 const themeRenderer = read('packages/theme-engine/src/theme-renderer.ts');
 const storefrontGraphQL = read('services/api-gateway/src/graphql/storefront.ts');
 const ws12Ledger = read('docs/archive/root-residue/2026-06-06-foundation-v2/CODEX_WS12_LEDGER.md');
@@ -44,7 +44,7 @@ test('developer portal limits checkout functions to advisory operations', () => 
     'allow_payment_methods',
     'validation_error',
   ]) {
-    assert.ok(appEngine.includes(marker), `app-engine is missing ${marker}`);
+    assert.ok(appEngine.includes(marker), `shared app-platform is missing ${marker}`);
   }
 
   assert.ok(reference.includes('Checkout Functions are advisory only'));

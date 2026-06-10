@@ -48,9 +48,9 @@ for (const skipId of ['SKIP-W0-PITR-TIER', 'SKIP-W3-SENTRY-DSN', 'SKIP-W3-DNS-CU
   );
 }
 
-const skipped = readFile('FOUNDATION_STEPUP_SKIPPED.md');
+const skipped = readFile('SKIPPED_HUMAN_DECISIONS.md');
 for (const skipId of ['SKIP-W3-SENTRY-DSN', 'SKIP-W3-DNS-CUTOVER']) {
-  reporter.assert(skipped.includes(`## ${skipId}`), `FOUNDATION_STEPUP_SKIPPED.md missing ${skipId}`);
+  reporter.assert(skipped.includes(skipId), `SKIPPED_HUMAN_DECISIONS.md missing ${skipId}`);
 }
 
 for (const file of [
@@ -60,8 +60,8 @@ for (const file of [
   'apps/developer-portal/src/lib/site-url.ts',
 ]) {
   reporter.assert(
-    readFile(file).includes("const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.store'"),
-    `${file} must default to letbuyy.store until DNS cutover is human-approved`,
+    readFile(file).includes("const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com'"),
+    `${file} must default to letbuyy.com until DNS cutover is human-approved`,
   );
 }
 

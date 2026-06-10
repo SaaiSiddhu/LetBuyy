@@ -1,231 +1,240 @@
 import 'package:flutter/material.dart';
-import 'dark_theme_colors.dart';
-import 'letbuyy_color_tokens.dart';
-import 'light_theme_colors.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
-/// Unified Theme Colors Accessor
-/// Provides theme-aware color access throughout the app
-/// Usage: AppThemeColors.of(context).bgStart
+/// Theme-aware mobile color accessor backed by the generated LetBuyy token bridge.
 class AppThemeColors {
-  final bool isDark;
-
   AppThemeColors._(this.isDark);
 
-  /// Create theme colors from BuildContext (recommended)
+  final bool isDark;
+
   factory AppThemeColors.of(BuildContext context) {
     final brightness = Theme.of(context).brightness;
     return AppThemeColors._(brightness == Brightness.dark);
   }
 
-  /// Create from explicit brightness value
   factory AppThemeColors.fromBrightness(Brightness brightness) {
     return AppThemeColors._(brightness == Brightness.dark);
   }
 
-  // ============================================
-  // BACKGROUND GRADIENTS
-  // ============================================
   Color get bgStart =>
-      isDark ? DarkThemeColors.bgStart : LightThemeColors.bgStart;
-  Color get bgMid => isDark ? DarkThemeColors.bgMid : LightThemeColors.bgMid;
-  Color get bgEnd => isDark ? DarkThemeColors.bgEnd : LightThemeColors.bgEnd;
+      isDark ? LetbuyyColorTokens.slate950 : LetbuyyColorTokens.slate50;
+  Color get bgMid =>
+      isDark ? LetbuyyColorTokens.slate900 : LetbuyyColorTokens.slate100;
+  Color get bgEnd =>
+      isDark ? LetbuyyColorTokens.slate800 : LetbuyyColorTokens.slate200;
 
-  Color get meshAccent1 =>
-      isDark ? DarkThemeColors.meshAccent1 : LightThemeColors.meshAccent1;
-  Color get meshAccent2 =>
-      isDark ? DarkThemeColors.meshAccent2 : LightThemeColors.meshAccent2;
-  Color get meshAccent3 =>
-      isDark ? DarkThemeColors.meshAccent3 : LightThemeColors.meshAccent3;
+  Color get meshAccent1 => LetbuyyColorTokens.brandPrimary;
+  Color get meshAccent2 => LetbuyyColorTokens.brandPrimaryDark;
+  Color get meshAccent3 => LetbuyyColorTokens.brandPrimaryDarker;
 
-  // ============================================
-  // SEMANTIC ELEVATION SYSTEM
-  // ============================================
-  Color get elevation0 =>
-      isDark ? DarkThemeColors.elevation0 : LightThemeColors.elevation0;
+  Color get elevation0 => bgStart;
   Color get elevation1 =>
-      isDark ? DarkThemeColors.elevation1 : LightThemeColors.elevation1;
+      isDark ? LetbuyyColorTokens.slate900 : LetbuyyColorTokens.white;
   Color get elevation2 =>
-      isDark ? DarkThemeColors.elevation2 : LightThemeColors.elevation2;
+      isDark ? LetbuyyColorTokens.slate800 : LetbuyyColorTokens.slate50;
   Color get elevation3 =>
-      isDark ? DarkThemeColors.elevation3 : LightThemeColors.elevation3;
+      isDark ? LetbuyyColorTokens.slate700 : LetbuyyColorTokens.slate100;
 
-  // ============================================
-  // GLASSMORPHISM SYSTEM
-  // ============================================
   Color get glassLight =>
-      isDark ? DarkThemeColors.glassLight : LightThemeColors.glassLight;
-  Color get glassLightBorder => isDark
-      ? DarkThemeColors.glassLightBorder
-      : LightThemeColors.glassLightBorder;
-  double get glassLightBlur =>
-      isDark ? DarkThemeColors.glassLightBlur : LightThemeColors.glassLightBlur;
+      isDark ? Colors.white.withValues(alpha: 0.03) : Colors.black.withValues(alpha: 0.02);
+  Color get glassLightBorder =>
+      isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06);
+  double get glassLightBlur => 8;
 
   Color get glassMedium =>
-      isDark ? DarkThemeColors.glassMedium : LightThemeColors.glassMedium;
-  Color get glassMediumBorder => isDark
-      ? DarkThemeColors.glassMediumBorder
-      : LightThemeColors.glassMediumBorder;
-  double get glassMediumBlur => isDark
-      ? DarkThemeColors.glassMediumBlur
-      : LightThemeColors.glassMediumBlur;
+      isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03);
+  Color get glassMediumBorder =>
+      isDark ? Colors.white.withValues(alpha: 0.12) : Colors.black.withValues(alpha: 0.08);
+  double get glassMediumBlur => 16;
 
   Color get glassHeavy =>
-      isDark ? DarkThemeColors.glassHeavy : LightThemeColors.glassHeavy;
-  Color get glassHeavyBorder => isDark
-      ? DarkThemeColors.glassHeavyBorder
-      : LightThemeColors.glassHeavyBorder;
-  double get glassHeavyBlur =>
-      isDark ? DarkThemeColors.glassHeavyBlur : LightThemeColors.glassHeavyBlur;
+      isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05);
+  Color get glassHeavyBorder =>
+      isDark ? Colors.white.withValues(alpha: 0.18) : Colors.black.withValues(alpha: 0.12);
+  double get glassHeavyBlur => 24;
 
-  Color get glassAccent =>
-      isDark ? DarkThemeColors.glassAccent : LightThemeColors.glassAccent;
-  Color get glassAccentBorder => isDark
-      ? DarkThemeColors.glassAccentBorder
-      : LightThemeColors.glassAccentBorder;
+  Color get glassAccent => LetbuyyColorTokens.brandPrimary.withValues(
+        alpha: isDark ? 0.08 : 0.06,
+      );
+  Color get glassAccentBorder => LetbuyyColorTokens.brandPrimary.withValues(
+        alpha: isDark ? 0.25 : 0.20,
+      );
 
-  // ============================================
-  // CARDS & SURFACES
-  // ============================================
-  Color get card => isDark ? DarkThemeColors.card : LightThemeColors.card;
+  Color get card =>
+      isDark ? LetbuyyColorTokens.slate800 : LetbuyyColorTokens.white;
   Color get cardHover =>
-      isDark ? DarkThemeColors.cardHover : LightThemeColors.cardHover;
+      isDark ? LetbuyyColorTokens.slate700 : LetbuyyColorTokens.slate50;
   Color get cardBorder =>
-      isDark ? DarkThemeColors.cardBorder : LightThemeColors.cardBorder;
-  Color get surface =>
-      isDark ? DarkThemeColors.surface : LightThemeColors.surface;
-  Color get surfaceVariant =>
-      isDark ? DarkThemeColors.surfaceVariant : LightThemeColors.surfaceVariant;
+      isDark ? LetbuyyColorTokens.slate700 : LetbuyyColorTokens.slate200;
+  Color get surface => card;
+  Color get surfaceVariant => cardHover;
 
-  // ============================================
-  // TEXT COLORS
-  // ============================================
   Color get textPrimary =>
-      isDark ? DarkThemeColors.textPrimary : LightThemeColors.textPrimary;
+      isDark ? LetbuyyColorTokens.white : LetbuyyColorTokens.slate900;
   Color get textSecondary =>
-      isDark ? DarkThemeColors.textSecondary : LightThemeColors.textSecondary;
+      isDark ? LetbuyyColorTokens.slate400 : LetbuyyColorTokens.slate600;
   Color get textTertiary =>
-      isDark ? DarkThemeColors.textTertiary : LightThemeColors.textTertiary;
+      isDark ? LetbuyyColorTokens.slate500 : LetbuyyColorTokens.slate500;
   Color get textHint =>
-      isDark ? DarkThemeColors.textHint : LightThemeColors.textHint;
+      isDark ? LetbuyyColorTokens.slate600 : LetbuyyColorTokens.slate400;
 
-  // ============================================
-  // ACCENT COLORS (Same in both themes)
-  // ============================================
-  Color get accent => isDark ? DarkThemeColors.accent : LightThemeColors.accent;
-  Color get accentBlue =>
-      isDark ? DarkThemeColors.accentBlue : LightThemeColors.accentBlue;
-  Color get accentCyan =>
-      isDark ? DarkThemeColors.accentCyan : LightThemeColors.accentCyan;
-  Color get accentPink =>
-      isDark ? DarkThemeColors.accentPink : LightThemeColors.accentPink;
-  Color get accentTeal =>
-      isDark ? DarkThemeColors.accentTeal : LightThemeColors.accentTeal;
-  Color get success =>
-      isDark ? DarkThemeColors.success : LightThemeColors.success;
-  Color get warning =>
-      isDark ? DarkThemeColors.warning : LightThemeColors.warning;
-  Color get error => isDark ? DarkThemeColors.error : LightThemeColors.error;
+  Color get accent => LetbuyyColorTokens.brandPrimary;
+  Color get accentBlue => LetbuyyColorTokens.info;
+  Color get accentCyan => LetbuyyColorTokens.cyan;
+  Color get accentPink => LetbuyyColorTokens.accentPink;
+  Color get accentTeal => LetbuyyColorTokens.teal;
+  Color get success => LetbuyyColorTokens.success;
+  Color get warning => LetbuyyColorTokens.warning;
+  Color get error => LetbuyyColorTokens.error;
 
-  // ============================================
-  // DIVIDERS & BORDERS
-  // ============================================
   Color get divider =>
-      isDark ? DarkThemeColors.divider : LightThemeColors.divider;
-  Color get border => isDark ? DarkThemeColors.border : LightThemeColors.border;
+      isDark ? LetbuyyColorTokens.slate800 : LetbuyyColorTokens.slate200;
+  Color get border =>
+      isDark ? LetbuyyColorTokens.slate700 : LetbuyyColorTokens.slate300;
   Color get borderSubtle =>
-      isDark ? DarkThemeColors.borderSubtle : LightThemeColors.borderSubtle;
+      isDark ? LetbuyyColorTokens.slate800 : LetbuyyColorTokens.slate200;
 
-  // ============================================
-  // GRADIENT PRESETS
-  // ============================================
-  LinearGradient get heroGradient =>
-      isDark ? DarkThemeColors.heroGradient : LightThemeColors.heroGradient;
-  LinearGradient get successGradient => isDark
-      ? DarkThemeColors.successGradient
-      : LightThemeColors.successGradient;
-  LinearGradient get blueGradient =>
-      isDark ? DarkThemeColors.blueGradient : LightThemeColors.blueGradient;
-  LinearGradient get purpleGradient =>
-      isDark ? DarkThemeColors.purpleGradient : LightThemeColors.purpleGradient;
-  LinearGradient get orangeGradient =>
-      isDark ? DarkThemeColors.orangeGradient : LightThemeColors.orangeGradient;
-  BoxDecoration get meshGradient =>
-      isDark ? DarkThemeColors.meshGradient : LightThemeColors.meshGradient;
+  LinearGradient get heroGradient => const LinearGradient(
+        colors: [
+          LetbuyyColorTokens.brandPrimary,
+          LetbuyyColorTokens.brandPrimaryDark,
+          LetbuyyColorTokens.brandPrimaryDarker,
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
 
-  // ============================================
-  // ANIMATION & MOTION CONSTANTS (Same in both themes)
-  // ============================================
-  Duration get durationFast =>
-      isDark ? DarkThemeColors.durationFast : LightThemeColors.durationFast;
-  Duration get durationMedium =>
-      isDark ? DarkThemeColors.durationMedium : LightThemeColors.durationMedium;
-  Duration get durationSlow =>
-      isDark ? DarkThemeColors.durationSlow : LightThemeColors.durationSlow;
-  Duration get durationVeryLong => isDark
-      ? DarkThemeColors.durationVeryLong
-      : LightThemeColors.durationVeryLong;
-  Duration get staggerDelay =>
-      isDark ? DarkThemeColors.staggerDelay : LightThemeColors.staggerDelay;
-  Curve get defaultCurve =>
-      isDark ? DarkThemeColors.defaultCurve : LightThemeColors.defaultCurve;
-  Curve get bounceCurve =>
-      isDark ? DarkThemeColors.bounceCurve : LightThemeColors.bounceCurve;
-  Curve get smoothCurve =>
-      isDark ? DarkThemeColors.smoothCurve : LightThemeColors.smoothCurve;
+  LinearGradient get successGradient => const LinearGradient(
+        colors: [LetbuyyColorTokens.success, LetbuyyColorTokens.successStrong],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
 
-  // ============================================
-  // DECORATIONS (Presets)
-  // ============================================
-  BoxDecoration get backgroundGradient => isDark
-      ? DarkThemeColors.backgroundGradient
-      : LightThemeColors.backgroundGradient;
-  BoxDecoration get glassCard =>
-      isDark ? DarkThemeColors.glassCard : LightThemeColors.glassCard;
-  BoxDecoration get glassCardLight =>
-      isDark ? DarkThemeColors.glassCardLight : LightThemeColors.glassCardLight;
-  BoxDecoration get glassCardHeavy =>
-      isDark ? DarkThemeColors.glassCardHeavy : LightThemeColors.glassCardHeavy;
-  BoxDecoration get solidCard =>
-      isDark ? DarkThemeColors.solidCard : LightThemeColors.solidCard;
-  BoxDecoration get bentoCard =>
-      isDark ? DarkThemeColors.bentoCard : LightThemeColors.bentoCard;
+  LinearGradient get blueGradient => const LinearGradient(
+        colors: [LetbuyyColorTokens.info, LetbuyyPrimitiveTokens.blue700],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
 
-  BoxDecoration floatingAction(Color accentColor) => isDark
-      ? DarkThemeColors.floatingAction(accentColor)
-      : LightThemeColors.floatingAction(accentColor);
+  LinearGradient get purpleGradient => const LinearGradient(
+        colors: [
+          LetbuyyColorTokens.brandPrimary,
+          LetbuyyColorTokens.brandPrimaryDarker,
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
 
-  // ============================================
-  // SPECIAL COLORS FOR SPECIFIC COMPONENTS
-  // ============================================
+  LinearGradient get orangeGradient => const LinearGradient(
+        colors: [LetbuyyColorTokens.warning, LetbuyyPrimitiveTokens.amber800],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
 
-  /// Bottom navigation bar background
+  BoxDecoration get meshGradient => BoxDecoration(
+        gradient: RadialGradient(
+          center: const Alignment(-0.8, -0.6),
+          radius: 1.8,
+          colors: [
+            meshAccent1.withValues(alpha: isDark ? 0.15 : 0.08),
+            meshAccent2.withValues(alpha: isDark ? 0.08 : 0.04),
+            bgStart,
+          ],
+          stops: const [0.0, 0.4, 1.0],
+        ),
+      );
+
+  Duration get durationFast => const Duration(milliseconds: 150);
+  Duration get durationMedium => const Duration(milliseconds: 300);
+  Duration get durationSlow => const Duration(milliseconds: 450);
+  Duration get durationVeryLong => const Duration(milliseconds: 800);
+  Duration get staggerDelay => const Duration(milliseconds: 50);
+  Curve get defaultCurve => Curves.easeOutCubic;
+  Curve get bounceCurve => Curves.elasticOut;
+  Curve get smoothCurve => Curves.easeInOutCubic;
+
+  BoxDecoration get backgroundGradient => BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [bgStart, bgMid, bgEnd],
+          stops: const [0.0, 0.5, 1.0],
+        ),
+      );
+
+  BoxDecoration get glassCard => BoxDecoration(
+        color: isDark ? glassMedium : card,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: isDark ? glassMediumBorder : cardBorder),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+      );
+
+  BoxDecoration get glassCardLight => BoxDecoration(
+        color: isDark ? glassLight : surfaceVariant,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: isDark ? glassLightBorder : borderSubtle),
+      );
+
+  BoxDecoration get glassCardHeavy => BoxDecoration(
+        color: isDark ? glassHeavy : card,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: isDark ? glassHeavyBorder : cardBorder),
+      );
+
+  BoxDecoration get solidCard => BoxDecoration(
+        color: card,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: cardBorder),
+      );
+
+  BoxDecoration get bentoCard => BoxDecoration(
+        color: card,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: cardBorder),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+      );
+
+  BoxDecoration floatingAction(Color accentColor) => BoxDecoration(
+        color: accentColor,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: accentColor.withValues(alpha: isDark ? 0.3 : 0.24),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      );
+
   Color get bottomNavBackground =>
-      isDark ? const Color(0xFF0F172A) : const Color(0xFFFFFFFF);
-
-  /// Bottom navigation bar border
-  Color get bottomNavBorder => isDark
-      ? Colors.white.withValues(alpha: 0.1)
-      : Colors.black.withValues(alpha: 0.08);
-
-  /// Bottom navigation selected item
-  Color get bottomNavSelected => isDark
-      ? LetbuyyColorTokens.brandPrimary
-      : LetbuyyColorTokens.brandPrimary;
-
-  /// Bottom navigation unselected item
+      isDark ? LetbuyyColorTokens.slate900 : LetbuyyColorTokens.white;
+  Color get bottomNavBorder =>
+      isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.08);
+  Color get bottomNavSelected => LetbuyyColorTokens.brandPrimary;
   Color get bottomNavUnselected =>
-      isDark ? Colors.white.withValues(alpha: 0.5) : const Color(0xFF64748B);
+      isDark ? Colors.white.withValues(alpha: 0.5) : LetbuyyColorTokens.slate500;
+  Color get bottomNavSelectedBg =>
+      LetbuyyColorTokens.brandPrimary.withValues(alpha: 0.12);
 
-  /// Selected nav item background
-  Color get bottomNavSelectedBg => isDark
-      ? LetbuyyColorTokens.brandPrimary.withValues(alpha: 0.12)
-      : LetbuyyColorTokens.brandPrimary.withValues(alpha: 0.12);
+  Color get snackbarBackground =>
+      isDark ? elevation2 : LetbuyyColorTokens.slate800;
 
-  /// Snackbar background
-  Color get snackbarBackground => isDark ? elevation2 : const Color(0xFF1E293B);
-
-  /// Sheet handle color
-  Color get sheetHandle => isDark
-      ? Colors.white.withValues(alpha: 0.2)
-      : Colors.black.withValues(alpha: 0.15);
+  Color get sheetHandle =>
+      isDark ? Colors.white.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.15);
 }

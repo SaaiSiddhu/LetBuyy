@@ -62,8 +62,8 @@ test.describe('J2 App Store lifecycle federation', () => {
         tagline: 'Cross-app federation proof.',
         description: 'Submitted by the F8 Playwright journey and reviewed through operations.',
         category_id: categoryId,
-        app_url: 'https://partner-apps.staging.letbuyy.store/f8-federated-app',
-        privacy_url: 'https://partner-apps.staging.letbuyy.store/privacy',
+        app_url: 'https://partner-apps.staging.letbuyy.com/f8-federated-app',
+        privacy_url: 'https://partner-apps.staging.letbuyy.com/privacy',
         pricing_model: 'free',
       },
     });
@@ -93,7 +93,7 @@ test.describe('J2 App Store lifecycle federation', () => {
         code_challenge: codeChallenge,
         code_challenge_method: 'S256',
         state: 'f8-app-lifecycle',
-        webhook_url: 'https://api.staging.letbuyy.store/app-webhook-receiver',
+        webhook_url: 'https://api.staging.letbuyy.com/app-webhook-receiver',
         webhook_secret: 'staging-webhook-f8',
       },
     });

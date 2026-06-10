@@ -62,9 +62,6 @@ jobs:
           pnpm run validate:runtime
           pnpm run validate:cloudflare
           pnpm run validate:deployment
-          pnpm run validate:rollback
-          pnpm run validate:replay
-          pnpm run validate:queues
 
       - name: Typecheck
         run: pnpm run typecheck

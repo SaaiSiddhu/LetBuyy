@@ -16,6 +16,7 @@ import { Button, Input,
     useToast,
 } from '@letbuyy/ui'
 import { SettingsPane } from '@/components/settings/SettingsPane'
+import { ProviderModeBadge, normalizeProviderMode } from '@/components/ProviderModeBadge'
 
 type SanitizedPaymentSettings = {
     mode: 'shared' | 'ownAccount'
@@ -34,6 +35,7 @@ type PaymentConfig = {
     store_id: string
     online_payment_enabled: boolean
     cod_enabled: boolean
+    provider_mode: 'mock' | 'sandbox' | 'live'
     payment_settings: SanitizedPaymentSettings
 }
 
@@ -66,6 +68,7 @@ function normalizePaymentConfig(value: unknown): PaymentConfig {
         store_id: readString(data.store_id),
         online_payment_enabled: data.online_payment_enabled === true,
         cod_enabled: data.cod_enabled === true,
+        provider_mode: normalizeProviderMode(data.provider_mode) || 'mock',
         payment_settings: {
             mode: settings.mode === 'ownAccount' ? 'ownAccount' : 'shared',
             gateways: Array.isArray(settings.gateways) ? settings.gateways.filter((gateway): gateway is string => typeof gateway === 'string') : [],
@@ -264,6 +267,7 @@ export default function PaymentsSettingsPage() {
     }
 
     const razorpay = config?.payment_settings.razorpay
+    const providerMode = normalizeProviderMode(config?.provider_mode)
     const status = razorpay?.verified
         ? { label: 'Verified', variant: 'success' as const }
         : razorpay?.secret_configured
@@ -306,7 +310,12 @@ export default function PaymentsSettingsPage() {
                 <Section
                     title="Razorpay account"
                     description="Connect the seller Razorpay account used by storefront checkout and Flutter builder flows."
-                    action={<Badge label={status.label} variant={status.variant} />}
+                    action={(
+                        <div className="flex flex-wrap items-center justify-end gap-[var(--lb-space-2)]">
+                            <ProviderModeBadge mode={providerMode} />
+                            <Badge label={status.label} variant={status.variant} />
+                        </div>
+                    )}
                 >
                     <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
                         <PaymentSummary
@@ -391,7 +400,7 @@ export default function PaymentsSettingsPage() {
                     <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
                         <PaymentSummary
                             icon={<IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Provider mode"
+                            label="Account mode"
                             value={config?.payment_settings.mode === 'ownAccount' ? 'Seller Razorpay account' : 'Shared LetBuyy account'}
                         />
                         <PaymentSummary

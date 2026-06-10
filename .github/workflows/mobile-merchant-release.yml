@@ -1,0 +1,60 @@
+name: Mobile Merchant Signed Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_CHANNEL: stable
+
+jobs:
+  android-signed-release:
+    name: Android signed release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Restore Android release keystore
+        working-directory: apps/mobile/merchant-app
+        env:
+          LETBUYY_ANDROID_KEYSTORE_BASE64: ${{ secrets.LETBUYY_ANDROID_KEYSTORE_BASE64 }}
+          LETBUYY_ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/letbuyy-merchant-release.jks
+        run: |
+          test -n "$LETBUYY_ANDROID_KEYSTORE_BASE64"
+          printf '%s' "$LETBUYY_ANDROID_KEYSTORE_BASE64" | base64 --decode > "$LETBUYY_ANDROID_KEYSTORE_PATH"
+          test -s "$LETBUYY_ANDROID_KEYSTORE_PATH"
+
+      - name: Install Flutter dependencies
+        working-directory: apps/mobile/merchant-app
+        run: flutter pub get
+
+      - name: Analyze Flutter app
+        working-directory: apps/mobile/merchant-app
+        run: flutter analyze
+
+      - name: Run Flutter tests
+        working-directory: apps/mobile/merchant-app
+        run: flutter test
+
+      - name: Build signed Android App Bundle
+        working-directory: apps/mobile/merchant-app
+        env:
+          LETBUYY_ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/letbuyy-merchant-release.jks
+          LETBUYY_ANDROID_STORE_PASSWORD: ${{ secrets.LETBUYY_ANDROID_STORE_PASSWORD }}
+          LETBUYY_ANDROID_KEY_ALIAS: ${{ secrets.LETBUYY_ANDROID_KEY_ALIAS }}
+          LETBUYY_ANDROID_KEY_PASSWORD: ${{ secrets.LETBUYY_ANDROID_KEY_PASSWORD }}
+        run: flutter build appbundle --release --dart-define-from-file=dart-defines/production.json
+
+      - name: Upload Android release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: letbuyy-merchant-android-release
+          path: apps/mobile/merchant-app/build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error

@@ -75,11 +75,6 @@ for (const requiredPattern of [
 
 for (const requiredPackage of [
   '- "packages/shared-types"',
-  '- "packages/application-services"',
-  '- "packages/distributed-runtime"',
-  '- "packages/projection-runtime"',
-  '- "packages/orchestration"',
-  '- "packages/runtime-composition"',
   '- "packages/infrastructure"',
 ]) {
   reporter.assert(workspace.includes(requiredPackage), `pnpm workspace missing governed package ${requiredPackage}`);

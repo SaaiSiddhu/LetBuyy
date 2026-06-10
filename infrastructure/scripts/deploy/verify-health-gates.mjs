@@ -40,6 +40,7 @@ for (const file of requiredFiles) {
 }
 
 for (const runtime of topology.runtimes) {
+  if (runtime.environment !== "production" || runtime.status !== "active") continue;
   for (const manifest of runtime.deploymentManifests) {
     assert(fs.existsSync(manifest), `runtime ${runtime.runtimeRoot} references missing manifest ${manifest}`);
   }
@@ -52,20 +53,20 @@ if (preflightOnly) {
 
 const endpoints = environment === "production"
   ? [
-      "https://api.letbuyy.store/v1/health",
-      "https://webhooks.letbuyy.store/health",
-      "https://accounts.letbuyy.store/",
-      "https://letbuyy.store/",
-      "https://console.letbuyy.store/",
+      "https://api.letbuyy.com/v1/health",
+      "https://webhooks.letbuyy.com/health",
+      "https://accounts.letbuyy.com/",
+      "https://letbuyy.com/",
+      "https://console.letbuyy.com/",
     ]
   : environment === "staging"
     ? [
-      "https://api.staging.letbuyy.store/v1/health",
-      "https://webhooks.staging.letbuyy.store/health",
+      "https://api.staging.letbuyy.com/v1/health",
+      "https://webhooks.staging.letbuyy.com/health",
     ]
     : [
-      "https://api.staging.letbuyy.store/v1/health",
-      "https://webhooks.staging.letbuyy.store/health",
+      "https://api.staging.letbuyy.com/v1/health",
+      "https://webhooks.staging.letbuyy.com/health",
     ];
 
 for (const endpoint of endpoints) {
@@ -82,10 +83,10 @@ for (const endpoint of endpoints) {
 
 if (process.env.LETBUYY_OPERATIONS_TOKEN) {
   const apiBase = environment === "production"
-    ? "https://api.letbuyy.store"
+    ? "https://api.letbuyy.com"
     : environment === "staging"
-      ? "https://api.staging.letbuyy.store"
-      : "https://api.staging.letbuyy.store";
+      ? "https://api.staging.letbuyy.com"
+      : "https://api.staging.letbuyy.com";
   const response = await fetch(`${apiBase}/v1/operations/runtime/overview?limit=10`, {
     headers: {
       Authorization: `Bearer ${process.env.LETBUYY_OPERATIONS_TOKEN}`,

@@ -122,7 +122,7 @@ export default function PortfolioComingSoon({ storeName, tagline, logoUrl, launc
                 {/* PROGRESS */}
                 {ok && <div style={{ width: '100%', maxWidth: 'min(280px,70vw)', animation: 'fu 1s cubic-bezier(.16,1,.3,1) .65s both' }}><div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3, fontSize: 'clamp(7px,1vw,10px)', fontWeight: 600, color: 'rgba(255,255,255,.25)' }}><span>Portfolio Setup</span><span style={{ color: 'rgb(253 164 175)' }}>82%</span></div><div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,.04)', overflow: 'hidden' }}><div style={{ width: '82%', height: '100%', borderRadius: 2, background: 'linear-gradient(90deg,rgb(244 63 94),rgb(251 113 133),rgb(253 164 175))', position: 'relative' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent)', animation: 'sh 2.5s linear infinite' }} /></div></div></div>}
 
-                <p style={{ fontSize: 'clamp(8px,1.1vw,11px)', color: 'rgba(255,255,255,.18)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .7s both' : 'none' }}>Powered by <a href="https://letbuyy.store" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(253,164,175,.45)', textDecoration: 'none', fontWeight: 700 }}>LetBuyy</a></p>
+                <p style={{ fontSize: 'clamp(8px,1.1vw,11px)', color: 'rgba(255,255,255,.18)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .7s both' : 'none' }}>Powered by <a href="https://letbuyy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(253,164,175,.45)', textDecoration: 'none', fontWeight: 700 }}>LetBuyy</a></p>
             </div>
 
             <style>{`

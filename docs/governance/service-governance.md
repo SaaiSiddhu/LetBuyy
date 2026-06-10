@@ -31,7 +31,7 @@ The API gateway keeps its existing `src/schemas/*.schema.ts` import paths, but t
 - theme contracts from `@letbuyy/theme-engine`
 - event/webhook/usage contracts from `@letbuyy/event-core`
 - billing/subscription contracts from `@letbuyy/billing-core`
-- AI payload contracts from `@letbuyy/app-engine`
+- AI payload contracts from explicit service-local facades until a governed active package owns reusable AI contracts
 
 Product and order service command types are package-owned. `ProductService` consumes commerce command contracts, and `OrderService` consumes checkout command contracts. Service-local interfaces are allowed for database row mapping and provider adapter internals only.
 

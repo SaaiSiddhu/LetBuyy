@@ -11,7 +11,8 @@ import 'package:share_plus/share_plus.dart';
 import '../../config/app_config.dart';
 import '../../services/order_service.dart';
 import '../../theme/app_theme_colors.dart';
-import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
+import '../../widgets/shared/provider_mode_badge.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   const OrderDetailScreen({
@@ -1227,6 +1228,24 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       setDialogState(() => createShippingLabel = value),
                 ),
                 if (createShippingLabel) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Text(
+                        'Carrier provider',
+                        style: TextStyle(
+                          color: colors.textSecondary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const ProviderModeBadge(
+                        mode: ProviderMode.sandbox,
+                        compact: true,
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     value: logisticsProvider,

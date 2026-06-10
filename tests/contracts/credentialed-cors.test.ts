@@ -24,28 +24,28 @@ function read(path: string): string {
 
 test('credentialed CORS reflects only exact platform or configured tenant origins', () => {
     assert.equal(
-        resolveCredentialedCorsOrigin('https://accounts.letbuyy.store', {}),
-        'https://accounts.letbuyy.store',
+        resolveCredentialedCorsOrigin('https://accounts.letbuyy.com', {}),
+        'https://accounts.letbuyy.com',
     );
     assert.equal(
         resolveCredentialedCorsOrigin('https://merchant.example.com', {
-            CORS_CREDENTIAL_ORIGINS: 'https://merchant.example.com, https://tenant.letbuyy.store/',
+            CORS_CREDENTIAL_ORIGINS: 'https://merchant.example.com, https://tenant.letbuyy.com/',
         }),
         'https://merchant.example.com',
     );
     assert.equal(
-        resolveCredentialedCorsOrigin('https://accounts-staging.letbuyy.store', {}),
+        resolveCredentialedCorsOrigin('https://accounts-staging.letbuyy.com', {}),
         DEFAULT_CREDENTIAL_ORIGIN,
         'staging origins must be configured by environment, not hardcoded into production source',
     );
     assert.equal(
-        resolveCredentialedCorsOrigin('https://accounts-staging.letbuyy.store', {
-            CORS_CREDENTIAL_ORIGINS: 'https://accounts-staging.letbuyy.store',
+        resolveCredentialedCorsOrigin('https://accounts-staging.letbuyy.com', {
+            CORS_CREDENTIAL_ORIGINS: 'https://accounts-staging.letbuyy.com',
         }),
-        'https://accounts-staging.letbuyy.store',
+        'https://accounts-staging.letbuyy.com',
     );
     assert.equal(
-        resolveCredentialedCorsOrigin('https://random-store.letbuyy.store', {}),
+        resolveCredentialedCorsOrigin('https://random-store.letbuyy.com', {}),
         DEFAULT_CREDENTIAL_ORIGIN,
         'unconfigured tenant subdomains must not receive credentialed CORS reflection',
     );
@@ -56,8 +56,8 @@ test('credentialed CORS reflects only exact platform or configured tenant origin
         DEFAULT_CREDENTIAL_ORIGIN,
         'configured origins must be HTTPS browser origins',
     );
-    assert.deepEqual(parseCredentialOrigins(' https://tenant.letbuyy.store/ , javascript:alert(1), https://store.example.com/path '), [
-        'https://tenant.letbuyy.store',
+    assert.deepEqual(parseCredentialOrigins(' https://tenant.letbuyy.com/ , javascript:alert(1), https://store.example.com/path '), [
+        'https://tenant.letbuyy.com',
     ]);
 });
 

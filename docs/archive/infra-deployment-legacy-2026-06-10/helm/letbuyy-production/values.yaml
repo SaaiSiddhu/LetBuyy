@@ -1,0 +1,17 @@
+environment: production
+primaryRegion: ap-south-1
+failoverRegion: ap-southeast-1
+
+runtimeHealthProbe:
+  schedule: "*/1 * * * *"
+  image: curlimages/curl:8.11.1
+  urls:
+    - https://api.letbuyy.com/v1/health
+    - https://webhooks.letbuyy.com/health
+    - https://accounts.letbuyy.com/
+    - https://letbuyy.com/
+    - https://console.letbuyy.com/
+
+serviceMonitor:
+  enabled: true
+  interval: 30s

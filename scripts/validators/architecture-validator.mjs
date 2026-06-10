@@ -4,13 +4,14 @@ import {
   createReporter,
   deprecatedTrackedPrefixes,
   domainPackageRoots,
-  executionPackageRoots,
   exists,
   forbiddenRuntimeRoots,
   forbiddenRuntimeSubtrees,
   getTrackedFiles,
+  rejectedPackageRoots,
   startsWithPrefix,
 } from "./governance-common.mjs";
+import fs from "node:fs";
 
 const reporter = createReporter("Architecture validator");
 const trackedFiles = getTrackedFiles();
@@ -18,6 +19,13 @@ const trackedFiles = getTrackedFiles();
 const mandatoryGovernanceFiles = [
   "AGENTS.md",
   ".gitattributes",
+  "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md",
+  "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_AGENTS_V2.md",
+  "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md",
+  "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_LEGACY_ELIMINATION_MASTER_PLAN.md",
+  "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_FOUNDATION_ROADMAP.md",
+  "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_UI_UX_GOVERNANCE.md",
+  "docs/archive/root-governance-2026-06-10/directories/GOVERNANCE_HARDENING_2026_06_10/GOVERNANCE_HARDENING_PLAN.md",
   "docs/governance/repository-topology.md",
   "docs/governance/runtime-governance.md",
   "docs/governance/dependency-governance.md",
@@ -32,23 +40,9 @@ const mandatoryGovernanceFiles = [
   "docs/governance/mobile-governance.md",
   "docs/governance/observability-governance.md",
   "docs/governance/theme-runtime-governance.md",
-  "docs/governance/runtime-composition-governance.md",
-  "docs/governance/execution-architecture-governance.md",
-  "docs/governance/application-services-governance.md",
   "docs/governance/infrastructure-governance.md",
-  "docs/governance/orchestration-governance.md",
-  "docs/governance/query-layer-governance.md",
   "docs/governance/event-driven-governance.md",
-  "docs/governance/event-runtime-governance.md",
   "docs/governance/outbox-governance.md",
-  "docs/governance/workflow-governance.md",
-  "docs/governance/execution-observability-governance.md",
-  "docs/governance/distributed-execution-governance.md",
-  "docs/governance/event-replay-governance.md",
-  "docs/governance/execution-context-governance.md",
-  "docs/governance/query-execution-governance.md",
-  "docs/governance/workflow-recovery-governance.md",
-  "docs/governance/async-execution-governance.md",
   "docs/governance/storefront-execution-governance.md",
   "docs/governance/provider-isolation-governance.md",
   "docs/governance/tooling-governance.md",
@@ -61,7 +55,6 @@ const mandatoryGovernanceFiles = [
   "scripts/validate-governance.mjs",
   "scripts/validate-architecture.mjs",
   "scripts/validators/runtime-manifest-validator.mjs",
-  "scripts/validators/execution-layer-validator.mjs",
   "scripts/validators/dependency-graph-validator.mjs",
   "scripts/validators/provider-isolation-validator.mjs",
   "scripts/validators/tooling-governance-validator.mjs",
@@ -79,9 +72,25 @@ for (const relPath of domainPackageRoots) {
   reporter.assert(exists(`${relPath}/AGENTS.md`), `Missing domain package ownership file: ${relPath}/AGENTS.md`);
 }
 
-for (const relPath of executionPackageRoots) {
-  reporter.assert(exists(relPath), `Missing governed execution package root: ${relPath}`);
-  reporter.assert(exists(`${relPath}/AGENTS.md`), `Missing execution package ownership file: ${relPath}/AGENTS.md`);
+for (const relPath of rejectedPackageRoots) {
+  const liveImporters = trackedFiles.filter(
+    (file) =>
+      /^(apps|services)\//.test(file) &&
+      /\.(ts|tsx|js|jsx|mjs|cjs|mts|cts|dart)$/.test(file) &&
+      !file.includes("__tests__") &&
+      !file.includes("/test/") &&
+      !startsWithPrefix(file, relPath),
+  );
+  const packageName = `@letbuyy/${relPath.split("/").pop()}`;
+  const offenders = liveImporters.filter((file) => {
+    const text = exists(file) ? fs.readFileSync(file, "utf8") : "";
+    return text.includes(packageName) || text.includes(relPath);
+  });
+
+  reporter.assert(
+    offenders.length === 0,
+    `Rejected package is imported by active runtime code: ${relPath} (${offenders.slice(0, 5).join(", ")})`,
+  );
 }
 
 for (const relPath of mandatoryGovernanceFiles) {

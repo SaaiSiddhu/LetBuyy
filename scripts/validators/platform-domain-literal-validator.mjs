@@ -1,80 +1,71 @@
-import { existsSync, readFileSync } from 'node:fs';
-import path from 'node:path';
-import ts from 'typescript';
+import path from "node:path";
+import {
+  createReporter,
+  listWorkspaceFiles,
+  readFile,
+  textExtensions,
+} from "./governance-common.mjs";
 
-const repoRoot = process.cwd();
+const reporter = createReporter("Platform domain literal validator");
 
-const tsTargets = [
-  'apps/marketing-site/src/components/Header.tsx',
-  'apps/theme-marketplace/src/lib/public-urls.ts',
-  'apps/storefront-runtime/src/lib/api/browser-client.ts',
-  'apps/storefront-runtime/src/lib/api/base-url.ts',
-  'apps/storefront-runtime/src/lib/seo.ts',
-  'packages/shared-types/src/brand.ts',
-  'services/api-gateway/src/routes/auth.ts',
-  'services/api-gateway/src/routes/onboarding.ts',
-  'services/api-gateway/src/routes/payments.ts',
-  'services/api-gateway/src/routes/storefront/customer-engagement-routes.ts',
-  'services/api-gateway/src/middleware/permission.ts',
-  'services/api-gateway/src/middleware/store-context.ts',
+const scanRoots = [
+  ".github",
+  "apps",
+  "services",
+  "packages",
+  "config",
+  "infrastructure",
+  "scripts",
+  "tests",
+  "docs/governance",
+  "docs/operations",
 ];
 
-const textTargets = [
-  'apps/mobile/merchant-app/lib/config/app_config.dart',
-  'apps/mobile/merchant-app/dart-defines/production.json',
-  'packages/dart/core/lib/src/constants/api_constants.dart',
+const allowedTokens = [
+  /^com\.letbuyy\.store(?:[./A-Za-z0-9_-]*)?$/,
+  /^group\.com\.letbuyy\.store(?:[./A-Za-z0-9_-]*)?$/,
+  /^letbuyy\.storeId$/,
 ];
 
-const allowedStringLiterals = [
-  /^letbuyy\.store$/,
-  /noreply@letbuyy\.store/,
-  /support@letbuyy\.store/,
-];
-
-function isAllowedLiteral(value) {
-  return allowedStringLiterals.some((pattern) => pattern.test(value));
+function tokenAt(text, index) {
+  let start = index;
+  let end = index + "letbuyy.store".length;
+  while (start > 0 && /[A-Za-z0-9._~:/?#[\]@!$&'()*+,;=%-]/.test(text[start - 1])) start -= 1;
+  while (end < text.length && /[A-Za-z0-9._~:/?#[\]@!$&'()*+,;=%-]/.test(text[end])) end += 1;
+  return text.slice(start, end);
 }
 
-function validateTsFile(relativePath) {
-  const absolutePath = path.join(repoRoot, relativePath);
-  if (!existsSync(absolutePath)) return [];
-
-  const text = readFileSync(absolutePath, 'utf8');
-  const sourceFile = ts.createSourceFile(absolutePath, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
-  const violations = [];
-
-  function visit(node) {
-    if (ts.isStringLiteralLike(node) && node.text.includes('letbuyy.store') && !isAllowedLiteral(node.text)) {
-      const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
-      violations.push(`${relativePath}:${line}: ${node.text}`);
-    }
-
-    ts.forEachChild(node, visit);
+function isAllowedToken(token) {
+  const normalized = token.replace(/^[^A-Za-z0-9]+/, "").replace(/[^A-Za-z0-9_./-]+$/, "");
+  if (
+    !normalized.includes("://") &&
+    !normalized.includes("@") &&
+    (normalized.includes("com.letbuyy.store") || normalized.includes("group.com.letbuyy.store"))
+  ) {
+    return true;
   }
-
-  visit(sourceFile);
-  return violations;
+  if (normalized.includes("letbuyy.storeId")) return true;
+  return allowedTokens.some((pattern) => pattern.test(normalized));
 }
 
-function validateTextFile(relativePath) {
-  const absolutePath = path.join(repoRoot, relativePath);
-  if (!existsSync(absolutePath)) return [];
+const offenders = [];
+for (const file of listWorkspaceFiles(scanRoots)) {
+  if (file === "scripts/validators/platform-domain-literal-validator.mjs") continue;
+  if (!textExtensions.has(path.extname(file))) continue;
 
-  const text = readFileSync(absolutePath, 'utf8');
-  return text.includes('letbuyy.store') ? [`${relativePath}: contains letbuyy.store`] : [];
-}
+  const text = readFile(file);
+  for (const match of text.matchAll(/letbuyy\.store/g)) {
+    const token = tokenAt(text, match.index || 0);
+    if (isAllowedToken(token)) continue;
 
-const violations = [
-  ...tsTargets.flatMap(validateTsFile),
-  ...textTargets.flatMap(validateTextFile),
-];
-
-if (violations.length > 0) {
-  console.error('Functional platform domain literals must be env-driven before .com cutover:');
-  for (const violation of violations) {
-    console.error(` - ${violation}`);
+    const line = text.slice(0, match.index).split("\n").length;
+    offenders.push(`${file}:${line}: ${token}`);
   }
-  process.exit(1);
 }
 
-console.log('Platform domain literal validator passed.');
+reporter.assert(
+  offenders.length === 0,
+  `Functional letbuyy.store literals must be migrated to letbuyy.com: ${offenders.slice(0, 20).join("; ")}`,
+);
+
+reporter.finish("functional platform domain literals checked");

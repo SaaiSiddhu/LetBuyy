@@ -58,13 +58,16 @@ export const canonicalAppRoots = [
   "apps/storefront-runtime",
   "apps/merchant-control-plane",
   "apps/identity-platform",
+  "apps/marketing-site",
+  "apps/platform-console",
+  "apps/mobile/merchant-app",
+];
+
+export const frozenAppRoots = [
   "apps/app-marketplace",
   "apps/developer-portal",
   "apps/theme-marketplace",
-  "apps/marketing-site",
-  "apps/platform-console",
   "apps/platform-operations-portal",
-  "apps/mobile/merchant-app",
 ];
 
 export const reservedMobileRuntimeRoots = [
@@ -94,14 +97,17 @@ export const forbiddenRuntimeSubtrees = [
 export const canonicalServiceRoots = [
   "services/api-gateway",
   "services/mobile-bff",
-  "services/checkout-runtime",
   "services/webhook-service",
   "services/queue-workers",
-  "services/notification-service",
+];
+
+export const reservedServiceRoots = [
+  "services/checkout-runtime",
   "services/search-service",
   "services/media-service",
-  "services/analytics-pipeline",
+  "services/notification-service",
   "services/event-bus",
+  "services/analytics-pipeline",
 ];
 
 export const canonicalRuntimeRoots = [
@@ -123,18 +129,21 @@ export const domainPackageRoots = [
   "packages/tenant-core",
   "packages/cms-core",
   "packages/theme-engine",
-  "packages/app-engine",
   "packages/event-core",
-  "packages/search-core",
   "packages/notification-core",
   "packages/billing-core",
   "packages/shared-types",
 ];
 
-export const executionPackageRoots = [
+export const infrastructurePackageRoots = [
+  "packages/infrastructure",
+];
+
+export const rejectedPackageRoots = [
+  "packages/app-engine",
   "packages/application-services",
   "packages/distributed-runtime",
-  "packages/infrastructure",
+  "packages/extension-host",
   "packages/orchestration",
   "packages/projection-runtime",
   "packages/runtime-composition",
@@ -146,9 +155,8 @@ export const workspacePackageRoots = [
   "packages/typescript/ui",
   "packages/dart/core",
   "packages/dart/models",
-  "packages/dart/services",
   "packages/dart/ui_kit",
-  ...executionPackageRoots,
+  ...infrastructurePackageRoots,
   ...domainPackageRoots,
 ];
 
@@ -181,6 +189,7 @@ export function getTrackedFiles() {
   return execGit(["ls-files", "-z"])
     .split("\0")
     .filter(Boolean)
+    .filter((file) => fs.existsSync(path.join(root, file)))
     .sort();
 }
 

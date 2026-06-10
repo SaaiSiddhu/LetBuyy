@@ -5,7 +5,7 @@
 # Target topology per docs/governance/domain-topology-governance.md.
 # This is the PARALLEL STAND-UP zone (migration §13 step 1): it brings the
 # platform control plane up on letbuyy.com alongside the existing
-# letbuyy.store topology. Storefronts stay on letbuyy.store (see dns.tf) and
+# letbuyy.com topology. Storefronts stay on letbuyy.com (see dns.tf) and
 # never move.
 #
 # PREREQUISITES (account actions — not Terraform):
@@ -57,6 +57,7 @@ locals {
     developer = "developer-portal"
     console   = "platform-console (internal-restricted)"
     team      = "platform-operations-portal (internal-restricted)"
+    checkout  = "storefront-runtime hosted checkout origin"
   }
 }
 

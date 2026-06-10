@@ -8,6 +8,7 @@ import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { OAuthBrandIcon } from '@/components/OAuthBrandIcon'
 import { Button, Input } from '@letbuyy/ui'
+import { useAuthTheme } from '@/lib/useAuthTheme'
 
 type Lang = 'en' | 'hi' | 'ta'
 type Step = 'email' | 'otp' | 'password'
@@ -172,7 +173,7 @@ function SignupContent() {
     const [emailTouched, setEmailTouched] = useState(false)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const [isDark, setIsDark] = useState(false)
+    const { isDark, toggleTheme } = useAuthTheme()
     const [lang, setLang] = useState<Lang>('en')
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
     const turnstileEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
@@ -197,8 +198,6 @@ function SignupContent() {
     const emailHelper = emailFormatValid ? t.emailValid : t.emailHelper
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem('letbuyy-theme')
-        setIsDark(savedTheme === 'dark')
         const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
         setLang(savedLang)
 
@@ -224,13 +223,6 @@ function SignupContent() {
         return () => clearInterval(interval)
     }, [step, canResend])
 
-    const toggleTheme = () => {
-        const newTheme = !isDark
-        setIsDark(newTheme)
-        localStorage.setItem('letbuyy-theme', newTheme ? 'dark' : 'light')
-        document.documentElement.classList.toggle('dark', newTheme)
-        document.documentElement.style.colorScheme = newTheme ? 'dark' : 'light'
-    }
 
     const cycleLang = () => {
         const langs: Lang[] = ['en', 'hi', 'ta']
@@ -528,7 +520,7 @@ function SignupContent() {
                                 </p>
                             </div>
 
-                            {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
+                            {error && <div className="auth-error" role="alert" aria-live="assertive"><AuthIcon name="error" />{error}</div>}
 
                             <Button unstyled
                                 type="submit"
@@ -583,7 +575,7 @@ function SignupContent() {
                             <strong>{email}</strong>
                         </p>
 
-                        <div className="auth-otp-inputs" onPaste={handleOtpPaste}>
+                        <div className="auth-otp-inputs" onPaste={handleOtpPaste} role="group" aria-label={t.otpTitle}>
                             {otp.map((digit, i) => (
                                 <Input unstyled
                                     key={i}
@@ -595,12 +587,13 @@ function SignupContent() {
                                     onChange={e => handleOtpChange(i, e.target.value)}
                                     onKeyDown={e => handleOtpKeyDown(i, e)}
                                     className="auth-otp-input"
+                                    aria-label={`Digit ${i + 1} of ${otp.length}`}
                                     autoFocus={i === 0}
                                 />
                             ))}
                         </div>
 
-                        {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
+                        {error && <div className="auth-error" role="alert" aria-live="assertive"><AuthIcon name="error" />{error}</div>}
 
                         <Button unstyled
                             type="button"
@@ -710,9 +703,9 @@ function SignupContent() {
                                 </div>
                             </div>
 
-                            {confirmPassword && !pwMatch && <div className="auth-error"><AuthIcon name="error" />{t.pwMismatch}</div>}
+                            {confirmPassword && !pwMatch && <div className="auth-error" role="alert" aria-live="assertive"><AuthIcon name="error" />{t.pwMismatch}</div>}
 
-                            {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
+                            {error && <div className="auth-error" role="alert" aria-live="assertive"><AuthIcon name="error" />{error}</div>}
 
                             <Button unstyled
                                 type="submit"

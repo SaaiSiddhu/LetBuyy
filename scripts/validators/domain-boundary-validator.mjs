@@ -49,10 +49,6 @@ const domainPackages = {
     packageName: "@letbuyy/notification-core",
     requiredExports: ["NotificationDispatchSchema", "NotificationTemplate", "EventNotificationMapping"],
   },
-  "packages/search-core": {
-    packageName: "@letbuyy/search-core",
-    requiredExports: ["SearchQuerySchema", "SearchDocument", "SearchIndexingJob", "RankingPolicy"],
-  },
   "packages/billing-core": {
     packageName: "@letbuyy/billing-core",
     requiredExports: ["BillingPlanSchema", "CreateSubscriptionSchema", "CreateSubscriptionOrderSchema", "SubscriptionContract", "InvoiceDto"],

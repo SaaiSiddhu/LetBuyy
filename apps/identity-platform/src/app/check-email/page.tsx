@@ -6,6 +6,7 @@ import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { Banner, Button, ProgressBar } from '@letbuyy/ui'
+import { useAuthTheme } from '@/lib/useAuthTheme'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -77,7 +78,7 @@ function CheckEmailContent() {
     const [countdown, setCountdown] = useState(60)
     const [canResend, setCanResend] = useState(false)
     const [resending, setResending] = useState(false)
-    const [isDark, setIsDark] = useState(false)
+    const { isDark, toggleTheme } = useAuthTheme()
     const [lang, setLang] = useState<Lang>('en')
 
     const t = translations[lang]
@@ -87,8 +88,6 @@ function CheckEmailContent() {
     const resendProgress = Math.max(0, Math.min(60, 60 - countdown))
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem('letbuyy-theme')
-        setIsDark(savedTheme === 'dark')
         const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
         setLang(savedLang)
     }, [])
@@ -102,13 +101,6 @@ function CheckEmailContent() {
         }
     }, [countdown])
 
-    const toggleTheme = () => {
-        const newTheme = !isDark
-        setIsDark(newTheme)
-        localStorage.setItem('letbuyy-theme', newTheme ? 'dark' : 'light')
-        document.documentElement.classList.toggle('dark', newTheme)
-        document.documentElement.style.colorScheme = newTheme ? 'dark' : 'light'
-    }
 
     const cycleLang = () => {
         const langs: Lang[] = ['en', 'hi', 'ta']

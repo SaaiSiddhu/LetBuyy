@@ -73,15 +73,25 @@ function allowed(ruleId, file, source) {
   return matched;
 }
 
-const files = [
-  ...getTrackedFiles().filter(shouldScan),
-  ...readExtraFiles(),
+const fileEntries = [
+  ...getTrackedFiles().filter(shouldScan).map((file) => ({ file, required: false })),
+  ...readExtraFiles().map((file) => ({ file, required: true })),
 ];
 
-for (const file of [...new Set(files)].sort()) {
+const files = [];
+const seenFiles = new Set();
+for (const entry of fileEntries) {
+  if (seenFiles.has(entry.file)) continue;
+  seenFiles.add(entry.file);
+  files.push(entry);
+}
+
+for (const { file, required } of files.sort((a, b) => a.file.localeCompare(b.file))) {
   const absPath = path.isAbsolute(file) ? file : path.join(root, file);
   if (!fs.existsSync(absPath)) {
-    reporter.assert(false, `Configured anti-fabrication scan file does not exist: ${file}`);
+    if (required) {
+      reporter.assert(false, `Configured anti-fabrication scan file does not exist: ${file}`);
+    }
     continue;
   }
 

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ArrowRight, BookOpen, Code2, LayoutDashboard, Puzzle, ShieldCheck } from "@letbuyy/ui";
+import { ArrowRight, BookOpen, Code2, LayoutDashboard, Puzzle, ShieldCheck, ThemeToggleButton } from "@letbuyy/ui";
 
 const navItems = [
   { href: "/docs", label: "Docs" },
@@ -24,6 +24,7 @@ export function PortalHeader() {
             </Link>
           ))}
         </nav>
+        <ThemeToggleButton label="Toggle developer theme" />
       </div>
     </header>
   );

@@ -88,7 +88,7 @@ export default async function ConsoleLoginPage({ searchParams }: { searchParams:
                             type="email"
                             autoComplete="email"
                             required
-                            placeholder="admin@letbuyy.store"
+                            placeholder="admin@letbuyy.com"
                             className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm text-zinc-100 outline-none focus:border-[var(--lb-color-primary)] focus:ring-2 focus:ring-[var(--lb-color-primary-subtle)]"
                         />
                     </div>

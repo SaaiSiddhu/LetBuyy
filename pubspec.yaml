@@ -13,7 +13,6 @@ workspace:
   - packages/dart/core
   - packages/dart/api_client
   - packages/dart/models
-  - packages/dart/services
   - packages/dart/ui_kit
 
 

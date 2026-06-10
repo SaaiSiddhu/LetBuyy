@@ -41,7 +41,7 @@ test('queue worker persists a Cloudflare batch with batched DB writes', () => {
 
 test('queue worker drains platform queues once per Cloudflare batch', () => {
   const queueHandlerBlock = blockAfter(queueWorkerSource, 'async queue(batch, env)');
-  assert.match(queueHandlerBlock, /const deliveries = normalizeDeliveries\(batch\)/);
+  assert.match(queueHandlerBlock, /const deliveries = await normalizeDeliveries\(env, batch\)/);
   assert.match(queueHandlerBlock, /await persistQueueBatch\(env, deliveries\)/);
   assert.match(queueHandlerBlock, /await recordQueueBatchMetric\(env, batch, deliveries\)/);
   assert.match(queueHandlerBlock, /consumePlatformQueuesForCloudflareQueue\(env, \{/);

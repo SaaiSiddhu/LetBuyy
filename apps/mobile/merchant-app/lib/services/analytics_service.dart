@@ -61,6 +61,18 @@ class StoreAnalytics {
   }
 }
 
+class MobileDashboardSnapshot {
+  const MobileDashboardSnapshot({
+    required this.analytics,
+    required this.payoutSummary,
+    required this.providerMode,
+  });
+
+  final StoreAnalytics analytics;
+  final Map<String, dynamic>? payoutSummary;
+  final String? providerMode;
+}
+
 /// Daily statistics for chart visualization.
 class DailyStats {
   final DateTime date;
@@ -154,7 +166,9 @@ class StoreAnalyticsComparison {
     final revenueComparison = _jsonMapOrEmpty(revenue['comparison']);
     return StoreAnalyticsComparison.fromJson({
       ...comparison,
-      'previousDailyStats': asJsonList(revenueComparison['chart']),
+      'previousDailyStats': asJsonList(
+        revenueComparison['chart'] ?? const <dynamic>[],
+      ),
     });
   }
 
@@ -407,6 +421,75 @@ class AnalyticsService extends ChangeNotifier {
       return _analytics!;
     } catch (e) {
       debugPrint('❌ getStoreAnalytics error: $e');
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<MobileDashboardSnapshot> getMobileDashboardSnapshot(
+    String storeId, {
+    String period = '30d',
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final response = await _api.requestJson(
+        '/mobile/dashboard',
+        options: ApiRequestOptions(
+          query: {'store_id': storeId, 'period': period},
+        ),
+      );
+      final analyticsPayload = _jsonMapOrEmpty(response['analytics']);
+      final dashboard = _jsonMapOrEmpty(analyticsPayload['dashboard']);
+      final orderBreakdown = _jsonMapOrEmpty(
+        analyticsPayload['order_breakdown'],
+      );
+      final revenue = _jsonMapOrEmpty(analyticsPayload['revenue']);
+      final trafficSources = _jsonMapOrEmpty(
+        analyticsPayload['traffic_sources'],
+      );
+      final topProductRows = asJsonList(
+        analyticsPayload['top_products'],
+      ).map((item) => asJsonMap(item)).toList(growable: false);
+      final summary = asJsonMap(dashboard['summary']);
+      final revenueMetric = asJsonMap(summary['revenue']);
+      final ordersMetric = asJsonMap(summary['orders']);
+      final ordersByStatus = _intMap(asJsonMap(orderBreakdown['breakdown']));
+      final dailyStats = asJsonList(revenue['chart'])
+          .map((item) => DailyStats.fromJson(asJsonMap(item)))
+          .toList(growable: false);
+
+      _analytics = StoreAnalytics(
+        totalRevenue: _number(revenueMetric['value']),
+        totalOrders: _integer(ordersMetric['value']),
+        totalProducts: _integer(summary['products']),
+        averageOrderValue: _number(summary['avg_order_value']),
+        ordersByStatus: ordersByStatus,
+        dailyStats: dailyStats,
+        topProducts: topProductRows.map(TopProduct.fromJson).toList(),
+        trafficSources: asJsonList(trafficSources['sources'])
+            .map((item) => TrafficSourceEntry.fromJson(asJsonMap(item)))
+            .toList(growable: false),
+        comparison: StoreAnalyticsComparison.fromGateway(
+          dashboard: dashboard,
+          revenue: revenue,
+        ),
+      );
+
+      final payoutSummary = response['payout_summary'] is Map
+          ? Map<String, dynamic>.from(response['payout_summary'] as Map)
+          : null;
+
+      return MobileDashboardSnapshot(
+        analytics: _analytics!,
+        payoutSummary: payoutSummary,
+        providerMode: response['provider_mode']?.toString(),
+      );
+    } catch (e) {
+      debugPrint('getMobileDashboardSnapshot error: $e');
       rethrow;
     } finally {
       _isLoading = false;

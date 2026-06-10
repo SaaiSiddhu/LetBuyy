@@ -3,7 +3,7 @@
   "manifestVersion": 1,
   "mode": "governance-contract-not-live-evidence",
   "engine": {
-    "engineSource": "packages/distributed-runtime/src/failure-domain-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "compiler": "compileFailureDomainManifest",
     "assertionFunction": "assertFailureDomainsContained",
     "checksum": "containmentChecksum",
@@ -14,10 +14,10 @@
     { "domainId": "webhook-worker-runtime", "isolationKind": "runtime", "ownerRuntime": "services/webhook-service", "containmentZone": "cloudflare-webhook-worker", "blastRadiusBoundary": "provider-callback-ingestion", "recoveryBoundary": "worker-version-rollback" },
     { "domainId": "rollback-runtime", "isolationKind": "rollback", "ownerRuntime": "infrastructure/scripts/deploy", "containmentZone": "rollback-wrapper", "blastRadiusBoundary": "single-worker-version", "recoveryBoundary": "deployment-lineage-manifest" },
     { "domainId": "queue-runtime", "isolationKind": "queue", "ownerRuntime": "services/queue-workers", "containmentZone": "queue-consumer-workers", "blastRadiusBoundary": "per-queue-redrive", "recoveryBoundary": "dead-letter-quarantine" },
-    { "domainId": "replay-runtime", "isolationKind": "replay", "ownerRuntime": "packages/distributed-runtime", "containmentZone": "append-only-event-stream", "blastRadiusBoundary": "stream-and-checkpoint", "recoveryBoundary": "replay-reconstruction" },
-    { "domainId": "projection-runtime", "isolationKind": "projection", "ownerRuntime": "packages/projection-runtime", "containmentZone": "read-model-rebuild", "blastRadiusBoundary": "projection-name-and-version", "recoveryBoundary": "selective-rebuild-window" },
+    { "domainId": "replay-runtime", "isolationKind": "replay", "ownerRuntime": "services/api-gateway", "containmentZone": "append-only-event-stream", "blastRadiusBoundary": "stream-and-checkpoint", "recoveryBoundary": "replay-reconstruction" },
+    { "domainId": "projection-runtime", "isolationKind": "projection", "ownerRuntime": "services/queue-workers", "containmentZone": "read-model-rebuild", "blastRadiusBoundary": "projection-name-and-version", "recoveryBoundary": "selective-rebuild-window" },
     { "domainId": "deployment-runtime", "isolationKind": "deployment", "ownerRuntime": "infrastructure/scripts/deploy", "containmentZone": "environment-stage", "blastRadiusBoundary": "single-environment", "recoveryBoundary": "rollback-wrapper" },
-    { "domainId": "reconciliation-runtime", "isolationKind": "reconciliation", "ownerRuntime": "packages/distributed-runtime", "containmentZone": "desired-vs-observed-state", "blastRadiusBoundary": "manifest-resource-id", "recoveryBoundary": "quarantine-orphan" }
+    { "domainId": "reconciliation-runtime", "isolationKind": "reconciliation", "ownerRuntime": "services/api-gateway", "containmentZone": "desired-vs-observed-state", "blastRadiusBoundary": "manifest-resource-id", "recoveryBoundary": "quarantine-orphan" }
   ],
   "validators": ["failure-domain-validator"],
   "failurePolicy": "fail-closed"

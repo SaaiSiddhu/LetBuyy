@@ -30,7 +30,7 @@ export async function POST() {
 
         // Clear the session cookie
         const isProduction = process.env.NODE_ENV === 'production'
-        const cookieDomain = isProduction ? (process.env.COOKIE_DOMAIN || '.letbuyy.store') : undefined
+        const cookieDomain = isProduction ? (process.env.COOKIE_DOMAIN || '.letbuyy.com') : undefined
         cookieStore.set(LETBUYY_MERCHANT_SESSION_COOKIE, '', {
             httpOnly: true,
             secure: isProduction,

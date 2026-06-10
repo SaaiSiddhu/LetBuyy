@@ -68,7 +68,7 @@ interface SetupChecklistItem {
 
 export default function DashboardClient({ store, storeInfo, setupStatus, homeData }: DashboardClientProps) {
     const config = SETUP_CONFIGS[storeInfo.site_type] || SETUP_CONFIGS.store
-    const currentDomain = storeInfo.custom_domain || `${storeInfo.subdomain}.letbuyy.store`
+    const currentDomain = storeInfo.custom_domain || `${storeInfo.subdomain}.letbuyy.com`
 
     return (
         <Page>

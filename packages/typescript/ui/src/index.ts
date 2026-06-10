@@ -191,6 +191,9 @@ export type {
     ThemeScriptProps,
 } from './theme-provider';
 
+export { ThemeToggleButton } from './theme-toggle-button';
+export type { ThemeToggleButtonProps } from './theme-toggle-button';
+
 export {
     formatInrCurrency,
     formatDisplayDate,

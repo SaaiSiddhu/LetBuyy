@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import type { LineItem as SharedLineItem, Order as SharedOrder } from '@letbuyy/shared-types'
 import { Button, Input, Table, Badge, Banner, Card, ConfirmDialog, EmptyState, MaterialIcon, Page, PageHeader, Search, Section, Select, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
+import { ProviderModeBadge, normalizeProviderMode } from '@/components/ProviderModeBadge'
 
 type OrderItemRow = Pick<
     SharedLineItem,
@@ -55,6 +56,7 @@ interface OrdersPayload {
 type OrderStatus = 'all' | 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
 type OrderSortKey = 'order' | 'customer' | 'item_count' | 'payment_status' | 'status' | 'total' | 'created_at'
 type SortDirection = 'asc' | 'desc'
+type ProviderMode = 'mock' | 'sandbox' | 'live'
 
 const statuses: Array<{ label: string; value: OrderStatus }> = [
     { label: 'All', value: 'all' },
@@ -185,6 +187,7 @@ export default function OrdersPage() {
     const [actionError, setActionError] = useState<string | null>(null)
     const [sortKey, setSortKey] = useState<OrderSortKey>('created_at')
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
+    const [fulfillmentProviderMode, setFulfillmentProviderMode] = useState<ProviderMode | null>(null)
 
     const loadOrders = useCallback(async () => {
         setLoading(true)
@@ -222,6 +225,24 @@ export default function OrdersPage() {
     }, [store, filter, paymentFilter, searchQuery])
 
     useEffect(() => { loadOrders() }, [loadOrders])
+
+    useEffect(() => {
+        let active = true
+        async function loadFulfillmentProviderMode() {
+            try {
+                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/shipping/zones`, { cache: 'no-store' })
+                const payload = await response.json().catch(() => null) as { data?: { provider_mode?: unknown } } | null
+                if (active && response.ok) {
+                    setFulfillmentProviderMode(normalizeProviderMode(payload?.data?.provider_mode))
+                }
+            } catch {
+                if (active) setFulfillmentProviderMode(null)
+            }
+        }
+
+        void loadFulfillmentProviderMode()
+        return () => { active = false }
+    }, [store])
 
     const loadOrderDetail = async (order: OrderRow) => {
         if (expandedOrderId === order.id) {
@@ -536,6 +557,7 @@ export default function OrdersPage() {
                         setCancellingId(order.id)
                         setFulfillingId(null)
                     }}
+                    providerMode={fulfillmentProviderMode}
                 />
             ),
         },
@@ -653,6 +675,7 @@ function OrderActions({
     onCancelFulfill,
     onFulfill,
     onStartCancel,
+    providerMode,
 }: {
     order: OrderRow
     updating: boolean
@@ -664,6 +687,7 @@ function OrderActions({
     onCancelFulfill: () => void
     onFulfill: () => void
     onStartCancel: () => void
+    providerMode: ProviderMode | null
 }) {
     const stop = (event: SyntheticEvent) => event.stopPropagation()
 
@@ -698,7 +722,13 @@ function OrderActions({
             </div>
 
             {fulfilling && (
-                <div className="grid w-full gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)]">
+                <div className="grid w-full gap-[var(--lb-space-2)] rounded-lg border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)]">
+                    <div className="flex items-center justify-between gap-[var(--lb-space-2)]">
+                        <span className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                            Carrier provider
+                        </span>
+                        <ProviderModeBadge mode={providerMode} />
+                    </div>
                     <Input
                         aria-label="Tracking number"
                         placeholder="Tracking number"

@@ -44,7 +44,7 @@ All contracts are proposed by the app-marketplace task and require implementatio
 
 ### CONTRACT C-077 — Full-Text and Synonym Search Ranking
 - Needed by issue(s): #77
-- Owner: parallel task (services+database+packages/search-core)
+- Owner: parallel task (services+database)
 - Capability: Ranked full-text search with keyword/synonym support and safe query parsing.
 - Proposed interface: `GET /v1/app-store/apps?search=<query>` returns rank-ordered results plus optional `matched_terms` metadata; ranking belongs behind the gateway/search service, not the Next app.
 - Marketplace flag: `NEXT_PUBLIC_MP_ADVANCED_SEARCH` (default off)
@@ -495,7 +495,7 @@ All contracts are proposed by the app-marketplace task and require implementatio
 ### CONTRACT C-044 — Published Developer Docs Availability
 - Needed by issue(s): #44
 - Owner: human/platform docs
-- Capability: Confirm production docs exist at `https://docs.letbuyy.store/apps` and `https://docs.letbuyy.store/api`.
+- Capability: Confirm production docs exist at `https://docs.letbuyy.com/apps` and `https://docs.letbuyy.com/api`.
 - Proposed interface: Human-owned docs publication and link verification.
 - Marketplace flag: none
 - FE behavior when absent: Links point to canonical docs paths without claiming availability.

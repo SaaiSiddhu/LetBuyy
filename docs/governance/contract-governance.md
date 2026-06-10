@@ -11,11 +11,9 @@ Contracts are machine-readable or type-readable boundaries between runtimes and 
 - Auth contracts: `packages/auth-core`
 - Tenant contracts: `packages/tenant-core`
 - CMS contracts: `packages/cms-core`
-- AI/app engine payload contracts: `packages/app-engine`
 - Theme contracts: `packages/theme-engine`
 - Event contracts: `packages/event-core`
 - Notification contracts: `packages/notification-core`
-- Search contracts: `packages/search-core`
 - Billing contracts: `packages/billing-core`
 
 ## Rules

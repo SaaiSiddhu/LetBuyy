@@ -26,7 +26,7 @@ test('Cloudflare queue poison messages are persisted as dead-lettered and acked'
   assert.match(normalizeBlock, /return quarantinedDelivery\(batch, message, error\)/);
 
   const queueHandlerBlock = blockAfter(queueWorkerSource, 'async queue(batch, env)', 2800);
-  assert.match(queueHandlerBlock, /const deliveries = normalizeDeliveries\(batch\)/);
+  assert.match(queueHandlerBlock, /const deliveries = await normalizeDeliveries\(env, batch\)/);
   assert.match(queueHandlerBlock, /await persistQueueBatch\(env, deliveries\)/);
   assert.match(queueHandlerBlock, /for \(const delivery of deliveries\) delivery\.message\.ack\(\)/);
   assert.match(queueHandlerBlock, /quarantined: deliveries\.filter/);

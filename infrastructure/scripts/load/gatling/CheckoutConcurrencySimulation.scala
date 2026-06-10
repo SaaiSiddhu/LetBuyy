@@ -3,7 +3,7 @@ import io.gatling.http.Predef._
 import scala.concurrent.duration._
 
 class CheckoutConcurrencySimulation extends Simulation {
-  val baseUrl = sys.env.getOrElse("LETBUYY_API_BASE_URL", "https://api.staging.letbuyy.store")
+  val baseUrl = sys.env.getOrElse("LETBUYY_API_BASE_URL", "https://api.staging.letbuyy.com")
 
   val httpProtocol = http
     .baseUrl(baseUrl)

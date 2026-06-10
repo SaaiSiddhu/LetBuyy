@@ -152,9 +152,9 @@ class StoreModel {
     this.publishedAt,
   });
 
-  /// Generate store URL from subdomain (new format: subdomain.letbuyy.store)
+  /// Generate store URL from subdomain (new format: subdomain.letbuyy.com)
   static String generateStoreUrl(String subdomain) {
-    return 'https://$subdomain.letbuyy.store';
+    return 'https://$subdomain.letbuyy.com';
   }
 
   /// Generate the public storefront URL.
@@ -478,11 +478,11 @@ class StoreModel {
       return 'https://$customDomain';
     }
     // With Load Balancer + wildcard SSL, subdomain always works instantly!
-    return 'https://$subdomain.letbuyy.store';
+    return 'https://$subdomain.letbuyy.com';
   }
 
   /// Get the preview URL (same as public URL with Load Balancer)
-  String get previewUrl => 'https://$subdomain.letbuyy.store';
+  String get previewUrl => 'https://$subdomain.letbuyy.com';
 
   /// Get the number of products (from selectedProductIds)
   int get productCount => selectedProductIds.length;

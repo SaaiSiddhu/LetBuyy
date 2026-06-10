@@ -4,7 +4,7 @@
   "mode": "governance-contract-not-live-evidence",
   "durableExecutionContract": "config/runtime/durable-execution-contract.json",
   "executionEngine": {
-    "engineSource": "packages/distributed-runtime/src/distributed-execution-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "planner": "planDistributedExecution",
     "resumeEngine": "resumeDistributedExecution",
     "journalFunction": "createExecutionJournalEntry",
@@ -16,7 +16,7 @@
     "recoveryPolicy": "resume-from-last-verified-checkpoint-before-compensation"
   },
   "idempotencyEngine": {
-    "engineSource": "packages/distributed-runtime/src/orchestration-idempotency-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "registryFactory": "createIdempotentExecutionRegistry",
     "registrationFunction": "registerIdempotentOperation",
     "retryLineageFunction": "buildRetryLineage",
@@ -26,7 +26,7 @@
     "exactlyOnceSimulation": "registry-deduplicates-retry-before-apply"
   },
   "compensationGovernance": {
-    "engineSource": "packages/distributed-runtime/src/compensation-saga-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "stepFactory": "createCompensationStep",
     "dagCompiler": "compileCompensationDag",
     "assertionFunction": "assertCompensationDagSafe",
@@ -36,7 +36,7 @@
     "orderingPolicy": "dependency-aware-dag-before-execution"
   },
   "cloudflareExecutionGovernance": {
-    "engineSource": "packages/distributed-runtime/src/cloudflare-execution-governance-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "bindingOwnershipManifest": "config/runtime/cloudflare-binding-ownership.json",
     "compiler": "compileCloudflareExecutionLineage",
     "assertionFunction": "assertCloudflareExecutionLineage",

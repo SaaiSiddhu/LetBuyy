@@ -23,7 +23,7 @@ apps -> apps
 packages -> apps
 packages -> services
 services -> apps
-active runtime -> legacy/firebase
+active runtime -> docs/archive/firebase-legacy
 database migrations -> generated app artifacts
 package circular dependency
 core/services Dart package -> ui_kit

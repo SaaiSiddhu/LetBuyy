@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../../theme/store_admin_colors.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../services/theme_provider.dart';
 import '../../services/language_service.dart';
@@ -295,8 +295,8 @@ class WizardContainer extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
             color: isActive
-                ? StoreAdminColors.primary
-                : (isDark ? StoreAdminColors.slate700 : Colors.grey.shade300),
+                ? LetbuyyColorTokens.brandPrimary
+                : (isDark ? LetbuyyColorTokens.slate700 : Colors.grey.shade300),
             borderRadius: BorderRadius.circular(4),
           ),
         );
@@ -380,7 +380,7 @@ class WizardOptionCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isSelected
-                ? StoreAdminColors.primary
+                ? LetbuyyColorTokens.brandPrimary
                 : (isDark
                       ? Colors.white.withValues(alpha: 0.08)
                       : Colors.grey.withValues(alpha: 0.2)),
@@ -398,7 +398,7 @@ class WizardOptionCard extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: isSelected
-                      ? [StoreAdminColors.primary, StoreAdminColors.accent]
+                      ? [LetbuyyColorTokens.brandPrimary, LetbuyyColorTokens.accentPink]
                       : (isDark
                             ? [
                                 Colors.white.withValues(alpha: 0.15),
@@ -492,7 +492,7 @@ class WizardPrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: StoreAdminColors.primary,
+          backgroundColor: LetbuyyColorTokens.brandPrimary,
           foregroundColor: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(
@@ -500,7 +500,7 @@ class WizardPrimaryButton extends StatelessWidget {
           ),
           disabledBackgroundColor: isDark
               ? Colors.white.withValues(alpha: 0.1) // Dark mode: subtle dark bg
-              : StoreAdminColors.slate300, // Light mode: light grey
+              : LetbuyyColorTokens.slate300, // Light mode: light grey
           disabledForegroundColor: isDark
               ? Colors.white.withValues(
                   alpha: 0.4,
@@ -563,7 +563,7 @@ class WizardTextField extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: isDark ? StoreAdminColors.textSecondary : Colors.black54,
+              color: isDark ? LetbuyyColorTokens.slate500 : Colors.black54,
             ),
           ),
           const SizedBox(height: 8),
@@ -575,27 +575,27 @@ class WizardTextField extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: isDark ? StoreAdminColors.textPrimary : Colors.black87,
+            color: isDark ? LetbuyyColorTokens.slate900 : Colors.black87,
           ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
-              color: isDark ? StoreAdminColors.slate400 : Colors.black38,
+              color: isDark ? LetbuyyColorTokens.slate400 : Colors.black38,
               fontWeight: FontWeight.normal,
             ),
             suffixText: suffix,
             suffixStyle: TextStyle(
-              color: isDark ? StoreAdminColors.slate500 : Colors.black45,
+              color: isDark ? LetbuyyColorTokens.slate500 : Colors.black45,
               fontSize: 16,
             ),
             errorText: errorText,
             filled: true,
-            fillColor: isDark ? StoreAdminColors.slate50 : Colors.grey.shade100,
+            fillColor: isDark ? LetbuyyColorTokens.slate50 : Colors.grey.shade100,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
                 color: isDark
-                    ? StoreAdminColors.slate200
+                    ? LetbuyyColorTokens.slate200
                     : Colors.grey.shade300,
               ),
             ),
@@ -603,20 +603,20 @@ class WizardTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
                 color: isDark
-                    ? StoreAdminColors.slate200
+                    ? LetbuyyColorTokens.slate200
                     : Colors.grey.shade300,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(
-                color: StoreAdminColors.primary,
+                color: LetbuyyColorTokens.brandPrimary,
                 width: 2,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: StoreAdminColors.error),
+              borderSide: BorderSide(color: LetbuyyColorTokens.error),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,

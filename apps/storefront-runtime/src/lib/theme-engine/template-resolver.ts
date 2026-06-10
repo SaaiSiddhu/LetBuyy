@@ -2,6 +2,7 @@ import {
     LiquidThemePackageBundleSchema,
     THEME_LIQUID_RENDERING_DEFAULT_ENABLED,
     isLiquidAppBlockType,
+    resolveThemeLiquidRenderingEnabled,
     type LiquidThemePackageBundle,
     type SectionModel,
     type StorefrontSectionGroupConfig,
@@ -194,7 +195,10 @@ export function resolveStorefrontTemplate(
     options: StorefrontTemplateResolverOptions = {},
 ): StorefrontRenderPlan {
     const templateKey = resolveTemplateKey(route.type);
-    const liquidEnabled = options.liquidEnabled ?? THEME_LIQUID_RENDERING_DEFAULT_ENABLED;
+    const liquidEnabled = options.liquidEnabled ?? resolveThemeLiquidRenderingEnabled({
+        templateConfig: store.templateConfig,
+        defaultEnabled: THEME_LIQUID_RENDERING_DEFAULT_ENABLED,
+    });
     const liquidBundle = liquidEnabled ? resolveLiquidBundle(store) : undefined;
     if (liquidBundle) {
         const liquidTemplateKey = resolveLiquidTemplateKey(liquidBundle, route, route.type);

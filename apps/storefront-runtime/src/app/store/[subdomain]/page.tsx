@@ -4,7 +4,6 @@ import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver'
 import { buildSectionDataPlan } from '@/lib/theme-engine/data-binding-engine';
 import StorefrontCompositionEngine from '@/lib/theme-engine/composition-engine';
 import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
-import { composeStorefrontRuntimeProjection } from '@letbuyy/runtime-composition/storefront-query-layer';
 import { buildStoreMetadata } from '@/lib/seo';
 import type { Metadata } from 'next';
 
@@ -35,27 +34,10 @@ export default async function StorePage({
     const query = await searchParams;
     const previewToken = await resolveThemePreviewToken(subdomain, query?.theme_preview_token);
     const path = `/store/${subdomain}`;
-    const projection = await composeStorefrontRuntimeProjection({
-        subdomain,
-        path,
-        previewToken: previewToken || undefined,
-    }, {
-        runtime: 'storefront-runtime',
-        route: path,
-        correlation: {
-            requestId: `storefront:${subdomain}`,
-            correlationId: `storefront:${subdomain}:${previewToken ? 'preview' : 'published'}`,
-        },
-    }, {
-        loadStore: async () => {
-            const previewStore = previewToken
-                ? await StoreService.getPreviewStoreBySubdomain(subdomain, previewToken)
-                : null;
-            return (previewStore || await StoreService.getStoreBySubdomainAnyStatus(subdomain)) as never;
-        },
-        loadTemplate: async (store) => (store as never as { templateConfig: never }).templateConfig,
-    });
-    const store = projection?.data.store as never as Awaited<ReturnType<typeof StoreService.getStoreBySubdomain>>;
+    const previewStore = previewToken
+        ? await StoreService.getPreviewStoreBySubdomain(subdomain, previewToken)
+        : null;
+    const store = previewStore || await StoreService.getStoreBySubdomainAnyStatus(subdomain);
     const isEditorPreview = query?.editor === '1';
 
     if (!store) return notFound();

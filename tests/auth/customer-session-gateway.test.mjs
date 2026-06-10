@@ -87,9 +87,9 @@ test('customer password reset is token-bound and stores only hashed reset intent
 });
 
 test('storefront-runtime signs server-only legacy customer lookups', () => {
-  assert.match(storefrontApiClientSource, /X-LetBuyy-Internal-App/);
-  assert.match(storefrontApiClientSource, /app = 'storefront'/);
-  assert.match(storefrontApiClientSource, /hmacSha256Hex/);
+  assert.match(storefrontApiClientSource, /createLetbuyyInternalAppHeaders/);
+  assert.match(storefrontApiClientSource, /app: 'storefront'/);
+  assert.match(storefrontApiClientSource, /getLetbuyyInternalAuthSecret/);
   assert.match(storefrontApiClientSource, /\/storefront\/customer\/by-email/);
   assert.match(storefrontApiClientSource, /\/storefront\/customer\/status/);
 });

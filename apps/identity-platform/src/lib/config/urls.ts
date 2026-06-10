@@ -1,5 +1,5 @@
-const PRODUCTION_ADMIN_URL = 'https://admin.letbuyy.store'
-const PRODUCTION_ACCOUNTS_URL = 'https://accounts.letbuyy.store'
+const PRODUCTION_ADMIN_URL = 'https://admin.letbuyy.com'
+const PRODUCTION_ACCOUNTS_URL = 'https://accounts.letbuyy.com'
 
 function trimTrailingSlash(value: string): string {
     return value.replace(/\/+$/, '')

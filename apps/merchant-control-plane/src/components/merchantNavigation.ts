@@ -70,6 +70,12 @@ const storeNavigation: MerchantNavItem[] = [
         children: ordersChildren,
     },
     {
+        path: 'settings/billing',
+        label: 'Money',
+        icon: 'payments',
+        shortcut: 'g y',
+    },
+    {
         path: 'products',
         label: 'Products',
         icon: 'inventory_2',
@@ -221,6 +227,7 @@ const shortcutDestinations: Record<MerchantSiteType, Record<string, string>> = {
         'g d': 'coupons',
         'g r': 'reviews',
         'g t': 'online-store/themes',
+        'g y': 'settings/billing',
         'g a': 'analytics',
         'g x': 'apps',
         'g s': 'settings',

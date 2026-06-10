@@ -3,9 +3,9 @@
 ## Runtime Topology
 
 - API Worker: `letbuyy-api-staging`
-- API route: `api.staging.letbuyy.store`
+- API route: `api.staging.letbuyy.com`
 - Webhook Worker: `letbuyy-webhook-staging`
-- Webhook route: `webhooks.staging.letbuyy.store`
+- Webhook route: `webhooks.staging.letbuyy.com`
 - Queue Worker: `letbuyy-queue-workers-staging`
 - Runtime root: `services/api-gateway`
 - Worker entrypoint: `services/api-gateway/src/index.ts`

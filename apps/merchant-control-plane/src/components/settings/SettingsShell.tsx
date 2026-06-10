@@ -157,7 +157,7 @@ export function SettingsShell({
                             {storeName}
                         </p>
                         <p className="m-0 truncate text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                            {subdomain}.letbuyy.store
+                            {subdomain}.letbuyy.com
                         </p>
                     </div>
                 </div>

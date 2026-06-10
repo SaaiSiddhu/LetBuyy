@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../services/theme_service.dart';
 import '../../theme/app_theme_colors.dart';
-import '../../theme/letbuyy_color_tokens.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 class ThemeVersionsScreen extends StatefulWidget {
   const ThemeVersionsScreen({

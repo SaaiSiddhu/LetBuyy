@@ -3,7 +3,7 @@
   "manifestVersion": 1,
   "mode": "governance-contract-not-live-evidence",
   "engine": {
-    "engineSource": "packages/distributed-runtime/src/convergence-math-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "compiler": "compileConvergenceEquilibrium",
     "assertionFunction": "assertConvergenceEquilibrium",
     "checksum": "equilibriumChecksum",

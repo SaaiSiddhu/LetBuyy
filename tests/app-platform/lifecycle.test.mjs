@@ -7,7 +7,7 @@ import ts from 'typescript';
 
 const AUTH_CORE_SOURCE = 'packages/auth-core/src/index.ts';
 const AUTH_CORE_STOREFRONT_ACCESS_SOURCE = 'packages/auth-core/src/storefront-access.ts';
-const APP_ENGINE_SOURCE = 'packages/app-engine/src/index.ts';
+const APP_ENGINE_SOURCE = 'packages/shared-types/src/app-platform.ts';
 const WEBHOOK_DISPATCH_SOURCE = 'services/webhook-service/src/app-lifecycle-dispatch.ts';
 
 function createZodStub() {
@@ -138,8 +138,8 @@ test('app OAuth authorization codes bind client, redirect URI, scopes, and expir
   assert.equal(expiredCode.status, 'expired');
 
   const stagingRedirect = appEngine.normalizeAppOAuthRedirectUri(
-    'https://partner.staging.letbuyy.store/callback',
-    ['https://partner.staging.letbuyy.store/callback'],
+    'https://partner.staging.letbuyy.com/callback',
+    ['https://partner.staging.letbuyy.com/callback'],
   );
   assert.equal(stagingRedirect.ok, true);
 
@@ -166,7 +166,7 @@ test('app bridge internal identity headers can be signed for gateway proxy calls
   assert.equal(
     await authCore.verifyLetbuyySignedPayload(
       secret,
-      `${userId}.merchant@example.com.${storeId}.${plan.timestamp}`,
+      `${userId}.merchant@example.com.${storeId}.${plan.timestamp}.${plan.jti}`,
       plan.signature,
     ),
     true,
@@ -260,7 +260,7 @@ test('app lifecycle issues scoped OAuth tokens and delivers signed app webhooks 
   assert.equal(deniedToken.status, 'insufficient_scope');
 
   const received = [];
-  const targetUrl = 'https://partner.staging.letbuyy.store/app-webhook';
+  const targetUrl = 'https://partner.staging.letbuyy.com/app-webhook';
   const definitions = appEngine.normalizeAppWebhookDefinitions([
     { event: 'app.installed', url: targetUrl, secret: signingSecret, is_active: true },
   ]);

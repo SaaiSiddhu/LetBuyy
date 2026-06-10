@@ -176,7 +176,7 @@ export default async function MerchantDetailPage({ params }: PageProps) {
                             <dl className="grid gap-[var(--lb-space-3)] text-sm md:grid-cols-2">
                                 <Field label="Site id" value={site.id} />
                                 <Field label="Type" value={site.site_type || 'ecommerce'} />
-                                <Field label="Subdomain" value={site.subdomain ? `${site.subdomain}.letbuyy.store` : '-'} />
+                                <Field label="Subdomain" value={site.subdomain ? `${site.subdomain}.letbuyy.com` : '-'} />
                                 <Field label="Custom domain" value={site.custom_domain || '-'} />
                                 <Field label="Domain status" value={site.custom_domain_status || '-'} />
                                 <Field label="Created" value={formatDateTime(site.created_at)} />

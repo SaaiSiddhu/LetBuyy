@@ -18,7 +18,7 @@ export const options = {
   },
 };
 
-const apiBase = __ENV.LETBUYY_API_BASE_URL || 'https://api.staging.letbuyy.store';
+const apiBase = __ENV.LETBUYY_API_BASE_URL || 'https://api.staging.letbuyy.com';
 const token = __ENV.LETBUYY_OPERATIONS_TOKEN;
 
 export default function () {

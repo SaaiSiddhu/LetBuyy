@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { Hono } from 'hono';
-import { hmacSha256Hex } from '@letbuyy/auth-core';
+import { hmacSha256Hex, internalAppSigningPayload } from '@letbuyy/auth-core';
 import type { Env } from '../index';
 import { requireCustomerSession } from '../middleware/customer-session';
 import { registerStorefrontCustomerEngagementRoutes } from '../routes/storefront/customer-engagement-routes';
@@ -16,11 +16,13 @@ function env(overrides: Partial<Env> = {}): Env {
 
 async function storefrontInternalHeaders(secret: string): Promise<Record<string, string>> {
     const timestamp = String(Date.now());
+    const jti = `test-jti-${crypto.randomUUID()}`;
     return {
         'Content-Type': 'application/json',
         'X-LetBuyy-Internal-App': 'storefront',
         'X-LetBuyy-Internal-Timestamp': timestamp,
-        'X-LetBuyy-Internal-Signature': await hmacSha256Hex(secret, `app.storefront.${timestamp}`),
+        'X-LetBuyy-Internal-JTI': jti,
+        'X-LetBuyy-Internal-Signature': await hmacSha256Hex(secret, internalAppSigningPayload('storefront', timestamp, jti)),
     };
 }
 

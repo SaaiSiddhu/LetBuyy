@@ -2,11 +2,12 @@ import { Hono, type Context } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../../index';
 import { EventExecutionAdapter } from '../../execution/event-execution.adapter';
-import { hmacSha256Hex } from '../../lib/crypto';
+import { hmacSha256Hex, sha256Hex } from '../../lib/crypto';
 import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
 import { validate } from '../../middleware/validation';
 import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
 import { CommerceChannelSchema, DEFAULT_PLATFORM_DOMAIN, type CommerceChannel } from '@letbuyy/shared-types';
+import { canonicalCheckoutCartBinding, canonicalCheckoutHandoffPayload } from '@letbuyy/checkout-core';
 
 type AppContext = Context<{ Bindings: Env }>;
 type DbRecord = Record<string, unknown>;
@@ -543,7 +544,25 @@ export function registerStorefrontCartRoutes(
         }
 
         const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-        const signaturePayload = `${store.id}:${cart.id}:${cart.cart_token}:${cart.channel}:${expiresAt}`;
+        const cartContentDigest = await sha256Hex(canonicalCheckoutCartBinding({
+            siteId: store.id,
+            cartId: cart.id,
+            cartToken: cart.cart_token,
+            channel: cart.channel,
+            expiresAt,
+            couponCodes: cart.coupon_codes,
+            lines: cart.lines,
+        }));
+        const signaturePayload = canonicalCheckoutHandoffPayload({
+            siteId: store.id,
+            cartId: cart.id,
+            cartToken: cart.cart_token,
+            channel: cart.channel,
+            expiresAt,
+            cartContentDigest,
+            couponCodes: cart.coupon_codes,
+            lines: cart.lines,
+        });
         const signature = await hmacSha256Hex(secret, signaturePayload);
         const checkoutUrl = new URL('/checkout', checkoutOrigin(c));
         checkoutUrl.searchParams.set('site_id', store.id);
@@ -551,6 +570,7 @@ export function registerStorefrontCartRoutes(
         checkoutUrl.searchParams.set('cart_token', cart.cart_token);
         checkoutUrl.searchParams.set('channel', cart.channel);
         checkoutUrl.searchParams.set('expires_at', expiresAt);
+        checkoutUrl.searchParams.set('cart_digest', cartContentDigest);
         checkoutUrl.searchParams.set('signature', signature);
 
         const db = getSupabaseAdmin(c);
@@ -562,6 +582,7 @@ export function registerStorefrontCartRoutes(
                     expires_at: expiresAt,
                     signed_at: new Date().toISOString(),
                     channel: cart.channel,
+                    cart_content_digest: cartContentDigest,
                 },
             })
             .eq('store_id', store.id)
@@ -570,6 +591,7 @@ export function registerStorefrontCartRoutes(
         return c.json(success({
             checkout_url: checkoutUrl.toString(),
             expires_at: expiresAt,
+            cart_digest: cartContentDigest,
             signature,
         }));
     });

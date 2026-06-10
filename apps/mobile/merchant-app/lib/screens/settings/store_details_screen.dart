@@ -380,7 +380,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      '${_store?.subdomain ?? 'mystore'}.letbuyy.store',
+                      '${_store?.subdomain ?? 'mystore'}.letbuyy.com',
                       style: TextStyle(
                         fontFamily: 'monospace',
                         color: Colors.grey[700],

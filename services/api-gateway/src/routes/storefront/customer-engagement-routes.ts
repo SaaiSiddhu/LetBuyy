@@ -263,7 +263,7 @@ async function sendCustomerPasswordResetEmail(
     if (!isConfiguredResetEmailProvider(c)) return;
 
     const recipientName = input.fullName?.trim() || 'there';
-    const from = c.env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.store>';
+    const from = c.env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>';
     const subject = 'Reset your LetBuyy store password';
     const text = [
         `Hi ${recipientName},`,

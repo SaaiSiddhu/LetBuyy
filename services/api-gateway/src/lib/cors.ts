@@ -2,7 +2,7 @@ export type CredentialCorsEnv = {
     CORS_CREDENTIAL_ORIGINS?: string;
     /**
      * Apex domain the platform credentialed origins are generated from. Defaults
-     * to `DEFAULT_PLATFORM_CREDENTIAL_DOMAIN` (`letbuyy.store`). Point this at a
+     * to `DEFAULT_PLATFORM_CREDENTIAL_DOMAIN` (`letbuyy.com`). Point this at a
      * new apex (e.g. `letbuyy.com`) to move the whole credentialed allowlist and
      * default origin in one config change — no source edit required.
      */
@@ -10,10 +10,10 @@ export type CredentialCorsEnv = {
 };
 
 /** Current platform apex; the future `letbuyy.com` cutover overrides this via env. */
-export const DEFAULT_PLATFORM_CREDENTIAL_DOMAIN = 'letbuyy.store';
+export const DEFAULT_PLATFORM_CREDENTIAL_DOMAIN = 'letbuyy.com';
 
-/** Backwards-compatible static fallback origin (the `letbuyy.store` apex). */
-export const DEFAULT_CREDENTIAL_ORIGIN = 'https://letbuyy.store';
+/** Backwards-compatible static fallback origin (the `letbuyy.com` apex). */
+export const DEFAULT_CREDENTIAL_ORIGIN = 'https://letbuyy.com';
 
 /**
  * Subdomain labels (alongside the bare apex) that receive credentialed CORS. The
@@ -57,7 +57,7 @@ export function resolveDefaultCredentialOrigin(env: CredentialCorsEnv = {}): str
     return `https://${normalizePlatformCredentialDomain(env.LETBUYY_PLATFORM_DOMAIN)}`;
 }
 
-/** Backwards-compatible static allowlist for the default (`letbuyy.store`) apex. */
+/** Backwards-compatible static allowlist for the default (`letbuyy.com`) apex. */
 export const PLATFORM_CREDENTIAL_ORIGINS = buildPlatformCredentialOrigins(DEFAULT_PLATFORM_CREDENTIAL_DOMAIN);
 
 export function normalizeCredentialOrigin(value: string): string | null {

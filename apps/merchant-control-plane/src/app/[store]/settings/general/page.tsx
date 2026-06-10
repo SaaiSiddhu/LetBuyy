@@ -236,7 +236,7 @@ export default function GeneralSettingsPage() {
                 description: 'Redirecting to your accounts workspace.',
                 variant: 'success',
             })
-            const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.store'
+            const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.com'
             window.location.href = accountsUrl
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to delete store'

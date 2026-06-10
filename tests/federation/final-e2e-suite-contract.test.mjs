@@ -35,9 +35,9 @@ test('F8 suite has no browser request interception or alternate gateway stand-in
 test('F8 real-stack helper defaults to staging gateway/app URLs and records screenshot evidence', () => {
   const helper = read('tests/e2e/federation/real-stack.ts');
 
-  assert.match(helper, /api-staging\.letbuyy\.store/);
-  assert.match(helper, /accounts-staging\.letbuyy\.store/);
-  assert.match(helper, /ops-staging\.letbuyy\.store/);
+  assert.match(helper, /api-staging\.letbuyy\.com/);
+  assert.match(helper, /accounts-staging\.letbuyy\.com/);
+  assert.match(helper, /ops-staging\.letbuyy\.com/);
   assert.match(helper, /\/v1\/storefront\/\$\{demo\.storeSubdomain\}\/products\?limit=1/);
   assert.match(helper, /recordJourneyEvidence/);
   assert.match(helper, /testInfo\.attach/);

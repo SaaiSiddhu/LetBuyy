@@ -32,7 +32,7 @@ Architecture validation must fail when:
 
 - An app imports another app.
 - A shared package imports an app or service runtime.
-- An active runtime imports `legacy/firebase`.
+- An active runtime imports `docs/archive/firebase-legacy`.
 - A runtime references deprecated pre-normalization roots outside archived historical documentation.
 - A deprecated app alias, duplicate operator runtime, nested storefront runtime, debug log, or raw trace file exists in active topology.
 - A service runtime lacks package metadata, deployment metadata, or ownership documentation.

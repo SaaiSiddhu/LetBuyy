@@ -73,6 +73,7 @@ function applyDomSignals(resolved: LetbuyyResolvedTheme): void {
     root.setAttribute('data-theme', resolved);
     root.classList.remove('light', 'dark');
     root.classList.add(resolved);
+    root.style.colorScheme = resolved;
     (window as unknown as GlobalWithResolvedTheme).__letbuyyResolvedTheme = resolved;
 }
 
@@ -215,6 +216,7 @@ export function ThemeScript({ storageKey = LETBUYY_THEME_STORAGE_KEY, defaultThe
         'var e=document.documentElement;' +
         "e.setAttribute('data-theme',r);" +
         "e.classList.remove('light','dark');e.classList.add(r);" +
+        'e.style.colorScheme=r;' +
         'window.__letbuyyResolvedTheme=r;' +
         '}catch(_){}})();';
     return <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: js }} />;

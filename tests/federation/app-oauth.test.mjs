@@ -4,12 +4,12 @@ import test from 'node:test';
 import { readAppStoreRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const AUTH_CORE_SOURCE = readFileSync('packages/auth-core/src/index.ts', 'utf8');
-const APP_ENGINE_SOURCE = readFileSync('packages/app-engine/src/index.ts', 'utf8');
+const APP_ENGINE_SOURCE = readFileSync('packages/shared-types/src/app-platform.ts', 'utf8');
 const API_CLIENT_SOURCE = readFileSync('packages/typescript/api-client/src/index.ts', 'utf8');
 const APP_STORE_ROUTE_SOURCE = readAppStoreRouteSource();
 const SHARED_TYPES_SOURCE = readFileSync('packages/shared-types/src/index.ts', 'utf8');
 
-test('app OAuth is owned by auth-core, app-engine, api-client, and the gateway route', () => {
+test('app OAuth is owned by auth-core, shared app-platform, api-client, and the gateway route', () => {
   assert.match(AUTH_CORE_SOURCE, /createAppAuthorizationCode/);
   assert.match(AUTH_CORE_SOURCE, /verifyAppAuthorizationCode/);
   assert.match(AUTH_CORE_SOURCE, /type: 'app_authorization_code'/);

@@ -5,6 +5,7 @@ import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
 import { Badge, Banner, Button } from '@letbuyy/ui'
+import { useAuthTheme } from '@/lib/useAuthTheme'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -67,14 +68,12 @@ export default function SelectPage() {
     const [loading, setLoading] = useState<string | null>(null)
     const [initialLoading, setInitialLoading] = useState(true)
     const [sessionExpired, setSessionExpired] = useState(false)
-    const [isDark, setIsDark] = useState(false)
+    const { isDark, toggleTheme } = useAuthTheme()
     const [lang, setLang] = useState<Lang>('en')
 
     const t = translations[lang]
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem('letbuyy-theme')
-        setIsDark(savedTheme === 'dark')
         const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
         setLang(savedLang)
 
@@ -116,13 +115,6 @@ export default function SelectPage() {
             })
     }, [])
 
-    const toggleTheme = () => {
-        const newTheme = !isDark
-        setIsDark(newTheme)
-        localStorage.setItem('letbuyy-theme', newTheme ? 'dark' : 'light')
-        document.documentElement.classList.toggle('dark', newTheme)
-        document.documentElement.style.colorScheme = newTheme ? 'dark' : 'light'
-    }
 
     const cycleLang = () => {
         const langs: Lang[] = ['en', 'hi', 'ta']
@@ -225,7 +217,7 @@ export default function SelectPage() {
                                     </div>
                                     <div className="auth-account-info">
                                         <span className="auth-account-name">{store.store_name || store.name}</span>
-                                        <span className="auth-account-email">{store.subdomain}.letbuyy.store</span>
+                                        <span className="auth-account-email">{store.subdomain}.letbuyy.com</span>
                                         <span className="auth-account-meta flex flex-wrap gap-[var(--lb-space-1)]">
                                             <Badge label={`${t.storeType}: ${getSiteTypeLabel(store.site_type)}`} variant="info" />
                                             <Badge label={`${t.statusLabel}: ${formatLabel(store.status)}`} variant={getStatusVariant(store.status)} />

@@ -16,7 +16,7 @@ void main() {
       'stock': 11,
       'is_active': true,
       'is_featured': false,
-      'images': ['https://cdn.letbuyy.store/products/urban-runner.jpg'],
+      'images': ['https://cdn.letbuyy.com/products/urban-runner.jpg'],
       'tags': ['shoes'],
       'metadata': {
         'specifications': {'material': 'mesh'},

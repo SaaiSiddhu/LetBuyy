@@ -17,7 +17,7 @@ const protectedPrefixes = [
     '/users',
 ];
 
-const PLATFORM_ROOT_DOMAINS = ['letbuyy.com', 'letbuyy.store'] as const;
+const PLATFORM_ROOT_DOMAINS = ['letbuyy.com'] as const;
 const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com';
 
 function isProtectedPath(pathname: string) {

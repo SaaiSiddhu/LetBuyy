@@ -270,7 +270,7 @@ class DomainSettingsSnapshot {
     return DomainSettingsSnapshot(
       storeId: store.id,
       subdomain: store.subdomain,
-      defaultDomain: '${store.subdomain}.letbuyy.store',
+      defaultDomain: '${store.subdomain}.letbuyy.com',
       customDomain: customDomain,
       customDomainStatus: store.customDomainStatus ?? 'none',
       accessMode: store.accessMode,

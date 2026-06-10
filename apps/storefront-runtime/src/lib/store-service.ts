@@ -652,6 +652,9 @@ function mapSupabaseToStore(
     templates = injectAppBlocksIntoTemplates(templates, appBlocks);
     const liquidBundleResult = LiquidThemePackageBundleSchema.safeParse(templateConfig.liquidBundle);
     const liquidBundle = liquidBundleResult.success ? liquidBundleResult.data : undefined;
+    const liquidRenderingCanary = typeof templateConfig.liquidRenderingCanary === 'boolean'
+        ? templateConfig.liquidRenderingCanary
+        : undefined;
 
     // Parse payment gateways from store settings
     const paymentSettings = asRecord(data.payment_settings);
@@ -700,6 +703,7 @@ function mapSupabaseToStore(
             templates,
             appBlocks: normalizedAppBlocks,
             liquidBundle,
+            liquidRenderingCanary,
             releaseManifest,
         },
     };

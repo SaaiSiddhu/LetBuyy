@@ -9,6 +9,7 @@ import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { OAuthBrandIcon } from '@/components/OAuthBrandIcon'
 import { Button, Input } from '@letbuyy/ui'
+import { useAuthTheme } from '@/lib/useAuthTheme'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 type Lang = 'en' | 'hi' | 'ta'
@@ -112,8 +113,8 @@ function isValidReturnTo(url: string): boolean {
     try {
         const parsed = new URL(url)
         return (
-            parsed.hostname.endsWith('.letbuyy.store') ||
-            parsed.hostname === 'letbuyy.store'
+            parsed.hostname.endsWith('.letbuyy.com') ||
+            parsed.hostname === 'letbuyy.com'
         )
     } catch {
         return false
@@ -128,7 +129,7 @@ function LookupContent() {
     const [viewState, setViewState] = useState<ViewState>('email')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const [isDark, setIsDark] = useState(false)
+    const { isDark, toggleTheme } = useAuthTheme()
     const [lang, setLang] = useState<Lang>('en')
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
     const turnstileTokenRef = useRef<string | null>(null)
@@ -144,8 +145,6 @@ function LookupContent() {
 
     // Initialize theme and language
     useEffect(() => {
-        const savedTheme = localStorage.getItem('letbuyy-theme')
-        setIsDark(savedTheme === 'dark')
 
         const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
         setLang(savedLang)
@@ -223,13 +222,6 @@ function LookupContent() {
         }
     }
 
-    const toggleTheme = () => {
-        const newTheme = !isDark
-        setIsDark(newTheme)
-        localStorage.setItem('letbuyy-theme', newTheme ? 'dark' : 'light')
-        document.documentElement.classList.toggle('dark', newTheme)
-        document.documentElement.style.colorScheme = newTheme ? 'dark' : 'light'
-    }
 
     const cycleLang = () => {
         const langs: Lang[] = ['en', 'hi', 'ta']
@@ -512,7 +504,7 @@ function LookupContent() {
                                 />
                             </div>
 
-                            {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
+                            {error && <div className="auth-error" role="alert" aria-live="assertive"><AuthIcon name="error" />{error}</div>}
 
                             <Button unstyled
                                 type="submit"
@@ -606,7 +598,7 @@ function LookupContent() {
                                 </div>
                             </div>
 
-                            {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
+                            {error && <div className="auth-error" role="alert" aria-live="assertive"><AuthIcon name="error" />{error}</div>}
 
                             <Button unstyled
                                 type="submit"

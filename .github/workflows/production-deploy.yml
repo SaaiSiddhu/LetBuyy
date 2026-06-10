@@ -21,8 +21,24 @@ env:
   HAS_VERCEL_CREDS: ${{ secrets.VERCEL_TOKEN != '' }}
 
 jobs:
+  branch-lag-guard:
+    name: Guard production branch lag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require integration branch merged to main
+        run: node scripts/validators/branch-lag-guard-validator.mjs
+        env:
+          LETBUYY_ENFORCE_BRANCH_LAG: "1"
+          LETBUYY_PRODUCTION_BRANCH: main
+          LETBUYY_RELEASE_INTEGRATION_BRANCH: stepup/main
+
   release-preflight:
     name: Release credential preflight
+    needs: branch-lag-guard
     runs-on: ubuntu-latest
     steps:
       - name: Require production release credentials
@@ -33,8 +49,11 @@ jobs:
           HAS_PRODUCTION_AUTH_SECRET: ${{ secrets.PRODUCTION_AUTH_SECRET != '' }}
           HAS_PRODUCTION_CSRF_SECRET: ${{ secrets.PRODUCTION_CSRF_SECRET != '' }}
           HAS_PRODUCTION_CUSTOMER_SESSION_SECRET: ${{ secrets.PRODUCTION_CUSTOMER_SESSION_SECRET != '' }}
+          HAS_PRODUCTION_IDENTITY_PRIVATE_JWK: ${{ secrets.PRODUCTION_IDENTITY_PRIVATE_JWK != '' }}
+          HAS_PRODUCTION_IDENTITY_PUBLIC_JWKS: ${{ secrets.PRODUCTION_IDENTITY_PUBLIC_JWKS != '' }}
           HAS_PRODUCTION_TURNSTILE_SECRET_KEY: ${{ secrets.PRODUCTION_TURNSTILE_SECRET_KEY != '' }}
           HAS_PRODUCTION_INTERNAL_API_SECRET: ${{ secrets.PRODUCTION_INTERNAL_API_SECRET != '' }}
+          HAS_PRODUCTION_QUEUE_TENANT_ENVELOPE_SECRET: ${{ secrets.PRODUCTION_QUEUE_TENANT_ENVELOPE_SECRET != '' }}
           HAS_PRODUCTION_PLATFORM_CONSOLE_API_TOKEN: ${{ secrets.PRODUCTION_PLATFORM_CONSOLE_API_TOKEN != '' }}
           HAS_PRODUCTION_UPSTASH_REDIS_REST_URL: ${{ secrets.PRODUCTION_UPSTASH_REDIS_REST_URL != '' }}
           HAS_PRODUCTION_UPSTASH_REDIS_REST_TOKEN: ${{ secrets.PRODUCTION_UPSTASH_REDIS_REST_TOKEN != '' }}
@@ -50,11 +69,7 @@ jobs:
           HAS_PRODUCTION_IDENTITY_PROJECT_ID: ${{ secrets.PRODUCTION_IDENTITY_PROJECT_ID != '' }}
           HAS_PRODUCTION_MERCHANT_PROJECT_ID: ${{ secrets.PRODUCTION_MERCHANT_PROJECT_ID != '' }}
           HAS_PRODUCTION_STOREFRONT_PROJECT_ID: ${{ secrets.PRODUCTION_STOREFRONT_PROJECT_ID != '' }}
-          HAS_PRODUCTION_THEME_MARKETPLACE_PROJECT_ID: ${{ secrets.PRODUCTION_THEME_MARKETPLACE_PROJECT_ID != '' }}
-          HAS_PRODUCTION_APP_MARKETPLACE_PROJECT_ID: ${{ secrets.PRODUCTION_APP_MARKETPLACE_PROJECT_ID != '' }}
-          HAS_PRODUCTION_DEVELOPER_PORTAL_PROJECT_ID: ${{ secrets.PRODUCTION_DEVELOPER_PORTAL_PROJECT_ID != '' }}
           HAS_PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID: ${{ secrets.PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID != '' }}
-          HAS_PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID: ${{ secrets.PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID != '' }}
           HAS_PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE: ${{ secrets.PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE != '' }}
           HAS_STAGING_E2E_IDENTITY_EMAIL: ${{ secrets.STAGING_E2E_IDENTITY_EMAIL != '' }}
           HAS_STAGING_E2E_IDENTITY_PASSWORD: ${{ secrets.STAGING_E2E_IDENTITY_PASSWORD != '' }}
@@ -71,8 +86,11 @@ jobs:
           [[ "${HAS_PRODUCTION_AUTH_SECRET}" == "true" ]] || missing+=("PRODUCTION_AUTH_SECRET")
           [[ "${HAS_PRODUCTION_CSRF_SECRET}" == "true" ]] || missing+=("PRODUCTION_CSRF_SECRET")
           [[ "${HAS_PRODUCTION_CUSTOMER_SESSION_SECRET}" == "true" ]] || missing+=("PRODUCTION_CUSTOMER_SESSION_SECRET")
+          [[ "${HAS_PRODUCTION_IDENTITY_PRIVATE_JWK}" == "true" ]] || missing+=("PRODUCTION_IDENTITY_PRIVATE_JWK")
+          [[ "${HAS_PRODUCTION_IDENTITY_PUBLIC_JWKS}" == "true" ]] || missing+=("PRODUCTION_IDENTITY_PUBLIC_JWKS")
           [[ "${HAS_PRODUCTION_TURNSTILE_SECRET_KEY}" == "true" ]] || missing+=("PRODUCTION_TURNSTILE_SECRET_KEY")
           [[ "${HAS_PRODUCTION_INTERNAL_API_SECRET}" == "true" ]] || missing+=("PRODUCTION_INTERNAL_API_SECRET")
+          [[ "${HAS_PRODUCTION_QUEUE_TENANT_ENVELOPE_SECRET}" == "true" ]] || missing+=("PRODUCTION_QUEUE_TENANT_ENVELOPE_SECRET")
           [[ "${HAS_PRODUCTION_PLATFORM_CONSOLE_API_TOKEN}" == "true" ]] || missing+=("PRODUCTION_PLATFORM_CONSOLE_API_TOKEN")
           [[ "${HAS_PRODUCTION_UPSTASH_REDIS_REST_URL}" == "true" ]] || missing+=("PRODUCTION_UPSTASH_REDIS_REST_URL")
           [[ "${HAS_PRODUCTION_UPSTASH_REDIS_REST_TOKEN}" == "true" ]] || missing+=("PRODUCTION_UPSTASH_REDIS_REST_TOKEN")
@@ -88,11 +106,7 @@ jobs:
           [[ "${HAS_PRODUCTION_IDENTITY_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_IDENTITY_PROJECT_ID")
           [[ "${HAS_PRODUCTION_MERCHANT_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_MERCHANT_PROJECT_ID")
           [[ "${HAS_PRODUCTION_STOREFRONT_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_STOREFRONT_PROJECT_ID")
-          [[ "${HAS_PRODUCTION_THEME_MARKETPLACE_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_THEME_MARKETPLACE_PROJECT_ID")
-          [[ "${HAS_PRODUCTION_APP_MARKETPLACE_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_APP_MARKETPLACE_PROJECT_ID")
-          [[ "${HAS_PRODUCTION_DEVELOPER_PORTAL_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_DEVELOPER_PORTAL_PROJECT_ID")
           [[ "${HAS_PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID")
-          [[ "${HAS_PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID")
           [[ "${HAS_PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE}" == "true" ]] || missing+=("PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE")
           [[ "${HAS_STAGING_E2E_IDENTITY_EMAIL}" == "true" ]] || missing+=("STAGING_E2E_IDENTITY_EMAIL")
           [[ "${HAS_STAGING_E2E_IDENTITY_PASSWORD}" == "true" ]] || missing+=("STAGING_E2E_IDENTITY_PASSWORD")
@@ -167,17 +181,17 @@ jobs:
       - name: Run full E2E suite against staging
         run: pnpm exec playwright test --project=chromium tests/e2e/
         env:
-          BASE_URL: https://store-staging.letbuyy.store
-          ACCOUNTS_URL: https://accounts-staging.letbuyy.store
-          ADMIN_URL: https://admin-staging.letbuyy.store
-          API_URL: https://api-staging.letbuyy.store/v1
+          BASE_URL: https://store-staging.letbuyy.com
+          ACCOUNTS_URL: https://accounts-staging.letbuyy.com
+          ADMIN_URL: https://admin-staging.letbuyy.com
+          API_URL: https://api-staging.letbuyy.com/v1
           LETBUYY_E2E_REQUIRE_REAL_STACK: "1"
-          LETBUYY_E2E_MARKETING_URL: https://store-staging.letbuyy.store
-          LETBUYY_E2E_IDENTITY_URL: https://accounts-staging.letbuyy.store
-          LETBUYY_E2E_MERCHANT_URL: https://admin-staging.letbuyy.store
-          LETBUYY_E2E_STOREFRONT_URL: https://store-staging.letbuyy.store
-          LETBUYY_E2E_API_URL: https://api-staging.letbuyy.store
-          LETBUYY_E2E_WEBHOOK_URL: https://webhooks-staging.letbuyy.store
+          LETBUYY_E2E_MARKETING_URL: https://store-staging.letbuyy.com
+          LETBUYY_E2E_IDENTITY_URL: https://accounts-staging.letbuyy.com
+          LETBUYY_E2E_MERCHANT_URL: https://admin-staging.letbuyy.com
+          LETBUYY_E2E_STOREFRONT_URL: https://store-staging.letbuyy.com
+          LETBUYY_E2E_API_URL: https://api-staging.letbuyy.com
+          LETBUYY_E2E_WEBHOOK_URL: https://webhooks-staging.letbuyy.com
           LETBUYY_E2E_STORE_SUBDOMAIN: ${{ vars.STAGING_E2E_STORE_SUBDOMAIN }}
           LETBUYY_E2E_IDENTITY_EMAIL: ${{ secrets.STAGING_E2E_IDENTITY_EMAIL }}
           LETBUYY_E2E_IDENTITY_PASSWORD: ${{ secrets.STAGING_E2E_IDENTITY_PASSWORD }}
@@ -272,9 +286,11 @@ jobs:
           echo "${{ secrets.PRODUCTION_AUTH_SECRET }}" | pnpm exec wrangler secret put AUTH_SECRET --env production
           echo "${{ secrets.PRODUCTION_CSRF_SECRET }}" | pnpm exec wrangler secret put CSRF_SECRET --env production
           echo "${{ secrets.PRODUCTION_CUSTOMER_SESSION_SECRET }}" | pnpm exec wrangler secret put CUSTOMER_SESSION_SECRET --env production
+          echo "${{ secrets.PRODUCTION_IDENTITY_PUBLIC_JWKS }}" | pnpm exec wrangler secret put LETBUYY_IDENTITY_PUBLIC_JWKS --env production
           echo "${{ secrets.PRODUCTION_TURNSTILE_SECRET_KEY }}" | pnpm exec wrangler secret put TURNSTILE_SECRET_KEY --env production
           echo "${{ secrets.PRODUCTION_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env production
           echo "${{ secrets.PRODUCTION_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put LETBUYY_INTERNAL_API_SECRET --env production
+          echo "${{ secrets.PRODUCTION_QUEUE_TENANT_ENVELOPE_SECRET }}" | pnpm exec wrangler secret put QUEUE_TENANT_ENVELOPE_SECRET --env production
           echo "${{ secrets.PRODUCTION_PLATFORM_CONSOLE_API_TOKEN }}" | pnpm exec wrangler secret put PLATFORM_CONSOLE_API_TOKEN --env production
           echo "${{ secrets.PRODUCTION_UPSTASH_REDIS_REST_URL }}" | pnpm exec wrangler secret put UPSTASH_REDIS_REST_URL --env production
           echo "${{ secrets.PRODUCTION_UPSTASH_REDIS_REST_TOKEN }}" | pnpm exec wrangler secret put UPSTASH_REDIS_REST_TOKEN --env production
@@ -315,6 +331,7 @@ jobs:
       - name: Set queue-workers production secrets
         run: |
           echo "${{ secrets.PRODUCTION_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env production
+          echo "${{ secrets.PRODUCTION_QUEUE_TENANT_ENVELOPE_SECRET }}" | pnpm exec wrangler secret put QUEUE_TENANT_ENVELOPE_SECRET --env production
         working-directory: services/queue-workers
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -358,16 +375,8 @@ jobs:
             project_id: PRODUCTION_MERCHANT_PROJECT_ID
           - app: storefront-runtime
             project_id: PRODUCTION_STOREFRONT_PROJECT_ID
-          - app: theme-marketplace
-            project_id: PRODUCTION_THEME_MARKETPLACE_PROJECT_ID
-          - app: app-marketplace
-            project_id: PRODUCTION_APP_MARKETPLACE_PROJECT_ID
-          - app: developer-portal
-            project_id: PRODUCTION_DEVELOPER_PORTAL_PROJECT_ID
           - app: platform-console
             project_id: PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID
-          - app: platform-operations-portal
-            project_id: PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID
     steps:
       - uses: actions/checkout@v4
 
@@ -391,22 +400,24 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.PRODUCTION_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PRODUCTION_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.PRODUCTION_TURNSTILE_SITE_KEY }}
-          NEXT_PUBLIC_APP_URL: https://letbuyy.store
-          NEXT_PUBLIC_ACCOUNTS_URL: https://accounts.letbuyy.store
-          NEXT_PUBLIC_ADMIN_URL: https://admin.letbuyy.store
-          NEXT_PUBLIC_API_URL: https://api.letbuyy.store/v1
-          NEXT_PUBLIC_API_BASE_URL: https://api.letbuyy.store/v1
-          LETBUYY_API_URL: https://api.letbuyy.store/v1
-          LETBUYY_API_BASE_URL: https://api.letbuyy.store/v1
-          API_URL: https://api.letbuyy.store/v1
-          API_BASE_URL: https://api.letbuyy.store/v1
-          WORKER_API_BASE_URL: https://api.letbuyy.store/v1
+          NEXT_PUBLIC_APP_URL: https://letbuyy.com
+          NEXT_PUBLIC_ACCOUNTS_URL: https://accounts.letbuyy.com
+          NEXT_PUBLIC_ADMIN_URL: https://admin.letbuyy.com
+          NEXT_PUBLIC_API_URL: https://api.letbuyy.com/v1
+          NEXT_PUBLIC_API_BASE_URL: https://api.letbuyy.com/v1
+          LETBUYY_API_URL: https://api.letbuyy.com/v1
+          LETBUYY_API_BASE_URL: https://api.letbuyy.com/v1
+          API_URL: https://api.letbuyy.com/v1
+          API_BASE_URL: https://api.letbuyy.com/v1
+          WORKER_API_BASE_URL: https://api.letbuyy.com/v1
           AUTH_SECRET: ${{ secrets.PRODUCTION_AUTH_SECRET }}
           CUSTOMER_SESSION_SECRET: ${{ secrets.PRODUCTION_CUSTOMER_SESSION_SECRET }}
+          LETBUYY_IDENTITY_ISSUER: https://accounts.letbuyy.com
+          LETBUYY_IDENTITY_PRIVATE_JWK: ${{ matrix.app == 'identity-platform' && secrets.PRODUCTION_IDENTITY_PRIVATE_JWK || '' }}
           CSRF_SECRET: ${{ secrets.PRODUCTION_CSRF_SECRET }}
           INTERNAL_API_SECRET: ${{ secrets.PRODUCTION_INTERNAL_API_SECRET }}
           RESEND_API_KEY: ${{ secrets.PRODUCTION_RESEND_API_KEY }}
-          COOKIE_DOMAIN: .letbuyy.store
+          COOKIE_DOMAIN: .letbuyy.com
           NEXT_PUBLIC_RAZORPAY_KEY_ID: ${{ secrets.PRODUCTION_RAZORPAY_KEY_ID }}
           NODE_ENV: production
 
@@ -471,17 +482,17 @@ jobs:
       - name: Run smoke tests against production
         run: pnpm exec playwright test --project=chromium tests/e2e/smoke/
         env:
-          BASE_URL: https://letbuyy.store
-          ACCOUNTS_URL: https://accounts.letbuyy.store
-          ADMIN_URL: https://admin.letbuyy.store
-          API_URL: https://api.letbuyy.store
+          BASE_URL: https://letbuyy.com
+          ACCOUNTS_URL: https://accounts.letbuyy.com
+          ADMIN_URL: https://admin.letbuyy.com
+          API_URL: https://api.letbuyy.com
           LETBUYY_E2E_REQUIRE_REAL_STACK: "1"
-          LETBUYY_E2E_MARKETING_URL: https://letbuyy.store
-          LETBUYY_E2E_IDENTITY_URL: https://accounts.letbuyy.store
-          LETBUYY_E2E_MERCHANT_URL: https://admin.letbuyy.store
-          LETBUYY_E2E_STOREFRONT_URL: https://letbuyy.store
-          LETBUYY_E2E_API_URL: https://api.letbuyy.store
-          LETBUYY_E2E_WEBHOOK_URL: https://webhooks.letbuyy.store
+          LETBUYY_E2E_MARKETING_URL: https://letbuyy.com
+          LETBUYY_E2E_IDENTITY_URL: https://accounts.letbuyy.com
+          LETBUYY_E2E_MERCHANT_URL: https://admin.letbuyy.com
+          LETBUYY_E2E_STOREFRONT_URL: https://letbuyy.com
+          LETBUYY_E2E_API_URL: https://api.letbuyy.com
+          LETBUYY_E2E_WEBHOOK_URL: https://webhooks.letbuyy.com
           LETBUYY_E2E_STORE_SUBDOMAIN: ${{ vars.PRODUCTION_E2E_STORE_SUBDOMAIN }}
           LETBUYY_E2E_IDENTITY_EMAIL: ${{ secrets.PRODUCTION_E2E_IDENTITY_EMAIL }}
           LETBUYY_E2E_IDENTITY_PASSWORD: ${{ secrets.PRODUCTION_E2E_IDENTITY_PASSWORD }}

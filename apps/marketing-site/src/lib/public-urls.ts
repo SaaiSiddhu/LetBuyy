@@ -10,8 +10,8 @@ type RequiredPublicUrlName =
     | 'NEXT_PUBLIC_DEVELOPER_PORTAL_URL'
 type PublicUrlTarget = 'accounts' | 'marketing' | 'themeMarketplace' | 'appMarketplace' | 'developerPortal'
 
-const PLATFORM_ROOT_DOMAINS = ['letbuyy.com', 'letbuyy.store'] as const
-const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.store'
+const PLATFORM_ROOT_DOMAINS = ['letbuyy.com'] as const
+const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com'
 
 const LOCAL_BROWSER_URLS: Record<PublicUrlTarget, string> = {
     accounts: 'http://127.0.0.1:9001',
@@ -167,5 +167,5 @@ export function getAssetPublicUrl(path = ''): string {
 }
 
 export function getSupportEmail(): string {
-    return process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'support@letbuyy.store'
+    return process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'support@letbuyy.com'
 }

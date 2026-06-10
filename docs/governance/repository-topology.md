@@ -42,24 +42,16 @@ packages/
   auth-core/
   cms-core/
   theme-engine/
-  app-engine/
   event-core/
-  search-core/
   notification-core/
   billing-core/
-  application-services/
-  distributed-runtime/
   infrastructure/
-  orchestration/
-  projection-runtime/
-  runtime-composition/
   typescript/api-client/
   typescript/api-types/
   typescript/ui/
   typescript/utils/
   dart/core/
   dart/models/
-  dart/services/
   dart/ui_kit/
 
 database/
@@ -132,7 +124,7 @@ docs/
 | Analytics pipeline | Reserved | `services/analytics-pipeline` | Manifest-only placeholder; active analytics APIs/queue work remain in `services/api-gateway` and `services/queue-workers` |
 | Event bus | Reserved | `services/event-bus` | Manifest-only placeholder; active event execution uses package-owned contracts through implemented runtimes |
 | Supabase database | Platform-owned data layer | `database/supabase` | Migrations, seeds, verification, RLS policies |
-| Firebase legacy | Deprecated | `legacy/firebase` | Historical Cloud Functions and Firebase rules only |
+| Firebase legacy | Archived | `docs/archive/firebase-legacy` | Historical Cloud Functions and Firebase rules only |
 
 ## Non-Negotiable Shape Rules
 

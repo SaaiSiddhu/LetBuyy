@@ -7,12 +7,13 @@ import {
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import { resolveCustomUser } from '../lib/auth-user';
 import { bytesToHex, verifyInternalAppRequest, verifyInternalSessionHeaders } from '../lib/internal-auth';
-import { dbErrorBody, errorBody, getSupabaseAdmin, shouldReturnEmptyForMissingLocalSchema } from '../lib/supabase';
+import { dbErrorBody, errorBody, getSupabaseAdmin, isLocalSupabaseEnvironment, shouldReturnEmptyForMissingLocalSchema } from '../lib/supabase';
 import { checkRateLimitKey } from '../middleware/rateLimit';
 import { validate } from '../middleware/validation';
 import { hashMerchantPassword, verifyMerchantPassword } from '../lib/merchant-password';
 import { validateMerchantSessionToken } from '../lib/merchant-session';
 import { decryptTextAesGcm } from '../lib/crypto';
+import { validateIdentityIssuedMerchantSessionToken } from '../lib/identity-session-verifier';
 import { verifyTotpCode } from '../lib/totp';
 import {
     AUTH_OTP_EXPIRY_MS,
@@ -204,6 +205,10 @@ function randomHex(byteCount: number): string {
     const bytes = new Uint8Array(byteCount);
     crypto.getRandomValues(bytes);
     return bytesToHex(bytes.buffer);
+}
+
+function isProductionGatewayRuntime(env: import('../index').Env): boolean {
+    return ['production', 'prod'].includes(String(env.APP_ENV || env.ENVIRONMENT || env.NODE_ENV || '').toLowerCase());
 }
 
 function randomOtp(): string {
@@ -596,7 +601,7 @@ auth.post('/custom/emails/send', async (c) => {
     const text = typeof body.text === 'string' ? body.text : undefined;
     const from = typeof body.from === 'string'
         ? body.from
-        : `LetBuyy <${c.env.RESEND_FROM_EMAIL || 'noreply@letbuyy.store'}>`;
+        : `LetBuyy <${c.env.RESEND_FROM_EMAIL || 'noreply@letbuyy.com'}>`;
 
     if ((!Array.isArray(to) && typeof to !== 'string') || !subject || (!html && !text)) {
         return c.json({ error: { code: 'VALIDATION', message: 'to, subject, and html or text are required' } }, 400);
@@ -717,6 +722,21 @@ auth.post('/custom/subdomains/validate', async (c) => {
         .limit(1);
 
     if (error) {
+        // Local dev resilience (matches /custom/users/first-store and the
+        // internal-console handlers): when the local Supabase has no `sites`
+        // table yet — or the local database is otherwise unreachable — there is
+        // nothing to conflict with, so don't block onboarding. Format and
+        // reserved-word checks have already passed above. This NEVER relaxes in
+        // production: isLocalSupabaseEnvironment is false unless SUPABASE_URL
+        // points at localhost / 127.0.0.1.
+        if (isLocalSupabaseEnvironment(c.env)) {
+            return c.json({
+                valid: true,
+                reason: 'available',
+                message: 'Available!',
+                devOnly: true,
+            });
+        }
         return c.json({
             valid: false,
             reason: 'unverified',
@@ -1090,12 +1110,34 @@ auth.post('/custom/sessions/create', async (c) => {
     const body = await c.req.json();
     const userId = String(body.user_id || '');
     const deviceId = body.device_id ? String(body.device_id) : null;
+    const providedToken = typeof body.token === 'string' ? body.token.trim() : '';
     if (!userId) {
         return c.json({ error: { code: 'VALIDATION', message: 'user_id is required' } }, 400);
     }
 
+    if (!providedToken && isProductionGatewayRuntime(c.env)) {
+        return c.json({
+            error: {
+                code: 'IDENTITY_ISSUER_REQUIRED',
+                message: 'Identity-issued merchant session token is required',
+            },
+        }, 503);
+    }
+
+    if (providedToken) {
+        const tokenValidation = await validateIdentityIssuedMerchantSessionToken(c.env, providedToken, userId);
+        if (!tokenValidation.ok) {
+            return c.json({
+                error: {
+                    code: 'INVALID_IDENTITY_SESSION_TOKEN',
+                    message: tokenValidation.reason || 'Identity-issued merchant session token is invalid',
+                },
+            }, 400);
+        }
+    }
+
     const db = getSupabaseAdmin(c);
-    const token = randomHex(32);
+    const token = providedToken || randomHex(32);
     const expiresAt = new Date(Date.now() + AUTH_SESSION_DURATION_MS).toISOString();
     const { error } = await db.from('sessions').insert({
         user_id: userId,

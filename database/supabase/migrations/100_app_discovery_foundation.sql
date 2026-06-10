@@ -352,7 +352,7 @@ SELECT
     0
 FROM public.marketplace_apps app
 WHERE app.slug IN ('letbuyy-reviews-demo', 'letbuyy-shipping-demo', 'letbuyy-analytics-demo')
-ON CONFLICT (app_id, plan_slug) DO UPDATE SET
+ON CONFLICT (app_id, plan_slug) WHERE (deleted_at IS NULL) DO UPDATE SET
     name = EXCLUDED.name,
     description = EXCLUDED.description,
     pricing_model = EXCLUDED.pricing_model,

@@ -36,7 +36,7 @@ for (const projection of projectionManifest?.projections || []) {
 }
 
 const topologyRuntimeNames = new Set((deploymentTopology?.nodes || []).map((node) => node.runtimeName));
-for (const required of ["API Gateway", "Webhook Service", "Queue Workers", "Event Bus", "Supabase Database"]) {
+for (const required of ["API Gateway", "Webhook Service", "Queue Workers", "Supabase Database"]) {
   reporter.assert(topologyRuntimeNames.has(required), `Runtime topology missing survivability node: ${required}`);
 }
 

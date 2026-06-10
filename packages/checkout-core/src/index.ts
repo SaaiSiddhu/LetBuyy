@@ -468,6 +468,96 @@ export interface CreateCheckoutOrderCommand {
   idempotency_key: string;
 }
 
+export interface CheckoutCartBindingLine {
+  product_id?: string | null;
+  productId?: string | null;
+  variant_id?: string | null;
+  variantId?: string | null;
+  quantity?: number | string | null;
+  unit_price?: number | string | null;
+  price?: number | string | null;
+  line_total?: number | string | null;
+  total?: number | string | null;
+}
+
+export interface CheckoutCartBindingInput {
+  siteId: string;
+  cartId: string;
+  cartToken: string;
+  channel: string;
+  expiresAt: string;
+  couponCodes?: Array<string | null | undefined>;
+  lines: CheckoutCartBindingLine[];
+}
+
+function checkoutNumber(value: unknown): number {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim()) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+}
+
+function checkoutMoneyMinor(value: unknown): number {
+  return Math.round(Math.max(0, checkoutNumber(value)) * 100);
+}
+
+function checkoutString(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+export function canonicalCheckoutCartBinding(input: CheckoutCartBindingInput): string {
+  const lines = input.lines
+    .map((line) => {
+      const productId = checkoutString(line.product_id ?? line.productId);
+      const variantId = checkoutString(line.variant_id ?? line.variantId);
+      const quantity = Math.max(1, Math.trunc(checkoutNumber(line.quantity)));
+      const unitPriceMinor = checkoutMoneyMinor(line.unit_price ?? line.price);
+      const lineTotalMinor = checkoutMoneyMinor(line.line_total ?? line.total);
+
+      return {
+        product_id: productId,
+        variant_id: variantId || null,
+        quantity,
+        unit_price_minor: unitPriceMinor,
+        line_total_minor: lineTotalMinor || unitPriceMinor * quantity,
+      };
+    })
+    .filter((line) => line.product_id && line.quantity > 0)
+    .sort((left, right) => (
+      left.product_id.localeCompare(right.product_id)
+      || String(left.variant_id || '').localeCompare(String(right.variant_id || ''))
+      || left.quantity - right.quantity
+    ));
+
+  return JSON.stringify({
+    version: 1,
+    site_id: input.siteId,
+    cart_id: input.cartId,
+    cart_token: input.cartToken,
+    channel: normalizeCheckoutChannel(input.channel),
+    expires_at: input.expiresAt,
+    coupon_codes: [...new Set((input.couponCodes || [])
+      .map((code) => checkoutString(code).toUpperCase())
+      .filter(Boolean))]
+      .sort(),
+    lines,
+  });
+}
+
+export function canonicalCheckoutHandoffPayload(input: CheckoutCartBindingInput & { cartContentDigest: string }): string {
+  return JSON.stringify({
+    version: 1,
+    site_id: input.siteId,
+    cart_id: input.cartId,
+    cart_token: input.cartToken,
+    channel: normalizeCheckoutChannel(input.channel),
+    expires_at: input.expiresAt,
+    cart_content_digest: input.cartContentDigest,
+  });
+}
+
 export interface FulfillmentLineCommand {
   order_item_id: string;
   quantity: number;

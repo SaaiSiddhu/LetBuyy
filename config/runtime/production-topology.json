@@ -1,13 +1,14 @@
 {
   "$schema": "config/runtime/production-topology.schema.json",
-  "topologyVersion": 1,
+  "topologyVersion": 2,
   "environment": "production",
+  "canonicalDomain": "letbuyy.com",
+  "mode": "governance-contract-not-live-evidence",
   "queueProvider": {
     "provider": "cloudflare-queues",
     "terraform": "infrastructure/cloudflare/queues.tf",
     "producerConfig": "services/api-gateway/wrangler.toml",
     "consumerConfig": "services/queue-workers/wrangler.toml",
-    "validationScript": "infrastructure/scripts/cloudflare/verify-provider-contracts.mjs",
     "queues": [
       "letbuyy-events-production",
       "letbuyy-analytics-queue-production",
@@ -23,70 +24,14 @@
     "migrations": [
       "database/supabase/migrations/000_baseline.sql"
     ],
-    "verificationSql": "database/supabase/verification/063_absolute_production_operationalization.sql",
-    "verificationScript": "infrastructure/scripts/database/verify-supabase-operations.mjs",
-    "retentionPolicy": "hot/warm/archive/legal-hold retention classes in distributed_event_store"
-  },
-  "cacheProviders": [
-    "upstash-redis",
-    "cloudflare-kv",
-    "vercel-edge-cache"
-  ],
-  "observabilityStack": {
-    "collector": "infrastructure/observability/otel-collector.yaml",
-    "metrics": "prometheus",
-    "traces": "tempo",
-    "logs": "loki",
-    "dashboards": [
-      "infrastructure/observability/grafana-runtime-dashboard.json",
-      "infrastructure/observability/grafana-queue-dashboard.json",
-      "infrastructure/observability/grafana-replay-dashboard.json",
-      "infrastructure/observability/grafana-incident-dashboard.json",
-      "infrastructure/observability/grafana-deployment-dashboard.json",
-      "infrastructure/observability/grafana-sre-dashboard.json"
-    ],
-    "alerts": "infrastructure/observability/prometheus-rules.yaml",
-    "validationScript": "infrastructure/scripts/observability/verify-observability-rollout.mjs"
+    "retentionPolicy": "single-region append-only outbox and ledger evidence"
   },
   "regions": {
     "primary": "ap-south-1",
-    "failover": "ap-southeast-1",
     "edge": [
       "global-edge"
     ],
-    "globalRegions": [
-      {
-        "id": "india",
-        "primaryRegion": "ap-south-1",
-        "tenantAffinity": "india-first",
-        "queueNamespace": "letbuyy-india",
-        "telemetryLabel": "region=\"india\""
-      },
-      {
-        "id": "apac",
-        "primaryRegion": "ap-southeast-1",
-        "tenantAffinity": "apac",
-        "queueNamespace": "letbuyy-apac",
-        "telemetryLabel": "region=\"apac\""
-      },
-      {
-        "id": "eu",
-        "primaryRegion": "eu-west-1",
-        "tenantAffinity": "eu",
-        "queueNamespace": "letbuyy-eu",
-        "telemetryLabel": "region=\"eu\""
-      },
-      {
-        "id": "us",
-        "primaryRegion": "us-east-1",
-        "tenantAffinity": "us",
-        "queueNamespace": "letbuyy-us",
-        "telemetryLabel": "region=\"us\""
-      }
-    ],
     "replayIntegrity": {
-      "checksumRequired": true,
-      "projectionComparisonRequired": true,
       "failClosedOnDivergence": true
     }
   },
@@ -95,561 +40,190 @@
       "runtimeName": "Supabase Database",
       "runtimeRoot": "database/supabase",
       "environment": "production",
+      "status": "active",
       "deploymentManifests": [
-        "infrastructure/deployment/migration-orchestration.yaml",
         "database/supabase/migrations/000_baseline.sql"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
-    },
-    {
-      "runtimeName": "Event Bus",
-      "runtimeRoot": "services/event-bus",
-      "environment": "production",
-      "deploymentManifests": [
-        "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
-        "infrastructure/deployment/release-promotion.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
-    },
-    {
-      "runtimeName": "Queue Workers",
-      "runtimeRoot": "services/queue-workers",
-      "environment": "production",
-      "deploymentManifests": [
-        "services/queue-workers/wrangler.toml",
-        "infrastructure/cloudflare/queues.tf"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues consumer and DLQ",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
+      ]
     },
     {
       "runtimeName": "API Gateway",
       "runtimeRoot": "services/api-gateway",
       "environment": "production",
+      "status": "active",
+      "deploymentKind": "cloudflare-worker",
       "deploymentManifests": [
-        "services/api-gateway/wrangler.toml",
-        "infrastructure/deployment/release-promotion.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
+        "services/api-gateway/wrangler.toml"
+      ]
+    },
+    {
+      "runtimeName": "Queue Workers",
+      "runtimeRoot": "services/queue-workers",
+      "environment": "production",
+      "status": "active",
+      "deploymentKind": "queue-worker",
+      "deploymentManifests": [
+        "services/queue-workers/wrangler.toml"
+      ]
     },
     {
       "runtimeName": "Mobile BFF",
       "runtimeRoot": "services/mobile-bff",
       "environment": "production",
+      "status": "active",
+      "deploymentKind": "cloudflare-worker",
       "deploymentManifests": [
-        "services/mobile-bff/wrangler.toml",
-        "infrastructure/deployment/release-promotion.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
+        "services/mobile-bff/wrangler.toml"
+      ]
     },
     {
       "runtimeName": "Webhook Service",
       "runtimeRoot": "services/webhook-service",
       "environment": "production",
+      "status": "active",
+      "deploymentKind": "cloudflare-worker",
       "deploymentManifests": [
-        "services/webhook-service/wrangler.toml",
-        "infrastructure/deployment/release-promotion.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
-    },
-    {
-      "runtimeName": "Analytics Pipeline",
-      "runtimeRoot": "services/analytics-pipeline",
-      "environment": "production",
-      "deploymentManifests": [
-        "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
-        "infrastructure/deployment/release-promotion.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
-    },
-    {
-      "runtimeName": "Checkout Runtime",
-      "runtimeRoot": "services/checkout-runtime",
-      "environment": "production",
-      "deploymentManifests": [
-        "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
-        "infrastructure/deployment/release-promotion.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
-    },
-    {
-      "runtimeName": "Media Service",
-      "runtimeRoot": "services/media-service",
-      "environment": "production",
-      "deploymentManifests": [
-        "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
-        "infrastructure/deployment/release-promotion.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
-    },
-    {
-      "runtimeName": "Notification Service",
-      "runtimeRoot": "services/notification-service",
-      "environment": "production",
-      "deploymentManifests": [
-        "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
-        "infrastructure/deployment/release-promotion.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
-    },
-    {
-      "runtimeName": "Search Service",
-      "runtimeRoot": "services/search-service",
-      "environment": "production",
-      "deploymentManifests": [
-        "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
-        "infrastructure/deployment/release-promotion.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
+        "services/webhook-service/wrangler.toml"
+      ]
     },
     {
       "runtimeName": "Identity Platform",
       "runtimeRoot": "apps/identity-platform",
       "environment": "production",
+      "status": "active",
+      "deploymentKind": "vercel-next",
       "deploymentManifests": [
-        "infrastructure/deployment/release-promotion.yaml",
-        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
-    },
-    {
-      "runtimeName": "Merchant Control Plane",
-      "runtimeRoot": "apps/merchant-control-plane",
-      "environment": "production",
-      "deploymentManifests": [
-        "infrastructure/deployment/release-promotion.yaml",
-        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
+        "apps/identity-platform/vercel.json"
+      ]
     },
     {
       "runtimeName": "Storefront Runtime",
       "runtimeRoot": "apps/storefront-runtime",
       "environment": "production",
+      "status": "active",
+      "deploymentKind": "vercel-next",
       "deploymentManifests": [
-        "infrastructure/deployment/release-promotion.yaml",
-        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
+        "apps/storefront-runtime/vercel.json"
+      ]
+    },
+    {
+      "runtimeName": "Merchant Control Plane",
+      "runtimeRoot": "apps/merchant-control-plane",
+      "environment": "production",
+      "status": "active",
+      "deploymentKind": "vercel-next",
+      "deploymentManifests": [
+        "apps/merchant-control-plane/vercel.json"
+      ]
     },
     {
       "runtimeName": "Marketing Site",
       "runtimeRoot": "apps/marketing-site",
       "environment": "production",
+      "status": "active",
+      "deploymentKind": "vercel-next",
       "deploymentManifests": [
-        "infrastructure/deployment/release-promotion.yaml",
-        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
-    },
-    {
-      "runtimeName": "App Marketplace",
-      "runtimeRoot": "apps/app-marketplace",
-      "environment": "production",
-      "deploymentManifests": [
-        "infrastructure/deployment/release-promotion.yaml",
-        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
-    },
-    {
-      "runtimeName": "Developer Portal",
-      "runtimeRoot": "apps/developer-portal",
-      "environment": "production",
-      "deploymentManifests": [
-        "infrastructure/deployment/release-promotion.yaml",
-        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
-    },
-    {
-      "runtimeName": "Theme Marketplace",
-      "runtimeRoot": "apps/theme-marketplace",
-      "environment": "production",
-      "deploymentManifests": [
-        "infrastructure/deployment/release-promotion.yaml",
-        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
+        "apps/marketing-site/vercel.json"
+      ]
     },
     {
       "runtimeName": "Platform Console",
       "runtimeRoot": "apps/platform-console",
       "environment": "production",
+      "status": "active",
+      "deploymentKind": "vercel-next",
       "deploymentManifests": [
-        "infrastructure/deployment/release-promotion.yaml",
-        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
-    },
-    {
-      "runtimeName": "Platform Operations Portal",
-      "runtimeRoot": "apps/platform-operations-portal",
-      "environment": "production",
-      "deploymentManifests": [
-        "infrastructure/deployment/release-promotion.yaml",
-        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
+        "apps/platform-console/vercel.json"
+      ]
     },
     {
       "runtimeName": "Mobile Merchant App",
       "runtimeRoot": "apps/mobile/merchant-app",
       "environment": "production",
+      "status": "active",
+      "deploymentKind": "mobile-app",
       "deploymentManifests": [
-        "infrastructure/deployment/release-promotion.yaml",
-        "infrastructure/monitoring/slo-catalog.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
+        "apps/mobile/merchant-app/pubspec.yaml"
+      ]
+    },
+    {
+      "runtimeName": "checkout-runtime",
+      "runtimeRoot": "services/checkout-runtime",
+      "environment": "reserved",
+      "status": "reserved",
+      "deploymentKind": "manifest-only",
+      "deploymentManifests": []
+    },
+    {
+      "runtimeName": "search-service",
+      "runtimeRoot": "services/search-service",
+      "environment": "reserved",
+      "status": "reserved",
+      "deploymentKind": "manifest-only",
+      "deploymentManifests": []
+    },
+    {
+      "runtimeName": "media-service",
+      "runtimeRoot": "services/media-service",
+      "environment": "reserved",
+      "status": "reserved",
+      "deploymentKind": "manifest-only",
+      "deploymentManifests": []
+    },
+    {
+      "runtimeName": "notification-service",
+      "runtimeRoot": "services/notification-service",
+      "environment": "reserved",
+      "status": "reserved",
+      "deploymentKind": "manifest-only",
+      "deploymentManifests": []
+    },
+    {
+      "runtimeName": "event-bus",
+      "runtimeRoot": "services/event-bus",
+      "environment": "reserved",
+      "status": "reserved",
+      "deploymentKind": "manifest-only",
+      "deploymentManifests": []
+    },
+    {
+      "runtimeName": "analytics-pipeline",
+      "runtimeRoot": "services/analytics-pipeline",
+      "environment": "reserved",
+      "status": "reserved",
+      "deploymentKind": "manifest-only",
+      "deploymentManifests": []
+    },
+    {
+      "runtimeName": "app-marketplace",
+      "runtimeRoot": "apps/app-marketplace",
+      "environment": "frozen",
+      "status": "frozen",
+      "deploymentKind": "not-deployed",
+      "deploymentManifests": []
+    },
+    {
+      "runtimeName": "developer-portal",
+      "runtimeRoot": "apps/developer-portal",
+      "environment": "frozen",
+      "status": "frozen",
+      "deploymentKind": "not-deployed",
+      "deploymentManifests": []
+    },
+    {
+      "runtimeName": "theme-marketplace",
+      "runtimeRoot": "apps/theme-marketplace",
+      "environment": "frozen",
+      "status": "frozen",
+      "deploymentKind": "not-deployed",
+      "deploymentManifests": []
+    },
+    {
+      "runtimeName": "platform-operations-portal",
+      "runtimeRoot": "apps/platform-operations-portal",
+      "environment": "frozen",
+      "status": "frozen",
+      "deploymentKind": "not-deployed",
+      "deploymentManifests": []
     }
-  ],
-  "deploymentPipeline": {
-    "workflow": ".github/workflows/production-rollout.yml",
-    "releasePromotion": "infrastructure/deployment/release-promotion.yaml",
-    "deployScript": "infrastructure/scripts/deploy/production-deploy.mjs",
-    "rollbackScript": "infrastructure/scripts/deploy/production-rollback.mjs",
-    "healthGateScript": "infrastructure/scripts/deploy/verify-health-gates.mjs",
-    "ultimateValidationScript": "infrastructure/scripts/operations/phase4-ultimate-validate.mjs"
-  },
-  "securityOperations": {
-    "controls": "infrastructure/security/production-security-controls.yaml",
-    "securityGateScript": "infrastructure/scripts/security/verify-security-gates.mjs",
-    "secretRotationScript": "infrastructure/scripts/security/rotate-secrets.mjs",
-    "secretRotationRunbook": "docs/runbooks/secret-rotation.md"
-  },
-  "liveCertification": {
-    "workflow": ".github/workflows/live-production-certification.yml",
-    "certificationConfig": "config/runtime/live-production-certification.json",
-    "certificationScript": "infrastructure/scripts/operations/phase4-live-certify.mjs",
-    "operationsVerificationScript": "infrastructure/scripts/operations/verify-live-operations.mjs",
-    "drillScript": "infrastructure/scripts/operations/run-live-drills.mjs",
-    "reportScript": "infrastructure/scripts/operations/generate-certification-report.mjs",
-    "certificationDoc": "docs/operations/production-certification.md",
-    "evidenceGovernanceDocs": [
-      "docs/governance/live-rollout-governance.md",
-      "docs/governance/production-certification-governance.md",
-      "docs/governance/operational-evidence-governance.md",
-      "docs/governance/deployment-execution-governance.md",
-      "docs/governance/failover-certification-governance.md",
-      "docs/governance/chaos-certification-governance.md",
-      "docs/governance/observability-certification-governance.md",
-      "docs/governance/security-certification-governance.md",
-      "docs/governance/sre-certification-governance.md",
-      "docs/governance/global-operations-governance.md",
-      "docs/governance/operational-certification-governance.md",
-      "docs/governance/deployment-readiness-governance.md"
-    ]
-  },
-  "operationalDashboards": [
-    "infrastructure/observability/grafana-runtime-dashboard.json",
-    "infrastructure/observability/grafana-queue-dashboard.json",
-    "infrastructure/observability/grafana-replay-dashboard.json",
-    "infrastructure/observability/grafana-incident-dashboard.json",
-    "infrastructure/observability/grafana-deployment-dashboard.json",
-    "infrastructure/observability/grafana-sre-dashboard.json",
-    "apps/platform-console/src/app/(dashboard)/operations/page.tsx"
-  ],
-  "runbooks": [
-    "docs/runbooks/incident-sev1.md",
-    "docs/runbooks/queue-dlq-redrive.md",
-    "docs/runbooks/event-replay.md",
-    "docs/runbooks/regional-failover.md",
-    "docs/runbooks/deployment-rollback.md",
-    "docs/runbooks/secret-rotation.md",
-    "docs/runbooks/chaos-drill.md",
-    "docs/runbooks/live-certification-execute.md"
-  ],
-  "chaosEngineering": {
-    "runner": "infrastructure/scripts/chaos/run-chaos-experiment.mjs",
-    "experiments": [
-      "queue-outage",
-      "provider-outage",
-      "replay-corruption",
-      "cache-failure",
-      "regional-outage",
-      "workflow-recovery",
-      "dlq-flood",
-      "telemetry-outage"
-    ]
-  },
-  "loadTesting": {
-    "runner": "infrastructure/scripts/load/run-load-suite.mjs",
-    "scripts": [
-      "infrastructure/scripts/load/k6-checkout-concurrency.js",
-      "infrastructure/scripts/load/k6-queue-throughput.js",
-      "infrastructure/scripts/load/k6-replay-stress.js"
-    ]
-  }
+  ]
 }

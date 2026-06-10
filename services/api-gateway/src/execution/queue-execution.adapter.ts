@@ -13,7 +13,7 @@ import {
     planDeletedSearchProjectionDocument,
     planOrderSearchProjectionDocument,
     planProductSearchProjectionDocument,
-} from '@letbuyy/runtime-composition';
+} from './queue-projection-plans';
 import { eventRetryDelaySeconds } from '@letbuyy/event-core';
 import { getDomainEventContract, type RuntimeEventEnvelope } from '@letbuyy/event-core';
 import { planInAppNotificationForEvent } from '@letbuyy/notification-core';

@@ -1,49 +1,72 @@
 'use strict';
 
-/**
- * LetBuyy Stylelint config — fences the CSS layer that ESLint cannot see.
- *
- * The ESLint plugin (@letbuyy/ui) governs colours in .ts/.tsx. This config
- * governs the remaining channel: hand-authored .css (notably each app's
- * globals.css), where raw rgb()/hex parallel "token" systems have historically
- * drifted from the canonical --lb-* tokens.
- *
- * Intent: raw colour values may only appear in the generated token stylesheet.
- * Everywhere else, reference a --lb-* custom property.
- *
- * To activate: `npm i -D stylelint` (workspace root) and add
- *   "lint:css": "stylelint \"apps/**/src/**/*.css\""
- * Generated token CSS and vendor files are ignored below.
- */
+const cssFiles = [
+    'apps/**/src/**/*.css',
+    'packages/**/src/**/*.css',
+];
+
 module.exports = {
-    rules: {
-        // Disallow raw hex colours — use var(--lb-color-*) instead.
-        'color-no-hex': true,
-        // Disallow named colours (white/black/red…) — use tokens.
-        'color-named': 'never',
-        // Disallow raw colour functions in declarations; the generated token
-        // CSS is the only place raw rgb()/hsl() values are allowed.
-        'declaration-property-value-disallowed-list': {
-            '/.*/': [/(?<!var\([^)]*)\b(?:rgba?|hsla?)\(/],
-        },
-    },
-    // Custom property *definitions* of the LetBuyy token set are exempt: the
-    // generated token CSS is the single source of raw values.
+    extends: ['stylelint-config-standard'],
     ignoreFiles: [
         '**/node_modules/**',
         '**/.next/**',
+        '**/.turbo/**',
         '**/dist/**',
+        '**/build/**',
+        '**/coverage/**',
         '**/*token*.css',
         '**/letbuyy-tokens*.css',
     ],
+    rules: {
+        'alpha-value-notation': null,
+        'at-rule-no-unknown': [
+            true,
+            {
+                ignoreAtRules: ['custom-variant', 'plugin', 'source', 'tailwind', 'theme'],
+            },
+        ],
+        'at-rule-empty-line-before': null,
+        'color-function-alias-notation': null,
+        'color-function-notation': null,
+        'comment-empty-line-before': null,
+        'custom-property-pattern': null,
+        'custom-property-empty-line-before': null,
+        'declaration-empty-line-before': null,
+        'declaration-block-no-redundant-longhand-properties': null,
+        'declaration-block-single-line-max-declarations': null,
+        'declaration-property-value-keyword-no-deprecated': null,
+        'font-family-name-quotes': null,
+        'hue-degree-notation': null,
+        'import-notation': null,
+        'keyframes-name-pattern': null,
+        'length-zero-no-unit': null,
+        'media-feature-range-notation': null,
+        'no-descending-specificity': null,
+        'no-duplicate-selectors': null,
+        'property-no-deprecated': null,
+        'property-no-vendor-prefix': null,
+        'rule-empty-line-before': null,
+        'selector-class-pattern': null,
+        'selector-id-pattern': null,
+        'selector-not-notation': null,
+        'shorthand-property-no-redundant-values': null,
+        'value-keyword-case': null,
+    },
     overrides: [
         {
-            // The shared token/preset CSS is allowed to declare raw values once.
-            files: ['packages/typescript/ui/**/*.css', 'config/tailwind/**/*.css'],
+            files: cssFiles,
             rules: {
-                'color-no-hex': null,
-                'color-named': null,
-                'declaration-property-value-disallowed-list': null,
+                'declaration-property-value-no-unknown': [
+                    true,
+                    {
+                        ignoreProperties: {
+                            '/.*/': [
+                                '/var\\(--/',
+                                '/theme\\(/',
+                            ],
+                        },
+                    },
+                ],
             },
         },
     ],

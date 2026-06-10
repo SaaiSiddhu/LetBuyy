@@ -9,7 +9,7 @@ export default function HomePage() {
       <section className="developer-hero">
         <div className="developer-hero-grid">
           <div className="developer-band">
-            <span className="developer-kicker">developers.letbuyy.store</span>
+            <span className="developer-kicker">developers.letbuyy.com</span>
             <h1 className="developer-title">Build apps, themes, and automations on the real LetBuyy platform.</h1>
             <p className="developer-lede">
               The developer portal is a docs-first workbench for the current `/v1` gateway, app OAuth, lifecycle webhooks, Liquid plus JSON-contract themes, GraphQL rollout status, and partner dashboard contracts.

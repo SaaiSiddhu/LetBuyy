@@ -20,7 +20,7 @@ Actual source root: `apps/storefront-runtime`.
 - Package: @letbuyy/storefront-runtime
 - File: apps/storefront-runtime/package.json
 - Scripts: dev, build, start, lint, typecheck, test
-- Runtime dependencies: @letbuyy/api-client, @letbuyy/auth-core, @letbuyy/checkout-core, @letbuyy/cms-core, @letbuyy/commerce-core, @letbuyy/runtime-composition, @letbuyy/shared-types, @letbuyy/tenant-core, @letbuyy/theme-engine, @letbuyy/ui, @vercel/speed-insights, clsx, framer-motion, jose, lucide-react, next, react, react-dom, server-only, tailwind-merge
+- Runtime dependencies: @letbuyy/api-client, @letbuyy/auth-core, @letbuyy/checkout-core, @letbuyy/cms-core, @letbuyy/commerce-core, @letbuyy/service-owned read planners, @letbuyy/shared-types, @letbuyy/tenant-core, @letbuyy/theme-engine, @letbuyy/ui, @vercel/speed-insights, clsx, framer-motion, jose, lucide-react, next, react, react-dom, server-only, tailwind-merge
 - Dev dependencies: @tailwindcss/postcss, @types/node, @types/react, @types/react-dom, eslint, eslint-config-next, tailwindcss, typescript
 - Peer dependencies: none declared
 
@@ -104,7 +104,7 @@ Actual source root: `apps/storefront-runtime`.
 ## Runtime Rules
 
 - Keep business logic out of page components. Use declared shared clients, app-local presentation adapters, or worker routes.
-- Durable checkout, payment, auth, tenant, CMS, and commerce workflows belong in application-services and backend service execution containers.
+- Durable checkout, payment, auth, tenant, CMS, and commerce workflows belong in service-owned workflow adapters and backend service execution containers.
 - Keep tenant context explicit: every store/merchant operation must bind to `site_id`, `[store]`, `[subdomain]`, or an ownership-checked resource.
 - Do not introduce secrets, provider keys, or service-role access into client components.
 - Prefer skeletons and retryable error states over spinner-only loading.

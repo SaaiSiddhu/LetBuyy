@@ -72,7 +72,7 @@ export default function CenterPanel({
                     </div>
                     <div className="te-preview-url-bar">
                         <MaterialIcon name="lock" size={14} />
-                        <span className="te-preview-url">{storeName}.letbuyy.store</span>
+                        <span className="te-preview-url">{storeName}.letbuyy.com</span>
                     </div>
                 </div>
 

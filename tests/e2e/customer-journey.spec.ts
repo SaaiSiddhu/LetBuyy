@@ -1,6 +1,6 @@
 import { expect, test, type APIRequestContext, type Locator, type Page } from '@playwright/test';
 
-const storefrontUrl = process.env.LETBUYY_E2E_STOREFRONT_URL ?? 'https://storefront.staging.letbuyy.store';
+const storefrontUrl = process.env.LETBUYY_E2E_STOREFRONT_URL ?? 'https://storefront.staging.letbuyy.com';
 const storeSubdomain = process.env.LETBUYY_E2E_STORE_SUBDOMAIN ?? 'demo-urban-kicks-store';
 
 async function requireReachable(request: APIRequestContext, url: string, label: string): Promise<void> {
@@ -25,7 +25,7 @@ async function clickFirstVisible(locator: Locator): Promise<boolean> {
 
 async function openStorefront(page: Page): Promise<void> {
   const subdomainUrl = process.env.LETBUYY_E2E_STORE_HOST_URL
-    ?? `https://${storeSubdomain}.staging.letbuyy.store`;
+    ?? `https://${storeSubdomain}.staging.letbuyy.com`;
 
   await page.goto(`${subdomainUrl}/`, { waitUntil: 'domcontentloaded' }).catch(async () => {
     await page.goto(`${storefrontUrl}/store/${storeSubdomain}`, { waitUntil: 'domcontentloaded' });

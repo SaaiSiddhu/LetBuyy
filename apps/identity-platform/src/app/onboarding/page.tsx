@@ -8,6 +8,7 @@ import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
 import { Badge, Banner, Button, DescriptionList, Input } from '@letbuyy/ui'
+import { useAuthTheme } from '@/lib/useAuthTheme'
 
 /* ——————————————————————————————————————
    Types
@@ -362,7 +363,7 @@ export default function OnboardingPage() {
     const [authLoading, setAuthLoading] = useState(true)
 
     // Theme & Language
-    const [isDark, setIsDark] = useState(false)
+    const { isDark, toggleTheme } = useAuthTheme()
     const [lang, setLang] = useState<Lang>('en')
 
     // User dropdown
@@ -372,11 +373,6 @@ export default function OnboardingPage() {
 
     /* ——— Initialize theme & language from localStorage ——— */
     useEffect(() => {
-        const savedTheme = localStorage.getItem('letbuyy-theme')
-        const dark = savedTheme === 'dark'
-        setIsDark(dark)
-        document.documentElement.classList.toggle('dark', dark)
-        document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
 
         const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
         setLang(savedLang)
@@ -415,13 +411,6 @@ export default function OnboardingPage() {
     }, [showUserMenu])
 
     /* ——— Theme toggle ——— */
-    const toggleTheme = () => {
-        const newTheme = !isDark
-        setIsDark(newTheme)
-        localStorage.setItem('letbuyy-theme', newTheme ? 'dark' : 'light')
-        document.documentElement.classList.toggle('dark', newTheme)
-        document.documentElement.style.colorScheme = newTheme ? 'dark' : 'light'
-    }
 
     /* ——— Language cycle ——— */
     const cycleLang = () => {
@@ -603,7 +592,7 @@ export default function OnboardingPage() {
                             className="mt-4 text-left"
                             items={[
                                 { term: t.siteTypeLabel, description: <strong>{selectedSiteTypeLabel}</strong> },
-                                { term: t.subdomainLabel, description: <strong className="break-all">{subdomain}.letbuyy.store</strong> },
+                                { term: t.subdomainLabel, description: <strong className="break-all">{subdomain}.letbuyy.com</strong> },
                             ]}
                         />
                         <Banner title={t.successNext} variant="success" className="mt-4 text-left">
@@ -670,7 +659,7 @@ export default function OnboardingPage() {
 
                 {/* Error banner */}
                 {error && (
-                    <div className="auth-error">
+                    <div className="auth-error" role="alert" aria-live="assertive">
                         <AuthIcon name="error" size={16} style={{ marginRight: 6 }} />
                         {error}
                     </div>
@@ -781,7 +770,7 @@ export default function OnboardingPage() {
                                     maxLength={63}
                                     autoFocus
                                 />
-                                <span className="onboard-subdomain-suffix">.letbuyy.store</span>
+                                <span className="onboard-subdomain-suffix">.letbuyy.com</span>
                             </div>
 
                             {/* Validation message */}
@@ -858,7 +847,7 @@ export default function OnboardingPage() {
                                 },
                                 {
                                     term: t.subdomainLabel,
-                                    description: <strong className="break-all">{subdomain}.letbuyy.store</strong>,
+                                    description: <strong className="break-all">{subdomain}.letbuyy.com</strong>,
                                 },
                             ]}
                         />
@@ -1008,7 +997,7 @@ export default function OnboardingPage() {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--bg-secondary)', borderRadius: 10, border: '1px solid var(--border)' }}>
                                 <span style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>{t.subdomainLabel}</span>
                                 <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--primary)' }}>
-                                    {subdomain}.letbuyy.store
+                                    {subdomain}.letbuyy.com
                                 </span>
                             </div>
                         </div>

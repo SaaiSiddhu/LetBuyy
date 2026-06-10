@@ -3,7 +3,7 @@
   "manifestVersion": 1,
   "mode": "governance-contract-not-live-evidence",
   "durableExecution": {
-    "engineSource": "packages/distributed-runtime/src/durable-execution-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "baseExecutionContract": "config/runtime/distributed-execution-contract.json",
     "walFactory": "createExecutionWal",
     "walAppender": "appendExecutionWalEntry",
@@ -30,7 +30,7 @@
     "checkpointLineagePolicy": "previousWalChecksum-links-every-entry"
   },
   "leaseGovernance": {
-    "engineSource": "packages/distributed-runtime/src/lease-fencing-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "arbitrationFunction": "arbitrateOrchestrationLease",
     "checkpointFunction": "reconcileLeaseCheckpoint",
     "revocationFunction": "revokeOrchestrationLease",
@@ -41,7 +41,7 @@
     "splitBrainPolicy": "hard-fail-on-active-owner-overlap"
   },
   "fencingGovernance": {
-    "engineSource": "packages/distributed-runtime/src/lease-fencing-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "tokenFunction": "createFencingToken",
     "validationFunction": "validateFencingToken",
     "tokenPolicy": "monotonic-increment-only",
@@ -49,8 +49,8 @@
     "staleTokenPolicy": "reject-before-operation-apply"
   },
   "sagaRecovery": {
-    "engineSource": "packages/distributed-runtime/src/saga-recovery-runtime.ts",
-    "baseCompensationEngine": "packages/distributed-runtime/src/compensation-saga-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
+    "baseCompensationEngine": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "walAppender": "appendSagaWalEntry",
     "recoveryFunction": "recoverPersistentSaga",
     "assertionFunction": "assertSagaRecoverySafe",
@@ -59,7 +59,7 @@
     "resumptionPolicy": "remaining-steps-derived-from-compensation-wal"
   },
   "distributedClock": {
-    "engineSource": "packages/distributed-runtime/src/distributed-clock-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "lamportTick": "tickLamportClock",
     "lamportMerge": "mergeLamportClock",
     "vectorMerge": "mergeVectorClock",
@@ -74,7 +74,7 @@
     "replayTemporalPolicy": "logical-clock-ordering-precedes-wall-clock-observation"
   },
   "executionIsolation": {
-    "engineSource": "packages/distributed-runtime/src/execution-isolation-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "graphCompiler": "compileExecutionAuthorityGraph",
     "assertionFunction": "assertExecutionIsolation",
     "capabilityModel": "deny-by-default-capability-token",
@@ -89,7 +89,7 @@
     ]
   },
   "operationalStorage": {
-    "engineSource": "packages/distributed-runtime/src/operational-storage-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "topologyCompiler": "compileOperationalStorageTopology",
     "assertionFunction": "assertOperationalStorageGovernance",
     "stateClasses": [
@@ -104,7 +104,7 @@
     "persistenceProvenance": "archivalLineageChecksum"
   },
   "recoverySimulation": {
-    "engineSource": "packages/distributed-runtime/src/recovery-simulation-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "simulationFunction": "simulateRecoveryPlayback",
     "assertionFunction": "assertRecoverySimulationStable",
     "simulationKinds": [
@@ -120,7 +120,7 @@
     "equilibriumPolicy": "all-recovery-paths-converge-before-execute-mode"
   },
   "executionReconciliation": {
-    "engineSource": "packages/distributed-runtime/src/execution-reconciliation-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "reconciliationFunction": "reconcileExecutionState",
     "assertionFunction": "assertExecutionReconciliationStable",
     "inputs": [
@@ -133,7 +133,7 @@
     "oscillationPolicy": "duplicate-reconciliation-actions-hard-fail"
   },
   "cloudflareDurableRuntime": {
-    "engineSource": "packages/distributed-runtime/src/durable-cloudflare-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "bindingOwnershipManifest": "config/runtime/cloudflare-binding-ownership.json",
     "compiler": "compileCloudflareDurableExecutionLineage",
     "assertionFunction": "assertCloudflareDurableExecutionLineage",
@@ -151,7 +151,7 @@
     "remoteReconciliationPolicy": "plan-only-until-execute-mode-credentials-exist"
   },
   "walLifecycle": {
-    "engineSource": "packages/distributed-runtime/src/wal-lifecycle-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "segmentFunction": "segmentExecutionWal",
     "planFunction": "compileWalLifecyclePlan",
     "restorationFunction": "restoreWalEntriesFromCursor",
@@ -163,7 +163,7 @@
     "archivalPolicy": "wal-ancestry-required-before-cold-archive"
   },
   "leaseHeartbeat": {
-    "engineSource": "packages/distributed-runtime/src/lease-heartbeat-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "heartbeatFunction": "recordLeaseHeartbeat",
     "reconciliationFunction": "reconcileLeaseHeartbeats",
     "assertionFunction": "assertLeaseHeartbeatSafe",
@@ -173,7 +173,7 @@
     "driftPolicy": "heartbeat-checksum-and-epoch-validation-required"
   },
   "splitBrainPrevention": {
-    "engineSource": "packages/distributed-runtime/src/lease-heartbeat-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "simulationFunction": "simulateSplitBrain",
     "assertionFunction": "assertLeaseHeartbeatSafe",
     "authorityPolicy": "single-authoritative-owner-after-fencing-replay",
@@ -182,7 +182,7 @@
     "failurePolicy": "hard-fail-if-concurrent-authority-survives"
   },
   "resumableExecution": {
-    "engineSource": "packages/distributed-runtime/src/resumable-dag-execution-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "cursorFunction": "compileResumableDagCursor",
     "restoreFunction": "restoreExecutionContinuation",
     "assertionFunction": "assertResumableDagExecution",
@@ -197,7 +197,7 @@
     ]
   },
   "distributedConflictArbitration": {
-    "engineSource": "packages/distributed-runtime/src/distributed-conflict-arbitration-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "arbitrationFunction": "arbitrateDistributedConflicts",
     "assertionFunction": "assertDistributedConflictArbitration",
     "authorityPolicy": "lowest-authority-rank-then-highest-version-wins",
@@ -206,7 +206,7 @@
     "mergePolicy": "deterministic-arbitration-dag-before-reconciliation"
   },
   "crdtConvergence": {
-    "engineSource": "packages/distributed-runtime/src/crdt-convergence-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "mergeFunction": "mergeCrdtLattice",
     "assertionFunction": "assertCrdtConvergence",
     "mergePolicy": "monotonic-lattice-join",
@@ -215,7 +215,7 @@
     "proofPolicy": "lattice-checksum-required"
   },
   "adaptiveRecoveryThrottling": {
-    "engineSource": "packages/distributed-runtime/src/adaptive-recovery-throttling-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "allocatorFunction": "allocateAdaptiveRecoveryBudgets",
     "assertionFunction": "assertAdaptiveRecoveryThrottling",
     "governorPolicy": "deterministic-token-bucket-recovery-governor",
@@ -228,7 +228,7 @@
     "starvationPolicy": "at-least-one-token-per-active-kind"
   },
   "durableObjectRecovery": {
-    "engineSource": "packages/distributed-runtime/src/durable-object-recovery-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "planFunction": "compileDurableObjectRecoveryPlan",
     "assertionFunction": "assertDurableObjectRecovery",
     "bindingOwnershipManifest": "config/runtime/cloudflare-binding-ownership.json",
@@ -241,7 +241,7 @@
     "bindingPolicy": "non-inheritable-binding-explicit-per-environment"
   },
   "convergenceProof": {
-    "engineSource": "packages/distributed-runtime/src/convergence-proof-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "proofFunction": "compileConvergenceProof",
     "assertionFunction": "assertConvergenceProof",
     "boundedPolicy": "observed-iterations-must-not-exceed-max-iterations",
@@ -250,7 +250,7 @@
     "equilibriumPolicy": "fixed-point-and-theorem-checksum-required"
   },
   "recoveryDrillGovernance": {
-    "engineSource": "packages/distributed-runtime/src/recovery-drill-runtime.ts",
+    "engineSource": "services/api-gateway/src/execution/event-execution.adapter.ts",
     "runtimeFunction": "replayRecoveryDrill",
     "assertionFunction": "assertRecoveryDrillLineage",
     "drillKinds": [

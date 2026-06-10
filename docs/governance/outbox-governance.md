@@ -1,12 +1,12 @@
 # Outbox Governance
 
-The outbox is LetBuyy's durable event handoff boundary between application workflows and async execution.
+The outbox is LetBuyy's durable event handoff boundary between service-side workflows and async execution.
 
 ## Source Authority
 
-- Outbox execution contracts live in `packages/orchestration/src/outbox-runtime.ts`.
-- Application services decide when a workflow emits events.
-- Services process outbox records as execution containers.
+- Domain event envelope contracts live in `packages/event-core`.
+- Services decide when a workflow emits events and persist outbox records through owned execution adapters.
+- Queue workers and webhook services process outbox records as execution containers.
 - Infrastructure adapters own concrete persistence, queue, retry, and dead-letter provider integrations.
 
 ## Record Rules
@@ -27,7 +27,7 @@ The outbox is LetBuyy's durable event handoff boundary between application workf
 
 - The foundation targets at-least-once delivery with idempotent handlers.
 - Exactly-once semantics must not be promised at runtime boundaries.
-- Application services and provider adapters must tolerate duplicate event delivery.
+- Service workflows, queue workers, webhook handlers, and provider adapters must tolerate duplicate event delivery.
 
 ## Forbidden Patterns
 

@@ -5,7 +5,7 @@
  * Server components (`lib/api/client.ts`), the request proxy (`proxy.ts`), and
  * the internal store-access client (`lib/storefront-access.ts`) all resolve from
  * THIS ordered list, so setting any one declared name works everywhere instead
- * of some readers silently falling back to the production `api.letbuyy.store`
+ * of some readers silently falling back to the production `api.letbuyy.com`
  * host.
  *
  * Reads use literal `process.env` access (not a dynamic `process.env[key]` loop)

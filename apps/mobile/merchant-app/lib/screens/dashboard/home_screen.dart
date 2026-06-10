@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
@@ -10,7 +10,6 @@ import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../services/analytics_service.dart';
 import '../../services/app_badge_service.dart';
 import '../../services/home_widget_service.dart';
-import '../../services/money_service.dart';
 import '../../services/store_service.dart';
 import '../../services/store_auth_service.dart';
 import '../../models/store_model.dart';
@@ -23,6 +22,7 @@ import '../../widgets/dashboard/quick_actions_grid.dart';
 import '../../widgets/dashboard/animated_revenue_chart.dart';
 import '../../widgets/dashboard/activity_timeline.dart';
 import '../../widgets/store/store_switcher_button.dart';
+import '../../widgets/shared/provider_mode_badge.dart';
 
 /// Premium Enhanced Dashboard - Bento Grid Layout
 /// Modern 2025/2026 UI with glassmorphism, micro-interactions, and animations
@@ -37,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   StoreModel? _store;
   StoreAnalytics? _analytics;
   Map<String, dynamic>? _payoutSummary;
+  String? _dashboardProviderMode;
   bool _isLoading = true;
   bool _isPublishing = false;
   String _selectedPeriod = '30 Days';
@@ -52,27 +53,26 @@ class _HomeScreenState extends State<HomeScreen> {
     final storeContext = context.read<StoreContext>();
     final analyticsService = context.read<AnalyticsService>();
     final appBadgeService = context.read<AppBadgeService>();
-    final moneyService = context.read<MoneyService>();
     final homeWidgetService = context.read<HomeWidgetService>();
 
     try {
       final store = await storeContext.ensureSelectedStore();
       StoreAnalytics? analytics;
       Map<String, dynamic>? payoutSummary;
+      String? providerMode;
       if (store != null) {
         try {
-          analytics = await analyticsService.getStoreAnalytics(
+          final snapshot = await analyticsService.getMobileDashboardSnapshot(
             store.id,
             period: _analyticsPeriod,
           );
-        } catch (analyticsError) {
-          debugPrint('Error loading dashboard analytics: $analyticsError');
-        }
-        try {
-          payoutSummary = await moneyService.fetchPayoutSummary(store.id);
-        } catch (payoutError) {
-          debugPrint('Error loading dashboard payouts: $payoutError');
-          payoutSummary = null;
+          analytics = snapshot.analytics;
+          payoutSummary = snapshot.payoutSummary;
+          providerMode = snapshot.providerMode;
+        } catch (dashboardError) {
+          debugPrint(
+            'Error loading mobile dashboard composite: $dashboardError',
+          );
         }
       }
       if (!mounted) return;
@@ -80,6 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _store = store;
         _analytics = analytics;
         _payoutSummary = payoutSummary;
+        _dashboardProviderMode = providerMode;
       });
       if (store != null && analytics != null) {
         unawaited(
@@ -659,6 +660,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final subtitle = nextPayout == null
         ? 'Paid orders will appear here when settlement is ready.'
         : '${nextPayout['status'] ?? 'pending'} · ${nextPayout['available_on'] ?? 'available soon'}';
+    final providerMode = ProviderMode.parse(
+      _dashboardProviderMode ?? _payoutSummary?['provider_mode'],
+    );
 
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, AppRoutes.money),
@@ -721,6 +725,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
+            ProviderModeBadge(mode: providerMode, compact: true),
+            const SizedBox(width: 8),
             Icon(Icons.chevron_right_rounded, color: colors.textSecondary),
           ],
         ),

@@ -1,13 +1,20 @@
 import fs from "node:fs";
 import { getTrackedFiles, readFile } from "./governance-common.mjs";
 
-const dashboard = readFile("FOUNDATION_EXECUTION_DASHBOARD.md");
-const status = readFile("FOUNDATION_STEPUP_STATUS.md");
+const archiveRoot = "docs/archive/root-governance-2026-06-10";
+const dashboardPath = fs.existsSync("FOUNDATION_EXECUTION_DASHBOARD.md")
+  ? "FOUNDATION_EXECUTION_DASHBOARD.md"
+  : `${archiveRoot}/FOUNDATION_EXECUTION_DASHBOARD.md`;
+const statusPath = fs.existsSync("FOUNDATION_STEPUP_STATUS.md")
+  ? "FOUNDATION_STEPUP_STATUS.md"
+  : `${archiveRoot}/FOUNDATION_STEPUP_STATUS.md`;
+const dashboard = readFile(dashboardPath);
+const status = readFile(statusPath);
 const phaseA = [
-  "FOUNDATION_REPO_STATE.md",
-  "ACTIVE_DEPLOYMENT_TOPOLOGY.md",
-  "BUILD_GRAPH.md",
-  "IMPORT_GRAPH.md",
+  `${archiveRoot}/FOUNDATION_REPO_STATE.md`,
+  `${archiveRoot}/ACTIVE_DEPLOYMENT_TOPOLOGY.md`,
+  `${archiveRoot}/BUILD_GRAPH.md`,
+  `${archiveRoot}/IMPORT_GRAPH.md`,
 ];
 
 console.log("Foundation Step-Up report lane");

@@ -1897,6 +1897,7 @@ export const StorePaymentConfigSchema = z.object({
   store_id: UuidSchema,
   online_payment_enabled: z.boolean().default(true),
   cod_enabled: z.boolean().default(true),
+  provider_mode: z.enum(['mock', 'sandbox', 'live']).default('mock'),
   payment_settings: StorePaymentSettingsSchema,
   schema_ready: z.boolean().optional(),
 }).passthrough();

@@ -6,12 +6,12 @@
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_IDENTITY_PROJECT_ID",
-        "url": "https://accounts-staging.letbuyy.store",
+        "url": "https://accounts-staging.letbuyy.com",
         "branch": "develop"
       },
       "production": {
         "project_id": "PRODUCTION_IDENTITY_PROJECT_ID",
-        "url": "https://accounts.letbuyy.store",
+        "url": "https://accounts.letbuyy.com",
         "branch": "main"
       }
     },
@@ -21,12 +21,12 @@
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_MERCHANT_PROJECT_ID",
-        "url": "https://admin-staging.letbuyy.store",
+        "url": "https://admin-staging.letbuyy.com",
         "branch": "develop"
       },
       "production": {
         "project_id": "PRODUCTION_MERCHANT_PROJECT_ID",
-        "url": "https://admin.letbuyy.store",
+        "url": "https://admin.letbuyy.com",
         "branch": "main"
       }
     },
@@ -36,12 +36,12 @@
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_STOREFRONT_PROJECT_ID",
-        "url": "https://store-staging.letbuyy.store",
+        "url": "https://store-staging.letbuyy.com",
         "branch": "develop"
       },
       "production": {
         "project_id": "PRODUCTION_STOREFRONT_PROJECT_ID",
-        "url": "https://store.letbuyy.store",
+        "url": "https://store.letbuyy.com",
         "branch": "main"
       }
     },
@@ -51,12 +51,12 @@
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_MARKETING_PROJECT_ID",
-        "url": "https://www-staging.letbuyy.store",
+        "url": "https://www-staging.letbuyy.com",
         "branch": "develop"
       },
       "production": {
         "project_id": "PRODUCTION_MARKETING_PROJECT_ID",
-        "url": "https://www.letbuyy.store",
+        "url": "https://www.letbuyy.com",
         "branch": "main"
       }
     },
@@ -66,12 +66,12 @@
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_PLATFORM_CONSOLE_PROJECT_ID",
-        "url": "https://console-staging.letbuyy.store",
+        "url": "https://console-staging.letbuyy.com",
         "branch": "develop"
       },
       "production": {
         "project_id": "PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID",
-        "url": "https://console.letbuyy.store",
+        "url": "https://console.letbuyy.com",
         "branch": "main"
       }
     },
@@ -81,12 +81,12 @@
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_APP_MARKETPLACE_PROJECT_ID",
-        "url": "https://apps-staging.letbuyy.store",
+        "url": "https://apps-staging.letbuyy.com",
         "branch": "develop"
       },
       "production": {
         "project_id": "PRODUCTION_APP_MARKETPLACE_PROJECT_ID",
-        "url": "https://apps.letbuyy.store",
+        "url": "https://apps.letbuyy.com",
         "branch": "main"
       }
     },
@@ -96,12 +96,12 @@
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_DEVELOPER_PORTAL_PROJECT_ID",
-        "url": "https://developers-staging.letbuyy.store",
+        "url": "https://developers-staging.letbuyy.com",
         "branch": "develop"
       },
       "production": {
         "project_id": "PRODUCTION_DEVELOPER_PORTAL_PROJECT_ID",
-        "url": "https://developers.letbuyy.store",
+        "url": "https://developers.letbuyy.com",
         "branch": "main"
       }
     },
@@ -111,12 +111,12 @@
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_THEME_MARKETPLACE_PROJECT_ID",
-        "url": "https://themes-staging.letbuyy.store",
+        "url": "https://themes-staging.letbuyy.com",
         "branch": "develop"
       },
       "production": {
         "project_id": "PRODUCTION_THEME_MARKETPLACE_PROJECT_ID",
-        "url": "https://themes.letbuyy.store",
+        "url": "https://themes.letbuyy.com",
         "branch": "main"
       }
     },
@@ -126,12 +126,12 @@
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID",
-        "url": "https://ops-staging.letbuyy.store",
+        "url": "https://ops-staging.letbuyy.com",
         "branch": "develop"
       },
       "production": {
         "project_id": "PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID",
-        "url": "https://ops.letbuyy.store",
+        "url": "https://ops.letbuyy.com",
         "branch": "main"
       }
     }

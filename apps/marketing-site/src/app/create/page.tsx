@@ -162,7 +162,7 @@ export default function CreateStorePage() {
                                         className="w-full border-none px-4 py-2.5 text-sm outline-none dark:bg-zinc-800 dark:text-zinc-100"
                                     />
                                     <span className="whitespace-nowrap bg-zinc-100 px-4 py-2.5 text-sm text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400">
-                                        .letbuyy.store
+                                        .letbuyy.com
                                     </span>
                                 </div>
                                 {subdomainAvailable === true && (

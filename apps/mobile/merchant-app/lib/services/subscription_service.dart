@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 
-import '../theme/letbuyy_color_tokens.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'api_client.dart';
 
 class BillingHistoryEntry {

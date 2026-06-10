@@ -115,7 +115,7 @@ export default function LandingComingSoon({ storeName, tagline, logoUrl, launchD
                 {/* PROGRESS */}
                 {ok && <div style={{ width: '100%', maxWidth: 'min(280px,70vw)', animation: 'fu 1s cubic-bezier(.16,1,.3,1) .65s both' }}><div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3, fontSize: 'clamp(7px,1vw,10px)', fontWeight: 600, color: 'rgba(255,255,255,.25)' }}><span>Launch Progress</span><span style={{ color: 'rgb(196 181 253)' }}>91%</span></div><div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,.04)', overflow: 'hidden' }}><div style={{ width: '91%', height: '100%', borderRadius: 2, background: 'linear-gradient(90deg,rgb(139 92 246),rgb(167 139 250),rgb(196 181 253))', position: 'relative' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent)', animation: 'sh 2.5s linear infinite' }} /></div></div></div>}
 
-                <p style={{ fontSize: 'clamp(8px,1.1vw,11px)', color: 'rgba(255,255,255,.18)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .7s both' : 'none' }}>Powered by <a href="https://letbuyy.store" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(196,181,253,.45)', textDecoration: 'none', fontWeight: 700 }}>LetBuyy</a></p>
+                <p style={{ fontSize: 'clamp(8px,1.1vw,11px)', color: 'rgba(255,255,255,.18)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .7s both' : 'none' }}>Powered by <a href="https://letbuyy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(196,181,253,.45)', textDecoration: 'none', fontWeight: 700 }}>LetBuyy</a></p>
             </div>
 
             <style>{`

@@ -49,7 +49,7 @@ const columns: Array<ConsoleDataColumn<ConsoleStore>> = [
                 >
                     {row.store_name || row.name || '-'}
                 </Link>
-                <p className="mt-1 text-xs text-zinc-500">{row.subdomain ? `${row.subdomain}.letbuyy.store` : row.id}</p>
+                <p className="mt-1 text-xs text-zinc-500">{row.subdomain ? `${row.subdomain}.letbuyy.com` : row.id}</p>
             </div>
         ),
     },

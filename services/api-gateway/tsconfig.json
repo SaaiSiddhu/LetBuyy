@@ -70,12 +70,6 @@
       "@letbuyy/permission-core": [
         "../../packages/permission-core/src/index.ts"
       ],
-      "@letbuyy/runtime-composition": [
-        "../../packages/runtime-composition/src/index.ts"
-      ],
-      "@letbuyy/search-core": [
-        "../../packages/search-core/src/index.ts"
-      ],
       "@letbuyy/billing-core": [
         "../../packages/billing-core/src/index.ts"
       ],

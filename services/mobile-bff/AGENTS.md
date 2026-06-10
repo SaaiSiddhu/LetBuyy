@@ -14,7 +14,7 @@ Forbidden dependencies:
 
 - No imports from `apps/*`, `legacy/*`, or repository-level `infrastructure/*`.
 - No direct database, Supabase, Firebase, payment-provider, or storage SDK access.
-- No business workflow orchestration. The BFF is a transport trust boundary only.
+- No business workflow service-local event helpers. The BFF is a transport trust boundary only.
 - No committed real secrets. `INTERNAL_API_SECRET` must be provided by Cloudflare secrets for live environments.
 
 Execution rules:

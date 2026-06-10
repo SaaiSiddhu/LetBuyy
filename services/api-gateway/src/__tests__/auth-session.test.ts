@@ -9,7 +9,7 @@ const authWrapperSource = readFileSync(new URL('../../../../apps/mobile/merchant
 
 test('custom auth session validation returns expiry metadata for mobile refresh UX', () => {
     assert.match(authRouteSource, /expires_at:\s*localSession\.expires_at/);
-    assert.match(authRouteSource, /expires_at:\s*session\.expires_at/);
+    assert.match(authRouteSource, /expires_at:\s*session\.expiresAt/);
     assert.match(dartClientSource, /ApiUnauthorizedHandler\? unauthorizedHandler/);
     assert.match(dartClientSource, /_shouldRetryAfterUnauthorized/);
     assert.match(mobileAuthSource, /AuthChangeEvent\.sessionExpired/);

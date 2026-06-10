@@ -1,10 +1,10 @@
 # Event Store Governance
 
-The production event store is the Supabase Postgres append-only event store until a dedicated event-store provider is introduced behind `packages/distributed-runtime`.
+The production event store is the Supabase Postgres append-only event store until a dedicated event-store provider is introduced behind `packages/infrastructure`.
 
 ## Ownership
 
-- Contracts: `packages/distributed-runtime/src/event-store-runtime.ts`
+- Contracts: `packages/event-core` plus the API gateway operations route contracts
 - Persistence: `distributed_event_streams`, `distributed_event_store`, and `event_stream_snapshots`
 - Replay scheduling: `runtime_replay_executions` and `replay_operation_schedules`
 - Replay authorization: `/v1/operations/runtime/replays/:replayId/authorize`

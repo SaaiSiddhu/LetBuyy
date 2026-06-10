@@ -1,0 +1,150 @@
+{
+  "generatedAt": "2026-06-09",
+  "motifCount": 18,
+  "motifs": [
+    {
+      "key": "generic",
+      "title": "Nothing here yet",
+      "surfaces": [
+        "Generic / fallback",
+        "Search — no results"
+      ]
+    },
+    {
+      "key": "orders",
+      "title": "No orders yet",
+      "surfaces": [
+        "Orders"
+      ]
+    },
+    {
+      "key": "products",
+      "title": "Add your first product",
+      "surfaces": [
+        "Products"
+      ]
+    },
+    {
+      "key": "inventory",
+      "title": "No inventory tracked",
+      "surfaces": [
+        "Inventory"
+      ]
+    },
+    {
+      "key": "shipping",
+      "title": "No shipments yet",
+      "surfaces": [
+        "Shipping",
+        "Fulfillment",
+        "Returns"
+      ]
+    },
+    {
+      "key": "customers",
+      "title": "No customers yet",
+      "surfaces": [
+        "Customers",
+        "Reseller"
+      ]
+    },
+    {
+      "key": "payments",
+      "title": "No payments yet",
+      "surfaces": [
+        "Payments",
+        "Checkout"
+      ]
+    },
+    {
+      "key": "payouts",
+      "title": "No payouts yet",
+      "surfaces": [
+        "Payouts",
+        "Settlements",
+        "Billing"
+      ]
+    },
+    {
+      "key": "discounts",
+      "title": "No discounts yet",
+      "surfaces": [
+        "Discounts",
+        "Marketing"
+      ]
+    },
+    {
+      "key": "analytics",
+      "title": "No data to show yet",
+      "surfaces": [
+        "Analytics"
+      ]
+    },
+    {
+      "key": "domains",
+      "title": "No domains connected",
+      "surfaces": [
+        "Domains"
+      ]
+    },
+    {
+      "key": "themes",
+      "title": "No theme published",
+      "surfaces": [
+        "Themes",
+        "Storefront"
+      ]
+    },
+    {
+      "key": "apps",
+      "title": "No apps installed",
+      "surfaces": [
+        "Apps",
+        "Marketplace",
+        "Integrations"
+      ]
+    },
+    {
+      "key": "messaging",
+      "title": "No conversations yet",
+      "surfaces": [
+        "WhatsApp"
+      ]
+    },
+    {
+      "key": "notifications",
+      "title": "You're all caught up",
+      "surfaces": [
+        "Notifications",
+        "Email"
+      ]
+    },
+    {
+      "key": "identity",
+      "title": "No identities yet",
+      "surfaces": [
+        "Identity",
+        "KYC"
+      ]
+    },
+    {
+      "key": "security",
+      "title": "Nothing flagged",
+      "surfaces": [
+        "Security",
+        "SSO",
+        "Passkeys",
+        "Audit Logs"
+      ]
+    },
+    {
+      "key": "permissions",
+      "title": "No staff added",
+      "surfaces": [
+        "Staff",
+        "Roles",
+        "Permissions"
+      ]
+    }
+  ]
+}

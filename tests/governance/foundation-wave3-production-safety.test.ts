@@ -100,7 +100,7 @@ test('shared environment preflight rejects sentinel secrets until evidence is re
   assert.equal(passed.ok, true);
 });
 
-test('domain defaults stay on letbuyy.store until DNS cutover is approved', () => {
+test('domain defaults stay on letbuyy.com until DNS cutover is approved', () => {
   for (const file of [
     'apps/marketing-site/src/lib/public-urls.ts',
     'apps/theme-marketplace/src/lib/public-urls.ts',

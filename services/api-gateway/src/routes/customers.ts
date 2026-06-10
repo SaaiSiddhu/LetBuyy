@@ -969,7 +969,7 @@ router.post('/:email/email', validate('json', SendCustomerEmailSchema), async (c
     const html = `<p>${escapeHtml(body.message).replaceAll('\n', '<br>')}</p>`;
     const result = await sendResendEmail({
         apiKey: c.env.RESEND_API_KEY,
-        from: `LetBuyy <${c.env.RESEND_FROM_EMAIL || 'noreply@letbuyy.store'}>`,
+        from: `LetBuyy <${c.env.RESEND_FROM_EMAIL || 'noreply@letbuyy.com'}>`,
         to: email,
         subject: body.subject,
         html,

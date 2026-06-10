@@ -42,7 +42,7 @@ test('Task 016 media module signs R2 upload intents and publishes media.processe
     const mediaRoute = source('routes/media.ts');
     const storageAdapter = repositorySource('packages/infrastructure/storage-adapter/index.ts');
     const eventCore = repositorySource('packages/event-core/src/index.ts');
-    const runtimeComposition = repositorySource('packages/runtime-composition/src/search-projection-runtime.ts');
+    const queueProjectionPlans = source('execution/queue-projection-plans.ts');
     const migration = repositorySource('database/supabase/migrations/154_executable_analytics_media_ai_seam.sql');
 
     assert.match(mediaRoute, /router\.post\('\/signed-upload'/);
@@ -58,8 +58,8 @@ test('Task 016 media module signs R2 upload intents and publishes media.processe
     assert.match(storageAdapter, /export function mediaAssetTypeForContent/);
     assert.match(eventCore, /'media\.processed'/);
     assert.match(eventCore, /activeGatewayContract\('media\.processed', 'media'/);
-    assert.match(runtimeComposition, /media\.processed/);
-    assert.match(runtimeComposition, /media\.size_bytes/);
+    assert.match(queueProjectionPlans, /media\.processed/);
+    assert.match(queueProjectionPlans, /media\.size_bytes/);
     assert.match(migration, /ALTER TABLE public\.media_assets[\s\S]*ADD COLUMN IF NOT EXISTS site_id/);
     assert.match(migration, /ALTER TABLE public\.media_assets FORCE ROW LEVEL SECURITY/);
 });

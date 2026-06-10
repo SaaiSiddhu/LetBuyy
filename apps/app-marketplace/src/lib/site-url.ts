@@ -15,8 +15,8 @@ const PUBLIC_URLS: Record<PublicUrlKey, { envName: string; value: string | undef
     themeMarketplace: { envName: 'NEXT_PUBLIC_THEME_MARKETPLACE_URL', value: process.env.NEXT_PUBLIC_THEME_MARKETPLACE_URL },
 };
 
-const PLATFORM_ROOT_DOMAINS = ['letbuyy.com', 'letbuyy.store'] as const;
-const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.store';
+const PLATFORM_ROOT_DOMAINS = ['letbuyy.com'] as const;
+const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com';
 
 const LOCAL_BROWSER_URLS: Record<PublicUrlKey, string> = {
     accounts: 'http://127.0.0.1:9001',

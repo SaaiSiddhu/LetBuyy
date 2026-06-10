@@ -101,7 +101,7 @@ export async function storefrontRequestCacheKey(c: StorefrontCacheContext, names
 }
 
 export function storefrontCacheRequest(key: string): Request {
-    return new Request(`https://letbuyy.storefront-cache.internal/${key}`, { method: 'GET' });
+    return new Request(`https://letbuyy-storefront-cache.internal/${key}`, { method: 'GET' });
 }
 
 export async function cachedJson(

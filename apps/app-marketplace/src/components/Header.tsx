@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
-import { Button, ChevronDown, ChevronRight, LogOut, Search, User, X } from '@letbuyy/ui';
+import { Button, ChevronDown, ChevronRight, LogOut, Search, ThemeToggleButton, User, X } from '@letbuyy/ui';
 import { getAccountsUrl } from '@/lib/site-url';
 
 type AccountState = {
@@ -241,6 +241,8 @@ export function Header() {
                 </nav>
 
                 <div className="appstore-header-right">
+                    <ThemeToggleButton label="Toggle marketplace theme" className="appstore-theme-toggle" />
+
                     <Link href="/search" className="appstore-mobile-search" aria-label="Search apps" onClick={closeMenus}>
                         <Search size={27} aria-hidden="true" />
                     </Link>

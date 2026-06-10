@@ -22,7 +22,9 @@ test('Task 003 checkout routes mount public session steps and split branding aut
 });
 
 test('Task 003 checkout verifies signed handoff, uses idempotency, and compensates failed confirm', () => {
-    assert.match(routeSource, /hmacSha256Hex\(secret, `\$\{siteId\}:\$\{cartId\}:\$\{cartToken\}:\$\{channel\}:\$\{expiresAt\}`\)/);
+    assert.match(routeSource, /canonicalCheckoutCartBinding/);
+    assert.match(routeSource, /canonicalCheckoutHandoffPayload/);
+    assert.match(routeSource, /cartDigest = c\.req\.query\('cart_digest'\)/);
     assert.match(routeSource, /timingSafeEqualHex\(expected, signature\)/);
     assert.match(routeSource, /new IdempotencyExecutionAdapter\(getSupabaseAdmin\(c\)\)/);
     assert.match(routeSource, /runIdempotentStep\(c,\s*verified\.handoff,\s*`checkout\.confirm:\$\{cartId\}`/);

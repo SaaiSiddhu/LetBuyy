@@ -1,8 +1,8 @@
-const DEFAULT_ACCOUNTS_URL = 'https://accounts.letbuyy.store'
-const DEFAULT_ADMIN_URL = 'https://admin.letbuyy.store'
+const DEFAULT_ACCOUNTS_URL = 'https://accounts.letbuyy.com'
+const DEFAULT_ADMIN_URL = 'https://admin.letbuyy.com'
 const DEFAULT_LOCAL_STOREFRONT_URL = 'http://localhost:3003'
-const DEFAULT_THEME_MARKETPLACE_URL = 'https://themes.letbuyy.store'
-const PLATFORM_DOMAIN = 'letbuyy.store'
+const DEFAULT_THEME_MARKETPLACE_URL = 'https://themes.letbuyy.com'
+const PLATFORM_DOMAIN = 'letbuyy.com'
 
 function trimTrailingSlash(value: string): string {
     return value.replace(/\/+$/, '')

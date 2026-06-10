@@ -619,7 +619,7 @@ export function getDefaultStorefrontThemeTemplate(
                 visible: true,
                 settings: {
                     ...footer.defaults,
-                    contactEmail: 'help@letbuyy.store',
+                    contactEmail: 'help@letbuyy.com',
                 },
             },
             template: [

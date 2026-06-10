@@ -31,7 +31,7 @@ class StorageService {
   Future<void> deleteImage(String imageUrl) async {
     try {
       // Extract the key from the CDN URL
-      // e.g. https://cdn.letbuyy.store/uploads/userId/file.jpg → uploads/userId/file.jpg
+      // e.g. https://cdn.letbuyy.com/uploads/userId/file.jpg → uploads/userId/file.jpg
       final uri = Uri.parse(imageUrl);
       final key = uri.path.startsWith('/') ? uri.path.substring(1) : uri.path;
       await _api.delete('upload/$key');

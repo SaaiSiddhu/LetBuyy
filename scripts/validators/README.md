@@ -18,4 +18,3 @@ Enterprise dependency and execution hardening is enforced by:
 - `queue-lifecycle-validator.mjs` for queue retry, dead-letter, poison-message, and recovery time governance.
 - `rollback-integrity-validator.mjs`, `deployment-lineage-validator.mjs`, and `topology-drift-validator.mjs` for rollback-safe deployment lineage.
 - `cloudflare-binding-validator.mjs` for explicit Wrangler environment binding ownership.
-- `survivability-governance-validator.mjs` for plan-vs-execute proof boundaries, measured live evidence status, observability contracts, and multi-region runtime contracts.

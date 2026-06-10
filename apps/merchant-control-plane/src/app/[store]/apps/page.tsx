@@ -39,7 +39,7 @@ export default async function AppsPage({ params }: AppsPageProps) {
                 description="Open embedded apps, review installed extensions, and reach the LetBuyy app marketplace."
                 primaryAction={{
                     label: 'Browse marketplace',
-                    href: 'https://apps.letbuyy.store',
+                    href: 'https://apps.letbuyy.com',
                     icon: <MaterialIcon name="extension" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />,
                 }}
             />
@@ -81,7 +81,7 @@ export default async function AppsPage({ params }: AppsPageProps) {
                             body="Install apps from the marketplace to add embedded workflows to this admin."
                             primaryAction={
                                 <a
-                                    href="https://apps.letbuyy.store"
+                                    href="https://apps.letbuyy.com"
                                     className="inline-flex h-[var(--lb-size-control-md)] items-center justify-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-primary)] bg-[var(--lb-color-primary)] px-[var(--lb-space-4)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-inverse)] transition-colors duration-[var(--lb-motion-fast)] hover:bg-[var(--lb-color-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
                                 >
                                     <MaterialIcon name="extension" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />

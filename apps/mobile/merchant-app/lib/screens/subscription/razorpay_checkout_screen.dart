@@ -8,7 +8,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../../config/app_config.dart';
 import '../../services/subscription_service.dart';
 import '../../theme/app_theme_colors.dart';
-import '../../theme/letbuyy_color_tokens.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 class RazorpayCheckoutScreen extends StatefulWidget {
   const RazorpayCheckoutScreen({

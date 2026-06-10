@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { readAppStoreRouteSource } from '../helpers/app-store-route-source.mjs';
 
-const APP_ENGINE = 'packages/app-engine/src/index.ts';
+const APP_ENGINE = 'packages/shared-types/src/app-platform.ts';
 const OUTBOX_ADAPTER = 'services/api-gateway/src/execution/outbox-execution.adapter.ts';
 const WEBHOOK_SERVICE = 'services/webhook-service/src/index.ts';
 const WEBHOOK_DISPATCH = 'services/webhook-service/src/app-lifecycle-dispatch.ts';

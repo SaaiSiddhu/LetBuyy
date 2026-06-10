@@ -100,7 +100,7 @@ class StoreSwitcherButton extends StatelessWidget {
                       ),
                     ),
                     subtitle: Text(
-                      '${store.subdomain}.letbuyy.store',
+                      '${store.subdomain}.letbuyy.com',
                       style: TextStyle(color: colors.textSecondary),
                     ),
                     trailing: store.id == storeContext.selectedStoreId

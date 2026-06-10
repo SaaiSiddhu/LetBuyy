@@ -1,6 +1,6 @@
 import { headers } from 'next/headers';
 
-const PLATFORM_ROOT_DOMAINS = ['letbuyy.com', 'letbuyy.store'] as const;
+const PLATFORM_ROOT_DOMAINS = ['letbuyy.com'] as const;
 const HOST_PATTERN = /^[a-z0-9.-]+(?::\d+)?$/i;
 
 function normalizeHostname(host: string): string {

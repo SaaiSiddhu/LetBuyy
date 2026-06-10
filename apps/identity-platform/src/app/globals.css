@@ -11,6 +11,10 @@
   --primary: var(--lb-color-primary);
   --primary-light: rgb(167 139 250);
   --primary-dark: var(--lb-color-primary-active);
+  /* THEME FIX (Wave 4 / TH-1): --purple is consumed at globals.css:215,530 (.auth-info
+     text + onboarding icon hover) but was never defined → broken color in BOTH themes.
+     Map it to the brand primary (theme-aware via --lb-color-primary); no hardcoded color. */
+  --purple: var(--primary);
   --accent-cyan: rgb(6 182 212);
   --accent-blue: var(--lb-color-info);
   --success: var(--lb-color-success);
@@ -374,6 +378,21 @@ body {
 
 .auth-field input:focus {
   border-color: var(--primary);
+}
+
+/* A11Y FIX (Wave 3 / UI-2, WCAG 2.4.7): several controls set `outline: none` and
+   signalled focus only via border-color, leaving keyboard users with no visible
+   focus indicator. Restore a token-based ring for keyboard focus only
+   (:focus-visible) so pointer interaction is unchanged. Scoped to the identity app. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
 .auth-field input[aria-invalid="true"] {

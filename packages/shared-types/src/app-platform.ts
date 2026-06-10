@@ -1218,7 +1218,7 @@ export function createAppExtensionReviewChecklist(): AppExtensionReviewChecklist
       key: 'sandboxed_admin_ui',
       label: 'Admin UI extensions',
       requirement: 'Admin UI extensions must render inside the extension-host sandbox and use scoped App Bridge tokens.',
-      evidence: 'packages/extension-host and /v1/app-store/installations/:id/extensions',
+      evidence: 'packages/shared-types/src/app-platform.ts and /v1/app-store/installations/:id/extensions',
     },
     {
       key: 'sandboxed_checkout_ui',
@@ -1252,8 +1252,8 @@ export function createAppExtensionDeveloperHandoff(): AppExtensionDeveloperHando
     manifest_schema_version: LETBUYY_APP_MANIFEST_SCHEMA_VERSION,
     lifecycle_version: LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION,
     sdk_source_files: [
-      'packages/app-engine/src/index.ts',
-      'packages/extension-host/src/index.ts',
+      'packages/shared-types/src/app-platform.ts',
+      'services/api-gateway/src/extensions/app-functions-runtime.ts',
       'packages/typescript/api-client/src/index.ts',
       'apps/developer-portal/src/lib/reference.ts',
     ],

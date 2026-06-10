@@ -4,9 +4,9 @@ function trimTrailingSlash(value: string): string {
 
 type PublicUrlTarget = 'accounts' | 'admin' | 'storefront' | 'themeMarketplace'
 
-const PLATFORM_ROOT_DOMAINS = ['letbuyy.com', 'letbuyy.store'] as const
-const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.store'
-const DEFAULT_STOREFRONT_ROOT_DOMAIN = 'letbuyy.store'
+const PLATFORM_ROOT_DOMAINS = ['letbuyy.com'] as const
+const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com'
+const DEFAULT_STOREFRONT_ROOT_DOMAIN = 'letbuyy.com'
 
 const PUBLIC_URL_ENV_NAMES: Record<PublicUrlTarget, string> = {
     accounts: 'NEXT_PUBLIC_ACCOUNTS_URL',

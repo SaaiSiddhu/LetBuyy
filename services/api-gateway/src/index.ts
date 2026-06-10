@@ -144,6 +144,8 @@ export interface Env {
     AUTH_SECRET?: string;
     CSRF_SECRET?: string;
     CUSTOMER_SESSION_SECRET?: string;
+    LETBUYY_IDENTITY_ISSUER?: string;
+    LETBUYY_IDENTITY_PUBLIC_JWKS?: string;
     CUSTOMER_PASSWORD_RESET_URL?: string;
     STOREFRONT_BASE_URL?: string;
     NEXT_PUBLIC_STOREFRONT_URL?: string;
@@ -186,6 +188,7 @@ export interface Env {
     INTERNAL_API_SECRET_PREVIOUS?: string;
     LETBUYY_INTERNAL_API_SECRET?: string;
     LETBUYY_INTERNAL_API_SECRET_PREVIOUS?: string;
+    QUEUE_TENANT_ENVELOPE_SECRET?: string;
     WORKER_INTERNAL_API_SECRET?: string;
     INTERNAL_GATEWAY_IP_ALLOWLIST?: string;
     PLATFORM_CONSOLE_API_TOKEN?: string;

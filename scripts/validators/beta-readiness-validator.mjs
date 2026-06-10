@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import {
   createReporter,
+  exists,
   readFile,
+  rejectedPackageRoots,
 } from './governance-common.mjs';
 
 const reporter = createReporter('Beta readiness validator');
@@ -136,24 +138,15 @@ for (const file of [
   assertIncludes(file, 'services/mobile-bff', `${file} must include the active mobile BFF worker in active worker handling`);
 }
 
-const repoState = readFile('FOUNDATION_REPO_STATE.md');
-const importGraph = readFile('IMPORT_GRAPH.md');
-const activeImporterTargets = [
-  ['packages/distributed-runtime', '@letbuyy/distributed-runtime'],
-  ['packages/projection-runtime', '@letbuyy/projection-runtime'],
-  ['packages/orchestration', '@letbuyy/orchestration'],
-  ['packages/application-services', '@letbuyy/application-services'],
-  ['packages/app-engine', '@letbuyy/app-engine'],
-  ['packages/extension-host', '@letbuyy/extension-host'],
-];
-for (const [root, packageName] of activeImporterTargets) {
-  reporter.assert(repoState.includes(`| \`${root}\` | QUARANTINE |`) && repoState.includes('Active dependency.'), `${root} must retain the Phase A active-dependency proof`);
-  reporter.assert(importGraph.includes(`\`${root}\` / \`${packageName}\``) && importGraph.includes('FAIL'), `${root} must not be quarantined without a zero-importer proof`);
-}
+const survivingRejectedRoots = rejectedPackageRoots.filter((root) => exists(root));
+reporter.assert(
+  survivingRejectedRoots.length === 0,
+  `Phase D11 rejected architecture packages must be deleted after live migration: ${survivingRejectedRoots.join(", ")}`,
+);
 
-const skipped = readFile('FOUNDATION_STEPUP_SKIPPED.md');
+const skipped = readFile('SKIPPED_HUMAN_DECISIONS.md');
 for (const skipId of ['SKIP-W7-MOBILE-TURNSTILE-SECRET', 'SKIP-W7-WHATSAPP-LIVE-CREDS']) {
-  reporter.assert(skipped.includes(`## ${skipId}`), `FOUNDATION_STEPUP_SKIPPED.md missing ${skipId}`);
+  reporter.assert(skipped.includes(skipId), `SKIPPED_HUMAN_DECISIONS.md missing ${skipId}`);
 }
 
 const packageJson = readFile('package.json');
@@ -164,4 +157,4 @@ for (const fragment of [
   reporter.assert(packageJson.includes(fragment), `package.json missing Wave 7 script: ${fragment}`);
 }
 
-reporter.finish('mobile Turnstile, checkout capture, sandbox COD/WhatsApp, OIDC honesty, deploy exclusions, and quarantine proof checked');
+reporter.finish('mobile Turnstile, checkout capture, sandbox COD/WhatsApp, OIDC honesty, deploy exclusions, and D11 package deletion checked');

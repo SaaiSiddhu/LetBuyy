@@ -199,7 +199,7 @@ async function ensureSchedule(
             name: 'Default commission',
             status: 'active',
             currency: 'INR',
-            commission_bps: 300,
+            commission_bps: 0,
             gst_bps: 1800,
             effective_from: today(),
             source: 'mobile_money_contract',

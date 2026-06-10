@@ -97,7 +97,6 @@ test('provider webhooks are centralized in webhook-service', () => {
     const stripeAdapter = repositorySource('packages/infrastructure/stripe-adapter/index.ts');
     const paypalAdapter = repositorySource('packages/infrastructure/paypal-adapter/index.ts');
     const cashfreeAdapter = repositorySource('packages/infrastructure/cashfree-adapter/index.ts');
-    const runtimeComposition = repositorySource('packages/runtime-composition/checkout-runtime-adapter/index.ts');
 
     assert.match(webhookSource, /app\.post\("\/razorpay"/);
     assert.match(webhookSource, /app\.post\("\/stripe"/);
@@ -114,7 +113,6 @@ test('provider webhooks are centralized in webhook-service', () => {
     assert.doesNotMatch(paypalAdapter, /export async function verifyWebhookSignature/);
     assert.match(cashfreeAdapter, /x-webhook-timestamp/);
     assert.match(cashfreeAdapter, /x-webhook-signature/);
-    assert.doesNotMatch(runtimeComposition, /constructWebhookEvent|verifyWebhookSignature/);
 });
 
 test('payment provider adapters implement the unified payments contract', () => {

@@ -117,7 +117,7 @@ function payoutMode(env: Env): PayoutTransferMode {
 }
 
 function payoutRail(): MerchantPayoutRail {
-    return 'razorpayx';
+    return 'razorpay_route';
 }
 
 function payoutProviderConfigured(env: Env): boolean {
@@ -245,7 +245,7 @@ function planPayoutFeeAssessmentLedger(input: {
     return lines;
 }
 
-function summarize(siteId: string, rows: PayoutStatementRow[]) {
+function summarize(siteId: string, rows: PayoutStatementRow[], providerMode: PayoutTransferMode) {
     const totals = rows.reduce((acc, row) => {
         const key = `${row.status}_minor` as keyof typeof acc;
         acc[key] += Number(row.net_amount_minor || 0);
@@ -263,6 +263,7 @@ function summarize(siteId: string, rows: PayoutStatementRow[]) {
     return {
         site_id: siteId,
         currency: 'INR',
+        provider_mode: providerMode,
         ...totals,
         next_payout: next ? serializePayout(next) : null,
     };
@@ -341,7 +342,7 @@ async function loadCommissionBps(db: ReturnType<typeof getSupabaseAdmin>, siteId
         .maybeSingle();
 
     if (error) throw new Error(`Commission schedule lookup failed: ${error.message}`);
-    return Number((data as { commission_bps?: number } | null)?.commission_bps ?? 300);
+    return Number((data as { commission_bps?: number } | null)?.commission_bps ?? 0);
 }
 
 router.get('/', validate('query', ListPayoutsQuerySchema), async (c) => {
@@ -352,7 +353,7 @@ router.get('/', validate('query', ListPayoutsQuerySchema), async (c) => {
 
     return c.json(success({
         payouts: rows.map(serializePayout),
-        summary: summarize(tenant.siteId, rows),
+        summary: summarize(tenant.siteId, rows, payoutMode(c.env)),
     }));
 });
 
@@ -362,7 +363,7 @@ router.get('/summary', validate('query', StoreQuerySchema), async (c) => {
     const tenant = await resolveTenantContextForOwnedSite(c, query.store_id);
     const rows = await loadPayoutRows(db, tenant.siteId, undefined, 100);
 
-    return c.json(success(summarize(tenant.siteId, rows)));
+    return c.json(success(summarize(tenant.siteId, rows, payoutMode(c.env))));
 });
 
 router.post('/', validate('json', CreatePayoutStatementSchema), async (c) => {

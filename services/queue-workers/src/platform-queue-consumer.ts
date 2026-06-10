@@ -13,8 +13,13 @@ import {
   planDeletedSearchProjectionDocument,
   planOrderSearchProjectionDocument,
   planProductSearchProjectionDocument,
-} from '@letbuyy/runtime-composition';
-import { planInAppNotificationForEvent, type PlannedInAppNotification } from '@letbuyy/notification-core';
+} from './queue-projection-plans';
+import {
+  planInAppNotificationForEvent,
+  planWhatsAppNotificationForEvent,
+  type PlannedInAppNotification,
+  type PlannedWhatsAppNotification,
+} from '@letbuyy/notification-core';
 import {
   DEFAULT_APP_REVENUE_SHARE_BPS,
   planSandboxAppPayoutTransfer,
@@ -25,6 +30,10 @@ import {
   type SupabaseServiceEnv,
 } from '@letbuyy/infrastructure/supabase-adapter';
 import { emitGatewayDomainEvent, type GatewayServiceBinding } from '@letbuyy/infrastructure/gateway-events-adapter';
+import {
+  createWhatsAppCommerceAdapter,
+  type WhatsAppSendResult,
+} from '@letbuyy/infrastructure/whatsapp-commerce-adapter';
 import {
   dispatchPushNotificationToDevices,
   type PushNotificationDispatchResult,
@@ -93,6 +102,35 @@ interface OrderSearchRow {
   deleted_at?: string | null;
 }
 
+interface OrderWhatsAppRow {
+  id: string;
+  store_id?: string | null;
+  site_id?: string | null;
+  order_number?: string | null;
+  customer_name?: string | null;
+  customer_email?: string | null;
+  customer_phone?: string | null;
+  status?: string | null;
+  total?: number | string | null;
+  currency?: string | null;
+  carrier?: string | null;
+  tracking_number?: string | null;
+  cod_expires_at?: string | null;
+}
+
+interface WaOptInRow {
+  consent_status?: string | null;
+  revoked_at?: string | null;
+}
+
+interface CodConfirmationRequestRow {
+  id: string;
+  site_id: string;
+  order_id: string;
+  expires_at?: string | null;
+  idempotency_key?: string | null;
+}
+
 interface OrderItemAnalyticsRow {
   product_id?: string | null;
   name?: string | null;
@@ -154,6 +192,15 @@ export interface PlatformQueueConsumeResult {
 export interface PlatformQueueConsumerEnv extends SupabaseServiceEnv, PushProviderEnv {
   API_GATEWAY_SERVICE?: GatewayServiceBinding;
   INTERNAL_API_SECRET?: string;
+  WHATSAPP_PROVIDER_MODE?: string;
+  WHATSAPP_PROVIDER?: string;
+  TWILIO_ACCOUNT_SID?: string;
+  TWILIO_AUTH_TOKEN?: string;
+  TWILIO_WHATSAPP_FROM?: string;
+  WHATSAPP_WEBHOOK_SECRET?: string;
+  ENVIRONMENT?: string;
+  APP_ENV?: string;
+  NODE_ENV?: string;
   PLATFORM_QUEUE_CLAIM_LIMIT?: string;
   PLATFORM_QUEUE_DRAIN_BUDGET_PER_BATCH?: string;
   PLATFORM_QUEUE_CIRCUIT_FAILURE_THRESHOLD?: string;
@@ -231,6 +278,34 @@ function circuitOpenMilliseconds(env: PlatformQueueConsumerEnv): number {
 
 function genericFanoutEnabled(env: PlatformQueueConsumerEnv): boolean {
   return ['1', 'true', 'yes', 'on'].includes(String(env.PLATFORM_QUEUE_DRAIN_GENERIC_FANOUT || '').trim().toLowerCase());
+}
+
+function normalizeWhatsAppPhone(value: unknown): string {
+  return String(value || '')
+    .replace(/^whatsapp:/i, '')
+    .replace(/[^\d+]/g, '')
+    .trim();
+}
+
+function textValue(value: unknown): string | null {
+  const text = typeof value === 'string' ? value.trim() : value === null || value === undefined ? '' : String(value).trim();
+  return text || null;
+}
+
+function isMissingOptionalWhatsAppTable(error: { message?: string } | null | undefined): boolean {
+  const text = error?.message?.toLowerCase() || '';
+  return text.includes('schema cache') || text.includes('does not exist') || text.includes('could not find');
+}
+
+function formatOrderTotal(total: number | string | null | undefined, currency: string | null | undefined): string {
+  const amount = Number(total);
+  const displayCurrency = currency || 'INR';
+  if (!Number.isFinite(amount)) return displayCurrency;
+  return `${displayCurrency} ${amount.toFixed(2)}`;
+}
+
+function payloadText(payload: JsonObject, key: string): string | null {
+  return textValue(payload[key]);
 }
 
 function isCircuitOpen(queueName: PlatformQueueName): boolean {
@@ -539,9 +614,26 @@ class PlatformQueueConsumer {
     const contract = getDomainEventContract(event.event_type);
     if (!contract?.consumers.includes('notifications')) return;
 
-    const planned = planInAppNotificationForEvent(event);
-    if (!planned) return;
+    if (event.site_id) {
+      await this.expireDueCodConfirmations(job, event.site_id);
+    }
 
+    const plannedInApp = planInAppNotificationForEvent(event);
+    if (plannedInApp) {
+      await this.processInAppNotificationSideEffect(job, event, plannedInApp);
+    }
+
+    const plannedWhatsApp = planWhatsAppNotificationForEvent(event);
+    if (plannedWhatsApp) {
+      await this.processWhatsAppSideEffect(job, event, plannedWhatsApp);
+    }
+  }
+
+  private async processInAppNotificationSideEffect(
+    job: PlatformQueueJob,
+    event: RuntimeEventEnvelope<JsonObject>,
+    planned: PlannedInAppNotification,
+  ): Promise<void> {
     const userId = await this.resolveNotificationUserId(event.site_id || null, event.payload);
     if (!userId) return;
     const openOrderBadgeCount = planned.type === 'order_placed' && event.site_id
@@ -585,6 +677,499 @@ class PlatformQueueConsumer {
     });
 
     await this.recordPushDispatchFailureLog(job, event, planned, userId, pushResult);
+  }
+
+  private async processWhatsAppSideEffect(
+    job: PlatformQueueJob,
+    event: RuntimeEventEnvelope<JsonObject>,
+    planned: PlannedWhatsAppNotification,
+  ): Promise<void> {
+    const siteId = event.site_id || job.site_id;
+    const orderId = event.aggregate_id || payloadText(event.payload, 'order_id');
+    if (!siteId || !orderId) return;
+
+    const order = await this.loadOrderForWhatsApp(siteId, orderId);
+    if (!order) return;
+
+    const customerEmail = textValue(order.customer_email) || payloadText(event.payload, 'customer_email');
+    const customerPhone = normalizeWhatsAppPhone(order.customer_phone || event.payload.customer_phone);
+    const baseIdempotencyKey = event.idempotency_key || job.idempotency_key || event.event_id || job.id;
+    const idempotencyKey = `wa.${planned.category}:${siteId}:${order.id}:${planned.template_key}:${baseIdempotencyKey}`;
+
+    if (!customerPhone) {
+      await this.recordWhatsAppDispatchLog(job, event, planned, {
+        siteId,
+        orderId: order.id,
+        customerEmail,
+        customerPhone: '',
+        status: 'failed',
+        provider: 'letbuyy_sandbox',
+        errorMessage: 'CUSTOMER_PHONE_REQUIRED',
+        idempotencyKey,
+      });
+      return;
+    }
+
+    const consent = await this.hasActiveWhatsAppConsent(siteId, customerPhone, customerEmail);
+    if (!consent.optedIn) {
+      await this.recordWhatsAppDispatchLog(job, event, planned, {
+        siteId,
+        orderId: order.id,
+        customerEmail,
+        customerPhone,
+        status: 'suppressed',
+        provider: 'letbuyy_sandbox',
+        errorMessage: 'WA_CONSENT_REQUIRED',
+        idempotencyKey,
+        metadata: {
+          consent_required: planned.consent_required,
+          fail_closed_without_consent: planned.fail_closed_without_consent,
+          blocked_by: consent.reason,
+        },
+      });
+      return;
+    }
+
+    const adapter = createWhatsAppCommerceAdapter({
+      mode: this.env.WHATSAPP_PROVIDER_MODE,
+      provider: this.env.WHATSAPP_PROVIDER,
+      accountSid: this.env.TWILIO_ACCOUNT_SID,
+      authToken: this.env.TWILIO_AUTH_TOKEN,
+      from: this.env.TWILIO_WHATSAPP_FROM,
+      webhookSecret: this.env.WHATSAPP_WEBHOOK_SECRET,
+      environment: this.env.ENVIRONMENT,
+      appEnv: this.env.APP_ENV,
+      nodeEnv: this.env.NODE_ENV,
+    });
+
+    if (!adapter.available) {
+      await this.recordWhatsAppDispatchLog(job, event, planned, {
+        siteId,
+        orderId: order.id,
+        customerEmail,
+        customerPhone,
+        status: 'failed',
+        provider: adapter.provider,
+        errorMessage: adapter.unavailableReason || 'WHATSAPP_UNAVAILABLE',
+        idempotencyKey,
+        metadata: {
+          provider_mode: adapter.mode,
+          mock_send: adapter.provider === 'letbuyy_sandbox',
+        },
+      });
+      return;
+    }
+
+    let result: WhatsAppSendResult;
+    try {
+      result = await adapter.sendTemplate({
+        storeId: siteId,
+        customerEmail,
+        toPhone: customerPhone,
+        template: planned.template_key,
+        variables: this.whatsAppVariablesForOrder(order, planned),
+        idempotencyKey,
+      });
+    } catch (error) {
+      await this.recordWhatsAppDispatchLog(job, event, planned, {
+        siteId,
+        orderId: order.id,
+        customerEmail,
+        customerPhone,
+        status: 'failed',
+        provider: adapter.provider,
+        errorMessage: error instanceof Error ? error.message : 'WHATSAPP_SEND_FAILED',
+        idempotencyKey,
+        metadata: {
+          provider_mode: adapter.mode,
+          mock_send: adapter.provider === 'letbuyy_sandbox',
+        },
+      });
+      return;
+    }
+
+    const logStatus = result.status === 'failed' ? 'failed' : result.status === 'sent' ? 'sent' : 'queued';
+    const metadata = {
+      ...result.metadata,
+      provider_mode: result.providerMode,
+      mock_send: result.sandbox,
+      queue_job_id: job.id,
+      event_id: event.event_id,
+      consent_ledger: 'wa_optins',
+      bsp_template_approval: result.sandbox ? 'skipped_human' : 'provider_managed',
+    };
+
+    await this.writeWhatsAppMessageMirrors({
+      siteId,
+      customerEmail,
+      customerPhone,
+      orderId: order.id,
+      eventType: event.event_type,
+      templateKey: planned.template_key,
+      body: result.body,
+      provider: result.provider,
+      providerMessageId: result.providerMessageId,
+      status: result.status,
+      idempotencyKey,
+      metadata,
+    });
+
+    await this.upsertWhatsAppSession({
+      siteId,
+      customerPhone,
+      orderId: order.id,
+      sessionType: planned.session_type,
+      idempotencyKey: `wa.session:${planned.session_type}:${siteId}:${order.id}:${planned.template_key}`,
+      expiresAt: planned.session_type === 'cod_confirmation'
+        ? order.cod_expires_at || new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString()
+        : new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      metadata,
+    });
+
+    await this.recordWhatsAppDispatchLog(job, event, planned, {
+      siteId,
+      orderId: order.id,
+      customerEmail,
+      customerPhone,
+      status: logStatus,
+      provider: result.provider,
+      providerMessageId: result.providerMessageId,
+      body: result.body,
+      idempotencyKey,
+      metadata,
+    });
+  }
+
+  private async loadOrderForWhatsApp(siteId: string, orderId: string): Promise<OrderWhatsAppRow | null> {
+    const { data, error } = await this.db
+      .from('orders')
+      .select('id, store_id, site_id, order_number, customer_name, customer_email, customer_phone, status, total, currency, carrier, tracking_number, cod_expires_at')
+      .eq('id', orderId)
+      .or(`store_id.eq.${siteId},site_id.eq.${siteId}`)
+      .is('deleted_at', null)
+      .maybeSingle();
+
+    if (error) throw new Error(`WhatsApp order lookup failed: ${error.message}`);
+    return data as OrderWhatsAppRow | null;
+  }
+
+  private async hasActiveWhatsAppConsent(
+    siteId: string,
+    customerPhone: string,
+    customerEmail: string | null,
+  ): Promise<{ optedIn: boolean; reason: 'active' | 'missing_ledger' | 'missing_opt_in' | 'withdrawn_or_not_opted_in' }> {
+    const phoneResult = await this.db
+      .from('wa_optins')
+      .select('id, consent_status, revoked_at')
+      .eq('site_id', siteId)
+      .eq('customer_phone', customerPhone)
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (phoneResult.error) {
+      if (isMissingOptionalWhatsAppTable(phoneResult.error)) return { optedIn: false, reason: 'missing_ledger' };
+      throw new Error(`WhatsApp consent lookup failed: ${phoneResult.error.message}`);
+    }
+
+    const phoneRow = phoneResult.data as WaOptInRow | null;
+    if (phoneRow) {
+      const optedIn = phoneRow.consent_status === 'opted_in' && !phoneRow.revoked_at;
+      return {
+        optedIn,
+        reason: optedIn ? 'active' : 'withdrawn_or_not_opted_in',
+      };
+    }
+
+    if (!customerEmail) return { optedIn: false, reason: 'missing_opt_in' };
+
+    const emailResult = await this.db
+      .from('wa_optins')
+      .select('id, consent_status, revoked_at')
+      .eq('site_id', siteId)
+      .eq('customer_email', customerEmail)
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (emailResult.error) {
+      if (isMissingOptionalWhatsAppTable(emailResult.error)) return { optedIn: false, reason: 'missing_ledger' };
+      throw new Error(`WhatsApp consent email lookup failed: ${emailResult.error.message}`);
+    }
+
+    const emailRow = emailResult.data as WaOptInRow | null;
+    if (!emailRow) return { optedIn: false, reason: 'missing_opt_in' };
+
+    const optedIn = emailRow?.consent_status === 'opted_in' && !emailRow.revoked_at;
+    return {
+      optedIn,
+      reason: optedIn ? 'active' : 'withdrawn_or_not_opted_in',
+    };
+  }
+
+  private whatsAppVariablesForOrder(
+    order: OrderWhatsAppRow,
+    planned: PlannedWhatsAppNotification,
+  ): Record<string, string | number | boolean | null> {
+    return {
+      customer_name: order.customer_name || order.customer_email || 'customer',
+      order_number: order.order_number || order.id,
+      status: planned.event_status === 'cod_confirmation_requested' ? 'pending COD confirmation' : planned.event_status,
+      total: formatOrderTotal(order.total, order.currency),
+      carrier: order.carrier || 'your carrier',
+      tracking_number: order.tracking_number || 'pending',
+    };
+  }
+
+  private async writeWhatsAppMessageMirrors(input: {
+    siteId: string;
+    customerEmail: string | null;
+    customerPhone: string;
+    orderId: string;
+    eventType: string;
+    templateKey: string;
+    body: string;
+    provider: string;
+    providerMessageId: string;
+    status: string;
+    idempotencyKey: string;
+    metadata: JsonObject;
+  }): Promise<void> {
+    const customerWrite = await this.db
+      .from('customer_whatsapp_messages')
+      .upsert(
+        {
+          store_id: input.siteId,
+          customer_email: input.customerEmail,
+          customer_phone: input.customerPhone,
+          direction: 'outbound',
+          template: input.templateKey,
+          message: input.body,
+          provider: input.provider,
+          provider_message_id: input.providerMessageId,
+          status: input.status,
+          idempotency_key: input.idempotencyKey,
+          metadata: input.metadata,
+        },
+        { onConflict: 'store_id,idempotency_key' },
+      );
+
+    if (customerWrite.error && !isMissingOptionalWhatsAppTable(customerWrite.error)) {
+      throw new Error(`WhatsApp customer message write failed: ${customerWrite.error.message}`);
+    }
+
+    const mirrorWrite = await this.db
+      .from('whatsapp_messages')
+      .upsert(
+        {
+          site_id: input.siteId,
+          customer_email: input.customerEmail,
+          customer_phone: input.customerPhone,
+          direction: 'outbound',
+          template_key: input.templateKey,
+          body: input.body,
+          provider: input.provider,
+          provider_message_id: input.providerMessageId,
+          status: input.status,
+          order_id: input.orderId,
+          event_type: input.eventType,
+          idempotency_key: input.idempotencyKey,
+          metadata: input.metadata,
+        },
+        { onConflict: 'site_id,idempotency_key' },
+      );
+
+    if (mirrorWrite.error && !isMissingOptionalWhatsAppTable(mirrorWrite.error)) {
+      throw new Error(`WhatsApp message mirror write failed: ${mirrorWrite.error.message}`);
+    }
+  }
+
+  private async upsertWhatsAppSession(input: {
+    siteId: string;
+    customerPhone: string;
+    orderId: string;
+    sessionType: 'lifecycle' | 'cod_confirmation';
+    idempotencyKey: string;
+    expiresAt: string;
+    metadata: JsonObject;
+  }): Promise<void> {
+    const { error } = await this.db
+      .from('wa_sessions')
+      .upsert(
+        {
+          site_id: input.siteId,
+          customer_phone: input.customerPhone,
+          order_id: input.orderId,
+          session_type: input.sessionType,
+          status: 'open',
+          last_message_at: new Date().toISOString(),
+          expires_at: input.expiresAt,
+          idempotency_key: input.idempotencyKey,
+          metadata: input.metadata,
+        },
+        { onConflict: 'site_id,idempotency_key' },
+      );
+
+    if (error && !isMissingOptionalWhatsAppTable(error)) {
+      throw new Error(`WhatsApp session write failed: ${error.message}`);
+    }
+  }
+
+  private async recordWhatsAppDispatchLog(
+    job: PlatformQueueJob,
+    event: RuntimeEventEnvelope<JsonObject>,
+    planned: PlannedWhatsAppNotification,
+    input: {
+      siteId: string;
+      orderId: string;
+      customerEmail: string | null;
+      customerPhone: string;
+      status: 'queued' | 'sent' | 'failed' | 'suppressed';
+      provider: string;
+      providerMessageId?: string | null;
+      body?: string | null;
+      errorMessage?: string | null;
+      idempotencyKey: string;
+      metadata?: JsonObject;
+    },
+  ): Promise<void> {
+    const { error } = await this.db
+      .from('notification_logs')
+      .upsert(
+        {
+          site_id: input.siteId,
+          channel: 'whatsapp',
+          category: planned.category,
+          template_key: planned.template_key,
+          event_type: event.event_type,
+          recipient: {
+            order_id: input.orderId,
+            customer_email: input.customerEmail,
+            customer_phone: input.customerPhone || null,
+          },
+          body: input.body || null,
+          status: input.status,
+          provider: input.provider,
+          provider_message_id: input.providerMessageId || null,
+          error_message: input.errorMessage || null,
+          request_id: event.request_id || job.request_id,
+          trace_id: job.trace_id,
+          idempotency_key: `notification:${input.idempotencyKey}`,
+          metadata: {
+            queue_job_id: job.id,
+            event_id: event.event_id,
+            aggregate_type: event.aggregate_type || null,
+            aggregate_id: event.aggregate_id || null,
+            consent_required: planned.consent_required,
+            fail_closed_without_consent: planned.fail_closed_without_consent,
+            ...(input.metadata || {}),
+          },
+        },
+        { onConflict: 'site_id,idempotency_key' },
+      );
+
+    if (error) throw new Error(`WhatsApp notification log write failed: ${error.message}`);
+  }
+
+  private async expireDueCodConfirmations(job: PlatformQueueJob, siteId: string): Promise<void> {
+    const now = new Date().toISOString();
+    const { data, error } = await this.db
+      .from('cod_confirmation_requests')
+      .select('id, site_id, order_id, expires_at, idempotency_key')
+      .eq('site_id', siteId)
+      .eq('status', 'requested')
+      .lte('expires_at', now)
+      .is('deleted_at', null)
+      .limit(25);
+
+    if (error) {
+      if (isMissingOptionalWhatsAppTable(error)) return;
+      throw new Error(`COD confirmation expiry lookup failed: ${error.message}`);
+    }
+
+    const requests = Array.isArray(data) ? data as CodConfirmationRequestRow[] : [];
+    for (const request of requests) {
+      await this.expireCodConfirmationRequest(job, request, now);
+    }
+  }
+
+  private async expireCodConfirmationRequest(
+    job: PlatformQueueJob,
+    request: CodConfirmationRequestRow,
+    now: string,
+  ): Promise<void> {
+    const responsePayload = {
+      reason: 'no_whatsapp_confirmation',
+      queue_job_id: job.id,
+      expired_at: now,
+      fail_closed: true,
+    };
+
+    const requestUpdate = await this.db
+      .from('cod_confirmation_requests')
+      .update({
+        status: 'expired',
+        response_payload: responsePayload,
+        updated_at: now,
+      })
+      .eq('id', request.id)
+      .eq('site_id', request.site_id)
+      .eq('status', 'requested');
+
+    if (requestUpdate.error) throw new Error(`COD confirmation expiry update failed: ${requestUpdate.error.message}`);
+
+    const orderUpdate = await this.db
+      .from('orders')
+      .update({
+        status: 'cancelled',
+        cod_confirmation_status: 'expired',
+        fulfillment_state: 'cancelled',
+        rto_status: 'at_risk',
+        updated_at: now,
+      })
+      .eq('id', request.order_id)
+      .eq('store_id', request.site_id)
+      .in('status', ['pending_cod', 'pending']);
+
+    if (orderUpdate.error) throw new Error(`COD confirmation order expiry update failed: ${orderUpdate.error.message}`);
+
+    await this.recordCodExpiryLog(job, request, now);
+  }
+
+  private async recordCodExpiryLog(
+    job: PlatformQueueJob,
+    request: CodConfirmationRequestRow,
+    now: string,
+  ): Promise<void> {
+    const { error } = await this.db
+      .from('notification_logs')
+      .upsert(
+        {
+          site_id: request.site_id,
+          channel: 'whatsapp',
+          category: 'cod_confirmation',
+          template_key: 'cod_confirmation',
+          event_type: 'cod.confirmation_expired',
+          recipient: { order_id: request.order_id },
+          status: 'failed',
+          provider: 'letbuyy_sandbox',
+          error_message: 'COD confirmation expired without customer reply',
+          idempotency_key: `wa.cod.expired:${request.site_id}:${request.order_id}:${request.id}`,
+          metadata: {
+            queue_job_id: job.id,
+            expired_at: now,
+            source_request_id: request.id,
+            source_idempotency_key: request.idempotency_key || null,
+            fail_closed: true,
+            auto_cancelled: true,
+          },
+        },
+        { onConflict: 'site_id,idempotency_key' },
+      );
+
+    if (error) throw new Error(`COD confirmation expiry log write failed: ${error.message}`);
   }
 
   private async recordPushDispatchFailureLog(

@@ -28,7 +28,8 @@ test('product detail cache misses emit sampled analytics events instead of hot-r
     "type: 'product'",
     'sample_rate: sampleRate',
     'sample_weight: sampleWeight',
-    'c.executionCtx.waitUntil(queue.send',
+    'c.executionCtx.waitUntil(signQueueTenantEnvelope',
+    'then((body) => queue.send(body))',
     'emitProductViewedEvent(c, {',
   ], 'storefront product-view event path');
   assert.ok(!storefrontRouteSource.includes('recordStorefrontView'));

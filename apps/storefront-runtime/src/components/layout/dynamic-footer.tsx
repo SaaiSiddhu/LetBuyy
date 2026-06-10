@@ -47,7 +47,7 @@ export default function DynamicFooter({ store, settings, blocks = [] }: DynamicF
     const youtubeUrl = settings?.youtubeUrl || '';
 
     // Contact email
-    const contactEmail = settings?.contactEmail || 'help@letbuyy.store';
+    const contactEmail = settings?.contactEmail || 'help@letbuyy.com';
 
     const footerBlockLinks = blocks
         .filter((block) => block.type === 'footerLink' && block.isVisible !== false)
@@ -233,7 +233,7 @@ export default function DynamicFooter({ store, settings, blocks = [] }: DynamicF
                             <Heart size={12} fill={theme.primaryColor} color={theme.primaryColor} />
                             <span>by</span>
                             <a
-                                href="https://letbuyy.store"
+                                href="https://letbuyy.com"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="font-semibold hover:opacity-80 transition-opacity"

@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'LetBuyy — Discover Sites Built by the Community',
     description: 'Explore the LetBuyy community. Find sites or create your own.',
-    url: 'https://storefront.letbuyy.store',
+    url: 'https://storefront.letbuyy.com',
     siteName: 'LetBuyy',
     type: 'website',
   },

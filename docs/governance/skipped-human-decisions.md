@@ -12,11 +12,10 @@ The recovery's hard constraint throughout: **the monorepo must stay green** (com
 **Impact.** New drift is blocked platform-wide today; existing drift is quarantined and can only decrease.
 **Recommendation.** Schedule the CSS burn-down (largest first: `merchant-control-plane` 10,335-line globals.css, `app-marketplace` 7,475, `marketing-site` 5,143). Each PR lowers the baseline via `pnpm run validate:design-system:update`.
 
-## D2 — Stylelint config activated but binary not added
-**Decision.** Wired `.stylelintrc.cjs` into scripts (`lint:css`), the pre-commit hook (guarded), and docs, but did **not** add `stylelint` to `package.json`/lockfile. The dependency-free `validate:design-system` Node validator is the CI-enforced CSS-color gate instead.
-**Reason.** Adding an npm dependency requires a lockfile regen, which cannot be produced safely in the build sandbox and would break `--frozen-lockfile` CI install.
-**Impact.** CSS color governance is enforced in CI now (via the Node validator); the richer stylelint rules are one command away.
-**Recommendation.** Run `pnpm add -Dw stylelint stylelint-config-standard`; `pnpm run lint:css` and the pre-commit stylelint step then activate automatically (the hook already guards on the binary's presence).
+## D2 — Stylelint config and binary ✅ RESOLVED (2026-06-10)
+**Status.** Closed. `stylelint@17.13.0` and `stylelint-config-standard@40.0.0` are installed at the workspace root, `pnpm-lock.yaml` is updated, `.stylelintrc.cjs` is the active config, and both CI governance workflows run `pnpm run lint:css`.
+**Why it mattered.** The CSS channel is now a real blocking gate instead of a dormant local script. The broad design-token debt remains governed by `validate:design-system`'s ratchet so the first stylelint activation does not rebaseline or mass-fail pre-existing CSS drift.
+**Verified.** `pnpm run lint:css` passes.
 
 ## D3 — ESLint color rules left at `warn`
 **Decision.** Did not promote `no-tailwind-default-color` / `no-raw-color-functions` / `no-raw-form-controls` from `warn` to `error` in `packages/typescript/ui/eslint/index.cjs`.
@@ -24,11 +23,11 @@ The recovery's hard constraint throughout: **the monorepo must stay green** (com
 **Impact.** ESLint still surfaces them; the design-system ratchet is the hard gate that blocks new ones.
 **Recommendation.** After the D1 burn-down, promote these to `error` (a one-line change per rule).
 
-## D4 — Identity auth-page toggles unified on key, not yet on `useTheme()`
-**Decision.** The 9 identity auth pages (login, signup, check-email, lookup, forgot-password, reset-password, set-password, select, onboarding) were migrated to the canonical key `letbuyy-theme`, but still flip `.dark` directly via their local toggle rather than calling `useTheme()`. `HeaderBar` (merchant) and `navbar` (theme-marketplace) are the reference `useTheme()` conversions.
-**Reason.** These pages co-mingle theme + language state; a 9-file structural rewrite was higher risk than value this pass. The hard requirement (single key, single vocabulary) is met.
-**Impact.** Single persistence key platform-wide; the provider re-reads it. The provider's in-memory `resolvedTheme` is not updated live by these page toggles (it re-resolves on navigation/reload), which is acceptable for full-page auth flows.
-**Recommendation.** Extract a shared `<AuthThemeToggle/>` in `identity-platform` that uses `useTheme()`, and replace the 9 inline toggles.
+## D4 — Identity auth-page toggles → `useTheme()` ✅ RESOLVED (2026-06-09)
+**Status.** Closed. All 9 identity auth pages (login, signup, check-email, lookup, forgot-password, reset-password, set-password, select, onboarding) now route their theme toggle through the canonical provider via a shared `useAuthTheme()` hook (`apps/identity-platform/src/lib/useAuthTheme.ts`, backed by `@letbuyy/ui` `useTheme()`). The local `isDark` state, mount-effect `.dark` application, and per-page `toggleTheme` functions were removed. The provider's `resolvedTheme` now updates live on toggle, so `@letbuyy/ui` components (e.g. `Banner`) flip with the page.
+**Why it mattered.** Surfaced live: the onboarding `<Banner variant="info">` rendered light-theme tokens on a dark page (light-on-light washout) because the page toggle flipped `<html>.dark` without updating `LetbuyyThemeProvider`, leaving `DesignSystemRoot` on the stale theme.
+**Also.** `colorScheme` is now set centrally by the provider (`applyDomSignals` + `ThemeScript`), replacing the per-page `document.documentElement.style.colorScheme` writes the pages used to do — native scrollbars/inputs match the theme for every app.
+**Verified.** `@letbuyy/ui` + `identity-platform` `tsc --noEmit` clean; `validate:design-system` passes.
 
 ## D5 — `_local-ui` workspace twins not deleted
 **Decision.** `platform-console/.../_local-ui/console-workspace.tsx` and `platform-operations-portal/.../_local-ui/ops-workspace.tsx` (the 63-line-diff twins) were **not** deleted. The canonical `StatusBadge` + `statusToBadgeVariant` were promoted to `@letbuyy/ui` as the replacement for the 5× status-pill fork, and `AppNavigation` now covers the sidebar duplication.
@@ -42,11 +41,20 @@ The recovery's hard constraint throughout: **the monorepo must stay green** (com
 **Impact.** 2 of 10 hand-rolled navs eliminated; active-state correctness added to both; one canonical width.
 **Recommendation.** Migrate `merchant-control-plane` next onto `AppNavigation`; define a separate shared `MarketingHeader` for marketing/app-marketplace/storefront.
 
+## D6A — Merchant shell migrated to `AppNavigation` ✅ RESOLVED (2026-06-10)
+**Status.** Closed for merchant. `apps/merchant-control-plane/src/components/AdminShell.tsx` now composes `@letbuyy/ui` `AppNavigation`, the local `Sidebar.tsx` fork is deleted, and the `shell-single` validator fails if the fork returns or the merchant shell drops `AppNavigation`.
+**Also.** Merchant IA now exposes a first-class Money node routing to `settings/billing`.
+**Verified.** `node scripts/validators/shell-single-validator.mjs` passes.
+
 ## D7 — Mobile reconciled by value, full token inversion deferred
 **Decision.** Reconciled `ui_kit/AppColors` status colors (success/error/warning) to the canonical token values, removing the rendered drift (lime success, brick error). Did **not** repoint the live `store_theme.dart`/screens to the generated `letbuyy_color_tokens.dart`, nor resolve the duplicate `LetbuyyColorTokens` class name collision.
 **Reason.** The live theme + ~343 screen references to `AppColors` make full inversion a large, separate refactor; the value reconciliation removes the actual divergence now. The `generate-mobile-tokens --check` gate is wired into CI.
 **Impact.** Mobile status/brand colors now match web. Two color-source classes still coexist in Dart.
 **Recommendation.** Invert `store_theme.dart` to consume the generated tokens, delete the `AppColors` duplication, and rename one `LetbuyyColorTokens` to remove the collision.
+
+## D7A — Mobile token inversion ✅ RESOLVED (2026-06-10)
+**Status.** Closed. `packages/typescript/ui/tokens.json` now feeds the generated Dart bridge at `packages/dart/ui_kit/lib/src/tokens/letbuyy_tokens.dart`; Flutter `AppTheme`/`AppColors` consume the generated bridge, and the app-local mobile token/color authorities were deleted.
+**Verified.** `node scripts/validators/token-source-single-validator.mjs`, `node scripts/generators/generate-mobile-tokens.mjs --check`, and `node scripts/generators/generate-design-tokens.mjs --check` pass.
 
 ## D8 — Operations apps default theme changed
 **Decision.** `platform-console` changed from **hardcoded** `theme="dark"` to `defaultTheme="dark"` (still dark, now user-toggleable). `platform-operations-portal` default set to `dark` (was OS/`auto`) for sibling consistency.
@@ -65,3 +73,9 @@ The recovery's hard constraint throughout: **the monorepo must stay green** (com
 **Reason.** The build sandbox caps commands at 45s; a full Next build of 9 apps + Flutter does not fit, and the installed esbuild/tsx binary targets the host OS, not the sandbox Linux.
 **Impact.** Package-level and governance verification is complete; app-level build verification relies on CI.
 **Recommendation.** Let CI run `turbo build`/`turbo typecheck` across the 9 apps on this branch; the changes are mechanical layout/import edits plus additive package exports.
+
+## D10 WhatsApp — BSP/WABA/HSM approval remains human-gated
+**Decision.** Scoped WhatsApp order lifecycle and COD confirmation flows stay on the `letbuyy_sandbox` mock adapter until a platform operator completes BSP/Meta WABA onboarding and template approval.
+**Reason.** Live WhatsApp sender approval, HSM/template review, business verification, webhook secret provisioning, and provider credentials are external-provider actions that cannot be fabricated in source.
+**Impact.** The repository can plan, consent-gate, persist, mirror, and audit WhatsApp lifecycle/COD sends, but the default send is mock/sandbox-badged and does not reach real shoppers.
+**Recommendation.** Complete `SKIP-D10-WHATSAPP-BSP-WABA-HSM` in `SKIPPED_HUMAN_DECISIONS.md`, then run live smoke evidence for `order_paid`, `order_shipped`, `order_delivered`, and `cod_confirmation`.

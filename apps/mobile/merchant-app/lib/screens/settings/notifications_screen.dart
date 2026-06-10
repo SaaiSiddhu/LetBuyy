@@ -5,7 +5,7 @@ import '../../app/store_context.dart';
 
 import '../../services/notification_settings_service.dart';
 import '../../theme/app_theme_colors.dart';
-import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});

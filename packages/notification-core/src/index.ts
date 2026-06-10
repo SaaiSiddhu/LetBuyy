@@ -281,6 +281,24 @@ export interface PlannedInAppNotification {
   data: Record<string, unknown>;
 }
 
+export type WhatsAppOrderLifecycleTemplateKey =
+  | 'order_paid'
+  | 'order_shipped'
+  | 'order_delivered'
+  | 'cod_confirmation';
+
+export type WhatsAppNotificationCategory = 'order_lifecycle' | 'cod_confirmation';
+
+export interface PlannedWhatsAppNotification {
+  template_key: WhatsAppOrderLifecycleTemplateKey;
+  category: WhatsAppNotificationCategory;
+  session_type: 'lifecycle' | 'cod_confirmation';
+  event_status: 'paid' | 'shipped' | 'delivered' | 'cod_confirmation_requested';
+  consent_required: true;
+  fail_closed_without_consent: true;
+  data: Record<string, unknown>;
+}
+
 function notificationData(event: RuntimeEventEnvelope): Record<string, unknown> {
   return {
     event_id: event.event_id,
@@ -290,6 +308,55 @@ function notificationData(event: RuntimeEventEnvelope): Record<string, unknown> 
     site_id: event.site_id || null,
     payload: event.payload && typeof event.payload === 'object' ? event.payload : {},
   };
+}
+
+export function planWhatsAppNotificationForEvent(event: RuntimeEventEnvelope): PlannedWhatsAppNotification | null {
+  const data = notificationData(event);
+
+  switch (event.event_type) {
+    case 'order.paid':
+      return {
+        template_key: 'order_paid',
+        category: 'order_lifecycle',
+        session_type: 'lifecycle',
+        event_status: 'paid',
+        consent_required: true,
+        fail_closed_without_consent: true,
+        data,
+      };
+    case 'order.fulfilled':
+      return {
+        template_key: 'order_shipped',
+        category: 'order_lifecycle',
+        session_type: 'lifecycle',
+        event_status: 'shipped',
+        consent_required: true,
+        fail_closed_without_consent: true,
+        data,
+      };
+    case 'order.delivered':
+      return {
+        template_key: 'order_delivered',
+        category: 'order_lifecycle',
+        session_type: 'lifecycle',
+        event_status: 'delivered',
+        consent_required: true,
+        fail_closed_without_consent: true,
+        data,
+      };
+    case 'cod.confirmation_requested':
+      return {
+        template_key: 'cod_confirmation',
+        category: 'cod_confirmation',
+        session_type: 'cod_confirmation',
+        event_status: 'cod_confirmation_requested',
+        consent_required: true,
+        fail_closed_without_consent: true,
+        data,
+      };
+    default:
+      return null;
+  }
 }
 
 export function planInAppNotificationForEvent(event: RuntimeEventEnvelope): PlannedInAppNotification | null {

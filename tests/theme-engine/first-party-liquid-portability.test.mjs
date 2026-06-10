@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const THEME_BUNDLE_SOURCE = 'packages/theme-engine/src/theme-bundle.ts';
+const THEME_GOVERNANCE_SOURCE = 'packages/theme-engine/src/theme-governance.ts';
 const STOREFRONT_REACT_REGISTRY_SOURCE = 'apps/storefront-runtime/src/lib/theme-engine/renderer-registry.tsx';
 
 function read(path) {
@@ -44,4 +45,19 @@ test('converted Liquid theme keeps reusable and app block portability', () => {
   assert.match(source, /path: 'blocks\/badge\.liquid'/);
   assert.match(source, /type: '@app'/);
   assert.match(source, /slot: 'home\.spotlight\.offer'/);
+});
+
+test('Liquid parity map covers the frozen React section files with portable sections', () => {
+  const bundleSource = read(THEME_BUNDLE_SOURCE);
+  const governanceSource = read(THEME_GOVERNANCE_SOURCE);
+  const parityEntries = [...governanceSource.matchAll(/liquidSectionType:\s*'([^']+)'/g)].map((match) => match[1]);
+
+  assert.equal(parityEntries.length, 20);
+  assert.match(bundleSource, /export function createLiquidParitySectionFiles/);
+
+  for (const sectionType of parityEntries) {
+    const keyPattern = sectionType.includes('-') ? `['"]${sectionType}['"]` : `(?:['"]${sectionType}['"]|${sectionType})`;
+    assert.match(bundleSource, new RegExp(`${keyPattern}:\\s*(?:createLiquidSectionFile|\\{)`));
+    assert.match(bundleSource, new RegExp(`type:\\s*['"]${sectionType}['"]`));
+  }
 });

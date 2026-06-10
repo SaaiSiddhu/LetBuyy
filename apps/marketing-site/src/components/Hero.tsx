@@ -62,7 +62,7 @@ export default function Hero() {
                                 <span />
                                 <span />
                             </span>
-                            <span className="hero-browser-url">letbuyy.store/workspace</span>
+                            <span className="hero-browser-url">letbuyy.com/workspace</span>
                         </div>
 
                         <div className="hero-dashboard">

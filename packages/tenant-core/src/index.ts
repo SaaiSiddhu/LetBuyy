@@ -70,7 +70,7 @@ export type StorefrontHostResolution =
 
 export function normalizeStoreRootDomain(rootDomain: string | null | undefined): string {
   // Falls back to the shared platform-domain config (env-overridable, defaulting
-  // to letbuyy.store) so a future apex cutover stays a single config change.
+  // to letbuyy.com) so a future apex cutover stays a single config change.
   return (rootDomain || resolvePlatformDomain())
     .trim()
     .toLowerCase()

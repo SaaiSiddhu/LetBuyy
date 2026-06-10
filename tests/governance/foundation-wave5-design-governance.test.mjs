@@ -27,14 +27,12 @@ test('Wave 5 design and mobile token gates pass with the committed baseline', ()
 
 test('Wave 5 ratchet fails on new arbitrary-radius drift', () => {
     const baseline = JSON.parse(readFileSync(BASELINE_PATH, 'utf8'));
-    const current = Number(baseline.metrics.tsxArbitraryRadius || 0);
-    assert.ok(current > 0, 'expected current arbitrary-radius baseline to prove the ratchet failure path');
 
     const stricter = {
         ...baseline,
         metrics: {
             ...baseline.metrics,
-            tsxArbitraryRadius: current - 1,
+            tsxArbitraryRadius: -1,
         },
     };
     const tempBaseline = join(mkdtempSync(join(tmpdir(), 'letbuyy-wave5-design-')), 'baseline.json');

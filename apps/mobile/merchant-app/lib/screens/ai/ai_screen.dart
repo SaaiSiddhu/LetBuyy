@@ -4,7 +4,7 @@ import '../../app/store_context.dart';
 
 import '../../services/ai_studio_service.dart';
 import '../../theme/app_theme_colors.dart';
-import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import '../../widgets/shared/ai_operator_sheet.dart';
 
 class AiScreen extends StatefulWidget {

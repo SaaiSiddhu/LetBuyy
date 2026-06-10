@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
                     email: session.email,
                     storeName: storeName.trim(),
                     storeType: siteType,
-                    storeUrl: `https://${normalizedSubdomain}.letbuyy.store`,
+                    storeUrl: `https://${normalizedSubdomain}.letbuyy.com`,
                     adminUrl: getAdminDashboardUrl(normalizedSubdomain),
                 }),
             })

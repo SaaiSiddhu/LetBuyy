@@ -176,6 +176,10 @@ export function resolveKmsProviderFromEnv(env: {
     LETBUYY_KMS_MODE?: string;
     LETBUYY_KMS_MOCK_SECRET?: string;
     LETBUYY_KMS_KEY_ID?: string;
+    LETBUYY_ALLOW_MOCK_KMS?: string;
+    NODE_ENV?: string;
+    APP_ENV?: string;
+    VERCEL_ENV?: string;
 }): KmsProvider {
     const mode = (env.LETBUYY_KMS_MODE || 'mock').trim().toLowerCase();
     if (mode === 'live') {
@@ -184,6 +188,24 @@ export function resolveKmsProviderFromEnv(env: {
             throw new KmsHumanRequiredError('Live KMS mode requires LETBUYY_KMS_KEY_ID');
         }
         return createLiveKmsProvider();
+    }
+
+    // SEC-C3 (Wave 0): the mock provider wraps field-level encryption with an in-repo
+    // literal secret ('letbuyy-local-mock-kms-envelope-secret'). It must never run
+    // silently in a production-like runtime. Fail closed unless an operator has
+    // explicitly opted in for the KMS migration window (LETBUYY_ALLOW_MOCK_KMS=true).
+    // [HUMAN-REQUIRED] Provision a live KMS (LETBUYY_KMS_MODE=live + key id/policy) and
+    // remove the escape hatch before production. Tracked as HR-KMS-LIVE.
+    const penv = (typeof process !== 'undefined' ? process.env : {}) as Record<string, string | undefined>;
+    const isProductionRuntime =
+        (env.NODE_ENV ?? penv.NODE_ENV) === 'production' ||
+        (env.APP_ENV ?? penv.APP_ENV) === 'production' ||
+        (env.VERCEL_ENV ?? penv.VERCEL_ENV) === 'production';
+    const allowMockInProd = (env.LETBUYY_ALLOW_MOCK_KMS ?? penv.LETBUYY_ALLOW_MOCK_KMS) === 'true';
+    if (isProductionRuntime && !allowMockInProd) {
+        throw new KmsHumanRequiredError(
+            'Mock KMS is not permitted in production; set LETBUYY_KMS_MODE=live with a provisioned key (or LETBUYY_ALLOW_MOCK_KMS=true only during migration)'
+        );
     }
 
     return createMockKmsProvider({

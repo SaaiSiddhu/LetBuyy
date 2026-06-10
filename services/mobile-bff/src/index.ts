@@ -24,6 +24,7 @@ const PLACEHOLDER_PREFIX = 'SKIP_NEEDS_HUMAN_';
 const TURNSTILE_SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const ALLOWED_PREFIXES = [
   '/v1/auth',
+  '/v1/mobile',
   '/v1/stores',
   '/v1/products',
   '/v1/orders',
@@ -67,6 +68,12 @@ const ALLOWED_PREFIXES = [
   '/v1/graphql/admin',
   '/v1/admin/graphql',
 ];
+
+type ProviderMode = 'mock' | 'sandbox' | 'live';
+
+type GatewayFanInResult =
+  | { ok: true; key: string; data: unknown; providerMode: ProviderMode | null }
+  | { ok: false; key: string; status: number; error: unknown };
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -210,6 +217,37 @@ function buildProxyHeaders(request: Request): Headers {
   return headers;
 }
 
+function buildGatewayUrl(pathname: string, query: Record<string, string | number | undefined>): string {
+  const url = new URL(`https://api-gateway.internal${pathname}`);
+  Object.entries(query).forEach(([key, value]) => {
+    if (value !== undefined && value !== '') url.searchParams.set(key, String(value));
+  });
+  return url.toString();
+}
+
+function unwrapGatewayPayload(value: unknown): unknown {
+  return value && typeof value === 'object' && !Array.isArray(value) && 'data' in value
+    ? (value as { data?: unknown }).data
+    : value;
+}
+
+function normalizeProviderMode(value: unknown): ProviderMode | null {
+  if (value !== 'mock' && value !== 'sandbox' && value !== 'live' && value !== 'test') return null;
+  return value === 'test' ? 'sandbox' : value;
+}
+
+function providerModeFromPayload(value: unknown): ProviderMode | null {
+  if (!value || typeof value !== 'object') return null;
+  const record = value as Record<string, unknown>;
+  const direct = normalizeProviderMode(record.provider_mode || record.providerMode);
+  if (direct) return direct;
+  for (const candidate of ['summary', 'next_payout', 'payment_settings', 'payout_summary']) {
+    const nested = providerModeFromPayload(record[candidate]);
+    if (nested) return nested;
+  }
+  return null;
+}
+
 async function signHeadersForSession(token: string, env: Env): Promise<Record<string, string> | Response> {
   const secret = env.INTERNAL_API_SECRET;
   if (!secret || secret.startsWith(PLACEHOLDER_PREFIX)) {
@@ -232,6 +270,111 @@ async function signHeadersForSession(token: string, env: Env): Promise<Record<st
   }
 
   return headerPlan.headers;
+}
+
+async function gatewayJson(
+  env: Env,
+  key: string,
+  pathname: string,
+  query: Record<string, string | number | undefined>,
+  headers: Headers,
+): Promise<GatewayFanInResult> {
+  const response = await env.API_GATEWAY_SERVICE.fetch(new Request(buildGatewayUrl(pathname, query), {
+    method: 'GET',
+    headers,
+  }));
+  const payload = await response.json().catch(() => null);
+  const data = unwrapGatewayPayload(payload);
+
+  if (!response.ok || (payload && typeof payload === 'object' && (payload as { success?: unknown }).success === false)) {
+    return { ok: false, key, status: response.status, error: data };
+  }
+
+  return { ok: true, key, data, providerMode: providerModeFromPayload(data) };
+}
+
+async function mobileDashboard(request: Request, env: Env): Promise<Response> {
+  const token = extractMobileSessionToken(request);
+  if (!token) {
+    return jsonResponse({
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Missing mobile session token',
+      },
+    }, 401);
+  }
+
+  const signedHeaders = await signHeadersForSession(token, env);
+  if (signedHeaders instanceof Response) return signedHeaders;
+
+  const url = new URL(request.url);
+  const storeId = url.searchParams.get('store_id')?.trim();
+  const period = url.searchParams.get('period')?.trim() || '30d';
+  if (!storeId) {
+    return jsonResponse({
+      success: false,
+      error: {
+        code: 'STORE_ID_REQUIRED',
+        message: 'store_id is required for the mobile dashboard composite.',
+      },
+    }, 400);
+  }
+
+  const headers = new Headers();
+  headers.set('Accept', 'application/json');
+  headers.set('X-Client', 'mobile-bff-composite');
+  headers.set('X-Request-ID', request.headers.get('X-Request-ID') || crypto.randomUUID());
+  Object.entries(signedHeaders).forEach(([key, value]) => headers.set(key, value));
+
+  const results = await Promise.all([
+    gatewayJson(env, 'analytics_dashboard', '/v1/analytics/dashboard', { store_id: storeId, period }, headers),
+    gatewayJson(env, 'analytics_orders', '/v1/analytics/orders', { store_id: storeId }, headers),
+    gatewayJson(env, 'analytics_revenue', '/v1/analytics/revenue', { store_id: storeId, period }, headers),
+    gatewayJson(env, 'analytics_top_products', '/v1/analytics/top-products', { store_id: storeId, limit: 5 }, headers),
+    gatewayJson(env, 'analytics_traffic_sources', '/v1/analytics/traffic-sources', { store_id: storeId, period, limit: 5 }, headers),
+    gatewayJson(env, 'payout_summary', '/v1/payouts/summary', { store_id: storeId }, headers),
+  ]);
+
+  const failures = results.filter((result): result is Extract<GatewayFanInResult, { ok: false }> => !result.ok);
+  const dataByKey = Object.fromEntries(
+    results
+      .filter((result): result is Extract<GatewayFanInResult, { ok: true }> => result.ok)
+      .map((result) => [result.key, result.data]),
+  );
+
+  if (failures.length === results.length) {
+    return jsonResponse({
+      success: false,
+      error: {
+        code: 'MOBILE_DASHBOARD_UNAVAILABLE',
+        message: 'Mobile dashboard data is temporarily unavailable.',
+        details: failures,
+      },
+    }, 502);
+  }
+
+  const providerMode = results
+    .filter((result): result is Extract<GatewayFanInResult, { ok: true }> => result.ok)
+    .map((result) => result.providerMode)
+    .find(Boolean) || null;
+
+  return jsonResponse({
+    success: true,
+    data: {
+      store_id: storeId,
+      period,
+      provider_mode: providerMode,
+      analytics: {
+        dashboard: dataByKey.analytics_dashboard || null,
+        order_breakdown: dataByKey.analytics_orders || null,
+        revenue: dataByKey.analytics_revenue || null,
+        top_products: dataByKey.analytics_top_products || [],
+        traffic_sources: dataByKey.analytics_traffic_sources || null,
+      },
+      payout_summary: dataByKey.payout_summary || null,
+      partial_errors: failures,
+    },
+  }, failures.length > 0 ? 207 : 200);
 }
 
 async function proxyToGateway(request: Request, env: Env): Promise<Response> {
@@ -275,6 +418,7 @@ async function proxyToGateway(request: Request, env: Env): Promise<Response> {
 
 app.get('/health', (c) => jsonResponse(healthResponse(c.env), healthResponse(c.env).status === 'healthy' ? 200 : 503));
 app.get('/v1/health', (c) => jsonResponse(healthResponse(c.env), healthResponse(c.env).status === 'healthy' ? 200 : 503));
+app.get('/v1/mobile/dashboard', (c) => mobileDashboard(c.req.raw, c.env));
 app.post('/v1/auth/mobile/turnstile/verify', async (c) => {
   const body = await c.req.json().catch(() => ({})) as { token?: unknown };
   const token = typeof body.token === 'string' ? body.token : '';

@@ -51,6 +51,7 @@ AI_PROVIDER_MODEL = "letbuyy-sandbox-copywriter"
 AI_CREDIT_PURCHASE_MODE = "sandbox"
 AI_CREDIT_PURCHASE_PROVIDER = "letbuyy_sandbox"
 AI_CREDIT_PRICE_INR_PAISE = "100"
+LETBUYY_IDENTITY_ISSUER = "https://accounts-staging.letbuyy.com"
 WHATSAPP_PROVIDER_MODE = "sandbox"
 WHATSAPP_PROVIDER = "letbuyy_sandbox"
 WHATSAPP_WEBHOOK_SECRET = "letbuyy-sandbox-whatsapp-webhook"
@@ -58,7 +59,8 @@ REQUEST_LOG_SAMPLE_RATE = "0.02"
 RUNTIME_NAME = "LetBuyy API Staging"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
-ASSET_PUBLIC_BASE_URL = "https://cdn-staging.letbuyy.store"
+ASSET_PUBLIC_BASE_URL = "https://cdn-staging.letbuyy.com"
+CHECKOUT_ORIGIN = "https://checkout-staging.letbuyy.com"
 EVENT_QUEUE_NAME = "letbuyy-events-staging"
 ANALYTICS_QUEUE_NAME = "letbuyy-analytics-queue-staging"
 SEARCH_QUEUE_NAME = "letbuyy-search-queue-staging"
@@ -97,8 +99,8 @@ mode = "smart"
 name = "letbuyy-api-staging"
 workers_dev = false
 routes = [
-  { pattern = "api-staging.letbuyy.store", custom_domain = true },
-  { pattern = "api.staging.letbuyy.store", custom_domain = true }
+  { pattern = "api-staging.letbuyy.com", custom_domain = true },
+  { pattern = "api.staging.letbuyy.com", custom_domain = true }
 ]
 
 [env.staging.observability]
@@ -140,6 +142,7 @@ AI_PROVIDER_MODEL = "letbuyy-sandbox-copywriter"
 AI_CREDIT_PURCHASE_MODE = "sandbox"
 AI_CREDIT_PURCHASE_PROVIDER = "letbuyy_sandbox"
 AI_CREDIT_PRICE_INR_PAISE = "100"
+LETBUYY_IDENTITY_ISSUER = "https://accounts-staging.letbuyy.com"
 WHATSAPP_PROVIDER_MODE = "sandbox"
 WHATSAPP_PROVIDER = "letbuyy_sandbox"
 WHATSAPP_WEBHOOK_SECRET = "letbuyy-sandbox-whatsapp-webhook"
@@ -147,7 +150,8 @@ REQUEST_LOG_SAMPLE_RATE = "0.02"
 RUNTIME_NAME = "LetBuyy API Staging"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
-ASSET_PUBLIC_BASE_URL = "https://cdn-staging.letbuyy.store"
+ASSET_PUBLIC_BASE_URL = "https://cdn-staging.letbuyy.com"
+CHECKOUT_ORIGIN = "https://checkout-staging.letbuyy.com"
 EVENT_QUEUE_NAME = "letbuyy-events-staging"
 ANALYTICS_QUEUE_NAME = "letbuyy-analytics-queue-staging"
 SEARCH_QUEUE_NAME = "letbuyy-search-queue-staging"
@@ -212,7 +216,7 @@ mode = "smart"
 name = "letbuyy-api"
 workers_dev = false
 routes = [
-  { pattern = "api.letbuyy.store", custom_domain = true }
+  { pattern = "api.letbuyy.com", custom_domain = true }
 ]
 
 [env.production.observability]
@@ -255,6 +259,7 @@ AI_CREDIT_PURCHASE_MODE = "live"
 AI_CREDIT_PURCHASE_PROVIDER = "razorpay"
 AI_CREDIT_PRICE_INR_PAISE = "100"
 AI_CREDIT_RAZORPAY_KEY_ID = "SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_ID"
+LETBUYY_IDENTITY_ISSUER = "https://accounts.letbuyy.com"
 WHATSAPP_PROVIDER_MODE = "live"
 WHATSAPP_PROVIDER = "twilio"
 WHATSAPP_WEBHOOK_SECRET = "SKIP_NEEDS_HUMAN_WHATSAPP_WEBHOOK_SECRET"
@@ -264,7 +269,8 @@ REQUEST_LOG_SAMPLE_RATE = "0.02"
 RUNTIME_NAME = "LetBuyy API"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
-ASSET_PUBLIC_BASE_URL = "https://cdn.letbuyy.store"
+ASSET_PUBLIC_BASE_URL = "https://cdn.letbuyy.com"
+CHECKOUT_ORIGIN = "https://checkout.letbuyy.com"
 EVENT_QUEUE_NAME = "letbuyy-events-production"
 ANALYTICS_QUEUE_NAME = "letbuyy-analytics-queue-production"
 SEARCH_QUEUE_NAME = "letbuyy-search-queue-production"

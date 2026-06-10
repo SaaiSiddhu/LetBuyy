@@ -986,7 +986,7 @@ export default function AddProductPage() {
                         <Section title="Search engine listing" description="Control how this product may appear in search results.">
                             <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
                                 <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-success)]">
-                                    {store}.letbuyy.store/products/{urlHandle || '...'}
+                                    {store}.letbuyy.com/products/{urlHandle || '...'}
                                 </p>
                                 <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-primary)] underline">
                                     {seoTitle || title || 'Page title'}

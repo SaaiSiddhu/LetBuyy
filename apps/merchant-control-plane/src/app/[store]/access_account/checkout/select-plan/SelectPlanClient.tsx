@@ -51,7 +51,7 @@ export default function SelectPlanClient({
     const handleSelectPlan = (planSlug: string) => {
         const plan = plans.find(p => p.slug === planSlug)
         if (plan?.requires_contact) {
-            window.open('mailto:sales@letbuyy.store?subject=Enterprise Plan Inquiry', '_blank')
+            window.open('mailto:sales@letbuyy.com?subject=Enterprise Plan Inquiry', '_blank')
             return
         }
         router.push(`/${storeSlug}/settings/subscribe/checkout?plan=${planSlug}&bp=${billingPeriod.toUpperCase()}&site_type=${siteType}`)
@@ -267,7 +267,7 @@ export default function SelectPlanClient({
             <footer className="select-plan-footer">
                 <p>
                     Need help choosing?{' '}
-                    <a href="mailto:support@letbuyy.store">
+                    <a href="mailto:support@letbuyy.com">
                         Contact our team
                     </a>
                 </p>

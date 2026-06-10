@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="128" viewBox="0 0 192 128" fill="none" role="img" aria-label="LetBuyy permissions empty-state illustration">
+  <defs>
+    <filter id="lbShadow-permissions-light" x="-20%" y="-20%" width="140%" height="160%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+  <rect x="18" y="18" width="156" height="92" rx="16" fill="#F1EBFE"/>
+  <rect x="34" y="32" width="124" height="64" rx="12" stroke="#8B5CF6" stroke-width="2" opacity="0.2"/>
+  <path d="M40 102C56 90 74 90 96 102C118 114 142 114 162 96" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" opacity="0.22"/>
+  <g>
+      <circle cx="72" cy="56" r="11" stroke="#8B5CF6" stroke-width="2" opacity="0.6"/>
+      <path d="M54 90C57 78 63 72 72 72C81 72 87 78 90 90" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" opacity="0.48"/>
+      <circle cx="116" cy="62" r="9" stroke="#8B5CF6" stroke-width="2" opacity="0.55"/>
+      <path d="M122 68L140 86M133 79L139 73M139 85L144 80" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
+      <circle cx="134" cy="42" r="6" fill="#8B5CF6" opacity="0.14" data-lb-empty-float="secondary"/>
+  </g>
+  <g filter="url(#lbShadow-permissions-light)">
+    <rect x="73" y="41" width="46" height="46" rx="14" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1.5"/>
+  </g>
+  <g transform="translate(84,52)" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="8.5" cy="10" r="4"/><path d="M11.5 13l8.5 8.5M16.5 18l3-3"/>
+  </g>
+</svg>

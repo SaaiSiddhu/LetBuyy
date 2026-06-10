@@ -21,6 +21,7 @@ import { registerStorefrontPublicRoutes } from './storefront/public-routes';
 import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { enqueueOrderConfirmationEmail } from '../lib/order-confirmation-email';
+import { signQueueTenantEnvelope } from '../lib/queue-tenant-envelope';
 import {
     getCustomerSession,
     requireCustomerSession,
@@ -247,7 +248,7 @@ function emitProductViewedEvent(
     const eventId = `product.viewed:${input.storeId}:${input.product.id}:${crypto.randomUUID()}`;
     const sampleWeight = sampleRate > 0 ? Math.round(1 / sampleRate) : 0;
 
-    c.executionCtx.waitUntil(queue.send({
+    c.executionCtx.waitUntil(signQueueTenantEnvelope(c.env, {
         messageId: eventId,
         queueName: 'analytics-events',
         jobType: 'product.viewed',
@@ -276,7 +277,7 @@ function emitProductViewedEvent(
             },
         },
         attempts: 0,
-    }).then(() => undefined, () => undefined));
+    }).then((body) => queue.send(body)).then(() => undefined, () => undefined));
 }
 
 function orderEventTotalPayload(totalValue: unknown): { amount_minor: number; currency: 'INR' } | undefined {

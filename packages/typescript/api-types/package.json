@@ -20,7 +20,6 @@
     "@letbuyy/event-core": "workspace:*",
     "@letbuyy/notification-core": "workspace:*",
     "@letbuyy/payments": "workspace:*",
-    "@letbuyy/search-core": "workspace:*",
     "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/tenant-core": "workspace:*",
     "@letbuyy/theme-engine": "workspace:*"

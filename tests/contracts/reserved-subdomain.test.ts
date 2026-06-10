@@ -43,26 +43,26 @@ test('storefront reserved labels match the domain split governance list', () => 
   for (const label of RESERVED_STOREFRONT_LABELS) {
     assert.equal(isReservedStorefrontLabel(label), true);
     assert.equal(validateSubdomainFormat(label).valid, false);
-    assert.equal(extractStorefrontSubdomain(`${label}.letbuyy.store`, 'letbuyy.store'), null);
-    assert.equal(resolveStorefrontHost(`${label}.letbuyy.store`, 'letbuyy.store').kind, 'reserved');
+    assert.equal(extractStorefrontSubdomain(`${label}.letbuyy.com`, 'letbuyy.com'), null);
+    assert.equal(resolveStorefrontHost(`${label}.letbuyy.com`, 'letbuyy.com').kind, 'reserved');
   }
 });
 
 test('storefront host parser is env-root driven and distinguishes custom domains', () => {
-  assert.deepEqual(resolveStorefrontHost('demo.letbuyy.store', 'letbuyy.store'), {
+  assert.deepEqual(resolveStorefrontHost('demo.letbuyy.com', 'letbuyy.com'), {
     kind: 'subdomain',
     subdomain: 'demo',
-    host: 'demo.letbuyy.store',
-    rootDomain: 'letbuyy.store',
+    host: 'demo.letbuyy.com',
+    rootDomain: 'letbuyy.com',
   });
   assert.equal(extractStorefrontSubdomain('demo.preview-root.test', 'preview-root.test'), 'demo');
-  assert.deepEqual(resolveStorefrontHost('shop.example.in', 'letbuyy.store'), {
+  assert.deepEqual(resolveStorefrontHost('shop.example.in', 'letbuyy.com'), {
     kind: 'custom_domain',
     domain: 'shop.example.in',
     host: 'shop.example.in',
-    rootDomain: 'letbuyy.store',
+    rootDomain: 'letbuyy.com',
   });
-  assert.equal(resolveStorefrontHost('letbuyy.store', 'letbuyy.store').kind, 'root');
+  assert.equal(resolveStorefrontHost('letbuyy.com', 'letbuyy.com').kind, 'root');
 });
 
 test('gateway and storefront use tenant-core as the reserved-label source', () => {

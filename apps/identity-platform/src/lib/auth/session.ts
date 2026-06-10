@@ -1,4 +1,5 @@
 import { identityApiRequest } from '@/lib/api/client'
+import { createIdentityIssuedMerchantSessionToken } from './identity-issued-session'
 
 /**
  * Create a new session for a user. Returns the session token.
@@ -8,11 +9,17 @@ export async function createSession(
     userId: string,
     deviceId?: string
 ): Promise<string> {
+    const identityIssuedToken = await createIdentityIssuedMerchantSessionToken({
+        userId,
+        deviceId: deviceId || null,
+    })
+
     const response = await identityApiRequest('/auth/custom/sessions/create', {
         method: 'POST',
         body: JSON.stringify({
             user_id: userId,
             device_id: deviceId || null,
+            token: identityIssuedToken || undefined,
         }),
     })
     const payload = await response.json().catch(() => null) as {

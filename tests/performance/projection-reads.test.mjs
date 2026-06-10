@@ -7,7 +7,7 @@ const analyticsRoute = readFileSync('services/api-gateway/src/routes/analytics.t
 const storefrontRoute = readStorefrontRouteSource();
 const queueWorker = readFileSync('services/queue-workers/src/platform-queue-consumer.ts', 'utf8');
 const gatewayQueueConsumer = readFileSync('services/api-gateway/src/execution/queue-execution.adapter.ts', 'utf8');
-const runtimeComposition = readFileSync('packages/runtime-composition/src/search-projection-runtime.ts', 'utf8');
+const queueProjectionPlans = readFileSync('services/queue-workers/src/queue-projection-plans.ts', 'utf8');
 const wranglerConfig = readFileSync('services/api-gateway/wrangler.toml', 'utf8');
 
 function blockAfter(source, marker, length = 2400) {
@@ -17,25 +17,25 @@ function blockAfter(source, marker, length = 2400) {
 }
 
 test('analytics rollup planner emits commerce projection metrics', () => {
-  assert.match(runtimeComposition, /metricName: 'orders\.created'/);
-  assert.match(runtimeComposition, /metricName: 'orders\.paid'/);
-  assert.match(runtimeComposition, /metricName: 'orders\.status'/);
-  assert.match(runtimeComposition, /metricName: 'revenue\.paid_minor'/);
-  assert.match(runtimeComposition, /metricName: 'product\.units_sold'/);
-  assert.match(runtimeComposition, /metricName: 'product\.revenue_minor'/);
-  assert.match(runtimeComposition, /export function planOrderItemAnalyticsRollupIncrements/);
+  assert.match(queueProjectionPlans, /metricName: 'orders\.created'/);
+  assert.match(queueProjectionPlans, /metricName: 'orders\.paid'/);
+  assert.match(queueProjectionPlans, /metricName: 'orders\.status'/);
+  assert.match(queueProjectionPlans, /metricName: 'revenue\.paid_minor'/);
+  assert.match(queueProjectionPlans, /metricName: 'product\.units_sold'/);
+  assert.match(queueProjectionPlans, /metricName: 'product\.revenue_minor'/);
+  assert.match(queueProjectionPlans, /export function planOrderItemAnalyticsRollupIncrements/);
 });
 
 test('analytics rollup planner emits storefront session and source metrics', () => {
-  assert.match(runtimeComposition, /function storefrontAnalyticsKind/);
-  assert.match(runtimeComposition, /metricName: 'storefront\.sessions\.started'/);
-  assert.match(runtimeComposition, /metricName: 'storefront\.sessions\.active'/);
-  assert.match(runtimeComposition, /metricName: 'storefront\.traffic\.source'/);
-  assert.match(runtimeComposition, /metricName: 'storefront\.page\.views'/);
-  assert.match(runtimeComposition, /metricName: 'storefront\.product\.views'/);
-  assert.match(runtimeComposition, /metricName: 'storefront\.cart\.added'/);
-  assert.match(runtimeComposition, /metricName: 'storefront\.checkouts\.started'/);
-  assert.match(runtimeComposition, /sample_weight/);
+  assert.match(queueProjectionPlans, /function storefrontAnalyticsKind/);
+  assert.match(queueProjectionPlans, /metricName: 'storefront\.sessions\.started'/);
+  assert.match(queueProjectionPlans, /metricName: 'storefront\.sessions\.active'/);
+  assert.match(queueProjectionPlans, /metricName: 'storefront\.traffic\.source'/);
+  assert.match(queueProjectionPlans, /metricName: 'storefront\.page\.views'/);
+  assert.match(queueProjectionPlans, /metricName: 'storefront\.product\.views'/);
+  assert.match(queueProjectionPlans, /metricName: 'storefront\.cart\.added'/);
+  assert.match(queueProjectionPlans, /metricName: 'storefront\.checkouts\.started'/);
+  assert.match(queueProjectionPlans, /sample_weight/);
 });
 
 test('queue consumers maintain analytics/search projections from events', () => {

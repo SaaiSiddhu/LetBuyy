@@ -705,6 +705,303 @@ export interface ThemeBundleValidationResult {
 type LiquidSettingField = z.infer<typeof ThemeLiquidSchemaSettingFieldSchema>;
 type LiquidSectionBlockDefinition = z.infer<typeof ThemeLiquidSectionInlineBlockSchema> | z.infer<typeof ThemeLiquidAppBlockSchema>;
 
+function liquidSetting(
+  id: string,
+  type: LiquidSettingField['type'],
+  label: string,
+  extra: Omit<LiquidSettingField, 'id' | 'type' | 'label'> = {},
+): LiquidSettingField {
+  return { id, type, label, ...extra };
+}
+
+function liquidInlineBlock(
+  type: string,
+  name: string,
+  settings: LiquidSettingField[] = [],
+): LiquidSectionBlockDefinition {
+  return { type, name, settings };
+}
+
+function liquidAppBlock(): LiquidSectionBlockDefinition {
+  return { type: '@app', name: 'App block' };
+}
+
+function buildLiquidSectionSchemaSource(schema: ThemeLiquidSectionDefinition): string {
+  return [
+    '{% schema %}',
+    JSON.stringify({
+      name: schema.name,
+      settings: schema.settings,
+      blocks: schema.blocks,
+      presets: schema.presets,
+    }, null, 2),
+    '{% endschema %}',
+  ].join('\n');
+}
+
+function createLiquidSectionFile(input: {
+  type: string;
+  name: string;
+  settings?: LiquidSettingField[];
+  blocks?: LiquidSectionBlockDefinition[];
+  body: string[];
+}): ThemeLiquidSectionFile {
+  const schema: ThemeLiquidSectionDefinition = {
+    name: input.name,
+    tag: 'section',
+    settings: input.settings || [],
+    blocks: input.blocks || [],
+    presets: [{ name: input.name, settings: {}, blocks: [] }],
+    enabled_on: { templates: ['*'] },
+    disabled_on: { templates: [] },
+  };
+
+  return {
+    path: `sections/${input.type}.liquid`,
+    source: [
+      ...input.body,
+      buildLiquidSectionSchemaSource(schema),
+    ].join('\n'),
+    schema,
+  };
+}
+
+export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSectionFile> {
+  return {
+    'about-section': createLiquidSectionFile({
+      type: 'about-section',
+      name: 'About Section',
+      settings: [
+        liquidSetting('title', 'text', 'Title', { default: 'About us' }),
+        liquidSetting('content', 'richtext', 'Content'),
+        liquidSetting('imageUrl', 'image', 'Image'),
+        liquidSetting('layout', 'select', 'Layout', { default: 'left', options: ['left', 'right', 'center'] }),
+      ],
+      body: [
+        '<section class="lb-about-section" data-section-id="{{ section.id }}">',
+        '  <h2>{{ section.settings.title }}</h2>',
+        '  <div>{{ section.settings.content }}</div>',
+        '  {% if section.settings.imageUrl %}<img src="{{ section.settings.imageUrl | image_url }}" alt="{{ section.settings.title }}">{% endif %}',
+        '</section>',
+      ],
+    }),
+    'app-block-slot': createLiquidSectionFile({
+      type: 'app-block-slot',
+      name: 'App Block Slot',
+      settings: [
+        liquidSetting('title', 'text', 'Title'),
+        liquidSetting('slot', 'text', 'Slot', { default: 'storefront.home.after-hero' }),
+      ],
+      blocks: [liquidAppBlock()],
+      body: [
+        '<section class="lb-app-block-slot" data-section-id="{{ section.id }}">',
+        '  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}',
+        '  {% for block in section.blocks %}{{ block.content | raw }}{% endfor %}',
+        '</section>',
+      ],
+    }),
+    'banner-carousel': createLiquidSectionFile({
+      type: 'banner-carousel',
+      name: 'Banner Carousel',
+      settings: [
+        liquidSetting('title', 'text', 'Title'),
+        liquidSetting('autoplay', 'toggle', 'Autoplay', { default: true }),
+      ],
+      blocks: [liquidInlineBlock('slide', 'Slide', [
+        liquidSetting('heading', 'text', 'Heading'),
+        liquidSetting('image', 'image', 'Image'),
+        liquidSetting('link', 'url', 'Link'),
+      ])],
+      body: [
+        '<section class="lb-banner-carousel" data-section-id="{{ section.id }}">',
+        '  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}',
+        '  <div class="lb-banner-carousel__slides">',
+        '    {% for block in section.blocks %}<a href="{{ block.settings.link }}"><span>{{ block.settings.heading }}</span></a>{% endfor %}',
+        '  </div>',
+        '</section>',
+      ],
+    }),
+    'brand-marquee': createLiquidSectionFile({
+      type: 'brand-marquee',
+      name: 'Brand Marquee',
+      settings: [liquidSetting('title', 'text', 'Title', { default: 'Featured brands' })],
+      blocks: [liquidInlineBlock('brand', 'Brand', [liquidSetting('name', 'text', 'Name')])],
+      body: [
+        '<section class="lb-brand-marquee" data-section-id="{{ section.id }}">',
+        '  <h2>{{ section.settings.title }}</h2>',
+        '  <div>{% for block in section.blocks %}<span>{{ block.settings.name }}</span>{% endfor %}</div>',
+        '</section>',
+      ],
+    }),
+    'contact-form': createLiquidSectionFile({
+      type: 'contact-form',
+      name: 'Contact Form',
+      settings: [
+        liquidSetting('title', 'text', 'Title', { default: 'Contact us' }),
+        liquidSetting('subtitle', 'text', 'Subtitle'),
+        liquidSetting('showPhone', 'toggle', 'Show phone field', { default: true }),
+      ],
+      body: [
+        '<section class="lb-contact-form" data-section-id="{{ section.id }}">',
+        '  <h2>{{ section.settings.title }}</h2>',
+        '  <p>{{ section.settings.subtitle }}</p>',
+        '  <form action="/contact" method="post"><input name="name" aria-label="Name"><input type="email" name="email" aria-label="Email">{% if section.settings.showPhone %}<input name="phone" aria-label="Phone">{% endif %}<button type="submit">Send</button></form>',
+        '</section>',
+      ],
+    }),
+    'cta-section': createLiquidSectionFile({
+      type: 'cta-section',
+      name: 'Call to Action',
+      settings: [
+        liquidSetting('heading', 'text', 'Heading', { default: 'Ready to get started?' }),
+        liquidSetting('subheading', 'text', 'Subheading'),
+        liquidSetting('ctaText', 'text', 'Button text', { default: 'Shop now' }),
+        liquidSetting('ctaLink', 'url', 'Button link', { default: '/products' }),
+      ],
+      body: [
+        '<section class="lb-cta-section" data-section-id="{{ section.id }}">',
+        '  <h2>{{ section.settings.heading }}</h2>',
+        '  <p>{{ section.settings.subheading }}</p>',
+        '  <a href="{{ section.settings.ctaLink }}">{{ section.settings.ctaText }}</a>',
+        '</section>',
+      ],
+    }),
+    'experience-timeline': createLiquidSectionFile({
+      type: 'experience-timeline',
+      name: 'Experience Timeline',
+      settings: [liquidSetting('title', 'text', 'Title', { default: 'Experience' })],
+      blocks: [liquidInlineBlock('experience', 'Experience', [
+        liquidSetting('title', 'text', 'Title'),
+        liquidSetting('company', 'text', 'Company'),
+        liquidSetting('period', 'text', 'Period'),
+      ])],
+      body: [
+        '<section class="lb-experience-timeline" data-section-id="{{ section.id }}">',
+        '  <h2>{{ section.settings.title }}</h2>',
+        '  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.company }}</p><time>{{ block.settings.period }}</time></article>{% endfor %}',
+        '</section>',
+      ],
+    }),
+    marquee: createLiquidSectionFile({
+      type: 'marquee',
+      name: 'Marquee',
+      settings: [liquidSetting('text', 'text', 'Text', { default: 'Featured announcement' })],
+      body: [
+        '<section class="lb-marquee" data-section-id="{{ section.id }}">',
+        '  <p>{{ section.settings.text }}</p>',
+        '</section>',
+      ],
+    }),
+    'portfolio-grid': createLiquidSectionFile({
+      type: 'portfolio-grid',
+      name: 'Portfolio Grid',
+      settings: [liquidSetting('title', 'text', 'Title', { default: 'Portfolio' })],
+      blocks: [liquidInlineBlock('project', 'Project', [
+        liquidSetting('title', 'text', 'Title'),
+        liquidSetting('summary', 'textarea', 'Summary'),
+        liquidSetting('link', 'url', 'Link'),
+      ])],
+      body: [
+        '<section class="lb-portfolio-grid" data-section-id="{{ section.id }}">',
+        '  <h2>{{ section.settings.title }}</h2>',
+        '  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.summary }}</p><a href="{{ block.settings.link }}">View</a></article>{% endfor %}',
+        '</section>',
+      ],
+    }),
+    'product-detail': createLiquidSectionFile({
+      type: 'product-detail',
+      name: 'Product Detail',
+      settings: [
+        liquidSetting('showGallery', 'toggle', 'Show gallery', { default: true }),
+        liquidSetting('showDescription', 'toggle', 'Show description', { default: true }),
+      ],
+      body: [
+        '<section class="lb-product-detail" data-section-id="{{ section.id }}">',
+        '  <h1>{{ product.title }}</h1>',
+        '  <p>{{ product.price | money_with_currency: product.currency }}</p>',
+        '  {% if section.settings.showDescription %}<div>{{ product.description }}</div>{% endif %}',
+        '  <lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ product.id }}" data-product-name="{{ product.title }}" data-product-price="{{ product.price }}" data-product-currency="{{ product.currency }}" data-product-url="{{ product.url }}"><button type="button" data-lb-add-to-cart>Add to cart</button><span data-lb-add-to-cart-status aria-live="polite"></span></lb-add-to-cart>',
+        '</section>',
+      ],
+    }),
+    'rich-content': createLiquidSectionFile({
+      type: 'rich-content',
+      name: 'Rich Content',
+      settings: [
+        liquidSetting('title', 'text', 'Title'),
+        liquidSetting('body', 'richtext', 'Body'),
+      ],
+      body: [
+        '<section class="lb-rich-content" data-section-id="{{ section.id }}">',
+        '  <h1>{{ section.settings.title }}</h1>',
+        '  <div>{{ section.settings.body }}</div>',
+        '</section>',
+      ],
+    }),
+    'services-grid': createLiquidSectionFile({
+      type: 'services-grid',
+      name: 'Services Grid',
+      settings: [liquidSetting('title', 'text', 'Title', { default: 'Services' })],
+      blocks: [liquidInlineBlock('service', 'Service', [
+        liquidSetting('title', 'text', 'Title'),
+        liquidSetting('description', 'textarea', 'Description'),
+        liquidSetting('link', 'url', 'Link'),
+      ])],
+      body: [
+        '<section class="lb-services-grid" data-section-id="{{ section.id }}">',
+        '  <h2>{{ section.settings.title }}</h2>',
+        '  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.description }}</p><a href="{{ block.settings.link }}">Learn more</a></article>{% endfor %}',
+        '</section>',
+      ],
+    }),
+    'skills-section': createLiquidSectionFile({
+      type: 'skills-section',
+      name: 'Skills Section',
+      settings: [liquidSetting('title', 'text', 'Title', { default: 'Skills' })],
+      blocks: [liquidInlineBlock('skill', 'Skill', [
+        liquidSetting('name', 'text', 'Skill'),
+        liquidSetting('level', 'range', 'Level', { min: 0, max: 100, step: 5 }),
+      ])],
+      body: [
+        '<section class="lb-skills-section" data-section-id="{{ section.id }}">',
+        '  <h2>{{ section.settings.title }}</h2>',
+        '  {% for block in section.blocks %}<span>{{ block.settings.name }}</span>{% endfor %}',
+        '</section>',
+      ],
+    }),
+    testimonials: createLiquidSectionFile({
+      type: 'testimonials',
+      name: 'Testimonials',
+      settings: [liquidSetting('title', 'text', 'Title', { default: 'What customers say' })],
+      blocks: [liquidInlineBlock('testimonial', 'Testimonial', [
+        liquidSetting('quote', 'textarea', 'Quote'),
+        liquidSetting('author', 'text', 'Author'),
+      ])],
+      body: [
+        '<section class="lb-testimonials" data-section-id="{{ section.id }}">',
+        '  <h2>{{ section.settings.title }}</h2>',
+        '  {% for block in section.blocks %}<blockquote><p>{{ block.settings.quote }}</p><cite>{{ block.settings.author }}</cite></blockquote>{% endfor %}',
+        '</section>',
+      ],
+    }),
+    'trust-badges': createLiquidSectionFile({
+      type: 'trust-badges',
+      name: 'Trust Badges',
+      settings: [liquidSetting('title', 'text', 'Title')],
+      blocks: [liquidInlineBlock('badge', 'Badge', [
+        liquidSetting('label', 'text', 'Label'),
+        liquidSetting('description', 'text', 'Description'),
+      ])],
+      body: [
+        '<section class="lb-trust-badges" data-section-id="{{ section.id }}">',
+        '  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}',
+        '  {% for block in section.blocks %}<article><strong>{{ block.settings.label }}</strong><span>{{ block.settings.description }}</span></article>{% endfor %}',
+        '</section>',
+      ],
+    }),
+  };
+}
+
 function isLiquidThemePackageBundle(input: PortableThemePackageBundle): input is LiquidThemePackageBundle {
   return input.renderer.engine === 'liquid';
 }
@@ -1178,11 +1475,11 @@ export function createMinimalLiquidThemeBundleFixture(): LiquidThemePackageBundl
           '<head>',
           '  <meta charset="utf-8">',
           '  <title>{{ shop.name }}</title>',
-          '  {{ content_for_header }}',
+          '  {{ content_for_header | raw }}',
           '</head>',
           '<body>',
-          '  {{ content_for_layout }}',
-          '  {{ content_for_footer }}',
+          '  {{ content_for_layout | raw }}',
+          '  {{ content_for_footer | raw }}',
           '</body>',
           '</html>',
         ].join('\n'),
@@ -1250,7 +1547,7 @@ export function createMinimalLiquidThemeBundleFixture(): LiquidThemePackageBundl
           '  <h1>{{ section.settings.heading }}</h1>',
           '  <div class="lb-spotlight__blocks">',
           '    {% for block in section.blocks %}',
-          '      {{ block.content }}',
+          '      {{ block.content | raw }}',
           '    {% endfor %}',
           '  </div>',
           '  <lb-variant-picker data-lb-island="variant-picker" data-product-id="demo-liquid-product">',
@@ -1373,13 +1670,13 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  <meta charset="utf-8">',
           '  <meta name="viewport" content="width=device-width, initial-scale=1">',
           '  <title>{{ shop.name }} - Urban Kicks</title>',
-          '  {{ content_for_header }}',
+          '  {{ content_for_header | raw }}',
           '</head>',
           '<body class="lb-theme lb-theme--urban-kicks">',
           '  <main id="MainContent">',
-          '    {{ content_for_layout }}',
+          '    {{ content_for_layout | raw }}',
           '  </main>',
-          '  {{ content_for_footer }}',
+          '  {{ content_for_footer | raw }}',
           '</body>',
           '</html>',
         ].join('\n'),
@@ -1601,6 +1898,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
       },
     },
     sections: {
+      ...createLiquidParitySectionFiles(),
       'announcement-bar': {
         path: 'sections/announcement-bar.liquid',
         source: [
@@ -1720,7 +2018,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  <p>{{ section.settings.subtitle }}</p>',
           '  <div class="lb-category-grid__items">',
           '    {% for block in section.blocks %}',
-          '      {{ block.content }}',
+          '      {{ block.content | raw }}',
           '    {% endfor %}',
           '  </div>',
           '</section>',
@@ -1774,7 +2072,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  </div>',
           '  <div class="lb-featured-products__items">',
           '    {% for block in section.blocks %}',
-          '      {{ block.content }}',
+          '      {{ block.content | raw }}',
           '    {% endfor %}',
           '  </div>',
           '  <a href="{{ section.settings.viewAllHref }}">{{ section.settings.viewAllLabel }}</a>',
@@ -1841,7 +2139,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  <p>{{ section.settings.subtitle }}</p>',
           '  <div class="lb-product-grid__items" data-columns="{{ section.settings.columns }}">',
           '    {% for block in section.blocks %}',
-          '      {{ block.content }}',
+          '      {{ block.content | raw }}',
           '    {% endfor %}',
           '  </div>',
           '</section>',
@@ -1903,7 +2201,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  <h2>{{ section.settings.heading }}</h2>',
           '  <div class="lb-first-party-spotlight__blocks">',
           '    {% for block in section.blocks %}',
-          '      {{ block.content }}',
+          '      {{ block.content | raw }}',
           '    {% endfor %}',
           '  </div>',
           '</section>',

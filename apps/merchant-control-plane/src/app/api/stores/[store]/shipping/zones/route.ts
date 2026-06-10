@@ -14,9 +14,10 @@ export async function GET(
         if (resolved.error) return resolved.error
 
         const apiClient = createMerchantApiClient()
-        const [zones, rates] = await Promise.all([
+        const [zones, rates, carrier] = await Promise.all([
             apiClient.shipping.zones.list({ store_id: resolved.storeId }),
             apiClient.shipping.rates.list({ store_id: resolved.storeId }),
+            apiClient.shippingLabels.providerMode({ store_id: resolved.storeId }),
         ])
 
         return NextResponse.json({
@@ -24,6 +25,7 @@ export async function GET(
             data: {
                 zones,
                 rates,
+                provider_mode: carrier.provider_mode,
             },
         })
     } catch (err) {

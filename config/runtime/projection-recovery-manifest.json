@@ -3,16 +3,16 @@
   "manifestVersion": 1,
   "mode": "governance-contract-not-live-evidence",
   "rebuildRuntime": {
-    "package": "@letbuyy/projection-runtime",
-    "source": "packages/projection-runtime/src/projection-rebuild-runtime.ts",
-    "checkpointSource": "packages/projection-runtime/src/projection-checkpoint-runtime.ts",
+    "package": "services/queue-workers",
+    "source": "services/queue-workers/src/queue-projection-plans.ts",
+    "checkpointSource": "services/queue-workers/src/queue-projection-plans.ts",
     "hashAlgorithm": "fnv1a32-stable-json",
     "serialization": "stable-json-sorted-keys"
   },
   "projections": [
     {
       "projectionName": "commerce-order-read-model",
-      "ownerPackage": "@letbuyy/projection-runtime",
+      "ownerPackage": "services/queue-workers",
       "ownerRuntime": "services/queue-workers",
       "projectionVersion": 1,
       "versionLineage": [

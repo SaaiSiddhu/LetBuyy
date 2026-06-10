@@ -5,9 +5,9 @@ const requireRealStack = process.env.LETBUYY_E2E_REQUIRE_REAL_STACK === '1';
 const mutatingSmokeEnabled = requireRealStack || process.env.LETBUYY_E2E_ENABLE_MUTATING_SMOKE === '1';
 
 const urls = {
-  gateway: normalizeGatewayUrl(process.env.API_URL || process.env.LETBUYY_E2E_API_URL || 'https://api-staging.letbuyy.store'),
-  identity: trimTrailingSlash(process.env.ACCOUNTS_URL || process.env.LETBUYY_E2E_IDENTITY_URL || 'https://accounts-staging.letbuyy.store'),
-  webhooks: trimTrailingSlash(process.env.LETBUYY_E2E_WEBHOOK_URL || 'https://webhooks-staging.letbuyy.store'),
+  gateway: normalizeGatewayUrl(process.env.API_URL || process.env.LETBUYY_E2E_API_URL || 'https://api-staging.letbuyy.com'),
+  identity: trimTrailingSlash(process.env.ACCOUNTS_URL || process.env.LETBUYY_E2E_IDENTITY_URL || 'https://accounts-staging.letbuyy.com'),
+  webhooks: trimTrailingSlash(process.env.LETBUYY_E2E_WEBHOOK_URL || 'https://webhooks-staging.letbuyy.com'),
 };
 
 const smoke = {

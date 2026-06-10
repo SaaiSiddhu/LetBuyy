@@ -83,7 +83,7 @@ export default async function InstallationsPage({ searchParams }: InstallationsP
         const subdomain = typeof site.subdomain === 'string' ? site.subdomain : 'unknown';
         const versionInstalled = typeof inst.version_installed === 'string' ? inst.version_installed : undefined;
         const installedAt = typeof inst.installed_at === 'string' ? inst.installed_at : undefined;
-        const storeHost = customDomain || `${subdomain}.letbuyy.store`;
+        const storeHost = customDomain || `${subdomain}.letbuyy.com`;
         const storeId = typeof inst.store_id === 'string' ? inst.store_id : '';
         const slug = typeof theme.slug === 'string' ? theme.slug : '';
         const releases = storeId && slug ? await ThemeService.getThemeReleases(slug, storeId) : [];

@@ -1,302 +1,200 @@
 import 'package:flutter/material.dart';
 
-class AppColors {
-  // ============================================
-  // PRIMARY COLORS - LetBuyy Brand Purple V1
-  // ============================================
-  static const Color brandPurple = Color(0xFF8B5CF6);
-  static const Color primary = Color(0xFF8B5CF6);
-  static const Color primaryLight = Color(0xFFA78BFA);
-  static const Color primaryDark = Color(0xFF6D28D9);
-  static const Color primaryHover = Color(0xFF7C3AED);
-  static const Color primaryActive = Color(0xFF6D28D9);
-  static const Color primaryLighter = Color(0xFFC4B5FD);
-  static const Color primaryDarker = Color(0xFF6D28D9);
+import '../tokens/letbuyy_tokens.dart';
 
-  // ============================================
-  // SECONDARY COLORS - Brand Purple Support
-  // ============================================
+/// Compatibility color facade backed by the generated LetBuyy token bridge.
+class AppColors {
+  AppColors._();
+
+  static const Color brandPurple = LetbuyyColorTokens.brandPrimary;
+  static const Color primary = LetbuyyColorTokens.brandPrimary;
+  static const Color primaryLight = LetbuyyColorTokens.brandPrimaryLight;
+  static const Color primaryDark = LetbuyyColorTokens.brandPrimaryDarker;
+  static const Color primaryHover = LetbuyyColorTokens.brandPrimaryDark;
+  static const Color primaryActive = LetbuyyColorTokens.brandPrimaryDarker;
+  static const Color primaryLighter = LetbuyyColorTokens.brandPrimaryLighter;
+  static const Color primaryDarker = LetbuyyColorTokens.brandPrimaryDarker;
+
   static const Color secondary = primaryHover;
   static const Color secondaryLight = primaryLight;
   static const Color secondaryDark = primaryActive;
   static const Color secondaryLighter = primaryLighter;
 
-  // ============================================
-  // ACCENT COLORS - Lime Green
-  // ============================================
-  static const Color accent = Color(0xFFA4E500); // Lime Green
-  static const Color accentLight = Color(0xFFC8F06B);
-  static const Color accentDark = Color(0xFF798700);
+  static const Color accent = LetbuyyColorTokens.accentPink;
+  static const Color accentLight = LetbuyyColorTokens.accentPinkLight;
+  static const Color accentDark = LetbuyyColorTokens.accentPinkDark;
 
-  // ============================================
-  // EDITOR ACCENT - Compatibility aliases for Purple V1
-  // ============================================
   static const Color lavender = primary;
   static const Color lavenderLight = primaryLight;
   static const Color lavenderDark = primaryActive;
   static const Color indigo = primary;
 
-  // ============================================
-  // BACKGROUND COLORS - Light Theme
-  // ============================================
-  static const Color background = Color(0xFFF8FAFC); // Ultra-light cool grey (Modern Standard)
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceVariant = Color(0xFFF1F5F9);
-  static const Color surfaceContainer = Color(0xFFE2E8F0);
-  
-  // Glassmorphism (Light)
-  static const Color surfaceGlass = Color(0xCCFFFFFF); // High opacity for readability
-  static const Color surfaceGlassHigh = Color(0xE6FFFFFF);
-  static const Color surfaceGlassLow = Color(0x66FFFFFF);
+  static const Color background = LetbuyyColorTokens.slate50;
+  static const Color surface = LetbuyyColorTokens.white;
+  static const Color surfaceVariant = LetbuyyColorTokens.slate100;
+  static const Color surfaceContainer = LetbuyyColorTokens.slate200;
+  static const Color lightGrey = LetbuyyColorTokens.slate100;
+  static const Color white = LetbuyyColorTokens.white;
 
-  static const Color lightGrey = Color(0xFFF1F6F5);
-  static const Color white = Color(0xFFFFFFFF);
+  static const Color backgroundDark = LetbuyyColorTokens.slate950;
+  static const Color surfaceDark = LetbuyyColorTokens.slate900;
+  static const Color surfaceDarkVariant = LetbuyyColorTokens.slate800;
+  static const Color surfaceDarkContainer = LetbuyyColorTokens.slate700;
+  static const Color surfaceDarkElevated = LetbuyyColorTokens.slate600;
 
-  // ============================================
-  // BACKGROUND COLORS - Dark Theme
-  // ============================================
-  static const Color backgroundDark = Color(0xFF020617); // Richer, deeper dark (Slate 950)
-  static const Color surfaceDark = Color(0xFF0F172A); // Slate 900
-  static const Color surfaceDarkVariant = Color(0xFF1E293B); // Slate 800
-  static const Color surfaceDarkContainer = Color(0xFF334155); // Slate 700
-  static const Color surfaceDarkElevated = Color(0xFF475569); // Slate 600
+  static const Color textPrimary = LetbuyyColorTokens.slate900;
+  static const Color textSecondary = LetbuyyColorTokens.slate600;
+  static const Color textTertiary = LetbuyyColorTokens.slate500;
+  static const Color textHint = LetbuyyColorTokens.slate400;
+  static const Color textDisabled = LetbuyyColorTokens.slate300;
+  static const Color grey = LetbuyyColorTokens.slate500;
 
-  // Glassmorphism (Dark)
-  static const Color surfaceGlassDark = Color(0xCC0F172A);
-  static const Color surfaceGlassDarkHigh = Color(0xE60F172A);
-  static const Color surfaceGlassDarkLow = Color(0x660F172A);
+  static const Color textLight = LetbuyyColorTokens.slate50;
+  static const Color textLightSecondary = LetbuyyColorTokens.slate300;
+  static const Color textLightTertiary = LetbuyyColorTokens.slate400;
+  static const Color textLightHint = LetbuyyColorTokens.slate500;
+  static const Color textLightDisabled = LetbuyyColorTokens.slate700;
 
-  // ============================================
-  // TEXT COLORS - Light Theme
-  // ============================================
-  static const Color textPrimary = Color(0xFF1A1A2E); // Dark slate
-  static const Color textSecondary = Color(0xFF4A5568); // Slate gray
-  static const Color textTertiary = Color(0xFF718096); // Muted gray
-  static const Color textHint = Color(0xFFA0AEC0); // Light gray
-  static const Color textDisabled = Color(0xFFCBD5E0); // Disabled gray
+  static const Color success = LetbuyyColorTokens.success;
+  static const Color successLight = LetbuyyPrimitiveTokens.green100;
+  static const Color successDark = LetbuyyPrimitiveTokens.green700;
+  static const Color error = LetbuyyColorTokens.error;
+  static const Color errorLight = LetbuyyPrimitiveTokens.red300;
+  static const Color errorDark = LetbuyyPrimitiveTokens.red700;
+  static const Color warning = LetbuyyColorTokens.warning;
+  static const Color warningLight = LetbuyyPrimitiveTokens.amber100;
+  static const Color warningDark = LetbuyyPrimitiveTokens.amber800;
+  static const Color info = LetbuyyColorTokens.info;
+  static const Color infoLight = LetbuyyPrimitiveTokens.blue300;
+  static const Color infoDark = LetbuyyPrimitiveTokens.blue700;
+  static const Color infoAccent = LetbuyyColorTokens.cyan;
 
-  static const Color grey = Color(0xFF718096);
+  static const Color border = LetbuyyColorTokens.slate300;
+  static const Color borderLight = LetbuyyColorTokens.slate200;
+  static const Color borderDark = LetbuyyColorTokens.slate700;
+  static const Color divider = LetbuyyColorTokens.slate300;
+  static const Color dividerLight = LetbuyyColorTokens.slate200;
+  static const Color borderDarkTheme = LetbuyyColorTokens.slate700;
+  static const Color dividerDarkTheme = LetbuyyColorTokens.slate600;
 
-  // ============================================
-  // TEXT COLORS - Dark Theme
-  // ============================================
-  static const Color textLight = Color(0xFFD3E4E3);
-  static const Color textLightSecondary = Color(0xFFAED9D8);
-  static const Color textLightTertiary = Color(0xFF89CBCB);
-  static const Color textLightHint = Color(0xFF67BFBF);
-  static const Color textLightDisabled = Color(0xFF3B706F);
-
-  // ============================================
-  // STATUS COLORS
-  // ============================================
-  // Reconciled to the canonical design tokens (packages/typescript/ui/src/tokens.ts
-  // green-500 / red-500 / amber-500, with 700/800 darks). Previously these diverged
-  // (lime success #A4E500, brick error #B02525) — see DESIGN_TOKEN_AUDIT.md TOK-4.
-  static const Color success = Color(0xFF22C55E);
-  static const Color successLight = Color(0xFF86EFAC);
-  static const Color successDark = Color(0xFF15803D);
-
-  static const Color error = Color(0xFFEF4444);
-  static const Color errorLight = Color(0xFFFCA5A5);
-  static const Color errorDark = Color(0xFFB91C1C);
-
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color warningLight = Color(0xFFFCD34D);
-  static const Color warningDark = Color(0xFF92400E);
-
-  static const Color info = Color(0xFF3B82F6);
-  static const Color infoLight = Color(0xFF60A5FA);
-  static const Color infoDark = Color(0xFF2563EB);
-  static const Color infoAccent = Color(0xFF33CCCC); // Accent variant for gradients
-
-  // ============================================
-  // BORDER & DIVIDER COLORS
-  // ============================================
-  static const Color border = Color(0xFFCAD7D6);
-  static const Color borderLight = Color(0xFFE2EAE9);
-  static const Color borderDark = Color(0xFF3B706F);
-
-  static const Color divider = Color(0xFFB5CAC9);
-  static const Color dividerLight = Color(0xFFD2E2E1);
-
-  static const Color borderDarkTheme = Color(0xFF2B5556);
-  static const Color dividerDarkTheme = Color(0xFF3B706F);
-
-  // ============================================
-  // GRADIENT COLORS
-  // ============================================
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [primary, primaryLight],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-
   static const LinearGradient primaryGradientVertical = LinearGradient(
     colors: [primary, primaryLight],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
-  
-  // Premium Gold Gradient
   static const LinearGradient goldGradient = LinearGradient(
-    colors: [Color(0xFFFFD700), Color(0xFFB8860B)],
+    colors: [warning, warningDark],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-  
-  // Modern Ocean Gradient
   static const LinearGradient oceanGradient = LinearGradient(
-    colors: [Color(0xFF06B6D4), Color(0xFF3B82F6)], // Cyan to Blue
+    colors: [LetbuyyColorTokens.cyan, info],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-
   static const LinearGradient secondaryGradient = LinearGradient(
     colors: [secondary, secondaryLight],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-
   static const LinearGradient accentGradient = LinearGradient(
     colors: [accent, accentLight],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-
   static const LinearGradient primaryGradientDark = LinearGradient(
     colors: [primaryDark, primaryDarker],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-
   static const LinearGradient backgroundGradientDark = LinearGradient(
     colors: [backgroundDark, surfaceDark],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
-
   static const LinearGradient backgroundGradientLight = LinearGradient(
-    colors: [background, Color(0xFFF1F5F9)],
+    colors: [background, surfaceVariant],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
-
-  // ============================================
-  // LOGIN / AUTH SCREEN GRADIENTS
-  // ============================================
-  
-  /// Branding panel gradient (left side of login screen)
   static const LinearGradient brandingGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      Color(0xFF0F2027),  // Deep dark blue-teal
-      Color(0xFF203A43),  // Mid teal  
-      Color(0xFF2C5364),  // Steel blue
-    ],
+    colors: [surfaceDark, surfaceDarkVariant, surfaceDarkContainer],
   );
 
-  /// Auth screen scaffold colors
-  static const Color scaffoldLight = Color(0xFFF0F4F8);
-  static const Color scaffoldDark = Color(0xFF080B12);
-  
-  /// Auth card gradient
+  static const Color scaffoldLight = LetbuyyColorTokens.slate50;
+  static const Color scaffoldDark = LetbuyyColorTokens.slate950;
   static const LinearGradient authCardGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      Color(0xFF1E293B),
-      Color(0xFF0F172A),
-    ],
+    colors: [surfaceDarkVariant, surfaceDark],
   );
-
-  /// Premium glass effect gradient
   static const LinearGradient glassGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      Color(0x1AFFFFFF),
-      Color(0x0DFFFFFF),
-    ],
+    colors: [LetbuyyPrimitiveTokens.overlayDark, LetbuyyPrimitiveTokens.overlayLight],
   );
 
-  // ============================================
-  // SHADOW COLORS
-  // ============================================
-  static const Color shadowLight = Color(0x1A000000);
-  static const Color shadowMedium = Color(0x33000000);
-  static const Color shadowDark = Color(0x4D000000);
-  static const Color shadowExtraDark = Color(0x66000000);
+  static final Color surfaceGlass = white.withValues(alpha: 0.80);
+  static final Color surfaceGlassHigh = white.withValues(alpha: 0.90);
+  static final Color surfaceGlassLow = white.withValues(alpha: 0.40);
+  static final Color surfaceGlassDark = surfaceDark.withValues(alpha: 0.80);
+  static final Color surfaceGlassDarkHigh = surfaceDark.withValues(alpha: 0.90);
+  static final Color surfaceGlassDarkLow = surfaceDark.withValues(alpha: 0.40);
 
-  static const Color shadowDarkTheme = Color(0x80000000);
+  static final Color shadowLight = LetbuyyColorTokens.black.withValues(alpha: 0.10);
+  static final Color shadowMedium = LetbuyyColorTokens.black.withValues(alpha: 0.20);
+  static final Color shadowDark = LetbuyyColorTokens.black.withValues(alpha: 0.30);
+  static final Color shadowExtraDark = LetbuyyColorTokens.black.withValues(alpha: 0.40);
+  static final Color shadowDarkTheme = LetbuyyColorTokens.black.withValues(alpha: 0.50);
 
-  // ============================================
-  // ORDER STATUS COLORS
-  // ============================================
-  static const Color pending = Color(0xFFFBBF24);
-  static const Color confirmed = Color(0xFF0F5257);
-  static const Color processing = Color(0xFF88B04D);
-  static const Color shipped = Color(0xFF09846A);
-  static const Color outForDelivery = Color(0xFFF97316);
-  static const Color delivered = Color(0xFFA4E500);
-  static const Color cancelled = Color(0xFFB02525);
-  static const Color returned = Color(0xFF6B7280);
-  static const Color refunded = Color(0xFF4B706F);
+  static const Color pending = warning;
+  static const Color confirmed = info;
+  static const Color processing = LetbuyyColorTokens.teal;
+  static const Color shipped = LetbuyyColorTokens.cyan;
+  static const Color outForDelivery = warningDark;
+  static const Color delivered = success;
+  static const Color cancelled = error;
+  static const Color returned = LetbuyyColorTokens.slate500;
+  static const Color refunded = LetbuyyColorTokens.slate600;
 
-  // ============================================
-  // RATING COLORS
-  // ============================================
-  static const Color ratingActive = Color(0xFFFBBF24);
-  static const Color ratingInactive = Color(0xFFE0E0E0);
-  static const Color ratingActiveDark = Color(0xFFF2EECB);
-  static const Color ratingInactiveDark = Color(0xFF595959);
+  static const Color ratingActive = warning;
+  static const Color ratingInactive = LetbuyyColorTokens.slate200;
+  static const Color ratingActiveDark = warningLight;
+  static const Color ratingInactiveDark = LetbuyyColorTokens.slate600;
 
-  // ============================================
-  // DISCOUNT & BADGE COLORS
-  // ============================================
-  static const Color discountBg = Color(0xFFB02525);
-  static const Color discountText = Color(0xFFFFFFFF);
-  static const Color discountBgDark = Color(0xFF710A0A);
+  static const Color discountBg = error;
+  static const Color discountText = white;
+  static const Color discountBgDark = LetbuyyPrimitiveTokens.red700;
+  static const Color badgeNew = success;
+  static const Color badgeSale = error;
+  static const Color badgeFeatured = warningDark;
+  static const Color badgeOutOfStock = LetbuyyColorTokens.slate500;
 
-  static const Color badgeNew = Color(0xFFA4E500);
-  static const Color badgeSale = Color(0xFFB02525);
-  static const Color badgeFeatured = Color(0xFFF97316);
-  static const Color badgeOutOfStock = Color(0xFF6B7280);
+  static const Color favorite = success;
+  static const Color cart = warningDark;
+  static const Color notification = error;
+  static const Color inStock = success;
+  static const Color lowStock = warningDark;
+  static const Color outOfStock = error;
+  static const Color cod = success;
+  static const Color online = info;
+  static const Color wallet = LetbuyyColorTokens.teal;
 
-  // ============================================
-  // SPECIAL UI COLORS
-  // ============================================
-  static const Color favorite = Color(0xFF88B04D);
-  static const Color cart = Color(0xFFF97316);
-  static const Color notification = Color(0xFFB02525);
+  static final Color overlay = surfaceDark.withValues(alpha: 0.50);
+  static final Color overlayLight = surfaceDark.withValues(alpha: 0.25);
+  static final Color overlayDark = surfaceDark.withValues(alpha: 0.70);
+  static const Color shimmerBase = LetbuyyColorTokens.slate200;
+  static const Color shimmerHighlight = LetbuyyColorTokens.slate50;
+  static const Color shimmerBaseDark = LetbuyyColorTokens.slate700;
+  static const Color shimmerHighlightDark = LetbuyyColorTokens.slate600;
 
-  static const Color inStock = Color(0xFFA4E500);
-  static const Color lowStock = Color(0xFFF97316);
-  static const Color outOfStock = Color(0xFFB02525);
-
-  static const Color cod = Color(0xFFA4E500);
-  static const Color online = Color(0xFF0F5257);
-  static const Color wallet = Color(0xFF88B04D);
-
-  // ============================================
-  // OVERLAY COLORS
-  // ============================================
-  static const Color overlay = Color(0x802C554E);
-  static const Color overlayLight = Color(0x402C554E);
-  static const Color overlayDark = Color(0xB32C554E);
-
-  // ============================================
-  // SHIMMER COLORS
-  // ============================================
-  static const Color shimmerBase = Color(0xFFBCD8D6);
-  static const Color shimmerHighlight = Color(0xFFE9F1F0);
-
-  static const Color shimmerBaseDark = Color(0xFF2B5556);
-  static const Color shimmerHighlightDark = Color(0xFF4A8B88);
-
-  // ============================================
-  // CATEGORY COLORS
-  // ============================================
   static const List<Color> categoryColors = [
     primary,
     secondary,
@@ -308,9 +206,6 @@ class AppColors {
     primaryLighter,
   ];
 
-  // ============================================
-  // HELPER METHODS
-  // ============================================
   static Color getOrderStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'pending':

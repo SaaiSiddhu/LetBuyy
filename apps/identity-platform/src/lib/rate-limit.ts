@@ -41,6 +41,9 @@ export const AUTH_RATE_LIMITS = {
 
     // OTP verification: 5 attempts per 15 minutes
     verify_otp: { limit: 5, window: '15 m', prefix: 'rl:verify_otp' },
+
+    // Account switch: 5 per 15 minutes (SEC-H7 — /switch was previously unthrottled)
+    switch: { limit: 5, window: '15 m', prefix: 'rl:switch' },
 } satisfies Record<string, AuthRateLimitConfig>
 
 type RateLimitPayload = {

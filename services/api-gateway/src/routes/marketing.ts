@@ -535,7 +535,7 @@ router.post('/email-campaigns/:id/send', validate('json', SendEmailCampaignSchem
     const deliveryMode = liveEmail ? 'live' : 'sandbox';
     const provider = liveEmail ? 'resend' : 'letbuyy_sandbox';
     const html = existing.data.body_html || `<p>${escapeHtml(existing.data.body_text || '').replaceAll('\n', '<br>')}</p>`;
-    const from = c.env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.store>';
+    const from = c.env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>';
     const recipients: RecipientRow[] = [];
     let sentCount = 0;
     let failedCount = 0;

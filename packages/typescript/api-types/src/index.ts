@@ -89,7 +89,6 @@ export * from '@letbuyy/cms-core';
 export * from '@letbuyy/shared-types';
 export * from '@letbuyy/event-core';
 export * from '@letbuyy/notification-core';
-export * from '@letbuyy/search-core';
 export * from '@letbuyy/billing-core';
 export {
   INR_CURRENCY,

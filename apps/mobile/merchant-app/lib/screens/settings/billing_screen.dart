@@ -6,7 +6,8 @@ import '../../app/store_context.dart';
 import '../../app/routes.dart';
 import '../../services/subscription_service.dart';
 import '../../theme/app_theme_colors.dart';
-import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
+import '../../widgets/shared/provider_mode_badge.dart';
 import '../subscription/razorpay_checkout_screen.dart';
 
 class BillingScreen extends StatefulWidget {
@@ -23,6 +24,7 @@ class _BillingScreenState extends State<BillingScreen> {
   bool _isRecovering = false;
   String? _storeId;
   String? _error;
+  ProviderMode? _providerMode;
 
   late AppThemeColors colors;
 
@@ -51,14 +53,19 @@ class _BillingScreenState extends State<BillingScreen> {
       }
 
       final subscriptionService = context.read<SubscriptionService>();
-      final results = await Future.wait([
+      final results = await Future.wait<Object?>([
         subscriptionService.getSubscription(_storeId!),
         subscriptionService.fetchBillingHistory(_storeId!),
+        subscriptionService.getPaymentConfig(_storeId!),
       ]);
+      final paymentConfig = results[2] is Map
+          ? Map<String, dynamic>.from(results[2] as Map)
+          : const <String, dynamic>{};
       if (mounted) {
         setState(() {
           _subscription = results[0] as SubscriptionModel?;
           _history = results[1] as List<BillingHistoryEntry>;
+          _providerMode = ProviderMode.parse(paymentConfig['provider_mode']);
           _isLoading = false;
         });
       }
@@ -240,6 +247,8 @@ class _BillingScreenState extends State<BillingScreen> {
                   ),
                 ),
               ),
+              ProviderModeBadge(mode: _providerMode, compact: true),
+              const SizedBox(width: 8),
               _statusChip(_statusLabel(status), statusTone),
             ],
           ),

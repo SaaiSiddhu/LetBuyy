@@ -2,8 +2,8 @@
 
 > Status: **Target / planned.** This document is the canonical design + implementation
 > runbook for splitting public DNS into `letbuyy.com` (platform control plane) and
-> `letbuyy.store` (storefronts only). It is **human-authored governance memory**, not a
-> generated scan. Built behavior today is the single-zone `letbuyy.store` topology in
+> `letbuyy.com` (storefronts only). It is **human-authored governance memory**, not a
+> generated scan. Built behavior today is the single-zone `letbuyy.com` topology in
 > `infrastructure/dns/dns.tf`; everything marked _Target_ below is not yet live.
 >
 > Not to be confused with [`domain-governance.md`](./domain-governance.md), which governs
@@ -21,7 +21,7 @@ surfaces and the platform control plane.**
 
 - Storefronts render merchant content, third-party themes, and installed-app code. They are
   the least-trusted surface.
-- Keeping storefronts on a **different registrable domain** (`letbuyy.store`) means a
+- Keeping storefronts on a **different registrable domain** (`letbuyy.com`) means a
   storefront origin can **never** read cookies, tokens, or `localStorage` scoped to
   `*.letbuyy.com`. Cross-apex is a hard browser boundary; cross-subdomain is not.
 - This directly satisfies the AGENTS.md non-negotiables: _"Storefront customer auth must
@@ -49,13 +49,13 @@ independent certificate / nameserver lifecycles.
 | `api.letbuyy.com` | `services/api-gateway` | Cloudflare Workers | Public API | Sole Commerce API backend. Hono `/v1`. Proxied (orange-cloud). |
 | `webhooks.letbuyy.com` | `services/webhook-service` | Cloudflare Workers | Provider callbacks | Signature-verified provider webhooks. Proxied. |
 
-### 2.2 `letbuyy.store` — Storefronts only (Vercel wildcard)
+### 2.2 `letbuyy.com` — Storefronts only (Vercel wildcard)
 
 | Host | Runtime root | Hosting | Exposure | Notes |
 |---|---|---|---|---|
-| `{merchant}.letbuyy.store` | `apps/storefront-runtime` | Vercel (wildcard `*`) | Public shopper | Default per-tenant subdomain, e.g. `myshop.letbuyy.store`. |
+| `{merchant}.letbuyy.com` | `apps/storefront-runtime` | Vercel (wildcard `*`) | Public shopper | Default per-tenant subdomain, e.g. `myshop.letbuyy.com`. |
 | `<merchant-custom-domain>` | `apps/storefront-runtime` | Vercel custom domains | Public shopper | Merchant brings own domain via CNAME (see §7). |
-| `letbuyy.store`, `www.letbuyy.store` | — | Cloudflare redirect | Public | **Decision (§14):** recommend 301 → `letbuyy.com`. Apex is not a tenant. |
+| `letbuyy.com`, `www.letbuyy.com` | — | Cloudflare redirect | Public | **Decision (§14):** recommend 301 → `letbuyy.com`. Apex is not a tenant. |
 
 > Naming reminder (AGENTS): database tables use `sites`; URLs/UI say `store`. The host label
 > `{merchant}` resolves to a `sites` row via the tenant lookup — do **not** introduce a
@@ -77,8 +77,8 @@ flowchart TB
     API["api → api-gateway (Workers)"]
     WH["webhooks → webhook-service (Workers)"]
   end
-  subgraph STORE["letbuyy.store — storefronts (untrusted merchant surface)"]
-    SF["*.letbuyy.store → storefront-runtime"]
+  subgraph STORE["letbuyy.com — storefronts (untrusted merchant surface)"]
+    SF["*.letbuyy.com → storefront-runtime"]
     CD["custom domains → storefront-runtime"]
   end
   MKT --> ACC --> ADM
@@ -91,7 +91,7 @@ flowchart TB
   API --> DB
 ```
 
-Cross-apex rule: storefront surfaces (`letbuyy.store`, custom domains) talk to the platform
+Cross-apex rule: storefront surfaces (`letbuyy.com`, custom domains) talk to the platform
 **only** through `api.letbuyy.com` over CORS — never by sharing cookies with `*.letbuyy.com`.
 
 ## 3. Cookie & session architecture (the crux of the split)
@@ -109,8 +109,8 @@ Hard rules:
   `accounts.letbuyy.com` login is valid across `admin`, `apps`, `themes`, `developer`. Scope
   it to the auth/session cookie only — do not blanket-set unrelated cookies on the parent.
 - **Storefront cookies are host-only**: omit the `Domain` attribute entirely. A cookie set on
-  `myshop.letbuyy.store` (or `shop.coolbrand.com`) must not be readable by
-  `othershop.letbuyy.store`. **Never** set `Domain=.letbuyy.store`. This is the tenant-isolation
+  `myshop.letbuyy.com` (or `shop.coolbrand.com`) must not be readable by
+  `othershop.letbuyy.com`. **Never** set `Domain=.letbuyy.com`. This is the tenant-isolation
   guarantee for shoppers and is why storefronts live on their own apex.
 - All cookies: `HttpOnly`, `Secure` in production, `SameSite=Lax` for the top-level auth
   redirect flow (`accounts` → app), `SameSite=Strict` for everything that doesn't cross a
@@ -211,14 +211,14 @@ resource "cloudflare_record" "com_webhooks" {
 }
 ```
 
-### 5.2 Cloudflare DNS — reduce `letbuyy.store` to storefronts only (Target edit to `dns.tf`)
+### 5.2 Cloudflare DNS — reduce `letbuyy.com` to storefronts only (Target edit to `dns.tf`)
 
 - **Keep:** the `*` wildcard CNAME → `cname.vercel-dns.com` (proxied=false), and the WAF
   scanner-block ruleset.
 - **Remove/relocate:** `admin`, `accounts`, `console`, `team`, `api`, `webhooks` records — they
   move to the `letbuyy.com` zone. During migration keep them as **301-redirect hosts** (§13)
   before deleting.
-- **Apex:** repoint `letbuyy.store` root + `www` to a 301 → `https://letbuyy.com` (Cloudflare
+- **Apex:** repoint `letbuyy.com` root + `www` to a 301 → `https://letbuyy.com` (Cloudflare
   Bulk Redirect or a tiny redirect Worker), unless §14 decides otherwise.
 
 ### 5.3 Vercel project domains
@@ -236,13 +236,13 @@ auto-provision the cert:
 | platform-console | `console.letbuyy.com` |
 | platform-operations-portal | `team.letbuyy.com` |
 | marketing-site | `letbuyy.com`, `www.letbuyy.com` |
-| storefront-runtime | `*.letbuyy.store` (wildcard) **+** merchant custom domains |
+| storefront-runtime | `*.letbuyy.com` (wildcard) **+** merchant custom domains |
 
 ### 5.4 Cloudflare Workers routes
 
 Update `services/api-gateway/wrangler.toml` and `services/webhook-service/wrangler.toml` route
 patterns to the new hosts (`api.letbuyy.com/*`, `webhooks.letbuyy.com/*`). Keep the old
-`*.letbuyy.store` routes only for the redirect window, then remove.
+`*.letbuyy.com` routes only for the redirect window, then remove.
 
 ### 5.5 Storefront wildcard → tenant rewrite (already built; host source changes)
 
@@ -254,12 +254,12 @@ the middleware trusts**:
 ```ts
 // apps/storefront-runtime/src/middleware.ts  (canonical host resolution — illustrative)
 const host = req.headers.get("host")!.toLowerCase();
-const STORE_ROOT = "letbuyy.store";
+const STORE_ROOT = "letbuyy.com";
 
 let subdomain: string | null = null;
 if (host.endsWith(`.${STORE_ROOT}`)) {
-  const label = host.slice(0, -(STORE_ROOT.length + 1)); // strip ".letbuyy.store"
-  if (label && label !== "www") subdomain = label;       // myshop.letbuyy.store → "myshop"
+  const label = host.slice(0, -(STORE_ROOT.length + 1)); // strip ".letbuyy.com"
+  if (label && label !== "www") subdomain = label;       // myshop.letbuyy.com → "myshop"
 } else if (host !== STORE_ROOT) {
   subdomain = await resolveCustomDomain(host);           // custom domain → site lookup (§7)
 }
@@ -272,7 +272,7 @@ subdomains in the create-store validator so a merchant can't claim a system labe
 
 ## 6. TLS / certificates
 
-- `*.letbuyy.store` — **Vercel-managed wildcard cert** (requires the wildcard domain on the
+- `*.letbuyy.com` — **Vercel-managed wildcard cert** (requires the wildcard domain on the
   storefront project and DNS verifiable; record stays **grey-cloud / proxied=false**).
 - Platform Vercel hosts — per-host managed certs (automatic).
 - `api` / `webhooks` — Cloudflare edge certs (orange-cloud, Workers).
@@ -286,7 +286,7 @@ mobile `custom_domains.dart` / `domain_settings_screen.dart`. Canonical activati
 
 1. Merchant enters `shop.coolbrand.com` in admin.
 2. Platform issues a **verification token**; merchant adds a `TXT` (ownership) + `CNAME` →
-   `connect.letbuyy.store`. `connect.letbuyy.store` is LetBuyy-owned and currently chains to
+   `connect.letbuyy.com`. `connect.letbuyy.com` is LetBuyy-owned and currently chains to
    Vercel; if Vercel rejects chained custom-domain validation, temporarily fall back to direct
    Vercel CNAME instructions or stand up the Phase-2 storefront ingress behind `connect`.
 3. Verify TXT, then **map host → `site_id`** in the tenant table (the source for
@@ -301,7 +301,7 @@ mobile `custom_domains.dart` / `domain_settings_screen.dart`. Canonical activati
 
 - `api.letbuyy.com` allows credentialed CORS from the **platform** origins
   (`accounts/admin/apps/themes/developer/console/team .letbuyy.com`) and from **storefront**
-  origins (`*.letbuyy.store` + verified custom domains) — with **different policies** per class
+  origins (`*.letbuyy.com` + verified custom domains) — with **different policies** per class
   (storefront origins get shopper-scoped routes only, never admin routes).
 - CSRF protection on all state-changing auth routes (already flagged across
   `identity-platform/api/auth/*`); `return_to`/redirect targets validated against the
@@ -322,15 +322,15 @@ commit values** (AGENTS env rule). Owned under `config/env/` per `environment-go
 | `COOKIE_DOMAIN` | `.letbuyy.com` | **unset** (host-only cookies) |
 | `SESSION_SECRET` | platform realm | n/a |
 | `CUSTOMER_SESSION_SECRET` | n/a | storefront realm |
-| `LETBUYY_E2E_STORE_HOST_URL` / `_SUBDOMAIN` | n/a | `*.letbuyy.store` test host |
+| `LETBUYY_E2E_STORE_HOST_URL` / `_SUBDOMAIN` | n/a | `*.letbuyy.com` test host |
 | `WORKER_API_BASE_URL` | `https://api.letbuyy.com` | `https://api.letbuyy.com` |
 
-Add a `*_STORE_ROOT` (e.g. `NEXT_PUBLIC_STORE_ROOT_DOMAIN=letbuyy.store`) so the storefront
+Add a `*_STORE_ROOT` (e.g. `NEXT_PUBLIC_STORE_ROOT_DOMAIN=letbuyy.com`) so the storefront
 host parser and admin "your store URL" copy share one source of truth.
 
 ## 10. SEO / robots
 
-- Storefronts (`*.letbuyy.store`, custom domains): **indexable**; per-store canonical = the
+- Storefronts (`*.letbuyy.com`, custom domains): **indexable**; per-store canonical = the
   custom domain when configured, else the `.store` subdomain.
 - `admin`, `accounts`, `console`, `team`, `api`, `webhooks`: `noindex` + `robots: disallow`.
 - `letbuyy.com` marketing + `apps`/`themes`/`developer`: indexable.
@@ -360,19 +360,19 @@ SSO cookie even though both sit under `.letbuyy.com`.
 ## 13. Migration plan (single-zone → split, zero-downtime)
 
 1. **Stand up `letbuyy.com` in parallel.** Add zone + records + Vercel domains; apps reachable
-   on both old `*.letbuyy.store` and new `*.letbuyy.com` hosts.
+   on both old `*.letbuyy.com` and new `*.letbuyy.com` hosts.
 2. **Dual-origin auth.** Temporarily allow the accounts cookie/redirect allowlist to include
    both apexes; verify SSO on `.com` before flipping defaults.
 3. **Flip env defaults** (`*_URL`, `COOKIE_DOMAIN=.letbuyy.com`) so apps emit `.com` links.
 4. **301 the old control-plane hosts** (`admin/accounts/console/team/api/webhooks
-   .letbuyy.store`) → `.letbuyy.com` equivalents. Keep redirects ≥ one release.
-5. **Apex redirect** `letbuyy.store` → `letbuyy.com`; storefront wildcard untouched throughout.
+   .letbuyy.com`) → `.letbuyy.com` equivalents. Keep redirects ≥ one release.
+5. **Apex redirect** `letbuyy.com` → `letbuyy.com`; storefront wildcard untouched throughout.
 6. **Decommission** old `.store` control-plane records + Worker routes after traffic drains.
-7. Storefronts (`*.letbuyy.store`, custom domains) **never move** — no shopper-facing migration.
+7. Storefronts (`*.letbuyy.com`, custom domains) **never move** — no shopper-facing migration.
 
 ## 14. Open decisions
 
-- **`letbuyy.store` apex:** recommend 301 → `letbuyy.com`. Alt: a storefront directory page.
+- **`letbuyy.com` apex:** recommend 301 → `letbuyy.com`. Alt: a storefront directory page.
 - **Developer surface:** `developer.letbuyy.com` now; optionally a dedicated `letbuyy.dev`
   later (Shopify uses `shopify.dev`). Partner _app submission_ currently lives in
   app-marketplace `/developers` — decide whether it consolidates under `developer.` or stays on
@@ -387,7 +387,7 @@ SSO cookie even though both sit under `.letbuyy.com`.
 - Worker hosts: service `wrangler.toml` files; topology mirrored in
   `config/cloudflare/resource-names.json` and `config/runtime/cloudflare-topology.json`.
 - Cookie/auth realm separation is covered by existing auth governance; storefront host-only
-  cookies and the no-`Domain=.letbuyy.store` rule are **hard requirements** of this doc.
+  cookies and the no-`Domain=.letbuyy.com` rule are **hard requirements** of this doc.
 - Run `node scripts/validate-governance.mjs` after any topology/import/env/DNS change (AGENTS
   required validation), and regenerate repository intelligence so the generated `domains/`,
   `subdomains/`, and `routing/` READMEs reflect reality.

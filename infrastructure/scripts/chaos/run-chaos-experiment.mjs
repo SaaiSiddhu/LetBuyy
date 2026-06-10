@@ -5,10 +5,10 @@ const blastRadius = valueFor("--blast-radius") || "single-runtime";
 const status = valueFor("--status") || "planned";
 const apiBase = process.env.LETBUYY_API_BASE_URL || (
   environment === "production"
-    ? "https://api.letbuyy.store"
+    ? "https://api.letbuyy.com"
     : environment === "staging"
-      ? "https://api.staging.letbuyy.store"
-      : "https://api.staging.letbuyy.store"
+      ? "https://api.staging.letbuyy.com"
+      : "https://api.staging.letbuyy.com"
 );
 
 const supportedTypes = new Set([

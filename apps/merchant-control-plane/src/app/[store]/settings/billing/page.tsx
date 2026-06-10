@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { Button, Table, Badge, Banner, Card, CreditCard, EmptyState, FileText, IndianRupee, Section, Skeleton, type TableColumn, useToast } from '@letbuyy/ui'
 import { formatUsLongDate, formatUsShortDate } from '@letbuyy/ui/formatting'
 import { SettingsPane } from '@/components/settings/SettingsPane'
+import { ProviderModeBadge, normalizeProviderMode } from '@/components/ProviderModeBadge'
 
 interface Invoice {
     id: string
@@ -20,6 +21,7 @@ interface PaymentMethodInfo {
     provider: string
     detail: string
     is_default: boolean
+    provider_mode: 'mock' | 'sandbox' | 'live' | null
 }
 
 type BillingPayload = {
@@ -81,6 +83,7 @@ function normalizePaymentMethods(value: unknown): PaymentMethodInfo[] {
 
     const paymentSettings = isRecord(value.payment_settings) ? value.payment_settings : null
     const razorpay = isRecord(paymentSettings?.razorpay) ? paymentSettings.razorpay : null
+    const providerMode = normalizeProviderMode(value.provider_mode)
     const methods: PaymentMethodInfo[] = []
 
     if (readBoolean(razorpay?.secret_configured)) {
@@ -89,6 +92,7 @@ function normalizePaymentMethods(value: unknown): PaymentMethodInfo[] {
             provider: 'Razorpay',
             detail: readString(razorpay?.key_id, 'Configured'),
             is_default: readBoolean(razorpay?.verified),
+            provider_mode: providerMode,
         })
     }
 
@@ -98,6 +102,7 @@ function normalizePaymentMethods(value: unknown): PaymentMethodInfo[] {
             provider: 'Cash on Delivery',
             detail: 'Available at checkout',
             is_default: !readBoolean(razorpay?.secret_configured),
+            provider_mode: providerMode,
         })
     }
 
@@ -326,6 +331,7 @@ export default function BillingSettingsPage() {
                                         </div>
                                     </div>
                                     <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                        <ProviderModeBadge mode={method.provider_mode} />
                                         {method.is_default && <Badge label="Default" variant="success" />}
                                         <Button type="button" variant="secondary" size="sm" onClick={() => router.push(`/${store}/settings/payments`)}>
                                             Manage

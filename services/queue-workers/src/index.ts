@@ -12,6 +12,7 @@ import { processIncidentCommandDeliveries, runIncidentPostmortemReminders } from
 import { processRiskScoringDeliveries } from './risk-scoring';
 import { processReviewCheckDeliveries } from './review-checks';
 import { processSupportAutomationDeliveries } from './support-automation';
+import { runInventoryReservationSweeper } from './inventory-reservations';
 
 type QueuePayload = {
   messageId?: string;
@@ -19,6 +20,11 @@ type QueuePayload = {
   jobType?: string;
   payload?: Record<string, unknown>;
   siteId?: string | null;
+  tenantEnvelope?: {
+    siteId?: string;
+    issuedAt?: string;
+    signature?: string;
+  };
   idempotencyKey?: string;
   requestId?: string | null;
   correlationId?: string | null;
@@ -50,8 +56,10 @@ export interface Env extends SupabaseServiceEnv, PushProviderEnv {
   PLATFORM_QUEUE_CIRCUIT_FAILURE_THRESHOLD?: string;
   PLATFORM_QUEUE_CIRCUIT_OPEN_SECONDS?: string;
   PLATFORM_QUEUE_DRAIN_GENERIC_FANOUT?: string;
+  INVENTORY_RESERVATION_SWEEPER_LIMIT?: string;
   API_GATEWAY_SERVICE?: Fetcher;
   INTERNAL_API_SECRET?: string;
+  QUEUE_TENANT_ENVELOPE_SECRET?: string;
   CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT?: string;
   RESEND_API_KEY?: string;
   RESEND_FROM_EMAIL?: string;
@@ -95,11 +103,90 @@ function stringValue(value: unknown, fallback: string): string {
   return typeof value === 'string' && value.trim().length > 0 ? value : fallback;
 }
 
+function tenantEnvelopeSecret(env: Pick<Env, 'QUEUE_TENANT_ENVELOPE_SECRET' | 'INTERNAL_API_SECRET'>): string | null {
+  const secret = env.QUEUE_TENANT_ENVELOPE_SECRET || env.INTERNAL_API_SECRET;
+  if (!secret || secret.includes('SKIP_NEEDS_HUMAN_') || secret.includes('replace-with')) return null;
+  return secret;
+}
+
+async function hmacSha256Hex(secret: string, message: string): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
+  const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(message));
+  return [...new Uint8Array(signature)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+function constantTimeEqual(left: string, right: string): boolean {
+  if (left.length !== right.length) return false;
+  let diff = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    diff |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+  return diff === 0;
+}
+
+function payloadHasTenantScope(value: unknown): boolean {
+  if (Array.isArray(value)) return value.some(payloadHasTenantScope);
+  if (!isRecord(value)) return false;
+  if (
+    typeof value.site_id === 'string'
+    || typeof value.store_id === 'string'
+    || typeof value.siteId === 'string'
+    || typeof value.storeId === 'string'
+  ) {
+    return true;
+  }
+  return Object.values(value).some(payloadHasTenantScope);
+}
+
+async function verifiedTenantSiteId(
+  env: Env,
+  body: QueuePayload,
+  normalized: Pick<Required<QueuePayload>, 'messageId' | 'idempotencyKey' | 'payload'>,
+): Promise<string | null> {
+  const candidateSiteId = typeof body.siteId === 'string'
+    ? body.siteId
+    : typeof body.tenantEnvelope?.siteId === 'string'
+      ? body.tenantEnvelope.siteId
+      : null;
+  const hasTenantScope = Boolean(candidateSiteId) || payloadHasTenantScope(normalized.payload);
+  if (!hasTenantScope) return null;
+
+  const envelope = body.tenantEnvelope;
+  const secret = tenantEnvelopeSecret(env);
+  if (!secret || !candidateSiteId || !envelope?.issuedAt || !envelope.signature) {
+    throw new QueueProcessingError('Tenant-scoped queue message requires signed tenant envelope', { deterministic: true });
+  }
+  if (envelope.siteId !== candidateSiteId) {
+    throw new QueueProcessingError('Tenant envelope siteId does not match queue message siteId', { deterministic: true });
+  }
+
+  const issuedAtMs = Date.parse(envelope.issuedAt);
+  if (!Number.isFinite(issuedAtMs) || Math.abs(Date.now() - issuedAtMs) > 15 * 60_000) {
+    throw new QueueProcessingError('Tenant envelope is expired or malformed', { deterministic: true });
+  }
+
+  const expected = await hmacSha256Hex(
+    secret,
+    `${candidateSiteId}.${normalized.messageId}.${normalized.idempotencyKey}.${envelope.issuedAt}`,
+  );
+  if (!constantTimeEqual(expected, envelope.signature)) {
+    throw new QueueProcessingError('Tenant envelope signature is invalid', { deterministic: true });
+  }
+
+  return candidateSiteId;
+}
+
 function queueNameFromBatch(batch: MessageBatch<QueuePayload | Record<string, unknown>>, body: QueuePayload): string {
   return stringValue(body.queueName, batch.queue);
 }
 
-function normalizePayload(message: QueueBatchMessage, batch: MessageBatch<QueuePayload | Record<string, unknown>>): Required<QueuePayload> {
+async function normalizePayload(env: Env, message: QueueBatchMessage, batch: MessageBatch<QueuePayload | Record<string, unknown>>): Promise<Required<QueuePayload>> {
   if (!isRecord(message.body)) {
     throw new QueueProcessingError('Queue message body must be a JSON object', { deterministic: true });
   }
@@ -111,13 +198,21 @@ function normalizePayload(message: QueueBatchMessage, batch: MessageBatch<QueueP
   const idempotencyKey = stringValue(body.idempotencyKey, `${queueName}:${messageId}`);
   const requestId = stringValue(body.requestId, messageId);
   const correlationId = stringValue(body.correlationId, requestId);
+  const payload = isRecord(body.payload) ? body.payload : { raw: redactedRawPayload(body.payload ?? body) };
+  const partial = {
+    messageId,
+    idempotencyKey,
+    payload,
+  };
+  const siteId = await verifiedTenantSiteId(env, body, partial);
 
   return {
     messageId,
     queueName,
     jobType,
-    payload: isRecord(body.payload) ? body.payload : { raw: redactedRawPayload(body.payload ?? body) },
-    siteId: typeof body.siteId === 'string' ? body.siteId : null,
+    payload,
+    siteId,
+    tenantEnvelope: body.tenantEnvelope || {},
     idempotencyKey,
     requestId,
     correlationId,
@@ -263,8 +358,8 @@ async function recordQueueBatchMetric(env: Env, batch: MessageBatch<QueuePayload
   });
 }
 
-function normalizeDelivery(batch: MessageBatch<QueuePayload | Record<string, unknown>>, message: QueueBatchMessage): NormalizedQueueDelivery {
-  const normalized = normalizePayload(message, batch);
+async function normalizeDelivery(env: Env, batch: MessageBatch<QueuePayload | Record<string, unknown>>, message: QueueBatchMessage): Promise<NormalizedQueueDelivery> {
+  const normalized = await normalizePayload(env, message, batch);
   const status = batch.queue.includes('dead-letters') ? 'dead-lettered' : 'completed';
   return {
     message,
@@ -297,6 +392,7 @@ function quarantinedDelivery(
         raw: redactedRawPayload(message.body),
       },
       siteId: null,
+      tenantEnvelope: {},
       idempotencyKey: `${queueName}:${messageId}:quarantined`,
       requestId,
       correlationId: requestId,
@@ -306,10 +402,10 @@ function quarantinedDelivery(
   };
 }
 
-function normalizeDeliveries(batch: MessageBatch<QueuePayload | Record<string, unknown>>): NormalizedQueueDelivery[] {
-  return batch.messages.map((message) => {
+async function normalizeDeliveries(env: Env, batch: MessageBatch<QueuePayload | Record<string, unknown>>): Promise<NormalizedQueueDelivery[]> {
+  return Promise.all(batch.messages.map(async (message) => {
     try {
-      return normalizeDelivery(batch, message);
+      return await normalizeDelivery(env, batch, message);
     } catch (error) {
       if (isDeterministicQueueError(error)) {
         return quarantinedDelivery(batch, message, error);
@@ -317,7 +413,7 @@ function normalizeDeliveries(batch: MessageBatch<QueuePayload | Record<string, u
 
       throw error;
     }
-  });
+  }));
 }
 
 function sharedBodyQueueName(deliveries: NormalizedQueueDelivery[]): string | null {
@@ -444,7 +540,7 @@ async function triggerCustomDomainReconciler(env: Env, cron: string): Promise<vo
 
 export default {
   async queue(batch, env) {
-    const deliveries = normalizeDeliveries(batch);
+    const deliveries = await normalizeDeliveries(env, batch);
 
     try {
       await persistQueueBatch(env, deliveries);
@@ -505,6 +601,21 @@ export default {
   async scheduled(controller, env, ctx) {
     const cron = controller.cron || 'manual';
     ctx.waitUntil(triggerCustomDomainReconciler(env, cron));
+    ctx.waitUntil(
+      runInventoryReservationSweeper(env, {
+        requestId: `scheduled:inventory-reservation-sweeper:${cron}:${Date.now()}`,
+      })
+        .then((result) => writeQueueLog('info', {
+          route: 'scheduled.inventory_reservation_sweeper',
+          status: 'completed',
+          result,
+        }))
+        .catch((error) => writeQueueLog('error', {
+          route: 'scheduled.inventory_reservation_sweeper',
+          status: 'failed',
+          error: error instanceof Error ? error.message : 'inventory reservation sweeper failed',
+        })),
+    );
     ctx.waitUntil(
       runExecutiveAnalyticsRollup(env, {
         requestId: `scheduled:executive-analytics:${cron}:${Date.now()}`,

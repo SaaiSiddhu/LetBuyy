@@ -56,8 +56,6 @@ import '../screens/products/collections_screen.dart';
 import '../screens/store_health/store_health_screen.dart';
 import '../screens/subscription/pricing_screen.dart';
 import '../screens/subscription/connect_razorpay_screen.dart';
-import '../screens/parity/merchant_feature_definitions.dart';
-import '../screens/parity/merchant_feature_screen.dart';
 import 'auth_wrapper.dart';
 
 enum AppRouteId {
@@ -760,8 +758,7 @@ class AppRoutes {
 
   static bool isKnownRoute(String? path) {
     if (path == null) return false;
-    return _routesByPath.containsKey(path) ||
-        MerchantFeatureDefinitions.byRoute.containsKey(path);
+    return _routesByPath.containsKey(path);
   }
 
   /// Generate routes with optimized page transitions
@@ -769,11 +766,6 @@ class AppRoutes {
     final spec = routeFor(settings.name);
     if (spec != null) {
       return _buildConfiguredRoute(spec, settings);
-    }
-
-    final feature = MerchantFeatureDefinitions.byRoute[settings.name];
-    if (feature != null) {
-      return _buildRoute(MerchantFeatureScreen(feature: feature), settings);
     }
 
     return _buildRoute(

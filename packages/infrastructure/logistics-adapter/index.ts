@@ -155,7 +155,7 @@ function trackingUrl(provider: LogisticsProviderName, trackingNumber: string): s
 }
 
 function labelUrl(provider: LogisticsProviderName, shipmentId: string): string {
-  return `https://logistics.test.letbuyy.store/${provider}/labels/${encodeURIComponent(shipmentId)}.pdf`;
+  return `https://logistics.test.letbuyy.com/${provider}/labels/${encodeURIComponent(shipmentId)}.pdf`;
 }
 
 function createScaffoldLogisticsProvider(provider: LogisticsProviderName, options: LogisticsProviderOptions = {}): LogisticsProvider {

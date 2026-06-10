@@ -6,6 +6,7 @@ import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { Badge, Banner, Button, Input, ProgressBar } from '@letbuyy/ui'
+import { useAuthTheme } from '@/lib/useAuthTheme'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -79,14 +80,12 @@ function SetPasswordContent() {
     const [error, setError] = useState<string | null>(null)
     const [userEmail, setUserEmail] = useState('')
     const [userId, setUserId] = useState('')
-    const [isDark, setIsDark] = useState(false)
+    const { isDark, toggleTheme } = useAuthTheme()
     const [lang, setLang] = useState<Lang>('en')
 
     const t = translations[lang]
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem('letbuyy-theme')
-        setIsDark(savedTheme === 'dark')
         const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
         setLang(savedLang)
 
@@ -115,13 +114,6 @@ function SetPasswordContent() {
         }
     }, [searchParams])
 
-    const toggleTheme = () => {
-        const newTheme = !isDark
-        setIsDark(newTheme)
-        localStorage.setItem('letbuyy-theme', newTheme ? 'dark' : 'light')
-        document.documentElement.classList.toggle('dark', newTheme)
-        document.documentElement.style.colorScheme = newTheme ? 'dark' : 'light'
-    }
 
     const cycleLang = () => {
         const langs: Lang[] = ['en', 'hi', 'ta']

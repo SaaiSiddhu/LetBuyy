@@ -9,6 +9,7 @@ import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { OAuthBrandIcon } from '@/components/OAuthBrandIcon'
 import { Button, Input } from '@letbuyy/ui'
+import { useAuthTheme } from '@/lib/useAuthTheme'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -83,7 +84,7 @@ function LoginContent() {
     const [showPasswordVisible, setShowPasswordVisible] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
-    const [isDark, setIsDark] = useState(false)
+    const { isDark, toggleTheme } = useAuthTheme()
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
     const turnstileTokenRef = useRef<string | null>(null)
     const turnstileRef = useRef<TurnstileHandle>(null)
@@ -93,8 +94,6 @@ function LoginContent() {
 
     // Initialize theme and language
     useEffect(() => {
-        const savedTheme = localStorage.getItem('letbuyy-theme')
-        setIsDark(savedTheme === 'dark')
 
         const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
         setLang(savedLang)
@@ -121,19 +120,6 @@ function LoginContent() {
         localStorage.setItem('letbuyy_lang', next)
     }
 
-    const toggleTheme = () => {
-        const newDark = !isDark
-        setIsDark(newDark)
-        if (newDark) {
-            document.documentElement.classList.add('dark')
-            document.documentElement.style.colorScheme = 'dark'
-            localStorage.setItem('letbuyy-theme', 'dark')
-        } else {
-            document.documentElement.classList.remove('dark')
-            document.documentElement.style.colorScheme = 'light'
-            localStorage.setItem('letbuyy-theme', 'light')
-        }
-    }
 
     const handleEmailContinue = useCallback(async (e: React.FormEvent) => {
         e.preventDefault()
@@ -256,7 +242,7 @@ function LoginContent() {
                                 />
                             </div>
 
-                            {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
+                            {error && <div className="auth-error" role="alert" aria-live="assertive"><AuthIcon name="error" />{error}</div>}
 
                             <Button unstyled
                                 type="submit"
@@ -343,7 +329,7 @@ function LoginContent() {
                                 </div>
                             </div>
 
-                            {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
+                            {error && <div className="auth-error" role="alert" aria-live="assertive"><AuthIcon name="error" />{error}</div>}
 
                             <Button unstyled
                                 type="submit"

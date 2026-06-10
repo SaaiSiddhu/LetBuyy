@@ -53,7 +53,7 @@ Actual source root: `apps/platform-operations-portal`.
 ## Runtime Rules
 
 - Keep business logic out of page components. Use declared shared clients, app-local presentation adapters, or worker routes.
-- Durable checkout, payment, auth, tenant, CMS, and commerce workflows belong in application-services and backend service execution containers.
+- Durable checkout, payment, auth, tenant, CMS, and commerce workflows belong in service-owned workflow adapters and backend service execution containers.
 - Keep tenant context explicit: every store/merchant operation must bind to `site_id`, `[store]`, `[subdomain]`, or an ownership-checked resource.
 - Do not introduce secrets, provider keys, or service-role access into client components.
 - Prefer skeletons and retryable error states over spinner-only loading.

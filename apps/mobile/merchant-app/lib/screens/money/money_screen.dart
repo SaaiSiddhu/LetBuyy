@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
 import '../../services/money_service.dart';
 import '../../theme/app_theme_colors.dart';
+import '../../widgets/shared/provider_mode_badge.dart';
 
 class MoneyScreen extends StatefulWidget {
   const MoneyScreen({super.key, this.initialTab = 0});
@@ -20,6 +21,7 @@ class _MoneyScreenState extends State<MoneyScreen>
   String? _storeId;
   String? _error;
   bool _loading = true;
+  final Set<String> _pendingMoneyActions = <String>{};
 
   @override
   void initState() {
@@ -62,68 +64,80 @@ class _MoneyScreenState extends State<MoneyScreen>
   Future<void> _createPayout() async {
     final storeId = _storeId;
     if (storeId == null) return;
-    try {
-      await context.read<MoneyService>().createPayoutStatement(storeId);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Payout statement created.')),
-      );
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No paid orders are ready for payout.')),
-      );
-    }
+    await _runMoneyAction('create-payout', () async {
+      try {
+        await context.read<MoneyService>().createPayoutStatement(storeId);
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Payout statement created.')),
+        );
+      } catch (_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No paid orders are ready for payout.')),
+        );
+      }
+    });
   }
 
   Future<void> _settlePayout(String payoutId) async {
     final storeId = _storeId;
     if (storeId == null) return;
-    try {
-      await context.read<MoneyService>().settlePayout(payoutId, storeId);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Payout settlement updated.')),
-      );
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Payout could not be settled now.')),
-      );
-    }
+    await _runMoneyAction('settle-payout:$payoutId', () async {
+      try {
+        await context.read<MoneyService>().settlePayout(payoutId, storeId);
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Payout settlement updated.')),
+        );
+      } catch (_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Payout could not be settled now.')),
+        );
+      }
+    });
   }
 
   Future<void> _reconcileCommission() async {
     final storeId = _storeId;
     if (storeId == null) return;
-    final result = await context.read<MoneyService>().reconcileCommission(
-      storeId,
-    );
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${result['created'] ?? 0} entries reconciled.')),
-    );
+    await _runMoneyAction('reconcile-commission', () async {
+      final result = await context.read<MoneyService>().reconcileCommission(
+        storeId,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${result['created'] ?? 0} entries reconciled.'),
+        ),
+      );
+    });
   }
 
   Future<void> _collectCodOrder(String orderId, int expectedAmountMinor) async {
     final storeId = _storeId;
     if (storeId == null) return;
-    try {
-      await context.read<MoneyService>().collectCodOrder(
-        storeId,
-        orderId,
-        collectedAmountMinor: expectedAmountMinor,
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('COD collection recorded.')));
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('COD collection could not be recorded.')),
-      );
-    }
+    await _runMoneyAction('collect-cod:$orderId', () async {
+      try {
+        await context.read<MoneyService>().collectCodOrder(
+          storeId,
+          orderId,
+          collectedAmountMinor: expectedAmountMinor,
+        );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('COD collection recorded.')),
+        );
+      } catch (_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('COD collection could not be recorded.'),
+          ),
+        );
+      }
+    });
   }
 
   Future<void> _reconcileCodEntry(
@@ -132,23 +146,38 @@ class _MoneyScreenState extends State<MoneyScreen>
   ) async {
     final storeId = _storeId;
     if (storeId == null) return;
+    await _runMoneyAction('reconcile-cod:$entryId', () async {
+      try {
+        await context.read<MoneyService>().reconcileCodEntry(
+          storeId,
+          entryId,
+          depositedAmountMinor: collectedAmountMinor,
+        );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('COD remittance reconciled.')),
+        );
+      } catch (_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('COD remittance could not be reconciled.'),
+          ),
+        );
+      }
+    });
+  }
+
+  Future<void> _runMoneyAction(
+    String actionKey,
+    Future<void> Function() action,
+  ) async {
+    if (_pendingMoneyActions.contains(actionKey)) return;
+    setState(() => _pendingMoneyActions.add(actionKey));
     try {
-      await context.read<MoneyService>().reconcileCodEntry(
-        storeId,
-        entryId,
-        depositedAmountMinor: collectedAmountMinor,
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('COD remittance reconciled.')),
-      );
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('COD remittance could not be reconciled.'),
-        ),
-      );
+      await action();
+    } finally {
+      if (mounted) setState(() => _pendingMoneyActions.remove(actionKey));
     }
   }
 
@@ -179,22 +208,36 @@ class _MoneyScreenState extends State<MoneyScreen>
           ? _EmptyState(message: _error!, actionLabel: 'Retry', onTap: _load)
           : Consumer<MoneyService>(
               builder: (context, money, _) {
+                final providerMode = ProviderMode.parse(
+                  money.payoutSummary?['provider_mode'],
+                );
                 return TabBarView(
                   controller: _tabController,
                   children: [
                     _PayoutsTab(
                       payouts: money.payouts,
                       summary: money.payoutSummary,
+                      providerMode: providerMode,
+                      pendingActionKeys: _pendingMoneyActions,
                       onCreate: _createPayout,
                       onSettle: _settlePayout,
                     ),
-                    _WalletTab(wallet: money.wallet),
+                    _WalletTab(
+                      wallet: money.wallet,
+                      providerMode: providerMode,
+                    ),
                     _CommissionTab(
                       commission: money.commission,
+                      providerMode: providerMode,
+                      isReconciling: _pendingMoneyActions.contains(
+                        'reconcile-commission',
+                      ),
                       onReconcile: _reconcileCommission,
                     ),
                     _CodTab(
                       cod: money.cod,
+                      providerMode: providerMode,
+                      pendingActionKeys: _pendingMoneyActions,
                       onCollect: _collectCodOrder,
                       onReconcile: _reconcileCodEntry,
                     ),
@@ -210,12 +253,16 @@ class _PayoutsTab extends StatelessWidget {
   const _PayoutsTab({
     required this.payouts,
     required this.summary,
+    required this.providerMode,
+    required this.pendingActionKeys,
     required this.onCreate,
     required this.onSettle,
   });
 
   final List<Map<String, dynamic>> payouts;
   final Map<String, dynamic>? summary;
+  final ProviderMode? providerMode;
+  final Set<String> pendingActionKeys;
   final Future<void> Function() onCreate;
   final Future<void> Function(String payoutId) onSettle;
 
@@ -229,6 +276,7 @@ class _PayoutsTab extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          _ProviderModeHeader(mode: providerMode),
           _SummaryCard(
             title: 'Next payout',
             value: nextPayout == null
@@ -238,6 +286,7 @@ class _PayoutsTab extends StatelessWidget {
                 ? 'Paid orders will appear here when ready.'
                 : '${nextPayout['status']} · ${nextPayout['available_on'] ?? 'available soon'}',
             actionLabel: 'Create statement',
+            actionBusy: pendingActionKeys.contains('create-payout'),
             onAction: () {
               onCreate();
             },
@@ -249,22 +298,28 @@ class _PayoutsTab extends StatelessWidget {
               detail: 'Paid orders will be grouped into settlement statements.',
             )
           else
-            ...payouts.map(
-              (payout) => _MoneyTile(
+            ...payouts.map((payout) {
+              final payoutId = payout['id']?.toString() ?? '';
+              return _MoneyTile(
                 title: payout['statement_number']?.toString() ?? 'Payout',
-                subtitle:
-                    '${payout['status'] ?? 'pending'} · ${payout['provider_mode'] ?? 'sandbox'}',
+                subtitle: payout['status']?.toString() ?? 'pending',
                 amount: _formatMinor(payout['net_amount_minor']),
                 trailing: payout['status'] == 'pending'
                     ? TextButton(
-                        onPressed: () {
-                          onSettle(payout['id'].toString());
-                        },
+                        onPressed:
+                            pendingActionKeys.contains(
+                                  'settle-payout:$payoutId',
+                                ) ||
+                                payoutId.isEmpty
+                            ? null
+                            : () {
+                                onSettle(payoutId);
+                              },
                         child: const Text('Settle'),
                       )
                     : null,
-              ),
-            ),
+              );
+            }),
         ],
       ),
     );
@@ -272,9 +327,10 @@ class _PayoutsTab extends StatelessWidget {
 }
 
 class _WalletTab extends StatelessWidget {
-  const _WalletTab({required this.wallet});
+  const _WalletTab({required this.wallet, required this.providerMode});
 
   final Map<String, dynamic>? wallet;
+  final ProviderMode? providerMode;
 
   @override
   Widget build(BuildContext context) {
@@ -283,6 +339,7 @@ class _WalletTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        _ProviderModeHeader(mode: providerMode),
         _SummaryCard(
           title: 'Available balance',
           value: _formatMinor(wallet?['available_minor']),
@@ -310,9 +367,16 @@ class _WalletTab extends StatelessWidget {
 }
 
 class _CommissionTab extends StatelessWidget {
-  const _CommissionTab({required this.commission, required this.onReconcile});
+  const _CommissionTab({
+    required this.commission,
+    required this.providerMode,
+    required this.isReconciling,
+    required this.onReconcile,
+  });
 
   final Map<String, dynamic>? commission;
+  final ProviderMode? providerMode;
+  final bool isReconciling;
   final Future<void> Function() onReconcile;
 
   @override
@@ -329,12 +393,14 @@ class _CommissionTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        _ProviderModeHeader(mode: providerMode),
         _SummaryCard(
           title: 'Commission schedule',
           value: '${(bps / 100).toStringAsFixed(2)}%',
           subtitle:
               'GST on platform fee: ${(((scheduleMap['gst_bps'] as num?)?.toDouble() ?? 0) / 100).toStringAsFixed(2)}%',
           actionLabel: 'Reconcile',
+          actionBusy: isReconciling,
           onAction: () {
             onReconcile();
           },
@@ -368,11 +434,15 @@ class _CommissionTab extends StatelessWidget {
 class _CodTab extends StatelessWidget {
   const _CodTab({
     required this.cod,
+    required this.providerMode,
+    required this.pendingActionKeys,
     required this.onCollect,
     required this.onReconcile,
   });
 
   final Map<String, dynamic>? cod;
+  final ProviderMode? providerMode;
+  final Set<String> pendingActionKeys;
   final Future<void> Function(String orderId, int expectedAmountMinor)
   onCollect;
   final Future<void> Function(String entryId, int collectedAmountMinor)
@@ -389,6 +459,7 @@ class _CodTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        _ProviderModeHeader(mode: providerMode),
         _SummaryCard(
           title: 'COD expected',
           value: _formatMinor(summaryMap['expected_amount_minor']),
@@ -417,10 +488,12 @@ class _CodTab extends StatelessWidget {
             final status = entry['status']?.toString() ?? 'pending';
             final expected = _intValue(entry['expected_amount_minor']);
             final collected = _intValue(entry['collected_amount_minor']);
+            final orderId = entry['order_id']?.toString() ?? '';
+            final entryId = entry['id']?.toString() ?? '';
             final title =
                 metadataMap['order_number']?.toString().isNotEmpty == true
                 ? 'Order ${metadataMap['order_number']}'
-                : 'Order ${entry['order_id'] ?? ''}';
+                : 'Order $orderId';
             final canCollect = status == 'pending';
             final canReconcile = status == 'collected';
 
@@ -431,16 +504,26 @@ class _CodTab extends StatelessWidget {
               amount: _formatMinor(collected > 0 ? collected : expected),
               trailing: canCollect
                   ? TextButton(
-                      onPressed: () {
-                        onCollect(entry['order_id'].toString(), expected);
-                      },
+                      onPressed:
+                          pendingActionKeys.contains('collect-cod:$orderId') ||
+                              orderId.isEmpty
+                          ? null
+                          : () {
+                              onCollect(orderId, expected);
+                            },
                       child: const Text('Collect'),
                     )
                   : canReconcile
                   ? TextButton(
-                      onPressed: () {
-                        onReconcile(entry['id'].toString(), collected);
-                      },
+                      onPressed:
+                          pendingActionKeys.contains(
+                                'reconcile-cod:$entryId',
+                              ) ||
+                              entryId.isEmpty
+                          ? null
+                          : () {
+                              onReconcile(entryId, collected);
+                            },
                       child: const Text('Reconcile'),
                     )
                   : null,
@@ -457,6 +540,7 @@ class _SummaryCard extends StatelessWidget {
     required this.value,
     required this.subtitle,
     this.actionLabel,
+    this.actionBusy = false,
     this.onAction,
   });
 
@@ -464,6 +548,7 @@ class _SummaryCard extends StatelessWidget {
   final String value;
   final String subtitle;
   final String? actionLabel;
+  final bool actionBusy;
   final VoidCallback? onAction;
 
   @override
@@ -494,8 +579,40 @@ class _SummaryCard extends StatelessWidget {
           Text(subtitle, style: TextStyle(color: colors.textSecondary)),
           if (actionLabel != null && onAction != null) ...[
             const SizedBox(height: 12),
-            FilledButton(onPressed: onAction, child: Text(actionLabel!)),
+            FilledButton(
+              onPressed: actionBusy ? null : onAction,
+              child: Text(actionBusy ? 'Working...' : actionLabel!),
+            ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ProviderModeHeader extends StatelessWidget {
+  const _ProviderModeHeader({required this.mode});
+
+  final ProviderMode? mode;
+
+  @override
+  Widget build(BuildContext context) {
+    if (mode == null) return const SizedBox.shrink();
+    final colors = AppThemeColors.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          Text(
+            'Provider mode',
+            style: TextStyle(
+              color: colors.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 8),
+          ProviderModeBadge(mode: mode, compact: true),
         ],
       ),
     );

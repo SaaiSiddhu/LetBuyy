@@ -5,9 +5,9 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import { readAppStoreRouteSource, readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
-const APP_ENGINE_SOURCE = 'packages/app-engine/src/index.ts';
+const APP_ENGINE_SOURCE = 'packages/shared-types/src/app-platform.ts';
 const APP_FUNCTION_RUNTIME_SOURCE = 'services/api-gateway/src/extensions/app-functions-runtime.ts';
-const EXTENSION_HOST_SOURCE = 'packages/extension-host/src/index.ts';
+const EXTENSION_HOST_SOURCE = 'packages/shared-types/src/app-platform.ts';
 const EMBEDDED_BRIDGE_CLIENT_SOURCE = 'apps/merchant-control-plane/src/components/apps/EmbeddedAppBridgeClient.tsx';
 const EMBEDDED_APP_PAGE_SOURCE = 'apps/merchant-control-plane/src/app/[store]/apps/[installationId]/page.tsx';
 const CHECKOUT_EXTENSION_HOST_SOURCE = 'apps/storefront-runtime/src/components/checkout-extensions/CheckoutExtensionHost.tsx';
@@ -65,15 +65,18 @@ const appEngine = loadTypeScriptModule(APP_ENGINE_SOURCE, {
   zod: { z },
   '@letbuyy/shared-types': { UuidSchema: zChain },
 });
-const extensionHost = loadTypeScriptModule(EXTENSION_HOST_SOURCE, {});
+const extensionHost = loadTypeScriptModule(EXTENSION_HOST_SOURCE, {
+  zod: { z },
+  '@letbuyy/shared-types': { UuidSchema: zChain },
+});
 
 test('admin app bridge resolves installed app embed surfaces safely', () => {
-  const stagingUrl = 'https://admin-staging.letbuyy.store/example-app-bridge.html';
+  const stagingUrl = 'https://admin-staging.letbuyy.com/example-app-bridge.html';
   const exampleInstallation = appEngine.createExampleAdminAppInstallation(stagingUrl);
   const stagingSurface = appEngine.normalizeAppAdminEmbedSurface(exampleInstallation);
 
   assert.equal(stagingSurface.url, stagingUrl);
-  assert.equal(stagingSurface.origin, 'https://admin-staging.letbuyy.store');
+  assert.equal(stagingSurface.origin, 'https://admin-staging.letbuyy.com');
   assert.equal(stagingSurface.title, 'Example App');
   assert.deepEqual(Array.from(stagingSurface.capabilities), ['api.fetch', 'toast', 'resize']);
 
@@ -136,7 +139,7 @@ test('WS13 X2 admin UI extension host normalizes registered extensions and enfor
     'createAdminUiExtensionFramePolicy',
     'createAdminUiExtensionBridgeContext',
   ]) {
-    assert.ok(extensionHostSource.includes(marker), `extension-host package is missing ${marker}`);
+    assert.ok(extensionHostSource.includes(marker), `shared app-platform contract is missing ${marker}`);
   }
 
   const normalized = extensionHost.normalizeAdminUiExtensionRegistration({
@@ -181,7 +184,7 @@ test('WS13 X2 admin UI extension host normalizes registered extensions and enfor
   assert.equal(policy.sandbox, 'allow-forms allow-popups allow-same-origin allow-scripts');
   assert.equal(policy.referrerPolicy, 'no-referrer');
 
-  assert.match(bridgeClient, /@letbuyy\/extension-host/);
+  assert.match(bridgeClient, /@letbuyy\/shared-types/);
   assert.match(bridgeClient, /listEnabledAdminUiExtensions\(adminExtensions\)/);
   assert.match(bridgeClient, /sandbox=\{framePolicy\.sandbox\}/);
   assert.match(bridgeClient, /referrerPolicy=\{framePolicy\.referrerPolicy\}/);
@@ -205,7 +208,7 @@ test('WS13 X3 checkout UI extension host normalizes public registrations and mou
     'createCheckoutUiExtensionFramePolicy',
     'createCheckoutUiExtensionBridgeContext',
   ]) {
-    assert.ok(extensionHostSource.includes(marker), `extension-host package is missing ${marker}`);
+    assert.ok(extensionHostSource.includes(marker), `shared app-platform contract is missing ${marker}`);
   }
 
   const normalized = extensionHost.normalizeCheckoutUiExtensionRegistration({
@@ -258,7 +261,7 @@ test('WS13 X3 checkout UI extension host normalizes public registrations and mou
   assert.match(storefrontRouteSource, /\.eq\('surface', 'checkout\.ui'\)/);
   assert.match(storefrontRouteSource, /\.eq\('status', 'enabled'\)/);
 
-  assert.match(checkoutHostSource, /@letbuyy\/extension-host/);
+  assert.match(checkoutHostSource, /@letbuyy\/shared-types/);
   assert.match(checkoutHostSource, /sandbox=\{framePolicy\.sandbox\}/);
   assert.match(checkoutHostSource, /letbuyy\.checkout\.extension\.context/);
   assert.match(checkoutHostSource, /letbuyy\.checkout\.extension\.resize/);

@@ -38,9 +38,6 @@
       "path": "./packages/cms-core"
     },
     {
-      "path": "./packages/search-core"
-    },
-    {
       "path": "./packages/checkout-core"
     },
     {
@@ -57,9 +54,6 @@
     },
     {
       "path": "./packages/infrastructure"
-    },
-    {
-      "path": "./packages/runtime-composition"
     },
     {
       "path": "./packages/typescript/api-client"

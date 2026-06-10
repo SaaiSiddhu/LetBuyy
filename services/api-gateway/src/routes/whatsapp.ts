@@ -263,7 +263,7 @@ async function hasActiveWhatsAppOptIn(
         .maybeSingle();
 
     if (error) {
-        if (isMissingOptionalWhatsAppTable(error)) return { optedIn: true, error: null };
+        if (isMissingOptionalWhatsAppTable(error)) return { optedIn: false, error: null };
         return { optedIn: false, error };
     }
 
@@ -278,7 +278,7 @@ async function hasActiveWhatsAppOptIn(
             .limit(1)
             .maybeSingle();
         if (emailResult.error) {
-            if (isMissingOptionalWhatsAppTable(emailResult.error)) return { optedIn: true, error: null };
+            if (isMissingOptionalWhatsAppTable(emailResult.error)) return { optedIn: false, error: null };
             return { optedIn: false, error: emailResult.error };
         }
         const emailRow = emailResult.data as { consent_status?: string | null; revoked_at?: string | null } | null;

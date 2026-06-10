@@ -30,9 +30,6 @@
       "@letbuyy/payments": [
         "../../payments/src/index.ts"
       ],
-      "@letbuyy/search-core": [
-        "../../search-core/src/index.ts"
-      ],
       "@letbuyy/shared-types": [
         "../../shared-types/src/index.ts"
       ],
@@ -61,9 +58,6 @@
   ],
   "references": [
     {
-      "path": "../../app-engine"
-    },
-    {
       "path": "../../auth-core"
     },
     {
@@ -86,9 +80,6 @@
     },
     {
       "path": "../../payments"
-    },
-    {
-      "path": "../../search-core"
     },
     {
       "path": "../../shared-types"

@@ -57,6 +57,9 @@ jobs:
       - name: Validate design system
         run: pnpm run validate:design-system
 
+      - name: Lint CSS
+        run: pnpm run lint:css
+
       - name: Validate design-token interchange (tokens.json ↔ tokens.ts)
         run: pnpm run validate:design-tokens
 
@@ -66,46 +69,19 @@ jobs:
       - name: Validate runtime safety
         run: pnpm run validate:runtime
 
-      - name: Validate runtime reconciliation
-        run: pnpm run validate:reconciliation
-
-      - name: Validate survivability intelligence
-        run: pnpm run validate:survivability-intelligence
-
-      - name: Validate distributed execution
-        run: pnpm run validate:distributed-execution
-
-      - name: Validate durable execution recovery
-        run: pnpm run validate:durable-execution
-
-      - name: Validate distributed survivability finalization
-        run: pnpm run validate:distributed-survivability
-
-      - name: Validate operational certification evidence
-        run: pnpm run validate:operational-certification
-
-      - name: Validate provider production certification gates
-        run: pnpm run validate:production-certification
-
-      - name: Validate replay safety
-        run: pnpm run validate:replay
+      - name: Validate operational execution gates
+        run: |
+          pnpm run validate:reconciliation
+          pnpm run validate:rollback
+          pnpm run validate:queues
 
       - name: Validate deployment safety
         run: pnpm run validate:deployment
 
-      - name: Validate rollback integrity
-        run: pnpm run validate:rollback
-
-      - name: Validate queue lifecycle
-        run: pnpm run validate:queues
-
       - name: Validate runtime topology
         run: pnpm run validate:topology
 
-      - name: Validate operational runtime topology
-        run: node scripts/validators/distributed-runtime-validator.mjs
-
-      - name: Validate production readiness topology
+      - name: Validate production readiness
         run: node scripts/validators/production-readiness-validator.mjs
 
       - name: Validate dependency governance
@@ -113,9 +89,6 @@ jobs:
 
       - name: Validate TypeScript governance
         run: pnpm run validate:typescript
-
-      - name: Validate survivability governance
-        run: pnpm run validate:survivability
 
       - name: Run governance tests
         run: pnpm run test

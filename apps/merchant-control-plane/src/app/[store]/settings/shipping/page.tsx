@@ -16,6 +16,7 @@ import { Button, Input,
     useToast,
 } from '@letbuyy/ui'
 import { SettingsPane } from '@/components/settings/SettingsPane'
+import { ProviderModeBadge, normalizeProviderMode } from '@/components/ProviderModeBadge'
 
 interface ShippingZone {
     id: string
@@ -35,6 +36,8 @@ type ShippingPayload = {
     data?: unknown
     error?: string | { message?: string }
 }
+
+type ProviderMode = 'mock' | 'sandbox' | 'live'
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
 type FormMode = 'add' | 'edit' | null
@@ -128,6 +131,7 @@ export default function ShippingSettingsPage() {
     const [loadError, setLoadError] = useState<string | null>(null)
     const [zones, setZones] = useState<ShippingZone[]>([])
     const [rates, setRates] = useState<ShippingRate[]>([])
+    const [providerMode, setProviderMode] = useState<ProviderMode | null>(null)
     const [formMode, setFormMode] = useState<FormMode>(null)
     const [editingId, setEditingId] = useState<string | null>(null)
     const [formName, setFormName] = useState('')
@@ -157,6 +161,7 @@ export default function ShippingSettingsPage() {
             const data = isRecord(payload?.data) ? payload.data : {}
             setZones(normalizeZones(data.zones))
             setRates(normalizeRates(data.rates))
+            setProviderMode(normalizeProviderMode(data.provider_mode))
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to load shipping settings'
             setLoadError(message)
@@ -374,6 +379,18 @@ export default function ShippingSettingsPage() {
                         label="Delivery rates"
                         value={`${totalRates} rate${totalRates === 1 ? '' : 's'}`}
                     />
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-[var(--lb-space-3)] rounded-lg border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]">
+                    <div className="min-w-0">
+                        <p className="m-0 text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                            Carrier provider
+                        </p>
+                        <p className="m-0 mt-[var(--lb-space-1)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                            Shipping labels and fulfillment rates
+                        </p>
+                    </div>
+                    <ProviderModeBadge mode={providerMode} />
                 </div>
 
                 {formMode && (

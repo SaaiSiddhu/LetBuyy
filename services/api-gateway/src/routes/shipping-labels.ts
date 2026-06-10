@@ -38,6 +38,7 @@ const BuyShippingLabelSchema = RateShippingLabelSchema.extend({
 
 type RateShippingLabelInput = z.infer<typeof RateShippingLabelSchema>;
 type BuyShippingLabelInput = z.infer<typeof BuyShippingLabelSchema>;
+type ShippingLabelProviderMode = 'sandbox' | 'live';
 
 interface OrderLabelSnapshot {
     id?: string | null;
@@ -115,7 +116,11 @@ function logisticsOptions(c: ShippingLabelContext, provider: LogisticsProviderNa
     return { mode: 'live', credentials: { token: c.env.PICKRR_TOKEN } };
 }
 
-function estimateRate(input: RateShippingLabelInput) {
+function providerModeFromLogisticsMode(mode: LogisticsMode): ShippingLabelProviderMode {
+    return mode === 'live' ? 'live' : 'sandbox';
+}
+
+function estimateRate(input: RateShippingLabelInput, mode: LogisticsMode) {
     const providerFactor: Record<LogisticsProviderName, number> = {
         shiprocket: 1,
         delhivery: 1.08,
@@ -129,7 +134,8 @@ function estimateRate(input: RateShippingLabelInput) {
         amount,
         service_level: 'standard',
         estimated_delivery_days: input.provider === 'delhivery' ? 4 : 5,
-        test_mode: true,
+        test_mode: mode !== 'live',
+        provider_mode: providerModeFromLogisticsMode(mode),
     };
 }
 
@@ -215,6 +221,7 @@ function serializeLabel(row: ShippingLabelRow, pdfBase64?: string | null) {
         label_url: row.label_url || null,
         status: row.status,
         test_mode: row.test_mode,
+        provider_mode: row.test_mode ? 'sandbox' : 'live',
         package: row.package || {},
         created_at: row.created_at || null,
         updated_at: row.updated_at || null,
@@ -226,7 +233,23 @@ function serializeLabel(row: ShippingLabelRow, pdfBase64?: string | null) {
 router.post('/rates', validate('json', RateShippingLabelSchema), async (c) => {
     const body = c.get('validatedBody') as RateShippingLabelInput;
     await loadOwnedOrder(c, body.order_id);
-    return c.json(success({ rates: [estimateRate(body)] }));
+    return c.json(success({
+        provider_mode: providerModeFromLogisticsMode(logisticsMode(c)),
+        rates: [estimateRate(body, logisticsMode(c))],
+    }));
+});
+
+router.get('/provider-mode', async (c) => {
+    const storeId = c.req.query('store_id');
+    if (!storeId) {
+        return c.json({ error: { code: 'VALIDATION', message: 'store_id required' } }, 400);
+    }
+
+    await resolveTenantContextForOwnedSite(c, storeId);
+
+    return c.json(success({
+        provider_mode: providerModeFromLogisticsMode(logisticsMode(c)),
+    }));
 });
 
 router.post('/', validate('json', BuyShippingLabelSchema), async (c) => {

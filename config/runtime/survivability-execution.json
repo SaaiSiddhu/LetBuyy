@@ -56,7 +56,6 @@
     "survivabilitySuite": "infrastructure/scripts/operations/run-survivability-suite.mjs",
     "reportScript": "infrastructure/scripts/operations/generate-certification-report.mjs",
     "liveCertificationScript": "infrastructure/scripts/operations/phase4-live-certify.mjs",
-    "validator": "scripts/validators/survivability-governance-validator.mjs",
     "requiredEvidenceCategories": [
       "deployment",
       "cloudflare",

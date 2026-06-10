@@ -12,9 +12,7 @@
 | `packages/tenant-core` | Tenant context, `sites` mapping, store model, navigation, subdomain ownership contracts | Product/order mutation rules |
 | `packages/cms-core` | Pages, navigation, policies, portfolio/resume content, dynamic content contracts | Payment or provider logic |
 | `packages/theme-engine` | Theme schemas, section/block contracts, renderer keys, templates, releases, hydration contracts | Arbitrary tenant JavaScript execution |
-| `packages/app-engine` | App marketplace contracts, AI assistant payloads, installs, app webhooks | Unscoped merchant data mutation |
 | `packages/event-core` | Outbox, queues, event envelopes, idempotency contracts | UI rendering |
-| `packages/search-core` | Search document contracts and indexing policy | Source-of-truth product mutation |
 | `packages/notification-core` | Notification templates, channels, preferences | Provider secrets in client code |
 | `packages/billing-core` | Plans, entitlements, usage, subscription contracts | Checkout product catalog authority |
 | `packages/shared-types` | Cross-runtime TypeScript contracts | Runtime side effects |
@@ -25,7 +23,7 @@ Business logic graduates into packages when it is shared, cross-runtime, or doma
 
 API worker schema files under `services/api-gateway/src/schemas` are compatibility facades for existing imports. New shared Zod contracts belong in the domain package first, then may be re-exported from the worker facade.
 
-`packages/typescript/api-types` is now a backward-compatible aggregate. It must not regain source authority for commerce, checkout, auth, tenant, CMS, theme, event, notification, search, or billing contracts.
+`packages/typescript/api-types` is now a backward-compatible aggregate. It must not regain source authority for commerce, checkout, auth, tenant, CMS, theme, event, notification, or billing contracts.
 
 Service route files must not define reusable Zod schemas inline. Billing, commerce, inventory, review, CMS, onboarding, AI, and theme payload schemas now live in package-owned surfaces and are consumed by the API gateway through package imports or schema facades.
 

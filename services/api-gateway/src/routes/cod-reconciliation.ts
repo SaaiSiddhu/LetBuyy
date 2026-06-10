@@ -62,6 +62,7 @@ interface CodReconciliationRow extends Record<string, unknown> {
     reconciled_at?: string | null;
     collection_idempotency_key?: string | null;
     reconciliation_idempotency_key?: string | null;
+    canonical_ledger_transaction_id?: string | null;
     notes?: string | null;
     metadata?: Record<string, unknown> | null;
     created_at?: string | null;
@@ -98,6 +99,7 @@ function serializeEntry(row: CodReconciliationRow) {
         reconciled_at: row.reconciled_at || null,
         collection_idempotency_key: row.collection_idempotency_key || null,
         reconciliation_idempotency_key: row.reconciliation_idempotency_key || null,
+        canonical_ledger_transaction_id: row.canonical_ledger_transaction_id || null,
         notes: row.notes || null,
         metadata: row.metadata || {},
         created_at: row.created_at || null,
@@ -273,56 +275,30 @@ async function loadEntryByIdempotency(
     return (data || null) as unknown as CodReconciliationRow | null;
 }
 
-function reconciliationStatus(expectedAmountMinor: number, depositedAmountMinor: number): CodStatus {
-    if (depositedAmountMinor < expectedAmountMinor) return 'short';
-    if (depositedAmountMinor > expectedAmountMinor) return 'over';
-    return 'reconciled';
-}
-
-async function insertWalletCreditIfMissing(
+async function reconcileCodRemittanceWithLedger(
     db: Db,
-    entry: CodReconciliationRow,
-    userId: string | null,
-    idempotencyKey: string,
-): Promise<void> {
-    const walletIdempotencyKey = `cod-remittance:${entry.id}:${idempotencyKey}`;
-    const { data: existing, error: existingError } = await db
-        .from('wallet_ledger_entries')
-        .select('id')
-        .eq('site_id', entry.site_id)
-        .eq('idempotency_key', walletIdempotencyKey)
-        .is('deleted_at', null)
-        .maybeSingle();
-
-    if (existingError) throw new Error(`COD wallet idempotency lookup failed: ${existingError.message}`);
-    if (existing) return;
-    if (Number(entry.deposited_amount_minor || 0) <= 0) return;
-
-    const orderNumber = typeof entry.metadata?.order_number === 'string'
-        ? entry.metadata.order_number
-        : entry.order_id;
-
-    const { error } = await db.from('wallet_ledger_entries').insert({
-        site_id: entry.site_id,
-        entry_type: 'cod_remittance_credit',
-        direction: 'credit',
-        status: 'posted',
-        currency: entry.currency || 'INR',
-        amount_minor: Number(entry.deposited_amount_minor || 0),
-        reference_type: 'cod_reconciliation_entry',
-        reference_id: entry.id,
-        description: `COD remittance for order ${orderNumber}`,
-        idempotency_key: walletIdempotencyKey,
-        metadata: {
-            order_id: entry.order_id,
-            difference_amount_minor: Number(entry.difference_amount_minor || 0),
-            reconciliation_status: entry.status,
-        },
-        created_by: userId,
-        updated_by: userId,
+    input: {
+        siteId: string;
+        entryId: string;
+        depositedAmountMinor: number;
+        notes?: string | null;
+        idempotencyKey: string;
+        userId?: string | null;
+        requestId?: string | null;
+    },
+): Promise<CodReconciliationRow> {
+    const { data, error } = await db.rpc('reconcile_cod_remittance_with_ledger', {
+        p_site_id: input.siteId,
+        p_entry_id: input.entryId,
+        p_deposited_amount_minor: input.depositedAmountMinor,
+        p_notes: input.notes || null,
+        p_idempotency_key: input.idempotencyKey,
+        p_actor_id: input.userId || null,
+        p_request_id: input.requestId || null,
     });
 
-    if (error) throw new Error(`COD wallet credit failed: ${error.message}`);
+    if (error || !data) throw new Error(`COD canonical ledger reconciliation failed: ${error?.message || 'unknown error'}`);
+    return data as unknown as CodReconciliationRow;
 }
 
 router.get('/reconciliation', validate('query', CodQuerySchema), async (c) => {
@@ -390,35 +366,15 @@ router.post('/reconciliation/:id/reconcile', validate('json', ReconcileCodSchema
     }
 
     const collectedAmountMinor = Number(current.collected_amount_minor || current.expected_amount_minor || 0);
-    const depositedAmountMinor = body.deposited_amount_minor ?? collectedAmountMinor;
-    const expectedAmountMinor = Number(current.expected_amount_minor || 0);
-    const status = reconciliationStatus(expectedAmountMinor, depositedAmountMinor);
-    const now = new Date().toISOString();
-    const { data, error } = await db
-        .from('cod_reconciliation_entries')
-        .update({
-            status,
-            collected_amount_minor: collectedAmountMinor,
-            deposited_amount_minor: depositedAmountMinor,
-            difference_amount_minor: depositedAmountMinor - expectedAmountMinor,
-            deposited_at: current.deposited_at || now,
-            reconciled_at: now,
-            reconciliation_idempotency_key: body.idempotency_key,
-            notes: body.notes || current.notes || null,
-            metadata: {
-                ...(current.metadata || {}),
-                reconciled_by: 'merchant_mobile',
-            },
-            updated_by: tenant.userId,
-        })
-        .eq('id', current.id)
-        .eq('site_id', tenant.siteId)
-        .select('*')
-        .single();
-
-    if (error || !data) throw new Error(`COD reconciliation update failed: ${error?.message || 'unknown error'}`);
-    const updated = data as unknown as CodReconciliationRow;
-    await insertWalletCreditIfMissing(db, updated, tenant.userId, body.idempotency_key);
+    const updated = await reconcileCodRemittanceWithLedger(db, {
+        siteId: tenant.siteId,
+        entryId: current.id,
+        depositedAmountMinor: body.deposited_amount_minor ?? collectedAmountMinor,
+        notes: body.notes || current.notes || null,
+        idempotencyKey: body.idempotency_key,
+        userId: tenant.userId,
+        requestId: c.req.header('X-Request-ID') || null,
+    });
 
     return c.json(success({ entry: serializeEntry(updated) }));
 });

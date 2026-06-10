@@ -3,10 +3,9 @@
  * validate-design-system.mjs — the design-system governance gate.
  *
  * This is the CI-enforced complement to the @letbuyy/ui ESLint plugin (which
- * governs .ts/.tsx) and the dormant stylelint config (which governs .css once a
- * human installs the stylelint binary — see docs/governance/skipped-human-decisions.md).
- * It is dependency-free (pure Node) so it runs under `pnpm install --frozen-lockfile`
- * without a lockfile change.
+ * governs .ts/.tsx) and stylelint (which governs .css through `pnpm run lint:css`).
+ * It remains dependency-free (pure Node) so the governance gate can run even
+ * before dependency installation.
  *
  * It enforces two classes of rule:
  *
@@ -78,6 +77,53 @@ const localWorkspaceFiles = [
     join(ROOT, 'apps', 'platform-console', 'src', 'components', '_local-ui', 'console-workspace.tsx'),
     join(ROOT, 'apps', 'platform-operations-portal', 'src', 'components', '_local-ui', 'ops-workspace.tsx'),
 ].filter(existsSync);
+const darkModeReachabilityTargets = [
+    {
+        surface: 'merchant-control-plane',
+        files: ['apps/merchant-control-plane/src/components/HeaderBar.tsx'],
+        patterns: [/setTheme\(/, /aria-label=["']Toggle theme["']/],
+    },
+    {
+        surface: 'identity-platform',
+        files: ['apps/identity-platform/src/lib/useAuthTheme.ts'],
+        patterns: [/setTheme\(/, /useAuthTheme/],
+    },
+    {
+        surface: 'storefront-runtime',
+        files: ['apps/storefront-runtime/src/app/storefront-landing.tsx'],
+        patterns: [/<ThemeToggleButton\b/],
+    },
+    {
+        surface: 'marketing-site',
+        files: ['apps/marketing-site/src/components/Header.tsx'],
+        patterns: [/<ThemeToggleButton\b/],
+    },
+    {
+        surface: 'app-marketplace',
+        files: ['apps/app-marketplace/src/components/Header.tsx'],
+        patterns: [/<ThemeToggleButton\b/],
+    },
+    {
+        surface: 'developer-portal',
+        files: ['apps/developer-portal/src/components/PortalChrome.tsx'],
+        patterns: [/<ThemeToggleButton\b/],
+    },
+    {
+        surface: 'theme-marketplace',
+        files: ['apps/theme-marketplace/src/components/layout/navbar.tsx'],
+        patterns: [/function ThemeToggle\(/, /setTheme\(/],
+    },
+    {
+        surface: 'platform-console',
+        files: ['apps/platform-console/src/app/(dashboard)/layout.tsx'],
+        patterns: [/<ThemeToggleButton\b/],
+    },
+    {
+        surface: 'platform-operations-portal',
+        files: ['apps/platform-operations-portal/src/app/(dashboard)/layout.tsx'],
+        patterns: [/<ThemeToggleButton\b/],
+    },
+];
 
 // ── Regexes ───────────────────────────────────────────────────────────────────
 const HEX = /(^|[^\w-])#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})(?![\w-])/;
@@ -124,6 +170,30 @@ const localWorkspaceImplementations = localWorkspaceFiles.filter((f) => {
     return /<(?:main|article|section)\s+className=/.test(t);
 });
 for (const f of localWorkspaceImplementations) hard.push(`${rel(f)}: local workspace shell implementation found — use @letbuyy/ui internal workspace primitives`);
+const sharedThemeToggle = join(ROOT, 'packages', 'typescript', 'ui', 'src', 'theme-toggle-button.tsx');
+if (!existsSync(sharedThemeToggle)) {
+    hard.push('packages/typescript/ui/src/theme-toggle-button.tsx: shared reachable dark-mode toggle is missing');
+} else {
+    const toggleText = readFileSync(sharedThemeToggle, 'utf8');
+    if (!/aria-label=\{label\}/.test(toggleText)) hard.push('packages/typescript/ui/src/theme-toggle-button.tsx: toggle must expose an accessible aria-label');
+    if (!/title=\{label\}/.test(toggleText)) hard.push('packages/typescript/ui/src/theme-toggle-button.tsx: toggle must expose a hover title');
+    if (!/min-h-11/.test(toggleText) || !/min-w-11/.test(toggleText)) hard.push('packages/typescript/ui/src/theme-toggle-button.tsx: toggle must keep a 44px touch target');
+}
+for (const target of darkModeReachabilityTargets) {
+    const texts = target.files
+        .map((file) => join(ROOT, file))
+        .filter(existsSync)
+        .map((file) => readFileSync(file, 'utf8'))
+        .join('\n');
+    if (!texts) {
+        hard.push(`${target.surface}: dark-mode reachability target file is missing`);
+        continue;
+    }
+    const missing = target.patterns.filter((pattern) => !pattern.test(texts));
+    if (missing.length > 0) {
+        hard.push(`${target.surface}: dark mode must be reachable through the canonical provider toggle`);
+    }
+}
 
 // ── RATCHET metrics ─────────────────────────────────────────────────────────--
 const metrics = {

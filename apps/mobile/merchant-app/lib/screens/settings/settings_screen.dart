@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:letbuyy_store/theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../app/store_context.dart';
@@ -11,7 +11,6 @@ import '../../services/subscription_service.dart';
 import '../../services/theme_provider.dart';
 import '../../models/store_model.dart';
 import '../../app/routes.dart';
-import '../parity/merchant_feature_definitions.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../widgets/settings/store_info_card.dart';
 import '../../widgets/settings/settings_tile.dart';
@@ -88,7 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
     }
 
-    final storeUrl = '${_store?.subdomain ?? 'your-store'}.letbuyy.store';
+    final storeUrl = '${_store?.subdomain ?? 'your-store'}.letbuyy.com';
 
     return Scaffold(
       backgroundColor: colors.card,
@@ -194,46 +193,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             Navigator.pushNamed(context, AppRoutes.analytics),
                       ),
                     ],
-                  ),
-
-                  _buildFeatureSection(
-                    title: 'Commerce',
-                    features: MerchantFeatureDefinitions.commerce,
-                  ),
-
-                  _buildFeatureSection(
-                    title: 'Money',
-                    features: MerchantFeatureDefinitions.money,
-                  ),
-
-                  _buildFeatureSection(
-                    title: 'Trust',
-                    features: MerchantFeatureDefinitions.trust,
-                  ),
-
-                  _buildFeatureSection(
-                    title: 'Online Store',
-                    features: MerchantFeatureDefinitions.onlineStore,
-                  ),
-
-                  _buildFeatureSection(
-                    title: 'Apps',
-                    features: MerchantFeatureDefinitions.apps,
-                  ),
-
-                  _buildFeatureSection(
-                    title: 'Settings Hub',
-                    features: MerchantFeatureDefinitions.settingsHub,
-                  ),
-
-                  _buildFeatureSection(
-                    title: 'Forms & Analytics',
-                    features: MerchantFeatureDefinitions.other,
-                  ),
-
-                  _buildFeatureSection(
-                    title: 'Platform-blocked seams',
-                    features: MerchantFeatureDefinitions.platformBlocked,
                   ),
 
                   // Payment Options Section
@@ -391,27 +350,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           StoreSwitcherButton(onChanged: _loadStore),
         ],
       ),
-    );
-  }
-
-  Widget _buildFeatureSection({
-    required String title,
-    required List<MerchantFeatureDefinition> features,
-  }) {
-    if (features.isEmpty) return const SizedBox.shrink();
-
-    return SettingsSection(
-      title: title,
-      children: features
-          .map(
-            (feature) => SettingsTile(
-              icon: feature.icon,
-              title: feature.title,
-              iconColor: AppColors.primary,
-              onTap: () => Navigator.pushNamed(context, feature.route),
-            ),
-          )
-          .toList(growable: false),
     );
   }
 

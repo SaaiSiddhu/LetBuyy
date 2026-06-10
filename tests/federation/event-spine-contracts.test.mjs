@@ -4,7 +4,6 @@ import test from 'node:test';
 import { readAppStoreRouteSource, readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const EVENT_CORE = 'packages/event-core/src/index.ts';
-const ORCHESTRATION_EVENTS = 'packages/orchestration/src/event-runtime.ts';
 const GATEWAY_EVENT_ADAPTER = 'services/api-gateway/src/execution/event-execution.adapter.ts';
 const QUEUE_EXECUTION_ADAPTER = 'services/api-gateway/src/execution/queue-execution.adapter.ts';
 const QUEUE_WORKER_CONSUMER = 'services/queue-workers/src/platform-queue-consumer.ts';
@@ -13,6 +12,7 @@ const NOTIFICATION_CORE = 'packages/notification-core/src/index.ts';
 const PRODUCT_ROUTE = 'services/api-gateway/src/routes/products.ts';
 const ORDER_ROUTE = 'services/api-gateway/src/routes/orders.ts';
 const PAYMENTS_ROUTE = 'services/api-gateway/src/routes/payments.ts';
+const PAYMENT_ROUTE_SUPPORT = 'services/api-gateway/src/lib/payment-route-support.ts';
 const ONBOARDING_ROUTE = 'services/api-gateway/src/routes/onboarding.ts';
 const STORES_ROUTE = 'services/api-gateway/src/routes/stores.ts';
 const STOREFRONT_ROUTE = 'services/api-gateway/src/routes/storefront.ts';
@@ -80,8 +80,9 @@ test('domain event contracts name producers and consumers for cross-app federati
   assert.match(source, /consumers: \['analytics', 'notifications', 'payout-ledger', 'webhook-service'\]/);
 });
 
-test('orchestration queue fanout uses event-core contracts before legacy prefix rules', () => {
-  const source = read(ORCHESTRATION_EVENTS);
+test('service queue fanout uses event-core contracts before legacy prefix rules', () => {
+  const source = read(EVENT_CORE);
+  const queueSource = read(QUEUE_EXECUTION_ADAPTER);
 
   assert.match(source, /getDomainEventContract/);
   assert.match(source, /const contract = getDomainEventContract\(eventType\)/);
@@ -89,6 +90,8 @@ test('orchestration queue fanout uses event-core contracts before legacy prefix 
   assert.match(source, /case 'analytics':\s+return 'analytics-events'/);
   assert.match(source, /case 'search-indexing':\s+return 'search-indexing'/);
   assert.match(source, /case 'payout-ledger':\s+return 'payment-events'/);
+  assert.match(queueSource, /getDomainEventContract/);
+  assert.match(queueSource, /type ConsumableQueueName = 'analytics-events' \| 'search-indexing' \| 'payment-events'/);
 });
 
 test('queue consumers drive analytics, search, notifications, and payout ledger side effects', () => {
@@ -196,14 +199,15 @@ test('public storefront checkout emits order.created through the gateway outbox'
 
 test('payment confirmations emit registered order.paid events', () => {
   const paymentsSource = read(PAYMENTS_ROUTE);
+  const paymentSupportSource = read(PAYMENT_ROUTE_SUPPORT);
   const storefrontSource = readStorefrontRouteSource();
 
-  assert.match(paymentsSource, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
-  assert.match(paymentsSource, /eventType: 'order\.paid'/);
-  assert.match(paymentsSource, /aggregateType: 'order'/);
-  assert.match(paymentsSource, /site_id: siteId/);
-  assert.match(paymentsSource, /order_id: orderId/);
   assert.match(paymentsSource, /emitOrderPaidEvent\(c\.env,\s*db/);
+  assert.match(paymentSupportSource, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
+  assert.match(paymentSupportSource, /eventType: 'order\.paid'/);
+  assert.match(paymentSupportSource, /aggregateType: 'order'/);
+  assert.match(paymentSupportSource, /site_id: siteId/);
+  assert.match(paymentSupportSource, /order_id: orderId/);
 
   assert.match(storefrontSource, /emitStorefrontOrderPaidEvent/);
   assert.match(storefrontSource, /eventType: 'order\.paid'/);

@@ -18,10 +18,13 @@
   },
   "dependencies": {
     "@letbuyy/shared-types": "workspace:*",
+    "dompurify": "^3.4.9",
+    "jsdom": "^29.1.1",
     "liquidjs": "^10.27.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@types/jsdom": "^28.0.3",
     "typescript": "^5.9.3"
   }
 }

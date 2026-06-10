@@ -7,7 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../models/store_model.dart';
 import '../../services/custom_domains.dart';
 import '../../theme/app_theme_colors.dart';
-import '../../theme/letbuyy_color_tokens.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 class DomainSettingsScreen extends StatefulWidget {
   const DomainSettingsScreen({super.key});

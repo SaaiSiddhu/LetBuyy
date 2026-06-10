@@ -7,7 +7,7 @@ Runtime boundary: `services/api-gateway`.
 Allowed dependencies:
 
 - Shared TypeScript packages from `packages/typescript/*`.
-- Domain, application-service, orchestration, runtime-composition, and infrastructure adapter packages declared in `runtime.manifest.json`.
+- Domain, application-service, service-local event helpers, service-owned read planners, and infrastructure adapter packages declared in `runtime.manifest.json`.
 - Durable service-local execution adapters under `services/api-gateway/src/execution`.
 - Provider integrations only through `packages/infrastructure` adapters wired to worker environment bindings.
 
@@ -15,7 +15,7 @@ Forbidden dependencies:
 
 - No imports from `apps/*`.
 - No imports from `legacy/*`.
-- No business orchestration under `services/api-gateway/src/services/*.service.ts`.
+- No business service-local event helpers under `services/api-gateway/src/services/*.service.ts`.
 - No direct provider SDK imports.
 - No direct reliance on generated `dist/*` output.
 - No client-side token storage or browser-only APIs.

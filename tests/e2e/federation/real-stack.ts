@@ -7,15 +7,15 @@ import {
 } from '@letbuyy/auth-core';
 
 export const federationUrls = {
-  gateway: process.env.LETBUYY_E2E_API_URL ?? 'https://api-staging.letbuyy.store',
-  marketing: process.env.LETBUYY_E2E_MARKETING_URL ?? 'https://www-staging.letbuyy.store',
-  identity: process.env.LETBUYY_E2E_IDENTITY_URL ?? 'https://accounts-staging.letbuyy.store',
-  merchant: process.env.LETBUYY_E2E_MERCHANT_URL ?? 'https://admin-staging.letbuyy.store',
-  storefront: process.env.LETBUYY_E2E_STOREFRONT_URL ?? 'https://store-staging.letbuyy.store',
-  appMarketplace: process.env.LETBUYY_E2E_APP_MARKETPLACE_URL ?? 'https://apps-staging.letbuyy.store',
-  themeMarketplace: process.env.LETBUYY_E2E_THEME_MARKETPLACE_URL ?? 'https://themes-staging.letbuyy.store',
-  platformConsole: process.env.LETBUYY_E2E_PLATFORM_CONSOLE_URL ?? 'https://console-staging.letbuyy.store',
-  operationsPortal: process.env.LETBUYY_E2E_OPERATIONS_PORTAL_URL ?? 'https://ops-staging.letbuyy.store',
+  gateway: process.env.LETBUYY_E2E_API_URL ?? 'https://api-staging.letbuyy.com',
+  marketing: process.env.LETBUYY_E2E_MARKETING_URL ?? 'https://www-staging.letbuyy.com',
+  identity: process.env.LETBUYY_E2E_IDENTITY_URL ?? 'https://accounts-staging.letbuyy.com',
+  merchant: process.env.LETBUYY_E2E_MERCHANT_URL ?? 'https://admin-staging.letbuyy.com',
+  storefront: process.env.LETBUYY_E2E_STOREFRONT_URL ?? 'https://store-staging.letbuyy.com',
+  appMarketplace: process.env.LETBUYY_E2E_APP_MARKETPLACE_URL ?? 'https://apps-staging.letbuyy.com',
+  themeMarketplace: process.env.LETBUYY_E2E_THEME_MARKETPLACE_URL ?? 'https://themes-staging.letbuyy.com',
+  platformConsole: process.env.LETBUYY_E2E_PLATFORM_CONSOLE_URL ?? 'https://console-staging.letbuyy.com',
+  operationsPortal: process.env.LETBUYY_E2E_OPERATIONS_PORTAL_URL ?? 'https://ops-staging.letbuyy.com',
 };
 
 export const demo = {
@@ -29,7 +29,7 @@ export const demo = {
   storeSubdomain: process.env.LETBUYY_E2E_STORE_SUBDOMAIN ?? 'urban-kicks-demo',
   seededAppId: '00000000-0000-4000-8000-000000000202',
   seededAppClientId: 'demo-loyalty-rewards-client',
-  seededAppRedirectUri: 'https://apps-staging.letbuyy.store/oauth/callback',
+  seededAppRedirectUri: 'https://apps-staging.letbuyy.com/oauth/callback',
   seededProductId: '00000000-0000-4000-8000-000000000101',
 };
 
@@ -184,7 +184,7 @@ export async function installCustomerSessionCookie(page: Page): Promise<void> {
 
   await page.context().addCookies([
     federationUrls.storefront,
-    `https://${demo.storeSubdomain}.staging.letbuyy.store`,
+    `https://${demo.storeSubdomain}.staging.letbuyy.com`,
   ].map((url) => ({
     name: LETBUYY_CUSTOMER_SESSION_COOKIE,
     value: token,

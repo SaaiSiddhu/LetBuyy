@@ -34,7 +34,7 @@ const columns: Array<TableColumn<TrustSafetyStoreRisk>> = [
                     {row.store_name || row.name || row.subdomain || row.id}
                 </p>
                 <p className="m-0 mt-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                    {row.custom_domain || (row.subdomain ? `${row.subdomain}.letbuyy.store` : row.id)}
+                    {row.custom_domain || (row.subdomain ? `${row.subdomain}.letbuyy.com` : row.id)}
                 </p>
             </div>
         ),

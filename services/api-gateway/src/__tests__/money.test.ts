@@ -10,6 +10,7 @@ const codSource = readFileSync(new URL('../routes/cod-reconciliation.ts', import
 const bffSource = readFileSync(new URL('../../../mobile-bff/src/index.ts', import.meta.url), 'utf8');
 const migrationSource = readFileSync(new URL('../../../../database/supabase/migrations/119_mobile_money_ledgers.sql', import.meta.url), 'utf8');
 const codMigrationSource = readFileSync(new URL('../../../../database/supabase/migrations/140_mobile_cod_reconciliation.sql', import.meta.url), 'utf8');
+const d5MoneyMigrationSource = readFileSync(new URL('../../../../database/supabase/migrations/165_d5_canonical_money_paths.sql', import.meta.url), 'utf8');
 const foundationLedgerMigrationSource = readFileSync(new URL('../../../../database/supabase/migrations/139_executable_foundation_ledger_core.sql', import.meta.url), 'utf8');
 const adapterSource = readFileSync(new URL('../../../../packages/infrastructure/payout-transfer-adapter/index.ts', import.meta.url), 'utf8');
 
@@ -51,16 +52,30 @@ test('wallet and commission routes are tenant scoped and backed by real ledger r
     assert.match(commissionSource, /\.from\('commission_reconciliation_entries'\)[\s\S]*\.insert/);
 });
 
-test('COD reconciliation route backfills COD orders and posts remittances to wallet', () => {
+test('COD reconciliation route backfills COD orders and reconciles through the canonical ledger RPC', () => {
     assert.match(codSource, /router\.get\('\/reconciliation'/);
     assert.match(codSource, /router\.post\('\/reconciliation'/);
     assert.match(codSource, /router\.post\('\/reconciliation\/:id\/reconcile'/);
     assert.match(codSource, /resolveTenantContextForOwnedSite\(c,\s*query\.store_id\)/);
     assert.match(codSource, /\.from\('orders'\)[\s\S]*\.eq\('payment_method',\s*'cod'\)/);
     assert.match(codSource, /\.from\('cod_reconciliation_entries'\)[\s\S]*\.insert/);
-    assert.match(codSource, /\.from\('wallet_ledger_entries'\)[\s\S]*\.insert/);
-    assert.match(codSource, /entry_type: 'cod_remittance_credit'/);
+    assert.match(codSource, /reconcile_cod_remittance_with_ledger/);
+    assert.match(codSource, /canonical_ledger_transaction_id/);
+    assert.doesNotMatch(codSource, /\.from\('wallet_ledger_entries'\)[\s\S]*\.insert/);
     assert.doesNotMatch(codSource, /S-0\d\d|backend contract|coming soon/);
+});
+
+test('D5 COD remittance posts canonical ledger before wallet compatibility', () => {
+    assert.match(d5MoneyMigrationSource, /CREATE OR REPLACE FUNCTION public\.reconcile_cod_remittance_with_ledger/);
+    assert.match(d5MoneyMigrationSource, /deposited_amount_minor_bigint bigint/);
+    assert.match(d5MoneyMigrationSource, /sync_cod_reconciliation_money_bigint/);
+    assert.match(d5MoneyMigrationSource, /public\.post_settlement_ledger_transaction\(/);
+    assert.match(d5MoneyMigrationSource, /'cod_remittance'/);
+    assert.match(d5MoneyMigrationSource, /'cod_receivable'[\s\S]*'debit'/);
+    assert.match(d5MoneyMigrationSource, /'merchant_payable'[\s\S]*'credit'/);
+    assert.match(d5MoneyMigrationSource, /canonical_ledger_transaction_id = v_ledger_transaction_id/);
+    assert.match(d5MoneyMigrationSource, /INSERT INTO public\.wallet_ledger_entries[\s\S]*canonical_ledger_transaction_id/);
+    assert.match(d5MoneyMigrationSource, /'compatibility_only'[\s\S]*true/);
 });
 
 test('money migration declares tenant RLS and approved updated_at triggers', () => {
@@ -127,4 +142,14 @@ test('executable foundation ledger migration is append-only, balanced, tenant-GU
     ]) {
         assert.match(foundationLedgerMigrationSource, new RegExp(account));
     }
+});
+
+test('D5 settlement writer derives tenant GUC from source ownership, not p_site_id', () => {
+    assert.match(d5MoneyMigrationSource, /CREATE OR REPLACE FUNCTION public\.resolve_money_ledger_source_site_id/);
+    assert.match(d5MoneyMigrationSource, /v_source_site_id := public\.resolve_money_ledger_source_site_id/);
+    assert.match(d5MoneyMigrationSource, /p_site_id IS NULL OR p_site_id <> v_source_site_id/);
+    assert.match(d5MoneyMigrationSource, /PERFORM set_config\('app\.site_id', v_source_site_id::text, true\)/);
+    assert.doesNotMatch(d5MoneyMigrationSource, /PERFORM set_config\('app\.site_id', p_site_id::text, true\)/);
+    assert.match(d5MoneyMigrationSource, /REVOKE UPDATE, DELETE ON public\.ledger_transactions/);
+    assert.match(d5MoneyMigrationSource, /REVOKE UPDATE, DELETE ON public\.ledger_entries/);
 });

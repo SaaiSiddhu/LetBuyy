@@ -2,15 +2,15 @@
 
 Status: Phase 2 foundation.
 
-The storefront runtime remains the shopper-facing rendering runtime. Phase 2 establishes boundaries for moving execution logic out of app-local helpers without rebuilding the UI.
+The storefront runtime remains the shopper-facing rendering runtime. Phase 2 establishes boundaries for keeping durable execution logic in the API gateway and domain packages without rebuilding the UI.
 
 ## Boundaries
 
 - Rendering runtime: `apps/storefront-runtime`.
-- Storefront query contracts: `packages/runtime-composition/storefront-query-layer`.
+- Storefront query contracts: versioned `/v1/storefront/*` API gateway responses and `@letbuyy/shared-types` DTOs.
 - Theme composition contracts: `packages/theme-engine/src/execution-runtime.ts`.
-- Checkout workflow contracts: `packages/application-services/checkout-application`.
-- Tenant resolution workflow contracts: `packages/application-services/tenant-application`.
+- Checkout workflow contracts: `packages/checkout-core` plus API gateway checkout execution adapters.
+- Tenant resolution workflow contracts: `packages/tenant-core` plus storefront tenant adapters.
 - Provider calls: `packages/infrastructure`.
 
 ## Rules

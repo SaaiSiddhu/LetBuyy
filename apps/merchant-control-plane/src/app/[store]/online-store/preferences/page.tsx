@@ -269,7 +269,7 @@ export default function PreferencesPage() {
                                     {previewTitle}
                                 </p>
                                 <p className="m-0 mt-[var(--lb-space-1)] truncate text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-success)]">
-                                    {store}.letbuyy.store
+                                    {store}.letbuyy.com
                                 </p>
                                 <p className="m-0 mt-[var(--lb-space-2)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
                                     {previewDescription}

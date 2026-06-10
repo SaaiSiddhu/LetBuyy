@@ -1,5 +1,6 @@
 import type { Env } from '../../index';
 import { getSupabaseAdmin } from '../../lib/supabase';
+import { signQueueTenantEnvelope } from '../../lib/queue-tenant-envelope';
 import { EventExecutionAdapter } from '../../execution/event-execution.adapter';
 import { ObservabilityExecutionAdapter } from '../../execution/observability-execution.adapter';
 import {
@@ -185,7 +186,7 @@ export async function enqueueMarketplaceAnalyticsEvent(input: MarketplaceAnalyti
 
     const queue = input.env.ANALYTICS_QUEUE;
     if (queue && input.executionCtx) {
-        input.executionCtx.waitUntil(queue.send({
+        input.executionCtx.waitUntil(signQueueTenantEnvelope(input.env, {
             messageId: idempotencyKey,
             queueName: 'analytics-events',
             jobType: eventType,
@@ -195,7 +196,7 @@ export async function enqueueMarketplaceAnalyticsEvent(input: MarketplaceAnalyti
             correlationId: requestId || idempotencyKey,
             payload: envelope,
             attempts: 0,
-        }).then(() => undefined, () => undefined));
+        }).then((body) => queue.send(body)).then(() => undefined, () => undefined));
     }
 
     return true;

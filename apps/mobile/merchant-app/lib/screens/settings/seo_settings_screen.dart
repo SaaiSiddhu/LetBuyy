@@ -5,7 +5,7 @@ import '../../app/store_context.dart';
 import '../../models/store_model.dart';
 import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
-import '../../theme/letbuyy_color_tokens.dart' as mobile_tokens;
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 
 class SEOSettingsScreen extends StatefulWidget {
   const SEOSettingsScreen({super.key});
@@ -208,7 +208,7 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
         : _descriptionController.text.trim();
     final url = _store?.customDomain?.isNotEmpty == true
         ? _store!.customDomain!
-        : '${_store?.subdomain ?? 'store'}.letbuyy.store';
+        : '${_store?.subdomain ?? 'store'}.letbuyy.com';
 
     return Container(
       padding: const EdgeInsets.all(16),

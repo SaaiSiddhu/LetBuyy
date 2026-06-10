@@ -30,7 +30,7 @@ export const DEFAULT_PLATFORM_ORIGIN = `https://${DEFAULT_PLATFORM_DOMAIN}` as c
  * Domains we still answer on during a platform apex migration. Host parsing must
  * accept these; canonical URLs should use the runtime-configured platform origin.
  */
-export const LEGACY_PLATFORM_DOMAINS = ['letbuyy.store'] as const;
+export const LEGACY_PLATFORM_DOMAINS = ['letbuyy.com'] as const;
 
 /** All fallback platform apex domains, primary first. */
 export const PLATFORM_DOMAINS = [DEFAULT_PLATFORM_DOMAIN, ...LEGACY_PLATFORM_DOMAINS] as const;

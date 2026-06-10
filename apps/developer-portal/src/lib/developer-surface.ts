@@ -1229,7 +1229,7 @@ export const themeEndpoints: EndpointDoc[] = [
 export const webhookEndpoints: EndpointDoc[] = [
   {
     method: "POST",
-    path: "https://webhooks.letbuyy.store/app-lifecycle/dispatch",
+    path: "https://webhooks.letbuyy.com/app-lifecycle/dispatch",
     auth: "internal",
     status: "available",
     summary: "Internal gateway-to-webhook-service route that signs and dispatches app lifecycle callbacks.",
@@ -1237,7 +1237,7 @@ export const webhookEndpoints: EndpointDoc[] = [
   },
   {
     method: "POST",
-    path: "https://webhooks.letbuyy.store/webhook-deliveries/dispatch",
+    path: "https://webhooks.letbuyy.com/webhook-deliveries/dispatch",
     auth: "internal",
     status: "available",
     summary: "Internal dispatcher for queued webhook delivery rows with retry scheduling.",

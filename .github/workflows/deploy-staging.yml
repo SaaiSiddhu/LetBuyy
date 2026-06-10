@@ -152,21 +152,21 @@ jobs:
       - name: API health check
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' && env.HAS_VERCEL_CREDS == 'true' }}
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://api-staging.letbuyy.store/v1/health)
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://api-staging.letbuyy.com/v1/health)
           if [ "$STATUS" != "200" ]; then echo "API health check failed: $STATUS"; exit 1; fi
           echo "API staging healthy"
 
       - name: Accounts health check
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' && env.HAS_VERCEL_CREDS == 'true' }}
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://accounts-staging.letbuyy.store)
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://accounts-staging.letbuyy.com)
           if [ "$STATUS" != "200" ]; then echo "Accounts health check failed: $STATUS"; exit 1; fi
           echo "Accounts staging healthy"
 
       - name: Admin health check
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' && env.HAS_VERCEL_CREDS == 'true' }}
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://admin-staging.letbuyy.store)
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://admin-staging.letbuyy.com)
           if [ "$STATUS" != "200" ] && [ "$STATUS" != "302" ]; then
             echo "Admin health check failed: $STATUS"
             exit 1
@@ -177,10 +177,10 @@ jobs:
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' && env.HAS_VERCEL_CREDS == 'true' }}
         run: |
           for URL in \
-            "https://apps-staging.letbuyy.store" \
-            "https://themes-staging.letbuyy.store" \
-            "https://console-staging.letbuyy.store" \
-            "https://ops-staging.letbuyy.store"; do
+            "https://apps-staging.letbuyy.com" \
+            "https://themes-staging.letbuyy.com" \
+            "https://console-staging.letbuyy.com" \
+            "https://ops-staging.letbuyy.com"; do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
             if [ "$STATUS" != "200" ] && [ "$STATUS" != "302" ]; then
               echo "$URL failed: $STATUS"

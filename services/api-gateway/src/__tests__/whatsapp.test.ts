@@ -19,6 +19,18 @@ const task012RollbackSource = readFileSync(
     new URL('../../../../database/supabase/rollback/150_executable_whatsapp_scoped.rollback.sql', import.meta.url),
     'utf8',
 );
+const notificationCoreSource = readFileSync(
+    new URL('../../../../packages/notification-core/src/index.ts', import.meta.url),
+    'utf8',
+);
+const queueWorkerSource = readFileSync(
+    new URL('../../../../services/queue-workers/src/platform-queue-consumer.ts', import.meta.url),
+    'utf8',
+);
+const skippedHumanSource = readFileSync(
+    new URL('../../../../SKIPPED_HUMAN_DECISIONS.md', import.meta.url),
+    'utf8',
+);
 const mobileServiceSource = readFileSync(
     new URL('../../../../apps/mobile/merchant-app/lib/services/whatsapp_service.dart', import.meta.url),
     'utf8',
@@ -129,4 +141,32 @@ test('Task 012 scoped WhatsApp lifecycle, consent, COD, and V1 /wa aliases are i
     assert.doesNotMatch(task012MigrationSource, /PARTITION BY/i);
     assert.match(task012RollbackSource, /DROP TABLE IF EXISTS public\.whatsapp_messages/);
     assert.match(task012RollbackSource, /DROP TABLE IF EXISTS public\.wa_optins/);
+});
+
+test('D10 WhatsApp lifecycle and COD notifications are outbox-planned, consent-gated, and mock-badged', () => {
+    assert.match(notificationCoreSource, /planWhatsAppNotificationForEvent/);
+    assert.match(notificationCoreSource, /case 'order\.paid'[\s\S]*template_key: 'order_paid'/);
+    assert.match(notificationCoreSource, /case 'order\.fulfilled'[\s\S]*template_key: 'order_shipped'/);
+    assert.match(notificationCoreSource, /case 'order\.delivered'[\s\S]*template_key: 'order_delivered'/);
+    assert.match(notificationCoreSource, /case 'cod\.confirmation_requested'[\s\S]*template_key: 'cod_confirmation'/);
+    assert.match(notificationCoreSource, /fail_closed_without_consent: true/);
+
+    assert.match(queueWorkerSource, /planWhatsAppNotificationForEvent/);
+    assert.match(queueWorkerSource, /processWhatsAppSideEffect/);
+    assert.match(queueWorkerSource, /\.from\('wa_optins'\)/);
+    assert.match(queueWorkerSource, /WA_CONSENT_REQUIRED/);
+    assert.match(queueWorkerSource, /\.from\('customer_whatsapp_messages'\)/);
+    assert.match(queueWorkerSource, /\.from\('whatsapp_messages'\)/);
+    assert.match(queueWorkerSource, /\.from\('wa_sessions'\)/);
+    assert.match(queueWorkerSource, /\.from\('notification_logs'\)/);
+    assert.match(queueWorkerSource, /mock_send/);
+    assert.match(queueWorkerSource, /bsp_template_approval/);
+    assert.match(queueWorkerSource, /letbuyy_sandbox/);
+    assert.match(queueWorkerSource, /expireDueCodConfirmations/);
+    assert.match(queueWorkerSource, /\.lte\('expires_at', now\)/);
+    assert.match(queueWorkerSource, /cod_confirmation_status: 'expired'/);
+    assert.match(queueWorkerSource, /status: 'cancelled'/);
+
+    assert.doesNotMatch(routeSource, /return \{ optedIn: true, error: null \}/);
+    assert.match(skippedHumanSource, /SKIP-D10-WHATSAPP-BSP-WABA-HSM/);
 });

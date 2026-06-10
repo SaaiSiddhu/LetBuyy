@@ -12,6 +12,7 @@ import {
     defaultPaymentConfig,
     encryptPaymentSecret,
     isMissingSitesPaymentColumnError,
+    paymentConfigProviderMode,
     sanitizePaymentSettings,
     verifyRazorpayCredentials,
     type PaymentSettings,
@@ -139,6 +140,10 @@ router.get('/:id/payment-config', async (c) => {
         store_id: data.id,
         online_payment_enabled: data.online_payment_enabled !== false,
         cod_enabled: data.cod_enabled !== false,
+        provider_mode: paymentConfigProviderMode({
+            onlinePaymentEnabled: data.online_payment_enabled !== false,
+            settings: data.payment_settings as PaymentSettings | null,
+        }),
         payment_settings: sanitizePaymentSettings(data.payment_settings as PaymentSettings | null),
     }));
 });
@@ -476,6 +481,10 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
         store_id: data.id,
         online_payment_enabled: data.online_payment_enabled !== false,
         cod_enabled: data.cod_enabled !== false,
+        provider_mode: paymentConfigProviderMode({
+            onlinePaymentEnabled: data.online_payment_enabled !== false,
+            settings: data.payment_settings as PaymentSettings | null,
+        }),
         payment_settings: sanitizePaymentSettings(data.payment_settings as PaymentSettings | null),
     }));
 });

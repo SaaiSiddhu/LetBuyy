@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Button, Input, MaterialIcon } from '@letbuyy/ui';
+import { Button, Input, MaterialIcon, ThemeToggleButton } from '@letbuyy/ui';
 import './storefront-landing.css';
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -62,7 +62,7 @@ function getStorefrontUrl(subdomain: string): string {
     }
 
     if (process.env.NODE_ENV === 'production') {
-        return `https://${encodedSubdomain}.letbuyy.store`;
+        return `https://${encodedSubdomain}.letbuyy.com`;
     }
 
     return `/store/${encodedSubdomain}`;
@@ -302,7 +302,7 @@ function StoreFinder() {
                         <strong>&quot;{query}&quot;</strong> was not found.
                     </span>
                     <a
-                        href="https://accounts.letbuyy.store"
+                        href="https://accounts.letbuyy.com"
                         className="finder-status-link"
                     >
                         Create yours →
@@ -362,7 +362,7 @@ function StoreCard({ store }: { store: StoreShowcase }) {
                 {/* Store Info */}
                 <div className="store-card-info">
                     <h3 className="store-card-name">{store.displayName}</h3>
-                    <p className="store-card-subdomain">{store.subdomain}.letbuyy.store</p>
+                    <p className="store-card-subdomain">{store.subdomain}.letbuyy.com</p>
                     <p className="store-card-owner">by {store.maskedEmail}</p>
                 </div>
 
@@ -439,9 +439,12 @@ export default function StorefrontLanding({ stores, stats }: StorefrontLandingPr
                         <span className="logo-icon">L</span>
                         LetBuyy
                     </Link>
-                    <a href="https://accounts.letbuyy.store" className="landing-nav-cta">
-                        Create Site →
-                    </a>
+                    <div className="flex items-center gap-[var(--lb-space-3)]">
+                        <ThemeToggleButton label="Toggle storefront theme" />
+                        <a href="https://accounts.letbuyy.com" className="landing-nav-cta">
+                            Create Site →
+                        </a>
+                    </div>
                 </div>
             </nav>
 
@@ -484,7 +487,7 @@ export default function StorefrontLanding({ stores, stats }: StorefrontLandingPr
                                     <MaterialIcon name="rocket_launch" />
                                 </div>
                                 <p>No sites launched yet. Be the first to create one!</p>
-                                <a href="https://accounts.letbuyy.store" className="landing-empty-cta">
+                                <a href="https://accounts.letbuyy.com" className="landing-empty-cta">
                                     Create Your Site →
                                 </a>
                             </div>
@@ -509,10 +512,10 @@ export default function StorefrontLanding({ stores, stats }: StorefrontLandingPr
                 <section className="landing-footer-cta">
                     <h2>Ready to build your site?</h2>
                     <div className="landing-footer-buttons">
-                        <a href="https://accounts.letbuyy.store" className="btn-primary">
+                        <a href="https://accounts.letbuyy.com" className="btn-primary">
                             Create Your Site →
                         </a>
-                        <a href="https://accounts.letbuyy.store" className="btn-secondary">
+                        <a href="https://accounts.letbuyy.com" className="btn-secondary">
                             Browse Themes →
                         </a>
                     </div>
@@ -528,7 +531,7 @@ export default function StorefrontLanding({ stores, stats }: StorefrontLandingPr
                     <span className="landing-footer-sep">·</span>
                     <a href="/privacy">Privacy</a>
                     <span className="landing-footer-sep">·</span>
-                    <span>storefront.letbuyy.store</span>
+                    <span>storefront.letbuyy.com</span>
                 </div>
             </footer>
         </div>

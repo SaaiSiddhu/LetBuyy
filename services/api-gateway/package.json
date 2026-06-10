@@ -25,7 +25,6 @@
     "@letbuyy/organization-core": "workspace:*",
     "@letbuyy/payments": "workspace:*",
     "@letbuyy/permission-core": "workspace:*",
-    "@letbuyy/runtime-composition": "workspace:*",
     "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/session-core": "workspace:*",
     "@letbuyy/tenant-core": "workspace:*",
@@ -34,6 +33,7 @@
     "bcryptjs": "^3.0.3",
     "hash-wasm": "^4.12.0",
     "hono": "^4.7.0",
+    "jose": "^6.1.3",
     "zod": "^4.3.6"
   },
   "devDependencies": {

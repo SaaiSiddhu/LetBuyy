@@ -60,8 +60,8 @@ test('Task 013 reconciles mobile money compatibility tables to canonical ledger'
     const commissionRoute = source('routes/commission.ts');
 
     assert.match(payoutsRoute, /postCanonicalPayoutLedger/);
-    assert.match(payoutsRoute, /payout-statement:\$\{statement\.id\}/);
-    assert.match(payoutsRoute, /payout-release:\$\{statement\.id\}/);
+    assert.match(payoutsRoute, /payout-fee-assessment:\$\{statement\.id\}/);
+    assert.match(payoutsRoute, /payout-release:\$\{claimedStatement\.id\}/);
     assert.match(payoutsRoute, /canonical_ledger_transaction_id/);
     assert.match(payoutsRoute, /release_ledger_transaction_id/);
 

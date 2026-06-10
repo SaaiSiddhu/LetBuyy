@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../services/cms_service.dart';
 import '../../theme/app_theme_colors.dart';
-import '../../theme/letbuyy_color_tokens.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 class PostEditorScreen extends StatefulWidget {
   const PostEditorScreen({super.key, required this.storeId, this.post});

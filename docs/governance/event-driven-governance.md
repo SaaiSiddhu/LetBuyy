@@ -2,12 +2,12 @@
 
 Status: Phase 2 foundation.
 
-Events remain contract-first in `packages/event-core` and execution-first in `packages/orchestration`.
+Events remain contract-first in `packages/event-core` and execution-first in service-owned adapters, queue workers, webhook handlers, and audited outbox tables.
 
 ## Event Ownership
 
 - Domain packages define domain event contracts.
-- Application services decide when workflow events are emitted.
+- Services and domain packages decide when workflow events are emitted through explicit versioned contracts.
 - Services publish, consume, retry, acknowledge, and dead-letter runtime events.
 - Infrastructure adapters normalize provider webhooks into provider-neutral event facts.
 

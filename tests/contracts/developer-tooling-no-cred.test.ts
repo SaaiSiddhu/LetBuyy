@@ -8,7 +8,7 @@ import {
     createExampleLetbuyyAppManifest,
     planAppManifestRegistration,
     planMarketplaceAppSubmission,
-} from '../../packages/app-engine/src/index.ts';
+} from '../../packages/shared-types/src/app-platform.ts';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const developerRouteSource = readFileSync(join(testDir, '../../services/api-gateway/src/routes/app-store/developer-routes.ts'), 'utf8');

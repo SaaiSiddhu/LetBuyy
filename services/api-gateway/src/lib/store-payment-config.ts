@@ -13,6 +13,8 @@ export type PaymentSettings = {
     };
 };
 
+export type ProviderMode = 'mock' | 'sandbox' | 'live';
+
 function base64EncodeBytes(bytes: Uint8Array): string {
     let binary = '';
     bytes.forEach((byte) => {
@@ -67,6 +69,15 @@ export function sanitizePaymentSettings(settings: PaymentSettings | null | undef
     };
 }
 
+export function paymentConfigProviderMode(input: {
+    onlinePaymentEnabled?: boolean | null;
+    settings?: PaymentSettings | null;
+}): ProviderMode {
+    const razorpay = input.settings?.razorpay;
+    if (input.onlinePaymentEnabled === false || !razorpay?.key_secret_ciphertext) return 'mock';
+    return razorpay.test_mode === false ? 'live' : 'sandbox';
+}
+
 export function isMissingSitesPaymentColumnError(error: { message?: string } | null | undefined): boolean {
     const message = error?.message || '';
     return (
@@ -81,6 +92,7 @@ export function defaultPaymentConfig(storeId: string) {
         store_id: storeId,
         online_payment_enabled: true,
         cod_enabled: true,
+        provider_mode: 'mock' as ProviderMode,
         payment_settings: sanitizePaymentSettings(null),
         schema_ready: false,
     };

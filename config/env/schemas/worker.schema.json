@@ -112,6 +112,13 @@
       "type": "string",
       "format": "uri"
     },
+    "CHECKOUT_ORIGIN": {
+      "type": "string",
+      "format": "uri"
+    },
+    "CHECKOUT_SIGNING_SECRET": {
+      "type": "string"
+    },
     "EVENT_QUEUE_NAME": {
       "type": "string"
     },

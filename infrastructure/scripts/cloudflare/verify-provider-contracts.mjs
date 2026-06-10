@@ -120,13 +120,13 @@ function scriptName(base) {
 }
 
 function apiRouteForEnvironment() {
-  if (environment === "production") return "api.letbuyy.store";
-  return "api.staging.letbuyy.store";
+  if (environment === "production") return "api.letbuyy.com";
+  return "api.staging.letbuyy.com";
 }
 
 function webhookRouteForEnvironment() {
-  if (environment === "production") return "webhooks.letbuyy.store";
-  return "webhooks.staging.letbuyy.store";
+  if (environment === "production") return "webhooks.letbuyy.com";
+  return "webhooks.staging.letbuyy.com";
 }
 
 function cacheTitleForEnvironment() {

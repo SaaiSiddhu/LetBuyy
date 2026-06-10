@@ -9,7 +9,7 @@ import '../../app/store_context.dart';
 import '../../models/store_model.dart';
 import '../../services/media_service.dart';
 import '../../theme/app_theme_colors.dart';
-import '../../theme/letbuyy_color_tokens.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../widgets/shared/cached_merchant_image.dart';
 import '../../widgets/shared/image_source_sheet.dart';
 

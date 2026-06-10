@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import { SignJWT, jwtVerify } from 'jose'
 import { LETBUYY_MERCHANT_SESSION_COOKIE } from '@letbuyy/auth-core'
+import { isProductionIdentityRuntime } from '@/lib/dev-auth-bypass'
 
 /**
  * Resolve the JWT signing key for the encrypted accounts cookie. SECURITY: never fall
@@ -11,7 +12,11 @@ import { LETBUYY_MERCHANT_SESSION_COOKIE } from '@letbuyy/auth-core'
 function getSigningKey(): Uint8Array {
     const value = process.env.AUTH_SECRET?.trim() || ''
     if (value.length < 16) {
-        if (process.env.NODE_ENV === 'production') {
+        // SEC-H3 (Wave 0): refuse the weak dev key in ANY production-like runtime
+        // (NODE_ENV/APP_ENV/VERCEL_ENV/NEXT_PUBLIC_ENV) — not just NODE_ENV=production.
+        // The previous NODE_ENV-only gate let a non-prod NODE_ENV deploy sign the
+        // PII-bearing lb_accounts cookie with a public literal.
+        if (isProductionIdentityRuntime(process.env)) {
             throw new Error('AUTH_SECRET is missing or too short (min 16 chars); refusing to sign/verify with a weak key')
         }
         return new TextEncoder().encode('dev-only-insecure-auth-secret-set-AUTH_SECRET-in-prod')
@@ -20,6 +25,7 @@ function getSigningKey(): Uint8Array {
 }
 const PASSWORD_SET_INTENT_COOKIE = 'lb_password_set_intent'
 const PASSWORD_SET_INTENT_TTL_SECONDS = 15 * 60
+const ACCOUNTS_COOKIE_TTL_SECONDS = 90 * 24 * 60 * 60
 
 // Cookie names
 export const COOKIE_NAMES = {
@@ -42,16 +48,12 @@ export const COOKIE_NAMES = {
  *     The two realms never share a cookie; that is the tenant-isolation guarantee.
  *     NEVER set a parent-domain attribute on a storefront cookie.
  *
- * COOKIE_DOMAIN is env-driven so the realm activates at cutover WITHOUT a code
- * change: it must always match the apex the platform apps are actually served
- * from. Pre-split that is `.letbuyy.store` (current default). At cutover, when
- * platform apps move to the control-plane apex, update COOKIE_DOMAIN in the
- * secret store. Flipping it
- * ahead of the DNS/Vercel move would break SSO (cookie scoped to a domain the
- * apps aren't served from).
+ * COOKIE_DOMAIN is env-driven so the realm activates without a code change: it
+ * must always match the apex the platform apps are actually served from. The
+ * secret store owns that value in production; leaving it unset makes cookies
+ * host-only, which is safer than a stale code-level domain fallback.
  */
-const COOKIE_DOMAIN =
-    process.env.COOKIE_DOMAIN?.trim() || (process.env.NODE_ENV === 'production' ? '.letbuyy.store' : undefined)
+const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN?.trim() || undefined
 
 // Cookie options shared across all auth cookies
 const BASE_OPTIONS = {
@@ -171,7 +173,7 @@ export async function getDeviceCookie(): Promise<string | undefined> {
 async function encryptAccounts(accounts: AccountEntry[]): Promise<string> {
     return new SignJWT({ accounts })
         .setProtectedHeader({ alg: 'HS256' })
-        .setExpirationTime('365d')
+        .setExpirationTime(`${ACCOUNTS_COOKIE_TTL_SECONDS}s`)
         .sign(getSigningKey())
 }
 
@@ -215,7 +217,7 @@ export async function addAccount(account: AccountEntry): Promise<void> {
     cookieStore.set(COOKIE_NAMES.accounts, token, {
         ...BASE_OPTIONS,
         sameSite: 'lax',
-        maxAge: 365 * 24 * 60 * 60, // 1 year
+        maxAge: ACCOUNTS_COOKIE_TTL_SECONDS,
     })
 }
 
@@ -230,6 +232,6 @@ export async function removeAccount(email: string): Promise<void> {
     cookieStore.set(COOKIE_NAMES.accounts, token, {
         ...BASE_OPTIONS,
         sameSite: 'lax',
-        maxAge: 365 * 24 * 60 * 60,
+        maxAge: ACCOUNTS_COOKIE_TTL_SECONDS,
     })
 }

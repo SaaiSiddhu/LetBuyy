@@ -5,12 +5,21 @@ import {
   BUILT_IN_SECTION_SCHEMAS,
   BUILT_IN_SECTION_TYPES,
   collectBuiltInSectionSchemaGaps,
+  DEFAULT_THEME_SETTINGS,
   migrateThemeTemplateSchemas,
   PreviewTokenSchema,
   SECTION_SCHEMAS,
   SaveThemeDraftSchema,
   THEME_SETTINGS_SCHEMA,
+  THEME_LIQUID_PLATFORM_WIDE_FLIP_DECISION,
+  THEME_LIQUID_PORTABLE_SECTION_PARITY,
+  collectLiquidPortableSectionParityGaps,
   collectThemeTemplateValidationIssues,
+  createMinimalLiquidThemeBundleFixture,
+  createUrbanKicksLiquidThemeBundleFixture,
+  LiquidRenderer,
+  resolveThemeLiquidRenderingEnabled,
+  sanitizeRenderedHtml,
 } from '../src/index.ts';
 
 const STORE_ID = '11111111-1111-4111-8111-111111111111';
@@ -189,4 +198,130 @@ test('Wave 6 schema migration runner migrates existing saved store sections', ()
   assert.equal(result.warnings.length, 0);
   assert.equal(result.templateConfig.sections[0]?.schemaVersion, '2026-06');
   assert.equal(result.templateConfig.sections[0]?.settings.heading, 'Legacy heading');
+});
+
+test('D7 Liquid rendering stays per-theme canary and records platform-wide flip as deferred', () => {
+  const templateConfig = {
+    themeId: 'urban-kicks-liquid',
+    themeSettings: DEFAULT_THEME_SETTINGS,
+    sections: [],
+  };
+
+  assert.equal(resolveThemeLiquidRenderingEnabled({ templateConfig }), false);
+  assert.equal(resolveThemeLiquidRenderingEnabled({
+    templateConfig: {
+      ...templateConfig,
+      liquidRenderingCanary: true,
+    },
+  }), true);
+  assert.equal(resolveThemeLiquidRenderingEnabled({
+    templateConfig: {
+      ...templateConfig,
+      releaseManifest: {
+        liquidCanary: {
+          enabled: true,
+          scope: 'theme',
+        },
+      },
+    },
+  }), true);
+  assert.equal(THEME_LIQUID_PLATFORM_WIDE_FLIP_DECISION.status, 'deferred');
+  assert.equal(THEME_LIQUID_PLATFORM_WIDE_FLIP_DECISION.defaultEnabled, false);
+});
+
+test('D7 first-party Liquid bundle has parity section files for the frozen React section set', () => {
+  const bundle = createUrbanKicksLiquidThemeBundleFixture();
+  const gaps = collectLiquidPortableSectionParityGaps(Object.keys(bundle.sections));
+
+  assert.equal(THEME_LIQUID_PORTABLE_SECTION_PARITY.length, 20);
+  assert.deepEqual(gaps, []);
+
+  for (const entry of THEME_LIQUID_PORTABLE_SECTION_PARITY) {
+    const section = bundle.sections[entry.liquidSectionType];
+    assert.ok(section, `${entry.liquidSectionType} must exist for ${entry.reactFile}`);
+    assert.equal(section.path, `sections/${entry.liquidSectionType}.liquid`);
+    assert.match(section.source, /\{%\s*schema\s*%\}/);
+  }
+});
+
+test('D7 DOMPurify sanitizer preserves Liquid hydration elements while removing active content', async () => {
+  const sanitized = await sanitizeRenderedHtml([
+    '<section data-theme-renderer="liquid">',
+    '<script>alert(1)</script>',
+    '<a href="javascript:alert(1)" onclick="alert(1)">bad link</a>',
+    '<lb-add-to-cart data-lb-island="add-to-cart" data-product-id="prod_1" onclick="alert(1)">',
+    '<button type="button" data-lb-add-to-cart>Add</button>',
+    '<span data-lb-add-to-cart-status aria-live="polite"></span>',
+    '</lb-add-to-cart>',
+    '</section>',
+  ].join(''));
+
+  assert.match(sanitized, /lb-add-to-cart/);
+  assert.match(sanitized, /data-lb-add-to-cart/);
+  assert.doesNotMatch(sanitized, /<script/i);
+  assert.doesNotMatch(sanitized, /onclick=/i);
+  assert.doesNotMatch(sanitized, /javascript:/i);
+});
+
+test('D7 Liquid renderer auto-escapes merchant settings before sanitized raw block HTML is inserted', async () => {
+  const bundle = createMinimalLiquidThemeBundleFixture();
+  const renderer = new LiquidRenderer();
+  const result = await renderer.render({
+    context: {
+      storeId: STORE_ID,
+      subdomain: 'local-kicks',
+      path: '/',
+      previewMode: true,
+      locale: 'en',
+    },
+    storeTemplate: {
+      storeId: STORE_ID,
+      themeId: 'liquid-starter',
+      themeSettings: DEFAULT_THEME_SETTINGS,
+      sections: [],
+    },
+    routeTemplate: {
+      id: 'index',
+      type: 'index',
+      layoutKey: 'theme',
+      sections: [],
+    },
+    liquidBundle: {
+      ...bundle,
+      templates: {
+        ...bundle.templates,
+        index: {
+          ...bundle.templates.index,
+          sections: {
+            ...bundle.templates.index.sections,
+            spotlight: {
+              ...bundle.templates.index.sections.spotlight,
+              settings: {
+                ...bundle.templates.index.sections.spotlight.settings,
+                heading: '<img src=x onerror=alert(1)>',
+              },
+              blocks: {
+                first_badge: {
+                  type: 'badge',
+                  settings: {
+                    label: '<strong onclick="alert(1)">Trusted</strong>',
+                  },
+                },
+              },
+              block_order: ['first_badge'],
+            },
+          },
+        },
+      },
+    },
+    liquidTemplateKey: 'index',
+  });
+
+  assert.equal(result.status, 'rendered');
+  const html = result.liquid?.layoutHtml || '';
+  assert.match(html, /&lt;img src=x onerror=alert\(1\)&gt;/);
+  assert.doesNotMatch(html, /<img src=x/i);
+  assert.doesNotMatch(html, /<[^>]+onclick=/i);
+  assert.doesNotMatch(html, /<[^>]+onerror=/i);
+  assert.doesNotMatch(html, /<script/i);
 });

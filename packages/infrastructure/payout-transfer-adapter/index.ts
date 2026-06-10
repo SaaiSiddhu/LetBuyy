@@ -70,7 +70,7 @@ function normalizeMode(mode: PayoutTransferMode | undefined): PayoutTransferMode
 }
 
 function normalizeRail(rail: MerchantPayoutRail | undefined): MerchantPayoutRail {
-  return rail || 'razorpayx';
+  return rail || 'razorpay_route';
 }
 
 function assertProviderReady(

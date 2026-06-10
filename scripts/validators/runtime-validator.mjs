@@ -7,6 +7,7 @@ import {
   exists,
   forbiddenRuntimeRoots,
   forbiddenRuntimeSubtrees,
+  frozenAppRoots,
   getTrackedFiles,
   reservedMobileRuntimeRoots,
   root,
@@ -16,7 +17,7 @@ import {
 const reporter = createReporter("Runtime validator");
 const trackedFiles = getTrackedFiles();
 
-const allowedAppRoots = new Set([...canonicalAppRoots, ...reservedMobileRuntimeRoots]);
+const allowedAppRoots = new Set([...canonicalAppRoots, ...frozenAppRoots, ...reservedMobileRuntimeRoots]);
 const appEntries = fs.readdirSync(path.join(root, "apps"), { withFileTypes: true });
 const forbiddenRuntimePrefixes = [...forbiddenRuntimeRoots, ...forbiddenRuntimeSubtrees];
 

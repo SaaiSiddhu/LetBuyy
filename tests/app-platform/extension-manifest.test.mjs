@@ -5,7 +5,7 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import { readAppStoreRouteSource } from '../helpers/app-store-route-source.mjs';
 
-const APP_ENGINE_SOURCE = 'packages/app-engine/src/index.ts';
+const APP_ENGINE_SOURCE = 'packages/shared-types/src/app-platform.ts';
 const APP_FUNCTION_RUNTIME_SOURCE = 'services/api-gateway/src/extensions/app-functions-runtime.ts';
 const DEVELOPER_REFERENCE_SOURCE = 'apps/developer-portal/src/lib/reference.ts';
 const OPERATIONS_REVIEW_PAGE_SOURCE = 'apps/platform-operations-portal/src/app/(dashboard)/operations/page.tsx';
@@ -85,7 +85,7 @@ test('WS13 X0 publishes a declarative app manifest contract for every extension 
     'LetbuyyAppManifestSchema',
     'planAppManifestRegistration',
   ]) {
-    assert.ok(appEngineSource.includes(marker), `app-engine manifest contract is missing ${marker}`);
+    assert.ok(appEngineSource.includes(marker), `shared app-platform manifest contract is missing ${marker}`);
   }
 });
 
@@ -135,7 +135,7 @@ test('WS13 X1 plans per-store extension and function registry records from a man
     'AppFunctionRegistryRecord',
     'planAppExtensionRegistryInstall',
   ]) {
-    assert.ok(appEngineSource.includes(marker), `app-engine registry contract is missing ${marker}`);
+    assert.ok(appEngineSource.includes(marker), `shared app-platform registry contract is missing ${marker}`);
   }
 
   const plan = appEngine.planAppExtensionRegistryInstall({
@@ -208,7 +208,7 @@ test('WS13 X6 publishes lifecycle observability and developer review handoff', (
     'createAppExtensionDeveloperHandoff',
     'createAppExtensionReviewChecklist',
   ]) {
-    assert.ok(appEngineSource.includes(marker), `app-engine lifecycle contract is missing ${marker}`);
+    assert.ok(appEngineSource.includes(marker), `shared app-platform lifecycle contract is missing ${marker}`);
   }
 
   const snapshot = appEngine.createAppExtensionLifecycleSnapshot({

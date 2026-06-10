@@ -57,7 +57,7 @@
   },
   "executionAuthority": {
     "executionRole": "Reserved/not-implemented mobile root; does not own active routing, rendering, presentation adapters, runtime transport, mobile release artifacts, or runtime bootstrapping. apps/storefront-runtime owns active shopper/customer presentation flows and services/api-gateway owns active customer/storefront API behavior; no shopper mobile app is implemented.",
-    "orchestrationRole": "No active orchestration execution; current workflows delegate to implemented web and service runtimes plus package-owned policy.",
+    "orchestrationRole": "No active service-local event helpers execution; current workflows delegate to implemented web and service runtimes plus package-owned policy.",
     "infrastructureOwnership": "No active runtime infrastructure ownership; future activation requires mobile source, package/deployment config, tests, and governance approval.",
     "eventOwnership": "No active event execution ownership; current event handling delegates to implemented runtimes.",
     "queryOwnership": "No active query execution ownership; current reads delegate to implemented runtimes.",

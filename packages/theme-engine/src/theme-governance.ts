@@ -12,6 +12,38 @@ export type ThemeRendererRegistryAuditStatus = 'pass' | 'warn' | 'fail';
 
 export const THEME_RENDERER_GOVERNANCE_DEFAULT_MODE: ThemeRendererGovernanceMode = 'warn';
 export const THEME_LIQUID_RENDERING_DEFAULT_ENABLED = false;
+export const THEME_LIQUID_PARITY_REQUIRED_SECTION_COUNT = 20;
+export const THEME_LIQUID_PLATFORM_WIDE_FLIP_DECISION = {
+  status: 'deferred',
+  authority: 'ARB',
+  reason: 'Liquid remains per-theme canary only until render-parity, security, SSTI/XSS, and performance evidence is green.',
+  defaultEnabled: THEME_LIQUID_RENDERING_DEFAULT_ENABLED,
+} as const;
+
+export const THEME_LIQUID_PORTABLE_SECTION_PARITY = [
+  { reactFile: 'about-section.tsx', rendererKey: 'core.about', liquidSectionType: 'about-section' },
+  { reactFile: 'app-block-slot.tsx', rendererKey: 'apps.app-block-slot', liquidSectionType: 'app-block-slot' },
+  { reactFile: 'banner-carousel.tsx', rendererKey: 'frozen.banner-carousel', liquidSectionType: 'banner-carousel' },
+  { reactFile: 'brand-marquee.tsx', rendererKey: 'commerce.brand-marquee', liquidSectionType: 'brand-marquee' },
+  { reactFile: 'category-grid.tsx', rendererKey: 'commerce.category-grid', liquidSectionType: 'category-grid' },
+  { reactFile: 'contact-form.tsx', rendererKey: 'core.contact-form', liquidSectionType: 'contact-form' },
+  { reactFile: 'cta-section.tsx', rendererKey: 'core.cta', liquidSectionType: 'cta-section' },
+  { reactFile: 'experience-timeline.tsx', rendererKey: 'core.experience-timeline', liquidSectionType: 'experience-timeline' },
+  { reactFile: 'featured-products.tsx', rendererKey: 'core.featured-products', liquidSectionType: 'featured-products' },
+  { reactFile: 'hero.tsx', rendererKey: 'core.hero', liquidSectionType: 'hero-banner' },
+  { reactFile: 'marquee.tsx', rendererKey: 'frozen.marquee', liquidSectionType: 'marquee' },
+  { reactFile: 'newsletter.tsx', rendererKey: 'core.newsletter', liquidSectionType: 'newsletter-signup' },
+  { reactFile: 'portfolio-grid.tsx', rendererKey: 'core.portfolio-grid', liquidSectionType: 'portfolio-grid' },
+  { reactFile: 'product-detail-section.tsx', rendererKey: 'core.product-detail', liquidSectionType: 'product-detail' },
+  { reactFile: 'product-grid.tsx', rendererKey: 'core.product-grid', liquidSectionType: 'product-grid' },
+  { reactFile: 'rich-content-section.tsx', rendererKey: 'core.rich-content', liquidSectionType: 'rich-content' },
+  { reactFile: 'services-grid.tsx', rendererKey: 'core.services-grid', liquidSectionType: 'services-grid' },
+  { reactFile: 'skills-section.tsx', rendererKey: 'core.skills', liquidSectionType: 'skills-section' },
+  { reactFile: 'testimonials.tsx', rendererKey: 'core.testimonials', liquidSectionType: 'testimonials' },
+  { reactFile: 'trust-badges.tsx', rendererKey: 'commerce.trust-badges', liquidSectionType: 'trust-badges' },
+] as const;
+
+export type ThemeLiquidPortableSectionParityEntry = typeof THEME_LIQUID_PORTABLE_SECTION_PARITY[number];
 
 export interface ThemeRendererRegistryAuditIssue {
   path: string;
@@ -35,6 +67,11 @@ export interface ThemeRendererRegistryAuditInput {
   sectionSchemas?: Record<string, SectionSchema>;
   approvedRendererKeys?: readonly string[];
   mode?: ThemeRendererGovernanceMode;
+}
+
+export interface ThemeLiquidRenderingDecisionInput {
+  templateConfig: StoreTemplateConfig;
+  defaultEnabled?: boolean;
 }
 
 export interface ThemeSectionSchemaMigration {
@@ -77,6 +114,64 @@ function collectTemplateSections(templateConfig: StoreTemplateConfig): Array<{ p
   }
 
   return sections;
+}
+
+function asGovernanceRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {};
+}
+
+function readBooleanDecision(value: unknown): boolean | undefined {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (['1', 'true', 'enabled', 'on', 'canary'].includes(normalized)) return true;
+    if (['0', 'false', 'disabled', 'off'].includes(normalized)) return false;
+  }
+
+  const record = asGovernanceRecord(value);
+  for (const key of ['enabled', 'liquid_enabled', 'liquidEnabled', 'canary', 'value']) {
+    if (key in record) {
+      const decision = readBooleanDecision(record[key]);
+      if (decision !== undefined) return decision;
+    }
+  }
+
+  return undefined;
+}
+
+export function resolveThemeLiquidRenderingEnabled(input: ThemeLiquidRenderingDecisionInput): boolean {
+  const releaseManifest = asGovernanceRecord(input.templateConfig.releaseManifest);
+  const rendererManifest = asGovernanceRecord(releaseManifest.renderer || releaseManifest.renderer_manifest);
+  const themeSettings = asGovernanceRecord(input.templateConfig.themeSettings);
+  const candidates = [
+    input.templateConfig.liquidRenderingCanary,
+    themeSettings.liquidRenderingCanary,
+    themeSettings.liquid_rendering_canary,
+    releaseManifest.liquidRenderingCanary,
+    releaseManifest.liquid_rendering_canary,
+    releaseManifest.liquidCanary,
+    releaseManifest.liquid_canary,
+    rendererManifest.liquidRenderingCanary,
+    rendererManifest.liquid_rendering_canary,
+    rendererManifest.liquidCanary,
+    rendererManifest.liquid_canary,
+  ];
+
+  for (const candidate of candidates) {
+    const decision = readBooleanDecision(candidate);
+    if (decision !== undefined) return decision;
+  }
+
+  return input.defaultEnabled ?? THEME_LIQUID_RENDERING_DEFAULT_ENABLED;
+}
+
+export function collectLiquidPortableSectionParityGaps(sectionTypes: Iterable<string>): string[] {
+  const available = new Set(sectionTypes);
+  return THEME_LIQUID_PORTABLE_SECTION_PARITY
+    .filter((entry) => !available.has(entry.liquidSectionType))
+    .map((entry) => `${entry.reactFile} requires Liquid section "${entry.liquidSectionType}"`);
 }
 
 export function auditThemeRendererRegistry(input: ThemeRendererRegistryAuditInput): ThemeRendererRegistryAudit {

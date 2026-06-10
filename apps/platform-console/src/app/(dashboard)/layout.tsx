@@ -14,6 +14,7 @@ import {
     Shield,
     ShieldAlert,
     Store,
+    ThemeToggleButton,
     Users,
     type AppNavigationSection,
 } from '@letbuyy/ui';
@@ -62,6 +63,7 @@ export default async function DashboardLayout({
             }
             topBar={
                 <div className="flex items-center justify-end gap-[var(--lb-space-4)]">
+                    <ThemeToggleButton label="Toggle console theme" />
                     <span className="text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">{session.email}</span>
                     <form action="/api/console-auth/logout" method="post">
                         <Button

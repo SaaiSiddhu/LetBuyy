@@ -159,7 +159,7 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
                                             <MaterialIcon name={getSiteTypeIcon(store.site_type)} />
                                             {getSiteTypeLabel(store.site_type)}
                                         </span>
-                                        {store.subdomain}.letbuyy.store
+                                        {store.subdomain}.letbuyy.com
                                     </div>
                                 </div>
                                 <span className={`all-stores-card-status ${store.status === 'active' ? 'active' : 'inactive'}`}>

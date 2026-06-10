@@ -41,7 +41,7 @@ class AppConstants {
   static const String dateTimeFormat = 'dd MMM yyyy, hh:mm a';
   
   // Support
-  static const String supportEmail = 'support@letbuyy.store';
+  static const String supportEmail = 'support@letbuyy.com';
   static const String supportPhone = '+91 9876543210';
   
   // Social Media
@@ -50,7 +50,7 @@ class AppConstants {
   static const String twitterUrl = 'https://twitter.com/letbuyy';
   
   // Policies
-  static const String privacyPolicyUrl = 'https://letbuyy.store/privacy';
-  static const String termsUrl = 'https://letbuyy.store/terms';
-  static const String returnPolicyUrl = 'https://letbuyy.store/returns';
+  static const String privacyPolicyUrl = 'https://letbuyy.com/privacy';
+  static const String termsUrl = 'https://letbuyy.com/terms';
+  static const String returnPolicyUrl = 'https://letbuyy.com/returns';
 }

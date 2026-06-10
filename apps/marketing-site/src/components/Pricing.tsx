@@ -41,7 +41,7 @@ const plans: PricingPlan[] = [
         price: 'Pending',
         priceNote: 'Requires human-approved monthly and yearly pricing',
         cta: 'Request pricing',
-        href: 'mailto:sales@letbuyy.store?subject=LetBuyy%20Basic%20pricing',
+        href: 'mailto:sales@letbuyy.com?subject=LetBuyy%20Basic%20pricing',
         featured: true,
         highlights: ['Custom domain readiness', 'Core commerce tools', 'Email support policy pending'],
     },
@@ -52,7 +52,7 @@ const plans: PricingPlan[] = [
         price: 'Pending',
         priceNote: 'Requires human-approved plan packaging',
         cta: 'Request pricing',
-        href: 'mailto:sales@letbuyy.store?subject=LetBuyy%20Pro%20pricing',
+        href: 'mailto:sales@letbuyy.com?subject=LetBuyy%20Pro%20pricing',
         highlights: ['Advanced operations', 'Theme and app workflows', 'Priority support policy pending'],
     },
     {
@@ -62,7 +62,7 @@ const plans: PricingPlan[] = [
         price: 'Custom',
         priceNote: 'Requires sales-approved terms',
         cta: 'Contact sales',
-        href: 'mailto:sales@letbuyy.store?subject=LetBuyy%20Enterprise%20pricing',
+        href: 'mailto:sales@letbuyy.com?subject=LetBuyy%20Enterprise%20pricing',
         highlights: ['Multi-store governance', 'Operational controls', 'SLA and onboarding terms pending'],
     },
 ]

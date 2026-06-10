@@ -1,9 +1,37 @@
+import org.gradle.api.GradleException
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
+}
+
+fun signingValue(name: String): String? {
+    val fromFile = keystoreProperties.getProperty(name)
+    val fromGradle = providers.gradleProperty(name).orNull
+    val fromEnv = System.getenv(name)
+    return (fromFile ?: fromGradle ?: fromEnv)
+        ?.trim()
+        ?.takeIf { it.isNotEmpty() && !it.startsWith("SKIP_NEEDS_HUMAN_") }
+}
+
+val releaseKeystorePath = signingValue("LETBUYY_ANDROID_KEYSTORE_PATH")
+val releaseKeystoreFile = releaseKeystorePath?.let { file(it) }
+val releaseKeyAlias = signingValue("LETBUYY_ANDROID_KEY_ALIAS")
+val releaseKeyPassword = signingValue("LETBUYY_ANDROID_KEY_PASSWORD")
+val releaseStorePassword = signingValue("LETBUYY_ANDROID_STORE_PASSWORD")
+val releaseSigningReady = releaseKeystoreFile?.exists() == true &&
+    releaseKeyAlias != null &&
+    releaseKeyPassword != null &&
+    releaseStorePassword != null
 
 android {
     namespace = "com.letbuyy.store"
@@ -30,11 +58,33 @@ android {
         multiDexEnabled = true
     }
 
+    signingConfigs {
+        create("release") {
+            if (releaseSigningReady) {
+                storeFile = releaseKeystoreFile
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            signingConfig = signingConfigs.getByName("debug")
+            if (releaseSigningReady) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
+    }
+}
+
+gradle.taskGraph.whenReady {
+    if (allTasks.any { it.name.contains("Release", ignoreCase = true) } && !releaseSigningReady) {
+        throw GradleException(
+            "Release signing requires LETBUYY_ANDROID_KEYSTORE_PATH, LETBUYY_ANDROID_KEY_ALIAS, " +
+                "LETBUYY_ANDROID_KEY_PASSWORD, and LETBUYY_ANDROID_STORE_PASSWORD. " +
+                "Provision production signing secrets before running release builds."
+        )
     }
 }
 

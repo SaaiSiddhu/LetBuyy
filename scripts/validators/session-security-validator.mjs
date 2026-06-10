@@ -141,9 +141,9 @@ reporter.assert(oidcDisabled.includes('implemented: false'), 'OIDC disabled scaf
 const allowlist = readJson('config/governance/anti-fabrication-allowlist.json');
 reporter.assert((allowlist.entries || []).length === 0, 'Wave 4 anti-fabrication allowlist entries must be burned down');
 
-const skipped = readFile('FOUNDATION_STEPUP_SKIPPED.md');
+const skipped = readFile('SKIPPED_HUMAN_DECISIONS.md');
 for (const skipId of ['SKIP-W4-LIVE-SECRET-ROTATION', 'SKIP-W4-MTLS-CF-ACCESS']) {
-  reporter.assert(skipped.includes(`## ${skipId}`), `FOUNDATION_STEPUP_SKIPPED.md missing ${skipId}`);
+  reporter.assert(skipped.includes(skipId), `SKIPPED_HUMAN_DECISIONS.md missing ${skipId}`);
 }
 
 for (const file of [

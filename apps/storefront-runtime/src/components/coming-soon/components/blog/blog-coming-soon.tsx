@@ -114,7 +114,7 @@ export default function BlogComingSoon({ storeName, tagline, logoUrl, launchDate
                     {[{ v: '50+', l: 'Articles' }, { v: '12K', l: 'Readers' }, { v: 'Weekly', l: 'Updates' }].map(s => (<div key={s.l} style={{ textAlign: 'center' }}><div style={{ fontSize: 'clamp(.85rem,2vw,1.3rem)', fontWeight: 800, lineHeight: 1, background: 'linear-gradient(135deg,rgb(254 215 170),rgb(253 186 116))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{s.v}</div><div style={{ fontSize: 'clamp(7px,1vw,10px)', fontWeight: 500, color: 'rgba(255,255,255,.25)', textTransform: 'uppercase', letterSpacing: '.06em', marginTop: 1 }}>{s.l}</div></div>))}
                 </div>
 
-                <p style={{ fontSize: 'clamp(8px,1.1vw,11px)', color: 'rgba(255,255,255,.18)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .65s both' : 'none' }}>Powered by <a href="https://letbuyy.store" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(253,186,116,.45)', textDecoration: 'none', fontWeight: 700 }}>LetBuyy</a></p>
+                <p style={{ fontSize: 'clamp(8px,1.1vw,11px)', color: 'rgba(255,255,255,.18)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .65s both' : 'none' }}>Powered by <a href="https://letbuyy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(253,186,116,.45)', textDecoration: 'none', fontWeight: 700 }}>LetBuyy</a></p>
             </div>
 
             <style>{`

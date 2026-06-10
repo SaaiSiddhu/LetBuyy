@@ -23,7 +23,16 @@ function isSafeSecret(secret: string) {
 export function getConsoleSessionSecret() {
     const secret = process.env.PLATFORM_CONSOLE_SESSION_SECRET || process.env.AUTH_SECRET || '';
 
-    if (process.env.NODE_ENV === 'production') {
+    // SEC-C2 (Wave 0): the dev fallback secret must be unreachable in any
+    // production-like runtime. The previous gate checked NODE_ENV only; widen it to
+    // APP_ENV and VERCEL_ENV (matching console-auth-server.isProductionConsoleRuntime)
+    // and fail closed (null) on an unsafe secret rather than ever returning a literal.
+    const isProductionRuntime =
+        process.env.NODE_ENV === 'production' ||
+        process.env.APP_ENV === 'production' ||
+        process.env.VERCEL_ENV === 'production';
+
+    if (isProductionRuntime) {
         return isSafeSecret(secret) ? secret : null;
     }
 

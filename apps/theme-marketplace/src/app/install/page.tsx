@@ -26,7 +26,7 @@ function storeName(store: Record<string, unknown>): string {
 function storeSubtitle(store: Record<string, unknown>): string {
     const subdomain = stringValue(store.subdomain);
     const status = stringValue(store.status);
-    return [subdomain ? `${subdomain}.letbuyy.store` : '', status].filter(Boolean).join(' - ');
+    return [subdomain ? `${subdomain}.letbuyy.com` : '', status].filter(Boolean).join(' - ');
 }
 
 async function installThemeAction(formData: FormData) {

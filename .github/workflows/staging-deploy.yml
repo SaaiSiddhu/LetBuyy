@@ -82,9 +82,11 @@ jobs:
           echo "${{ secrets.STAGING_AUTH_SECRET }}" | pnpm exec wrangler secret put AUTH_SECRET --env staging
           echo "${{ secrets.STAGING_CUSTOMER_SESSION_SECRET }}" | pnpm exec wrangler secret put CUSTOMER_SESSION_SECRET --env staging
           echo "${{ secrets.STAGING_CSRF_SECRET }}" | pnpm exec wrangler secret put CSRF_SECRET --env staging
+          echo "${{ secrets.STAGING_IDENTITY_PUBLIC_JWKS }}" | pnpm exec wrangler secret put LETBUYY_IDENTITY_PUBLIC_JWKS --env staging
           echo "${{ secrets.STAGING_TURNSTILE_SECRET_KEY }}" | pnpm exec wrangler secret put TURNSTILE_SECRET_KEY --env staging
           echo "${{ secrets.STAGING_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env staging
           echo "${{ secrets.STAGING_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put LETBUYY_INTERNAL_API_SECRET --env staging
+          echo "${{ secrets.STAGING_QUEUE_TENANT_ENVELOPE_SECRET }}" | pnpm exec wrangler secret put QUEUE_TENANT_ENVELOPE_SECRET --env staging
           echo "${{ secrets.STAGING_PLATFORM_CONSOLE_API_TOKEN }}" | pnpm exec wrangler secret put PLATFORM_CONSOLE_API_TOKEN --env staging
           echo "${{ secrets.STAGING_UPSTASH_REDIS_REST_URL }}" | pnpm exec wrangler secret put UPSTASH_REDIS_REST_URL --env staging
           echo "${{ secrets.STAGING_UPSTASH_REDIS_REST_TOKEN }}" | pnpm exec wrangler secret put UPSTASH_REDIS_REST_TOKEN --env staging
@@ -129,6 +131,7 @@ jobs:
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
         run: |
           echo "${{ secrets.STAGING_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env staging
+          echo "${{ secrets.STAGING_QUEUE_TENANT_ENVELOPE_SECRET }}" | pnpm exec wrangler secret put QUEUE_TENANT_ENVELOPE_SECRET --env staging
         working-directory: services/queue-workers
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -173,28 +176,28 @@ jobs:
         include:
           - app: marketing-site
             project_id: STAGING_MARKETING_PROJECT_ID
-            app_url: https://www-staging.letbuyy.store
+            app_url: https://www-staging.letbuyy.com
           - app: identity-platform
             project_id: STAGING_IDENTITY_PROJECT_ID
-            app_url: https://accounts-staging.letbuyy.store
+            app_url: https://accounts-staging.letbuyy.com
           - app: merchant-control-plane
             project_id: STAGING_MERCHANT_PROJECT_ID
-            app_url: https://admin-staging.letbuyy.store
+            app_url: https://admin-staging.letbuyy.com
           - app: storefront-runtime
             project_id: STAGING_STOREFRONT_PROJECT_ID
-            app_url: https://store-staging.letbuyy.store
+            app_url: https://store-staging.letbuyy.com
           - app: theme-marketplace
             project_id: STAGING_THEME_MARKETPLACE_PROJECT_ID
-            app_url: https://themes-staging.letbuyy.store
+            app_url: https://themes-staging.letbuyy.com
           - app: app-marketplace
             project_id: STAGING_APP_MARKETPLACE_PROJECT_ID
-            app_url: https://apps-staging.letbuyy.store
+            app_url: https://apps-staging.letbuyy.com
           - app: platform-console
             project_id: STAGING_PLATFORM_CONSOLE_PROJECT_ID
-            app_url: https://console-staging.letbuyy.store
+            app_url: https://console-staging.letbuyy.com
           - app: platform-operations-portal
             project_id: STAGING_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID
-            app_url: https://ops-staging.letbuyy.store
+            app_url: https://ops-staging.letbuyy.com
     steps:
       - uses: actions/checkout@v4
 
@@ -220,21 +223,23 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.STAGING_TURNSTILE_SITE_KEY }}
           NEXT_PUBLIC_APP_URL: ${{ matrix.app_url }}
-          NEXT_PUBLIC_ACCOUNTS_URL: https://accounts-staging.letbuyy.store
-          NEXT_PUBLIC_ADMIN_URL: https://admin-staging.letbuyy.store
-          NEXT_PUBLIC_API_URL: https://api-staging.letbuyy.store/v1
-          NEXT_PUBLIC_API_BASE_URL: https://api-staging.letbuyy.store/v1
-          LETBUYY_API_URL: https://api-staging.letbuyy.store/v1
-          LETBUYY_API_BASE_URL: https://api-staging.letbuyy.store/v1
-          API_URL: https://api-staging.letbuyy.store/v1
-          API_BASE_URL: https://api-staging.letbuyy.store/v1
-          WORKER_API_BASE_URL: https://api-staging.letbuyy.store/v1
+          NEXT_PUBLIC_ACCOUNTS_URL: https://accounts-staging.letbuyy.com
+          NEXT_PUBLIC_ADMIN_URL: https://admin-staging.letbuyy.com
+          NEXT_PUBLIC_API_URL: https://api-staging.letbuyy.com/v1
+          NEXT_PUBLIC_API_BASE_URL: https://api-staging.letbuyy.com/v1
+          LETBUYY_API_URL: https://api-staging.letbuyy.com/v1
+          LETBUYY_API_BASE_URL: https://api-staging.letbuyy.com/v1
+          API_URL: https://api-staging.letbuyy.com/v1
+          API_BASE_URL: https://api-staging.letbuyy.com/v1
+          WORKER_API_BASE_URL: https://api-staging.letbuyy.com/v1
           AUTH_SECRET: ${{ secrets.STAGING_AUTH_SECRET }}
           CUSTOMER_SESSION_SECRET: ${{ secrets.STAGING_CUSTOMER_SESSION_SECRET }}
+          LETBUYY_IDENTITY_ISSUER: https://accounts-staging.letbuyy.com
+          LETBUYY_IDENTITY_PRIVATE_JWK: ${{ matrix.app == 'identity-platform' && secrets.STAGING_IDENTITY_PRIVATE_JWK || '' }}
           CSRF_SECRET: ${{ secrets.STAGING_CSRF_SECRET }}
           INTERNAL_API_SECRET: ${{ secrets.STAGING_INTERNAL_API_SECRET }}
           RESEND_API_KEY: ${{ secrets.STAGING_RESEND_API_KEY }}
-          COOKIE_DOMAIN: .staging.letbuyy.store
+          COOKIE_DOMAIN: .staging.letbuyy.com
           NEXT_PUBLIC_RAZORPAY_KEY_ID: ${{ secrets.STAGING_RAZORPAY_KEY_ID }}
           NODE_ENV: production
 
@@ -268,17 +273,17 @@ jobs:
       - name: Run smoke tests against staging
         run: pnpm exec playwright test --project=chromium tests/e2e/smoke/
         env:
-          BASE_URL: https://store-staging.letbuyy.store
-          ACCOUNTS_URL: https://accounts-staging.letbuyy.store
-          ADMIN_URL: https://admin-staging.letbuyy.store
-          API_URL: https://api-staging.letbuyy.store/v1
+          BASE_URL: https://store-staging.letbuyy.com
+          ACCOUNTS_URL: https://accounts-staging.letbuyy.com
+          ADMIN_URL: https://admin-staging.letbuyy.com
+          API_URL: https://api-staging.letbuyy.com/v1
           LETBUYY_E2E_REQUIRE_REAL_STACK: "1"
-          LETBUYY_E2E_MARKETING_URL: https://store-staging.letbuyy.store
-          LETBUYY_E2E_IDENTITY_URL: https://accounts-staging.letbuyy.store
-          LETBUYY_E2E_MERCHANT_URL: https://admin-staging.letbuyy.store
-          LETBUYY_E2E_STOREFRONT_URL: https://store-staging.letbuyy.store
-          LETBUYY_E2E_API_URL: https://api-staging.letbuyy.store
-          LETBUYY_E2E_WEBHOOK_URL: https://webhooks-staging.letbuyy.store
+          LETBUYY_E2E_MARKETING_URL: https://store-staging.letbuyy.com
+          LETBUYY_E2E_IDENTITY_URL: https://accounts-staging.letbuyy.com
+          LETBUYY_E2E_MERCHANT_URL: https://admin-staging.letbuyy.com
+          LETBUYY_E2E_STOREFRONT_URL: https://store-staging.letbuyy.com
+          LETBUYY_E2E_API_URL: https://api-staging.letbuyy.com
+          LETBUYY_E2E_WEBHOOK_URL: https://webhooks-staging.letbuyy.com
           LETBUYY_E2E_STORE_SUBDOMAIN: ${{ vars.STAGING_E2E_STORE_SUBDOMAIN }}
           LETBUYY_E2E_IDENTITY_EMAIL: ${{ secrets.STAGING_E2E_IDENTITY_EMAIL }}
           LETBUYY_E2E_IDENTITY_PASSWORD: ${{ secrets.STAGING_E2E_IDENTITY_PASSWORD }}

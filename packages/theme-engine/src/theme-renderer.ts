@@ -1,4 +1,6 @@
+/// <reference path="./jsdom-runtime.d.ts" />
 import { Liquid } from 'liquidjs';
+import type { Config as DOMPurifyConfig, DOMPurify, WindowLike } from 'dompurify';
 import type {
   StorefrontCompositionInput,
   StorefrontCompositionResult,
@@ -96,6 +98,71 @@ export interface ThemeRenderer {
 
 export const THEME_RENDERER_INTERFACE_VERSION = '2026-05-theme-renderer';
 
+const LIQUID_HYDRATION_CUSTOM_ELEMENTS = [
+  'lb-add-to-cart',
+  'lb-cart-drawer',
+  'lb-search',
+  'lb-variant-picker',
+] as const;
+
+export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
+  USE_PROFILES: { html: true },
+  ADD_TAGS: [
+    ...LIQUID_HYDRATION_CUSTOM_ELEMENTS,
+    'iframe',
+    'meta',
+  ],
+  ADD_ATTR: [
+    'aria-live',
+    'aria-pressed',
+    'class',
+    'content',
+    'data-app-block-app-id',
+    'data-app-block-extension-id',
+    'data-app-block-slot',
+    'data-app-block-type',
+    'data-block-id',
+    'data-columns',
+    'data-editor-mode',
+    'data-lb-add-to-cart',
+    'data-lb-add-to-cart-status',
+    'data-lb-island',
+    'data-lb-variant-option',
+    'data-letbuyy-app-block',
+    'data-product-currency',
+    'data-product-id',
+    'data-product-name',
+    'data-product-price',
+    'data-product-url',
+    'data-search-url',
+    'data-section-id',
+    'data-theme-renderer',
+    'data-variant-name',
+    'data-variant-value',
+    'height',
+    'href',
+    'loading',
+    'name',
+    'sandbox',
+    'src',
+    'title',
+    'type',
+    'width',
+  ],
+  CUSTOM_ELEMENT_HANDLING: {
+    tagNameCheck: /^lb-(?:add-to-cart|cart-drawer|search|variant-picker)$/,
+    attributeNameCheck: /^(?:aria-[a-z0-9-]+|data-[a-z0-9-]+|class|id|role|slot|title|type|name|value|href|src)$/i,
+    allowCustomizedBuiltInElements: false,
+  },
+  FORBID_ATTR: ['style'],
+  FORBID_TAGS: ['base', 'embed', 'object', 'script'],
+};
+
+const LIQUID_RENDERED_HTML_DOMPURIFY_DOCUMENT_CONFIG: DOMPurifyConfig = {
+  ...LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG,
+  WHOLE_DOCUMENT: true,
+};
+
 export class JsonContractThemeRenderer implements ThemeRenderer {
   readonly engine = 'json-contract' as const;
   readonly interfaceVersion = THEME_RENDERER_INTERFACE_VERSION;
@@ -146,8 +213,8 @@ export class LiquidRenderer implements ThemeRenderer {
       };
     }
 
-    const contentForHeader = renderLiquidEmbedRegion(input.liquidAppEmbeds?.header);
-    const contentForFooter = renderLiquidEmbedRegion(input.liquidAppEmbeds?.footer);
+    const contentForHeader = await renderLiquidEmbedRegion(input.liquidAppEmbeds?.header, { allowHeadMetadata: true });
+    const contentForFooter = await renderLiquidEmbedRegion(input.liquidAppEmbeds?.footer);
     const engine = createLiquidEngine(bundle, { contentForHeader, contentForFooter });
     const renderedSections: LiquidRenderedSection[] = [];
     const sectionOrder = orderedKeys(template.sections, template.order);
@@ -196,7 +263,7 @@ export class LiquidRenderer implements ThemeRenderer {
         id: sectionId,
         type: templateSection.type,
         settings: templateSection.settings,
-        html: sanitizeRenderedHtml(String(sectionHtml)),
+        html: await sanitizeRenderedHtml(String(sectionHtml)),
         blocks: renderedBlocks,
       });
     }
@@ -213,7 +280,7 @@ export class LiquidRenderer implements ThemeRenderer {
     );
     const liquid: LiquidRenderedTheme = {
       templateKey,
-      layoutHtml: sanitizeRenderedHtml(String(layoutHtml)),
+      layoutHtml: await sanitizeRenderedHtml(String(layoutHtml), { wholeDocument: true }),
       contentForLayout,
       sections: renderedSections,
     };
@@ -258,6 +325,7 @@ function createLiquidEngine(
     strictFilters: true,
     strictVariables: false,
     ownPropertyOnly: true,
+    outputEscape: 'escape',
     jsTruthy: false,
     parseLimit: 300_000,
     renderLimit: liquidRenderOptions.renderLimit,
@@ -315,7 +383,7 @@ async function renderLiquidSectionBlocks(input: {
         id: blockId,
         type: block.type,
         settings: block.settings,
-        html: resolveLiquidAppBlockHtml(input.input, input.sectionId, blockId, block),
+        html: await resolveLiquidAppBlockHtml(input.input, input.sectionId, blockId, block),
         isAppBlock: true,
       });
       continue;
@@ -348,7 +416,7 @@ async function renderLiquidSectionBlocks(input: {
       id: blockId,
       type: block.type,
       settings: block.settings,
-      html: sanitizeRenderedHtml(String(html)),
+      html: await sanitizeRenderedHtml(String(html)),
       isAppBlock: false,
     });
   }
@@ -463,14 +531,18 @@ function toLiquidDrop(value: unknown, depth = 0): unknown {
   return output;
 }
 
-function renderLiquidEmbedRegion(embeds?: Array<string | LiquidAppBlockRenderSource>): string {
+async function renderLiquidEmbedRegion(
+  embeds?: Array<string | LiquidAppBlockRenderSource>,
+  sanitizerOptions: RenderedHtmlSanitizerOptions = {},
+): Promise<string> {
   if (!embeds || embeds.length === 0) return '';
 
-  return embeds
+  const sanitizedEmbeds = await Promise.all(embeds
     .map((embed) => typeof embed === 'string' ? embed : embed.html)
     .filter((html): html is string => typeof html === 'string' && html.trim().length > 0)
-    .map((html) => sanitizeRenderedHtml(html))
-    .join('\n');
+    .map((html) => sanitizeRenderedHtml(html, sanitizerOptions)));
+
+  return sanitizedEmbeds.join('\n');
 }
 
 function registerLetbuyyLiquidFilters(engine: Liquid): void {
@@ -502,12 +574,12 @@ function safeLiquidUrl(value: unknown): string {
   return '';
 }
 
-function resolveLiquidAppBlockHtml(
+async function resolveLiquidAppBlockHtml(
   input: ThemeRendererInput,
   sectionId: string,
   blockId: string,
   block: ThemeBundleTemplateBlock,
-): string {
+): Promise<string> {
   const candidates = [
     `${sectionId}.${blockId}`,
     blockId,
@@ -603,11 +675,69 @@ function composeLiquidStorefrontTheme(
   return composeStorefrontTheme({ ...input, storeTemplate, routeTemplate });
 }
 
-function sanitizeRenderedHtml(html: string): string {
-  return html
-    .replace(/<script\b[\s\S]*?<\/script>/gi, '')
-    .replace(/\son[a-z]+\s*=\s*("(?:[^"]*)"|'(?:[^']*)'|[^\s>]+)/gi, '')
-    .replace(/\s(href|src)\s*=\s*("(?:\s*javascript:|\s*data:text\/html)[^"]*"|'(?:\s*javascript:|\s*data:text\/html)[^']*')/gi, '');
+export interface RenderedHtmlSanitizerOptions {
+  allowHeadMetadata?: boolean;
+  wholeDocument?: boolean;
+}
+
+interface ThemeDomPurifyRuntime {
+  purify: DOMPurify;
+  createDocument(html: string): { head: { innerHTML: string } };
+}
+
+let domPurifyPromise: Promise<ThemeDomPurifyRuntime> | undefined;
+
+async function getThemeDomPurify(): Promise<ThemeDomPurifyRuntime> {
+  domPurifyPromise ||= (async () => {
+    const [{ default: createDOMPurify }, { JSDOM }] = await Promise.all([
+      import('dompurify'),
+      import('jsdom'),
+    ]);
+    const { window } = new JSDOM('<!doctype html><html><body></body></html>');
+    const purify = createDOMPurify(window as unknown as WindowLike);
+    purify.addHook('uponSanitizeAttribute', (_node, data) => {
+      const attrName = data.attrName.toLowerCase();
+      const attrValue = data.attrValue.trim();
+      const normalizedValue = attrValue.toLowerCase();
+      const isUrlAttribute = attrName === 'href' || attrName === 'src' || attrName.endsWith('url');
+
+      if (attrName.startsWith('data-') && (attrValue.includes('<') || attrValue.includes('>'))) {
+        data.keepAttr = false;
+      }
+
+      if (isUrlAttribute && (normalizedValue.startsWith('javascript:') || normalizedValue.startsWith('data:text/html'))) {
+        data.keepAttr = false;
+      }
+    });
+    return {
+      purify,
+      createDocument: (html: string) => new JSDOM(html).window.document,
+    };
+  })();
+
+  return domPurifyPromise;
+}
+
+export async function sanitizeRenderedHtml(
+  html: string,
+  options: RenderedHtmlSanitizerOptions = {},
+): Promise<string> {
+  const { purify, createDocument } = await getThemeDomPurify();
+
+  if (options.allowHeadMetadata) {
+    const sanitizedDocument = purify.sanitize(
+      `<!doctype html><html><head>${html}</head><body></body></html>`,
+      LIQUID_RENDERED_HTML_DOMPURIFY_DOCUMENT_CONFIG,
+    );
+    return createDocument(sanitizedDocument).head.innerHTML.trim();
+  }
+
+  return purify.sanitize(
+    html,
+    options.wholeDocument
+      ? LIQUID_RENDERED_HTML_DOMPURIFY_DOCUMENT_CONFIG
+      : LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG,
+  );
 }
 
 function escapeHtmlAttribute(value: string): string {

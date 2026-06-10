@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
 function source(path: string): string {
@@ -50,7 +50,6 @@ test('clients and mobile app expose metafields without the S-026 blocked seam', 
   const service = source('apps/mobile/merchant-app/lib/services/metafield_service.dart');
   const screen = source('apps/mobile/merchant-app/lib/screens/settings/custom_data_screen.dart');
   const blocked = source('apps/mobile/merchant-app/lib/services/platform_blocked_service.dart');
-  const features = source('apps/mobile/merchant-app/lib/screens/parity/merchant_feature_definitions.dart');
 
   assert.match(bff, /'\/v1\/metafields'/);
   assert.match(tsClient, /readonly metafields = \{/);
@@ -61,7 +60,8 @@ test('clients and mobile app expose metafields without the S-026 blocked seam', 
   assert.match(service, /fetchDefinitions/);
   assert.match(service, /StoreMetafieldsSummary/);
   assert.match(routes, /CustomDataScreen/);
+  assert.match(routes, /path:\s*'\/features\/custom-data'/);
   assert.match(screen, /Custom Data/);
   assert.doesNotMatch(blocked, /MOBILE_CUSTOM_DATA|S-026/);
-  assert.match(features, /endpoint: 'metafields'/);
+  assert.equal(existsSync('apps/mobile/merchant-app/lib/screens/parity/merchant_feature_definitions.dart'), false);
 });

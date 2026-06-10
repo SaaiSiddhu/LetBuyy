@@ -1407,7 +1407,7 @@ function ThemeEditorInner() {
                     <div className="theme-os-preview-panel__header">
                         <div>
                             <strong>Live preview</strong>
-                            <span>{store}.letbuyy.store - {activeDevice.width}px</span>
+                            <span>{store}.letbuyy.com - {activeDevice.width}px</span>
                         </div>
                         <div className="theme-os-device-toggle" role="group" aria-label="Preview device">
                             {PREVIEW_DEVICES.map((device) => {

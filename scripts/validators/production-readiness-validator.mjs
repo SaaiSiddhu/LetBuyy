@@ -28,10 +28,6 @@ const requiredFiles = [
   "infrastructure/cloudflare/storage.tf",
   "infrastructure/cloudflare/workers-topology.md",
   ".github/workflows/staging-runtime-deployment.yml",
-  "infrastructure/deployment/kubernetes/namespace.yaml",
-  "infrastructure/deployment/kubernetes/runtime-health-probes.yaml",
-  "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
-  "infrastructure/deployment/helm/letbuyy-production/values.yaml",
   "infrastructure/deployment/release-promotion.yaml",
   "infrastructure/deployment/migration-orchestration.yaml",
   "infrastructure/observability/otel-collector.yaml",
@@ -168,9 +164,19 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
 }
 
 for (const runtime of productionTopology?.runtimes || []) {
+  const deployable = runtime.environment === "production" && runtime.status === "active";
+
+  if (!deployable) {
+    reporter.assert(
+      Array.isArray(runtime.deploymentManifests) && runtime.deploymentManifests.length === 0,
+      `Reserved/frozen runtime must not declare deployable manifests: ${runtime.runtimeRoot}`,
+    );
+    continue;
+  }
+
   reporter.assert(
     Array.isArray(runtime.deploymentManifests) && runtime.deploymentManifests.length > 0,
-    `Production topology runtime must declare deployment manifests: ${runtime.runtimeRoot}`,
+    `Active production topology runtime must declare deployment manifests: ${runtime.runtimeRoot}`,
   );
 
   for (const manifestPath of runtime.deploymentManifests || []) {
@@ -391,8 +397,8 @@ const baseRuntimeQueues = [
 ];
 const environmentRoutes = {
   staging: {
-    api: "api-staging.letbuyy.store",
-    webhooks: "webhooks-staging.letbuyy.store",
+    api: "api-staging.letbuyy.com",
+    webhooks: "webhooks-staging.letbuyy.com",
     cache: "letbuyy-cache-staging",
     r2: "letbuyy-media-staging",
     d1: "letbuyy-staging-d1",
@@ -400,8 +406,8 @@ const environmentRoutes = {
     runtimeDlq: "letbuyy-staging-dead-letter-queue",
   },
   production: {
-    api: "api.letbuyy.store",
-    webhooks: "webhooks.letbuyy.store",
+    api: "api.letbuyy.com",
+    webhooks: "webhooks.letbuyy.com",
     cache: "letbuyy-cache-production",
     r2: "letbuyy-media-production",
     d1: "letbuyy-production-d1",

@@ -454,16 +454,16 @@ void main() {
         final file = File('${tempDir.path}/logo.jpg');
         await file.writeAsBytes([1, 2, 3], flush: true);
         final api = _StorageApiClient(
-          uploadUrl: 'https://cdn.letbuyy.store/uploads/logo.jpg',
+          uploadUrl: 'https://cdn.letbuyy.com/uploads/logo.jpg',
         );
         final service = StorageService(api: api);
 
         final url = await service.uploadImage(file, path: 'store-logos');
         await service.deleteImage(
-          'https://cdn.letbuyy.store/uploads/store/logo.jpg',
+          'https://cdn.letbuyy.com/uploads/store/logo.jpg',
         );
 
-        expect(url, 'https://cdn.letbuyy.store/uploads/logo.jpg');
+        expect(url, 'https://cdn.letbuyy.com/uploads/logo.jpg');
         expect(api.uploadedFilePath, file.path);
         expect(api.uploadedFolder, 'store-logos');
         expect(api.deletedPaths, contains('upload/uploads/store/logo.jpg'));
@@ -474,7 +474,7 @@ void main() {
       final api = _StorageApiClient(failDeletes: true);
       final service = StorageService(api: api);
 
-      await service.deleteImage('https://cdn.letbuyy.store/uploads/old.png');
+      await service.deleteImage('https://cdn.letbuyy.com/uploads/old.png');
 
       expect(api.deletedPaths, ['upload/uploads/old.png']);
     });
@@ -821,39 +821,12 @@ void main() {
           '/customers': [_customerJson()],
         },
         json: {
-          '/analytics/dashboard': {
-            'summary': {
-              'revenue': {'value': 1200},
-              'orders': {'value': 4},
-              'products': 1,
-              'avg_order_value': 300,
-            },
-          },
-          '/analytics/orders': {
-            'breakdown': {'paid': 3, 'pending': 1},
-          },
-          '/analytics/revenue': {
-            'chart': [
-              {'date': '2026-06-01', 'revenue': 1200, 'orders': 4},
-            ],
-          },
-          '/analytics/top-products': [
-            {
-              'id': 'prod_1',
-              'name': 'Cotton Tee',
-              'total_sold': 2,
-              'revenue': 600,
-            },
-          ],
-          '/analytics/traffic-sources': {
-            'available': true,
-            'total_sessions': 8,
-            'total_page_views': 14,
-            'sources': [
-              {'label': 'instagram', 'value': 5, 'percentage': 62.5},
-            ],
-          },
-          '/payouts/summary': _payoutSummaryJson(),
+          '/mobile/dashboard': _mobileDashboardJson(
+            revenueValue: 1200,
+            orderValue: 4,
+            productCount: 1,
+            averageOrderValue: 300,
+          ),
           '/customers/segments': [_customerSegmentJson()],
         },
       );
@@ -872,7 +845,12 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
 
       expect(find.text('Performance'), findsOneWidget);
-      expect(api.paths, containsAll(['/analytics/dashboard', '/orders']));
+      expect(api.paths, containsAll(['/mobile/dashboard', '/orders']));
+      expect(
+        api.paths.where((path) => path == '/mobile/dashboard'),
+        hasLength(1),
+      );
+      expect(api.paths, isNot(contains('/analytics/dashboard')));
       final shellContext = tester.element(find.byType(StoreMainScreen));
 
       await tester.tap(find.bySemanticsLabel('Orders tab'));
@@ -913,7 +891,7 @@ void main() {
           '/products',
           '/customers',
           '/customers/segments',
-          '/payouts/summary',
+          '/mobile/dashboard',
         ]),
       );
     });
@@ -929,24 +907,14 @@ void main() {
           '/stores': [_storeJson()],
         },
         json: {
-          '/analytics/dashboard': {
-            'summary': {
-              'revenue': {'value': 0},
-              'orders': {'value': 0},
-              'products': 0,
-              'avg_order_value': 0,
-            },
-          },
-          '/analytics/orders': {'breakdown': const <String, int>{}},
-          '/analytics/revenue': {'chart': const <Map<String, dynamic>>[]},
-          '/analytics/top-products': const <Map<String, dynamic>>[],
-          '/analytics/traffic-sources': {
-            'available': false,
-            'total_sessions': 0,
-            'total_page_views': 0,
-            'sources': const <Map<String, dynamic>>[],
-          },
-          '/payouts/summary': _payoutSummaryJson(),
+          '/mobile/dashboard': _mobileDashboardJson(
+            revenueValue: 0,
+            orderValue: 0,
+            productCount: 0,
+            averageOrderValue: 0,
+            topProducts: const <Map<String, dynamic>>[],
+            trafficSources: const <Map<String, dynamic>>[],
+          ),
         },
       );
 
@@ -1269,12 +1237,6 @@ void main() {
         File('apps/mobile/merchant-app/lib/app/routes.dart'),
         File('lib/app/routes.dart'),
       ].firstWhere((file) => file.existsSync());
-      final definitionsFile = [
-        File(
-          'apps/mobile/merchant-app/lib/screens/parity/merchant_feature_definitions.dart',
-        ),
-        File('lib/screens/parity/merchant_feature_definitions.dart'),
-      ].firstWhere((file) => file.existsSync());
       final blockedFile = [
         File(
           'apps/mobile/merchant-app/lib/services/platform_blocked_service.dart',
@@ -1282,15 +1244,22 @@ void main() {
         File('lib/services/platform_blocked_service.dart'),
       ].firstWhere((file) => file.existsSync());
       final routes = routesFile.readAsStringSync();
-      final definitions = definitionsFile.readAsStringSync();
       final blocked = blockedFile.readAsStringSync();
 
       expect(routes, contains("'/features/taxes'"));
       expect(routes, contains('TaxesScreen'));
-      expect(definitions, contains("id: 'taxes'"));
-      expect(definitions, contains("endpoint: 'shipping-tax/taxes'"));
+      expect(routes, isNot(contains('MerchantFeatureDefinitions')));
       expect(blocked, isNot(contains('MOBILE_TAXES')));
       expect(blocked, isNot(contains("title: 'Taxes")));
+      expect(
+        [
+          File(
+            'apps/mobile/merchant-app/lib/screens/parity/merchant_feature_definitions.dart',
+          ),
+          File('lib/screens/parity/merchant_feature_definitions.dart'),
+        ].any((file) => file.existsSync()),
+        isFalse,
+      );
     });
 
     test('AppRoutes resolves routes through typed registry', () {
@@ -2148,7 +2117,7 @@ void main() {
           storeId: 'store_1',
           documentType: 'business_pan',
           documentNumberLast4: '1234',
-          fileUrl: 'https://cdn.letbuyy.store/kyc/pan.jpg',
+          fileUrl: 'https://cdn.letbuyy.com/kyc/pan.jpg',
           fileName: 'pan.jpg',
         );
         final refreshed = await service.refreshDocument('kyc_1', 'store_1');
@@ -2165,7 +2134,7 @@ void main() {
         );
         expect(
           api.bodies['/kyc/documents'],
-          containsPair('file_url', 'https://cdn.letbuyy.store/kyc/pan.jpg'),
+          containsPair('file_url', 'https://cdn.letbuyy.com/kyc/pan.jpg'),
         );
       },
     );
@@ -3485,9 +3454,9 @@ void main() {
         'Read products',
         'Read orders',
       ]);
-      expect(handoff.url, 'https://apps.letbuyy.store/admin/campaign-booster');
+      expect(handoff.url, 'https://apps.letbuyy.com/admin/campaign-booster');
       expect(runtime.canOpenInApp, isTrue);
-      expect(runtime.host.allowedOrigin, 'https://apps.letbuyy.store');
+      expect(runtime.host.allowedOrigin, 'https://apps.letbuyy.com');
       expect(runtime.host.messageChannel, 'LetBuyyAppBridge');
       expect(bridgeFetch['ok'], isTrue);
       expect(api.paths, contains('/app-store/apps'));
@@ -3827,7 +3796,7 @@ void main() {
       );
       final shareTarget = AppDeepLinkRouter.resolve(
         Uri.parse(
-          'letbuyy://merchant/share/store_1?name=Demo&url=https://demo.letbuyy.store',
+          'letbuyy://merchant/share/store_1?name=Demo&url=https://demo.letbuyy.com',
         ),
       );
 
@@ -4464,59 +4433,62 @@ void main() {
       expect(requests.last.headers['X-CSRF-Token'], 'csrf_123');
     });
 
-    test('verifies Turnstile with the mobile BFF before password login', () async {
-      final requests = <http.Request>[];
-      final auth = StoreAuthService(
-        api: _FakeApiClient(),
-        identityBaseUrl: 'https://accounts.test',
-        mobileBffBaseUrl: 'https://bff.test/v1',
-        turnstileTokenProvider: () => 'turnstile_token',
-        httpClient: MockClient((request) async {
-          requests.add(request);
-          switch (request.url.host) {
-            case 'bff.test':
-              expect(request.url.path, '/v1/auth/mobile/turnstile/verify');
-              expect(request.body, contains('turnstile_token'));
-              return http.Response('{"success":true}', 200);
-            case 'accounts.test':
-              if (request.url.path == '/login') {
-                return http.Response(
-                  '',
-                  200,
-                  headers: {'set-cookie': 'letbuyy_csrf=csrf_123; Path=/;'},
-                );
-              }
-              if (request.url.path == '/api/auth/login') {
-                return http.Response(
-                  '{"success":true}',
-                  200,
-                  headers: {'set-cookie': 'lb_session=session_123; Path=/;'},
-                );
-              }
-              if (request.url.path == '/api/auth/session') {
-                return http.Response(
-                  '{"authenticated":true,"user":{"id":"user_1","email":"m@example.com"}}',
-                  200,
-                );
-              }
-          }
-          return http.Response('not found', 404);
-        }),
-      );
+    test(
+      'verifies Turnstile with the mobile BFF before password login',
+      () async {
+        final requests = <http.Request>[];
+        final auth = StoreAuthService(
+          api: _FakeApiClient(),
+          identityBaseUrl: 'https://accounts.test',
+          mobileBffBaseUrl: 'https://bff.test/v1',
+          turnstileTokenProvider: () => 'turnstile_token',
+          httpClient: MockClient((request) async {
+            requests.add(request);
+            switch (request.url.host) {
+              case 'bff.test':
+                expect(request.url.path, '/v1/auth/mobile/turnstile/verify');
+                expect(request.body, contains('turnstile_token'));
+                return http.Response('{"success":true}', 200);
+              case 'accounts.test':
+                if (request.url.path == '/login') {
+                  return http.Response(
+                    '',
+                    200,
+                    headers: {'set-cookie': 'letbuyy_csrf=csrf_123; Path=/;'},
+                  );
+                }
+                if (request.url.path == '/api/auth/login') {
+                  return http.Response(
+                    '{"success":true}',
+                    200,
+                    headers: {'set-cookie': 'lb_session=session_123; Path=/;'},
+                  );
+                }
+                if (request.url.path == '/api/auth/session') {
+                  return http.Response(
+                    '{"authenticated":true,"user":{"id":"user_1","email":"m@example.com"}}',
+                    200,
+                  );
+                }
+            }
+            return http.Response('not found', 404);
+          }),
+        );
 
-      final user = await auth.signInWithPassword(
-        'M@Example.COM',
-        'Password123',
-      );
+        final user = await auth.signInWithPassword(
+          'M@Example.COM',
+          'Password123',
+        );
 
-      expect(user?.email, 'm@example.com');
-      expect(requests.map((request) => request.url.host), [
-        'accounts.test',
-        'bff.test',
-        'accounts.test',
-        'accounts.test',
-      ]);
-    });
+        expect(user?.email, 'm@example.com');
+        expect(requests.map((request) => request.url.host), [
+          'accounts.test',
+          'bff.test',
+          'accounts.test',
+          'accounts.test',
+        ]);
+      },
+    );
 
     test('verifies OTP, sets password, and persists lb_session', () async {
       final auth = StoreAuthService(
@@ -6124,7 +6096,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Domain settings'), findsOneWidget);
-    expect(find.text('demo.letbuyy.store'), findsOneWidget);
+    expect(find.text('demo.letbuyy.com'), findsOneWidget);
     expect(find.text('shop.example.com'), findsWidgets);
     expect(find.text('Save domain'), findsOneWidget);
     await tester.scrollUntilVisible(
@@ -6616,7 +6588,7 @@ class _FakeApiClient extends ApiClient {
 
 class _StorageApiClient extends _FakeApiClient {
   _StorageApiClient({
-    this.uploadUrl = 'https://cdn.letbuyy.store/uploads/test.jpg',
+    this.uploadUrl = 'https://cdn.letbuyy.com/uploads/test.jpg',
     this.failDeletes = false,
   });
 
@@ -6786,7 +6758,7 @@ Map<String, dynamic> _storeJson({
   'name': name,
   'tagline': 'Demo',
   'subdomain': subdomain,
-  'store_url': 'https://$subdomain.letbuyy.store',
+  'store_url': 'https://$subdomain.letbuyy.com',
   'theme_id': 'modern',
   'tax_inclusive': taxInclusive,
   'seo_title': seoTitle,
@@ -7280,7 +7252,7 @@ Map<String, dynamic> _marketplaceAppJson({
   'review_count': 8,
   'rating_avg': 4.7,
   'api_scopes': scopes,
-  'app_url': 'https://apps.letbuyy.store/campaign-booster',
+  'app_url': 'https://apps.letbuyy.com/campaign-booster',
   'app_developers': {'company_name': 'LetBuyy Labs', 'verified': true},
   'app_categories': _appCategoryJson(),
 };
@@ -7302,7 +7274,7 @@ Map<String, dynamic> _appInstallationJson({
     'name': 'Campaign Booster',
     'tagline': 'Automated campaigns for storefront growth.',
     'pricing_model': 'free',
-    'app_url': 'https://apps.letbuyy.store/campaign-booster',
+    'app_url': 'https://apps.letbuyy.com/campaign-booster',
   },
 };
 
@@ -7311,8 +7283,8 @@ Map<String, dynamic> _appBridgeSessionJson() => {
   'embed': {
     'title': 'Campaign Booster',
     'label': 'Open app',
-    'url': 'https://apps.letbuyy.store/admin/campaign-booster',
-    'origin': 'https://apps.letbuyy.store',
+    'url': 'https://apps.letbuyy.com/admin/campaign-booster',
+    'origin': 'https://apps.letbuyy.com',
   },
   'bridge': {
     'version': '2026-06-01',
@@ -7329,8 +7301,8 @@ Map<String, dynamic> _appBridgeSessionJson() => {
   'mobile_host': {
     'platform': 'mobile_webview',
     'host_version': '2026-06-08.mobile-app-bridge.v1',
-    'allowed_origin': 'https://apps.letbuyy.store',
-    'allowed_navigation_origins': ['https://apps.letbuyy.store'],
+    'allowed_origin': 'https://apps.letbuyy.com',
+    'allowed_navigation_origins': ['https://apps.letbuyy.com'],
     'js_namespace': 'LetBuyyAppBridge',
     'message_channel': 'LetBuyyAppBridge',
     'bridge_fetch_path': '/app-store/bridge/fetch',
@@ -7615,7 +7587,7 @@ Map<String, dynamic> _formSubmissionJson({
   'form_type': 'lead',
   'form_name': 'Wholesale form',
   'data': {'company': 'Meera Retail', 'source': 'homepage'},
-  'source_url': 'https://demo.letbuyy.store/pages/wholesale',
+  'source_url': 'https://demo.letbuyy.com/pages/wholesale',
   'status': status,
   'full_name': 'Meera Merchant',
   'email': 'meera@example.com',
@@ -7796,7 +7768,58 @@ Map<String, dynamic> _payoutSummaryJson() => {
   'processing_minor': 0,
   'released_minor': 0,
   'failed_minor': 0,
+  'provider_mode': 'sandbox',
   'next_payout': _payoutJson(),
+};
+
+Map<String, dynamic> _mobileDashboardJson({
+  required num revenueValue,
+  required int orderValue,
+  required int productCount,
+  required num averageOrderValue,
+  List<Map<String, dynamic>> topProducts = const [
+    {'id': 'prod_1', 'name': 'Cotton Tee', 'total_sold': 2, 'revenue': 600},
+  ],
+  List<Map<String, dynamic>> trafficSources = const [
+    {'label': 'instagram', 'value': 5, 'percentage': 62.5},
+  ],
+}) => {
+  'store_id': 'store_1',
+  'period': '30d',
+  'provider_mode': 'sandbox',
+  'analytics': {
+    'dashboard': {
+      'summary': {
+        'revenue': {'value': revenueValue},
+        'orders': {'value': orderValue},
+        'products': productCount,
+        'avg_order_value': averageOrderValue,
+      },
+    },
+    'order_breakdown': {
+      'breakdown': {'paid': orderValue, 'pending': 0},
+    },
+    'revenue': {
+      'chart': [
+        {'date': '2026-06-01', 'revenue': revenueValue, 'orders': orderValue},
+      ],
+    },
+    'top_products': topProducts,
+    'traffic_sources': {
+      'available': trafficSources.isNotEmpty,
+      'total_sessions': trafficSources.fold<int>(
+        0,
+        (total, item) => total + ((item['value'] as num?)?.toInt() ?? 0),
+      ),
+      'total_page_views': trafficSources.fold<int>(
+        0,
+        (total, item) => total + ((item['value'] as num?)?.toInt() ?? 0),
+      ),
+      'sources': trafficSources,
+    },
+  },
+  'payout_summary': _payoutSummaryJson(),
+  'partial_errors': const <Map<String, dynamic>>[],
 };
 
 Map<String, dynamic> _walletJson() => {
@@ -7902,7 +7925,7 @@ Map<String, dynamic> _kycDocumentJson({String status = 'submitted'}) => {
   'provider_mode': 'sandbox',
   'provider_reference': 'kyc_sandbox_store_business_pan',
   'document_number_last4': '1234',
-  'file_url': 'https://cdn.letbuyy.store/kyc/pan.jpg',
+  'file_url': 'https://cdn.letbuyy.com/kyc/pan.jpg',
   'file_name': 'pan.jpg',
   'metadata': const {'sandbox': true},
   'submitted_at': '2026-06-01T12:00:00.000Z',

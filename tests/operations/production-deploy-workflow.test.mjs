@@ -18,11 +18,18 @@ function regexEscape(value) {
 }
 
 function productionVercelApps() {
-  return vercelProjects.apps.map((app) => ({
-    appName: app.directory.replace(/^apps\//, ''),
-    directory: app.directory,
-    projectId: app.production.project_id,
-  }));
+  const activeProductionAppRoots = new Set(
+    productionTopology.runtimes
+      .filter((runtime) => runtime.environment === 'production' && runtime.status === 'active')
+      .map((runtime) => runtime.runtimeRoot),
+  );
+  return vercelProjects.apps
+    .filter((app) => activeProductionAppRoots.has(app.directory))
+    .map((app) => ({
+      appName: app.directory.replace(/^apps\//, ''),
+      directory: app.directory,
+      projectId: app.production.project_id,
+    }));
 }
 
 test('production deploy workflow fails closed on missing release credentials', () => {
@@ -92,6 +99,7 @@ test('production smoke runs only after explicit required-job success gate', () =
 
 test('production app deployment matrices match production Vercel topology', () => {
   const topologyAppRoots = productionTopology.runtimes
+    .filter((runtime) => runtime.environment === 'production' && runtime.status === 'active')
     .map((runtime) => runtime.runtimeRoot)
     .filter((runtimeRoot) => runtimeRoot.startsWith('apps/') && !runtimeRoot.startsWith('apps/mobile/'))
     .sort();

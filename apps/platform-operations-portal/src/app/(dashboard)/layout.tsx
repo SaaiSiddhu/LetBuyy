@@ -1,4 +1,4 @@
-import { AppNavigation, MaterialIcon, type AppNavigationSection } from '@letbuyy/ui';
+import { AppNavigation, MaterialIcon, ThemeToggleButton, type AppNavigationSection } from '@letbuyy/ui';
 
 const NAV_SECTIONS: AppNavigationSection[] = [
     {
@@ -34,6 +34,11 @@ export default function TeamDashboardLayout({
                     <span className="ml-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] bg-[var(--lb-color-primary-soft)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-primary)]">
                         Ops
                     </span>
+                </div>
+            }
+            topBar={
+                <div className="flex items-center justify-end">
+                    <ThemeToggleButton label="Toggle operations theme" />
                 </div>
             }
         >

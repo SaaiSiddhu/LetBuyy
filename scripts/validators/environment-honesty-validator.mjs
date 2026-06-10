@@ -75,13 +75,13 @@ reporter.assert(
 const uploadRoute = readFile("services/api-gateway/src/routes/upload.ts");
 reporter.assert(
   uploadRoute.includes("Public asset base URL is not configured") &&
-    !uploadRoute.includes("cdn-staging.letbuyy.store"),
+    !uploadRoute.includes("cdn-staging.letbuyy.com"),
   "Upload route must require ASSET_PUBLIC_BASE_URL outside production instead of defaulting to staging CDN",
 );
 
 const gatewayCors = readFile("services/api-gateway/src/lib/cors.ts");
 reporter.assert(
-  !gatewayCors.includes("staging.letbuyy.store"),
+  !gatewayCors.includes("staging.letbuyy.com"),
   "Gateway fixed credentialed CORS origins must not hardcode staging origins; use CORS_CREDENTIAL_ORIGINS",
 );
 

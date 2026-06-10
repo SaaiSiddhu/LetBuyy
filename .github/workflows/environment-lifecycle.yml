@@ -83,6 +83,6 @@ jobs:
 
       - name: Run staging E2E
         env:
-          LETBUYY_E2E_BASE_URL: https://merchant.staging.letbuyy.store
-          LETBUYY_API_BASE_URL: https://api.staging.letbuyy.store/v1
+          LETBUYY_E2E_BASE_URL: https://merchant.staging.letbuyy.com
+          LETBUYY_API_BASE_URL: https://api.staging.letbuyy.com/v1
         run: pnpm exec playwright test tests/e2e/federation --project=chromium
