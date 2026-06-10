@@ -2051,7 +2051,7 @@ export const sdkToolingGaps: ToolingGapDoc[] = [
     capability: "OpenAPI export",
     currentStatus: "[SKIP — NEEDS BACKEND/SDK] Gateway routes are mounted under /v1, but no generated OpenAPI document is checked in for this branch.",
     blockedUntil: "Gateway schema/export tooling lands and publishes an artifact the portal can consume network-free.",
-    source: "services/api-gateway/src/index.ts:161 + apps/developer-portal/CODEX_WS10_LEDGER.md"
+    source: "services/api-gateway/src/index.ts:161 + apps/developer-portal/src/lib/developer-surface.ts"
   },
   {
     capability: "Published App SDK package",
@@ -2063,13 +2063,13 @@ export const sdkToolingGaps: ToolingGapDoc[] = [
     capability: "Theme CLI scaffolder",
     currentStatus: "[SKIP — NEEDS BACKEND/SDK] Theme bundle validation exists as JSON-contract schemas, but no CLI generator or packager is present.",
     blockedUntil: "Theme tooling can scaffold, validate, package, and upload a bundle from local source.",
-    source: "packages/theme-engine/src/theme-bundle.ts:117 + apps/developer-portal/CODEX_WS10_LEDGER.md"
+    source: "packages/theme-engine/src/theme-bundle.ts:117 + apps/developer-portal/src/lib/developer-surface.ts"
   },
   {
     capability: "Webhook test sender UI",
     currentStatus: "[SKIP — NEEDS BACKEND/SDK] Webhook dispatch exists behind service/internal flows; no public developer test-delivery endpoint or UI exists.",
     blockedUntil: "A developer-owned test sender can sign and dispatch sample events without touching production merchant data.",
-    source: "services/webhook-service/src/index.ts + apps/developer-portal/CODEX_WS10_LEDGER.md"
+    source: "services/webhook-service/src/index.ts + apps/developer-portal/src/lib/developer-surface.ts"
   },
   {
     capability: "Credential rotation console",

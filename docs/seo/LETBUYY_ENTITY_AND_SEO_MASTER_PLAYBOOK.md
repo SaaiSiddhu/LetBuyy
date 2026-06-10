@@ -4,9 +4,9 @@
 > a distinct company — not a typo of a similarly spelled brand — and rank LetBuyy,
 > its merchant storefronts, its app/theme marketplaces, and its developer portal.
 >
-> Canonical domain decision: **`letbuyy.com`** (you chose `.com` as the real home;
-> today the code is built on `letbuyy.store`, so this playbook includes the full
-> migration). This is the advanced, codebase-specific expansion of the 5-step plan.
+> Canonical domain decision: **`letbuyy.com`**. The repository now defaults active
+> platform URLs to `.com`; this playbook keeps the `.store` redirect/cutover steps
+> as an external DNS and search-console migration checklist.
 
 **Status legend:** ✅ implemented in this pass · 🔧 you must do (infra/external) · 📝 ready-to-paste snippet included below.
 
@@ -259,10 +259,10 @@ and [Schema validator](https://validator.schema.org/).
 
 ## 8. Migration runbook
 
-You chose `letbuyy.com` as canonical while the codebase runs on `letbuyy.store`
-(**150 files** still reference `.store`). The code is now **migration-safe**: defaults
-point to `.com`, and storefront host-parsing accepts **both** domains so nothing breaks
-mid-cutover. Execute in this order for zero downtime:
+You chose `letbuyy.com` as canonical. The code is now **migration-safe**: active
+defaults point to `.com`, and storefront host-parsing accepts **both** domains so
+nothing breaks mid-cutover. Execute the remaining external steps in this order for
+zero downtime:
 
 **Phase A — Acquire & resolve (no user impact)**
 1. 🔧 Register/confirm ownership of `letbuyy.com`.
@@ -290,9 +290,8 @@ mid-cutover. Execute in this order for zero downtime:
 10. 🔧 Keep `.store` resolving + redirecting for **at least 6–12 months** (link equity).
 
 **Phase D — Sweep the residue**
-11. The remaining `.store` literals are mostly in tests, docs, and IaC. Sweep them to the
-    centralized config / env (`CANONICAL_DOMAIN` in `shared-types/brand.ts`, the per-app
-    `site-url.ts`/`public-urls.ts`). Then run governance (§11).
+11. Keep functional `.store` literals out of active source except mobile bundle IDs,
+    migration evidence, and explicit redirect guidance. Then run governance (§11).
 
 > Why not a blind find-replace of the 150 files? Several touch **auth cookies, tenant
 > resolution, and payment callbacks** — a naïve swap there breaks sessions and checkout
