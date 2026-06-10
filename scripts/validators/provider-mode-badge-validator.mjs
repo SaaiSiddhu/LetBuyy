@@ -49,6 +49,8 @@ const queueWorker = readFile("services/queue-workers/src/platform-queue-consumer
 const themesRoute = readFile("services/api-gateway/src/routes/themes.ts");
 const storePaymentConfig = readFile("services/api-gateway/src/lib/store-payment-config.ts");
 const merchantPaymentsPage = readFile("apps/merchant-control-plane/src/app/[store]/settings/payments/page.tsx");
+const notificationCore = readFile("packages/notification-core/src/index.ts");
+const emailRoute = readFile("services/api-gateway/src/routes/email.ts");
 reporter.assert(!kycAdapter.includes("live_provider_stub"), "KYC adapter must not turn sandbox verification into live-provider success");
 reporter.assert(kycAdapter.includes("KYC_LIVE_PROVIDER_UNAVAILABLE"), "KYC adapter must fail closed while live provider integration is absent");
 reporter.assert(capabilityBacklog.includes("CAP-C15"), "CAPABILITY_BACKLOG.md missing CAP-C15 live KYC provider gap");
@@ -75,6 +77,24 @@ reporter.assert(!storePaymentConfig.includes("provider_mode: 'mock'"), "store pa
 reporter.assert(storePaymentConfig.includes("provider_mode: 'sandbox'"), "store payment config fallback must expose sandbox provider_mode");
 reporter.assert(!merchantPaymentsPage.includes("|| 'mock'"), "merchant payments page must not fall back to mock provider mode");
 reporter.assert(merchantPaymentsPage.includes("|| 'sandbox'"), "merchant payments page must fall back to sandbox provider mode");
+for (const fragment of [
+  "mock_resend",
+  "mock_ses",
+  "mock_sendgrid",
+  "input.mode || 'mock'",
+]) {
+  reporter.assert(!notificationCore.includes(fragment), `notification-core email providers must be sandbox-labelled: ${fragment}`);
+}
+for (const fragment of [
+  "LETBUYY_EMAIL_MODE || 'mock'",
+  "mock_failed_providers",
+  "`mock_${",
+  "mock_failover_fixture",
+]) {
+  reporter.assert(!emailRoute.includes(fragment), `email route must not use mock ESP labels: ${fragment}`);
+}
+reporter.assert(notificationCore.includes("sandbox_resend"), "notification-core must expose sandbox ESP providers");
+reporter.assert(emailRoute.includes("email_sandbox_"), "email route must emit sandbox provider message ids");
 reporter.assert(!exists("packages/infrastructure/identity-otp-adapter/index.ts"), "retired identity OTP mock adapter must not exist");
 reporter.assert(!readFile("packages/infrastructure/src/index.ts").includes("identity-otp-adapter"), "infrastructure barrel must not export retired identity OTP mock adapter");
 reporter.assert(!readFile("packages/infrastructure/package.json").includes("identity-otp-adapter"), "infrastructure package must not expose retired identity OTP mock adapter");

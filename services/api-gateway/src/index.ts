@@ -207,7 +207,7 @@ export interface Env {
     RUNTIME_TELEMETRY?: AnalyticsEngineDataset;
     RESEND_API_KEY: string;
     RESEND_FROM_EMAIL?: string;
-    LETBUYY_EMAIL_MODE?: 'mock' | 'sandbox' | 'live';
+    LETBUYY_EMAIL_MODE?: 'sandbox' | 'live';
     SES_ACCESS_KEY_ID?: string;
     SES_SECRET_ACCESS_KEY?: string;
     SENDGRID_API_KEY?: string;

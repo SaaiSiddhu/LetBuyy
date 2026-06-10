@@ -16,7 +16,7 @@ function repoSource(path: string): string {
     return readFileSync(join(repoRoot, path), 'utf8');
 }
 
-test('Task 011 email route renders and sends through the monolith with mock ESP failover', () => {
+test('Task 011 email route renders and sends through the monolith with sandbox ESP failover', () => {
     const routeSource = source('routes/email.ts');
     const indexSource = source('index.ts');
     const coreSource = repoSource('packages/notification-core/src/index.ts');
@@ -42,6 +42,10 @@ test('Task 011 email route renders and sends through the monolith with mock ESP 
     assert.match(coreSource, /export const EmailSendSchema/);
     assert.match(coreSource, /export function renderEmailTemplate/);
     assert.match(coreSource, /export function planEmailProviderFailover/);
+    assert.match(coreSource, /sandbox_resend/);
+    assert.doesNotMatch(coreSource, /mock_resend|mock_ses|mock_sendgrid/);
+    assert.match(routeSource, /email_sandbox_/);
+    assert.doesNotMatch(routeSource, /mock_failed_providers|provider_message_id:\s*delivery\.provider \? `mock_/);
     assert.match(eventSource, /'email\.delivered'/);
     assert.match(eventSource, /'email\.bounced'/);
     assert.match(eventSource, /'email\.complained'/);

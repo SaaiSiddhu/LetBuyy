@@ -42,7 +42,7 @@ export const NotificationSendSchema = z.object({
   metadata: z.record(z.string(), z.unknown()).default({}),
 });
 
-const EmailProviderSchema = z.enum(['mock_resend', 'mock_ses', 'mock_sendgrid', 'resend', 'ses', 'sendgrid']);
+const EmailProviderSchema = z.enum(['sandbox_resend', 'sandbox_ses', 'sandbox_sendgrid', 'resend', 'ses', 'sendgrid']);
 
 const EmailContextSchema = z.record(z.string(), z.unknown()).default({});
 
@@ -98,7 +98,7 @@ export interface NotificationRoutePlan {
 }
 
 export type EmailProvider = z.infer<typeof EmailProviderSchema>;
-export type EmailMode = 'mock' | 'sandbox' | 'live';
+export type EmailMode = 'sandbox' | 'live';
 
 export interface RenderedEmailTemplate {
   template_key: string;
@@ -114,7 +114,7 @@ export interface EmailProviderFailoverPlan {
   preferred_provider: EmailProvider | null;
 }
 
-const MOCK_EMAIL_PROVIDERS: EmailProvider[] = ['mock_resend', 'mock_ses', 'mock_sendgrid'];
+const SANDBOX_EMAIL_PROVIDERS: EmailProvider[] = ['sandbox_resend', 'sandbox_ses', 'sandbox_sendgrid'];
 const LIVE_EMAIL_PROVIDERS: EmailProvider[] = ['resend', 'ses', 'sendgrid'];
 
 const DEFAULT_EMAIL_TEMPLATES: Record<string, { subject: string; body: string }> = {
@@ -210,12 +210,12 @@ export function planEmailProviderFailover(input: {
   preferredProvider?: EmailProvider | null;
   availableProviders?: EmailProvider[] | null;
 } = {}): EmailProviderFailoverPlan {
-  const mode = input.mode || 'mock';
+  const mode = input.mode || 'sandbox';
   const baseline = input.availableProviders?.length
     ? input.availableProviders
     : mode === 'live'
       ? LIVE_EMAIL_PROVIDERS
-      : MOCK_EMAIL_PROVIDERS;
+      : SANDBOX_EMAIL_PROVIDERS;
   const providers = baseline.filter((provider, index) => baseline.indexOf(provider) === index);
   const preferred = input.preferredProvider && providers.includes(input.preferredProvider)
     ? input.preferredProvider

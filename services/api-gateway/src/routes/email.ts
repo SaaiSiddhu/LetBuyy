@@ -26,7 +26,7 @@ function configured(value: string | undefined): boolean {
 }
 
 function emailMode(env: Env): EmailMode {
-    return env.LETBUYY_EMAIL_MODE || 'mock';
+    return env.LETBUYY_EMAIL_MODE === 'live' ? 'live' : 'sandbox';
 }
 
 function assertEmailProviderReady(env: Env) {
@@ -81,7 +81,7 @@ function chooseProvider(input: {
     let selected: EmailProvider | null = null;
     const attempts = input.providers.map((provider) => {
         if (selected) return { provider, status: 'skipped' };
-        if (input.failedProviders.has(provider)) return { provider, status: 'failed', reason: 'mock_failover_fixture' };
+        if (input.failedProviders.has(provider)) return { provider, status: 'failed', reason: 'sandbox_failover_fixture' };
         selected = provider;
         return { provider, status: 'delivered' };
     });
@@ -199,7 +199,7 @@ router.post('/send', validate('json', EmailSendSchema), async (c) => {
         mode,
         preferredProvider: body.provider_preference || null,
     });
-    const failedProviders = coerceFailedProviders(body.metadata.mock_failed_providers);
+    const failedProviders = coerceFailedProviders(body.metadata.sandbox_failed_providers);
     const delivery = activeSuppression
         ? { provider: null, attempts: [] }
         : chooseProvider({ providers: failover.providers, failedProviders });
@@ -228,7 +228,7 @@ router.post('/send', validate('json', EmailSendSchema), async (c) => {
             subject: rendered.subject,
             status,
             provider: delivery.provider,
-            provider_message_id: delivery.provider ? `mock_${crypto.randomUUID()}` : null,
+            provider_message_id: delivery.provider ? `email_sandbox_${crypto.randomUUID()}` : null,
             provider_attempts: delivery.attempts,
             idempotency_key: body.idempotency_key,
             request_id: c.req.header('X-Request-ID') || null,
