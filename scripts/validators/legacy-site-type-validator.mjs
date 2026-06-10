@@ -107,6 +107,12 @@ reporter.assert(
   "developer portal must mark portfolio/resume API surfaces as legacy-gated",
 );
 
+const merchantNavigation = readFile("apps/merchant-control-plane/src/components/merchantNavigation.ts");
+reporter.assert(
+  !merchantNavigation.includes("ats-score") && !merchantNavigation.includes("PDF export"),
+  "merchant resume navigation must not expose deleted ATS/PDF-export stub routes",
+);
+
 for (const file of [
   "config/env/templates/next-app.env.example",
   "config/env/templates/worker.env.example",

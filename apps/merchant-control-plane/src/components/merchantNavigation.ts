@@ -170,15 +170,6 @@ const resumeNavigation: MerchantNavItem[] = [
             { path: 'certifications', label: 'Certifications', icon: 'verified' },
         ],
     },
-    {
-        path: 'ats-score',
-        label: 'Productivity',
-        icon: 'steps',
-        children: [
-            { path: 'ats-score', label: 'ATS score', icon: 'analytics' },
-            { path: 'export', label: 'PDF export', icon: 'picture_as_pdf' },
-        ],
-    },
     ...baseEndItems,
 ]
 
