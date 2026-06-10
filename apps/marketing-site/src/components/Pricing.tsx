@@ -29,7 +29,7 @@ const plans: PricingPlan[] = [
         name: 'Free',
         audience: 'Validate a new store or personal site',
         price: '₹0',
-        priceNote: 'Final free-tier limits need approval',
+        priceNote: 'Free-tier limits are being finalized',
         cta: 'Start free',
         href: getAccountsUrl('/signup'),
         highlights: ['Site builder access', 'LetBuyy subdomain', 'Basic launch checklist'],
@@ -39,31 +39,31 @@ const plans: PricingPlan[] = [
         name: 'Basic',
         audience: 'Solo merchants preparing a first launch',
         price: 'Pending',
-        priceNote: 'Requires human-approved monthly and yearly pricing',
+        priceNote: 'Monthly and yearly pricing is being finalized',
         cta: 'Request pricing',
         href: 'mailto:sales@letbuyy.com?subject=LetBuyy%20Basic%20pricing',
         featured: true,
-        highlights: ['Custom domain readiness', 'Core commerce tools', 'Email support policy pending'],
+        highlights: ['Custom domain readiness', 'Core commerce tools', 'Email support'],
     },
     {
         key: 'pro',
         name: 'Pro',
         audience: 'Growing stores with repeat operations',
         price: 'Pending',
-        priceNote: 'Requires human-approved plan packaging',
+        priceNote: 'Plan packaging is being finalized',
         cta: 'Request pricing',
         href: 'mailto:sales@letbuyy.com?subject=LetBuyy%20Pro%20pricing',
-        highlights: ['Advanced operations', 'Theme and app workflows', 'Priority support policy pending'],
+        highlights: ['Advanced operations', 'Theme and app workflows', 'Priority support'],
     },
     {
         key: 'enterprise',
         name: 'Enterprise',
         audience: 'Teams needing contracts and governance',
         price: 'Custom',
-        priceNote: 'Requires sales-approved terms',
+        priceNote: 'Sales-led terms',
         cta: 'Contact sales',
         href: 'mailto:sales@letbuyy.com?subject=LetBuyy%20Enterprise%20pricing',
-        highlights: ['Multi-store governance', 'Operational controls', 'SLA and onboarding terms pending'],
+        highlights: ['Multi-store governance', 'Operational controls', 'SLA and onboarding'],
     },
 ]
 
@@ -82,7 +82,7 @@ const matrixRows: MatrixRow[] = [
     },
     {
         feature: 'Products and inventory',
-        values: { free: 'Starter limits', basic: 'Approved limit pending', pro: 'Higher limit pending', enterprise: 'Custom' },
+        values: { free: 'Starter limits', basic: 'Launch limits', pro: 'Scale limits', enterprise: 'Custom' },
     },
     {
         feature: 'COD, GST and payment setup guidance',
@@ -94,7 +94,7 @@ const matrixRows: MatrixRow[] = [
     },
     {
         feature: 'Support',
-        values: { free: 'Community / email policy pending', basic: 'Email policy pending', pro: 'Priority policy pending', enterprise: 'SLA pending' },
+        values: { free: 'Community / email', basic: 'Email', pro: 'Priority', enterprise: 'SLA' },
     },
     {
         feature: 'Transaction or platform fees',
@@ -128,18 +128,18 @@ export default function Pricing() {
             <div className="container">
                 <div className="pricing-header">
                     <p className="section-label">Pricing</p>
-                    <h2 className="section-title">Plan comparison without invented prices</h2>
+                    <h2 className="section-title">Plan comparison with launch details</h2>
                     <p className="section-subtitle">
-                        Free, Basic, Pro and Enterprise packaging is mapped below. Exact paid pricing, discounts, support terms and contractual terms stay pending human approval; transaction and platform fees stay 0%.
+                        Free, Basic, Pro and Enterprise packaging is mapped below. Paid pricing, discounts and contract terms are being finalized; transaction and platform fees stay 0%.
                     </p>
                 </div>
 
                 <div className="pricing-approval">
                     <AlertCircle className="pricing-approval-icon" aria-hidden="true" />
                     <div>
-                        <p className="pricing-approval-title">Pricing approval required</p>
+                        <p className="pricing-approval-title">Paid plans being finalized</p>
                         <p className="pricing-approval-copy">
-                            This grid is ready for the approved commercial numbers. Paid plan amounts, discounts and support policies are intentionally not fabricated.
+                            This grid shows the current launch packaging without inventing paid plan amounts or discounts.
                         </p>
                     </div>
                 </div>
