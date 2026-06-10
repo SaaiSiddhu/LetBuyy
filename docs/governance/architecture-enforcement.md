@@ -11,7 +11,7 @@ LetBuyy enforces architecture through:
 - Modular validators under `scripts/validators/`.
 - CI workflow: `.github/workflows/architecture-governance.yml`.
 - CODEOWNERS: `.github/CODEOWNERS`.
-- Generated repository intelligence from `scripts/generate-repository-intelligence.mjs`.
+- Repository-intelligence retirement checks in `scripts/validators/repository-intelligence-validator.mjs`.
 
 ## Validator Responsibilities
 

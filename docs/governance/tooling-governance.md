@@ -11,11 +11,11 @@ Repository tooling must be owned, discoverable, reusable, and CI-safe.
 - `scripts/migration/`: documented migration tools.
 - `scripts/utilities/`: reusable non-governance utilities.
 
-Root-level scripts are limited to stable entrypoints:
+Root-level scripts are limited to stable entrypoints and retired tombstones:
 
 - `scripts/validate-governance.mjs`
 - `scripts/validate-architecture.mjs`
-- `scripts/generate-repository-intelligence.mjs`
+- `scripts/generate-repository-intelligence.mjs` (retired; exits non-zero and must not generate authority)
 
 ## Temporary Tooling
 

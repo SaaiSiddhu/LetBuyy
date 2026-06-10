@@ -354,8 +354,8 @@ SSO cookie even though both sit under `.letbuyy.com`.
 - [ ] Configure `api` CORS origin allowlist for both realms (§8).
 - [ ] Edit `dns.tf` to storefront-only + apex redirect; keep old hosts as 301 during cutover (§5.2, §13).
 - [ ] Update robots/noindex per §10; verify custom-domain flow end-to-end (§7).
-- [ ] Run `node scripts/validate-governance.mjs`; regenerate intelligence with
-      `node scripts/generate-repository-intelligence.mjs`.
+- [ ] Run `node scripts/validate-governance.mjs`; verify the generator remains retired with
+      `node scripts/validators/repository-intelligence-validator.mjs`.
 
 ## 13. Migration plan (single-zone → split, zero-downtime)
 

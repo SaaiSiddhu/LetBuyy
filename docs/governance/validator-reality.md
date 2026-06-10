@@ -17,7 +17,7 @@ The file-level cycle budget is currently `3` strongly connected components acros
 
 ## Merchant Mobile Product Gate
 
-Merchant-mobile readiness is tracked by `CODEX_FOUNDATION_STEPUP_V2_MISSION.md`, `CODEX_FOUNDATION_STEPUP_V2_LEDGER.md`, `CODEX_FOUNDATION_STEPUP_V2_STATUS.md`, and `docs/LETBUYY_MERCHANT_MOBILE_MASTER_REPORT.md`.
+Merchant-mobile readiness is tracked by executable Flutter tests, current governance validators, `CAPABILITY_BACKLOG.md`, and `SKIPPED_HUMAN_DECISIONS.md`. Historical Codex ledgers and the merchant-mobile master report are archived evidence only.
 
 Wave gates must include the product-facing checks, not only repository governance:
 
@@ -27,4 +27,4 @@ Wave gates must include the product-facing checks, not only repository governanc
 - `node scripts/validate-governance.mjs`
 - a leak audit proving no merchant-visible screen renders `SKIP_NEEDS_HUMAN_*`, `SKIP-NEEDS-BACKEND`, `S-0NN`, or backend-contract wording
 
-The V2 ledger/status are the canonical mobile-readiness rollup until the mission is closed. Older mobile-readiness notes are archive context only and must not contradict the master report or the active V2 ledger.
+The live blockers are recorded as `SKIP-W7-MOBILE-TURNSTILE-SECRET`, `SKIP-CAP-MOBILE-TURNSTILE-DOUBLE-SPEND`, `SKIP-CAP-STORE-PUBLISH-PIPELINE`, `SKIP-MOBILE-EDITOR-ARB`, and `SKIP-D8-MOBILE-RELEASE-SIGNING-SECRETS`. Older mobile-readiness notes are archive context only and must not be cited as current launch authority.
