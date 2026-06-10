@@ -1221,7 +1221,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     style: TextStyle(color: colors.textPrimary),
                   ),
                   subtitle: Text(
-                    'Creates a test-mode label unless live carrier credentials are configured.',
+                    'Creates a sandbox label unless live carrier credentials are configured.',
                     style: TextStyle(color: colors.textSecondary),
                   ),
                   onChanged: (value) =>

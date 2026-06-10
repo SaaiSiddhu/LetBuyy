@@ -359,19 +359,19 @@ export default function PaymentsSettingsPage() {
                         </div>
 
                         <label
-                            htmlFor="razorpay-test-mode"
+                            htmlFor="razorpay-sandbox-mode"
                             className="flex cursor-pointer items-start justify-between gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] transition-colors hover:bg-[var(--lb-color-surface-subdued)]"
                         >
                             <span className="min-w-0 space-y-[var(--lb-space-1)]">
                                 <span className="block text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                                    Use Razorpay test mode
+                                    Use Razorpay sandbox mode
                                 </span>
                                 <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                    Keep test mode on while validating credentials and payment flows.
+                                    Keep sandbox mode on while validating credentials and payment flows.
                                 </span>
                             </span>
                             <Input unstyled
-                                id="razorpay-test-mode"
+                                id="razorpay-sandbox-mode"
                                 checked={testMode}
                                 onChange={(event) => setTestMode(event.target.checked)}
                                 type="checkbox"

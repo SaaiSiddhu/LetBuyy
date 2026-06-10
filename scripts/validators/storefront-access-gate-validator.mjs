@@ -45,7 +45,8 @@ reporter.assert(
 );
 reporter.assert(
   /LETBUYY_STOREFRONT_PREVIEW_COOKIE/.test(orderRoute)
-    && /Preview checkout uses test mode/.test(orderRoute),
+    && /Preview checkout uses sandbox mode/.test(orderRoute)
+    && /cannot create real orders/.test(orderRoute),
   "preview checkout must block real order creation",
 );
 

@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
             || request.cookies.get(LETBUYY_STOREFRONT_PREVIEW_COOKIE)?.value;
         if (previewCheckoutMode) {
             return NextResponse.json(
-                { success: false, error: 'Preview checkout uses test mode and cannot create real orders' },
+                { success: false, error: 'Preview checkout uses sandbox mode and cannot create real orders' },
                 { status: 409 }
             );
         }
