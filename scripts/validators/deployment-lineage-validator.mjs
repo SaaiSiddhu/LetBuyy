@@ -21,7 +21,7 @@ for (const gate of ["rollback-integrity-validator", "deployment-lineage-validato
   reporter.assert(manifest?.lineageGates?.includes(gate), `Deployment lineage manifest missing gate: ${gate}`);
 }
 
-for (const scriptName of ["validate:rollback", "validate:queues", "validate:topology", "validate:deployment", "validate:replay"]) {
+for (const scriptName of ["validate:rollback", "validate:queues", "validate:topology", "validate:deployment"]) {
   reporter.assert(Boolean(packageJson?.scripts?.[scriptName]), `Root package scripts missing deployment lineage gate: ${scriptName}`);
 }
 

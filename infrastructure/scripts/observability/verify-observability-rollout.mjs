@@ -26,8 +26,10 @@ async function fetchOk(url, options = {}) {
 
 assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 
-const topology = JSON.parse(read("config/runtime/production-topology.json"));
-const collector = read(topology.observabilityStack.collector);
+const observability = JSON.parse(read("config/runtime/observability-platform.json"));
+const collectorPath = "infrastructure/observability/otel-collector.yaml";
+const alertsPath = "infrastructure/observability/prometheus-rules.yaml";
+const collector = read(collectorPath);
 for (const fragment of [
   "endpoint: 0.0.0.0:4318",
   "endpoint: 0.0.0.0:4317",
@@ -40,20 +42,12 @@ for (const fragment of [
   assert(collector.includes(fragment), `OpenTelemetry collector missing ${fragment}`);
 }
 
-const rules = read(topology.observabilityStack.alerts);
-for (const alertName of [
-  "LetBuyyApiGatewayHighErrorRate",
-  "LetBuyyQueueDeadLetterGrowth",
-  "LetBuyyReplayLagHigh",
-  "LetBuyyDeploymentGateFailed",
-  "LetBuyyEventStoreIntegrityFailed",
-  "LetBuyyErrorBudgetFreeze",
-  "LetBuyyRegionalOverrideActive",
-]) {
+const rules = read(alertsPath);
+for (const alertName of (observability.alerts || []).map((alert) => alert.name)) {
   assert(rules.includes(`alert: ${alertName}`), `Prometheus rules missing ${alertName}`);
 }
 
-for (const dashboardPath of topology.observabilityStack.dashboards) {
+for (const dashboardPath of (observability.dashboards || []).map((dashboard) => dashboard.path)) {
   const dashboard = JSON.parse(read(dashboardPath));
   assert(dashboard.title && dashboard.uid, `Grafana dashboard missing title or uid: ${dashboardPath}`);
   assert(Array.isArray(dashboard.panels) && dashboard.panels.length > 0, `Grafana dashboard has no panels: ${dashboardPath}`);

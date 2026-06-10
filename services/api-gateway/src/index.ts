@@ -252,7 +252,7 @@ export interface Env {
     REQUEST_LOG_SAMPLE_RATE?: string;
     RUNTIME_NAME?: string;
     PRIMARY_REGION?: string;
-    FAILOVER_REGION?: string;
+    EDGE_SCOPE?: string;
     EVENT_QUEUE_NAME?: string;
     ANALYTICS_QUEUE_NAME?: string;
     SEARCH_QUEUE_NAME?: string;

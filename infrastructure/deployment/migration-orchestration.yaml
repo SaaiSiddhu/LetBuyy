@@ -15,16 +15,13 @@ migrationPolicy:
       pooler: supabase-pgbouncer
       maxClientConnections: governed-by-supabase-project-plan
       idleTimeout: 300s
-    readReplicas:
-      primary: ap-south-1
-      failover: ap-southeast-1
-      lagAlertThresholdMs: 5000
+    primaryRegion: ap-south-1
     verification:
       - schema version recorded
       - RLS enabled on new tables
       - updated_at triggers use update_updated_at()
       - service-role policies exist for operational tables
-      - event-store integrity check recorded
+      - transactional outbox compatibility recorded
       - production readiness gate run recorded
   rollback:
     strategy: forward-fix-preferred

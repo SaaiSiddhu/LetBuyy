@@ -6,7 +6,7 @@ Generated governance validators are useful repository memory, but the raw count 
 
 - Real executable gates: full-repo `pnpm turbo typecheck`, `pnpm run test:unit:gateway`, `pnpm run test:behavioral`, `pnpm run test:contracts`, `scripts/validators/route-ownership-validator.mjs`, `scripts/validators/platform-domain-literal-validator.mjs`, and `scripts/validators/cycle-budget-validator.mjs`.
 - Structural validators: import boundaries, dependency declarations, package exports, runtime manifests, migration safety, Cloudflare topology, and generated artifact checks. These can fail for real repository facts, but many still inspect source/config shape instead of executing business behavior.
-- Plan-mode / not-live validators: survivability, certification, failover, benchmark, recovery, and provider-evidence validators currently prove that evidence contracts exist. They are not live production certification until provider-backed execute-mode evidence is recorded fresh through the operations control plane.
+- Plan-mode / not-live validators: certification, recovery, and provider-evidence validators currently prove that evidence contracts exist. They are not live production certification until provider-backed execute-mode evidence is recorded fresh through the operations control plane.
 - String-presence validators: several historical validators still match docs/config phrases. They remain as residue detectors, not readiness proof.
 
 ## Readiness Signal

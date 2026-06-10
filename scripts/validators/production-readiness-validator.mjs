@@ -32,7 +32,6 @@ const requiredFiles = [
   "infrastructure/observability/grafana-queue-dashboard.json",
   "infrastructure/observability/grafana-incident-dashboard.json",
   "infrastructure/observability/grafana-deployment-dashboard.json",
-  "infrastructure/observability/grafana-sre-dashboard.json",
   "infrastructure/security/production-security-controls.yaml",
   "infrastructure/monitoring/slo-catalog.yaml",
   "infrastructure/scripts/cloudflare/verify-provider-contracts.mjs",

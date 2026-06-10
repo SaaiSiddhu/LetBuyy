@@ -790,7 +790,7 @@ router.get('/settings', async (c) => {
         environment: c.env.ENVIRONMENT || c.env.APP_ENV || c.env.NODE_ENV || 'unknown',
         runtime_name: c.env.RUNTIME_NAME || 'api-gateway',
         primary_region: c.env.PRIMARY_REGION || 'unset',
-        failover_region: c.env.FAILOVER_REGION || 'unset',
+        edge_scope: c.env.EDGE_SCOPE || 'global-edge',
         console_api_token_configured: Boolean(c.env.PLATFORM_CONSOLE_API_TOKEN),
         csrf_secret_configured: Boolean(c.env.CSRF_SECRET),
         internal_api_secret_configured: Boolean(c.env.INTERNAL_API_SECRET),

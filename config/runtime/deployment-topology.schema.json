@@ -40,7 +40,7 @@
               "maxInstances": { "type": "integer", "minimum": 0 },
               "concurrency": { "type": "integer", "minimum": 1 },
               "scaleMetric": {
-                "enum": ["request-rate", "queue-depth", "replay-lag", "workflow-lag", "manual"]
+                "enum": ["request-rate", "queue-depth", "workflow-lag", "manual"]
               }
             }
           },

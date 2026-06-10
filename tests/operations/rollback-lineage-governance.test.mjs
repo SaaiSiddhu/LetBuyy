@@ -20,7 +20,7 @@ test("deployment lineage validator wires rollback and queue gates", () => {
   assert.equal(result.status, 0, result.stderr || result.stdout);
 });
 
-test("topology drift validator checks queue/replay/projection/rollback topology", () => {
+test("topology drift validator checks queue and rollback topology", () => {
   const result = spawnSync(process.execPath, ["scripts/validators/topology-drift-validator.mjs"], {
     cwd: process.cwd(),
     encoding: "utf8",

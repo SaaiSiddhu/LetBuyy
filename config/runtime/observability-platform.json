@@ -1,32 +1,60 @@
 {
   "$schema": "config/runtime/observability-platform.schema.json",
   "contractVersion": 1,
-  "signals": ["traces", "metrics", "logs", "spans", "operational-events"],
+  "signals": [
+    "traces",
+    "metrics",
+    "logs",
+    "spans",
+    "operational-events"
+  ],
   "lineage": [
     "request-lineage",
     "queue-lineage",
-    "replay-lineage",
     "deployment-lineage",
     "tenant-lineage",
-    "regional-lineage",
     "migration-lineage"
   ],
   "dashboards": [
-    { "name": "runtime", "path": "infrastructure/observability/grafana-runtime-dashboard.json", "mustUseLiveTelemetry": true },
-    { "name": "queue", "path": "infrastructure/observability/grafana-queue-dashboard.json", "mustUseLiveTelemetry": true },
-    { "name": "replay", "path": "infrastructure/observability/grafana-replay-dashboard.json", "mustUseLiveTelemetry": true },
-    { "name": "incident", "path": "infrastructure/observability/grafana-incident-dashboard.json", "mustUseLiveTelemetry": true },
-    { "name": "deployment", "path": "infrastructure/observability/grafana-deployment-dashboard.json", "mustUseLiveTelemetry": true },
-    { "name": "sre", "path": "infrastructure/observability/grafana-sre-dashboard.json", "mustUseLiveTelemetry": true }
+    {
+      "name": "runtime",
+      "path": "infrastructure/observability/grafana-runtime-dashboard.json",
+      "mustUseLiveTelemetry": true
+    },
+    {
+      "name": "queue",
+      "path": "infrastructure/observability/grafana-queue-dashboard.json",
+      "mustUseLiveTelemetry": true
+    },
+    {
+      "name": "incident",
+      "path": "infrastructure/observability/grafana-incident-dashboard.json",
+      "mustUseLiveTelemetry": true
+    },
+    {
+      "name": "deployment",
+      "path": "infrastructure/observability/grafana-deployment-dashboard.json",
+      "mustUseLiveTelemetry": true
+    }
   ],
   "alerts": [
-    { "name": "LetBuyyApiGatewayHighErrorRate", "class": "burn-rate" },
-    { "name": "LetBuyyQueueDeadLetterGrowth", "class": "queue-lag" },
-    { "name": "LetBuyyReplayLagHigh", "class": "replay-corruption" },
-    { "name": "LetBuyyDeploymentGateFailed", "class": "deployment-degradation" },
-    { "name": "LetBuyyEventStoreIntegrityFailed", "class": "event-store-integrity" },
-    { "name": "LetBuyyErrorBudgetFreeze", "class": "slo-burn" },
-    { "name": "LetBuyyRegionalOverrideActive", "class": "regional-failover" }
+    {
+      "name": "LetBuyyApiGatewayHighErrorRate",
+      "class": "burn-rate"
+    },
+    {
+      "name": "LetBuyyQueueDeadLetterGrowth",
+      "class": "queue-lag"
+    },
+    {
+      "name": "LetBuyyDeploymentGateFailed",
+      "class": "deployment-degradation"
+    }
   ],
-  "forbiddenDashboardSources": ["mockData", "fixtureData", "static sample data", "placeholder"]
+  "forbiddenDashboardSources": [
+    "mockData",
+    "fixtureData",
+    "static sample data",
+    "placeholder"
+  ]
 }

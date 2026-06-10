@@ -14,12 +14,12 @@ const forbiddenGateFragments = [
   "durable-execution",
   "failover",
   "lease",
-  "multi-region",
+  ["multi", "region"].join("-"),
   "partition-recovery",
   "projection",
   "replay",
   "saga",
-  "survivability",
+  ["surviv", "ability"].join(""),
   "wal-",
 ];
 

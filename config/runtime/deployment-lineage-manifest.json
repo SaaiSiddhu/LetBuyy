@@ -42,11 +42,9 @@
       },
       "config": "services/api-gateway/wrangler.toml",
       "rollbackCommand": "node infrastructure/scripts/deploy/production-rollback.mjs --environment=production --worker=letbuyy-api --version-id=$APPROVED_PREVIOUS_VERSION_ID --reason=$ROLLBACK_REASON",
-      "replayValidation": "validate:replay",
       "queueValidation": "validate:queues",
       "migrationCompatibility": "forward-compatible-or-forward-fix-only",
-      "projectionCompatibility": "projection-recovery-validator",
-      "rollbackCorruptionPolicy": "block-if-event-schema-or-projection-version-incompatible"
+      "rollbackCorruptionPolicy": "block-if-queue-or-migration-state-incompatible"
     },
     {
       "runtimeRoot": "services/webhook-service",
@@ -56,11 +54,9 @@
       },
       "config": "services/webhook-service/wrangler.toml",
       "rollbackCommand": "node infrastructure/scripts/deploy/production-rollback.mjs --environment=production --worker=letbuyy-webhook --version-id=$APPROVED_PREVIOUS_VERSION_ID --reason=$ROLLBACK_REASON",
-      "replayValidation": "validate:replay",
       "queueValidation": "validate:queues",
       "migrationCompatibility": "forward-compatible-or-forward-fix-only",
-      "projectionCompatibility": "projection-recovery-validator",
-      "rollbackCorruptionPolicy": "block-if-webhook-event-version-incompatible"
+      "rollbackCorruptionPolicy": "block-if-webhook-queue-state-incompatible"
     },
     {
       "runtimeRoot": "services/queue-workers",
@@ -70,11 +66,9 @@
       },
       "config": "services/queue-workers/wrangler.toml",
       "rollbackCommand": "node infrastructure/scripts/deploy/production-rollback.mjs --environment=production --worker=letbuyy-queue-workers --version-id=$APPROVED_PREVIOUS_VERSION_ID --reason=$ROLLBACK_REASON",
-      "replayValidation": "validate:replay",
       "queueValidation": "validate:queues",
       "migrationCompatibility": "forward-compatible-or-forward-fix-only",
-      "projectionCompatibility": "projection-recovery-validator",
-      "rollbackCorruptionPolicy": "block-if-queue-redrive-or-projection-version-incompatible"
+      "rollbackCorruptionPolicy": "block-if-queue-redrive-state-incompatible"
     }
   ],
   "lineageGates": [
@@ -85,10 +79,9 @@
   ],
   "integrityRules": {
     "rollbackRequiresPriorDeploymentVersion": true,
-    "rollbackMustNotMutateEventStore": true,
     "rollbackMustNotDropMigrationState": true,
     "rollbackMustPreserveQueueNames": true,
-    "rollbackMustPreserveProjectionVersionCompatibility": true
+    "rollbackMustNotMutateOutbox": true
   },
   "failurePolicy": "fail-closed"
 }

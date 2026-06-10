@@ -6,7 +6,7 @@ type ConsoleSettings = {
     environment: string;
     runtime_name: string;
     primary_region: string;
-    failover_region: string;
+    edge_scope: string;
     console_api_token_configured: boolean;
     csrf_secret_configured: boolean;
     internal_api_secret_configured: boolean;
@@ -33,7 +33,7 @@ export default async function ConsoleSettingsPage() {
                         <SettingRow label="Environment" value={settings?.environment || 'unknown'} />
                         <SettingRow label="Runtime" value={settings?.runtime_name || 'api-gateway'} />
                         <SettingRow label="Primary Region" value={settings?.primary_region || 'unset'} />
-                        <SettingRow label="Failover Region" value={settings?.failover_region || 'unset'} />
+                        <SettingRow label="Edge Scope" value={settings?.edge_scope || 'global-edge'} />
                     </SettingsPanel>
 
                     <SettingsPanel title="Secrets">

@@ -60,4 +60,4 @@ The canonical Supabase CLI config is `database/supabase/config.toml`. The previo
 
 ## Validation
 
-Migration safety is enforced by `scripts/validators/migration-safety-validator.mjs` and is part of `pnpm run validate:governance`. Unsafe historical migrations must be retired as no-op migration-number memory or replaced by additive compatibility objects. Production migration orchestration must keep staging dry-run, PITR checkpoint, rollback manifest, event-store integrity, and production readiness gates in `infrastructure/deployment/migration-orchestration.yaml`.
+Migration safety is enforced by `scripts/validators/migration-safety-validator.mjs` and is part of `pnpm run validate:governance`. Unsafe historical migrations must be retired as no-op migration-number memory or replaced by additive compatibility objects. Production migration orchestration must keep staging dry-run, PITR checkpoint, rollback manifest, transactional outbox compatibility, and production readiness gates in `infrastructure/deployment/migration-orchestration.yaml`.

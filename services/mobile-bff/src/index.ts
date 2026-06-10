@@ -12,7 +12,7 @@ export interface Env {
   TELEMETRY_ENV?: string;
   RUNTIME_NAME?: string;
   PRIMARY_REGION?: string;
-  FAILOVER_REGION?: string;
+  EDGE_SCOPE?: string;
   RUNTIME_TELEMETRY?: AnalyticsEngineDataset;
 }
 

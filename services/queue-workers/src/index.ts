@@ -49,7 +49,7 @@ export interface Env extends SupabaseServiceEnv, PushProviderEnv {
   TELEMETRY_ENV?: string;
   RUNTIME_NAME?: string;
   PRIMARY_REGION?: string;
-  FAILOVER_REGION?: string;
+  EDGE_SCOPE?: string;
   RUNTIME_TELEMETRY?: RuntimeTelemetryDatasetBinding;
   PLATFORM_QUEUE_CLAIM_LIMIT?: string;
   PLATFORM_QUEUE_DRAIN_BUDGET_PER_BATCH?: string;

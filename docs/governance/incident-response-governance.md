@@ -5,7 +5,7 @@ Incidents are operational records, not chat-only events. Production incidents mu
 ## Severity
 
 - `sev1`: checkout, auth, storefront, or API outage with broad customer impact.
-- `sev2`: degraded checkout, queue backlog, regional failover, or provider outage affecting live commerce.
+- `sev2`: degraded checkout, queue backlog, deployment regression, or provider outage affecting live commerce.
 - `sev3`: isolated runtime degradation or tenant-scoped operational impact.
 - `sev4`: low-risk operational issue with no customer-visible impact.
 
@@ -15,7 +15,7 @@ Incidents are operational records, not chat-only events. Production incidents mu
 - Timeline entries in `production_incident_events`
 - Alert evidence in `runtime_alert_evaluations`
 - Related control commands in `runtime_control_commands`
-- Security, deployment, queue, replay, and regional evidence linked from operational projection tables
+- Security, deployment, queue, provider, and runtime-health evidence linked from operational projection tables
 
 ## Response Flow
 

@@ -22,8 +22,8 @@
     "planModeMustNotClaimProviderEvidence": true
   },
   "recoveryRules": {
-    "replayStoragePerEnvironment": true,
-    "walStoragePerEnvironment": true,
+    "outboxEvidencePerEnvironment": true,
+    "operationEvidencePerEnvironment": true,
     "queueDlqPerEnvironment": true,
     "d1BackupBeforeMigration": true,
     "durableObjectCheckpointBeforeRestoration": true

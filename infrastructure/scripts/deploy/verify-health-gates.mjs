@@ -21,6 +21,7 @@ function readJson(path) {
 }
 
 const topology = readJson("config/runtime/production-topology.json");
+const observability = readJson("config/runtime/observability-platform.json");
 assert(topology.environment === "production", "production topology must target production");
 assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 
@@ -28,8 +29,9 @@ const requiredFiles = [
   topology.queueProvider.terraform,
   topology.queueProvider.producerConfig,
   topology.queueProvider.consumerConfig,
-  topology.observabilityStack.collector,
-  topology.observabilityStack.alerts,
+  "infrastructure/observability/otel-collector.yaml",
+  "infrastructure/observability/prometheus-rules.yaml",
+  ...(observability.dashboards || []).map((dashboard) => dashboard.path),
   "infrastructure/deployment/release-promotion.yaml",
   "infrastructure/deployment/migration-orchestration.yaml",
   "infrastructure/security/production-security-controls.yaml",

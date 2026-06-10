@@ -131,7 +131,7 @@ const WORKER_OVERRIDES = {
   LETBUYY_ENABLE_LEGACY_SITE_TYPES: "false",
   CORS_CREDENTIAL_ORIGINS: Object.keys(APP_PORTS).map(appOrigin).join(","),
   PRIMARY_REGION: "ap-south-1",
-  FAILOVER_REGION: "ap-southeast-1",
+  EDGE_SCOPE: "global-edge",
   ASSET_PUBLIC_BASE_URL: `${serviceOrigin("api-gateway")}/assets`,
   RAZORPAY_KEY_ID: joinLocalValue("rzp_test", "_localdev"),
   RAZORPAY_KEY_SECRET: joinLocalValue("rzp_test", "_localdev_secret"),

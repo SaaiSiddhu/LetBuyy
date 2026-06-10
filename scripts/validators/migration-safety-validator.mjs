@@ -145,7 +145,7 @@ for (const fragment of [
   "run SQL dry run against staging branch",
   "backup: require-pitr-checkpoint-before-apply",
   "rollbackManifest",
-  "event-store integrity check recorded",
+  "transactional outbox compatibility recorded",
   "production readiness gate run recorded",
   "strategy: forward-fix-preferred",
 ]) {

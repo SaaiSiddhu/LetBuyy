@@ -17,7 +17,7 @@ reporter.assert(exists(migrationPath), "D1 provider execution migration must exi
 for (const fragment of [
   "provider_execution_evidence",
   "d1_migration_lineage",
-  "replay_restoration_lineage",
+  "outbox_restoration_lineage",
   "rollback_lineage",
 ]) {
   reporter.assert(migration.includes(fragment), `D1 migration missing table ${fragment}`);

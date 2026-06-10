@@ -105,7 +105,7 @@
     "PRIMARY_REGION": {
       "type": "string"
     },
-    "FAILOVER_REGION": {
+    "EDGE_SCOPE": {
       "type": "string"
     },
     "ASSET_PUBLIC_BASE_URL": {

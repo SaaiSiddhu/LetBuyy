@@ -31,8 +31,6 @@ environments:
       - queue-lag
       - error-budget
       - security-gates
-      - chaos-suite-approved
-      - load-suite-current
 startupSequence:
   - name: staging-workers
     command: node infrastructure/scripts/deploy/production-deploy.mjs --environment=staging --target=cloudflare --execute && node infrastructure/scripts/deploy/production-deploy.mjs --environment=staging --target=workers --execute
@@ -86,8 +84,6 @@ rollback:
   webApps: vercel-promote-previous-deployment
   database: forward-fix-or-approved-reversible-migration
   queues: pause-consumer-redrive-after-fix
-  replayCompatibility: pnpm run validate:replay
-  projectionRecovery: node scripts/validators/projection-recovery-validator.mjs
   queueLifecycle: pnpm run validate:queues
   rollbackIntegrity: pnpm run validate:rollback
 driftValidation:

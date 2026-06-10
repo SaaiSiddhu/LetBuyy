@@ -30,7 +30,7 @@
             "TELEMETRY_ENV",
             "RUNTIME_NAME",
             "PRIMARY_REGION",
-            "FAILOVER_REGION",
+            "EDGE_SCOPE",
             "EVENT_QUEUE_NAME",
             "ANALYTICS_QUEUE_NAME",
             "SEARCH_QUEUE_NAME",
@@ -78,7 +78,7 @@
             "TELEMETRY_ENV",
             "RUNTIME_NAME",
             "PRIMARY_REGION",
-            "FAILOVER_REGION",
+            "EDGE_SCOPE",
             "EVENT_QUEUE_NAME",
             "ANALYTICS_QUEUE_NAME",
             "SEARCH_QUEUE_NAME",
@@ -132,7 +132,7 @@
             "TELEMETRY_ENV",
             "RUNTIME_NAME",
             "PRIMARY_REGION",
-            "FAILOVER_REGION"
+            "EDGE_SCOPE"
           ],
           "secrets": [
             "INTERNAL_API_SECRET"
@@ -164,7 +164,7 @@
             "TELEMETRY_ENV",
             "RUNTIME_NAME",
             "PRIMARY_REGION",
-            "FAILOVER_REGION"
+            "EDGE_SCOPE"
           ],
           "secrets": [
             "INTERNAL_API_SECRET"
@@ -202,7 +202,7 @@
             "TELEMETRY_ENV",
             "RUNTIME_NAME",
             "PRIMARY_REGION",
-            "FAILOVER_REGION"
+            "EDGE_SCOPE"
           ],
           "queueProducers": [],
           "queueConsumers": [],
@@ -231,7 +231,7 @@
             "TELEMETRY_ENV",
             "RUNTIME_NAME",
             "PRIMARY_REGION",
-            "FAILOVER_REGION"
+            "EDGE_SCOPE"
           ],
           "queueProducers": [],
           "queueConsumers": [],
@@ -266,7 +266,7 @@
             "TELEMETRY_ENV",
             "RUNTIME_NAME",
             "PRIMARY_REGION",
-            "FAILOVER_REGION"
+            "EDGE_SCOPE"
           ],
           "queueProducers": [],
           "queueConsumers": [
@@ -303,7 +303,7 @@
             "TELEMETRY_ENV",
             "RUNTIME_NAME",
             "PRIMARY_REGION",
-            "FAILOVER_REGION"
+            "EDGE_SCOPE"
           ],
           "queueProducers": [],
           "queueConsumers": [

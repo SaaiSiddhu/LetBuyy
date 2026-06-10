@@ -29,8 +29,8 @@
       "deadLetterQueue": "letbuyy-staging-dead-letter-queue",
       "durableObjectNamespace": "letbuyy-staging-runtime-coordinator",
       "telemetryDataset": "letbuyy-staging-telemetry",
-      "replayStorage": "letbuyy-staging-replay",
-      "walStorage": "letbuyy-staging-wal",
+      "outboxEvidenceStorage": "letbuyy-staging-outbox-evidence",
+      "operationEvidenceStorage": "letbuyy-staging-operation-evidence",
       "workers": {
         "apiGateway": "letbuyy-api-staging",
         "mobileBff": "letbuyy-mobile-bff-staging",
@@ -55,8 +55,8 @@
       "deadLetterQueue": "letbuyy-production-dead-letter-queue",
       "durableObjectNamespace": "letbuyy-production-runtime-coordinator",
       "telemetryDataset": "letbuyy-production-telemetry",
-      "replayStorage": "letbuyy-production-replay",
-      "walStorage": "letbuyy-production-wal",
+      "outboxEvidenceStorage": "letbuyy-production-outbox-evidence",
+      "operationEvidenceStorage": "letbuyy-production-operation-evidence",
       "workers": {
         "apiGateway": "letbuyy-api",
         "mobileBff": "letbuyy-mobile-bff",
@@ -121,7 +121,7 @@
     "className": "LetbuyyRuntimeDurableObject",
     "migrationTag": "v1-runtime-coordinator",
     "storageBackend": "sqlite",
-    "checkpointPolicy": "snapshot-and-replay-cursor-required-before-restoration",
+    "checkpointPolicy": "snapshot-and-outbox-cursor-required-before-restoration",
     "namespacePolicy": "worker-environment-isolated"
   },
   "evidence": {

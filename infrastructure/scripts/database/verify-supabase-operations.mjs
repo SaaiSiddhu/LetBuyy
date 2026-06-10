@@ -9,6 +9,7 @@ const verificationSqlFiles = [
   "database/supabase/verification/063_absolute_production_operationalization.sql",
   "database/supabase/verification/064_live_production_certification.sql",
 ];
+const activeSchemaMigration = "database/supabase/migrations/000_baseline.sql";
 
 function valueFor(prefix) {
   const arg = process.argv.slice(2).find((candidate) => candidate.startsWith(`${prefix}=`));
@@ -30,9 +31,7 @@ function requireFile(path) {
 assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 
 for (const file of [
-  "database/supabase/migrations/062_production_rollout_operations.sql",
-  "database/supabase/migrations/063_absolute_production_operationalization.sql",
-  "database/supabase/migrations/064_live_production_certification.sql",
+  activeSchemaMigration,
   ...verificationSqlFiles,
   "infrastructure/deployment/migration-orchestration.yaml",
 ]) {
@@ -41,42 +40,37 @@ for (const file of [
 
 const topology = JSON.parse(read("config/runtime/production-topology.json"));
 assert(
-  topology.eventStoreProvider.migrations.includes("database/supabase/migrations/063_absolute_production_operationalization.sql"),
-  "production topology must include migration 063",
-);
-assert(
-  topology.eventStoreProvider.migrations.includes("database/supabase/migrations/064_live_production_certification.sql"),
-  "production topology must include migration 064",
+  topology.outboxProvider.migrations.includes(activeSchemaMigration),
+  "production topology must include active Supabase baseline migration",
 );
 
-const migration = read("database/supabase/migrations/063_absolute_production_operationalization.sql");
+const migration = read(activeSchemaMigration);
 for (const fragment of [
-  "CREATE TABLE IF NOT EXISTS production_readiness_gate_runs",
-  "CREATE TABLE IF NOT EXISTS event_store_integrity_checks",
-  "CREATE OR REPLACE FUNCTION validate_event_stream_consistency",
-  "CREATE OR REPLACE FUNCTION archive_distributed_events",
-  "ALTER TABLE regional_routing_overrides ENABLE ROW LEVEL SECURITY",
+  "CREATE TABLE public.production_readiness_gate_runs",
+  "CREATE TABLE public.deployment_health_gate_results",
+  "CREATE TABLE public.operational_dashboard_snapshots",
+  "CREATE TABLE public.security_enforcement_events",
 ]) {
-  assert(migration.includes(fragment), `migration 063 missing ${fragment}`);
+  assert(migration.includes(fragment), `active Supabase baseline missing ${fragment}`);
 }
 
 const verification = read("database/supabase/verification/063_absolute_production_operationalization.sql");
 for (const fragment of [
-  "validate_event_stream_consistency",
   "pg_policies",
   "production_readiness_gate_runs",
-  "regional_routing_overrides",
+  "deployment_health_gate_results",
+  "operational_dashboard_snapshots",
 ]) {
   assert(verification.includes(fragment), `Supabase verification SQL missing ${fragment}`);
 }
 
-const certificationMigration = read("database/supabase/migrations/064_live_production_certification.sql");
+const certificationMigration = migration;
 for (const fragment of [
-  "CREATE TABLE IF NOT EXISTS operational_certification_reports",
-  "ALTER TABLE operational_certification_reports ENABLE ROW LEVEL SECURITY",
-  "CREATE OR REPLACE FUNCTION record_operational_certification_report",
+  "CREATE TABLE public.operational_certification_reports",
+  "ALTER TABLE public.operational_certification_reports ENABLE ROW LEVEL SECURITY",
+  "CREATE FUNCTION public.record_operational_certification_report",
 ]) {
-  assert(certificationMigration.includes(fragment), `migration 064 missing ${fragment}`);
+  assert(certificationMigration.includes(fragment), `active Supabase baseline missing ${fragment}`);
 }
 
 const certificationVerification = read("database/supabase/verification/064_live_production_certification.sql");

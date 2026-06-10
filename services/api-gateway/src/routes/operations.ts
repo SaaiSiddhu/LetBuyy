@@ -18,28 +18,19 @@ import {
     DispatchOutboxSchema,
     DispatchWebhookDeliveriesSchema,
     OperationsListQuerySchema,
-    AuthorizeRuntimeReplaySchema,
-    RecordChaosExperimentSchema,
     RecordDeploymentHealthGateSchema,
     RecordDeploymentPromotionSchema,
-    RecordFailoverDrillSchema,
-    RecordLoadTestRunSchema,
     RecordOperationalDashboardSnapshotSchema,
     RecordProductionIncidentSchema,
     RecordProductionReadinessGateSchema,
-    RecordRegionalRoutingOverrideSchema,
     RecordOperationalCertificationReportSchema,
     RecordSecurityEnforcementEventSchema,
-    RecordSreErrorBudgetSnapshotSchema,
     RecordUsageSchema,
     RuntimeDeadLetterRedriveSchema,
     RuntimeQueueRecoverySchema,
-    ScheduleRuntimeReplaySchema,
     SubmitRuntimeControlCommandSchema,
     UpdateProductionIncidentStatusSchema,
     UpdateWebhookSubscriptionSchema,
-    ValidateEventStoreIntegritySchema,
-    ArchiveDistributedEventsSchema,
     type DispatchOutboxInput,
     type DispatchWebhookDeliveriesInput,
     type OperationsListQuery,
@@ -480,16 +471,9 @@ router.get('/runtime/overview', async (c) => {
         incidents,
         deployments,
         deploymentHealth,
-        failover,
-        chaos,
-        load,
-        slo,
         readiness,
-        eventIntegrity,
         dashboards,
-        errorBudgets,
         security,
-        regionalOverrides,
         certificationReports,
     ] = await Promise.all([
         db.from('runtime_health_projections')
@@ -523,44 +507,13 @@ router.get('/runtime/overview', async (c) => {
             .is('deleted_at', null)
             .order('evaluated_at', { ascending: false })
             .limit(20),
-        db.from('failover_drill_runs')
-            .select('drill_id, drill_type, source_region, target_region, affected_runtimes, status, rto_seconds, rpo_seconds, result, created_at')
-            .is('deleted_at', null)
-            .order('created_at', { ascending: false })
-            .limit(20),
-        db.from('chaos_experiment_runs')
-            .select('experiment_id, experiment_type, environment, blast_radius, status, guardrails, result, created_at')
-            .is('deleted_at', null)
-            .order('created_at', { ascending: false })
-            .limit(20),
-        db.from('load_test_runs')
-            .select('run_id, test_type, environment, status, tool, target_rps, p95_latency_ms, error_rate, report_url, result, created_at')
-            .is('deleted_at', null)
-            .order('created_at', { ascending: false })
-            .limit(20),
-        db.from('runtime_slo_definitions')
-            .select('slo_id, runtime_name, sli_name, target_percent, window, error_budget_policy, alert_policy, active')
-            .is('deleted_at', null)
-            .eq('active', true)
-            .order('runtime_name', { ascending: true })
-            .limit(50),
         db.from('production_readiness_gate_runs')
             .select('gate_run_id, environment, version, status, gates, failure_summary, started_at, finished_at, created_at')
             .is('deleted_at', null)
             .order('created_at', { ascending: false })
             .limit(20),
-        db.from('event_store_integrity_checks')
-            .select('check_id, stream_name, environment, status, checked_events, gap_count, duplicate_count, checked_at')
-            .is('deleted_at', null)
-            .order('checked_at', { ascending: false })
-            .limit(20),
         db.from('operational_dashboard_snapshots')
             .select('snapshot_id, dashboard_name, environment, status, source_api, source_projection, sampled_at')
-            .is('deleted_at', null)
-            .order('sampled_at', { ascending: false })
-            .limit(20),
-        db.from('sre_error_budget_snapshots')
-            .select('budget_id, runtime_name, slo_id, environment, window, target_percent, observed_percent, remaining_budget_percent, burn_rate, status, sampled_at')
             .is('deleted_at', null)
             .order('sampled_at', { ascending: false })
             .limit(20),
@@ -569,11 +522,6 @@ router.get('/runtime/overview', async (c) => {
             .is('deleted_at', null)
             .order('recorded_at', { ascending: false })
             .limit(20),
-        db.from('regional_routing_overrides')
-            .select('override_id, environment, tenant_site_id, runtime_root, source_region, target_region, status, expires_at, activated_at, restored_at, created_at')
-            .is('deleted_at', null)
-            .order('created_at', { ascending: false })
-            .limit(20),
         db.from('operational_certification_reports')
             .select('certification_id, environment, certification_mode, status, repository_maturity_score, live_maturity_score, evidence_summary, missing_capabilities, generated_at, expires_at')
             .is('deleted_at', null)
@@ -581,7 +529,7 @@ router.get('/runtime/overview', async (c) => {
             .limit(20),
     ]);
 
-    for (const result of [health, queues, alerts, incidents, deployments, deploymentHealth, failover, chaos, load, slo, readiness, eventIntegrity, dashboards, errorBudgets, security, regionalOverrides, certificationReports]) {
+    for (const result of [health, queues, alerts, incidents, deployments, deploymentHealth, readiness, dashboards, security, certificationReports]) {
         if (result.error) {
             if (shouldReturnEmptyForMissingLocalSchema(c.env, result.error)) {
                 return c.json(success({
@@ -591,16 +539,9 @@ router.get('/runtime/overview', async (c) => {
                     incidents: [],
                     deployments: [],
                     deployment_health_gates: [],
-                    failover_drills: [],
-                    chaos_experiments: [],
-                    load_tests: [],
-                    slos: [],
                     readiness_gates: [],
-                    event_store_integrity: [],
                     dashboards: [],
-                    error_budgets: [],
                     security_events: [],
-                    regional_routing_overrides: [],
                     certification_reports: [],
                 }));
             }
@@ -615,16 +556,9 @@ router.get('/runtime/overview', async (c) => {
         incidents: incidents.data || [],
         deployments: deployments.data || [],
         deployment_health_gates: deploymentHealth.data || [],
-        failover_drills: failover.data || [],
-        chaos_experiments: chaos.data || [],
-        load_tests: load.data || [],
-        slos: slo.data || [],
         readiness_gates: readiness.data || [],
-        event_store_integrity: eventIntegrity.data || [],
         dashboards: dashboards.data || [],
-        error_budgets: errorBudgets.data || [],
         security_events: security.data || [],
-        regional_routing_overrides: regionalOverrides.data || [],
         certification_reports: certificationReports.data || [],
     }));
 });
@@ -683,70 +617,6 @@ router.post('/runtime/queues/:queueName/redrive-dead-letters', async (c) => {
     if (error) throw new Error(`Distributed dead-letter redrive failed: ${error.message}`);
 
     return c.json(success({ operation_id: operationId, redriven_count: data }));
-});
-
-router.get('/runtime/replays', async (c) => {
-    const db = getSupabaseAdmin(c);
-    const { data, error } = await db
-        .from('replay_operation_schedules')
-        .select('replay_id, owner_runtime, site_id, event_types, cursor, batch_size, dry_run, impact, rollback_plan, requested_by, approved_by, authorization_expires_at, status, request_id, correlation_id, trace_id, created_at, updated_at')
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false })
-        .limit(parseLimit(c));
-
-    if (error) throw new Error(`Runtime replay list failed: ${error.message}`);
-
-    return c.json(success({ replays: data || [] }));
-});
-
-router.post('/runtime/replays', async (c) => {
-    const body = await readOptionalJson<unknown>(c, {});
-    const parsed = ScheduleRuntimeReplaySchema.safeParse(body);
-
-    if (!parsed.success) {
-        throw new ValidationError('Invalid runtime replay schedule request', parsed.error.flatten());
-    }
-
-    const db = getSupabaseAdmin(c);
-    const requestId = getRequestId(c);
-    const { data, error } = await db.rpc('schedule_runtime_replay_operation', {
-        p_replay_id: parsed.data.replay_id,
-        p_owner_runtime: parsed.data.owner_runtime,
-        p_site_id: parsed.data.site_id || null,
-        p_event_types: parsed.data.event_types,
-        p_cursor: parsed.data.cursor,
-        p_batch_size: parsed.data.batch_size,
-        p_dry_run: parsed.data.dry_run,
-        p_requested_by: actorId(c),
-        p_reason: parsed.data.reason,
-        p_request_id: requestId,
-        p_correlation_id: requestId,
-        p_trace_id: c.req.header('X-Trace-ID') || null,
-    });
-
-    if (error) throw new Error(`Runtime replay scheduling failed: ${error.message}`);
-
-    return c.json(success({ replay: data }), 201);
-});
-
-router.post('/runtime/replays/:replayId/authorize', async (c) => {
-    const body = await readOptionalJson<unknown>(c, {});
-    const parsed = AuthorizeRuntimeReplaySchema.safeParse(body);
-
-    if (!parsed.success) {
-        throw new ValidationError('Invalid runtime replay authorization request', parsed.error.flatten());
-    }
-
-    const db = getSupabaseAdmin(c);
-    const { data, error } = await db.rpc('authorize_runtime_replay_operation', {
-        p_replay_id: c.req.param('replayId'),
-        p_approved_by: actorId(c),
-        p_expires_at: parsed.data.expires_at,
-    });
-
-    if (error) throw new Error(`Runtime replay authorization failed: ${error.message}`);
-
-    return c.json(success({ replay: data }));
 });
 
 router.get('/runtime/control-commands', requirePermission('incident:view'), async (c) => {
@@ -980,83 +850,6 @@ router.patch('/runtime/incidents/:incidentId/status', requirePermission('inciden
     return c.json(success({ incident: data }));
 });
 
-router.post('/runtime/failover-drills', async (c) => {
-    const body = await readOptionalJson<unknown>(c, {});
-    const parsed = RecordFailoverDrillSchema.safeParse(body);
-
-    if (!parsed.success) {
-        throw new ValidationError('Invalid failover drill request', parsed.error.flatten());
-    }
-
-    const db = getSupabaseAdmin(c);
-    const { data, error } = await db.rpc('record_failover_drill_run', {
-        p_drill_id: parsed.data.drill_id,
-        p_drill_type: parsed.data.drill_type,
-        p_source_region: parsed.data.source_region || null,
-        p_target_region: parsed.data.target_region || null,
-        p_affected_runtimes: parsed.data.affected_runtimes,
-        p_status: parsed.data.status,
-        p_rto_seconds: parsed.data.rto_seconds ?? null,
-        p_rpo_seconds: parsed.data.rpo_seconds ?? null,
-        p_result: parsed.data.result,
-    });
-
-    if (error) throw new Error(`Failover drill recording failed: ${error.message}`);
-
-    return c.json(success({ drill: data }), 201);
-});
-
-router.post('/runtime/chaos-experiments', async (c) => {
-    const body = await readOptionalJson<unknown>(c, {});
-    const parsed = RecordChaosExperimentSchema.safeParse(body);
-
-    if (!parsed.success) {
-        throw new ValidationError('Invalid chaos experiment request', parsed.error.flatten());
-    }
-
-    const db = getSupabaseAdmin(c);
-    const { data, error } = await db.rpc('record_chaos_experiment_run', {
-        p_experiment_id: parsed.data.experiment_id,
-        p_experiment_type: parsed.data.experiment_type,
-        p_environment: parsed.data.environment,
-        p_blast_radius: parsed.data.blast_radius,
-        p_status: parsed.data.status,
-        p_guardrails: parsed.data.guardrails,
-        p_result: parsed.data.result,
-    });
-
-    if (error) throw new Error(`Chaos experiment recording failed: ${error.message}`);
-
-    return c.json(success({ experiment: data }), 201);
-});
-
-router.post('/runtime/load-tests', async (c) => {
-    const body = await readOptionalJson<unknown>(c, {});
-    const parsed = RecordLoadTestRunSchema.safeParse(body);
-
-    if (!parsed.success) {
-        throw new ValidationError('Invalid load test run request', parsed.error.flatten());
-    }
-
-    const db = getSupabaseAdmin(c);
-    const { data, error } = await db.rpc('record_load_test_run', {
-        p_run_id: parsed.data.run_id,
-        p_test_type: parsed.data.test_type,
-        p_environment: parsed.data.environment,
-        p_status: parsed.data.status,
-        p_tool: parsed.data.tool,
-        p_target_rps: parsed.data.target_rps ?? null,
-        p_p95_latency_ms: parsed.data.p95_latency_ms ?? null,
-        p_error_rate: parsed.data.error_rate ?? null,
-        p_report_url: parsed.data.report_url || null,
-        p_result: parsed.data.result,
-    });
-
-    if (error) throw new Error(`Load test run recording failed: ${error.message}`);
-
-    return c.json(success({ run: data }), 201);
-});
-
 router.post('/runtime/deployments', async (c) => {
     const body = await readOptionalJson<unknown>(c, {});
     const parsed = RecordDeploymentPromotionSchema.safeParse(body);
@@ -1131,59 +924,6 @@ router.post('/runtime/deployment-health-gates', async (c) => {
     return c.json(success({ gate: data }), 201);
 });
 
-router.get('/runtime/event-store/integrity', async (c) => {
-    const db = getSupabaseAdmin(c);
-    const { data, error } = await db
-        .from('event_store_integrity_checks')
-        .select('check_id, stream_name, environment, status, checked_events, min_stream_position, max_stream_position, gap_count, duplicate_count, retention_class, result, checked_at')
-        .is('deleted_at', null)
-        .order('checked_at', { ascending: false })
-        .limit(parseLimit(c));
-
-    if (error) throw new Error(`Event store integrity list failed: ${error.message}`);
-
-    return c.json(success({ checks: data || [] }));
-});
-
-router.post('/runtime/event-store/integrity', async (c) => {
-    const body = await readOptionalJson<unknown>(c, {});
-    const parsed = ValidateEventStoreIntegritySchema.safeParse(body);
-
-    if (!parsed.success) {
-        throw new ValidationError('Invalid event-store integrity request', parsed.error.flatten());
-    }
-
-    const db = getSupabaseAdmin(c);
-    const { data, error } = await db.rpc('validate_event_stream_consistency', {
-        p_stream_name: parsed.data.stream_name,
-        p_environment: parsed.data.environment,
-        p_limit: parsed.data.limit,
-    });
-
-    if (error) throw new Error(`Event stream consistency validation failed: ${error.message}`);
-
-    return c.json(success({ check: data }), 201);
-});
-
-router.post('/runtime/event-store/archive', async (c) => {
-    const body = await readOptionalJson<unknown>(c, {});
-    const parsed = ArchiveDistributedEventsSchema.safeParse(body);
-
-    if (!parsed.success) {
-        throw new ValidationError('Invalid event archival request', parsed.error.flatten());
-    }
-
-    const db = getSupabaseAdmin(c);
-    const { data, error } = await db.rpc('archive_distributed_events', {
-        p_before: parsed.data.before,
-        p_limit: parsed.data.limit,
-    });
-
-    if (error) throw new Error(`Event archival failed: ${error.message}`);
-
-    return c.json(success({ archived_count: data }));
-});
-
 router.post('/runtime/dashboards', async (c) => {
     const body = await readOptionalJson<unknown>(c, {});
     const parsed = RecordOperationalDashboardSnapshotSchema.safeParse(body);
@@ -1208,33 +948,6 @@ router.post('/runtime/dashboards', async (c) => {
     return c.json(success({ snapshot: data }), 201);
 });
 
-router.post('/runtime/sre/error-budgets', async (c) => {
-    const body = await readOptionalJson<unknown>(c, {});
-    const parsed = RecordSreErrorBudgetSnapshotSchema.safeParse(body);
-
-    if (!parsed.success) {
-        throw new ValidationError('Invalid SRE error budget snapshot request', parsed.error.flatten());
-    }
-
-    const db = getSupabaseAdmin(c);
-    const { data, error } = await db.rpc('record_sre_error_budget_snapshot', {
-        p_budget_id: parsed.data.budget_id,
-        p_runtime_name: parsed.data.runtime_name,
-        p_slo_id: parsed.data.slo_id,
-        p_environment: parsed.data.environment,
-        p_window: parsed.data.window,
-        p_target_percent: parsed.data.target_percent,
-        p_observed_percent: parsed.data.observed_percent,
-        p_remaining_budget_percent: parsed.data.remaining_budget_percent,
-        p_burn_rate: parsed.data.burn_rate,
-        p_status: parsed.data.status,
-    });
-
-    if (error) throw new Error(`SRE error budget snapshot recording failed: ${error.message}`);
-
-    return c.json(success({ budget: data }), 201);
-});
-
 router.post('/runtime/security/enforcement-events', async (c) => {
     const body = await readOptionalJson<unknown>(c, {});
     const parsed = RecordSecurityEnforcementEventSchema.safeParse(body);
@@ -1257,33 +970,6 @@ router.post('/runtime/security/enforcement-events', async (c) => {
     if (error) throw new Error(`Security enforcement event recording failed: ${error.message}`);
 
     return c.json(success({ event: data }), 201);
-});
-
-router.post('/runtime/regional-routing-overrides', async (c) => {
-    const body = await readOptionalJson<unknown>(c, {});
-    const parsed = RecordRegionalRoutingOverrideSchema.safeParse(body);
-
-    if (!parsed.success) {
-        throw new ValidationError('Invalid regional routing override request', parsed.error.flatten());
-    }
-
-    const db = getSupabaseAdmin(c);
-    const { data, error } = await db.rpc('record_regional_routing_override', {
-        p_override_id: parsed.data.override_id,
-        p_environment: parsed.data.environment,
-        p_tenant_site_id: parsed.data.tenant_site_id || null,
-        p_runtime_root: parsed.data.runtime_root,
-        p_source_region: parsed.data.source_region,
-        p_target_region: parsed.data.target_region,
-        p_reason: parsed.data.reason,
-        p_status: parsed.data.status,
-        p_expires_at: parsed.data.expires_at || null,
-        p_metadata: parsed.data.metadata,
-    });
-
-    if (error) throw new Error(`Regional routing override recording failed: ${error.message}`);
-
-    return c.json(success({ override: data }), 201);
 });
 
 router.get('/runtime/certification-reports', async (c) => {

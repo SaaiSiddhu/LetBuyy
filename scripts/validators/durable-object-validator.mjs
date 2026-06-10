@@ -17,7 +17,7 @@ reporter.assert(apiWrangler.includes(`tag = "${topology.durableObjects.migration
 reporter.assert(apiWrangler.includes('new_sqlite_classes = ["LetbuyyRuntimeDurableObject"]'), "Durable Object must use SQLite-backed class migration");
 reporter.assert(indexSource.includes("export { LetbuyyRuntimeDurableObject }"), "API Gateway main module must export Durable Object class");
 reporter.assert(durableSource.includes("blockConcurrencyWhile"), "Durable Object must initialize storage through blockConcurrencyWhile");
-reporter.assert(durableSource.includes("checkpoint"), "Durable Object must expose checkpoint state for replay recovery");
+reporter.assert(durableSource.includes("checkpoint"), "Durable Object must expose checkpoint state for rollback recovery");
 
 for (const environment of ["staging", "production"]) {
   const env = topology.environments[environment];

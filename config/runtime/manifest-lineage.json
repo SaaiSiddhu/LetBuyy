@@ -1,33 +1,9 @@
 {
   "$schema": "config/runtime/manifest-lineage.schema.json",
-  "manifestVersion": 1,
+  "manifestVersion": 2,
   "mode": "governance-contract-not-live-evidence",
   "checksumAlgorithm": "sha256",
   "entries": [
-    {
-      "path": "config/runtime/runtime-orchestration-manifest.json",
-      "owner": "runtime-orchestration",
-      "compatibility": "additive-or-explicit-migration",
-      "checksum": "f88138414e87d35693b438cf8e835fe29c929146d6c5f9128ad929d9008dd40f"
-    },
-    {
-      "path": "config/runtime/runtime-survivability-intelligence.json",
-      "owner": "runtime-survivability",
-      "compatibility": "deterministic-convergence-intelligence",
-      "checksum": "e0ee7d563f810d59d2f9f19f9d5b58a5b919369ba721b188b9a0cb110a954d38"
-    },
-    {
-      "path": "config/runtime/replay-evolution-manifest.json",
-      "owner": "replay-runtime",
-      "compatibility": "additive-or-explicit-transform-before-replay",
-      "checksum": "43076a4221fd32c9b59fac12aa72bff156768e66b2c18b6f1b61dbc846316ca2"
-    },
-    {
-      "path": "config/runtime/projection-recovery-manifest.json",
-      "owner": "projection-runtime",
-      "compatibility": "rebuild-compatible",
-      "checksum": "ebe323ed2b3d36a96f5154de6bda91c9aca2adb63edc43f408870e0ec8ce68c5"
-    },
     {
       "path": "config/runtime/queue-lifecycle-manifest.json",
       "owner": "queue-runtime",
@@ -38,13 +14,13 @@
       "path": "config/runtime/deployment-lineage-manifest.json",
       "owner": "deployment-runtime",
       "compatibility": "rollback-lineage-compatible",
-      "checksum": "f2afc759ea8b8a867161e6bc15d22e64dd6d9351fffa81dbf09d4b939a18eeab"
+      "checksum": "6ef0e6b0fc09587f0515607e8d54a9f8525b33d191cf6d9efbade399f6c46eff"
     },
     {
       "path": "config/runtime/cloudflare-binding-ownership.json",
       "owner": "cloudflare-runtime",
       "compatibility": "explicit-env-binding-compatible",
-      "checksum": "60a45b32efac2fc7f8537798bca2e4f31d4b6dbcd8a9479927ef8fd26f938e07"
+      "checksum": "830d95588f29815a219b5a6d44edd919a6ce556bd96f40a41e027754e1420c9f"
     },
     {
       "path": "config/runtime/deployment-topology.json",
@@ -53,70 +29,34 @@
       "checksum": "bde6f7f8f9f2647280d03f6f60b1e820b41b43fc7b29aeaaa77cbef6f7b6b352"
     },
     {
-      "path": "config/runtime/distributed-execution-contract.json",
-      "owner": "distributed-execution",
-      "compatibility": "execution-checkpoint-compatible",
-      "checksum": "deb7b586addb866d6c8a1d377a635f807b1c702c91037d195710a1d4d4a15d01"
+      "path": "config/runtime/environment-lifecycle.json",
+      "owner": "environment-lifecycle",
+      "compatibility": "staging-production-isolation-compatible",
+      "checksum": "7df9346198dee2128e58a5ab63f7c7eae00075a6b85e23fb516df16e59339417"
     },
     {
-      "path": "config/runtime/durable-execution-contract.json",
-      "owner": "durable-distributed-execution",
-      "compatibility": "wal-lease-fencing-and-recovery-compatible",
-      "checksum": "62a6feafb242b998a8cb63687d4e81c3184dac875db943cd2b66b326f40d7118"
+      "path": "config/runtime/rollout-lifecycle.json",
+      "owner": "rollout-lifecycle",
+      "compatibility": "canary-and-rollback-compatible",
+      "checksum": "25f5fafa8ff8b7a1ace99b15381c544b2791cbef1fb607c89d8239deea0ee94e"
     },
     {
-      "path": "config/runtime/distributed-consistency-contract.json",
-      "owner": "distributed-consistency",
-      "compatibility": "consistency-precedence-compatible",
-      "checksum": "8e246d9f54df15e92259ae7a476d5cc2ca88c8ea8e0f43f86617e637c2b350d4"
+      "path": "config/runtime/production-topology.json",
+      "owner": "production-topology",
+      "compatibility": "single-region-outbox-compatible",
+      "checksum": "5a0d662d09cac8236ebb21cabd8bec0e892c8e4c8adba74c97e842f5c7887d9d"
     },
     {
-      "path": "config/runtime/runtime-causality-graph.json",
-      "owner": "runtime-causality",
-      "compatibility": "acyclic-causality-compatible",
-      "checksum": "7f11150661b3ddadc2774fd47ea051ea57a2b0d3f7cfc0aae750f13a327afa52"
+      "path": "config/runtime/live-production-certification.json",
+      "owner": "live-certification",
+      "compatibility": "credential-gated-evidence-compatible",
+      "checksum": "28e142ad68d2b369743c8415dd290e9d1e3f007c01c8aaa7b9d23c66993f8f21"
     },
     {
-      "path": "config/runtime/runtime-saturation-contract.json",
-      "owner": "runtime-saturation",
-      "compatibility": "budget-compatible",
-      "checksum": "b890eefbf202f7b8619054712037c76f33a6afa2679ea630010d6d94e599f82a"
-    },
-    {
-      "path": "config/runtime/runtime-memory-model.json",
-      "owner": "runtime-memory",
-      "compatibility": "single-owner-memory-compatible",
-      "checksum": "351db68589f4c99f9c31d54b9b5c172dcaba08ee8fe7686cc47df64a373fbe41"
-    },
-    {
-      "path": "config/runtime/failure-domain-manifest.json",
-      "owner": "failure-domain",
-      "compatibility": "blast-radius-compatible",
-      "checksum": "8b15b682ce183d5e9e61fade351b807931f5ed5f94d6ce60fcbbf7ac7961a41b"
-    },
-    {
-      "path": "config/runtime/replay-branch-registry.json",
-      "owner": "replay-branch-governance",
-      "compatibility": "isolated-branch-compatible",
-      "checksum": "09d9d00a0bcb5677b5774a9f054682ac34e90e2632ff9aa1e6f085ee3da83c1e"
-    },
-    {
-      "path": "config/runtime/convergence-invariants.json",
-      "owner": "convergence-math",
-      "compatibility": "fixed-point-compatible",
-      "checksum": "73eff65ff345fb6443b1a63249891a7cca0dc83f34378e46115310809f6a5639"
-    },
-    {
-      "path": "config/runtime/operational-certification-evidence.json",
+      "path": "config/runtime/operational-certification-policy.json",
       "owner": "operational-certification",
-      "compatibility": "local-evidence-contract-compatible",
-      "checksum": "bfb8a45ac274f15e0f5768e824a792853f997c6efd68560d3779547f48229b81"
-    },
-    {
-      "path": "config/runtime/recovery-slo-contract.json",
-      "owner": "recovery-slo",
-      "compatibility": "bounded-recovery-budget-compatible",
-      "checksum": "1382ceb8ea12dd145f9086317e70769f0cb26d6173fdb8bcbc392cd4436e8a9c"
+      "compatibility": "active-evidence-category-compatible",
+      "checksum": "f654fc4d579100fc5fbc1fb5bbf8d4c4ad7b39cdb79f123b508ee5ec6d91379f"
     }
   ],
   "failurePolicy": "fail-closed"

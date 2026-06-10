@@ -28,7 +28,7 @@ reporter.assert(ownership?.sourceTopology === "config/runtime/cloudflare-topolog
 reporter.assert(JSON.stringify(lineage?.promotionOrder) === JSON.stringify(["staging", "production"]), "Environment lineage must preserve staging -> production");
 
 const seenResourceNames = new Map();
-const resourceKeys = ["worker", "d1", "kv", "r2", "runtimeQueue", "deadLetterQueue", "durableObjectNamespace", "telemetryDataset", "replayStorage", "walStorage"];
+const resourceKeys = ["worker", "d1", "kv", "r2", "runtimeQueue", "deadLetterQueue", "durableObjectNamespace", "telemetryDataset", "outboxEvidenceStorage", "operationEvidenceStorage"];
 
 function envSection(text, environment) {
   const marker = `[env.${environment}]`;

@@ -12,12 +12,12 @@
 
 1. Identify the Worker and version from Cloudflare deployments.
 2. Run `node infrastructure/scripts/deploy/production-rollback.mjs --environment=production --worker=<worker> --version-id=<version>`.
-3. Verify health gates and replay integrity.
+3. Verify deployment health gates and queue drain state.
 4. Record rollback evidence and incident timeline.
 
 ## Supabase Recovery
 
 1. Run verification SQL in plan/preflight first.
 2. For recovery drills, restore into an isolated environment.
-3. Run replay and event-store integrity checks.
-4. Promote only after projection comparison passes.
+3. Run RLS, migration, operational-dashboard, and deployment-health verification.
+4. Promote only after the restored environment passes production readiness gates.

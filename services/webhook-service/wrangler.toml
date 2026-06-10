@@ -26,7 +26,7 @@ DEPLOYMENT_ENV = "staging"
 TELEMETRY_ENV = "staging"
 RUNTIME_NAME = "Webhook Service"
 PRIMARY_REGION = "ap-south-1"
-FAILOVER_REGION = "ap-southeast-1"
+EDGE_SCOPE = "global-edge"
 
 [env.staging]
 name = "letbuyy-webhook-staging"
@@ -55,7 +55,7 @@ DEPLOYMENT_ENV = "staging"
 TELEMETRY_ENV = "staging"
 RUNTIME_NAME = "Webhook Service"
 PRIMARY_REGION = "ap-south-1"
-FAILOVER_REGION = "ap-southeast-1"
+EDGE_SCOPE = "global-edge"
 
 [[env.staging.services]]
 binding = "API_GATEWAY_SERVICE"
@@ -94,7 +94,7 @@ DEPLOYMENT_ENV = "production"
 TELEMETRY_ENV = "production"
 RUNTIME_NAME = "Webhook Service"
 PRIMARY_REGION = "ap-south-1"
-FAILOVER_REGION = "ap-southeast-1"
+EDGE_SCOPE = "global-edge"
 
 [[env.production.services]]
 binding = "API_GATEWAY_SERVICE"

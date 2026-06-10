@@ -908,27 +908,13 @@ export const RuntimeDeadLetterRedriveSchema = z.object({
   reason: z.string().trim().min(8).max(500),
 });
 
-export const ScheduleRuntimeReplaySchema = z.object({
-  replay_id: z.string().trim().min(8).max(120),
-  owner_runtime: z.string().trim().min(1).max(120),
-  site_id: z.string().uuid().nullable().optional(),
-  event_types: z.array(z.string().trim().min(1).max(120)).max(100).default([]),
-  cursor: JsonRecordSchema.default({}),
-  batch_size: z.number().int().min(1).max(1000).default(100),
-  dry_run: z.boolean().default(true),
-  reason: z.string().trim().min(8).max(500),
-});
 
-export const AuthorizeRuntimeReplaySchema = z.object({
-  expires_at: z.string().datetime(),
-});
 
 export const SubmitRuntimeControlCommandSchema = z.object({
   command_id: z.string().trim().min(8).max(120),
   operation: z.enum([
     'pause-queue',
     'resume-queue',
-    'replay-events',
     'redrive-dead-letter',
     'cancel-workflow',
     'retry-workflow',
@@ -936,8 +922,6 @@ export const SubmitRuntimeControlCommandSchema = z.object({
     'invalidate-cache',
     'throttle-tenant',
     'release-tenant-throttle',
-    'failover-region',
-    'restore-region',
     'pause-provider',
     'restore-provider',
     'promote-deployment',
@@ -945,13 +929,11 @@ export const SubmitRuntimeControlCommandSchema = z.object({
   ]),
   target_type: z.enum([
     'queue',
-    'event-stream',
     'workflow',
     'dead-letter',
     'worker',
     'cache',
     'tenant-runtime',
-    'region',
     'provider',
     'deployment',
   ]),
@@ -977,40 +959,8 @@ export const UpdateProductionIncidentStatusSchema = z.object({
   details: JsonRecordSchema.default({}),
 });
 
-export const RecordFailoverDrillSchema = z.object({
-  drill_id: z.string().trim().min(8).max(120),
-  drill_type: z.enum(['regional', 'provider', 'queue', 'cache', 'telemetry', 'database']),
-  source_region: z.string().trim().min(1).max(80).nullable().optional(),
-  target_region: z.string().trim().min(1).max(80).nullable().optional(),
-  affected_runtimes: z.array(z.string().trim().min(1).max(120)).max(50).default([]),
-  status: z.enum(['planned', 'running', 'passed', 'failed', 'cancelled']),
-  rto_seconds: z.number().int().min(0).nullable().optional(),
-  rpo_seconds: z.number().int().min(0).nullable().optional(),
-  result: JsonRecordSchema.default({}),
-});
 
-export const RecordChaosExperimentSchema = z.object({
-  experiment_id: z.string().trim().min(8).max(120),
-  experiment_type: z.enum(['queue-outage', 'provider-outage', 'replay-corruption', 'cache-failure', 'regional-outage', 'workflow-recovery', 'dlq-flood', 'telemetry-outage']),
-  environment: z.enum(['staging', 'production']),
-  blast_radius: z.enum(['single-tenant', 'single-runtime', 'single-region', 'global-readonly']),
-  status: z.enum(['planned', 'approved', 'running', 'passed', 'failed', 'aborted']),
-  guardrails: JsonRecordSchema.default({}),
-  result: JsonRecordSchema.default({}),
-});
 
-export const RecordLoadTestRunSchema = z.object({
-  run_id: z.string().trim().min(8).max(120),
-  test_type: z.enum(['queue', 'replay', 'projection-rebuild', 'tenant-isolation', 'cache-throughput', 'checkout-concurrency', 'workflow-concurrency', 'multi-region-latency']),
-  environment: z.enum(['staging', 'production']),
-  status: z.enum(['planned', 'running', 'passed', 'failed', 'cancelled']),
-  tool: z.enum(['k6', 'gatling', 'locust']),
-  target_rps: z.number().int().min(0).nullable().optional(),
-  p95_latency_ms: z.number().int().min(0).nullable().optional(),
-  error_rate: z.number().min(0).max(1).nullable().optional(),
-  report_url: z.string().url().nullable().optional(),
-  result: JsonRecordSchema.default({}),
-});
 
 export const RecordDeploymentPromotionSchema = z.object({
   promotion_id: z.string().trim().min(8).max(120),
@@ -1044,16 +994,7 @@ export const RecordDeploymentHealthGateSchema = z.object({
   evidence_url: z.string().url().nullable().optional(),
 });
 
-export const ValidateEventStoreIntegritySchema = z.object({
-  stream_name: z.string().trim().min(1).max(160),
-  environment: z.enum(['staging', 'production']).default('production'),
-  limit: z.number().int().min(1).max(100000).default(10000),
-});
 
-export const ArchiveDistributedEventsSchema = z.object({
-  before: z.string().datetime(),
-  limit: z.number().int().min(1).max(100000).default(10000),
-});
 
 export const RecordOperationalDashboardSnapshotSchema = z.object({
   snapshot_id: z.string().trim().min(8).max(120),
@@ -1065,18 +1006,6 @@ export const RecordOperationalDashboardSnapshotSchema = z.object({
   panels: z.array(JsonRecordSchema).default([]),
 });
 
-export const RecordSreErrorBudgetSnapshotSchema = z.object({
-  budget_id: z.string().trim().min(8).max(120),
-  runtime_name: z.string().trim().min(1).max(120),
-  slo_id: z.string().trim().min(1).max(120),
-  environment: z.enum(['staging', 'production']),
-  window: z.string().trim().min(1).max(80),
-  target_percent: z.number().min(0).max(100),
-  observed_percent: z.number().min(0).max(100),
-  remaining_budget_percent: z.number().min(0).max(100),
-  burn_rate: z.number().min(0).default(0),
-  status: z.enum(['healthy', 'watch', 'freeze', 'exhausted']),
-});
 
 export const RecordSecurityEnforcementEventSchema = z.object({
   enforcement_id: z.string().trim().min(8).max(120),
@@ -1088,18 +1017,6 @@ export const RecordSecurityEnforcementEventSchema = z.object({
   evidence: JsonRecordSchema.default({}),
 });
 
-export const RecordRegionalRoutingOverrideSchema = z.object({
-  override_id: z.string().trim().min(8).max(120),
-  environment: z.enum(['staging', 'production']),
-  tenant_site_id: z.string().uuid().nullable().optional(),
-  runtime_root: z.string().trim().min(1).max(200),
-  source_region: z.string().trim().min(1).max(80),
-  target_region: z.string().trim().min(1).max(80),
-  reason: z.string().trim().min(8).max(500),
-  status: z.enum(['planned', 'active', 'restored', 'cancelled']),
-  expires_at: z.string().datetime().nullable().optional(),
-  metadata: JsonRecordSchema.default({}),
-});
 
 export const RecordOperationalCertificationReportSchema = z.object({
   certification_id: z.string().trim().min(8).max(120),
@@ -1258,21 +1175,12 @@ export type CreateWebhookSubscriptionInput = z.infer<typeof CreateWebhookSubscri
 export type UpdateWebhookSubscriptionInput = z.infer<typeof UpdateWebhookSubscriptionSchema>;
 export type RuntimeQueueRecoveryInput = z.infer<typeof RuntimeQueueRecoverySchema>;
 export type RuntimeDeadLetterRedriveInput = z.infer<typeof RuntimeDeadLetterRedriveSchema>;
-export type ScheduleRuntimeReplayInput = z.infer<typeof ScheduleRuntimeReplaySchema>;
-export type AuthorizeRuntimeReplayInput = z.infer<typeof AuthorizeRuntimeReplaySchema>;
 export type SubmitRuntimeControlCommandInput = z.infer<typeof SubmitRuntimeControlCommandSchema>;
 export type RecordProductionIncidentInput = z.infer<typeof RecordProductionIncidentSchema>;
 export type UpdateProductionIncidentStatusInput = z.infer<typeof UpdateProductionIncidentStatusSchema>;
-export type RecordFailoverDrillInput = z.infer<typeof RecordFailoverDrillSchema>;
-export type RecordChaosExperimentInput = z.infer<typeof RecordChaosExperimentSchema>;
-export type RecordLoadTestRunInput = z.infer<typeof RecordLoadTestRunSchema>;
 export type RecordDeploymentPromotionInput = z.infer<typeof RecordDeploymentPromotionSchema>;
 export type RecordProductionReadinessGateInput = z.infer<typeof RecordProductionReadinessGateSchema>;
 export type RecordDeploymentHealthGateInput = z.infer<typeof RecordDeploymentHealthGateSchema>;
-export type ValidateEventStoreIntegrityInput = z.infer<typeof ValidateEventStoreIntegritySchema>;
-export type ArchiveDistributedEventsInput = z.infer<typeof ArchiveDistributedEventsSchema>;
 export type RecordOperationalDashboardSnapshotInput = z.infer<typeof RecordOperationalDashboardSnapshotSchema>;
-export type RecordSreErrorBudgetSnapshotInput = z.infer<typeof RecordSreErrorBudgetSnapshotSchema>;
 export type RecordSecurityEnforcementEventInput = z.infer<typeof RecordSecurityEnforcementEventSchema>;
-export type RecordRegionalRoutingOverrideInput = z.infer<typeof RecordRegionalRoutingOverrideSchema>;
 export type RecordOperationalCertificationReportInput = z.infer<typeof RecordOperationalCertificationReportSchema>;

@@ -4,7 +4,7 @@ Deployment proof requires a traceable sequence from governance gates through rol
 
 ## Required Proof
 
-- Governance, dependency, TypeScript, test, migration, Cloudflare, security, observability, chaos, and CI gates pass before rollout.
+- Governance, dependency, TypeScript, test, migration, Cloudflare, security, observability, provider-failure, and CI gates pass before rollout.
 - Worker deployments use explicit Wrangler `--env`; Cloudflare environment bindings are declared per environment because bindings and vars are not inherited.
 - Production rollout evidence must include deployment health gates and rollback command readiness.
 - Canary and blue/green promotion evidence must include tenant or percentage scope, health score, rollback threshold, and operator approval.

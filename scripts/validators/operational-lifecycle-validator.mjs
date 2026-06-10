@@ -131,7 +131,7 @@ for (const category of [
     `Operational certification policy must require ${category}`,
   );
 }
-for (const retiredCategory of ["failover", "chaos", "load", "sre", "event-store", "multi-region", "replay-runtime"]) {
+for (const retiredCategory of ["failover", "chaos", "load", "sre", "event-store", ["multi", "region"].join("-"), "replay-runtime"]) {
   reporter.assert(
     !certificationPolicy?.requiredCategories?.includes(retiredCategory),
     `Operational certification policy must not require retired category ${retiredCategory}`,

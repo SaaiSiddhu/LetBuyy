@@ -13,7 +13,6 @@ const reporter = createReporter("Manifest lineage validator");
 const manifestPath = "config/runtime/manifest-lineage.json";
 const schemaPath = "config/runtime/manifest-lineage.schema.json";
 const manifest = readJson(manifestPath);
-const orchestration = readJson("config/runtime/runtime-orchestration-manifest.json");
 
 reporter.assert(exists(manifestPath), `Missing manifest lineage manifest: ${manifestPath}`);
 reporter.assert(exists(schemaPath), `Missing manifest lineage schema: ${schemaPath}`);
@@ -21,8 +20,6 @@ reporter.assert(manifest?.$schema === schemaPath, "Manifest lineage must referen
 reporter.assert(manifest?.mode === "governance-contract-not-live-evidence", "Manifest lineage must not claim live evidence");
 reporter.assert(manifest?.checksumAlgorithm === "sha256", "Manifest lineage must use sha256 checksums");
 reporter.assert(manifest?.failurePolicy === "fail-closed", "Manifest lineage must fail closed");
-reporter.assert(orchestration?.manifestEvolution?.lineageManifest === manifestPath, "Runtime orchestration must bind manifest lineage");
-reporter.assert(orchestration?.manifestEvolution?.checksumAlgorithm === "sha256", "Runtime orchestration must declare sha256 manifest lineage");
 
 function checksum(relPath) {
   return crypto
@@ -32,25 +29,15 @@ function checksum(relPath) {
 }
 
 const requiredEntries = [
-  "config/runtime/runtime-orchestration-manifest.json",
-  "config/runtime/runtime-survivability-intelligence.json",
-  "config/runtime/replay-evolution-manifest.json",
-  "config/runtime/projection-recovery-manifest.json",
   "config/runtime/queue-lifecycle-manifest.json",
   "config/runtime/deployment-lineage-manifest.json",
   "config/runtime/cloudflare-binding-ownership.json",
   "config/runtime/deployment-topology.json",
-  "config/runtime/distributed-execution-contract.json",
-  "config/runtime/durable-execution-contract.json",
-  "config/runtime/distributed-consistency-contract.json",
-  "config/runtime/runtime-causality-graph.json",
-  "config/runtime/runtime-saturation-contract.json",
-  "config/runtime/runtime-memory-model.json",
-  "config/runtime/failure-domain-manifest.json",
-  "config/runtime/replay-branch-registry.json",
-  "config/runtime/convergence-invariants.json",
-  "config/runtime/operational-certification-evidence.json",
-  "config/runtime/recovery-slo-contract.json",
+  "config/runtime/environment-lifecycle.json",
+  "config/runtime/rollout-lifecycle.json",
+  "config/runtime/production-topology.json",
+  "config/runtime/live-production-certification.json",
+  "config/runtime/operational-certification-policy.json",
 ];
 
 const entries = manifest?.entries || [];

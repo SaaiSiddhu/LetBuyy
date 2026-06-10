@@ -26,7 +26,7 @@ DEPLOYMENT_ENV = "staging"
 TELEMETRY_ENV = "staging"
 RUNTIME_NAME = "Mobile BFF"
 PRIMARY_REGION = "ap-south-1"
-FAILOVER_REGION = "ap-southeast-1"
+EDGE_SCOPE = "global-edge"
 # INTERNAL_API_SECRET is a Worker SECRET — provision per environment with:
 #   wrangler secret put INTERNAL_API_SECRET            (default/dev)
 #   wrangler secret put INTERNAL_API_SECRET --env staging
@@ -64,7 +64,7 @@ DEPLOYMENT_ENV = "staging"
 TELEMETRY_ENV = "staging"
 RUNTIME_NAME = "Mobile BFF"
 PRIMARY_REGION = "ap-south-1"
-FAILOVER_REGION = "ap-southeast-1"
+EDGE_SCOPE = "global-edge"
 # INTERNAL_API_SECRET is a Worker SECRET — provision per environment with:
 #   wrangler secret put INTERNAL_API_SECRET            (default/dev)
 #   wrangler secret put INTERNAL_API_SECRET --env staging
@@ -112,7 +112,7 @@ DEPLOYMENT_ENV = "production"
 TELEMETRY_ENV = "production"
 RUNTIME_NAME = "Mobile BFF"
 PRIMARY_REGION = "ap-south-1"
-FAILOVER_REGION = "ap-southeast-1"
+EDGE_SCOPE = "global-edge"
 # INTERNAL_API_SECRET is a Worker SECRET — provision per environment with:
 #   wrangler secret put INTERNAL_API_SECRET            (default/dev)
 #   wrangler secret put INTERNAL_API_SECRET --env staging

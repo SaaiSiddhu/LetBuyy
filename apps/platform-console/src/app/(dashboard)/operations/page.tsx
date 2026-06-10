@@ -36,10 +36,7 @@ type OperationsOverview = {
     incidents?: InternalProductionIncident[];
     deployments?: Array<{ promotion_id: string; runtime_name: string; environment: string; strategy: string; status: string; version: string; created_at?: string | null }>;
     deployment_health_gates?: Array<{ gate_id: string; runtime_root: string; environment: string; gate_name: string; status: string; evaluated_at?: string | null }>;
-    event_store_integrity?: Array<{ check_id: string; stream_name?: string | null; status: string; checked_events?: number | null; gap_count?: number | null; duplicate_count?: number | null; checked_at?: string | null }>;
     security_events?: Array<{ enforcement_id: string; control_name: string; runtime_root: string; status: string; severity: string; recorded_at?: string | null }>;
-    error_budgets?: Array<{ budget_id: string; runtime_name: string; slo_id: string; status: string; remaining_budget_percent: number; burn_rate: number; sampled_at?: string | null }>;
-    regional_routing_overrides?: Array<{ override_id: string; runtime_root: string; source_region: string; target_region: string; status: string; created_at?: string | null }>;
     certification_reports?: Array<{ certification_id: string; certification_mode: string; status: string; repository_maturity_score: number; live_maturity_score: number; generated_at?: string | null; expires_at?: string | null }>;
 };
 
@@ -308,10 +305,7 @@ export default async function OperationsDashboardPage() {
     const incidents = data.overview.incidents || [];
     const deployments = data.overview.deployments || [];
     const deploymentHealth = data.overview.deployment_health_gates || [];
-    const integrity = data.overview.event_store_integrity || [];
     const security = data.overview.security_events || [];
-    const budgets = data.overview.error_budgets || [];
-    const regional = data.overview.regional_routing_overrides || [];
     const certifications = data.overview.certification_reports || [];
     const activeIncidents = incidents.filter((item) => item.status !== 'closed');
     const sev12WithoutPostmortem = activeIncidents.filter((incident) => (
@@ -320,7 +314,6 @@ export default async function OperationsDashboardPage() {
     )).length;
     const latestCertification = certifications[0];
     const dlqMessages = queues.reduce((total, item) => total + Number(item.dead_lettered || 0), 0);
-    const frozenBudgets = budgets.filter((item) => item.status === 'freeze' || item.status === 'exhausted').length;
     const firingAlerts = alerts.filter((item) => item.firing).length;
 
     return (
@@ -404,18 +397,6 @@ export default async function OperationsDashboardPage() {
                 />
 
                 <StatusPanel
-                    title="Event Store Integrity"
-                    description="Replay and event stream consistency checks."
-                    items={integrity.map((item) => ({
-                        key: item.check_id,
-                        label: item.stream_name || item.check_id,
-                        detail: `${item.checked_events ?? 0} events | gaps ${item.gap_count ?? 0} | duplicates ${item.duplicate_count ?? 0}`,
-                        status: item.status,
-                        timestamp: item.checked_at,
-                    }))}
-                />
-
-                <StatusPanel
                     title="Security Enforcement"
                     description="Security controls recorded by the operations runtime."
                     items={security.map((item) => ({
@@ -428,18 +409,6 @@ export default async function OperationsDashboardPage() {
                 />
 
                 <StatusPanel
-                    title="Regional Overrides"
-                    description="Temporary region routing exceptions."
-                    items={regional.map((item) => ({
-                        key: item.override_id,
-                        label: item.runtime_root,
-                        detail: `${item.source_region} to ${item.target_region}`,
-                        status: item.status,
-                        timestamp: item.created_at,
-                    }))}
-                />
-
-                <StatusPanel
                     title="Operational Certification"
                     description="Certification score evidence for leadership review."
                     items={certifications.map((item) => ({
@@ -448,18 +417,6 @@ export default async function OperationsDashboardPage() {
                         detail: `${item.certification_mode} | repo ${item.repository_maturity_score}/10 | live ${item.live_maturity_score}/10`,
                         status: item.status,
                         timestamp: item.generated_at,
-                    }))}
-                />
-
-                <StatusPanel
-                    title="Error Budgets"
-                    description="SRE budget status across runtime SLOs."
-                    items={budgets.map((item) => ({
-                        key: item.budget_id,
-                        label: item.runtime_name,
-                        detail: `${item.slo_id} | ${item.remaining_budget_percent}% remaining | burn ${item.burn_rate}`,
-                        status: item.status,
-                        timestamp: item.sampled_at,
                     }))}
                 />
             </section>
@@ -585,7 +542,8 @@ function RuntimeCommandPanel({ commands }: { commands: InternalRuntimeControlCom
                         <option value="pause-queue">Pause queue</option>
                         <option value="resume-queue">Resume queue</option>
                         <option value="redrive-dead-letter">Redrive dead letter</option>
-                        <option value="failover-region">Failover region</option>
+                        <option value="pause-provider">Pause provider</option>
+                        <option value="restore-provider">Restore provider</option>
                         <option value="rollback-deployment">Rollback deployment</option>
                     </select>
                 </label>
@@ -595,7 +553,7 @@ function RuntimeCommandPanel({ commands }: { commands: InternalRuntimeControlCom
                         <option value="cache">Cache</option>
                         <option value="queue">Queue</option>
                         <option value="dead-letter">Dead letter</option>
-                        <option value="region">Region</option>
+                        <option value="provider">Provider</option>
                         <option value="deployment">Deployment</option>
                     </select>
                 </label>
