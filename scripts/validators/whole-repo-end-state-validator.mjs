@@ -43,6 +43,14 @@ reporter.assert(
   "Archived master implementation prompt must be preserved under docs/archive/codex-prompts",
 );
 reporter.assert(
+  exists("docs/archive/codex-prompts/CODEX_REPOSITORY_CONVERGENCE_EXECUTION_PROMPT.md"),
+  "Archived HALT-mode repository convergence prompt must be preserved under docs/archive/codex-prompts",
+);
+reporter.assert(
+  exists("docs/archive/prompt-drift-2026-06-10/README.md"),
+  "Prompt drift quarantine archive must exist with a README sentinel",
+);
+reporter.assert(
   exists("docs/archive/root-governance-2026-06-10"),
   "Root governance archive must exist after D11 cleanup",
 );
@@ -114,6 +122,7 @@ for (const validator of [
   "platform-domain-literal-validator.mjs",
   "beta-readiness-validator.mjs",
   "production-safety-validator.mjs",
+  "prompt-perimeter-validator.mjs",
   "whole-repo-end-state-validator.mjs",
 ]) {
   reporter.assert(governanceGate.includes(validator), `Governance gate must include ${validator}`);

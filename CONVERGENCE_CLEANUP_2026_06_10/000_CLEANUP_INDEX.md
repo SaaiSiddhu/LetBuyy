@@ -19,7 +19,7 @@
 | 6 | **PROMPT_DRIFT_ELIMINATION_PLAN.md** | Drift-capable prompts → delete/quarantine + the structural anti-drift guard |
 | 7 | **GOVERNANCE_CONSTITUTION.md** | The cleanup constitution — final authority chain + 8 Cleanup Laws + drift regime |
 | 8 | **LETBUYY_CONVERGENCE_EXECUTION_MASTERPLAN.md** | Phases 0–8, each with goals/inputs/outputs/risks/validation gates + batch/law mapping |
-| 9 | **CODEX_REPOSITORY_CONVERGENCE_EXECUTION_PROMPT.md** | The crown deliverable — single safe, gated mega-prompt for Codex execution |
+| 9 | **docs/archive/codex-prompts/CODEX_REPOSITORY_CONVERGENCE_EXECUTION_PROMPT.md** | Historical HALT-mode predecessor prompt archived after transformation into the canonical foundation stepup execution prompt |
 
 `_PREMISES_SEED.md` (carried from the convergence audit) anchors the shared winner spine.
 

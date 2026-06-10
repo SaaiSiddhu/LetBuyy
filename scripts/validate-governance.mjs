@@ -103,6 +103,7 @@ const validators = [
   "deploy-matrix-topology-validator.mjs",
   "topology-json-antifabrication-validator.mjs",
   "no-scan-generated-agents-validator.mjs",
+  "prompt-perimeter-validator.mjs",
   "whole-repo-end-state-validator.mjs",
 ];
 

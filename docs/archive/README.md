@@ -1,5 +1,8 @@
 # LetBuyy Documentation Archive
 
+> ARCHIVED — REJECTED ARCHITECTURE — DO NOT EXECUTE
+> Prompt-class files under this archive are historical evidence only and are never current operating authority.
+
 > ⚠️ **Read-Only Reference Archive**
 > Source of truth: `docs/LETBUYY.md`
 > Last restored: 2026-03-01
