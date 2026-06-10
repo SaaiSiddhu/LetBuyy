@@ -106,11 +106,11 @@ function packagePayload(input: RateShippingLabelInput) {
 }
 
 function logisticsMode(c: ShippingLabelContext): LogisticsMode {
-    return c.env.LOGISTICS_MODE === 'live' ? 'live' : 'test';
+    return c.env.LOGISTICS_MODE === 'live' ? 'live' : 'sandbox';
 }
 
 function logisticsOptions(c: ShippingLabelContext, provider: LogisticsProviderName): LogisticsProviderOptions {
-    if (logisticsMode(c) === 'test') return { mode: 'test' };
+    if (logisticsMode(c) === 'sandbox') return { mode: 'sandbox' };
     if (provider === 'shiprocket') return { mode: 'live', credentials: { token: c.env.SHIPROCKET_TOKEN } };
     if (provider === 'delhivery') return { mode: 'live', credentials: { token: c.env.DELHIVERY_TOKEN } };
     return { mode: 'live', credentials: { token: c.env.PICKRR_TOKEN } };

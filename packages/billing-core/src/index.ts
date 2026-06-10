@@ -93,7 +93,7 @@ export const AppChargeStatusSchema = z.enum([
   'failed',
 ]);
 export const IndiaPayoutRailSchema = z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']);
-export const AppChargeProviderModeSchema = z.enum(['test', 'live']);
+export const AppChargeProviderModeSchema = z.enum(['sandbox', 'live']);
 export const SettlementRailSchema = z.enum(['pa_split', 'cod_remittance']);
 export const SettlementProviderSchema = z.enum(['razorpay_route', 'cashfree', 'cod', 'manual']);
 export const SettlementProviderModeSchema = z.enum(['sandbox', 'live']);
@@ -157,7 +157,7 @@ export const ApproveAppBillingChargeSchema = z.object({
   provider_reference: z.string().trim().min(1).max(200).optional(),
   provider_payment_id: z.string().trim().min(1).max(200).optional(),
   provider_signature: z.string().trim().min(1).max(500).optional(),
-  provider_mode: AppChargeProviderModeSchema.default('test'),
+  provider_mode: AppChargeProviderModeSchema.default('sandbox'),
 });
 
 export const CancelAppBillingChargeSchema = z.object({
@@ -1052,7 +1052,7 @@ export function planIndiaAppChargePayout(input: {
   const payoutRail = input.payoutRail && INDIA_APP_PAYOUT_RAILS.includes(input.payoutRail)
     ? input.payoutRail
     : 'razorpay_route';
-  const providerMode = input.providerMode === 'live' ? 'live' : 'test';
+  const providerMode = input.providerMode === 'live' ? 'live' : 'sandbox';
 
   return {
     amount_minor: amountMinor,

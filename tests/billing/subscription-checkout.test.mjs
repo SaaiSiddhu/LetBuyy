@@ -275,7 +275,7 @@ test('billing core plans merchant-approved app charges with India payout math', 
     revenueShareBps: 8000,
     partnerGstBps: 1800,
     payoutRail: 'razorpay_route',
-    providerMode: 'test',
+    providerMode: 'sandbox',
   });
 
   assert.equal(payout.currency, 'INR');
@@ -283,7 +283,7 @@ test('billing core plans merchant-approved app charges with India payout math', 
   assert.equal(payout.platform_fee_minor, 20000);
   assert.equal(payout.partner_gst_minor, 14400);
   assert.equal(payout.payout_rail, 'razorpay_route');
-  assert.equal(payout.provider_mode, 'test');
+  assert.equal(payout.provider_mode, 'sandbox');
 
   const charge = billingCore.planAppBillingCharge({
     appId: '11111111-1111-4111-8111-111111111111',
@@ -296,7 +296,7 @@ test('billing core plans merchant-approved app charges with India payout math', 
     idempotencyKey: 'app-usage-june-001',
     approvalUrl: '/v1/app-store/charges/charge_001/approve',
     payoutRail: 'razorpay_route',
-    providerMode: 'test',
+    providerMode: 'sandbox',
   });
 
   assert.equal(charge.status, 'pending_merchant_approval');

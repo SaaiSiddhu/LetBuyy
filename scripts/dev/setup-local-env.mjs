@@ -28,7 +28,7 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."
 const force = process.argv.includes("--force");
 const joinLocalValue = (...parts) => parts.join("");
 
-// A single fake secret reused across local runtimes. >=32 chars; the storefront
+// A single dev-only placeholder secret reused across local runtimes. >=32 chars; the storefront
 // signing keys need >=16. INTERNAL_API_SECRET is shared between Next apps and
 // workers so the storefront middleware -> api-gateway internal calls line up.
 const DEV_SECRET = "letbuyy_local_dev_only_secret_change_me_please";

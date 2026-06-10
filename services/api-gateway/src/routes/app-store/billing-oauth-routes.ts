@@ -714,7 +714,7 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
 
         if (!c.env.RAZORPAY_KEY_ID || !c.env.RAZORPAY_KEY_SECRET) {
             const trialWindow = planAppBillingTrialWindow({ trialDays: charge.trial_days, nowMs: Date.parse(now) });
-            const startsSandboxTrial = input.data.provider_mode === 'test' && trialWindow.status === 'trialing';
+            const startsSandboxTrial = input.data.provider_mode === 'sandbox' && trialWindow.status === 'trialing';
             const { data: approvedCharge, error: approvalError } = await db
                 .from('app_billing_charges')
                 .update({

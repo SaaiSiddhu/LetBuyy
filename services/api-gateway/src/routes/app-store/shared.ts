@@ -86,7 +86,7 @@ export interface AppBillingChargeRecord {
     billing_starts_at?: string | null;
     idempotency_key: string;
     provider_reference?: string | null;
-    provider_mode?: 'test' | 'live' | string | null;
+    provider_mode?: 'sandbox' | 'live' | string | null;
     metadata?: AppEngineJsonRecord | null;
 }
 
@@ -314,7 +314,7 @@ export function appBillingMode(value: unknown): AppChargeBillingMode {
 }
 
 export function appChargeProviderMode(value: unknown): AppChargeProviderMode {
-    return value === 'live' ? 'live' : 'test';
+    return value === 'live' ? 'live' : 'sandbox';
 }
 
 export function appPayoutRail(value: unknown): IndiaPayoutRail | null {
@@ -596,7 +596,7 @@ export async function insertAppChargeOutbox(
             },
             payout_rail: stringOrNull(indiaPayout.payout_rail) || 'razorpay_route',
             provider_reference: stringOrNull(input.charge.provider_reference) || undefined,
-            provider_mode: input.charge.provider_mode === 'live' ? 'live' : 'test',
+            provider_mode: input.charge.provider_mode === 'live' ? 'live' : 'sandbox',
             revenue_share_bps: Number(indiaPayout.revenue_share_bps || DEFAULT_APP_REVENUE_SHARE_BPS),
             partner_gst_bps: Number(indiaPayout.partner_gst_bps || 1800),
             partner_gst_minor: Number(indiaPayout.partner_gst_minor || 0),

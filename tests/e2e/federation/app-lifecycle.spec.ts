@@ -144,7 +144,7 @@ test.describe('J2 App Store lifecycle federation', () => {
         name: 'F8 app recurring charge',
         amount_minor: 39900,
         idempotency_key: uniqueSlug('f8-app-charge'),
-        provider_mode: 'test',
+        provider_mode: 'sandbox',
         payout_rail: 'razorpay_route',
       },
     });
@@ -156,7 +156,7 @@ test.describe('J2 App Store lifecycle federation', () => {
       data: {
         store_id: demo.storeId,
         idempotency_key: uniqueSlug('f8-app-charge-approval'),
-        provider_mode: 'test',
+        provider_mode: 'sandbox',
       },
     });
     const approvedCharge = await expectApiSuccess<ChargeApprovalResult>(approveChargeResponse, 'app charge approval');

@@ -257,7 +257,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
             provider_reference: typeof body.provider_reference === 'string' ? body.provider_reference : undefined,
             provider_payment_id: typeof body.provider_payment_id === 'string' ? body.provider_payment_id : undefined,
             provider_signature: typeof body.provider_signature === 'string' ? body.provider_signature : undefined,
-            provider_mode: body.provider_mode === 'live' ? 'live' : 'test',
+            provider_mode: body.provider_mode === 'live' ? 'live' : 'sandbox',
         });
 
         return NextResponse.json({ data });

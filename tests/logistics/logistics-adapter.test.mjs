@@ -42,7 +42,7 @@ function loadTypeScriptModule(sourcePath) {
 const logistics = loadTypeScriptModule(LOGISTICS_ADAPTER_SOURCE);
 
 test('Shiprocket scaffold creates fulfilment-ready label and tracking fields', async () => {
-  const provider = logistics.createShiprocketLogisticsProvider({ mode: 'test' });
+  const provider = logistics.createShiprocketLogisticsProvider({ mode: 'sandbox' });
   const label = await provider.createLabel({
     orderId: 'order_001',
     orderNumber: 'LBY-1001',
@@ -74,8 +74,8 @@ test('Shiprocket scaffold creates fulfilment-ready label and tracking fields', a
 });
 
 test('Logistics provider scaffolds cover Delhivery and Pickrr tracking', async () => {
-  const delhivery = logistics.createDelhiveryLogisticsProvider({ mode: 'test', now: () => new Date('2026-06-01T00:00:00.000Z') });
-  const pickrr = logistics.createPickrrLogisticsProvider({ mode: 'test' });
+  const delhivery = logistics.createDelhiveryLogisticsProvider({ mode: 'sandbox', now: () => new Date('2026-06-01T00:00:00.000Z') });
+  const pickrr = logistics.createPickrrLogisticsProvider({ mode: 'sandbox' });
 
   const delhiveryTracking = await delhivery.getTracking({ trackingNumber: 'DLVTEST001' });
   const pickrrLabel = await pickrr.createLabel({

@@ -18,7 +18,7 @@ const approvalPayload = {
     provider_reference: 'order_app_charge_001',
     provider_payment_id: 'pay_app_charge_001',
     provider_signature: 'provider-signature',
-    provider_mode: 'test',
+    provider_mode: 'sandbox',
 };
 
 test('app billing approval contracts carry provider proof for activation', () => {
@@ -29,7 +29,7 @@ test('app billing approval contracts carry provider proof for activation', () =>
         store_id: approvalPayload.store_id,
         charge_id: approvalPayload.charge_id,
         idempotency_key: approvalPayload.idempotency_key,
-        provider_mode: 'test',
+        provider_mode: 'sandbox',
     };
     assert.equal(ApproveAppBillingChargeSchema.safeParse(merchantApprovalOnly).success, true);
     assert.equal(AppBillingChargeApproveSchema.safeParse(merchantApprovalOnly).success, true);
@@ -45,7 +45,7 @@ test('gateway activates app billing only after provider verification', () => {
     assert.match(routeSource, /getRazorpayOrderNotes\(/);
     assert.match(routeSource, /eventType: 'app\.charge\.activated'/);
     assert.match(sharedRouteSource, /provider_reference: stringOrNull\(input\.charge\.provider_reference\) \|\| undefined/);
-    assert.match(sharedRouteSource, /provider_mode: input\.charge\.provider_mode === 'live' \? 'live' : 'test'/);
+    assert.match(sharedRouteSource, /provider_mode: input\.charge\.provider_mode === 'live' \? 'live' : 'sandbox'/);
     assert.match(queueSource, /provider_reference: payload\.provider_reference \|\| null/);
     assert.match(queueSource, /payout_provider_mode: providerMode/);
     assert.match(queueSource, /planSandboxAppPayoutTransfer/);

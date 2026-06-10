@@ -1,5 +1,5 @@
 export type LogisticsProviderName = 'shiprocket' | 'delhivery' | 'pickrr';
-export type LogisticsMode = 'test' | 'live';
+export type LogisticsMode = 'sandbox' | 'live';
 export type ShipmentStatus =
   | 'label_created'
   | 'ready_to_ship'
@@ -115,11 +115,11 @@ const PROVIDER_CONFIG: Record<LogisticsProviderName, { carrier: string; tracking
 };
 
 function normalizeMode(options: LogisticsProviderOptions): LogisticsMode {
-  return options.mode || 'test';
+  return options.mode || 'sandbox';
 }
 
 function assertLiveCredentials(provider: LogisticsProviderName, options: LogisticsProviderOptions) {
-  if (normalizeMode(options) === 'test') return;
+  if (normalizeMode(options) === 'sandbox') return;
   const credentials = options.credentials || {};
   if (!credentials.apiKey && !credentials.token && !(credentials.username && credentials.password)) {
     throw new Error(`${provider} logistics live mode requires provider credentials`);
@@ -155,7 +155,7 @@ function trackingUrl(provider: LogisticsProviderName, trackingNumber: string): s
 }
 
 function labelUrl(provider: LogisticsProviderName, shipmentId: string): string {
-  return `https://logistics.test.letbuyy.com/${provider}/labels/${encodeURIComponent(shipmentId)}.pdf`;
+  return `https://logistics.sandbox.letbuyy.com/${provider}/labels/${encodeURIComponent(shipmentId)}.pdf`;
 }
 
 function createScaffoldLogisticsProvider(provider: LogisticsProviderName, options: LogisticsProviderOptions = {}): LogisticsProvider {
@@ -182,7 +182,7 @@ function createScaffoldLogisticsProvider(provider: LogisticsProviderName, option
         trackingUrl: trackingUrl(provider, trackingNumber),
         labelUrl: labelUrl(provider, providerShipmentId),
         status: 'label_created',
-        testMode: mode === 'test',
+        testMode: mode === 'sandbox',
       };
     },
 
@@ -201,7 +201,7 @@ function createScaffoldLogisticsProvider(provider: LogisticsProviderName, option
             description: `${config.carrier} shipment label is ready`,
           },
         ],
-        testMode: mode === 'test',
+        testMode: mode === 'sandbox',
       };
     },
   };

@@ -508,7 +508,7 @@ async function applyLogisticsLabel(
     if (!data) throw new Error('Order not found for logistics label creation');
 
     const order = data as FulfillmentOrderSnapshot;
-    const provider = createLogisticsProvider(input.logistics_provider as LogisticsProviderName, { mode: 'test' });
+    const provider = createLogisticsProvider(input.logistics_provider as LogisticsProviderName, { mode: 'sandbox' });
     const dimensions = input.package_dimensions_cm;
     const label = await provider.createLabel({
         orderId,

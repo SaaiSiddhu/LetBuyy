@@ -25,7 +25,7 @@ const ShippingRatesSchema = ShippingServiceabilityQuerySchema.extend({
 }).strict();
 
 function logisticsMode(env: Env): LogisticsMode {
-    return env.LOGISTICS_MODE === 'live' ? 'live' : 'test';
+    return env.LOGISTICS_MODE === 'live' ? 'live' : 'sandbox';
 }
 
 type ShippingContext = Context<{ Bindings: Env }>;
@@ -40,7 +40,7 @@ function carrierSetupError(c: ShippingContext) {
 }
 
 function logisticsOptions(env: Env, provider: LogisticsProviderName): LogisticsProviderOptions {
-    if (logisticsMode(env) === 'test') return { mode: 'test' };
+    if (logisticsMode(env) === 'sandbox') return { mode: 'sandbox' };
     if (provider === 'shiprocket' && env.SHIPROCKET_TOKEN) return { mode: 'live', credentials: { token: env.SHIPROCKET_TOKEN } };
     if (provider === 'delhivery' && env.DELHIVERY_TOKEN) return { mode: 'live', credentials: { token: env.DELHIVERY_TOKEN } };
     if (provider === 'pickrr' && env.PICKRR_TOKEN) return { mode: 'live', credentials: { token: env.PICKRR_TOKEN } };

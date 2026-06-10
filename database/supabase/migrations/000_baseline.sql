@@ -8260,7 +8260,7 @@ CREATE TABLE public.app_billing_charges (
     partner_gst_minor integer DEFAULT 0 NOT NULL,
     payout_rail text DEFAULT 'razorpay_route'::text NOT NULL,
     provider text DEFAULT 'razorpay_route'::text NOT NULL,
-    provider_mode text DEFAULT 'test'::text NOT NULL,
+    provider_mode text DEFAULT 'sandbox'::text NOT NULL,
     provider_reference text,
     approval_url text,
     approved_by uuid,
@@ -8282,7 +8282,7 @@ CREATE TABLE public.app_billing_charges (
     CONSTRAINT app_billing_charges_payout_rail_check CHECK ((payout_rail = ANY (ARRAY['razorpay_route'::text, 'razorpayx'::text, 'upi'::text, 'manual'::text]))),
     CONSTRAINT app_billing_charges_platform_fee_minor_check CHECK ((platform_fee_minor >= 0)),
     CONSTRAINT app_billing_charges_provider_check CHECK ((provider = ANY (ARRAY['razorpay_route'::text, 'razorpayx'::text, 'upi'::text, 'manual'::text]))),
-    CONSTRAINT app_billing_charges_provider_mode_check CHECK ((provider_mode = ANY (ARRAY['test'::text, 'live'::text]))),
+    CONSTRAINT app_billing_charges_provider_mode_check CHECK ((provider_mode = ANY (ARRAY['sandbox'::text, 'live'::text]))),
     CONSTRAINT app_billing_charges_revenue_share_bps_check CHECK (((revenue_share_bps >= 0) AND (revenue_share_bps <= 10000))),
     CONSTRAINT app_billing_charges_status_check CHECK ((status = ANY (ARRAY['pending_merchant_approval'::text, 'approved'::text, 'active'::text, 'cancelled'::text, 'failed'::text])))
 );

@@ -165,7 +165,7 @@ export function AppBillingChargePanel({ installation, appName }: AppBillingCharg
                     action: 'approve_charge',
                     store_id: installation.store_id,
                     charge_id: charge.id,
-                    provider_mode: 'test',
+                    provider_mode: 'sandbox',
                     idempotency_key: `approve-${charge.id}`,
                 }),
             });

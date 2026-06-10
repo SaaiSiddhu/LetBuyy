@@ -62,7 +62,7 @@ test('event spine activates payout ledger only after merchant-approved app charg
   assert.match(QUEUE_EXECUTION_SOURCE, /rail,\s+metadata: ledgerMetadata/);
   assert.match(QUEUE_EXECUTION_SOURCE, /partner_gst_minor/);
   assert.match(EVENT_CORE_SOURCE, /provider_reference: z\.string\(\)\.trim\(\)\.min\(1\)\.max\(200\)\.optional\(\)/);
-  assert.match(EVENT_CORE_SOURCE, /provider_mode: z\.enum\(\['test', 'live'\]\)\.default\('test'\)/);
+  assert.match(EVENT_CORE_SOURCE, /provider_mode: z\.enum\(\['sandbox', 'live'\]\)\.default\('sandbox'\)/);
   assert.match(QUEUE_EXECUTION_SOURCE, /payout_provider_mode: providerMode/);
   assert.doesNotMatch(QUEUE_EXECUTION_SOURCE, /payout_provider_mode: 'test'/);
   assert.match(QUEUE_EXECUTION_SOURCE, /planSandboxAppPayoutTransfer/);

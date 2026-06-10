@@ -120,7 +120,7 @@ interface AppChargeEventPayload {
     };
     payout_rail?: 'razorpay_route' | 'razorpayx' | 'upi' | 'manual';
     provider_reference?: string;
-    provider_mode?: 'test' | 'live';
+    provider_mode?: 'sandbox' | 'live';
     revenue_share_bps?: number;
     partner_gst_bps?: number;
     partner_gst_minor?: number;
@@ -461,7 +461,7 @@ export class QueueExecutionAdapter {
             ? Math.max(0, Math.trunc(payload.partner_gst_minor))
             : Math.round((partnerAmountMinor * partnerGstBps) / 10000);
         const rail = payoutRail(payload.payout_rail);
-        const providerMode = payload.provider_mode === 'live' ? 'live' : 'test';
+        const providerMode = payload.provider_mode === 'live' ? 'live' : 'sandbox';
         const ledgerMetadata = {
             source_event_type: eventType,
             queue_job_id: job.id,

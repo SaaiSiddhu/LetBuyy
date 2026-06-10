@@ -3903,7 +3903,7 @@ export const AppBillingChargeStatusSchema = z.enum([
   'failed',
 ]);
 export const AppBillingIndiaPayoutRailSchema = z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']);
-export const AppBillingChargeProviderModeSchema = z.enum(['test', 'live']);
+export const AppBillingChargeProviderModeSchema = z.enum(['sandbox', 'live']);
 
 export const AppBillingChargeSchema = z.object({
   id: UuidSchema,
@@ -3928,7 +3928,7 @@ export const AppBillingChargeSchema = z.object({
   partner_gst_minor: z.number().int().nonnegative().default(0),
   payout_rail: AppBillingIndiaPayoutRailSchema.default('razorpay_route'),
   provider: AppBillingIndiaPayoutRailSchema.default('razorpay_route'),
-  provider_mode: AppBillingChargeProviderModeSchema.default('test'),
+  provider_mode: AppBillingChargeProviderModeSchema.default('sandbox'),
   provider_reference: z.string().max(200).optional().nullable(),
   approval_url: z.string().min(1).max(500).optional().nullable(),
   approved_by: z.string().min(1).optional().nullable(),
@@ -3960,7 +3960,7 @@ export const AppBillingChargeApproveSchema = z.object({
   provider_reference: z.string().trim().min(1).max(200).optional(),
   provider_payment_id: z.string().trim().min(1).max(200).optional(),
   provider_signature: z.string().trim().min(1).max(500).optional(),
-  provider_mode: AppBillingChargeProviderModeSchema.default('test'),
+  provider_mode: AppBillingChargeProviderModeSchema.default('sandbox'),
 }).strict();
 
 export const AppBillingChargeResultSchema = z.object({

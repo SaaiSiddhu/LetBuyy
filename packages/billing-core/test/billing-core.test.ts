@@ -53,7 +53,7 @@ test('India app charge payout plan records revenue share, GST, and provider mode
     partner_gst_minor: 1_530,
     payout_rail: 'razorpay_route',
     provider: 'razorpay_route',
-    provider_mode: 'test',
+    provider_mode: 'sandbox',
   });
 
   const charge = planAppBillingCharge({
