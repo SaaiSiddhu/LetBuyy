@@ -42,6 +42,7 @@ for (const entry of gateSources) {
 assertNoOffenders(reporter, offenders, "Governance gate must not certify rejected never-build capabilities");
 
 const activeIdentityDocForbiddenFragments = [
+  "failover",
   "multi-region",
   "region failover",
   "key-failover",

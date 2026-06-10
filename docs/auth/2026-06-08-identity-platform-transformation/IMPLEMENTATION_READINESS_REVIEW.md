@@ -33,7 +33,7 @@ Role: independent Staff+/Principal review across the entire Identity Platform do
 
 | ID | Missing concept | Why it matters | Severity |
 |----|-----------------|----------------|:--------:|
-| **G-1** | **IdP high-availability + graceful degradation + DR.** The Identity Platform becomes the hard dependency of *every* login and (via JWKS) every request. No HA topology, failover, JWKS-cache offline window, or "IdP down" degradation is designed. | A single IdP outage = total platform auth outage. | Critical |
+| **G-1** | **IdP high-availability + graceful degradation + DR.** The Identity Platform becomes the hard dependency of *every* login and (via JWKS) every request. No HA topology, standby-promotion/restore drill, JWKS-cache offline window, or "IdP down" degradation is designed. | A single IdP outage = total platform auth outage. | Critical |
 | **G-2** | **Customer credential migration at millions-scale.** No hash-format compatibility / rehash-on-login / bulk-import plan for `customer_credentials` + `users_custom`. | Blocks customer-realm cutover (W5); risk of mass lockout. | Critical |
 | **G-3** | **India regulatory: SMS-OTP DLT + DPDP data residency.** OTP/magic-link is the customer realm's primary auth; India mandates DLT-registered SMS templates and the DPDP Act 2023 constrains residency. Undesigned. | Customer auth can't legally/operationally ship in-region without it. | Critical |
 | **G-4** | **Key management operations.** `TOKEN_STRATEGY` names per-realm asymmetric keys + JWKS + rotation, but no KMS/HSM choice, rotation runbook, compromise procedure, or audit-anchor signing key ops. | Keys are the new trust root; weak ops = systemic risk. | High |
