@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme_colors.dart';
 
 enum ProviderMode {
-  mock,
   sandbox,
   live;
 
   static ProviderMode? parse(Object? value) {
     final normalized = value?.toString().trim().toLowerCase();
     return switch (normalized) {
-      'mock' => ProviderMode.mock,
       'sandbox' || 'test' => ProviderMode.sandbox,
       'live' => ProviderMode.live,
       _ => null,
@@ -18,7 +16,6 @@ enum ProviderMode {
   }
 
   String get label => switch (this) {
-    ProviderMode.mock => 'MOCK',
     ProviderMode.sandbox => 'SANDBOX',
     ProviderMode.live => 'LIVE',
   };
@@ -41,7 +38,6 @@ class ProviderModeBadge extends StatelessWidget {
 
     final colors = AppThemeColors.of(context);
     final accent = switch (value) {
-      ProviderMode.mock => colors.error,
       ProviderMode.sandbox => colors.warning,
       ProviderMode.live => colors.success,
     };

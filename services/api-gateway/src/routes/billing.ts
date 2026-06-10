@@ -6,7 +6,7 @@ import {
     applyStorePlanTierDefaults,
     planBillingAmountMinor,
     planBillingDunning,
-    planMockUpiAutopayMandate,
+    planSandboxUpiAutopayMandate,
     type BillingInvoiceQueryInput,
     type BillingMandateInput,
     type BillingPlanCatalogRecord,
@@ -29,11 +29,11 @@ function configured(value: string | undefined): boolean {
     return Boolean(value && !value.startsWith('SKIP_NEEDS_HUMAN_') && !value.includes('replace-with'));
 }
 
-function autopayMode(env: Env): 'mock' | 'sandbox' | 'live' {
-    return env.LETBUYY_AUTOPAY_MODE || 'mock';
+function autopayMode(env: Env): 'sandbox' | 'live' {
+    return env.LETBUYY_AUTOPAY_MODE === 'live' ? 'live' : 'sandbox';
 }
 
-function assertAutopayReady(env: Env, providerMode: 'mock' | 'sandbox' | 'live') {
+function assertAutopayReady(env: Env, providerMode: 'sandbox' | 'live') {
     if (providerMode !== 'live' && autopayMode(env) !== 'live') return;
     if (configured(env.RAZORPAY_KEY_ID) && configured(env.RAZORPAY_KEY_SECRET)) return;
 
@@ -142,8 +142,8 @@ async function createMerchantBillingInvoice(
                 total_minor: input.totalMinor,
                 period_start: input.periodStart,
                 period_end: input.periodEnd,
-                irn: `mock-irn-${input.invoiceNumber}`,
-                qr_payload: `mock-qr:${input.invoiceNumber}`,
+                irn: `sandbox-irn-${input.invoiceNumber}`,
+                qr_payload: `sandbox-qr:${input.invoiceNumber}`,
                 metadata: input.metadata || {},
                 created_by: input.userId,
                 updated_by: input.userId,
@@ -180,7 +180,7 @@ router.post('/mandate', validate('json', BillingMandateSchema), async (c) => {
 
     const siteType = await loadStoreSiteType(db, tenant.siteId);
     const plan = await loadPlan(db, siteType, body.plan_slug);
-    const mandate = planMockUpiAutopayMandate({
+    const mandate = planSandboxUpiAutopayMandate({
         plan,
         billingPeriod: body.billing_period,
         providerMode: body.provider_mode,
@@ -200,7 +200,7 @@ router.post('/mandate', validate('json', BillingMandateSchema), async (c) => {
             external_mandate_id: mandate.external_mandate_id,
             upi_vpa_hash: body.upi_vpa ? `mock-hash:${body.upi_vpa.trim().toLowerCase()}` : null,
             idempotency_key: body.idempotency_key,
-            metadata: { ...body.metadata, mock: mandate.mock },
+            metadata: { ...body.metadata, sandbox: mandate.sandbox },
             created_by: tenant.userId,
             updated_by: tenant.userId,
         })
@@ -229,9 +229,9 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
     const amount = planBillingAmountMinor(plan, body.billing_period);
     const now = new Date();
     const periodEnd = subscriptionPeriodEnd(now, body.billing_period);
-    const dunning = planBillingDunning({ paymentStatus: body.mock_payment_status });
+    const dunning = planBillingDunning({ paymentStatus: body.sandbox_payment_status });
 
-    if (body.mock_payment_status === 'failed') {
+    if (body.sandbox_payment_status === 'failed') {
         const { data: subscription, error: subscriptionError } = await db
             .from('subscriptions')
             .insert({
@@ -244,7 +244,7 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
                 current_period_start: now.toISOString(),
                 current_period_end: periodEnd.toISOString(),
                 payment_gateway: 'razorpay',
-                external_subscription_id: `mock_autopay_failed:${tenant.siteId}:${body.idempotency_key}`,
+                external_subscription_id: `sandbox_autopay_failed:${tenant.siteId}:${body.idempotency_key}`,
                 amount_paid: amount.amountMinor,
                 currency: 'INR',
                 mandate_id: body.mandate_id || null,
@@ -273,7 +273,7 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
                 tax_amount: taxMinor,
                 total_amount: amount.amountMinor + taxMinor,
                 payment_gateway: 'razorpay',
-                payment_id: `mock_failed:${body.idempotency_key}`,
+                payment_id: `sandbox_failed:${body.idempotency_key}`,
                 payment_status: 'failed',
                 period_start: now.toISOString(),
                 period_end: periodEnd.toISOString(),
@@ -303,7 +303,7 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
             status: 'scheduled',
             attempt_number: dunning.dunning_attempts,
             next_attempt_at: dunning.next_dunning_at,
-            reason: 'mock_autopay_failed',
+            reason: 'sandbox_autopay_failed',
             metadata: body.metadata,
             created_by: tenant.userId,
             updated_by: tenant.userId,
@@ -327,8 +327,8 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
         billingPeriod: body.billing_period,
         amountPaid: amount.amountMinor,
         paymentGateway: amount.amountMinor > 0 ? 'razorpay' : null,
-        externalSubscriptionId: `mock_autopay:${tenant.siteId}:${body.idempotency_key}`,
-        razorpayPaymentId: amount.amountMinor > 0 ? `mock_autopay_payment:${body.idempotency_key}` : null,
+        externalSubscriptionId: `sandbox_autopay:${tenant.siteId}:${body.idempotency_key}`,
+        razorpayPaymentId: amount.amountMinor > 0 ? `sandbox_autopay_payment:${body.idempotency_key}` : null,
         now,
     });
     await db

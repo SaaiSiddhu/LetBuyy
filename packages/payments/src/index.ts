@@ -20,7 +20,7 @@ export type PaymentMethodName = SharedPaymentMethod;
 export type PaymentLifecycleStatus = SharedPaymentStatus;
 export type PaymentMetadata = Record<string, unknown>;
 export type PaymentWebhookHeaders = Record<string, string | string[] | undefined>;
-export type PaymentProviderMode = 'mock' | 'sandbox' | 'live';
+export type PaymentProviderMode = 'sandbox' | 'live';
 export type V1PaymentSessionProvider = Extract<PaymentProviderName, 'razorpay' | 'cashfree' | 'upi' | 'cod'>;
 export type V1PaymentSessionStatus = 'pending' | 'requires_action' | 'authorized' | 'captured' | 'failed' | 'voided' | 'refunded';
 export type PaymentProviderReference = {
@@ -276,13 +276,13 @@ export function resolvePaymentProviderMode(
   options?: { productionRuntime?: boolean },
 ): PaymentProviderMode {
   const normalized = (value || (options?.productionRuntime ? 'live' : 'sandbox')).trim().toLowerCase();
-  if (normalized === 'mock' || normalized === 'sandbox' || normalized === 'live') {
-    if (normalized === 'mock' && options?.productionRuntime) {
-      throw new Error('Mock payment provider mode is not allowed in production runtime');
-    }
+  if (normalized === 'sandbox' || normalized === 'live') {
     return normalized;
   }
-  throw new Error('Payment provider mode must be mock, sandbox, or live');
+  if (normalized === 'mock' && options?.productionRuntime) {
+    throw new Error('Mock payment provider mode is not allowed in production runtime');
+  }
+  throw new Error('Payment provider mode must be sandbox or live');
 }
 
 export function normalizeV1PaymentSessionProvider(value: string): V1PaymentSessionProvider {
@@ -301,7 +301,7 @@ export function livePaymentCredentialsAreRequired(input: {
   return input.mode === 'live' && input.merchantCredentialPresent !== true;
 }
 
-export function buildMockPaymentSessionPlan(input: PaymentSessionPlanInput): PaymentSessionPlan {
+export function buildSandboxPaymentSessionPlan(input: PaymentSessionPlanInput): PaymentSessionPlan {
   const provider = input.provider;
   const mode = resolvePaymentProviderMode(input.mode, { productionRuntime: input.productionRuntime });
   const amount = normalizePaymentMoney(input.amount);
@@ -311,14 +311,12 @@ export function buildMockPaymentSessionPlan(input: PaymentSessionPlanInput): Pay
     ? 'upi_collect'
     : provider === 'cod'
       ? 'cod_confirm'
-      : mode === 'mock'
-        ? 'none'
-        : 'redirect';
+      : 'redirect';
 
   return {
     provider,
     mode,
-    status: provider === 'cod' ? 'requires_action' : mode === 'mock' ? 'authorized' : 'pending',
+    status: provider === 'cod' ? 'requires_action' : 'pending',
     amount,
     idempotencyKey,
     providerOrderId,
@@ -329,7 +327,7 @@ export function buildMockPaymentSessionPlan(input: PaymentSessionPlanInput): Pay
       ...(input.metadata || {}),
       provider,
       provider_mode: mode,
-      external_rail: mode === 'mock' ? 'mock' : provider,
+      external_rail: provider,
     },
   };
 }

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const V1PaymentProviderSchema = z.enum(['razorpay', 'cashfree', 'upi', 'cod']);
-export const V1PaymentModeSchema = z.enum(['mock', 'sandbox', 'live']).optional();
+export const V1PaymentModeSchema = z.enum(['sandbox', 'live']).optional();
 export const PaymentSessionMetadataSchema = z.record(z.string(), z.unknown()).default({});
 
 export const CreatePaymentSessionSchema = z.object({

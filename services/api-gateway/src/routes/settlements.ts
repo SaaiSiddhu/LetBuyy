@@ -30,7 +30,7 @@ interface SettlementRow extends JsonRecord {
     site_id: string;
     settlement_reference: string;
     provider: string;
-    provider_mode: 'mock' | 'sandbox' | 'live';
+    provider_mode: 'sandbox' | 'live';
     rail: 'pa_split' | 'cod_remittance';
     status: 'recorded' | 'break_detected' | 'failed';
     currency: 'INR';

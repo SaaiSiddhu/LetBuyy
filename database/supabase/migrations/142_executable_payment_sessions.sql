@@ -1,6 +1,6 @@
 -- LetBuyy Executable Architecture V1 Task 004: merchant-owned payment sessions.
--- Additive only. Provider live credentials remain HUMAN-REQUIRED and mock mode is
--- the local default.
+-- Additive only. Provider live credentials remain HUMAN-REQUIRED and sandbox mode
+-- is the local default.
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS public.payment_credentials (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   site_id uuid NOT NULL REFERENCES public.sites(id) ON DELETE CASCADE,
   provider text NOT NULL CHECK (provider IN ('razorpay', 'cashfree', 'upi', 'cod')),
-  mode text NOT NULL DEFAULT 'mock' CHECK (mode IN ('mock', 'sandbox', 'live')),
+  mode text NOT NULL DEFAULT 'sandbox' CHECK (mode IN ('sandbox', 'live')),
   status text NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'disabled', 'needs_verification')),
-  kms_key_ref text NOT NULL DEFAULT 'mock-kms://letbuyy/payment-credentials',
+  kms_key_ref text NOT NULL DEFAULT 'sandbox-kms://letbuyy/payment-credentials',
   encrypted_credentials jsonb NOT NULL DEFAULT '{}'::jsonb,
   last_verified_at timestamptz,
   metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS public.payments (
   site_id uuid NOT NULL REFERENCES public.sites(id) ON DELETE CASCADE,
   order_id uuid NOT NULL REFERENCES public.orders(id) ON DELETE CASCADE,
   provider text NOT NULL CHECK (provider IN ('razorpay', 'cashfree', 'upi', 'cod')),
-  mode text NOT NULL DEFAULT 'mock' CHECK (mode IN ('mock', 'sandbox', 'live')),
+  mode text NOT NULL DEFAULT 'sandbox' CHECK (mode IN ('sandbox', 'live')),
   status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'requires_action', 'authorized', 'captured', 'failed', 'voided', 'refunded')),
   amount_minor bigint NOT NULL CHECK (amount_minor >= 0),
   currency text NOT NULL DEFAULT 'INR' CHECK (currency = 'INR'),

@@ -54,6 +54,15 @@ const emailRoute = readFile("services/api-gateway/src/routes/email.ts");
 const aiRoute = readFile("services/api-gateway/src/routes/ai.ts");
 const aiAdapter = readFile("packages/infrastructure/ai-generation-adapter/index.ts");
 const analyticsRoute = readFile("services/api-gateway/src/routes/analytics.ts");
+const billingCore = readFile("packages/billing-core/src/index.ts");
+const billingRoute = readFile("services/api-gateway/src/routes/billing.ts");
+const providerModeBadge = readFile("apps/merchant-control-plane/src/components/ProviderModeBadge.tsx");
+const mobileProviderModeBadge = readFile("apps/mobile/merchant-app/lib/widgets/shared/provider_mode_badge.dart");
+const paymentsPackage = readFile("packages/payments/src/index.ts");
+const paymentsRoute = readFile("services/api-gateway/src/routes/payments.ts");
+const paymentSupport = readFile("services/api-gateway/src/lib/payment-route-support.ts");
+const paymentSchema = readFile("services/api-gateway/src/schemas/payment.schema.ts");
+const paymentSessionsMigration = readFile("database/supabase/migrations/142_executable_payment_sessions.sql");
 reporter.assert(!kycAdapter.includes("live_provider_stub"), "KYC adapter must not turn sandbox verification into live-provider success");
 reporter.assert(kycAdapter.includes("KYC_LIVE_PROVIDER_UNAVAILABLE"), "KYC adapter must fail closed while live provider integration is absent");
 reporter.assert(capabilityBacklog.includes("CAP-C15"), "CAPABILITY_BACKLOG.md missing CAP-C15 live KYC provider gap");
@@ -116,6 +125,54 @@ for (const fragment of [
   reporter.assert(!analyticsRoute.includes(fragment), `analytics warehouse seam must not use mock labels: ${fragment}`);
 }
 reporter.assert(analyticsRoute.includes("mode: 'sandbox'"), "analytics warehouse seam must default to sandbox while live warehouse is human-gated");
+for (const fragment of [
+  "z.enum(['mock', 'sandbox', 'live'])",
+  "default('mock')",
+  "mock_payment_status",
+  "planMockUpiAutopayMandate",
+  "providerMode || 'mock'",
+]) {
+  reporter.assert(!billingCore.includes(fragment), `billing-core must use sandbox-labelled AutoPay contracts: ${fragment}`);
+  reporter.assert(!billingRoute.includes(fragment), `billing route must use sandbox-labelled AutoPay contracts: ${fragment}`);
+}
+for (const fragment of [
+  "mock_autopay",
+  "mock_failed",
+  "mock-irn",
+  "mock-qr",
+  "mock: mandate",
+]) {
+  reporter.assert(!billingRoute.includes(fragment), `billing route must not persist mock AutoPay labels: ${fragment}`);
+}
+reporter.assert(billingCore.includes("BillingProviderModeSchema = z.enum(['sandbox', 'live'])"), "billing provider mode schema must be sandbox/live only");
+reporter.assert(billingCore.includes("planSandboxUpiAutopayMandate"), "billing-core must expose the sandbox AutoPay planner");
+reporter.assert(billingRoute.includes("sandbox_autopay"), "billing route must persist sandbox AutoPay identifiers");
+reporter.assert(!providerModeBadge.includes("'mock'"), "web ProviderModeBadge must not expose mock as a valid provider mode");
+reporter.assert(!mobileProviderModeBadge.includes("ProviderMode.mock"), "Flutter ProviderModeBadge must not expose mock as a valid provider mode");
+for (const fragment of [
+  "PaymentProviderMode = 'mock'",
+  "buildMockPaymentSessionPlan",
+  "normalized === 'mock' || normalized === 'sandbox'",
+  "mode === 'mock'",
+  "external_rail: mode === 'mock'",
+]) {
+  reporter.assert(!paymentsPackage.includes(fragment), `payments package must use sandbox-labelled session planning: ${fragment}`);
+  reporter.assert(!paymentsRoute.includes(fragment), `payments route must use sandbox-labelled session planning: ${fragment}`);
+  reporter.assert(!paymentSupport.includes(fragment), `payment route support must use sandbox-labelled session planning: ${fragment}`);
+}
+for (const fragment of [
+  "z.enum(['mock', 'sandbox', 'live'])",
+  "DEFAULT 'mock'",
+  "mock-kms://",
+  "CHECK (mode IN ('mock', 'sandbox', 'live'))",
+]) {
+  reporter.assert(!paymentSchema.includes(fragment), `payment schema must not accept mock mode: ${fragment}`);
+  reporter.assert(!paymentSessionsMigration.includes(fragment), `payment sessions migration must not replay mock mode: ${fragment}`);
+}
+reporter.assert(paymentsPackage.includes("PaymentProviderMode = 'sandbox' | 'live'"), "payments package provider mode must be sandbox/live only");
+reporter.assert(paymentsPackage.includes("buildSandboxPaymentSessionPlan"), "payments package must expose the sandbox payment-session planner");
+reporter.assert(paymentSchema.includes("z.enum(['sandbox', 'live'])"), "payment session schema must accept sandbox/live modes only");
+reporter.assert(paymentSessionsMigration.includes("DEFAULT 'sandbox' CHECK (mode IN ('sandbox', 'live'))"), "payment sessions migration must default mode to sandbox/live only");
 reporter.assert(!exists("packages/infrastructure/identity-otp-adapter/index.ts"), "retired identity OTP mock adapter must not exist");
 reporter.assert(!readFile("packages/infrastructure/src/index.ts").includes("identity-otp-adapter"), "infrastructure barrel must not export retired identity OTP mock adapter");
 reporter.assert(!readFile("packages/infrastructure/package.json").includes("identity-otp-adapter"), "infrastructure package must not expose retired identity OTP mock adapter");

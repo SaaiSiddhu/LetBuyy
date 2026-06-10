@@ -35,7 +35,7 @@ type PaymentConfig = {
     store_id: string
     online_payment_enabled: boolean
     cod_enabled: boolean
-    provider_mode: 'mock' | 'sandbox' | 'live'
+    provider_mode: 'sandbox' | 'live'
     payment_settings: SanitizedPaymentSettings
 }
 

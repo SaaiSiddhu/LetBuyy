@@ -10,7 +10,7 @@ import {
   getStoreBillingTierDefinitions,
   isAppBillingTrialExpired,
   planBillingDunning,
-  planMockUpiAutopayMandate,
+  planSandboxUpiAutopayMandate,
   planAppBillingCharge,
   planAppBillingTrialWindow,
   planAppUsageMetering,
@@ -162,7 +162,7 @@ test('settlement ledger plan surfaces breaks without reserve auto-plugging', () 
     idempotency_key: 'settlement-001',
     rail: 'pa_split',
     provider: 'razorpay_route',
-    provider_mode: 'mock',
+    provider_mode: 'sandbox',
     currency: 'INR',
     gross_amount_minor: 10_000,
     platform_fee_minor: 300,
@@ -198,7 +198,7 @@ test('settlement ledger plan models COD remittance and payout release', () => {
     idempotency_key: 'cod-settlement-001',
     rail: 'cod_remittance',
     provider: 'cod',
-    provider_mode: 'mock',
+    provider_mode: 'sandbox',
     currency: 'INR',
     gross_amount_minor: 5_000,
     platform_fee_minor: 150,
@@ -222,7 +222,7 @@ test('settlement ledger plan models COD remittance and payout release', () => {
   );
 });
 
-test('store billing tiers permanently remove GMV rake and plan mock UPI AutoPay mandates', () => {
+test('store billing tiers permanently remove GMV rake and plan sandbox UPI AutoPay mandates', () => {
   const tiers = getStoreBillingTierDefinitions();
   assert.equal(tiers.every((tier) => tier.gmv_percentage === 0), true);
   assert.equal(
@@ -236,7 +236,7 @@ test('store billing tiers permanently remove GMV rake and plan mock UPI AutoPay 
     0,
   );
 
-  const mandate = planMockUpiAutopayMandate({
+  const mandate = planSandboxUpiAutopayMandate({
     plan: applyStorePlanTierDefaults({
       id: 'plan_2',
       slug: 'business',
@@ -245,13 +245,13 @@ test('store billing tiers permanently remove GMV rake and plan mock UPI AutoPay 
       price_monthly_inr: 99900,
     }),
     billingPeriod: 'monthly',
-    providerMode: 'mock',
+    providerMode: 'sandbox',
     idempotencyKey: 'mandate-001',
   });
 
   assert.equal(mandate.provider, 'upi_autopay');
   assert.equal(mandate.status, 'active');
-  assert.equal(mandate.mock, true);
+  assert.equal(mandate.sandbox, true);
   assert.equal(mandate.amount_minor, 99900);
 });
 

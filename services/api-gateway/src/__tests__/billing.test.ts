@@ -23,14 +23,14 @@ test('Task 014 billing APIs are mounted in the monolith and use billing-core con
 
     assert.match(indexSource, /import billingRouter from '\.\/routes\/billing'/);
     assert.match(indexSource, /api\.route\('\/billing', billingRouter\)/);
-    assert.match(indexSource, /LETBUYY_AUTOPAY_MODE\?: 'mock' \| 'sandbox' \| 'live'/);
+    assert.match(indexSource, /LETBUYY_AUTOPAY_MODE\?: 'sandbox' \| 'live'/);
 
     assert.match(billingRoute, /router\.post\('\/mandate'/);
     assert.match(billingRoute, /router\.post\('\/subscribe'/);
     assert.match(billingRoute, /router\.get\('\/invoices'/);
     assert.match(billingRoute, /BillingMandateSchema/);
     assert.match(billingRoute, /BillingSubscribeSchema/);
-    assert.match(billingRoute, /planMockUpiAutopayMandate/);
+    assert.match(billingRoute, /planSandboxUpiAutopayMandate/);
     assert.match(billingRoute, /planBillingDunning/);
     assert.match(billingRoute, /billing\.charged/);
     assert.match(billingRoute, /billing\.failed/);
@@ -38,7 +38,7 @@ test('Task 014 billing APIs are mounted in the monolith and use billing-core con
 
     assert.match(billingCore, /export const BillingMandateSchema/);
     assert.match(billingCore, /export const BillingSubscribeSchema/);
-    assert.match(billingCore, /export function planMockUpiAutopayMandate/);
+    assert.match(billingCore, /export function planSandboxUpiAutopayMandate/);
     assert.match(billingCore, /export function planBillingDunning/);
 });
 

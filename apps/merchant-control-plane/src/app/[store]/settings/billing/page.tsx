@@ -21,7 +21,7 @@ interface PaymentMethodInfo {
     provider: string
     detail: string
     is_default: boolean
-    provider_mode: 'mock' | 'sandbox' | 'live' | null
+    provider_mode: 'sandbox' | 'live' | null
 }
 
 type BillingPayload = {

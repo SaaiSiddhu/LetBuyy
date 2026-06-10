@@ -150,7 +150,7 @@ test('payment provider adapters implement the unified payments contract', () => 
     assert.match(codAdapter, /COD requires OTP\/call verification/);
 });
 
-test('Task 004 generic payment sessions are persisted, tenant-scoped, mock-first, and live-gated', () => {
+test('Task 004 generic payment sessions are persisted, tenant-scoped, sandbox-first, and live-gated', () => {
     const paymentsSource = source('routes/payments.ts');
     const paymentSupportSource = source('lib/payment-route-support.ts');
     const paymentPackage = repositorySource('packages/payments/src/index.ts');
@@ -159,8 +159,8 @@ test('Task 004 generic payment sessions are persisted, tenant-scoped, mock-first
     const humanRequired = repositorySource('EXECUTABLE_HUMAN_REQUIRED.md');
     const liveSkips = repositorySource('tests/executable/human-required-live-paths.test.mjs');
 
-    assert.match(paymentPackage, /export type PaymentProviderMode = 'mock' \| 'sandbox' \| 'live'/);
-    assert.match(paymentPackage, /buildMockPaymentSessionPlan/);
+    assert.match(paymentPackage, /export type PaymentProviderMode = 'sandbox' \| 'live'/);
+    assert.match(paymentPackage, /buildSandboxPaymentSessionPlan/);
     assert.match(paymentPackage, /livePaymentCredentialsAreRequired/);
     assert.match(paymentsSource, /router\.post\('\/sessions'/);
     assert.match(paymentsSource, /router\.post\('\/:paymentId\/capture'/);
@@ -169,7 +169,7 @@ test('Task 004 generic payment sessions are persisted, tenant-scoped, mock-first
     assert.match(paymentsSource, /requireLivePaymentCredential/);
     assert.match(paymentSupportSource, /HR-MERCHANT-PSP-LIVE/);
     assert.match(paymentsSource, /paymentSetupRequiredResponse/);
-    assert.match(paymentsSource, /buildMockPaymentSessionPlan/);
+    assert.match(paymentsSource, /buildSandboxPaymentSessionPlan/);
     assert.match(paymentsSource, /new IdempotencyExecutionAdapter\(db\)/);
     assert.match(paymentsSource, /emitPaymentEvent/);
     assert.match(paymentsSource, /eventType:\s*'payment\.captured'/);
@@ -179,7 +179,8 @@ test('Task 004 generic payment sessions are persisted, tenant-scoped, mock-first
     assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.payment_tokens/);
     assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.payments/);
     assert.match(migration, /encrypted_credentials jsonb NOT NULL/);
-    assert.match(migration, /CHECK \(mode IN \('mock', 'sandbox', 'live'\)\)/);
+    assert.match(migration, /CHECK \(mode IN \('sandbox', 'live'\)\)/);
+    assert.doesNotMatch(migration, /DEFAULT 'mock'|mock-kms/);
     assert.match(migration, /'upi'::text/);
     assert.match(migration, /payment_transactions_provider_payment_id_v1_uniq/);
     assert.match(migration, /FORCE ROW LEVEL SECURITY/);

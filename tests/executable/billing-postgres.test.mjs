@@ -200,7 +200,7 @@ test('Task 014 billing migration removes GMV rake, enforces tenant RLS, supports
       now(),
       now() + interval '1 month',
       'razorpay',
-      'mock_autopay_subscription_001',
+      'sandbox_autopay_subscription_001',
       499900,
       'INR',
       id,
@@ -223,7 +223,7 @@ test('Task 014 billing migration removes GMV rake, enforces tenant RLS, supports
       89982,
       589882,
       'razorpay',
-      'mock_payment_001',
+      'sandbox_payment_001',
       'paid',
       'monthly',
       now(),
@@ -242,8 +242,8 @@ test('Task 014 billing migration removes GMV rake, enforces tenant RLS, supports
       amount,
       tax_amount,
       total_amount,
-      'mock-irn-proof',
-      'mock-qr-proof'
+      'sandbox-irn-proof',
+      'sandbox-qr-proof'
     FROM public.billing_history
     WHERE invoice_number = 'INV-BILLING-PROOF-001';
     INSERT INTO public.billing_dunning_events (
@@ -256,7 +256,7 @@ test('Task 014 billing migration removes GMV rake, enforces tenant RLS, supports
       'scheduled',
       1,
       now() + interval '3 days',
-      'mock_autopay_failed'
+      'sandbox_autopay_failed'
     FROM public.billing_history
     WHERE invoice_number = 'INV-BILLING-PROOF-001';
     INSERT INTO public.billing_usage_events (

@@ -92,7 +92,7 @@ async function activeMerchantPaymentCredential(
     provider: V1PaymentSessionProvider,
     mode: PaymentProviderMode,
 ): Promise<{ id: string } | null> {
-    if (mode === 'mock') return null;
+    if (mode !== 'live') return null;
 
     const { data } = await db
         .from('payment_credentials')

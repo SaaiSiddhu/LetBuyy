@@ -48,7 +48,7 @@ import {
 import {
     buildPaymentCaptureLedgerPosting,
     buildPaymentRefundLedgerPosting,
-    buildMockPaymentSessionPlan,
+    buildSandboxPaymentSessionPlan,
     inrMoney,
     normalizeV1PaymentSessionProvider,
 } from '@letbuyy/payments';
@@ -140,7 +140,7 @@ router.post('/sessions', validate('json', CreatePaymentSessionSchema), async (c)
     }
 
     try {
-        const plan = buildMockPaymentSessionPlan({
+        const plan = buildSandboxPaymentSessionPlan({
             provider,
             mode,
             orderId: body.order_id,

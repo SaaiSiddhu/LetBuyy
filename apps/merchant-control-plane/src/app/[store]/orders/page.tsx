@@ -56,7 +56,7 @@ interface OrdersPayload {
 type OrderStatus = 'all' | 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
 type OrderSortKey = 'order' | 'customer' | 'item_count' | 'payment_status' | 'status' | 'total' | 'created_at'
 type SortDirection = 'asc' | 'desc'
-type ProviderMode = 'mock' | 'sandbox' | 'live'
+type ProviderMode = 'sandbox' | 'live'
 
 const statuses: Array<{ label: string; value: OrderStatus }> = [
     { label: 'All', value: 'all' },

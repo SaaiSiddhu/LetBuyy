@@ -96,13 +96,13 @@ export const IndiaPayoutRailSchema = z.enum(['razorpay_route', 'razorpayx', 'upi
 export const AppChargeProviderModeSchema = z.enum(['test', 'live']);
 export const SettlementRailSchema = z.enum(['pa_split', 'cod_remittance']);
 export const SettlementProviderSchema = z.enum(['razorpay_route', 'cashfree', 'cod', 'manual']);
-export const SettlementProviderModeSchema = z.enum(['mock', 'sandbox', 'live']);
-export const BillingProviderModeSchema = z.enum(['mock', 'sandbox', 'live']);
+export const SettlementProviderModeSchema = z.enum(['sandbox', 'live']);
+export const BillingProviderModeSchema = z.enum(['sandbox', 'live']);
 export const BillingMandateSchema = z.object({
   store_id: z.string().uuid(),
   plan_slug: z.enum(['free', 'starter', 'business', 'enterprise']).default('starter'),
   billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
-  provider_mode: BillingProviderModeSchema.default('mock'),
+  provider_mode: BillingProviderModeSchema.default('sandbox'),
   upi_vpa: z.string().trim().min(3).max(120).optional(),
   idempotency_key: z.string().trim().min(8).max(200),
   metadata: z.record(z.string(), z.unknown()).default({}),
@@ -113,7 +113,7 @@ export const BillingSubscribeSchema = z.object({
   billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
   mandate_id: z.string().uuid().optional(),
   idempotency_key: z.string().trim().min(8).max(200),
-  mock_payment_status: z.enum(['paid', 'failed']).default('paid'),
+  sandbox_payment_status: z.enum(['paid', 'failed']).default('paid'),
   metadata: z.record(z.string(), z.unknown()).default({}),
 });
 export const BillingInvoiceQuerySchema = z.object({
@@ -332,7 +332,7 @@ export interface BillingMandatePlan {
   amount_minor: number;
   currency: 'INR';
   external_mandate_id: string;
-  mock: boolean;
+  sandbox: boolean;
 }
 
 export interface BillingDunningPlan {
@@ -940,14 +940,14 @@ export function planBillingAmountMinor(
   };
 }
 
-export function planMockUpiAutopayMandate(input: {
+export function planSandboxUpiAutopayMandate(input: {
   plan: BillingPlanCatalogRecord;
   billingPeriod: SubscriptionBillingPeriod;
   providerMode?: BillingProviderMode;
   idempotencyKey: string;
 }): BillingMandatePlan {
   const amount = planBillingAmountMinor(input.plan, input.billingPeriod);
-  const providerMode = input.providerMode || 'mock';
+  const providerMode = input.providerMode || 'sandbox';
   return {
     provider: 'upi_autopay',
     provider_mode: providerMode,
@@ -955,7 +955,7 @@ export function planMockUpiAutopayMandate(input: {
     amount_minor: Math.max(0, amount.amountMinor),
     currency: 'INR',
     external_mandate_id: `${providerMode}_upi_autopay_${input.idempotencyKey.replace(/[^a-zA-Z0-9_-]+/g, '_').slice(0, 80)}`,
-    mock: providerMode !== 'live',
+    sandbox: providerMode !== 'live',
   };
 }
 

@@ -105,7 +105,7 @@ export interface Env {
     LETBUYY_CASHFREE_MODE?: 'mock' | 'sandbox' | 'live';
     LETBUYY_UPI_MODE?: 'mock' | 'sandbox' | 'live';
     LETBUYY_COD_MODE?: 'mock' | 'sandbox' | 'live';
-    LETBUYY_AUTOPAY_MODE?: 'mock' | 'sandbox' | 'live';
+    LETBUYY_AUTOPAY_MODE?: 'sandbox' | 'live';
     LETBUYY_GST_IRP_MODE?: 'mock' | 'sandbox' | 'live';
     RAZORPAY_ROUTE_MODE?: 'sandbox' | 'live';
     RAZORPAY_ROUTE_ACCOUNT_ID?: string;

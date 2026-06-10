@@ -5,7 +5,7 @@ import {
   assertBalancedLedgerLines,
   buildPaymentCaptureLedgerPosting,
   buildPaymentRefundLedgerPosting,
-  buildMockPaymentSessionPlan,
+  buildSandboxPaymentSessionPlan,
   buildReversalLedgerPosting,
   inrMoney,
   isProductionRuntime,
@@ -81,8 +81,8 @@ test('ledger posting helpers enforce double-entry balance and reversal-only corr
   assert.doesNotThrow(() => assertBalancedLedgerLines(refund.lines));
 });
 
-test('V1 payment session plans default to sandbox mode and production rejects mock', () => {
-  const plan = buildMockPaymentSessionPlan({
+test('V1 payment session plans default to sandbox mode and reject mock mode', () => {
+  const plan = buildSandboxPaymentSessionPlan({
     provider: 'upi',
     orderId: 'order-123',
     amount: inrMoney(12_500),
@@ -100,7 +100,8 @@ test('V1 payment session plans default to sandbox mode and production rejects mo
   assert.equal(resolvePaymentProviderMode(null, { productionRuntime: true }), 'live');
   assert.equal(isProductionRuntime({ nodeEnv: 'production' }), true);
   assert.throws(() => resolvePaymentProviderMode('mock', { productionRuntime: true }), /not allowed in production/);
-  assert.throws(() => resolvePaymentProviderMode('production'), /mock, sandbox, or live/);
+  assert.throws(() => resolvePaymentProviderMode('mock'), /sandbox or live/);
+  assert.throws(() => resolvePaymentProviderMode('production'), /sandbox or live/);
   assert.equal(livePaymentCredentialsAreRequired({ provider: 'razorpay', mode: 'live' }), true);
   assert.equal(livePaymentCredentialsAreRequired({ provider: 'razorpay', mode: 'sandbox' }), false);
   assert.equal(livePaymentCredentialsAreRequired({ provider: 'razorpay', mode: 'live', merchantCredentialPresent: true }), false);

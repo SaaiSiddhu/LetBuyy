@@ -13,7 +13,7 @@ export type PaymentSettings = {
     };
 };
 
-export type ProviderMode = 'mock' | 'sandbox' | 'live';
+export type ProviderMode = 'sandbox' | 'live';
 
 function base64EncodeBytes(bytes: Uint8Array): string {
     let binary = '';

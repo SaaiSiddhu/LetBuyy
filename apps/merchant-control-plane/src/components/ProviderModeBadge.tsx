@@ -1,14 +1,13 @@
-type ProviderMode = 'mock' | 'sandbox' | 'live'
+type ProviderMode = 'sandbox' | 'live'
 
 const toneByMode: Record<ProviderMode, string> = {
-    mock: 'border-[var(--lb-color-critical)] bg-[var(--lb-color-critical-soft)] text-[var(--lb-color-critical)]',
     sandbox: 'border-[var(--lb-color-warning)] bg-[var(--lb-color-warning-soft)] text-[var(--lb-color-warning)]',
     live: 'border-[var(--lb-color-success)] bg-[var(--lb-color-success-soft)] text-[var(--lb-color-success)]',
 }
 
 export function normalizeProviderMode(value: unknown): ProviderMode | null {
     if (value === 'test') return 'sandbox'
-    return value === 'mock' || value === 'sandbox' || value === 'live' ? value : null
+    return value === 'sandbox' || value === 'live' ? value : null
 }
 
 export function ProviderModeBadge({ mode }: { mode: ProviderMode | null | undefined }) {

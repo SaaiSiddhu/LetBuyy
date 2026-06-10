@@ -37,7 +37,7 @@ type ShippingPayload = {
     error?: string | { message?: string }
 }
 
-type ProviderMode = 'mock' | 'sandbox' | 'live'
+type ProviderMode = 'sandbox' | 'live'
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
 type FormMode = 'add' | 'edit' | null
