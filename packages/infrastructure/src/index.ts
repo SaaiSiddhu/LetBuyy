@@ -22,4 +22,3 @@ export * from '../provider-resilience-adapter/index';
 export * from '../ai-generation-adapter/index';
 export * from '../ai-credit-purchase-adapter/index';
 export * from '../whatsapp-commerce-adapter/index';
-export * from '../identity-otp-adapter/index';

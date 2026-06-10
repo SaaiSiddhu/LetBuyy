@@ -3,7 +3,7 @@ import {
   phaseBEntries,
   pushRegexOffenders,
 } from "./phase-b-common.mjs";
-import { createReporter, readFile } from "./governance-common.mjs";
+import { createReporter, exists, readFile } from "./governance-common.mjs";
 
 const reporter = createReporter("Provider mode badge validator");
 
@@ -47,6 +47,9 @@ reporter.assert(!kycAdapter.includes("live_provider_stub"), "KYC adapter must no
 reporter.assert(kycAdapter.includes("KYC_LIVE_PROVIDER_UNAVAILABLE"), "KYC adapter must fail closed while live provider integration is absent");
 reporter.assert(capabilityBacklog.includes("CAP-C15"), "CAPABILITY_BACKLOG.md missing CAP-C15 live KYC provider gap");
 reporter.assert(skippedHumanDecisions.includes("SKIP-CAP-KYC-LIVE-PROVIDER"), "SKIPPED_HUMAN_DECISIONS.md missing SKIP-CAP-KYC-LIVE-PROVIDER");
+reporter.assert(!exists("packages/infrastructure/identity-otp-adapter/index.ts"), "retired identity OTP mock adapter must not exist");
+reporter.assert(!readFile("packages/infrastructure/src/index.ts").includes("identity-otp-adapter"), "infrastructure barrel must not export retired identity OTP mock adapter");
+reporter.assert(!readFile("packages/infrastructure/package.json").includes("identity-otp-adapter"), "infrastructure package must not expose retired identity OTP mock adapter");
 
 const routes = readFile("apps/mobile/merchant-app/lib/app/routes.dart");
 reporter.assert(!routes.includes("MerchantFeatureDefinitions"), "mobile routes must not depend on the parity feature catalog");
