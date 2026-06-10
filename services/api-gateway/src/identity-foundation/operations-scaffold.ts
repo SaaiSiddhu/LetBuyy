@@ -21,7 +21,7 @@ export function jwksCacheMetric(realm: IdentityRealm, hit: boolean): IdentityMet
   return {
     name: 'identity_jwks_cache_hit',
     value: hit ? 1 : 0,
-    labels: { realm, mode: 'mock' },
+    labels: { realm, mode: 'scaffold' },
   };
 }
 

@@ -43,6 +43,10 @@ const capabilityBacklog = readFile("CAPABILITY_BACKLOG.md");
 const gatewayAuthRoute = readFile("services/api-gateway/src/routes/auth.ts");
 const legacyAuthCore = readFile("packages/auth-core/src/index.ts");
 const gatewayIdentityMock = readFile("services/api-gateway/src/identity-foundation/mock-key-service.ts");
+const operationsScaffold = readFile("services/api-gateway/src/identity-foundation/operations-scaffold.ts");
+
+reporter.assert(!operationsScaffold.includes("mode: 'mock'"), "identity operations scaffold must not emit mock mode labels");
+reporter.assert(operationsScaffold.includes("mode: 'scaffold'"), "identity operations scaffold must label dormant metric hooks as scaffold");
 
 const legacySessionResidue =
   gatewayAuthRoute.includes("randomHex(32)") ||
