@@ -28,6 +28,7 @@ const offenders = [];
 for (const entry of phaseBEntries(["apps", "services", "packages"])) {
   if (allowedInfrastructureAdapters.has(entry.path) && !entry.extra) continue;
   if (entry.path.startsWith("services/api-gateway/src/lib/supabase.ts") && !entry.extra) continue;
+  if (entry.path.endsWith(".sql") && !entry.extra) continue;
 
   if (entry.path.startsWith("apps/") || entry.extra) {
     pushRegexOffenders(

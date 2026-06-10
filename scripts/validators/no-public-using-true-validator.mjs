@@ -11,7 +11,6 @@ import {
 
 const reporter = createReporter("No public USING true validator");
 const legacySqlFiles = new Set([
-  "apps/identity-platform/src/lib/db/schema.sql",
   "database/supabase/migrations/000_baseline.sql",
 ]);
 

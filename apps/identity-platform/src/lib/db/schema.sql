@@ -66,7 +66,7 @@ ALTER TABLE devices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE verification_tokens ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies: Allow service role full access (API routes use service role)
-CREATE POLICY "Service role full access" ON users_custom FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Service role full access" ON sessions FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Service role full access" ON devices FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Service role full access" ON verification_tokens FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Service role full access" ON users_custom FOR ALL TO service_role USING (true) WITH CHECK (true);
+CREATE POLICY "Service role full access" ON sessions FOR ALL TO service_role USING (true) WITH CHECK (true);
+CREATE POLICY "Service role full access" ON devices FOR ALL TO service_role USING (true) WITH CHECK (true);
+CREATE POLICY "Service role full access" ON verification_tokens FOR ALL TO service_role USING (true) WITH CHECK (true);
