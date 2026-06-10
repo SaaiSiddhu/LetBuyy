@@ -930,7 +930,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
                 if (quote.available) ...[
                   const SizedBox(height: LetbuyySpacingTokens.space4),
                   Text(
-                    quote.provider == 'mock'
+                    quote.provider == 'sandbox'
                         ? 'Test checkout is ready for this domain.'
                         : 'Registrar checkout will record the provider payment reference.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { createDomainRegistrarProvider } from '../lib/registrar';
+import { createDomainRegistrarProvider } from '../lib/registrar/index.ts';
 
 function repositorySource(path: string): string {
     return readFileSync(new URL(`../../../../${path}`, import.meta.url), 'utf8');
@@ -15,18 +15,18 @@ const mobileService = repositorySource('apps/mobile/merchant-app/lib/services/cu
 const mobileScreen = repositorySource('apps/mobile/merchant-app/lib/screens/settings/domain_settings_screen.dart');
 const bffSource = repositorySource('services/mobile-bff/src/index.ts');
 
-test('mock registrar verifies the sandbox buy-domain checkout path', async () => {
+test('sandbox registrar verifies the sandbox buy-domain checkout path', async () => {
     const provider = createDomainRegistrarProvider({
         APP_ENV: 'development',
-        REGISTRAR_PROVIDER: 'mock',
-        REGISTRAR_MOCK_ENABLED: 'true',
+        REGISTRAR_PROVIDER: 'sandbox',
+        REGISTRAR_SANDBOX_ENABLED: 'true',
         REGISTRAR_DEFAULT_CURRENCY: 'INR',
     });
 
     const quote = await provider.searchDomain('demo.in');
     assert.equal(quote.available, true);
     assert.equal(quote.amountMinor, 79900);
-    assert.equal(quote.provider, 'mock');
+    assert.equal(quote.provider, 'sandbox');
 
     const purchase = await provider.purchaseDomain({
         domain: quote.domain,
@@ -37,7 +37,7 @@ test('mock registrar verifies the sandbox buy-domain checkout path', async () =>
     });
     const dns = await provider.configureDns(quote.domain, 'cname.letbuyy.test');
 
-    assert.equal(purchase.registrarOrderId, 'mock-domain-order:site_1:demo.in');
+    assert.equal(purchase.registrarOrderId, 'sandbox-domain-order:site_1:demo.in');
     assert.equal(dns.configured, true);
     assert.equal(dns.raw.target, 'cname.letbuyy.test');
 });

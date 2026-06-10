@@ -7,7 +7,7 @@ function normalizeRealm(realm: string): string {
 }
 
 function keyIdFor(realm: string, state: KeyDescriptor['state'], generation = 1): string {
-  return `mock-${normalizeRealm(realm)}-${state}-es256-v${generation}`;
+  return `sandbox-${normalizeRealm(realm)}-${state}-es256-v${generation}`;
 }
 
 function base64UrlEncode(input: string | Uint8Array): string {
@@ -245,7 +245,7 @@ export function createMockRealmKeyInfrastructure(now: () => Date = () => new Dat
     compromiseRunbook(kid) {
       return [
         { order: 1, action: `Mark ${kid} as retiring and publish next key ahead of use.` },
-        { order: 2, action: 'Rotate active mock signing key and refresh JWKS caches.' },
+        { order: 2, action: 'Rotate active sandbox signing key and refresh JWKS caches.' },
         { order: 3, action: 'Revoke affected sessions through the dormant revocation service.' },
         { order: 4, action: 'Provision live KMS/HSM replacement before production enablement.', humanRequired: 'HR-KMS-LIVE' },
         { order: 5, action: 'Deploy through approved migration/deploy pipeline.', humanRequired: 'HR-PROD-MIGRATE-DEPLOY' },

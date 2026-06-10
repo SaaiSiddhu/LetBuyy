@@ -89,7 +89,7 @@ class DomainService extends ChangeNotifier {
     String? paymentReference,
     int years = 1,
   }) async {
-    final checkoutMode = quote.provider == 'mock'
+    final checkoutMode = quote.provider == 'sandbox'
         ? 'sandbox'
         : 'external_reference';
     final reference = paymentReference?.trim().isNotEmpty == true

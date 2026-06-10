@@ -279,9 +279,6 @@ export function resolvePaymentProviderMode(
   if (normalized === 'sandbox' || normalized === 'live') {
     return normalized;
   }
-  if (normalized === 'mock' && options?.productionRuntime) {
-    throw new Error('Mock payment provider mode is not allowed in production runtime');
-  }
   throw new Error('Payment provider mode must be sandbox or live');
 }
 

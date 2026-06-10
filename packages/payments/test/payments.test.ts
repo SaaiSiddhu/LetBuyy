@@ -99,7 +99,7 @@ test('V1 payment session plans default to sandbox mode and reject mock mode', ()
   assert.equal(resolvePaymentProviderMode(), 'sandbox');
   assert.equal(resolvePaymentProviderMode(null, { productionRuntime: true }), 'live');
   assert.equal(isProductionRuntime({ nodeEnv: 'production' }), true);
-  assert.throws(() => resolvePaymentProviderMode('mock', { productionRuntime: true }), /not allowed in production/);
+  assert.throws(() => resolvePaymentProviderMode('mock', { productionRuntime: true }), /sandbox or live/);
   assert.throws(() => resolvePaymentProviderMode('mock'), /sandbox or live/);
   assert.throws(() => resolvePaymentProviderMode('production'), /sandbox or live/);
   assert.equal(livePaymentCredentialsAreRequired({ provider: 'razorpay', mode: 'live' }), true);

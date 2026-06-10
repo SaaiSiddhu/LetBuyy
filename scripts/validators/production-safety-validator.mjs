@@ -20,8 +20,8 @@ for (const forbidden of ['failOpenRateLimitResult', 'failOpenQueryCostResult', '
 }
 
 const registrarSource = readFile('services/api-gateway/src/lib/registrar/index.ts');
-reporter.assert(!registrarSource.includes('raw: { mock: true }'), 'Mock registrar must not emit mock:true runtime success payloads');
-reporter.assert(registrarSource.includes("REGISTRAR_MOCK_ENABLED !== 'true'"), 'Mock registrar must remain explicitly gated off unless enabled outside production');
+reporter.assert(!registrarSource.includes('raw: { mock: true }'), 'Sandbox registrar must not emit mock:true runtime success payloads');
+reporter.assert(registrarSource.includes("REGISTRAR_SANDBOX_ENABLED !== 'true'"), 'Sandbox registrar must remain explicitly gated off unless enabled outside production');
 
 const allowlist = readJson('config/governance/anti-fabrication-allowlist.json');
 reporter.assert(

@@ -100,13 +100,13 @@ export interface Env {
     SUPABASE_DB_URL?: string;
     RAZORPAY_KEY_ID: string;
     RAZORPAY_KEY_SECRET: string;
-    LETBUYY_PAYMENT_MODE?: 'mock' | 'sandbox' | 'live';
-    LETBUYY_RAZORPAY_MODE?: 'mock' | 'sandbox' | 'live';
-    LETBUYY_CASHFREE_MODE?: 'mock' | 'sandbox' | 'live';
-    LETBUYY_UPI_MODE?: 'mock' | 'sandbox' | 'live';
-    LETBUYY_COD_MODE?: 'mock' | 'sandbox' | 'live';
+    LETBUYY_PAYMENT_MODE?: 'sandbox' | 'live';
+    LETBUYY_RAZORPAY_MODE?: 'sandbox' | 'live';
+    LETBUYY_CASHFREE_MODE?: 'sandbox' | 'live';
+    LETBUYY_UPI_MODE?: 'sandbox' | 'live';
+    LETBUYY_COD_MODE?: 'sandbox' | 'live';
     LETBUYY_AUTOPAY_MODE?: 'sandbox' | 'live';
-    LETBUYY_GST_IRP_MODE?: 'mock' | 'sandbox' | 'live';
+    LETBUYY_GST_IRP_MODE?: 'sandbox' | 'live';
     RAZORPAY_ROUTE_MODE?: 'sandbox' | 'live';
     RAZORPAY_ROUTE_ACCOUNT_ID?: string;
     RAZORPAY_ROUTE_KEY_SECRET?: string;
@@ -175,7 +175,7 @@ export interface Env {
     REGISTRAR_USERNAME?: string;
     REGISTRAR_PASSWORD?: string;
     REGISTRAR_DEFAULT_CURRENCY?: string;
-    REGISTRAR_MOCK_ENABLED?: string;
+    REGISTRAR_SANDBOX_ENABLED?: string;
     CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT?: string;
     TURNSTILE_SECRET_KEY?: string;
     LETBUYY_KMS_MODE?: 'sandbox' | 'live';

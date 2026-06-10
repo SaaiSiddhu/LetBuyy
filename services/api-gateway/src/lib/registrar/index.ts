@@ -1,4 +1,4 @@
-export type RegistrarProviderName = 'resellerclub' | 'opensrs' | 'mock';
+export type RegistrarProviderName = 'resellerclub' | 'opensrs' | 'sandbox';
 
 export interface RegistrarEnv {
     ENVIRONMENT?: string;
@@ -10,7 +10,7 @@ export interface RegistrarEnv {
     REGISTRAR_USERNAME?: string;
     REGISTRAR_PASSWORD?: string;
     REGISTRAR_DEFAULT_CURRENCY?: string;
-    REGISTRAR_MOCK_ENABLED?: string;
+    REGISTRAR_SANDBOX_ENABLED?: string;
 }
 
 export interface DomainAvailabilityQuote {
@@ -124,8 +124,13 @@ function priceForTld(domain: string): number {
 
 export class ResellerClubRegistrarProvider implements DomainRegistrarProvider {
     readonly name = 'resellerclub' as const;
+    private readonly env: RegistrarEnv;
+    private readonly fetchImpl: FetchLike;
 
-    constructor(private env: RegistrarEnv, private fetchImpl: FetchLike = fetch) { }
+    constructor(env: RegistrarEnv, fetchImpl: FetchLike = fetch) {
+        this.env = env;
+        this.fetchImpl = fetchImpl;
+    }
 
     async searchDomain(domain: string): Promise<DomainAvailabilityQuote> {
         const { baseUrl, resellerId, apiKey } = requireResellerClubCredentials(this.env);
@@ -194,8 +199,13 @@ export class ResellerClubRegistrarProvider implements DomainRegistrarProvider {
 
 export class OpenSrsRegistrarProvider implements DomainRegistrarProvider {
     readonly name = 'opensrs' as const;
+    private readonly env: RegistrarEnv;
+    private readonly fetchImpl: FetchLike;
 
-    constructor(private env: RegistrarEnv, private fetchImpl: FetchLike = fetch) { }
+    constructor(env: RegistrarEnv, fetchImpl: FetchLike = fetch) {
+        this.env = env;
+        this.fetchImpl = fetchImpl;
+    }
 
     async searchDomain(domain: string): Promise<DomainAvailabilityQuote> {
         const { baseUrl, username, password } = requireOpenSrsCredentials(this.env);
@@ -249,10 +259,13 @@ export class OpenSrsRegistrarProvider implements DomainRegistrarProvider {
     }
 }
 
-export class MockRegistrarProvider implements DomainRegistrarProvider {
-    readonly name = 'mock' as const;
+export class SandboxRegistrarProvider implements DomainRegistrarProvider {
+    readonly name = 'sandbox' as const;
+    private readonly env: RegistrarEnv;
 
-    constructor(private env: RegistrarEnv = {}) { }
+    constructor(env: RegistrarEnv = {}) {
+        this.env = env;
+    }
 
     async searchDomain(domain: string): Promise<DomainAvailabilityQuote> {
         return {
@@ -269,7 +282,7 @@ export class MockRegistrarProvider implements DomainRegistrarProvider {
     async purchaseDomain(input: DomainPurchaseInput): Promise<DomainPurchaseResult> {
         return {
             provider: this.name,
-            registrarOrderId: `mock-${input.idempotencyKey}`,
+            registrarOrderId: `sandbox-${input.idempotencyKey}`,
             domain: input.domain,
             expiresAt: new Date(Date.now() + input.years * 365 * 24 * 60 * 60 * 1000).toISOString(),
             nameservers: [],
@@ -284,11 +297,11 @@ export class MockRegistrarProvider implements DomainRegistrarProvider {
 
 export function createDomainRegistrarProvider(env: RegistrarEnv, fetchImpl: FetchLike = fetch): DomainRegistrarProvider {
     const provider = (env.REGISTRAR_PROVIDER?.trim().toLowerCase() || 'resellerclub') as RegistrarProviderName;
-    if (provider === 'mock') {
-        if (isProduction(env) || env.REGISTRAR_MOCK_ENABLED !== 'true') {
-            throw new RegistrarConfigError('Mock registrar is only allowed outside production with REGISTRAR_MOCK_ENABLED=true', 'REGISTRAR_MOCK_FORBIDDEN');
+    if (provider === 'sandbox') {
+        if (isProduction(env) || env.REGISTRAR_SANDBOX_ENABLED !== 'true') {
+            throw new RegistrarConfigError('Sandbox registrar is only allowed outside production with REGISTRAR_SANDBOX_ENABLED=true', 'REGISTRAR_SANDBOX_FORBIDDEN');
         }
-        return new MockRegistrarProvider(env);
+        return new SandboxRegistrarProvider(env);
     }
     if (provider === 'opensrs') {
         requireOpenSrsCredentials(env);

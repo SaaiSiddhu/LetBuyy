@@ -35,7 +35,7 @@ test('theme marketplace checkout uses the working local payment default and has 
 
     assert.match(source, /PAYMENT_UNAVAILABLE/);
     assert.match(source, /Theme checkout is unavailable/);
-    assert.match(source, /local mock provider in development/);
+    assert.match(source, /sandbox provider in development/);
     assert.doesNotMatch(source, /function handleApplyCoupon/);
     assert.doesNotMatch(source, /Theme coupons are not configured/);
     assert.match(source, /paymentMethod\] = useState<'razorpay'>\('razorpay'\)/);
@@ -73,7 +73,8 @@ test('gateway theme purchase remains server-priced and provider-proof based', ()
     const source = read(gatewayThemesRoutePath);
 
     assert.match(source, /amountPaise = Math\.round\(priceInr \* 100\)/);
-    assert.match(source, /if \(!c\.env\.RAZORPAY_KEY_ID \|\| !c\.env\.RAZORPAY_KEY_SECRET\)/);
+    assert.match(source, /const hasRazorpayKeys = Boolean\(c\.env\.RAZORPAY_KEY_ID && c\.env\.RAZORPAY_KEY_SECRET\)/);
+    assert.match(source, /if \(!hasRazorpayKeys\)/);
     assert.match(source, /PAYMENT_UNAVAILABLE/);
     assert.match(source, /createRazorpayOrder/);
     assert.match(source, /timingSafeEqualHex\(expected, body\.razorpay_signature\)/);

@@ -106,8 +106,8 @@ router.post('/purchase', async (c) => {
     if (!quote.available) {
         return c.json({ error: { code: 'DOMAIN_UNAVAILABLE', message: 'Domain is unavailable', details: quote } }, 409);
     }
-    const checkoutMode = parsed.data.checkout_mode || (provider.name === 'mock' ? 'sandbox' : 'external_reference');
-    if (checkoutMode === 'sandbox' && provider.name !== 'mock') {
+    const checkoutMode = parsed.data.checkout_mode || (provider.name === 'sandbox' ? 'sandbox' : 'external_reference');
+    if (checkoutMode === 'sandbox' && provider.name !== 'sandbox') {
         return c.json({
             error: {
                 code: 'DOMAIN_CHECKOUT_MODE_UNAVAILABLE',

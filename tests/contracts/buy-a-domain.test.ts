@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { MockRegistrarProvider, createDomainRegistrarProvider } from '../../services/api-gateway/src/lib/registrar';
+import { SandboxRegistrarProvider, createDomainRegistrarProvider } from '../../services/api-gateway/src/lib/registrar/index.ts';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(testDir, '../..');
@@ -14,11 +14,11 @@ function read(relativePath: string): string {
   return readFileSync(absolutePath, 'utf8');
 }
 
-test('mock registrar covers search and purchase happy path without live credentials', async () => {
-  const provider = new MockRegistrarProvider({ REGISTRAR_DEFAULT_CURRENCY: 'INR' });
+test('sandbox registrar covers search and purchase happy path without live credentials', async () => {
+  const provider = new SandboxRegistrarProvider({ REGISTRAR_DEFAULT_CURRENCY: 'INR' });
   const quote = await provider.searchDomain('example-buy-domain.in');
   assert.equal(quote.available, true);
-  assert.equal(quote.provider, 'mock');
+  assert.equal(quote.provider, 'sandbox');
 
   const purchase = await provider.purchaseDomain({
     domain: quote.domain,
@@ -28,7 +28,7 @@ test('mock registrar covers search and purchase happy path without live credenti
     idempotencyKey: 'test-key',
   });
   assert.equal(purchase.domain, quote.domain);
-  assert.equal(purchase.provider, 'mock');
+  assert.equal(purchase.provider, 'sandbox');
 });
 
 test('registrar provider fails loud without credentials and gateway owns domain_orders', () => {

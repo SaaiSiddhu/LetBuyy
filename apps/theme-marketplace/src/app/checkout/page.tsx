@@ -378,7 +378,7 @@ function CheckoutContent() {
                             <div>
                                 <Shield className="w-5 h-5 mx-auto mb-2 text-secondary" />
                                 <p className="text-sm font-medium text-text-heading">INR checkout</p>
-                                <p className="text-[10px] text-text-subtle">Razorpay in production, local mock provider in development</p>
+                                <p className="text-[10px] text-text-subtle">Razorpay in production, sandbox provider in development</p>
                             </div>
                         </div>
                     </div>

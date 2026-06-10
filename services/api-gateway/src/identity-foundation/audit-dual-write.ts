@@ -118,7 +118,7 @@ export function redactAuditMetadata(metadata: Record<string, unknown> = {}): {
       redacted[key] = '[redacted]';
       encryptedPii[key] = {
         placeholder: true,
-        algorithm: 'identity-foundation-mock-envelope',
+        algorithm: 'identity-foundation-sandbox-envelope',
         value,
       };
     } else {
@@ -247,7 +247,7 @@ export async function emitAuditDualWrite(
           seq: canonicalRow.seq,
           prevHash: canonicalRow.prev_hash,
           hash: canonicalRow.hash,
-          anchorKid: String(canonicalRow.metadata.audit_anchor_kid || 'mock-audit-anchor'),
+          anchorKid: String(canonicalRow.metadata.audit_anchor_kid || 'sandbox-audit-anchor'),
         }
       : undefined,
   };

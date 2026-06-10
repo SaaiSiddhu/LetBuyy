@@ -65,6 +65,14 @@ const paymentSchema = readFile("services/api-gateway/src/schemas/payment.schema.
 const paymentSessionsMigration = readFile("database/supabase/migrations/142_executable_payment_sessions.sql");
 const notificationsRoute = readFile("services/api-gateway/src/routes/notifications.ts");
 const cryptoSource = readFile("services/api-gateway/src/lib/crypto.ts");
+const registrarSource = readFile("services/api-gateway/src/lib/registrar/index.ts");
+const domainRoutes = readFile("services/api-gateway/src/routes/domains.ts");
+const sharedTypes = readFile("packages/shared-types/src/index.ts");
+const gatewayIndex = readFile("services/api-gateway/src/index.ts");
+const checkoutRoute = readFile("services/api-gateway/src/routes/checkout.ts");
+const storefrontCartRoutes = readFile("services/api-gateway/src/routes/storefront/cart-routes.ts");
+const mediaRoute = readFile("services/api-gateway/src/routes/media.ts");
+const shippingRoute = readFile("services/api-gateway/src/routes/shipping.ts");
 reporter.assert(!kycAdapter.includes("live_provider_stub"), "KYC adapter must not turn sandbox verification into live-provider success");
 reporter.assert(kycAdapter.includes("KYC_LIVE_PROVIDER_UNAVAILABLE"), "KYC adapter must fail closed while live provider integration is absent");
 reporter.assert(capabilityBacklog.includes("CAP-C15"), "CAPABILITY_BACKLOG.md missing CAP-C15 live KYC provider gap");
@@ -190,6 +198,33 @@ for (const fragment of [
 }
 reporter.assert(cryptoSource.includes("KmsMode = 'sandbox' | 'live'"), "KMS provider mode must be sandbox/live only");
 reporter.assert(cryptoSource.includes("createSandboxKmsProvider"), "KMS envelope provider must use sandbox helper naming");
+for (const fragment of [
+  "REGISTRAR_MOCK_ENABLED",
+  "MockRegistrarProvider",
+  "provider === 'mock'",
+  "registrarOrderId: `mock-",
+  "Mock registrar is only allowed",
+]) {
+  reporter.assert(!registrarSource.includes(fragment), `registrar seam must use sandbox labels: ${fragment}`);
+  reporter.assert(!domainRoutes.includes(fragment), `domain routes must use sandbox registrar labels: ${fragment}`);
+  reporter.assert(!gatewayIndex.includes(fragment), `gateway env surface must use sandbox registrar labels: ${fragment}`);
+}
+reporter.assert(registrarSource.includes("SandboxRegistrarProvider"), "registrar seam must expose SandboxRegistrarProvider");
+reporter.assert(registrarSource.includes("REGISTRAR_SANDBOX_ENABLED"), "registrar sandbox provider must be explicitly gated");
+reporter.assert(sharedTypes.includes("DomainRegistrarProviderSchema = z.enum(['resellerclub', 'opensrs', 'sandbox'])"), "shared domain registrar schema must use sandbox, not mock");
+reporter.assert(sharedTypes.includes("provider_mode: z.enum(['sandbox', 'live']).default('sandbox')"), "store payment config schema must use sandbox/live provider modes");
+for (const [label, source] of [
+  ["checkout route", checkoutRoute],
+  ["storefront cart route", storefrontCartRoutes],
+  ["media route", mediaRoute],
+]) {
+  reporter.assert(!source.includes("letbuyy-local-mock"), `${label} local fallback secrets must use sandbox labels`);
+}
+reporter.assert(checkoutRoute.includes("letbuyy-local-sandbox-checkout-handoff-secret"), "checkout route local handoff secret must be sandbox-labelled");
+reporter.assert(storefrontCartRoutes.includes("letbuyy-local-sandbox-checkout-handoff-secret"), "storefront cart route local handoff secret must be sandbox-labelled");
+reporter.assert(mediaRoute.includes("letbuyy-local-sandbox-media-upload-secret"), "media route local upload secret must be sandbox-labelled");
+reporter.assert(!shippingRoute.includes("mock-standard"), "shipping route local fallback rate must be sandbox-labelled");
+reporter.assert(shippingRoute.includes("sandbox-standard"), "shipping route local fallback rate must expose sandbox-standard");
 reporter.assert(!exists("packages/infrastructure/identity-otp-adapter/index.ts"), "retired identity OTP mock adapter must not exist");
 reporter.assert(!readFile("packages/infrastructure/src/index.ts").includes("identity-otp-adapter"), "infrastructure barrel must not export retired identity OTP mock adapter");
 reporter.assert(!readFile("packages/infrastructure/package.json").includes("identity-otp-adapter"), "infrastructure package must not expose retired identity OTP mock adapter");

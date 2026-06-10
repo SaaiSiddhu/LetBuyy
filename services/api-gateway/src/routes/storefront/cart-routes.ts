@@ -307,7 +307,7 @@ function checkoutSigningSecret(c: AppContext): string | null {
     const configured = c.env.CHECKOUT_SIGNING_SECRET || c.env.AUTH_SECRET || c.env.STORE_ACCESS_SIGNING_KEY;
     if (configured && !configured.startsWith('SKIP_NEEDS_HUMAN_')) return configured;
     if (c.env.ENVIRONMENT === 'production' || c.env.APP_ENV === 'production') return null;
-    return 'letbuyy-local-mock-checkout-handoff-secret';
+    return 'letbuyy-local-sandbox-checkout-handoff-secret';
 }
 
 async function emitCartEvent(

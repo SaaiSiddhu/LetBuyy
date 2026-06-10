@@ -7,7 +7,7 @@ import {
 } from '../../services/api-gateway/src/middleware/rateLimit.ts';
 import {
   createDomainRegistrarProvider,
-  MockRegistrarProvider,
+  SandboxRegistrarProvider,
 } from '../../services/api-gateway/src/lib/registrar/index.ts';
 import {
   evaluateProductionSafetyPreflight,
@@ -33,17 +33,17 @@ test('production rate limiting fails closed when no backend is ready', async () 
   assert.equal(queryCost.remaining, 0);
 });
 
-test('mock registrar stays gated and no longer emits mock:true raw payloads', async () => {
+test('sandbox registrar stays gated and no longer emits success-shaped fake payloads', async () => {
   assert.throws(
     () => createDomainRegistrarProvider({
       ENVIRONMENT: 'production',
-      REGISTRAR_PROVIDER: 'mock',
-      REGISTRAR_MOCK_ENABLED: 'true',
+      REGISTRAR_PROVIDER: 'sandbox',
+      REGISTRAR_SANDBOX_ENABLED: 'true',
     }),
-    /Mock registrar is only allowed outside production/,
+    /Sandbox registrar is only allowed outside production/,
   );
 
-  const provider = new MockRegistrarProvider({ ENVIRONMENT: 'development', REGISTRAR_MOCK_ENABLED: 'true' });
+  const provider = new SandboxRegistrarProvider({ ENVIRONMENT: 'development', REGISTRAR_SANDBOX_ENABLED: 'true' });
   const result = await provider.purchaseDomain({
     domain: 'example.store',
     years: 1,
@@ -51,7 +51,7 @@ test('mock registrar stays gated and no longer emits mock:true raw payloads', as
     paymentReference: 'non-production-fixture',
     idempotencyKey: 'idem-001',
   });
-  assert.deepEqual(result.raw, { provider: 'mock', simulated: true });
+  assert.deepEqual(result.raw, { provider: 'sandbox', simulated: true });
 });
 
 test('shared environment preflight rejects sentinel secrets until evidence is ready', () => {

@@ -1043,7 +1043,7 @@ export const CustomDomainHealthSchema = z.object({
   vercel: MetadataSchema.default({}),
 });
 
-export const DomainRegistrarProviderSchema = z.enum(['resellerclub', 'opensrs', 'mock']);
+export const DomainRegistrarProviderSchema = z.enum(['resellerclub', 'opensrs', 'sandbox']);
 
 export const DomainAvailabilityQuoteSchema = z.object({
   domain: z.string().min(3).max(255),
@@ -1897,7 +1897,7 @@ export const StorePaymentConfigSchema = z.object({
   store_id: UuidSchema,
   online_payment_enabled: z.boolean().default(true),
   cod_enabled: z.boolean().default(true),
-  provider_mode: z.enum(['mock', 'sandbox', 'live']).default('mock'),
+  provider_mode: z.enum(['sandbox', 'live']).default('sandbox'),
   payment_settings: StorePaymentSettingsSchema,
   schema_ready: z.boolean().optional(),
 }).passthrough();

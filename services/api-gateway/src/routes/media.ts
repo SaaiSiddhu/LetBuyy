@@ -60,7 +60,7 @@ function mediaUploadSigningSecret(env: Pick<Env, 'MEDIA_UPLOAD_SIGNING_SECRET' |
     const configured = env.MEDIA_UPLOAD_SIGNING_SECRET || env.AUTH_SECRET;
     if (configured && !configured.startsWith('SKIP_NEEDS_HUMAN_')) return configured;
     if (env.ENVIRONMENT === 'production' || env.APP_ENV === 'production') return null;
-    return 'letbuyy-local-mock-media-upload-secret';
+    return 'letbuyy-local-sandbox-media-upload-secret';
 }
 
 function base64UrlJson(value: Record<string, unknown>): string {

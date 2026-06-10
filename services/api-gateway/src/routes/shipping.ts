@@ -146,7 +146,7 @@ router.post('/rates', validate('json', ShippingRatesSchema), async (c) => {
     return c.json(success({
         serviceability,
         rates: rates.length > 0 ? rates : [{
-            id: 'mock-standard',
+            id: 'sandbox-standard',
             name: 'Standard shipping',
             type: 'flat',
             currency: 'INR',
