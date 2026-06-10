@@ -5,15 +5,15 @@
 Validate that Vercel accepts a merchant custom domain whose merchant-facing CNAME points to the LetBuyy-owned target:
 
 ```text
-www.<test-domain> -> connect.letbuyy.store -> cname.vercel-dns.com
+www.<test-domain> -> connect.letbuyy.com -> cname.vercel-dns.com
 ```
 
 This is a live-provider test. Do not mark custom-domain automation production-ready until this runbook has fresh evidence in the operations ledger.
 
 ## Preconditions
 
-- Cloudflare credentials with DNS Edit access to the `letbuyy.store` zone.
-- `connect.letbuyy.store` present as a DNS-only CNAME to Vercel.
+- Cloudflare credentials with DNS Edit access to the `letbuyy.com` zone.
+- `connect.letbuyy.com` present as a DNS-only CNAME to Vercel.
 - `VERCEL_API_TOKEN` and `VERCEL_STOREFRONT_PROJECT_ID` set for `services/api-gateway`.
 - A real test domain whose DNS can be changed without affecting production email.
 - A test LetBuyy site with a known `site_id`.
@@ -23,7 +23,7 @@ This is a live-provider test. Do not mark custom-domain automation production-re
 ```sh
 terraform -chdir=infrastructure/dns plan
 terraform -chdir=infrastructure/dns apply
-dig +short CNAME connect.letbuyy.store
+dig +short CNAME connect.letbuyy.com
 ```
 
 Expected result:
@@ -44,10 +44,10 @@ curl -sS -X POST "$API_BASE_URL/v1/custom/domains" \
 Add the returned ownership TXT record at the test domain's DNS provider. Add the CNAME:
 
 ```text
-www  CNAME  connect.letbuyy.store
+www  CNAME  connect.letbuyy.com
 ```
 
-If testing the apex, use DNS-provider ALIAS/ANAME/CNAME-flattening to `connect.letbuyy.store`; do not remove existing MX records.
+If testing the apex, use DNS-provider ALIAS/ANAME/CNAME-flattening to `connect.letbuyy.com`; do not remove existing MX records.
 
 ## Step 3: Verify and attach through the gateway
 
@@ -75,7 +75,7 @@ curl -I https://www.<test-domain>
 
 Expected proof:
 
-- `dig` resolves to `connect.letbuyy.store` or through the chain to Vercel.
+- `dig` resolves to `connect.letbuyy.com` or through the chain to Vercel.
 - `curl -I` returns a valid TLS response from the storefront runtime.
 - Vercel domain config reports valid/ready through the gateway status endpoint or Vercel dashboard.
 
@@ -84,8 +84,8 @@ Expected proof:
 If Vercel rejects the chained CNAME:
 
 1. Temporarily change merchant instructions and `CUSTOM_DOMAIN_CNAME_TARGET` to Vercel's direct CNAME target for affected domains only.
-2. Or stand up the Phase-2 storefront ingress behind `connect.letbuyy.store` and move custom-domain routing there.
-3. Record the evidence and decision in `CODEX_DOMAIN_FINALIZATION_LEDGER.md` and `CODEX_DOMAIN_FINALIZATION_STATUS.md`.
+2. Or stand up the storefront ingress behind `connect.letbuyy.com` and move custom-domain routing there.
+3. Record the evidence and decision in `EXECUTION_LEDGER.md` and `SKIPPED_HUMAN_DECISIONS.md`.
 
 ## SKIPPED -- NEEDS HUMAN
 

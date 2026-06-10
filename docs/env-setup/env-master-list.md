@@ -4,18 +4,18 @@ Generated during environment setup Phase 0 from `config/env/templates/*`.
 
 | Variable | Category | Used In | Staging Value Source | Production Value Source |
 |----------|----------|---------|----------------------|-------------------------|
-| `NEXT_PUBLIC_API_URL` | PUBLIC | Next apps | Vercel staging env -> `https://api-staging.letbuyy.store/v1` | Vercel production env -> `https://api.letbuyy.store/v1` |
-| `NEXT_PUBLIC_API_BASE_URL` | PUBLIC | Next apps | Vercel staging env -> `https://api-staging.letbuyy.store/v1` | Vercel production env -> `https://api.letbuyy.store/v1` |
-| `NEXT_PUBLIC_ACCOUNTS_URL` | PUBLIC | Next apps | Vercel staging env -> `https://accounts-staging.letbuyy.store` | Vercel production env -> `https://accounts.letbuyy.store` |
-| `NEXT_PUBLIC_ADMIN_URL` | PUBLIC | Next apps | Vercel staging env -> `https://admin-staging.letbuyy.store` | Vercel production env -> `https://admin.letbuyy.store` |
-| `NEXT_PUBLIC_STOREFRONT_URL` | PUBLIC | Next apps | Vercel staging env -> `https://store-staging.letbuyy.store` | Vercel production env -> `https://store.letbuyy.store` |
+| `NEXT_PUBLIC_API_URL` | PUBLIC | Next apps | Vercel staging env -> `https://api-staging.letbuyy.com/v1` | Vercel production env -> `https://api.letbuyy.com/v1` |
+| `NEXT_PUBLIC_API_BASE_URL` | PUBLIC | Next apps | Vercel staging env -> `https://api-staging.letbuyy.com/v1` | Vercel production env -> `https://api.letbuyy.com/v1` |
+| `NEXT_PUBLIC_ACCOUNTS_URL` | PUBLIC | Next apps | Vercel staging env -> `https://accounts-staging.letbuyy.com` | Vercel production env -> `https://accounts.letbuyy.com` |
+| `NEXT_PUBLIC_ADMIN_URL` | PUBLIC | Next apps | Vercel staging env -> `https://admin-staging.letbuyy.com` | Vercel production env -> `https://admin.letbuyy.com` |
+| `NEXT_PUBLIC_STOREFRONT_URL` | PUBLIC | Next apps | Vercel staging env -> `https://store-staging.letbuyy.com` | Vercel production env -> `https://store.letbuyy.com` |
 | `NEXT_PUBLIC_SUPABASE_URL` | PUBLIC | Browser Supabase clients | Supabase staging project API URL | Supabase production project API URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | PUBLIC | Browser Supabase clients | Supabase staging anon key in Vercel | Supabase production anon key in Vercel |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | PUBLIC | Identity/browser anti-abuse UI | Cloudflare Turnstile staging site key in Vercel | Cloudflare Turnstile production site key in Vercel |
-| `LETBUYY_API_URL` | INFRA | Next server worker clients | Vercel staging env -> `https://api-staging.letbuyy.store/v1` | Vercel production env -> `https://api.letbuyy.store/v1` |
+| `LETBUYY_API_URL` | INFRA | Next server worker clients | Vercel staging env -> `https://api-staging.letbuyy.com/v1` | Vercel production env -> `https://api.letbuyy.com/v1` |
 | `LETBUYY_API_BASE_URL` | INFRA | Local/worker clients | Vercel/worker staging config | Vercel/worker production config |
-| `API_URL` | INFRA | Next server worker clients | Vercel staging env -> `https://api-staging.letbuyy.store/v1` | Vercel production env -> `https://api.letbuyy.store/v1` |
-| `API_BASE_URL` | INFRA | Next server worker clients | Vercel staging env -> `https://api-staging.letbuyy.store/v1` | Vercel production env -> `https://api.letbuyy.store/v1` |
+| `API_URL` | INFRA | Next server worker clients | Vercel staging env -> `https://api-staging.letbuyy.com/v1` | Vercel production env -> `https://api.letbuyy.com/v1` |
+| `API_BASE_URL` | INFRA | Next server worker clients | Vercel staging env -> `https://api-staging.letbuyy.com/v1` | Vercel production env -> `https://api.letbuyy.com/v1` |
 | `INTERNAL_API_SECRET` | SECRET | Next apps and Workers | GitHub/Vercel/Cloudflare staging secret | GitHub/Vercel/Cloudflare production secret |
 | `LETBUYY_INTERNAL_API_SECRET` | SECRET | Workers/internal HMAC | Cloudflare staging secret | Cloudflare production secret |
 | `AUTH_SECRET` | SECRET | Identity, console, Workers | GitHub/Vercel/Cloudflare staging secret | GitHub/Vercel/Cloudflare production secret |
@@ -25,7 +25,7 @@ Generated during environment setup Phase 0 from `config/env/templates/*`.
 | `PLATFORM_CONSOLE_TOTP_SECRET` | SECRET | Platform console TOTP fallback | Vercel staging secret | Vercel production secret |
 | `PLATFORM_CONSOLE_DEV_MFA_CODE` | SECRET | Staging console fallback only | Optional Vercel staging secret; omit in production where possible | Do not configure unless explicitly approved |
 | `PLATFORM_CONSOLE_API_TOKEN` | SECRET | Console-to-worker internal API | Vercel + Cloudflare staging secret | Vercel + Cloudflare production secret |
-| `PLATFORM_CONSOLE_API_BASE_URL` | INFRA | Platform console | Vercel staging env -> `https://api-staging.letbuyy.store/v1` | Vercel production env -> `https://api.letbuyy.store/v1` |
+| `PLATFORM_CONSOLE_API_BASE_URL` | INFRA | Platform console | Vercel staging env -> `https://api-staging.letbuyy.com/v1` | Vercel production env -> `https://api.letbuyy.com/v1` |
 | `RESEND_API_KEY` | SECRET | Email adapter | Resend staging/test API key in secrets manager | Resend production API key in secrets manager |
 | `RESEND_FROM_EMAIL` | INFRA | Email adapter | Verified staging sender/domain | Verified production sender/domain |
 | `UPSTASH_REDIS_REST_URL` | INFRA | Rate limit/cache | Staging Upstash REST URL | Production Upstash REST URL |
@@ -70,4 +70,4 @@ Generated during environment setup Phase 0 from `config/env/templates/*`.
 | `TEMPO_URL` | INFRA | Tracing | Staging Tempo URL | Production Tempo URL |
 | `FEATURE_FLAG_API_URL` | INFRA | Feature flags | Staging feature flag API URL | Production feature flag API URL |
 | `FEATURE_FLAG_EXPOSURE_MODE` | INFRA | Feature flags | `staging` policy | Production policy |
-| `API_BASE_URL` | PUBLIC | Mobile app dart defines | `https://api-staging.letbuyy.store/v1` | `https://api.letbuyy.store/v1` |
+| `API_BASE_URL` | PUBLIC | Mobile app dart defines | `https://api-staging.letbuyy.com/v1` | `https://api.letbuyy.com/v1` |

@@ -12,8 +12,8 @@ Generated during environment setup Phase 0 from the current `wrangler.toml` file
 
 | Worker | Routes / Domains | Service Bindings |
 |--------|------------------|------------------|
-| `api-gateway` | Staging: `api-staging.letbuyy.store`; production: `api.letbuyy.store` | `WEBHOOK_SERVICE` in staging/production |
-| `webhook-service` | Staging: `webhooks-staging.letbuyy.store`; production: `webhooks.letbuyy.store` | `API_GATEWAY_SERVICE` in staging/production |
+| `api-gateway` | Staging: `api-staging.letbuyy.com`; production: `api.letbuyy.com` | `WEBHOOK_SERVICE` in staging/production |
+| `webhook-service` | Staging: `webhooks-staging.letbuyy.com`; production: `webhooks.letbuyy.com` | `API_GATEWAY_SERVICE` in staging/production |
 | `queue-workers` | No HTTP route configured; queue consumer only | `API_GATEWAY_SERVICE` in staging/production |
 
 ## Reserved Service Roots Without Wrangler Configs
