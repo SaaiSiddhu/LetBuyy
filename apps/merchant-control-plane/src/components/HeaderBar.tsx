@@ -328,13 +328,13 @@ export default function MerchantHeaderBar({
                         <MaterialIcon name="search" size={18} />
                     </Button>
 
-                    {/* AI button */}
+                    {/* Setup assistant button */}
                     <Button unstyled
                         type="button"
                         className="admin-header-btn"
                         onClick={onAISidebarToggle}
-                        title="LetBuyy AI"
-                        aria-label="LetBuyy AI"
+                        title="Setup assistant"
+                        aria-label="Setup assistant"
                     >
                         <MaterialIcon name="assistant" size={16} />
                     </Button>

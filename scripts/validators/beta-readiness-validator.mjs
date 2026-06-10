@@ -208,6 +208,38 @@ assertRecordedCapabilityGap(
   'Transactional invite/contact email delivery must remain recorded until queue/provider-backed sends are wired',
 );
 
+const aiSidebar = readFile('apps/merchant-control-plane/src/components/AISidebar.tsx');
+const headerBar = readFile('apps/merchant-control-plane/src/components/HeaderBar.tsx');
+const merchantGlobals = readFile('apps/merchant-control-plane/src/app/globals.css');
+for (const fragment of [
+  'AI-powered suggestions are coming soon',
+  'AI-powered responses are coming soon',
+  "placeholder=\"Ask LetBuyy AI...\"",
+  "setTimeout(() =>",
+  "activeTab === 'chat'",
+  'admin-ai-message',
+  'admin-ai-panel-footer',
+]) {
+  reporter.assert(!aiSidebar.includes(fragment), `merchant setup assistant must not expose fake AI chat residue: ${fragment}`);
+}
+reporter.assert(
+  aiSidebar.includes('Setup assistant'),
+  'merchant setup assistant must present the real setup checklist instead of a fake AI chat surface',
+);
+reporter.assert(
+  headerBar.includes('title="Setup assistant"'),
+  'merchant header must label the panel as setup assistant, not live AI',
+);
+reporter.assert(!headerBar.includes('title="LetBuyy AI"'), 'merchant header must not advertise a fake live AI panel');
+for (const fragment of [
+  '.admin-ai-tab',
+  '.admin-ai-message',
+  '.admin-ai-input',
+  '.admin-ai-send-btn',
+]) {
+  reporter.assert(!merchantGlobals.includes(fragment), `merchant setup assistant CSS must not retain fake chat selectors: ${fragment}`);
+}
+
 const packageJson = readFile('package.json');
 for (const fragment of [
   '"validate:beta-readiness": "node scripts/validators/beta-readiness-validator.mjs"',
