@@ -37,6 +37,13 @@ export interface KycVerificationAdapter {
   refreshStatus(input: VerifyKycDocumentInput): Promise<VerifyKycDocumentResult>;
 }
 
+export class KycProviderUnavailableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'KycProviderUnavailableError';
+  }
+}
+
 function requiresLiveCredentials(credentials: KycVerificationCredentials): boolean {
   return credentials.mode === 'live' && (!credentials.apiKey || credentials.apiKey.startsWith('SKIP_NEEDS_HUMAN_'));
 }
@@ -66,33 +73,18 @@ function sandboxResult(
 
 export function createKycVerificationAdapter(credentials: KycVerificationCredentials): KycVerificationAdapter {
   if (requiresLiveCredentials(credentials)) {
-    throw new Error('live KYC provider mode requires provider credentials');
+    throw new KycProviderUnavailableError('KYC_LIVE_PROVIDER_CREDENTIALS_REQUIRED: live KYC provider mode requires provider credentials');
+  }
+  if (credentials.mode === 'live') {
+    throw new KycProviderUnavailableError('KYC_LIVE_PROVIDER_UNAVAILABLE: SKIP-CAP-KYC-LIVE-PROVIDER');
   }
 
   return {
     async verifyDocument(input) {
-      if (credentials.mode === 'sandbox') return sandboxResult(credentials, input);
-      return {
-        ...sandboxResult(credentials, input),
-        providerMode: 'live',
-        metadata: {
-          provider: credentials.provider,
-          live_provider_stub: true,
-          checked_at: new Date().toISOString(),
-        },
-      };
+      return sandboxResult(credentials, input);
     },
     async refreshStatus(input) {
-      if (credentials.mode === 'sandbox') return sandboxResult(credentials, input);
-      return {
-        ...sandboxResult(credentials, input),
-        providerMode: 'live',
-        metadata: {
-          provider: credentials.provider,
-          live_provider_stub: true,
-          refreshed_at: new Date().toISOString(),
-        },
-      };
+      return sandboxResult(credentials, input);
     },
   };
 }

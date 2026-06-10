@@ -40,6 +40,14 @@ reporter.assert(bff.includes("Promise.all"), "mobile BFF dashboard must fan into
 reporter.assert(bff.includes("/v1/payouts/summary"), "mobile BFF dashboard must include payout summary");
 reporter.assert(bff.includes("/v1/analytics/dashboard"), "mobile BFF dashboard must include analytics dashboard");
 
+const capabilityBacklog = readFile("CAPABILITY_BACKLOG.md");
+const skippedHumanDecisions = readFile("SKIPPED_HUMAN_DECISIONS.md");
+const kycAdapter = readFile("packages/infrastructure/kyc-verification-adapter/index.ts");
+reporter.assert(!kycAdapter.includes("live_provider_stub"), "KYC adapter must not turn sandbox verification into live-provider success");
+reporter.assert(kycAdapter.includes("KYC_LIVE_PROVIDER_UNAVAILABLE"), "KYC adapter must fail closed while live provider integration is absent");
+reporter.assert(capabilityBacklog.includes("CAP-C15"), "CAPABILITY_BACKLOG.md missing CAP-C15 live KYC provider gap");
+reporter.assert(skippedHumanDecisions.includes("SKIP-CAP-KYC-LIVE-PROVIDER"), "SKIPPED_HUMAN_DECISIONS.md missing SKIP-CAP-KYC-LIVE-PROVIDER");
+
 const routes = readFile("apps/mobile/merchant-app/lib/app/routes.dart");
 reporter.assert(!routes.includes("MerchantFeatureDefinitions"), "mobile routes must not depend on the parity feature catalog");
 reporter.assert(!routes.includes("MerchantFeatureScreen"), "mobile routes must not render parity feature screens");
