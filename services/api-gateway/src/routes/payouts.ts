@@ -543,7 +543,7 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
 
     if (!payoutProviderConfigured(c.env)) {
         return c.json(payoutProviderUnavailableBody(
-            new PayoutProviderUnavailable('RazorpayX Route payout provider is gated off until PA credentials and provider client are configured'),
+            new PayoutProviderUnavailable('Razorpay Route payout provider is gated off until PA credentials and provider client are configured'),
         ), 503);
     }
 
