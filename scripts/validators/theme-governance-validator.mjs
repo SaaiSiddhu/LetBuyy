@@ -32,6 +32,8 @@ const rendererRegistry = read('apps/storefront-runtime/src/lib/theme-engine/rend
 const templateResolver = read('apps/storefront-runtime/src/lib/theme-engine/template-resolver.ts');
 const noNewReactSectionsValidator = read('scripts/validators/no-new-react-sections-validator.mjs');
 const packageTest = read('packages/theme-engine/test/theme-engine.test.ts');
+const themeRoadmap = read('docs/themes/enterprise-theme-engine/10_THEME_ENGINE_IMPLEMENTATION_ROADMAP.md');
+const capabilityBacklog = read('CAPABILITY_BACKLOG.md');
 
 const builtInSectionTypes = extractStringArray(builtInSchemas, 'BUILT_IN_SECTION_TYPES');
 if (builtInSectionTypes.length !== 25) {
@@ -105,6 +107,12 @@ if (!/auditThemeRendererRegistry/.test(packageTest) || !/WARN mode/.test(package
 }
 if (!/DOMPurify sanitizer preserves Liquid hydration elements/.test(packageTest) || !/first-party Liquid bundle has parity section files/.test(packageTest)) {
   failures.push('Theme-engine tests must prove D7 DOMPurify sanitizer and Liquid parity coverage');
+}
+if (/production-ready/.test(themeRoadmap)) {
+  failures.push('Active theme roadmap must not claim production-ready while Liquid chrome/editor capability gap remains open');
+}
+if (!themeRoadmap.includes('CAP-C08') || !capabilityBacklog.includes('CAP-C08')) {
+  failures.push('Active theme roadmap must cross-reference CAP-C08 until Liquid chrome/editor completion is real');
 }
 
 if (failures.length) {

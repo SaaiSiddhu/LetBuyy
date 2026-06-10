@@ -383,9 +383,9 @@ For Next storefront:
 - Custom domains route to the same tenant resolver.
 - Cache purge by tags from outbox events.
 
-## Definition of Done
+## Production Review Exit Criteria
 
-The theme engine is production-ready when:
+The theme engine is not ready for production in the current convergence state. `CAP-C08` remains open for Liquid chrome, data binding, full templates, canary write path, and editor completion; the React renderer remains frozen until those prerequisites are real. The theme engine is ready for production review only when:
 
 - New section types can be introduced through registry/package version, not hardcoded editor arrays.
 - Storefront and editor preview use the same renderer.
