@@ -21,6 +21,7 @@ export type BuiltInSectionType =
   | 'header'
   | 'announcementBar'
   | 'heroBanner'
+  | 'productDetail'
   | 'productGrid'
   | 'footer'
   | 'featuredProducts'

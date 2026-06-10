@@ -34,8 +34,8 @@ const noNewReactSectionsValidator = read('scripts/validators/no-new-react-sectio
 const packageTest = read('packages/theme-engine/test/theme-engine.test.ts');
 
 const builtInSectionTypes = extractStringArray(builtInSchemas, 'BUILT_IN_SECTION_TYPES');
-if (builtInSectionTypes.length !== 24) {
-  failures.push(`Expected 24 built-in section types; found ${builtInSectionTypes.length}`);
+if (builtInSectionTypes.length !== 25) {
+  failures.push(`Expected 25 built-in section types; found ${builtInSectionTypes.length}`);
 }
 if (unique(builtInSectionTypes).length !== builtInSectionTypes.length) {
   failures.push('Built-in section type list contains duplicates');

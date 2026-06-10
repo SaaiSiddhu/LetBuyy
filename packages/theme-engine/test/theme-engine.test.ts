@@ -85,8 +85,8 @@ test('theme template validation rejects unsafe JSON keys, unknown sections, and 
   assert.ok(issues.some((issue) => issue.includes('themeSettings.onclick is not allowed')));
 });
 
-test('Wave 6 built-in theme registry exposes schemas for all 24 built-in section types', () => {
-  assert.equal(BUILT_IN_SECTION_TYPES.length, 24);
+test('Wave 6 built-in theme registry exposes schemas for all 25 built-in section types', () => {
+  assert.equal(BUILT_IN_SECTION_TYPES.length, 25);
   assert.deepEqual(collectBuiltInSectionSchemaGaps(), []);
 
   for (const sectionType of BUILT_IN_SECTION_TYPES) {

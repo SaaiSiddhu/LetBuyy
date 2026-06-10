@@ -19,9 +19,7 @@ import ProductDetailSection from '@/components/sections/product-detail-section';
 import DynamicHeader from '@/components/layout/dynamic-header';
 import DynamicFooter from '@/components/layout/dynamic-footer';
 import {
-    SECTION_SCHEMAS,
-    type BlockSchema,
-    type SchemaField,
+    BUILT_IN_SECTION_SCHEMAS,
     type SectionSchema,
 } from '@letbuyy/theme-engine';
 import type { FooterSettings, HeaderSettings, SectionModel } from '@letbuyy/theme-engine';
@@ -43,156 +41,14 @@ export interface SectionRendererManifestEntry {
     schema: SectionSchema;
 }
 
-function field(type: SchemaField['type'], label: string, extra: Omit<SchemaField, 'type' | 'label'> = {}): SchemaField {
-    return { type, label, ...extra };
-}
-
-function defineSectionSchema(input: {
-    type: string;
-    name: string;
-    description: string;
-    defaults?: Record<string, unknown>;
-    settings_schema?: Record<string, SchemaField>;
-    blocks_schema?: Record<string, BlockSchema>;
-    sample_blocks?: Array<{ type: string; settings: Record<string, unknown> }>;
-}): SectionSchema {
-    return {
+function schemaFor(sectionType: string): SectionSchema {
+    return BUILT_IN_SECTION_SCHEMAS[sectionType] || {
         defaults: {},
         settings_schema: {},
-        ...input,
-    };
-}
-
-const RUNTIME_SECTION_SCHEMAS: Record<string, SectionSchema> = {
-    productDetail: defineSectionSchema({
-        type: 'productDetail',
-        name: 'Product Detail',
-        description: 'Product media, pricing, variants, and purchase controls for product routes.',
-        settings_schema: {
-            showGallery: field('toggle', 'Show gallery', { default: true }),
-            showDescription: field('toggle', 'Show description', { default: true }),
-            showVariantSelector: field('toggle', 'Show variant selector', { default: true }),
-            showQuantity: field('toggle', 'Show quantity selector', { default: true }),
-            showBuyNow: field('toggle', 'Show buy now button', { default: true }),
-        },
-    }),
-    featuredProducts: defineSectionSchema({
-        type: 'featuredProducts',
-        name: 'Featured Products',
-        description: 'Curated product rail backed by the store catalog.',
-        settings_schema: {
-            title: field('text', 'Title', { default: 'Featured Products', maxLength: 80 }),
-            subtitle: field('text', 'Subtitle', { maxLength: 120 }),
-            columns: field('range', 'Columns', { default: 4, min: 2, max: 4, step: 1 }),
-            showPrice: field('toggle', 'Show price', { default: true }),
-            showAddToCart: field('toggle', 'Show add to cart', { default: true }),
-            productIds: field('text', 'Product ids'),
-        },
-    }),
-    aboutSection: defineSectionSchema({
-        type: 'aboutSection',
-        name: 'About Section',
-        description: 'Merchant story content with optional supporting media.',
-        settings_schema: {
-            title: field('text', 'Title', { default: 'About Us', maxLength: 80 }),
-            content: field('richtext', 'Content'),
-            imageUrl: field('image', 'Image'),
-            layout: field('select', 'Layout', { default: 'left', options: ['left', 'right', 'center'] }),
-        },
-    }),
-    portfolioGrid: defineSectionSchema({
-        type: 'portfolioGrid',
-        name: 'Portfolio Grid',
-        description: 'Grid of portfolio projects for creator and service sites.',
-        settings_schema: {
-            title: field('text', 'Title', { default: 'Portfolio', maxLength: 80 }),
-            subtitle: field('text', 'Subtitle', { maxLength: 120 }),
-            columns: field('range', 'Columns', { default: 3, min: 2, max: 4, step: 1 }),
-            layout: field('select', 'Layout', { default: 'grid', options: ['grid', 'masonry'] }),
-        },
-    }),
-    skillsSection: defineSectionSchema({
-        type: 'skillsSection',
-        name: 'Skills Section',
-        description: 'Skill tags or bars for resumes and portfolios.',
-        settings_schema: {
-            title: field('text', 'Title', { default: 'Skills', maxLength: 80 }),
-            subtitle: field('text', 'Subtitle', { maxLength: 120 }),
-            layout: field('select', 'Layout', { default: 'tags', options: ['tags', 'bars'] }),
-        },
-    }),
-    experienceTimeline: defineSectionSchema({
-        type: 'experienceTimeline',
-        name: 'Experience Timeline',
-        description: 'Timeline list for work, education, or milestones.',
-        settings_schema: {
-            title: field('text', 'Title', { default: 'Experience', maxLength: 80 }),
-            subtitle: field('text', 'Subtitle', { maxLength: 120 }),
-        },
-    }),
-    contactForm: defineSectionSchema({
-        type: 'contactForm',
-        name: 'Contact Form',
-        description: 'Lead capture form for storefront, portfolio, and landing pages.',
-        settings_schema: {
-            title: field('text', 'Title', { default: 'Contact Us', maxLength: 80 }),
-            subtitle: field('text', 'Subtitle', { maxLength: 120 }),
-            email: field('text', 'Notification email'),
-            showPhone: field('toggle', 'Show phone field', { default: true }),
-            showAddress: field('toggle', 'Show address field', { default: false }),
-        },
-    }),
-    ctaSection: defineSectionSchema({
-        type: 'ctaSection',
-        name: 'Call to Action',
-        description: 'Focused promotional call-to-action band.',
-        settings_schema: {
-            heading: field('text', 'Heading', { default: 'Ready to get started?', maxLength: 100 }),
-            subheading: field('text', 'Subheading', { maxLength: 160 }),
-            ctaText: field('text', 'Button text', { default: 'Shop Now', maxLength: 40 }),
-            ctaLink: field('url', 'Button link', { default: '/shop' }),
-            style: field('select', 'Style', { default: 'primary', options: ['primary', 'gradient', 'dark'] }),
-        },
-    }),
-    servicesGrid: defineSectionSchema({
-        type: 'servicesGrid',
-        name: 'Services Grid',
-        description: 'Service cards for creators, freelancers, and local businesses.',
-        settings_schema: {
-            title: field('text', 'Title', { default: 'Services', maxLength: 80 }),
-            subtitle: field('text', 'Subtitle', { maxLength: 120 }),
-            columns: field('range', 'Columns', { default: 3, min: 2, max: 4, step: 1 }),
-        },
-        blocks_schema: {
-            service: {
-                name: 'Service',
-                fields: {
-                    icon: field('select', 'Icon', { options: ['design', 'code', 'web', 'mobile', 'photo', 'branding', 'analytics', 'marketing'] }),
-                    title: field('text', 'Title', { maxLength: 60 }),
-                    description: field('textarea', 'Description', { maxLength: 200 }),
-                    link: field('url', 'Link'),
-                },
-            },
-        },
-    }),
-    contentPage: defineSectionSchema({
-        type: 'contentPage',
-        name: 'Rich Content',
-        description: 'Theme-rendered page or policy content.',
-        settings_schema: {
-            title: field('text', 'Title', { maxLength: 100 }),
-            body: field('richtext', 'Body'),
-            html: field('richtext', 'HTML content'),
-        },
-    }),
-};
-
-function schemaFor(sectionType: string): SectionSchema {
-    return SECTION_SCHEMAS[sectionType] || RUNTIME_SECTION_SCHEMAS[sectionType] || defineSectionSchema({
         type: sectionType,
         name: sectionType,
         description: `Runtime section renderer for ${sectionType}.`,
-    });
+    };
 }
 
 const SECTION_RENDERER_DEFINITIONS: RegisteredSectionRenderer[] = [

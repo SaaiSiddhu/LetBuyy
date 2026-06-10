@@ -4,6 +4,7 @@ export const BUILT_IN_SECTION_TYPES = [
   'header',
   'announcementBar',
   'heroBanner',
+  'productDetail',
   'productGrid',
   'footer',
   'featuredProducts',
@@ -38,6 +39,25 @@ function schema(input: SectionSchema): SectionSchema {
 }
 
 const ADDITIONAL_BUILT_IN_SECTION_SCHEMAS: Record<string, SectionSchema> = {
+  productDetail: schema({
+    type: 'productDetail',
+    name: 'Product Detail',
+    description: 'Product media, pricing, variants, and purchase controls for product routes.',
+    defaults: {
+      showGallery: true,
+      showDescription: true,
+      showVariantSelector: true,
+      showQuantity: true,
+      showBuyNow: true,
+    },
+    settings_schema: {
+      showGallery: field('toggle', 'Show gallery', { default: true }),
+      showDescription: field('toggle', 'Show description', { default: true }),
+      showVariantSelector: field('toggle', 'Show variant selector', { default: true }),
+      showQuantity: field('toggle', 'Show quantity selector', { default: true }),
+      showBuyNow: field('toggle', 'Show buy now button', { default: true }),
+    },
+  }),
   aboutSection: schema({
     type: 'aboutSection',
     name: 'About Section',
