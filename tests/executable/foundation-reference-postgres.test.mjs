@@ -186,7 +186,7 @@ test('Task 001 reference slice is atomic, idempotent, balanced, traced, audited,
       ${sqlString(aggregateId)}::uuid,
       'checkout:${aggregateId}',
       'refund_payment_capture_on_order_failure',
-      ${jsonSql({ payment_id: 'pay_mock_reference' })},
+      ${jsonSql({ payment_id: 'pay_sandbox_reference' })},
       ${sqlString(requestId)}
     );
     INSERT INTO public.outbox_events (

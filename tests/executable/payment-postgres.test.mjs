@@ -161,11 +161,11 @@ test('Task 004 payment sessions apply, enforce tenant GUC RLS, and roll back on 
       ${sqlString(siteId)}::uuid,
       ${sqlString(orderId)}::uuid,
       'upi',
-      'mock',
+      'sandbox',
       'authorized',
       12345,
-      'upi_mock_order',
-      'upi_mock_session',
+      'upi_sandbox_order',
+      'upi_sandbox_session',
       'payment-session-proof',
       'upi_collect'
     );

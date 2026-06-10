@@ -168,7 +168,7 @@ test('Task 003 checkout migration applies, isolates sessions/branding, rejects e
       'Buyer',
       ARRAY[${sqlString(reservationId)}::uuid],
       ARRAY['SAVE10'],
-      '{"payment_intent_id":"cod_mock_001","provider":"cod","mode":"mock"}'::jsonb
+      '{"payment_intent_id":"cod_sandbox_001","provider":"cod","mode":"sandbox"}'::jsonb
     );
     INSERT INTO public.store_branding (site_id, primary_color, accent_color, checkout_theme, tokens)
     VALUES (${sqlString(siteId)}::uuid, '#111827', '#2563EB', 'system', '{"radius":8}'::jsonb);

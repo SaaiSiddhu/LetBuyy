@@ -16,13 +16,13 @@ function repositorySource(path: string): string {
     return readFileSync(join(repositoryRoot, path), 'utf8');
 }
 
-test('Task 015 security route is mounted with DSR export/erase and mock step-up challenge APIs', () => {
+test('Task 015 security route is mounted with DSR export/erase and recorded step-up challenge APIs', () => {
     const indexSource = source('index.ts');
     const securityRoute = source('routes/security.ts');
 
     assert.match(indexSource, /import securityRouter from '\.\/routes\/security'/);
     assert.match(indexSource, /api\.route\('\/security', securityRouter\)/);
-    assert.match(indexSource, /LETBUYY_KMS_MODE\?: 'mock' \| 'live'/);
+    assert.match(indexSource, /LETBUYY_KMS_MODE\?: 'sandbox' \| 'live'/);
     assert.match(securityRoute, /router\.post\('\/step-up\/challenges'/);
     assert.match(securityRoute, /router\.post\('\/dsr\/export'/);
     assert.match(securityRoute, /router\.post\('\/dsr\/erase'/);

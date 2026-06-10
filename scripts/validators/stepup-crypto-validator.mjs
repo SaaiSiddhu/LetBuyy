@@ -19,14 +19,24 @@ const weakStepUpPatterns = [
 
 const requiredSecurityControls = phaseBEntries(["services"])
   .find((entry) => entry.path === "services/api-gateway/src/lib/security-controls.ts");
+const securityRoute = phaseBEntries(["services"])
+  .find((entry) => entry.path === "services/api-gateway/src/routes/security.ts");
 
 reporter.assert(
   requiredSecurityControls?.text.includes("verifySensitiveActionStepUp"),
   "security-controls must expose the shared sensitive-action step-up verifier",
 );
 reporter.assert(
-  phaseBEntries(["services"]).some((entry) => entry.path === "services/api-gateway/src/routes/security.ts" && entry.text.includes("step_up_challenges")),
+  Boolean(securityRoute?.text.includes("step_up_challenges")),
   "step-up challenge route must persist challenge evidence",
+);
+reporter.assert(
+  Boolean(securityRoute?.text.includes("recorded-gap-step-up-")),
+  "step-up challenge route must visibly label the current token as a recorded capability gap",
+);
+reporter.assert(
+  !securityRoute?.text.includes("mock-step-up-") && !securityRoute?.text.includes("mode: 'mock'"),
+  "step-up challenge route must not emit mock-labelled security evidence",
 );
 
 const offenders = [];

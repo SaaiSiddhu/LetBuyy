@@ -342,7 +342,7 @@ router.post('/send', validate('json', NotificationSendSchema), async (c) => {
         subject: body.message.subject || null,
         body: body.message.body || null,
         status,
-        provider: selectedChannel ? `mock_${selectedChannel}` : null,
+        provider: selectedChannel ? `sandbox_${selectedChannel}` : null,
         idempotency_key: body.idempotency_key,
         request_id: c.req.header('X-Request-ID') || null,
         metadata: {

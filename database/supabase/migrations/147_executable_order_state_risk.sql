@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS public.cod_confirmation_requests (
   site_id uuid NOT NULL REFERENCES public.sites(id) ON DELETE CASCADE,
   order_id uuid NOT NULL REFERENCES public.orders(id) ON DELETE CASCADE,
   status text NOT NULL DEFAULT 'requested' CHECK (status IN ('requested', 'confirmed', 'rejected', 'expired', 'cancelled')),
-  provider text NOT NULL DEFAULT 'mock_whatsapp',
+  provider text NOT NULL DEFAULT 'sandbox_whatsapp',
   idempotency_key text NOT NULL,
   request_payload jsonb NOT NULL DEFAULT '{}'::jsonb,
   response_payload jsonb NOT NULL DEFAULT '{}'::jsonb,

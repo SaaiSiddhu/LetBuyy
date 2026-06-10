@@ -133,7 +133,7 @@ export interface CredentialLayerHashDryRun {
   outputAlgo: 'argon2id(bcrypt)';
   bcryptHash: string;
   layeredHashPreview: string;
-  pepperHandle: 'mock-kms-pepper';
+  pepperHandle: 'sandbox-kms-pepper';
   writes: false;
   verified: boolean;
 }
@@ -321,7 +321,7 @@ export async function credentialLayerHashDryRun(
     outputAlgo: 'argon2id(bcrypt)',
     bcryptHash,
     layeredHashPreview,
-    pepperHandle: 'mock-kms-pepper',
+    pepperHandle: 'sandbox-kms-pepper',
     writes: false,
     verified: layeredHashPreview.startsWith('dry-run-argon2id-bcrypt:'),
   };

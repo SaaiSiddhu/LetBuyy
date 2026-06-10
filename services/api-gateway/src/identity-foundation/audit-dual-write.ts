@@ -212,7 +212,7 @@ export async function prepareCanonicalAuditRow(
     metadata: {
       ...row.metadata,
       audit_anchor_kid: hashChain.anchorKid,
-      audit_anchor_mode: 'mock-kms',
+      audit_anchor_mode: 'sandbox-kms',
     },
   };
 }

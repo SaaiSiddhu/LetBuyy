@@ -99,7 +99,7 @@ export async function decryptTextAesGcm(secret: string, token: string): Promise<
     return new TextDecoder().decode(plaintext);
 }
 
-export type KmsMode = 'mock' | 'live';
+export type KmsMode = 'sandbox' | 'live';
 
 export interface KmsProvider {
     mode: KmsMode;
@@ -141,12 +141,12 @@ function decodeEnvelope(token: string): KmsEnvelope {
     return envelope;
 }
 
-export function createMockKmsProvider(options: { keyId?: string; secret?: string } = {}): KmsProvider {
-    const keyId = options.keyId || 'mock-local-kms-key';
-    const secret = options.secret || 'letbuyy-local-mock-kms-envelope-secret';
+export function createSandboxKmsProvider(options: { keyId?: string; secret?: string } = {}): KmsProvider {
+    const keyId = options.keyId || 'sandbox-local-kms-key';
+    const secret = options.secret || 'letbuyy-local-sandbox-kms-envelope-secret';
 
     return {
-        mode: 'mock',
+        mode: 'sandbox',
         keyId,
         encryptDataKey(dataKey: string) {
             return encryptTextAesGcm(`${secret}:${keyId}`, dataKey);
@@ -174,14 +174,14 @@ export function createLiveKmsProvider(): KmsProvider {
 
 export function resolveKmsProviderFromEnv(env: {
     LETBUYY_KMS_MODE?: string;
-    LETBUYY_KMS_MOCK_SECRET?: string;
+    LETBUYY_KMS_SANDBOX_SECRET?: string;
     LETBUYY_KMS_KEY_ID?: string;
-    LETBUYY_ALLOW_MOCK_KMS?: string;
+    LETBUYY_ALLOW_SANDBOX_KMS?: string;
     NODE_ENV?: string;
     APP_ENV?: string;
     VERCEL_ENV?: string;
 }): KmsProvider {
-    const mode = (env.LETBUYY_KMS_MODE || 'mock').trim().toLowerCase();
+    const mode = (env.LETBUYY_KMS_MODE || 'sandbox').trim().toLowerCase();
     if (mode === 'live') {
         if (!env.LETBUYY_KMS_KEY_ID || env.LETBUYY_KMS_KEY_ID.startsWith('SKIP_NEEDS_HUMAN_')) {
             // [HUMAN-REQUIRED] Live KMS key id must be installed in the environment before live mode is usable.
@@ -190,10 +190,10 @@ export function resolveKmsProviderFromEnv(env: {
         return createLiveKmsProvider();
     }
 
-    // SEC-C3 (Wave 0): the mock provider wraps field-level encryption with an in-repo
-    // literal secret ('letbuyy-local-mock-kms-envelope-secret'). It must never run
+    // SEC-C3 (Wave 0): the sandbox provider wraps field-level encryption with an in-repo
+    // literal secret ('letbuyy-local-sandbox-kms-envelope-secret'). It must never run
     // silently in a production-like runtime. Fail closed unless an operator has
-    // explicitly opted in for the KMS migration window (LETBUYY_ALLOW_MOCK_KMS=true).
+    // explicitly opted in for the KMS migration window (LETBUYY_ALLOW_SANDBOX_KMS=true).
     // [HUMAN-REQUIRED] Provision a live KMS (LETBUYY_KMS_MODE=live + key id/policy) and
     // remove the escape hatch before production. Tracked as HR-KMS-LIVE.
     const penv = (typeof process !== 'undefined' ? process.env : {}) as Record<string, string | undefined>;
@@ -201,16 +201,16 @@ export function resolveKmsProviderFromEnv(env: {
         (env.NODE_ENV ?? penv.NODE_ENV) === 'production' ||
         (env.APP_ENV ?? penv.APP_ENV) === 'production' ||
         (env.VERCEL_ENV ?? penv.VERCEL_ENV) === 'production';
-    const allowMockInProd = (env.LETBUYY_ALLOW_MOCK_KMS ?? penv.LETBUYY_ALLOW_MOCK_KMS) === 'true';
-    if (isProductionRuntime && !allowMockInProd) {
+    const allowSandboxInProd = (env.LETBUYY_ALLOW_SANDBOX_KMS ?? penv.LETBUYY_ALLOW_SANDBOX_KMS) === 'true';
+    if (isProductionRuntime && !allowSandboxInProd) {
         throw new KmsHumanRequiredError(
-            'Mock KMS is not permitted in production; set LETBUYY_KMS_MODE=live with a provisioned key (or LETBUYY_ALLOW_MOCK_KMS=true only during migration)'
+            'Sandbox KMS is not permitted in production; set LETBUYY_KMS_MODE=live with a provisioned key (or LETBUYY_ALLOW_SANDBOX_KMS=true only during migration)'
         );
     }
 
-    return createMockKmsProvider({
-        keyId: env.LETBUYY_KMS_KEY_ID || 'mock-local-kms-key',
-        secret: env.LETBUYY_KMS_MOCK_SECRET,
+    return createSandboxKmsProvider({
+        keyId: env.LETBUYY_KMS_KEY_ID || 'sandbox-local-kms-key',
+        secret: env.LETBUYY_KMS_SANDBOX_SECRET,
     });
 }
 

@@ -73,7 +73,7 @@ export interface RealmKeyRegistryEntry {
   activeKid: string;
   nextKid: string;
   algorithm: 'ES256';
-  custody: 'mock-kms';
+  custody: 'sandbox-kms';
   replacementFor: readonly string[];
 }
 
@@ -229,7 +229,7 @@ export function createMockRealmKeyInfrastructure(now: () => Date = () => new Dat
         activeKid: active.kid,
         nextKid: next.kid,
         algorithm: 'ES256',
-        custody: 'mock-kms',
+        custody: 'sandbox-kms',
         replacementFor: [
           'AUTH_SECRET',
           'CUSTOMER_SESSION_SECRET',

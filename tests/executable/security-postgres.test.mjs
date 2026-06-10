@@ -169,11 +169,11 @@ test('Task 015 security migration enforces tenant RLS, stores DSR/consent/step-u
     INSERT INTO public.sites (id, name)
     VALUES (${sqlString(siteId)}::uuid, 'Security Store'), (${sqlString(otherSiteId)}::uuid, 'Other Store');
     INSERT INTO public.store_customers (store_id, email, full_name, encrypted_email, encrypted_phone, pii_encryption_key_id)
-    VALUES (${sqlString(siteId)}::uuid, 'buyer@example.test', 'Buyer Example', 'kms.email', 'kms.phone', 'mock-local-kms-key');
+    VALUES (${sqlString(siteId)}::uuid, 'buyer@example.test', 'Buyer Example', 'kms.email', 'kms.phone', 'sandbox-local-kms-key');
     INSERT INTO public.customer_addresses (store_id, customer_email, address_line1, city, encrypted_payload, pii_encryption_key_id)
-    VALUES (${sqlString(siteId)}::uuid, 'buyer@example.test', 'Line 1', 'Bengaluru', 'kms.address', 'mock-local-kms-key');
+    VALUES (${sqlString(siteId)}::uuid, 'buyer@example.test', 'Line 1', 'Bengaluru', 'kms.address', 'sandbox-local-kms-key');
     INSERT INTO public.customer_credentials (store_id, email_or_phone, encrypted_identifier, pii_encryption_key_id)
-    VALUES (${sqlString(siteId)}::uuid, 'buyer@example.test', 'kms.identifier', 'mock-local-kms-key');
+    VALUES (${sqlString(siteId)}::uuid, 'buyer@example.test', 'kms.identifier', 'sandbox-local-kms-key');
     INSERT INTO public.orders (store_id, customer_email, customer_name, customer_phone, total)
     VALUES (${sqlString(siteId)}::uuid, 'buyer@example.test', 'Buyer Example', '+919999999999', 999.00);
     INSERT INTO public.data_subject_requests (id, site_id, request_type, subject_type, subject_email, status, reason)

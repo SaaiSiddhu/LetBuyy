@@ -63,6 +63,8 @@ const paymentsRoute = readFile("services/api-gateway/src/routes/payments.ts");
 const paymentSupport = readFile("services/api-gateway/src/lib/payment-route-support.ts");
 const paymentSchema = readFile("services/api-gateway/src/schemas/payment.schema.ts");
 const paymentSessionsMigration = readFile("database/supabase/migrations/142_executable_payment_sessions.sql");
+const notificationsRoute = readFile("services/api-gateway/src/routes/notifications.ts");
+const cryptoSource = readFile("services/api-gateway/src/lib/crypto.ts");
 reporter.assert(!kycAdapter.includes("live_provider_stub"), "KYC adapter must not turn sandbox verification into live-provider success");
 reporter.assert(kycAdapter.includes("KYC_LIVE_PROVIDER_UNAVAILABLE"), "KYC adapter must fail closed while live provider integration is absent");
 reporter.assert(capabilityBacklog.includes("CAP-C15"), "CAPABILITY_BACKLOG.md missing CAP-C15 live KYC provider gap");
@@ -173,6 +175,21 @@ reporter.assert(paymentsPackage.includes("PaymentProviderMode = 'sandbox' | 'liv
 reporter.assert(paymentsPackage.includes("buildSandboxPaymentSessionPlan"), "payments package must expose the sandbox payment-session planner");
 reporter.assert(paymentSchema.includes("z.enum(['sandbox', 'live'])"), "payment session schema must accept sandbox/live modes only");
 reporter.assert(paymentSessionsMigration.includes("DEFAULT 'sandbox' CHECK (mode IN ('sandbox', 'live'))"), "payment sessions migration must default mode to sandbox/live only");
+reporter.assert(!notificationsRoute.includes("`mock_${selectedChannel}`"), "notification route must not persist mock provider labels");
+reporter.assert(notificationsRoute.includes("`sandbox_${selectedChannel}`"), "notification route must persist sandbox provider labels");
+for (const fragment of [
+  "KmsMode = 'mock'",
+  "createMockKmsProvider",
+  "LETBUYY_KMS_MOCK_SECRET",
+  "LETBUYY_ALLOW_MOCK_KMS",
+  "mode: 'mock'",
+  "mock-local-kms-key",
+  "letbuyy-local-mock-kms-envelope-secret",
+]) {
+  reporter.assert(!cryptoSource.includes(fragment), `KMS envelope provider must use sandbox labels: ${fragment}`);
+}
+reporter.assert(cryptoSource.includes("KmsMode = 'sandbox' | 'live'"), "KMS provider mode must be sandbox/live only");
+reporter.assert(cryptoSource.includes("createSandboxKmsProvider"), "KMS envelope provider must use sandbox helper naming");
 reporter.assert(!exists("packages/infrastructure/identity-otp-adapter/index.ts"), "retired identity OTP mock adapter must not exist");
 reporter.assert(!readFile("packages/infrastructure/src/index.ts").includes("identity-otp-adapter"), "infrastructure barrel must not export retired identity OTP mock adapter");
 reporter.assert(!readFile("packages/infrastructure/package.json").includes("identity-otp-adapter"), "infrastructure package must not expose retired identity OTP mock adapter");

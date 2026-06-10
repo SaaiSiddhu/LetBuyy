@@ -144,11 +144,11 @@ test('customer auth limiter throttles the sixth store-email attempt', async () =
     assert.equal(payload.error.code, 'CUSTOMER_AUTH_RATE_LIMITED')
 })
 
-test('mock KMS envelope encrypts PII fields and round-trips without exposing plaintext', async () => {
+test('sandbox KMS envelope encrypts PII fields and round-trips without exposing plaintext', async () => {
     const provider = resolveKmsProviderFromEnv({
-        LETBUYY_KMS_MODE: 'mock',
-        LETBUYY_KMS_KEY_ID: 'mock-foundation-key',
-        LETBUYY_KMS_MOCK_SECRET: 'foundation-test-secret',
+        LETBUYY_KMS_MODE: 'sandbox',
+        LETBUYY_KMS_KEY_ID: 'sandbox-foundation-key',
+        LETBUYY_KMS_SANDBOX_SECRET: 'foundation-test-secret',
     })
 
     const token = await encryptFieldWithKms(provider, 'buyer@example.com')

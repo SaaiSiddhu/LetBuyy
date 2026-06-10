@@ -125,7 +125,7 @@ router.post('/step-up/challenges', validate('json', StepUpChallengeSchema), asyn
     const auth = c.get('auth');
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOwnedSite(c, body.store_id);
-    const token = `mock-step-up-${crypto.randomUUID()}`;
+    const token = `recorded-gap-step-up-${crypto.randomUUID()}`;
     const verifiedAt = new Date().toISOString();
     const { data, error } = await db
         .from('step_up_challenges')
@@ -137,7 +137,7 @@ router.post('/step-up/challenges', validate('json', StepUpChallengeSchema), asyn
             challenge_token_hash: await sha256Hex(token),
             verified_at: verifiedAt,
             idempotency_key: body.idempotency_key,
-            metadata: { mode: 'mock' },
+            metadata: { mode: 'recorded_gap' },
             created_by: tenant.userId,
             updated_by: tenant.userId,
         }, { onConflict: 'site_id,idempotency_key' })

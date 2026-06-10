@@ -35,8 +35,8 @@ const checks = [
   {
     id: 'SEC-C3',
     file: 'services/api-gateway/src/lib/crypto.ts',
-    mustContain: ['Mock KMS is not permitted in production'],
-    desc: 'mock KMS must fail closed in production-like runtimes',
+    mustContain: ['Sandbox KMS is not permitted in production'],
+    desc: 'sandbox KMS must fail closed in production-like runtimes',
   },
   {
     id: 'SEC-H3',

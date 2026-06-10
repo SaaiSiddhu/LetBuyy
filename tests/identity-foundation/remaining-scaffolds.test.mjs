@@ -13,13 +13,13 @@ test('audit dual-write shim keeps legacy writes authoritative and canonical writ
   assert.match(source, /reconcileLegacyAuditActorType/);
   assert.match(source, /redactAuditMetadata/);
   assert.match(source, /computeAuditHashChain/);
-  assert.match(source, /mock-kms/);
+  assert.match(source, /sandbox-kms/);
 });
 
-test('key service scaffolding is mock ES256 only and records live KMS as human-required', () => {
+test('key service scaffolding is sandbox ES256 only and records live KMS as human-required', () => {
   const source = read('services/api-gateway/src/identity-foundation/mock-key-service.ts');
   assert.match(source, /ES256/);
-  assert.match(source, /mock-kms/);
+  assert.match(source, /sandbox-kms/);
   assert.match(source, /HR-KMS-LIVE/);
   assert.match(source, /AUTH_SECRET/);
   assert.match(source, /CUSTOMER_SESSION_SECRET/);

@@ -125,8 +125,8 @@ test('Task 011 email migration extends logs, enforces tenant RLS, supports suppr
       'order_confirmation',
       'Order confirmed',
       'delivered',
-      'mock_resend',
-      '[{"provider":"mock_resend","status":"delivered"}]'::jsonb,
+      'sandbox_resend',
+      '[{"provider":"sandbox_resend","status":"delivered"}]'::jsonb,
       'email-log-proof-001',
       ${sqlString(userId)}::uuid,
       ${sqlString(userId)}::uuid

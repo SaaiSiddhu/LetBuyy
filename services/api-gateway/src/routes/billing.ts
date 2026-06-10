@@ -198,7 +198,7 @@ router.post('/mandate', validate('json', BillingMandateSchema), async (c) => {
             currency: 'INR',
             amount_minor: mandate.amount_minor,
             external_mandate_id: mandate.external_mandate_id,
-            upi_vpa_hash: body.upi_vpa ? `mock-hash:${body.upi_vpa.trim().toLowerCase()}` : null,
+            upi_vpa_hash: body.upi_vpa ? `sandbox-hash:${body.upi_vpa.trim().toLowerCase()}` : null,
             idempotency_key: body.idempotency_key,
             metadata: { ...body.metadata, sandbox: mandate.sandbox },
             created_by: tenant.userId,

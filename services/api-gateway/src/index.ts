@@ -178,8 +178,8 @@ export interface Env {
     REGISTRAR_MOCK_ENABLED?: string;
     CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT?: string;
     TURNSTILE_SECRET_KEY?: string;
-    LETBUYY_KMS_MODE?: 'mock' | 'live';
-    LETBUYY_KMS_MOCK_SECRET?: string;
+    LETBUYY_KMS_MODE?: 'sandbox' | 'live';
+    LETBUYY_KMS_SANDBOX_SECRET?: string;
     LETBUYY_KMS_KEY_ID?: string;
     LETBUYY_WAREHOUSE_MODE?: 'sandbox' | 'live';
     LETBUYY_AI_MODEL_MODE?: 'sandbox' | 'live';

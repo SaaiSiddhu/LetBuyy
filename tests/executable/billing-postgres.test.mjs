@@ -179,8 +179,8 @@ test('Task 014 billing migration removes GMV rake, enforces tenant RLS, supports
       'business',
       'monthly',
       499900,
-      'mock_mandate_001',
-      'mock-hash:merchant@upi',
+      'sandbox_mandate_001',
+      'sandbox-hash:merchant@upi',
       'mandate-proof-001'
     );
     INSERT INTO public.subscriptions (
