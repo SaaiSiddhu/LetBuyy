@@ -23,10 +23,10 @@ DateTime? _parseTimestamp(dynamic value) {
 
 /// Subscription plan types for store subscriptions
 enum SubscriptionPlan {
-  trial, // 30-day free trial, 50 products, 3% commission
-  starter, // ₹99/month, 5 products, 5% commission
-  business, // ₹399/month, 30 products, 3% commission
-  professional, // ₹799/month, unlimited products, 0% commission
+  trial, // 30-day free trial, 50 products, 0% transaction fee
+  starter, // ₹99/month, 5 products, 0% transaction fee
+  business, // ₹399/month, 30 products, 0% transaction fee
+  professional, // ₹799/month, unlimited products, 0% transaction fee
 }
 
 /// Subscription status
@@ -48,9 +48,9 @@ class PlanConfig {
   };
 
   static const Map<SubscriptionPlan, double> commissionPercents = {
-    SubscriptionPlan.trial: 3.0,
-    SubscriptionPlan.starter: 5.0,
-    SubscriptionPlan.business: 3.0,
+    SubscriptionPlan.trial: 0.0,
+    SubscriptionPlan.starter: 0.0,
+    SubscriptionPlan.business: 0.0,
     SubscriptionPlan.professional: 0.0,
   };
 
@@ -161,7 +161,7 @@ class SubscriptionModel {
       createdAt: _parseTimestamp(map['createdAt']) ?? DateTime.now(),
       updatedAt: _parseTimestamp(map['updatedAt']),
       productLimit: map['productLimit'] ?? 5,
-      commissionPercent: (map['commissionPercent'] as num?)?.toDouble() ?? 5.0,
+      commissionPercent: (map['commissionPercent'] as num?)?.toDouble() ?? 0.0,
       razorpaySubscriptionId: map['razorpaySubscriptionId'],
       razorpayPlanId: map['razorpayPlanId'],
       lastPaymentDate: _parseTimestamp(map['lastPaymentDate']),

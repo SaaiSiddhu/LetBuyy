@@ -161,6 +161,9 @@ class PaymentConfigModel {
     if (mode == PaymentMode.ownAccount && verified) {
       return '0% platform fee - All payments go directly to your Razorpay account';
     }
+    if (commissionPercent == 0) {
+      return '0% platform fee - Letbuyy does not charge a transaction fee';
+    }
     return '${commissionPercent.toStringAsFixed(0)}% platform fee on each transaction';
   }
 

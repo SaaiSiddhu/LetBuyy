@@ -549,7 +549,8 @@ class _PricingScreenState extends State<PricingScreen> {
                       ),
                     ),
                     Text(
-                      '${planInfo['commission']}% commission',
+                      planInfo['commissionLabel'] as String? ??
+                          '${planInfo['commission']}% commission',
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.textSecondary,

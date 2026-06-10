@@ -2023,7 +2023,7 @@ void main() {
         expect((payouts['payouts'] as List).single['id'], 'payout_1');
         expect(summary['next_payout']['id'], 'payout_1');
         expect(wallet['available_minor'], 250000);
-        expect(commission['schedule']['commission_bps'], 300);
+        expect(commission['schedule']['commission_bps'], 0);
         expect(cod['summary']['expected_amount_minor'], 300000);
         expect(created['id'], 'payout_1');
         expect(settled['status'], 'released');
@@ -7751,9 +7751,9 @@ Map<String, dynamic> _payoutJson({String status = 'pending'}) => {
   'rail': 'razorpay_route',
   'currency': 'INR',
   'gross_amount_minor': 300000,
-  'platform_fee_minor': 9000,
-  'tax_minor': 1620,
-  'net_amount_minor': 289380,
+  'platform_fee_minor': 0,
+  'tax_minor': 0,
+  'net_amount_minor': 300000,
   'available_on': '2026-06-03',
   'metadata': const {},
   'created_at': '2026-06-01T12:00:00.000Z',
@@ -7763,7 +7763,7 @@ Map<String, dynamic> _payoutJson({String status = 'pending'}) => {
 Map<String, dynamic> _payoutSummaryJson() => {
   'site_id': 'store_1',
   'currency': 'INR',
-  'pending_minor': 289380,
+  'pending_minor': 300000,
   'processing_minor': 0,
   'released_minor': 0,
   'failed_minor': 0,
@@ -7825,7 +7825,7 @@ Map<String, dynamic> _walletJson() => {
   'site_id': 'store_1',
   'currency': 'INR',
   'available_minor': 250000,
-  'pending_minor': 289380,
+  'pending_minor': 300000,
   'held_minor': 0,
   'released_minor': 0,
   'ledger': [
@@ -7836,7 +7836,7 @@ Map<String, dynamic> _walletJson() => {
       'direction': 'credit',
       'status': 'pending',
       'currency': 'INR',
-      'amount_minor': 289380,
+      'amount_minor': 300000,
       'description': 'Payout pending settlement',
     },
   ],
@@ -7851,7 +7851,7 @@ Map<String, dynamic> _commissionJson() => {
     'name': 'Default commission',
     'status': 'active',
     'currency': 'INR',
-    'commission_bps': 300,
+    'commission_bps': 0,
     'gst_bps': 1800,
     'effective_from': '2026-06-01',
     'source': 'mobile_money_contract',
@@ -7865,18 +7865,18 @@ Map<String, dynamic> _commissionJson() => {
       'status': 'pending',
       'currency': 'INR',
       'gross_amount_minor': 300000,
-      'commission_bps': 300,
-      'commission_amount_minor': 9000,
+      'commission_bps': 0,
+      'commission_amount_minor': 0,
       'gst_bps': 1800,
-      'gst_amount_minor': 1620,
-      'net_payable_minor': 289380,
+      'gst_amount_minor': 0,
+      'net_payable_minor': 300000,
     },
   ],
   'summary': {
     'gross_amount_minor': 300000,
-    'commission_amount_minor': 9000,
-    'gst_amount_minor': 1620,
-    'net_payable_minor': 289380,
+    'commission_amount_minor': 0,
+    'gst_amount_minor': 0,
+    'net_payable_minor': 300000,
   },
 };
 

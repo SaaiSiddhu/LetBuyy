@@ -115,7 +115,7 @@ class StoreModel {
     this.subscriptionEndsAt,
     this.productLimit = 50,
     this.currentProductCount = 0,
-    this.commissionPercent = 3.0,
+    this.commissionPercent = 0.0,
     this.isFrozen = false,
     this.frozenAt,
     this.freezeReason,
@@ -214,7 +214,7 @@ class StoreModel {
       commissionPercent:
           (data['commissionPercent'] ?? data['commission_percent'] as num?)
               ?.toDouble() ??
-          3.0,
+          0.0,
       isFrozen: data['isFrozen'] ?? data['is_frozen'] ?? false,
       frozenAt: _parseTimestamp(data['frozenAt'] ?? data['frozen_at']),
       freezeReason: data['freezeReason'] ?? data['freeze_reason'],
