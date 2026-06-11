@@ -11,6 +11,7 @@
 | A3 deploy gate wiring | Added governance-gate prerequisites, untracked migration rejection, production mobile-bff Turnstile secret wiring, and validator/test enforcement. | Revert the A3 commit. | Ready; Codex did not run deployment or mutate GitHub branch protection. |
 | A4/A5 G4 human block | Recorded that production promotion, live smoke, and post-promotion audit are skipped-human/blocking seams. | No rollback required for remote work because none was performed. Revert this evidence row if superseded by real G4 evidence. | Ready. |
 | A5 branch-lag monitor prep | Added scheduled branch-lag monitor workflow and validator/test enforcement. | Revert the A5 monitor commit. | Ready; Codex did not run or claim a live scheduled GitHub Actions result. |
+| A5 ledger freeze backfill | Backfilled stale pre-freeze ledger commit cells to `e1d6fb18`. | Revert the A5 ledger backfill commit. | Ready; docs-only evidence change. |
 
 ## Promotion Rollback Requirements
 
