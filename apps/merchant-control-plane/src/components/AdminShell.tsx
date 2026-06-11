@@ -7,7 +7,7 @@ import TrialBanner from './TrialBanner'
 import CommandPalette from './CommandPalette'
 import AISidebar from './AISidebar'
 import type { SessionUser } from '@/lib/auth/session'
-import { AppNavigation, MaterialIcon, ToastProvider, type AppNavigationSection } from '@letbuyy/ui'
+import { AppNavigation, Button, MaterialIcon, ToastProvider, type AppNavigationSection } from '@letbuyy/ui'
 import { getMerchantNavigation, type MerchantNavItem } from './merchantNavigation'
 
 export interface StoreData {
@@ -73,7 +73,8 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                 />
 
                 {sidebarOpen && (
-                    <button
+                    <Button
+                        unstyled
                         type="button"
                         className="admin-sidebar-overlay active"
                         onClick={() => setSidebarOpen(false)}

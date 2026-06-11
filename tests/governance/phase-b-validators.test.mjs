@@ -17,6 +17,14 @@ const validatorCases = [
     expected: /canonical ledger|Money mutations/i,
   },
   {
+    validator: "canonical-ledger-only-validator.mjs",
+    fixture: {
+      path: "database/supabase/migrations/999_bad_capture.sql",
+      text: "CREATE OR REPLACE FUNCTION public.confirm_order_payment_with_ledger(p_order_id uuid, p_provider text, p_provider_payment_id text, p_provider_order_id text DEFAULT NULL::text, p_provider_event_id text DEFAULT NULL::text, p_request_id text DEFAULT NULL::text, p_idempotency_key text DEFAULT NULL::text) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $$ BEGIN RETURN jsonb_build_object('capture_posted_to_ledger', true); END; $$;",
+    },
+    expected: /confirm_order_payment_with_ledger body must contain call-adjacent canonical ledger evidence/i,
+  },
+  {
     validator: "no-self-custody-rail-validator.mjs",
     fixture: {
       path: "services/api-gateway/src/routes/bad-payout.ts",

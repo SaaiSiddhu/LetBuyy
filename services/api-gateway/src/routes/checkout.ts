@@ -650,16 +650,33 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
         }
 
         let paidOrder: unknown = order;
+        let capturePostedToLedger = false;
         if (orderPlan.provider !== 'cod') {
+            const providerPaymentId = stringValue(body.provider_payment_id)!;
+            const captureIdempotencyKey = `checkout.confirm.capture:${orderId}:${body.idempotency_key}`;
             paidOrder = await new PaymentExecutionAdapter(db).confirmPayment({
                 orderId,
                 provider: orderPlan.provider,
-                providerPaymentId: stringValue(body.provider_payment_id)!,
+                providerPaymentId,
                 providerOrderId: requestedPaymentIntentId || expectedPaymentIntentId,
-                providerEventId: `hosted_checkout:${orderPlan.provider}:${stringValue(body.provider_payment_id)}`,
+                providerEventId: `hosted_checkout:${orderPlan.provider}:${providerPaymentId}`,
                 requestId: getRequestId(c),
-                idempotencyKey: `checkout.confirm.capture:${orderId}:${body.idempotency_key}`,
+                idempotencyKey: captureIdempotencyKey,
             });
+
+            const { data: captureLedgerRow, error: captureLedgerError } = await db
+                .from('ledger_transactions')
+                .select('id')
+                .eq('site_id', verified.handoff.siteId)
+                .eq('source_type', 'payment_capture')
+                .eq('source_id', `${orderPlan.provider}:${providerPaymentId}`)
+                .eq('idempotency_key', captureIdempotencyKey)
+                .is('deleted_at', null)
+                .maybeSingle();
+            if (captureLedgerError) {
+                throw new Error(`Hosted checkout capture ledger proof failed: ${captureLedgerError.message}`);
+            }
+            capturePostedToLedger = Boolean(captureLedgerRow);
         }
 
         const session = await persistCheckoutStep(c, verified.handoff, 'completed', {
@@ -670,7 +687,7 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
                 ...(existing.metadata || {}),
                 order_id: orderId,
                 payment_provider: orderPlan.provider,
-                capture_posted_to_ledger: orderPlan.provider !== 'cod',
+                capture_posted_to_ledger: capturePostedToLedger,
             },
         });
         if (!session) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout cannot be confirmed.' } }, status: 409 };

@@ -45,8 +45,11 @@ test('Wave 7 checkout confirm creates server order and posts provider capture to
     assert.match(routeSource, /new OrderExecutionAdapter\(db\)\.createOrder\(orderPlan\.command,\s*tenant\)/);
     assert.match(routeSource, /CHECKOUT_PROVIDER_PAYMENT_REQUIRED/);
     assert.match(routeSource, /new PaymentExecutionAdapter\(db\)\.confirmPayment\(\{/);
-    assert.match(routeSource, /idempotencyKey:\s*`checkout\.confirm\.capture:\$\{orderId\}:\$\{body\.idempotency_key\}`/);
-    assert.match(routeSource, /capture_posted_to_ledger:\s*orderPlan\.provider !== 'cod'/);
+    assert.match(routeSource, /const captureIdempotencyKey = `checkout\.confirm\.capture:\$\{orderId\}:\$\{body\.idempotency_key\}`/);
+    assert.match(routeSource, /idempotencyKey:\s*captureIdempotencyKey/);
+    assert.match(routeSource, /\.eq\('idempotency_key', captureIdempotencyKey\)/);
+    assert.match(routeSource, /\.from\('ledger_transactions'\)[\s\S]*\.eq\('source_type', 'payment_capture'\)/);
+    assert.match(routeSource, /capture_posted_to_ledger:\s*capturePostedToLedger/);
     assert.match(routeSource, /payload:\s*\{ channel: session\.channel \|\| 'web', order_id: orderId \}/);
 });
 

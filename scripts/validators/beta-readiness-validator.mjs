@@ -85,7 +85,9 @@ for (const fragment of [
   'new OrderExecutionAdapter(db).createOrder(orderPlan.command, tenant)',
   'new PaymentExecutionAdapter(db).confirmPayment({',
   'CHECKOUT_PROVIDER_PAYMENT_REQUIRED',
-  'capture_posted_to_ledger: orderPlan.provider !== \'cod\'',
+  ".from('ledger_transactions')",
+  "source_type', 'payment_capture'",
+  'capture_posted_to_ledger: capturePostedToLedger',
   'buildHostedCheckoutOrderCommand',
 ]) {
   reporter.assert(checkoutRoute.includes(fragment), `hosted checkout confirm missing: ${fragment}`);
