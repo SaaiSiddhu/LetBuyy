@@ -7,6 +7,7 @@
 | A0 prompt registration | Added the final convergence prompt registry row and tracked the final-truth audit bundle. | Revert the A0 commit. | Ready. |
 | A0 local snapshot tags | Created local annotated tags `convergence-cabe148c` and `pre-promotion-origin-41b6ea49`. | Tags are local-only; delete them only if the A0 snapshot is abandoned. | Ready. |
 | A1 verification | No runtime/schema change. | No rollback required beyond reverting the evidence-only A1 commit. | Ready. |
+| A2 runbook fix | Updated remote promotion instructions and recorded `SKIP-A2-REMOTE-BRANCH-CONVERGENCE`. | Revert the A2 commit. | Ready; Codex changed no remote refs. |
 
 ## Promotion Rollback Requirements
 

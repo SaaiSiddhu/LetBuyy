@@ -13,3 +13,6 @@
 | A1 install | `CI=true pnpm install --frozen-lockfile` | PASS | Initial sandboxed attempt failed with `ENOTFOUND registry.npmjs.org`; escalated retry completed using the frozen lockfile and reused cached packages. |
 | A1 Phase-B validator fixtures | `node --test tests/governance/phase-b-validators.test.mjs` | PASS | 16/16 tests passed. |
 | A1 whitespace | `git diff --check` | PASS | No whitespace or conflict-marker residue. |
+| A2 branch-lag validator | `node scripts/validators/branch-lag-guard-validator.mjs` | PASS | Runbook remains compatible with the local branch-lag guard after adding the remote `stepup/main` then `main` push sequence. |
+| A2 governance gate | `node scripts/validate-governance.mjs --lane=gate` | PASS | 92 validators passed after the runbook and skipped-human seam updates. |
+| A2 whitespace | `git diff --check` | PASS | No whitespace or conflict-marker residue. |

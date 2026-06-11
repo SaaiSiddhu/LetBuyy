@@ -50,7 +50,29 @@ The human operator performs the remote side:
 1. Review `EXECUTION_LEDGER.md`, `SKIPPED_HUMAN_DECISIONS.md`, and `CAPABILITY_BACKLOG.md`.
 2. Confirm backup artifacts recorded in `EXECUTION_LEDGER.md` are still readable.
 3. Confirm branch protection rules and production deploy approval are in place.
-4. Push or merge the validated local `main` to the protected remote branch.
-5. Run the production deploy workflow and record the deployment result.
+4. Push the validated local branches to the protected remote in the branch-lag-safe order:
+
+   ```bash
+   git push origin refs/heads/stepup/main:refs/heads/stepup/main
+   git push origin refs/heads/main:refs/heads/main
+   ```
+
+   `stepup/main` is pushed first because the production branch-lag guard resolves `origin/stepup/main`; pushing `main` first can leave the next guarded deploy blocked on a missing or stale integration ref.
+5. Neutralize the stale `develop` remote pointer by deleting it or repointing it to the promoted commit, according to the branch-protection decision:
+
+   ```bash
+   git push origin --delete develop
+   # or, if deletion is not allowed during the cutover window:
+   git push origin refs/heads/main:refs/heads/develop
+   ```
+
+6. Verify the remote reality:
+
+   ```bash
+   git ls-remote origin refs/heads/main refs/heads/stepup/main refs/heads/develop
+   ```
+
+   `origin/main` and `origin/stepup/main` must resolve to the same promoted commit; `origin/develop` must be absent or intentionally equal to that commit.
+7. Run the production deploy workflow and record the deployment result.
 
 Until that happens, remote production is not promoted even when local `main` equals `stepup/main`.
