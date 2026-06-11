@@ -21,7 +21,7 @@ const PARTICLE_STYLES: CSSProperties[] = Array.from({ length: 35 }, (_, i) => ({
 }));
 
 function useCountdown(td?: string) {
-    const tgt = useMemo(() => { if (td) return new Date(td); const d = new Date(); d.setDate(d.getDate() + 14); return d; }, [td]);
+    const tgt = useMemo(() => { if (td) return new Date(td); return new Date(); }, [td]);
     const calc = useCallback(() => { const df = Math.max(0, tgt.getTime() - Date.now()); return { d: Math.floor(df / 86400000), h: Math.floor((df / 3600000) % 24), m: Math.floor((df / 60000) % 60), s: Math.floor((df / 1000) % 60) }; }, [tgt]);
     const [t, setT] = useState(calc);
     useEffect(() => { const i = setInterval(() => setT(calc), 1000); return () => clearInterval(i); }, [calc]);
@@ -29,16 +29,16 @@ function useCountdown(td?: string) {
 }
 
 const SKILLS = [
-    { name: 'React / Next.js', level: 95, color: 'rgb(59 130 246)' },
-    { name: 'TypeScript', level: 90, color: 'rgb(14 165 233)' },
-    { name: 'Node.js', level: 85, color: 'rgb(16 185 129)' },
-    { name: 'UI/UX Design', level: 80, color: 'rgb(139 92 246)' },
+    { name: 'Profile content', level: 0, color: 'rgb(59 130 246)' },
+    { name: 'Experience details', level: 0, color: 'rgb(14 165 233)' },
+    { name: 'Skills list', level: 0, color: 'rgb(16 185 129)' },
+    { name: 'Contact links', level: 0, color: 'rgb(139 92 246)' },
 ];
 
 const EXPERIENCE = [
-    { role: 'Senior Developer', company: 'Tech Corp', years: '2022 – Present' },
-    { role: 'Full-Stack Dev', company: 'StartupXYZ', years: '2019 – 2022' },
-    { role: 'Frontend Dev', company: 'Agency Co', years: '2017 – 2019' },
+    { role: 'Experience section', company: 'Not published', years: 'Pending' },
+    { role: 'Education section', company: 'Not published', years: 'Pending' },
+    { role: 'Portfolio section', company: 'Not published', years: 'Pending' },
 ];
 
 export default function ResumeComingSoon({ storeName, tagline, logoUrl, launchDate }: Props) {

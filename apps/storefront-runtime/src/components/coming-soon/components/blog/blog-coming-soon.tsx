@@ -21,7 +21,7 @@ const PARTICLE_STYLES: CSSProperties[] = Array.from({ length: 35 }, (_, i) => ({
 }));
 
 function useCountdown(td?: string) {
-    const tgt = useMemo(() => { if (td) return new Date(td); const d = new Date(); d.setDate(d.getDate() + 14); return d; }, [td]);
+    const tgt = useMemo(() => { if (td) return new Date(td); return new Date(); }, [td]);
     const calc = useCallback(() => { const df = Math.max(0, tgt.getTime() - Date.now()); return { d: Math.floor(df / 86400000), h: Math.floor((df / 3600000) % 24), m: Math.floor((df / 60000) % 60), s: Math.floor((df / 1000) % 60) }; }, [tgt]);
     const [t, setT] = useState(calc);
     useEffect(() => { const i = setInterval(() => setT(calc), 1000); return () => clearInterval(i); }, [calc]);
@@ -29,10 +29,10 @@ function useCountdown(td?: string) {
 }
 
 const POSTS = [
-    { title: 'The Future of Design', tag: 'Design', read: '5 min', gradient: 'linear-gradient(135deg,rgb(249 115 22),rgb(251 146 60))' },
-    { title: 'Building at Scale', tag: 'Engineering', read: '8 min', gradient: 'linear-gradient(135deg,rgb(16 185 129),rgb(52 211 153))' },
-    { title: 'Growth Strategies', tag: 'Business', read: '4 min', gradient: 'linear-gradient(135deg,rgb(236 72 153),rgb(244 114 182))' },
-    { title: 'AI & Automation', tag: 'Tech', read: '6 min', gradient: 'linear-gradient(135deg,rgb(99 102 241),rgb(129 140 248))' },
+    { title: 'Draft post slot', tag: 'Draft', read: 'Pending', gradient: 'linear-gradient(135deg,rgb(249 115 22),rgb(251 146 60))' },
+    { title: 'Topic slot', tag: 'Draft', read: 'Pending', gradient: 'linear-gradient(135deg,rgb(16 185 129),rgb(52 211 153))' },
+    { title: 'Author slot', tag: 'Draft', read: 'Pending', gradient: 'linear-gradient(135deg,rgb(236 72 153),rgb(244 114 182))' },
+    { title: 'Archive slot', tag: 'Draft', read: 'Pending', gradient: 'linear-gradient(135deg,rgb(99 102 241),rgb(129 140 248))' },
 ];
 
 export default function BlogComingSoon({ storeName, tagline, logoUrl, launchDate }: Props) {
@@ -101,7 +101,7 @@ export default function BlogComingSoon({ storeName, tagline, logoUrl, launchDate
 
                 {/* EMAIL */}
                 <div style={{ width: '100%', maxWidth: 'min(420px,90vw)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .55s both' : 'none' }}>
-                    {done ? <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 'clamp(8px,1.2dvh,12px)', borderRadius: 14, background: 'rgba(34,197,94,.08)', border: '1px solid rgba(34,197,94,.2)', color: 'rgb(134 239 172)', fontSize: 'clamp(11px,1.4vw,14px)', fontWeight: 600 }}>Subscribed! First post incoming.</div> : (
+                    {done ? <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 'clamp(8px,1.2dvh,12px)', borderRadius: 14, background: 'rgba(34,197,94,.08)', border: '1px solid rgba(34,197,94,.2)', color: 'rgb(134 239 172)', fontSize: 'clamp(11px,1.4vw,14px)', fontWeight: 600 }}>Subscription recorded.</div> : (
                         <form onSubmit={submit} style={{ display: 'flex', gap: 'clamp(4px,.6vw,8px)', padding: 'clamp(3px,.4dvh,5px)', borderRadius: 'clamp(12px,1.5dvh,16px)', background: 'rgba(255,255,255,.025)', border: '1px solid rgba(255,255,255,.06)' }}>
                             <Input unstyled type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="enter@youremail.com" required style={{ flex: 1, padding: 'clamp(8px,1dvh,12px) clamp(10px,2vw,16px)', borderRadius: 'clamp(10px,1.2dvh,14px)', border: 'none', background: 'transparent', color: 'rgb(255 255 255)', fontSize: 'clamp(11px,1.4vw,14px)', outline: 'none', fontFamily: 'inherit', minWidth: 0 }} />
                             <Button unstyled type="submit" style={{ padding: 'clamp(8px,1dvh,12px) clamp(12px,2.5vw,24px)', borderRadius: 'clamp(10px,1.2dvh,14px)', border: 'none', background: 'linear-gradient(135deg,rgb(249 115 22),rgb(251 146 60))', color: 'rgb(255 255 255)', fontWeight: 700, fontSize: 'clamp(10px,1.3vw,13px)', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', boxShadow: '0 6px 20px rgba(249,115,22,.3)' }}>Subscribe</Button>
@@ -111,7 +111,7 @@ export default function BlogComingSoon({ storeName, tagline, logoUrl, launchDate
 
                 {/* STATS */}
                 <div style={{ display: 'flex', gap: 'clamp(16px,4vw,40px)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .6s both' : 'none' }}>
-                    {[{ v: '50+', l: 'Articles' }, { v: '12K', l: 'Readers' }, { v: 'Weekly', l: 'Updates' }].map(s => (<div key={s.l} style={{ textAlign: 'center' }}><div style={{ fontSize: 'clamp(.85rem,2vw,1.3rem)', fontWeight: 800, lineHeight: 1, background: 'linear-gradient(135deg,rgb(254 215 170),rgb(253 186 116))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{s.v}</div><div style={{ fontSize: 'clamp(7px,1vw,10px)', fontWeight: 500, color: 'rgba(255,255,255,.25)', textTransform: 'uppercase', letterSpacing: '.06em', marginTop: 1 }}>{s.l}</div></div>))}
+                    {[{ v: 'Draft', l: 'Status' }, { v: 'Closed', l: 'Access' }, { v: 'Manual', l: 'Publish' }].map(s => (<div key={s.l} style={{ textAlign: 'center' }}><div style={{ fontSize: 'clamp(.85rem,2vw,1.3rem)', fontWeight: 800, lineHeight: 1, background: 'linear-gradient(135deg,rgb(254 215 170),rgb(253 186 116))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{s.v}</div><div style={{ fontSize: 'clamp(7px,1vw,10px)', fontWeight: 500, color: 'rgba(255,255,255,.25)', textTransform: 'uppercase', letterSpacing: '.06em', marginTop: 1 }}>{s.l}</div></div>))}
                 </div>
 
                 <p style={{ fontSize: 'clamp(8px,1.1vw,11px)', color: 'rgba(255,255,255,.18)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .65s both' : 'none' }}>Powered by <a href="https://letbuyy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(253,186,116,.45)', textDecoration: 'none', fontWeight: 700 }}>LetBuyy</a></p>

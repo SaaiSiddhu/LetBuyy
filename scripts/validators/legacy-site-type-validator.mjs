@@ -100,6 +100,24 @@ for (const file of [
   );
 }
 
+for (const file of [
+  "apps/storefront-runtime/src/components/coming-soon/components/store/store-coming-soon.tsx",
+  "apps/storefront-runtime/src/components/coming-soon/components/landing/landing-coming-soon.tsx",
+  "apps/storefront-runtime/src/components/coming-soon/components/portfolio/portfolio-coming-soon.tsx",
+  "apps/storefront-runtime/src/components/coming-soon/components/resume/resume-coming-soon.tsx",
+  "apps/storefront-runtime/src/components/coming-soon/components/blog/blog-coming-soon.tsx",
+]) {
+  const source = readFile(file);
+  reporter.assert(
+    !source.includes("setDate(d.getDate() + 14)"),
+    `${file} must not fabricate a launch date when no launchDate is supplied`,
+  );
+  reporter.assert(
+    !/(10K\+|99\.9%|<50ms|2,400\+|150\+|4\.9|50\+|12K|Weekly|Senior Developer|StartupXYZ|Tech Corp|SOON|Launch Rewards|Scale Infinitely|Global CDN|Waitlist|First post incoming)/.test(source),
+    `${file} must not ship fabricated launch metrics, sample resume history, or future-state badges`,
+  );
+}
+
 const marketingCreate = readFile("apps/marketing-site/src/app/create/page.tsx");
 reporter.assert(
   marketingCreate.indexOf("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES") !== -1 &&

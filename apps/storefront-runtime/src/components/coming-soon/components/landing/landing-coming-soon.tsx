@@ -21,7 +21,7 @@ const PARTICLE_STYLES: CSSProperties[] = Array.from({ length: 35 }, (_, i) => ({
 }));
 
 function useCountdown(td?: string) {
-    const tgt = useMemo(() => { if (td) return new Date(td); const d = new Date(); d.setDate(d.getDate() + 14); return d; }, [td]);
+    const tgt = useMemo(() => { if (td) return new Date(td); return new Date(); }, [td]);
     const calc = useCallback(() => { const df = Math.max(0, tgt.getTime() - Date.now()); return { d: Math.floor(df / 86400000), h: Math.floor((df / 3600000) % 24), m: Math.floor((df / 60000) % 60), s: Math.floor((df / 1000) % 60) }; }, [tgt]);
     const [t, setT] = useState(calc);
     useEffect(() => { const i = setInterval(() => setT(calc), 1000); return () => clearInterval(i); }, [calc]);
@@ -29,9 +29,9 @@ function useCountdown(td?: string) {
 }
 
 const FRAMES = [
-    { title: 'Build Faster', desc: 'Ship in hours, not weeks', gradient: 'linear-gradient(135deg,rgb(139 92 246),rgb(167 139 250))' },
-    { title: 'Scale Infinitely', desc: 'Zero config, auto-scaling', gradient: 'linear-gradient(135deg,rgb(236 72 153),rgb(244 114 182))' },
-    { title: 'Secure by Default', desc: 'Enterprise-grade security', gradient: 'linear-gradient(135deg,rgb(16 185 129),rgb(52 211 153))' },
+    { title: 'Draft Content', desc: 'Owner-provided copy pending', gradient: 'linear-gradient(135deg,rgb(139 92 246),rgb(167 139 250))' },
+    { title: 'Gated Access', desc: 'Publication is still closed', gradient: 'linear-gradient(135deg,rgb(236 72 153),rgb(244 114 182))' },
+    { title: 'Manual Publish', desc: 'Merchant opens this page', gradient: 'linear-gradient(135deg,rgb(16 185 129),rgb(52 211 153))' },
 ];
 
 export default function LandingComingSoon({ storeName, tagline, logoUrl, launchDate }: Props) {
@@ -94,7 +94,7 @@ export default function LandingComingSoon({ storeName, tagline, logoUrl, launchD
 
                 {/* FEATURES */}
                 <div style={{ display: 'flex', gap: 'clamp(6px,1vw,14px)', flexWrap: 'wrap', justifyContent: 'center', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .5s both' : 'none' }}>
-                    {['Analytics Dashboard', 'Auto Scaling', 'API First', 'Global CDN', '99.9% Uptime'].map(f => (<span key={f} style={{ padding: 'clamp(3px,.5dvh,6px) clamp(8px,1.2vw,14px)', borderRadius: 8, fontSize: 'clamp(8px,1.1vw,11px)', fontWeight: 600, background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.05)', color: 'rgba(255,255,255,.45)' }}>{f}</span>))}
+                    {['Draft Content', 'Password Gate', 'Publication Review', 'Contact Capture', 'Hosted Page'].map(f => (<span key={f} style={{ padding: 'clamp(3px,.5dvh,6px) clamp(8px,1.2vw,14px)', borderRadius: 8, fontSize: 'clamp(8px,1.1vw,11px)', fontWeight: 600, background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.05)', color: 'rgba(255,255,255,.45)' }}>{f}</span>))}
                 </div>
 
                 {/* EMAIL */}
@@ -109,11 +109,11 @@ export default function LandingComingSoon({ storeName, tagline, logoUrl, launchD
 
                 {/* STATS */}
                 <div style={{ display: 'flex', gap: 'clamp(16px,4vw,40px)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .6s both' : 'none' }}>
-                    {[{ v: '10K+', l: 'Beta Users' }, { v: '99.9%', l: 'Uptime' }, { v: '<50ms', l: 'Latency' }].map(s => (<div key={s.l} style={{ textAlign: 'center' }}><div style={{ fontSize: 'clamp(.85rem,2vw,1.3rem)', fontWeight: 800, lineHeight: 1, background: 'linear-gradient(135deg,rgb(221 214 254),rgb(196 181 253))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{s.v}</div><div style={{ fontSize: 'clamp(7px,1vw,10px)', fontWeight: 500, color: 'rgba(255,255,255,.25)', textTransform: 'uppercase', letterSpacing: '.06em', marginTop: 1 }}>{s.l}</div></div>))}
+                    {[{ v: 'Draft', l: 'Status' }, { v: 'Closed', l: 'Access' }, { v: 'Manual', l: 'Publish' }].map(s => (<div key={s.l} style={{ textAlign: 'center' }}><div style={{ fontSize: 'clamp(.85rem,2vw,1.3rem)', fontWeight: 800, lineHeight: 1, background: 'linear-gradient(135deg,rgb(221 214 254),rgb(196 181 253))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{s.v}</div><div style={{ fontSize: 'clamp(7px,1vw,10px)', fontWeight: 500, color: 'rgba(255,255,255,.25)', textTransform: 'uppercase', letterSpacing: '.06em', marginTop: 1 }}>{s.l}</div></div>))}
                 </div>
 
                 {/* PROGRESS */}
-                {ok && <div style={{ width: '100%', maxWidth: 'min(280px,70vw)', animation: 'fu 1s cubic-bezier(.16,1,.3,1) .65s both' }}><div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3, fontSize: 'clamp(7px,1vw,10px)', fontWeight: 600, color: 'rgba(255,255,255,.25)' }}><span>Launch Progress</span><span style={{ color: 'rgb(196 181 253)' }}>91%</span></div><div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,.04)', overflow: 'hidden' }}><div style={{ width: '91%', height: '100%', borderRadius: 2, background: 'linear-gradient(90deg,rgb(139 92 246),rgb(167 139 250),rgb(196 181 253))', position: 'relative' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent)', animation: 'sh 2.5s linear infinite' }} /></div></div></div>}
+                {ok && <div style={{ width: '100%', maxWidth: 'min(280px,70vw)', animation: 'fu 1s cubic-bezier(.16,1,.3,1) .65s both' }}><div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3, fontSize: 'clamp(7px,1vw,10px)', fontWeight: 600, color: 'rgba(255,255,255,.25)' }}><span>Publication Status</span><span style={{ color: 'rgb(196 181 253)' }}>0%</span></div><div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,.04)', overflow: 'hidden' }}><div style={{ width: '0%', height: '100%', borderRadius: 2, background: 'linear-gradient(90deg,rgb(139 92 246),rgb(167 139 250),rgb(196 181 253))', position: 'relative' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent)', animation: 'sh 2.5s linear infinite' }} /></div></div></div>}
 
                 <p style={{ fontSize: 'clamp(8px,1.1vw,11px)', color: 'rgba(255,255,255,.18)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .7s both' : 'none' }}>Powered by <a href="https://letbuyy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(196,181,253,.45)', textDecoration: 'none', fontWeight: 700 }}>LetBuyy</a></p>
             </div>

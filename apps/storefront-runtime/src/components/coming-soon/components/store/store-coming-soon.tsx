@@ -21,7 +21,7 @@ const PARTICLE_STYLES: CSSProperties[] = Array.from({ length: 35 }, (_, i) => ({
 }));
 
 function useCountdown(td?: string) {
-    const tgt = useMemo(() => { if (td) return new Date(td); const d = new Date(); d.setDate(d.getDate() + 14); return d; }, [td]);
+    const tgt = useMemo(() => { if (td) return new Date(td); return new Date(); }, [td]);
     const calc = useCallback(() => { const df = Math.max(0, tgt.getTime() - Date.now()); return { d: Math.floor(df / 86400000), h: Math.floor((df / 3600000) % 24), m: Math.floor((df / 60000) % 60), s: Math.floor((df / 1000) % 60) }; }, [tgt]);
     const [t, setT] = useState(calc);
     useEffect(() => { const i = setInterval(() => setT(calc), 1000); return () => clearInterval(i); }, [calc]);
@@ -29,10 +29,10 @@ function useCountdown(td?: string) {
 }
 
 const PRODUCTS = [
-    { name: 'Limited Edition Sneakers', price: '\u20B94,999', tag: 'NEW', gradient: 'linear-gradient(135deg,rgb(99 102 241),rgb(129 140 248))' },
-    { name: 'Premium Hoodie', price: '\u20B92,499', tag: 'HOT', gradient: 'linear-gradient(135deg,rgb(236 72 153),rgb(244 114 182))' },
-    { name: 'Designer Watch', price: '\u20B98,999', tag: 'SOON', gradient: 'linear-gradient(135deg,rgb(245 158 11),rgb(251 191 36))' },
-    { name: 'Wireless Earbuds Pro', price: '\u20B93,499', tag: 'NEW', gradient: 'linear-gradient(135deg,rgb(16 185 129),rgb(52 211 153))' },
+    { name: 'Product slot', price: 'Draft', tag: 'DRAFT', gradient: 'linear-gradient(135deg,rgb(99 102 241),rgb(129 140 248))' },
+    { name: 'Collection slot', price: 'Draft', tag: 'DRAFT', gradient: 'linear-gradient(135deg,rgb(236 72 153),rgb(244 114 182))' },
+    { name: 'Offer slot', price: 'Draft', tag: 'DRAFT', gradient: 'linear-gradient(135deg,rgb(245 158 11),rgb(251 191 36))' },
+    { name: 'Media slot', price: 'Draft', tag: 'DRAFT', gradient: 'linear-gradient(135deg,rgb(16 185 129),rgb(52 211 153))' },
 ];
 
 export default function StoreComingSoon({ storeName, tagline, logoUrl, launchDate }: Props) {
@@ -102,7 +102,7 @@ export default function StoreComingSoon({ storeName, tagline, logoUrl, launchDat
 
                 {/* FEATURES */}
                 <div style={{ display: 'flex', gap: 'clamp(6px,1vw,14px)', flexWrap: 'wrap', justifyContent: 'center', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .5s both' : 'none' }}>
-                    {['Secure Checkout', 'Fast Shipping', 'Premium Quality', 'Launch Rewards'].map(f => (<span key={f} style={{ padding: 'clamp(3px,.5dvh,6px) clamp(8px,1.2vw,14px)', borderRadius: 8, fontSize: 'clamp(8px,1.1vw,11px)', fontWeight: 600, background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.05)', color: 'rgba(255,255,255,.45)' }}>{f}</span>))}
+                    {['Draft Catalog', 'Access Gated', 'Merchant Review', 'Opening Updates'].map(f => (<span key={f} style={{ padding: 'clamp(3px,.5dvh,6px) clamp(8px,1.2vw,14px)', borderRadius: 8, fontSize: 'clamp(8px,1.1vw,11px)', fontWeight: 600, background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.05)', color: 'rgba(255,255,255,.45)' }}>{f}</span>))}
                 </div>
 
                 {/* EMAIL */}
@@ -117,11 +117,11 @@ export default function StoreComingSoon({ storeName, tagline, logoUrl, launchDat
 
                 {/* STATS */}
                 <div style={{ display: 'flex', gap: 'clamp(16px,4vw,40px)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .6s both' : 'none' }}>
-                    {[{ v: '2,400+', l: 'Waitlist' }, { v: '150+', l: 'Products' }, { v: '4.9', l: 'Rating' }].map(s => (<div key={s.l} style={{ textAlign: 'center' }}><div style={{ fontSize: 'clamp(.85rem,2vw,1.3rem)', fontWeight: 800, lineHeight: 1, background: 'linear-gradient(135deg,rgb(224 231 255),rgb(165 180 252))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{s.v}</div><div style={{ fontSize: 'clamp(7px,1vw,10px)', fontWeight: 500, color: 'rgba(255,255,255,.25)', textTransform: 'uppercase', letterSpacing: '.06em', marginTop: 1 }}>{s.l}</div></div>))}
+                    {[{ v: 'Draft', l: 'Status' }, { v: 'Closed', l: 'Access' }, { v: 'Manual', l: 'Publish' }].map(s => (<div key={s.l} style={{ textAlign: 'center' }}><div style={{ fontSize: 'clamp(.85rem,2vw,1.3rem)', fontWeight: 800, lineHeight: 1, background: 'linear-gradient(135deg,rgb(224 231 255),rgb(165 180 252))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{s.v}</div><div style={{ fontSize: 'clamp(7px,1vw,10px)', fontWeight: 500, color: 'rgba(255,255,255,.25)', textTransform: 'uppercase', letterSpacing: '.06em', marginTop: 1 }}>{s.l}</div></div>))}
                 </div>
 
                 {/* PROGRESS */}
-                {ok && <div style={{ width: '100%', maxWidth: 'min(280px,70vw)', animation: 'fu 1s cubic-bezier(.16,1,.3,1) .65s both' }}><div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3, fontSize: 'clamp(7px,1vw,10px)', fontWeight: 600, color: 'rgba(255,255,255,.25)' }}><span>Store Setup</span><span style={{ color: 'rgb(165 180 252)' }}>78%</span></div><div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,.04)', overflow: 'hidden' }}><div style={{ width: '78%', height: '100%', borderRadius: 2, background: 'linear-gradient(90deg,rgb(99 102 241),rgb(139 92 246),rgb(168 85 247))', position: 'relative' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent)', animation: 'sh 2.5s linear infinite' }} /></div></div></div>}
+                {ok && <div style={{ width: '100%', maxWidth: 'min(280px,70vw)', animation: 'fu 1s cubic-bezier(.16,1,.3,1) .65s both' }}><div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3, fontSize: 'clamp(7px,1vw,10px)', fontWeight: 600, color: 'rgba(255,255,255,.25)' }}><span>Store Setup</span><span style={{ color: 'rgb(165 180 252)' }}>0%</span></div><div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,.04)', overflow: 'hidden' }}><div style={{ width: '0%', height: '100%', borderRadius: 2, background: 'linear-gradient(90deg,rgb(99 102 241),rgb(139 92 246),rgb(168 85 247))', position: 'relative' }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent)', animation: 'sh 2.5s linear infinite' }} /></div></div></div>}
 
                 {/* POWERED */}
                 <p style={{ fontSize: 'clamp(8px,1.1vw,11px)', color: 'rgba(255,255,255,.18)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .7s both' : 'none' }}>Powered by <a href="https://letbuyy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(165,180,252,.45)', textDecoration: 'none', fontWeight: 700 }}>LetBuyy</a></p>
