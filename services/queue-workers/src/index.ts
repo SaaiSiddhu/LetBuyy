@@ -444,6 +444,8 @@ function emailPayload(value: Record<string, unknown>): {
   text: string;
   html?: string;
   orderId?: string;
+  inviteId?: string;
+  contactSubmissionId?: string;
   storeId?: string;
 } | null {
   const to = typeof value.to === 'string' ? value.to : '';
@@ -457,8 +459,16 @@ function emailPayload(value: Record<string, unknown>): {
     text,
     html: typeof value.html === 'string' ? value.html : undefined,
     orderId: typeof value.order_id === 'string' ? value.order_id : undefined,
+    inviteId: typeof value.invite_id === 'string' ? value.invite_id : undefined,
+    contactSubmissionId: typeof value.contact_submission_id === 'string' ? value.contact_submission_id : undefined,
     storeId: typeof value.store_id === 'string' ? value.store_id : undefined,
   };
+}
+
+function isTransactionalEmailJob(jobType: string): boolean {
+  return jobType === 'email.order_confirmation'
+    || jobType === 'email.employee_invite'
+    || jobType === 'email.contact_owner_notification';
 }
 
 function resendConfigured(env: Env): boolean {
@@ -468,10 +478,10 @@ function resendConfigured(env: Env): boolean {
 
 async function dispatchEmailDeliveries(env: Env, deliveries: NormalizedQueueDelivery[]): Promise<void> {
   for (const delivery of deliveries) {
-    if (delivery.status === 'dead-lettered' || delivery.input.jobType !== 'email.order_confirmation') continue;
+    if (delivery.status === 'dead-lettered' || !isTransactionalEmailJob(delivery.input.jobType)) continue;
     const payload = emailPayload(delivery.input.payload);
     if (!payload) {
-      throw new QueueProcessingError('email.order_confirmation payload is invalid', { deterministic: true });
+      throw new QueueProcessingError(`${delivery.input.jobType} payload is invalid`, { deterministic: true });
     }
 
     if (!resendConfigured(env)) {
@@ -479,6 +489,8 @@ async function dispatchEmailDeliveries(env: Env, deliveries: NormalizedQueueDeli
         job_type: delivery.input.jobType,
         status: 'missing-resend-secret',
         order_id: payload.orderId || null,
+        invite_id: payload.inviteId || null,
+        contact_submission_id: payload.contactSubmissionId || null,
         store_id: payload.storeId || delivery.input.siteId,
         request_id: delivery.input.requestId,
       });
@@ -502,6 +514,8 @@ async function dispatchEmailDeliveries(env: Env, deliveries: NormalizedQueueDeli
       job_type: delivery.input.jobType,
       status: 'sent',
       order_id: payload.orderId || null,
+      invite_id: payload.inviteId || null,
+      contact_submission_id: payload.contactSubmissionId || null,
       store_id: payload.storeId || delivery.input.siteId,
       request_id: delivery.input.requestId,
     });

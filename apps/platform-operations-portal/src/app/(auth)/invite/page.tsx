@@ -15,8 +15,8 @@ export default function InvitePage() {
 
                 <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
                     Invitation acceptance is not active in this frozen portal. The survivor fold-in remains recorded
-                    under SKIP-GATE-OPS-SURVIVOR-ARB, and invite delivery remains recorded under
-                    SKIP-CAP-TRANSACTIONAL-EMAILS.
+                    under SKIP-GATE-OPS-SURVIVOR-ARB, and live ESP dispatch evidence remains recorded under
+                    SKIP-CAP-LIVE-EMAIL-DISPATCH.
                 </div>
                 <div className="space-y-4">
                     <Button

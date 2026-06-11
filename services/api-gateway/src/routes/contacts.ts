@@ -1,10 +1,56 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
+import { enqueueContactOwnerNotificationEmail } from '../lib/transactional-email';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { authMiddleware } from '../middleware/auth';
 
 const router = new Hono<{ Bindings: Env }>();
+
+type ContactStoreRow = {
+    id: string;
+    name?: string | null;
+    store_name?: string | null;
+    subdomain?: string | null;
+    custom_user_id?: string | null;
+    user_id?: string | null;
+};
+
+function stringValue(value: unknown, fallback = ''): string {
+    return typeof value === 'string' && value.trim() ? value.trim() : fallback;
+}
+
+async function resolveStoreOwnerEmail(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    store: ContactStoreRow,
+): Promise<string | null> {
+    if (store.custom_user_id) {
+        const { data } = await db
+            .from('users_custom')
+            .select('email')
+            .eq('id', store.custom_user_id)
+            .maybeSingle();
+        if (typeof data?.email === 'string' && data.email.trim()) return data.email.trim();
+    }
+
+    if (store.user_id) {
+        const { data: user } = await db
+            .from('users')
+            .select('email')
+            .eq('id', store.user_id)
+            .maybeSingle();
+        if (typeof user?.email === 'string' && user.email.trim()) return user.email.trim();
+
+        const { data: profile } = await db
+            .from('user_profiles')
+            .select('email')
+            .eq('id', store.user_id)
+            .maybeSingle();
+        if (typeof profile?.email === 'string' && profile.email.trim()) return profile.email.trim();
+    }
+
+    return null;
+}
 
 // POST /contacts — Public: submit a contact form
 router.post('/', async (c) => {
@@ -18,7 +64,7 @@ router.post('/', async (c) => {
     const db = getSupabaseAdmin(c);
     const { data: store } = await db
         .from('sites')
-        .select('id')
+        .select('id, name, store_name, subdomain, custom_user_id, user_id')
         .eq('id', store_id)
         .eq('status', 'published')
         .is('deleted_at', null)
@@ -46,7 +92,18 @@ router.post('/', async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    // HUMAN-REQUIRED: SKIP-CAP-TRANSACTIONAL-EMAILS — contact persistence is live, owner notification delivery is not claimed.
+    const ownerEmail = await resolveStoreOwnerEmail(db, store as ContactStoreRow);
+    await enqueueContactOwnerNotificationEmail(c.env, {
+        submissionId: String(data.id),
+        storeId: store_id,
+        storeName: stringValue((store as ContactStoreRow).name || (store as ContactStoreRow).store_name, 'your store'),
+        ownerEmail,
+        customerName: stringValue(name, 'Storefront visitor'),
+        customerEmail: typeof email === 'string' ? email : null,
+        customerPhone: typeof phone === 'string' ? phone : null,
+        message: stringValue(message, ''),
+        requestId: c.req.header('X-Request-ID') || null,
+    });
 
     return c.json(success(data), 201);
 });

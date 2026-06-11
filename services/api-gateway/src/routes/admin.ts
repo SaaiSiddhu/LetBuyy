@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
+import { enqueueEmployeeInviteEmail } from '../lib/transactional-email';
 import { getSupabaseAdmin, success, paginated } from '../lib/supabase';
 import { requireRoleCategory, requireSuperAdmin } from '../middleware/rbac';
 import { dispatchStoreAppComplianceWebhook } from './app-store/compliance-routes';
@@ -294,7 +295,16 @@ router.post('/employees/invite', async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    // HUMAN-REQUIRED: SKIP-CAP-TRANSACTIONAL-EMAILS — invite persistence is live, email delivery is not claimed.
+    await enqueueEmployeeInviteEmail(c.env, {
+        inviteId: String(data.id),
+        storeId: typeof data.store_id === 'string' ? data.store_id : null,
+        to: String(data.email || email),
+        role: String(data.role || role || 'support'),
+        token: String(data.token || token),
+        expiresAt: typeof data.expires_at === 'string' ? data.expires_at : null,
+        inviterEmail: auth.user.email || null,
+        requestId: c.req.header('X-Request-ID') || null,
+    });
 
     return c.json(success(data), 201);
 });

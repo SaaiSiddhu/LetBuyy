@@ -1,8 +1,8 @@
 # LetBuyy Final Convergence Completion Report
 
 **Date:** 2026-06-11
-**Scope:** Repository-side B/C/D/E implementation and certification after Phase A live G4 was recorded as human-owned, plus repo-side Phase F CAP-C03 through CAP-C07 and CAP-C09/C10/C11 money/security/identity/mobile/alerting/tenant-isolation capability implementation.
-**Pre-report HEAD:** `0f72fbe3` on `stepup/main`; local `main..stepup/main = 0`.
+**Scope:** Repository-side B/C/D/E implementation and certification after Phase A live G4 was recorded as human-owned, plus repo-side Phase F CAP-C03 through CAP-C07 and CAP-C09 through CAP-C14 capability implementation.
+**Pre-report HEAD:** `e2e2d47e` on `stepup/main`; local `main..stepup/main = 0`.
 
 ## Repository Answer
 
@@ -30,6 +30,7 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | F CAP-C11 | Tenant isolation now has a repository-side executable Postgres red-team proof for RT-1 through RT-9: `app_tenant` positive controls pass, missing-GUC and cross-tenant reads fail closed, raw-REST authenticated visibility matches app-tenant owner scope, anon does not inherit service-role order access, and authenticated users cannot self-add super admins. Live production-shaped DB probes remain human-owned. |
 | F CAP-C12 | Store-publish convergence is repo-side done: web and mobile editors publish canonical `template_config` carrying Liquid bundle/canary state, the gateway publish contract accepts that shape, and backend release snapshots prefer the supplied publish config before draft/store fallback. Live publish/rollback/render smoke remains human-owned. |
 | F CAP-C13 | Checkout Wasm/app-functions retirement is repo-side done: buyer order creation no longer imports or calls `evaluateCheckoutAppFunctions`, the checkout page no longer fetches checkout extension registrations, the checkout iframe host component is deleted, and beta-readiness now fails if the live path returns. |
+| F CAP-C14 | Transactional invite/contact email delivery is repo-side done: admin and merchant employee invites plus storefront contact-owner notifications enqueue signed `NOTIFICATION_QUEUE` jobs, queue-workers dispatch those job types through the existing email sender path, and beta-readiness now fails if the stale CAP-C14 seam rows return. Live ESP dispatch evidence remains human-owned under CAP-C18. |
 
 ## Validation Evidence
 
@@ -74,6 +75,9 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | `node --test tests/app-platform/app-bridge.test.mjs tests/feature-flags/gateway-feature-gates.test.mjs` | PASS, 9/9 after CAP-C13 checkout retirement assertions |
 | `node scripts/validators/beta-readiness-validator.mjs`; `node scripts/validators/meta-no-theater-validator.mjs` | PASS after CAP-C13 |
 | `npx tsc --noEmit -p services/api-gateway/tsconfig.json`; `npx tsc --noEmit -p apps/storefront-runtime/tsconfig.json` | PASS after CAP-C13 |
+| `npx tsx --test services/api-gateway/src/__tests__/order-confirmation-email.test.ts` | PASS, 3/3 after CAP-C14 transactional invite/contact queue assertions |
+| `node scripts/validators/beta-readiness-validator.mjs` | PASS after CAP-C14; now requires route enqueue wiring, transactional helper fragments, worker job support, and absence of stale CAP-C14 seam rows |
+| `npx tsc --noEmit -p services/api-gateway/tsconfig.json`; `npx tsc --noEmit -p services/queue-workers/tsconfig.json` | PASS after CAP-C14 |
 
 Mutation proofs added during final certification:
 
@@ -84,10 +88,11 @@ Mutation proofs added during final certification:
 | Renamed the validator-required `assertRawRestParity` CAP-C11 test marker. | `rls-force-coverage-validator` failed on the missing executable RT-1 through RT-9 app-tenant/raw-REST proof. |
 | Renamed the CAP-C12 mobile publish body key from `template_config` to `template_config_probe`. | `beta-readiness-validator` failed on the missing canonical mobile publish payload fragment. |
 | Reintroduced the forbidden `evaluateCheckoutAppFunctions` marker into buyer checkout order creation. | `beta-readiness-validator` failed on checkout app-functions/Wasm execution returning to the payment route. |
+| Removed the validator-required `email.employee_invite` queue-worker fragment. | `beta-readiness-validator` failed on the missing CAP-C14 transactional email worker support. |
 
 ## Remaining Human-Live Seams
 
-The exact live seam table is `SKIPPED_HUMAN_DECISIONS.md`, now **60 rows**. The exact capability backlog is `CAPABILITY_BACKLOG.md`, now **17 rows**. These are the only remaining blockers to production/live certification.
+The exact live seam table is `SKIPPED_HUMAN_DECISIONS.md`, now **59 rows**. The exact capability backlog is `CAPABILITY_BACKLOG.md`, now **16 rows**. These are the only remaining blockers to production/live certification.
 
 Production certification blockers:
 
@@ -100,7 +105,7 @@ Production certification blockers:
 - `SKIP-D4-FROZEN-VERCEL-PROJECT-DELETION`
 - `SKIP-D5-DNS-TERRAFORM-APPLY`
 
-Provider/capability blockers remain in the skip and capability ledgers for live PSP credentials, payout provider credentials/enablement/smoke, capture/refund/settlement/reconciliation live variance-0 smoke, step-up signing secret/live TOTP smoke, identity keys/OIDC/drain, Liquid production canary and ARB default flip, mobile Turnstile secret/live smoke, alert-provider DSNs/on-call delivery drills, PITR, KYC, logistics, WhatsApp, transactional/live email, AI-credit purchases, and React deletion proof.
+Provider/capability blockers remain in the skip and capability ledgers for live PSP credentials, payout provider credentials/enablement/smoke, capture/refund/settlement/reconciliation live variance-0 smoke, step-up signing secret/live TOTP smoke, identity keys/OIDC/drain, Liquid production canary and ARB default flip, mobile Turnstile secret/live smoke, alert-provider DSNs/on-call delivery drills, PITR, KYC, logistics, WhatsApp, live ESP dispatch, AI-credit purchases, and React deletion proof.
 
 ## Final Scores
 
@@ -117,6 +122,7 @@ Provider/capability blockers remain in the skip and capability ledgers for live 
 | Tenant isolation readiness | CAP-C11 executable RT-1 through RT-9 Postgres proof is repo-side done and guarded by RLS FORCE validation | Live production-shaped database role probes, migration-state evidence, and queue-envelope secret proof remain human/live seams. |
 | Theme convergence | Repository C0-C3 and CAP-C12 publish-path convergence done | C4 production canary, ARB flip, deployed publish/rollback smoke, and C7 React deletion proof remain blocked by live/canary and 4x100% parity evidence. |
 | Checkout compatibility | CAP-C13 checkout Wasm/app-functions live path is retired repo-side and guarded by beta-readiness/app-platform tests | Hosted-checkout live cutover and provider smoke remain human/live seams, but checkout no longer depends on the rejected extension/Wasm runtime. |
+| Transactional email readiness | CAP-C14 invite/contact queue wiring is repo-side done and guarded by beta-readiness plus queue payload tests | Live ESP provider dispatch, sender-domain verification, delivery webhooks, and provider smoke remain human/live seams under CAP-C18. |
 
 ## Completion Statement
 

@@ -271,18 +271,30 @@ for (const file of [
   'services/api-gateway/src/routes/employee.ts',
   'services/api-gateway/src/routes/contacts.ts',
 ]) {
-  assertIncludes(
-    file,
-    'SKIP-CAP-TRANSACTIONAL-EMAILS',
-    `${file} must record transactional email delivery as a capability seam while persistence succeeds without sends`,
-  );
+  assertIncludes(file, 'enqueue', `${file} must enqueue transactional email delivery after persistence`);
+  assertNotIncludes(file, 'SKIP-CAP-TRANSACTIONAL-EMAILS', `${file} must not retain the CAP-C14 delivery seam after queue wiring`);
   assertNotIncludes(file, 'TODO: Send', `${file} must not carry loose transactional email TODOs`);
 }
-assertRecordedCapabilityGap(
-  'CAP-C14',
-  'SKIP-CAP-TRANSACTIONAL-EMAILS',
-  'Transactional invite/contact email delivery must remain recorded until queue/provider-backed sends are wired',
-);
+const transactionalEmail = readFile('services/api-gateway/src/lib/transactional-email.ts');
+for (const fragment of [
+  "jobType: 'email.employee_invite'",
+  "jobType: 'email.contact_owner_notification'",
+  'NOTIFICATION_QUEUE.send',
+  'signQueueTenantEnvelope',
+  'missing-notification-queue',
+]) {
+  reporter.assert(transactionalEmail.includes(fragment), `CAP-C14 transactional email helper missing: ${fragment}`);
+}
+const queueWorker = readFile('services/queue-workers/src/index.ts');
+for (const fragment of [
+  "jobType === 'email.employee_invite'",
+  "jobType === 'email.contact_owner_notification'",
+  '!isTransactionalEmailJob(delivery.input.jobType)',
+]) {
+  reporter.assert(queueWorker.includes(fragment), `CAP-C14 queue worker dispatch missing: ${fragment}`);
+}
+reporter.assert(!capabilityBacklog.includes('| CAP-C14 |'), 'CAP-C14 must not remain an open capability gap after invite/contact queue wiring');
+reporter.assert(!skippedHumanDecisions.includes('SKIP-CAP-TRANSACTIONAL-EMAILS'), 'CAP-C14 queue wiring is repo-side complete, so its skipped-human seam must not remain open');
 
 const aiSidebar = readFile('apps/merchant-control-plane/src/components/AISidebar.tsx');
 const headerBar = readFile('apps/merchant-control-plane/src/components/HeaderBar.tsx');

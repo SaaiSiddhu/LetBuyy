@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { enqueueOrderConfirmationEmail } from '../lib/order-confirmation-email';
+import {
+    enqueueContactOwnerNotificationEmail,
+    enqueueEmployeeInviteEmail,
+} from '../lib/transactional-email';
 import type { Env } from '../index';
 
 type QueryResponse = {
@@ -84,4 +89,78 @@ test('order confirmation email queues one relational receipt payload with determ
     assert.match(JSON.stringify(sent[0]?.payload), /Urban Runner/);
     assert.match(JSON.stringify(sent[0]?.payload), /INR 1299\.00/);
     assert.match(JSON.stringify(sent[0]?.payload), /asha@example\.com/);
+});
+
+test('transactional invite and contact emails enqueue signed tenant-scoped jobs', async () => {
+    const sent: Array<Record<string, unknown>> = [];
+    const env = {
+        ENVIRONMENT: 'test',
+        NEXT_PUBLIC_ADMIN_URL: 'https://merchant.letbuyy.test',
+        QUEUE_TENANT_ENVELOPE_SECRET: 'test-queue-envelope-secret',
+        NOTIFICATION_QUEUE: {
+            send: async (body: Record<string, unknown>) => {
+                sent.push(body);
+            },
+        },
+    } as unknown as Pick<
+        Env,
+        | 'NOTIFICATION_QUEUE'
+        | 'INTERNAL_API_SECRET'
+        | 'QUEUE_TENANT_ENVELOPE_SECRET'
+        | 'NEXT_PUBLIC_ADMIN_URL'
+        | 'NEXT_PUBLIC_PLATFORM_DOMAIN'
+        | 'LETBUYY_PLATFORM_DOMAIN'
+        | 'PLATFORM_ROOT_DOMAIN'
+        | 'ENVIRONMENT'
+    >;
+
+    await enqueueEmployeeInviteEmail(env, {
+        inviteId: 'invite-1',
+        storeId: 'store-1',
+        to: 'employee@example.com',
+        role: 'manager',
+        token: 'invite-token',
+        expiresAt: '2026-06-18T00:00:00.000Z',
+        inviterEmail: 'owner@example.com',
+        requestId: 'req-invite',
+    });
+
+    await enqueueContactOwnerNotificationEmail(env, {
+        submissionId: 'contact-1',
+        storeId: 'store-1',
+        storeName: 'Urban Kicks',
+        ownerEmail: 'owner@example.com',
+        customerName: 'Asha',
+        customerEmail: 'asha@example.com',
+        customerPhone: '+919999999999',
+        message: 'Do you ship to Mumbai?',
+        requestId: 'req-contact',
+    });
+
+    assert.equal(sent.length, 2);
+    assert.equal(sent[0]?.jobType, 'email.employee_invite');
+    assert.equal(sent[0]?.idempotencyKey, 'email.employee_invite:invite-1');
+    assert.equal(sent[0]?.siteId, 'store-1');
+    assert.match(JSON.stringify(sent[0]?.payload), /employee@example\.com/);
+    assert.match(JSON.stringify(sent[0]?.payload), /invite-token/);
+    assert.equal(typeof sent[0]?.tenantEnvelope, 'object');
+
+    assert.equal(sent[1]?.jobType, 'email.contact_owner_notification');
+    assert.equal(sent[1]?.idempotencyKey, 'email.contact_owner_notification:store-1:contact-1');
+    assert.equal(sent[1]?.siteId, 'store-1');
+    assert.match(JSON.stringify(sent[1]?.payload), /owner@example\.com/);
+    assert.match(JSON.stringify(sent[1]?.payload), /Do you ship to Mumbai/);
+    assert.equal(typeof sent[1]?.tenantEnvelope, 'object');
+});
+
+test('queue worker dispatches the canonical transactional email job allowlist', () => {
+    const worker = readFileSync(new URL('../../../../services/queue-workers/src/index.ts', import.meta.url), 'utf8');
+
+    assert.match(worker, /function isTransactionalEmailJob/);
+    assert.match(worker, /jobType === 'email\.order_confirmation'/);
+    assert.match(worker, /jobType === 'email\.employee_invite'/);
+    assert.match(worker, /jobType === 'email\.contact_owner_notification'/);
+    assert.match(worker, /!isTransactionalEmailJob\(delivery\.input\.jobType\)/);
+    assert.match(worker, /invite_id: payload\.inviteId/);
+    assert.match(worker, /contact_submission_id: payload\.contactSubmissionId/);
 });
