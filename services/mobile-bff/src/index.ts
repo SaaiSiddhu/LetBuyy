@@ -1,4 +1,4 @@
-import { createLetbuyyInternalSessionHeaders } from '@letbuyy/auth-core';
+import { createLetbuyyInternalSessionHeaders, hmacSha256Hex, sha256Hex } from '@letbuyy/auth-core';
 import { Hono } from 'hono';
 
 export interface Env {
@@ -22,6 +22,8 @@ const VERSIONED_PREFIX = '/v1';
 const SESSION_COOKIE_NAME = 'lb_session';
 const PLACEHOLDER_PREFIX = 'SKIP_NEEDS_HUMAN_';
 const TURNSTILE_SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+const MOBILE_TURNSTILE_PROOF_PREFIX = 'lb-mobile-turnstile-v1';
+const MOBILE_TURNSTILE_PROOF_TTL_SECONDS = 2 * 60;
 const ALLOWED_PREFIXES = [
   '/v1/auth',
   '/v1/mobile',
@@ -113,11 +115,47 @@ export interface MobileTurnstileVerificationResult {
   ok: boolean;
   status: 'verified' | 'invalid' | 'unavailable';
   code?: string;
+  proofToken?: string;
+  proofExpiresAt?: string;
+}
+
+function base64UrlEncodeJson(value: unknown): string {
+  const bytes = new TextEncoder().encode(JSON.stringify(value));
+  let binary = '';
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
+export async function createMobileTurnstileProof(input: {
+  turnstileToken: string;
+  internalSecret: string;
+  remoteIp?: string | null;
+  nowMs?: number;
+}): Promise<{ token: string; expiresAt: string }> {
+  const nowSeconds = Math.floor((input.nowMs ?? Date.now()) / 1000);
+  const exp = nowSeconds + MOBILE_TURNSTILE_PROOF_TTL_SECONDS;
+  const payload = {
+    type: 'letbuyy.mobile_turnstile_proof',
+    source: 'mobile-bff',
+    provider: 'cloudflare_turnstile',
+    status: 'verified',
+    token_hash: await sha256Hex(input.turnstileToken),
+    remote_ip_hash: input.remoteIp ? await sha256Hex(input.remoteIp) : null,
+    iat: nowSeconds,
+    exp,
+    jti: crypto.randomUUID(),
+  };
+  const encodedPayload = base64UrlEncodeJson(payload);
+  const signature = await hmacSha256Hex(input.internalSecret, `${MOBILE_TURNSTILE_PROOF_PREFIX}.${encodedPayload}`);
+  return {
+    token: `${MOBILE_TURNSTILE_PROOF_PREFIX}.${encodedPayload}.${signature}`,
+    expiresAt: new Date(exp * 1000).toISOString(),
+  };
 }
 
 export async function verifyMobileTurnstileToken(input: {
   token: string;
-  env: Pick<Env, 'TURNSTILE_SECRET_KEY'>;
+  env: Pick<Env, 'TURNSTILE_SECRET_KEY' | 'INTERNAL_API_SECRET'>;
   remoteIp?: string | null;
   fetcher?: typeof fetch;
 }): Promise<MobileTurnstileVerificationResult> {
@@ -148,7 +186,23 @@ export async function verifyMobileTurnstileToken(input: {
   }
 
   const payload = await response.json().catch(() => null) as { success?: boolean; 'error-codes'?: string[] } | null;
-  if (payload?.success === true) return { ok: true, status: 'verified' };
+  if (payload?.success === true) {
+    const internalSecret = input.env.INTERNAL_API_SECRET;
+    if (!isConfiguredSecret(internalSecret)) {
+      return { ok: false, status: 'unavailable', code: 'TURNSTILE_PROOF_SECRET_NOT_CONFIGURED' };
+    }
+    const proof = await createMobileTurnstileProof({
+      turnstileToken: token,
+      internalSecret: internalSecret!.trim(),
+      remoteIp: input.remoteIp,
+    });
+    return {
+      ok: true,
+      status: 'verified',
+      proofToken: proof.token,
+      proofExpiresAt: proof.expiresAt,
+    };
+  }
   return {
     ok: false,
     status: 'invalid',
@@ -429,7 +483,15 @@ app.post('/v1/auth/mobile/turnstile/verify', async (c) => {
   });
 
   if (result.ok) {
-    return c.json({ success: true, verification: { provider: 'cloudflare_turnstile', status: result.status } });
+    return c.json({
+      success: true,
+      verification: {
+        provider: 'cloudflare_turnstile',
+        status: result.status,
+        proof_token: result.proofToken,
+        proof_expires_at: result.proofExpiresAt,
+      },
+    });
   }
 
   const status = result.status === 'unavailable' ? 503 : 403;

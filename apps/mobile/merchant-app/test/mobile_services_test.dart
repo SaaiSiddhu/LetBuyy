@@ -4451,7 +4451,10 @@ void main() {
               case 'bff.test':
                 expect(request.url.path, '/v1/auth/mobile/turnstile/verify');
                 expect(request.body, contains('turnstile_token'));
-                return http.Response('{"success":true}', 200);
+                return http.Response(
+                  '{"success":true,"verification":{"proof_token":"lb-mobile-turnstile-v1.proof.signature"}}',
+                  200,
+                );
               case 'accounts.test':
                 if (request.url.path == '/login') {
                   return http.Response(
@@ -4461,6 +4464,11 @@ void main() {
                   );
                 }
                 if (request.url.path == '/api/auth/login') {
+                  expect(
+                    request.body,
+                    contains('lb-mobile-turnstile-v1.proof.signature'),
+                  );
+                  expect(request.body, isNot(contains('turnstile_token')));
                   return http.Response(
                     '{"success":true}',
                     200,

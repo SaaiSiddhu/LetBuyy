@@ -120,14 +120,41 @@ test('mobile Turnstile verification uses Cloudflare siteverify response', async 
   const result = await verifyMobileTurnstileToken({
     token: 'turnstile-response-token',
     remoteIp: '203.0.113.10',
-    env: { TURNSTILE_SECRET_KEY: 'secret_test_key' },
+    env: {
+      TURNSTILE_SECRET_KEY: 'secret_test_key',
+      INTERNAL_API_SECRET: 'internal-proof-secret',
+    },
     fetcher,
   });
 
   assert.equal(result.ok, true);
   assert.equal(result.status, 'verified');
+  assert.match(result.proofToken || '', /^lb-mobile-turnstile-v1\./);
+  assert.ok(result.proofExpiresAt);
   assert.equal(requests.length, 1);
   assert.match(requests[0].url, /challenges\.cloudflare\.com\/turnstile\/v0\/siteverify/);
   assert.match(requests[0].body, /response=turnstile-response-token/);
   assert.match(requests[0].body, /remoteip=203\.0\.113\.10/);
+});
+
+test('mobile Turnstile verification fails closed when proof signing secret is absent', async () => {
+  const fetcher: typeof fetch = async () => new Response(JSON.stringify({ success: true }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  const result = await verifyMobileTurnstileToken({
+    token: 'turnstile-response-token',
+    env: {
+      TURNSTILE_SECRET_KEY: 'secret_test_key',
+      INTERNAL_API_SECRET: 'SKIP_NEEDS_HUMAN_INTERNAL_SECRET',
+    },
+    fetcher,
+  });
+
+  assert.deepEqual(result, {
+    ok: false,
+    status: 'unavailable',
+    code: 'TURNSTILE_PROOF_SECRET_NOT_CONFIGURED',
+  });
 });

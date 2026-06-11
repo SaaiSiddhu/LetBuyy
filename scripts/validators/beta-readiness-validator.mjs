@@ -27,9 +27,13 @@ function assertRecordedCapabilityGap(gapId, skipId, message) {
 const mobileBff = readFile('services/mobile-bff/src/index.ts');
 for (const fragment of [
   'TURNSTILE_SECRET_KEY?: string',
+  'INTERNAL_API_SECRET?: string',
   'verifyMobileTurnstileToken',
+  'createMobileTurnstileProof',
   "TURNSTILE_NOT_CONFIGURED",
+  "TURNSTILE_PROOF_SECRET_NOT_CONFIGURED",
   "TURNSTILE_PROVIDER_UNAVAILABLE",
+  "proof_token",
   "app.post('/v1/auth/mobile/turnstile/verify'",
 ]) {
   reporter.assert(mobileBff.includes(fragment), `mobile BFF Turnstile verifier missing: ${fragment}`);
@@ -39,6 +43,8 @@ const mobileBffTest = readFile('services/mobile-bff/test/session-token.test.ts')
 for (const fragment of [
   'mobile Turnstile verification fails closed without a configured secret',
   'mobile Turnstile verification uses Cloudflare siteverify response',
+  'mobile Turnstile verification fails closed when proof signing secret is absent',
+  'lb-mobile-turnstile-v1',
 ]) {
   reporter.assert(mobileBffTest.includes(fragment), `mobile BFF test missing: ${fragment}`);
 }
@@ -46,20 +52,21 @@ for (const fragment of [
 const mobileAuthService = readFile('apps/mobile/merchant-app/lib/services/store_auth_service.dart');
 for (const fragment of [
   'mobileBffBaseUrl',
-  '_verifyTurnstileWithBff(token)',
+  '_exchangeTurnstileWithBff(token)',
   '/auth/mobile/turnstile/verify',
+  'proof_token',
 ]) {
   reporter.assert(mobileAuthService.includes(fragment), `merchant mobile Turnstile BFF flow missing: ${fragment}`);
 }
-if (
-  mobileAuthService.includes('_verifyTurnstileWithBff(token)') &&
-  mobileAuthService.includes("'turnstileToken': await _requireTurnstileToken(turnstileToken)")
-) {
-  assertRecordedCapabilityGap(
-    'CAP-C09',
-    'SKIP-CAP-MOBILE-TURNSTILE-DOUBLE-SPEND',
-    'Mobile Turnstile double-spend residue must remain recorded while BFF preverify and identity login consume the same token',
-  );
+reporter.assert(!mobileAuthService.includes('_verifyTurnstileWithBff(token)'), 'merchant mobile Turnstile flow must exchange the BFF verification for a proof token');
+reporter.assert(mobileAuthService.includes('return await _exchangeTurnstileWithBff(token) ?? token'), 'merchant mobile Turnstile flow must submit the BFF proof when the BFF is configured');
+const identityTurnstile = readFile('apps/identity-platform/src/lib/turnstile.ts');
+for (const fragment of [
+  'verifyMobileTurnstileProof',
+  'lb-mobile-turnstile-v1',
+  'verifyLetbuyySignedPayload',
+]) {
+  reporter.assert(identityTurnstile.includes(fragment), `identity Turnstile proof verifier missing: ${fragment}`);
 }
 assertIncludes(
   'apps/mobile/merchant-app/lib/main.dart',
@@ -68,8 +75,8 @@ assertIncludes(
 );
 assertIncludes(
   'apps/mobile/merchant-app/test/mobile_services_test.dart',
-  'verifies Turnstile with the mobile BFF before password login',
-  'merchant mobile tests must prove BFF Turnstile verification before login',
+  'lb-mobile-turnstile-v1.proof.signature',
+  'merchant mobile tests must prove BFF Turnstile proof is sent to identity instead of the consumed provider token',
 );
 
 for (const file of [

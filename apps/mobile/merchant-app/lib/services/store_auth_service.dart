@@ -376,20 +376,27 @@ class StoreAuthService extends ChangeNotifier {
         'Verification is temporarily unavailable. Please try again later.',
       );
     }
-    await _verifyTurnstileWithBff(token);
-    return token;
+    return await _exchangeTurnstileWithBff(token) ?? token;
   }
 
-  Future<void> _verifyTurnstileWithBff(String token) async {
+  Future<String?> _exchangeTurnstileWithBff(String token) async {
     final baseUrl = _mobileBffBaseUrl;
-    if (baseUrl == null || baseUrl.isEmpty) return;
+    if (baseUrl == null || baseUrl.isEmpty) return null;
 
     final response = await _http.post(
       Uri.parse('$baseUrl/auth/mobile/turnstile/verify'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'token': token}),
     );
-    if (response.statusCode >= 200 && response.statusCode < 300) return;
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final payload = _decodeBody(response);
+      final verification = payload['verification'];
+      final proofToken = verification is Map<String, dynamic>
+          ? verification['proof_token']?.toString().trim()
+          : null;
+      if (proofToken != null && proofToken.isNotEmpty) return proofToken;
+      throw Exception('Mobile verification proof was not returned');
+    }
     throw Exception(_errorMessage(response, 'Mobile verification failed'));
   }
 
