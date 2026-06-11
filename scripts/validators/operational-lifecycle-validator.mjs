@@ -109,6 +109,20 @@ for (const provider of ["stripe", "razorpay", "paypal", "email", "sms", "queues"
     `Sandbox provider lifecycle must define ${provider}`,
   );
 }
+reporter.assert(
+  !JSON.stringify(envLifecycle).includes("test mode"),
+  "Environment lifecycle must use sandbox provider terminology instead of test mode",
+);
+reporter.assert(
+  !JSON.stringify(rolloutLifecycle).includes("test mode"),
+  "Rollout lifecycle must use sandbox provider terminology instead of test mode",
+);
+for (const provider of ["stripe", "razorpay"]) {
+  reporter.assert(
+    rolloutLifecycle?.sandboxProviders?.[provider]?.includes("sandbox mode"),
+    `Sandbox provider lifecycle must label ${provider} as sandbox mode`,
+  );
+}
 
 const certificationPolicy = readJson("config/runtime/operational-certification-policy.json");
 reporter.assert(certificationPolicy?.hardFail === true, "Operational certification policy must hard-fail");

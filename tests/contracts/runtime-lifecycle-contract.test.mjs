@@ -10,7 +10,7 @@ test("environment lifecycle preserves promotion order and isolation", () => {
   assert.ok(environmentLifecycle.isolationRules.mustSeparate.includes("secrets"));
   assert.ok(environmentLifecycle.isolationRules.mustSeparate.includes("queues"));
   assert.ok(environmentLifecycle.isolationRules.mustSeparate.includes("telemetry backends"));
-  assert.ok(environmentLifecycle.isolationRules.forbidden.includes("marking live certification without fresh provider execution evidence"));
+  assert.ok(environmentLifecycle.isolationRules.forbidden.includes("marking live certification without fresh credential-gated production evidence"));
 });
 
 test("production lifecycle requires live evidence and execute-mode provider isolation", () => {
@@ -27,4 +27,14 @@ test("rollout lifecycle defines canary, blue-green, shadow traffic, and kill swi
   assert.ok(rolloutLifecycle.blueGreen.requiredChecks.includes("rollback-switchback"));
   assert.equal(rolloutLifecycle.featureFlags.instantDisablement, "kill_switch overrides all rollout rules");
   assert.equal(rolloutLifecycle.shadowTraffic.sideEffectPolicy.includes("non-mutating"), true);
+});
+
+test("runtime lifecycle uses sandbox provider terminology outside production execute mode", () => {
+  const staging = environmentLifecycle.environments.find((environment) => environment.name === "staging");
+  assert.ok(staging.providers.payments.includes("Stripe sandbox mode"));
+  assert.ok(staging.providers.payments.includes("Razorpay sandbox mode"));
+  assert.equal(rolloutLifecycle.sandboxProviders.stripe.includes("sandbox mode"), true);
+  assert.equal(rolloutLifecycle.sandboxProviders.razorpay.includes("sandbox mode"), true);
+  assert.equal(JSON.stringify(environmentLifecycle).includes("test mode"), false);
+  assert.equal(JSON.stringify(rolloutLifecycle).includes("test mode"), false);
 });

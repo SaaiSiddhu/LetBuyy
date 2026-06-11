@@ -53,8 +53,8 @@
       },
       "providers": {
         "payments": [
-          "Stripe test mode",
-          "Razorpay test mode",
+          "Stripe sandbox mode",
+          "Razorpay sandbox mode",
           "PayPal sandbox"
         ],
         "email": "staging sender domain",

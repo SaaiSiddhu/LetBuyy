@@ -77,8 +77,8 @@
     ]
   },
   "sandboxProviders": {
-    "stripe": "test mode only outside production execute mode",
-    "razorpay": "test mode only outside production execute mode",
+    "stripe": "sandbox mode only outside production execute mode",
+    "razorpay": "sandbox mode only outside production execute mode",
     "paypal": "sandbox only outside production execute mode",
     "email": "isolated sender domains outside production execute mode",
     "sms": "sandbox gateway outside production execute mode",
