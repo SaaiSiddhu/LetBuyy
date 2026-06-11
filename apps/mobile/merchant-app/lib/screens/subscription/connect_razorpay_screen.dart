@@ -308,7 +308,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
           const SizedBox(height: 8),
           Text(
             _paymentConfig?.testMode == true
-                ? 'Test Mode Active'
+                ? 'Sandbox Mode Active'
                 : 'Live Mode Active',
             style: TextStyle(color: colors.textSecondary),
           ),
@@ -405,7 +405,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
           ),
           const SizedBox(height: 16),
 
-          // Test Mode Toggle
+          // Sandbox mode toggle; request field remains test_mode for API compatibility.
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -419,14 +419,14 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Test Mode',
+                        'Sandbox Mode',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: colors.textPrimary,
                         ),
                       ),
                       Text(
-                        'Use test credentials for development',
+                        'Use sandbox credentials for development',
                         style: TextStyle(
                           fontSize: 12,
                           color: colors.textSecondary,

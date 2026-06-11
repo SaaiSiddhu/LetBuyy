@@ -59,6 +59,7 @@ const billingCore = readFile("packages/billing-core/src/index.ts");
 const billingRoute = readFile("services/api-gateway/src/routes/billing.ts");
 const providerModeBadge = readFile("apps/merchant-control-plane/src/components/ProviderModeBadge.tsx");
 const mobileProviderModeBadge = readFile("apps/mobile/merchant-app/lib/widgets/shared/provider_mode_badge.dart");
+const mobileRazorpayConnectScreen = readFile("apps/mobile/merchant-app/lib/screens/subscription/connect_razorpay_screen.dart");
 const paymentsPackage = readFile("packages/payments/src/index.ts");
 const paymentsRoute = readFile("services/api-gateway/src/routes/payments.ts");
 const paymentSupport = readFile("services/api-gateway/src/lib/payment-route-support.ts");
@@ -192,6 +193,11 @@ reporter.assert(billingRoute.includes("sandbox_autopay"), "billing route must pe
 reporter.assert(!providerModeBadge.includes("'mock'"), "web ProviderModeBadge must not expose mock as a valid provider mode");
 reporter.assert(!mobileProviderModeBadge.includes("ProviderMode.mock"), "Flutter ProviderModeBadge must not expose mock as a valid provider mode");
 reporter.assert(!mobileProviderModeBadge.includes("'test' => ProviderMode.sandbox"), "Flutter ProviderModeBadge must not accept test as a provider mode alias");
+reporter.assert(!mobileRazorpayConnectScreen.includes("'Test Mode'"), "mobile Razorpay connect screen must use sandbox mode copy");
+reporter.assert(!mobileRazorpayConnectScreen.includes("Test Mode Active"), "mobile Razorpay connect screen must use sandbox active-state copy");
+reporter.assert(!mobileRazorpayConnectScreen.includes("Use test credentials for development"), "mobile Razorpay connect screen must not use test-credentials copy");
+reporter.assert(mobileRazorpayConnectScreen.includes("'Sandbox Mode'"), "mobile Razorpay connect screen must expose sandbox mode copy");
+reporter.assert(mobileRazorpayConnectScreen.includes("Sandbox Mode Active"), "mobile Razorpay connect screen must expose sandbox active-state copy");
 for (const fragment of [
   "PaymentProviderMode = 'mock'",
   "buildMockPaymentSessionPlan",
