@@ -9,6 +9,7 @@ const reporter = createReporter("RLS FORCE coverage validator");
 
 const registry = readFile("services/api-gateway/src/tenant/tenant-tables.registry.ts");
 const d4Migration = readFile("database/supabase/migrations/164_d4_tenant_role_guc.sql");
+const capC11RedTeam = readFile("tests/executable/tenant-redteam-postgres.test.mjs");
 reporter.assert(registry.includes("TENANT_TABLES"), "tenant table registry must exist before RLS FORCE coverage can be enforced");
 reporter.assert(
   /FORCE\s+ROW\s+LEVEL\s+SECURITY/i.test(readFile("database/supabase/migrations/155_storefront_session_analytics.sql")),
@@ -20,6 +21,14 @@ reporter.assert(
     && /TO app_tenant USING/i.test(d4Migration)
     && /public\.current_site_id\(\)/i.test(d4Migration),
   "D4 must install app_tenant FORCE RLS policies that read the tenant GUC",
+);
+reporter.assert(
+  capC11RedTeam.includes("RT_CASES")
+    && capC11RedTeam.includes("assertRawRestParity")
+    && capC11RedTeam.includes("app_tenant")
+    && capC11RedTeam.includes("raw REST authenticated role must deny forged tenant row")
+    && capC11RedTeam.includes("RT-9 authenticated users must not be able to self-add super admins"),
+  "CAP-C11 must keep an executable RT-1 through RT-9 app_tenant/raw-REST red-team proof",
 );
 
 const offenders = [];

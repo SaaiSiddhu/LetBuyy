@@ -1,8 +1,8 @@
 # LetBuyy Final Convergence Completion Report
 
 **Date:** 2026-06-11
-**Scope:** Repository-side B/C/D/E implementation and certification after Phase A live G4 was recorded as human-owned, plus repo-side Phase F CAP-C03 through CAP-C07 and CAP-C09/C10 money/security/identity/mobile/alerting capability implementation.
-**Pre-report HEAD:** `16748a9b` on `stepup/main`; local `main..stepup/main = 0`.
+**Scope:** Repository-side B/C/D/E implementation and certification after Phase A live G4 was recorded as human-owned, plus repo-side Phase F CAP-C03 through CAP-C07 and CAP-C09/C10/C11 money/security/identity/mobile/alerting/tenant-isolation capability implementation.
+**Pre-report HEAD:** `0f72fbe3` on `stepup/main`; local `main..stepup/main = 0`.
 
 ## Repository Answer
 
@@ -27,6 +27,7 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | F CAP-C07 | Identity JWKS/revocation hardening is repo-side complete: JWKS publication serves only configured public ES256/EdDSA keys and fails closed without keys, fake disabled JWKS coordinates are validator-banned, and merchant logout/logout-everywhere preserves durable `revoked_at` evidence instead of deleting session rows. Live OIDC client registration, grant smoke, key rotation evidence, and final HS256 drain remain human-owned. |
 | F CAP-C09 | Mobile Turnstile no longer double-consumes one provider token: mobile-bff verifies Cloudflare once, signs a short-lived `lb-mobile-turnstile-v1` proof, Flutter sends that proof to identity, and identity verifies it locally before web direct-verification fallback. Live Turnstile secret provisioning and production mobile smoke remain human-owned. |
 | F CAP-C10 | API runtime failures now emit redacted `letbuyy.alert.runtime.error` metrics and enqueue `incident.page.dry_run` jobs through the existing runtime queue/queue-worker incident command path. Mobile crash reporting already stores sanitized local reports and uses Sentry only with a real DSN. Live DSN/provider/on-call delivery drills remain human-owned. |
+| F CAP-C11 | Tenant isolation now has a repository-side executable Postgres red-team proof for RT-1 through RT-9: `app_tenant` positive controls pass, missing-GUC and cross-tenant reads fail closed, raw-REST authenticated visibility matches app-tenant owner scope, anon does not inherit service-role order access, and authenticated users cannot self-add super admins. Live production-shaped DB probes remain human-owned. |
 
 ## Validation Evidence
 
@@ -58,6 +59,11 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | `node scripts/validators/beta-readiness-validator.mjs` | PASS after CAP-C09; mutation-proved old direct preverify marker fails |
 | `npx tsx --test services/api-gateway/src/__tests__/observability.test.ts` | PASS, 8/8 including CAP-C10 runtime alert planning and redaction |
 | `node scripts/validators/beta-readiness-validator.mjs` | PASS after CAP-C10; mutation-proved missing alert enqueue hook fails |
+| `node scripts/governance/foundation-ephemeral-postgres.mjs start` | PASS, Docker-backed executable Postgres fixture ready for CAP-C11 |
+| `node --test tests/executable/tenant-redteam-postgres.test.mjs` | PASS, RT-1 through RT-9 executable tenant red-team proof |
+| `node scripts/validators/rls-force-coverage-validator.mjs` | PASS after CAP-C11; now requires the executable red-team proof |
+| `pnpm run test:foundation:wave2` | PASS after CAP-C11; tenant registry tests, executable red-team suite, and tenant-isolation validator run together |
+| `node scripts/validate-governance.mjs --lane=gate` | PASS after CAP-C11, 105 validators |
 
 Mutation proofs added during final certification:
 
@@ -65,6 +71,7 @@ Mutation proofs added during final certification:
 |---|---|
 | Reintroduced `future activation requires deployment config and governance approval` into a reserved service manifest. | `whole-repo-end-state-validator` failed on reserved manifest forward-activation language. |
 | Repointed an active checkout test back to `infrastructure/dns/letbuyy_com.tf`. | `whole-repo-end-state-validator` failed on the retired DNS overlay reference. |
+| Renamed the validator-required `assertRawRestParity` CAP-C11 test marker. | `rls-force-coverage-validator` failed on the missing executable RT-1 through RT-9 app-tenant/raw-REST proof. |
 
 ## Remaining Human-Live Seams
 
@@ -95,6 +102,7 @@ Provider/capability blockers remain in the skip and capability ledgers for live 
 | Identity convergence | Merchant session issuance remains identity-platform-owned; CAP-C07 configured-public-JWKS publication and durable session revocation are repo-side done | Live identity keys, OIDC clients/grants, JWKS rotation evidence, and final HS256 drain telemetry remain human/live seams. |
 | Mobile readiness | CAP-C09 Turnstile proof exchange is repo-side done and guarded by beta-readiness validation | Live Cloudflare Turnstile secret provisioning and production mobile login smoke remain human/live seams. |
 | Alerting readiness | CAP-C10 API runtime alert metrics and queue-worker dry-run incident routing are repo-side done and guarded by beta-readiness validation | Live DSN/provider credentials, active on-call routing, mobile provider delivery, and production drill evidence remain human/live seams. |
+| Tenant isolation readiness | CAP-C11 executable RT-1 through RT-9 Postgres proof is repo-side done and guarded by RLS FORCE validation | Live production-shaped database role probes, migration-state evidence, and queue-envelope secret proof remain human/live seams. |
 | Theme convergence | Repository C0-C3 done | C4 production canary, ARB flip, and C7 React deletion proof remain blocked by 4x100% parity evidence. |
 
 ## Completion Statement
