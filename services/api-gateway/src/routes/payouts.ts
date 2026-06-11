@@ -573,12 +573,13 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
         return c.json({ success: false, error: { code: 'PAYOUT_NOT_SETTLEABLE', message: 'This payout cannot be settled.' } }, 409);
     }
 
-    const stepUp = verifySensitiveActionStepUp({
+    const stepUp = await verifySensitiveActionStepUp({
         action: 'payout.release',
         actorId: tenant.userId,
         siteId: tenant.siteId,
         token: c.req.header('X-Step-Up-Token'),
         verifiedAt: c.req.header('X-Step-Up-Verified-At'),
+        signingSecret: c.env.STEP_UP_SIGNING_SECRET,
     });
     if (!stepUp.ok) {
         return c.json(stepUpErrorBody(stepUp), 428);

@@ -81,6 +81,7 @@ jobs:
           echo "${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --env staging
           echo "${{ secrets.STAGING_AUTH_SECRET }}" | pnpm exec wrangler secret put AUTH_SECRET --env staging
           echo "${{ secrets.STAGING_CUSTOMER_SESSION_SECRET }}" | pnpm exec wrangler secret put CUSTOMER_SESSION_SECRET --env staging
+          echo "${{ secrets.STAGING_STEP_UP_SIGNING_SECRET }}" | pnpm exec wrangler secret put STEP_UP_SIGNING_SECRET --env staging
           echo "${{ secrets.STAGING_CSRF_SECRET }}" | pnpm exec wrangler secret put CSRF_SECRET --env staging
           echo "${{ secrets.STAGING_IDENTITY_PUBLIC_JWKS }}" | pnpm exec wrangler secret put LETBUYY_IDENTITY_PUBLIC_JWKS --env staging
           echo "${{ secrets.STAGING_TURNSTILE_SECRET_KEY }}" | pnpm exec wrangler secret put TURNSTILE_SECRET_KEY --env staging

@@ -4,11 +4,12 @@ import { z } from 'zod';
 import type { Env } from '../index';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { resolveCustomUser } from '../lib/auth-user';
-import { KmsHumanRequiredError, encryptFieldWithKms, resolveKmsProviderFromEnv, sha256Hex } from '../lib/crypto';
+import { KmsHumanRequiredError, decryptTextAesGcm, encryptFieldWithKms, resolveKmsProviderFromEnv, sha256Hex } from '../lib/crypto';
 import { createManualDataSubjectRequest, updateDataSubjectRequest } from '../lib/internal-compliance';
-import { stepUpErrorBody, verifySensitiveActionStepUp } from '../lib/security-controls';
+import { signSensitiveActionStepUp, stepUpErrorBody, verifySensitiveActionStepUp } from '../lib/security-controls';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
+import { verifyTotpCode } from '../lib/totp';
 import { validate } from '../middleware/validation';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -24,14 +25,49 @@ const StepUpChallengeSchema = z.object({
     store_id: z.string().uuid(),
     action: z.enum(['refund.approve', 'payout.release', 'customer.dsr.export', 'customer.dsr.erase']),
     idempotency_key: z.string().min(8).max(200),
+    factor_id: z.string().uuid(),
+    code: z.string().min(6).max(12),
 });
 
 type DsrInput = z.infer<typeof DsrSchema>;
 type StepUpChallengeInput = z.infer<typeof StepUpChallengeSchema>;
 type JsonRecord = Record<string, unknown>;
 
+interface StepUpFactorRow extends JsonRecord {
+    id: string;
+    custom_user_id: string;
+    factor_type: 'totp' | 'passkey';
+    status: 'pending' | 'active' | 'disabled';
+    secret_ciphertext: string;
+}
+
 function lowerEmail(value: string): string {
     return value.trim().toLowerCase();
+}
+
+function configuredSecret(value: string | undefined): string | null {
+    if (!value || value.startsWith('SKIP_NEEDS_HUMAN_') || value.includes('replace-with')) return null;
+    return value;
+}
+
+async function loadActiveStepUpFactor(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        customUserId: string;
+        factorId: string;
+    },
+): Promise<StepUpFactorRow | null> {
+    const { data, error } = await db
+        .from('merchant_2fa_factors')
+        .select('id, custom_user_id, factor_type, status, secret_ciphertext')
+        .eq('id', input.factorId)
+        .eq('custom_user_id', input.customUserId)
+        .eq('factor_type', 'totp')
+        .eq('status', 'active')
+        .is('deleted_at', null)
+        .maybeSingle();
+    if (error) throw new Error(`Step-up factor lookup failed: ${error.message}`);
+    return (data as unknown as StepUpFactorRow | null) || null;
 }
 
 async function emitCustomerDsrEvent(
@@ -125,25 +161,74 @@ router.post('/step-up/challenges', validate('json', StepUpChallengeSchema), asyn
     const auth = c.get('auth');
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOwnedSite(c, body.store_id);
-    const token = `recorded-gap-step-up-${crypto.randomUUID()}`;
-    const verifiedAt = new Date().toISOString();
-    const { data, error } = await db
-        .from('step_up_challenges')
-        .upsert({
-            site_id: tenant.siteId,
-            actor_id: auth.user.id,
-            action: body.action,
-            status: 'verified',
-            challenge_token_hash: await sha256Hex(token),
-            verified_at: verifiedAt,
-            idempotency_key: body.idempotency_key,
-            metadata: { mode: 'recorded_gap' },
-            created_by: tenant.userId,
-            updated_by: tenant.userId,
-        }, { onConflict: 'site_id,idempotency_key' })
-        .select('id, site_id, action, status, verified_at')
-        .single();
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) return c.json({ error: { code: 'STEP_UP_PROFILE_REQUIRED', message: 'Merchant profile is required for step-up verification.' } }, 403);
 
+    const signingSecret = configuredSecret(c.env.STEP_UP_SIGNING_SECRET);
+    if (!signingSecret) {
+        return c.json({ error: { code: 'STEP_UP_SIGNING_SECRET_REQUIRED', message: 'Step-up signing is not configured for this environment.' } }, 503);
+    }
+    const totpEncryptionSecret = configuredSecret(c.env.TOTP_ENCRYPTION_KEY);
+    if (!totpEncryptionSecret) {
+        return c.json({ error: { code: 'TWO_FACTOR_UNAVAILABLE', message: 'Two-factor verification is not configured for this environment.' } }, 503);
+    }
+
+    const factor = await loadActiveStepUpFactor(db, { customUserId: customUser.id, factorId: body.factor_id });
+    if (!factor) return c.json({ error: { code: 'STEP_UP_FACTOR_REQUIRED', message: 'An active TOTP factor is required for step-up verification.' } }, 428);
+    const totpSecret = await decryptTextAesGcm(totpEncryptionSecret, factor.secret_ciphertext);
+    const accepted = await verifyTotpCode({ secret: totpSecret, code: body.code });
+    if (!accepted) return c.json({ error: { code: 'STEP_UP_CODE_INVALID', message: 'Step-up verification code is invalid.' } }, 400);
+
+    const existing = await db
+        .from('step_up_challenges')
+        .select('id')
+        .eq('site_id', tenant.siteId)
+        .eq('idempotency_key', body.idempotency_key)
+        .is('deleted_at', null)
+        .maybeSingle();
+    if (existing.error) throw new Error(`Step-up challenge lookup failed: ${existing.error.message}`);
+
+    const challengeId = String((existing.data as { id?: string } | null)?.id || crypto.randomUUID());
+    const signed = await signSensitiveActionStepUp({
+        action: body.action,
+        actorId: customUser.id,
+        siteId: tenant.siteId,
+        challengeId,
+        signingSecret,
+    });
+    const values = {
+        site_id: tenant.siteId,
+        actor_id: customUser.id,
+        action: body.action,
+        status: 'verified',
+        challenge_token_hash: await sha256Hex(signed.token),
+        verified_at: signed.verifiedAt,
+        expires_at: signed.expiresAt,
+        idempotency_key: body.idempotency_key,
+        metadata: {
+            mode: 'crypto',
+            method: 'totp',
+            step_up_crypto: 'hmac-sha256',
+            factor_id: factor.id,
+            jti: signed.jti,
+        },
+        created_by: tenant.userId,
+        updated_by: tenant.userId,
+    };
+    const result = existing.data
+        ? await db
+            .from('step_up_challenges')
+            .update(values)
+            .eq('id', challengeId)
+            .select('id, site_id, action, status, verified_at, expires_at')
+            .single()
+        : await db
+            .from('step_up_challenges')
+            .insert({ id: challengeId, ...values })
+            .select('id, site_id, action, status, verified_at, expires_at')
+            .single();
+
+    const { data, error } = result;
     if (error || !data) throw new Error(`Step-up challenge create failed: ${error?.message || 'unknown error'}`);
     await new EventExecutionAdapter(db).emitDomainEvent({
         storeId: tenant.siteId,
@@ -151,12 +236,17 @@ router.post('/step-up/challenges', validate('json', StepUpChallengeSchema), asyn
         aggregateId: data.id,
         eventType: 'auth.stepup',
         idempotencyKey: `auth.stepup:${data.id}`,
-        actorId: auth.user.id,
+        actorId: customUser.id,
         requestId: c.req.header('X-Request-ID') || null,
-        payload: { site_id: tenant.siteId, action: body.action, status: 'verified' },
+        payload: { site_id: tenant.siteId, action: body.action, status: 'verified', method: 'totp' },
     });
 
-    return c.json(success({ challenge: data, step_up_token: token, verified_at: verifiedAt }), 201);
+    return c.json(success({
+        challenge: data,
+        step_up_token: signed.token,
+        verified_at: signed.verifiedAt,
+        expires_at: signed.expiresAt,
+    }), 201);
 });
 
 router.post('/dsr/export', validate('json', DsrSchema), async (c) => {
@@ -224,12 +314,13 @@ router.post('/dsr/erase', validate('json', DsrSchema), async (c) => {
     const tenant = await resolveTenantContextForOwnedSite(c, body.store_id);
     const customUser = await resolveCustomUser(db, auth.user);
     const email = lowerEmail(body.email);
-    const stepUp = verifySensitiveActionStepUp({
+    const stepUp = await verifySensitiveActionStepUp({
         action: 'customer.dsr.erase',
         actorId: customUser?.id || auth.user.id,
         siteId: tenant.siteId,
         token: c.req.header('X-Step-Up-Token'),
         verifiedAt: c.req.header('X-Step-Up-Verified-At'),
+        signingSecret: c.env.STEP_UP_SIGNING_SECRET,
     });
     if (!stepUp.ok) return c.json(stepUpErrorBody(stepUp), 428);
 

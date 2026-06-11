@@ -16,7 +16,7 @@ function repositorySource(path: string): string {
     return readFileSync(join(repositoryRoot, path), 'utf8');
 }
 
-test('Task 015 security route is mounted with DSR export/erase and recorded step-up challenge APIs', () => {
+test('Task 015 security route is mounted with DSR export/erase and cryptographic step-up challenge APIs', () => {
     const indexSource = source('index.ts');
     const securityRoute = source('routes/security.ts');
 
@@ -24,6 +24,11 @@ test('Task 015 security route is mounted with DSR export/erase and recorded step
     assert.match(indexSource, /api\.route\('\/security', securityRouter\)/);
     assert.match(indexSource, /LETBUYY_KMS_MODE\?: 'sandbox' \| 'live'/);
     assert.match(securityRoute, /router\.post\('\/step-up\/challenges'/);
+    assert.match(securityRoute, /factor_id/);
+    assert.match(securityRoute, /verifyTotpCode/);
+    assert.match(securityRoute, /signSensitiveActionStepUp/);
+    assert.match(securityRoute, /STEP_UP_SIGNING_SECRET_REQUIRED/);
+    assert.doesNotMatch(securityRoute, /recorded-gap-step-up-/);
     assert.match(securityRoute, /router\.post\('\/dsr\/export'/);
     assert.match(securityRoute, /router\.post\('\/dsr\/erase'/);
     assert.match(securityRoute, /resolveTenantContextForOwnedSite/);
@@ -39,11 +44,16 @@ test('Task 015 payout and refund sensitive actions require shared step-up eviden
     const paymentsRoute = source('routes/payments.ts');
     const payoutsRoute = source('routes/payouts.ts');
 
-    assert.match(securityControls, /export function verifySensitiveActionStepUp/);
+    assert.match(securityControls, /export async function verifySensitiveActionStepUp/);
+    assert.match(securityControls, /export async function signSensitiveActionStepUp/);
+    assert.match(securityControls, /HMAC/);
+    assert.match(securityControls, /STEP_UP_SIGNING_SECRET_REQUIRED/);
     assert.match(securityControls, /STEP_UP_WINDOW_MS = 10 \* 60 \* 1000/);
-    assert.match(paymentsRoute, /verifySensitiveActionStepUp\(\{[\s\S]*action: 'refund\.approve'/);
+    assert.match(paymentsRoute, /await verifySensitiveActionStepUp\(\{[\s\S]*action: 'refund\.approve'/);
+    assert.match(paymentsRoute, /signingSecret: c\.env\.STEP_UP_SIGNING_SECRET/);
     assert.match(paymentsRoute, /STEP_UP_REQUIRED|stepUpErrorBody/);
-    assert.match(payoutsRoute, /verifySensitiveActionStepUp\(\{[\s\S]*action: 'payout\.release'/);
+    assert.match(payoutsRoute, /await verifySensitiveActionStepUp\(\{[\s\S]*action: 'payout\.release'/);
+    assert.match(payoutsRoute, /signingSecret: c\.env\.STEP_UP_SIGNING_SECRET/);
     assert.match(payoutsRoute, /STEP_UP_REQUIRED|stepUpErrorBody/);
 });
 

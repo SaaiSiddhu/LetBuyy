@@ -65,6 +65,7 @@ jobs:
           HAS_PRODUCTION_AUTH_SECRET: ${{ secrets.PRODUCTION_AUTH_SECRET != '' }}
           HAS_PRODUCTION_CSRF_SECRET: ${{ secrets.PRODUCTION_CSRF_SECRET != '' }}
           HAS_PRODUCTION_CUSTOMER_SESSION_SECRET: ${{ secrets.PRODUCTION_CUSTOMER_SESSION_SECRET != '' }}
+          HAS_PRODUCTION_STEP_UP_SIGNING_SECRET: ${{ secrets.PRODUCTION_STEP_UP_SIGNING_SECRET != '' }}
           HAS_PRODUCTION_IDENTITY_PRIVATE_JWK: ${{ secrets.PRODUCTION_IDENTITY_PRIVATE_JWK != '' }}
           HAS_PRODUCTION_IDENTITY_PUBLIC_JWKS: ${{ secrets.PRODUCTION_IDENTITY_PUBLIC_JWKS != '' }}
           HAS_PRODUCTION_CHECKOUT_SIGNING_SECRET: ${{ secrets.PRODUCTION_CHECKOUT_SIGNING_SECRET != '' }}
@@ -99,6 +100,7 @@ jobs:
           [[ "${HAS_PRODUCTION_AUTH_SECRET}" == "true" ]] || missing+=("PRODUCTION_AUTH_SECRET")
           [[ "${HAS_PRODUCTION_CSRF_SECRET}" == "true" ]] || missing+=("PRODUCTION_CSRF_SECRET")
           [[ "${HAS_PRODUCTION_CUSTOMER_SESSION_SECRET}" == "true" ]] || missing+=("PRODUCTION_CUSTOMER_SESSION_SECRET")
+          [[ "${HAS_PRODUCTION_STEP_UP_SIGNING_SECRET}" == "true" ]] || missing+=("PRODUCTION_STEP_UP_SIGNING_SECRET")
           [[ "${HAS_PRODUCTION_IDENTITY_PRIVATE_JWK}" == "true" ]] || missing+=("PRODUCTION_IDENTITY_PRIVATE_JWK")
           [[ "${HAS_PRODUCTION_IDENTITY_PUBLIC_JWKS}" == "true" ]] || missing+=("PRODUCTION_IDENTITY_PUBLIC_JWKS")
           [[ "${HAS_PRODUCTION_CHECKOUT_SIGNING_SECRET}" == "true" ]] || missing+=("PRODUCTION_CHECKOUT_SIGNING_SECRET")
@@ -313,6 +315,7 @@ jobs:
           echo "${{ secrets.PRODUCTION_AUTH_SECRET }}" | pnpm exec wrangler secret put AUTH_SECRET --env production
           echo "${{ secrets.PRODUCTION_CSRF_SECRET }}" | pnpm exec wrangler secret put CSRF_SECRET --env production
           echo "${{ secrets.PRODUCTION_CUSTOMER_SESSION_SECRET }}" | pnpm exec wrangler secret put CUSTOMER_SESSION_SECRET --env production
+          echo "${{ secrets.PRODUCTION_STEP_UP_SIGNING_SECRET }}" | pnpm exec wrangler secret put STEP_UP_SIGNING_SECRET --env production
           echo "${{ secrets.PRODUCTION_IDENTITY_PUBLIC_JWKS }}" | pnpm exec wrangler secret put LETBUYY_IDENTITY_PUBLIC_JWKS --env production
           echo "${{ secrets.PRODUCTION_CHECKOUT_SIGNING_SECRET }}" | pnpm exec wrangler secret put CHECKOUT_SIGNING_SECRET --env production
           echo "${{ secrets.PRODUCTION_TURNSTILE_SECRET_KEY }}" | pnpm exec wrangler secret put TURNSTILE_SECRET_KEY --env production

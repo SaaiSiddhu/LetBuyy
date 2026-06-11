@@ -343,6 +343,9 @@
     "CUSTOMER_SESSION_SECRET": {
       "type": "string"
     },
+    "STEP_UP_SIGNING_SECRET": {
+      "type": "string"
+    },
     "LETBUYY_IDENTITY_ISSUER": {
       "type": "string"
     },

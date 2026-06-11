@@ -488,12 +488,13 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
     }
     const fullyRefunded = cumulativeRefundMinor === payment.amount_minor;
 
-    const stepUp = verifySensitiveActionStepUp({
+    const stepUp = await verifySensitiveActionStepUp({
         action: 'refund.approve',
         actorId: customUser.id,
         siteId: payment.site_id,
         token: c.req.header('X-Step-Up-Token') || (body.metadata?.step_up_token as string | undefined),
         verifiedAt: c.req.header('X-Step-Up-Verified-At') || (body.metadata?.step_up_verified_at as string | undefined),
+        signingSecret: c.env.STEP_UP_SIGNING_SECRET,
     });
     if (!stepUp.ok) {
         return c.json(stepUpErrorBody(stepUp), 428);

@@ -144,6 +144,7 @@ export interface Env {
     AUTH_SECRET?: string;
     CSRF_SECRET?: string;
     CUSTOMER_SESSION_SECRET?: string;
+    STEP_UP_SIGNING_SECRET?: string;
     LETBUYY_IDENTITY_ISSUER?: string;
     LETBUYY_IDENTITY_PUBLIC_JWKS?: string;
     CUSTOMER_PASSWORD_RESET_URL?: string;

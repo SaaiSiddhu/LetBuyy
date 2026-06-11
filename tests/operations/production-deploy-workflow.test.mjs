@@ -44,6 +44,7 @@ test('production deploy workflow fails closed on missing release credentials', (
   assert.match(workflow, /Missing required production release credentials/);
   assert.match(workflow, /PRODUCTION_CUSTOMER_SESSION_SECRET/);
   assert.match(workflow, /PRODUCTION_CHECKOUT_SIGNING_SECRET/);
+  assert.match(workflow, /PRODUCTION_STEP_UP_SIGNING_SECRET/);
   assert.match(workflow, /PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE/);
   assert.doesNotMatch(workflow, /Skip production migrations/);
   assert.doesNotMatch(workflow, /Skip worker deployment/);
@@ -100,6 +101,7 @@ test('worker secrets are written before production Worker deploys', () => {
 
   assert.match(workflow, /wrangler secret put CUSTOMER_SESSION_SECRET --env production/);
   assert.match(workflow, /wrangler secret put CHECKOUT_SIGNING_SECRET --env production/);
+  assert.match(workflow, /wrangler secret put STEP_UP_SIGNING_SECRET --env production/);
   assert.match(workflow, /Set mobile-bff production secrets[\s\S]*?wrangler secret put TURNSTILE_SECRET_KEY --env production[\s\S]*?working-directory: services\/mobile-bff/);
 });
 

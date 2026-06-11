@@ -50,6 +50,7 @@ const workerTemplate = readFile("config/env/templates/worker.env.example");
 const workerSchema = readFile("config/env/schemas/worker.schema.json");
 const requiredWorkerEnvKeys = [
   "CUSTOMER_SESSION_SECRET",
+  "STEP_UP_SIGNING_SECRET",
   "LETBUYY_IDENTITY_ISSUER",
   "LETBUYY_IDENTITY_PUBLIC_JWKS",
   "CUSTOMER_PASSWORD_RESET_URL",
