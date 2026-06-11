@@ -1327,9 +1327,14 @@ export class ThemeExecutionAdapter {
             throw new ConflictError('Theme draft has changed in another session');
         }
 
-        const templateConfig = hasRenderableThemeTemplate(draftRecord?.draft_config)
-            ? mergeThemeIdentity(asRecord(draftRecord?.draft_config), theme)
-            : resolveRenderableThemeTemplateConfig(store.template_config, theme);
+        const suppliedPublishConfig = hasRenderableThemeTemplate(input.template_config)
+            ? asRecord(input.template_config)
+            : null;
+        const templateConfig = suppliedPublishConfig
+            ? mergeThemeIdentity(suppliedPublishConfig, theme)
+            : hasRenderableThemeTemplate(draftRecord?.draft_config)
+                ? mergeThemeIdentity(asRecord(draftRecord?.draft_config), theme)
+                : resolveRenderableThemeTemplateConfig(store.template_config, theme);
         const runtime = await this.validateTemplateConfig(templateConfig, theme);
         const themeInstance = await this.ensureThemeInstance(
             input.store_id,

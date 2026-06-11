@@ -4286,6 +4286,63 @@ void main() {
       },
     );
 
+    test('ThemeService publishes canonical Liquid template config', () async {
+      final api = _FakeApiClient(
+        raw: {
+          '/themes': {
+            'data': [
+              {'id': 'theme_1', 'slug': 'modern', 'name': 'Modern'},
+            ],
+            'current_theme': 'modern',
+          },
+        },
+        json: {
+          '/themes/modern/publish': {'ok': true},
+        },
+      );
+      final service = ThemeService(api: api);
+
+      await service.publish(
+        storeId: 'store_1',
+        themeSlug: 'modern',
+        templateConfig: const {
+          'themeId': 'modern',
+          'sections': {'hero': {}},
+        },
+        liquidBundle: const {
+          'schema_version': '2026-06-liquid-sections',
+          'layout': {
+            'path': 'layout/theme.liquid',
+            'source': '<main>{{ content_for_layout }}</main>',
+          },
+          'sections': <Map<String, dynamic>>[],
+          'templates': <String, dynamic>{},
+        },
+        liquidRenderingCanary: true,
+        baseVersion: 2,
+      );
+
+      expect(api.bodies['/themes/modern/publish'], {
+        'store_id': 'store_1',
+        'template_config': {
+          'themeId': 'modern',
+          'sections': {'hero': {}},
+          'liquidBundle': {
+            'schema_version': '2026-06-liquid-sections',
+            'layout': {
+              'path': 'layout/theme.liquid',
+              'source': '<main>{{ content_for_layout }}</main>',
+            },
+            'sections': <Map<String, dynamic>>[],
+            'templates': <String, dynamic>{},
+          },
+          'liquidRenderingCanary': true,
+        },
+        'base_version': 2,
+        'make_store_live': true,
+      });
+    });
+
     test('ThemeService maps stale editor saves to conflict guidance', () async {
       const conflict = ApiException(
         message: 'Theme draft has changed in another session',

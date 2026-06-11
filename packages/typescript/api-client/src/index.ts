@@ -2790,6 +2790,7 @@ export type SaveThemeDraftInput = {
 export type PublishThemeInput = {
   store_id: string;
   template_key?: string;
+  template_config?: JsonRecord;
   base_version?: number;
   make_store_live?: boolean;
   publish_message?: string;

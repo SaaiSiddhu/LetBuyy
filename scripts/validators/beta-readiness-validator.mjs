@@ -188,10 +188,51 @@ for (const skipId of ['SKIP-W7-MOBILE-TURNSTILE-SECRET', 'SKIP-W7-WHATSAPP-LIVE-
   reporter.assert(skipped.includes(skipId), `SKIPPED_HUMAN_DECISIONS.md missing ${skipId}`);
 }
 if (exists('apps/mobile/merchant-app/lib/widgets/editor/website_preview.dart')) {
+  const merchantEditorPublishRoute = readFile('apps/merchant-control-plane/src/app/api/themes/[themeId]/editor/route.ts');
+  for (const fragment of [
+    'readPublishTemplateConfig',
+    'body.liquidBundle',
+    'body.liquidRenderingCanary',
+    'template_config: templateConfig',
+  ]) {
+    reporter.assert(merchantEditorPublishRoute.includes(fragment), `CAP-C12 merchant editor publish route missing: ${fragment}`);
+  }
+
+  const merchantEditorPage = readFile('apps/merchant-control-plane/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx');
+  for (const fragment of [
+    'const templateConfig = buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)',
+    'templateConfig,',
+  ]) {
+    reporter.assert(merchantEditorPage.includes(fragment), `CAP-C12 merchant editor page publish payload missing: ${fragment}`);
+  }
+
+  const themeExecutionAdapter = readFile('services/api-gateway/src/execution/theme-execution.adapter.ts');
+  for (const fragment of [
+    'const suppliedPublishConfig = hasRenderableThemeTemplate(input.template_config)',
+    'mergeThemeIdentity(suppliedPublishConfig, theme)',
+  ]) {
+    reporter.assert(themeExecutionAdapter.includes(fragment), `CAP-C12 theme execution publish path missing: ${fragment}`);
+  }
+
+  const mobileThemeService = readFile('apps/mobile/merchant-app/lib/services/theme_service.dart');
+  for (const fragment of [
+    'Map<String, dynamic>? templateConfig',
+    'Map<String, dynamic>? liquidBundle',
+    "'template_config': publishConfig",
+  ]) {
+    reporter.assert(mobileThemeService.includes(fragment), `CAP-C12 mobile theme publish service missing: ${fragment}`);
+  }
+
+  const mobileThemeScreen = readFile('apps/mobile/merchant-app/lib/screens/customize/theme_screen.dart');
+  reporter.assert(
+    mobileThemeScreen.includes('_editorPayload?.templateConfig') && mobileThemeScreen.includes('templateConfig: templateConfig'),
+    'CAP-C12 mobile theme screen must pass canonical template config into publish',
+  );
+
   assertRecordedCapabilityGap(
     'CAP-C12',
     'SKIP-CAP-STORE-PUBLISH-PIPELINE',
-    'Residual mobile/editor preview surface must remain recorded until store-publish writes canonical theme runtime state',
+    'Store-publish live certification must remain recorded until production publish/rollback smoke proves canonical theme runtime state',
   );
 }
 assertRecordedCapabilityGap(

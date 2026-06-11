@@ -71,18 +71,38 @@ test('gateway and merchant proxy routes preserve selected template keys', () => 
 });
 
 test('web and mobile editors can save Liquid bundles and canary state through draft config', () => {
+  const themeEngineSource = read(THEME_ENGINE_SOURCE);
+  const apiClientSource = read(API_CLIENT_SOURCE);
+  const editorRouteSource = read(EDITOR_ROUTE_SOURCE);
+  const editorPageSource = read(EDITOR_PAGE_SOURCE);
+  const executionSource = read(THEME_EXECUTION_SOURCE);
   const draftRouteSource = read(DRAFT_ROUTE_SOURCE);
   const mobileThemeServiceSource = read(MOBILE_THEME_SERVICE_SOURCE);
+
+  assert.match(themeEngineSource, /PublishThemeSchema[\s\S]*template_config: z\.record\(z\.string\(\), z\.unknown\(\)\)\.optional\(\)/);
+  assert.match(apiClientSource, /type PublishThemeInput = \{[\s\S]*template_config\?: JsonRecord/);
 
   assert.match(draftRouteSource, /function mergeLiquidDraftConfig/);
   assert.match(draftRouteSource, /body\.liquidBundle/);
   assert.match(draftRouteSource, /body\.liquidRenderingCanary/);
   assert.match(draftRouteSource, /template_config: mergeLiquidDraftConfig\(body, draftConfig\)/);
 
+  assert.match(editorRouteSource, /function readPublishTemplateConfig/);
+  assert.match(editorRouteSource, /body\.liquidBundle/);
+  assert.match(editorRouteSource, /body\.liquidRenderingCanary/);
+  assert.match(editorRouteSource, /template_config: templateConfig/);
+  assert.match(editorPageSource, /const templateConfig = buildDraftConfig\(baseConfig, themeId, editorState, selectedTemplateKey\)/);
+  assert.match(editorPageSource, /body: JSON\.stringify\(\{[\s\S]*templateConfig,/);
+  assert.match(executionSource, /const suppliedPublishConfig = hasRenderableThemeTemplate\(input\.template_config\)/);
+  assert.match(executionSource, /mergeThemeIdentity\(suppliedPublishConfig, theme\)/);
+
   assert.match(mobileThemeServiceSource, /Future<ThemeDraftSaveResult> saveLiquidDraft/);
   assert.match(mobileThemeServiceSource, /required Map<String, dynamic> liquidBundle/);
   assert.match(mobileThemeServiceSource, /'liquidBundle': liquidBundle/);
   assert.match(mobileThemeServiceSource, /'liquidRenderingCanary': liquidRenderingCanary/);
+  assert.match(mobileThemeServiceSource, /Map<String, dynamic>\? templateConfig/);
+  assert.match(mobileThemeServiceSource, /Map<String, dynamic>\? liquidBundle/);
+  assert.match(mobileThemeServiceSource, /'template_config': publishConfig/);
 });
 
 test('theme execution stores and publishes drafts by template key', () => {

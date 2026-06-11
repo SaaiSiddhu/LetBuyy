@@ -16,6 +16,30 @@ function readPositiveInt(value: unknown): number | undefined {
     return Number.isInteger(numeric) && numeric > 0 ? numeric : undefined
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function readPublishTemplateConfig(body: Record<string, unknown>): Record<string, unknown> | undefined {
+    const templateConfig = isRecord(body.templateConfig)
+        ? body.templateConfig
+        : isRecord(body.template_config) ? body.template_config : undefined
+    if (!templateConfig) return undefined
+
+    const liquidBundle = isRecord(body.liquidBundle)
+        ? body.liquidBundle
+        : isRecord(body.liquid_bundle) ? body.liquid_bundle : undefined
+    const liquidRenderingCanary = typeof body.liquidRenderingCanary === 'boolean'
+        ? body.liquidRenderingCanary
+        : typeof body.liquid_rendering_canary === 'boolean' ? body.liquid_rendering_canary : undefined
+
+    return {
+        ...templateConfig,
+        ...(liquidBundle ? { liquidBundle } : {}),
+        ...(typeof liquidRenderingCanary === 'boolean' ? { liquidRenderingCanary } : {}),
+    }
+}
+
 /**
  * GET /api/themes/[themeId]/editor?store_name=xxx&template=product
  *
@@ -86,12 +110,14 @@ export async function PUT(
             )
         }
 
-        const body = await request.json().catch(() => ({}))
+        const rawBody = await request.json().catch(() => ({}))
+        const body = isRecord(rawBody) ? rawBody : {}
         const templateKey = readTemplateKey(body?.templateKey || body?.template_key || queryTemplateKey)
         const baseVersion = readPositiveInt(body?.baseVersion || body?.base_version)
         const publishMessage = typeof body?.publishMessage === 'string'
             ? body.publishMessage
             : typeof body?.publish_message === 'string' ? body.publish_message : undefined
+        const templateConfig = readPublishTemplateConfig(body)
 
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
@@ -100,6 +126,7 @@ export async function PUT(
         const publishPayload = await api.themes.publish(themeId, {
             store_id: resolved.storeId,
             template_key: templateKey,
+            ...(templateConfig ? { template_config: templateConfig } : {}),
             base_version: baseVersion,
             make_store_live: true,
             publish_message: publishMessage,

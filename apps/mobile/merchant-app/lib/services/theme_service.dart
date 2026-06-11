@@ -185,12 +185,25 @@ class ThemeService extends ChangeNotifier {
   Future<void> publish({
     required String storeId,
     required String themeSlug,
+    Map<String, dynamic>? templateConfig,
+    Map<String, dynamic>? liquidBundle,
+    bool? liquidRenderingCanary,
     int? baseVersion,
     bool makeStoreLive = true,
   }) async {
+    final publishConfig = templateConfig == null
+        ? null
+        : <String, dynamic>{
+            ...templateConfig,
+            if (liquidBundle != null) 'liquidBundle': liquidBundle,
+            if (liquidRenderingCanary != null)
+              'liquidRenderingCanary': liquidRenderingCanary,
+          };
+
     try {
       await _api.themes.publish(themeSlug, {
         'store_id': storeId,
+        if (publishConfig != null) 'template_config': publishConfig,
         if (baseVersion != null) 'base_version': baseVersion,
         'make_store_live': makeStoreLive,
       });

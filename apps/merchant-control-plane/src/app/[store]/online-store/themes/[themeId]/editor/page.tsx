@@ -1041,10 +1041,15 @@ function ThemeEditorInner() {
         }
         setIsPublishing(true)
         try {
+            const templateConfig = buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)
             const res = await fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ templateKey: selectedTemplateKey, baseVersion: draftVersion ?? undefined }),
+                body: JSON.stringify({
+                    templateKey: selectedTemplateKey,
+                    templateConfig,
+                    baseVersion: draftVersion ?? undefined,
+                }),
             })
             const payload = await res.json().catch(() => ({}))
             if (!res.ok) {
@@ -1072,7 +1077,7 @@ function ThemeEditorInner() {
         } finally {
             setIsPublishing(false)
         }
-    }, [currentReleaseVersion, draftVersion, editorState, isDirty, isPublishing, loadReleases, notify, selectedTemplate.label, selectedTemplateKey, store, themeId])
+    }, [baseConfig, currentReleaseVersion, draftVersion, editorState, isDirty, isPublishing, loadReleases, notify, selectedTemplate.label, selectedTemplateKey, store, themeId])
 
     const handleTemplateChange = useCallback((nextTemplateKey: string) => {
         const normalized = normalizeTemplateKey(nextTemplateKey)

@@ -28,6 +28,7 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | F CAP-C09 | Mobile Turnstile no longer double-consumes one provider token: mobile-bff verifies Cloudflare once, signs a short-lived `lb-mobile-turnstile-v1` proof, Flutter sends that proof to identity, and identity verifies it locally before web direct-verification fallback. Live Turnstile secret provisioning and production mobile smoke remain human-owned. |
 | F CAP-C10 | API runtime failures now emit redacted `letbuyy.alert.runtime.error` metrics and enqueue `incident.page.dry_run` jobs through the existing runtime queue/queue-worker incident command path. Mobile crash reporting already stores sanitized local reports and uses Sentry only with a real DSN. Live DSN/provider/on-call delivery drills remain human-owned. |
 | F CAP-C11 | Tenant isolation now has a repository-side executable Postgres red-team proof for RT-1 through RT-9: `app_tenant` positive controls pass, missing-GUC and cross-tenant reads fail closed, raw-REST authenticated visibility matches app-tenant owner scope, anon does not inherit service-role order access, and authenticated users cannot self-add super admins. Live production-shaped DB probes remain human-owned. |
+| F CAP-C12 | Store-publish convergence is repo-side done: web and mobile editors publish canonical `template_config` carrying Liquid bundle/canary state, the gateway publish contract accepts that shape, and backend release snapshots prefer the supplied publish config before draft/store fallback. Live publish/rollback/render smoke remains human-owned. |
 
 ## Validation Evidence
 
@@ -64,6 +65,11 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | `node scripts/validators/rls-force-coverage-validator.mjs` | PASS after CAP-C11; now requires the executable red-team proof |
 | `pnpm run test:foundation:wave2` | PASS after CAP-C11; tenant registry tests, executable red-team suite, and tenant-isolation validator run together |
 | `node scripts/validate-governance.mjs --lane=gate` | PASS after CAP-C11, 105 validators |
+| `node --test tests/theme-engine/theme-template-editor.test.mjs` | PASS, 6/6 after CAP-C12 canonical publish assertions |
+| `flutter test test/mobile_services_test.dart --plain-name "ThemeService publishes canonical Liquid template config"` | PASS, focused CAP-C12 mobile publish payload test |
+| `node scripts/validators/beta-readiness-validator.mjs` | PASS after CAP-C12; now requires web/mobile/backend publish fragments |
+| `pnpm --filter @letbuyy/theme-engine typecheck`; `pnpm --filter @letbuyy/api-client typecheck`; `npx tsc --noEmit -p services/api-gateway/tsconfig.json`; `npx tsc --noEmit -p apps/merchant-control-plane/tsconfig.json`; `flutter analyze` | PASS after CAP-C12 |
+| `node scripts/validate-governance.mjs --lane=gate` | PASS after CAP-C12, 105 validators |
 
 Mutation proofs added during final certification:
 
@@ -72,6 +78,7 @@ Mutation proofs added during final certification:
 | Reintroduced `future activation requires deployment config and governance approval` into a reserved service manifest. | `whole-repo-end-state-validator` failed on reserved manifest forward-activation language. |
 | Repointed an active checkout test back to `infrastructure/dns/letbuyy_com.tf`. | `whole-repo-end-state-validator` failed on the retired DNS overlay reference. |
 | Renamed the validator-required `assertRawRestParity` CAP-C11 test marker. | `rls-force-coverage-validator` failed on the missing executable RT-1 through RT-9 app-tenant/raw-REST proof. |
+| Renamed the CAP-C12 mobile publish body key from `template_config` to `template_config_probe`. | `beta-readiness-validator` failed on the missing canonical mobile publish payload fragment. |
 
 ## Remaining Human-Live Seams
 
@@ -103,7 +110,7 @@ Provider/capability blockers remain in the skip and capability ledgers for live 
 | Mobile readiness | CAP-C09 Turnstile proof exchange is repo-side done and guarded by beta-readiness validation | Live Cloudflare Turnstile secret provisioning and production mobile login smoke remain human/live seams. |
 | Alerting readiness | CAP-C10 API runtime alert metrics and queue-worker dry-run incident routing are repo-side done and guarded by beta-readiness validation | Live DSN/provider credentials, active on-call routing, mobile provider delivery, and production drill evidence remain human/live seams. |
 | Tenant isolation readiness | CAP-C11 executable RT-1 through RT-9 Postgres proof is repo-side done and guarded by RLS FORCE validation | Live production-shaped database role probes, migration-state evidence, and queue-envelope secret proof remain human/live seams. |
-| Theme convergence | Repository C0-C3 done | C4 production canary, ARB flip, and C7 React deletion proof remain blocked by 4x100% parity evidence. |
+| Theme convergence | Repository C0-C3 and CAP-C12 publish-path convergence done | C4 production canary, ARB flip, deployed publish/rollback smoke, and C7 React deletion proof remain blocked by live/canary and 4x100% parity evidence. |
 
 ## Completion Statement
 

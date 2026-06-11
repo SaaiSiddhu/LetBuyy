@@ -123,9 +123,12 @@ class _ThemeScreenState extends State<ThemeScreen> {
 
   Future<void> _publishTheme() {
     return _runThemeAction(() async {
+      final templateConfig =
+          _editorPayload?.templateConfig ?? _store?.templateConfig?.toMap();
       await context.read<ThemeService>().publish(
         storeId: _store!.id,
         themeSlug: _activeThemeSlug,
+        templateConfig: templateConfig,
         baseVersion: _editorPayload?.version,
       );
       _showMessage('Theme published', isSuccess: true);
