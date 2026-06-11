@@ -60,8 +60,32 @@ function envString(c: Context<{ Bindings: Env }>, key: string): string | null {
     return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
 }
 
+function isProductionLikeRuntime(c: Context<{ Bindings: Env }>): boolean {
+    return ['ENVIRONMENT', 'APP_ENV', 'NODE_ENV', 'VERCEL_ENV']
+        .some((key) => envString(c, key)?.toLowerCase() === 'production');
+}
+
+function configuredThemeMarketplaceSellerGstin(c: Context<{ Bindings: Env }>): string | null {
+    return envString(c, 'THEME_MARKETPLACE_GSTIN') || envString(c, 'GSTIN');
+}
+
 function themeMarketplaceSellerGstin(c: Context<{ Bindings: Env }>): string {
-    return envString(c, 'THEME_MARKETPLACE_GSTIN') || envString(c, 'GSTIN') || THEME_MARKETPLACE_DEV_GSTIN;
+    return configuredThemeMarketplaceSellerGstin(c) || THEME_MARKETPLACE_DEV_GSTIN;
+}
+
+function themeMarketplaceGstinSource(c: Context<{ Bindings: Env }>): 'environment' | 'local_dev_default' {
+    return configuredThemeMarketplaceSellerGstin(c) ? 'environment' : 'local_dev_default';
+}
+
+function requireThemeMarketplaceSellerGstin(c: Context<{ Bindings: Env }>): string | Response {
+    const configured = configuredThemeMarketplaceSellerGstin(c);
+    if (configured) return configured;
+    if (!isProductionLikeRuntime(c)) return THEME_MARKETPLACE_DEV_GSTIN;
+
+    return c.json(
+        { error: { code: 'THEME_MARKETPLACE_GSTIN_REQUIRED', message: 'Theme marketplace GSTIN must be configured before production receipts can be issued.' } },
+        503,
+    );
 }
 
 function themeMarketplaceGstAmount(amountInr: number): number {
@@ -86,11 +110,11 @@ function themeMarketplaceInvoiceJson(
         provider: typeof input.provider === 'string' ? input.provider : 'local',
         provider_payment_id: typeof input.providerPaymentId === 'string' ? input.providerPaymentId : null,
         seller_gstin: sellerGstin,
-        gstin_source: sellerGstin === THEME_MARKETPLACE_DEV_GSTIN ? 'dev_placeholder' : 'environment',
+        gstin_source: themeMarketplaceGstinSource(c),
         gst_rate: THEME_MARKETPLACE_GST_RATE,
         gst_amount_inr: themeMarketplaceGstAmount(input.amountInr),
         tax_treatment: 'gst_inclusive',
-        invoice_mode: 'local_dev_default',
+        invoice_mode: themeMarketplaceGstinSource(c) === 'environment' ? 'live' : 'local_dev_default',
     };
 }
 
@@ -342,6 +366,9 @@ export function mountThemeMarketplaceAuxiliaryRoutes(router: ThemeRouter): void 
 
         const amountInr = Number(purchase.price_paid_inr || 0);
         const gstAmountInr = themeMarketplaceGstAmount(amountInr);
+        const sellerGstin = requireThemeMarketplaceSellerGstin(c);
+        if (sellerGstin instanceof Response) return sellerGstin;
+
         const { data: receipt, error: receiptError } = await db
             .from('theme_purchase_receipts')
             .insert({
@@ -353,7 +380,7 @@ export function mountThemeMarketplaceAuxiliaryRoutes(router: ThemeRouter): void 
                 currency: purchase.currency || 'INR',
                 gst_rate: THEME_MARKETPLACE_GST_RATE,
                 gst_amount_inr: gstAmountInr,
-                seller_gstin: themeMarketplaceSellerGstin(c),
+                seller_gstin: sellerGstin,
                 invoice_json: themeMarketplaceInvoiceJson(c, {
                     purchaseId,
                     themeSlug: recordValue(purchase.themes).slug,

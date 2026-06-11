@@ -105,6 +105,8 @@ for (const fragment of [
 reporter.assert(themesRoute.includes("payment_provider: 'sandbox'"), "theme marketplace local paid purchase must be sandbox-labelled");
 reporter.assert(themesRoute.includes("provider: 'sandbox'"), "theme marketplace paid purchase response/event must be sandbox-labelled");
 reporter.assert(themesRoute.includes("isProductionLikeRuntime"), "theme marketplace sandbox purchase fallback must fail closed in production-like runtimes");
+reporter.assert(themesRoute.includes("THEME_MARKETPLACE_GSTIN_REQUIRED"), "theme marketplace receipts must fail closed without production GSTIN");
+reporter.assert(!themesRoute.includes("dev_placeholder"), "theme marketplace receipts must not label dev GSTIN as a placeholder provider fact");
 reporter.assert(!storePaymentConfig.includes("provider_mode: 'mock'"), "store payment config fallback must not expose mock provider_mode");
 reporter.assert(storePaymentConfig.includes("provider_mode: 'sandbox'"), "store payment config fallback must expose sandbox provider_mode");
 reporter.assert(!merchantPaymentsPage.includes("|| 'mock'"), "merchant payments page must not fall back to mock provider mode");

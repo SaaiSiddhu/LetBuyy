@@ -171,8 +171,27 @@ function isProductionLikeRuntime(c: Context<{ Bindings: Env }>): boolean {
         .some((key) => envString(c, key)?.toLowerCase() === 'production');
 }
 
+function configuredThemeMarketplaceSellerGstin(c: Context<{ Bindings: Env }>): string | null {
+    return envString(c, 'THEME_MARKETPLACE_GSTIN') || envString(c, 'GSTIN');
+}
+
 function themeMarketplaceSellerGstin(c: Context<{ Bindings: Env }>): string {
-    return envString(c, 'THEME_MARKETPLACE_GSTIN') || envString(c, 'GSTIN') || THEME_MARKETPLACE_DEV_GSTIN;
+    return configuredThemeMarketplaceSellerGstin(c) || THEME_MARKETPLACE_DEV_GSTIN;
+}
+
+function themeMarketplaceGstinSource(c: Context<{ Bindings: Env }>): 'environment' | 'local_dev_default' {
+    return configuredThemeMarketplaceSellerGstin(c) ? 'environment' : 'local_dev_default';
+}
+
+function requireThemeMarketplaceSellerGstin(c: Context<{ Bindings: Env }>): string | Response {
+    const configured = configuredThemeMarketplaceSellerGstin(c);
+    if (configured) return configured;
+    if (!isProductionLikeRuntime(c)) return THEME_MARKETPLACE_DEV_GSTIN;
+
+    return c.json(
+        { error: { code: 'THEME_MARKETPLACE_GSTIN_REQUIRED', message: 'Theme marketplace GSTIN must be configured before production receipts can be issued.' } },
+        503,
+    );
 }
 
 function themeMarketplaceGstAmount(amountInr: number): number {
@@ -197,11 +216,11 @@ function themeMarketplaceInvoiceJson(
         provider: input.provider,
         provider_payment_id: input.providerPaymentId || null,
         seller_gstin: sellerGstin,
-        gstin_source: sellerGstin === THEME_MARKETPLACE_DEV_GSTIN ? 'dev_placeholder' : 'environment',
+        gstin_source: themeMarketplaceGstinSource(c),
         gst_rate: THEME_MARKETPLACE_GST_RATE,
         gst_amount_inr: themeMarketplaceGstAmount(input.amountInr),
         tax_treatment: 'gst_inclusive',
-        invoice_mode: 'local_dev_default',
+        invoice_mode: themeMarketplaceGstinSource(c) === 'environment' ? 'live' : 'local_dev_default',
     };
 }
 
@@ -1148,6 +1167,7 @@ router.post('/:slug/purchase', validate('json', ThemePurchaseOrderSchema), async
 
         const amountInr = Number(sandboxPurchase.price_paid_inr || 0);
         const gstAmountInr = themeMarketplaceGstAmount(amountInr);
+        const sellerGstin = themeMarketplaceSellerGstin(c);
         const { data: receipt } = await db
             .from('theme_purchase_receipts')
             .upsert(
@@ -1160,7 +1180,7 @@ router.post('/:slug/purchase', validate('json', ThemePurchaseOrderSchema), async
                     currency: sandboxPurchase.currency || 'INR',
                     gst_rate: THEME_MARKETPLACE_GST_RATE,
                     gst_amount_inr: gstAmountInr,
-                    seller_gstin: themeMarketplaceSellerGstin(c),
+                    seller_gstin: sellerGstin,
                     invoice_json: themeMarketplaceInvoiceJson(c, {
                         purchaseId: String(sandboxPurchase.id),
                         themeSlug: slug,
@@ -1415,6 +1435,9 @@ router.post('/:slug/purchase/verify', validate('json', ThemePurchaseVerifySchema
 
     const amountInr = Number(purchase.price_paid_inr || 0);
     const gstAmountInr = themeMarketplaceGstAmount(amountInr);
+    const sellerGstin = requireThemeMarketplaceSellerGstin(c);
+    if (sellerGstin instanceof Response) return sellerGstin;
+
     const { data: receipt } = await db
         .from('theme_purchase_receipts')
         .upsert(
@@ -1427,7 +1450,7 @@ router.post('/:slug/purchase/verify', validate('json', ThemePurchaseVerifySchema
                 currency: purchase.currency || 'INR',
                 gst_rate: THEME_MARKETPLACE_GST_RATE,
                 gst_amount_inr: gstAmountInr,
-                seller_gstin: themeMarketplaceSellerGstin(c),
+                seller_gstin: sellerGstin,
                 invoice_json: themeMarketplaceInvoiceJson(c, {
                     purchaseId: String(purchase.id),
                     themeSlug: slug,
