@@ -79,7 +79,7 @@ export default function PortfolioComingSoon({ storeName, tagline, logoUrl, launc
 
                 {/* HEADING */}
                 <h1 style={{ fontSize: 'clamp(2rem,7vw,4.5rem)', fontWeight: 900, lineHeight: 1, textAlign: 'center', letterSpacing: '-.04em', background: 'linear-gradient(135deg,rgb(255 255 255) 0%,rgb(254 205 211) 40%,rgb(244 63 94) 80%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', filter: 'drop-shadow(0 2px 12px rgba(244,63,94,.15))', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .1s both' : 'none' }}>{storeName}</h1>
-                <p style={{ fontSize: 'clamp(.78rem,1.8vw,1.1rem)', color: 'rgba(255,255,255,.5)', lineHeight: 1.6, textAlign: 'center', maxWidth: 420, animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .2s both' : 'none' }}>{tagline || 'Creative portfolio launching soon. Design, art & innovation.'}</p>
+                <p style={{ fontSize: 'clamp(.78rem,1.8vw,1.1rem)', color: 'rgba(255,255,255,.5)', lineHeight: 1.6, textAlign: 'center', maxWidth: 420, animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .2s both' : 'none' }}>{tagline || 'This portfolio is not open yet. Published work will appear after the owner opens it.'}</p>
 
                 {/* COUNTDOWN */}
                 <div style={{ display: 'flex', gap: 'clamp(4px,1vw,10px)', animation: ok ? 'fu 1s cubic-bezier(.16,1,.3,1) .3s both' : 'none' }}>

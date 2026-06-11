@@ -83,6 +83,23 @@ reporter.assert(
   "identity onboarding must gate legacy site-type UI behind the public legacy flag",
 );
 
+for (const file of [
+  "apps/merchant-control-plane/src/app/launching-soon/page.tsx",
+  "apps/storefront-runtime/src/components/coming-soon/components/landing/landing-coming-soon.tsx",
+  "apps/storefront-runtime/src/components/coming-soon/components/portfolio/portfolio-coming-soon.tsx",
+  "apps/storefront-runtime/src/components/coming-soon/components/resume/resume-coming-soon.tsx",
+]) {
+  const source = readFile(file);
+  reporter.assert(
+    !/launching soon|check back soon/i.test(source),
+    `${file} must not promise launch timing from draft/gated storefront defaults`,
+  );
+  reporter.assert(
+    /not open(?: to shoppers)? yet/i.test(source),
+    `${file} must describe draft/gated storefront defaults as not open yet`,
+  );
+}
+
 const marketingCreate = readFile("apps/marketing-site/src/app/create/page.tsx");
 reporter.assert(
   marketingCreate.indexOf("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES") !== -1 &&

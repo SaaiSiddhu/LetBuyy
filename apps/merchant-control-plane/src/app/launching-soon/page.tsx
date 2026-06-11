@@ -2,13 +2,13 @@ import type { Metadata } from 'next'
 import { MaterialIcon } from '@letbuyy/ui'
 
 export const metadata: Metadata = {
-    title: 'Launching Soon — LetBuyy',
-    description: 'This store is being set up. Check back soon!',
+    title: 'Store Not Open Yet — LetBuyy',
+    description: 'This store is not open to shoppers yet.',
 }
 
 /**
  * /launching-soon
- * Publicly visible placeholder for stores still in draft mode.
+ * Publicly visible gated page for stores still in draft mode.
  * Shown when a user visits a subdomain whose store.status === 'draft'.
  *
  * The storefront middleware should redirect here when the store isn't published.
@@ -23,11 +23,11 @@ export default function LaunchingSoonPage() {
                 </div>
 
                 <h1 className="launching-soon-title">
-                    Launching Soon
+                    Store Not Open Yet
                 </h1>
 
                 <p className="launching-soon-copy">
-                    This store is currently being set up. Check back soon for something amazing.
+                    This store is currently being set up and is not open to shoppers yet.
                 </p>
 
                 <div className="launching-soon-powered">
