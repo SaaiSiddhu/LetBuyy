@@ -210,7 +210,7 @@ SELECT
     'https://apps-demo.letbuyy.test',
     'marketplace-demo@letbuyy.test',
     NULL,
-    'First-party demo apps used to exercise marketplace discovery and installation flows before launch partners are onboarded.',
+    'First-party demo apps used to exercise marketplace discovery and installation flows before partner inventory is onboarded.',
     true,
     'approved',
     'IN'
@@ -274,7 +274,7 @@ SELECT
     demo_apps.slug,
     demo_apps.name,
     demo_apps.tagline,
-    demo_apps.tagline || E'\n\nThis is a clearly labeled first-party demo listing. It is seeded so the marketplace catalog, install consent, extension, and discovery flows can be exercised without pretending launch-partner inventory exists.',
+    demo_apps.tagline || E'\n\nThis is a clearly labeled first-party demo listing. It is seeded so the marketplace catalog, install consent, extension, and discovery flows can be exercised without pretending partner inventory exists.',
     'public',
     'published',
     'free',
