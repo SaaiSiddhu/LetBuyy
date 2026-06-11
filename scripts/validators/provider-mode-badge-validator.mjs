@@ -191,6 +191,7 @@ reporter.assert(billingCore.includes("planSandboxUpiAutopayMandate"), "billing-c
 reporter.assert(billingRoute.includes("sandbox_autopay"), "billing route must persist sandbox AutoPay identifiers");
 reporter.assert(!providerModeBadge.includes("'mock'"), "web ProviderModeBadge must not expose mock as a valid provider mode");
 reporter.assert(!mobileProviderModeBadge.includes("ProviderMode.mock"), "Flutter ProviderModeBadge must not expose mock as a valid provider mode");
+reporter.assert(!mobileProviderModeBadge.includes("'test' => ProviderMode.sandbox"), "Flutter ProviderModeBadge must not accept test as a provider mode alias");
 for (const fragment of [
   "PaymentProviderMode = 'mock'",
   "buildMockPaymentSessionPlan",

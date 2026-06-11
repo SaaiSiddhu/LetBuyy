@@ -9,7 +9,7 @@ enum ProviderMode {
   static ProviderMode? parse(Object? value) {
     final normalized = value?.toString().trim().toLowerCase();
     return switch (normalized) {
-      'sandbox' || 'test' => ProviderMode.sandbox,
+      'sandbox' => ProviderMode.sandbox,
       'live' => ProviderMode.live,
       _ => null,
     };
