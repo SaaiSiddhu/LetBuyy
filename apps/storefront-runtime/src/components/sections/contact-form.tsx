@@ -19,16 +19,19 @@ export default function ContactForm({ section, theme }: Props) {
     const showAddress = settings.showAddress as boolean;
 
     const [form, setForm] = useState({ name: '', email: '', message: '' });
-    const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
+    const [status, setStatus] = useState<'idle' | 'opening' | 'opened'>('idle');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!form.name || !form.email || !form.message) return;
 
-        setStatus('sending');
-        // Simulate sending (in production, this would call an API)
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setStatus('sent');
+        if (!contactEmail) return;
+
+        setStatus('opening');
+        const subject = encodeURIComponent(`Storefront contact from ${form.name}`);
+        const body = encodeURIComponent(`${form.message}\n\nReply to: ${form.email}`);
+        window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
+        setStatus('opened');
         setForm({ name: '', email: '', message: '' });
         setTimeout(() => setStatus('idle'), 3000);
     };
@@ -148,14 +151,16 @@ export default function ContactForm({ section, theme }: Props) {
                         </div>
                         <Button unstyled
                             type="submit"
-                            disabled={status !== 'idle'}
+                            disabled={status !== 'idle' || !contactEmail}
                             className="w-full py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-60"
                             style={{ backgroundColor: theme.primaryColor }}
                         >
-                            {status === 'sending' ? (
-                                <><Loader2 size={16} className="animate-spin" /> Sending...</>
-                            ) : status === 'sent' ? (
-                                <><CheckCircle size={16} /> Sent!</>
+                            {status === 'opening' ? (
+                                <><Loader2 size={16} className="animate-spin" /> Opening email...</>
+                            ) : status === 'opened' ? (
+                                <><CheckCircle size={16} /> Email opened</>
+                            ) : !contactEmail ? (
+                                <><Mail size={16} /> Contact email unavailable</>
                             ) : (
                                 <><Send size={16} /> Send Message</>
                             )}
