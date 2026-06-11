@@ -43,6 +43,7 @@ test('production deploy workflow fails closed on missing release credentials', (
   assert.match(rolloutWorkflow, /group: production-release-\$\{\{ inputs\.environment \}\}/);
   assert.match(workflow, /Missing required production release credentials/);
   assert.match(workflow, /PRODUCTION_CUSTOMER_SESSION_SECRET/);
+  assert.match(workflow, /PRODUCTION_CHECKOUT_SIGNING_SECRET/);
   assert.match(workflow, /PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE/);
   assert.doesNotMatch(workflow, /Skip production migrations/);
   assert.doesNotMatch(workflow, /Skip worker deployment/);
@@ -98,7 +99,24 @@ test('worker secrets are written before production Worker deploys', () => {
   assert.ok(webhookSecretIndex < webhookDeployIndex, 'webhook secrets must be set before deploy');
 
   assert.match(workflow, /wrangler secret put CUSTOMER_SESSION_SECRET --env production/);
+  assert.match(workflow, /wrangler secret put CHECKOUT_SIGNING_SECRET --env production/);
   assert.match(workflow, /Set mobile-bff production secrets[\s\S]*?wrangler secret put TURNSTILE_SECRET_KEY --env production[\s\S]*?working-directory: services\/mobile-bff/);
+});
+
+test('A4 go-live atom excludes live provider-money secrets', () => {
+  assert.doesNotMatch(workflow, /HAS_PRODUCTION_RAZORPAY_KEY_ID/);
+  assert.doesNotMatch(workflow, /HAS_PRODUCTION_RAZORPAY_KEY_SECRET/);
+  assert.doesNotMatch(workflow, /HAS_PRODUCTION_RAZORPAY_WEBHOOK_SECRET/);
+  assert.doesNotMatch(workflow, /HAS_PRODUCTION_STRIPE_WEBHOOK_SECRET/);
+  assert.doesNotMatch(workflow, /missing\+=\("PRODUCTION_RAZORPAY_KEY_ID"\)/);
+  assert.doesNotMatch(workflow, /missing\+=\("PRODUCTION_RAZORPAY_KEY_SECRET"\)/);
+  assert.doesNotMatch(workflow, /missing\+=\("PRODUCTION_RAZORPAY_WEBHOOK_SECRET"\)/);
+  assert.doesNotMatch(workflow, /missing\+=\("PRODUCTION_STRIPE_WEBHOOK_SECRET"\)/);
+  assert.doesNotMatch(workflow, /wrangler secret put RAZORPAY_KEY_ID --env production/);
+  assert.doesNotMatch(workflow, /wrangler secret put RAZORPAY_KEY_SECRET --env production/);
+  assert.doesNotMatch(workflow, /wrangler secret put RAZORPAY_WEBHOOK_SECRET --env production/);
+  assert.doesNotMatch(workflow, /wrangler secret put STRIPE_WEBHOOK_SECRET --env production/);
+  assert.doesNotMatch(workflow, /NEXT_PUBLIC_RAZORPAY_KEY_ID: \$\{\{ secrets\.PRODUCTION_RAZORPAY_KEY_ID \}\}/);
 });
 
 test('production smoke runs only after explicit required-job success gate', () => {

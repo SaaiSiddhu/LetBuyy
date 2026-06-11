@@ -123,11 +123,32 @@ for (const fragment of [
   "git ls-files --others --exclude-standard database/supabase/migrations/",
   "- migrate-production",
   "- governance-gate",
+  "HAS_PRODUCTION_CHECKOUT_SIGNING_SECRET",
+  'missing+=("PRODUCTION_CHECKOUT_SIGNING_SECRET")',
+  "wrangler secret put CHECKOUT_SIGNING_SECRET --env production",
   "migration-preflight=${MIGRATION_PREFLIGHT_RESULT}",
   "governance-gate=${GOVERNANCE_RESULT}",
   "wrangler secret put TURNSTILE_SECRET_KEY --env production",
 ]) {
   reporter.assert(productionDeployWorkflow.includes(fragment), `Production deploy workflow missing gated release fragment: ${fragment}`);
+}
+
+for (const forbidden of [
+  "HAS_PRODUCTION_RAZORPAY_KEY_ID",
+  "HAS_PRODUCTION_RAZORPAY_KEY_SECRET",
+  "HAS_PRODUCTION_RAZORPAY_WEBHOOK_SECRET",
+  "HAS_PRODUCTION_STRIPE_WEBHOOK_SECRET",
+  'missing+=("PRODUCTION_RAZORPAY_KEY_ID")',
+  'missing+=("PRODUCTION_RAZORPAY_KEY_SECRET")',
+  'missing+=("PRODUCTION_RAZORPAY_WEBHOOK_SECRET")',
+  'missing+=("PRODUCTION_STRIPE_WEBHOOK_SECRET")',
+  "wrangler secret put RAZORPAY_KEY_ID --env production",
+  "wrangler secret put RAZORPAY_KEY_SECRET --env production",
+  "wrangler secret put RAZORPAY_WEBHOOK_SECRET --env production",
+  "wrangler secret put STRIPE_WEBHOOK_SECRET --env production",
+  "NEXT_PUBLIC_RAZORPAY_KEY_ID: ${{ secrets.PRODUCTION_RAZORPAY_KEY_ID }}",
+]) {
+  reporter.assert(!productionDeployWorkflow.includes(forbidden), `A4 production go-live atom must not require or provision provider-money secret: ${forbidden}`);
 }
 
 reporter.assert(
