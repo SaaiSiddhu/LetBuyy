@@ -46,6 +46,11 @@ interface SettlementRow extends JsonRecord {
     updated_at?: string | null;
 }
 
+interface PayoutStatementExecutorRow extends JsonRecord {
+    id: string;
+    statement_number: string;
+}
+
 function configured(value: string | undefined): boolean {
     return Boolean(value && !value.startsWith('SKIP_NEEDS_HUMAN_') && !value.includes('replace-with'));
 }
@@ -97,6 +102,14 @@ function serializeSettlement(row: SettlementRow) {
     };
 }
 
+function dateOnly(value: Date): string {
+    return value.toISOString().slice(0, 10);
+}
+
+function settlementPayoutStatementNumber(settlementId: string): string {
+    return `STL-${settlementId.replace(/-/g, '').slice(0, 12).toUpperCase()}`;
+}
+
 function toLedgerRpcLines(lines: readonly SettlementLedgerLine[]) {
     return lines.map((line) => ({
         account_code: line.account_code,
@@ -104,6 +117,47 @@ function toLedgerRpcLines(lines: readonly SettlementLedgerLine[]) {
         amount_minor: line.amount_minor,
         memo: line.memo,
     }));
+}
+
+async function loadExistingSettlement(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        siteId: string;
+        idempotencyKey: string;
+        provider: string;
+        settlementReference: string;
+    },
+): Promise<{ row: SettlementRow; dedupeKey: 'idempotency_key' | 'provider_reference' } | null> {
+    const byIdempotency = await db
+        .from('settlements')
+        .select('*')
+        .eq('site_id', input.siteId)
+        .eq('idempotency_key', input.idempotencyKey)
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    if (byIdempotency.error) throw new Error(`Settlement idempotency lookup failed: ${byIdempotency.error.message}`);
+    if (byIdempotency.data) {
+        return { row: byIdempotency.data as unknown as SettlementRow, dedupeKey: 'idempotency_key' };
+    }
+
+    const byProviderReference = await db
+        .from('settlements')
+        .select('*')
+        .eq('site_id', input.siteId)
+        .eq('provider', input.provider)
+        .eq('settlement_reference', input.settlementReference)
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    if (byProviderReference.error) {
+        throw new Error(`Settlement provider reference lookup failed: ${byProviderReference.error.message}`);
+    }
+    if (byProviderReference.data) {
+        return { row: byProviderReference.data as unknown as SettlementRow, dedupeKey: 'provider_reference' };
+    }
+
+    return null;
 }
 
 async function postSettlementLedgerTransaction(
@@ -130,6 +184,86 @@ async function postSettlementLedgerTransaction(
 
     if (error || !data) throw new Error(`Settlement ledger post failed: ${error?.message || 'unknown error'}`);
     return String(data);
+}
+
+async function ensureSettlementPayoutStatement(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        siteId: string;
+        userId: string | null;
+        settlement: SettlementRow;
+        providerMode: 'sandbox' | 'live';
+        amountMinor: number;
+    },
+): Promise<PayoutStatementExecutorRow> {
+    const idempotencyKey = `settlement-payout:${input.settlement.id}`;
+    const existing = await db
+        .from('payout_statements')
+        .select('id, statement_number')
+        .eq('site_id', input.siteId)
+        .eq('idempotency_key', idempotencyKey)
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    if (existing.error) throw new Error(`Settlement payout statement lookup failed: ${existing.error.message}`);
+    if (existing.data) return existing.data as unknown as PayoutStatementExecutorRow;
+
+    const today = dateOnly(new Date());
+    const { data, error } = await db
+        .from('payout_statements')
+        .insert({
+            site_id: input.siteId,
+            statement_number: settlementPayoutStatementNumber(input.settlement.id),
+            status: 'pending',
+            provider: 'razorpay_route',
+            provider_mode: input.providerMode,
+            rail: 'razorpay_route',
+            currency: 'INR',
+            gross_amount_minor: input.amountMinor,
+            platform_fee_minor: 0,
+            tax_minor: 0,
+            net_amount_minor: input.amountMinor,
+            available_on: today,
+            idempotency_key: idempotencyKey,
+            metadata: {
+                source_type: 'settlement',
+                source_settlement_id: input.settlement.id,
+                source_settlement_reference: input.settlement.settlement_reference,
+                canonical_executor: 'payout_statements',
+                no_custody: true,
+            },
+            created_by: input.userId,
+            updated_by: input.userId,
+        })
+        .select('id, statement_number')
+        .single();
+
+    if (error || !data) throw new Error(`Settlement payout statement create failed: ${error?.message || 'unknown error'}`);
+
+    const { error: walletCreditError } = await db.from('wallet_ledger_entries').insert({
+        site_id: input.siteId,
+        payout_statement_id: data.id,
+        entry_type: 'payout_credit',
+        direction: 'credit',
+        status: 'pending',
+        currency: 'INR',
+        amount_minor: input.amountMinor,
+        available_on: today,
+        reference_type: 'settlement',
+        reference_id: input.settlement.id,
+        description: `Settlement payout ${input.settlement.settlement_reference} pending release`,
+        idempotency_key: `settlement-payout-credit:${input.settlement.id}`,
+        metadata: {
+            source_type: 'settlement',
+            source_settlement_id: input.settlement.id,
+            source_settlement_reference: input.settlement.settlement_reference,
+        },
+        created_by: input.userId,
+        updated_by: input.userId,
+    }).select('id').single();
+    if (walletCreditError) throw new Error(`Settlement payout wallet credit failed: ${walletCreditError.message}`);
+
+    return data as unknown as PayoutStatementExecutorRow;
 }
 
 async function emitSettlementEvent(
@@ -193,16 +327,19 @@ router.post('/ingest', validate('json', SettlementIngestSchema), async (c) => {
 
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOwnedSite(c, body.store_id);
-    const existing = await db
-        .from('settlements')
-        .select('*')
-        .eq('site_id', tenant.siteId)
-        .eq('idempotency_key', body.idempotency_key)
-        .is('deleted_at', null)
-        .maybeSingle();
-
-    if (existing.error) throw new Error(`Settlement idempotency lookup failed: ${existing.error.message}`);
-    if (existing.data) return c.json(success({ settlement: serializeSettlement(existing.data as unknown as SettlementRow), replayed: true }));
+    const existing = await loadExistingSettlement(db, {
+        siteId: tenant.siteId,
+        idempotencyKey: body.idempotency_key,
+        provider: body.provider,
+        settlementReference: body.settlement_reference,
+    });
+    if (existing) {
+        return c.json(success({
+            settlement: serializeSettlement(existing.row),
+            replayed: true,
+            dedupe_key: existing.dedupeKey,
+        }));
+    }
 
     const plan = planSettlementLedgerPosting(body);
     const status = plan.recon_break_minor === 0 ? 'recorded' : 'break_detected';
@@ -281,11 +418,19 @@ router.post('/ingest', validate('json', SettlementIngestSchema), async (c) => {
 
     let payout: JsonRecord | null = null;
     if (plan.recon_break_minor === 0 && plan.net_amount_minor > 0 && body.rail === 'pa_split') {
+        const payoutStatement = await ensureSettlementPayoutStatement(db, {
+            siteId: tenant.siteId,
+            userId: tenant.userId,
+            settlement: settlementRow,
+            providerMode: body.provider_mode,
+            amountMinor: plan.net_amount_minor,
+        });
         const { data: payoutRow, error: payoutError } = await db
             .from('payouts')
             .insert({
                 site_id: tenant.siteId,
                 settlement_id: settlementRow.id,
+                payout_statement_id: payoutStatement.id,
                 status: 'scheduled',
                 provider: body.provider,
                 provider_mode: body.provider_mode,
@@ -295,7 +440,12 @@ router.post('/ingest', validate('json', SettlementIngestSchema), async (c) => {
                 idempotency_key: `payout:${body.idempotency_key}`,
                 requires_step_up: true,
                 maker_actor_id: tenant.userId,
-                metadata: { no_custody: true, instruction_only: true },
+                metadata: {
+                    no_custody: true,
+                    instruction_only: true,
+                    canonical_executor: 'payout_statements',
+                    payout_statement_id: payoutStatement.id,
+                },
                 created_by: tenant.userId,
                 updated_by: tenant.userId,
             })
@@ -315,7 +465,9 @@ router.post('/ingest', validate('json', SettlementIngestSchema), async (c) => {
             source_id: settlementRow.id,
             currency: 'INR',
             amount_minor: plan.net_amount_minor,
+            ledger_transaction_id: ledgerTransactionId,
             ledger_preview: { lines: payoutLines },
+            metadata: { payout_statement_id: payoutStatement.id },
             created_by: tenant.userId,
             updated_by: tenant.userId,
         });

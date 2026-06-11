@@ -206,6 +206,43 @@ async function postCanonicalPayoutLedger(
     return String(data);
 }
 
+async function syncSettlementPayoutInstruction(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        siteId: string;
+        payoutStatementId: string;
+        status: 'processing' | 'released' | 'failed';
+        providerReference: string | null;
+        utr: string | null;
+        failureReason: string | null;
+        ledgerTransactionId: string | null;
+        actorId: string | null;
+        processedAt: string;
+    },
+) {
+    const instructionStatus = input.status === 'released' ? 'paid' : input.status;
+    const update: JsonRecord = {
+        status: instructionStatus,
+        provider_reference: input.providerReference,
+        utr: input.utr,
+        failure_reason: input.failureReason,
+        checker_actor_id: input.actorId,
+        checked_at: input.processedAt,
+        updated_by: input.actorId,
+        updated_at: input.processedAt,
+    };
+    if (input.ledgerTransactionId) update.ledger_transaction_id = input.ledgerTransactionId;
+
+    const { error } = await db
+        .from('payouts')
+        .update(update)
+        .eq('site_id', input.siteId)
+        .eq('payout_statement_id', input.payoutStatementId)
+        .is('deleted_at', null);
+
+    if (error) throw new Error(`Settlement payout instruction sync failed: ${error.message}`);
+}
+
 function payoutProviderUnavailableBody(error: PayoutProviderUnavailable) {
     return {
         success: false,
@@ -615,8 +652,9 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
 
     if (updateError || !updated) throw new Error(`Payout statement settlement update failed: ${updateError?.message || 'unknown error'}`);
 
+    let releaseLedgerTransactionId: string | null = null;
     if (nextStatus === 'released') {
-        const releaseLedgerTransactionId = await postCanonicalPayoutLedger(db, {
+        releaseLedgerTransactionId = await postCanonicalPayoutLedger(db, {
             siteId: tenant.siteId,
             sourceType: 'payout',
             sourceId: claimedStatement.id,
@@ -651,7 +689,22 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
         });
     }
 
-    return c.json(success(serializePayout(updated as unknown as PayoutStatementRow)));
+    await syncSettlementPayoutInstruction(db, {
+        siteId: tenant.siteId,
+        payoutStatementId: claimedStatement.id,
+        status: nextStatus,
+        providerReference: transfer.providerReference,
+        utr: transfer.utr,
+        failureReason: transfer.failureReason,
+        ledgerTransactionId: releaseLedgerTransactionId,
+        actorId: tenant.userId,
+        processedAt: now,
+    });
+
+    return c.json(success(serializePayout({
+        ...(updated as unknown as PayoutStatementRow),
+        release_ledger_transaction_id: releaseLedgerTransactionId || (updated as unknown as PayoutStatementRow).release_ledger_transaction_id,
+    })));
 });
 
 export default router;

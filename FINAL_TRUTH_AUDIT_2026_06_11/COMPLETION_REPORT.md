@@ -1,8 +1,8 @@
 # LetBuyy Final Convergence Completion Report
 
 **Date:** 2026-06-11
-**Scope:** Repository-side B/C/D/E implementation and certification after Phase A live G4 was recorded as human-owned, plus repo-side Phase F CAP-C03 payout provider client implementation.
-**Pre-report HEAD:** `b99f62e4` on `stepup/main`; local `main..stepup/main = 0`.
+**Scope:** Repository-side B/C/D/E implementation and certification after Phase A live G4 was recorded as human-owned, plus repo-side Phase F CAP-C03 through CAP-C05 money capability implementation.
+**Pre-report HEAD:** `1d6e5fa2` on `stepup/main`; local `main..stepup/main = 0`.
 
 ## Repository Answer
 
@@ -22,6 +22,7 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | E Certification | Final anti-recurrence validators cover prompt perimeter, DOC/stub language, frozen deploy shape, validator liveness, canonical ledger migration evidence, reserved manifest activation wording, and retired DNS overlay references. Completion evidence is recorded in this report plus the execution, change, validation, and rollback ledgers. |
 | F CAP-C03 | Razorpay Route payout provider client is implemented behind `PayoutProviderClient`, wired into payout release only when the existing provider flag and credentials are present, posts idempotent provider transfer requests, maps provider references/UTRs, and records provider rejection as failed rather than released. |
 | F CAP-C04 | Money reconciliation now has a repository-side dual-control operator resolve/recheck path: mismatches can be annotated as provider-explained or suspense-acknowledged without falsifying variance, or rechecked through the canonical refresh RPC. Live zero-break-or-explained-suspense evidence remains human-owned. |
+| F CAP-C05 | Settlement ingest now dedupes by idempotency key and provider settlement reference, creates/reuses canonical `payout_statements` executor rows for balanced PA-split settlements, links settlement payout instructions to those executor rows, and syncs provider release status back to the instruction. Live provider settlement/payout smoke and variance-0 evidence remain human-owned. |
 
 ## Validation Evidence
 
@@ -40,6 +41,8 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | `pnpm --filter @letbuyy/infrastructure typecheck` | PASS |
 | `pnpm run lint` | PASS with existing warnings only |
 | `pnpm run lint:css` | PASS |
+| `npx tsx --test services/api-gateway/src/__tests__/settlements.test.ts` | PASS, 3/3 for CAP-C05 linkage |
+| `npx tsx --test services/api-gateway/src/__tests__/money.test.ts` | PASS, 10/10 after CAP-C05 |
 
 Mutation proofs added during final certification:
 
@@ -73,7 +76,7 @@ Provider/capability blockers remain in the skip and capability ledgers for live 
 | Governance authority | 9/10 | One local law chain and prompt perimeter pass; ARB signature remains `SKIP-EG1-ARB-SINGLE-REALITY-CERTIFICATION`. |
 | Documentation convergence | 9/10 | Root markdown budget is 9/9 and prompt/DOC-02 drift is archived or pointed; live certification docs remain seam-backed. |
 | Validator integrity | 9.5/10 | Gate passes 105 validators, orphan validators are wired, and mutation probes fail as expected. |
-| Money convergence | Repository B1-B5 done; Phase F CAP-C03 payout client and CAP-C04 operator resolution done repo-side | B6 live provider credentials, smoke, and variance-0 remain human/live seams. |
+| Money convergence | Repository B1-B5 done; Phase F CAP-C03 payout client, CAP-C04 operator resolution, and CAP-C05 settlement executor linkage done repo-side | B6 live provider credentials, smoke, and variance-0 remain human/live seams. |
 | Theme convergence | Repository C0-C3 done | C4 production canary, ARB flip, and C7 React deletion proof remain blocked by 4x100% parity evidence. |
 
 ## Completion Statement

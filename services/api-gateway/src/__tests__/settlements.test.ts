@@ -34,6 +34,12 @@ test('Task 013 settlements are monolith routes backed by billing-core and the F6
     assert.match(settlementRoute, /settlement\.recon\.break_detected/);
     assert.match(settlementRoute, /payout\.scheduled/);
     assert.match(settlementRoute, /no_custody:\s*true/);
+    assert.match(settlementRoute, /loadExistingSettlement/);
+    assert.match(settlementRoute, /provider_reference/);
+    assert.match(settlementRoute, /ensureSettlementPayoutStatement/);
+    assert.match(settlementRoute, /settlement-payout:\$\{input\.settlement\.id\}/);
+    assert.match(settlementRoute, /payout_statement_id: payoutStatement\.id/);
+    assert.match(settlementRoute, /canonical_executor:\s*'payout_statements'/);
 
     assert.match(billingCore, /export const SettlementIngestSchema/);
     assert.match(billingCore, /export function planSettlementLedgerPosting/);
@@ -64,6 +70,9 @@ test('Task 013 reconciles mobile money compatibility tables to canonical ledger'
     assert.match(payoutsRoute, /payout-release:\$\{claimedStatement\.id\}/);
     assert.match(payoutsRoute, /canonical_ledger_transaction_id/);
     assert.match(payoutsRoute, /release_ledger_transaction_id/);
+    assert.match(payoutsRoute, /syncSettlementPayoutInstruction/);
+    assert.match(payoutsRoute, /\.from\('payouts'\)[\s\S]*payout_statement_id/);
+    assert.match(payoutsRoute, /ledgerTransactionId: releaseLedgerTransactionId/);
 
     assert.match(walletRoute, /loadCanonicalLedgerSummary/);
     assert.match(walletRoute, /ledger_entries/);
