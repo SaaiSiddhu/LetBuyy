@@ -132,6 +132,10 @@ for (const fragment of [
 }
 reporter.assert(notificationCore.includes("sandbox_resend"), "notification-core must expose sandbox ESP providers");
 reporter.assert(emailRoute.includes("email_sandbox_"), "email route must emit sandbox provider message ids");
+reporter.assert(emailRoute.includes("liveEmailProviderDispatchAvailable"), "email route live mode must fail closed until provider dispatch is implemented");
+reporter.assert(emailRoute.includes("EMAIL_PROVIDER_SETUP_REQUIRED"), "email route must return setup-required for unavailable live provider dispatch");
+reporter.assert(capabilityBacklog.includes("CAP-C18"), "CAPABILITY_BACKLOG.md missing CAP-C18 live email dispatch gap");
+reporter.assert(skippedHumanDecisions.includes("SKIP-CAP-LIVE-EMAIL-DISPATCH"), "SKIPPED_HUMAN_DECISIONS.md missing SKIP-CAP-LIVE-EMAIL-DISPATCH");
 for (const fragment of [
   "LETBUYY_AI_MODEL_MODE || 'mock'",
   "mode?: 'mock'",

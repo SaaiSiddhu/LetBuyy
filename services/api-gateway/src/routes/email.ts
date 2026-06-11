@@ -21,20 +21,20 @@ const router = new Hono<{ Bindings: Env }>();
 
 type EmailEventType = 'email.delivered' | 'email.bounced' | 'email.complained';
 
-function configured(value: string | undefined): boolean {
-    return Boolean(value && !value.startsWith('SKIP_NEEDS_HUMAN_') && !value.includes('replace-with'));
-}
-
 function emailMode(env: Env): EmailMode {
     return env.LETBUYY_EMAIL_MODE === 'live' ? 'live' : 'sandbox';
 }
 
+function liveEmailProviderDispatchAvailable(): boolean {
+    return false;
+}
+
 function assertEmailProviderReady(env: Env) {
     if (emailMode(env) !== 'live') return;
-    if (configured(env.RESEND_API_KEY) || configured(env.SES_ACCESS_KEY_ID) || configured(env.SENDGRID_API_KEY)) return;
+    if (liveEmailProviderDispatchAvailable()) return;
 
-    // [HUMAN-REQUIRED] HR-ESP-LIVE: live ESP domains, API keys, SPF/DKIM/DMARC, and sender verification must be installed before live sends.
-    throw new HumanRequiredError('Email provider setup is required before live email delivery can be enabled.');
+    // [HUMAN-REQUIRED] HR-ESP-LIVE: live ESP dispatch, domains, API keys, SPF/DKIM/DMARC, and sender verification must be installed before live sends.
+    throw new HumanRequiredError('Email provider dispatch is required before live email delivery can be enabled.');
 }
 
 function fromDomain(value: string | undefined): string | null {

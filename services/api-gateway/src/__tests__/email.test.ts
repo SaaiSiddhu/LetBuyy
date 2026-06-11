@@ -36,6 +36,8 @@ test('Task 011 email route renders and sends through the monolith with sandbox E
     assert.match(routeSource, /email\.delivered/);
     assert.match(routeSource, /email\.bounced/);
     assert.match(routeSource, /\[HUMAN-REQUIRED\] HR-ESP-LIVE/);
+    assert.match(routeSource, /liveEmailProviderDispatchAvailable/);
+    assert.match(routeSource, /EMAIL_PROVIDER_SETUP_REQUIRED/);
     assert.doesNotMatch(routeSource, /notification-service/);
 
     assert.match(coreSource, /export const EmailRenderSchema/);
