@@ -44,9 +44,15 @@ export interface AiCreditPurchaseAdapter {
   purchase(input: PurchaseAiCreditsInput): Promise<AiCreditPurchaseResult>;
 }
 
-function isConfigured(value: string | null | undefined): value is string {
-  const trimmed = value?.trim();
-  return Boolean(trimmed && !trimmed.startsWith('SKIP_NEEDS_HUMAN_'));
+export const AI_CREDIT_PURCHASE_LIVE_PROVIDER_UNAVAILABLE = 'AI_CREDIT_PURCHASE_LIVE_PROVIDER_UNAVAILABLE';
+
+export class AiCreditPurchaseLiveProviderUnavailableError extends Error {
+  readonly code = AI_CREDIT_PURCHASE_LIVE_PROVIDER_UNAVAILABLE;
+
+  constructor() {
+    super('AI credit purchase live provider client is not implemented');
+    this.name = 'AiCreditPurchaseLiveProviderUnavailableError';
+  }
 }
 
 function isProductionRuntime(credentials: AiCreditPurchaseCredentials): boolean {
@@ -103,12 +109,8 @@ export function createAiCreditPurchaseAdapter(
   const provider = normalizeProvider(credentials.provider);
   const pricePerCreditMinor = normalizePrice(credentials.pricePerCreditMinor);
   const currency = normalizeCurrency(credentials.currency);
-  const liveConfigured = mode === 'live'
-    && provider === 'razorpay'
-    && isConfigured(credentials.razorpayKeyId)
-    && isConfigured(credentials.razorpayKeySecret);
-  const available = mode === 'sandbox' || liveConfigured;
-  const unavailableReason = available ? null : 'AI credit purchase provider credentials must be configured';
+  const available = mode === 'sandbox';
+  const unavailableReason = available ? null : 'AI credit purchase live provider client is not implemented';
 
   return {
     provider,
@@ -126,27 +128,7 @@ export function createAiCreditPurchaseAdapter(
         return sandboxPurchase({ provider, mode, pricePerCreditMinor, currency }, input);
       }
 
-      if (!liveConfigured) {
-        throw new Error(unavailableReason || 'AI credit purchase provider is not configured');
-      }
-
-      const amountMinor = input.credits * pricePerCreditMinor;
-      return {
-        id: `ai_credit_${input.idempotencyKey}`,
-        provider: 'razorpay',
-        providerMode: 'live',
-        status: 'requires_checkout',
-        credits: input.credits,
-        amountMinor,
-        currency,
-        providerReference: null,
-        checkoutUrl: null,
-        metadata: {
-          checkout_provider: 'razorpay',
-          store_id: input.storeId,
-          user_id: input.userId,
-        },
-      };
+      throw new AiCreditPurchaseLiveProviderUnavailableError();
     },
   };
 }

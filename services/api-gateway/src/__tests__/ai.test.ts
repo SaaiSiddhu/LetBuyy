@@ -108,13 +108,25 @@ test('AI credit purchase is sandbox-first and live Razorpay credential-gated', a
     const liveAdapter = createAiCreditPurchaseAdapter({
         mode: 'live',
         provider: 'razorpay',
-        razorpayKeyId: 'SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_ID',
-        razorpayKeySecret: 'SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_SECRET',
+        razorpayKeyId: 'configured-provider-id-fixture',
+        razorpayKeySecret: 'configured-provider-auth-fixture',
         environment: 'production',
     });
 
     assert.equal(liveAdapter.available, false);
-    assert.match(liveAdapter.unavailableReason || '', /provider credentials/);
+    assert.match(liveAdapter.unavailableReason || '', /provider client is not implemented/);
+    await assert.rejects(
+        () => liveAdapter.purchase({
+            storeId: 'store_1',
+            userId: 'user_1',
+            credits: 100,
+            idempotencyKey: 'purchase_live_1',
+        }),
+        (error) => {
+            assert.equal((error as { code?: string }).code, 'AI_CREDIT_PURCHASE_LIVE_PROVIDER_UNAVAILABLE');
+            return true;
+        },
+    );
 });
 
 test('AI schemas and mobile service accept the mobile generation contract', () => {

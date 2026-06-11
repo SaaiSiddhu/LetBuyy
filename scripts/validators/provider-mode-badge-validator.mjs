@@ -53,6 +53,7 @@ const notificationCore = readFile("packages/notification-core/src/index.ts");
 const emailRoute = readFile("services/api-gateway/src/routes/email.ts");
 const aiRoute = readFile("services/api-gateway/src/routes/ai.ts");
 const aiAdapter = readFile("packages/infrastructure/ai-generation-adapter/index.ts");
+const aiCreditAdapter = readFile("packages/infrastructure/ai-credit-purchase-adapter/index.ts");
 const analyticsRoute = readFile("services/api-gateway/src/routes/analytics.ts");
 const billingCore = readFile("packages/billing-core/src/index.ts");
 const billingRoute = readFile("services/api-gateway/src/routes/billing.ts");
@@ -142,6 +143,10 @@ for (const fragment of [
 }
 reporter.assert(aiRoute.includes("LETBUYY_AI_MODEL_MODE === 'live' ? 'live' : 'sandbox'"), "AI seam route must default model mode to sandbox");
 reporter.assert(aiAdapter.includes("mode: 'sandbox' | 'live'"), "AI capability seam must expose sandbox/live modes");
+reporter.assert(aiCreditAdapter.includes("AI_CREDIT_PURCHASE_LIVE_PROVIDER_UNAVAILABLE"), "AI credit purchase live mode must fail closed while provider checkout client is absent");
+reporter.assert(!aiCreditAdapter.includes("providerMode: 'live'"), "AI credit purchase adapter must not return live provider mode without a real provider checkout order");
+reporter.assert(capabilityBacklog.includes("CAP-C17"), "CAPABILITY_BACKLOG.md missing CAP-C17 AI credit purchase provider gap");
+reporter.assert(skippedHumanDecisions.includes("SKIP-CAP-AI-CREDIT-PURCHASE-PROVIDER"), "SKIPPED_HUMAN_DECISIONS.md missing SKIP-CAP-AI-CREDIT-PURCHASE-PROVIDER");
 for (const fragment of [
   "LETBUYY_WAREHOUSE_MODE || 'mock'",
   "mode: 'mock'",
