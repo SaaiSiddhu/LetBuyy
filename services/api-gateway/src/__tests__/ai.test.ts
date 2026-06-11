@@ -114,7 +114,7 @@ test('AI credit purchase is sandbox-first and live Razorpay credential-gated', a
     });
 
     assert.equal(liveAdapter.available, false);
-    assert.match(liveAdapter.unavailableReason || '', /provider client is not implemented/);
+    assert.match(liveAdapter.unavailableReason || '', /provider integration is unavailable/);
     await assert.rejects(
         () => liveAdapter.purchase({
             storeId: 'store_1',

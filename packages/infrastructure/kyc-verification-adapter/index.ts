@@ -70,7 +70,7 @@ function sandboxResult(
 export function createKycVerificationAdapter(credentials: KycVerificationCredentials): KycVerificationAdapter {
   if (credentials.mode === 'live') {
     throw new KycProviderUnavailableError(
-      'KYC_LIVE_PROVIDER_UNAVAILABLE: live KYC provider client is not implemented; SKIP-CAP-KYC-LIVE-PROVIDER',
+      'KYC_LIVE_PROVIDER_UNAVAILABLE: live KYC provider integration is unavailable until SKIP-CAP-KYC-LIVE-PROVIDER ships',
     );
   }
 

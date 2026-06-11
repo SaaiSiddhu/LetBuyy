@@ -126,7 +126,7 @@ export class LogisticsLiveProviderUnavailableError extends Error {
 
   constructor(provider: LogisticsProviderName) {
     const carrier = PROVIDER_CONFIG[provider].carrier;
-    super(`${carrier} live logistics provider client is not implemented`);
+    super(`${carrier} live logistics provider integration is unavailable until SKIP-CAP-LOGISTICS-LIVE-PROVIDER ships`);
     this.name = 'LogisticsLiveProviderUnavailableError';
     this.provider = provider;
   }
@@ -140,7 +140,7 @@ export function isLogisticsLiveProviderUnavailableError(error: unknown): boolean
   );
 }
 
-function assertSandboxScaffold(provider: LogisticsProviderName, options: LogisticsProviderOptions) {
+function assertSandboxMode(provider: LogisticsProviderName, options: LogisticsProviderOptions) {
   if (normalizeMode(options) === 'sandbox') return;
   throw new LogisticsLiveProviderUnavailableError(provider);
 }
@@ -180,7 +180,7 @@ function labelUrl(provider: LogisticsProviderName, shipmentId: string): string {
 function createScaffoldLogisticsProvider(provider: LogisticsProviderName, options: LogisticsProviderOptions = {}): LogisticsProvider {
   const mode = normalizeMode(options);
   const config = PROVIDER_CONFIG[provider];
-  assertSandboxScaffold(provider, options);
+  assertSandboxMode(provider, options);
 
   return {
     name: provider,

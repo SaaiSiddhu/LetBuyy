@@ -105,7 +105,7 @@ test('Live logistics provider scaffolds fail closed instead of returning sandbox
     (error) => {
       assert.equal(error.code, 'LOGISTICS_LIVE_PROVIDER_UNAVAILABLE');
       assert.equal(error.provider, 'shiprocket');
-      assert.match(error.message, /live logistics provider client is not implemented/);
+      assert.match(error.message, /live logistics provider integration is unavailable/);
       return true;
     },
   );

@@ -50,7 +50,7 @@ export class AiCreditPurchaseLiveProviderUnavailableError extends Error {
   readonly code = AI_CREDIT_PURCHASE_LIVE_PROVIDER_UNAVAILABLE;
 
   constructor() {
-    super('AI credit purchase live provider client is not implemented');
+    super('AI credit purchase live provider integration is unavailable until SKIP-CAP-AI-CREDIT-PURCHASE-PROVIDER ships');
     this.name = 'AiCreditPurchaseLiveProviderUnavailableError';
   }
 }
@@ -110,7 +110,7 @@ export function createAiCreditPurchaseAdapter(
   const pricePerCreditMinor = normalizePrice(credentials.pricePerCreditMinor);
   const currency = normalizeCurrency(credentials.currency);
   const available = mode === 'sandbox';
-  const unavailableReason = available ? null : 'AI credit purchase live provider client is not implemented';
+  const unavailableReason = available ? null : 'AI credit purchase live provider integration is unavailable until SKIP-CAP-AI-CREDIT-PURCHASE-PROVIDER ships';
 
   return {
     provider,

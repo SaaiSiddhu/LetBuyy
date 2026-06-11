@@ -288,7 +288,15 @@ reporter.assert(mediaRoute.includes("letbuyy-local-sandbox-media-upload-secret")
 reporter.assert(!shippingRoute.includes("mock-standard"), "shipping route local fallback rate must be sandbox-labelled");
 reporter.assert(shippingRoute.includes("sandbox-standard"), "shipping route local fallback rate must expose sandbox-standard");
 reporter.assert(logisticsAdapter.includes("LOGISTICS_LIVE_PROVIDER_UNAVAILABLE"), "logistics adapter live mode must fail closed while real carrier clients are absent");
-reporter.assert(logisticsAdapter.includes("assertSandboxScaffold"), "logistics adapter must restrict scaffold labels to sandbox mode");
+reporter.assert(logisticsAdapter.includes("assertSandboxMode"), "logistics adapter must restrict non-live labels to sandbox mode");
+for (const [label, source] of [
+  ["KYC adapter", kycAdapter],
+  ["AI credit purchase adapter", aiCreditAdapter],
+  ["logistics adapter", logisticsAdapter],
+]) {
+  reporter.assert(!source.includes("provider client is not implemented"), `${label} must not expose implementation-detail provider-client errors`);
+  reporter.assert(source.includes("provider integration is unavailable"), `${label} must expose unavailable provider-integration wording`);
+}
 reporter.assert(!logisticsAdapter.includes("live mode requires provider credentials"), "logistics adapter must not treat credentials alone as a live provider implementation");
 reporter.assert(shippingRoute.includes("isLogisticsLiveProviderUnavailableError"), "shipping tracking route must translate unavailable live logistics providers to setup-required responses");
 reporter.assert(shippingLabelsRoute.includes("liveLogisticsProviderAvailable"), "shipping label route must not expose live provider mode until a real logistics provider exists");
