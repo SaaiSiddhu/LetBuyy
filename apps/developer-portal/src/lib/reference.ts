@@ -299,7 +299,7 @@ export const sdkGuides: GuideCard[] = [
     status: "SKIP - NEEDS SDK/CLI",
     body: "No tracked `@letbuyy/cli`, theme CLI, app CLI, or `create-letbuyy` package exists in the active workspace.",
     bullets: [
-      "Use the JSON-contract schema and gateway upload endpoint for now.",
+      "Use the JSON-contract schema and gateway upload endpoint until the SDK/CLI package exists.",
       "Local dev generation remains a planned SDK/CLI artifact.",
       "Do not publish CLI commands in docs as available until the package exists.",
     ],

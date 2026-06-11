@@ -108,11 +108,11 @@ export default function PayPalReturnPage({ params }: { params: Promise<{ subdoma
 
                 <h1 className="text-2xl font-bold mb-2">Payment Successful!</h1>
                 <p className="text-theme-secondary mb-6">
-                    Your PayPal payment has been processed. We&apos;ll begin preparing your order shortly.
+                    Your PayPal payment has been captured. The merchant can now prepare your order.
                 </p>
 
                 <div className="card-theme p-4 rounded-xl shadow-sm mb-6 text-sm text-theme-secondary">
-                    <p>A confirmation email will be sent to your PayPal email address.</p>
+                    <p>Use your PayPal receipt as the provider confirmation for this payment.</p>
                 </div>
 
                 <Link

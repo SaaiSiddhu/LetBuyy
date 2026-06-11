@@ -40,9 +40,9 @@ const advancedPreferences = [
     },
     {
         title: 'Password protection',
-        description: 'Restrict storefront access while preparing a launch.',
+        description: 'Restrict storefront access while preparing publication.',
         icon: Lock,
-        value: 'Locked for now',
+        value: 'Locked pending safe editing',
     },
     {
         title: 'Google Analytics',
@@ -287,7 +287,7 @@ export default function PreferencesPage() {
                     action={<Badge label="Read-only" variant="warning" />}
                 >
                     <Banner variant="warning" title="Advanced fields are read-only">
-                        Social image, password protection, analytics ID, and favicon controls are locked for now.
+                        Social image, password protection, analytics ID, and favicon controls are locked pending safe editing.
                     </Banner>
 
                     <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
