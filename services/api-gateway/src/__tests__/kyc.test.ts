@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import {
+    createKycVerificationAdapter,
+    KycProviderUnavailableError,
+} from '@letbuyy/infrastructure/kyc-verification-adapter';
 
 const indexSource = readFileSync(new URL('../index.ts', import.meta.url), 'utf8');
 const kycSource = readFileSync(new URL('../routes/kyc.ts', import.meta.url), 'utf8');
@@ -35,12 +39,31 @@ test('KYC migration declares tenant RLS and approved updated_at trigger', () => 
     assert.match(migrationSource, /update_merchant_kyc_documents_updated_at[\s\S]*EXECUTE FUNCTION public\.update_updated_at\(\)/);
 });
 
-test('KYC adapter is sandbox-first and fail-closed for live providers', () => {
+test('KYC adapter is sandbox-first, manual-review aware, and fail-closed for automated live providers', async () => {
     assert.match(adapterSource, /export function createKycVerificationAdapter/);
-    assert.match(adapterSource, /credentials\.mode === 'live'/);
+    assert.match(adapterSource, /credentials\.mode === 'live' && credentials\.provider === 'manual'/);
     assert.doesNotMatch(adapterSource, /KYC_LIVE_PROVIDER_CREDENTIALS_REQUIRED/);
-    assert.match(adapterSource, /live KYC provider integration is unavailable/);
+    assert.match(adapterSource, /automated live KYC provider integration is unavailable/);
     assert.match(adapterSource, /KYC_LIVE_PROVIDER_UNAVAILABLE/);
     assert.doesNotMatch(adapterSource, /live_provider_stub/);
     assert.match(adapterSource, /status: hasEvidence \? 'verified' : 'needs_review'/);
+    assert.match(adapterSource, /manual_review_required: true/);
+
+    const manual = createKycVerificationAdapter({ provider: 'manual', mode: 'live' });
+    const result = await manual.verifyDocument({
+        siteId: '11111111-1111-4111-8111-111111111111',
+        documentId: '22222222-2222-4222-8222-222222222222',
+        documentType: 'business_pan',
+        documentNumberLast4: '1234',
+    });
+    assert.equal(result.status, 'needs_review');
+    assert.equal(result.provider, 'manual');
+    assert.equal(result.providerMode, 'live');
+    assert.equal(result.metadata.manual_review_required, true);
+    assert.match(result.providerReference, /^kyc_manual_review_/);
+
+    assert.throws(
+        () => createKycVerificationAdapter({ provider: 'signzy', mode: 'live', apiKey: 'provider-key' }),
+        KycProviderUnavailableError,
+    );
 });

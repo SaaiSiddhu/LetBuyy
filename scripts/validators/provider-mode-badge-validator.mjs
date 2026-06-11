@@ -90,6 +90,7 @@ const moneyAuthorityRollback = readFile("database/supabase/rollback/160_foundati
 reporter.assert(!kycAdapter.includes("live_provider_stub"), "KYC adapter must not turn sandbox verification into live-provider success");
 reporter.assert(!kycAdapter.includes("KYC_LIVE_PROVIDER_CREDENTIALS_REQUIRED"), "KYC live provider gap must not imply credentials alone activate the missing provider client");
 reporter.assert(kycAdapter.includes("KYC_LIVE_PROVIDER_UNAVAILABLE"), "KYC adapter must fail closed while live provider integration is absent");
+reporter.assert(kycAdapter.includes("manual_review_required: true"), "KYC manual live provider must route to manual review without claiming automated provider verification");
 reporter.assert(!identityResidencyConfig.includes("mockAllowed"), "identity residency config must use sandboxAllowed instead of mockAllowed");
 reporter.assert(!identityResidencySchema.includes("mockAllowed"), "identity residency schema must use sandboxAllowed instead of mockAllowed");
 reporter.assert(identityResidencyConfig.includes("sandboxAllowed"), "identity residency config must retain sandboxAllowed environment gating");

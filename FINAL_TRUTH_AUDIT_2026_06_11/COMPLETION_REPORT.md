@@ -1,8 +1,8 @@
 # LetBuyy Final Convergence Completion Report
 
 **Date:** 2026-06-11
-**Scope:** Repository-side B/C/D/E implementation and certification after Phase A live G4 was recorded as human-owned, plus repo-side Phase F CAP-C03 through CAP-C07 and CAP-C09 through CAP-C14 capability implementation.
-**Pre-report HEAD:** `e2e2d47e` on `stepup/main`; local `main..stepup/main = 0`.
+**Scope:** Repository-side B/C/D/E implementation and certification after Phase A live G4 was recorded as human-owned, plus repo-side Phase F CAP-C03 through CAP-C07 and CAP-C09 through CAP-C15 capability implementation.
+**Pre-report HEAD:** `fa1fcf3c` on `stepup/main`; local `main..stepup/main = 0`.
 
 ## Repository Answer
 
@@ -31,6 +31,7 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | F CAP-C12 | Store-publish convergence is repo-side done: web and mobile editors publish canonical `template_config` carrying Liquid bundle/canary state, the gateway publish contract accepts that shape, and backend release snapshots prefer the supplied publish config before draft/store fallback. Live publish/rollback/render smoke remains human-owned. |
 | F CAP-C13 | Checkout Wasm/app-functions retirement is repo-side done: buyer order creation no longer imports or calls `evaluateCheckoutAppFunctions`, the checkout page no longer fetches checkout extension registrations, the checkout iframe host component is deleted, and beta-readiness now fails if the live path returns. |
 | F CAP-C14 | Transactional invite/contact email delivery is repo-side done: admin and merchant employee invites plus storefront contact-owner notifications enqueue signed `NOTIFICATION_QUEUE` jobs, queue-workers dispatch those job types through the existing email sender path, and beta-readiness now fails if the stale CAP-C14 seam rows return. Live ESP dispatch evidence remains human-owned under CAP-C18. |
+| F CAP-C15 | Live manual KYC review is repo-side done: the KYC adapter routes `KYC_PROVIDER=manual` in live mode to `needs_review` with manual-review metadata, while automated Signzy/HyperVerge live providers still fail closed behind the recorded provider seam. |
 
 ## Validation Evidence
 
@@ -78,6 +79,9 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | `npx tsx --test services/api-gateway/src/__tests__/order-confirmation-email.test.ts` | PASS, 3/3 after CAP-C14 transactional invite/contact queue assertions |
 | `node scripts/validators/beta-readiness-validator.mjs` | PASS after CAP-C14; now requires route enqueue wiring, transactional helper fragments, worker job support, and absence of stale CAP-C14 seam rows |
 | `npx tsc --noEmit -p services/api-gateway/tsconfig.json`; `npx tsc --noEmit -p services/queue-workers/tsconfig.json` | PASS after CAP-C14 |
+| `npx tsx --test services/api-gateway/src/__tests__/kyc.test.ts` | PASS, 4/4 after CAP-C15 manual-review assertions |
+| `node scripts/validators/provider-mode-badge-validator.mjs` | PASS after CAP-C15; now requires exact `manual_review_required: true` metadata |
+| `pnpm --filter @letbuyy/payments build`; `npx tsc --noEmit -p packages/infrastructure/tsconfig.json`; `npx tsc --noEmit -p services/api-gateway/tsconfig.json` | PASS after CAP-C15 |
 
 Mutation proofs added during final certification:
 
@@ -89,6 +93,7 @@ Mutation proofs added during final certification:
 | Renamed the CAP-C12 mobile publish body key from `template_config` to `template_config_probe`. | `beta-readiness-validator` failed on the missing canonical mobile publish payload fragment. |
 | Reintroduced the forbidden `evaluateCheckoutAppFunctions` marker into buyer checkout order creation. | `beta-readiness-validator` failed on checkout app-functions/Wasm execution returning to the payment route. |
 | Removed the validator-required `email.employee_invite` queue-worker fragment. | `beta-readiness-validator` failed on the missing CAP-C14 transactional email worker support. |
+| Replaced `manual_review_required: true` with a probe field in the KYC adapter. | `provider-mode-badge-validator` failed after tightening the check to the exact manual-review field. |
 
 ## Remaining Human-Live Seams
 
@@ -123,6 +128,7 @@ Provider/capability blockers remain in the skip and capability ledgers for live 
 | Theme convergence | Repository C0-C3 and CAP-C12 publish-path convergence done | C4 production canary, ARB flip, deployed publish/rollback smoke, and C7 React deletion proof remain blocked by live/canary and 4x100% parity evidence. |
 | Checkout compatibility | CAP-C13 checkout Wasm/app-functions live path is retired repo-side and guarded by beta-readiness/app-platform tests | Hosted-checkout live cutover and provider smoke remain human/live seams, but checkout no longer depends on the rejected extension/Wasm runtime. |
 | Transactional email readiness | CAP-C14 invite/contact queue wiring is repo-side done and guarded by beta-readiness plus queue payload tests | Live ESP provider dispatch, sender-domain verification, delivery webhooks, and provider smoke remain human/live seams under CAP-C18. |
+| KYC readiness | CAP-C15 live manual review enters `needs_review` repo-side and is guarded by provider-mode validation/tests | Automated Signzy/HyperVerge provider clients, credentials, contract tests, and live verification evidence remain human/live seams. |
 
 ## Completion Statement
 

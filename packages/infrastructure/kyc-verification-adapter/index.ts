@@ -67,10 +67,44 @@ function sandboxResult(
   };
 }
 
+function manualReviewReference(input: VerifyKycDocumentInput): string {
+  return `kyc_manual_review_${input.siteId.replace(/-/g, '').slice(0, 8)}_${input.documentType}_${input.documentId.replace(/-/g, '').slice(0, 8)}`;
+}
+
+function manualReviewResult(
+  credentials: KycVerificationCredentials,
+  input: VerifyKycDocumentInput,
+): VerifyKycDocumentResult {
+  const hasEvidence = Boolean(input.fileUrl || input.documentNumberLast4);
+  return {
+    status: 'needs_review',
+    provider: credentials.provider,
+    providerMode: credentials.mode,
+    providerReference: manualReviewReference(input),
+    rejectionReason: null,
+    metadata: {
+      manual_review_required: true,
+      evidence_present: hasEvidence,
+      checked_at: new Date().toISOString(),
+    },
+  };
+}
+
 export function createKycVerificationAdapter(credentials: KycVerificationCredentials): KycVerificationAdapter {
+  if (credentials.mode === 'live' && credentials.provider === 'manual') {
+    return {
+      async verifyDocument(input) {
+        return manualReviewResult(credentials, input);
+      },
+      async refreshStatus(input) {
+        return manualReviewResult(credentials, input);
+      },
+    };
+  }
+
   if (credentials.mode === 'live') {
     throw new KycProviderUnavailableError(
-      'KYC_LIVE_PROVIDER_UNAVAILABLE: live KYC provider integration is unavailable until SKIP-CAP-KYC-LIVE-PROVIDER ships',
+      'KYC_LIVE_PROVIDER_UNAVAILABLE: automated live KYC provider integration is unavailable until SKIP-CAP-KYC-LIVE-PROVIDER ships',
     );
   }
 
