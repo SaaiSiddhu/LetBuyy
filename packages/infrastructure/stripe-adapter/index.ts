@@ -3,11 +3,16 @@ import {
   inrMoney,
   normalizeIdempotencyKey,
   normalizePaymentMoney,
+  type PaymentCaptureInput,
   type PaymentCaptureResult,
+  type PaymentCreateIntentInput,
   type PaymentProvider,
+  type PaymentRefundInput,
   type PaymentRefundResult,
+  type PaymentVerifyInput,
   type PaymentVerificationResult,
   type PaymentWebhookHeaders,
+  type PaymentWebhookVerifyInput,
   type PaymentWebhookVerificationResult,
 } from '@letbuyy/payments';
 import { hmacSha256Hex, timingSafeEqual } from '../razorpay-adapter/index';
@@ -173,7 +178,7 @@ export function createStripePaymentProvider(params: {
   return {
     name: 'stripe',
 
-    async createIntent(input) {
+    async createIntent(input: PaymentCreateIntentInput) {
       if (!params.secretKey) {
         throw new Error('Stripe checkout requires STRIPE_SECRET_KEY');
       }
@@ -220,7 +225,7 @@ export function createStripePaymentProvider(params: {
       };
     },
 
-    async verify(input): Promise<PaymentVerificationResult> {
+    async verify(input: PaymentVerifyInput): Promise<PaymentVerificationResult> {
       const amount = normalizePaymentMoney(input.amount);
       normalizeIdempotencyKey(input.idempotencyKey);
 
@@ -239,7 +244,7 @@ export function createStripePaymentProvider(params: {
       };
     },
 
-    async capture(input): Promise<PaymentCaptureResult> {
+    async capture(input: PaymentCaptureInput): Promise<PaymentCaptureResult> {
       const amount = normalizePaymentMoney(input.amount);
       normalizeIdempotencyKey(input.idempotencyKey);
 
@@ -257,7 +262,7 @@ export function createStripePaymentProvider(params: {
       };
     },
 
-    async refund(input): Promise<PaymentRefundResult> {
+    async refund(input: PaymentRefundInput): Promise<PaymentRefundResult> {
       normalizePaymentMoney(input.amount);
       normalizeIdempotencyKey(input.idempotencyKey);
 
@@ -274,7 +279,7 @@ export function createStripePaymentProvider(params: {
       };
     },
 
-    async webhookVerify(input): Promise<PaymentWebhookVerificationResult> {
+    async webhookVerify(input: PaymentWebhookVerifyInput): Promise<PaymentWebhookVerificationResult> {
       const signatureHeader = stripeHeader(input.headers, 'stripe-signature');
       if (!signatureHeader) {
         return {

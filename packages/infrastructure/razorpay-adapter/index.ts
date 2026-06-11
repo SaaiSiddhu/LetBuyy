@@ -2,11 +2,16 @@ import {
   inrMoney,
   normalizeIdempotencyKey,
   normalizePaymentMoney,
+  type PaymentCaptureInput,
   type PaymentCaptureResult,
+  type PaymentCreateIntentInput,
   type PaymentProvider,
+  type PaymentRefundInput,
   type PaymentRefundResult,
+  type PaymentVerifyInput,
   type PaymentVerificationResult,
   type PaymentWebhookHeaders,
+  type PaymentWebhookVerifyInput,
   type PaymentWebhookVerificationResult,
 } from '@letbuyy/payments';
 
@@ -289,7 +294,7 @@ export function createRazorpayPaymentProvider(
   return {
     name: 'razorpay',
 
-    async createIntent(input) {
+    async createIntent(input: PaymentCreateIntentInput) {
       const amount = normalizePaymentMoney(input.amount);
       const idempotencyKey = normalizeIdempotencyKey(input.idempotencyKey);
       const providerOrder = await createRazorpayOrder(credentials, {
@@ -320,7 +325,7 @@ export function createRazorpayPaymentProvider(
       };
     },
 
-    async verify(input): Promise<PaymentVerificationResult> {
+    async verify(input: PaymentVerifyInput): Promise<PaymentVerificationResult> {
       const amount = normalizePaymentMoney(input.amount);
       normalizeIdempotencyKey(input.idempotencyKey);
 
@@ -357,7 +362,7 @@ export function createRazorpayPaymentProvider(
       };
     },
 
-    async capture(input): Promise<PaymentCaptureResult> {
+    async capture(input: PaymentCaptureInput): Promise<PaymentCaptureResult> {
       const amount = normalizePaymentMoney(input.amount);
       normalizeIdempotencyKey(input.idempotencyKey);
 
@@ -390,7 +395,7 @@ export function createRazorpayPaymentProvider(
       };
     },
 
-    async refund(input): Promise<PaymentRefundResult> {
+    async refund(input: PaymentRefundInput): Promise<PaymentRefundResult> {
       const amount = normalizePaymentMoney(input.amount);
       const idempotencyKey = normalizeIdempotencyKey(input.idempotencyKey);
 
@@ -421,7 +426,7 @@ export function createRazorpayPaymentProvider(
       };
     },
 
-    async webhookVerify(input): Promise<PaymentWebhookVerificationResult> {
+    async webhookVerify(input: PaymentWebhookVerifyInput): Promise<PaymentWebhookVerificationResult> {
       const signature = headerValue(input.headers, 'x-razorpay-signature');
       if (!signature) {
         return {

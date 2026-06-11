@@ -3,11 +3,16 @@ import {
   inrMoney,
   normalizeIdempotencyKey,
   normalizePaymentMoney,
+  type PaymentCaptureInput,
   type PaymentCaptureResult,
+  type PaymentCreateIntentInput,
   type PaymentProvider,
+  type PaymentRefundInput,
   type PaymentRefundResult,
+  type PaymentVerifyInput,
   type PaymentVerificationResult,
   type PaymentWebhookHeaders,
+  type PaymentWebhookVerifyInput,
   type PaymentWebhookVerificationResult,
 } from '@letbuyy/payments';
 
@@ -287,7 +292,7 @@ export function createPayPalPaymentProvider(
   return {
     name: 'paypal',
 
-    async createIntent(input) {
+    async createIntent(input: PaymentCreateIntentInput) {
       const amount = normalizePaymentMoney(input.amount);
       const idempotencyKey = normalizeIdempotencyKey(input.idempotencyKey);
       const returnUrl = metadataString(input.metadata, 'return_url');
@@ -331,7 +336,7 @@ export function createPayPalPaymentProvider(
       };
     },
 
-    async verify(input): Promise<PaymentVerificationResult> {
+    async verify(input: PaymentVerifyInput): Promise<PaymentVerificationResult> {
       const amount = normalizePaymentMoney(input.amount);
       normalizeIdempotencyKey(input.idempotencyKey);
       const verified = Boolean(input.providerOrderId);
@@ -351,7 +356,7 @@ export function createPayPalPaymentProvider(
       };
     },
 
-    async capture(input): Promise<PaymentCaptureResult> {
+    async capture(input: PaymentCaptureInput): Promise<PaymentCaptureResult> {
       const amount = normalizePaymentMoney(input.amount);
       normalizeIdempotencyKey(input.idempotencyKey);
 
@@ -376,7 +381,7 @@ export function createPayPalPaymentProvider(
       };
     },
 
-    async refund(input): Promise<PaymentRefundResult> {
+    async refund(input: PaymentRefundInput): Promise<PaymentRefundResult> {
       normalizePaymentMoney(input.amount);
       normalizeIdempotencyKey(input.idempotencyKey);
 
@@ -393,7 +398,7 @@ export function createPayPalPaymentProvider(
       };
     },
 
-    async webhookVerify(input): Promise<PaymentWebhookVerificationResult> {
+    async webhookVerify(input: PaymentWebhookVerifyInput): Promise<PaymentWebhookVerificationResult> {
       const verified = await verifyPayPalWebhookSignatureWithCredentials(
         credentials,
         {

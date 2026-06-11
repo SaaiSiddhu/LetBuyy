@@ -3,11 +3,16 @@ import {
   inrMoney,
   normalizeIdempotencyKey,
   normalizePaymentMoney,
+  type PaymentCaptureInput,
   type PaymentCaptureResult,
+  type PaymentCreateIntentInput,
   type PaymentProvider,
+  type PaymentRefundInput,
   type PaymentRefundResult,
+  type PaymentVerifyInput,
   type PaymentVerificationResult,
   type PaymentWebhookHeaders,
+  type PaymentWebhookVerifyInput,
   type PaymentWebhookVerificationResult,
 } from '@letbuyy/payments';
 import { timingSafeEqual } from '../razorpay-adapter/index';
@@ -265,7 +270,7 @@ export function createCashfreePaymentProvider(
   return {
     name: 'cashfree',
 
-    async createIntent(input) {
+    async createIntent(input: PaymentCreateIntentInput) {
       const amount = normalizePaymentMoney(input.amount);
       const idempotencyKey = normalizeIdempotencyKey(input.idempotencyKey);
       const metadata = input.metadata || {};
@@ -331,7 +336,7 @@ export function createCashfreePaymentProvider(
       };
     },
 
-    async verify(input): Promise<PaymentVerificationResult> {
+    async verify(input: PaymentVerifyInput): Promise<PaymentVerificationResult> {
       const amount = normalizePaymentMoney(input.amount);
       normalizeIdempotencyKey(input.idempotencyKey);
 
@@ -415,7 +420,7 @@ export function createCashfreePaymentProvider(
       };
     },
 
-    async capture(input): Promise<PaymentCaptureResult> {
+    async capture(input: PaymentCaptureInput): Promise<PaymentCaptureResult> {
       const amount = normalizePaymentMoney(input.amount);
       const idempotencyKey = normalizeIdempotencyKey(input.idempotencyKey);
       const verification = await createCashfreePaymentProvider(credentials, { fetch: fetchImpl }).verify({
@@ -439,7 +444,7 @@ export function createCashfreePaymentProvider(
       };
     },
 
-    async refund(input): Promise<PaymentRefundResult> {
+    async refund(input: PaymentRefundInput): Promise<PaymentRefundResult> {
       const amount = normalizePaymentMoney(input.amount);
       const idempotencyKey = normalizeIdempotencyKey(input.idempotencyKey);
 
@@ -493,7 +498,7 @@ export function createCashfreePaymentProvider(
       };
     },
 
-    async webhookVerify(input): Promise<PaymentWebhookVerificationResult> {
+    async webhookVerify(input: PaymentWebhookVerifyInput): Promise<PaymentWebhookVerificationResult> {
       const signature = headerValue(input.headers, 'x-webhook-signature');
       const timestamp = headerValue(input.headers, 'x-webhook-timestamp');
 

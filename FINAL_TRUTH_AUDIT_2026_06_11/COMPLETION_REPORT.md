@@ -34,6 +34,8 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | `npx tsx --test tests/contracts/dns-letbuyy-com-zone.test.ts` | PASS, 1/1 |
 | `npx tsx --test services/api-gateway/src/__tests__/checkout-d6.test.ts` | PASS, 7/7 |
 | `npx tsc --noEmit -p services/api-gateway/tsconfig.json` | PASS |
+| `pnpm --filter @letbuyy/payments build` | PASS |
+| `pnpm --filter @letbuyy/infrastructure typecheck` | PASS |
 | `pnpm run lint` | PASS with existing warnings only |
 | `pnpm run lint:css` | PASS |
 

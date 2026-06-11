@@ -2,7 +2,12 @@ import {
   inrMoney,
   normalizeIdempotencyKey,
   normalizePaymentMoney,
+  type PaymentCaptureInput,
+  type PaymentCreateIntentInput,
   type PaymentProvider,
+  type PaymentRefundInput,
+  type PaymentVerifyInput,
+  type PaymentWebhookVerifyInput,
 } from '@letbuyy/payments';
 
 export interface CodPaymentProviderOptions {
@@ -19,7 +24,7 @@ export function createCodPaymentProvider(options: CodPaymentProviderOptions = {}
   return {
     name: 'cod',
 
-    async createIntent(input) {
+    async createIntent(input: PaymentCreateIntentInput) {
       const amount = normalizePaymentMoney(input.amount);
       const idempotencyKey = normalizeIdempotencyKey(input.idempotencyKey);
       return {
@@ -38,7 +43,7 @@ export function createCodPaymentProvider(options: CodPaymentProviderOptions = {}
       };
     },
 
-    async verify(input) {
+    async verify(input: PaymentVerifyInput) {
       const amount = normalizePaymentMoney(input.amount);
       const verified = !requireVerification || isCodVerified(input.metadata);
       return {
@@ -56,7 +61,7 @@ export function createCodPaymentProvider(options: CodPaymentProviderOptions = {}
       };
     },
 
-    async capture(input) {
+    async capture(input: PaymentCaptureInput) {
       const amount = normalizePaymentMoney(input.amount);
       normalizeIdempotencyKey(input.idempotencyKey);
       return {
@@ -71,7 +76,7 @@ export function createCodPaymentProvider(options: CodPaymentProviderOptions = {}
       };
     },
 
-    async refund(input) {
+    async refund(input: PaymentRefundInput) {
       normalizeIdempotencyKey(input.idempotencyKey);
       return {
         provider: 'cod',
@@ -88,7 +93,7 @@ export function createCodPaymentProvider(options: CodPaymentProviderOptions = {}
       };
     },
 
-    async webhookVerify(input) {
+    async webhookVerify(input: PaymentWebhookVerifyInput) {
       return {
         provider: 'cod',
         verified: false,
