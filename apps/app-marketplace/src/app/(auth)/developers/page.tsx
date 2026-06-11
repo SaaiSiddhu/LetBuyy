@@ -59,7 +59,7 @@ export default function DeveloperPortalPage() {
                                 { step: '1', title: 'Register', desc: 'Create a developer account record for private review flows.' },
                                 { step: '2', title: 'Build', desc: 'Use source-backed APIs and docs only in approved sandbox/private flows.' },
                                 { step: '3', title: 'Submit', desc: 'Submit an app record for automated checks and human review.' },
-                                { step: '4', title: 'Activate', desc: 'Public catalog activation requires human ARB/product approval and is not claimed here.' },
+                                { step: '4', title: 'Activate', desc: 'Public catalog activation is outside the current launch scope and is not claimed here.' },
                             ].map((s, i) => (
                                 <div key={i} className="dev-step-card">
                                     <div className="dev-step-card__number">{s.step}</div>

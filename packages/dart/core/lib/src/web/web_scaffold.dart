@@ -1,13 +1,13 @@
 // packages/core/lib/src/web/web_scaffold.dart
-// 📱 Production-ready Scaffold for Mobile Web
+// Mobile web Scaffold with stable keyboard handling
 // Proper keyboard handling WITHOUT layout jank
 
 import 'package:flutter/material.dart';
 
-/// A production-ready Scaffold designed for mobile web that properly
+/// A Scaffold designed for mobile web that properly
 /// handles virtual keyboard open/close WITHOUT layout jank.
 ///
-/// ✅ Key principles (production-grade):
+/// Key principles:
 /// - `resizeToAvoidBottomInset: false` - keyboard overlays, doesn't resize
 /// - NO SingleChildScrollView wrapping entire screen (causes rebuild storm)
 /// - Background uses `double.infinity` not MediaQuery.size.height
