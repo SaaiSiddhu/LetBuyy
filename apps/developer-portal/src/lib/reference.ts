@@ -300,7 +300,7 @@ export const sdkGuides: GuideCard[] = [
     body: "No tracked `@letbuyy/cli`, theme CLI, app CLI, or `create-letbuyy` package exists in the active workspace.",
     bullets: [
       "Use the JSON-contract schema and gateway upload endpoint for now.",
-      "Local dev scaffolding remains a planned SDK/CLI artifact.",
+      "Local dev generation remains a planned SDK/CLI artifact.",
       "Do not publish CLI commands in docs as available until the package exists.",
     ],
   },

@@ -71,7 +71,7 @@ export function CommunicationTemplateIndexTable({ rows }: { rows: CommunicationT
                 <EmptyState
                     kind="marketing"
                     title="No communication templates"
-                    body="The current filters did not match the local communications scaffold."
+                    body="The current filters did not match the local communications template library."
                 />
             }
         />

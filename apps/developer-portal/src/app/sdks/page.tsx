@@ -38,7 +38,7 @@ export default function SdksPage() {
             <h1>SDK quick-starts</h1>
             <p>
               Current package contracts for themes and apps. Published JavaScript SDKs,
-              CLIs, scaffolds, and test tools are not present in this branch.
+              CLIs, generators, and test tools are not present in this branch.
             </p>
           </div>
         </section>

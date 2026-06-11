@@ -62,7 +62,7 @@ const moduleCopy: Record<EmployeeModuleKey, {
         description: 'Operational campaign planning for merchant lifecycle and education.',
         contract: '/v1/employees/campaigns',
         workflows: ['Campaign calendar', 'Audience builder', 'Approval queue', 'Campaign performance'],
-        skip: 'No employee campaign contract exists. Existing marketing scaffolds cannot send or schedule campaigns safely.',
+        skip: 'No employee campaign contract exists. Existing marketing modules cannot send or schedule campaigns safely.',
     },
     communications: {
         eyebrow: 'Communications',

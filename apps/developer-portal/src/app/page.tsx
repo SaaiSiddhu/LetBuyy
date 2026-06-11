@@ -63,7 +63,7 @@ export default function HomePage() {
           <article className="developer-card">
             <div className="developer-icon-line">
               <Badge label="SKIP - NEEDS SDK/CLI" variant="warning" />
-              <h3>Local scaffolding CLI</h3>
+              <h3>Local generator CLI</h3>
             </div>
             <p>No active `@letbuyy/cli`, app SDK package, theme CLI, or `create-letbuyy` package exists yet. The portal documents the contract and keeps CLI commands planned.</p>
           </article>

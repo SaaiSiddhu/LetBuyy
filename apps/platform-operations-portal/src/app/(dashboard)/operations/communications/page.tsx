@@ -137,7 +137,7 @@ export default async function CommunicationsPage({ searchParams }: Communication
         <Page>
             <PageHeader
                 title="Merchant Communications"
-                description="Template-based merchant messaging scaffold for onboarding, payments, shipping, and launch support."
+                description="Template-based merchant messaging plan for onboarding, payments, shipping, and launch support."
                 iconName="mail"
                 showDescription
                 secondaryActions={[
@@ -157,7 +157,7 @@ export default async function CommunicationsPage({ searchParams }: Communication
                     <MetricCard
                         label="Templates"
                         value={summary.templates.toLocaleString('en-IN')}
-                        delta="Local scaffold library"
+                        delta="Local template library"
                         deltaTone="neutral"
                     />
                     <MetricCard
@@ -189,7 +189,7 @@ export default async function CommunicationsPage({ searchParams }: Communication
 
                 <div className="grid gap-[var(--lb-density-card-gap)] xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
                     <Card>
-                        <Section title="Template mix" description="Scaffold templates grouped by operational support use case.">
+                    <Section title="Template mix" description="Local templates grouped by operational support use case.">
                             <Chart
                                 ariaLabel="Merchant communication template mix"
                                 data={[
@@ -220,7 +220,7 @@ export default async function CommunicationsPage({ searchParams }: Communication
                 </div>
 
                 <Card>
-                    <Section title="Template filters" description="Filter the local communications scaffold.">
+                    <Section title="Template filters" description="Filter the local communications template library.">
                         <form action="/operations/communications" method="get">
                             <FilterBar
                                 search={

@@ -2060,9 +2060,9 @@ export const sdkToolingGaps: ToolingGapDoc[] = [
     source: "packages/typescript/api-client/src/index.ts"
   },
   {
-    capability: "Theme CLI scaffolder",
+    capability: "Theme CLI generator",
     currentStatus: "[SKIP — NEEDS BACKEND/SDK] Theme bundle validation exists as JSON-contract schemas, but no CLI generator or packager is present.",
-    blockedUntil: "Theme tooling can scaffold, validate, package, and upload a bundle from local source.",
+    blockedUntil: "Theme tooling can generate, validate, package, and upload a bundle from local source.",
     source: "packages/theme-engine/src/theme-bundle.ts:117 + apps/developer-portal/src/lib/developer-surface.ts"
   },
   {
@@ -2091,7 +2091,7 @@ export const skipItems: SkipItem[] = [
     reason: "[SKIP — NEEDS SDK/CLI] A minimal createLetbuyyAppSdk wrapper exists in @letbuyy/api-client, but no dedicated @letbuyy/app-sdk browser bridge package exists in this branch."
   },
   {
-    title: "Theme CLI scaffolder",
+    title: "Theme CLI generator",
     reason: "[SKIP — NEEDS BACKEND/SDK] The theme contract exists as Zod schemas, but no CLI generator or packager is present."
   },
   {

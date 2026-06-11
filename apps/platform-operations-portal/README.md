@@ -10,4 +10,4 @@
 
 ## Runtime Boundary
 
-This app may call versioned service APIs and shared packages. It must not import sibling apps, legacy code, infrastructure modules, generated build output, deprecated app aliases, or retired duplicate mobile-team scaffolds.
+This app may call versioned service APIs and shared packages. It must not import sibling apps, legacy code, infrastructure modules, generated build output, deprecated app aliases, or retired duplicate mobile-team source.
