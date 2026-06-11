@@ -27,5 +27,5 @@ Canonical source boundary: `packages/token-core`.
 
 ## Migration Notes
 
-- Mock signing is allowed only through runtime implementations gated off by feature flags.
+- Sandbox signing is allowed only for dormant/local runtime implementations gated off by default-off identity feature flags; it must never be described as live identity issuance.
 - Live KMS/HSM key provisioning remains human-approved work and must not be inferred from these interfaces.

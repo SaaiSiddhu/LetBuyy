@@ -44,9 +44,15 @@ const gatewayAuthRoute = readFile("services/api-gateway/src/routes/auth.ts");
 const legacyAuthCore = readFile("packages/auth-core/src/index.ts");
 const gatewayIdentityMock = readFile("services/api-gateway/src/identity-foundation/mock-key-service.ts");
 const operationsScaffold = readFile("services/api-gateway/src/identity-foundation/operations-scaffold.ts");
+const tokenCoreAgents = readFile("packages/token-core/AGENTS.md");
 
 reporter.assert(!operationsScaffold.includes("mode: 'mock'"), "identity operations scaffold must not emit mock mode labels");
 reporter.assert(operationsScaffold.includes("mode: 'scaffold'"), "identity operations scaffold must label dormant metric hooks as scaffold");
+reporter.assert(!tokenCoreAgents.includes("Mock signing"), "token-core AGENTS must not authorize mock signing");
+reporter.assert(
+  tokenCoreAgents.includes("Sandbox signing is allowed only for dormant/local runtime implementations"),
+  "token-core AGENTS must constrain sandbox signing to dormant/local implementations",
+);
 
 const legacySessionResidue =
   gatewayAuthRoute.includes("randomHex(32)") ||
