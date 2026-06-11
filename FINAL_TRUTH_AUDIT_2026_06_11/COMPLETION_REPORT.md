@@ -1,8 +1,8 @@
 # LetBuyy Final Convergence Completion Report
 
-**Date:** 2026-06-11  
-**Scope:** Repository-side B/C/D/E implementation and certification after Phase A live G4 was recorded as human-owned.  
-**Pre-report HEAD:** `e2452fa9` on `stepup/main`; local `main..stepup/main = 0`.
+**Date:** 2026-06-11
+**Scope:** Repository-side B/C/D/E implementation and certification after Phase A live G4 was recorded as human-owned, plus repo-side Phase F CAP-C03 payout provider client implementation.
+**Pre-report HEAD:** `b99f62e4` on `stepup/main`; local `main..stepup/main = 0`.
 
 ## Repository Answer
 
@@ -20,6 +20,7 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | C Liquid | Liquid consumes full `layoutHtml`; header/footer chrome, `lb-*` CSS, first-party sections, settings-faithful stubs, product/cart drops, `t` filter, and web/mobile editor canary write paths are implemented locally. React stays frozen and undeleted. |
 | D Duplicates | DOC-02/prompt authority retargeted; reserved stubs and manifests made non-activating; frozen app deploy shape neutralized; orphan validators wired; queue planner deduped into `@letbuyy/event-core`; `auth-core/src/legacy.ts` removed; Firebase/GCS media residue, `EMAIL_QUEUE`, stale `develop`, DNS overlay, and undeclared env/config drift removed or guarded. |
 | E Certification | Final anti-recurrence validators cover prompt perimeter, DOC/stub language, frozen deploy shape, validator liveness, canonical ledger migration evidence, reserved manifest activation wording, and retired DNS overlay references. Completion evidence is recorded in this report plus the execution, change, validation, and rollback ledgers. |
+| F CAP-C03 | Razorpay Route payout provider client is implemented behind `PayoutProviderClient`, wired into payout release only when the existing provider flag and credentials are present, posts idempotent provider transfer requests, maps provider references/UTRs, and records provider rejection as failed rather than released. |
 
 ## Validation Evidence
 
@@ -61,7 +62,7 @@ Production certification blockers:
 - `SKIP-D4-FROZEN-VERCEL-PROJECT-DELETION`
 - `SKIP-D5-DNS-TERRAFORM-APPLY`
 
-Provider/capability blockers remain in the skip and capability ledgers for live PSP credentials, payout provider client, capture/refund/settlement/reconciliation live variance-0 smoke, identity keys/OIDC/drain, Liquid production canary and ARB default flip, mobile Turnstile, observability/PITR, KYC, logistics, WhatsApp, transactional/live email, AI-credit purchases, and React deletion proof.
+Provider/capability blockers remain in the skip and capability ledgers for live PSP credentials, payout provider credentials/enablement/smoke, capture/refund/settlement/reconciliation live variance-0 smoke, identity keys/OIDC/drain, Liquid production canary and ARB default flip, mobile Turnstile, observability/PITR, KYC, logistics, WhatsApp, transactional/live email, AI-credit purchases, and React deletion proof.
 
 ## Final Scores
 
@@ -71,7 +72,7 @@ Provider/capability blockers remain in the skip and capability ledgers for live 
 | Governance authority | 9/10 | One local law chain and prompt perimeter pass; ARB signature remains `SKIP-EG1-ARB-SINGLE-REALITY-CERTIFICATION`. |
 | Documentation convergence | 9/10 | Root markdown budget is 9/9 and prompt/DOC-02 drift is archived or pointed; live certification docs remain seam-backed. |
 | Validator integrity | 9.5/10 | Gate passes 105 validators, orphan validators are wired, and mutation probes fail as expected. |
-| Money convergence | Repository B1-B5 done | B6 live provider smoke and variance-0 remain human/live seams. |
+| Money convergence | Repository B1-B5 done; Phase F CAP-C03 payout client done repo-side | B6 live provider credentials, smoke, and variance-0 remain human/live seams. |
 | Theme convergence | Repository C0-C3 done | C4 production canary, ARB flip, and C7 React deletion proof remain blocked by 4x100% parity evidence. |
 
 ## Completion Statement

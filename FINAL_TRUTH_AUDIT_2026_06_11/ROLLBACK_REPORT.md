@@ -61,3 +61,9 @@ Phase A4 is not executed yet. Before any production promotion, the human operato
 | D6/E DNS overlay anti-recurrence | Retargeted active DNS tests to `infrastructure/dns/dns.tf` and made whole-repo validation reject references to the retired `infrastructure/dns/letbuyy_com.tf`. | Revert the D6/E certification commit to restore the previous test references and validator. | Ready locally; live DNS apply remains `SKIP-D5-DNS-TERRAFORM-APPLY`. |
 | D6/E completion report | Added repository-side completion report and EG1 human-live seam records. | Revert the D6/E certification commit to remove the report/seam rows. | Ready; no ARB signature, live deployment, or remote certification was fabricated. |
 | D6/E infrastructure typecheck closure | Annotated payment provider adapter method inputs with canonical `@letbuyy/payments` input interfaces and built payment declarations before infrastructure typecheck. | Revert the infra typecheck closure commit to restore the previous unannotated adapter signatures. | Ready; type-only change, no provider behavior changed. |
+
+## Phase F
+
+| Scope | Forward action | Rollback path | Status |
+|---|---|---|---|
+| CAP-C03 payout provider client | Added `createRazorpayRoutePayoutProviderClient`, wired payout release to inject it for the `razorpay_route` rail when the existing provider flag and credentials are present, and added provider-client tests for confirmed, rejected, and missing-provider outcomes. | Revert the CAP-C03 commit to return payout release to the previous provider-client seam. If already deployed later by a human, disable `RAZORPAY_ROUTE_PROVIDER_ENABLED` first so payout release fails closed before rollback. | Ready; Codex did not provision credentials, enable the provider flag in production, run a live transfer, or claim provider smoke evidence. |

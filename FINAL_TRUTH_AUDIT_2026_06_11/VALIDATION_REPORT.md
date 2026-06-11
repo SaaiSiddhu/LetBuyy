@@ -98,3 +98,13 @@
 | D6/E mutation proofs | Temporarily reintroduced reserved-service manifest `future activation requires deployment config...`; temporarily repointed checkout D6 test to `infrastructure/dns/letbuyy_com.tf`; restored both probes. | FAILS AS EXPECTED | Whole-repo end-state validator failed on the reserved manifest activation language and on the stale DNS overlay reference. |
 | D6/E typecheck | `npx tsc --noEmit -p services/api-gateway/tsconfig.json`; `pnpm --filter @letbuyy/payments build`; `pnpm --filter @letbuyy/infrastructure typecheck` | PASS | Touched API gateway test/runtime project typechecks; the prior infrastructure package caveat is closed by building payment declarations and annotating provider adapter input contracts. |
 | D6/E lint/style | `pnpm run lint`; `pnpm run lint:css` | PASS | Root lint exits 0 with existing warnings only; stylelint exits 0. |
+
+## Phase F
+
+| Checkpoint | Command | Result | Notes |
+|---|---|---|---|
+| CAP-C03 install | `CI=true pnpm install --frozen-lockfile` | PASS | Initial sandboxed install hit registry DNS (`ENOTFOUND registry.npmjs.org`); escalated retry completed from the frozen lockfile and existing cache. |
+| CAP-C03 payout provider tests | `npx tsx --test services/api-gateway/src/__tests__/payout-provider-client.test.ts`; `npx tsx --test services/api-gateway/src/__tests__/money.test.ts` | PASS | New payout provider client tests pass 3/3 and cover provider-confirmed release mapping, provider rejection as failed, and missing-provider fail-closed behavior. Existing money tests pass 10/10 and now assert payout route wiring to `createRazorpayRoutePayoutProviderClient`. |
+| CAP-C03 typecheck | `pnpm --filter @letbuyy/payments build`; `pnpm --filter @letbuyy/infrastructure typecheck`; `npx tsc --noEmit -p services/api-gateway/tsconfig.json` | PASS | Payment declarations, infrastructure adapter package, and API gateway route/test project typecheck cleanly after the provider client wiring. |
+| CAP-C03 governance gate | `node scripts/validate-governance.mjs --lane=gate` | PASS | Gate passes with 105 validators after the provider-client code and seam/backlog retarget. |
+| CAP-C03 lint/style/whitespace | `pnpm run lint`; `pnpm run lint:css`; `git diff --check` | PASS | Root lint exits 0 with existing warnings only; stylelint exits 0; whitespace check is clean after removing a Markdown trailing-space residue. |

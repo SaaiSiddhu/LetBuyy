@@ -39,6 +39,8 @@ test('payout route creates tenant-scoped statements and settles through the adap
     assert.match(payoutsSource, /\.from\('payout_statements'\)[\s\S]*\.insert/);
     assert.match(payoutsSource, /\.from\('wallet_ledger_entries'\)[\s\S]*\.insert/);
     assert.match(payoutsSource, /createPayoutTransferAdapter/);
+    assert.match(payoutsSource, /createRazorpayRoutePayoutProviderClient/);
+    assert.match(payoutsSource, /provider:\s*payoutProviderClient\(statement\.rail\)/);
     assert.doesNotMatch(payoutsSource, /S-018|backend contract|SKIP-NEEDS-BACKEND/);
 });
 
@@ -105,9 +107,11 @@ test('COD reconciliation migration declares tenant RLS, triggers, and wallet rem
 
 test('payout transfer adapter is provider-gated and cannot fabricate release proof', () => {
     assert.match(adapterSource, /export function createPayoutTransferAdapter/);
+    assert.match(adapterSource, /export function createRazorpayRoutePayoutProviderClient/);
     assert.match(adapterSource, /PayoutProviderUnavailable/);
     assert.match(adapterSource, /provider client is not configured/);
-    assert.doesNotMatch(adapterSource, /status:\s*'released'/);
+    assert.match(adapterSource, /'Idempotency-Key': input\.idempotencyKey/);
+    assert.match(adapterSource, /providerReference: stringValue\(payload\.id\)/);
     assert.doesNotMatch(adapterSource, /UTR\$\{/);
 });
 

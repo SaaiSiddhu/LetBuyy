@@ -7,6 +7,7 @@ import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
 import {
     createPayoutTransferAdapter,
+    createRazorpayRoutePayoutProviderClient,
     PayoutProviderUnavailable,
     type MerchantPayoutRail,
     type PayoutTransferMode,
@@ -128,6 +129,11 @@ function payoutProviderConfigured(env: Env): boolean {
         && env.RAZORPAY_ROUTE_ACCOUNT_ID
         && envRecord.RAZORPAY_ROUTE_PROVIDER_ENABLED === 'true',
     );
+}
+
+function payoutProviderClient(rail: MerchantPayoutRail) {
+    if (rail === 'razorpay_route') return createRazorpayRoutePayoutProviderClient();
+    return undefined;
 }
 
 function statementNumber(siteId: string, now: Date): string {
@@ -555,6 +561,7 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
             keySecret: c.env.RAZORPAY_ROUTE_KEY_SECRET || c.env.RAZORPAY_KEY_SECRET,
             accountId: c.env.RAZORPAY_ROUTE_ACCOUNT_ID,
         },
+        provider: payoutProviderClient(statement.rail),
     });
 
     const { data: claimed, error: claimError } = await db.rpc('claim_payout_statement_release', {
