@@ -26,7 +26,7 @@ test('sample product is clearly labeled and not active storefront inventory', ()
     assert.match(productsRouteSource, /Sample Product - Cotton Tote/);
     assert.match(productsRouteSource, /inactive draft/);
     assert.match(productsRouteSource, /LETBUYY-SAMPLE-PRODUCT/);
-    assert.match(productsRouteSource, /'sample', 'not-for-sale', 'delete-before-launch'/);
+    assert.match(productsRouteSource, /'sample', 'not-for-sale', 'edit-before-publication'/);
     assert.match(productsRouteSource, /is_active: false/);
     assert.match(productsRouteSource, /sampleProductInput\(body\.store_id\)/);
     assert.doesNotMatch(sampleRouteSource, /order_|orders|analytics|revenue|sales/i);

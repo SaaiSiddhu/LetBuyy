@@ -6949,7 +6949,7 @@ Map<String, dynamic> _sampleProductJson() => {
   'sku': 'LETBUYY-SAMPLE-PRODUCT',
   'stock': 1,
   'is_active': false,
-  'tags': const ['sample', 'not-for-sale', 'delete-before-launch'],
+  'tags': const ['sample', 'not-for-sale', 'edit-before-publication'],
   'variants': const [],
 };
 
