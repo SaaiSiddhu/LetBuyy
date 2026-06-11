@@ -23,7 +23,7 @@ const translations: Record<Lang, Record<string, string>> = {
         or: 'or',
         apple: 'Apple',
         google: 'Google',
-        comingSoon: 'Soon',
+        unavailable: 'Unavailable',
         alreadyHave: 'Already have an account?',
         logIn: 'Log in',
         terms: 'By proceeding, you agree to the',
@@ -71,7 +71,7 @@ const translations: Record<Lang, Record<string, string>> = {
         or: 'या',
         apple: 'Apple',
         google: 'Google',
-        comingSoon: 'जल्द',
+        unavailable: 'उपलब्ध नहीं',
         alreadyHave: 'पहले से अकाउंट है?',
         logIn: 'लॉग इन',
         terms: 'आगे बढ़कर, आप सहमत हैं',
@@ -117,7 +117,7 @@ const translations: Record<Lang, Record<string, string>> = {
         or: 'அல்லது',
         apple: 'Apple',
         google: 'Google',
-        comingSoon: 'விரைவில்',
+        unavailable: 'கிடைக்கவில்லை',
         alreadyHave: 'ஏற்கனவே கணக்கு உள்ளதா?',
         logIn: 'உள்நுழை',
         terms: 'தொடர்வதன் மூலம், நீங்கள் ஒப்புக்கொள்கிறீர்கள்',
@@ -536,10 +536,10 @@ function SignupContent() {
                         </div>
 
                         <div className="auth-oauth-row">
-                            <Button unstyled type="button" className="auth-btn-oauth coming-soon" onClick={(e) => e.preventDefault()} aria-disabled="true">
+                            <Button unstyled type="button" className="auth-btn-oauth unavailable" onClick={(e) => e.preventDefault()} aria-disabled="true">
                                 <OAuthBrandIcon provider="apple" className="auth-oauth-brand-icon" />
                                 {t.apple}
-                                <span className="auth-coming-soon-badge">{t.comingSoon}</span>
+                                <span className="auth-unavailable-badge">{t.unavailable}</span>
                             </Button>
                             <Button unstyled type="button" className="auth-btn-oauth" onClick={() => handleOAuth('google')}>
                                 <OAuthBrandIcon provider="google" className="auth-oauth-brand-icon" />

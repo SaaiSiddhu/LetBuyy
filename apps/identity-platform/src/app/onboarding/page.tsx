@@ -288,7 +288,7 @@ const translations: Record<Lang, Record<string, string>> = {
    Constants
    —————————————————————————————————————— */
 
-type SiteTypeAvailability = 'available' | 'coming-soon' | 'locked'
+type SiteTypeAvailability = 'available' | 'launch-disabled' | 'locked'
 
 type SiteTypeOption = {
     id: SiteType
@@ -300,8 +300,8 @@ type SiteTypeOption = {
 
 const SITE_TYPES: SiteTypeOption[] = [
     { id: 'store', nameKey: 'store', icon: 'shopping_cart', descKey: 'storeDesc', availability: 'available' },
-    { id: 'landing', nameKey: 'landing', icon: 'rocket_launch', descKey: 'landingDesc', availability: 'coming-soon' },
-    { id: 'blog', nameKey: 'blog', icon: 'edit_note', descKey: 'blogDesc', availability: 'coming-soon' },
+    { id: 'landing', nameKey: 'landing', icon: 'rocket_launch', descKey: 'landingDesc', availability: 'launch-disabled' },
+    { id: 'blog', nameKey: 'blog', icon: 'edit_note', descKey: 'blogDesc', availability: 'launch-disabled' },
 ]
 
 const LEGACY_SITE_TYPES: SiteTypeOption[] = [

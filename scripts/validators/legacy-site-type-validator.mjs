@@ -73,7 +73,8 @@ const defaultIdentityTypes = identityOnboarding.match(/const SITE_TYPES:[\s\S]*?
 reporter.assert(
   Boolean(defaultIdentityTypes) &&
     !defaultIdentityTypes?.[0].includes("portfolio") &&
-    !defaultIdentityTypes?.[0].includes("resume"),
+    !defaultIdentityTypes?.[0].includes("resume") &&
+    defaultIdentityTypes?.[0].includes("availability: 'launch-disabled'"),
   "identity onboarding default SITE_TYPES must not include portfolio/resume",
 );
 reporter.assert(

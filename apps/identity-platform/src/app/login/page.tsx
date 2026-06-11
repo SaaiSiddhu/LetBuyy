@@ -24,7 +24,7 @@ const translations: Record<Lang, Record<string, string>> = {
         signInWithPasskey: 'Sign in with passkey',
         apple: 'Apple',
         google: 'Google',
-        comingSoon: 'Soon',
+        unavailable: 'Unavailable',
         newToLetBuyy: 'New to LetBuyy?',
         getStarted: 'Get started',
         password: 'Password',
@@ -43,7 +43,7 @@ const translations: Record<Lang, Record<string, string>> = {
         signInWithPasskey: 'पासकी से साइन इन करें',
         apple: 'Apple',
         google: 'Google',
-        comingSoon: 'जल्द',
+        unavailable: 'उपलब्ध नहीं',
         newToLetBuyy: 'LetBuyy पर नए हैं?',
         getStarted: 'शुरू करें',
         password: 'पासवर्ड',
@@ -62,7 +62,7 @@ const translations: Record<Lang, Record<string, string>> = {
         signInWithPasskey: 'பாஸ்கீ மூலம் உள்நுழையவும்',
         apple: 'Apple',
         google: 'Google',
-        comingSoon: 'விரைவில்',
+        unavailable: 'கிடைக்கவில்லை',
         newToLetBuyy: 'LetBuyy-ல் புதியவரா?',
         getStarted: 'தொடங்கவும்',
         password: 'கடவுச்சொல்',
@@ -264,10 +264,10 @@ function LoginContent() {
                         )}
 
                         <div className="auth-oauth-row">
-                            <Button unstyled className="auth-btn-oauth coming-soon" onClick={(e) => e.preventDefault()} aria-disabled="true">
+                            <Button unstyled className="auth-btn-oauth unavailable" onClick={(e) => e.preventDefault()} aria-disabled="true">
                                 <OAuthBrandIcon provider="apple" className="auth-oauth-brand-icon" />
                                 {t.apple}
-                                <span className="auth-coming-soon-badge">{t.comingSoon}</span>
+                                <span className="auth-unavailable-badge">{t.unavailable}</span>
                             </Button>
                             <Button unstyled className="auth-btn-oauth" onClick={() => handleOAuth('google')}>
                                 <OAuthBrandIcon provider="google" className="auth-oauth-brand-icon" />

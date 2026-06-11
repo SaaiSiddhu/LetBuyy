@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 /**
  * GET /auth/callback
- * OAuth callback handler placeholder while provider OAuth is owned by the gateway.
+ * Fail-closed OAuth callback while provider OAuth is owned by the gateway.
  */
 export async function GET(request: Request) {
     const { origin } = new URL(request.url)

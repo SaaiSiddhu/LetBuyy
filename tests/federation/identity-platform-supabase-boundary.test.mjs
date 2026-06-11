@@ -36,6 +36,7 @@ test('identity-platform still routes backend calls through the shared api client
   const callback = read(`${appRoot}/src/app/auth/callback/route.ts`);
   assert.match(callback, /oauth_unavailable/);
   assert.doesNotMatch(callback, /supabase|exchangeCodeForSession/i);
+  assert.doesNotMatch(callback, /placeholder/i);
 });
 
 test('identity-platform has no runtime-composition provider adapter dependency', () => {
