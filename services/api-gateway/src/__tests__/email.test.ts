@@ -30,14 +30,18 @@ test('Task 011 email route renders and sends through the monolith with sandbox E
     assert.match(routeSource, /router\.post\('\/send',\s*validate\('json',\s*EmailSendSchema\)/);
     assert.match(routeSource, /renderEmailTemplate/);
     assert.match(routeSource, /planEmailProviderFailover/);
+    assert.match(routeSource, /sendResendEmail/);
     assert.match(routeSource, /\.from\('email_suppressions'\)/);
     assert.match(routeSource, /\.from\('sender_domains'\)/);
     assert.match(routeSource, /\.from\('email_logs'\)/);
     assert.match(routeSource, /email\.delivered/);
     assert.match(routeSource, /email\.bounced/);
     assert.match(routeSource, /\[HUMAN-REQUIRED\] HR-ESP-LIVE/);
-    assert.match(routeSource, /liveEmailProviderDispatchAvailable/);
+    assert.match(routeSource, /liveEmailProviderDispatchAvailable\(env: Env\)/);
+    assert.match(routeSource, /configuredSecret\(env\.RESEND_API_KEY\)/);
+    assert.match(routeSource, /provider_client_not_configured/);
     assert.match(routeSource, /EMAIL_PROVIDER_SETUP_REQUIRED/);
+    assert.doesNotMatch(routeSource, /function liveEmailProviderDispatchAvailable\(\): boolean \{\s*return false;\s*\}/);
     assert.doesNotMatch(routeSource, /notification-service/);
 
     assert.match(coreSource, /export const EmailRenderSchema/);
@@ -47,6 +51,7 @@ test('Task 011 email route renders and sends through the monolith with sandbox E
     assert.match(coreSource, /sandbox_resend/);
     assert.doesNotMatch(coreSource, /mock_resend|mock_ses|mock_sendgrid/);
     assert.match(routeSource, /email_sandbox_/);
+    assert.match(routeSource, /provider_message_id: delivery\.provider[\s\S]*delivery\.providerMessageId/);
     assert.doesNotMatch(routeSource, /mock_failed_providers|provider_message_id:\s*delivery\.provider \? `mock_/);
     assert.match(eventSource, /'email\.delivered'/);
     assert.match(eventSource, /'email\.bounced'/);

@@ -141,9 +141,13 @@ for (const fragment of [
 }
 reporter.assert(notificationCore.includes("sandbox_resend"), "notification-core must expose sandbox ESP providers");
 reporter.assert(emailRoute.includes("email_sandbox_"), "email route must emit sandbox provider message ids");
-reporter.assert(emailRoute.includes("liveEmailProviderDispatchAvailable"), "email route live mode must fail closed until provider dispatch is implemented");
+reporter.assert(emailRoute.includes("sendResendEmail"), "email route live mode must use the existing Resend provider adapter when credentials are present");
+reporter.assert(emailRoute.includes("liveEmailProviderDispatchAvailable(env: Env)"), "email route live dispatch readiness must be environment-gated");
+reporter.assert(!emailRoute.includes("function liveEmailProviderDispatchAvailable(): boolean"), "email route must not keep a permanent false live-dispatch gate");
+reporter.assert(emailRoute.includes("provider_client_not_configured"), "email route must keep non-Resend live ESP providers unavailable until their clients ship");
+reporter.assert(emailRoute.includes("delivery.providerMessageId"), "email route must persist live provider message ids when dispatch succeeds");
 reporter.assert(emailRoute.includes("EMAIL_PROVIDER_SETUP_REQUIRED"), "email route must return setup-required for unavailable live provider dispatch");
-reporter.assert(capabilityBacklog.includes("CAP-C18"), "CAPABILITY_BACKLOG.md missing CAP-C18 live email dispatch gap");
+reporter.assert(capabilityBacklog.includes("CAP-C18"), "CAPABILITY_BACKLOG.md missing CAP-C18 live email certification gap");
 reporter.assert(skippedHumanDecisions.includes("SKIP-CAP-LIVE-EMAIL-DISPATCH"), "SKIPPED_HUMAN_DECISIONS.md missing SKIP-CAP-LIVE-EMAIL-DISPATCH");
 for (const fragment of [
   "LETBUYY_AI_MODEL_MODE || 'mock'",

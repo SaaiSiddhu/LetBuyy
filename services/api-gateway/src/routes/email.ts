@@ -8,6 +8,7 @@ import {
     type EmailProvider,
     type EmailSendInput,
 } from '@letbuyy/notification-core';
+import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import { DEFAULT_PLATFORM_DOMAIN } from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
@@ -20,20 +21,29 @@ import { validate } from '../middleware/validation';
 const router = new Hono<{ Bindings: Env }>();
 
 type EmailEventType = 'email.delivered' | 'email.bounced' | 'email.complained';
+type EmailDeliveryResult = {
+    provider: EmailProvider | null;
+    providerMessageId: string | null;
+    attempts: Array<Record<string, unknown>>;
+};
 
 function emailMode(env: Env): EmailMode {
     return env.LETBUYY_EMAIL_MODE === 'live' ? 'live' : 'sandbox';
 }
 
-function liveEmailProviderDispatchAvailable(): boolean {
-    return false;
+function configuredSecret(value: string | undefined | null): boolean {
+    return Boolean(value && !value.toLowerCase().includes('placeholder') && !value.toLowerCase().includes('skip_needs_human'));
+}
+
+function liveEmailProviderDispatchAvailable(env: Env): boolean {
+    return configuredSecret(env.RESEND_API_KEY);
 }
 
 function assertEmailProviderReady(env: Env) {
     if (emailMode(env) !== 'live') return;
-    if (liveEmailProviderDispatchAvailable()) return;
+    if (liveEmailProviderDispatchAvailable(env)) return;
 
-    // [HUMAN-REQUIRED] HR-ESP-LIVE: live ESP dispatch, domains, API keys, SPF/DKIM/DMARC, and sender verification must be installed before live sends.
+    // [HUMAN-REQUIRED] HR-ESP-LIVE: live ESP credentials, sender DNS, SPF/DKIM/DMARC, and provider smoke must be installed before live sends.
     throw new HumanRequiredError('Email provider dispatch is required before live email delivery can be enabled.');
 }
 
@@ -77,7 +87,7 @@ function coerceFailedProviders(value: unknown): Set<string> {
 function chooseProvider(input: {
     providers: EmailProvider[];
     failedProviders: Set<string>;
-}): { provider: EmailProvider | null; attempts: Array<Record<string, unknown>> } {
+}): EmailDeliveryResult {
     let selected: EmailProvider | null = null;
     const attempts = input.providers.map((provider) => {
         if (selected) return { provider, status: 'skipped' };
@@ -86,7 +96,54 @@ function chooseProvider(input: {
         return { provider, status: 'delivered' };
     });
 
-    return { provider: selected, attempts };
+    return { provider: selected, providerMessageId: null, attempts };
+}
+
+async function dispatchLiveEmail(env: Env, input: {
+    providers: EmailProvider[];
+    from: string;
+    to: string;
+    subject: string;
+    html: string;
+    text: string;
+}): Promise<EmailDeliveryResult> {
+    const attempts: Array<Record<string, unknown>> = [];
+
+    for (const provider of input.providers) {
+        if (provider !== 'resend') {
+            attempts.push({ provider, status: 'unavailable', reason: 'provider_client_not_configured' });
+            continue;
+        }
+        if (!configuredSecret(env.RESEND_API_KEY)) {
+            attempts.push({ provider, status: 'unavailable', reason: 'missing_resend_secret' });
+            continue;
+        }
+
+        const result = await sendResendEmail({
+            apiKey: env.RESEND_API_KEY,
+            from: input.from,
+            to: input.to,
+            subject: input.subject,
+            html: input.html,
+            text: input.text,
+        });
+        const attempt = {
+            provider,
+            status: result.success ? 'delivered' : 'failed',
+            provider_message_id: result.messageId || null,
+            reason: result.success ? null : result.error || 'provider_error',
+        };
+        attempts.push(attempt);
+        if (result.success) {
+            return {
+                provider,
+                providerMessageId: result.messageId || null,
+                attempts,
+            };
+        }
+    }
+
+    return { provider: null, providerMessageId: null, attempts };
 }
 
 async function emitEmailEvent(
@@ -199,10 +256,26 @@ router.post('/send', validate('json', EmailSendSchema), async (c) => {
         mode,
         preferredProvider: body.provider_preference || null,
     });
-    const failedProviders = coerceFailedProviders(body.metadata.sandbox_failed_providers);
+    const fromEmail = senderDomain.data?.status === 'verified'
+        ? body.from || c.env.RESEND_FROM_EMAIL || `notifications@${requestedDomain}`
+        : senderDomain.data?.from_rewrite_domain
+            ? `notifications@${senderDomain.data.from_rewrite_domain}`
+            : body.from || c.env.RESEND_FROM_EMAIL || `notifications@${defaultSenderDomain(c.env)}`;
+    const failedProviders = mode === 'sandbox'
+        ? coerceFailedProviders(body.metadata.sandbox_failed_providers)
+        : new Set<string>();
     const delivery = activeSuppression
-        ? { provider: null, attempts: [] }
-        : chooseProvider({ providers: failover.providers, failedProviders });
+        ? { provider: null, providerMessageId: null, attempts: [] }
+        : mode === 'live'
+            ? await dispatchLiveEmail(c.env, {
+                providers: failover.providers,
+                from: fromEmail,
+                to: body.to,
+                subject: rendered.subject,
+                html: rendered.html,
+                text: rendered.text,
+            })
+            : chooseProvider({ providers: failover.providers, failedProviders });
     const delivered = Boolean(delivery.provider);
     const status = activeSuppression ? 'suppressed' : delivered ? 'delivered' : 'failed';
     const eventType: EmailEventType = activeSuppression
@@ -210,12 +283,6 @@ router.post('/send', validate('json', EmailSendSchema), async (c) => {
         : delivered
             ? 'email.delivered'
             : 'email.bounced';
-    const fromEmail = senderDomain.data?.status === 'verified'
-        ? body.from || c.env.RESEND_FROM_EMAIL || `notifications@${requestedDomain}`
-        : senderDomain.data?.from_rewrite_domain
-            ? `notifications@${senderDomain.data.from_rewrite_domain}`
-            : body.from || c.env.RESEND_FROM_EMAIL || `notifications@${defaultSenderDomain(c.env)}`;
-
     const { data: log, error: logError } = await db
         .from('email_logs')
         .insert({
@@ -228,7 +295,11 @@ router.post('/send', validate('json', EmailSendSchema), async (c) => {
             subject: rendered.subject,
             status,
             provider: delivery.provider,
-            provider_message_id: delivery.provider ? `email_sandbox_${crypto.randomUUID()}` : null,
+            provider_message_id: delivery.provider
+                ? mode === 'live'
+                    ? delivery.providerMessageId
+                    : `email_sandbox_${crypto.randomUUID()}`
+                : null,
             provider_attempts: delivery.attempts,
             idempotency_key: body.idempotency_key,
             request_id: c.req.header('X-Request-ID') || null,

@@ -1,8 +1,8 @@
 # LetBuyy Final Convergence Completion Report
 
 **Date:** 2026-06-11
-**Scope:** Repository-side B/C/D/E implementation and certification after Phase A live G4 was recorded as human-owned, plus repo-side Phase F CAP-C03 through CAP-C07 and CAP-C09 through CAP-C15 capability implementation.
-**Pre-report HEAD:** `fa1fcf3c` on `stepup/main`; local `main..stepup/main = 0`.
+**Scope:** Repository-side B/C/D/E implementation and certification after Phase A live G4 was recorded as human-owned, plus repo-side Phase F CAP-C03 through CAP-C07, CAP-C09 through CAP-C15, and CAP-C18 capability implementation.
+**Pre-report HEAD:** `c8592b2b` on `stepup/main`; local `main..stepup/main = 0`.
 
 ## Repository Answer
 
@@ -32,6 +32,7 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | F CAP-C13 | Checkout Wasm/app-functions retirement is repo-side done: buyer order creation no longer imports or calls `evaluateCheckoutAppFunctions`, the checkout page no longer fetches checkout extension registrations, the checkout iframe host component is deleted, and beta-readiness now fails if the live path returns. |
 | F CAP-C14 | Transactional invite/contact email delivery is repo-side done: admin and merchant employee invites plus storefront contact-owner notifications enqueue signed `NOTIFICATION_QUEUE` jobs, queue-workers dispatch those job types through the existing email sender path, and beta-readiness now fails if the stale CAP-C14 seam rows return. Live ESP dispatch evidence remains human-owned under CAP-C18. |
 | F CAP-C15 | Live manual KYC review is repo-side done: the KYC adapter routes `KYC_PROVIDER=manual` in live mode to `needs_review` with manual-review metadata, while automated Signzy/HyperVerge live providers still fail closed behind the recorded provider seam. |
+| F CAP-C18 | `/email/send` Resend dispatch is repo-side done: live mode now calls the existing Resend adapter when a real `RESEND_API_KEY` is configured, stores provider message ids, fails closed without credentials, and records SES/SendGrid as unavailable attempts until their clients ship. Sender-domain verification, delivery webhooks, credentials, and provider smoke remain human-live. |
 
 ## Validation Evidence
 
@@ -82,6 +83,9 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | `npx tsx --test services/api-gateway/src/__tests__/kyc.test.ts` | PASS, 4/4 after CAP-C15 manual-review assertions |
 | `node scripts/validators/provider-mode-badge-validator.mjs` | PASS after CAP-C15; now requires exact `manual_review_required: true` metadata |
 | `pnpm --filter @letbuyy/payments build`; `npx tsc --noEmit -p packages/infrastructure/tsconfig.json`; `npx tsc --noEmit -p services/api-gateway/tsconfig.json` | PASS after CAP-C15 |
+| `node --test services/api-gateway/src/__tests__/email.test.ts`; `node scripts/validators/provider-mode-badge-validator.mjs` | PASS after CAP-C18; route source proves Resend dispatch, environment-gated readiness, provider-message-id capture, and non-Resend unavailable attempts |
+| `pnpm --filter @letbuyy/payments build`; `npx tsc --noEmit -p services/api-gateway/tsconfig.json`; `npx tsc --noEmit -p packages/infrastructure/tsconfig.json` | PASS after CAP-C18 |
+| `node scripts/validate-governance.mjs --lane=gate`; `pnpm run lint`; `pnpm run lint:css`; `git diff --check` | PASS after CAP-C18; gate still passes 105 validators, root lint exits 0 with existing warnings only, stylelint and whitespace pass |
 
 Mutation proofs added during final certification:
 
@@ -94,6 +98,7 @@ Mutation proofs added during final certification:
 | Reintroduced the forbidden `evaluateCheckoutAppFunctions` marker into buyer checkout order creation. | `beta-readiness-validator` failed on checkout app-functions/Wasm execution returning to the payment route. |
 | Removed the validator-required `email.employee_invite` queue-worker fragment. | `beta-readiness-validator` failed on the missing CAP-C14 transactional email worker support. |
 | Replaced `manual_review_required: true` with a probe field in the KYC adapter. | `provider-mode-badge-validator` failed after tightening the check to the exact manual-review field. |
+| Replaced the CAP-C18 `provider_client_not_configured` marker with a probe value. | `provider-mode-badge-validator` failed on missing non-Resend live ESP unavailable-attempt proof. |
 
 ## Remaining Human-Live Seams
 
@@ -110,7 +115,7 @@ Production certification blockers:
 - `SKIP-D4-FROZEN-VERCEL-PROJECT-DELETION`
 - `SKIP-D5-DNS-TERRAFORM-APPLY`
 
-Provider/capability blockers remain in the skip and capability ledgers for live PSP credentials, payout provider credentials/enablement/smoke, capture/refund/settlement/reconciliation live variance-0 smoke, step-up signing secret/live TOTP smoke, identity keys/OIDC/drain, Liquid production canary and ARB default flip, mobile Turnstile secret/live smoke, alert-provider DSNs/on-call delivery drills, PITR, KYC, logistics, WhatsApp, live ESP dispatch, AI-credit purchases, and React deletion proof.
+Provider/capability blockers remain in the skip and capability ledgers for live PSP credentials, payout provider credentials/enablement/smoke, capture/refund/settlement/reconciliation live variance-0 smoke, step-up signing secret/live TOTP smoke, identity keys/OIDC/drain, Liquid production canary and ARB default flip, mobile Turnstile secret/live smoke, alert-provider DSNs/on-call delivery drills, PITR, KYC, logistics, WhatsApp, live ESP certification, AI-credit purchases, and React deletion proof.
 
 ## Final Scores
 
@@ -127,9 +132,9 @@ Provider/capability blockers remain in the skip and capability ledgers for live 
 | Tenant isolation readiness | CAP-C11 executable RT-1 through RT-9 Postgres proof is repo-side done and guarded by RLS FORCE validation | Live production-shaped database role probes, migration-state evidence, and queue-envelope secret proof remain human/live seams. |
 | Theme convergence | Repository C0-C3 and CAP-C12 publish-path convergence done | C4 production canary, ARB flip, deployed publish/rollback smoke, and C7 React deletion proof remain blocked by live/canary and 4x100% parity evidence. |
 | Checkout compatibility | CAP-C13 checkout Wasm/app-functions live path is retired repo-side and guarded by beta-readiness/app-platform tests | Hosted-checkout live cutover and provider smoke remain human/live seams, but checkout no longer depends on the rejected extension/Wasm runtime. |
-| Transactional email readiness | CAP-C14 invite/contact queue wiring is repo-side done and guarded by beta-readiness plus queue payload tests | Live ESP provider dispatch, sender-domain verification, delivery webhooks, and provider smoke remain human/live seams under CAP-C18. |
+| Transactional email readiness | CAP-C14 invite/contact queue wiring and CAP-C18 `/email/send` Resend dispatch are repo-side done and guarded by beta-readiness/provider-mode plus email route tests | ESP credentials, sender-domain verification, delivery webhooks, provider smoke, and SES/SendGrid client expansion remain human/live seams under CAP-C18. |
 | KYC readiness | CAP-C15 live manual review enters `needs_review` repo-side and is guarded by provider-mode validation/tests | Automated Signzy/HyperVerge provider clients, credentials, contract tests, and live verification evidence remain human/live seams. |
 
 ## Completion Statement
 
-B/C/D/E repository-side implementation is complete to the current authority boundary. Every remaining item is either recorded as a live-only human seam in `SKIPPED_HUMAN_DECISIONS.md` or a capability gap in `CAPABILITY_BACKLOG.md`. No live result, ARB approval, provider success, DNS change, protected remote push, or production deployment is claimed.
+B/C/D/E and the implemented Phase F repository-side capability slices are complete to the current authority boundary. Every remaining item is either recorded as a live-only human seam in `SKIPPED_HUMAN_DECISIONS.md` or a capability gap in `CAPABILITY_BACKLOG.md`. No live result, ARB approval, provider success, DNS change, protected remote push, or production deployment is claimed.

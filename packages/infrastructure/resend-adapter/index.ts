@@ -26,7 +26,7 @@ export function getResendClient(apiKey = readProcessEnv('RESEND_API_KEY')): Rese
   return resendClient;
 }
 
-export async function sendResendEmail(input: ResendEmailInput): Promise<{ success: boolean; error?: string }> {
+export async function sendResendEmail(input: ResendEmailInput): Promise<{ success: boolean; error?: string; messageId?: string }> {
   const message = input.html
     ? {
         from: input.from,
@@ -41,8 +41,12 @@ export async function sendResendEmail(input: ResendEmailInput): Promise<{ succes
         text: input.text || '',
       };
 
-  const { error } = await getResendClient(input.apiKey).emails.send(message);
+  const response = await getResendClient(input.apiKey).emails.send(message) as {
+    data?: { id?: string | null } | null;
+    error?: { message?: string | null } | null;
+  };
+  const { data, error } = response;
 
-  if (error) return { success: false, error: error.message };
-  return { success: true };
+  if (error) return { success: false, error: error.message || 'Resend email send failed' };
+  return { success: true, messageId: data?.id || undefined };
 }
