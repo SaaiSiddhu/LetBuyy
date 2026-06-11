@@ -52,3 +52,15 @@
 | B3/B5 typecheck | `npx tsc --noEmit -p services/api-gateway/tsconfig.json`; `pnpm --filter @letbuyy/queue-workers typecheck`; `pnpm --filter @letbuyy/platform-console typecheck` | PASS | API gateway, queue-workers, and platform-console typechecks pass after package-local links were rebuilt. Earlier filtered typechecks failed only while package `node_modules` links were absent. |
 | B3/B5 lint | `pnpm run lint`; `pnpm run lint:css` | PASS | Root lint exits 0 with existing warnings only; stylelint exits 0. |
 | B3/B5 whitespace/status | `git diff --check`; `git status --short` | PASS | No whitespace or conflict-marker residue; status shows only intended B3-B5 and report files before commit. |
+
+## Phase C
+
+| Checkpoint | Command | Result | Notes |
+|---|---|---|---|
+| C0-C3 install | `CI=true pnpm install --frozen-lockfile --force` | PASS | Noninteractive frozen install first failed under sandbox DNS (`ENOTFOUND registry.npmjs.org`); escalated retry rebuilt workspace links from the frozen lockfile. |
+| C0-C3 source tests | `node --test tests/theme-engine/storefront-liquid-runtime.test.mjs`; `node --test tests/theme-engine/first-party-liquid-portability.test.mjs`; `node --test tests/theme-engine/liquid-renderer-contract.test.mjs`; `node --test tests/theme-engine/theme-template-editor.test.mjs`; `node --test tests/theme-engine/*.test.mjs` | PASS | Focused tests and the full theme-engine source-test set passed 32/32 after adding full-layout rendering, Liquid chrome groups, CSS/data bindings, `t` filter, first-party-only snippet decision, and editor canary write coverage. |
+| C0-C3 package test | `pnpm --filter @letbuyy/theme-engine run test` | PASS | Initial sandboxed `tsx` run failed before tests with IPC `EPERM`; escalated retry after frozen install passed 9/9 package runtime tests. |
+| C0-C3 typecheck | `npx tsc --noEmit -p apps/storefront-runtime/tsconfig.json`; `npx tsc --noEmit -p apps/merchant-control-plane/tsconfig.json`; `pnpm --filter @letbuyy/shared-types build`; `pnpm --filter @letbuyy/theme-engine typecheck`; `flutter analyze` in `apps/mobile/merchant-app` | PASS | Storefront and merchant-control-plane typechecks passed; theme-engine typecheck initially hit the known project-reference TS6305 after reinstall, then passed after rebuilding `shared-types`; Flutter analyze passed with no issues. |
+| C0-C3 lint | `pnpm run lint`; `pnpm run lint:css` | PASS | Root lint exits 0 with existing warnings only; stylelint exits 0. |
+| C0-C3 governance gate | `node scripts/validate-governance.mjs --lane=gate` | PASS | 92 validators passed; `no-new-react-sections-validator` remains active and React deletion remains forbidden without 4x100% parity proof. |
+| C0-C3 whitespace/status | `git diff --check`; `git status --short` | PASS | No whitespace or conflict-marker residue; status shows only intended Phase C files before commit. |

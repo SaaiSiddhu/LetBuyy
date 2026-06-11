@@ -266,6 +266,27 @@ function collectLiquidProducts(sectionData: Map<string, SectionRenderData>): Rec
     return Array.from(products.values());
 }
 
+function collectLiquidCart(
+    sectionData: Map<string, SectionRenderData>,
+    plan: StorefrontRenderPlan,
+): Record<string, unknown> {
+    for (const data of sectionData.values()) {
+        if (data.cart && typeof data.cart === 'object' && !Array.isArray(data.cart)) {
+            return data.cart;
+        }
+    }
+
+    return {
+        item_count: 0,
+        items: [],
+        total_price: 0,
+        currency: 'INR',
+        source: 'browser_hydrated',
+        cart_url: '/cart',
+        sync_url: `/api/storefront/${plan.route.subdomain}/cart`,
+    };
+}
+
 function buildLiquidCommerceContext({
     store,
     plan,
@@ -298,12 +319,7 @@ function buildLiquidCommerceContext({
         product,
         collection,
         collections: collection ? [collection] : [],
-        cart: {
-            item_count: 0,
-            items: [],
-            total_price: 0,
-            currency: 'INR',
-        },
+        cart: collectLiquidCart(sectionData, plan),
         customer: null,
     };
 }
@@ -349,7 +365,7 @@ async function renderLiquidPlan({
 
     if (result.status !== 'rendered' || !result.liquid) return null;
 
-    return result.liquid.contentForLayout;
+    return result.liquid.layoutHtml;
 }
 
 export default async function StorefrontCompositionEngine({

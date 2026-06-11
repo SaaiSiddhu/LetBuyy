@@ -4,8 +4,21 @@ import type { SectionModel } from '@letbuyy/theme-engine';
 import type { StoreModel } from '@letbuyy/tenant-core';
 import type { SectionRenderData, StorefrontRouteContext } from './types';
 
-const PRODUCT_SECTION_TYPES = new Set(['productGrid', 'featuredProducts']);
-const PRODUCT_RENDERER_KEYS = new Set(['core.product-grid', 'core.featured-products']);
+const PRODUCT_SECTION_TYPES = new Set([
+    'productGrid',
+    'featuredProducts',
+    'product-grid',
+    'featured-products',
+    'product-detail',
+]);
+const PRODUCT_RENDERER_KEYS = new Set([
+    'core.product-grid',
+    'core.featured-products',
+    'core.product-detail',
+    'liquid.section.product-grid',
+    'liquid.section.featured-products',
+    'liquid.section.product-detail',
+]);
 
 function getStringArray(value: unknown): string[] {
     return Array.isArray(value)
@@ -43,6 +56,13 @@ function sectionRequestsProductData(section: SectionModel): boolean {
         || getStringArray(bindingRecord.resources).includes('products');
 }
 
+function sectionRequestsSingleProduct(section: SectionModel, route: StorefrontRouteContext): boolean {
+    return route.type === 'product'
+        || section.type === 'product-detail'
+        || section.rendererKey === 'liquid.section.product-detail'
+        || section.rendererKey === 'core.product-detail';
+}
+
 export async function buildSectionDataPlan({
     store,
     sections,
@@ -75,8 +95,10 @@ export async function buildSectionDataPlan({
 
     const productsById = new Map(products.map((product) => [product.id, product]));
     for (const section of productSections) {
+        const sectionProducts = getProductsForSection(section, store, products, productsById);
         dataBySectionId.set(section.id, {
-            products: getProductsForSection(section, store, products, productsById),
+            products: sectionProducts,
+            ...(sectionRequestsSingleProduct(section, route) ? { product: sectionProducts[0] || products[0] } : {}),
         });
     }
 

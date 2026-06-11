@@ -768,6 +768,21 @@ function createLiquidSectionFile(input: {
 
 export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSectionFile> {
   return {
+    'announcement-bar': createLiquidSectionFile({
+      type: 'announcement-bar',
+      name: 'Announcement Bar',
+      settings: [
+        liquidSetting('text', 'text', 'Message', { default: 'Free shipping on fresh drops this week.' }),
+        liquidSetting('linkLabel', 'text', 'Link label', { default: 'Shop now' }),
+        liquidSetting('linkHref', 'url', 'Link URL', { default: '/products' }),
+      ],
+      body: [
+        '<section class="lb-announcement-bar" data-section-id="{{ section.id }}">',
+        '  <span>{{ section.settings.text }}</span>',
+        '  {% if section.settings.linkLabel %}<a href="{{ section.settings.linkHref }}">{{ section.settings.linkLabel }}</a>{% endif %}',
+        '</section>',
+      ],
+    }),
     'about-section': createLiquidSectionFile({
       type: 'about-section',
       name: 'About Section',
@@ -813,10 +828,10 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         liquidSetting('link', 'url', 'Link'),
       ])],
       body: [
-        '<section class="lb-banner-carousel" data-section-id="{{ section.id }}">',
+        '<section class="lb-banner-carousel" data-section-id="{{ section.id }}" data-autoplay="{{ section.settings.autoplay }}">',
         '  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}',
         '  <div class="lb-banner-carousel__slides">',
-        '    {% for block in section.blocks %}<a href="{{ block.settings.link }}"><span>{{ block.settings.heading }}</span></a>{% endfor %}',
+        '    {% for block in section.blocks %}<a href="{{ block.settings.link }}">{% if block.settings.image %}<img src="{{ block.settings.image | image_url }}" alt="{{ block.settings.heading }}">{% endif %}<span>{{ block.settings.heading }}</span></a>{% endfor %}',
         '  </div>',
         '</section>',
       ],
@@ -830,6 +845,28 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '<section class="lb-brand-marquee" data-section-id="{{ section.id }}">',
         '  <h2>{{ section.settings.title }}</h2>',
         '  <div>{% for block in section.blocks %}<span>{{ block.settings.name }}</span>{% endfor %}</div>',
+        '</section>',
+      ],
+    }),
+    'category-grid': createLiquidSectionFile({
+      type: 'category-grid',
+      name: 'Category Grid',
+      settings: [
+        liquidSetting('title', 'text', 'Heading', { default: 'Shop by style' }),
+        liquidSetting('subtitle', 'text', 'Subheading'),
+      ],
+      blocks: [liquidInlineBlock('category', 'Category', [
+        liquidSetting('name', 'text', 'Name'),
+        liquidSetting('slug', 'text', 'Slug'),
+        liquidSetting('tagline', 'text', 'Tagline'),
+      ])],
+      body: [
+        '<section class="lb-category-grid" data-section-id="{{ section.id }}">',
+        '  <h2>{{ section.settings.title }}</h2>',
+        '  {% if section.settings.subtitle %}<p>{{ section.settings.subtitle }}</p>{% endif %}',
+        '  <div class="lb-category-grid__items">',
+        '    {% for block in section.blocks %}<a class="lb-category-card" href="/collections/{{ block.settings.slug }}"><strong>{{ block.settings.name }}</strong><span>{{ block.settings.tagline }}</span></a>{% endfor %}',
+        '  </div>',
         '</section>',
       ],
     }),
@@ -866,6 +903,30 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '</section>',
       ],
     }),
+    'featured-products': createLiquidSectionFile({
+      type: 'featured-products',
+      name: 'Featured Products',
+      settings: [
+        liquidSetting('title', 'text', 'Heading', { default: 'Drop-ready collection' }),
+        liquidSetting('subtitle', 'text', 'Subheading'),
+        liquidSetting('viewAllLabel', 'text', 'View all label', { default: 'View collection' }),
+        liquidSetting('viewAllHref', 'url', 'View all URL', { default: '/collections/new-arrivals' }),
+      ],
+      blocks: [liquidInlineBlock('product-card', 'Product card', [
+        liquidSetting('title', 'text', 'Title'),
+        liquidSetting('price', 'text', 'Price'),
+        liquidSetting('url', 'url', 'Product URL'),
+      ])],
+      body: [
+        '<section class="lb-featured-products" data-section-id="{{ section.id }}">',
+        '  <div><h2>{{ section.settings.title }}</h2>{% if section.settings.subtitle %}<p>{{ section.settings.subtitle }}</p>{% endif %}</div>',
+        '  <div class="lb-featured-products__items">',
+        '    {% for block in section.blocks %}<article class="lb-product-card"><a href="{{ block.settings.url }}"><strong>{{ block.settings.title }}</strong><span>{{ block.settings.price }}</span></a></article>{% endfor %}',
+        '  </div>',
+        '  <a href="{{ section.settings.viewAllHref }}">{{ section.settings.viewAllLabel }}</a>',
+        '</section>',
+      ],
+    }),
     'experience-timeline': createLiquidSectionFile({
       type: 'experience-timeline',
       name: 'Experience Timeline',
@@ -879,6 +940,63 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '<section class="lb-experience-timeline" data-section-id="{{ section.id }}">',
         '  <h2>{{ section.settings.title }}</h2>',
         '  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.company }}</p><time>{{ block.settings.period }}</time></article>{% endfor %}',
+        '</section>',
+      ],
+    }),
+    footer: createLiquidSectionFile({
+      type: 'footer',
+      name: 'Footer',
+      settings: [
+        liquidSetting('storeName', 'text', 'Store name', { default: '{{ shop.name }}' }),
+        liquidSetting('tagline', 'text', 'Tagline'),
+      ],
+      blocks: [liquidInlineBlock('link', 'Link', [
+        liquidSetting('label', 'text', 'Label'),
+        liquidSetting('href', 'url', 'URL'),
+      ])],
+      body: [
+        '<footer class="lb-footer" data-section-id="{{ section.id }}">',
+        '  <div><strong>{{ section.settings.storeName }}</strong>{% if section.settings.tagline %}<p>{{ section.settings.tagline }}</p>{% endif %}</div>',
+        '  <nav>{% for block in section.blocks %}<a href="{{ block.settings.href }}">{{ block.settings.label }}</a>{% endfor %}</nav>',
+        '</footer>',
+      ],
+    }),
+    header: createLiquidSectionFile({
+      type: 'header',
+      name: 'Header',
+      settings: [
+        liquidSetting('storeName', 'text', 'Store name', { default: '{{ shop.name }}' }),
+        liquidSetting('showSearch', 'toggle', 'Show search', { default: true }),
+        liquidSetting('showCart', 'toggle', 'Show cart', { default: true }),
+      ],
+      blocks: [liquidInlineBlock('link', 'Link', [
+        liquidSetting('label', 'text', 'Label'),
+        liquidSetting('href', 'url', 'URL'),
+      ])],
+      body: [
+        '<header class="lb-header" data-section-id="{{ section.id }}">',
+        '  <a class="lb-header__brand" href="/">{{ section.settings.storeName }}</a>',
+        '  <nav>{% for block in section.blocks %}<a href="{{ block.settings.href }}">{{ block.settings.label }}</a>{% endfor %}</nav>',
+        '  <div class="lb-header__actions">{% if section.settings.showSearch %}<lb-search data-lb-island="search" data-search-url="/search"></lb-search>{% endif %}{% if section.settings.showCart %}<a href="/cart">{{ "general.cart" | t }} ({{ cart.item_count }})</a>{% endif %}</div>',
+        '</header>',
+      ],
+    }),
+    'hero-banner': createLiquidSectionFile({
+      type: 'hero-banner',
+      name: 'Hero Banner',
+      settings: [
+        liquidSetting('eyebrow', 'text', 'Eyebrow', { default: 'New season essentials' }),
+        liquidSetting('heading', 'text', 'Heading', { default: 'Fresh drops for daily buyers' }),
+        liquidSetting('subheading', 'textarea', 'Subheading'),
+        liquidSetting('ctaText', 'text', 'Button text', { default: 'Shop Now' }),
+        liquidSetting('ctaLink', 'url', 'Button link', { default: '/products' }),
+      ],
+      body: [
+        '<section class="lb-hero-banner" data-section-id="{{ section.id }}">',
+        '  {% if section.settings.eyebrow %}<p>{{ section.settings.eyebrow }}</p>{% endif %}',
+        '  <h1>{{ section.settings.heading }}</h1>',
+        '  {% if section.settings.subheading %}<p>{{ section.settings.subheading }}</p>{% endif %}',
+        '  <a href="{{ section.settings.ctaLink }}">{{ section.settings.ctaText }}</a>',
         '</section>',
       ],
     }),
@@ -918,9 +1036,28 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
       body: [
         '<section class="lb-product-detail" data-section-id="{{ section.id }}">',
         '  <h1>{{ product.title }}</h1>',
+        '  {% if section.settings.showGallery %}<div class="lb-product-detail__gallery">{% for image in product.images %}<img src="{{ image | image_url }}" alt="{{ product.title }}">{% endfor %}</div>{% endif %}',
         '  <p>{{ product.price | money_with_currency: product.currency }}</p>',
         '  {% if section.settings.showDescription %}<div>{{ product.description }}</div>{% endif %}',
         '  <lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ product.id }}" data-product-name="{{ product.title }}" data-product-price="{{ product.price }}" data-product-currency="{{ product.currency }}" data-product-url="{{ product.url }}"><button type="button" data-lb-add-to-cart>Add to cart</button><span data-lb-add-to-cart-status aria-live="polite"></span></lb-add-to-cart>',
+        '</section>',
+      ],
+    }),
+    'product-grid': createLiquidSectionFile({
+      type: 'product-grid',
+      name: 'Product Grid',
+      settings: [
+        liquidSetting('title', 'text', 'Heading', { default: 'Featured Products' }),
+        liquidSetting('subtitle', 'text', 'Subheading'),
+        liquidSetting('columns', 'range', 'Columns', { min: 2, max: 4, step: 1, default: 4 }),
+      ],
+      body: [
+        '<section class="lb-product-grid" data-section-id="{{ section.id }}">',
+        '  <h2>{{ section.settings.title }}</h2>',
+        '  {% if section.settings.subtitle %}<p>{{ section.settings.subtitle }}</p>{% endif %}',
+        '  <div class="lb-product-grid__items" data-columns="{{ section.settings.columns }}">',
+        '    {% for item in collection.products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | money_with_currency: item.currency }}</span></a></article>{% endfor %}',
+        '  </div>',
         '</section>',
       ],
     }),
@@ -965,7 +1102,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
       body: [
         '<section class="lb-skills-section" data-section-id="{{ section.id }}">',
         '  <h2>{{ section.settings.title }}</h2>',
-        '  {% for block in section.blocks %}<span>{{ block.settings.name }}</span>{% endfor %}',
+        '  {% for block in section.blocks %}<span data-level="{{ block.settings.level }}">{{ block.settings.name }} {{ block.settings.level }}%</span>{% endfor %}',
         '</section>',
       ],
     }),
@@ -996,6 +1133,22 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '<section class="lb-trust-badges" data-section-id="{{ section.id }}">',
         '  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}',
         '  {% for block in section.blocks %}<article><strong>{{ block.settings.label }}</strong><span>{{ block.settings.description }}</span></article>{% endfor %}',
+        '</section>',
+      ],
+    }),
+    'newsletter-signup': createLiquidSectionFile({
+      type: 'newsletter-signup',
+      name: 'Newsletter Signup',
+      settings: [
+        liquidSetting('title', 'text', 'Heading', { default: 'Get first access' }),
+        liquidSetting('subtitle', 'text', 'Subheading'),
+        liquidSetting('buttonLabel', 'text', 'Button label', { default: 'Sign up' }),
+      ],
+      body: [
+        '<section class="lb-newsletter-signup" data-section-id="{{ section.id }}">',
+        '  <h2>{{ section.settings.title }}</h2>',
+        '  {% if section.settings.subtitle %}<p>{{ section.settings.subtitle }}</p>{% endif %}',
+        '  <form action="/contact" method="post"><input type="email" name="email" aria-label="Email" required><button type="submit">{{ section.settings.buttonLabel }}</button></form>',
         '</section>',
       ],
     }),
@@ -1735,6 +1888,69 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
       },
     },
     templates: {
+      header: {
+        name: 'Urban Kicks header',
+        layout: 'theme',
+        sections: {
+          'header-default': {
+            type: 'header',
+            settings: {
+              storeName: 'Urban Kicks',
+              showSearch: true,
+              showCart: true,
+            },
+            blocks: {
+              'header-products': {
+                type: 'link',
+                settings: {
+                  label: 'Products',
+                  href: '/products',
+                },
+              },
+              'header-collections': {
+                type: 'link',
+                settings: {
+                  label: 'Collections',
+                  href: '/collections/new-arrivals',
+                },
+              },
+            },
+            block_order: ['header-products', 'header-collections'],
+          },
+        },
+        order: ['header-default'],
+      },
+      footer: {
+        name: 'Urban Kicks footer',
+        layout: 'theme',
+        sections: {
+          'footer-default': {
+            type: 'footer',
+            settings: {
+              storeName: 'Urban Kicks',
+              tagline: 'First-party Liquid commerce storefront.',
+            },
+            blocks: {
+              'footer-contact': {
+                type: 'link',
+                settings: {
+                  label: 'Contact',
+                  href: '/contact',
+                },
+              },
+              'footer-policy': {
+                type: 'link',
+                settings: {
+                  label: 'Policies',
+                  href: '/policies/shipping-policy',
+                },
+              },
+            },
+            block_order: ['footer-contact', 'footer-policy'],
+          },
+        },
+        order: ['footer-default'],
+      },
       index: {
         name: 'Urban Kicks home page',
         layout: 'theme',

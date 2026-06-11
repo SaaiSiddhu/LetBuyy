@@ -23,6 +23,8 @@ test('first-party Urban Kicks ships as a portable Liquid bundle', () => {
   assert.match(source, /type: 'featured-products'/);
   assert.match(source, /type: 'product-grid'/);
   assert.match(source, /type: 'newsletter-signup'/);
+  assert.match(source, /header: \{\s*name: 'Urban Kicks header'/);
+  assert.match(source, /footer: \{\s*name: 'Urban Kicks footer'/);
 });
 
 test('brand-new spotlight section is provided by bundle files, not storefront code', () => {
@@ -60,4 +62,28 @@ test('Liquid parity map covers the frozen React section files with portable sect
     assert.match(bundleSource, new RegExp(`${keyPattern}:\\s*(?:createLiquidSectionFile|\\{)`));
     assert.match(bundleSource, new RegExp(`type:\\s*['"]${sectionType}['"]`));
   }
+});
+
+test('portable Liquid section files include first-party commerce sections and honor settings', () => {
+  const source = read(THEME_BUNDLE_SOURCE);
+  const parityFactory = source.match(/export function createLiquidParitySectionFiles[\s\S]*?\n}\n\nfunction isLiquidThemePackageBundle/)?.[0] || '';
+
+  for (const sectionType of [
+    'announcement-bar',
+    'hero-banner',
+    'category-grid',
+    'featured-products',
+    'product-grid',
+    'newsletter-signup',
+    'header',
+    'footer',
+  ]) {
+    assert.match(parityFactory, new RegExp(`type:\\s*'${sectionType}'`));
+  }
+
+  assert.match(parityFactory, /data-autoplay="\{\{ section\.settings\.autoplay \}\}"/);
+  assert.match(parityFactory, /block\.settings\.image \| image_url/);
+  assert.match(parityFactory, /section\.settings\.showGallery/);
+  assert.match(parityFactory, /block\.settings\.level/);
+  assert.match(parityFactory, /\{\{ "general\.cart" \| t \}\}/);
 });

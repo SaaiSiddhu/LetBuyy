@@ -11,6 +11,7 @@ const THEME_EXECUTION_SOURCE = 'services/api-gateway/src/execution/theme-executi
 const EDITOR_ROUTE_SOURCE = 'apps/merchant-control-plane/src/app/api/themes/[themeId]/editor/route.ts';
 const DRAFT_ROUTE_SOURCE = 'apps/merchant-control-plane/src/app/api/themes/[themeId]/editor/draft/route.ts';
 const EDITOR_PAGE_SOURCE = 'apps/merchant-control-plane/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx';
+const MOBILE_THEME_SERVICE_SOURCE = 'apps/mobile/merchant-app/lib/services/theme_service.dart';
 
 function read(path) {
   return readFileSync(path, 'utf8');
@@ -67,6 +68,21 @@ test('gateway and merchant proxy routes preserve selected template keys', () => 
   assert.match(draftRouteSource, /template_key: templateKey/);
   assert.match(draftRouteSource, /query: \{ template_key: templateKey \}/);
   assert.match(draftRouteSource, /templateKey/);
+});
+
+test('web and mobile editors can save Liquid bundles and canary state through draft config', () => {
+  const draftRouteSource = read(DRAFT_ROUTE_SOURCE);
+  const mobileThemeServiceSource = read(MOBILE_THEME_SERVICE_SOURCE);
+
+  assert.match(draftRouteSource, /function mergeLiquidDraftConfig/);
+  assert.match(draftRouteSource, /body\.liquidBundle/);
+  assert.match(draftRouteSource, /body\.liquidRenderingCanary/);
+  assert.match(draftRouteSource, /template_config: mergeLiquidDraftConfig\(body, draftConfig\)/);
+
+  assert.match(mobileThemeServiceSource, /Future<ThemeDraftSaveResult> saveLiquidDraft/);
+  assert.match(mobileThemeServiceSource, /required Map<String, dynamic> liquidBundle/);
+  assert.match(mobileThemeServiceSource, /'liquidBundle': liquidBundle/);
+  assert.match(mobileThemeServiceSource, /'liquidRenderingCanary': liquidRenderingCanary/);
 });
 
 test('theme execution stores and publishes drafts by template key', () => {

@@ -58,6 +58,7 @@ export interface StorefrontRenderPlan {
 export interface SectionRenderData {
     products?: ProductModel[];
     product?: ProductModel;
+    cart?: Record<string, unknown>;
 }
 
 export interface SectionRendererProps {

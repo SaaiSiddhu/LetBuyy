@@ -105,6 +105,26 @@ class ThemeService extends ChangeNotifier {
     });
   }
 
+  Future<ThemeDraftSaveResult> saveLiquidDraft({
+    required String storeId,
+    required String themeSlug,
+    required Map<String, dynamic> templateConfig,
+    required Map<String, dynamic> liquidBundle,
+    bool liquidRenderingCanary = true,
+    int? baseVersion,
+  }) {
+    return saveDraft(
+      storeId: storeId,
+      themeSlug: themeSlug,
+      templateConfig: {
+        ...templateConfig,
+        'liquidBundle': liquidBundle,
+        'liquidRenderingCanary': liquidRenderingCanary,
+      },
+      baseVersion: baseVersion,
+    );
+  }
+
   Future<ThemeDraftSaveResult> duplicateDraft({
     required String storeId,
     required String themeSlug,

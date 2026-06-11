@@ -144,7 +144,24 @@ function coerceLiquidTemplate(
     const template = bundle.templates[templateKey];
     if (!template) return null;
 
-    const sections = orderedKeys(template.sections, template.order)
+    const sections = coerceLiquidTemplateSections(bundle, templateKey);
+
+    return {
+        id: templateKey,
+        type: routeType,
+        layoutKey: template.layout || 'theme',
+        sections,
+    };
+}
+
+function coerceLiquidTemplateSections(
+    bundle: LiquidThemePackageBundle,
+    templateKey: string,
+): SectionModel[] {
+    const template = bundle.templates[templateKey];
+    if (!template) return [];
+
+    return orderedKeys(template.sections, template.order)
         .map((sectionId, order): SectionModel | null => {
             const section = template.sections[sectionId];
             if (!section || section.disabled) return null;
@@ -176,13 +193,27 @@ function coerceLiquidTemplate(
             };
         })
         .filter((section): section is SectionModel => section !== null);
+}
 
-    return {
-        id: templateKey,
-        type: routeType,
-        layoutKey: template.layout || 'theme',
-        sections,
+function resolveLiquidSectionGroups(
+    bundle: LiquidThemePackageBundle,
+    store: StoreModel,
+): StorefrontSectionGroups {
+    const fallbackGroups = resolveSectionGroups(store);
+    const groups: StorefrontSectionGroups = {
+        header: coerceLiquidTemplateSections(bundle, 'header'),
+        footer: coerceLiquidTemplateSections(bundle, 'footer'),
     };
+
+    if (groups.header.length === 0) {
+        groups.header = fallbackGroups.header.filter((section) => bundle.sections[section.type]);
+    }
+
+    if (groups.footer.length === 0) {
+        groups.footer = fallbackGroups.footer.filter((section) => bundle.sections[section.type]);
+    }
+
+    return groups;
 }
 
 export interface StorefrontTemplateResolverOptions {
@@ -210,10 +241,7 @@ export function resolveStorefrontTemplate(
                 rendererEngine: 'liquid',
                 liquidBundle,
                 liquidTemplateKey,
-                sectionGroups: {
-                    header: [],
-                    footer: [],
-                },
+                sectionGroups: resolveLiquidSectionGroups(liquidBundle, store),
                 template: liquidTemplate,
                 themeSettings: store.templateConfig.themeSettings,
                 releaseId: store.templateConfig.releaseId,

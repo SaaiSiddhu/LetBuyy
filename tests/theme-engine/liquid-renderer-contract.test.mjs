@@ -25,6 +25,26 @@ test('LiquidRenderer renders blocks before sections and strips schema tags', () 
   assert.match(source, /stripLiquidSchemaBlocks\(sectionFile\.source\)/);
   assert.match(source, /content: block\.html/);
   assert.match(source, /content_for_layout: contentForLayout/);
+  assert.match(source, /layoutHtml: await sanitizeRenderedHtml\(String\(layoutHtml\), \{ wholeDocument: true \}\)/);
+});
+
+test('LiquidRenderer keeps snippets first-party-scoped and provides the t filter', () => {
+  const rendererSource = read(THEME_RENDERER_SOURCE);
+  const bundleSource = read('packages/theme-engine/src/theme-bundle.ts');
+
+  assert.match(rendererSource, /engine\.registerFilter\('t'/);
+  assert.match(rendererSource, /function translateLiquidKey/);
+  assert.match(rendererSource, /function resolveLiquidLocaleDictionary/);
+  assert.match(rendererSource, /function lookupTranslation/);
+  assert.match(bundleSource, /'\{% render'/);
+  assert.match(bundleSource, /Liquid source contains forbidden fragment/);
+});
+
+test('LiquidRenderer exposes schema-valid inline blocks to section scope', () => {
+  const source = read(THEME_RENDERER_SOURCE);
+
+  assert.match(source, /const inlineBlockAllowed = sectionFile\?\.schema\.blocks\.some/);
+  assert.match(source, /settings: block\.settings,\s+html: '',\s+isAppBlock: false/s);
 });
 
 test('LiquidRenderer keeps app blocks as explicit injectable slots', () => {

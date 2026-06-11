@@ -16,6 +16,25 @@ function readPositiveInt(value: unknown): number | undefined {
     return Number.isInteger(numeric) && numeric > 0 ? numeric : undefined
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function mergeLiquidDraftConfig(body: Record<string, unknown>, draftConfig: Record<string, unknown>): Record<string, unknown> {
+    const liquidBundle = isRecord(body.liquidBundle)
+        ? body.liquidBundle
+        : isRecord(body.liquid_bundle) ? body.liquid_bundle : undefined
+    const liquidRenderingCanary = typeof body.liquidRenderingCanary === 'boolean'
+        ? body.liquidRenderingCanary
+        : typeof body.liquid_rendering_canary === 'boolean' ? body.liquid_rendering_canary : undefined
+
+    return {
+        ...draftConfig,
+        ...(liquidBundle ? { liquidBundle } : {}),
+        ...(typeof liquidRenderingCanary === 'boolean' ? { liquidRenderingCanary } : {}),
+    }
+}
+
 /**
  * POST /api/themes/[themeId]/editor/draft?store_name=xxx&template=product
  *
@@ -39,8 +58,9 @@ export async function POST(
             )
         }
 
-        const body = await request.json()
-        const { draftConfig } = body
+        const rawBody = await request.json()
+        const body = isRecord(rawBody) ? rawBody : {}
+        const draftConfig = isRecord(body.draftConfig) ? body.draftConfig : undefined
         const templateKey = readTemplateKey(body?.templateKey || body?.template_key || queryTemplateKey)
         const baseVersion = readPositiveInt(body?.baseVersion || body?.base_version)
 
@@ -57,7 +77,7 @@ export async function POST(
         const payload = await createMerchantApiClient().themes.saveDraft(themeId, {
             store_id: resolved.storeId,
             template_key: templateKey,
-            template_config: draftConfig,
+            template_config: mergeLiquidDraftConfig(body, draftConfig),
             base_version: baseVersion,
             client: 'admin-web',
         })

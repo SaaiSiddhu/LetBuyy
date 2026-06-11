@@ -215,7 +215,11 @@ export class LiquidRenderer implements ThemeRenderer {
 
     const contentForHeader = await renderLiquidEmbedRegion(input.liquidAppEmbeds?.header, { allowHeadMetadata: true });
     const contentForFooter = await renderLiquidEmbedRegion(input.liquidAppEmbeds?.footer);
-    const engine = createLiquidEngine(bundle, { contentForHeader, contentForFooter });
+    const engine = createLiquidEngine(bundle, {
+      contentForHeader,
+      contentForFooter,
+      locale: input.context.locale || 'en',
+    });
     const renderedSections: LiquidRenderedSection[] = [];
     const sectionOrder = orderedKeys(template.sections, template.order);
 
@@ -315,10 +319,11 @@ const liquidRenderOptions = {
 
 function createLiquidEngine(
   bundle: LiquidThemePackageBundle,
-  globals: { contentForHeader?: string; contentForFooter?: string } = {},
+  globals: { contentForHeader?: string; contentForFooter?: string; locale?: string } = {},
 ): Liquid {
   const contentForHeader = globals.contentForHeader || '';
   const contentForFooter = globals.contentForFooter || '';
+  const locale = globals.locale || 'en';
   const engine = new Liquid({
     cache: false,
     dynamicPartials: false,
@@ -341,7 +346,7 @@ function createLiquidEngine(
     },
   });
 
-  registerLetbuyyLiquidFilters(engine);
+  registerLetbuyyLiquidFilters(engine, bundle, locale);
   return engine;
 }
 
@@ -391,6 +396,17 @@ async function renderLiquidSectionBlocks(input: {
 
     const blockFile = input.bundle.blocks[block.type];
     if (!blockFile) {
+      const sectionFile = input.bundle.sections[input.sectionType];
+      const inlineBlockAllowed = sectionFile?.schema.blocks.some((candidate) => candidate.type === block.type) === true;
+      if (inlineBlockAllowed) {
+        blocks.push({
+          id: blockId,
+          type: block.type,
+          settings: block.settings,
+          html: '',
+          isAppBlock: false,
+        });
+      }
       continue;
     }
 
@@ -545,12 +561,61 @@ async function renderLiquidEmbedRegion(
   return sanitizedEmbeds.join('\n');
 }
 
-function registerLetbuyyLiquidFilters(engine: Liquid): void {
+function registerLetbuyyLiquidFilters(engine: Liquid, bundle: LiquidThemePackageBundle, locale: string): void {
   engine.registerFilter('money', (value: unknown) => formatLiquidMoney(value));
   engine.registerFilter('money_with_currency', (value: unknown, currency?: unknown) => formatLiquidMoney(value, currency));
   engine.registerFilter('json', (value: unknown) => JSON.stringify(toLiquidDrop(value) ?? null).replace(/</g, '\\u003c'));
   engine.registerFilter('asset_url', (value: unknown) => safeLiquidUrl(value));
   engine.registerFilter('image_url', (value: unknown) => safeLiquidUrl(value));
+  engine.registerFilter('t', (value: unknown, replacements?: unknown) => translateLiquidKey(bundle, locale, value, replacements));
+}
+
+function translateLiquidKey(
+  bundle: LiquidThemePackageBundle,
+  locale: string,
+  value: unknown,
+  replacements?: unknown,
+): string {
+  const key = String(value || '').trim();
+  if (!key) return '';
+
+  const dictionary = resolveLiquidLocaleDictionary(bundle, locale);
+  const translated = lookupTranslation(dictionary, key);
+  const template = typeof translated === 'string' ? translated : key;
+  const replacementRecord = asRecord(replacements);
+
+  return template.replace(/\{\{\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\}\}/g, (match, name: string) => {
+    const replacement = replacementRecord[name];
+    return replacement === undefined || replacement === null ? match : String(replacement);
+  });
+}
+
+function resolveLiquidLocaleDictionary(
+  bundle: LiquidThemePackageBundle,
+  locale: string,
+): Record<string, unknown> {
+  const candidates = [
+    locale,
+    locale.split('-')[0],
+    'en',
+  ].filter(Boolean);
+
+  for (const candidate of candidates) {
+    const exact = bundle.locales[candidate];
+    if (exact && typeof exact === 'object') return exact as Record<string, unknown>;
+
+    const matchingKey = Object.keys(bundle.locales).find((key) => key.toLowerCase() === candidate.toLowerCase());
+    if (matchingKey) return bundle.locales[matchingKey] as Record<string, unknown>;
+  }
+
+  return {};
+}
+
+function lookupTranslation(dictionary: Record<string, unknown>, key: string): unknown {
+  return key.split('.').reduce<unknown>((current, segment) => {
+    if (!current || typeof current !== 'object' || Array.isArray(current)) return undefined;
+    return (current as Record<string, unknown>)[segment];
+  }, dictionary);
 }
 
 function formatLiquidMoney(value: unknown, currency: unknown = 'INR'): string {
