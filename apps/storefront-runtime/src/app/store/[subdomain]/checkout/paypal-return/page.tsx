@@ -47,7 +47,7 @@ export default function PayPalReturnPage({ params }: { params: Promise<{ subdoma
 
                 const result = await readStorefrontApiJson<{ captured?: boolean }>(res);
 
-                if (res.ok && result.success !== false) {
+                if (res.ok && result.success !== false && result.data?.captured === true) {
                     setStatus('success');
                 } else {
                     setErrorMessage(storefrontApiErrorMessage(result, 'Payment capture failed.'));

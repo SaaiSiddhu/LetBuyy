@@ -2,31 +2,33 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { CheckCircle, ArrowLeft } from '@letbuyy/ui';
+import { ArrowLeft } from '@letbuyy/ui';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { StorefrontListLoadingState } from '@/components/storefront/storefront-states';
 
 export default function StripeSuccessPage({ params }: { params: Promise<{ subdomain: string }> }) {
     const searchParams = useSearchParams();
     const sessionId = searchParams.get('session_id');
-    const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+    const [status, setStatus] = useState<'loading' | 'error'>('loading');
     const [subdomain, setSubdomain] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         params.then(p => setSubdomain(p.subdomain));
     }, [params]);
 
     useEffect(() => {
+        if (!subdomain) return;
+
         if (!sessionId) {
+            setErrorMessage('Missing payment session.');
             setStatus('error');
             return;
         }
 
-        // Verify the session with backend (optional enhancement)
-        // For now, we trust Stripe's redirect and mark as success
-        setStatus('success');
-    }, [sessionId]);
+        setErrorMessage('We could not verify this Stripe payment with the store backend.');
+        setStatus('error');
+    }, [sessionId, subdomain]);
 
     if (status === 'loading') {
         return (
@@ -42,49 +44,15 @@ export default function StripeSuccessPage({ params }: { params: Promise<{ subdom
         return (
             <div className="min-h-screen flex items-center justify-center px-4">
                 <div className="text-center">
-                    <p className="text-lg font-semibold mb-2">Something went wrong</p>
-                    <p className="text-sm text-theme-secondary mb-4">We couldn&apos;t verify your payment session.</p>
-                    <Link href={`/store/${subdomain}`} className="text-sm font-medium" style={{ color: 'var(--primary)' }}>
-                        <ArrowLeft size={14} className="inline mr-1" /> Return to store
+                    <p className="text-lg font-semibold mb-2">Payment verification required</p>
+                    <p className="text-sm text-theme-secondary mb-4">{errorMessage || 'We could not verify your payment session.'}</p>
+                    <Link href={`/store/${subdomain}/checkout`} className="text-sm font-medium" style={{ color: 'var(--primary)' }}>
+                        <ArrowLeft size={14} className="inline mr-1" /> Return to checkout
                     </Link>
                 </div>
             </div>
         );
     }
 
-    return (
-        <div className="min-h-screen flex items-center justify-center px-4">
-            <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center max-w-md"
-            >
-                <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: 'spring', delay: 0.2 }}
-                    className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center"
-                >
-                    <CheckCircle size={40} className="text-green-600" />
-                </motion.div>
-
-                <h1 className="text-2xl font-bold mb-2">Payment Successful!</h1>
-                <p className="text-theme-secondary mb-6">
-                    Thank you for your order. We&apos;ve received your payment and will begin processing it shortly.
-                </p>
-
-                <div className="card-theme p-4 rounded-xl shadow-sm mb-6 text-sm text-theme-secondary">
-                    <p>A confirmation email will be sent to your email address shortly.</p>
-                </div>
-
-                <Link
-                    href={`/store/${subdomain}`}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold text-sm"
-                    style={{ backgroundColor: 'var(--primary)' }}
-                >
-                    <ArrowLeft size={16} /> Continue Shopping
-                </Link>
-            </motion.div>
-        </div>
-    );
+    return null;
 }
