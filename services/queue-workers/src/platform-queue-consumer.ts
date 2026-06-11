@@ -1,11 +1,6 @@
 import {
   eventRetryDelaySeconds,
   getDomainEventContract,
-  parseDomainEventPayload,
-  type DomainEventType,
-  type RuntimeEventEnvelope,
-} from '@letbuyy/event-core';
-import {
   normalizeQueueEnvelope,
   planAnalyticsEventStreamRecord,
   planOrderItemAnalyticsRollupIncrements,
@@ -13,7 +8,10 @@ import {
   planDeletedSearchProjectionDocument,
   planOrderSearchProjectionDocument,
   planProductSearchProjectionDocument,
-} from './queue-projection-plans';
+  parseDomainEventPayload,
+  type DomainEventType,
+  type RuntimeEventEnvelope,
+} from '@letbuyy/event-core';
 import {
   planInAppNotificationForEvent,
   planWhatsAppNotificationForEvent,

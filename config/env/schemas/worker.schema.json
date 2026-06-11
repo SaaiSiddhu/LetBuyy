@@ -339,6 +339,111 @@
     },
     "R2_BUCKET": {
       "type": "string"
+    },
+    "CUSTOMER_SESSION_SECRET": {
+      "type": "string"
+    },
+    "LETBUYY_IDENTITY_ISSUER": {
+      "type": "string"
+    },
+    "LETBUYY_IDENTITY_PUBLIC_JWKS": {
+      "type": "string"
+    },
+    "CUSTOMER_PASSWORD_RESET_URL": {
+      "type": "string"
+    },
+    "STOREFRONT_BASE_URL": {
+      "type": "string"
+    },
+    "NEXT_PUBLIC_STOREFRONT_URL": {
+      "type": "string"
+    },
+    "NEXT_PUBLIC_ADMIN_URL": {
+      "type": "string"
+    },
+    "LETBUYY_PLATFORM_DOMAIN": {
+      "type": "string"
+    },
+    "NEXT_PUBLIC_PLATFORM_DOMAIN": {
+      "type": "string"
+    },
+    "VERCEL_ORG_ID": {
+      "type": "string"
+    },
+    "QUEUE_TENANT_ENVELOPE_SECRET": {
+      "type": "string"
+    },
+    "LETBUYY_KMS_SANDBOX_SECRET": {
+      "type": "string"
+    },
+    "LETBUYY_KMS_KEY_ID": {
+      "type": "string"
+    },
+    "MEDIA_UPLOAD_SIGNING_SECRET": {
+      "type": "string"
+    },
+    "SES_ACCESS_KEY_ID": {
+      "type": "string"
+    },
+    "SES_SECRET_ACCESS_KEY": {
+      "type": "string"
+    },
+    "SENDGRID_API_KEY": {
+      "type": "string"
+    },
+    "SHIPROCKET_TOKEN": {
+      "type": "string"
+    },
+    "DELHIVERY_TOKEN": {
+      "type": "string"
+    },
+    "PICKRR_TOKEN": {
+      "type": "string"
+    },
+    "PRODUCT_VARIANTS_RELATIONAL_READS": {
+      "type": "string"
+    },
+    "REQUEST_LOG_SAMPLE_RATE": {
+      "type": "string"
+    },
+    "RATE_LIMIT_KV_FALLBACK": {
+      "type": "string"
+    },
+    "LETBUYY_KMS_MODE": {
+      "enum": [
+        "sandbox",
+        "live"
+      ]
+    },
+    "LETBUYY_ALLOW_SANDBOX_KMS": {
+      "enum": [
+        "true",
+        "false"
+      ]
+    },
+    "LETBUYY_WAREHOUSE_MODE": {
+      "enum": [
+        "sandbox",
+        "live"
+      ]
+    },
+    "LETBUYY_AI_MODEL_MODE": {
+      "enum": [
+        "sandbox",
+        "live"
+      ]
+    },
+    "LETBUYY_EMAIL_MODE": {
+      "enum": [
+        "sandbox",
+        "live"
+      ]
+    },
+    "LOGISTICS_MODE": {
+      "enum": [
+        "sandbox",
+        "live"
+      ]
     }
   }
 }

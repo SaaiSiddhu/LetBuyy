@@ -1,5 +1,7 @@
 # App Marketplace Payout Ledger Runbook
 
+> Frozen seam runbook. The public app marketplace is not an active production surface; use this only for first-party/private sandbox payout-ledger evidence until an ARB-approved marketplace reopen trigger exists.
+
 Owner: `services/queue-workers` and App Marketplace finance operations.
 
 1. Locate the charge in `app_billing_charges` and the corresponding `partner_payout_ledger_entries` row by `charge_id` or `source_event_id`.

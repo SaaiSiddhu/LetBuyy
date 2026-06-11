@@ -156,11 +156,10 @@ test('AI schemas and mobile service accept the mobile generation contract', () =
 test('AI wrangler config documents sandbox defaults and production human approval', () => {
     assert.match(wranglerSource, /AI_PROVIDER_MODE = "sandbox"/);
     assert.match(wranglerSource, /AI_PROVIDER = "letbuyy_sandbox"/);
-    assert.match(wranglerSource, /AI_PROVIDER_MODE = "live"/);
-    assert.match(wranglerSource, /AI_PROVIDER = "openai_compatible"/);
-    assert.match(wranglerSource, /AI_PROVIDER_MODEL = "SKIP_NEEDS_HUMAN_AI_PROVIDER_MODEL"/);
+    assert.match(wranglerSource, /AI_PROVIDER_MODEL = "letbuyy-sandbox-copywriter"/);
     assert.match(wranglerSource, /AI_CREDIT_PURCHASE_MODE = "sandbox"/);
-    assert.match(wranglerSource, /AI_CREDIT_PURCHASE_MODE = "live"/);
-    assert.match(wranglerSource, /AI_CREDIT_PURCHASE_PROVIDER = "razorpay"/);
+    assert.match(wranglerSource, /AI_CREDIT_PURCHASE_PROVIDER = "letbuyy_sandbox"/);
     assert.match(wranglerSource, /AI_CREDIT_RAZORPAY_KEY_ID = "SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_ID"/);
+    assert.doesNotMatch(wranglerSource, /AI_PROVIDER_MODE = "live"[\s\S]*SKIP_NEEDS_HUMAN_AI_PROVIDER_MODEL/);
+    assert.doesNotMatch(wranglerSource, /AI_CREDIT_PURCHASE_MODE = "live"[\s\S]*SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_ID/);
 });

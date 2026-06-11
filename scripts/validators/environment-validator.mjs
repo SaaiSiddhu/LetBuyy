@@ -46,6 +46,87 @@ for (const expectedRule of [".env", ".env.*", "*.env", "all.env", ".dev.vars", "
   reporter.assert(gitignore.includes(expectedRule), `.gitignore must block ${expectedRule}`);
 }
 
+const workerTemplate = readFile("config/env/templates/worker.env.example");
+const workerSchema = readFile("config/env/schemas/worker.schema.json");
+const requiredWorkerEnvKeys = [
+  "CUSTOMER_SESSION_SECRET",
+  "LETBUYY_IDENTITY_ISSUER",
+  "LETBUYY_IDENTITY_PUBLIC_JWKS",
+  "CUSTOMER_PASSWORD_RESET_URL",
+  "STOREFRONT_BASE_URL",
+  "NEXT_PUBLIC_STOREFRONT_URL",
+  "NEXT_PUBLIC_ADMIN_URL",
+  "LETBUYY_PLATFORM_DOMAIN",
+  "NEXT_PUBLIC_PLATFORM_DOMAIN",
+  "VERCEL_ORG_ID",
+  "QUEUE_TENANT_ENVELOPE_SECRET",
+  "LETBUYY_KMS_MODE",
+  "LETBUYY_KMS_SANDBOX_SECRET",
+  "LETBUYY_KMS_KEY_ID",
+  "LETBUYY_ALLOW_SANDBOX_KMS",
+  "LETBUYY_WAREHOUSE_MODE",
+  "LETBUYY_AI_MODEL_MODE",
+  "MEDIA_UPLOAD_SIGNING_SECRET",
+  "LETBUYY_EMAIL_MODE",
+  "SES_ACCESS_KEY_ID",
+  "SES_SECRET_ACCESS_KEY",
+  "SENDGRID_API_KEY",
+  "LOGISTICS_MODE",
+  "SHIPROCKET_TOKEN",
+  "DELHIVERY_TOKEN",
+  "PICKRR_TOKEN",
+  "PRODUCT_VARIANTS_RELATIONAL_READS",
+  "REQUEST_LOG_SAMPLE_RATE",
+  "RATE_LIMIT_KV_FALLBACK",
+];
+
+for (const key of requiredWorkerEnvKeys) {
+  reporter.assert(workerTemplate.includes(`${key}=`), `Worker env template missing ${key}`);
+  reporter.assert(workerSchema.includes(`"${key}"`), `Worker env schema missing ${key}`);
+}
+
+const runtimeEnvOwnership = JSON.parse(readFile("config/env/ownership/runtime-env-ownership.json"));
+const secretMatrix = JSON.parse(readFile("config/env/staging-production-secret-matrix.json"));
+const forbiddenEnvOwners = [
+  "apps/app-marketplace",
+  "apps/developer-portal",
+  "apps/theme-marketplace",
+  "apps/platform-operations-portal",
+  "apps/mobile/shopper-app",
+  "apps/mobile/operator-app",
+  "services/checkout-runtime",
+  "services/search-service",
+  "services/media-service",
+  "services/notification-service",
+  "services/event-bus",
+  "services/analytics-pipeline",
+];
+const envOwnerLists = [
+  runtimeEnvOwnership?.nextApp?.owners || [],
+  runtimeEnvOwnership?.worker?.owners || [],
+  runtimeEnvOwnership?.mobile?.owners || [],
+  secretMatrix?.nextApps?.owners || [],
+];
+
+for (const owner of forbiddenEnvOwners) {
+  reporter.assert(
+    !envOwnerLists.some((owners) => owners.includes(owner)),
+    `Frozen/reserved runtime must not own staging/production secret config: ${owner}`,
+  );
+}
+
+for (const suffix of ["APP_MARKETPLACE", "THEME_MARKETPLACE", "DEVELOPER_PORTAL", "PLATFORM_OPERATIONS_PORTAL"]) {
+  reporter.assert(
+    !(secretMatrix?.ciSecrets?.vercelProjectIdSuffixes || []).includes(suffix),
+    `Frozen app must not have a Vercel project secret suffix: ${suffix}`,
+  );
+}
+
+reporter.assert(
+  !readFile("services/api-gateway/src/index.ts").includes("EMAIL_QUEUE"),
+  "API gateway Env must not declare the removed EMAIL_QUEUE ghost binding; use NOTIFICATION_QUEUE",
+);
+
 const secretPatterns = [
   /\b(?:sk|pk|rk)_(?:live|test)_[A-Za-z0-9_=-]{20,}/,
   /\bwhsec_[A-Za-z0-9_=-]{20,}/,

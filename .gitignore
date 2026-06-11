@@ -91,6 +91,7 @@ functions/lib/
 all.env
 .dev.vars
 **/.dev.vars
+.claude/
 .dart-defines.local
 **/.dart-defines.local
 

@@ -170,13 +170,15 @@ for (const actionId of [
   "D9-TOKEN-SOURCE",
   "D10-WHATSAPP-SCOPED",
   "D11-PLATFORM-SIMPLIFICATION",
-  "D12-D13-GATE-RESTORE",
+  "STEPUP-B6-CERT-SURVIVABILITY-RETIRE",
   "D11-D13-VERIFY",
   "D13-WHOLE-REPO-END-STATE",
   "D13-END-STATE-VERIFY",
 ]) {
   reporter.assert(ledger.includes(actionId), `EXECUTION_LEDGER.md missing completion row ${actionId}`);
 }
+
+reporter.assert(readFile(".gitignore").includes(".claude/"), ".claude/ must stay gitignored");
 
 const skipped = readFile("SKIPPED_HUMAN_DECISIONS.md");
 const skippedIds = [...skipped.matchAll(/^\| (SKIP-[^| ]+) \|/gm)].map((match) => match[1]);
@@ -190,6 +192,8 @@ for (const skipId of [
   "SKIP-GATE1-ARB-RATIFICATION",
   "SKIP-PROD-DEPLOY-PROMOTION",
   "SKIP-PROD-DNS-CUTOVER",
+  "SKIP-D4-FROZEN-VERCEL-PROJECT-DELETION",
+  "SKIP-D5-DNS-TERRAFORM-APPLY",
   "SKIP-PROVIDER-SECRETS",
   "SKIP-D2-LIVE-ANON-GRANT-PROBE",
   "SKIP-D3-IDENTITY-LIVE-PROVIDERS",
@@ -208,6 +212,50 @@ for (const skipId of [
   "SKIP-D11-PRODUCT-DEAD-TABLE-WRITER-PROBE",
 ]) {
   reporter.assert(skipped.includes(skipId), `SKIPPED_HUMAN_DECISIONS.md missing human seam ${skipId}`);
+}
+
+for (const forbiddenPath of [
+  "services/api-gateway/src/execution/queue-projection-plans.ts",
+  "services/queue-workers/src/queue-projection-plans.ts",
+  "packages/auth-core/src/legacy.ts",
+  "infrastructure/dns/letbuyy_com.tf",
+]) {
+  reporter.assert(!exists(forbiddenPath), `Legacy duplicate/runtime residue must be removed: ${forbiddenPath}`);
+}
+
+reporter.assert(
+  exists("packages/event-core/src/queue-projection-plans.ts"),
+  "Shared queue projection planner must live in packages/event-core",
+);
+
+const dnsTerraform = readFile("infrastructure/dns/dns.tf");
+reporter.assert(
+  dnsTerraform.includes('name    = "checkout"') && dnsTerraform.includes("checkout.letbuyy.com"),
+  "Single DNS Terraform file must include checkout.letbuyy.com",
+);
+for (const frozenDnsName of ['name    = "apps"', 'name     = "apps"', 'name    = "themes"', 'name     = "themes"', 'name    = "developer"', 'name     = "developer"', 'name    = "team"', 'name     = "team"']) {
+  reporter.assert(!dnsTerraform.includes(frozenDnsName), `DNS Terraform must not publish frozen app host: ${frozenDnsName}`);
+}
+
+for (const runbook of [
+  "docs/runbooks/app-marketplace-catalog.md",
+  "docs/runbooks/app-marketplace-payout-ledger.md",
+  "docs/runbooks/app-marketplace-incident-response.md",
+  "docs/runbooks/app-marketplace-review-queue.md",
+]) {
+  reporter.assert(
+    readFile(runbook).includes("Frozen seam runbook"),
+    `Frozen marketplace runbook must carry an active-use warning: ${runbook}`,
+  );
+}
+
+const mediaResidueChecks = [
+  ["apps/storefront-runtime/next.config.ts", /firebasestorage\.googleapis\.com|storage\.googleapis\.com/],
+  ["apps/theme-marketplace/next.config.ts", /firebasestorage\.googleapis\.com|storage\.googleapis\.com/],
+  ["packages/infrastructure/storage-adapter/index.ts", /firebase-storage/],
+];
+for (const [file, pattern] of mediaResidueChecks) {
+  reporter.assert(!pattern.test(readFile(file)), `Firebase/GCS media storage residue must stay removed: ${file}`);
 }
 
 reporter.assert(productionTopology?.canonicalDomain === "letbuyy.com", "Production topology must declare letbuyy.com");

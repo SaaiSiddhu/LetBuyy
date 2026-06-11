@@ -97,10 +97,9 @@ test('WhatsApp timeline migration is tenant-scoped with RLS and approved trigger
 test('WhatsApp config is sandbox-first and production human-gated', () => {
     assert.match(wranglerSource, /WHATSAPP_PROVIDER_MODE = "sandbox"/);
     assert.match(wranglerSource, /WHATSAPP_PROVIDER = "letbuyy_sandbox"/);
-    assert.match(wranglerSource, /WHATSAPP_PROVIDER_MODE = "live"/);
-    assert.match(wranglerSource, /WHATSAPP_PROVIDER = "twilio"/);
     assert.match(wranglerSource, /TWILIO_ACCOUNT_SID = "SKIP_NEEDS_HUMAN_TWILIO_ACCOUNT_SID"/);
     assert.match(wranglerSource, /TWILIO_WHATSAPP_FROM = "SKIP_NEEDS_HUMAN_TWILIO_WHATSAPP_FROM"/);
+    assert.doesNotMatch(wranglerSource, /WHATSAPP_PROVIDER_MODE = "live"[\s\S]*SKIP_NEEDS_HUMAN_TWILIO_ACCOUNT_SID/);
 });
 
 test('mobile customer detail uses the WhatsApp service and hides provider internals', () => {

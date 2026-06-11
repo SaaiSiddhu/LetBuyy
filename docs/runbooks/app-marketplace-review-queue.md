@@ -1,5 +1,7 @@
 # App Marketplace Review Queue Runbook
 
+> Frozen seam runbook. The public app marketplace is not an active production surface; use this only for first-party/private sandbox review evidence until an ARB-approved marketplace reopen trigger exists.
+
 Owner: App Marketplace review operations, with gateway routes owning review mutations.
 
 1. Open the review queue and filter by app, developer, automated-check status, fraud flags, abuse reports, and submission version.

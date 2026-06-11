@@ -13,9 +13,10 @@ import {
     planDeletedSearchProjectionDocument,
     planOrderSearchProjectionDocument,
     planProductSearchProjectionDocument,
-} from './queue-projection-plans';
-import { eventRetryDelaySeconds } from '@letbuyy/event-core';
-import { getDomainEventContract, type RuntimeEventEnvelope } from '@letbuyy/event-core';
+    eventRetryDelaySeconds,
+    getDomainEventContract,
+    type RuntimeEventEnvelope,
+} from '@letbuyy/event-core';
 import { planInAppNotificationForEvent } from '@letbuyy/notification-core';
 import { EventExecutionAdapter } from './event-execution.adapter';
 import {

@@ -2,6 +2,7 @@ import {
   canonicalAppRoots,
   canonicalServiceRoots,
   createReporter,
+  exists,
   readFile,
   readJson,
 } from "./governance-common.mjs";
@@ -64,6 +65,16 @@ for (const frozenRoot of frozenAppRoots) {
 
 const vercelProjects = readJson("config/vercel/projects.json");
 const vercelProjectDirs = new Set((vercelProjects?.apps || []).map((app) => app.directory));
+const packageJson = readJson("package.json");
+const vercelProjectBranches = JSON.stringify(vercelProjects);
+reporter.assert(
+  !vercelProjectBranches.includes('"branch":"develop"') && !vercelProjectBranches.includes('"branch": "develop"'),
+  "Vercel project registry must not target retired develop branch",
+);
+reporter.assert(
+  !readFile(".github/workflows/deploy-staging.yml").includes("branches: [develop]"),
+  "Staging deploy workflow must not trigger from retired develop branch",
+);
 
 for (const appRoot of expectedApps) {
   reporter.assert(vercelProjectDirs.has(appRoot), `Vercel project registry missing active app: ${appRoot}`);
@@ -71,6 +82,34 @@ for (const appRoot of expectedApps) {
 
 for (const frozenRoot of frozenAppRoots) {
   reporter.assert(!vercelProjectDirs.has(frozenRoot), `Frozen app must not be in Vercel project registry: ${frozenRoot}`);
+  reporter.assert(!exists(`${frozenRoot}/vercel.json`), `Frozen app must not keep a Vercel deploy manifest: ${frozenRoot}/vercel.json`);
+
+  const manifest = readJson(`${frozenRoot}/runtime.manifest.json`);
+  reporter.assert(
+    manifest?.runtimeCategory === "frozen-next-app",
+    `Frozen app runtime manifest must declare frozen-next-app category: ${frozenRoot}`,
+  );
+  reporter.assert(
+    manifest?.deploymentAuthority?.platform === "frozen-not-deployed",
+    `Frozen app deployment authority must be frozen-not-deployed: ${frozenRoot}`,
+  );
+  reporter.assert(
+    Array.isArray(manifest?.deploymentAuthority?.config) && manifest.deploymentAuthority.config.length === 0,
+    `Frozen app deployment authority must not list deploy config: ${frozenRoot}`,
+  );
+  reporter.assert(
+    manifest?.environmentAuthority?.secretStore === "none - frozen app is not deployed",
+    `Frozen app must not claim a provider secret store: ${frozenRoot}`,
+  );
+
+  const packageName = readJson(`${frozenRoot}/package.json`)?.name;
+  reporter.assert(
+    typeof packageName === "string" &&
+      packageJson.scripts?.build?.includes(`--filter=!${packageName}`) &&
+      packageJson.scripts?.lint?.includes(`--filter=!${packageName}`) &&
+      packageJson.scripts?.typecheck?.includes(`--filter=!${packageName}`),
+    `Root build/lint/typecheck scripts must exclude frozen app package: ${frozenRoot}`,
+  );
 }
 
 for (const reservedRoot of [

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+export * from './queue-projection-plans';
+
 export const DispatchOutboxSchema = z.object({
   limit: z.number().int().min(1).max(100).optional(),
   webhook_limit: z.number().int().min(1).max(100).optional(),

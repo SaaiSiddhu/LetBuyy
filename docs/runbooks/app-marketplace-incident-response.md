@@ -1,5 +1,7 @@
 # App Marketplace Incident Response Runbook
 
+> Frozen seam runbook. The public app marketplace is not an active production surface; use this only for first-party/private sandbox incident evidence until an ARB-approved marketplace reopen trigger exists.
+
 Owner: App Marketplace on-call with API gateway, queue worker, and finance escalation paths.
 
 1. Classify the incident: catalog/discovery outage, install/OAuth failure, billing or payout issue, webhook delivery backlog, media upload failure, review abuse, or data-handling concern.

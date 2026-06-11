@@ -7,7 +7,7 @@ const analyticsRoute = readFileSync('services/api-gateway/src/routes/analytics.t
 const storefrontRoute = readStorefrontRouteSource();
 const queueWorker = readFileSync('services/queue-workers/src/platform-queue-consumer.ts', 'utf8');
 const gatewayQueueConsumer = readFileSync('services/api-gateway/src/execution/queue-execution.adapter.ts', 'utf8');
-const queueProjectionPlans = readFileSync('services/queue-workers/src/queue-projection-plans.ts', 'utf8');
+const queueProjectionPlans = readFileSync('packages/event-core/src/queue-projection-plans.ts', 'utf8');
 const wranglerConfig = readFileSync('services/api-gateway/wrangler.toml', 'utf8');
 
 function blockAfter(source, marker, length = 2400) {

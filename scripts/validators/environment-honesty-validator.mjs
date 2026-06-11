@@ -99,4 +99,30 @@ for (const key of ["NEXT_PUBLIC_MARKETING_URL", "NEXT_PUBLIC_THEME_MARKETPLACE_U
   reporter.assert(nextSchema.includes(`"${key}"`), `Next app env schema missing ${key}`);
 }
 
+const apiWrangler = readFile("services/api-gateway/wrangler.toml");
+const queueWrangler = readFile("services/queue-workers/wrangler.toml");
+const livePlaceholderPairs = [
+  {
+    label: "AI provider",
+    pattern: /AI_PROVIDER_MODE = "live"[\s\S]*AI_PROVIDER_MODEL = "SKIP_NEEDS_HUMAN_AI_PROVIDER_MODEL"/,
+  },
+  {
+    label: "AI credit purchase",
+    pattern: /AI_CREDIT_PURCHASE_MODE = "live"[\s\S]*AI_CREDIT_RAZORPAY_KEY_ID = "SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_ID"/,
+  },
+  {
+    label: "WhatsApp provider",
+    pattern: /WHATSAPP_PROVIDER_MODE = "live"[\s\S]*TWILIO_ACCOUNT_SID = "SKIP_NEEDS_HUMAN_TWILIO_ACCOUNT_SID"/,
+  },
+];
+
+for (const { label, pattern } of livePlaceholderPairs) {
+  reporter.assert(!pattern.test(apiWrangler), `${label} must not be labelled live while human-secret placeholders remain`);
+}
+
+reporter.assert(
+  !/PUSH_DISPATCH_MODE = "live"[\s\S]*SKIP_NEEDS_HUMAN_PUSH_/.test(queueWrangler),
+  "Queue worker push dispatch must not be labelled live while human-secret placeholders remain",
+);
+
 reporter.finish(`${trackedFiles.filter(isActiveSource).length} active source files checked for environment honesty`);

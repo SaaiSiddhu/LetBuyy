@@ -91,7 +91,7 @@ function configuredResend(env: Pick<Env, 'RESEND_API_KEY'>): boolean {
 }
 
 export async function enqueueOrderConfirmationEmail(
-    env: Pick<Env, 'EMAIL_QUEUE' | 'RESEND_API_KEY' | 'RESEND_FROM_EMAIL' | 'ENVIRONMENT' | 'INTERNAL_API_SECRET' | 'QUEUE_TENANT_ENVELOPE_SECRET'>,
+    env: Pick<Env, 'NOTIFICATION_QUEUE' | 'RESEND_API_KEY' | 'RESEND_FROM_EMAIL' | 'ENVIRONMENT' | 'INTERNAL_API_SECRET' | 'QUEUE_TENANT_ENVELOPE_SECRET'>,
     db: SupabaseClient,
     input: { orderId: string; storeId: string; requestId: string; idempotencyKey: string },
 ): Promise<void> {
@@ -124,8 +124,8 @@ export async function enqueueOrderConfirmationEmail(
         payload: email,
     };
 
-    if (env.EMAIL_QUEUE) {
-        await env.EMAIL_QUEUE.send(await signQueueTenantEnvelope(env, queueBody));
+    if (env.NOTIFICATION_QUEUE) {
+        await env.NOTIFICATION_QUEUE.send(await signQueueTenantEnvelope(env, queueBody));
         return;
     }
 
@@ -133,7 +133,7 @@ export async function enqueueOrderConfirmationEmail(
         console.warn(JSON.stringify({
             level: 'warn',
             event: 'order_confirmation_email_skipped',
-            reason: 'missing-email-queue-and-resend',
+            reason: 'missing-notification-queue-and-resend',
             environment: env.ENVIRONMENT,
             order_id: input.orderId,
             store_id: input.storeId,

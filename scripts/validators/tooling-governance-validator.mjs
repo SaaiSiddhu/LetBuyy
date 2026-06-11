@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   createReporter,
   exists,
+  readFile,
   root,
 } from "./governance-common.mjs";
 
@@ -48,6 +49,33 @@ for (const entry of fs.readdirSync(path.join(root, "scripts/validators"), { with
   reporter.assert(
     entry.name.endsWith(".mjs") || entry.name === "README.md" || entry.name === "design-system-baseline.json",
     `Validator must be an .mjs module: scripts/validators/${entry.name}`,
+  );
+}
+
+const governanceGate = readFile("scripts/validate-governance.mjs");
+const wiredValidators = new Set([...governanceGate.matchAll(/"([^"]+\.mjs)"/g)].map((match) => match[1]));
+const nonValidatorModules = new Set([
+  "governance-common.mjs",
+  "phase-b-common.mjs",
+]);
+const hookOnlyValidators = new Set([
+  "frozen-path-override-gate.mjs",
+]);
+
+for (const entry of fs.readdirSync(path.join(root, "scripts/validators"), { withFileTypes: true })) {
+  if (!entry.isFile() || !entry.name.endsWith(".mjs")) continue;
+  if (nonValidatorModules.has(entry.name) || hookOnlyValidators.has(entry.name)) continue;
+
+  reporter.assert(
+    wiredValidators.has(entry.name),
+    `Validator module must be wired into scripts/validate-governance.mjs gate lane: scripts/validators/${entry.name}`,
+  );
+}
+
+for (const hookPath of ["scripts/git-hooks/pre-commit", "scripts/git-hooks/commit-msg"]) {
+  reporter.assert(
+    readFile(hookPath).includes("frozen-path-override-gate.mjs"),
+    `Git hook must run frozen-path override gate: ${hookPath}`,
   );
 }
 

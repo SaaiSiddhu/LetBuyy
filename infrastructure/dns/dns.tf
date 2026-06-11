@@ -88,13 +88,13 @@ resource "cloudflare_record" "console" {
   comment = "Vercel — console.letbuyy.com"
 }
 
-resource "cloudflare_record" "team" {
+resource "cloudflare_record" "checkout" {
   zone_id = var.cloudflare_zone_id
-  name    = "team"
+  name    = "checkout"
   content = "cname.vercel-dns.com"
   type    = "CNAME"
   proxied = false
-  comment = "Vercel — team.letbuyy.com"
+  comment = "Vercel — checkout.letbuyy.com (hosted checkout origin)"
 }
 
 # ─── API → Cloudflare Workers ────────────────────────────────

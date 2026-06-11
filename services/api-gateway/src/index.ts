@@ -201,7 +201,6 @@ export interface Env {
     ANALYTICS_QUEUE?: Queue<Record<string, unknown>>;
     SEARCH_QUEUE?: Queue<Record<string, unknown>>;
     NOTIFICATION_QUEUE?: Queue<Record<string, unknown>>;
-    EMAIL_QUEUE?: Queue<Record<string, unknown>>;
     RUNTIME_QUEUE?: Queue<Record<string, unknown>>;
     WEBHOOK_SERVICE?: Fetcher;
     RUNTIME_TELEMETRY?: AnalyticsEngineDataset;

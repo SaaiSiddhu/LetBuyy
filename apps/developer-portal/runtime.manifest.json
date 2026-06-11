@@ -6,7 +6,7 @@
     "developer",
     "partner"
   ],
-  "runtimeCategory": "next-app",
+  "runtimeCategory": "frozen-next-app",
   "runtimeClassification": "developer-ecosystem-plane",
   "ownership": {
     "sourceAuthority": "apps/developer-portal",
@@ -43,15 +43,13 @@
     "provider-sdks"
   ],
   "deploymentAuthority": {
-    "platform": "Vercel",
-    "config": [
-      "apps/developer-portal/next.config.ts"
-    ]
+    "platform": "frozen-not-deployed",
+    "config": []
   },
   "environmentAuthority": {
     "schema": "config/env/schemas/next-app.schema.json",
     "template": "config/env/templates/next-app.env.example",
-    "secretStore": "Vercel developer-portal project environment"
+    "secretStore": "none - frozen app is not deployed"
   },
   "observabilityAuthority": {
     "correlationId": "X-Request-ID",
@@ -87,15 +85,15 @@
   "cacheExecutionOwnership": "No cache execution ownership; cache invalidation, consistency checks, idempotency invalidation, and lifecycle metrics delegate to service-owned read planners, service-owned read planners, and service runtimes.",
   "diagnosticsOwnership": "May surface user-safe diagnostics returned by service APIs; runtime diagnostics persistence and incident metadata delegate to operational service runtimes.",
   "operationalControlPlaneOwnership": "No operational control-plane ownership; workflow, queue, provider resilience, telemetry, tenant, and recovery commands delegate to platform service runtimes.",
-  "deploymentOwnership": "Owns presentation runtime deployment participation for Developer Portal; deploys through provider promotion gates and delegates infrastructure execution to service runtimes.",
+  "deploymentOwnership": "Frozen app is not deployed; no Vercel deployment participation is allowed until an ARB-approved reopen trigger changes this manifest.",
   "observabilityInfrastructureOwnership": "Emits correlated runtime telemetry to the OpenTelemetry, Prometheus, Tempo, Loki, and Grafana stack declared in infrastructure/observability.",
   "queueProviderOwnership": "Delegates production queue provider execution to services/api-gateway producers and services/queue-workers consumers.",
   "incidentOwnership": "Participates in incident metadata, diagnostics, alert routing, and audit records through production incident governance.",
-  "deploymentTopologyOwnership": "Must match config/runtime/deployment-topology.json and config/runtime/production-topology.json; topology drift is a hard validation failure.",
+  "deploymentTopologyOwnership": "Must remain frozen/not-deployed in config/runtime/production-topology.json with no deployment manifests.",
   "securityOwnership": "Uses provider environment stores and authenticated service APIs; no service-role or provider secrets may enter client runtime.",
   "controlPlaneOwnership": "Uses operator UI/API surfaces for control-plane visibility and delegates execution to service runtimes.",
-  "productionOwnership": "Delegates production execution to service APIs, provider platforms, deployment topology, and runtime manifests while owning presentation availability.",
-  "deploymentPipelineOwnership": "Delegates deployment pipeline gates through infrastructure/deployment, production-rollout workflow, health gates, rollback runbooks, and production topology validation.",
+  "productionOwnership": "Frozen app is not a production runtime; production topology must keep it frozen/not-deployed.",
+  "deploymentPipelineOwnership": "No deployment pipeline ownership while frozen; no Vercel project, vercel.json, or auto-deploy shape is allowed.",
   "telemetryInfrastructureOwnership": "Delegates telemetry infrastructure integration through OpenTelemetry, runtime telemetry tables, Prometheus alerts, and dashboard projections.",
   "dashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local fixture data.",
   "operationalDashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local fixture data."

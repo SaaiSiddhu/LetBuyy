@@ -1,5 +1,5 @@
 export interface StorageObjectDescriptor {
-  provider: 'r2' | 's3' | 'supabase-storage' | 'firebase-storage' | 'local';
+  provider: 'r2' | 's3' | 'supabase-storage' | 'local';
   bucket: string;
   key: string;
   contentType?: string;

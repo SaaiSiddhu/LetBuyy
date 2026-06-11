@@ -63,9 +63,6 @@
     },
     {
       "path": "./packages/typescript/ui"
-    },
-    {
-      "path": "./packages/typescript/utils"
     }
   ]
 }

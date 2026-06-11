@@ -63,12 +63,12 @@ test('order confirmation email queues one relational receipt payload with determ
     const env = {
         ENVIRONMENT: 'test',
         RESEND_API_KEY: 'SKIP_NEEDS_HUMAN_TEST_RESEND_API_KEY',
-        EMAIL_QUEUE: {
+        NOTIFICATION_QUEUE: {
             send: async (body: Record<string, unknown>) => {
                 sent.push(body);
             },
         },
-    } as unknown as Pick<Env, 'EMAIL_QUEUE' | 'RESEND_API_KEY' | 'RESEND_FROM_EMAIL' | 'ENVIRONMENT'>;
+    } as unknown as Pick<Env, 'NOTIFICATION_QUEUE' | 'RESEND_API_KEY' | 'RESEND_FROM_EMAIL' | 'ENVIRONMENT'>;
 
     await enqueueOrderConfirmationEmail(env, createDb(), {
         orderId: 'order-1',

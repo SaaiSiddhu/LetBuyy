@@ -8,12 +8,8 @@
       "apps/storefront-runtime",
       "apps/merchant-control-plane",
       "apps/identity-platform",
-      "apps/app-marketplace",
-      "apps/developer-portal",
-      "apps/theme-marketplace",
       "apps/marketing-site",
-      "apps/platform-console",
-      "apps/platform-operations-portal"
+      "apps/platform-console"
     ],
     "rules": [
       "No tracked .env files.",
@@ -29,13 +25,8 @@
     "owners": [
       "services/api-gateway",
       "services/webhook-service",
-      "services/checkout-runtime",
-      "services/queue-workers",
-      "services/notification-service",
-      "services/search-service",
-      "services/media-service",
-      "services/analytics-pipeline",
-      "services/event-bus"
+      "services/mobile-bff",
+      "services/queue-workers"
     ],
     "rules": [
       "Worker secrets live in Cloudflare secret stores, not repository files.",
@@ -49,9 +40,7 @@
     "template": "config/env/templates/mobile.dart-defines.example",
     "secretStore": "Mobile CI dart-define and platform secret injection",
     "owners": [
-      "apps/mobile/shopper-app",
-      "apps/mobile/merchant-app",
-      "apps/mobile/operator-app"
+      "apps/mobile/merchant-app"
     ],
     "rules": [
       "No provider secret keys in Flutter source.",

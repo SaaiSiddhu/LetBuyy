@@ -44,7 +44,7 @@ test('Task 016 media module signs R2 upload intents and publishes media.processe
     const mediaRoute = source('routes/media.ts');
     const storageAdapter = repositorySource('packages/infrastructure/storage-adapter/index.ts');
     const eventCore = repositorySource('packages/event-core/src/index.ts');
-    const queueProjectionPlans = source('execution/queue-projection-plans.ts');
+    const queueProjectionPlans = repositorySource('packages/event-core/src/queue-projection-plans.ts');
     const migration = repositorySource('database/supabase/migrations/154_executable_analytics_media_ai_seam.sql');
 
     assert.match(mediaRoute, /router\.post\('\/signed-upload'/);

@@ -1,5 +1,7 @@
 # App Marketplace Catalog Runbook
 
+> Frozen seam runbook. The public app marketplace is not an active production surface; use this only for first-party/private sandbox catalog evidence until an ARB-approved marketplace reopen trigger exists.
+
 Owner: App Marketplace operations, with `services/api-gateway` as the catalog writer.
 
 1. Review candidate app, category, collection, featured placement, and media changes against the current `marketplace_apps`, `app_categories`, `app_collections`, `app_collection_items`, and `app_featured_placements` contracts.
