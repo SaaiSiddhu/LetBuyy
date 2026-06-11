@@ -2,20 +2,20 @@
 // Committed secret placeholder validator.
 //
 // Fails CI if any committed wrangler.toml assigns a plaintext value to a CREDENTIAL key
-// (name ending in _SECRET or _TOKEN). Such values MUST be Cloudflare Worker secrets set
+// (name ending in _SECRET, _TOKEN, or _PRIVATE_KEY). Such values MUST be Cloudflare Worker secrets set
 // via `wrangler secret put`, never committed as a `[vars]` value.
 //
 // This gate exists because a committed placeholder —
 //   INTERNAL_API_SECRET = "SKIP_NEEDS_HUMAN_BFF_INTERNAL_API_SECRET"
 // — shipped in mobile-bff/wrangler.toml and made the entire mobile backend return HTTP
 // 500 for every authenticated request. Non-credential placeholders (e.g. FCM_PROJECT_ID,
-// APNS_BUNDLE_ID) are intentionally allowed; only *_SECRET / *_TOKEN keys are gated.
+// APNS_BUNDLE_ID) are intentionally allowed; credential keys are gated.
 
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 const ROOTS = ['apps', 'services'];
-const CREDENTIAL_KEY = /^[A-Za-z0-9_]*(_SECRET|_TOKEN)$/;
+const CREDENTIAL_KEY = /^[A-Za-z0-9_]*(_SECRET|_TOKEN|_PRIVATE_KEY)$/;
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.next', '.turbo', 'build']);
 const violations = [];
 
@@ -52,7 +52,7 @@ for (const root of ROOTS) walk(root);
 
 if (violations.length > 0) {
   console.error('Committed secret placeholder validator FAILED.');
-  console.error('Credential keys (ending in _SECRET / _TOKEN) must be provisioned with');
+  console.error('Credential keys (ending in _SECRET / _TOKEN / _PRIVATE_KEY) must be provisioned with');
   console.error('`wrangler secret put`, never committed as a plaintext [vars] value:');
   for (const v of violations) {
     const preview = v.value.length > 24 ? `${v.value.slice(0, 24)}…` : v.value;
@@ -61,5 +61,5 @@ if (violations.length > 0) {
   process.exit(1);
 }
 
-console.log('Committed secret placeholder validator passed (no plaintext *_SECRET/*_TOKEN in committed wrangler.toml).');
+console.log('Committed secret placeholder validator passed (no plaintext *_SECRET/*_TOKEN/*_PRIVATE_KEY in committed wrangler.toml).');
 process.exit(0);
