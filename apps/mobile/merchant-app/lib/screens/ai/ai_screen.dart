@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../app/store_context.dart';
 
 import '../../services/ai_studio_service.dart';
@@ -497,8 +498,25 @@ class _AiScreenState extends State<AiScreen> {
         storeId: storeId,
         amount: 100,
       );
+      final checkoutUri = !purchase.completed && purchase.checkoutUrl.isNotEmpty
+          ? Uri.tryParse(purchase.checkoutUrl)
+          : null;
       if (mounted) {
         setState(() => _credits = service.credits ?? _credits);
+      }
+      if (checkoutUri != null) {
+        final opened = await launchUrl(
+          checkoutUri,
+          mode: LaunchMode.externalApplication,
+        );
+        if (mounted) {
+          _showSnack(
+            opened ? 'Credit checkout opened.' : 'Credit checkout is ready.',
+          );
+        }
+        return;
+      }
+      if (mounted) {
         _showSnack(
           purchase.completed ? 'Credits added.' : 'Credit checkout is ready.',
         );

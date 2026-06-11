@@ -9,6 +9,7 @@ const aiRouteSource = readFileSync(new URL('../routes/ai.ts', import.meta.url), 
 const bffSource = readFileSync(new URL('../../../mobile-bff/src/index.ts', import.meta.url), 'utf8');
 const wranglerSource = readFileSync(new URL('../../wrangler.toml', import.meta.url), 'utf8');
 const appEngineSource = readFileSync(new URL('../../../../packages/shared-types/src/app-platform.ts', import.meta.url), 'utf8');
+const sharedTypesSource = readFileSync(new URL('../../../../packages/shared-types/src/index.ts', import.meta.url), 'utf8');
 const mobileAiServiceSource = readFileSync(
     new URL('../../../../apps/mobile/merchant-app/lib/services/ai_studio_service.dart', import.meta.url),
     'utf8'
@@ -108,28 +109,75 @@ test('AI credit purchase is sandbox-first and live Razorpay credential-gated', a
     assert.equal(sandboxPurchase.providerMode, 'sandbox');
     assert.equal(sandboxPurchase.amountMinor, 10000);
 
+    const requests: Array<{ url: string; body: Record<string, unknown>; authorization: string | null }> = [];
     const liveAdapter = createAiCreditPurchaseAdapter({
         mode: 'live',
         provider: 'razorpay',
         razorpayKeyId: 'configured-provider-id-fixture',
         razorpayKeySecret: 'configured-provider-auth-fixture',
         environment: 'production',
+        fetch: async (url, init) => {
+            requests.push({
+                url: String(url),
+                body: JSON.parse(String(init?.body || '{}')) as Record<string, unknown>,
+                authorization: init?.headers instanceof Headers
+                    ? init.headers.get('Authorization')
+                    : (init?.headers as Record<string, string> | undefined)?.Authorization || null,
+            });
+            return new Response(JSON.stringify({
+                id: 'plink_ai_credit_1',
+                short_url: 'https://rzp.io/i/aiCredit1',
+                status: 'created',
+            }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        },
     });
 
-    assert.equal(liveAdapter.available, false);
-    assert.match(liveAdapter.unavailableReason || '', /provider integration is unavailable/);
+    assert.equal(liveAdapter.available, true);
+    assert.equal(liveAdapter.unavailableReason, null);
+    const livePurchase = await liveAdapter.purchase({
+        storeId: 'store_1',
+        userId: 'user_1',
+        credits: 100,
+        idempotencyKey: 'purchase_live_1',
+    });
+
+    assert.equal(livePurchase.status, 'pending_provider_payment');
+    assert.equal(livePurchase.providerMode, 'live');
+    assert.equal(livePurchase.providerReference, 'plink_ai_credit_1');
+    assert.equal(livePurchase.checkoutUrl, 'https://rzp.io/i/aiCredit1');
+    assert.equal(livePurchase.metadata.credit_grant_deferred_until_provider_webhook, true);
+    const paymentLinkUrl = new URL(requests[0].url);
+    assert.equal(paymentLinkUrl.protocol, 'https:');
+    assert.equal(paymentLinkUrl.pathname, '/v1/payment_links');
+    assert.equal(requests[0].body.amount, 10000);
+    assert.equal(requests[0].body.currency, 'INR');
+    assert.equal(requests[0].body.accept_partial, false);
+    assert.equal((requests[0].body.notes as Record<string, unknown>).source_type, 'ai_credit_purchase');
+    assert.match(requests[0].authorization || '', /^Basic /);
+
+    const missingCredentialAdapter = createAiCreditPurchaseAdapter({
+        mode: 'live',
+        provider: 'razorpay',
+        razorpayKeyId: 'SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_ID',
+        razorpayKeySecret: 'configured-provider-auth-fixture',
+        environment: 'production',
+    });
+    assert.equal(missingCredentialAdapter.available, false);
+    assert.match(missingCredentialAdapter.unavailableReason || '', /credentials and webhook certification/);
     await assert.rejects(
-        () => liveAdapter.purchase({
+        () => missingCredentialAdapter.purchase({
             storeId: 'store_1',
             userId: 'user_1',
             credits: 100,
-            idempotencyKey: 'purchase_live_1',
+            idempotencyKey: 'purchase_live_2',
         }),
         (error) => {
             assert.equal((error as { code?: string }).code, 'AI_CREDIT_PURCHASE_LIVE_PROVIDER_UNAVAILABLE');
             return true;
         },
     );
+
+    assert.match(sharedTypesSource, /pending_provider_payment/);
 });
 
 test('AI schemas and mobile service accept the mobile generation contract', () => {

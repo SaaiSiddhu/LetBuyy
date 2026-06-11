@@ -160,10 +160,13 @@ for (const fragment of [
 }
 reporter.assert(aiRoute.includes("LETBUYY_AI_MODEL_MODE === 'live' ? 'live' : 'sandbox'"), "AI seam route must default model mode to sandbox");
 reporter.assert(aiAdapter.includes("mode: 'sandbox' | 'live'"), "AI capability seam must expose sandbox/live modes");
-reporter.assert(aiCreditAdapter.includes("AI_CREDIT_PURCHASE_LIVE_PROVIDER_UNAVAILABLE"), "AI credit purchase live mode must fail closed while provider checkout client is absent");
-reporter.assert(!aiCreditAdapter.includes("providerMode: 'live'"), "AI credit purchase adapter must not return live provider mode without a real provider checkout order");
+reporter.assert(aiCreditAdapter.includes("AI_CREDIT_PURCHASE_LIVE_PROVIDER_UNAVAILABLE"), "AI credit purchase live mode must fail closed without credentials/webhook certification");
+reporter.assert(aiCreditAdapter.includes("https://api.razorpay.com/v1/payment_links"), "AI credit purchase adapter must create real Razorpay payment links when credentials are present");
+reporter.assert(aiCreditAdapter.includes("pending_provider_payment"), "AI credit purchase adapter must not mark live provider links as completed before webhook proof");
+reporter.assert(aiCreditAdapter.includes("credit_grant_deferred_until_provider_webhook"), "AI credit purchase adapter must keep live credit grants deferred until provider webhook proof");
 reporter.assert(!aiCreditAdapter.includes("requires_checkout"), "AI credit purchase adapter must not advertise checkout-required state before a real checkout provider exists");
 reporter.assert(!sharedTypes.includes("requires_checkout"), "shared AI credit purchase contract must not advertise checkout-required state before a real checkout provider exists");
+reporter.assert(sharedTypes.includes("pending_provider_payment"), "shared AI credit purchase contract must expose pending provider payment status");
 reporter.assert(capabilityBacklog.includes("CAP-C17"), "CAPABILITY_BACKLOG.md missing CAP-C17 AI credit purchase provider gap");
 reporter.assert(skippedHumanDecisions.includes("SKIP-CAP-AI-CREDIT-PURCHASE-PROVIDER"), "SKIPPED_HUMAN_DECISIONS.md missing SKIP-CAP-AI-CREDIT-PURCHASE-PROVIDER");
 for (const fragment of [
