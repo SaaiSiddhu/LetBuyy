@@ -43,7 +43,7 @@ class PaymentConfigModel {
   final DateTime? verifiedAt;
   final String? verificationError;
 
-  // Test mode for sandbox testing
+  // Sandbox flag; API compatibility keeps the persisted field named test_mode.
   final bool testMode;
 
   // Webhook configuration

@@ -181,7 +181,7 @@ const softwareNode = {
     "@type": "Offer",
     price: "0",
     priceCurrency: "INR",
-    description: "Free launch tier available; paid plan pricing requires human approval.",
+    description: "Free launch tier available with 0% transaction and platform fees.",
   },
 };
 
