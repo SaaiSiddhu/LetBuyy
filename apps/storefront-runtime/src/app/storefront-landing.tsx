@@ -287,7 +287,7 @@ function StoreFinder() {
                             <MaterialIcon name={SITE_TYPE_META[store.siteType]?.icon || 'web'} />
                             {getSiteTypeLabel(store.siteType)}
                         </span>
-                        is coming soon! Still being set up.
+                        is not open yet. Still being set up.
                     </span>
                     <a className="finder-status-link" onClick={handleVisitClick}>
                         Preview →

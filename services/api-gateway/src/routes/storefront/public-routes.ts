@@ -596,7 +596,7 @@ export function registerStorefrontPublicRoutes(
         });
     });
 
-    // GET /storefront/:subdomain/status — Public limited status data for coming-soon routing.
+    // GET /storefront/:subdomain/status — Public limited status data for gated storefront routing.
     // Draft/suspended stores never expose mutable theme config through this endpoint.
     router.get('/:subdomain/status', async (c) => {
         const store = await loadSiteByHandle(c, c.req.param('subdomain'), { publishedOnly: false });

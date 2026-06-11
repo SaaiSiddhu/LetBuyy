@@ -1066,7 +1066,7 @@ export const storefrontEndpoints: EndpointDoc[] = [
     path: "/v1/storefront/:subdomain/status",
     auth: "public",
     status: "available",
-    summary: "Returns limited status data for draft, published, suspended, or coming-soon routing.",
+    summary: "Returns limited status data for draft, published, suspended, or gated storefront routing.",
     source: "services/api-gateway/src/routes/storefront.ts:1545"
   },
   {

@@ -45,7 +45,7 @@ function ComingSoonPreviewContent() {
             <ComingSoonRouter
                 siteType={active}
                 storeName="LetBuyy Demo"
-                tagline={gateMessage || 'Preview of the coming soon pages — switch between site types below.'}
+                tagline={gateMessage || 'Preview of the gated storefront pages — switch between site types below.'}
             />
 
             {isPasswordGate ? (
