@@ -511,9 +511,9 @@ class LanguageService extends ChangeNotifier {
       'hi': 'बाद में तय करूंगा',
     },
     'decideLaterSubtitle': {
-      'en': 'Skip for now',
-      'ta': 'இப்போது தவிர்',
-      'hi': 'अभी के लिए छोड़ें',
+      'en': 'Skip setup',
+      'ta': 'அமைப்பை தவிர்',
+      'hi': 'सेटअप छोड़ें',
     },
 
     // Categories
