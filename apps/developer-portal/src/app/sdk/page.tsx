@@ -43,7 +43,7 @@ export default function SdkPage() {
           </article>
           <article className="developer-card">
             <h3>2. App</h3>
-            <p>Register a developer profile, validate and submit a marketplace app manifest, copy the show-once credentials, then install through app OAuth authorization code flow. Extension execution stays a recorded capability seam until its runtime is deliberately scoped.</p>
+            <p>Register a developer profile, validate and submit a marketplace app manifest, copy the show-once credentials, then install through app OAuth authorization code flow. Checkout Functions can advise coupons, shipping, payment method availability, and validation only. Extension execution stays a recorded capability seam until its runtime is deliberately scoped.</p>
           </article>
           <article className="developer-card">
             <h3>3. Webhooks</h3>

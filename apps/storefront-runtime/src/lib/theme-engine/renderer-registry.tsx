@@ -41,8 +41,10 @@ export interface SectionRendererManifestEntry {
     schema: SectionSchema;
 }
 
+const SECTION_SCHEMA_LOOKUP = BUILT_IN_SECTION_SCHEMAS as Readonly<Record<string, SectionSchema>>;
+
 function schemaFor(sectionType: string): SectionSchema {
-    return BUILT_IN_SECTION_SCHEMAS[sectionType] || {
+    return SECTION_SCHEMA_LOOKUP[sectionType] || {
         defaults: {},
         settings_schema: {},
         type: sectionType,

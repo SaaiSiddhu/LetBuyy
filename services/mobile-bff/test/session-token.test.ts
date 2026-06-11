@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import app, { extractMobileSessionToken, verifyMobileTurnstileToken } from '../src/index.ts';
+import app, { extractMobileSessionToken, verifyMobileTurnstileToken } from '../src/index';
 
 test('extracts lb_session from bearer authorization first', () => {
   const request = new Request('https://mobile-bff.test/v1/products', {

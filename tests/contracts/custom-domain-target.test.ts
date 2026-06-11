@@ -19,9 +19,9 @@ test('custom-domain CNAME target is env-driven and documented as the LetBuyy con
   const route = read('services/api-gateway/src/routes/custom-domains.ts');
   const targetHelper = read('services/api-gateway/src/lib/custom-domain-config.ts');
 
-  assert.match(workerTemplate, /CUSTOM_DOMAIN_CNAME_TARGET=connect\.letbuyy\.store/);
-  assert.match(workerTemplate, /NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET=connect\.letbuyy\.store/);
-  assert.match(nextTemplate, /NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET=connect\.letbuyy\.store/);
+  assert.match(workerTemplate, /CUSTOM_DOMAIN_CNAME_TARGET=connect\.letbuyy\.com/);
+  assert.match(workerTemplate, /NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET=connect\.letbuyy\.com/);
+  assert.match(nextTemplate, /NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET=connect\.letbuyy\.com/);
   assert.match(route, /getCustomDomainCnameTarget/);
   assert.match(targetHelper, /CUSTOM_DOMAIN_CNAME_TARGET/);
   assert.doesNotMatch(route, /cname\.vercel-dns\.com/);

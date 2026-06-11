@@ -14,8 +14,8 @@ const themeRenderer = read('packages/theme-engine/src/theme-renderer.ts');
 const storefrontGraphQL = read('services/api-gateway/src/graphql/storefront.ts');
 const ws12Ledger = read('docs/archive/root-residue/2026-06-06-foundation-v2/CODEX_WS12_LEDGER.md');
 const masterLedger = read('docs/archive/root-residue/2026-06-06-foundation-v2/CODEX_MASTER_EXECUTION_LEDGER.md');
-const ctoReport = read('docs/LETBUYY_CTO_WAR_ROOM_REPORT.md');
-const deepAuditReport = read('docs/LETBUYY_DEEP_AUDIT_REPORT.md');
+const ctoReport = read('docs/archive/historical-audits-2026-06-10/root-status-reports/LETBUYY_CTO_WAR_ROOM_REPORT.md');
+const deepAuditReport = read('docs/archive/historical-audits-2026-06-10/root-status-reports/LETBUYY_DEEP_AUDIT_REPORT.md');
 
 test('developer portal states Liquid plus JSON theme capability from shipped source', () => {
   assert.match(themeRenderer, /import \{ Liquid \} from 'liquidjs'/);

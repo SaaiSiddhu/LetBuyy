@@ -74,7 +74,7 @@ test('credentialed CORS configuration is present in env contracts and governance
     const schema = read(workerSchemaPath);
     const governance = read(securityGovernancePath);
 
-    assert.match(template, /CORS_CREDENTIAL_ORIGINS=https:\/\/accounts-staging\.letbuyy\.store,https:\/\/admin-staging\.letbuyy\.store,https:\/\/store-staging\.letbuyy\.store/);
+    assert.match(template, /CORS_CREDENTIAL_ORIGINS=https:\/\/accounts-staging\.letbuyy\.com,https:\/\/admin-staging\.letbuyy\.com,https:\/\/store-staging\.letbuyy\.com/);
     assert.match(schema, /"CORS_CREDENTIAL_ORIGINS"/);
     assert.match(governance, /CORS_CREDENTIAL_ORIGINS/);
     assert.match(governance, /credentialed CORS/i);

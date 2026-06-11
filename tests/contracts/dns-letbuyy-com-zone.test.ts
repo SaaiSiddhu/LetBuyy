@@ -34,5 +34,5 @@ test('letbuyy.com DNS zone is additive and reuses the existing Cloudflare provid
 
   assert.match(comZone, /name\s+=\s+"api"/);
   assert.match(comZone, /name\s+=\s+"webhooks"/);
-  assert.match(comZone, /Storefronts stay on letbuyy\.store/);
+  assert.match(comZone, /Storefronts stay on letbuyy\.com/);
 });

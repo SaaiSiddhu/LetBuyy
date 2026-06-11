@@ -47,7 +47,7 @@ const translations: Record<Lang, Record<string, string>> = {
         availableNow: 'Available now',
         comingSoon: 'Not enabled',
         lockedType: 'This format is not enabled for publication.',
-        onlineStoreOnly: 'Online Store is available today. Landing pages and blogs are not enabled for publication.',
+        onlineStoreOnly: 'Online Store is available today. Landing pages and blogs are not enabled for launch.',
         storeIncludes: 'Products, checkout, orders, themes',
         smartDefaults: 'India commerce defaults',
         smartDefaultsDesc: 'We will start your site with INR currency, GST tax settings, and COD-friendly opening guidance.',

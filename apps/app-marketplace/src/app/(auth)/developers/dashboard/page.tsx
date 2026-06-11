@@ -209,7 +209,7 @@ export default async function DeveloperDashboardPage() {
                     <div className="marketplace-panel">
                         <div className="marketplace-panel-header">
                             <div>
-                                <h2 className="marketplace-panel-title">Payout metadata</h2>
+                                <h2 className="marketplace-panel-title">Payout ledger</h2>
                                 <p className="marketplace-panel-copy">Pricing, tax, and payout evidence metadata for approval-gated app-charge flows.</p>
                             </div>
                             <span className="marketplace-badge marketplace-badge--neutral">{payouts.length} entries</span>

@@ -87,11 +87,12 @@ test('mobile notification and push needs are covered by implemented runtimes, no
 
 test('runtime manifest validator enforces reserved service honesty', () => {
   const validator = read('scripts/validators/runtime-manifest-validator.mjs');
+  const governanceCommon = read('scripts/validators/governance-common.mjs');
 
-  assert.match(validator, /reservedNotImplementedServiceRoots/);
+  assert.match(validator, /reservedServiceRoots/);
   for (const root of reservedServiceRoots) {
-    assert.match(validator, new RegExp(root.replaceAll('/', '\\/')));
+    assert.match(governanceCommon, new RegExp(root.replaceAll('/', '\\/')));
   }
-  assert.match(validator, /Reserved service root must not contain deployable source or worker config/);
-  assert.match(validator, /Reserved service manifest must name the current active owner runtime/);
+  assert.match(validator, /Reserved runtime root must remain manifest-only/);
+  assert.match(validator, /reserved-not-implemented/);
 });

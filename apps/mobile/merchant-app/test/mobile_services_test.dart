@@ -2768,15 +2768,19 @@ void main() {
     });
 
     test('Inventory scanner source is wired to mobile_scanner', () {
-      final pubspec = File(
-        'apps/mobile/merchant-app/pubspec.yaml',
-      ).readAsStringSync();
-      final scanner = File(
-        'apps/mobile/merchant-app/lib/widgets/shared/barcode_scanner_sheet.dart',
-      ).readAsStringSync();
-      final inventory = File(
-        'apps/mobile/merchant-app/lib/services/inventory_service.dart',
-      ).readAsStringSync();
+      final pubspec = _readSource(
+        appRelative: 'pubspec.yaml',
+        repoRelative: 'apps/mobile/merchant-app/pubspec.yaml',
+      );
+      final scanner = _readSource(
+        appRelative: 'lib/widgets/shared/barcode_scanner_sheet.dart',
+        repoRelative:
+            'apps/mobile/merchant-app/lib/widgets/shared/barcode_scanner_sheet.dart',
+      );
+      final inventory = _readSource(
+        appRelative: 'lib/services/inventory_service.dart',
+        repoRelative: 'apps/mobile/merchant-app/lib/services/inventory_service.dart',
+      );
 
       expect(pubspec, contains('mobile_scanner:'));
       expect(scanner, contains('MobileScanner'));
@@ -5833,15 +5837,19 @@ void main() {
   });
 
   test('Gateway upload route supports bounded video and model media', () {
-    final route = File(
-      'services/api-gateway/src/routes/upload.ts',
-    ).readAsStringSync();
-    final sharedTypes = File(
-      'packages/shared-types/src/index.ts',
-    ).readAsStringSync();
-    final uploadTest = File(
-      'services/api-gateway/src/__tests__/upload.security.test.ts',
-    ).readAsStringSync();
+    final route = _readSource(
+      appRelative: '../../../services/api-gateway/src/routes/upload.ts',
+      repoRelative: 'services/api-gateway/src/routes/upload.ts',
+    );
+    final sharedTypes = _readSource(
+      appRelative: '../../../packages/shared-types/src/index.ts',
+      repoRelative: 'packages/shared-types/src/index.ts',
+    );
+    final uploadTest = _readSource(
+      appRelative:
+          '../../../services/api-gateway/src/__tests__/upload.security.test.ts',
+      repoRelative: 'services/api-gateway/src/__tests__/upload.security.test.ts',
+    );
 
     expect(route, contains('VIDEO_UPLOAD_LIMIT_BYTES'));
     expect(route, contains('MODEL_UPLOAD_LIMIT_BYTES'));

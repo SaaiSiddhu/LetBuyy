@@ -8,7 +8,7 @@ export type RouteGroup = {
 
 export type GuideCard = {
   title: string;
-  status: "Live contract" | "Partial" | "SKIP - NEEDS BACKEND" | "SKIP - NEEDS SDK/CLI";
+  status: "Live contract" | "Partial" | "SKIP - EXTENSION EXECUTION" | "SKIP - NEEDS BACKEND" | "SKIP - NEEDS SDK/CLI";
   body: string;
   bullets: string[];
 };
@@ -268,7 +268,7 @@ export const sdkGuides: GuideCard[] = [
       "`POST /v1/app-store/developers/apps/manifest/validate` validates and normalizes manifests without creating an app.",
       "Admin UI and Checkout UI extensions render through `@letbuyy/shared-types` sandbox policies.",
       "Theme app blocks install as WS11 portable Liquid app blocks and require no storefront source changes.",
-      "Checkout Functions are advisory-only in contract and remain blocked from arbitrary totals, taxes, line prices, or payment amounts.",
+      "Checkout Functions are advisory only; they cannot set arbitrary totals, taxes, line prices, or payment amounts.",
       "Wasm/function execution is not available for production use; it remains recorded under the checkout extension capability seam.",
       "Per-store registry rows expose `enabled`, `disabled`, and `revoked` lifecycle state.",
     ],

@@ -32,13 +32,13 @@
       "path": "config/runtime/environment-lifecycle.json",
       "owner": "environment-lifecycle",
       "compatibility": "staging-production-isolation-compatible",
-      "checksum": "7df9346198dee2128e58a5ab63f7c7eae00075a6b85e23fb516df16e59339417"
+      "checksum": "eb3a784149325485967f45d3600f719d5c69afccc00ae567d1e17152146c6a41"
     },
     {
       "path": "config/runtime/rollout-lifecycle.json",
       "owner": "rollout-lifecycle",
       "compatibility": "canary-and-rollback-compatible",
-      "checksum": "25f5fafa8ff8b7a1ace99b15381c544b2791cbef1fb607c89d8239deea0ee94e"
+      "checksum": "f0fd759e75121a6edd6532712a22eee932226cc2a9d0dc2ea9046a3e5123dad8"
     },
     {
       "path": "config/runtime/production-topology.json",
