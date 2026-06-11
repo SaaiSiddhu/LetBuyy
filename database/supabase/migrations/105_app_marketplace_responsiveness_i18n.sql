@@ -24,7 +24,7 @@ CREATE INDEX IF NOT EXISTS idx_marketplace_apps_currency
     WHERE ((status = 'published'::text) AND (deleted_at IS NULL));
 
 COMMENT ON COLUMN public.marketplace_apps.currency IS
-    'Marketplace listing display currency scaffold. Pricing plans remain the authoritative per-plan currency source.';
+    'Marketplace listing display currency metadata. Pricing plans remain the authoritative per-plan currency source.';
 
 COMMENT ON COLUMN public.marketplace_apps.video_captions_url IS
     'Caption source for marketplace demo videos. UI hides demo videos without captions for accessibility.';
