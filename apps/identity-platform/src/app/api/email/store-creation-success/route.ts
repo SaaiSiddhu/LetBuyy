@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
                 body: JSON.stringify({
                     recipient_email: email,
                     email_type: 'store_created_success',
-                    subject: 'Your store is ready!',
+                    subject: 'Your LetBuyy workspace was created',
                     status: result.success ? 'sent' : 'failed',
                     error_message: result.error || null,
                     metadata: { storeName, storeType, storeUrl, adminUrl },

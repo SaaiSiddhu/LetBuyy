@@ -72,7 +72,7 @@ function comingSoonSiteTypeCreationResponse(siteType: string) {
     return {
         error: {
             code: 'SITE_TYPE_COMING_SOON',
-            message: `${siteType} site creation is not enabled for launch. Online Store is available today.`,
+            message: `${siteType} site creation is not enabled for publication. Online Store is available today.`,
         },
     };
 }

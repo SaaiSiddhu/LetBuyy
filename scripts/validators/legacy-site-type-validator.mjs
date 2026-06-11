@@ -64,8 +64,8 @@ for (const [fileName, source] of [
     `${fileName} must not advertise launch-disabled site types as coming soon`,
   );
   reporter.assert(
-    source.includes("not enabled for launch"),
-    `${fileName} must describe launch-disabled site types as not enabled for launch`,
+    source.includes("not enabled for publication"),
+    `${fileName} must describe launch-disabled site types as not enabled for publication`,
   );
 }
 
