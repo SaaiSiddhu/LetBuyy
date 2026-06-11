@@ -10,13 +10,13 @@ const CATEGORIES = [
     { slug: 'store', label: 'Store Themes', description: 'E-commerce & retail storefronts', icon: ShoppingBag, image: '/previews/store.png', color: 'from-blue-500 to-cyan-400' },
     { slug: 'portfolio', label: 'Portfolio', description: 'Designers & creative showcases', icon: Palette, image: '/previews/portfolio.png', color: 'from-purple-500 to-pink-500' },
     { slug: 'resume', label: 'Resume / CV', description: 'Professional profiles & CVs', icon: FileText, image: '/previews/resume.png', color: 'from-amber-500 to-orange-400' },
-    { slug: 'landing', label: 'Landing Pages', description: 'Launch, lead capture, and campaign layouts', icon: Rocket, image: '/previews/landing.png', color: 'from-emerald-500 to-teal-400' },
+    { slug: 'landing', label: 'Landing Pages', description: 'Campaign, lead capture, and promotion layouts', icon: Rocket, image: '/previews/landing.png', color: 'from-emerald-500 to-teal-400' },
     { slug: 'saas', label: 'SaaS', description: 'Product-led software and subscription pages', icon: Sparkles, image: '/previews/saas-console-card.png', color: 'from-indigo-500 to-violet-500' },
 ];
 
 const VALUE_PROPS = [
     { icon: Zap, title: 'Guided install', desc: 'Add an approved theme to a selected LetBuyy store through the marketplace install flow.', accent: 'from-yellow-500 to-amber-500' },
-    { icon: Palette, title: 'Editable after install', desc: 'Open installed themes in the merchant editor when your store is ready to customize.', accent: 'from-purple-500 to-pink-500' },
+    { icon: Palette, title: 'Editable after install', desc: 'Open installed themes in the merchant editor when the store is selected for customization.', accent: 'from-purple-500 to-pink-500' },
     { icon: Smartphone, title: 'Responsive foundations', desc: 'Themes are designed for storefront, portfolio, resume, landing, and SaaS surfaces.', accent: 'from-blue-500 to-cyan-500' },
     { icon: Lock, title: 'INR checkout', desc: 'Paid theme purchases use provider-verified Razorpay checkout for India-first commerce.', accent: 'from-emerald-500 to-green-500' },
     { icon: Globe, title: 'Storefront runtime', desc: 'Themes render through LetBuyy storefront contracts instead of app-local business logic.', accent: 'from-indigo-500 to-violet-500' },

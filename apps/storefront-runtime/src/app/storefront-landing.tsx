@@ -270,7 +270,7 @@ function StoreFinder() {
                             <MaterialIcon name={SITE_TYPE_META[store.siteType]?.icon || 'web'} />
                             {getSiteTypeLabel(store.siteType)}
                         </span>
-                        is live! Redirecting in {countdown}s...
+                        is online. Redirecting in {countdown}s...
                     </span>
                     <a className="finder-status-link" onClick={handleVisitClick}>
                         Visit Now →

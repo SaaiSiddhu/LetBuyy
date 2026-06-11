@@ -269,7 +269,7 @@ export const sdkGuides: GuideCard[] = [
       "Admin UI and Checkout UI extensions render through `@letbuyy/shared-types` sandbox policies.",
       "Theme app blocks install as WS11 portable Liquid app blocks and require no storefront source changes.",
       "Checkout Functions are advisory-only in contract and remain blocked from arbitrary totals, taxes, line prices, or payment amounts.",
-      "Wasm/function execution is not presented as launch-ready; it remains recorded under the checkout extension capability seam.",
+      "Wasm/function execution is not available for production use; it remains recorded under the checkout extension capability seam.",
       "Per-store registry rows expose `enabled`, `disabled`, and `revoked` lifecycle state.",
     ],
   },
