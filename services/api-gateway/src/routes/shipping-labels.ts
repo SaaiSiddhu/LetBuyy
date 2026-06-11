@@ -8,11 +8,13 @@ import { validate } from '../middleware/validation';
 import { bytesToBase64, createSimplePdfBytes } from '../lib/simple-pdf';
 import {
     createLogisticsProvider,
+    isLogisticsLiveProviderUnavailableError,
     type LogisticsAddress,
     type LogisticsMode,
     type LogisticsProviderName,
     type LogisticsProviderOptions,
     type LogisticsParcel,
+    type ShippingLabelResult,
 } from '@letbuyy/infrastructure/logistics-adapter';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -109,6 +111,23 @@ function logisticsMode(c: ShippingLabelContext): LogisticsMode {
     return c.env.LOGISTICS_MODE === 'live' ? 'live' : 'sandbox';
 }
 
+function liveLogisticsProviderAvailable(): boolean {
+    return false;
+}
+
+function shouldBlockLiveLogistics(c: ShippingLabelContext): boolean {
+    return logisticsMode(c) === 'live' && !liveLogisticsProviderAvailable();
+}
+
+function carrierSetupError(c: ShippingLabelContext) {
+    return c.json({
+        error: {
+            code: 'CARRIER_SETUP_REQUIRED',
+            message: 'Carrier provider setup is not enabled for this environment.',
+        },
+    }, 503);
+}
+
 function logisticsOptions(c: ShippingLabelContext, provider: LogisticsProviderName): LogisticsProviderOptions {
     if (logisticsMode(c) === 'sandbox') return { mode: 'sandbox' };
     if (provider === 'shiprocket') return { mode: 'live', credentials: { token: c.env.SHIPROCKET_TOKEN } };
@@ -116,8 +135,12 @@ function logisticsOptions(c: ShippingLabelContext, provider: LogisticsProviderNa
     return { mode: 'live', credentials: { token: c.env.PICKRR_TOKEN } };
 }
 
+function providerModeFromLogisticsContext(c: ShippingLabelContext): ShippingLabelProviderMode {
+    return logisticsMode(c) === 'live' && liveLogisticsProviderAvailable() ? 'live' : 'sandbox';
+}
+
 function providerModeFromLogisticsMode(mode: LogisticsMode): ShippingLabelProviderMode {
-    return mode === 'live' ? 'live' : 'sandbox';
+    return mode === 'live' && liveLogisticsProviderAvailable() ? 'live' : 'sandbox';
 }
 
 function estimateRate(input: RateShippingLabelInput, mode: LogisticsMode) {
@@ -233,8 +256,9 @@ function serializeLabel(row: ShippingLabelRow, pdfBase64?: string | null) {
 router.post('/rates', validate('json', RateShippingLabelSchema), async (c) => {
     const body = c.get('validatedBody') as RateShippingLabelInput;
     await loadOwnedOrder(c, body.order_id);
+    if (shouldBlockLiveLogistics(c)) return carrierSetupError(c);
     return c.json(success({
-        provider_mode: providerModeFromLogisticsMode(logisticsMode(c)),
+        provider_mode: providerModeFromLogisticsContext(c),
         rates: [estimateRate(body, logisticsMode(c))],
     }));
 });
@@ -248,7 +272,7 @@ router.get('/provider-mode', async (c) => {
     await resolveTenantContextForOwnedSite(c, storeId);
 
     return c.json(success({
-        provider_mode: providerModeFromLogisticsMode(logisticsMode(c)),
+        provider_mode: providerModeFromLogisticsContext(c),
     }));
 });
 
@@ -273,18 +297,24 @@ router.post('/', validate('json', BuyShippingLabelSchema), async (c) => {
     }
 
     const destination = buildDestination(order);
-    const provider = createLogisticsProvider(body.provider, logisticsOptions(c, body.provider));
-    const result = await provider.createLabel({
-        orderId: body.order_id,
-        orderNumber: textValue(order.order_number) || body.order_id,
-        idempotencyKey: body.idempotency_key,
-        destination,
-        parcels: [parcelFromInput(body)],
-        metadata: {
-            site_id: tenant.siteId,
-            source: 'shipping.labels',
-        },
-    });
+    let result: ShippingLabelResult;
+    try {
+        const provider = createLogisticsProvider(body.provider, logisticsOptions(c, body.provider));
+        result = await provider.createLabel({
+            orderId: body.order_id,
+            orderNumber: textValue(order.order_number) || body.order_id,
+            idempotencyKey: body.idempotency_key,
+            destination,
+            parcels: [parcelFromInput(body)],
+            metadata: {
+                site_id: tenant.siteId,
+                source: 'shipping.labels',
+            },
+        });
+    } catch (error) {
+        if (isLogisticsLiveProviderUnavailableError(error)) return carrierSetupError(c);
+        throw error;
+    }
 
     const inserted = await db
         .from('shipping_labels')

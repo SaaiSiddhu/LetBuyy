@@ -96,6 +96,8 @@ export interface FulfillmentTrackingFields {
   tracking_url: string;
 }
 
+export const LOGISTICS_LIVE_PROVIDER_UNAVAILABLE = 'LOGISTICS_LIVE_PROVIDER_UNAVAILABLE';
+
 const PROVIDER_CONFIG: Record<LogisticsProviderName, { carrier: string; trackingPrefix: string; trackingBaseUrl: string }> = {
   shiprocket: {
     carrier: 'Shiprocket',
@@ -118,12 +120,29 @@ function normalizeMode(options: LogisticsProviderOptions): LogisticsMode {
   return options.mode || 'sandbox';
 }
 
-function assertLiveCredentials(provider: LogisticsProviderName, options: LogisticsProviderOptions) {
-  if (normalizeMode(options) === 'sandbox') return;
-  const credentials = options.credentials || {};
-  if (!credentials.apiKey && !credentials.token && !(credentials.username && credentials.password)) {
-    throw new Error(`${provider} logistics live mode requires provider credentials`);
+export class LogisticsLiveProviderUnavailableError extends Error {
+  readonly code = LOGISTICS_LIVE_PROVIDER_UNAVAILABLE;
+  readonly provider: LogisticsProviderName;
+
+  constructor(provider: LogisticsProviderName) {
+    const carrier = PROVIDER_CONFIG[provider].carrier;
+    super(`${carrier} live logistics provider client is not implemented`);
+    this.name = 'LogisticsLiveProviderUnavailableError';
+    this.provider = provider;
   }
+}
+
+export function isLogisticsLiveProviderUnavailableError(error: unknown): boolean {
+  return Boolean(
+    error &&
+    typeof error === 'object' &&
+    (error as { code?: unknown }).code === LOGISTICS_LIVE_PROVIDER_UNAVAILABLE,
+  );
+}
+
+function assertSandboxScaffold(provider: LogisticsProviderName, options: LogisticsProviderOptions) {
+  if (normalizeMode(options) === 'sandbox') return;
+  throw new LogisticsLiveProviderUnavailableError(provider);
 }
 
 function safeToken(value: string): string {
@@ -161,7 +180,7 @@ function labelUrl(provider: LogisticsProviderName, shipmentId: string): string {
 function createScaffoldLogisticsProvider(provider: LogisticsProviderName, options: LogisticsProviderOptions = {}): LogisticsProvider {
   const mode = normalizeMode(options);
   const config = PROVIDER_CONFIG[provider];
-  assertLiveCredentials(provider, options);
+  assertSandboxScaffold(provider, options);
 
   return {
     name: provider,

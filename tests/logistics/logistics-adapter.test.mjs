@@ -99,6 +99,18 @@ test('Logistics provider scaffolds cover Delhivery and Pickrr tracking', async (
   assert.match(pickrrLabel.trackingUrl, /tracking_id=/);
 });
 
+test('Live logistics provider scaffolds fail closed instead of returning sandbox labels', () => {
+  assert.throws(
+    () => logistics.createShiprocketLogisticsProvider({ mode: 'live', credentials: { token: 'provider-token' } }),
+    (error) => {
+      assert.equal(error.code, 'LOGISTICS_LIVE_PROVIDER_UNAVAILABLE');
+      assert.equal(error.provider, 'shiprocket');
+      assert.match(error.message, /live logistics provider client is not implemented/);
+      return true;
+    },
+  );
+});
+
 test('Fulfilment route is wired to the logistics adapter before RPC fulfilment', () => {
   const source = readFileSync(ORDERS_ROUTE_SOURCE, 'utf8');
 

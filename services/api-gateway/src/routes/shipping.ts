@@ -8,6 +8,7 @@ import {
 } from '@letbuyy/checkout-core';
 import {
     createLogisticsProvider,
+    isLogisticsLiveProviderUnavailableError,
     type LogisticsMode,
     type LogisticsProviderName,
     type LogisticsProviderOptions,
@@ -166,7 +167,7 @@ router.get('/track/:trackingNumber', async (c) => {
         const provider = createLogisticsProvider(providerName, logisticsOptions(c.env, providerName));
         return c.json(success(await provider.getTracking({ trackingNumber })));
     } catch (error) {
-        if (error instanceof HumanRequiredError) return carrierSetupError(c);
+        if (error instanceof HumanRequiredError || isLogisticsLiveProviderUnavailableError(error)) return carrierSetupError(c);
         throw error;
     }
 });

@@ -20,6 +20,9 @@ test('merchant shipping label route supports rates, buy, PDF, and void over owne
     assert.match(routeSource, /router\.post\('\/:id\/void'/);
     assert.match(routeSource, /resolveTenantContextForOrder\(c,\s*orderId\)/);
     assert.match(routeSource, /createLogisticsProvider/);
+    assert.match(routeSource, /isLogisticsLiveProviderUnavailableError/);
+    assert.match(routeSource, /CARRIER_SETUP_REQUIRED/);
+    assert.match(routeSource, /liveLogisticsProviderAvailable/);
     assert.match(routeSource, /R2_BUCKET\.put/);
     assert.match(routeSource, /pdf_base64/);
 });

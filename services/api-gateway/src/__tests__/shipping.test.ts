@@ -25,8 +25,11 @@ test('Task 009 shipping route is tenant checked, COD-aware, and live-carrier gat
     assert.match(routeSource, /cod_available/);
     assert.match(routeSource, /HR-CARRIER-LIVE/);
     assert.match(routeSource, /CARRIER_SETUP_REQUIRED/);
+    assert.match(routeSource, /isLogisticsLiveProviderUnavailableError/);
     assert.match(humanRequiredSource, /HR-CARRIER-LIVE/);
     assert.match(labelsRouteSource, /createLogisticsProvider/);
+    assert.match(labelsRouteSource, /liveLogisticsProviderAvailable/);
+    assert.match(labelsRouteSource, /CARRIER_SETUP_REQUIRED/);
 });
 
 test('Task 009 checkout-core exposes serviceability schema and planner', () => {
