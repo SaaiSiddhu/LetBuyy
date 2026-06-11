@@ -33,6 +33,11 @@ function productionVercelApps() {
 }
 
 test('production deploy workflow fails closed on missing release credentials', () => {
+  assert.match(workflow, /governance-gate:/);
+  assert.match(workflow, /node scripts\/validate-governance\.mjs --lane=gate/);
+  assert.match(rolloutWorkflow, /governance-gate:/);
+  assert.match(rolloutWorkflow, /needs: governance-gate/);
+  assert.match(rolloutWorkflow, /node scripts\/validate-governance\.mjs --lane=gate/);
   assert.match(workflow, /release-preflight:/);
   assert.match(workflow, /group: production-release-production/);
   assert.match(rolloutWorkflow, /group: production-release-\$\{\{ inputs\.environment \}\}/);
@@ -46,6 +51,7 @@ test('production deploy workflow fails closed on missing release credentials', (
 });
 
 test('production migration gate precedes staging smoke and production migration', () => {
+  const governanceGateIndex = indexOf('governance-gate:');
   const preflightIndex = indexOf('release-preflight:');
   const migrationGateIndex = indexOf('migration-preflight:');
   const stagingIndex = indexOf('staging-e2e:');
@@ -53,25 +59,33 @@ test('production migration gate precedes staging smoke and production migration'
   const workerDeployIndex = indexOf('deploy-workers-production:');
   const appDeployIndex = indexOf('deploy-apps-production:');
 
+  assert.ok(governanceGateIndex < preflightIndex, 'governance gate must precede credential preflight');
   assert.ok(preflightIndex < migrationGateIndex, 'credential preflight must precede migration gate');
   assert.ok(migrationGateIndex < stagingIndex, 'migration gate must precede staging smoke');
   assert.ok(stagingIndex < migrateIndex, 'staging smoke must precede production migration');
   assert.ok(migrateIndex < workerDeployIndex, 'production migration must precede Worker deployment');
   assert.ok(workerDeployIndex < appDeployIndex, 'Workers must deploy before apps');
   assert.match(workflow, /migration-preflight:\n[\s\S]*?environment: production-migrations/);
-  assert.match(workflow, /staging-e2e:\n[\s\S]*?needs: migration-preflight/);
-  assert.match(workflow, /migrate-production:\n[\s\S]*?needs: staging-e2e/);
-  assert.match(workflow, /deploy-workers-production:\n[\s\S]*?needs: migrate-production/);
-  assert.match(workflow, /deploy-apps-production:\n[\s\S]*?needs: deploy-workers-production/);
+  assert.match(workflow, /staging-e2e:\n[\s\S]*?needs:\n\s+- migration-preflight\n\s+- governance-gate/);
+  assert.match(workflow, /migrate-production:\n[\s\S]*?needs:\n\s+- staging-e2e\n\s+- governance-gate/);
+  assert.match(workflow, /deploy-workers-production:\n[\s\S]*?needs:\n\s+- migrate-production\n\s+- governance-gate/);
+  assert.match(workflow, /deploy-apps-production:\n[\s\S]*?needs:\n\s+- deploy-workers-production\n\s+- governance-gate/);
 });
 
 test('production migrations require approval plus diff and encrypted backup evidence', () => {
+  const untrackedGuardIndex = indexOf('Reject untracked Supabase migrations');
+  const dbPushIndex = indexOf('supabase@latest db push');
+  assert.ok(untrackedGuardIndex < dbPushIndex, 'untracked migration rejection must precede db push');
   assert.match(workflow, /supabase@latest db diff/);
   assert.match(workflow, /name: production-migration-diff/);
   assert.match(workflow, /pg_dump --format=custom/);
   assert.match(workflow, /gpg --batch --yes --symmetric/);
   assert.match(workflow, /name: production-pre-migration-backup/);
   assert.match(workflow, /supabase@latest db push/);
+  assert.match(workflow, /git ls-files --others --exclude-standard database\/supabase\/migrations\//);
+  assert.match(workflow, /Untracked Supabase migrations are forbidden before production db push --include-all/);
+  assert.match(rolloutWorkflow, /Reject untracked Supabase migrations/);
+  assert.match(rolloutWorkflow, /git ls-files --others --exclude-standard database\/supabase\/migrations\//);
 });
 
 test('worker secrets are written before production Worker deploys', () => {
@@ -84,6 +98,7 @@ test('worker secrets are written before production Worker deploys', () => {
   assert.ok(webhookSecretIndex < webhookDeployIndex, 'webhook secrets must be set before deploy');
 
   assert.match(workflow, /wrangler secret put CUSTOMER_SESSION_SECRET --env production/);
+  assert.match(workflow, /Set mobile-bff production secrets[\s\S]*?wrangler secret put TURNSTILE_SECRET_KEY --env production[\s\S]*?working-directory: services\/mobile-bff/);
 });
 
 test('production smoke runs only after explicit required-job success gate', () => {
@@ -91,6 +106,7 @@ test('production smoke runs only after explicit required-job success gate', () =
   const smokeIndex = indexOf('smoke-test-production:');
   assert.ok(gateIndex < smokeIndex, 'required-job gate must precede smoke tests');
   assert.match(workflow, /if: always\(\)/);
+  assert.match(workflow, /governance-gate=\$\{GOVERNANCE_RESULT\}/);
   assert.match(workflow, /migration-preflight=\$\{MIGRATION_PREFLIGHT_RESULT\}/);
   assert.match(workflow, /deploy-workers-production=\$\{WORKERS_RESULT\}/);
   assert.match(workflow, /deploy-apps-production=\$\{APPS_RESULT\}/);

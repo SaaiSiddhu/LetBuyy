@@ -16,3 +16,11 @@
 | A2 branch-lag validator | `node scripts/validators/branch-lag-guard-validator.mjs` | PASS | Runbook remains compatible with the local branch-lag guard after adding the remote `stepup/main` then `main` push sequence. |
 | A2 governance gate | `node scripts/validate-governance.mjs --lane=gate` | PASS | 92 validators passed after the runbook and skipped-human seam updates. |
 | A2 whitespace | `git diff --check` | PASS | No whitespace or conflict-marker residue. |
+| A3 production workflow test | `node --test tests/operations/production-deploy-workflow.test.mjs` | PASS | 7/7 tests passed; covers governance gate, migration ordering, untracked migration rejection, mobile-bff Turnstile secret, and required-job gate. |
+| A3 branch-lag workflow test | `node --test tests/governance/branch-lag-guard.test.mjs` | PASS | 2/2 tests passed after retargeting release-preflight to depend on both branch-lag and governance-gate jobs. |
+| A3 deployment safety validator | `node scripts/validators/deployment-safety-validator.mjs` | PASS | Enforces the deploy governance gate, untracked migration rejection, and mobile-bff Turnstile secret wiring. |
+| A3 branch-lag validator | `node scripts/validators/branch-lag-guard-validator.mjs` | PASS | Validator accepts the multi-need release-preflight shape and remains wired into the gate. |
+| A3 governance-gate mutation | Temporarily changed the production deploy gate command to `--lane=disabled-probe`; ran `node scripts/validators/deployment-safety-validator.mjs`; restored the command. | FAILS AS EXPECTED | Validator failed with `Production deploy workflow missing gated release fragment: node scripts/validate-governance.mjs --lane=gate`. |
+| A3 untracked migration mutation | Temporarily added `database/supabase/migrations/999_probe.sql`; ran the workflow guard snippet; deleted the probe. | FAILS AS EXPECTED | Guard failed and printed the probe path before any `db push --include-all` could run. |
+| A3 governance gate | `node scripts/validate-governance.mjs --lane=gate` | PASS | 92 validators passed after all A3 probes were reverted. |
+| A3 whitespace/status | `git diff --check`; `git status --short` | PASS | No whitespace residue; status showed only intended A3 tracked files after probe deletion. |

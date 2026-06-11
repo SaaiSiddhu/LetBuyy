@@ -37,7 +37,22 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  governance-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run governance gate
+        run: node scripts/validate-governance.mjs --lane=gate
+
   rollout:
+    needs: governance-gate
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
@@ -53,6 +68,15 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.7.5
+
+      - name: Reject untracked Supabase migrations
+        run: |
+          untracked="$(git ls-files --others --exclude-standard database/supabase/migrations/)"
+          if [[ -n "${untracked}" ]]; then
+            printf 'Untracked Supabase migrations are forbidden before rollout execution:\n' >&2
+            printf '%s\n' "${untracked}" >&2
+            exit 1
+          fi
 
       - name: Install dependencies
         run: |

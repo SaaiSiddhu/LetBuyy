@@ -99,25 +99,48 @@ reporter.assert(
 );
 
 const releasePreflightIndex = indexOf(productionDeployWorkflow, "release-preflight:");
+const governanceGateIndex = indexOf(productionDeployWorkflow, "governance-gate:");
 const migrationPreflightIndex = indexOf(productionDeployWorkflow, "migration-preflight:");
 const stagingSmokeIndex = indexOf(productionDeployWorkflow, "staging-e2e:");
 const migrateProductionIndex = indexOf(productionDeployWorkflow, "migrate-production:");
 const deployWorkersIndex = indexOf(productionDeployWorkflow, "deploy-workers-production:");
 const deployAppsIndex = indexOf(productionDeployWorkflow, "deploy-apps-production:");
+const untrackedMigrationGuardIndex = indexOf(productionDeployWorkflow, "Reject untracked Supabase migrations");
+const productionDbPushIndex = indexOf(productionDeployWorkflow, "supabase@latest db push");
+reporter.assert(governanceGateIndex < releasePreflightIndex, "Governance gate must precede release credential preflight");
 reporter.assert(releasePreflightIndex < migrationPreflightIndex, "Release credential preflight must precede migration gate");
 reporter.assert(migrationPreflightIndex < stagingSmokeIndex, "Migration gate must precede staging smoke");
 reporter.assert(stagingSmokeIndex < migrateProductionIndex, "Staging smoke must precede production migration");
 reporter.assert(migrateProductionIndex < deployWorkersIndex, "Production migration must precede Worker deployment");
 reporter.assert(deployWorkersIndex < deployAppsIndex, "Worker deployment must precede app deployment");
+reporter.assert(untrackedMigrationGuardIndex < productionDbPushIndex, "Untracked migration rejection must precede production db push --include-all");
 for (const fragment of [
+  "node scripts/validate-governance.mjs --lane=gate",
   "Validate migration safety",
   "production-migration-diff",
   "production-pre-migration-backup",
-  "needs: migrate-production",
+  "Untracked Supabase migrations are forbidden before production db push --include-all",
+  "git ls-files --others --exclude-standard database/supabase/migrations/",
+  "- migrate-production",
+  "- governance-gate",
   "migration-preflight=${MIGRATION_PREFLIGHT_RESULT}",
+  "governance-gate=${GOVERNANCE_RESULT}",
+  "wrangler secret put TURNSTILE_SECRET_KEY --env production",
 ]) {
   reporter.assert(productionDeployWorkflow.includes(fragment), `Production deploy workflow missing gated release fragment: ${fragment}`);
 }
+
+reporter.assert(
+  productionRollout.includes("governance-gate:") &&
+    productionRollout.includes("needs: governance-gate") &&
+    productionRollout.includes("node scripts/validate-governance.mjs --lane=gate"),
+  "Production rollout workflow must require the governance-gate job before rollout",
+);
+reporter.assert(
+  productionRollout.includes("Reject untracked Supabase migrations") &&
+    productionRollout.includes("git ls-files --others --exclude-standard database/supabase/migrations/"),
+  "Production rollout workflow must reject untracked migrations before execution",
+);
 
 for (const fragment of [
   "pnpm run validate:governance",

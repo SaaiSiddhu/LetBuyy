@@ -29,8 +29,8 @@ reporter.assert(
   "Production deploy workflow must run the branch-lag guard validator",
 );
 reporter.assert(
-  /release-preflight:\s+name: Release credential preflight\s+needs: branch-lag-guard/s.test(workflow),
-  "Release credential preflight must depend on the branch-lag guard",
+  /release-preflight:\s+name: Release credential preflight\s+needs:\s+- branch-lag-guard\s+- governance-gate/s.test(workflow),
+  "Release credential preflight must depend on the branch-lag guard and governance gate",
 );
 reporter.assert(
   gate.includes('"branch-lag-guard-validator.mjs"'),

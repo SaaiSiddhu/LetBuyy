@@ -23,5 +23,5 @@ test("production deploy enforces branch lag before credential preflight", () => 
   assert.match(workflow, /branch-lag-guard:/);
   assert.match(workflow, /fetch-depth: 0/);
   assert.match(workflow, /LETBUYY_ENFORCE_BRANCH_LAG: "1"/);
-  assert.match(workflow, /release-preflight:\s+name: Release credential preflight\s+needs: branch-lag-guard/s);
+  assert.match(workflow, /release-preflight:\s+name: Release credential preflight\s+needs:\s+- branch-lag-guard\s+- governance-gate/s);
 });

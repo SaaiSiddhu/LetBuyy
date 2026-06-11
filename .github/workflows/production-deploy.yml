@@ -36,9 +36,25 @@ jobs:
           LETBUYY_PRODUCTION_BRANCH: main
           LETBUYY_RELEASE_INTEGRATION_BRANCH: stepup/main
 
+  governance-gate:
+    name: Governance gate
+    needs: branch-lag-guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Run governance gate
+        run: node scripts/validate-governance.mjs --lane=gate
+
   release-preflight:
     name: Release credential preflight
-    needs: branch-lag-guard
+    needs:
+      - branch-lag-guard
+      - governance-gate
     runs-on: ubuntu-latest
     steps:
       - name: Require production release credentials
@@ -121,7 +137,9 @@ jobs:
 
   migration-preflight:
     name: Migration gate
-    needs: release-preflight
+    needs:
+      - release-preflight
+      - governance-gate
     runs-on: ubuntu-latest
     environment: production-migrations
     steps:
@@ -157,7 +175,9 @@ jobs:
 
   staging-e2e:
     name: E2E tests on staging (production gate)
-    needs: migration-preflight
+    needs:
+      - migration-preflight
+      - governance-gate
     runs-on: ubuntu-latest
     environment: staging
     steps:
@@ -208,7 +228,9 @@ jobs:
 
   migrate-production:
     name: Migrate production DB
-    needs: staging-e2e
+    needs:
+      - staging-e2e
+      - governance-gate
     runs-on: ubuntu-latest
     environment: production-migrations
     steps:
@@ -250,6 +272,15 @@ jobs:
             production-pre-migration.backup.gpg.sha256
           retention-days: 7
 
+      - name: Reject untracked Supabase migrations
+        run: |
+          untracked="$(git ls-files --others --exclude-standard database/supabase/migrations/)"
+          if [[ -n "${untracked}" ]]; then
+            printf 'Untracked Supabase migrations are forbidden before production db push --include-all:\n' >&2
+            printf '%s\n' "${untracked}" >&2
+            exit 1
+          fi
+
       - name: Run migrations on production DB
         run: pnpm dlx supabase@latest db push --db-url "${{ secrets.PRODUCTION_DB_CONNECTION_STRING }}" --include-all
         env:
@@ -257,7 +288,9 @@ jobs:
 
   deploy-workers-production:
     name: Deploy workers to production
-    needs: migrate-production
+    needs:
+      - migrate-production
+      - governance-gate
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -347,6 +380,7 @@ jobs:
       - name: Set mobile-bff production secrets
         run: |
           echo "${{ secrets.PRODUCTION_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env production
+          echo "${{ secrets.PRODUCTION_TURNSTILE_SECRET_KEY }}" | pnpm exec wrangler secret put TURNSTILE_SECRET_KEY --env production
         working-directory: services/mobile-bff
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -361,7 +395,9 @@ jobs:
 
   deploy-apps-production:
     name: Deploy Next apps to production
-    needs: deploy-workers-production
+    needs:
+      - deploy-workers-production
+      - governance-gate
     runs-on: ubuntu-latest
     environment: production
     strategy:
@@ -424,6 +460,7 @@ jobs:
   release-required-jobs-succeeded:
     name: Verify required release jobs succeeded
     needs:
+      - governance-gate
       - release-preflight
       - migration-preflight
       - staging-e2e
@@ -435,6 +472,7 @@ jobs:
     steps:
       - name: Fail when a required release job failed or skipped
         env:
+          GOVERNANCE_RESULT: ${{ needs.governance-gate.result }}
           PREFLIGHT_RESULT: ${{ needs.release-preflight.result }}
           MIGRATION_PREFLIGHT_RESULT: ${{ needs.migration-preflight.result }}
           STAGING_E2E_RESULT: ${{ needs.staging-e2e.result }}
@@ -443,6 +481,7 @@ jobs:
           APPS_RESULT: ${{ needs.deploy-apps-production.result }}
         run: |
           failed=()
+          [[ "${GOVERNANCE_RESULT}" == "success" ]] || failed+=("governance-gate=${GOVERNANCE_RESULT}")
           [[ "${PREFLIGHT_RESULT}" == "success" ]] || failed+=("release-preflight=${PREFLIGHT_RESULT}")
           [[ "${MIGRATION_PREFLIGHT_RESULT}" == "success" ]] || failed+=("migration-preflight=${MIGRATION_PREFLIGHT_RESULT}")
           [[ "${STAGING_E2E_RESULT}" == "success" ]] || failed+=("staging-e2e=${STAGING_E2E_RESULT}")
