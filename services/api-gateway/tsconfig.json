@@ -43,6 +43,9 @@
       "@letbuyy/auth-core": [
         "../../packages/auth-core/src/index.ts"
       ],
+      "@letbuyy/auth-core/*": [
+        "../../packages/auth-core/src/*.ts"
+      ],
       "@letbuyy/checkout-core": [
         "../../packages/checkout-core/src/index.ts"
       ],
