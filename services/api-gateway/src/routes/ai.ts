@@ -480,21 +480,63 @@ function createCreditPurchaseAdapter(env: Env) {
 }
 
 function decorateCredits(
-    credits: Record<string, unknown> | null | undefined,
+    credits: Record<string, unknown>,
     storeId: string,
     adapter: ReturnType<typeof createCreditPurchaseAdapter>
 ) {
     return {
         store_id: storeId,
-        balance: 100,
-        plan_credits: 100,
-        bonus_credits: 0,
-        total_used: 0,
-        total_purchased: 0,
-        ...(credits || {}),
+        ...credits,
         purchase_available: adapter.available,
         purchase_mode: adapter.mode,
         purchase_provider: adapter.provider,
+    };
+}
+
+async function loadAiCreditProjection(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    storeId: string
+): Promise<Record<string, unknown>> {
+    const [{ data: creditConfig, error: creditError }, { data: usageRows, error: usageError }] = await Promise.all([
+        db
+            .from('ai_credits')
+            .select('id,plan_credits,bonus_credits,total_purchased,reset_period,reset_at,updated_at')
+            .eq('store_id', storeId)
+            .maybeSingle(),
+        db
+            .from('ai_usage')
+            .select('credits_used,status')
+            .eq('store_id', storeId),
+    ]);
+
+    if (creditError && creditError.code !== 'PGRST116') {
+        throw new Error(`AI credit projection config lookup failed: ${creditError.message}`);
+    }
+    if (usageError) {
+        throw new Error(`AI credit usage projection lookup failed: ${usageError.message}`);
+    }
+
+    const config = (creditConfig || {}) as Record<string, unknown>;
+    const planCredits = Number(config.plan_credits ?? 100);
+    const bonusCredits = Number(config.bonus_credits ?? 0);
+    const totalPurchased = Number(config.total_purchased ?? 0);
+    const totalUsed = ((usageRows || []) as Array<{ credits_used?: number | string | null; status?: string | null }>)
+        .filter((row) => row.status === 'completed')
+        .reduce((sum, row) => sum + Number(row.credits_used || 0), 0);
+    const available = Math.max(0, planCredits + bonusCredits + totalPurchased - totalUsed);
+
+    return {
+        id: config.id || null,
+        store_id: storeId,
+        balance: available,
+        plan_credits: planCredits,
+        bonus_credits: bonusCredits,
+        total_used: totalUsed,
+        total_purchased: totalPurchased,
+        reset_period: config.reset_period || 'monthly',
+        reset_at: config.reset_at || null,
+        updated_at: config.updated_at || null,
+        projection_source: 'ai_usage',
     };
 }
 
@@ -524,18 +566,14 @@ router.get('/credits', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const { data, error } = await db
-        .from('ai_credits')
-        .select('*')
-        .eq('store_id', storeId)
-        .single();
-
-    if (error && error.code !== 'PGRST116') {
-        // PGRST116 = no rows found (not an actual error — credits just haven't been initialized)
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    let credits;
+    try {
+        credits = await loadAiCreditProjection(db, storeId);
+    } catch (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error instanceof Error ? error.message : 'AI credit projection failed' } }, 500);
     }
 
-    return c.json(success(decorateCredits(data, storeId, createCreditPurchaseAdapter(c.env))));
+    return c.json(success(decorateCredits(credits, storeId, createCreditPurchaseAdapter(c.env))));
 });
 
 // GET /ai/usage — List AI usage history
@@ -599,14 +637,14 @@ router.post('/generate', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    // Check credit balance
-    const { data: credits } = await db
-        .from('ai_credits')
-        .select('id,balance,total_used')
-        .eq('store_id', body.store_id)
-        .single();
+    let creditProjection;
+    try {
+        creditProjection = await loadAiCreditProjection(db, body.store_id);
+    } catch (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error instanceof Error ? error.message : 'AI credit projection failed' } }, 500);
+    }
 
-    const balance = credits?.balance ?? 100;
+    const balance = Number(creditProjection.balance || 0);
     if (balance <= 0) {
         return c.json({ error: { code: 'INSUFFICIENT_CREDITS', message: 'No AI credits remaining. Please purchase more credits.' } }, 402);
     }
@@ -712,34 +750,11 @@ router.post('/generate', async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: usageError.message } }, 500);
     }
 
-    let updatedCredits = null;
-    if (credits?.id) {
-        const { data, error } = await db
-            .from('ai_credits')
-            .update({
-                balance: Math.max(0, balance - creditsUsed),
-                total_used: Number(credits.total_used || 0) + creditsUsed,
-            })
-            .eq('store_id', body.store_id)
-            .select()
-            .single();
-        if (error) return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-        updatedCredits = data;
-    } else {
-        const { data, error } = await db
-            .from('ai_credits')
-            .insert({
-                store_id: body.store_id,
-                balance: Math.max(0, 100 - creditsUsed),
-                plan_credits: 100,
-                bonus_credits: 0,
-                total_used: creditsUsed,
-                total_purchased: 0,
-            })
-            .select()
-            .single();
-        if (error) return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-        updatedCredits = data;
+    let updatedCredits;
+    try {
+        updatedCredits = await loadAiCreditProjection(db, body.store_id);
+    } catch (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error instanceof Error ? error.message : 'AI credit projection failed' } }, 500);
     }
 
     return c.json(success({
@@ -766,15 +781,17 @@ router.post('/homepage', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const [{ data: credits }, store] = await Promise.all([
-        db
-            .from('ai_credits')
-            .select('id,balance,total_used')
-            .eq('store_id', body.store_id)
-            .single(),
-        loadOperatorStore(db, body.store_id),
-    ]);
-    const balance = credits?.balance ?? 100;
+    let creditProjection;
+    let store;
+    try {
+        [creditProjection, store] = await Promise.all([
+            loadAiCreditProjection(db, body.store_id),
+            loadOperatorStore(db, body.store_id),
+        ]);
+    } catch (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error instanceof Error ? error.message : 'AI credit projection failed' } }, 500);
+    }
+    const balance = Number(creditProjection.balance || 0);
     if (balance <= 0) {
         return c.json({ error: { code: 'INSUFFICIENT_CREDITS', message: 'No AI credits remaining.' } }, 402);
     }
@@ -884,29 +901,6 @@ router.post('/homepage', async (c) => {
 
     if (usageError) {
         return c.json({ error: { code: 'DB_ERROR', message: 'AI homepage generation could not be saved.' } }, 500);
-    }
-
-    if (credits?.id) {
-        const { error } = await db
-            .from('ai_credits')
-            .update({
-                balance: Math.max(0, balance - creditsUsed),
-                total_used: Number(credits.total_used || 0) + creditsUsed,
-            })
-            .eq('store_id', body.store_id);
-        if (error) return c.json({ error: { code: 'DB_ERROR', message: 'AI credit balance could not be updated.' } }, 500);
-    } else {
-        const { error } = await db
-            .from('ai_credits')
-            .insert({
-                store_id: body.store_id,
-                balance: Math.max(0, 100 - creditsUsed),
-                plan_credits: 100,
-                bonus_credits: 0,
-                total_used: creditsUsed,
-                total_purchased: 0,
-            });
-        if (error) return c.json({ error: { code: 'DB_ERROR', message: 'AI credit balance could not be initialized.' } }, 500);
     }
 
     return c.json(success({
@@ -1098,54 +1092,23 @@ router.post('/credits/purchase', async (c) => {
         metadata: purchase.metadata,
     };
 
-    const { data: existingCredits, error: readError } = await db
-        .from('ai_credits')
-        .select('id,balance,plan_credits,bonus_credits,total_used,total_purchased')
-        .eq('store_id', storeId)
-        .single();
-
-    if (readError && readError.code !== 'PGRST116') {
-        return c.json({ error: { code: 'DB_ERROR', message: readError.message } }, 500);
-    }
-
-    let updatedCredits = existingCredits || null;
-    if (purchase.status === 'completed') {
-        const currentBalance = Number(existingCredits?.balance ?? 100);
-        const currentPurchased = Number(existingCredits?.total_purchased ?? 0);
-        if (existingCredits?.id) {
-            const { data, error } = await db
-                .from('ai_credits')
-                .update({
-                    balance: currentBalance + purchase.credits,
-                    total_purchased: currentPurchased + purchase.credits,
-                })
-                .eq('store_id', storeId)
-                .select()
-                .single();
-            if (error) return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-            updatedCredits = data;
-        } else {
-            const { data, error } = await db
-                .from('ai_credits')
-                .insert({
-                    store_id: storeId,
-                    balance: 100 + purchase.credits,
-                    plan_credits: 100,
-                    bonus_credits: 0,
-                    total_used: 0,
-                    total_purchased: purchase.credits,
-                })
-                .select()
-                .single();
-            if (error) return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-            updatedCredits = data;
-        }
+    let projectedCredits;
+    try {
+        projectedCredits = await loadAiCreditProjection(db, storeId);
+    } catch (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error instanceof Error ? error.message : 'AI credit projection failed' } }, 500);
     }
 
     return c.json(success({
-        purchase: purchaseRecord,
-        credits: decorateCredits(updatedCredits, storeId, adapter),
-    }), purchase.status === 'completed' ? 201 : 202);
+        purchase: {
+            ...purchaseRecord,
+            metadata: {
+                ...purchaseRecord.metadata,
+                credit_grant_deferred_until_canonical_ledger: true,
+            },
+        },
+        credits: decorateCredits(projectedCredits, storeId, adapter),
+    }), 202);
 });
 
 export default router;

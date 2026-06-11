@@ -13,6 +13,7 @@ import { processRiskScoringDeliveries } from './risk-scoring';
 import { processReviewCheckDeliveries } from './review-checks';
 import { processSupportAutomationDeliveries } from './support-automation';
 import { runInventoryReservationSweeper } from './inventory-reservations';
+import { runMoneyLedgerReconciliation } from './money-ledger-reconciliation';
 
 type QueuePayload = {
   messageId?: string;
@@ -57,6 +58,7 @@ export interface Env extends SupabaseServiceEnv, PushProviderEnv {
   PLATFORM_QUEUE_CIRCUIT_OPEN_SECONDS?: string;
   PLATFORM_QUEUE_DRAIN_GENERIC_FANOUT?: string;
   INVENTORY_RESERVATION_SWEEPER_LIMIT?: string;
+  MONEY_LEDGER_RECONCILIATION_BATCH_LIMIT?: string;
   API_GATEWAY_SERVICE?: Fetcher;
   INTERNAL_API_SECRET?: string;
   QUEUE_TENANT_ENVELOPE_SECRET?: string;
@@ -614,6 +616,21 @@ export default {
           route: 'scheduled.inventory_reservation_sweeper',
           status: 'failed',
           error: error instanceof Error ? error.message : 'inventory reservation sweeper failed',
+        })),
+    );
+    ctx.waitUntil(
+      runMoneyLedgerReconciliation(env, {
+        requestId: `scheduled:money-ledger-reconciliation:${cron}:${Date.now()}`,
+      })
+        .then((result) => writeQueueLog('info', {
+          route: 'scheduled.money_ledger_reconciliation',
+          status: 'completed',
+          result,
+        }))
+        .catch((error) => writeQueueLog('error', {
+          route: 'scheduled.money_ledger_reconciliation',
+          status: 'failed',
+          error: error instanceof Error ? error.message : 'money ledger reconciliation failed',
         })),
     );
     ctx.waitUntil(

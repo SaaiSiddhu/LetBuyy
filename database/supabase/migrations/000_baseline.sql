@@ -1727,6 +1727,7 @@ DECLARE
     v_tax_amount NUMERIC(12,2) := 0;
     v_discount_amount NUMERIC(12,2) := 0;
     v_gift_card_amount NUMERIC(12,2) := 0;
+    v_gift_card_balance NUMERIC(12,2) := 0;
     v_grand_total NUMERIC(12,2) := 0;
     v_payment_due NUMERIC(12,2) := 0;
     v_promotion JSONB := jsonb_build_object('valid', false, 'discount', 0);
@@ -1827,17 +1828,27 @@ BEGIN
             RAISE EXCEPTION 'gift card is invalid or unavailable';
         END IF;
 
-        v_gift_card_amount := LEAST(COALESCE(v_gift_card.balance, 0), v_grand_total);
+        SELECT COALESCE(
+            SUM(
+                CASE
+                    WHEN entry_type IN ('issued', 'credit', 'refund_credit', 'release') THEN amount
+                    WHEN entry_type IN ('debit', 'hold', 'expire', 'fraud_hold') THEN -amount
+                    ELSE 0
+                END
+            ),
+            COALESCE(v_gift_card.initial_value, v_gift_card.balance, 0)
+        )
+          INTO v_gift_card_balance
+          FROM gift_card_ledger_entries
+         WHERE gift_card_account_id = v_gift_card.id
+           AND site_id = p_store_id
+           AND deleted_at IS NULL;
+
+        v_gift_card_amount := LEAST(COALESCE(v_gift_card_balance, 0), v_grand_total);
 
         IF v_gift_card_amount <= 0 THEN
             RAISE EXCEPTION 'gift card has no redeemable balance';
         END IF;
-
-        UPDATE gift_card_accounts
-           SET balance = balance - v_gift_card_amount,
-               updated_at = NOW(),
-               updated_by = p_actor_id
-         WHERE id = v_gift_card.id;
 
         INSERT INTO gift_card_redemptions (
             site_id,
@@ -1881,7 +1892,7 @@ BEGIN
             v_order_id,
             'debit',
             v_gift_card_amount,
-            COALESCE(v_gift_card.balance, 0) - v_gift_card_amount,
+            COALESCE(v_gift_card_balance, 0) - v_gift_card_amount,
             'gift_card.debit:' || v_order_id::TEXT || ':' || v_gift_card.id::TEXT,
             p_request_id,
             jsonb_build_object('code_last4', v_gift_card.code_last4),

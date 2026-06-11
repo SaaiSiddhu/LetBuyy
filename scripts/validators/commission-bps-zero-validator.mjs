@@ -10,12 +10,7 @@ const activeFiles = listWorkspaceFiles(["apps", "services", "packages", "config"
   .filter((file) => /\.(ts|tsx|js|jsx|mjs|cjs|sql|json|toml|yaml|yml|dart)$/.test(file))
   .filter((file) => !file.includes("/test/") && !file.includes("__tests__") && !file.includes("integration_test/"))
   .filter((file) => !file.startsWith("database/supabase/rollback/"))
-  .filter((file) => !file.startsWith("database/supabase/seeds/"))
-  .filter(
-    (file) =>
-      !file.startsWith("database/supabase/migrations/")
-      || file === "database/supabase/migrations/162_phase_a_commission_zero.sql",
-  );
+  .filter((file) => !file.startsWith("database/supabase/seeds/"));
 
 const activeOffenders = [];
 for (const file of activeFiles) {
@@ -24,12 +19,15 @@ for (const file of activeFiles) {
   const lines = text.split(/\r?\n/);
   lines.forEach((line, index) => {
     if (
-      /\bcommission_bps\b\s*[:=]\s*300\b/i.test(line) ||
-      /\bcommissionBps\b\s*[:=]\s*300\b/.test(line) ||
-      /\?\?\s*300\b/.test(line) ||
-      /DEFAULT\s+300\s+NOT\s+NULL/i.test(line) ||
+      /\bcommission_bps\b[^;\n]{0,120}\bDEFAULT\s+(?!0\b)[1-9]\d*\b/i.test(line) ||
+      /\bcommission_bps\b\s*[:=]\s*(?!0\b)[1-9]\d*\b/i.test(line) ||
+      /\bcommissionBps\b\s*[:=]\s*(?!0\b)[1-9]\d*\b/i.test(line) ||
+      /\b(?:commission_bps|commissionBps)\b[^\n]{0,80}\?\?\s*(?!0\b)[1-9]\d*\b/i.test(line) ||
+      /\bALTER\s+COLUMN\s+commission_bps\s+SET\s+DEFAULT\s+(?!0\b)[1-9]\d*\b/i.test(line) ||
       /gmv_percentage\s*=\s*[1-9]/i.test(line) ||
-      /[1-9](?:\.\d+)?%\s+transaction fee/i.test(line)
+      /[1-9](?:\.\d+)?%\s+transaction fee/i.test(line) ||
+      /\bcommission[_-]?rate\b\s*[:=]\s*(?!0(?:\.0+)?\b)[1-9]\d*(?:\.\d+)?\b/i.test(line) ||
+      /\bplatform[_-]?commission\b\s*[:=]\s*(?!0(?:\.0+)?\b)[1-9]\d*(?:\.\d+)?\b/i.test(line)
     ) {
       activeOffenders.push(`${file}:${index + 1}: ${line.trim()}`);
     }

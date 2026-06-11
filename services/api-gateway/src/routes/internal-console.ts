@@ -16,6 +16,7 @@ import { getSupabaseAdmin, paginated, shouldReturnEmptyForMissingLocalSchema, su
 import { checkSegregationOfDuty, validateSensitiveReason } from '../middleware/rbac';
 import internalConsoleComplianceRouter from './internal-console/compliance';
 import internalConsoleDevelopersRouter from './internal-console/developers';
+import internalConsoleMoneyRouter from './internal-console/money-reconciliation';
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
 const ListQuerySchema = z.object({
@@ -196,6 +197,7 @@ router.use('*', async (c, next) => {
 });
 router.route('/developers', internalConsoleDevelopersRouter);
 router.route('/compliance', internalConsoleComplianceRouter);
+router.route('/money', internalConsoleMoneyRouter);
 function cleanOptional(value: string | undefined): string | undefined {
     const trimmed = value?.trim();
     return trimmed ? trimmed : undefined;

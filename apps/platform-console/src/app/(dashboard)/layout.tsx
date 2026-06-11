@@ -27,6 +27,7 @@ const NAV_SECTIONS: AppNavigationSection[] = [
             { id: 'stores', label: 'Merchant Directory', href: '/stores', icon: <Store size={16} /> },
             { id: 'merchants', label: 'Merchant 360', href: '/merchants', icon: <Store size={16} /> },
             { id: 'revenue', label: 'Revenue', href: '/revenue', icon: <IndianRupee size={16} /> },
+            { id: 'money-reconciliation', label: 'Money Reconciliation', href: '/money-reconciliation', icon: <IndianRupee size={16} /> },
             { id: 'subscriptions', label: 'Subscriptions', href: '/subscriptions', icon: <CreditCard size={16} /> },
             { id: 'marketplace-governance', label: 'Marketplace Governance', href: '/marketplace-governance', icon: <AppWindow size={16} /> },
             { id: 'risk', label: 'Risk Detection', href: '/risk', icon: <ShieldAlert size={16} /> },
