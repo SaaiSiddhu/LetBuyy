@@ -58,6 +58,14 @@ test('D3 gateway production path is verify/store-only for merchant sessions', ()
     assert.match(gatewayAuthRoute, /const token = providedToken \|\| randomHex\(32\)/);
 });
 
+test('CAP-C07 merchant session logout preserves durable revocation evidence', () => {
+    assert.match(gatewayAuthRoute, /revoked_at: new Date\(\)\.toISOString\(\)/);
+    assert.match(gatewayAuthRoute, /revoked_reason: 'logout'/);
+    assert.match(gatewayAuthRoute, /revoked_reason: 'logout_everywhere'/);
+    assert.match(gatewayAuthRoute, /\.is\('revoked_at', null\)/);
+    assert.doesNotMatch(gatewayAuthRoute, /\.from\('sessions'\)\.delete\(\)/);
+});
+
 test('D3 lb_accounts cookie lifetime is capped to 90 days', () => {
     assert.match(identityCookies, /const ACCOUNTS_COOKIE_TTL_SECONDS = 90 \* 24 \* 60 \* 60/);
     assert.match(identityCookies, /setExpirationTime\(`\$\{ACCOUNTS_COOKIE_TTL_SECONDS\}s`\)/);

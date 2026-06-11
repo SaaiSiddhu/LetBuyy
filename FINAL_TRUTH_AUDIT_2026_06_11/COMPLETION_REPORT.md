@@ -1,8 +1,8 @@
 # LetBuyy Final Convergence Completion Report
 
 **Date:** 2026-06-11
-**Scope:** Repository-side B/C/D/E implementation and certification after Phase A live G4 was recorded as human-owned, plus repo-side Phase F CAP-C03 through CAP-C06 money/security capability implementation.
-**Pre-report HEAD:** `3ebaa596` on `stepup/main`; local `main..stepup/main = 0`.
+**Scope:** Repository-side B/C/D/E implementation and certification after Phase A live G4 was recorded as human-owned, plus repo-side Phase F CAP-C03 through CAP-C07 money/security/identity capability implementation.
+**Pre-report HEAD:** `d189f217` on `stepup/main`; local `main..stepup/main = 0`.
 
 ## Repository Answer
 
@@ -24,6 +24,7 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | F CAP-C04 | Money reconciliation now has a repository-side dual-control operator resolve/recheck path: mismatches can be annotated as provider-explained or suspense-acknowledged without falsifying variance, or rechecked through the canonical refresh RPC. Live zero-break-or-explained-suspense evidence remains human-owned. |
 | F CAP-C05 | Settlement ingest now dedupes by idempotency key and provider settlement reference, creates/reuses canonical `payout_statements` executor rows for balanced PA-split settlements, links settlement payout instructions to those executor rows, and syncs provider release status back to the instruction. Live provider settlement/payout smoke and variance-0 evidence remain human-owned. |
 | F CAP-C06 | Step-up proofs are now repository-side cryptographic: active TOTP verification issues short-lived HMAC-SHA256 tokens bound to action, actor, site, challenge, and expiry, and refund/payout/DSR erase verify them with `STEP_UP_SIGNING_SECRET`. Live signing-secret provisioning, enrolled-factor proof, and production smoke remain human-owned. |
+| F CAP-C07 | Identity JWKS/revocation hardening is repo-side complete: JWKS publication serves only configured public ES256/EdDSA keys and fails closed without keys, fake disabled JWKS coordinates are validator-banned, and merchant logout/logout-everywhere preserves durable `revoked_at` evidence instead of deleting session rows. Live OIDC client registration, grant smoke, key rotation evidence, and final HS256 drain remain human-owned. |
 
 ## Validation Evidence
 
@@ -46,6 +47,9 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | `npx tsx --test services/api-gateway/src/__tests__/money.test.ts` | PASS, 10/10 after CAP-C05 |
 | `npx tsx --test services/api-gateway/src/__tests__/stepup-crypto.test.ts` | PASS, 2/2 for CAP-C06 HMAC proof |
 | `npx tsx --test services/api-gateway/src/__tests__/security-v1.test.ts` | PASS, 4/4 after CAP-C06 |
+| `pnpm --filter @letbuyy/identity-platform exec tsx --test src/__tests__/oidc-jwks.test.ts` | PASS, 3/3 for CAP-C07 JWKS hardening |
+| `npx tsx --test services/api-gateway/src/__tests__/identity-issuer-d3.test.ts` | PASS, 6/6 after CAP-C07 durable revocation check |
+| `node scripts/validators/session-security-validator.mjs` | PASS after CAP-C07; mutation-proved fake JWKS coordinates fail |
 
 Mutation proofs added during final certification:
 
@@ -80,6 +84,7 @@ Provider/capability blockers remain in the skip and capability ledgers for live 
 | Documentation convergence | 9/10 | Root markdown budget is 9/9 and prompt/DOC-02 drift is archived or pointed; live certification docs remain seam-backed. |
 | Validator integrity | 9.5/10 | Gate passes 105 validators, orphan validators are wired, and mutation probes fail as expected. |
 | Money convergence | Repository B1-B5 done; Phase F CAP-C03 payout client, CAP-C04 operator resolution, CAP-C05 settlement executor linkage, and CAP-C06 cryptographic step-up done repo-side | B6 live provider credentials, smoke, step-up signing-secret/live TOTP evidence, and variance-0 remain human/live seams. |
+| Identity convergence | Merchant session issuance remains identity-platform-owned; CAP-C07 configured-public-JWKS publication and durable session revocation are repo-side done | Live identity keys, OIDC clients/grants, JWKS rotation evidence, and final HS256 drain telemetry remain human/live seams. |
 | Theme convergence | Repository C0-C3 done | C4 production canary, ARB flip, and C7 React deletion proof remain blocked by 4x100% parity evidence. |
 
 ## Completion Statement

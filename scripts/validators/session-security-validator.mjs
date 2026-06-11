@@ -137,6 +137,10 @@ for (const fragment of [
 const oidcDisabled = readFile('apps/identity-platform/src/lib/identity-foundation/oidc-disabled.ts');
 reporter.assert(!oidcDisabled.includes('mock: true'), 'OIDC disabled scaffold must not emit mock:true runtime payloads');
 reporter.assert(oidcDisabled.includes('implemented: false'), 'OIDC disabled scaffold must be honest-disabled');
+reporter.assert(!oidcDisabled.includes('DISABLED_JWKS'), 'OIDC scaffold must not publish hard-coded disabled JWKS');
+reporter.assert(!/disabled-[xy]-coordinate/.test(oidcDisabled), 'OIDC scaffold must not publish fake JWKS coordinates');
+reporter.assert(oidcDisabled.includes('configuredIdentityPublicJwks'), 'OIDC JWKS route must read configured public JWKS');
+reporter.assert(oidcDisabled.includes('IDENTITY_JWKS_NOT_CONFIGURED'), 'OIDC JWKS route must fail closed when public JWKS is absent');
 
 const allowlist = readJson('config/governance/anti-fabrication-allowlist.json');
 reporter.assert((allowlist.entries || []).length === 0, 'Wave 4 anti-fabrication allowlist entries must be burned down');

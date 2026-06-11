@@ -1181,8 +1181,21 @@ auth.post('/custom/sessions/destroy', async (c) => {
         return c.json({ error: { code: 'VALIDATION', message: 'token is required' } }, 400);
     }
 
-    await getSupabaseAdmin(c).from('sessions').delete().eq('token', token);
-    return c.json({ data: { deleted: true } });
+    localAuthSessions.delete(token);
+    const { error } = await getSupabaseAdmin(c)
+        .from('sessions')
+        .update({ revoked_at: new Date().toISOString(), revoked_reason: 'logout' })
+        .eq('token', token)
+        .is('revoked_at', null);
+
+    if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            return c.json({ data: { revoked: true }, local_schema_missing: true, devOnly: true });
+        }
+        return c.json(dbErrorBody(), 500);
+    }
+
+    return c.json({ data: { revoked: true } });
 });
 
 auth.post('/custom/sessions/destroy-all', async (c) => {
@@ -1195,8 +1208,24 @@ auth.post('/custom/sessions/destroy-all', async (c) => {
         return c.json({ error: { code: 'VALIDATION', message: 'user_id is required' } }, 400);
     }
 
-    await getSupabaseAdmin(c).from('sessions').delete().eq('user_id', userId);
-    return c.json({ data: { deleted: true } });
+    for (const [token, session] of localAuthSessions.entries()) {
+        if (session.user_id === userId) localAuthSessions.delete(token);
+    }
+
+    const { error } = await getSupabaseAdmin(c)
+        .from('sessions')
+        .update({ revoked_at: new Date().toISOString(), revoked_reason: 'logout_everywhere' })
+        .eq('user_id', userId)
+        .is('revoked_at', null);
+
+    if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            return c.json({ data: { revoked: true }, local_schema_missing: true, devOnly: true });
+        }
+        return c.json(dbErrorBody(), 500);
+    }
+
+    return c.json({ data: { revoked: true } });
 });
 
 auth.post('/custom/tokens/create', async (c) => {
