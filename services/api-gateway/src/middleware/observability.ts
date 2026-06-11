@@ -5,6 +5,8 @@ import { getSupabaseAdmin } from '../lib/supabase';
 import { ObservabilityExecutionAdapter } from '../execution/observability-execution.adapter';
 import { LETBUYY_INTERNAL_SUBREQUEST_HEADER, isGraphQLRestShimSubrequest } from '../graphql/rest-shim';
 import { writeRuntimeTelemetryDataPoint } from '@letbuyy/infrastructure/runtime-telemetry-adapter';
+import { AppError } from '../lib/errors';
+import { enqueueRuntimeAlert } from '../lib/runtime-alerting';
 
 type AppContext = Context<{ Bindings: Env }>;
 
@@ -49,6 +51,14 @@ function getTraceId(c: AppContext): string {
 
 function readErrorCodeFromResponse(c: AppContext): string | null {
     return c.res.headers.get('X-Error-Code');
+}
+
+function statusCodeFromThrownError(error: unknown): number {
+    return error instanceof AppError ? error.statusCode : 500;
+}
+
+function errorCodeFromThrownError(error: unknown): string {
+    return error instanceof AppError ? error.code : 'INTERNAL_ERROR';
 }
 
 function getTenant(c: AppContext): RuntimeTenant | null {
@@ -142,13 +152,14 @@ function recordRequestAnalyticsEnginePoint(
         siteId: string | null;
         requestId: string;
         traceId: string;
+        statusCode: number;
         latencyMs: number;
         userId: string | null;
         authSource: string | null;
         errorCode: string | null;
     },
 ): void {
-    const responseStatus = c.res.status;
+    const responseStatus = input.statusCode;
     const responseStatusClass = statusClass(responseStatus);
 
     writeRuntimeTelemetryDataPoint(c.env.RUNTIME_TELEMETRY, {
@@ -204,127 +215,171 @@ export const observability = createMiddleware<{ Bindings: Env }>(async (c, next)
     const startedAt = Date.now();
     const requestId = getRequestHeaderId(c);
     const traceId = getTraceId(c);
+    let thrownError: unknown = null;
 
     c.header('X-Trace-ID', traceId);
 
-    await next();
+    try {
+        await next();
+    } catch (error) {
+        thrownError = error;
+        throw error;
+    } finally {
+        if (!isGraphQLRestShimSubrequest(c.req.header(LETBUYY_INTERNAL_SUBREQUEST_HEADER))) {
+            const latencyMs = Date.now() - startedAt;
+            const tenant = getTenant(c);
+            const auth = getAuth(c);
+            const siteId = tenant?.siteId || null;
+            const userId = auth?.user?.id || null;
+            const authSource = auth?.user?.authSource || null;
+            const responseStatus = thrownError ? statusCodeFromThrownError(thrownError) : c.res.status;
+            const errorCode = thrownError ? errorCodeFromThrownError(thrownError) : readErrorCodeFromResponse(c);
+            const runtime = runtimeName(c);
+            const country = c.req.header('CF-IPCountry') || null;
+            const colo = c.req.header('CF-Ray') || null;
 
-    if (isGraphQLRestShimSubrequest(c.req.header(LETBUYY_INTERNAL_SUBREQUEST_HEADER))) {
-        return;
-    }
-
-    const latencyMs = Date.now() - startedAt;
-    const tenant = getTenant(c);
-    const auth = getAuth(c);
-    const siteId = tenant?.siteId || null;
-    const userId = auth?.user?.id || null;
-    const authSource = auth?.user?.authSource || null;
-    const errorCode = readErrorCodeFromResponse(c);
-
-    const fields = {
-        request_id: requestId,
-        trace_id: traceId,
-        site_id: siteId,
-        route: c.req.path,
-        method: c.req.method,
-        status_code: c.res.status,
-        latency_ms: latencyMs,
-        user_id: userId,
-        auth_source: authSource,
-    };
-
-    writeStructuredRuntimeLog(fields);
-    recordRequestAnalyticsEnginePoint(c, {
-        siteId,
-        requestId,
-        traceId,
-        latencyMs,
-        userId,
-        authSource,
-        errorCode,
-    });
-
-    const db = getSupabaseAdmin(c);
-    const service = new ObservabilityExecutionAdapter(db);
-
-    c.executionCtx.waitUntil(
-        service.recordRuntimeMetric({
-            metricName: 'letbuyy.runtime.request',
-            metricValue: 1,
-            unit: 'count',
-            runtimeName: runtimeName(c),
-            siteId,
-            requestId,
-            correlationId: requestId,
-            traceId,
-            dimensions: {
+            const fields = {
+                request_id: requestId,
+                trace_id: traceId,
+                site_id: siteId,
                 route: c.req.path,
                 method: c.req.method,
-                status_code: c.res.status,
-                status_class: statusClass(c.res.status),
+                status_code: responseStatus,
                 latency_ms: latencyMs,
-                server_error_count: c.res.status >= 500 ? 1 : 0,
-                client_error_count: c.res.status >= 400 && c.res.status < 500 ? 1 : 0,
-                success_count: c.res.status < 400 ? 1 : 0,
+                user_id: userId,
                 auth_source: authSource,
-                country: c.req.header('CF-IPCountry') || null,
-                colo: c.req.header('CF-Ray') || null,
-            },
-        }).catch((error: unknown) => {
-            writeStructuredRuntimeLog({
-                request_id: requestId,
-                trace_id: traceId,
-                route: c.req.path,
-                method: 'OBSERVABILITY_METRIC',
-                status_code: 500,
-                latency_ms: 0,
-                error: error instanceof Error ? error.message : 'Runtime metric recording failed',
-            });
-        })
-    );
+            };
 
-    const sampling = shouldRecordRequestLog({
-        method: c.req.method,
-        path: c.req.path,
-        statusCode: c.res.status,
-        userId,
-        authSource,
-        requestId,
-        sampleRate: c.env.REQUEST_LOG_SAMPLE_RATE,
-    });
-    if (!sampling.record) return;
-
-    c.executionCtx.waitUntil(
-        service.recordRequestLog({
-            siteId,
-            requestId,
-            traceId,
-            method: c.req.method,
-            path: c.req.path,
-            route: c.req.path,
-            statusCode: c.res.status,
-            latencyMs,
-            userId,
-            authSource,
-            ipAddress: c.req.header('CF-Connecting-IP') || null,
-            userAgent: c.req.header('User-Agent') || null,
-            errorCode,
-            metadata: {
-                country: c.req.header('CF-IPCountry') || null,
-                colo: c.req.header('CF-Ray') || null,
-                request_log_sample_reason: sampling.reason,
-                request_log_sample_rate: sampling.sampleRate,
-            },
-        }).catch((error: unknown) => {
-            writeStructuredRuntimeLog({
-                request_id: requestId,
-                trace_id: traceId,
-                route: c.req.path,
-                method: 'OBSERVABILITY',
-                status_code: 500,
-                latency_ms: 0,
-                error: error instanceof Error ? error.message : 'Request log recording failed',
+            writeStructuredRuntimeLog(fields);
+            recordRequestAnalyticsEnginePoint(c, {
+                siteId,
+                requestId,
+                traceId,
+                statusCode: responseStatus,
+                latencyMs,
+                userId,
+                authSource,
+                errorCode,
             });
-        })
-    );
+
+            const db = getSupabaseAdmin(c);
+            const service = new ObservabilityExecutionAdapter(db);
+
+            c.executionCtx.waitUntil(
+                service.recordRuntimeMetric({
+                    metricName: 'letbuyy.runtime.request',
+                    metricValue: 1,
+                    unit: 'count',
+                    runtimeName: runtime,
+                    siteId,
+                    requestId,
+                    correlationId: requestId,
+                    traceId,
+                    dimensions: {
+                        route: c.req.path,
+                        method: c.req.method,
+                        status_code: responseStatus,
+                        status_class: statusClass(responseStatus),
+                        latency_ms: latencyMs,
+                        server_error_count: responseStatus >= 500 ? 1 : 0,
+                        client_error_count: responseStatus >= 400 && responseStatus < 500 ? 1 : 0,
+                        success_count: responseStatus < 400 ? 1 : 0,
+                        auth_source: authSource,
+                        country,
+                        colo,
+                    },
+                }).catch((error: unknown) => {
+                    writeStructuredRuntimeLog({
+                        request_id: requestId,
+                        trace_id: traceId,
+                        route: c.req.path,
+                        method: 'OBSERVABILITY_METRIC',
+                        status_code: 500,
+                        latency_ms: 0,
+                        error: error instanceof Error ? error.message : 'Runtime metric recording failed',
+                    });
+                })
+            );
+
+            c.executionCtx.waitUntil(
+                enqueueRuntimeAlert({
+                    runtimeQueue: c.env.RUNTIME_QUEUE || null,
+                    metricRecorder: service,
+                    runtimeName: runtime,
+                    environment: c.env.ENVIRONMENT,
+                    deploymentEnv: c.env.DEPLOYMENT_ENV || c.env.ENVIRONMENT,
+                    telemetryEnv: c.env.TELEMETRY_ENV || c.env.ENVIRONMENT,
+                    runtimeQueueName: c.env.RUNTIME_QUEUE_NAME || 'letbuyy-runtime-queue',
+                    siteId,
+                    requestId,
+                    traceId,
+                    route: c.req.path,
+                    method: c.req.method,
+                    statusCode: responseStatus,
+                    latencyMs,
+                    errorCode,
+                    userId,
+                    authSource,
+                    country,
+                    colo,
+                }).catch((error: unknown) => {
+                    writeStructuredRuntimeLog({
+                        request_id: requestId,
+                        trace_id: traceId,
+                        route: c.req.path,
+                        method: 'RUNTIME_ALERT',
+                        status_code: 500,
+                        latency_ms: 0,
+                        error: error instanceof Error ? error.message : 'Runtime alert enqueue failed',
+                    });
+                })
+            );
+
+            const sampling = shouldRecordRequestLog({
+                method: c.req.method,
+                path: c.req.path,
+                statusCode: responseStatus,
+                userId,
+                authSource,
+                requestId,
+                sampleRate: c.env.REQUEST_LOG_SAMPLE_RATE,
+            });
+            if (sampling.record) {
+
+                c.executionCtx.waitUntil(
+                    service.recordRequestLog({
+                        siteId,
+                        requestId,
+                        traceId,
+                        method: c.req.method,
+                        path: c.req.path,
+                        route: c.req.path,
+                        statusCode: responseStatus,
+                        latencyMs,
+                        userId,
+                        authSource,
+                        ipAddress: c.req.header('CF-Connecting-IP') || null,
+                        userAgent: c.req.header('User-Agent') || null,
+                        errorCode,
+                        metadata: {
+                            country,
+                            colo,
+                            request_log_sample_reason: sampling.reason,
+                            request_log_sample_rate: sampling.sampleRate,
+                        },
+                    }).catch((error: unknown) => {
+                        writeStructuredRuntimeLog({
+                            request_id: requestId,
+                            trace_id: traceId,
+                            route: c.req.path,
+                            method: 'OBSERVABILITY',
+                            status_code: 500,
+                            latency_ms: 0,
+                            error: error instanceof Error ? error.message : 'Request log recording failed',
+                        });
+                    })
+                );
+            }
+        }
+    }
 });

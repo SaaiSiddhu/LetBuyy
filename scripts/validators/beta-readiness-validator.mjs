@@ -199,6 +199,34 @@ assertRecordedCapabilityGap(
   'SKIP-CAP-ALERTING-END-TO-END',
   'Alerting must remain recorded as an end-to-end capability gap; DSN presence alone is not live alert delivery',
 );
+const runtimeAlerting = readFile('services/api-gateway/src/lib/runtime-alerting.ts');
+for (const fragment of [
+  'RUNTIME_ALERT_METRIC_NAME',
+  "RUNTIME_ALERT_JOB_TYPE = 'incident.page.dry_run'",
+  'redactRuntimeAlertPayload',
+  'enqueueRuntimeAlert',
+  'missing-runtime-queue-binding',
+  'CAP-C10 automated runtime alert dry-run',
+]) {
+  reporter.assert(runtimeAlerting.includes(fragment), `CAP-C10 runtime alerting implementation missing: ${fragment}`);
+}
+const observabilityMiddleware = readFile('services/api-gateway/src/middleware/observability.ts');
+for (const fragment of [
+  'enqueueRuntimeAlert',
+  'RUNTIME_QUEUE',
+  'RUNTIME_QUEUE_NAME',
+  'statusCodeFromThrownError',
+]) {
+  reporter.assert(observabilityMiddleware.includes(fragment), `CAP-C10 observability middleware missing: ${fragment}`);
+}
+const incidentCommandWorker = readFile('services/queue-workers/src/incident-command.ts');
+for (const fragment of [
+  "jobType === 'incident.page.dry_run'",
+  'incident.page.dry_run.worker',
+  'currentOncallSchedule',
+]) {
+  reporter.assert(incidentCommandWorker.includes(fragment), `CAP-C10 incident command worker missing: ${fragment}`);
+}
 for (const file of [
   'services/api-gateway/src/routes/admin.ts',
   'services/api-gateway/src/routes/employee.ts',
@@ -257,4 +285,4 @@ for (const fragment of [
   reporter.assert(packageJson.includes(fragment), `package.json missing Wave 7 script: ${fragment}`);
 }
 
-reporter.finish('mobile Turnstile, checkout capture, sandbox COD/WhatsApp, OIDC honesty, deploy exclusions, D11 package deletion, and recorded capability gaps checked');
+reporter.finish('mobile Turnstile, checkout capture, sandbox COD/WhatsApp, OIDC honesty, runtime alerting, deploy exclusions, D11 package deletion, and recorded capability gaps checked');
