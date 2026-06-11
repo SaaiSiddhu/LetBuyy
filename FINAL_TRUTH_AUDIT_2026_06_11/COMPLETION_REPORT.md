@@ -21,6 +21,7 @@ The converged branch now contains one enforced authority chain, one canonical mo
 | D Duplicates | DOC-02/prompt authority retargeted; reserved stubs and manifests made non-activating; frozen app deploy shape neutralized; orphan validators wired; queue planner deduped into `@letbuyy/event-core`; `auth-core/src/legacy.ts` removed; Firebase/GCS media residue, `EMAIL_QUEUE`, stale `develop`, DNS overlay, and undeclared env/config drift removed or guarded. |
 | E Certification | Final anti-recurrence validators cover prompt perimeter, DOC/stub language, frozen deploy shape, validator liveness, canonical ledger migration evidence, reserved manifest activation wording, and retired DNS overlay references. Completion evidence is recorded in this report plus the execution, change, validation, and rollback ledgers. |
 | F CAP-C03 | Razorpay Route payout provider client is implemented behind `PayoutProviderClient`, wired into payout release only when the existing provider flag and credentials are present, posts idempotent provider transfer requests, maps provider references/UTRs, and records provider rejection as failed rather than released. |
+| F CAP-C04 | Money reconciliation now has a repository-side dual-control operator resolve/recheck path: mismatches can be annotated as provider-explained or suspense-acknowledged without falsifying variance, or rechecked through the canonical refresh RPC. Live zero-break-or-explained-suspense evidence remains human-owned. |
 
 ## Validation Evidence
 
@@ -72,7 +73,7 @@ Provider/capability blockers remain in the skip and capability ledgers for live 
 | Governance authority | 9/10 | One local law chain and prompt perimeter pass; ARB signature remains `SKIP-EG1-ARB-SINGLE-REALITY-CERTIFICATION`. |
 | Documentation convergence | 9/10 | Root markdown budget is 9/9 and prompt/DOC-02 drift is archived or pointed; live certification docs remain seam-backed. |
 | Validator integrity | 9.5/10 | Gate passes 105 validators, orphan validators are wired, and mutation probes fail as expected. |
-| Money convergence | Repository B1-B5 done; Phase F CAP-C03 payout client done repo-side | B6 live provider credentials, smoke, and variance-0 remain human/live seams. |
+| Money convergence | Repository B1-B5 done; Phase F CAP-C03 payout client and CAP-C04 operator resolution done repo-side | B6 live provider credentials, smoke, and variance-0 remain human/live seams. |
 | Theme convergence | Repository C0-C3 done | C4 production canary, ARB flip, and C7 React deletion proof remain blocked by 4x100% parity evidence. |
 
 ## Completion Statement

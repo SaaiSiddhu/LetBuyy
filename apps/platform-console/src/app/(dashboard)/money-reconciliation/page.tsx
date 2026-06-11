@@ -1,4 +1,5 @@
-import { Table } from '@letbuyy/ui';
+import { revalidatePath } from 'next/cache';
+import { Button, Input, Select, Table, Textarea } from '@letbuyy/ui';
 import {
     ConsoleWorkspace,
     EmptyDataState,
@@ -12,8 +13,10 @@ import {
     fetchConsoleApi,
     formatDateTime,
     formatMoneyFromPaise,
+    type ConsoleDataResponse,
     type ConsolePaginatedResponse,
 } from '@/lib/console-api';
+import { requireConsoleSession } from '@/lib/console-auth-server';
 
 type SiteSummary = {
     id?: string | null;
@@ -33,6 +36,17 @@ type MoneyReconciliationRow = {
     sites?: SiteSummary | null;
 };
 
+type MoneyReconciliationResolveResult = {
+    reconciliation: MoneyReconciliationRow;
+    resolution: Record<string, unknown>;
+};
+
+const resolutionOptions = [
+    { label: 'Request recheck', value: 'request_recheck' },
+    { label: 'Provider explained', value: 'provider_explained' },
+    { label: 'Acknowledge suspense', value: 'acknowledge_suspense' },
+];
+
 function moneyValue(value: unknown): number {
     const parsed = typeof value === 'number' ? value : Number(value || 0);
     return Number.isFinite(parsed) ? parsed : 0;
@@ -40,6 +54,48 @@ function moneyValue(value: unknown): number {
 
 function siteLabel(row: MoneyReconciliationRow): string {
     return row.sites?.store_name || row.sites?.name || row.sites?.subdomain || row.site_id;
+}
+
+function requireActorId(actorId: string | null | undefined): string {
+    if (!actorId) throw new Error('Console session is missing an actor id.');
+    return actorId;
+}
+
+function optionalFormString(value: FormDataEntryValue | null): string | null {
+    const trimmed = String(value || '').trim();
+    return trimmed.length > 0 ? trimmed : null;
+}
+
+async function resolveMoneyBreak(formData: FormData) {
+    'use server';
+
+    const session = await requireConsoleSession({ mfa: true });
+    const siteId = String(formData.get('site_id') || '').trim();
+    const resolution = String(formData.get('resolution') || '').trim();
+    const secondaryApproverId = String(formData.get('secondary_approver_id') || '').trim();
+    const reason = String(formData.get('reason') || '').trim();
+
+    if (!siteId || !resolution || !secondaryApproverId || reason.length < 8) {
+        throw new Error('Money break resolution requires a site, resolution, second approver, and reason.');
+    }
+
+    const result = await fetchConsoleApi<ConsoleDataResponse<MoneyReconciliationResolveResult>>(
+        `/internal/console/money/reconciliation/${siteId}/resolve`,
+        {
+            method: 'POST',
+            body: {
+                actor_id: requireActorId(session.userId),
+                actor_email: session.email,
+                secondary_approver_id: secondaryApproverId,
+                reason,
+                resolution,
+                provider_reference: optionalFormString(formData.get('provider_reference')),
+            },
+        }
+    );
+
+    if (result.error) throw new Error(result.error);
+    revalidatePath('/money-reconciliation');
 }
 
 export default async function MoneyReconciliationPage() {
@@ -78,7 +134,7 @@ export default async function MoneyReconciliationPage() {
 
             <Panel title="Break Resolution Queue" description="Mismatches stay visible until the scheduled queue-worker refresh returns variance 0.">
                 {mismatches.length ? (
-                    <Table className="shadow-none" containerClassName="overflow-x-auto" tableClassName="min-w-[760px] text-left text-sm">
+                    <Table className="shadow-none" containerClassName="overflow-x-auto" tableClassName="min-w-[1080px] text-left text-sm">
                         <thead className="text-[var(--lb-color-text-subdued)]">
                             <tr className="border-b border-[var(--lb-color-border)]">
                                 <th className="px-[var(--lb-space-3)] py-[var(--lb-space-3)] font-[var(--lb-font-weight-medium)]">Store</th>
@@ -87,6 +143,7 @@ export default async function MoneyReconciliationPage() {
                                 <th className="px-[var(--lb-space-3)] py-[var(--lb-space-3)] font-[var(--lb-font-weight-medium)]">Canonical</th>
                                 <th className="px-[var(--lb-space-3)] py-[var(--lb-space-3)] font-[var(--lb-font-weight-medium)]">Variance</th>
                                 <th className="px-[var(--lb-space-3)] py-[var(--lb-space-3)] font-[var(--lb-font-weight-medium)]">Updated</th>
+                                <th className="px-[var(--lb-space-3)] py-[var(--lb-space-3)] font-[var(--lb-font-weight-medium)]">Resolution</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--lb-color-border)]">
@@ -101,6 +158,18 @@ export default async function MoneyReconciliationPage() {
                                     <td className="px-[var(--lb-space-3)] py-[var(--lb-space-3)]">{formatMoneyFromPaise(row.ledger_merchant_payable_minor)}</td>
                                     <td className="px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[var(--lb-color-critical)]">{formatMoneyFromPaise(row.variance_minor)}</td>
                                     <td className="px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[var(--lb-color-text-subdued)]">{formatDateTime(row.updated_at)}</td>
+                                    <td className="px-[var(--lb-space-3)] py-[var(--lb-space-3)]">
+                                        <form action={resolveMoneyBreak} className="grid min-w-[360px] gap-[var(--lb-space-2)]">
+                                            <Input unstyled type="hidden" name="site_id" value={row.site_id} />
+                                            <Select name="resolution" hideLabel label="Resolution" defaultValue="request_recheck" options={resolutionOptions} controlSize="sm" />
+                                            <div className="grid gap-[var(--lb-space-2)] md:grid-cols-2">
+                                                <Input name="secondary_approver_id" placeholder="Second approver ID" />
+                                                <Input name="provider_reference" placeholder="Provider/ref optional" />
+                                            </div>
+                                            <Textarea name="reason" required minLength={8} placeholder="Evidence, suspense account, or recheck reason." rows={2} />
+                                            <Button type="submit" size="sm" variant="outline">Record</Button>
+                                        </form>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

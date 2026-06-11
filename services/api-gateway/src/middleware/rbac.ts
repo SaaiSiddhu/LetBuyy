@@ -24,6 +24,7 @@ export type SensitiveAction =
     | 'developer.suspend'
     | 'refund.approve'
     | 'payout.release'
+    | 'money.reconciliation.resolve'
     | 'ts.appeal.decide'
     | 'ts.reinstate'
     | 'runtime.control-command';
@@ -192,6 +193,7 @@ export function checkSegregationOfDuty(input: SegregationCheckInput): Segregatio
         'developer.suspend',
         'refund.approve',
         'payout.release',
+        'money.reconciliation.resolve',
         'ts.reinstate',
         'runtime.control-command',
     ]);

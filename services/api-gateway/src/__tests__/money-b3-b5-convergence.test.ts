@@ -36,9 +36,17 @@ test('B4 exposes an audited platform-console break-resolution queue for money le
     assert.match(internalConsoleMoneySource, /REASON_REQUIRED/);
     assert.match(internalConsoleMoneySource, /money_ledger\.breaks\.read/);
     assert.match(internalConsoleMoneySource, /money_ledger\.reconciliation\.read/);
+    assert.match(internalConsoleMoneySource, /router\.post\('\/reconciliation\/:siteId\/resolve'/);
+    assert.match(internalConsoleMoneySource, /checkSegregationOfDuty/);
+    assert.match(internalConsoleMoneySource, /targetAction:\s*'money\.reconciliation\.resolve'/);
+    assert.match(internalConsoleMoneySource, /operator_resolution/);
+    assert.match(internalConsoleMoneySource, /money_ledger\.breaks\.resolve/);
+    assert.match(internalConsoleMoneySource, /refresh_money_ledger_site_reconciliation/);
     assert.match(consoleLayoutSource, /href:\s*'\/money-reconciliation'/);
     assert.match(consolePageSource, /\/internal\/console\/money\/reconciliation/);
     assert.match(consolePageSource, /Break Resolution Queue/);
+    assert.match(consolePageSource, /resolveMoneyBreak/);
+    assert.match(consolePageSource, /secondary_approver_id/);
     assert.match(consolePageSource, /variance-0 row/);
 });
 
