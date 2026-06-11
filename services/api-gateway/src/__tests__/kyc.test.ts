@@ -38,7 +38,8 @@ test('KYC migration declares tenant RLS and approved updated_at trigger', () => 
 test('KYC adapter is sandbox-first and fail-closed for live providers', () => {
     assert.match(adapterSource, /export function createKycVerificationAdapter/);
     assert.match(adapterSource, /credentials\.mode === 'live'/);
-    assert.match(adapterSource, /live KYC provider mode requires provider credentials/);
+    assert.doesNotMatch(adapterSource, /KYC_LIVE_PROVIDER_CREDENTIALS_REQUIRED/);
+    assert.match(adapterSource, /live KYC provider client is not implemented/);
     assert.match(adapterSource, /KYC_LIVE_PROVIDER_UNAVAILABLE/);
     assert.doesNotMatch(adapterSource, /live_provider_stub/);
     assert.match(adapterSource, /status: hasEvidence \? 'verified' : 'needs_review'/);

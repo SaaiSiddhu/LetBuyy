@@ -2116,7 +2116,7 @@ export const AICreditBalanceSchema = z.object({
 export const AICreditPurchaseSchema = z.object({
   id: z.string().min(1),
   store_id: UuidSchema,
-  status: z.enum(['completed', 'requires_checkout', 'unavailable']),
+  status: z.enum(['completed', 'unavailable']),
   provider: z.string().max(120),
   provider_mode: z.enum(['sandbox', 'live']),
   credits: z.number().int().min(1),

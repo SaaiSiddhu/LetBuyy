@@ -85,6 +85,7 @@ const billingAutopayMigration = readFile("database/supabase/migrations/152_execu
 const aiSeamMigration = readFile("database/supabase/migrations/154_executable_analytics_media_ai_seam.sql");
 const moneyAuthorityRollback = readFile("database/supabase/rollback/160_foundation_money_ledger_authority.rollback.sql");
 reporter.assert(!kycAdapter.includes("live_provider_stub"), "KYC adapter must not turn sandbox verification into live-provider success");
+reporter.assert(!kycAdapter.includes("KYC_LIVE_PROVIDER_CREDENTIALS_REQUIRED"), "KYC live provider gap must not imply credentials alone activate the missing provider client");
 reporter.assert(kycAdapter.includes("KYC_LIVE_PROVIDER_UNAVAILABLE"), "KYC adapter must fail closed while live provider integration is absent");
 reporter.assert(capabilityBacklog.includes("CAP-C15"), "CAPABILITY_BACKLOG.md missing CAP-C15 live KYC provider gap");
 reporter.assert(skippedHumanDecisions.includes("SKIP-CAP-KYC-LIVE-PROVIDER"), "SKIPPED_HUMAN_DECISIONS.md missing SKIP-CAP-KYC-LIVE-PROVIDER");
@@ -149,6 +150,8 @@ reporter.assert(aiRoute.includes("LETBUYY_AI_MODEL_MODE === 'live' ? 'live' : 's
 reporter.assert(aiAdapter.includes("mode: 'sandbox' | 'live'"), "AI capability seam must expose sandbox/live modes");
 reporter.assert(aiCreditAdapter.includes("AI_CREDIT_PURCHASE_LIVE_PROVIDER_UNAVAILABLE"), "AI credit purchase live mode must fail closed while provider checkout client is absent");
 reporter.assert(!aiCreditAdapter.includes("providerMode: 'live'"), "AI credit purchase adapter must not return live provider mode without a real provider checkout order");
+reporter.assert(!aiCreditAdapter.includes("requires_checkout"), "AI credit purchase adapter must not advertise checkout-required state before a real checkout provider exists");
+reporter.assert(!sharedTypes.includes("requires_checkout"), "shared AI credit purchase contract must not advertise checkout-required state before a real checkout provider exists");
 reporter.assert(capabilityBacklog.includes("CAP-C17"), "CAPABILITY_BACKLOG.md missing CAP-C17 AI credit purchase provider gap");
 reporter.assert(skippedHumanDecisions.includes("SKIP-CAP-AI-CREDIT-PURCHASE-PROVIDER"), "SKIPPED_HUMAN_DECISIONS.md missing SKIP-CAP-AI-CREDIT-PURCHASE-PROVIDER");
 for (const fragment of [

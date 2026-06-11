@@ -44,10 +44,6 @@ export class KycProviderUnavailableError extends Error {
   }
 }
 
-function requiresLiveCredentials(credentials: KycVerificationCredentials): boolean {
-  return credentials.mode === 'live' && (!credentials.apiKey || credentials.apiKey.startsWith('SKIP_NEEDS_HUMAN_'));
-}
-
 function sandboxReference(input: VerifyKycDocumentInput): string {
   return `kyc_sandbox_${input.siteId.replace(/-/g, '').slice(0, 8)}_${input.documentType}_${input.documentId.replace(/-/g, '').slice(0, 8)}`;
 }
@@ -72,11 +68,10 @@ function sandboxResult(
 }
 
 export function createKycVerificationAdapter(credentials: KycVerificationCredentials): KycVerificationAdapter {
-  if (requiresLiveCredentials(credentials)) {
-    throw new KycProviderUnavailableError('KYC_LIVE_PROVIDER_CREDENTIALS_REQUIRED: live KYC provider mode requires provider credentials');
-  }
   if (credentials.mode === 'live') {
-    throw new KycProviderUnavailableError('KYC_LIVE_PROVIDER_UNAVAILABLE: SKIP-CAP-KYC-LIVE-PROVIDER');
+    throw new KycProviderUnavailableError(
+      'KYC_LIVE_PROVIDER_UNAVAILABLE: live KYC provider client is not implemented; SKIP-CAP-KYC-LIVE-PROVIDER',
+    );
   }
 
   return {

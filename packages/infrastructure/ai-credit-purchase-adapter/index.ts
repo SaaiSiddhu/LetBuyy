@@ -1,6 +1,6 @@
 export type AiCreditPurchaseMode = 'sandbox' | 'live';
 export type AiCreditPurchaseProvider = 'letbuyy_sandbox' | 'razorpay' | 'manual';
-export type AiCreditPurchaseStatus = 'completed' | 'requires_checkout' | 'unavailable';
+export type AiCreditPurchaseStatus = 'completed' | 'unavailable';
 
 export interface AiCreditPurchaseCredentials {
   mode?: AiCreditPurchaseMode | string | null;
