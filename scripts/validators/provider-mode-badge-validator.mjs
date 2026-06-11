@@ -261,6 +261,9 @@ reporter.assert(shippingRoute.includes("sandbox-standard"), "shipping route loca
 reporter.assert(!exists("packages/infrastructure/identity-otp-adapter/index.ts"), "retired identity OTP mock adapter must not exist");
 reporter.assert(!readFile("packages/infrastructure/src/index.ts").includes("identity-otp-adapter"), "infrastructure barrel must not export retired identity OTP mock adapter");
 reporter.assert(!readFile("packages/infrastructure/package.json").includes("identity-otp-adapter"), "infrastructure package must not expose retired identity OTP mock adapter");
+reporter.assert(!exists("packages/infrastructure/upi-adapter/index.ts"), "retired native UPI scaffold adapter must not exist");
+reporter.assert(!readFile("packages/infrastructure/src/index.ts").includes("upi-adapter"), "infrastructure barrel must not export retired native UPI scaffold adapter");
+reporter.assert(!readFile("packages/infrastructure/package.json").includes("upi-adapter"), "infrastructure package must not expose retired native UPI scaffold adapter");
 
 const routes = readFile("apps/mobile/merchant-app/lib/app/routes.dart");
 reporter.assert(!routes.includes("MerchantFeatureDefinitions"), "mobile routes must not depend on the parity feature catalog");

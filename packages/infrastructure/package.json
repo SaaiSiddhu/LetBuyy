@@ -10,7 +10,6 @@
     "./stripe-adapter": "./stripe-adapter/index.ts",
     "./razorpay-adapter": "./razorpay-adapter/index.ts",
     "./cashfree-adapter": "./cashfree-adapter/index.ts",
-    "./upi-adapter": "./upi-adapter/index.ts",
     "./cod-adapter": "./cod-adapter/index.ts",
     "./paypal-adapter": "./paypal-adapter/index.ts",
     "./supabase-adapter": "./supabase-adapter/index.ts",

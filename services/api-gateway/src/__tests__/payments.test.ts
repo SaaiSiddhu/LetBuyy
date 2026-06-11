@@ -120,7 +120,6 @@ test('payment provider adapters implement the unified payments contract', () => 
     const stripeAdapter = repositorySource('packages/infrastructure/stripe-adapter/index.ts');
     const paypalAdapter = repositorySource('packages/infrastructure/paypal-adapter/index.ts');
     const cashfreeAdapter = repositorySource('packages/infrastructure/cashfree-adapter/index.ts');
-    const upiAdapter = repositorySource('packages/infrastructure/upi-adapter/index.ts');
     const codAdapter = repositorySource('packages/infrastructure/cod-adapter/index.ts');
 
     assert.match(razorpayAdapter, /createRazorpayPaymentProvider/);
@@ -136,7 +135,7 @@ test('payment provider adapters implement the unified payments contract', () => 
     assert.match(cashfreeAdapter, /payment_session_id/);
     assert.doesNotMatch(cashfreeAdapter, /scaffolded|cashfreeUnavailable/);
 
-    for (const adapter of [stripeAdapter, paypalAdapter, cashfreeAdapter, upiAdapter, codAdapter]) {
+    for (const adapter of [stripeAdapter, paypalAdapter, cashfreeAdapter, codAdapter]) {
         assert.match(adapter, /PaymentProvider/);
         assert.match(adapter, /createIntent/);
         assert.match(adapter, /verify/);
@@ -145,7 +144,6 @@ test('payment provider adapters implement the unified payments contract', () => 
         assert.match(adapter, /webhookVerify/);
     }
 
-    assert.match(upiAdapter, /upi_autopay_supported/);
     assert.match(codAdapter, /COD requires OTP\/call verification/);
 });
 
