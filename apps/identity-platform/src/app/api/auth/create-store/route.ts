@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
         // Validate site type
         if (isComingSoonSiteType(siteType)) {
             return NextResponse.json(
-                { error: 'Landing pages and blogs are coming soon. Online Store is available today.' },
+                { error: 'Landing pages and blogs are not enabled for launch. Online Store is available today.' },
                 { status: 403 }
             )
         }

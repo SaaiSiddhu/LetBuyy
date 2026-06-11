@@ -62,7 +62,7 @@ test('gateway and identity creation paths fail closed for unavailable site types
     assert.match(identityCreateStore, /legacySiteTypesEnabled/);
 });
 
-test('public acquisition surfaces show landing and blog as locked coming soon', () => {
+test('public acquisition surfaces show landing and blog as launch-disabled', () => {
     const identityOnboarding = read(join(repoRoot, 'apps/identity-platform/src/app/onboarding/page.tsx'));
     const marketingCreate = read(join(repoRoot, 'apps/marketing-site/src/app/create/page.tsx'));
     const marketingSiteTypes = read(join(repoRoot, 'apps/marketing-site/src/components/SiteTypes.tsx'));
@@ -72,6 +72,8 @@ test('public acquisition surfaces show landing and blog as locked coming soon', 
     assert.doesNotMatch(defaultIdentityTypes[0], /portfolio|resume/);
     assert.match(defaultIdentityTypes[0], /availability:\s*'available'/);
     assert.match(defaultIdentityTypes[0], /availability:\s*'coming-soon'/);
+    assert.doesNotMatch(identityOnboarding, /Online Store is available today\. Landing pages and blogs are coming soon\./);
+    assert.match(identityOnboarding, /Online Store is available today\. Landing pages and blogs are not enabled for launch\./);
     assert.match(identityOnboarding, /aria-disabled=\{!isSiteTypeAvailable\(type\)\}/);
     assert.match(identityOnboarding, /NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES/);
     assert.match(identityOnboarding, /ACQUISITION_SITE_TYPES/);

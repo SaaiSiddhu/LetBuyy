@@ -11,7 +11,7 @@ const tenantCore = readFile("packages/tenant-core/src/index.ts");
 reporter.assert(
   /ACTIVE_SITE_TYPES\s*=\s*\['store'\]/.test(tenantCore) &&
     /COMING_SOON_SITE_TYPES\s*=\s*\['blog', 'landing'\]/.test(tenantCore),
-  "tenant-core must keep only store active and classify blog/landing as coming soon",
+  "tenant-core must keep only store active and classify blog/landing as launch-disabled",
 );
 reporter.assert(
   /LEGACY_SITE_TYPES\s*=\s*\['portfolio', 'resume'\]/.test(tenantCore),
@@ -45,6 +45,7 @@ for (const marker of [
 }
 
 const identityCreateStore = readFile("apps/identity-platform/src/app/api/auth/create-store/route.ts");
+const identityOnboarding = readFile("apps/identity-platform/src/app/onboarding/page.tsx");
 reporter.assert(
   identityCreateStore.includes("ACTIVE_SITE_TYPES = ['store']") &&
     identityCreateStore.includes("COMING_SOON_SITE_TYPES = ['landing', 'blog']") &&
@@ -52,8 +53,22 @@ reporter.assert(
     identityCreateStore.includes("legacySiteTypesEnabled"),
   "identity create-store route must keep unavailable site types out of default creation",
 );
+for (const [fileName, source] of [
+  ["services/api-gateway/src/routes/stores.ts", gatewayStores],
+  ["services/api-gateway/src/routes/onboarding.ts", gatewayOnboarding],
+  ["apps/identity-platform/src/app/api/auth/create-store/route.ts", identityCreateStore],
+  ["apps/identity-platform/src/app/onboarding/page.tsx", identityOnboarding],
+]) {
+  reporter.assert(
+    !/site creation is coming soon|Landing pages and blogs are coming soon|Coming soon/.test(source),
+    `${fileName} must not advertise launch-disabled site types as coming soon`,
+  );
+  reporter.assert(
+    source.includes("not enabled for launch"),
+    `${fileName} must describe launch-disabled site types as not enabled for launch`,
+  );
+}
 
-const identityOnboarding = readFile("apps/identity-platform/src/app/onboarding/page.tsx");
 const defaultIdentityTypes = identityOnboarding.match(/const SITE_TYPES:[\s\S]*?\]\n\nconst LEGACY_SITE_TYPES/);
 reporter.assert(
   Boolean(defaultIdentityTypes) &&
