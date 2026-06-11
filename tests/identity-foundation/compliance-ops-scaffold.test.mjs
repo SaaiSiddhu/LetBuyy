@@ -22,7 +22,8 @@ test('identity residency config pins ap-south-1 and requires live certification'
   assert.equal(config.identityDataResidency.requiredRegion, 'ap-south-1');
   assert.equal(config.identityDataResidency.providerEvidence, 'HR-RESIDENCY-DPDP');
   assert.equal(config.identityDataResidency.liveCertificationRequired, true);
-  assert.equal(config.mockAllowed.production, false);
+  assert.equal(config.sandboxAllowed.production, false);
+  assert.equal('mockAllowed' in config, false);
 });
 
 test('SOC2 control map references dormant identity foundation evidence without live claims', () => {

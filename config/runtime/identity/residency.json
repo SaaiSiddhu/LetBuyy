@@ -6,7 +6,7 @@
     "providerEvidence": "HR-RESIDENCY-DPDP",
     "liveCertificationRequired": true
   },
-  "mockAllowed": {
+  "sandboxAllowed": {
     "local": true,
     "staging": true,
     "production": false

@@ -3,7 +3,7 @@
   "title": "LetBuyy Identity Residency Runtime Contract",
   "type": "object",
   "additionalProperties": false,
-  "required": ["defaultRegion", "identityDataResidency", "mockAllowed"],
+  "required": ["defaultRegion", "identityDataResidency", "sandboxAllowed"],
   "properties": {
     "defaultRegion": {
       "type": "string",
@@ -28,7 +28,7 @@
         }
       }
     },
-    "mockAllowed": {
+    "sandboxAllowed": {
       "type": "object",
       "additionalProperties": false,
       "required": ["local", "staging", "production"],
