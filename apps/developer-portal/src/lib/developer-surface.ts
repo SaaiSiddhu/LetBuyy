@@ -704,7 +704,7 @@ export const contractCards: ContractCard[] = [
     status: "partial",
     source: "services/api-gateway/src/routes/app-store.ts:262",
     points: [
-      "Only method=GET is accepted; mutation bridge calls are not implemented.",
+      "Only method=GET is accepted; mutation bridge calls are not available.",
       "Absolute URLs, parent path traversal, double slashes, and mismatched store_id values are rejected.",
       "Allowed first path segments are products, orders, customers, themes, and storefront.",
       "Required scopes map to read_products, read_orders, read_customers, read_themes, and read_storefront."
@@ -1281,7 +1281,7 @@ export const oauthSteps: GuideStep[] = [
   },
   {
     title: "6. App bridge reads are scoped and GET-only",
-    body: "POST /v1/app-store/bridge/fetch accepts a Bearer app token and only proxies GET reads to approved first segments. Mutating bridge calls are not implemented.",
+    body: "POST /v1/app-store/bridge/fetch accepts a Bearer app token and only proxies GET reads to approved first segments. Mutating bridge calls are not available.",
     source: "services/api-gateway/src/routes/app-store.ts:781"
   },
   {

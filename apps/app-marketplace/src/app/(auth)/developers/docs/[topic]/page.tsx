@@ -26,7 +26,7 @@ const topics: DocTopic[] = [
                     'Register with business, tax, support, and consent details.',
                     'Create an app with URLs, manifest, OAuth redirects, scopes, pricing, media, support SLA, and data-handling disclosure.',
                     'Submit for automated checks and marketplace review.',
-                    'Use Partner Console scaffolding for versions, pricing metadata, webhooks, analytics, usage metrics, and payout-status review.',
+                    'Use Partner Console workflows for versions, pricing metadata, webhooks, analytics, usage metrics, and payout-status review.',
                 ],
             },
             {
@@ -125,7 +125,7 @@ const topics: DocTopic[] = [
             {
                 heading: 'Merchant reviews',
                 items: [
-                    'Published-review scaffolding requires verified active installation proof before any approved public surface.',
+                    'Published review workflows require verified active installation proof before any approved public surface.',
                     'Developers can reply to reviews.',
                     'Reports and fraud signals route reviews to moderation before public trust signals are affected.',
                 ],
