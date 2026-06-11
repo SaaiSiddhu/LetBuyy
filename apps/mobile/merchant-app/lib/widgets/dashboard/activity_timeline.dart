@@ -89,7 +89,7 @@ class ActivityTimeline extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Ready to launch?',
+            'Ready to publish?',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -214,10 +214,10 @@ class ActivityItems {
 
   static ActivityItem storePublished(DateTime? publishedAt) => ActivityItem(
     icon: Icons.check_circle_rounded,
-    title: 'Store is live',
+    title: 'Store published',
     subtitle: publishedAt != null
         ? 'Published ${_formatRelativeTime(publishedAt)}'
-        : 'Store is active',
+        : 'Store is online',
     color: _success,
     timestamp: publishedAt,
   );
@@ -245,7 +245,7 @@ class ActivityItems {
 
   static ActivityItem readyToLaunch() => const ActivityItem(
     icon: Icons.rocket_launch_rounded,
-    title: 'Ready to launch?',
+    title: 'Ready to publish?',
     subtitle: 'Publish your store to start selling',
     color: _warning,
   );

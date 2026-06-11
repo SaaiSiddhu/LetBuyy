@@ -53,7 +53,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
     },
     {
       'id': 'going_live',
-      'label': 'Going live!',
+      'label': 'Publishing store',
       'icon': Icons.rocket_launch_rounded,
     },
   ];
@@ -540,7 +540,7 @@ class _StorePublishedScreenState extends State<StorePublishedScreen>
 
                   // Title
                   const Text(
-                    'Your store is live!',
+                    'Your store is published!',
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,

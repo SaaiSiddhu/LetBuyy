@@ -1881,7 +1881,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
             type: 'newsletter-signup',
             settings: {
               title: 'Get first access',
-              subtitle: 'Launch updates, new drops, and offers sent to your inbox.',
+              subtitle: 'Store updates, new drops, and offers sent to your inbox.',
               buttonLabel: 'Sign up',
             },
           },

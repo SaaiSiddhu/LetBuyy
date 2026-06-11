@@ -97,7 +97,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
         _showSuccessDialog();
       } else {
         _showError(
-          'Keys were saved, but verification did not complete. Re-check the credentials before going live.',
+          'Keys were saved, but verification did not complete. Re-check the credentials before accepting live payments.',
         );
       }
     } catch (e) {

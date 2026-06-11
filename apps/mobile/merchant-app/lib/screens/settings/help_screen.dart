@@ -207,7 +207,7 @@ class HelpScreen extends StatelessWidget {
     {
       'q': 'How do I publish my store?',
       'a':
-          'Go to the Home tab and toggle the Publish switch. Your store will be live at your subdomain within seconds.',
+          'Go to the Home tab and toggle the Publish switch. Your store will be published at your subdomain within seconds.',
     },
     {
       'q': 'How do I add products to my store?',
