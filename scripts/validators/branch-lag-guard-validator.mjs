@@ -6,6 +6,7 @@ import {
 
 const reporter = createReporter("Branch lag guard validator");
 const workflow = readFile(".github/workflows/production-deploy.yml");
+const monitorWorkflow = readFile(".github/workflows/branch-lag-monitor.yml");
 const gate = readFile("scripts/validate-governance.mjs");
 
 const productionBranch = process.env.LETBUYY_PRODUCTION_BRANCH || "main";
@@ -35,6 +36,20 @@ reporter.assert(
 reporter.assert(
   gate.includes('"branch-lag-guard-validator.mjs"'),
   "Branch lag guard validator must be wired into the governance gate lane",
+);
+reporter.assert(
+  monitorWorkflow.includes("schedule:") &&
+    monitorWorkflow.includes('cron: "17 * * * *"') &&
+    monitorWorkflow.includes("workflow_dispatch:"),
+  "Branch lag monitor workflow must run on a standing schedule and support manual dispatch",
+);
+reporter.assert(
+  monitorWorkflow.includes("fetch-depth: 0") &&
+    monitorWorkflow.includes("node scripts/validators/branch-lag-guard-validator.mjs") &&
+    monitorWorkflow.includes('LETBUYY_ENFORCE_BRANCH_LAG: "1"') &&
+    monitorWorkflow.includes("LETBUYY_PRODUCTION_BRANCH: main") &&
+    monitorWorkflow.includes("LETBUYY_RELEASE_INTEGRATION_BRANCH: stepup/main"),
+  "Branch lag monitor workflow must enforce main against stepup/main with full history",
 );
 
 function git(args) {

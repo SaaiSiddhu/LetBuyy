@@ -25,3 +25,15 @@ test("production deploy enforces branch lag before credential preflight", () => 
   assert.match(workflow, /LETBUYY_ENFORCE_BRANCH_LAG: "1"/);
   assert.match(workflow, /release-preflight:\s+name: Release credential preflight\s+needs:\s+- branch-lag-guard\s+- governance-gate/s);
 });
+
+test("scheduled branch-lag monitor enforces main against stepup/main", () => {
+  const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/branch-lag-monitor.yml"), "utf8");
+
+  assert.match(workflow, /schedule:\s+- cron: "17 \* \* \* \*"/);
+  assert.match(workflow, /workflow_dispatch:/);
+  assert.match(workflow, /fetch-depth: 0/);
+  assert.match(workflow, /node scripts\/validators\/branch-lag-guard-validator\.mjs/);
+  assert.match(workflow, /LETBUYY_ENFORCE_BRANCH_LAG: "1"/);
+  assert.match(workflow, /LETBUYY_PRODUCTION_BRANCH: main/);
+  assert.match(workflow, /LETBUYY_RELEASE_INTEGRATION_BRANCH: stepup\/main/);
+});

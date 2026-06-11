@@ -1,0 +1,25 @@
+name: Branch lag monitor
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  branch-lag-monitor:
+    name: Monitor production branch lag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require production branch to include integration branch
+        run: node scripts/validators/branch-lag-guard-validator.mjs
+        env:
+          LETBUYY_ENFORCE_BRANCH_LAG: "1"
+          LETBUYY_PRODUCTION_BRANCH: main
+          LETBUYY_RELEASE_INTEGRATION_BRANCH: stepup/main
