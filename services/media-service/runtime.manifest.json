@@ -56,7 +56,7 @@
   "executionAuthority": {
     "executionRole": "Reserved/not-implemented root; does not own active APIs, workers, webhooks, schedulers, queue consumers, or runtime bootstrapping.",
     "orchestrationRole": "No active service-local event helpers execution; current behavior delegates to services/api-gateway or services/queue-workers and package-owned policy.",
-    "infrastructureOwnership": "No active runtime infrastructure ownership; future activation requires deployment config and governance approval.",
+    "infrastructureOwnership": "No active runtime infrastructure ownership; this root remains manifest-only unless a future constitutional amendment replaces the reserved-service prohibition.",
     "eventOwnership": "No active event execution ownership; current event handling delegates to implemented runtimes.",
     "queryOwnership": "No active query execution ownership; current reads delegate to implemented runtimes.",
     "compositionOwnership": "No active runtime composition ownership; current composition delegates to implemented runtimes."

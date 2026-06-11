@@ -93,11 +93,13 @@ for (const root of [...reservedServiceRoots, ...reservedMobileRuntimeRoots]) {
 }
 
 const reservedServiceActivationPattern =
-  /\b(Incubating|until extracted|future dedicated|reserved service runtime|must be versioned|when activated|activation plan|production service)\b/i;
+  /\b(Incubating|until extracted|future dedicated|future activation|reserved service runtime|must be versioned|when activated|activation plan|activation-ready|production service)\b/i;
 
 for (const root of reservedServiceRoots) {
   const agentsPath = `${root}/AGENTS.md`;
   const agents = readFile(agentsPath);
+  const manifestPath = `${root}/runtime.manifest.json`;
+  const manifestSource = readFile(manifestPath);
   reporter.assert(agents.includes("manifest-only"), `${agentsPath} must state the root is manifest-only`);
   reporter.assert(
     agents.includes("MUST NOT add source, tests, package.json, wrangler.toml, or deployment config"),
@@ -106,6 +108,14 @@ for (const root of reservedServiceRoots) {
   reporter.assert(
     !reservedServiceActivationPattern.test(agents),
     `${agentsPath} must not contain forward-activation/incubation service language`,
+  );
+  reporter.assert(
+    !reservedServiceActivationPattern.test(manifestSource),
+    `${manifestPath} must not contain forward-activation/incubation service language`,
+  );
+  reporter.assert(
+    manifestSource.includes("manifest-only") || manifestSource.includes("Reserved/not-implemented"),
+    `${manifestPath} must explicitly keep the root manifest-only`,
   );
 
   const topologyRuntime = productionRuntimeByRoot.get(root);
@@ -221,6 +231,16 @@ for (const forbiddenPath of [
   "infrastructure/dns/letbuyy_com.tf",
 ]) {
   reporter.assert(!exists(forbiddenPath), `Legacy duplicate/runtime residue must be removed: ${forbiddenPath}`);
+}
+
+for (const staleDnsReference of [
+  "tests/contracts/dns-letbuyy-com-zone.test.ts",
+  "services/api-gateway/src/__tests__/checkout-d6.test.ts",
+]) {
+  reporter.assert(
+    !readFile(staleDnsReference).includes("infrastructure/dns/letbuyy_com.tf"),
+    `Active tests must not reference the retired DNS overlay: ${staleDnsReference}`,
+  );
 }
 
 reporter.assert(

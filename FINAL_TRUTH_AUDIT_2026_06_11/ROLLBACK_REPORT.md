@@ -52,3 +52,11 @@ Phase A4 is not executed yet. Before any production promotion, the human operato
 | D4 Firebase/GCS media residue removal | Removed Firebase/GCS media allowlists and the `firebase-storage` storage adapter enum. | Revert the D3-D5 commit to restore the allowlists/enum if a live asset migration transition requires them. | Ready; no live asset migration is claimed. |
 | D5 DNS consolidation | Deleted `infrastructure/dns/letbuyy_com.tf` and kept active records in `infrastructure/dns/dns.tf` with checkout. | Revert the D3-D5 commit to restore the overlay, or restore from git before any Terraform apply. | Ready; live Terraform apply remains `SKIP-D5-DNS-TERRAFORM-APPLY`. |
 | D5 environment/config honesty | Removed `EMAIL_QUEUE` from API Env, routed order confirmation through `NOTIFICATION_QUEUE`, declared missing worker env keys, removed frozen/reserved secret owners, retargeted staging branch metadata to `stepup/main`, and relabelled placeholder live modes to sandbox/dry-run. | Revert the D3-D5 commit to restore previous env/config behavior. | Ready; no production secrets or provider settings were changed. |
+
+## Phase D6 / E
+
+| Scope | Forward action | Rollback path | Status |
+|---|---|---|---|
+| D6/E reserved manifest anti-recurrence | Reworded reserved service manifests away from forward-activation language and made whole-repo validation reject `future activation`, `activation-ready`, and incubation wording. | Revert the D6/E certification commit to restore the previous manifest language and validator. | Ready locally; no reserved service was activated. |
+| D6/E DNS overlay anti-recurrence | Retargeted active DNS tests to `infrastructure/dns/dns.tf` and made whole-repo validation reject references to the retired `infrastructure/dns/letbuyy_com.tf`. | Revert the D6/E certification commit to restore the previous test references and validator. | Ready locally; live DNS apply remains `SKIP-D5-DNS-TERRAFORM-APPLY`. |
+| D6/E completion report | Added repository-side completion report and EG1 human-live seam records. | Revert the D6/E certification commit to remove the report/seam rows. | Ready; no ARB signature, live deployment, or remote certification was fabricated. |

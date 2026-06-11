@@ -15,7 +15,7 @@ const queueWranglerSource = readFileSync(new URL('../../../../services/queue-wor
 const apiWranglerSource = readFileSync(new URL('../../../../services/api-gateway/wrangler.toml', import.meta.url), 'utf8');
 const d6MigrationSource = readFileSync(new URL('../../../../database/supabase/migrations/166_d6_checkout_handoff_inventory.sql', import.meta.url), 'utf8');
 const d6RollbackSource = readFileSync(new URL('../../../../database/supabase/rollback/166_d6_checkout_handoff_inventory.rollback.sql', import.meta.url), 'utf8');
-const dnsSource = readFileSync(new URL('../../../../infrastructure/dns/letbuyy_com.tf', import.meta.url), 'utf8');
+const dnsSource = readFileSync(new URL('../../../../infrastructure/dns/dns.tf', import.meta.url), 'utf8');
 const productionEnvSource = readFileSync(new URL('../../../../config/env/production.env.example', import.meta.url), 'utf8');
 
 test('D6 checkout handoff canonical binding is content stable and order independent', () => {
@@ -95,7 +95,9 @@ test('D6 stale reservation sweeper is scheduled in queue-workers', () => {
 });
 
 test('D6 hosted checkout origin is provisioned as config and human-applied DNS', () => {
-    assert.match(dnsSource, /checkout\s+= "storefront-runtime hosted checkout origin"/);
+    assert.match(dnsSource, /resource\s+"cloudflare_record"\s+"checkout"/);
+    assert.match(dnsSource, /name\s+=\s+"checkout"/);
+    assert.match(dnsSource, /checkout\.letbuyy\.com \(hosted checkout origin\)/);
     assert.match(apiWranglerSource, /CHECKOUT_ORIGIN = "https:\/\/checkout\.letbuyy\.com"/);
     assert.match(productionEnvSource, /CHECKOUT_ORIGIN=https:\/\/checkout\.letbuyy\.com/);
     assert.match(productionEnvSource, /CHECKOUT_SIGNING_SECRET=SKIP_NEEDS_HUMAN_PRODUCTION_CHECKOUT_SIGNING_SECRET/);
