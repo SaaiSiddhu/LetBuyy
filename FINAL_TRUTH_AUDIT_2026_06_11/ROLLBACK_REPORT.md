@@ -35,3 +35,13 @@ Phase A4 is not executed yet. Before any production promotion, the human operato
 | C0-C3 Liquid rendering and chrome | Storefront composition consumes `layoutHtml`; Liquid resolver reads bundle `header`/`footer` templates; portable bundle includes first-party chrome/commerce sections and `lb-*` CSS. | Revert the C0-C3 commit. | Ready; React remains frozen and available as fallback, and no production canary was enabled. |
 | C0-C3 Liquid data and filters | Liquid product/collection planner recognizes Liquid section keys; cart drops use supplied projection or honest browser-hydrated empty state; renderer exposes `t` while keeping `{% render %}` forbidden. | Revert the C0-C3 commit. | Ready; no third-party snippet/runtime surface was added. |
 | C0-C3 editor canary writer | Web draft route and mobile theme service can persist `liquidBundle` plus `liquidRenderingCanary` into canonical template config. | Revert the C0-C3 commit. | Ready; no publish, production rollout, ARB flip, or React deletion was executed. |
+
+## Phase D
+
+| Scope | Forward action | Rollback path | Status |
+|---|---|---|---|
+| D1 DOC-02 and Constitution/Claude authority | Root `AGENTS.md` remains operative DOC-02 under the Constitution; `LETBUYY_AGENTS_V2.md` becomes a pointer; stale ops-console and authority-order text is corrected. | Revert the D1/D2 authority commit. | Ready; docs/validator-only, no runtime behavior changed. |
+| D1 reserved service stubs | Six reserved-service `AGENTS.md` files now state manifest-only status and explicitly ban source/tests/package/deploy config. | Revert the D1/D2 authority commit. | Ready; no reserved runtime was activated. |
+| D1 root business binary archival | Four root business binaries moved under `docs/archive/root-business-artifacts-2026-06-11/`. | Revert the D1/D2 authority commit or `git mv` the four files back to the repository root. | Ready; archival only. |
+| D2 prompt/archive retarget | Prompt perimeter constant retargeted to the final convergence prompt; old foundation prompt marked executed; old masterplan/deletion/auth prompt-class docs moved under prompt-drift archive. | Revert the D1/D2 authority commit or move the archived prompt-class docs back and restore the registry/validator constant together. | Ready; archival only. |
+| D2 duplicate SKIP seam merge | Duplicate `SKIP-RAZORPAYX-ENUM-PURGE` rows merged into one seam row; duplicate-ID validator added. | Revert the D1/D2 authority commit if the split rows must be restored. | Ready; docs/validator-only. |

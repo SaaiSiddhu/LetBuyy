@@ -37,6 +37,17 @@ reporter.assert(
   `Root markdown sprawl must stay archived; unexpected root markdown: ${unexpectedRootMarkdown.join(", ")}`,
 );
 
+const rootBusinessBinaries = fs
+  .readdirSync(process.cwd(), { withFileTypes: true })
+  .filter((entry) => entry.isFile() && /\.(pptx|xlsx|docx|pdf)$/i.test(entry.name))
+  .map((entry) => entry.name)
+  .sort();
+
+reporter.assert(
+  rootBusinessBinaries.length === 0,
+  `Root business binaries must be archived outside the repository root: ${rootBusinessBinaries.join(", ")}`,
+);
+
 reporter.assert(!exists("CODEX_MASTER_IMPLEMENTATION_PROMPT.md"), "Master prompt must not remain at the repository root");
 reporter.assert(
   exists("docs/archive/codex-prompts/CODEX_MASTER_IMPLEMENTATION_PROMPT.md"),
@@ -81,7 +92,22 @@ for (const root of [...reservedServiceRoots, ...reservedMobileRuntimeRoots]) {
   );
 }
 
+const reservedServiceActivationPattern =
+  /\b(Incubating|until extracted|future dedicated|reserved service runtime|must be versioned|when activated|activation plan|production service)\b/i;
+
 for (const root of reservedServiceRoots) {
+  const agentsPath = `${root}/AGENTS.md`;
+  const agents = readFile(agentsPath);
+  reporter.assert(agents.includes("manifest-only"), `${agentsPath} must state the root is manifest-only`);
+  reporter.assert(
+    agents.includes("MUST NOT add source, tests, package.json, wrangler.toml, or deployment config"),
+    `${agentsPath} must explicitly ban source/tests/package/deploy config`,
+  );
+  reporter.assert(
+    !reservedServiceActivationPattern.test(agents),
+    `${agentsPath} must not contain forward-activation/incubation service language`,
+  );
+
   const topologyRuntime = productionRuntimeByRoot.get(root);
   reporter.assert(topologyRuntime, `Reserved service root must be represented as reserved in production topology: ${root}`);
   reporter.assert(
@@ -153,6 +179,13 @@ for (const actionId of [
 }
 
 const skipped = readFile("SKIPPED_HUMAN_DECISIONS.md");
+const skippedIds = [...skipped.matchAll(/^\| (SKIP-[^| ]+) \|/gm)].map((match) => match[1]);
+const duplicateSkippedIds = [...new Set(skippedIds.filter((id, index) => skippedIds.indexOf(id) !== index))];
+reporter.assert(
+  duplicateSkippedIds.length === 0,
+  `SKIPPED_HUMAN_DECISIONS.md must not contain duplicate SKIP IDs: ${duplicateSkippedIds.join(", ")}`,
+);
+
 for (const skipId of [
   "SKIP-GATE1-ARB-RATIFICATION",
   "SKIP-PROD-DEPLOY-PROMOTION",

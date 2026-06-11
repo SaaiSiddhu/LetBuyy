@@ -64,3 +64,17 @@
 | C0-C3 lint | `pnpm run lint`; `pnpm run lint:css` | PASS | Root lint exits 0 with existing warnings only; stylelint exits 0. |
 | C0-C3 governance gate | `node scripts/validate-governance.mjs --lane=gate` | PASS | 92 validators passed; `no-new-react-sections-validator` remains active and React deletion remains forbidden without 4x100% parity proof. |
 | C0-C3 whitespace/status | `git diff --check`; `git status --short` | PASS | No whitespace or conflict-marker residue; status shows only intended Phase C files before commit. |
+
+## Phase D
+
+| Checkpoint | Command | Result | Notes |
+|---|---|---|---|
+| D1/D2 install | `CI=true pnpm install --frozen-lockfile --force` | PASS | Sandboxed install failed on registry DNS after recreating `node_modules`; escalated retry completed from the frozen lockfile and rebuilt workspace links. |
+| D1/D2 governance gate | `node scripts/validate-governance.mjs --lane=gate` | PASS | 92 validators passed after the authority/prompt archive changes and validator hardening. |
+| D1/D2 forced decisions | `node scripts/validators/phase-c-forced-decisions-validator.mjs` | PASS | Validator now scans the Constitution as an active governance doc and rejects unresolved ops-console survivor language. |
+| D1/D2 prompt perimeter | `node scripts/validators/prompt-perimeter-validator.mjs` | PASS | Validator now points canonical execution at the final convergence prompt, allows the spent foundation prompt only as `EXECUTED-*`, and scans `MASTERPLAN`/`DELETION` basenames. Initial run after widening failed on the tracked old masterplan/deletion/auth docs before archival; post-archive run passes. |
+| D1/D2 whole-repo end-state | `node scripts/validators/whole-repo-end-state-validator.mjs` | PASS | Validator now bans root business binaries, reserved-service activation/incubation language, and duplicate SKIP IDs. Initial run failed on the four root business binaries before archival; post-archive run passes. |
+| D1/D2 prompt mutation | Temporarily changed the final convergence prompt registry row class from `CANONICAL-EXECUTION` to `EXECUTED-DO-NOT-RERUN`; ran `node scripts/validators/prompt-perimeter-validator.mjs`; restored the row. | FAILS AS EXPECTED | Prompt perimeter failed with `PROMPTS.md must register the final convergence prompt as canonical`. |
+| D1/D2 reserved-stub mutation | Temporarily added `Incubating` to `services/search-service/AGENTS.md`; ran `node scripts/validators/whole-repo-end-state-validator.mjs`; restored the file. | FAILS AS EXPECTED | Whole-repo validator failed with `services/search-service/AGENTS.md must not contain forward-activation/incubation service language`. |
+| D1/D2 duplicate-SKIP mutation | Temporarily inserted a duplicate `SKIP-GATE1-ARB-RATIFICATION` row; ran `node scripts/validators/whole-repo-end-state-validator.mjs`; removed the row. | FAILS AS EXPECTED | Whole-repo validator failed with `SKIPPED_HUMAN_DECISIONS.md must not contain duplicate SKIP IDs: SKIP-GATE1-ARB-RATIFICATION`. |
+| D1/D2 lint/style/whitespace | `pnpm run lint`; `pnpm run lint:css`; `git diff --check`; `git status --short` | PASS | Root lint exits 0 with existing warnings only; stylelint exits 0; whitespace check is clean; status shows only intended D1/D2 files and archive moves before commit. |

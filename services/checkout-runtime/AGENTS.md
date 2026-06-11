@@ -1,13 +1,14 @@
-# Checkout Runtime Governance
-
-Purpose: Reserved independent checkout runtime for future dedicated cart, pricing, inventory reservation, payment service-local event helpers, and order finalization workflows.
+# Checkout Runtime Reserved Root
 
 Runtime boundary: `services/checkout-runtime`.
 
-Status: Incubating. Existing checkout behavior remains in `services/api-gateway` and storefront routes until extracted with tests and idempotent state transitions.
+Status: reserved-not-implemented, manifest-only.
+
+The active checkout owner is `services/api-gateway` plus hosted storefront checkout surfaces. This directory is a reserved seam only.
 
 Rules:
 
-- Recalculate totals server-side.
-- Require idempotency for all mutations.
-- Keep payment adapters behind a common state machine.
+- MUST remain manifest-only.
+- MUST NOT add source, tests, package.json, wrangler.toml, or deployment config.
+- MUST NOT extract checkout, payments, inventory reservation, or order finalization into this root.
+- Any change from reserved status requires a human ARB amendment and the canonical topology update before source exists.

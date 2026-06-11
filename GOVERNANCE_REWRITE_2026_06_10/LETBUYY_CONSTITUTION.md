@@ -15,14 +15,14 @@
 
 This is the **Constitution of LetBuyy**. It is the supreme law of the platform. It is the single authoritative statement of **what LetBuyy is, what it must never become, and the order of precedence by which every other rule, document, validator, agent, and human is bound.** Every future decision — by an AI agent, an engineer, or the ARB itself — is subordinate to this document. Where anything conflicts with this Constitution, this Constitution governs and the other thing is void to the extent of the conflict.
 
-It is written to be read **standalone**: a new agent or engineer with zero prior context can follow this document and be correct about what LetBuyy is and what it is permitted to build. The detailed operating rules live one level below, in `LETBUYY_AGENTS_V2.md` (the manual); this document is the law the manual must conform to.
+It is written to be read **standalone**: a new agent or engineer with zero prior context can follow this document and be correct about what LetBuyy is and what it is permitted to build. The detailed operating rules live one level below, in root `AGENTS.md` (the promoted `LETBUYY_AGENTS_V2` manual); this document is the law the manual must conform to.
 
 ### P.2 — Supersession header (what this Constitution replaces)
 
 This Constitution **absorbs, ratifies, and retires** the prior architecture authorities. Their decisions are not discarded — they are **promoted into constitutional Articles** (Article register, §9) and the source documents are demoted to historical record.
 
 - **`LETBUYY_EXECUTABLE_ARCHITECTURE_V1.md`** (the executable constitution) and **`LETBUYY_FINAL_ARCHITECTURE_FREEZE.md`** (the freeze) — **ABSORBED.** Their substance becomes Articles ART-01 … ART-24 below. As standalone authorities they are **RETIRED to `docs/archive/`** as historical record. They no longer govern; this Constitution governs in their place. *(Resolution: Article ART-01; evidence: FADR §0.3, ADR-001; spine S2.)*
-- **The generated `AGENTS.md`** (the auto-produced 9-app / CQRS / multi-region "Canonical Active Runtimes" map) — its **constitutional claims are REVOKED.** `AGENTS.md` is demoted from law to a **generated artifact** that must be regenerated from this Constitution (via `LETBUYY_AGENTS_V2.md` and the canonical-systems registry) and may never again declare topology or architecture as law. *(Resolution: Article ART-21, ART-22; evidence: spine S1, S5; FADR §3, ADR-001/002.)*
+- **The previous generated `AGENTS.md`** (the auto-produced 9-app / CQRS / multi-region "Canonical Active Runtimes" map) — its **constitutional claims are REVOKED.** The current root `AGENTS.md` is the promoted, hand-authored DOC 02 (`LETBUYY_AGENTS_V2`) and is subordinate to this Constitution. The retired generator is retargeted or retired so it can never again declare topology or architecture as law. *(Resolution: Article ART-21, ART-22; evidence: spine S1, S5; FADR §3, ADR-001/002.)*
 - **The maximalist `LETBUYY_CHECKOUT_PLATFORM_ARCHITECTURE.md`** (the 1,000,000-merchant / 22-service / Wasm-runtime / CQRS-saga-multi-region vision) — **FORMALLY REJECTED as active topology and ARCHIVED.** It is not LetBuyy's destination. Its individual capabilities are each separately forbidden by the Never-Build List (§10). *(Resolution: Article ART-23; evidence: spine S6; FADR ADR-021.)*
 
 This Constitution does **not** modify code or any other document by its own act; the migrations of `V1`/`FREEZE` and the maximalist plan into `docs/archive/` are constitutional consequences to be executed under §14, recorded here as binding.
@@ -32,7 +32,7 @@ This Constitution does **not** modify code or any other document by its own act;
 On **any** conflict, the higher authority wins. This single chain replaces the prior "two/three/four-constitution" ambiguity (V1 vs Freeze vs the generated AGENTS.md vs the maximalist plan) that the forensic audit found certifying the wrong architecture. *(Spine S2; FADR §3.1 "four realities".)*
 
 1. **`LETBUYY_CONSTITUTION.md`** — **this document. Supreme.** Nothing overrides it. Changes require a constitutional amendment under §14.
-2. **`LETBUYY_AGENTS_V2.md`** — the operating rules every agent and engineer follows. **Must conform to this Constitution.**
+2. **root `AGENTS.md`** — the promoted `LETBUYY_AGENTS_V2` operating rules every agent and engineer follows. **Must conform to this Constitution.**
 3. **`LETBUYY_CANONICAL_SYSTEMS.md`** — the winner registry: the one true system per domain. Subordinate to 1–2.
 4. **`LETBUYY_LEGACY_ELIMINATION_MASTER_PLAN.md` + `LETBUYY_FOUNDATION_ROADMAP.md`** — how and when convergence happens. Subordinate to 1–3.
 5. **`LETBUYY_UI_UX_GOVERNANCE.md` + the surviving retargeted `docs/governance/*`** — domain governance. Subordinate to 1–4.
@@ -280,10 +280,10 @@ The winner registry (spine S5) that these Articles enforce is **final and not re
 
 ### Constitutional envelope rulings
 
-**ART-21 — The generated `AGENTS.md` is a map, not law; it is regenerated from the Constitution.**
-- **Decision.** `AGENTS.md` is a **generated artifact** — a map of the canonical topology/state derived from this Constitution and the canonical-systems registry — never a competing authority. It is regenerated; its generator is retargeted (or retired) so it can never again promote repository sprawl into canonical law. Promoting a corrected `AGENTS.md` to the operative `AGENTS.md` is a **constitutional act** reserved to the ARB (§12).
+**ART-21 — The previous generated `AGENTS.md` is revoked; root `AGENTS.md` is the promoted hand-authored DOC 02.**
+- **Decision.** The previous generated `AGENTS.md` is revoked as authority. The current root `AGENTS.md` is the promoted, hand-authored `LETBUYY_AGENTS_V2` operating manual and is subordinate to this Constitution. Any future generated map is evidence only, never a competing authority, and its generator is retargeted or retired so it can never again promote repository sprawl into canonical law.
 - **Why permanent.** A document produced by a repository scan encodes whatever sprawl exists as canonical law; the stale, generated `AGENTS.md` is exactly how the rejected 9-app/CQRS topology became the machine-enforced "truth."
-- **Forbids.** `AGENTS.md` (or any generated document) declaring topology, architecture, or scale as law. A generator that emits a rejected-architecture topology. Hand-maintaining a parallel `AGENTS.md` that drifts from the Constitution.
+- **Forbids.** Any generated document declaring topology, architecture, or scale as law. A generator that emits a rejected-architecture topology. Hand-maintaining a parallel DOC-02 copy that drifts from the Constitution and root `AGENTS.md`.
 - *Evidence: spine S1/S2; FADR ADR-001; forensic Q2.*
 
 **ART-22 — The app-marketplace and developer-portal are frozen (de-deployed; the OAuth2/PKCE seam is kept).**
@@ -298,8 +298,8 @@ The winner registry (spine S5) that these Articles enforce is **final and not re
 - **Forbids.** Building or activating any Shopify-scale capability (service fleet, CQRS/event-sourcing/saga, multi-region, sharding-now, service mesh, Wasm runtime, headless tier, cross-merchant wallet/vault, fraud-ML, full in-WhatsApp commerce) within this envelope. Keeping dead packages "just in case." Carrying a second contradictory blueprint as a "north-star."
 - *Evidence: V1 §4 (R-1…R-15); FREEZE §2; FADR ADR-021/023; spine S6.*
 
-**ART-24 — Legacy is frozen, then deleted only after the winner serves + a zero-drift proof; one thin ops console survives.**
-- **Decision.** The **SAFE_DELETION taxonomy is constitutional deletion law.** Nothing is deleted until its validation gate passes: zero-importer (`SAFE_DELETE`) items go first and cheap (import → build → test → governance → rollback gates); migration-dependent (`DELETE_AFTER_MIGRATION`) items delete **only once the canonical winner is live and serving and the legacy importer count returns to zero** — no money system is deleted until the reconciliation harness proves zero drift on the path it replaces; no renderer is deleted until parity + security + perf are green per-section. Deletion happens on a branch behind the deploy meta-blocker fix (ART-03). **One thin internal ops console survives** (refund, maker-checker payout, dispute log, KYC queue); the other is folded — **which one survives is an ARB decision (UNVERIFIED, tentatively `platform-console`).**
+**ART-24 — Legacy is frozen, then deleted only after the winner serves + a zero-drift proof; `platform-console` is the thin ops survivor.**
+- **Decision.** The **SAFE_DELETION taxonomy is constitutional deletion law.** Nothing is deleted until its validation gate passes: zero-importer (`SAFE_DELETE`) items go first and cheap (import -> build -> test -> governance -> rollback gates); migration-dependent (`DELETE_AFTER_MIGRATION`) items delete **only once the canonical winner is live and serving and the legacy importer count returns to zero** — no money system is deleted until the reconciliation harness proves zero drift on the path it replaces; no renderer is deleted until parity + security + perf are green per-section. Deletion happens on a branch behind the deploy meta-blocker fix (ART-03). **`apps/platform-console` is the one thin internal ops console survivor** for refund, maker-checker payout, dispute log, and KYC queue workflows; `apps/platform-operations-portal` is the fold-then-delete loser. The final ARB signature is tracked as a skipped-human seam, but the repository default is no longer tentative.
 - **Why permanent.** "Two of everything" is the maintenance tax this program exists to end; but blindly dropping load-bearing things is itself a risk (some "dead" tables have RPC/ops-script writers invisible in code). Gated, reversible deletion is the only safe path.
 - **Forbids.** Deleting any system before its winner is live and a zero-drift / zero-importer proof passes. Deleting a money system without a reconciliation proof. Aggressive "clean-up now" drops. Keeping legacy indefinitely once the gate is satisfied.
 - *Evidence: FADR ADR-024; spine S5; forensic LEG/DEL registers.*
@@ -367,13 +367,13 @@ The ARB MAY, and only the ARB may:
 1. **Amend this Constitution** (§14) — add, alter, or retire an Article; change the authority hierarchy, scale envelope, Never-Build List, or Constitutional Rules.
 2. **Declare or change a canonical winner** for a domain (recorded in `LETBUYY_CANONICAL_SYSTEMS.md`, subordinate to this Constitution).
 3. **Freeze or reopen a capability** at its named trigger (ART-22/23) and **authorize filling a reserved service** (ART-19).
-4. **Ratify the constitutional acts** of §14 — the promotion of `AGENTS_V2` to the operative `AGENTS.md`, the archival of `V1`/`FREEZE`/the maximalist plan, and the retargeting of the validator baseline.
+4. **Ratify or acknowledge the constitutional acts** of §14 — the promotion of `AGENTS_V2` to the operative root `AGENTS.md`, the archival of `V1`/`FREEZE`/the maximalist plan, and the retargeting of the validator baseline.
 5. **Resolve `UNVERIFIED` items** (§14.4) once verification evidence exists.
 6. **Grant a time-boxed, recorded waiver** of an operative rule (never of a Constitutional Rule §13 or a Never-Build prohibition §10) where an emergency requires it, with a remediation deadline.
 
-### 12.3 — Promotion of `AGENTS_V2` to the operative `AGENTS.md` is a constitutional act
+### 12.3 — Promotion of `AGENTS_V2` to the operative root `AGENTS.md` is recorded
 
-Because the generated `AGENTS.md` is how rejected architecture became machine-enforced law, **only the ARB may promote `LETBUYY_AGENTS_V2.md` to become the operative `AGENTS.md`**, and only after confirming it conforms to this Constitution and that its generator can never again emit a rejected-architecture topology. This promotion, the retargeting of the validator baseline (ART-02), and the archival of the retired constitutions (P.2) are the constitutional acts that, together with §14.2, make this Constitution **live**.
+Because the generated `AGENTS.md` is how rejected architecture became machine-enforced law, `LETBUYY_AGENTS_V2` has been promoted to the operative root `AGENTS.md` and the source-side duplicate is retained only as a pointer. This promotion, the retargeting of the validator baseline (ART-02), and the archival of the retired constitutions (P.2) are the constitutional acts that, together with §14.2, make this Constitution **live**.
 
 ### 12.4 — Limits on the ARB
 
@@ -440,7 +440,7 @@ This Constitution changes **only** by **ARB amendment**:
 This Constitution becomes **live and operative** upon the ARB's ratification, which simultaneously:
 1. **Promotes** this document to the apex of the authority hierarchy (P.3), above all else.
 2. **Demotes and archives** `LETBUYY_EXECUTABLE_ARCHITECTURE_V1.md` and `LETBUYY_FINAL_ARCHITECTURE_FREEZE.md` to `docs/archive/` as historical record (their decisions now live as Articles ART-01…ART-24).
-3. **Demotes** the generated `AGENTS.md` from law to a generated artifact, to be regenerated from this Constitution; and reserves the promotion of `AGENTS_V2` to the operative `AGENTS.md` to the ARB as a constitutional act (§12.3).
+3. **Revokes** the previous generated `AGENTS.md`, promotes `AGENTS_V2` to the operative root `AGENTS.md`, and retires or retargets the generator so generated output cannot become law (§12.3).
 4. **Archives** the maximalist `LETBUYY_CHECKOUT_PLATFORM_ARCHITECTURE.md` as a rejected blueprint.
 5. **Directs** the validator baseline to be retargeted to enforce this Constitution (ART-02) — the act that makes these words enforceable for the first time.
 
@@ -454,7 +454,7 @@ If any clause of this Constitution is found void or unenforceable, the remainder
 
 The following are carried forward from the evidence base as **UNVERIFIED**. They MUST NOT be treated as settled fact and MUST be resolved by the ARB (§12.2.5) with verification evidence before any irreversible action relies on them. *(Forensic master §"Verification note"; FADR §6; program index "Provenance & caveats".)*
 - **The six anon RLS-to-PUBLIC table GRANTs** are set by Supabase's managed bootstrap, not repo SQL — confirm live state with an anon-key probe / `\dp public.orders` before final S0 sign-off (migration 107's header is strong evidence they are live).
-- **Which ops console survives** (`platform-console` vs `platform-operations-portal`) is an ARB decision, not a code fact — tentatively `platform-console`.
+- **The final ARB signature for the ops-console survivor** is a human seam (`SKIP-GATE-OPS-SURVIVOR-ARB`), but the repository survivor is fixed: `apps/platform-console` is KEEP and `apps/platform-operations-portal` is MIGRATE-then-DELETE.
 - **Full RLS/FORCE coverage per tenant table** and the live writers of the product-dead tables need live database introspection before any DROP.
 - **Live deployment state** of every "complete" wave is ~0% until the deploy meta-blocker clears — completion-% measures the working tree, not production.
 

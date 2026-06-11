@@ -3,6 +3,7 @@ import { createReporter, readFile } from "./governance-common.mjs";
 const reporter = createReporter("Phase C forced decisions validator");
 
 const rootAgents = readFile("AGENTS.md");
+const constitution = readFile("GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md");
 const sourceAgents = readFile("GOVERNANCE_REWRITE_2026_06_10/LETBUYY_AGENTS_V2.md");
 const canonicalSystems = readFile("GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md");
 const legacyPlan = readFile("GOVERNANCE_REWRITE_2026_06_10/LETBUYY_LEGACY_ELIMINATION_MASTER_PLAN.md");
@@ -11,6 +12,7 @@ const skipped = readFile("SKIPPED_HUMAN_DECISIONS.md");
 
 const activeGovernanceDocs = [
   ["AGENTS.md", rootAgents],
+  ["LETBUYY_CONSTITUTION.md", constitution],
   ["LETBUYY_AGENTS_V2.md", sourceAgents],
   ["LETBUYY_CANONICAL_SYSTEMS.md", canonicalSystems],
   ["LETBUYY_LEGACY_ELIMINATION_MASTER_PLAN.md", legacyPlan],

@@ -1,5 +1,7 @@
 # LETBUYY CLEANUP GOVERNANCE CONSTITUTION
 
+> HISTORICAL / EXECUTED CLEANUP RECORD. This file is not current authority and must not be used to override the law chain. Current authority is `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` -> root `AGENTS.md` -> canonical governance documents.
+
 > **Document type:** The **procedural / supremacy-declaring** constitution of the Convergence Cleanup Program. The binding law for **how** the convergence is allowed to proceed and **how** drift is permanently prevented afterward.
 > **Document ID:** CLEANUP-CONSTITUTION (Phase 7 of the Convergence Cleanup Program of 2026-06-10).
 > **Date authored:** 2026-06-10 · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store`.

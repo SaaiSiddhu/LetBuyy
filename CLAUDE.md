@@ -1,6 +1,6 @@
 # LetBuyy AI Operating Context
 
-`AGENTS.md` is the promoted `LETBUYY_AGENTS_V2` operating rulebook for this repository. Claude, Codex, humans, and other automation must follow `AGENTS.md` first, then `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`, then the relevant local `AGENTS.md`, then the canonical governance rewrite documents.
+`GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` is supreme law for this repository. Claude, Codex, humans, and other automation must follow the Constitution first, then root `AGENTS.md` (the promoted `LETBUYY_AGENTS_V2` operating rulebook), then the relevant local `AGENTS.md`, then the canonical governance rewrite documents.
 
 ## Canonical Runtime Map
 
