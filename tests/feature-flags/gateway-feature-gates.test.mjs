@@ -43,11 +43,11 @@ test('GraphQL and extension routes are mounted behind gateway feature gates', ()
   );
 });
 
-test('checkout app functions do not execute when extensions are disabled', () => {
-  const evaluationIndex = storefrontRoute.indexOf("isGatewayFeatureEnabled(c.env, 'FEATURE_EXTENSIONS')");
-  const executeIndex = storefrontRoute.indexOf('evaluateCheckoutAppFunctions(c,');
-  assert.notEqual(evaluationIndex, -1);
-  assert.notEqual(executeIndex, -1);
-  assert.ok(evaluationIndex < executeIndex, 'feature check must precede checkout function execution');
-  assert.match(storefrontRoute, /extensionFunctions: \(functionEvaluation\?\.executions \|\| \[\]\)\.map/);
+test('checkout app functions stay off the buyer order-creation path', () => {
+  assert.equal(storefrontRoute.includes('evaluateCheckoutAppFunctions(c,'), false);
+  assert.equal(storefrontRoute.includes('CHECKOUT_FUNCTION_VALIDATION'), false);
+  assert.equal(storefrontRoute.includes('checkoutDecision'), false);
+  assert.match(storefrontRoute, /payment_method: body\.paymentMethod/);
+  assert.match(storefrontRoute, /shipping_method: body\.deliveryOption/);
+  assert.match(storefrontRoute, /extensionFunctions: \[\]/);
 });

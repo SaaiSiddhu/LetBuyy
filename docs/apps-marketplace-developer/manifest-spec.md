@@ -19,7 +19,7 @@ This scaffold records the manifest fields enforced by current app submission che
 - App URL, privacy URL, and redirect URLs must use HTTPS.
 - Requested scopes must be known platform scopes and must match the declared use case.
 - Redirect URLs must match the submitted manifest and listing payload.
-- Function module URLs are review metadata only; live Wasm/function execution remains recorded under `SKIP-CAP-CHECKOUT-WASM-RETIREMENT`.
+- Function module URLs are review metadata only; the buyer checkout live path no longer executes Wasm/functions, and any future execution requires a new ARB-approved scope.
 - Submission creates automated check results; hard failures block the review queue.
 
 ## Versioning

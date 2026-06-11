@@ -100,17 +100,15 @@ for (const fragment of [
   reporter.assert(checkoutRoute.includes(fragment), `hosted checkout confirm missing: ${fragment}`);
 }
 const checkoutPaymentRoute = readFile('services/api-gateway/src/routes/storefront/checkout-payment-routes.ts');
-const checkoutExtensionHost = readFile('apps/storefront-runtime/src/components/checkout-extensions/CheckoutExtensionHost.tsx');
-if (
-  checkoutPaymentRoute.includes('evaluateCheckoutAppFunctions') ||
-  checkoutExtensionHost.includes('CheckoutExtensionHost')
-) {
-  assertRecordedCapabilityGap(
-    'CAP-C13',
-    'SKIP-CAP-CHECKOUT-WASM-RETIREMENT',
-    'Residual checkout app-functions/Wasm live path must remain recorded until ARB/product scoping and deletion are complete',
-  );
-}
+reporter.assert(!checkoutPaymentRoute.includes('evaluateCheckoutAppFunctions'), 'CAP-C13 checkout payment route must not execute app-functions/Wasm');
+reporter.assert(!checkoutPaymentRoute.includes('CHECKOUT_FUNCTION_VALIDATION'), 'CAP-C13 checkout payment route must not depend on app-function validation errors');
+reporter.assert(checkoutPaymentRoute.includes('extensionFunctions: []'), 'CAP-C13 checkout response must expose an empty compatibility extensionFunctions array');
+reporter.assert(
+  !exists('apps/storefront-runtime/src/components/checkout-extensions/CheckoutExtensionHost.tsx'),
+  'CAP-C13 checkout extension iframe host must stay deleted unless ARB re-scopes checkout extensions',
+);
+reporter.assert(!capabilityBacklog.includes('| CAP-C13 |'), 'CAP-C13 must not remain an open capability gap after checkout Wasm retirement');
+reporter.assert(!skippedHumanDecisions.includes('SKIP-CAP-CHECKOUT-WASM-RETIREMENT'), 'CAP-C13 retired locally, so its skipped-human seam must not remain open');
 assertIncludes(
   'services/api-gateway/src/__tests__/checkout.test.ts',
   'Wave 7 checkout confirm creates server order and posts provider capture to ledger',

@@ -88,8 +88,7 @@ for (const sourcePath of marketplaceFrozenSources) {
       source.includes("Frozen") ||
       source.includes("human-approved") ||
       source.includes("approval-gated") ||
-      source.includes("recorded") ||
-      source.includes("SKIP-CAP-CHECKOUT-WASM-RETIREMENT"),
+      source.includes("recorded"),
     `${sourcePath} must disclose the app-marketplace frozen seam before describing developer flows`,
   );
 }

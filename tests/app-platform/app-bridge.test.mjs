@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
@@ -10,7 +10,6 @@ const APP_FUNCTION_RUNTIME_SOURCE = 'services/api-gateway/src/extensions/app-fun
 const EXTENSION_HOST_SOURCE = 'packages/shared-types/src/app-platform.ts';
 const EMBEDDED_BRIDGE_CLIENT_SOURCE = 'apps/merchant-control-plane/src/components/apps/EmbeddedAppBridgeClient.tsx';
 const EMBEDDED_APP_PAGE_SOURCE = 'apps/merchant-control-plane/src/app/[store]/apps/[installationId]/page.tsx';
-const CHECKOUT_EXTENSION_HOST_SOURCE = 'apps/storefront-runtime/src/components/checkout-extensions/CheckoutExtensionHost.tsx';
 const CHECKOUT_CLIENT_SOURCE = 'apps/storefront-runtime/src/app/store/[subdomain]/checkout/checkout-client.tsx';
 const CHECKOUT_PAGE_SOURCE = 'apps/storefront-runtime/src/app/store/[subdomain]/checkout/page.tsx';
 const SHARED_TYPES_SOURCE = 'packages/shared-types/src/index.ts';
@@ -192,9 +191,8 @@ test('WS13 X2 admin UI extension host normalizes registered extensions and enfor
   assert.match(embeddedAppPage, /adminExtensions=\{registry\?\.extensions \|\| \[\]\}/);
 });
 
-test('WS13 X3 checkout UI extension host normalizes public registrations and mounts checkout targets', () => {
+test('WS13 X3 checkout UI extension registry stays typed but buyer checkout does not mount extension iframes', () => {
   const extensionHostSource = readFileSync(EXTENSION_HOST_SOURCE, 'utf8');
-  const checkoutHostSource = readFileSync(CHECKOUT_EXTENSION_HOST_SOURCE, 'utf8');
   const checkoutClientSource = readFileSync(CHECKOUT_CLIENT_SOURCE, 'utf8');
   const checkoutPageSource = readFileSync(CHECKOUT_PAGE_SOURCE, 'utf8');
   const storefrontRouteSource = readStorefrontRouteSource();
@@ -261,18 +259,21 @@ test('WS13 X3 checkout UI extension host normalizes public registrations and mou
   assert.match(storefrontRouteSource, /\.eq\('surface', 'checkout\.ui'\)/);
   assert.match(storefrontRouteSource, /\.eq\('status', 'enabled'\)/);
 
-  assert.match(checkoutHostSource, /@letbuyy\/shared-types/);
-  assert.match(checkoutHostSource, /sandbox=\{framePolicy\.sandbox\}/);
-  assert.match(checkoutHostSource, /letbuyy\.checkout\.extension\.context/);
-  assert.match(checkoutHostSource, /letbuyy\.checkout\.extension\.resize/);
-  assert.match(checkoutPageSource, /storefront\.checkoutExtensions\(subdomain\)/);
+  assert.equal(
+    existsSync('apps/storefront-runtime/src/components/checkout-extensions/CheckoutExtensionHost.tsx'),
+    false,
+    'checkout iframe host must stay deleted until ARB re-scopes checkout extensions',
+  );
+  assert.doesNotMatch(checkoutPageSource, /storefront\.checkoutExtensions\(subdomain\)/);
+  assert.doesNotMatch(checkoutPageSource, /checkoutExtensions=/);
+  assert.doesNotMatch(checkoutClientSource, /CheckoutExtensionHost/);
   for (const target of [
     'checkout.contact.render-after',
     'checkout.shipping-options.render-after',
     'checkout.payment-options.render-after',
     'checkout.order-summary.render-after',
   ]) {
-    assert.match(checkoutClientSource, new RegExp(`target="${target}"`));
+    assert.doesNotMatch(checkoutClientSource, new RegExp(`target="${target}"`));
   }
 });
 
@@ -292,7 +293,7 @@ test('WS13 X4 theme app blocks load from the per-store extension registry into W
   assert.match(storefrontRouteSource, /app_blocks: appBlocks/);
 });
 
-test('WS13 X5 checkout Functions execute as tenant-scoped sandboxed Wasm decisions', () => {
+test('WS13 X5 checkout Functions remain quarantined and do not influence buyer order creation', () => {
   const appEngineSource = readFileSync(APP_ENGINE_SOURCE, 'utf8');
   const functionRuntimeSource = readFileSync(APP_FUNCTION_RUNTIME_SOURCE, 'utf8');
   const storefrontRouteSource = readStorefrontRouteSource();
@@ -330,12 +331,11 @@ test('WS13 X5 checkout Functions execute as tenant-scoped sandboxed Wasm decisio
   assert.match(functionRuntimeSource, /app_function\.execution\.duration_ms/);
   assert.match(functionRuntimeSource, /app_function\.execution\.failed_securely/);
 
-  assert.match(storefrontRouteSource, /evaluateCheckoutAppFunctions/);
-  assert.match(storefrontRouteSource, /isGatewayFeatureEnabled\(c\.env, 'FEATURE_EXTENSIONS'\)/);
-  assert.match(storefrontRouteSource, /const checkoutDecision = functionEvaluation\?\.decision \|\|/);
-  assert.match(storefrontRouteSource, /CHECKOUT_FUNCTION_VALIDATION/);
-  assert.match(storefrontRouteSource, /payment_method: checkoutDecision\.paymentMethod/);
-  assert.match(storefrontRouteSource, /shipping_method: checkoutDecision\.shippingMethod/);
-  assert.match(storefrontRouteSource, /coupon_code: checkoutDecision\.couponCode/);
-  assert.match(storefrontRouteSource, /extensionFunctions: \(functionEvaluation\?\.executions \|\| \[\]\)\.map/);
+  assert.doesNotMatch(storefrontRouteSource, /evaluateCheckoutAppFunctions/);
+  assert.doesNotMatch(storefrontRouteSource, /CHECKOUT_FUNCTION_VALIDATION/);
+  assert.doesNotMatch(storefrontRouteSource, /checkoutDecision/);
+  assert.match(storefrontRouteSource, /payment_method: body\.paymentMethod/);
+  assert.match(storefrontRouteSource, /shipping_method: body\.deliveryOption/);
+  assert.match(storefrontRouteSource, /coupon_code: body\.couponCode/);
+  assert.match(storefrontRouteSource, /extensionFunctions: \[\]/);
 });

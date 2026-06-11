@@ -81,7 +81,7 @@ const topics: DocTopic[] = [
                     'Submitted slug must match the manifest slug.',
                     'URLs must be HTTPS and redirect URLs must match the submitted manifest.',
                     'Requested scopes must be known platform scopes and match the app use case.',
-                    'Function/module URLs are review metadata only until `SKIP-CAP-CHECKOUT-WASM-RETIREMENT` is resolved or formally re-scoped.',
+                    'Function/module URLs are review metadata only; buyer checkout no longer executes Wasm/functions unless a future ARB scope explicitly reopens it.',
                 ],
             },
         ],
