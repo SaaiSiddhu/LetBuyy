@@ -490,7 +490,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
       colors,
       title: 'Domain health',
       description:
-          'Review DNS verification, SSL readiness, and renewal state before launch.',
+          'Review DNS verification, SSL readiness, and renewal state before publication.',
       child: _panel(
         colors,
         child: snapshot.hasCustomDomain

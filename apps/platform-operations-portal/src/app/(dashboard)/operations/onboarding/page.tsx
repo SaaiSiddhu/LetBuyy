@@ -315,7 +315,7 @@ async function buildOnboardingRow(
         productsLabel: signals.find((signal) => signal.label === 'Products')?.detail ?? 'Products unavailable',
         paymentLabel: signals.find((signal) => signal.label === 'Payments')?.detail ?? 'Payments unavailable',
         shippingLabel: signals.find((signal) => signal.label === 'Shipping')?.detail ?? 'Shipping unavailable',
-        nextAction: signals.find((signal) => !signal.complete)?.action || 'Review launch readiness when employee queue backend is available',
+        nextAction: signals.find((signal) => !signal.complete)?.action || 'Review publication readiness when employee queue backend is available',
         missingSignals,
     };
 }

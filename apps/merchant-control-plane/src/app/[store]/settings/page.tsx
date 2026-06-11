@@ -38,7 +38,7 @@ export default function SettingsPage() {
         >
             <Card>
                 <Section
-                    title="Launch checklist"
+                    title="Opening checklist"
                     description="These are the settings merchants usually need before accepting real orders."
                 >
                     <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2 xl:grid-cols-4">

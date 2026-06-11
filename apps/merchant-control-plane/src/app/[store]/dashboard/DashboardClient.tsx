@@ -168,11 +168,11 @@ function SetupCards({ store, siteType, setupStatus, currentDomain, storeStatus }
                             Welcome hero
                         </p>
                         <h2 className="m-0 text-[length:var(--lb-font-size-h2)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-h2)] text-[color:var(--lb-color-text)]">
-                            Launch checklist for {store}
+                            Opening checklist for {store}
                         </h2>
                         <p className="m-0 max-w-[var(--lb-size-content-measure)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
                             {nextStep
-                                ? `${nextStep.title} is the next action. ${blockers.length} ${blockers.length === 1 ? 'blocker remains' : 'blockers remain'} before launch readiness.`
+                                ? `${nextStep.title} is the next action. ${blockers.length} ${blockers.length === 1 ? 'blocker remains' : 'blockers remain'} before publication readiness.`
                                 : 'All setup blockers are cleared. Review your storefront and keep monitoring incoming orders.'}
                         </p>
                     </div>
@@ -389,7 +389,7 @@ function buildSetupChecklist({
             },
             {
                 title: 'Customize theme',
-                description: 'Choose a theme and tune storefront branding before launch.',
+                description: 'Choose a theme and tune storefront branding before publication.',
                 icon: 'palette',
                 actionText: 'Customize',
                 actionLink: 'online-store/themes',

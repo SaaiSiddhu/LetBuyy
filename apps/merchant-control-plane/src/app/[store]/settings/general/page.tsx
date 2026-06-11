@@ -280,7 +280,7 @@ export default function GeneralSettingsPage() {
                 store={store}
                 guidance={{
                     title: 'Core store identity',
-                    body: 'Keep these details aligned with the public storefront, billing records, and support workflows before launch.',
+                    body: 'Keep these details aligned with the public storefront, billing records, and support workflows before publication.',
                 }}
                 saveBar={{
                     state: activeSaveState,

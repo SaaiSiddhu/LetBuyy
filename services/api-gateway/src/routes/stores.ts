@@ -268,7 +268,7 @@ router.get('/:id/health', async (c) => {
             label: 'Catalog and inventory',
             score: productCount === 0 ? 35 : lowStockCount && lowStockCount > 0 ? 72 : 100,
             summary: productCount === 0
-                ? 'Add the first product before launch.'
+                ? 'Add the first product before publication.'
                 : lowStockCount && lowStockCount > 0
                     ? `${lowStockCount} product${lowStockCount === 1 ? '' : 's'} need inventory attention.`
                     : 'Products are present and inventory has no zero-stock signal.',

@@ -272,7 +272,7 @@ export function FormsAndFeedback() {
                             <Textarea label="Public description" defaultValue="Premium everyday footwear and accessories." />
                         </div>
                         <Banner title="Payments need attention" variant="warning">
-                            Add a payment provider before launching checkout.
+                            Add a payment provider before enabling checkout.
                         </Banner>
                         <div className="flex flex-wrap gap-[var(--lb-space-3)]">
                             <ToastDemo />

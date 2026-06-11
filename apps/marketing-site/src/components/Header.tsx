@@ -84,7 +84,7 @@ const whyCards: MenuItem[] = [
         href: '#how-it-works',
         icon: Rocket,
         label: 'Launch fast',
-        description: 'Start with guided onboarding, store setup, domains, pages and launch readiness in one flow.',
+        description: 'Start with guided onboarding, store setup, domains, pages and publication readiness in one flow.',
     },
     {
         href: '#features',

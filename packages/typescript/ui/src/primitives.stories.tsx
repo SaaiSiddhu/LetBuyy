@@ -68,7 +68,7 @@ export function ChecklistOverviewStory() {
                         <div className="grid content-start gap-[var(--lb-space-4)]">
                             <DateRangePicker value={range} onChange={setRange} />
                             <DensityToggle value={density} onChange={setDensity} />
-                            <ProgressBar label="Launch checklist" value={72} showValue />
+                            <ProgressBar label="Opening checklist" value={72} showValue />
                         </div>
                     </div>
                 </Section>

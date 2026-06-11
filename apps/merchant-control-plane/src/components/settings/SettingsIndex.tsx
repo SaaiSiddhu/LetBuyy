@@ -51,7 +51,7 @@ export function SettingsIndex({ store, groups, activePathname, onNavigate }: Set
                         Settings home
                     </span>
                     <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                        Launch checklist and grouped settings overview.
+                        Opening checklist and grouped settings overview.
                     </span>
                 </span>
             </Link>

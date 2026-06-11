@@ -94,7 +94,7 @@ const TEMPLATE_ROWS: CommunicationTemplateRow[] = [
         trigger: 'Payment readiness missing',
         status: 'backend_needed',
         statusLabel: 'Backend needed',
-        preview: 'Complete COD or online payment setup before launch.',
+        preview: 'Complete COD or online payment setup before publication.',
         backendNeeded: true,
     },
     {

@@ -395,7 +395,7 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                 {app.is_first_party_demo && (
                     <div className="marketplace-banner marketplace-banner--info">
                         <strong>First-party demo app</strong>
-                        <span>This listing is seeded by LetBuyy to exercise marketplace flows before launch-partner inventory is onboarded.</span>
+                        <span>This listing is seeded by LetBuyy to exercise marketplace flows before partner inventory is onboarded.</span>
                     </div>
                 )}
 
