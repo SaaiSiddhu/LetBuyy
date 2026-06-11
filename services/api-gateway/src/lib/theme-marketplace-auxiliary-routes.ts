@@ -608,7 +608,7 @@ export function mountThemeMarketplaceAuxiliaryRoutes(router: ThemeRouter): void 
                 payout_provider: 'manual',
                 metadata: {
                     dev_default: true,
-                    payout_provider_cutover: 'operator chooses razorpay_route, upi, or manual at go-live',
+                    payout_provider_cutover: 'operator chooses razorpay_route, upi, or manual during live payout setup',
                 },
             },
         }));

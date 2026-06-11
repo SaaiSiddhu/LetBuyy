@@ -37,7 +37,7 @@ function assertAutopayReady(env: Env, providerMode: 'sandbox' | 'live') {
     if (providerMode !== 'live' && autopayMode(env) !== 'live') return;
     if (configured(env.RAZORPAY_KEY_ID) && configured(env.RAZORPAY_KEY_SECRET)) return;
 
-    // [HUMAN-REQUIRED] HR-AUTOPAY-LIVE: live UPI AutoPay/NPCI mandate activation requires provider go-live and live credentials.
+    // [HUMAN-REQUIRED] HR-AUTOPAY-LIVE: live UPI AutoPay/NPCI mandate activation requires provider production activation and live credentials.
     throw new HumanRequiredError('Live AutoPay setup is required before live billing mandates can be enabled.');
 }
 
