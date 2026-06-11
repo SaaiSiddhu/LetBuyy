@@ -43,8 +43,8 @@ export async function generateMetadata({ params }: { params: Promise<{ subdomain
 
     if (store.status !== 'published') {
         return {
-            title: `${store.name} — Coming Soon`,
-            description: `${store.name} is launching soon on LetBuyy!`,
+            title: `${store.name} — Not Open Yet`,
+            description: `${store.name} is not open yet on LetBuyy.`,
             robots: { index: false, follow: false },
         };
     }
@@ -75,7 +75,7 @@ export default async function StoreLayout({ children, params }: Props) {
         return notFound();
     }
 
-    // Show Coming Soon page for draft/suspended stores
+    // Show the gated storefront page for draft/suspended stores
     if (!previewStore && store.status !== 'published') {
         return (
             <ComingSoonRouter
