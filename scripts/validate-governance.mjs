@@ -57,6 +57,7 @@ const validators = [
   "migration-safety-validator.mjs",
   "sequential-migration-validator.mjs",
   "deployment-safety-validator.mjs",
+  "secret-topology-validator.mjs",
   "domain-boundary-validator.mjs",
   "single-writer-ownership-validator.mjs",
   "fail-closed-internal-routes-validator.mjs",

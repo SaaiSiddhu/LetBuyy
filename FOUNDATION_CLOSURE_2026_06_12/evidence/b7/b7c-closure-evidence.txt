@@ -1,0 +1,44 @@
+B7c CLOSURE EVIDENCE — 2026-06-12
+Sub-step: secret-topology-validator, HR-SECRET-ROTATION runbook, mutation probe
+
+--- VALIDATOR ---
+scripts/validators/secret-topology-validator.mjs created.
+Registered in scripts/validate-governance.mjs (after deployment-safety-validator.mjs).
+
+Assertions checked:
+  1. set-secrets.mjs: "INTERNAL_API_SECRET" NOT in generatedSecretSuffixes (retired global)
+  2. set-secrets.mjs: "INTERNAL_API_KEYRING" IS in generatedSecretSuffixes
+  3. set-secrets.mjs: perCallerInternalSecretSuffixes array exists (HR-SECRET-ROTATION runbook)
+  4-7. staging-deploy.yml: STAGING_{API_GATEWAY,WEBHOOK_SERVICE,QUEUE_WORKERS,MOBILE_BFF}_INTERNAL_SECRET present
+  8. staging-deploy.yml: STAGING_INTERNAL_API_KEYRING present
+  9-12. production-deploy.yml: PRODUCTION_* per-caller secrets present
+  13. production-deploy.yml: PRODUCTION_INTERNAL_API_KEYRING present
+  14-16. internal-auth.ts: getInternalApiKeyring, isLegacyAcceptEnabled, getSecretsForCaller exported
+  17. internal-auth.ts: HR-SECRET-ROTATION sunset comment present
+  18. console-session.ts: process.env.AUTH_SECRET NOT used as fallback
+
+--- VALIDATOR COUNT ---
+Before: 106 validators
+After:  107 validators (secret-topology-validator added)
+
+--- MUTATION PROBE ---
+Mutant: add || process.env.AUTH_SECRET fallback back to console-session.ts line 24
+  node scripts/validators/secret-topology-validator.mjs → exit 1
+  Output: "Secret topology validator failed: apps/platform-console/src/lib/console-session.ts
+           must not use process.env.AUTH_SECRET as a fallback (different security domain)"
+Restored: remove fallback → exit 0 → PASS
+
+--- HR-SECRET-ROTATION ROW ---
+Appended to EXECUTABLE_HUMAN_REQUIRED.md
+Row: HR-SECRET-ROTATION
+Exact human action documented:
+  1. Generate per-caller secrets (openssl rand -hex 32 for each of 9 callers)
+  2. Build INTERNAL_API_KEYRING JSON and set as GitHub secret
+  3. Set each STAGING/PRODUCTION_{SERVICE}_INTERNAL_SECRET
+  4. Deploy — legacy accept ON by default, zero breakage
+  5. After all callers updated: set INTERNAL_AUTH_LEGACY_ACCEPT=false
+  6. Retire old STAGING/PRODUCTION_INTERNAL_API_SECRET
+Unblocks: per-caller HMAC blast-radius isolation
+
+--- FINAL GATE ---
+node scripts/validate-governance.mjs → 107 validators PASS
