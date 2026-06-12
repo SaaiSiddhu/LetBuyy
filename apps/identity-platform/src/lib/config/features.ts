@@ -13,12 +13,6 @@ export const features = {
     /** Enable passkey/WebAuthn login */
     passkey: process.env.FEATURE_PASSKEY === 'true',
 
-    /** Enable multi-account switching */
-    multiAccount: process.env.FEATURE_MULTI_ACCOUNT === 'true',
-
-    /** Enable Cloudflare Turnstile bot protection */
-    turnstile: process.env.FEATURE_TURNSTILE === 'true',
-
     /** Dormant Identity Platform foundation flags. All default false. */
     identityFoundation: resolveIdentityFoundationFeatureFlags(process.env),
 } as const
