@@ -58,11 +58,19 @@ At activation, the foundation program itself terminates: REPOSITORY_TRUTH → CO
 
 | Field | Value |
 |---|---|
-| Closure SHA | _pending_ |
-| Gate validator count at closure | _pending (~107)_ |
-| CLOSURE-B4/B3/B5/B6/B7/B2/B1A ledger lines | _pending_ |
-| `git ls-remote origin` transcript ref | _pending_ |
-| Human owner signature (B1-a operator) | _pending_ |
-| Date of activation | _pending_ |
+| Closure SHA (repo-side, executor) | `f5e7036d` (CLOSURE-B2 commit — last content commit; `main == stepup/main` at this SHA) |
+| Gate validator count at closure | 107 (106 baseline + B7c secret-topology-validator; B4/B3 extensions carried no new count) |
+| CLOSURE-B4 ledger line | EXECUTION_LEDGER.md line 211 |
+| CLOSURE-B3 ledger line | EXECUTION_LEDGER.md line 214 |
+| CLOSURE-B5 ledger line | EXECUTION_LEDGER.md line 213 |
+| CLOSURE-B6 ledger line | EXECUTION_LEDGER.md line 212 |
+| CLOSURE-B7 ledger lines | EXECUTION_LEDGER.md lines 216 (B7c), 217 (B7b), 218 (B7a) |
+| CLOSURE-B2 ledger line | EXECUTION_LEDGER.md line 215 |
+| CLOSURE-B1A ledger line | _pending-human_ (human appends after push) |
+| `git ls-remote origin` transcript ref | _pending-human_ (verify after B1-a push) |
+| Human owner signature (B1-a operator) | _pending-human_ |
+| Date of activation | _pending-human_ |
 
-**On completion of this table: FOUNDATION ERA — CLOSED. Successor authority: `LAUNCH_HANDOFF_DOCUMENT.md`.**
+**Human action to activate:** complete B1-a per `EXECUTABLE_HUMAN_REQUIRED.md` row `HR-B1A-FOUNDATION-PUSH` → append `CLOSURE-B1A` row → fill in remaining _pending-human_ fields → sign. On completion: FOUNDATION ERA — CLOSED. Successor authority: `LAUNCH_HANDOFF_DOCUMENT.md`.
+
+**STATUS (executor): ARMED. All CLOSURE-B4/B3/B5/B6/B7/B2 rows committed, gate green (107), main == stepup/main == f5e7036d. Pending human: B1-a push + branch protection + CLOSURE-B1A row.**
