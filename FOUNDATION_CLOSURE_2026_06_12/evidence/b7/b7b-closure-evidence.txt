@@ -1,0 +1,56 @@
+B7b CLOSURE EVIDENCE — 2026-06-12
+Sub-step: Per-service secret topology — matrix, set-secrets, workflows, console fallback removal
+
+--- CHANGES MADE ---
+
+1. scripts/github/set-secrets.mjs
+   - Removed "INTERNAL_API_SECRET" from generatedSecretSuffixes (retired as shared global)
+   - Added "INTERNAL_API_KEYRING" to generatedSecretSuffixes (JSON blob secret per env)
+   - Added perCallerInternalSecretSuffixes array (9 entries: API_GATEWAY_INTERNAL_SECRET, …)
+   - Added per-caller secret loop at end of each env iteration
+
+2. .github/workflows/staging-deploy.yml — per-service secret names for 4 workers:
+   api-gateway:     STAGING_INTERNAL_API_SECRET → STAGING_API_GATEWAY_INTERNAL_SECRET
+                    + added STAGING_INTERNAL_API_KEYRING → INTERNAL_API_KEYRING push
+   webhook-service: STAGING_INTERNAL_API_SECRET → STAGING_WEBHOOK_SERVICE_INTERNAL_SECRET
+   queue-workers:   STAGING_INTERNAL_API_SECRET → STAGING_QUEUE_WORKERS_INTERNAL_SECRET
+   mobile-bff:      STAGING_INTERNAL_API_SECRET → STAGING_MOBILE_BFF_INTERNAL_SECRET
+   Next apps:       KEEP STAGING_INTERNAL_API_SECRET (legacy accept covers during rotation window)
+
+3. .github/workflows/production-deploy.yml — same pattern:
+   api-gateway:     PRODUCTION_INTERNAL_API_SECRET → PRODUCTION_API_GATEWAY_INTERNAL_SECRET
+                    + added PRODUCTION_INTERNAL_API_KEYRING → INTERNAL_API_KEYRING push
+   webhook-service: PRODUCTION_INTERNAL_API_SECRET → PRODUCTION_WEBHOOK_SERVICE_INTERNAL_SECRET
+   queue-workers:   PRODUCTION_INTERNAL_API_SECRET → PRODUCTION_QUEUE_WORKERS_INTERNAL_SECRET
+   mobile-bff:      PRODUCTION_INTERNAL_API_SECRET → PRODUCTION_MOBILE_BFF_INTERNAL_SECRET
+   Next apps:       KEEP PRODUCTION_INTERNAL_API_SECRET (legacy window)
+
+4. config/env/staging-production-secret-matrix.json
+   - Added workers.perCallerInternalSecrets with callerIds, githubSecretSuffixes, keyringSuffix
+   - Added INTERNAL_API_KEYRING to workers.requiredSecrets
+   - Replaced INTERNAL_API_SECRET → INTERNAL_API_KEYRING in ciSecrets.generatedSecretSuffixes
+   - Added ciSecrets.perCallerInternalSecretSuffixes (9 entries)
+
+5. apps/platform-console/src/lib/console-session.ts
+   - Removed || process.env.AUTH_SECRET fallback (line 24)
+   - Function now: process.env.PLATFORM_CONSOLE_SESSION_SECRET || ''
+   - AUTH_SECRET is a Next-app-level secret; it must not be a fallback for the console session key
+
+--- NON-BREAKING INVARIANT ---
+INTERNAL_AUTH_LEGACY_ACCEPT defaults ON in all workers.
+Existing STAGING/PRODUCTION_INTERNAL_API_SECRET GitHub secrets continue to work
+via getInternalAuthSecrets() → legacy accept window until HR-SECRET-ROTATION.
+Per-caller secrets (API_GATEWAY_INTERNAL_SECRET etc.) are empty/unset until human
+provisions them — setSecret() skips with a SKIP: warning, no failure.
+INTERNAL_API_KEYRING is empty until human provisions the keyring JSON — empty keyring
+means getInternalApiKeyring() returns {} → falls through to legacy accept.
+
+--- GATE ---
+node scripts/validate-governance.mjs → 106 validators PASS
+deployment-safety-validator.mjs: no assertions on INTERNAL_API_SECRET names → PASS
+
+--- AUTH_SECRET FALLBACK REMOVAL RATIONALE ---
+PLATFORM_CONSOLE_SESSION_SECRET is provisioned independently (already in secret matrix).
+AUTH_SECRET is a shared Next-app JWT secret — different security domain from console sessions.
+Using it as a fallback allows AUTH_SECRET compromise to impersonate console sessions.
+Removal enforced: production gate returns null when PLATFORM_CONSOLE_SESSION_SECRET is unsafe.

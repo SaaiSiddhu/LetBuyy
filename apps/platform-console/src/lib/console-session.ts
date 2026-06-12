@@ -21,7 +21,7 @@ function isSafeSecret(secret: string) {
 }
 
 export function getConsoleSessionSecret() {
-    const secret = process.env.PLATFORM_CONSOLE_SESSION_SECRET || process.env.AUTH_SECRET || '';
+    const secret = process.env.PLATFORM_CONSOLE_SESSION_SECRET || '';
 
     // SEC-C2 (Wave 0): the dev fallback secret must be unreachable in any
     // production-like runtime. The previous gate checked NODE_ENV only; widen it to

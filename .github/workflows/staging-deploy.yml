@@ -86,8 +86,9 @@ jobs:
           echo "${{ secrets.STAGING_CSRF_SECRET }}" | pnpm exec wrangler secret put CSRF_SECRET --env staging
           echo "${{ secrets.STAGING_IDENTITY_PUBLIC_JWKS }}" | pnpm exec wrangler secret put LETBUYY_IDENTITY_PUBLIC_JWKS --env staging
           echo "${{ secrets.STAGING_TURNSTILE_SECRET_KEY }}" | pnpm exec wrangler secret put TURNSTILE_SECRET_KEY --env staging
-          echo "${{ secrets.STAGING_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env staging
-          echo "${{ secrets.STAGING_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put LETBUYY_INTERNAL_API_SECRET --env staging
+          echo "${{ secrets.STAGING_API_GATEWAY_INTERNAL_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env staging
+          echo "${{ secrets.STAGING_API_GATEWAY_INTERNAL_SECRET }}" | pnpm exec wrangler secret put LETBUYY_INTERNAL_API_SECRET --env staging
+          echo "${{ secrets.STAGING_INTERNAL_API_KEYRING }}" | pnpm exec wrangler secret put INTERNAL_API_KEYRING --env staging
           echo "${{ secrets.STAGING_QUEUE_TENANT_ENVELOPE_SECRET }}" | pnpm exec wrangler secret put QUEUE_TENANT_ENVELOPE_SECRET --env staging
           echo "${{ secrets.STAGING_PLATFORM_CONSOLE_API_TOKEN }}" | pnpm exec wrangler secret put PLATFORM_CONSOLE_API_TOKEN --env staging
           echo "${{ secrets.STAGING_UPSTASH_REDIS_REST_URL }}" | pnpm exec wrangler secret put UPSTASH_REDIS_REST_URL --env staging
@@ -113,7 +114,7 @@ jobs:
       - name: Set webhook-service staging secrets
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
         run: |
-          echo "${{ secrets.STAGING_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env staging
+          echo "${{ secrets.STAGING_WEBHOOK_SERVICE_INTERNAL_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env staging
           echo "${{ secrets.STAGING_RAZORPAY_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_WEBHOOK_SECRET --env staging
           echo "${{ secrets.STAGING_STRIPE_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put STRIPE_WEBHOOK_SECRET --env staging
         working-directory: services/webhook-service
@@ -132,7 +133,7 @@ jobs:
       - name: Set queue-workers staging secrets
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
         run: |
-          echo "${{ secrets.STAGING_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env staging
+          echo "${{ secrets.STAGING_QUEUE_WORKERS_INTERNAL_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env staging
           echo "${{ secrets.STAGING_QUEUE_TENANT_ENVELOPE_SECRET }}" | pnpm exec wrangler secret put QUEUE_TENANT_ENVELOPE_SECRET --env staging
         working-directory: services/queue-workers
         env:
@@ -150,7 +151,7 @@ jobs:
       - name: Set mobile-bff staging secrets
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
         run: |
-          echo "${{ secrets.STAGING_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env staging
+          echo "${{ secrets.STAGING_MOBILE_BFF_INTERNAL_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env staging
         working-directory: services/mobile-bff
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

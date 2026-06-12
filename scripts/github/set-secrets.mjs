@@ -52,12 +52,29 @@ const legacyProjectAliases = {
 const generatedSecretSuffixes = [
   "AUTH_SECRET",
   "CUSTOMER_SESSION_SECRET",
-  "INTERNAL_API_SECRET",
+  // INTERNAL_API_SECRET retired as a shared global — replaced by per-caller secrets below
+  // and the INTERNAL_API_KEYRING blob (HR-SECRET-ROTATION). Legacy callers continue to
+  // work via INTERNAL_AUTH_LEGACY_ACCEPT=true (default) until rotation is complete.
+  "INTERNAL_API_KEYRING",
   "CSRF_SECRET",
   "PLATFORM_CONSOLE_SESSION_SECRET",
   "PLATFORM_CONSOLE_TOTP_SECRET",
   "PLATFORM_CONSOLE_API_TOKEN",
   "PAYMENT_CONFIG_ENCRYPTION_KEY",
+];
+// Per-caller internal HMAC signing secrets. Each runtime signs requests with its own
+// secret. INTERNAL_API_KEYRING on receiving services maps callerId → secret.
+// Set these and update the INTERNAL_API_KEYRING JSON blob per HR-SECRET-ROTATION.
+const perCallerInternalSecretSuffixes = [
+  "API_GATEWAY_INTERNAL_SECRET",
+  "WEBHOOK_SERVICE_INTERNAL_SECRET",
+  "QUEUE_WORKERS_INTERNAL_SECRET",
+  "MOBILE_BFF_INTERNAL_SECRET",
+  "MERCHANT_CONTROL_PLANE_INTERNAL_SECRET",
+  "STOREFRONT_RUNTIME_INTERNAL_SECRET",
+  "IDENTITY_PLATFORM_INTERNAL_SECRET",
+  "PLATFORM_CONSOLE_INTERNAL_SECRET",
+  "MARKETING_SITE_INTERNAL_SECRET",
 ];
 const providerSecretSuffixes = [
   "RAZORPAY_KEY_ID",
@@ -120,6 +137,11 @@ for (const environment of environments) {
   }
 
   for (const suffix of providerSecretSuffixes) {
+    const name = `${environment}_${suffix}`;
+    configured += setSecret(name, e[name]);
+  }
+
+  for (const suffix of perCallerInternalSecretSuffixes) {
     const name = `${environment}_${suffix}`;
     configured += setSecret(name, e[name]);
   }
