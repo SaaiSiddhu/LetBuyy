@@ -17,6 +17,40 @@ export function getInternalAuthSecret(env: Env): string | undefined {
     return getLetbuyyInternalAuthSecret(env);
 }
 
+// B7: Per-caller HMAC keyring.
+// INTERNAL_API_KEYRING: JSON object mapping callerId → HMAC secret string.
+// INTERNAL_AUTH_LEGACY_ACCEPT: controls the legacy single-secret fallback window.
+// Sunset: set INTERNAL_AUTH_LEGACY_ACCEPT="false" after all callers are provisioned
+// with per-caller keyring secrets and all runtimes have rotated (see HR-SECRET-ROTATION).
+
+export function getInternalApiKeyring(env: Env): Record<string, string> {
+    const raw = ((env as unknown as Record<string, string | undefined>).INTERNAL_API_KEYRING ?? '').trim();
+    if (!raw) return {};
+    try {
+        const parsed: unknown = JSON.parse(raw);
+        if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {};
+        return Object.fromEntries(
+            Object.entries(parsed as Record<string, unknown>).filter(([, v]) => typeof v === 'string' && (v as string).length > 0)
+        ) as Record<string, string>;
+    } catch {
+        return {};
+    }
+}
+
+export function isLegacyAcceptEnabled(env: Env): boolean {
+    // Default ON — unset or empty means legacy single-secret acceptance is active.
+    // Only explicit "false" / "0" / "off" / "no" / "disabled" disables legacy accept.
+    const val = ((env as unknown as Record<string, string | undefined>).INTERNAL_AUTH_LEGACY_ACCEPT ?? '').trim().toLowerCase();
+    return !['false', '0', 'off', 'no', 'disabled'].includes(val);
+}
+
+export function getSecretsForCaller(env: Env, callerId?: string | null): string[] {
+    const keyring = getInternalApiKeyring(env);
+    const callerSecret = callerId && keyring[callerId] ? [keyring[callerId]] : [];
+    const legacySecrets = isLegacyAcceptEnabled(env) ? getInternalAuthSecrets(env) : [];
+    return Array.from(new Set([...callerSecret, ...legacySecrets]));
+}
+
 export function getInternalAuthSecrets(env: Env): string[] {
     const secrets = [
         getLetbuyyInternalAuthSecret(env),
@@ -113,6 +147,7 @@ export async function verifyInternalSessionHeaders(
 
 export async function verifyInternalAppRequest(c: Context<{ Bindings: Env }>, expectedApp: string): Promise<boolean> {
     const app = c.req.header('X-LetBuyy-Internal-App');
+    const callerId = c.req.header('X-LetBuyy-Internal-Caller');
     const timestamp = c.req.header('X-LetBuyy-Internal-Timestamp');
     const jti = c.req.header('X-LetBuyy-Internal-JTI');
     const signature = c.req.header('X-LetBuyy-Internal-Signature');
@@ -121,8 +156,13 @@ export async function verifyInternalAppRequest(c: Context<{ Bindings: Env }>, ex
         return false;
     }
 
-    const signed = await verifySignedPayload(c.env, internalAppSigningPayload(app, String(timestamp), jti), signature);
-    return signed && consumeInternalJti({ kind: `app:${app}`, jti, signature });
+    const signingPayload = internalAppSigningPayload(app, String(timestamp), jti);
+    for (const secret of getSecretsForCaller(c.env, callerId)) {
+        if (await verifyLetbuyySignedPayload(secret, signingPayload, signature)) {
+            return consumeInternalJti({ kind: `app:${app}`, jti, signature });
+        }
+    }
+    return false;
 }
 
 export async function verifyInternalIdentityPayload(

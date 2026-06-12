@@ -1,0 +1,57 @@
+B7a CLOSURE EVIDENCE — 2026-06-12
+Sub-step: Keyring model extension to internal-auth.ts
+
+--- DESIGN SUMMARY ---
+Added three exported helpers to services/api-gateway/src/lib/internal-auth.ts:
+
+  getInternalApiKeyring(env: Env): Record<string, string>
+    Parses INTERNAL_API_KEYRING JSON env var (callerId → HMAC secret map).
+    Returns {} on unset, malformed JSON, non-object, or empty-value entries.
+
+  isLegacyAcceptEnabled(env: Env): boolean
+    Reads INTERNAL_AUTH_LEGACY_ACCEPT env var.
+    Defaults ON (true) when unset or empty — non-breaking during rotation window.
+    Explicitly disabled only by: "false" / "0" / "off" / "no" / "disabled".
+    Sunset comment: disable after all callers provisioned + runtimes rotated (HR-SECRET-ROTATION).
+
+  getSecretsForCaller(env: Env, callerId?: string | null): string[]
+    Returns [keyring[callerId], ...legacySecrets] when caller has a keyring entry + legacy ON.
+    Returns [keyring[callerId]] only when legacy OFF + caller has keyring entry.
+    Returns [] when legacy OFF + no keyring entry for caller.
+    Set-deduplicates output.
+
+Updated verifyInternalAppRequest:
+    Reads X-LetBuyy-Internal-Caller header (optional — no break if absent).
+    Iterates getSecretsForCaller(c.env, callerId) instead of verifySignedPayload(c.env, ...).
+    Returns true on first matching secret + consumes JTI.
+    Backward-compatible: existing callers without the header use legacy secret pool.
+
+--- ENV VARS NOT IN index.ts Env TYPE ---
+INTERNAL_API_KEYRING and INTERNAL_AUTH_LEGACY_ACCEPT are not declared in the Env
+interface (index.ts is outside B7 perimeter). Same cast pattern as B6:
+  (env as unknown as Record<string, string | undefined>).INTERNAL_API_KEYRING
+
+--- TYPECHECK ---
+npx tsc --project services/api-gateway/tsconfig.json --noEmit → 0 errors
+
+--- TEST FILE ---
+services/api-gateway/src/__tests__/internal-auth-keyring.test.ts
+Coverage:
+  - getInternalApiKeyring: empty/unset, valid JSON, malformed JSON, non-object, empty-value drop
+  - isLegacyAcceptEnabled: default ON, empty string, all explicit disable values, all explicit enable values
+  - getSecretsForCaller: legacy-only, caller-first-ordering, legacy-excluded, empty-when-no-match, dedup
+  - source-level: X-LetBuyy-Internal-Caller present, getSecretsForCaller delegation, HR-SECRET-ROTATION comment
+
+--- GATE ---
+node scripts/validate-governance.mjs → 106 validators PASS
+
+--- LEGACY ACCEPT INVARIANT ---
+INTERNAL_AUTH_LEGACY_ACCEPT is NOT set in any wrangler.toml env block.
+This is intentional: unset → defaults ON (isLegacyAcceptEnabled returns true).
+Flag is SET TO FALSE only by human after rotation is complete (HR-SECRET-ROTATION).
+This ensures no breakage during provisioning window.
+
+--- MUTATION PROBE (source-level) ---
+Removed getSecretsForCaller call from verifyInternalAppRequest → source-level assertion
+test 'verifyInternalAppRequest delegates to getSecretsForCaller' fails → confirmed detection.
+Restored → test passes.
