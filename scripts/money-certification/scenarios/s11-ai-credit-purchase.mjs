@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // S11 — AI-credit purchase via payment link → webhook → credit grant
-// Pass condition: grant deferred until webhook+ledger evidence (commit 533479cb behavior);
-//                 ledger posting distinct from commerce flows.
+// B6 Form B annotation: /v1/ai/credits/purchase now returns 501 AI_CREDIT_PURCHASE_NOT_AVAILABLE
+// (FEATURE_AI_CREDIT_PURCHASE = "false" in all wrangler env blocks). No un-ledgered mutation
+// is reachable. This scenario verifies the closed-path assertion and ledger invariants directly.
+// Pass condition: /ai/credits/purchase returns 501 (path closed); ledger invariants I1/I5/I6 intact.
 // Requires STAGING_API_URL, STAGING_INTERNAL_API_SECRET, STAGING_MERCHANT_SITE_ID.
 
 import {

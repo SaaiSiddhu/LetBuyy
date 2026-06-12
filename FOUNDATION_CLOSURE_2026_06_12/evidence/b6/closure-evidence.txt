@@ -1,0 +1,53 @@
+B6 CLOSURE EVIDENCE — 2026-06-12
+Form: B (honest retirement)
+Decision: Form A requires new ai_credit_purchase_intents table + webhook consumer + new source_type
+  — exceeds "existing webhook+post_ledger_transaction patterns without schema redesign" budget.
+
+--- ROUTE ANALYSIS (before) ---
+services/api-gateway/src/routes/ai.ts:1027-1112:
+  - builds fabricated purchaseRecord object
+  - returns 202 with credit_grant_deferred_until_canonical_ledger: true
+  - NO insert, NO RPC, NO ledger row, NO webhook consumer (0 matches in queue-workers)
+  = un-ledgered money path OPEN
+
+--- ROUTE AFTER FORM B ---
+router.post('/credits/purchase', async (c) => {
+    const flagValue = ((c.env as unknown as Record<string, string | undefined>)
+        .FEATURE_AI_CREDIT_PURCHASE ?? '').trim().toLowerCase();
+    if (!['1', 'true', 'on', 'enabled', 'yes'].includes(flagValue)) {
+        return c.json({ error: { code: 'AI_CREDIT_PURCHASE_NOT_AVAILABLE', ... } }, 501);
+    }
+    return c.json({ error: { code: 'AI_CREDIT_PURCHASE_NOT_AVAILABLE', ... } }, 501);
+});
+  = BOTH branches return 501; fabricated purchaseRecord DELETED
+
+--- FLAG BLOCKS (all explicitly "false") ---
+services/api-gateway/wrangler.toml:39   FEATURE_AI_CREDIT_PURCHASE = "false"  [default vars]
+services/api-gateway/wrangler.toml:130  FEATURE_AI_CREDIT_PURCHASE = "false"  [env.staging.vars]
+services/api-gateway/wrangler.toml:246  FEATURE_AI_CREDIT_PURCHASE = "false"  [env.production.vars]
+
+WHY explicit: featureFlags.ts:25 returns !isProductionRuntime(env) when unset → true in staging.
+              Flag left unset = fails OPEN in non-prod. Explicit "false" ensures fail-closed.
+
+--- PROD-SIMULATION LOGIC CHECK ---
+When FEATURE_AI_CREDIT_PURCHASE is unset or "false":
+  flagValue = "" or "false"
+  ['1','true','on','enabled','yes'].includes("false") = false → route returns 501 ✓
+When FEATURE_AI_CREDIT_PURCHASE = "true":
+  ['1','true','on','enabled','yes'].includes("true") = true → falls through to second 501 ✓
+  (second 501 is the placeholder until ARB approves the canonical ledger path)
+
+--- CLOSURE CRITERIA VERIFICATION ---
+grep "purchaseRecord\|credit_grant_deferred_until_canonical_ledger" services/api-gateway/src/routes/ai.ts
+  → 0 matches (fabricated object deleted)
+
+--- SKIPPED_HUMAN_DECISIONS.md ---
+Row SKIP-B6-AI-CREDIT-DESIGN-ARB appended: ARB approval + canonical ledger path required
+  to enable the route.
+
+--- S11 ANNOTATION ---
+scripts/money-certification/scenarios/s11-ai-credit-purchase.mjs:1-7 annotated:
+  B6 Form B — /v1/ai/credits/purchase returns 501; no un-ledgered mutation reachable.
+
+--- GATE ---
+node scripts/validate-governance.mjs → 106 validators PASS

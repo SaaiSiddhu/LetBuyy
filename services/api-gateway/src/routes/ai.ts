@@ -1024,91 +1024,26 @@ router.post('/usage/:id/rate', async (c) => {
     return c.json(success(data));
 });
 
-// POST /ai/credits/purchase — Purchase additional credits
+// POST /ai/credits/purchase — B6 Form B: route retired; returns 501 until ARB approves money design.
+// featureFlags.ts:25 fails open in non-prod when the flag is unset, so FEATURE_AI_CREDIT_PURCHASE
+// is explicitly set to "false" in every wrangler.toml env block (not left unset).
+// Re-enable after ARB closes SKIP-B6-AI-CREDIT-DESIGN-ARB and a canonical ledger path is implemented.
 router.post('/credits/purchase', async (c) => {
-    const auth = c.get('auth');
-    const body = await c.req.json() as Record<string, unknown>;
-    const db = getSupabaseAdmin(c);
-    const storeId = String(body.store_id || '').trim();
-    const amount = typeof body.amount === 'number'
-        ? body.amount
-        : Number.parseInt(String(body.amount || ''), 10);
-    const idempotencyKey = String(
-        body.idempotency_key || c.req.header('Idempotency-Key') || ''
-    ).trim();
-
-    if (!storeId || !Number.isInteger(amount) || amount < 10 || amount > 10000 || idempotencyKey.length < 8) {
+    const flagValue = ((c.env as unknown as Record<string, string | undefined>).FEATURE_AI_CREDIT_PURCHASE ?? '').trim().toLowerCase();
+    if (!['1', 'true', 'on', 'enabled', 'yes'].includes(flagValue)) {
         return c.json({
             error: {
-                code: 'VALIDATION',
-                message: 'store_id, amount, and idempotency_key are required',
+                code: 'AI_CREDIT_PURCHASE_NOT_AVAILABLE',
+                message: 'AI credit purchase is not available (deferred to ARB — see SKIP-B6-AI-CREDIT-DESIGN-ARB).',
             },
-        }, 400);
+        }, 501);
     }
-    const customUser = await resolveAuthorizedUser(db, auth.user, storeId);
-    if (!customUser) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    const adapter = createCreditPurchaseAdapter(c.env);
-    if (!adapter.available) {
-        return c.json({
-            error: {
-                code: 'AI_CREDIT_PURCHASE_UNAVAILABLE',
-                message: 'AI credit purchases are temporarily unavailable.',
-            },
-        }, 503);
-    }
-
-    let purchase;
-    try {
-        purchase = await adapter.purchase({
-            storeId,
-            userId: customUser.id,
-            credits: amount,
-            idempotencyKey,
-        });
-    } catch {
-        return c.json({
-            error: {
-                code: 'AI_CREDIT_PURCHASE_UNAVAILABLE',
-                message: 'AI credit purchases are temporarily unavailable.',
-            },
-        }, 503);
-    }
-
-    const purchaseRecord = {
-        id: purchase.id,
-        store_id: storeId,
-        status: purchase.status,
-        provider: purchase.provider,
-        provider_mode: purchase.providerMode,
-        credits: purchase.credits,
-        amount_minor: purchase.amountMinor,
-        currency: purchase.currency,
-        provider_reference: purchase.providerReference,
-        checkout_url: purchase.checkoutUrl,
-        created_at: new Date().toISOString(),
-        metadata: purchase.metadata,
-    };
-
-    let projectedCredits;
-    try {
-        projectedCredits = await loadAiCreditProjection(db, storeId);
-    } catch (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error instanceof Error ? error.message : 'AI credit projection failed' } }, 500);
-    }
-
-    return c.json(success({
-        purchase: {
-            ...purchaseRecord,
-            metadata: {
-                ...purchaseRecord.metadata,
-                credit_grant_deferred_until_canonical_ledger: true,
-            },
+    return c.json({
+        error: {
+            code: 'AI_CREDIT_PURCHASE_NOT_AVAILABLE',
+            message: 'AI credit purchase requires the ARB-approved canonical ledger implementation.',
         },
-        credits: decorateCredits(projectedCredits, storeId, adapter),
-    }), 202);
+    }, 501);
 });
 
 export default router;
