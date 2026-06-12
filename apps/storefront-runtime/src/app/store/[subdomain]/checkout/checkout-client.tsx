@@ -96,8 +96,9 @@ interface SavedAddress {
 }
 
 type DeliveryOption = 'standard' | 'express';
-type PaymentMethod = 'online' | 'stripe' | 'paypal' | 'cod';
-type ProviderOrderMethod = 'razorpay' | 'stripe' | 'paypal' | 'cod';
+// V1 ships Razorpay+COD; Stripe and PayPal deferred (LB-2)
+type PaymentMethod = 'online' | 'cod';
+type ProviderOrderMethod = 'razorpay' | 'cod';
 const productImageFallback = '/images/banners/new-arrivals-1.png';
 const passthroughImageLoader = ({ src }: ImageLoaderProps) => src;
 
@@ -129,17 +130,6 @@ type RazorpayOrderData = {
     currency?: string;
 };
 
-type StripeCheckoutData = {
-    url?: string;
-    session_url?: string;
-};
-
-type PayPalOrderData = {
-    paypalOrderId?: string;
-    paypal_order_id?: string;
-    approvalUrl?: string;
-    approval_url?: string;
-};
 
 function scrollToCheckoutTop() {
     if (typeof window === 'undefined') return;
@@ -504,81 +494,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         } catch {
             setIsProcessing(false);
             showCheckoutError('Payment failed. Please try again.');
-        }
-    };
-
-    // Initialize Stripe Checkout
-    const handleStripeCheckout = async () => {
-        setIsProcessing(true);
-        try {
-            const orderResult = await createCheckoutOrder('stripe');
-
-            if (!orderResult.success || !orderResult.order) {
-                showCheckoutError('Order creation failed. Please try again.');
-                setIsProcessing(false);
-                return;
-            }
-
-            const stripeRes = await storefrontBrowserApiFetch(subdomain, '/payments/stripe/checkout', {
-                method: 'POST',
-                body: JSON.stringify({
-                    orderId: orderResult.order.id,
-                    customerEmail: formData.email.toLowerCase(),
-                    successUrl: `${window.location.origin}/store/${subdomain}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-                    cancelUrl: `${window.location.origin}/store/${subdomain}/checkout`,
-                    idempotencyKey: getIdempotencyKey(`stripe-checkout-${orderResult.order.id}`),
-                }),
-            });
-
-            const stripeResult = await readStorefrontApiJson<StripeCheckoutData>(stripeRes);
-            const stripeUrl = stripeResult.data?.url || stripeResult.data?.session_url;
-
-            if (stripeRes.ok && stripeResult.success !== false && stripeUrl) {
-                window.location.href = stripeUrl;
-            } else {
-                showCheckoutError(storefrontApiErrorMessage(stripeResult, 'Failed to create Stripe checkout session. Please try again.'));
-                setIsProcessing(false);
-            }
-        } catch {
-            showCheckoutError('Payment failed. Please try again.');
-            setIsProcessing(false);
-        }
-    };
-
-    // Initialize PayPal Checkout
-    const handlePayPalCheckout = async () => {
-        setIsProcessing(true);
-        try {
-            const orderResult = await createCheckoutOrder('paypal');
-
-            if (!orderResult.success || !orderResult.order) {
-                showCheckoutError('Order creation failed. Please try again.');
-                setIsProcessing(false);
-                return;
-            }
-
-            const paypalRes = await storefrontBrowserApiFetch(subdomain, '/payments/paypal/order', {
-                method: 'POST',
-                body: JSON.stringify({
-                    orderId: orderResult.order.id,
-                    returnUrl: `${window.location.origin}/store/${subdomain}/checkout/paypal-return?orderId=${orderResult.order.id}`,
-                    cancelUrl: `${window.location.origin}/store/${subdomain}/checkout`,
-                    idempotencyKey: getIdempotencyKey(`paypal-create-${orderResult.order.id}`),
-                }),
-            });
-
-            const paypalResult = await readStorefrontApiJson<PayPalOrderData>(paypalRes);
-            const approvalUrl = paypalResult.data?.approvalUrl || paypalResult.data?.approval_url;
-
-            if (paypalRes.ok && paypalResult.success !== false && approvalUrl) {
-                window.location.href = approvalUrl;
-            } else {
-                showCheckoutError(storefrontApiErrorMessage(paypalResult, 'Failed to create PayPal order. Please try again.'));
-                setIsProcessing(false);
-            }
-        } catch {
-            showCheckoutError('Payment failed. Please try again.');
-            setIsProcessing(false);
         }
     };
 
@@ -980,42 +895,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         </div>
                                                     </label>
                                                 )}
-                                                {onlinePaymentEnabled && (
-                                                    <label
-                                                        className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all ${paymentMethod === 'stripe' ? 'border-purple-500 bg-purple-50' : 'border-card hover:bg-surface-hover'}`}
-                                                        onClick={() => setPaymentMethod('stripe')}
-                                                    >
-                                                        <Input unstyled
-                                                            type="radio"
-                                                            checked={paymentMethod === 'stripe'}
-                                                            onChange={() => setPaymentMethod('stripe')}
-                                                            className="accent-purple-500"
-                                                        />
-                                                        <CreditCard size={20} className="text-purple-500" />
-                                                        <div>
-                                                            <p className="font-medium text-sm">Pay with Stripe</p>
-                                                            <p className="text-xs text-theme-secondary">Cards, Apple Pay, Google Pay</p>
-                                                        </div>
-                                                    </label>
-                                                )}
-                                                {onlinePaymentEnabled && (
-                                                    <label
-                                                        className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all ${paymentMethod === 'paypal' ? 'border-blue-500 bg-blue-50' : 'border-card hover:bg-surface-hover'}`}
-                                                        onClick={() => setPaymentMethod('paypal')}
-                                                    >
-                                                        <Input unstyled
-                                                            type="radio"
-                                                            checked={paymentMethod === 'paypal'}
-                                                            onChange={() => setPaymentMethod('paypal')}
-                                                            className="accent-blue-500"
-                                                        />
-                                                        <CreditCard size={20} className="text-blue-500" />
-                                                        <div>
-                                                            <p className="font-medium text-sm">Pay with PayPal</p>
-                                                            <p className="text-xs text-theme-secondary">PayPal, Debit/Credit Cards</p>
-                                                        </div>
-                                                    </label>
-                                                )}
                                                 {codEnabled && (
                                                     <label
                                                         className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all ${paymentMethod === 'cod' ? 'border-green-500 bg-green-50' : 'border-card hover:bg-surface-hover'}`}
@@ -1050,15 +929,10 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
 
                                         {/* Payment Button */}
                                         <Button unstyled
-                                            onClick={
-                                                paymentMethod === 'paypal' ? handlePayPalCheckout :
-                                                    paymentMethod === 'stripe' ? handleStripeCheckout :
-                                                        paymentMethod === 'online' ? handlePayment :
-                                                            handleCODOrder
-                                            }
+                                            onClick={paymentMethod === 'online' ? handlePayment : handleCODOrder}
                                             disabled={!hasPaymentMethods || isProcessing || (paymentMethod === 'online' && !razorpayLoaded)}
                                             className="flex min-h-11 w-full items-center justify-center gap-3 rounded-xl py-4 text-lg font-bold text-white shadow-lg disabled:opacity-60"
-                                            style={{ backgroundColor: paymentMethod === 'cod' ? 'rgb(22 163 74)' : paymentMethod === 'paypal' ? 'rgb(0 112 186)' : paymentMethod === 'stripe' ? 'rgb(99 102 241)' : 'rgb(26 26 46)' }}
+                                            style={{ backgroundColor: paymentMethod === 'cod' ? 'rgb(22 163 74)' : 'rgb(26 26 46)' }}
                                         >
                                             {isProcessing ? (
                                                 <>
@@ -1067,14 +941,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             ) : paymentMethod === 'cod' ? (
                                                 <>
                                                     <Truck size={22} /> Confirm COD order
-                                                </>
-                                            ) : paymentMethod === 'paypal' ? (
-                                                <>
-                                                    <CreditCard size={22} /> Pay with PayPal ₹{totalAmount.toLocaleString('en-IN')}
-                                                </>
-                                            ) : paymentMethod === 'stripe' ? (
-                                                <>
-                                                    <CreditCard size={22} /> Pay with Stripe ₹{totalAmount.toLocaleString('en-IN')}
                                                 </>
                                             ) : (
                                                 <>
@@ -1085,12 +951,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
 
                                         <div className="flex items-center justify-center gap-2 text-xs text-theme-muted">
                                             <Lock size={12} />
-                                            <span>{
-                                                paymentMethod === 'cod' ? 'COD order is confirmed server-side' :
-                                                    paymentMethod === 'paypal' ? 'Secured by PayPal' :
-                                                        paymentMethod === 'stripe' ? 'Secured by Stripe' :
-                                                            'Secured by Razorpay'
-                                            }</span>
+                                            <span>{paymentMethod === 'cod' ? 'COD order is confirmed server-side' : 'Secured by Razorpay'}</span>
                                         </div>
                                     </motion.div>
                                 )}

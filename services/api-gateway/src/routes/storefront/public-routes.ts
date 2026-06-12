@@ -5,6 +5,7 @@ import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../../lib/s
 import { cachedJson, storefrontRequestCacheKey, STOREFRONT_CACHE_SWR_SECONDS, STOREFRONT_CACHE_TTL_SECONDS } from '../../lib/storefront-cache';
 import { validate } from '../../middleware/validation';
 import { StorefrontProductReviewsQuery } from '../../schemas/review.schema';
+import { authRateLimit, sensitiveRateLimit } from '../../middleware/rateLimit';
 import { registerStorefrontCartRoutes } from './cart-routes';
 import { registerStorefrontCheckoutPaymentRoutes } from './checkout-payment-routes';
 import { registerStorefrontCustomerEngagementRoutes } from './customer-engagement-routes';
@@ -263,7 +264,9 @@ export function registerStorefrontPublicRoutes(
         return c.json(success({ status: 'not_found' }));
     });
 
-    // GET /storefront/directory — Public LetBuyy discovery directory and aggregate stats
+    // GET /storefront/directory — Public LetBuyy discovery directory and aggregate stats.
+    // SECURITY: owner PII (full_name, email) is never returned to anonymous callers.
+    // Aggregate stats are per-platform counts with no PII exposure.
     router.get('/directory', async (c) => {
         const db = getSupabaseAdmin(c);
 
@@ -276,22 +279,16 @@ export function registerStorefrontPublicRoutes(
                 theme_id,
                 status,
                 site_type,
-                created_at,
-                users_custom!sites_custom_user_id_fkey (
-                    full_name,
-                    email
-                )
+                created_at
             `)
             .in('status', ['draft', 'published'])
             .is('deleted_at', null)
             .order('created_at', { ascending: false })
             .limit(12);
 
-        const [storesCount, themesCount, productsCount, ordersCount] = await Promise.all([
+        const [storesCount, themesCount] = await Promise.all([
             db.from('sites').select('*', { count: 'exact', head: true }).not('status', 'eq', 'suspended').is('deleted_at', null),
             db.from('online_store_themes').select('*', { count: 'exact', head: true }),
-            db.from('products').select('*', { count: 'exact', head: true }).is('deleted_at', null),
-            db.from('orders').select('*', { count: 'exact', head: true }).is('deleted_at', null),
         ]);
 
         return c.json(success({
@@ -299,8 +296,6 @@ export function registerStorefrontPublicRoutes(
             stats: {
                 totalStores: storesCount.count || 0,
                 totalThemes: themesCount.count || 0,
-                totalProducts: productsCount.count || 0,
-                totalOrders: ordersCount.count || 0,
             },
         }));
     });
@@ -737,6 +732,21 @@ export function registerStorefrontPublicRoutes(
         }), 202);
     });
 
+    // SECURITY: rate-limit checkout payment POSTs per-IP using authRateLimit (20/5min).
+    // Applied only to mutating POST paths; public GET browsing is unaffected.
+    router.use('/:subdomain/orders', async (c, next) => {
+        if (c.req.method !== 'POST') { await next(); return; }
+        return authRateLimit(c, next);
+    });
+    router.use('/:subdomain/payments/razorpay/order', async (c, next) => {
+        if (c.req.method !== 'POST') { await next(); return; }
+        return authRateLimit(c, next);
+    });
+    router.use('/:subdomain/payments/razorpay/verify', async (c, next) => {
+        if (c.req.method !== 'POST') { await next(); return; }
+        return authRateLimit(c, next);
+    });
+
     // POST /storefront/:subdomain/orders — Public checkout order creation.
     // The subdomain owns tenant resolution; client-submitted store IDs and totals are ignored.
     registerStorefrontCheckoutPaymentRoutes(router, {
@@ -1095,6 +1105,22 @@ export function registerStorefrontPublicRoutes(
                 };
             }
         });
+    });
+
+    // SECURITY: rate-limit customer auth POSTs per-IP using sensitiveRateLimit (5/min).
+    // customer/login already has per-identity enforceCustomerAuthRateLimit inline; this
+    // adds an outer per-IP guard at the router level for all auth entry-points.
+    router.use('/customer/login', async (c, next) => {
+        if (c.req.method !== 'POST') { await next(); return; }
+        return sensitiveRateLimit(c, next);
+    });
+    router.use('/customer/password/request-reset', async (c, next) => {
+        if (c.req.method !== 'POST') { await next(); return; }
+        return sensitiveRateLimit(c, next);
+    });
+    router.use('/customer/password/confirm-reset', async (c, next) => {
+        if (c.req.method !== 'POST') { await next(); return; }
+        return sensitiveRateLimit(c, next);
     });
 
     // POST /storefront/customer/find-or-create — Sessionless checkout customer bootstrap

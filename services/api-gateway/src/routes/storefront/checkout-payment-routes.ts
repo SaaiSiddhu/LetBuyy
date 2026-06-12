@@ -21,6 +21,7 @@ import { createPayPalPaymentProvider } from '@letbuyy/infrastructure/paypal-adap
 import { createCashfreePaymentProvider } from '@letbuyy/infrastructure/cashfree-adapter';
 import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-adapter';
 import { createStripePaymentProvider } from '@letbuyy/infrastructure/stripe-adapter';
+import { assertProviderPaymentNotReplayed } from '../../lib/payment-route-support';
 import type { CreateCheckoutOrderCommand } from '@letbuyy/checkout-core';
 import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
 
@@ -527,6 +528,16 @@ export function registerStorefrontCheckoutPaymentRoutes(
                     409
                 );
             }
+
+            // SECURITY: reject cross-order payment replay — provider payment IDs are globally
+            // unique; if this razorpay_payment_id is already recorded for a different order,
+            // the caller is replaying a prior capture.
+            await assertProviderPaymentNotReplayed(db, {
+                provider: 'razorpay',
+                providerPaymentId: body.razorpay_payment_id,
+                providerOrderId: body.razorpay_order_id,
+                orderId: body.orderId,
+            });
 
             const provider = createRazorpayPaymentProvider({
                 keyId: c.env.RAZORPAY_KEY_ID || 'storefront',
