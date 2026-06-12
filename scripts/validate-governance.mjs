@@ -55,6 +55,7 @@ const validators = [
   "legacy-site-type-validator.mjs",
   "app-utils-service-role-edge-validator.mjs",
   "migration-safety-validator.mjs",
+  "sequential-migration-validator.mjs",
   "deployment-safety-validator.mjs",
   "domain-boundary-validator.mjs",
   "single-writer-ownership-validator.mjs",
