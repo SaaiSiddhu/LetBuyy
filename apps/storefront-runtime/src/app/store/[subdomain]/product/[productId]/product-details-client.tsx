@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { ProductModel } from '@letbuyy/commerce-core';
 import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
 import type { ThemeSettings } from '@letbuyy/theme-engine';
-import { useCart } from '@/context/cart-context';
+import { useCart, type CartVariantContext } from '@/context/cart-context';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -35,10 +35,9 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
     const [addedToCart, setAddedToCart] = useState(false);
     const [isWishlisted, setIsWishlisted] = useState(false);
 
-    // Calculate discount
-    const discount = product.compareAtPrice && product.compareAtPrice > product.price
-        ? Math.round((1 - product.price / product.compareAtPrice) * 100)
-        : 0;
+    // discount is recomputed after variant resolution using displayPrice/displayComparePrice
+    // (defined below after resolvedVariant)
+    let discount = 0; // overwritten below
 
     // Get variant options from variantOptions field (primary) or parse from variants
     const getVariantGroups = (): Record<string, string[]> => {
@@ -89,16 +88,93 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
         return initial;
     });
 
+    // Resolve matching variant from the hydrated variants array.
+    // API returns option1/option2/option3 on each variant row; variantOptions drives the group order.
+    const resolveMatchingVariant = (): CartVariantContext | undefined => {
+        const variants = product.variants || [];
+        if (variants.length === 0) return undefined;
+
+        const optionNames = (product.variantOptions || []).map((o) => o.name);
+        const matchedVariant = variants.find((v) => {
+            // Support both option1/option2/option3 (API shape) and options map (typed shape)
+            const raw = v as unknown as Record<string, unknown>;
+            const option1 = (raw.option1 as string | null | undefined) ?? null;
+            const option2 = (raw.option2 as string | null | undefined) ?? null;
+            const option3 = (raw.option3 as string | null | undefined) ?? null;
+            const optionValues = [option1, option2, option3].filter(Boolean) as string[];
+
+            // Try option1/2/3 path first
+            if (option1 !== null || option2 !== null || option3 !== null) {
+                const groupKeys = Object.keys(selectedVariants);
+                return groupKeys.every((key, idx) => {
+                    const selected = selectedVariants[key];
+                    return optionValues[idx] === selected;
+                });
+            }
+
+            // Fallback: options map
+            if (v.options && typeof v.options === 'object') {
+                return Object.entries(selectedVariants).every(([key, val]) => {
+                    return (v.options as Record<string, string>)[key] === val;
+                });
+            }
+            return false;
+        });
+
+        if (!matchedVariant) return undefined;
+
+        const raw = matchedVariant as unknown as Record<string, unknown>;
+        const variantTitle = optionNames.length > 0
+            ? optionNames.map((name) => selectedVariants[name]).filter(Boolean).join(' / ')
+            : ((matchedVariant as { title?: string }).title || Object.values(selectedVariants).join(' / '));
+
+        return {
+            variantId: matchedVariant.id,
+            variantTitle,
+            price: (typeof raw.price === 'number' ? raw.price : Number(raw.price)) || product.price,
+            comparePrice: raw.compare_price != null ? Number(raw.compare_price) : null,
+        };
+    };
+
+    const resolvedVariant = hasVariants ? resolveMatchingVariant() : undefined;
+    const displayPrice = resolvedVariant?.price ?? product.price;
+    const displayComparePrice = hasVariants
+        ? (resolvedVariant?.comparePrice ?? null)
+        : product.compareAtPrice;
+    const displayStock = (() => {
+        if (!hasVariants) return product.stock;
+        const variants = product.variants || [];
+        if (variants.length === 0) return product.stock;
+        const matched = variants.find((v) => {
+            const raw = v as unknown as Record<string, unknown>;
+            const o1 = raw.option1 as string | null | undefined;
+            const o2 = raw.option2 as string | null | undefined;
+            const o3 = raw.option3 as string | null | undefined;
+            const optVals = [o1, o2, o3].filter(Boolean) as string[];
+            const groupKeys = Object.keys(selectedVariants);
+            return groupKeys.every((k, i) => optVals[i] === selectedVariants[k]);
+        });
+        if (!matched) return product.stock;
+        const raw = matched as unknown as Record<string, unknown>;
+        return typeof raw.inventory_qty === 'number' ? raw.inventory_qty
+            : typeof raw.stock === 'number' ? raw.stock
+            : product.stock;
+    })();
+
+    discount = displayComparePrice && displayComparePrice > displayPrice
+        ? Math.round((1 - displayPrice / displayComparePrice) * 100)
+        : 0;
+
     const handleQuantity = (delta: number) => {
         const newQty = quantity + delta;
-        if (newQty >= 1 && newQty <= product.stock) {
+        if (newQty >= 1 && newQty <= displayStock) {
             setQuantity(newQty);
         }
     };
 
     const handleAddToCart = () => {
         for (let i = 0; i < quantity; i++) {
-            addToCart(product);
+            addToCart(product, resolvedVariant);
         }
         setAddedToCart(true);
         setTimeout(() => setAddedToCart(false), 2000);
@@ -106,7 +182,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
 
     const handleBuyNow = () => {
         for (let i = 0; i < quantity; i++) {
-            addToCart(product);
+            addToCart(product, resolvedVariant);
         }
         router.push(`${basePath}/cart`);
     };
@@ -266,15 +342,15 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 className="text-2xl md:text-3xl font-bold"
                                 style={{ color: colors.primaryColor }}
                             >
-                                ₹{product.price.toLocaleString('en-IN')}
+                                ₹{displayPrice.toLocaleString('en-IN')}
                             </span>
-                            {product.compareAtPrice && product.compareAtPrice > product.price && (
+                            {displayComparePrice && displayComparePrice > displayPrice && (
                                 <>
                                     <span className="text-lg text-theme-muted line-through">
-                                        ₹{product.compareAtPrice.toLocaleString('en-IN')}
+                                        ₹{displayComparePrice.toLocaleString('en-IN')}
                                     </span>
                                     <span className="text-sm font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded">
-                                        Save ₹{(product.compareAtPrice - product.price).toLocaleString('en-IN')}
+                                        Save ₹{(displayComparePrice - displayPrice).toLocaleString('en-IN')}
                                     </span>
                                 </>
                             )}
@@ -290,13 +366,13 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                         {/* Stock Status */}
                         <div className="flex items-center gap-2 text-sm">
                             <div
-                                className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-green-500' : 'bg-red-500'}`}
+                                className={`w-2 h-2 rounded-full ${displayStock > 0 ? 'bg-green-500' : 'bg-red-500'}`}
                             />
-                            <span className={product.stock > 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
-                                {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                            <span className={displayStock > 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                                {displayStock > 0 ? 'In Stock' : 'Out of Stock'}
                             </span>
-                            {product.stock > 0 && product.stock < 10 && (
-                                <span className="text-orange-500 text-xs">• Hurry! Only {product.stock} left</span>
+                            {displayStock > 0 && displayStock < 10 && (
+                                <span className="text-orange-500 text-xs">• Hurry! Only {displayStock} left</span>
                             )}
                         </div>
 
@@ -408,7 +484,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                     type="button"
                                     aria-label="Increase quantity"
                                     onClick={() => handleQuantity(1)}
-                                    disabled={quantity >= product.stock}
+                                    disabled={quantity >= displayStock}
                                     className="flex h-11 w-11 items-center justify-center hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
                                 >
                                     <Plus size={16} />
@@ -422,7 +498,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 type="button"
                                 onClick={handleAddToCart}
                                 whileTap={{ scale: 0.98 }}
-                                disabled={product.stock === 0}
+                                disabled={displayStock === 0}
                                 className={`flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border-2 py-3.5 font-semibold transition-all disabled:opacity-50 sm:flex-1 ${addedToCart
                                     ? 'bg-green-500 border-green-500 text-white'
                                     : 'hover:bg-surface-hover'
@@ -440,7 +516,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 type="button"
                                 onClick={handleBuyNow}
                                 whileTap={{ scale: 0.98 }}
-                                disabled={product.stock === 0}
+                                disabled={displayStock === 0}
                                 className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl py-3.5 font-semibold text-white shadow-lg disabled:opacity-50 sm:flex-1"
                                 style={{ backgroundColor: colors.primaryColor }}
                             >

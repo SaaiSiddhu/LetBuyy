@@ -304,6 +304,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         },
         items: items.map(item => ({
             productId: item.id,
+            variantId: (item as typeof item & { variantId?: string | null }).variantId ?? null,
             quantity: item.quantity,
         })),
         paymentMethod: method,

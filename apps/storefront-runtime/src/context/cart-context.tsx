@@ -10,14 +10,21 @@ import {
 
 interface CartContextType {
     items: CartItem[];
-    addToCart: (product: ProductModel) => void;
-    removeFromCart: (productId: string) => void;
-    updateQuantity: (productId: string, quantity: number) => void;
+    addToCart: (product: ProductModel, variantContext?: CartVariantContext) => void;
+    removeFromCart: (productId: string, variantId?: string | null) => void;
+    updateQuantity: (productId: string, quantity: number, variantId?: string | null) => void;
     clearCart: () => void;
     cartTotal: number;
     cartCount: number;
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
+}
+
+export interface CartVariantContext {
+    variantId: string | null;
+    variantTitle?: string;
+    price: number;
+    comparePrice?: number | null;
 }
 
 type ServerCartLine = {
@@ -41,6 +48,7 @@ type CartLineInput = {
     product_id: string;
     variant_id?: string | null;
     quantity: number;
+    unit_price?: number;
     properties: Record<string, unknown>;
 };
 
@@ -88,10 +96,12 @@ function serverCartToItems(serverCart: ServerCart): CartItem[] {
 }
 
 function cartLineInputFromItem(item: CartItem): CartLineInput {
+    const variantId = (item as CartItem & { variantId?: string | null }).variantId ?? null;
     return {
         product_id: item.id,
-        variant_id: null,
+        variant_id: variantId,
         quantity: item.quantity,
+        unit_price: item.price,
         properties: item.selectedVariant || {},
     };
 }
@@ -169,27 +179,61 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         void syncCartToServer(items);
     }, [items, hasLoadedStorage]);
 
-    const addToCart = (product: ProductModel) => {
+    const addToCart = (product: ProductModel, variantContext?: CartVariantContext) => {
         setItems(prev => {
-            const existing = prev.find(i => i.id === product.id);
+            const cartLineKey = variantContext?.variantId
+                ? `${product.id}:${variantContext.variantId}`
+                : product.id;
+            const existing = prev.find(i => {
+                const iKey = (i as CartItem & { variantId?: string | null }).variantId
+                    ? `${i.id}:${(i as CartItem & { variantId?: string | null }).variantId}`
+                    : i.id;
+                return iKey === cartLineKey;
+            });
+            const effectivePrice = variantContext?.price ?? product.price;
+            const effectiveCompareAtPrice = variantContext?.comparePrice !== undefined
+                ? variantContext.comparePrice ?? undefined
+                : product.compareAtPrice;
             if (existing) {
-                return prev.map(i => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i);
+                return prev.map(i => {
+                    const iKey = (i as CartItem & { variantId?: string | null }).variantId
+                        ? `${i.id}:${(i as CartItem & { variantId?: string | null }).variantId}`
+                        : i.id;
+                    return iKey === cartLineKey ? { ...i, quantity: i.quantity + 1 } : i;
+                });
             }
-            return [...prev, { ...product, quantity: 1 }];
+            const newItem: CartItem & { variantId?: string | null; variantTitle?: string } = {
+                ...product,
+                price: effectivePrice,
+                compareAtPrice: effectiveCompareAtPrice,
+                quantity: 1,
+                variantId: variantContext?.variantId ?? null,
+                variantTitle: variantContext?.variantTitle,
+            };
+            return [...prev, newItem];
         });
         setIsOpen(true);
     };
 
-    const removeFromCart = (productId: string) => {
-        setItems(prev => prev.filter(i => i.id !== productId));
+    const removeFromCart = (productId: string, variantId?: string | null) => {
+        setItems(prev => prev.filter(i => {
+            const iVariantId = (i as CartItem & { variantId?: string | null }).variantId ?? null;
+            if (i.id !== productId) return true;
+            if (variantId !== undefined) return iVariantId !== variantId;
+            return false;
+        }));
     };
 
-    const updateQuantity = (productId: string, quantity: number) => {
+    const updateQuantity = (productId: string, quantity: number, variantId?: string | null) => {
         if (quantity < 1) {
-            removeFromCart(productId);
+            removeFromCart(productId, variantId);
             return;
         }
-        setItems(prev => prev.map(i => i.id === productId ? { ...i, quantity } : i));
+        setItems(prev => prev.map(i => {
+            const iVariantId = (i as CartItem & { variantId?: string | null }).variantId ?? null;
+            const matches = i.id === productId && (variantId === undefined || iVariantId === variantId);
+            return matches ? { ...i, quantity } : i;
+        }));
     };
 
     const clearCart = () => setItems([]);
@@ -200,7 +244,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return (
         <CartContext.Provider value={{
             items,
-            addToCart,
+            addToCart: addToCart as CartContextType['addToCart'],
             removeFromCart,
             updateQuantity,
             clearCart,

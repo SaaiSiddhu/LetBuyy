@@ -31,6 +31,18 @@ interface VariantOption {
     values: string[]
 }
 
+interface VariantRow {
+    id?: string           // present when editing existing rows
+    option1: string | null
+    option2: string | null
+    option3: string | null
+    title: string
+    price: string
+    comparePrice: string
+    sku: string
+    stock: string
+}
+
 interface ProductFormSnapshot {
     title: string
     description: string
@@ -51,6 +63,7 @@ interface ProductFormSnapshot {
     countryOfOrigin: string
     hsCode: string
     variantOptions: VariantOption[]
+    variantMatrix: VariantRow[]
     seoTitle: string
     seoDescription: string
     urlHandle: string
@@ -80,6 +93,7 @@ const defaultProductSnapshot: ProductFormSnapshot = {
     countryOfOrigin: '',
     hsCode: '',
     variantOptions: [],
+    variantMatrix: [],
     seoTitle: '',
     seoDescription: '',
     urlHandle: '',
@@ -87,6 +101,64 @@ const defaultProductSnapshot: ProductFormSnapshot = {
     productType: '',
     vendor: '',
     tags: '',
+}
+
+/** Generate cartesian product of option values then build VariantRow[] */
+function buildVariantMatrix(
+    options: VariantOption[],
+    basePrice: string,
+    existingRows: VariantRow[] = [],
+): VariantRow[] {
+    const filled = options.filter((o) => o.values.length > 0)
+    if (filled.length === 0) return []
+
+    // cartesian
+    const combos: string[][] = filled.reduce<string[][]>((acc, opt) => {
+        if (acc.length === 0) return opt.values.map((v) => [v])
+        return acc.flatMap((row) => opt.values.map((v) => [...row, v]))
+    }, [])
+
+    return combos.map((combo) => {
+        const o1 = combo[0] ?? null
+        const o2 = combo[1] ?? null
+        const o3 = combo[2] ?? null
+        const title = combo.join(' / ')
+
+        // Preserve edits from existing matching row
+        const existing = existingRows.find(
+            (r) => r.option1 === o1 && r.option2 === o2 && r.option3 === o3,
+        )
+        return {
+            id: existing?.id,
+            option1: o1,
+            option2: o2,
+            option3: o3,
+            title,
+            price: existing?.price ?? basePrice,
+            comparePrice: existing?.comparePrice ?? '',
+            sku: existing?.sku ?? '',
+            stock: existing?.stock ?? '0',
+        }
+    })
+}
+
+/** Map API variant rows back into VariantRow[] for edit hydration */
+function normalizeApiVariants(apiVariants: unknown[]): VariantRow[] {
+    return apiVariants
+        .filter((v): v is Record<string, unknown> => Boolean(v) && typeof v === 'object')
+        .map((v) => ({
+            id: typeof v.id === 'string' ? v.id : undefined,
+            option1: typeof v.option1 === 'string' ? v.option1 : null,
+            option2: typeof v.option2 === 'string' ? v.option2 : null,
+            option3: typeof v.option3 === 'string' ? v.option3 : null,
+            title: typeof v.title === 'string' ? v.title : '',
+            price: v.price !== undefined && v.price !== null ? String(v.price) : '',
+            comparePrice: v.compare_price !== undefined && v.compare_price !== null ? String(v.compare_price) : '',
+            sku: typeof v.sku === 'string' ? v.sku : '',
+            stock: v.inventory_qty !== undefined && v.inventory_qty !== null
+                ? String(v.inventory_qty)
+                : v.stock !== undefined && v.stock !== null ? String(v.stock) : '0',
+        }))
 }
 
 const weightUnitOptions = [
@@ -149,6 +221,9 @@ function normalizeProductSnapshot(product: Record<string, unknown>): ProductForm
             }))
         : []
 
+    const apiVariants = Array.isArray(product.variants) ? product.variants as unknown[] : []
+    const variantMatrix = apiVariants.length > 0 ? normalizeApiVariants(apiVariants) : []
+
     return {
         title: normalizeString(product.name),
         description: normalizeString(product.description),
@@ -169,6 +244,7 @@ function normalizeProductSnapshot(product: Record<string, unknown>): ProductForm
         countryOfOrigin: normalizeString(product.country_of_origin),
         hsCode: normalizeString(product.hs_code),
         variantOptions: productOptions,
+        variantMatrix,
         seoTitle: normalizeString(product.seo_title),
         seoDescription: normalizeString(product.seo_description),
         urlHandle: normalizeString(product.url_handle || product.slug),
@@ -234,6 +310,7 @@ export default function AddProductPage() {
     const [countryOfOrigin, setCountryOfOrigin] = useState(defaultProductSnapshot.countryOfOrigin)
     const [hsCode, setHsCode] = useState(defaultProductSnapshot.hsCode)
     const [variantOptions, setVariantOptions] = useState<VariantOption[]>(defaultProductSnapshot.variantOptions)
+    const [variantMatrix, setVariantMatrix] = useState<VariantRow[]>(defaultProductSnapshot.variantMatrix)
     const [showVariantBuilder, setShowVariantBuilder] = useState(false)
     const [newOptionName, setNewOptionName] = useState('')
     const [newOptionValue, setNewOptionValue] = useState('')
@@ -273,6 +350,7 @@ export default function AddProductPage() {
         countryOfOrigin,
         hsCode,
         variantOptions,
+        variantMatrix,
         seoTitle,
         seoDescription,
         urlHandle,
@@ -303,6 +381,7 @@ export default function AddProductPage() {
         title,
         trackInventory,
         urlHandle,
+        variantMatrix,
         variantOptions,
         vendor,
         weight,
@@ -333,6 +412,7 @@ export default function AddProductPage() {
         setCountryOfOrigin(snapshot.countryOfOrigin)
         setHsCode(snapshot.hsCode)
         setVariantOptions(snapshot.variantOptions)
+        setVariantMatrix(snapshot.variantMatrix)
         setSeoTitle(snapshot.seoTitle)
         setSeoDescription(snapshot.seoDescription)
         setUrlHandle(snapshot.urlHandle)
@@ -436,36 +516,54 @@ export default function AddProductPage() {
         setImages((prev) => prev.filter((_, imageIndex) => imageIndex !== index))
     }
 
+    const rebuildMatrix = useCallback((nextOptions: VariantOption[], currentMatrix: VariantRow[], basePrice: string) => {
+        setVariantMatrix(buildVariantMatrix(nextOptions, basePrice, currentMatrix))
+    }, [])
+
     const addVariantOption = () => {
         const optionName = newOptionName.trim()
         if (!optionName) return
-        setVariantOptions((prev) => [...prev, { name: optionName, values: [] }])
+        const nextOptions = [...variantOptions, { name: optionName, values: [] }]
+        setVariantOptions(nextOptions)
         setEditingOptionIndex(variantOptions.length)
         setNewOptionName('')
         setShowVariantBuilder(false)
+        rebuildMatrix(nextOptions, variantMatrix, price)
     }
 
     const addValueToOption = (optionIndex: number) => {
         const optionValue = newOptionValue.trim()
         if (!optionValue) return
-        setVariantOptions((prev) => prev.map((option, index) => (
-            index === optionIndex
-                ? { ...option, values: [...option.values, optionValue] }
-                : option
-        )))
+        setVariantOptions((prev) => {
+            const nextOptions = prev.map((option, index) => (
+                index === optionIndex
+                    ? { ...option, values: [...option.values, optionValue] }
+                    : option
+            ))
+            rebuildMatrix(nextOptions, variantMatrix, price)
+            return nextOptions
+        })
         setNewOptionValue('')
     }
 
     const removeValueFromOption = (optionIndex: number, valueIndex: number) => {
-        setVariantOptions((prev) => prev.map((option, index) => (
-            index === optionIndex
-                ? { ...option, values: option.values.filter((_, valueIndexCurrent) => valueIndexCurrent !== valueIndex) }
-                : option
-        )))
+        setVariantOptions((prev) => {
+            const nextOptions = prev.map((option, index) => (
+                index === optionIndex
+                    ? { ...option, values: option.values.filter((_, valueIndexCurrent) => valueIndexCurrent !== valueIndex) }
+                    : option
+            ))
+            rebuildMatrix(nextOptions, variantMatrix, price)
+            return nextOptions
+        })
     }
 
     const removeOption = (index: number) => {
-        setVariantOptions((prev) => prev.filter((_, optionIndex) => optionIndex !== index))
+        setVariantOptions((prev) => {
+            const nextOptions = prev.filter((_, optionIndex) => optionIndex !== index)
+            rebuildMatrix(nextOptions, variantMatrix, price)
+            return nextOptions
+        })
         if (editingOptionIndex === index) setEditingOptionIndex(null)
     }
 
@@ -525,7 +623,25 @@ export default function AddProductPage() {
                         position: index,
                         values: option.values,
                     })),
-                    variants: [],
+                    variants: variantMatrix.map((row, index) => ({
+                        title: row.title,
+                        price: parseFloat(row.price) || parseFloat(price) || 0,
+                        compare_price: parseFloat(row.comparePrice) || null,
+                        sku: row.sku || null,
+                        stock: parseInt(row.stock) || 0,
+                        options: [
+                            row.option1 ? variantOptions[0]?.name ?? 'Option 1' : null,
+                            row.option2 ? variantOptions[1]?.name ?? 'Option 2' : null,
+                            row.option3 ? variantOptions[2]?.name ?? 'Option 3' : null,
+                        ]
+                            .map((name, i) => {
+                                const vals = [row.option1, row.option2, row.option3]
+                                return name && vals[i] ? [name, vals[i]] : null
+                            })
+                            .filter((entry): entry is [string, string] => entry !== null)
+                            .reduce<Record<string, string>>((acc, [k, v]) => { acc[k] = v; return acc }, {}),
+                        position: index,
+                    })),
                 }),
             })
 
@@ -597,6 +713,7 @@ export default function AddProductPage() {
         title,
         trackInventory,
         urlHandle,
+        variantMatrix,
         variantOptions,
         vendor,
         weight,
@@ -980,6 +1097,94 @@ export default function AddProductPage() {
                                 </Button>
                             )}
                         </Section>
+
+                        {/* Variant matrix — auto-generated from option combos */}
+                        {variantMatrix.length > 0 && (
+                            <Section title="Variant combinations" description="Edit price, SKU, and stock for each combination.">
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)]">
+                                        <thead>
+                                            <tr className="border-b border-[var(--lb-color-border)]">
+                                                <th className="pb-[var(--lb-space-2)] pr-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text-subdued)]">Variant</th>
+                                                <th className="pb-[var(--lb-space-2)] pr-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text-subdued)]">Price</th>
+                                                <th className="pb-[var(--lb-space-2)] pr-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text-subdued)]">Compare</th>
+                                                <th className="pb-[var(--lb-space-2)] pr-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text-subdued)]">SKU</th>
+                                                <th className="pb-[var(--lb-space-2)] pr-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text-subdued)]">Stock</th>
+                                                <th className="pb-[var(--lb-space-2)] text-left font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text-subdued)]" />
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {variantMatrix.map((row, rowIndex) => (
+                                                <tr key={`${row.option1}-${row.option2}-${row.option3}-${rowIndex}`} className="border-b border-[var(--lb-color-border)] last:border-0">
+                                                    <td className="py-[var(--lb-space-2)] pr-[var(--lb-space-3)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)]">
+                                                        {row.title}
+                                                    </td>
+                                                    <td className="py-[var(--lb-space-2)] pr-[var(--lb-space-3)]">
+                                                        <Input
+                                                            unstyled
+                                                            type="number"
+                                                            min="0"
+                                                            step="0.01"
+                                                            placeholder={price || '0.00'}
+                                                            value={row.price}
+                                                            aria-label={`Price for ${row.title}`}
+                                                            onChange={(e) => setVariantMatrix((prev) => prev.map((r, i) => i === rowIndex ? { ...r, price: e.target.value } : r))}
+                                                            className="w-[80px] rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)]"
+                                                        />
+                                                    </td>
+                                                    <td className="py-[var(--lb-space-2)] pr-[var(--lb-space-3)]">
+                                                        <Input
+                                                            unstyled
+                                                            type="number"
+                                                            min="0"
+                                                            step="0.01"
+                                                            placeholder="—"
+                                                            value={row.comparePrice}
+                                                            aria-label={`Compare-at price for ${row.title}`}
+                                                            onChange={(e) => setVariantMatrix((prev) => prev.map((r, i) => i === rowIndex ? { ...r, comparePrice: e.target.value } : r))}
+                                                            className="w-[80px] rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)]"
+                                                        />
+                                                    </td>
+                                                    <td className="py-[var(--lb-space-2)] pr-[var(--lb-space-3)]">
+                                                        <Input
+                                                            unstyled
+                                                            placeholder="SKU-001"
+                                                            value={row.sku}
+                                                            aria-label={`SKU for ${row.title}`}
+                                                            onChange={(e) => setVariantMatrix((prev) => prev.map((r, i) => i === rowIndex ? { ...r, sku: e.target.value } : r))}
+                                                            className="w-[100px] rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)]"
+                                                        />
+                                                    </td>
+                                                    <td className="py-[var(--lb-space-2)] pr-[var(--lb-space-3)]">
+                                                        <Input
+                                                            unstyled
+                                                            type="number"
+                                                            min="0"
+                                                            placeholder="0"
+                                                            value={row.stock}
+                                                            aria-label={`Stock for ${row.title}`}
+                                                            onChange={(e) => setVariantMatrix((prev) => prev.map((r, i) => i === rowIndex ? { ...r, stock: e.target.value } : r))}
+                                                            className="w-[64px] rounded-md border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)]"
+                                                        />
+                                                    </td>
+                                                    <td className="py-[var(--lb-space-2)]">
+                                                        <Button
+                                                            unstyled
+                                                            type="button"
+                                                            aria-label={`Remove variant ${row.title}`}
+                                                            onClick={() => setVariantMatrix((prev) => prev.filter((_, i) => i !== rowIndex))}
+                                                            className="text-[var(--lb-color-text-subdued)] hover:text-[var(--lb-color-critical)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                                        >
+                                                            <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                        </Button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Section>
+                        )}
                     </Card>
 
                     <Card>

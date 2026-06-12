@@ -350,7 +350,7 @@ const STOREFRONT_SITE_COMPAT_SELECT: string =
 const STOREFRONT_SITE_RELEASE_COMPAT_SELECT: string =
     `${STOREFRONT_SITE_COMPAT_SELECT},current_theme_release_id,storefront_release_version`;
 const PRODUCT_SELECT_FULL: string =
-    'id,store_id,name,slug,description,images,price,compare_price,compare_at_price,currency,stock,quantity,stock_quantity,is_active,is_featured,status,category,tags,variants,avg_rating,review_count,display_order,created_at,updated_at,seo_title,seo_description';
+    'id,store_id,name,slug,description,images,price,compare_price,currency,stock,quantity,stock_quantity,is_active,is_featured,status,category,tags,variants,avg_rating,review_count,display_order,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_COMPAT: string =
     'id,store_id,name,slug,description,images,price,compare_price,currency,stock,quantity,is_active,is_featured,status,category,tags,variants,display_order,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_MINIMAL: string =
