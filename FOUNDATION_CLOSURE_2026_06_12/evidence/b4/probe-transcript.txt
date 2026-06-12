@@ -1,0 +1,23 @@
+B4 MUTATION PROBE TRANSCRIPT — 2026-06-12
+Validator: scripts/validators/sequential-migration-validator.mjs
+Probe file: database/supabase/migrations/170_closure_probe.sql
+
+--- STEP 1: Create untracked probe file ---
+Command: echo "-- B4 closure probe" > database/supabase/migrations/170_closure_probe.sql
+Then:    node scripts/validators/sequential-migration-validator.mjs
+
+OUTPUT (exit 1 — FAIL, as required):
+Sequential migration validator failed:
+- Untracked migration file found on disk but not committed: database/supabase/migrations/170_closure_probe.sql — run 'git add database/supabase/migrations/170_closure_probe.sql' or delete it
+
+--- STEP 2: Delete probe file ---
+Command: rm database/supabase/migrations/170_closure_probe.sql
+Then:    node scripts/validators/sequential-migration-validator.mjs
+
+OUTPUT (exit 0 — PASS, clean state):
+Sequential migration validator passed (Migration sequence checked: no untracked files, no duplicate prefixes, no gaps after baseline).
+
+--- RESULT ---
+Detection confirmed: validator exits nonzero and names the untracked file.
+False-green structurally impossible: probe file removed from repo; gate is green.
+Probe file NOT committed.

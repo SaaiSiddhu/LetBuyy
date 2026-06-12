@@ -1,4 +1,4 @@
-import { createReporter, getTrackedFiles } from "./governance-common.mjs";
+import { createReporter, getTrackedFiles, getUntrackedFiles } from "./governance-common.mjs";
 
 const reporter = createReporter("Sequential migration validator");
 
@@ -6,9 +6,27 @@ const reporter = createReporter("Sequential migration validator");
 // Any gap or duplicate AFTER 073 is a sequencing violation.
 const KNOWN_GAP_END = 72;
 
-const migFiles = getTrackedFiles().filter(
-  (f) => f.startsWith("database/supabase/migrations/") && f.endsWith(".sql"),
+const MIG_DIR = "database/supabase/migrations/";
+
+const trackedMigFiles = getTrackedFiles().filter(
+  (f) => f.startsWith(MIG_DIR) && f.endsWith(".sql"),
 );
+
+// Untracked migrations on disk are a gate failure: they exist locally but are not committed,
+// so the gate would pass in CI while a real schema divergence exists locally.
+const untrackedMigFiles = getUntrackedFiles().filter(
+  (f) => f.startsWith(MIG_DIR) && f.endsWith(".sql"),
+);
+
+for (const f of untrackedMigFiles) {
+  reporter.assert(
+    false,
+    `Untracked migration file found on disk but not committed: ${f} — run 'git add ${f}' or delete it`,
+  );
+}
+
+// Build the union for duplicate/gap checking so violations in untracked files are also caught.
+const migFiles = [...new Set([...trackedMigFiles, ...untrackedMigFiles])];
 
 const prefixes = [];
 for (const f of migFiles) {
@@ -42,4 +60,4 @@ for (let i = 1; i < postBaseline.length; i++) {
   );
 }
 
-reporter.finish("Migration sequence checked: no duplicate prefixes, no gaps after baseline");
+reporter.finish("Migration sequence checked: no untracked files, no duplicate prefixes, no gaps after baseline");
