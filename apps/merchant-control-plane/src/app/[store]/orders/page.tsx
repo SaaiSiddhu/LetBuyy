@@ -6,6 +6,7 @@ import type { LineItem as SharedLineItem, Order as SharedOrder } from '@letbuyy/
 import { Button, Input, Table, Badge, Banner, Card, ConfirmDialog, EmptyState, MaterialIcon, Page, PageHeader, Search, Section, Select, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import { ProviderModeBadge, normalizeProviderMode } from '@/components/ProviderModeBadge'
+import { StepUpDialog, type StepUpResult } from '@/components/security/StepUpDialog'
 
 type OrderItemRow = Pick<
     SharedLineItem,
@@ -188,6 +189,13 @@ export default function OrdersPage() {
     const [sortKey, setSortKey] = useState<OrderSortKey>('created_at')
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
     const [fulfillmentProviderMode, setFulfillmentProviderMode] = useState<ProviderMode | null>(null)
+
+    // Refund state
+    const [refundingOrderId, setRefundingOrderId] = useState<string | null>(null)
+    const [refundAmount, setRefundAmount] = useState('')
+    const [refundReason, setRefundReason] = useState('')
+    const [refundStepUpOpen, setRefundStepUpOpen] = useState(false)
+    const [refundLoading, setRefundLoading] = useState(false)
 
     const loadOrders = useCallback(async () => {
         setLoading(true)
@@ -403,6 +411,53 @@ export default function OrdersPage() {
         })
     }, [loadOrders, notify, store])
 
+    const handleRefundStepUpSuccess = useCallback(async (result: StepUpResult) => {
+        if (!refundingOrderId) return
+        setRefundLoading(true)
+        setRefundStepUpOpen(false)
+        setActionError(null)
+        try {
+            const amountMinor = refundAmount.trim()
+                ? Math.round(parseFloat(refundAmount.trim()) * 100)
+                : undefined
+            const response = await fetch(
+                `/api/stores/${encodeURIComponent(store)}/orders/${encodeURIComponent(refundingOrderId)}/refund`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        idempotency_key: `refund-${refundingOrderId}-${crypto.randomUUID()}`,
+                        ...(amountMinor != null ? { amount_minor: amountMinor } : {}),
+                        ...(refundReason.trim() ? { reason: refundReason.trim() } : {}),
+                        // provider_refund_id intentionally omitted: the gateway creates
+                        // the Razorpay refund itself when the id is absent (LB-3).
+                        step_up_token: result.token,
+                        step_up_verified_at: result.verifiedAt,
+                    }),
+                }
+            )
+            const payload = await response.json().catch(() => null)
+            if (!response.ok) {
+                const message = getErrorMsg(payload, 'Unable to process refund')
+                setActionError(message)
+                notify({ title: 'Refund failed', description: message, variant: 'critical' })
+                return
+            }
+            notify({ title: 'Refund recorded', description: 'The refund has been submitted successfully.', variant: 'success' })
+            setRefundingOrderId(null)
+            setRefundAmount('')
+            setRefundReason('')
+            await loadOrders()
+        } catch {
+            const message = 'Unable to process refund'
+            setActionError(message)
+            notify({ title: 'Refund failed', description: message, variant: 'critical' })
+        } finally {
+            setRefundLoading(false)
+        }
+    }, [store, refundingOrderId, refundAmount, refundReason, loadOrders, notify])
+
+    const refundingOrder = orders.find(order => order.id === refundingOrderId) || null
     const activeOrder = orders.find(order => order.id === expandedOrderId) || null
     const orderToCancel = orders.find(order => order.id === cancellingId) || null
     const activeFilters = [
@@ -541,6 +596,12 @@ export default function OrdersPage() {
                     order={order}
                     updating={updatingId === order.id}
                     fulfilling={fulfillingId === order.id}
+                    refunding={refundingOrderId === order.id}
+                    refundLoading={refundLoading && refundingOrderId === order.id}
+                    refundAmount={refundingOrderId === order.id ? refundAmount : ''}
+                    refundReason={refundingOrderId === order.id ? refundReason : ''}
+                    onRefundAmountChange={setRefundAmount}
+                    onRefundReasonChange={setRefundReason}
                     trackingNumber={trackingNumber}
                     onTrackingChange={setTrackingNumber}
                     onStatusChange={updateOrderStatus}
@@ -557,6 +618,19 @@ export default function OrdersPage() {
                         setCancellingId(order.id)
                         setFulfillingId(null)
                     }}
+                    onStartRefund={() => {
+                        setRefundingOrderId(order.id)
+                        setRefundAmount(String(order.total || ''))
+                        setRefundReason('')
+                        setCancellingId(null)
+                        setFulfillingId(null)
+                    }}
+                    onCancelRefund={() => {
+                        setRefundingOrderId(null)
+                        setRefundAmount('')
+                        setRefundReason('')
+                    }}
+                    onConfirmRefund={() => setRefundStepUpOpen(true)}
                     providerMode={fulfillmentProviderMode}
                 />
             ),
@@ -660,6 +734,19 @@ export default function OrdersPage() {
                     }
                 }}
             />
+
+            <StepUpDialog
+                store={store}
+                action="refund.approve"
+                open={refundStepUpOpen}
+                onSuccess={(result) => { void handleRefundStepUpSuccess(result) }}
+                onClose={() => {
+                    setRefundStepUpOpen(false)
+                    setRefundingOrderId(null)
+                    setRefundAmount('')
+                    setRefundReason('')
+                }}
+            />
         </Page>
     )
 }
@@ -668,6 +755,12 @@ function OrderActions({
     order,
     updating,
     fulfilling,
+    refunding,
+    refundLoading,
+    refundAmount,
+    refundReason,
+    onRefundAmountChange,
+    onRefundReasonChange,
     trackingNumber,
     onTrackingChange,
     onStatusChange,
@@ -675,11 +768,20 @@ function OrderActions({
     onCancelFulfill,
     onFulfill,
     onStartCancel,
+    onStartRefund,
+    onCancelRefund,
+    onConfirmRefund,
     providerMode,
 }: {
     order: OrderRow
     updating: boolean
     fulfilling: boolean
+    refunding: boolean
+    refundLoading: boolean
+    refundAmount: string
+    refundReason: string
+    onRefundAmountChange: (value: string) => void
+    onRefundReasonChange: (value: string) => void
     trackingNumber: string
     onTrackingChange: (value: string) => void
     onStatusChange: (orderId: string, status: string) => void
@@ -687,9 +789,13 @@ function OrderActions({
     onCancelFulfill: () => void
     onFulfill: () => void
     onStartCancel: () => void
+    onStartRefund: () => void
+    onCancelRefund: () => void
+    onConfirmRefund: () => void
     providerMode: ProviderMode | null
 }) {
     const stop = (event: SyntheticEvent) => event.stopPropagation()
+    const canRefund = order.payment_status === 'paid'
 
     return (
         <div className="flex min-w-[calc(var(--lb-size-control-lg)*4)] flex-col items-end gap-[var(--lb-space-2)]" onClick={stop}>
@@ -719,6 +825,11 @@ function OrderActions({
                         Cancel
                     </Button>
                 )}
+                {canRefund && !refunding && (
+                    <Button size="sm" variant="secondary" loading={refundLoading} onClick={onStartRefund}>
+                        Refund
+                    </Button>
+                )}
             </div>
 
             {fulfilling && (
@@ -742,6 +853,34 @@ function OrderActions({
                 </div>
             )}
 
+            {refunding && (
+                <div className="grid w-full gap-[var(--lb-space-2)] rounded-lg border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)]">
+                    <span className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                        Issue refund
+                    </span>
+                    <Input
+                        aria-label="Refund amount"
+                        placeholder={`Full amount (${currency(Number(order.total || 0))})`}
+                        value={refundAmount}
+                        onChange={(event) => onRefundAmountChange(event.target.value)}
+                        type="number"
+                        min="0"
+                        step="0.01"
+                    />
+                    <Input
+                        aria-label="Refund reason"
+                        placeholder="Reason (optional)"
+                        value={refundReason}
+                        onChange={(event) => onRefundReasonChange(event.target.value)}
+                    />
+                    <div className="flex justify-end gap-[var(--lb-space-2)]">
+                        <Button size="sm" loading={refundLoading} onClick={onConfirmRefund}>
+                            Verify and refund
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={onCancelRefund}>Close</Button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
@@ -775,7 +914,7 @@ function OrderDetail({ order }: { order: OrderRow }) {
                         {order.items.map((item, index) => (
                             <div
                                 key={`${item.product_id}-${index}`}
-                                className="grid gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] p-[var(--lb-space-3)] md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center"
+                                className="grid gap-[var(--lb-space-3)] lb-rounded-lg border border-[var(--lb-color-border)] p-[var(--lb-space-3)] md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center"
                             >
                                 <div className="min-w-0">
                                     <p className="m-0 truncate font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">

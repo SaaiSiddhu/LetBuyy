@@ -9,7 +9,7 @@ import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter'
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { stepUpErrorBody, verifySensitiveActionStepUp } from '../lib/security-controls';
 import { SubscriptionExecutionAdapter } from '../execution/subscription-execution.adapter';
-import { createRazorpayOrder, fetchRazorpayPayment } from '@letbuyy/infrastructure/razorpay-adapter';
+import { createRazorpayOrder, createRazorpayPaymentProvider, fetchRazorpayPayment } from '@letbuyy/infrastructure/razorpay-adapter';
 import { createStripeCheckoutSessionWithFetch } from '@letbuyy/infrastructure/stripe-adapter';
 import {
     RazorpayOrderSchema,
@@ -473,10 +473,6 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
         throw new ConflictError('Only captured payments can be refunded');
     }
 
-    const providerRefundId = body.provider_refund_id || stringOrNull(body.metadata?.provider_refund_id) || null;
-    if (!providerRefundId) {
-        throw new ConflictError('Provider refund id is required before refund can be recorded');
-    }
     const alreadyRefundedMinor = Math.max(0, Number(payment.refunded_amount_minor || 0));
     const refundAmountMinor = body.amount_minor || (payment.amount_minor - alreadyRefundedMinor);
     if (refundAmountMinor <= 0) {
@@ -487,6 +483,11 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
         throw new ConflictError('Refund amount cannot exceed captured amount');
     }
     const fullyRefunded = cumulativeRefundMinor === payment.amount_minor;
+
+    const manualProviderRefundId = body.provider_refund_id || stringOrNull(body.metadata?.provider_refund_id) || null;
+    if (!manualProviderRefundId && payment.provider !== 'razorpay') {
+        throw new ConflictError('Provider refund id is required before refund can be recorded for non-Razorpay payments');
+    }
 
     const stepUp = await verifySensitiveActionStepUp({
         action: 'refund.approve',
@@ -511,6 +512,46 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
 
     if (claim.kind === 'replay') {
         return c.json(claim.responseBody as never, claim.statusCode as never);
+    }
+
+    // For Razorpay payments without a manual provider_refund_id, call Razorpay API to create the refund.
+    // Non-Razorpay providers must supply provider_refund_id (validated above).
+    let providerRefundId: string;
+    if (manualProviderRefundId) {
+        providerRefundId = manualProviderRefundId;
+    } else {
+        // payment.provider === 'razorpay' is guaranteed here (non-razorpay without id was rejected above)
+        if (!payment.provider_payment_id) {
+            await idempotency.fail(claim.id);
+            return c.json({ error: { code: 'REFUND_PROVIDER_PAYMENT_ID_MISSING', message: 'Cannot initiate refund: provider payment id is not recorded for this payment.' } }, 409);
+        }
+        const razorpayProvider = createRazorpayPaymentProvider({
+            keyId: c.env.RAZORPAY_KEY_ID,
+            keySecret: c.env.RAZORPAY_KEY_SECRET,
+        });
+        const razorpayRefundKey = [
+            'payment.refund',
+            payment.id,
+            body.idempotency_key,
+        ].join(':');
+        const refundResult = await razorpayProvider.refund({
+            paymentId: payment.provider_payment_id,
+            storeId: payment.site_id,
+            orderId: payment.order_id,
+            amount: inrMoney(refundAmountMinor),
+            idempotencyKey: razorpayRefundKey,
+            metadata: { reason: body.reason || null, internal_payment_ref: payment.id, site_id: payment.site_id },
+        });
+        if (refundResult.status !== 'refunded' || !refundResult.references.providerRefundId) {
+            await idempotency.fail(claim.id);
+            return c.json({
+                error: {
+                    code: refundResult.failureCode || 'RAZORPAY_REFUND_FAILED',
+                    message: refundResult.failureMessage || 'Razorpay refund creation failed. No ledger entry was written.',
+                },
+            }, 502);
+        }
+        providerRefundId = refundResult.references.providerRefundId;
     }
 
     try {

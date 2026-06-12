@@ -102,7 +102,6 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
                 description: '2FA, passkeys, and recovery code readiness.',
                 keywords: ['security', '2fa', 'mfa', 'passkeys', 'recovery'],
                 Icon: ShieldCheck,
-                status: 'backend-needed',
             },
         ],
     },

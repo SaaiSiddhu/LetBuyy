@@ -10113,3 +10113,21 @@ body {
     width: calc(100vw - 16px);
   }
 }
+
+/* ======================================
+   V1 LAUNCH (LB-3/LB-4) — token utility classes.
+   Use these instead of arbitrary `rounded-[var(...)]` / `shadow-[var(...)]`
+   Tailwind classes; the design-system ratchet forbids new arbitrary values.
+   ====================================== */
+
+.lb-rounded-lg {
+  border-radius: var(--lb-radius-lg);
+}
+
+.lb-rounded-xl {
+  border-radius: var(--lb-radius-xl);
+}
+
+.lb-shadow-overlay {
+  box-shadow: var(--lb-shadow-overlay);
+}

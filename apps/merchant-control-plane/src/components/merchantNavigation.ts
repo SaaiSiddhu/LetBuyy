@@ -74,6 +74,10 @@ const storeNavigation: MerchantNavItem[] = [
         label: 'Money',
         icon: 'payments',
         shortcut: 'g y',
+        children: [
+            { path: 'settings/billing', label: 'Billing', icon: 'receipt_long' },
+            { path: 'payouts', label: 'Payouts', icon: 'account_balance', keywords: ['payout', 'settlement', 'transfer'] },
+        ],
     },
     {
         path: 'products',
