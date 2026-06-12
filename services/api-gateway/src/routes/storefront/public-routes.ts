@@ -910,6 +910,95 @@ export function registerStorefrontPublicRoutes(
         }));
     }
 
+    // GET /storefront/:subdomain/collections/:slug — Public collection with assigned products.
+    // The collections table uses id as the canonical URL segment (no slug column in baseline schema).
+    // The route accepts either a UUID (canonical) or any token and resolves by id.
+    router.get('/:subdomain/collections/:slug', async (c) => {
+        const identifier = c.req.param('slug');
+        if (!identifier || identifier.length > 120 || !/^[a-z0-9_-]+$/i.test(identifier)) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid collection identifier' } }, 400);
+        }
+
+        const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+        return cachedJson(c, await storefrontRequestCacheKey(c, 'collection-detail', handle, identifier), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+            const db = getSupabaseAdmin(c);
+            const store = await loadPublishedStore(c, c.req.param('subdomain'));
+            if (!store) {
+                return {
+                    status: 404,
+                    body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+                };
+            }
+
+            // Load collection by id (the baseline schema has no slug column; id is the URL token)
+            const buildCollectionQuery = (includeDeletedAtFilter: boolean) => {
+                let q = db
+                    .from('collections')
+                    .select('id, store_id, title, description, image_url, is_active')
+                    .eq('id', identifier)
+                    .eq('store_id', store.id)
+                    .eq('is_active', true);
+
+                if (includeDeletedAtFilter) q = q.is('deleted_at', null);
+                return q.maybeSingle();
+            };
+
+            let { data: collection, error: collectionError } = await buildCollectionQuery(true);
+            if (isMissingTableError(collectionError, 'collections')) {
+                return { status: 404, body: { success: false, error: { code: 'NOT_FOUND', message: 'Collection not found' } } };
+            }
+            if (collectionError) {
+                return { status: 500, body: dbFailureBody() };
+            }
+            if (!collection) {
+                return { status: 404, body: { success: false, error: { code: 'NOT_FOUND', message: 'Collection not found' } } };
+            }
+
+            const collectionRow = collection as SqlRecord;
+
+            // Load assigned product IDs from junction table
+            const { data: assignments, error: assignError } = await db
+                .from('collection_products')
+                .select('product_id')
+                .eq('collection_id', identifier)
+                .order('position', { ascending: true });
+
+            if (assignError && !isMissingTableError(assignError, 'collection_products')) {
+                return { status: 500, body: dbFailureBody() };
+            }
+
+            const productIds = (assignments || [])
+                .map((row) => (row as SqlRecord).product_id as string)
+                .filter(Boolean);
+
+            let products: PublicProductRow[] = [];
+            if (productIds.length > 0) {
+                const { data: productData, error: productError } = await queryPublicProducts(c, store.id, {
+                    limit: Math.min(productIds.length, 100),
+                    ids: productIds,
+                });
+                if (!productError) {
+                    const hydratedProducts = await hydratePublicProductVariants(c, productData || []);
+                    products = hydratedProducts;
+                }
+            }
+
+            return {
+                body: success({
+                    collection: {
+                        id: collectionRow.id,
+                        title: collectionRow.title,
+                        description: collectionRow.description || null,
+                        image_url: collectionRow.image_url || null,
+                    },
+                    products,
+                    total: products.length,
+                }),
+                tags: storefrontCacheTags(store.id, handle, 'storefront:collections', `storefront:collection:${identifier}`),
+            };
+        });
+    });
+
     // GET /storefront/:subdomain/categories
     router.get('/:subdomain/categories', async (c) => {
         const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');

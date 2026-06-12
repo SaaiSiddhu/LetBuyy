@@ -206,7 +206,7 @@ for (const file of appApiRoutes) {
   routeOwnershipCounts.set(classification, (routeOwnershipCounts.get(classification) || 0) + 1);
 }
 
-reporter.assert(appApiRoutes.length === 123, `App-local API route inventory changed without updating P4-4 classification: expected 123, found ${appApiRoutes.length}`);
+reporter.assert(appApiRoutes.length === 124, `App-local API route inventory changed without updating P4-4 classification: expected 124, found ${appApiRoutes.length}`);
 
 function appLocalOwnershipForFile(file) {
   if (/^apps\/[^/]+\/src\/app\/api\/.+\/route\.ts$/.test(file)) {

@@ -73,7 +73,7 @@ export default function CategoryGrid({ section, basePath }: CategoryGridProps) {
                     {categories.map((category) => (
                         <Link
                             key={category.slug}
-                            href={`${basePath}/shop?category=${encodeURIComponent(category.slug)}`}
+                            href={`${basePath}/collections/${encodeURIComponent(category.slug)}`}
                             className="storefront-collection-card group relative block aspect-[3/4] md:aspect-[4/3] rounded-xl overflow-hidden bg-[var(--lb-color-surface-subdued)]"
                         >
                             {category.image ? (

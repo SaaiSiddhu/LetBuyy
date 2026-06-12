@@ -743,6 +743,196 @@ router.patch('/collections/:id', validate('json', UpdateCollectionSchema), async
     return c.json(success(data));
 });
 
+// GET /products/collections/:id/products — List assigned products for a collection
+router.get('/collections/:id/products', async (c) => {
+    const auth = c.get('auth');
+    const collectionId = c.req.param('id');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const loadCollection = async (includeDeletedAtFilter: boolean) => {
+        let request = db
+            .from('collections')
+            .select('id, store_id')
+            .eq('id', collectionId);
+
+        if (includeDeletedAtFilter) request = request.is('deleted_at', null);
+        return request.maybeSingle();
+    };
+
+    let { data: existing, error: existingError } = await loadCollection(true);
+    if (isMissingDeletedAtError(existingError)) {
+        ({ data: existing, error: existingError } = await loadCollection(false));
+    }
+
+    if (isMissingTableError(existingError, 'collections')) {
+        return c.json({ error: { code: 'COLLECTION_SCHEMA_MISSING', message: 'Collections are not available in this environment.' } }, 503);
+    }
+    if (existingError) {
+        return c.json({ error: { code: 'DB_ERROR', message: existingError.message } }, 500);
+    }
+
+    const collection = existing as { id: string; store_id?: string | null } | null;
+    if (!collection?.store_id || !(await verifyStoreOwnership(db, collection.store_id, customUser.id, auth.user.storeId))) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Collection not found' } }, 404);
+    }
+
+    const { data: assignments, error: assignError } = await db
+        .from('collection_products')
+        .select('product_id, position')
+        .eq('collection_id', collectionId)
+        .order('position', { ascending: true });
+
+    if (isMissingTableError(assignError, 'collection_products')) {
+        return c.json(success({ collection_id: collectionId, product_ids: [], products: [] }));
+    }
+    if (assignError) {
+        return c.json({ error: { code: 'DB_ERROR', message: assignError.message } }, 500);
+    }
+
+    const productIds = (assignments || []).map((row) => row.product_id as string);
+    if (productIds.length === 0) {
+        return c.json(success({ collection_id: collectionId, product_ids: [], products: [] }));
+    }
+
+    const buildProductsQuery = (includeDeletedAtFilter: boolean) => {
+        let query = db
+            .from('products')
+            .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : PRODUCT_LIST_COLUMNS)
+            .in('id', productIds)
+            .eq('store_id', collection.store_id!);
+
+        if (includeDeletedAtFilter) query = query.is('deleted_at', null);
+        return query;
+    };
+
+    let { data: products, error: productsError } = await buildProductsQuery(true);
+    if (isMissingDeletedAtError(productsError)) {
+        ({ data: products, error: productsError } = await buildProductsQuery(false));
+    }
+
+    if (productsError) {
+        return c.json({ error: { code: 'DB_ERROR', message: productsError.message } }, 500);
+    }
+
+    return c.json(success({
+        collection_id: collectionId,
+        product_ids: productIds,
+        products: products || [],
+    }));
+});
+
+// PUT /products/collections/:id/products — Replace the product assignment set for a collection
+router.put('/collections/:id/products', async (c) => {
+    const auth = c.get('auth');
+    const collectionId = c.req.param('id');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const body = await c.req.json().catch(() => null);
+    if (!body || !Array.isArray(body.product_ids)) {
+        return c.json({ error: { code: 'VALIDATION', message: 'product_ids array is required' } }, 400);
+    }
+    const productIds = (body.product_ids as unknown[])
+        .filter((id): id is string => typeof id === 'string' && /^[0-9a-f-]{36}$/i.test(id))
+        .slice(0, 500);
+
+    const loadCollection = async (includeDeletedAtFilter: boolean) => {
+        let request = db
+            .from('collections')
+            .select('id, store_id')
+            .eq('id', collectionId);
+
+        if (includeDeletedAtFilter) request = request.is('deleted_at', null);
+        return request.maybeSingle();
+    };
+
+    let { data: existing, error: existingError } = await loadCollection(true);
+    if (isMissingDeletedAtError(existingError)) {
+        ({ data: existing, error: existingError } = await loadCollection(false));
+    }
+
+    if (isMissingTableError(existingError, 'collections')) {
+        return c.json({ error: { code: 'COLLECTION_SCHEMA_MISSING', message: 'Collections are not available in this environment.' } }, 503);
+    }
+    if (existingError) {
+        return c.json({ error: { code: 'DB_ERROR', message: existingError.message } }, 500);
+    }
+
+    const collection = existing as { id: string; store_id?: string | null } | null;
+    if (!collection?.store_id || !(await verifyStoreOwnership(db, collection.store_id, customUser.id, auth.user.storeId))) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Collection not found' } }, 404);
+    }
+
+    // Validate that all submitted product IDs belong to the same store
+    if (productIds.length > 0) {
+        const buildValidateQuery = (includeDeletedAtFilter: boolean) => {
+            let query = db
+                .from('products')
+                .select('id', { count: 'exact', head: true })
+                .in('id', productIds)
+                .eq('store_id', collection.store_id!);
+
+            if (includeDeletedAtFilter) query = query.is('deleted_at', null);
+            return query;
+        };
+
+        let { count: validCount, error: validateError } = await buildValidateQuery(true);
+        if (isMissingDeletedAtError(validateError)) {
+            ({ count: validCount, error: validateError } = await buildValidateQuery(false));
+        }
+
+        if (validateError) {
+            return c.json({ error: { code: 'DB_ERROR', message: validateError.message } }, 500);
+        }
+
+        if ((validCount || 0) !== productIds.length) {
+            return c.json({ error: { code: 'VALIDATION', message: 'One or more product IDs do not belong to this store' } }, 422);
+        }
+    }
+
+    // Delete removed assignments
+    const { error: deleteError } = await db
+        .from('collection_products')
+        .delete()
+        .eq('collection_id', collectionId);
+
+    if (deleteError && !isMissingTableError(deleteError, 'collection_products')) {
+        return c.json({ error: { code: 'DB_ERROR', message: deleteError.message } }, 500);
+    }
+
+    // Insert new assignments with position index
+    if (productIds.length > 0) {
+        const inserts = productIds.map((productId, index) => ({
+            collection_id: collectionId,
+            product_id: productId,
+            position: index,
+        }));
+
+        const { error: insertError } = await db
+            .from('collection_products')
+            .upsert(inserts, { onConflict: 'collection_id,product_id', ignoreDuplicates: false });
+
+        if (insertError) {
+            return c.json({ error: { code: 'DB_ERROR', message: insertError.message } }, 500);
+        }
+    }
+
+    return c.json(success({
+        collection_id: collectionId,
+        product_ids: productIds,
+        count: productIds.length,
+    }));
+});
+
 // DELETE /products/collections/:id — Soft-delete a collection
 router.delete('/collections/:id', async (c) => {
     const auth = c.get('auth');

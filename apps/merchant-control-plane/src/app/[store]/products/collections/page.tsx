@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import type { Collection as SharedCollection } from '@letbuyy/shared-types'
-import { Button, Input, Table, Avatar, Badge, Banner, Card, EmptyState, Package, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Skeleton, Textarea, useToast } from '@letbuyy/ui'
+import { Button, Input, Table, Avatar, Badge, Banner, Card, Checkbox, EmptyState, Package, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Skeleton, Textarea, useToast } from '@letbuyy/ui'
 
 type CollectionRow = Pick<SharedCollection, 'id' | 'title' | 'description' | 'image_url' | 'created_at'> & {
     is_active: boolean
@@ -13,6 +13,25 @@ type CollectionRow = Pick<SharedCollection, 'id' | 'title' | 'description' | 'im
 interface CollectionFormState {
     title: string
     description: string
+}
+
+interface ProductRow {
+    id: string
+    name: string
+    thumbnail_url?: string | null
+    price?: number
+    is_active?: boolean
+}
+
+interface ManageProductsState {
+    collectionId: string
+    collectionTitle: string
+    open: boolean
+    loading: boolean
+    saving: boolean
+    allProducts: ProductRow[]
+    assignedIds: Set<string>
+    searchQuery: string
 }
 
 const emptyForm: CollectionFormState = {
@@ -51,6 +70,27 @@ function normalizeCollection(row: Record<string, unknown>): CollectionRow {
     }
 }
 
+const emptyManageState: ManageProductsState = {
+    collectionId: '',
+    collectionTitle: '',
+    open: false,
+    loading: false,
+    saving: false,
+    allProducts: [],
+    assignedIds: new Set(),
+    searchQuery: '',
+}
+
+function normalizeProduct(row: Record<string, unknown>): ProductRow {
+    return {
+        id: String(row.id || ''),
+        name: String(row.name || 'Unnamed product'),
+        thumbnail_url: typeof row.thumbnail_url === 'string' ? row.thumbnail_url : null,
+        price: typeof row.price === 'number' ? row.price : Number(row.price) || 0,
+        is_active: row.is_active !== false,
+    }
+}
+
 export default function CollectionsPage() {
     const { store } = useParams<{ store: string }>()
     const { notify } = useToast()
@@ -60,6 +100,7 @@ export default function CollectionsPage() {
     const [showCreate, setShowCreate] = useState(false)
     const [form, setForm] = useState<CollectionFormState>(emptyForm)
     const [creating, setCreating] = useState(false)
+    const [manage, setManage] = useState<ManageProductsState>(emptyManageState)
 
     const loadCollections = useCallback(async () => {
         setLoading(true)
@@ -158,6 +199,90 @@ export default function CollectionsPage() {
         }
     }, [creating, form.description, form.title, loadCollections, notify, store])
 
+    const openManageProducts = useCallback(async (collection: CollectionRow) => {
+        setManage((prev) => ({
+            ...prev,
+            collectionId: collection.id,
+            collectionTitle: collection.title,
+            open: true,
+            loading: true,
+            allProducts: [],
+            assignedIds: new Set(),
+            searchQuery: '',
+        }))
+
+        try {
+            const [productsRes, assignedRes] = await Promise.all([
+                fetch(`/api/stores/${encodeURIComponent(store)}/products?limit=200`, { cache: 'no-store' }),
+                fetch(`/api/stores/${encodeURIComponent(store)}/collections/${encodeURIComponent(collection.id)}/products`, { cache: 'no-store' }),
+            ])
+
+            const [productsPayload, assignedPayload] = await Promise.all([
+                productsRes.json().catch(() => null),
+                assignedRes.json().catch(() => null),
+            ])
+
+            const allProducts = Array.isArray(productsPayload?.data)
+                ? productsPayload.data.map((row: Record<string, unknown>) => normalizeProduct(row)).filter((p: ProductRow) => p.id)
+                : []
+
+            const assignedIds = new Set<string>(
+                Array.isArray(assignedPayload?.data?.product_ids)
+                    ? (assignedPayload.data.product_ids as string[])
+                    : [],
+            )
+
+            setManage((prev) => ({ ...prev, loading: false, allProducts, assignedIds }))
+        } catch {
+            setManage((prev) => ({ ...prev, loading: false }))
+            notify({ title: 'Could not load products', description: 'Unable to load product list.', variant: 'critical' })
+        }
+    }, [notify, store])
+
+    const toggleProductAssignment = useCallback((productId: string) => {
+        setManage((prev) => {
+            const next = new Set(prev.assignedIds)
+            if (next.has(productId)) {
+                next.delete(productId)
+            } else {
+                next.add(productId)
+            }
+            return { ...prev, assignedIds: next }
+        })
+    }, [])
+
+    const saveManageProducts = useCallback(async () => {
+        if (manage.saving) return
+        setManage((prev) => ({ ...prev, saving: true }))
+        try {
+            const response = await fetch(
+                `/api/stores/${encodeURIComponent(store)}/collections/${encodeURIComponent(manage.collectionId)}/products`,
+                {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product_ids: Array.from(manage.assignedIds) }),
+                },
+            )
+            const payload = await response.json().catch(() => null)
+            if (!response.ok) {
+                throw new Error(getErrorMessage(payload, 'Unable to save products'))
+            }
+            setManage((prev) => ({ ...prev, saving: false, open: false }))
+            notify({ title: 'Products updated', description: `${manage.collectionTitle} product list saved.`, variant: 'success' })
+            await loadCollections()
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to save products'
+            setManage((prev) => ({ ...prev, saving: false }))
+            notify({ title: 'Could not save products', description: message, variant: 'critical' })
+        }
+    }, [loadCollections, manage.assignedIds, manage.collectionId, manage.collectionTitle, manage.saving, notify, store])
+
+    const filteredManageProducts = useMemo(() => {
+        const q = manage.searchQuery.trim().toLowerCase()
+        if (!q) return manage.allProducts
+        return manage.allProducts.filter((p) => p.name.toLowerCase().includes(q))
+    }, [manage.allProducts, manage.searchQuery])
+
     const columns = useMemo(() => [
         {
             key: 'title',
@@ -193,7 +318,21 @@ export default function CollectionsPage() {
                 />
             ),
         },
-    ], [])
+        {
+            key: 'actions',
+            header: '',
+            render: (row: CollectionRow) => (
+                <Button
+                    variant="secondary"
+                    size="slim"
+                    type="button"
+                    onClick={() => void openManageProducts(row)}
+                >
+                    Manage products
+                </Button>
+            ),
+        },
+    ], [openManageProducts])
 
     if (loading) {
         return (
@@ -325,6 +464,81 @@ export default function CollectionsPage() {
                 onDiscard={resetCreateForm}
                 saveLabel="Create collection"
             />
+
+            {manage.open && (
+                <Card>
+                    <Section
+                        title={`Manage products — ${manage.collectionTitle}`}
+                        description="Select which products belong to this collection. Changes take effect after saving."
+                        action={
+                            <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                <Button
+                                    type="button"
+                                    onClick={() => void saveManageProducts()}
+                                    loading={manage.saving}
+                                    disabled={manage.saving || manage.loading}
+                                >
+                                    Save products
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    onClick={() => setManage((prev) => ({ ...prev, open: false }))}
+                                    disabled={manage.saving}
+                                >
+                                    Cancel
+                                </Button>
+                            </div>
+                        }
+                    >
+                        {manage.loading ? (
+                            <Skeleton variant="table" lines={4} />
+                        ) : (
+                            <>
+                                <div className="mb-[var(--lb-space-3)]">
+                                    <Input
+                                        label="Filter products"
+                                        value={manage.searchQuery}
+                                        onChange={(e) => setManage((prev) => ({ ...prev, searchQuery: e.target.value }))}
+                                        placeholder="Search by name…"
+                                    />
+                                </div>
+                                {filteredManageProducts.length === 0 ? (
+                                    <EmptyState
+                                        icon={<Package className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
+                                        title="No products found"
+                                        body="Add products to this store to assign them to collections."
+                                    />
+                                ) : (
+                                    <div className="divide-y divide-[var(--lb-color-border-subdued)]">
+                                        {filteredManageProducts.map((product) => (
+                                            <label
+                                                key={product.id}
+                                                className="flex min-h-11 cursor-pointer items-center gap-[var(--lb-space-3)] py-[var(--lb-space-2)]"
+                                            >
+                                                <Checkbox
+                                                    checked={manage.assignedIds.has(product.id)}
+                                                    onChange={() => toggleProductAssignment(product.id)}
+                                                    disabled={manage.saving}
+                                                />
+                                                <Avatar name={product.name} imageUrl={product.thumbnail_url || undefined} size="sm" />
+                                                <span className="flex-1 text-[var(--lb-font-size-body)] text-[var(--lb-color-text)]">
+                                                    {product.name}
+                                                </span>
+                                                {product.price !== undefined && (
+                                                    <span className="text-[var(--lb-font-size-caption)] text-[var(--lb-color-text-subdued)]">
+                                                        ₹{product.price.toLocaleString('en-IN')}
+                                                    </span>
+                                                )}
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </Section>
+                </Card>
+            )}
         </Page>
     )
 }

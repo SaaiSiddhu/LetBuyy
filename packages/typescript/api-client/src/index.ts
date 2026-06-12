@@ -2330,6 +2330,17 @@ export type StorefrontContentPayload = JsonRecord & {
 
 export type StorefrontBlogPostPayload = BlogPost & JsonRecord;
 
+export type StorefrontCollectionPayload = {
+  collection: {
+    id: string;
+    title: string;
+    description?: string | null;
+    image_url?: string | null;
+  };
+  products: Product[];
+  total: number;
+};
+
 export type StorefrontLookupResult = JsonRecord & {
   status: 'invalid' | 'found' | 'not_found' | string;
   message?: string | null;
@@ -4061,6 +4072,10 @@ export class LetbuyyApiClient {
         this.requestData<Collection>(`/products/collections/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
       remove: (id: string, options?: LetbuyyRequestOptions) =>
         this.requestData<{ deleted: boolean; id: string }>(`/products/collections/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+      listProducts: (id: string, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ collection_id: string; product_ids: string[]; products: Product[] }>(`/products/collections/${encodePathSegment(id)}/products`, options),
+      replaceProducts: (id: string, input: { product_ids: string[] }, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ collection_id: string; product_ids: string[]; count: number }>(`/products/collections/${encodePathSegment(id)}/products`, { ...options, method: 'PUT', body: input }),
     },
     giftCards: {
       list: (query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
@@ -4600,6 +4615,8 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontProductReviewsResult>('/storefront/reviews', { ...options, query }),
     submitProductReview: (input: StorefrontProductReviewInput, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontProductReviewResult>('/storefront/reviews', { ...options, method: 'POST', body: input }),
+    getCollectionWithProducts: (subdomain: string, collectionId: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCollectionPayload>(`/storefront/${encodePathSegment(subdomain)}/collections/${encodePathSegment(collectionId)}`, options),
   };
 
   withOptions(options: Partial<LetbuyyApiClientOptions>): LetbuyyApiClient {
