@@ -21,6 +21,7 @@ const requiredScriptDirectories = [
   "scripts/git-hooks",
   "scripts/migration",
   "scripts/utilities",
+  "scripts/money-certification",
 ];
 
 const allowedRootScriptFiles = new Set([
