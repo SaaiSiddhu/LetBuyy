@@ -16,7 +16,7 @@ This directory is the complete launch-readiness program. It is **documentation o
 | 6 | `LIQUID_ACTIVATION_PROGRAM.md` | React/Liquid parity matrix, activation, canary, rollback (React deletion gated) |
 | 7 | `MERCHANT_PILOT_PROGRAM.md` | First 5 merchants: onboarding, support, feedback, success criteria |
 | 8 | `LAUNCH_CERTIFICATION.md` | Launch requirements + GO / NO-GO checklist |
-| 9 | `LAUNCH_READINESS_CODEX_EXECUTION_PROMPT.md` | The single gated Codex execution constitution for this program |
+| 9 | `LAUNCH_READINESS_CLAUDE_EXECUTION_PROMPT.md` | The single gated Claude execution constitution for this program |
 
 ## Standing constraints (apply to every document)
 
@@ -24,6 +24,6 @@ This directory is the complete launch-readiness program. It is **documentation o
 2. No document here reopens a settled decision (Liquid winner, canonical ledger SSOT, identity-platform sole issuer, RLS+GUC, modular monolith, one region, 0% commission, PA-split rails only).
 3. The governance gate (`node scripts/validate-governance.mjs --lane=gate`) must be GREEN before and after every commit this program produces.
 4. **Prompt-perimeter registration duty (commit-time):** two files in this program's scope are prompt-class by filename and MUST be registered in `PROMPTS.md` in the same commit that tracks them, or the gate goes red:
-   - `| CANONICAL-LAUNCH-READINESS-EXECUTION | `LAUNCH_READINESS_2026_06_12/LAUNCH_READINESS_CODEX_EXECUTION_PROMPT.md` | CANONICAL-EXECUTION |`
+   - `| CANONICAL-LAUNCH-READINESS-EXECUTION | `LAUNCH_READINESS_2026_06_12/LAUNCH_READINESS_CLAUDE_EXECUTION_PROMPT.md` | CANONICAL-EXECUTION |`
    - `| EXECUTED-SAFE-DELETION-CERTIFICATION | `FINAL_SAFE_DELETION_CERTIFICATION_2026_06_12/FINAL_SAFE_DELETION_CERTIFICATION.md` | EXECUTED-DO-NOT-RERUN |` (a report, but its basename matches the DELETION prompt-class token)
    The existing `CANONICAL-FINAL-CONVERGENCE-EXECUTION` row must remain — `prompt-perimeter-validator.mjs:13` pins it. Retargeting that pin is a future governed change, not part of this program's baseline.
