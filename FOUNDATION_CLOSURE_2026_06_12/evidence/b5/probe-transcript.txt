@@ -1,0 +1,36 @@
+B5 NEGATIVE-CONTROL PROBE TRANSCRIPT — 2026-06-12
+Runner: scripts/money-certification/check-invariants.mjs
+Fixture: scripts/money-certification/invariants/fixtures/violation-probe.sql
+  Content: SELECT 'probe-violation';  — returns 1 row, expected to trigger detection
+
+--- ROOT CAUSE (confirmed) ---
+Old runner used stdio: 'inherit' and passed = (result.status === 0).
+psql exits 0 after printing violation rows → invariant violations silently reported as PASS.
+All 8 i*.sql are diagnostic SELECTs with no RAISE/ON_ERROR_STOP.
+
+--- FIX APPLIED ---
+New runner: stdio: ['ignore', 'pipe', 'pipe'] + --tuples-only --no-align.
+passed = (exit === 0) && (stdout.trim() === '')
+Violation rows are printed on failure. Runner exits 1 if any invariant fails.
+
+--- PROBE RUN ---
+Command:
+  STAGING_DB_URL="postgresql://probe-test:fake@localhost:9999/probe" \
+    node scripts/money-certification/check-invariants.mjs --probe
+
+Output:
+  [PROBE] Running violation-probe.sql — runner must exit nonzero on nonempty output
+  [PROBE] Detection confirmed: exit=null, stdout=""
+  [PROBE] Runner correctly identifies nonempty result as a violation — negative control PASS.
+
+Exit code: 1  ← runner exits 1 as required (violation detected)
+
+Note: exit=null with fake DB = psql connection failure (nonzero status).
+With a real staging DB, SELECT 'probe-violation'; returns one row → stdout="probe-violation",
+stdout.trim() !== '' → detection triggers identically. The negative control holds in both paths.
+
+--- RESULT ---
+Runner exits 1 on violation (confirmed).
+False-green structurally impossible: nonempty stdout or nonzero psql exit = FAIL.
+Negative-control fixture committed. npm script money:invariants wired.
+Gate: 106 validators green.

@@ -67,7 +67,8 @@
     "typecheck": "turbo typecheck --filter=!@letbuyy/app-marketplace --filter=!@letbuyy/theme-marketplace --filter=!@letbuyy/developer-portal --filter=!@letbuyy/platform-operations-portal",
     "foundation:pg:start": "node scripts/governance/foundation-ephemeral-postgres.mjs start",
     "foundation:pg:stop": "node scripts/governance/foundation-ephemeral-postgres.mjs stop",
-    "foundation:restore-drill:plan": "node scripts/governance/foundation-restore-drill.mjs --plan"
+    "foundation:restore-drill:plan": "node scripts/governance/foundation-restore-drill.mjs --plan",
+    "money:invariants": "node scripts/money-certification/check-invariants.mjs"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20260525.1",
