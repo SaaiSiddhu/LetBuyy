@@ -1,0 +1,26 @@
+B2 CLOSURE EVIDENCE — 2026-06-12
+Branch invariant: main == stepup/main
+
+--- BEFORE FAST-FORWARD ---
+git rev-list --count main..stepup/main = 14
+(14 commits: CP-0, B4, B3, B5, B6, B7a, B7b, B7c foundation-closure commits)
+
+--- FAST-FORWARD COMMAND ---
+git branch -f main stepup/main
+
+--- AFTER FAST-FORWARD ---
+git rev-list --count main..stepup/main = 0
+git rev-parse main == git rev-parse stepup/main (identical SHAs)
+
+--- BRANCH-LAG GUARD ---
+node scripts/validate-governance.mjs → 107 validators PASS
+Branch lag guard validator: "Local working branch is 0 commit(s) ahead of main" (warning suppressed)
+
+--- WHY B2 IS LAST ---
+FC-01 §B2: "every prior closure commit reopens the lag; ff only after the final content commit"
+The CLOSURE-B2 ledger row is appended in THIS commit (the final content commit on stepup/main).
+The ff then moves main to this exact SHA, capturing the row.
+
+--- ROLLBACK ---
+git branch -f main <previous-sha> (reflog: git reflog show main)
+No content risk — ff is a ref move only.
