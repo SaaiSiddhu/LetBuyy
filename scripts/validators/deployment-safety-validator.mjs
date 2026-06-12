@@ -181,4 +181,28 @@ for (const fragment of [
   reporter.assert(productionRollout.includes(fragment), `Production rollout workflow missing fail-closed gate: ${fragment}`);
 }
 
-reporter.finish("Deployment wrappers, rollback wrapper, release promotion, and CI deployment gates checked");
+// B3 staging gate assertions: deploy-staging.yml must run the governance gate before any deploy job.
+const stagingDeployWorkflow = readFile(".github/workflows/deploy-staging.yml");
+for (const fragment of [
+  "governance-gate:",
+  "node scripts/validate-governance.mjs --lane=gate",
+  "git ls-files --others --exclude-standard database/supabase/migrations/",
+]) {
+  reporter.assert(
+    stagingDeployWorkflow.includes(fragment),
+    `deploy-staging.yml missing governance-gate fragment: ${fragment}`,
+  );
+}
+reporter.assert(
+  (stagingDeployWorkflow.match(/needs:.*governance-gate/g) || []).length >= 2,
+  "deploy-staging.yml: both deploy-workers and deploy-apps must declare needs: governance-gate",
+);
+
+// B3 staging-deploy.yml: push trigger for develop must be disabled (develop is stale).
+const stagingDeployLegacy = readFile(".github/workflows/staging-deploy.yml");
+reporter.assert(
+  !(/^\s*push:/m.test(stagingDeployLegacy) && stagingDeployLegacy.includes("develop")),
+  "staging-deploy.yml must not have an active push trigger for develop — disable it or add the governance gate (B3 closure)",
+);
+
+reporter.finish("Deployment wrappers, rollback wrapper, release promotion, CI deployment gates, and staging gate checked");

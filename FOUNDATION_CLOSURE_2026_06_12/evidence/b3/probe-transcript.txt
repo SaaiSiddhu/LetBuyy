@@ -1,0 +1,33 @@
+B3 MUTATION PROBE TRANSCRIPT — 2026-06-12
+Validator: scripts/validators/deployment-safety-validator.mjs
+Probe: strip 'needs: governance-gate' from deploy-staging.yml copy
+
+--- STEP 1: Strip needs: governance-gate ---
+sed removes both "needs: governance-gate" (deploy-workers) and
+"needs: [governance-gate, deploy-workers]" (deploy-apps) → plain "needs: deploy-workers"
+
+node scripts/validators/deployment-safety-validator.mjs
+
+OUTPUT (exit 1 — FAIL, as required):
+Deployment safety validator failed:
+- deploy-staging.yml: both deploy-workers and deploy-apps must declare needs: governance-gate
+
+--- STEP 2: Restore original ---
+Restored original deploy-staging.yml from backup.
+
+node scripts/validators/deployment-safety-validator.mjs
+
+OUTPUT (exit 0 — PASS, clean state):
+Deployment safety validator passed (Deployment wrappers, rollback wrapper, release promotion, CI deployment gates, and staging gate checked).
+
+--- DECISIONS ---
+deploy-staging.yml: governance-gate job added; deploy-workers and deploy-apps both
+  declare needs: governance-gate; untracked-migration guard added.
+staging-deploy.yml: push trigger for 'develop' disabled with explanatory comment
+  (develop is fully merged/stale per LAUNCH-READINESS-P2-5; active deploy lane is
+  deploy-staging.yml).
+
+--- RESULT ---
+Detection confirmed: validator fails when needs is absent.
+Clean state confirmed: validator passes after restore.
+Gate: 106 validators green.

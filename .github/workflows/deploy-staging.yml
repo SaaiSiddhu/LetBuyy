@@ -17,10 +17,46 @@ env:
   HAS_VERCEL_CREDS: ${{ secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' }}
 
 jobs:
+  governance-gate:
+    name: Governance Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run governance gate
+        run: node scripts/validate-governance.mjs --lane=gate
+
+      - name: Reject untracked Supabase migrations
+        run: |
+          UNTRACKED=$(git ls-files --others --exclude-standard database/supabase/migrations/)
+          if [ -n "$UNTRACKED" ]; then
+            echo "Untracked Supabase migrations are forbidden before staging deploy:"
+            echo "$UNTRACKED"
+            exit 1
+          fi
+
   deploy-workers:
     name: Deploy Cloudflare Workers (Staging)
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    needs: governance-gate
 
     steps:
       - name: Checkout
@@ -87,7 +123,7 @@ jobs:
     name: Deploy Vercel Apps (Staging)
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: deploy-workers
+    needs: [governance-gate, deploy-workers]
 
     strategy:
       matrix:
