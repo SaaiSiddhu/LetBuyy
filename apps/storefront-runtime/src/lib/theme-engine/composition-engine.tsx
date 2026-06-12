@@ -379,7 +379,20 @@ export default async function StorefrontCompositionEngine({
     sectionData: Map<string, SectionRenderData>;
     editorMode?: boolean;
 }) {
+    const renderStart = Date.now();
     const liquidHtml = await renderLiquidPlan({ store, plan, sectionData, editorMode });
+    const engine = liquidHtml ? 'liquid' : 'react';
+    // Canary telemetry (Document 6 §4): structured log consumed by monitoring pipeline.
+    console.log(JSON.stringify({
+        event: 'lb:canary:render',
+        engine,
+        subdomain: plan.route.subdomain,
+        template: plan.template.id,
+        route_type: plan.route.type,
+        latency_ms: Date.now() - renderStart,
+        editor_mode: editorMode,
+    }));
+
     if (liquidHtml) {
         return (
             <LiquidRenderedHtml

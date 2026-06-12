@@ -165,7 +165,12 @@ function rewriteToStore(req: NextRequest, subdomain: string, previewMode: boolea
   if (!destination.pathname.startsWith(`/store/${subdomain}`)) {
     destination.pathname = `/store/${subdomain}${destination.pathname}`;
   }
-  return NextResponse.rewrite(destination, { request: { headers: requestHeaders } });
+  const response = NextResponse.rewrite(destination, { request: { headers: requestHeaders } });
+  // Canary observability (Document 6 §4): reflects the global render-engine flag so CDN/monitoring
+  // can bucket requests by active engine without parsing response bodies.
+  const renderEngine = process.env.THEME_LIQUID_RENDERING_DEFAULT_ENABLED === 'true' ? 'liquid' : 'react';
+  response.headers.set('X-Lb-Render-Engine', renderEngine);
+  return response;
 }
 
 function holdingPage(req: NextRequest, status: number, reason: string, site?: StorefrontAccessContext): NextResponse {

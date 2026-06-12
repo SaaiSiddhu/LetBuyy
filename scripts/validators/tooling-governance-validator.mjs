@@ -22,6 +22,7 @@ const requiredScriptDirectories = [
   "scripts/migration",
   "scripts/utilities",
   "scripts/money-certification",
+  "scripts/liquid-parity",
 ];
 
 const allowedRootScriptFiles = new Set([
