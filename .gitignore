@@ -142,3 +142,7 @@ packages/dart/**/build/
 .vercel
 **/.vercel/
 .env*.local
+
+# Graphify code-knowledge-graph artifacts (generated, not committed)
+graphify-out/
+.graphify/

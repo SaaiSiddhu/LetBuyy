@@ -1,0 +1,47 @@
+name: Claude Security Review (PR)
+
+# Runs Anthropic's claude-code-security-review on the diff of every pull request.
+# Findings are posted as inline PR review comments. Read-only: it never edits code
+# or merges. Requires repository secret ANTHROPIC_API_KEY.
+#
+# This is ADDITIVE to the 107-validator governance gate (scripts/validate-governance.mjs),
+# which remains the authoritative blocking gate. This job is advisory security signal.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: security-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  claude-security-review:
+    name: AI security review of PR diff
+    runs-on: ubuntu-latest
+    # Skip on forks (no access to secrets) and when the key is absent.
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    steps:
+      - name: Checkout (full history for accurate diff)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude security review
+        uses: anthropics/claude-code-security-review@main
+        with:
+          comment-pr: true
+          # Focus the reviewer on LetBuyy's high-risk surfaces.
+          false-positive-filtering-instructions: |
+            LetBuyy invariants — do NOT flag these as issues when correctly followed:
+            - Money mutations go through SECURITY DEFINER Postgres RPCs called via db.rpc
+              (never .from(money_table).insert/update in TS). This is correct, not a bug.
+            - Customer sessions are HS256 (CUSTOMER_SESSION_SECRET); merchant sessions are
+              ES256 (identity-platform). Separation is intentional.
+            - getSupabaseAdmin (service role) is used in the gateway BEHIND explicit
+              verifySiteOwnership/tenant checks — flag only if an ownership check is missing.
+          claude-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
