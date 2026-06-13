@@ -2163,8 +2163,30 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         sections: { 'customer-register-default': { type: 'customer-register', settings: {} } },
         order: ['customer-register-default'],
       },
+      'customers/account': {
+        name: 'Account',
+        layout: 'theme',
+        sections: { 'customer-account-default': { type: 'customer-account', settings: {} } },
+        order: ['customer-account-default'],
+      },
     },
     sections: {
+      'customer-account': createLiquidSectionFile({
+        type: 'customer-account',
+        name: 'Customer Account',
+        settings: [liquidSetting('heading', 'text', 'Heading', { default: 'Your account' })],
+        body: [
+          '<section class="lb-account" data-section-id="{{ section.id }}">',
+          '  {% if customer %}',
+          '  <h1>{{ section.settings.heading }}</h1>',
+          '  <p class="lb-account__hello">Signed in as {{ customer.name | default: customer.email }}</p>',
+          '  <nav class="lb-account__nav"><a href="/account/orders">Orders</a><a href="/account/addresses">Addresses</a><a href="/account/settings">Settings</a><a href="/api/customer/logout">Sign out</a></nav>',
+          '  {% else %}',
+          '  <p class="lb-account__guest">Please <a href="/customers/login">sign in</a> to view your account.</p>',
+          '  {% endif %}',
+          '</section>',
+        ],
+      }),
       'customer-login': createLiquidSectionFile({
         type: 'customer-login',
         name: 'Customer Login',
