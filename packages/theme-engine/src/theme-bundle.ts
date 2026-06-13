@@ -2136,8 +2136,28 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         },
         order: ['collection-banner-default', 'collection-products'],
       },
+      search: {
+        name: 'Urban Kicks search',
+        layout: 'theme',
+        sections: {
+          'search-box-default': { type: 'search-box', settings: { placeholder: 'Search products' } },
+          'search-results': { type: 'collection-product-list', settings: { title: 'Results' } },
+        },
+        order: ['search-box-default', 'search-results'],
+      },
     },
     sections: {
+      'search-box': createLiquidSectionFile({
+        type: 'search-box',
+        name: 'Search',
+        settings: [liquidSetting('placeholder', 'text', 'Placeholder', { default: 'Search products' })],
+        body: [
+          '<section class="lb-search" data-section-id="{{ section.id }}">',
+          '  <lb-search data-lb-island="search" data-search-url="/search"><input type="search" placeholder="{{ section.settings.placeholder }}" aria-label="Search products"></lb-search>',
+          '  {% if search.terms %}<p class="lb-search__terms">Results for "{{ search.terms }}"</p>{% endif %}',
+          '</section>',
+        ],
+      }),
       'collection-banner': createLiquidSectionFile({
         type: 'collection-banner',
         name: 'Collection Banner',
