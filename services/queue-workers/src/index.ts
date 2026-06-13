@@ -469,6 +469,7 @@ function isTransactionalEmailJob(jobType: string): boolean {
   return jobType === 'email.order_confirmation'
     || jobType === 'email.order_cancelled'
     || jobType === 'email.order_refunded'
+    || jobType === 'email.gift_card_issued'
     || jobType === 'email.employee_invite'
     || jobType === 'email.contact_owner_notification';
 }

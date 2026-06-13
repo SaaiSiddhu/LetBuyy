@@ -2620,7 +2620,57 @@ export type UpdateCollectionInput = Partial<Pick<Collection, 'title' | 'descript
 };
 export type CreateProductCategoryInput = Pick<ProductCategory, 'store_id' | 'name'> & NewRecord<ProductCategory>;
 export type UpdateProductCategoryInput = NewRecord<ProductCategory>;
-export type CreateGiftCardInput = Pick<GiftCard, 'store_id' | 'initial_value'> & NewRecord<GiftCard>;
+export type CreateGiftCardInput = Pick<GiftCard, 'store_id' | 'initial_value'> & {
+  currency?: string;
+  expires_at?: string | null;
+  recipient_email?: string | null;
+  recipient_name?: string | null;
+  note?: string | null;
+} & NewRecord<GiftCard>;
+// LB-11 — gift card lifecycle surfaces (canonical gift_card_accounts model).
+export interface GiftCardLifecycleItem {
+  id: string;
+  store_id: string;
+  code_last4: string;
+  initial_value: number;
+  balance: number;
+  currency: string;
+  status: 'active' | 'held' | 'disabled' | 'expired';
+  fraud_hold_reason?: string | null;
+  expires_at?: string | null;
+  created_at?: string | null;
+  recipient_email?: string | null;
+  redemption_count?: number;
+}
+export interface GiftCardIssued extends GiftCardLifecycleItem {
+  // The plaintext code is returned exactly once, at issuance.
+  code: string;
+}
+export interface GiftCardBalanceResult {
+  found: boolean;
+  id?: string;
+  code_last4?: string;
+  initial_value?: number;
+  balance?: number;
+  currency?: string;
+  status?: string;
+  expires_at?: string | null;
+  redeemable?: boolean;
+}
+export interface GiftCardTransactionsResult {
+  found: boolean;
+  id?: string;
+  code_last4?: string;
+  balance?: number;
+  status?: string;
+  ledger?: Array<{ id: string; entry_type: string; amount: number; balance_after: number; order_id?: string | null; created_at: string; metadata?: Record<string, unknown> }>;
+  redemptions?: Array<{ id: string; order_id: string; amount: number; status: string; created_at: string }>;
+}
+export interface GiftCardStatusUpdateInput {
+  store_id: string;
+  status: 'active' | 'held' | 'disabled';
+  reason?: string | null;
+}
 export type InventoryAdjustInput = {
   product_id: string;
   variant_id?: string | null;
@@ -4083,9 +4133,15 @@ export class LetbuyyApiClient {
     },
     giftCards: {
       list: (query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
-        this.requestData<GiftCard[]>('/products/gift-cards', { ...options, query }),
+        this.requestData<GiftCardLifecycleItem[]>('/products/gift-cards', { ...options, query }),
       create: (input: CreateGiftCardInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<GiftCard>('/products/gift-cards', { ...options, method: 'POST', body: input }),
+        this.requestData<GiftCardIssued>('/products/gift-cards', { ...options, method: 'POST', body: input }),
+      balance: (query: { store_id: string; code: string }, options?: LetbuyyRequestOptions) =>
+        this.requestData<GiftCardBalanceResult>('/products/gift-cards/balance', { ...options, query }),
+      transactions: (id: string, query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
+        this.requestData<GiftCardTransactionsResult>(`/products/gift-cards/${encodePathSegment(id)}/transactions`, { ...options, query }),
+      setStatus: (id: string, input: GiftCardStatusUpdateInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<GiftCardLifecycleItem>(`/products/gift-cards/${encodePathSegment(id)}/status`, { ...options, method: 'POST', body: input }),
     },
     importCsv: (input: ProductImportInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ProductImportResult>('/export/import-products', { ...options, method: 'POST', body: input }),

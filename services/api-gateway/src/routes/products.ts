@@ -5,6 +5,7 @@ import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, 
 import { validate } from '../middleware/validation';
 import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../execution/product-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { registerGiftCardRoutes } from './gift-cards';
 import {
     CreateProductSchema,
     UpdateProductSchema,
@@ -14,7 +15,6 @@ import {
     StoreScopedQuerySchema,
     CreateCollectionSchema,
     UpdateCollectionSchema,
-    CreateGiftCardSchema,
     type CreateProductInput,
     type UpdateProductInput,
     type BulkProductActionInput,
@@ -23,9 +23,6 @@ import {
     type StoreScopedQueryInput,
     type CreateCollectionInput,
     type UpdateCollectionInput,
-    type CreateGiftCardInput,
-    generateGiftCardCodeFromBytes,
-    planGiftCardInsert,
 } from '@letbuyy/commerce-core';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -998,88 +995,10 @@ router.delete('/collections/:id', async (c) => {
     return c.json(success({ deleted: true, id: collectionId }));
 });
 
-// GET /products/gift-cards — List gift cards for a store
-router.get('/gift-cards', validate('query', StoreScopedQuerySchema), async (c) => {
-    const auth = c.get('auth');
-    const query = c.get('validatedQuery') as StoreScopedQueryInput;
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    }
-
-    const ownsStore = await verifyStoreOwnership(db, query.store_id, customUser.id, auth.user.storeId);
-    if (!ownsStore) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    const buildGiftCardsQuery = (includeDeletedAtFilter: boolean) => {
-        let dbQuery = db
-            .from('gift_cards')
-            .select('*')
-            .eq('store_id', query.store_id);
-
-        if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
-        return dbQuery.order('created_at', { ascending: false });
-    };
-
-    let { data, error } = await buildGiftCardsQuery(true);
-
-    if (isMissingDeletedAtError(error)) {
-        ({ data, error } = await buildGiftCardsQuery(false));
-    }
-
-    if (error) {
-        if (isMissingTableError(error, 'gift_cards')) {
-            return c.json(success([]));
-        }
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    return c.json(success(data || []));
-});
-
-// POST /products/gift-cards — Issue a gift card with server-generated code
-router.post('/gift-cards', validate('json', CreateGiftCardSchema), async (c) => {
-    const auth = c.get('auth');
-    const body = c.get('validatedBody') as CreateGiftCardInput;
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    }
-
-    const ownsStore = await verifyStoreOwnership(db, body.store_id, customUser.id, auth.user.storeId);
-    if (!ownsStore) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
-
-    const code = generateGiftCardCodeFromBytes(crypto.getRandomValues(new Uint8Array(16)));
-    const buildGiftCardInsert = (includeAuditFields: boolean) => {
-        return db
-            .from('gift_cards')
-            .insert(planGiftCardInsert(body, code, customUser.id, includeAuditFields))
-            .select()
-            .single();
-    };
-
-    let { data, error } = await buildGiftCardInsert(true);
-
-    if (isMissingAuditColumnError(error)) {
-        ({ data, error } = await buildGiftCardInsert(false));
-    }
-
-    if (error) {
-        if (isMissingTableError(error, 'gift_cards')) {
-            return c.json({ error: { code: 'GIFT_CARD_SCHEMA_MISSING', message: 'Gift cards are not available in this environment.' } }, 503);
-        }
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    return c.json(success(data), 201);
-});
+// Gift cards — issuance + lifecycle on the canonical gift_card_accounts model
+// (LB-11). Registered here so the public paths stay /products/gift-cards*; the
+// implementation lives in ./gift-cards to keep this router under the line budget.
+registerGiftCardRoutes(router);
 
 // POST /products/sample — Seed one clearly labeled inactive sample product for an empty store
 router.post('/sample', validate('json', StoreScopedQuerySchema), async (c) => {

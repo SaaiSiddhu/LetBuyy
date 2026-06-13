@@ -252,7 +252,25 @@ export const UpdateCollectionSchema = z
 export const CreateGiftCardSchema = z.object({
   store_id: UuidSchema,
   initial_value: z.coerce.number().positive().max(999999),
+  currency: z.string().length(3).toUpperCase().default('INR'),
   expires_at: z.string().datetime().optional().nullable(),
+  // Optional recipient — when an email is supplied the issued code is emailed to them.
+  recipient_email: z.string().email().max(320).optional().nullable(),
+  recipient_name: z.string().max(200).trim().optional().nullable(),
+  note: z.string().max(500).trim().optional().nullable(),
+});
+
+// Lifecycle: validate a card by code (merchant balance check).
+export const GiftCardBalanceQuerySchema = z.object({
+  store_id: UuidSchema,
+  code: z.string().min(4).max(100).trim(),
+});
+
+// Lifecycle: fraud control — hold / disable / reactivate a card.
+export const GiftCardStatusUpdateSchema = z.object({
+  store_id: UuidSchema,
+  status: z.enum(['active', 'held', 'disabled']),
+  reason: z.string().max(500).trim().optional().nullable(),
 });
 
 export const CreateLocationSchema = z.object({
@@ -564,6 +582,8 @@ export type UpdateCategoryInput = z.infer<typeof UpdateCategorySchema>;
 export type CreateCollectionInput = z.infer<typeof CreateCollectionSchema>;
 export type UpdateCollectionInput = z.infer<typeof UpdateCollectionSchema>;
 export type CreateGiftCardInput = z.infer<typeof CreateGiftCardSchema>;
+export type GiftCardBalanceQueryInput = z.infer<typeof GiftCardBalanceQuerySchema>;
+export type GiftCardStatusUpdateInput = z.infer<typeof GiftCardStatusUpdateSchema>;
 export type InventoryAdjustmentInput = z.infer<typeof AdjustInventorySchema>;
 export type BulkAdjustInput = z.infer<typeof BulkAdjustSchema>;
 export type CreateLocationInput = z.infer<typeof CreateLocationSchema>;
