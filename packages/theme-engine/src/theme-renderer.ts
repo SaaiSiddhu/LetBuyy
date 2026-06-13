@@ -70,6 +70,10 @@ export interface LiquidRenderedTheme {
   layoutHtml: string;
   contentForLayout: string;
   sections: LiquidRenderedSection[];
+  // L4 — Liquid chrome: rendered header/footer template HTML so a Liquid page wears Liquid chrome
+  // (not React) when the storefront layout opts into engine=liquid.
+  header?: string;
+  footer?: string;
 }
 
 export interface ThemeRendererInput extends StorefrontCompositionInput {
@@ -248,6 +252,70 @@ export class JsonContractThemeRenderer implements ThemeRenderer {
   }
 }
 
+// Render every section of one Liquid template to sanitized HTML. Shared by the page body and by the
+// header/footer chrome templates (L4) so chrome and body go through the identical sanitized pipeline.
+async function renderLiquidTemplateSections(
+  template: LiquidThemePackageBundle['templates'][string],
+  engine: Liquid,
+  input: ThemeRendererInput,
+  bundle: LiquidThemePackageBundle,
+  warnings: string[],
+): Promise<{ sections: LiquidRenderedSection[]; html: string }> {
+  const renderedSections: LiquidRenderedSection[] = [];
+  const sectionOrder = orderedKeys(template.sections, template.order);
+
+  for (const sectionId of sectionOrder) {
+    const templateSection = template.sections[sectionId];
+    if (!templateSection || templateSection.disabled) continue;
+
+    const sectionFile = bundle.sections[templateSection.type];
+    if (!sectionFile) {
+      warnings.push(`Liquid section "${templateSection.type}" was not found and was skipped.`);
+      continue;
+    }
+
+    const renderedBlocks = await renderLiquidSectionBlocks({
+      engine,
+      bundle,
+      input,
+      sectionId,
+      sectionType: templateSection.type,
+      section: templateSection,
+    });
+    const sectionHtml = await engine.parseAndRender(
+      stripLiquidSchemaBlocks(sectionFile.source),
+      buildLiquidScope(input, bundle, {
+        section: {
+          id: sectionId,
+          type: templateSection.type,
+          settings: templateSection.settings,
+          blocks: renderedBlocks.map((block) => ({
+            id: block.id,
+            type: block.type,
+            settings: block.settings,
+            content: block.html,
+            html: block.html,
+            is_app_block: block.isAppBlock,
+          })),
+          block_order: renderedBlocks.map((block) => block.id),
+          schema: sectionFile.schema,
+        },
+      }),
+      liquidRenderOptions,
+    );
+
+    renderedSections.push({
+      id: sectionId,
+      type: templateSection.type,
+      settings: templateSection.settings,
+      html: await sanitizeRenderedHtml(String(sectionHtml)),
+      blocks: renderedBlocks,
+    });
+  }
+
+  return { sections: renderedSections, html: renderedSections.map((section) => section.html).join('\n') };
+}
+
 export class LiquidRenderer implements ThemeRenderer {
   readonly engine = 'liquid' as const;
   readonly interfaceVersion = THEME_RENDERER_INTERFACE_VERSION;
@@ -285,59 +353,19 @@ export class LiquidRenderer implements ThemeRenderer {
       contentForFooter,
       locale: input.context.locale || 'en',
     });
-    const renderedSections: LiquidRenderedSection[] = [];
-    const sectionOrder = orderedKeys(template.sections, template.order);
+    const main = await renderLiquidTemplateSections(template, engine, input, bundle, warnings);
+    const renderedSections = main.sections;
+    const contentForLayout = main.html;
 
-    for (const sectionId of sectionOrder) {
-      const templateSection = template.sections[sectionId];
-      if (!templateSection || templateSection.disabled) continue;
+    // L4 — Liquid chrome: render the header/footer templates (if present) so a Liquid page can wear
+    // Liquid header/footer instead of React. Each section is sanitized inside the helper.
+    const headerHtml = bundle.templates.header
+      ? (await renderLiquidTemplateSections(bundle.templates.header, engine, input, bundle, warnings)).html
+      : '';
+    const footerHtml = bundle.templates.footer
+      ? (await renderLiquidTemplateSections(bundle.templates.footer, engine, input, bundle, warnings)).html
+      : '';
 
-      const sectionFile = bundle.sections[templateSection.type];
-      if (!sectionFile) {
-        warnings.push(`Liquid section "${templateSection.type}" was not found and was skipped.`);
-        continue;
-      }
-
-      const renderedBlocks = await renderLiquidSectionBlocks({
-        engine,
-        bundle,
-        input,
-        sectionId,
-        sectionType: templateSection.type,
-        section: templateSection,
-      });
-      const sectionHtml = await engine.parseAndRender(
-        stripLiquidSchemaBlocks(sectionFile.source),
-        buildLiquidScope(input, bundle, {
-          section: {
-            id: sectionId,
-            type: templateSection.type,
-            settings: templateSection.settings,
-            blocks: renderedBlocks.map((block) => ({
-              id: block.id,
-              type: block.type,
-              settings: block.settings,
-              content: block.html,
-              html: block.html,
-              is_app_block: block.isAppBlock,
-            })),
-            block_order: renderedBlocks.map((block) => block.id),
-            schema: sectionFile.schema,
-          },
-        }),
-        liquidRenderOptions,
-      );
-
-      renderedSections.push({
-        id: sectionId,
-        type: templateSection.type,
-        settings: templateSection.settings,
-        html: await sanitizeRenderedHtml(String(sectionHtml)),
-        blocks: renderedBlocks,
-      });
-    }
-
-    const contentForLayout = renderedSections.map((section) => section.html).join('\n');
     const layoutHtml = await engine.parseAndRender(
       bundle.layout.theme.source,
       buildLiquidScope(input, bundle, {
@@ -352,6 +380,8 @@ export class LiquidRenderer implements ThemeRenderer {
       layoutHtml: await sanitizeRenderedHtml(String(layoutHtml), { wholeDocument: true }),
       contentForLayout,
       sections: renderedSections,
+      header: headerHtml,
+      footer: footerHtml,
     };
     const composition = composeLiquidStorefrontTheme(input, bundle, templateKey);
 
