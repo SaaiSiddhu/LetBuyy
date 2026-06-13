@@ -573,9 +573,26 @@ function mapSupabaseToStore(
         };
     const templateConfig = localizeThemeTemplateConfig(resolvedTemplateConfig, storeLocale);
     const bundleSettingsData = asRecord(asRecord(templateConfig.config).settings_data);
+    // LB-9 — appearance bridge: merge the merchant's appearance settings (sites.site_settings, snake_case)
+    // over the theme defaults so the brand color / font / radius set in the Appearance page reach the
+    // storefront :root tokens (layout.tsx). Merchant appearance wins over the theme bundle.
+    const appearanceSettings = asRecord(data.site_settings);
+    const appearanceOverrides: Record<string, unknown> = {};
+    if (typeof appearanceSettings.primary_color === 'string' && appearanceSettings.primary_color) {
+        appearanceOverrides.primaryColor = appearanceSettings.primary_color;
+    }
+    if (typeof appearanceSettings.font_family === 'string' && appearanceSettings.font_family) {
+        appearanceOverrides.fontFamily = appearanceSettings.font_family;
+        appearanceOverrides.headingFontFamily = appearanceSettings.font_family;
+    }
+    if (appearanceSettings.border_radius !== undefined && appearanceSettings.border_radius !== null && appearanceSettings.border_radius !== '') {
+        const radius = Number(appearanceSettings.border_radius);
+        if (Number.isFinite(radius)) appearanceOverrides.borderRadius = radius;
+    }
     const themeSettingsRecord = {
         ...asRecord(bundleSettingsData.current),
         ...asRecord(templateConfig.themeSettings),
+        ...appearanceOverrides,
     };
     const themeSettings: ThemeSettings = {
         ...DEFAULT_THEME_SETTINGS,
@@ -667,7 +684,10 @@ function mapSupabaseToStore(
         tagline: (data.tagline as string) || '',
         subdomain: (data.subdomain as string) || (data.store_name as string) || '',
         storeUrl: data.custom_domain as string,
-        logoUrl: data.logo_url as string,
+        // LB-9 — the Appearance-page logo (site_settings.logo_url) overrides the base site logo.
+        logoUrl: (typeof appearanceSettings.logo_url === 'string' && appearanceSettings.logo_url
+            ? appearanceSettings.logo_url
+            : data.logo_url) as string,
         bannerUrl: undefined,
         themeId,
         currentThemeReleaseId: (data.current_theme_release_id as string) || release?.id,

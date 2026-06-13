@@ -342,11 +342,11 @@ async function emitStorefrontOrderPaidEvent(
 }
 
 const STOREFRONT_SITE_SELECT: string =
-    'id,user_id,custom_user_id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,custom_domain_status,access_mode,access_message,published,currency,locale,theme_id,template_config,status,published_at,created_at,updated_at,seo_title,seo_description';
+    'id,user_id,custom_user_id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,custom_domain_status,access_mode,access_message,published,currency,locale,theme_id,template_config,site_settings,status,published_at,created_at,updated_at,seo_title,seo_description';
 const STOREFRONT_SITE_RELEASE_SELECT: string =
     `${STOREFRONT_SITE_SELECT},current_theme_release_id,storefront_release_version`;
 const STOREFRONT_SITE_COMPAT_SELECT: string =
-    'id,user_id,custom_user_id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,custom_domain_status,access_mode,access_message,published,currency,locale,theme_id,template_config,status,published_at,created_at,updated_at';
+    'id,user_id,custom_user_id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,custom_domain_status,access_mode,access_message,published,currency,locale,theme_id,template_config,site_settings,status,published_at,created_at,updated_at';
 const STOREFRONT_SITE_RELEASE_COMPAT_SELECT: string =
     `${STOREFRONT_SITE_COMPAT_SELECT},current_theme_release_id,storefront_release_version`;
 const PRODUCT_SELECT_FULL: string =
