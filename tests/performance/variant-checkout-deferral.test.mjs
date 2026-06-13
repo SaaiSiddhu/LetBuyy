@@ -54,7 +54,9 @@ test('storefront checkout defers post-commit usage and GST work', () => {
   const adminOrders = read('services/api-gateway/src/routes/orders.ts');
 
   assert.match(orderAdapter, /interface CreateOrderOptions/);
-  assert.match(orderAdapter, /async createOrder\(input: CreateCheckoutOrderCommand,\s*tenant: TenantContext,\s*options: CreateOrderOptions = {}\)/);
+  // input is CreateCheckoutOrderCommand (optionally intersected with shipping_rate_id/tax_amount),
+  // followed by tenant + the deferral options bag.
+  assert.match(orderAdapter, /async createOrder\(\s*input: CreateCheckoutOrderCommand[\s\S]{0,200}tenant: TenantContext,\s*options: CreateOrderOptions = \{\},?\s*\)/);
   assert.match(orderAdapter, /if \(options\.deferPostCommit\) return data/);
   assert.match(orderAdapter, /async completeOrderPostCommitWork/);
   assert.match(storefront, /isCheckoutPostCommitDeferralEnabled\(c\.env\)/);

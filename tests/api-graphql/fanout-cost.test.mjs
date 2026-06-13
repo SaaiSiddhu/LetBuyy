@@ -30,13 +30,16 @@ test('internal GraphQL REST shim subrequests bypass per-field logging and gatewa
   assert.match(gatewayIndex, /if \(isGraphQLRestShimSubrequest\(header\)\) return true/);
   assert.match(gatewayIndex, /skip: shouldSkipGatewayQueryCostLimit/);
 
-  const skipIndex = observability.indexOf('if (isGraphQLRestShimSubrequest(c.req.header(LETBUYY_INTERNAL_SUBREQUEST_HEADER)))');
-  assert.ok(skipIndex > 0, 'observability middleware must check the internal shim marker');
+  // The observability middleware guards the per-field log write with the shim marker so
+  // internal REST-shim subrequests are not logged. The skip is expressed as a `!`-guard
+  // (`if (!isGraphQLRestShimSubrequest(...)) { ...log... }`) wrapping the log block.
+  const skipIndex = observability.indexOf('if (!isGraphQLRestShimSubrequest(c.req.header(LETBUYY_INTERNAL_SUBREQUEST_HEADER)))');
+  assert.ok(skipIndex > 0, 'observability middleware must check the internal shim marker (skip logging for shim subrequests)');
   assert.ok(
     skipIndex < observability.indexOf('writeStructuredRuntimeLog(fields)'),
-    'observability logging must skip internal shim subrequests before log writes',
+    'the shim-marker guard must wrap the structured log write',
   );
-  assert.match(observability, /return;\s*}\s*const latencyMs/);
+  assert.match(observability, /if \(!isGraphQLRestShimSubrequest\([\s\S]{0,90}\)\) \{\s*const latencyMs/);
   assert.match(adminGraphQL, /const ADMIN_CONNECTION_FIELDS = \[/);
   assert.match(adminGraphQL, /Promise\.all\(ADMIN_CONNECTION_FIELDS\.map/);
 });
