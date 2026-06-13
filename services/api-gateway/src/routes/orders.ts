@@ -1187,6 +1187,24 @@ router.patch('/:id', validate('json', UpdateOrderStatusSchema), async (c) => {
                     error: String(emailError),
                 }));
             }
+            // LB-11 — restore any gift-card balance redeemed on this order (the whole order is
+            // being reversed). Idempotent + best-effort; never blocks the status change.
+            try {
+                await db.rpc('restore_gift_card_on_refund', {
+                    p_store_id: tenant.siteId,
+                    p_order_id: orderId,
+                    p_actor_id: tenant.userId,
+                    p_request_id: tenant.requestId,
+                });
+            } catch (restoreError) {
+                console.warn(JSON.stringify({
+                    level: 'warn',
+                    event: 'gift_card_refund_restore_failed',
+                    kind: body.status,
+                    order_id: orderId,
+                    error: String(restoreError),
+                }));
+            }
         }
         const responseBody = success(data);
         await idempotency.complete({
