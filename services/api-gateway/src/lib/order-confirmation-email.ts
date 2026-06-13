@@ -151,3 +151,104 @@ export async function enqueueOrderConfirmationEmail(
         html: email.html,
     });
 }
+
+// LB-10 — order cancelled / refunded customer emails. Mirrors enqueueOrderConfirmationEmail: render then
+// enqueue an email.order_cancelled / email.order_refunded job (or send directly when no queue is bound).
+export type OrderLifecycleEmailKind = 'cancelled' | 'refunded';
+
+function buildOrderLifecycleEmail(order: OrderRow, kind: OrderLifecycleEmailKind, refundAmount?: number | string | null) {
+    const recipient = textValue(order.customer_email);
+    if (!recipient) return null;
+
+    const currency = textValue(order.currency, 'INR').toUpperCase();
+    const orderLabel = textValue(order.order_number, order.id);
+    const greetingName = textValue(order.customer_name, 'there');
+
+    if (kind === 'cancelled') {
+        return {
+            to: recipient,
+            subject: `Order ${orderLabel} cancelled`,
+            text: `Hi ${greetingName},\n\nYour LetBuyy order ${orderLabel} has been cancelled. If you were charged, your refund is being processed.`,
+            html: [
+                `<p>Hi ${greetingName},</p>`,
+                `<p>Your LetBuyy order <strong>${orderLabel}</strong> has been cancelled. If you were charged, your refund is being processed.</p>`,
+            ].join(''),
+            order_id: order.id,
+            store_id: order.store_id,
+            order_number: order.order_number,
+        };
+    }
+
+    const amount = money(refundAmount ?? order.total, currency);
+    return {
+        to: recipient,
+        subject: `Refund issued for order ${orderLabel}`,
+        text: `Hi ${greetingName},\n\nA refund of ${amount} for order ${orderLabel} has been issued and should reach your original payment method shortly.`,
+        html: [
+            `<p>Hi ${greetingName},</p>`,
+            `<p>A refund of <strong>${amount}</strong> for order <strong>${orderLabel}</strong> has been issued and should reach your original payment method shortly.</p>`,
+        ].join(''),
+        order_id: order.id,
+        store_id: order.store_id,
+        order_number: order.order_number,
+    };
+}
+
+export async function enqueueOrderLifecycleEmail(
+    env: Pick<Env, 'NOTIFICATION_QUEUE' | 'RESEND_API_KEY' | 'RESEND_FROM_EMAIL' | 'ENVIRONMENT' | 'INTERNAL_API_SECRET' | 'QUEUE_TENANT_ENVELOPE_SECRET'>,
+    db: SupabaseClient,
+    input: { orderId: string; storeId: string; requestId: string; kind: OrderLifecycleEmailKind; refundAmount?: number | string | null },
+): Promise<void> {
+    const { data: orderData } = await db
+        .from('orders')
+        .select('id, store_id, order_number, customer_name, customer_email, total, currency')
+        .eq('id', input.orderId)
+        .eq('store_id', input.storeId)
+        .maybeSingle();
+
+    const order = orderData as OrderRow | null;
+    if (!order?.customer_email) return;
+
+    const email = buildOrderLifecycleEmail(order, input.kind, input.refundAmount);
+    if (!email) return;
+
+    const jobType = input.kind === 'cancelled' ? 'email.order_cancelled' : 'email.order_refunded';
+    const queueBody = {
+        messageId: `order-${input.kind}:${input.storeId}:${input.orderId}`,
+        queueName: 'email',
+        jobType,
+        siteId: input.storeId,
+        idempotencyKey: `${jobType}:${input.storeId}:${input.orderId}`,
+        requestId: input.requestId,
+        correlationId: input.requestId,
+        payload: email,
+    };
+
+    if (env.NOTIFICATION_QUEUE) {
+        await env.NOTIFICATION_QUEUE.send(await signQueueTenantEnvelope(env, queueBody));
+        return;
+    }
+
+    if (!configuredResend(env)) {
+        console.warn(JSON.stringify({
+            level: 'warn',
+            event: 'order_lifecycle_email_skipped',
+            reason: 'missing-notification-queue-and-resend',
+            kind: input.kind,
+            environment: env.ENVIRONMENT,
+            order_id: input.orderId,
+            store_id: input.storeId,
+            request_id: input.requestId,
+        }));
+        return;
+    }
+
+    await sendResendEmail({
+        apiKey: env.RESEND_API_KEY,
+        from: env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>',
+        to: email.to,
+        subject: email.subject,
+        text: email.text,
+        html: email.html,
+    });
+}

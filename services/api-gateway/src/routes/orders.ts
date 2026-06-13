@@ -9,6 +9,7 @@ import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { resolveTenantContextForOrder, resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { bytesToBase64, createSimplePdfBytes } from '../lib/simple-pdf';
 import { listOwnedStoreIds } from '../lib/order-ownership';
+import { enqueueOrderLifecycleEmail } from '../lib/order-confirmation-email';
 import {
     CreateOrderSchema,
     UpdateOrderStatusSchema,
@@ -1167,6 +1168,25 @@ router.patch('/:id', validate('json', UpdateOrderStatusSchema), async (c) => {
                 actorId: tenant.userId,
                 requestId: tenant.requestId,
             });
+        }
+        // LB-10 — dispatch the cancelled/refunded customer email (best-effort; never blocks the status change).
+        if (body.status === 'cancelled' || body.status === 'refunded') {
+            try {
+                await enqueueOrderLifecycleEmail(c.env, db, {
+                    orderId,
+                    storeId: tenant.siteId,
+                    requestId: tenant.requestId,
+                    kind: body.status,
+                });
+            } catch (emailError) {
+                console.warn(JSON.stringify({
+                    level: 'warn',
+                    event: 'order_lifecycle_email_enqueue_failed',
+                    kind: body.status,
+                    order_id: orderId,
+                    error: String(emailError),
+                }));
+            }
         }
         const responseBody = success(data);
         await idempotency.complete({
