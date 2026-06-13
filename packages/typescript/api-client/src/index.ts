@@ -2421,6 +2421,10 @@ export type StorefrontCustomerPasswordInput = StorefrontCustomerLookupQuery & {
   turnstileToken?: string | null;
 };
 
+export type StorefrontCustomerRegisterInput = StorefrontCustomerPasswordInput & {
+  full_name?: string | null;
+};
+
 export type StorefrontCustomerPasswordResetRequestInput = StorefrontCustomerLookupQuery & {
   reset_url?: string | null;
 };
@@ -4589,6 +4593,8 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontCustomerPasswordResult>('/storefront/customer/password/confirm-reset', { ...options, method: 'POST', body: input }),
     verifyCustomerPassword: (input: StorefrontCustomerPasswordInput, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCustomerResult>('/storefront/customer/login', { ...options, method: 'POST', body: input }),
+    registerCustomer: (input: StorefrontCustomerRegisterInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCustomerResult>('/storefront/customer/register', { ...options, method: 'POST', body: input }),
     updateCustomerStats: (input: StorefrontCustomerStatsInput, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCustomerStatsResult>('/storefront/customer/order-stats', { ...options, method: 'POST', body: input }),
     customerWishlist: (query: StorefrontWishlistQuery, options?: LetbuyyRequestOptions) =>

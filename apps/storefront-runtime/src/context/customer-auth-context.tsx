@@ -27,6 +27,7 @@ interface CustomerAuthContextType {
     // Actions
     login: (email: string, password: string, storeId: string, turnstileToken?: string | null) => Promise<LoginResult>;
     setPassword: (email: string, password: string, storeId: string, resetToken?: string) => Promise<LoginResult>;
+    register: (email: string, password: string, storeId: string, fullName?: string | null, turnstileToken?: string | null) => Promise<LoginResult>;
     checkEmail: (email: string, storeId: string) => Promise<EmailCheckResult>;
     logout: () => Promise<void>;
     refreshSession: () => Promise<void>;
@@ -170,6 +171,36 @@ export function CustomerAuthProvider({ children }: Props) {
         }
     }, []);
 
+    // ── Register (First-time account, LB-12) ────────────────
+    const register = useCallback(async (
+        email: string,
+        password: string,
+        sid: string,
+        fullName?: string | null,
+        turnstileToken?: string | null
+    ): Promise<LoginResult> => {
+        try {
+            const res = await fetch('/api/customer/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, storeId: sid, fullName, turnstileToken }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                return { success: false, error: data.error || 'Registration failed' };
+            }
+
+            setCustomer(data.customer);
+            syncLocalWishlist();
+
+            return { success: true, customer: data.customer };
+        } catch {
+            return { success: false, error: 'Network error. Please try again.' };
+        }
+    }, []);
+
     // ── Logout ──────────────────────────────────────────────
     const logout = useCallback(async () => {
         try {
@@ -208,6 +239,7 @@ export function CustomerAuthProvider({ children }: Props) {
         isLoading,
         login,
         setPassword,
+        register,
         checkEmail,
         logout,
         refreshSession,

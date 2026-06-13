@@ -11,8 +11,9 @@ import { CreateStorefrontProductReviewSchema, type CreateStorefrontProductReview
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import { issueCustomerSession, LETBUYY_CUSTOMER_GATEWAY_SESSION_TTL_SECONDS, LETBUYY_CUSTOMER_SESSION_COOKIE } from '@letbuyy/auth-core';
 import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
+import { registerCustomerRegistrationRoute } from './customer-registration';
 
-type AppContext = Context<{ Bindings: Env }>;
+export type AppContext = Context<{ Bindings: Env }>;
 type SqlRecord = Record<string, unknown>;
 type DatabaseErrorLike = { message?: string; details?: string; hint?: string } | null | undefined;
 const CUSTOMER_PASSWORD_RESET_TTL_SECONDS = 60 * 60; const CUSTOMER_PASSWORD_RESET_TOKEN_BYTES = 32;
@@ -46,7 +47,7 @@ type CustomerActivityBody = {
     metadata?: Record<string, unknown>;
 };
 
-type CustomerLifecycleBody = {
+export type CustomerLifecycleBody = {
     customer_id?: string;
     store_id?: string;
     subdomain?: string;
@@ -65,7 +66,7 @@ type CustomerLifecycleBody = {
     order_id?: string;
 };
 
-type StoreCustomerAuthRow = {
+export type StoreCustomerAuthRow = {
     id: string;
     store_id: string;
     email: string;
@@ -691,6 +692,8 @@ export function registerStorefrontCustomerEngagementRoutes(
             status: data.status || 'active',
         }));
     });
+
+    registerCustomerRegistrationRoute(router, { requireValidTurnstile, normalizeEmail, publicCustomerProfile, buildCookie, randomCsrfToken, insertCustomerActivity });
 
     router.post('/customer/login', async (c) => {
         const body = await c.req.json() as CustomerLifecycleBody;

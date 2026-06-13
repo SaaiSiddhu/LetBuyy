@@ -109,6 +109,9 @@ const explicitAllowlist = new Set([
   'storefront/customer-engagement-routes.ts:POST:/customer/password/request-reset',
   'storefront/customer-engagement-routes.ts:POST:/customer/password/confirm-reset',
   'storefront/customer-engagement-routes.ts:POST:/customer/login',
+  // LB-12 register is public by necessity (a new shopper has no session); gated by per-IP rate-limit
+  // + Turnstile + the not-exists precondition (no token-less overwrite of an existing credential).
+  'storefront/customer-registration.ts:POST:/customer/register',
   'storefront/customer-engagement-routes.ts:PATCH:/customer/profile',
   'storefront/customer-engagement-routes.ts:POST:/reviews',
   // Public storefront catalog reads are scoped by loadPublishedStore/loadSiteByHandle
