@@ -77,11 +77,13 @@
   </div>
 </main>
 <script>
-const TABS=['overview','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
-const TLABEL={overview:'Overview',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
+const TABS=['overview','atlas','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
+const TLABEL={overview:'Overview',atlas:'★ Atlas (full graph)',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
+const ATLAS_DOMAINS={atlas:'',services:'services',apps:'apps',packages:'packages',payments:'payments',identity:'identity',database:'database',marketplace:'marketplace',themes:'themes',developer:'developer',security:'security',tenancy:'tenancy'};
 const $=s=>document.querySelector(s);
 const cv=$('#cv'),ctx=cv.getContext('2d'),hud=$('#hud'),dash=$('#dash'),hint=$('#hint');
-let DPR=window.devicePixelRatio||1, sim=null, raf=null;
+let DPR=window.devicePixelRatio||1, sim=null, raf=null, atlasRedraw=null;
+function clearCanvasHandlers(){cv.onwheel=cv.onmousedown=cv.onmousemove=cv.onmouseup=cv.onclick=cv.onmouseleave=null;atlasRedraw=null;}
 
 function api(p){return fetch(p).then(r=>r.json());}
 function esc(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
@@ -100,10 +102,11 @@ function setActive(t){document.querySelectorAll('.tab').forEach(e=>e.classList.t
 async function selectTab(t){
   setActive(t); stopSim(); cv.style.display='none'; hud.style.display='none'; hint.style.display='none'; dash.style.display='block';
   if(t==='overview'){return overview();}
+  if(t==='atlas'){return renderAtlas('');}
   const d=await api('/api/domain?key='+t);
   if(!d){dash.innerHTML='<p class="hint">No data.</p>';return;}
   const riskColor=d.risk>66?'var(--red)':d.risk>33?'var(--amber)':'var(--green)';
-  dash.innerHTML=`<h2 style="margin:0">${TLABEL[t]}</h2>
+  dash.innerHTML=`<div class="row" style="justify-content:space-between"><h2 style="margin:0">${TLABEL[t]}</h2><button id="asGraph">★ View as graph</button></div>
    <div class="cards">
      <div class="card"><div class="n">${d.nodes.toLocaleString()}</div><div class="k">nodes</div></div>
      <div class="card"><div class="n">${d.files.toLocaleString()}</div><div class="k">files</div></div>
@@ -118,6 +121,7 @@ async function selectTab(t){
    ${d.top.map(n=>`<tr class="clk" data-id="${encodeURIComponent(n.id)}"><td class="lbl"><a>${esc(n.label)}</a></td><td style="color:var(--sub);font-size:12px">${esc(n.source_file||'')}:${esc(n.source_location||'')}</td><td>${n.degree}</td></tr>`).join('')}
    </tbody></table>`;
   dash.querySelectorAll('tr.clk').forEach(tr=>tr.onclick=()=>loadNode(decodeURIComponent(tr.dataset.id)));
+  const ag=document.getElementById('asGraph'); if(ag)ag.onclick=()=>renderAtlas(ATLAS_DOMAINS[t]||'');
 }
 async function overview(){
   const s=await api('/api/stats');
@@ -162,7 +166,7 @@ window.addEventListener('resize',()=>{if(cv.style.display!=='none'){resize();}})
 function stopSim(){if(raf)cancelAnimationFrame(raf);raf=null;}
 
 function runSim(g,rootId){
-  stopSim();
+  stopSim(); clearCanvasHandlers();
   const W=cv.width/DPR,H=cv.height/DPR;
   const nodes=g.nodes.map((n,i)=>({...n,x:W/2+Math.cos(i)*120+(Math.random()*40-20),y:H/2+Math.sin(i)*120+(Math.random()*40-20),vx:0,vy:0,root:n.id===rootId}));
   const idx=new Map(nodes.map((n,i)=>[n.id,i]));
@@ -208,8 +212,71 @@ async function trace(){
   runSim({nodes:r.nodes,links:r.links},r.path[0]);
 }
 
+// ---- Atlas: full-graph community-colored view (server-precomputed layout) ----
+async function renderAtlas(domain){
+  stopSim(); clearCanvasHandlers();
+  showCanvas(); hud.style.display='block';
+  hud.innerHTML='<div class="lbl">Loading atlas…</div><div class="sf">computing force layout server-side</div>';
+  const limit=domain?900:1500;
+  const a=await api('/api/atlas?limit='+limit+(domain?'&domain='+domain:''));
+  if(!a.nodes||!a.nodes.length){hud.innerHTML='<div class="lbl">No nodes.</div>';return;}
+  const W=cv.width/DPR,H=cv.height/DPR;
+  let minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9;
+  for(const n of a.nodes){if(n.x<minX)minX=n.x;if(n.y<minY)minY=n.y;if(n.x>maxX)maxX=n.x;if(n.y>maxY)maxY=n.y;}
+  const pad=46,scale0=Math.min((W-pad*2)/((maxX-minX)||1),(H-pad*2)/((maxY-minY)||1));
+  let scale=scale0, tx=(W-(minX+maxX)*scale)/2, ty=(H-(minY+maxY)*scale)/2;
+  const maxD=Math.max(1,...a.nodes.map(n=>n.d));
+  let hover=null,drag=null,q='';
+  const S=n=>({x:n.x*scale+tx,y:n.y*scale+ty});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(139,148,158,.10)';ctx.lineWidth=.6;ctx.beginPath();
+    for(const [s,t] of a.links){const A=S(a.nodes[s]),B=S(a.nodes[t]);ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);}
+    ctx.stroke();
+    for(const n of a.nodes){const P=S(n),r=Math.max(1.6,2+(n.d/maxD)*7*Math.min(1,scale*2.2));
+      const match=q&&n.label.toLowerCase().includes(q);
+      ctx.globalAlpha=(q&&!match)?.16:1;ctx.beginPath();ctx.arc(P.x,P.y,r,0,7);ctx.fillStyle=match?'#fff':n.color;ctx.fill();ctx.globalAlpha=1;
+      if(match){ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();}}
+    if(hover){const P=S(hover);ctx.beginPath();ctx.arc(P.x,P.y,9,0,7);ctx.strokeStyle='#58a6ff';ctx.lineWidth=2;ctx.stroke();
+      ctx.fillStyle='rgba(13,17,23,.85)';const w=ctx.measureText(hover.label).width+12;ctx.fillRect(P.x+10,P.y-9,Math.min(w,260),18);
+      ctx.fillStyle='#e6edf3';ctx.font='12px sans-serif';ctx.fillText(hover.label.slice(0,38),P.x+15,P.y+4);}
+  }
+  function pick(mx,my){let best=null,bd=12;for(const n of a.nodes){const P=S(n),d=Math.hypot(P.x-mx,P.y-my);if(d<bd){bd=d;best=n;}}return best;}
+  cv.onwheel=e=>{e.preventDefault();const r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,f=e.deltaY<0?1.12:0.89,wx=(mx-tx)/scale,wy=(my-ty)/scale;scale*=f;tx=mx-wx*scale;ty=my-wy*scale;draw();};
+  cv.onmousedown=e=>{drag={x:e.clientX,y:e.clientY,tx,ty,moved:false};};
+  cv.onmouseup=()=>{drag=null;};
+  cv.onmouseleave=()=>{drag=null;};
+  cv.onmousemove=e=>{const r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+    if(drag){tx=drag.tx+(e.clientX-drag.x);ty=drag.ty+(e.clientY-drag.y);drag.moved=true;cv.style.cursor='grabbing';draw();return;}
+    const h=pick(mx,my);if(h!==hover){hover=h;cv.style.cursor=h?'pointer':'grab';draw();}};
+  cv.onclick=e=>{if(drag&&drag.moved)return;const r=cv.getBoundingClientRect(),h=pick(e.clientX-r.left,e.clientY-r.top);if(h)atlasNodeInfo(h,()=>showAtlasHud(a,domain));};
+  atlasRedraw=()=>{q=($('#q').value||'').toLowerCase();draw();};
+  showAtlasHud(a,domain); draw();
+}
+function showAtlasHud(a,domain){
+  hud.innerHTML=`<div class="lbl">★ Atlas${domain?' · '+domain:''}</div>`
+    +`<div class="sf">${a.shown.toLocaleString()} of ${a.total.toLocaleString()} nodes (highest-degree backbone) · ${a.links.length.toLocaleString()} edges · scroll to zoom, drag to pan, click a node, type to highlight</div>`
+    +`<div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:2px 10px">`
+    +a.communities.map(c=>`<div class="sf" style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:2px;background:${c.color};display:inline-block"></span>community ${c.id} <b style="color:#e6edf3">${c.count}</b></div>`).join('')
+    +`</div>`;
+}
+async function atlasNodeInfo(n,back){
+  hud.innerHTML=`<div class="lbl">${esc(n.label)}</div><div class="sf">loading…</div>`;
+  const r=await api('/api/node?id='+encodeURIComponent(n.id));
+  const v=r.node||{};const nb=(r.graph&&r.graph.nodes||[]).filter(x=>x.id!==n.id).slice(0,12);
+  hud.innerHTML=`<div class="lbl">${esc(v.label||n.label)}</div>`
+    +`<div class="sf">type ${esc(v.file_type||'code')} · community ${esc(String(v.community??n.c))} · degree ${v.degree??n.d}</div>`
+    +(v.source_file?`<div class="sf">${esc(v.source_file)}:${esc(v.source_location||'')}</div>`:'')
+    +`<div class="sf" style="margin-top:6px;color:#8b949e">neighbors (${nb.length})</div>`
+    +nb.map(x=>`<div class="sf" style="cursor:pointer;color:#58a6ff" data-id="${encodeURIComponent(x.id)}">↳ ${esc(x.label)}</div>`).join('')
+    +`<div style="margin-top:8px"><a href="#" id="atExplore" style="color:#58a6ff">explore neighborhood →</a> · <a href="#" id="atBack" style="color:#8b949e">back to legend</a></div>`;
+  hud.querySelectorAll('[data-id]').forEach(el=>el.onclick=()=>atlasNodeInfo({id:decodeURIComponent(el.dataset.id),label:el.textContent.replace('↳ ',''),c:n.c,d:0},back));
+  const ex=document.getElementById('atExplore');if(ex)ex.onclick=e=>{e.preventDefault();loadNode(n.id);};
+  const bk=document.getElementById('atBack');if(bk)bk.onclick=e=>{e.preventDefault();back();};
+}
+
 $('#q').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
-$('#q').addEventListener('input',()=>{clearTimeout(window._t);window._t=setTimeout(doSearch,250);});
+$('#q').addEventListener('input',()=>{clearTimeout(window._t);window._t=setTimeout(()=>{doSearch();if(atlasRedraw)atlasRedraw();},250);});
 $('#trace').onclick=trace;
 $('#reset').onclick=()=>selectTab('overview');
 boot();

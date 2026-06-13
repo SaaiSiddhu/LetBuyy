@@ -164,6 +164,59 @@ function domain(key, limit = 60) {
   return { key, nodes: matched.length, files: files.size, relationships: edgeCount, avgDegree: Number(avgDeg.toFixed(1)), risk, workspaces: topN(ws, 12), top };
 }
 
+// ---- atlas (full-graph community-colored layout, computed server-side + cached) ----
+const PALETTE = ['#8B5CF6', '#58a6ff', '#3fb950', '#d29922', '#f85149', '#db61a2', '#39c5cf', '#bc8cff', '#e3b341', '#7ee787', '#ffa657', '#a5d6ff', '#ff7b72', '#56d364', '#e2c08d', '#79c0ff', '#f0883e', '#6ca0f6'];
+const communitySizes = (() => { const m = {}; for (const n of nodes) m[n.community] = (m[n.community] || 0) + 1; return m; })();
+const communityColor = (() => {
+  const ranked = Object.keys(communitySizes).sort((a, b) => communitySizes[b] - communitySizes[a]);
+  const map = new Map(); ranked.forEach((c, i) => map.set(c, PALETTE[i % PALETTE.length])); return map;
+})();
+const atlasCache = new Map();
+
+function buildLayout(pool, edgeList) {
+  const N = pool.length;
+  const pos = pool.map((_, i) => ({ x: Math.cos((i / N) * 6.283) * 420 + (Math.random() * 60 - 30), y: Math.sin((i / N) * 6.283) * 420 + (Math.random() * 60 - 30), vx: 0, vy: 0 }));
+  const iters = N > 1200 ? 220 : 300;
+  const cell = 70, R2 = (cell * 3) ** 2;
+  for (let it = 0; it < iters; it++) {
+    const cool = 1 - (it / iters) * 0.6;
+    const grid = new Map();
+    for (let i = 0; i < N; i++) { const k = Math.floor(pos[i].x / cell) + ',' + Math.floor(pos[i].y / cell); (grid.get(k) || grid.set(k, []).get(k)).push(i); }
+    for (let i = 0; i < N; i++) {
+      const a = pos[i], gx = Math.floor(a.x / cell), gy = Math.floor(a.y / cell);
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+        const arr = grid.get((gx + dx) + ',' + (gy + dy)); if (!arr) continue;
+        for (const j of arr) { if (j <= i) continue; const b = pos[j]; let ddx = a.x - b.x, ddy = a.y - b.y; let d2 = ddx * ddx + ddy * ddy || 0.01; if (d2 > R2) continue; const f = 1100 / d2, d = Math.sqrt(d2); ddx /= d; ddy /= d; a.vx += ddx * f; a.vy += ddy * f; b.vx -= ddx * f; b.vy -= ddy * f; }
+      }
+    }
+    for (const [s, t] of edgeList) { const a = pos[s], b = pos[t]; let dx = b.x - a.x, dy = b.y - a.y; const d = Math.hypot(dx, dy) || 0.01; const f = (d - 45) * 0.012; dx /= d; dy /= d; a.vx += dx * f; a.vy += dy * f; b.vx -= dx * f; b.vy -= dy * f; }
+    for (let i = 0; i < N; i++) { const p = pos[i]; p.vx += -p.x * 0.0007; p.vy += -p.y * 0.0007; p.x += Math.max(-34, Math.min(34, p.vx * cool)); p.y += Math.max(-34, Math.min(34, p.vy * cool)); p.vx *= 0.86; p.vy *= 0.86; }
+  }
+  return pos;
+}
+
+function atlas({ limit = 1400, domain = '', community = '' } = {}) {
+  limit = Math.max(100, Math.min(2600, limit));
+  const key = `${limit}|${domain}|${community}`;
+  if (atlasCache.has(key)) return atlasCache.get(key);
+  let pool = nodes;
+  if (domain && DOMAINS[domain]) pool = pool.filter(DOMAINS[domain]);
+  if (community) pool = pool.filter((n) => String(n.community) === String(community));
+  const total = pool.length;
+  pool = [...pool].sort((a, b) => (degree.get(b.id) || 0) - (degree.get(a.id) || 0)).slice(0, limit);
+  const idx = new Map(pool.map((n, i) => [n.id, i]));
+  const edgeList = [];
+  for (const e of links) { const s = idx.get(e.source), t = idx.get(e.target); if (s !== undefined && t !== undefined && s !== t) edgeList.push([s, t]); }
+  const pos = buildLayout(pool, edgeList);
+  const outNodes = pool.map((n, i) => ({ id: n.id, label: (n.label || '').slice(0, 60), x: Math.round(pos[i].x), y: Math.round(pos[i].y), c: String(n.community), d: degree.get(n.id) || 0, color: communityColor.get(String(n.community)) || '#8b949e' }));
+  const cc = {};
+  for (const n of pool) cc[n.community] = (cc[n.community] || 0) + 1;
+  const comms = Object.entries(cc).sort((a, b) => b[1] - a[1]).slice(0, 16).map(([id, count]) => ({ id, count, color: communityColor.get(String(id)) || '#8b949e' }));
+  const result = { total, shown: outNodes.length, nodes: outNodes, links: edgeList, communities: comms };
+  atlasCache.set(key, result);
+  return result;
+}
+
 // ---- http ----
 const indexHtml = readFileSync(join(__dirname, 'index.html'), 'utf8');
 function json(res, obj, code = 200) { const b = JSON.stringify(obj); res.writeHead(code, { 'content-type': 'application/json', 'content-length': Buffer.byteLength(b) }); res.end(b); }
@@ -179,6 +232,7 @@ const server = createServer((req, res) => {
     if (p === '/api/neighbors') return json(res, neighbors(u.searchParams.get('id'), Number(u.searchParams.get('depth') || 1), Number(u.searchParams.get('limit') || 80)));
     if (p === '/api/path') return json(res, shortestPath(u.searchParams.get('a'), u.searchParams.get('b')));
     if (p === '/api/domain') return json(res, domain(u.searchParams.get('key') || 'services'));
+    if (p === '/api/atlas') return json(res, atlas({ limit: Number(u.searchParams.get('limit') || 1400), domain: u.searchParams.get('domain') || '', community: u.searchParams.get('community') || '' }));
     if (p === '/api/health') return json(res, { ok: true, nodes: nodes.length });
     res.writeHead(404, { 'content-type': 'application/json' }); res.end('{"error":"not found"}');
   } catch (err) { json(res, { error: String(err) }, 500); }
