@@ -2145,8 +2145,29 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         },
         order: ['search-box-default', 'search-results'],
       },
+      cart: {
+        name: 'Urban Kicks cart',
+        layout: 'theme',
+        sections: { 'cart-summary-default': { type: 'cart-summary', settings: {} } },
+        order: ['cart-summary-default'],
+      },
     },
     sections: {
+      'cart-summary': createLiquidSectionFile({
+        type: 'cart-summary',
+        name: 'Cart',
+        settings: [liquidSetting('heading', 'text', 'Heading', { default: 'Your cart' })],
+        body: [
+          '<section class="lb-cart" data-section-id="{{ section.id }}">',
+          '  <h1>{{ section.settings.heading }}</h1>',
+          '  {% if cart.item_count > 0 %}',
+          '  <ul class="lb-cart__items">{% for item in cart.items %}<li class="lb-cart__item"><span class="lb-cart__title">{{ item.title }}</span><span class="lb-cart__qty">{{ item.quantity }}</span><span class="lb-cart__line">{{ item.line_price | money_with_currency: cart.currency }}</span></li>{% endfor %}</ul>',
+          '  <p class="lb-cart__total">Total: {{ cart.total_price | money_with_currency: cart.currency }}</p>',
+          '  <a class="lb-cart__checkout" href="{{ cart.checkout_url }}">Checkout</a>',
+          '  {% else %}<p class="lb-cart__empty">Your cart is empty.</p>{% endif %}',
+          '</section>',
+        ],
+      }),
       'search-box': createLiquidSectionFile({
         type: 'search-box',
         name: 'Search',
