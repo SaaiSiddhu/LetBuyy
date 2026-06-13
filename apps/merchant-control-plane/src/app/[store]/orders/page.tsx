@@ -438,7 +438,7 @@ export default function OrdersPage() {
             )
             const payload = await response.json().catch(() => null)
             if (!response.ok) {
-                const message = getErrorMsg(payload, 'Unable to process refund')
+                const message = getErrorMessage(payload, 'Unable to process refund')
                 setActionError(message)
                 notify({ title: 'Refund failed', description: message, variant: 'critical' })
                 return

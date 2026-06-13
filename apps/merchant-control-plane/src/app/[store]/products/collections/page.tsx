@@ -324,7 +324,7 @@ export default function CollectionsPage() {
             render: (row: CollectionRow) => (
                 <Button
                     variant="secondary"
-                    size="slim"
+                    size="sm"
                     type="button"
                     onClick={() => void openManageProducts(row)}
                 >
@@ -517,6 +517,8 @@ export default function CollectionsPage() {
                                                 className="flex min-h-11 cursor-pointer items-center gap-[var(--lb-space-3)] py-[var(--lb-space-2)]"
                                             >
                                                 <Checkbox
+                                                    label={product.name}
+                                                    unstyled
                                                     checked={manage.assignedIds.has(product.id)}
                                                     onChange={() => toggleProductAssignment(product.id)}
                                                     disabled={manage.saving}

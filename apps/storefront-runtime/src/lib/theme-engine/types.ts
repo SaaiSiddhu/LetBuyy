@@ -59,6 +59,7 @@ export interface SectionRenderData {
     products?: ProductModel[];
     product?: ProductModel;
     cart?: Record<string, unknown>;
+    collection?: { id: string; title: string; description?: string | null };
 }
 
 export interface SectionRendererProps {
