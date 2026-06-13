@@ -2169,8 +2169,48 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         sections: { 'customer-account-default': { type: 'customer-account', settings: {} } },
         order: ['customer-account-default'],
       },
+      'customers/orders': {
+        name: 'Order history',
+        layout: 'theme',
+        sections: { 'customer-orders-default': { type: 'customer-orders', settings: {} } },
+        order: ['customer-orders-default'],
+      },
+      'customers/order': {
+        name: 'Order detail',
+        layout: 'theme',
+        sections: { 'customer-order-detail-default': { type: 'customer-order-detail', settings: {} } },
+        order: ['customer-order-detail-default'],
+      },
     },
     sections: {
+      'customer-orders': createLiquidSectionFile({
+        type: 'customer-orders',
+        name: 'Order History',
+        settings: [liquidSetting('heading', 'text', 'Heading', { default: 'Your orders' })],
+        body: [
+          '<section class="lb-orders" data-section-id="{{ section.id }}">',
+          '  <h1>{{ section.settings.heading }}</h1>',
+          '  {% if customer.orders and customer.orders.size > 0 %}',
+          '  <ul class="lb-orders__list">{% for order in customer.orders %}<li class="lb-orders__row"><a href="/account/orders/{{ order.id }}"><span class="lb-orders__num">#{{ order.number }}</span><span class="lb-orders__status">{{ order.status }}</span><span class="lb-orders__total">{{ order.total | money_with_currency: order.currency }}</span></a></li>{% endfor %}</ul>',
+          '  {% else %}<p class="lb-orders__empty">No orders yet.</p>{% endif %}',
+          '</section>',
+        ],
+      }),
+      'customer-order-detail': createLiquidSectionFile({
+        type: 'customer-order-detail',
+        name: 'Order Detail',
+        settings: [liquidSetting('heading', 'text', 'Heading', { default: 'Order' })],
+        body: [
+          '<section class="lb-order-detail" data-section-id="{{ section.id }}">',
+          '  {% if order %}',
+          '  <h1>Order #{{ order.number }}</h1>',
+          '  <p class="lb-order-detail__status">Status: {{ order.status }}</p>',
+          '  <ul class="lb-order-detail__items">{% for item in order.line_items %}<li><span class="lb-order-detail__title">{{ item.title }}</span><span class="lb-order-detail__qty">{{ item.quantity }}</span><span class="lb-order-detail__line">{{ item.line_price | money_with_currency: order.currency }}</span></li>{% endfor %}</ul>',
+          '  <p class="lb-order-detail__total">Total: {{ order.total | money_with_currency: order.currency }}</p>',
+          '  {% else %}<p class="lb-order-detail__missing">Order not found.</p>{% endif %}',
+          '</section>',
+        ],
+      }),
       'customer-account': createLiquidSectionFile({
         type: 'customer-account',
         name: 'Customer Account',

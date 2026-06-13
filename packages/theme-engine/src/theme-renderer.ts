@@ -48,6 +48,7 @@ export interface LiquidCommerceDrops {
   cart?: unknown;
   customer?: unknown;
   search?: unknown;
+  order?: unknown;
 }
 
 export interface LiquidRenderedBlock {
@@ -572,6 +573,7 @@ function buildLiquidScope(
     cart: commerceDrops.cart,
     customer: commerceDrops.customer,
     search: commerceDrops.search,
+    order: commerceDrops.order,
     ...extra,
   };
 }
@@ -594,6 +596,7 @@ function buildLiquidCommerceDrops(context?: LiquidCommerceDrops): {
   cart: Record<string, unknown>;
   customer: unknown;
   search: unknown;
+  order: unknown;
 } {
   const collections = Array.isArray(context?.collections)
     ? toLiquidDrop(context.collections)
@@ -611,6 +614,7 @@ function buildLiquidCommerceDrops(context?: LiquidCommerceDrops): {
     },
     customer: toLiquidDrop(context?.customer) || null,
     search: toLiquidDrop(context?.search) || null,
+    order: toLiquidDrop(context?.order) || null,
   };
 }
 
