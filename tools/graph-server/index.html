@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LetBuyy Graph Intelligence</title>
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--sub:#8b949e;--accent:#8B5CF6;--green:#3fb950;--amber:#d29922;--red:#f85149;--blue:#58a6ff;}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text)}
+  header{display:flex;align-items:center;gap:16px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--panel);flex-wrap:wrap}
+  header h1{font-size:15px;margin:0;font-weight:650;letter-spacing:.2px}
+  header h1 b{color:var(--accent)}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+  .chip{background:#21262d;border:1px solid var(--border);border-radius:20px;padding:3px 11px;font-size:12px;color:var(--sub)}
+  .chip b{color:var(--text)}
+  .tabs{display:flex;gap:4px;padding:8px 18px;border-bottom:1px solid var(--border);overflow-x:auto;background:var(--panel)}
+  .tab{padding:5px 12px;border-radius:6px;cursor:pointer;color:var(--sub);white-space:nowrap;border:1px solid transparent;font-size:13px}
+  .tab:hover{color:var(--text);background:#21262d}
+  .tab.active{color:#fff;background:var(--accent);border-color:var(--accent)}
+  main{display:grid;grid-template-columns:340px 1fr;height:calc(100vh - 104px)}
+  .side{border-right:1px solid var(--border);overflow:auto;padding:14px}
+  .panel{flex:1;position:relative;overflow:hidden}
+  input,button{font:inherit}
+  input[type=text]{width:100%;padding:8px 10px;background:#0d1117;border:1px solid var(--border);border-radius:6px;color:var(--text);margin-bottom:8px}
+  button{padding:7px 10px;background:#21262d;border:1px solid var(--border);border-radius:6px;color:var(--text);cursor:pointer}
+  button:hover{border-color:var(--accent)}
+  .results{list-style:none;margin:6px 0 0;padding:0}
+  .results li{padding:8px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;cursor:pointer;background:#0d1117}
+  .results li:hover{border-color:var(--accent)}
+  .results .lbl{font-weight:600;color:var(--blue)}
+  .results .sf{font-size:11px;color:var(--sub);word-break:break-all}
+  .results .deg{float:right;font-size:11px;color:var(--sub)}
+  .sectionTitle{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--sub);margin:16px 0 6px}
+  canvas{display:block;width:100%;height:100%}
+  .hud{position:absolute;top:10px;left:10px;background:rgba(22,27,34,.92);border:1px solid var(--border);border-radius:8px;padding:10px 12px;max-width:420px;font-size:12px}
+  .hud .lbl{color:var(--accent);font-weight:650;font-size:13px}
+  .hud .sf{color:var(--sub);word-break:break-all;margin-top:2px}
+  .hint{color:var(--sub);font-size:12px;padding:10px}
+  .dash{padding:18px;overflow:auto;height:100%}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin:12px 0}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .card .n{font-size:24px;font-weight:700}
+  .card .k{font-size:12px;color:var(--sub);text-transform:uppercase;letter-spacing:.4px}
+  .risk{height:8px;border-radius:4px;background:#21262d;overflow:hidden;margin-top:6px}
+  .risk>i{display:block;height:100%}
+  .row{display:flex;gap:8px;align-items:center}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+  td,th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border)}
+  th{color:var(--sub);font-weight:600;font-size:11px;text-transform:uppercase}
+  tr.clk{cursor:pointer} tr.clk:hover td{background:#21262d}
+  a{color:var(--blue);text-decoration:none}
+  .pathbar{display:flex;gap:6px;margin-top:6px}
+  .pathbar input{margin:0}
+</style>
+</head>
+<body>
+<header>
+  <h1>Let<b>Buyy</b> Graph Intelligence</h1>
+  <div class="chips" id="chips"></div>
+</header>
+<div class="tabs" id="tabs"></div>
+<main>
+  <div class="side">
+    <input id="q" type="text" placeholder="Search nodes, files, routes, symbols…" autocomplete="off" />
+    <div class="row"><button id="reset" style="flex:1">Reset view</button></div>
+    <div class="sectionTitle">Trace shortest path</div>
+    <div class="pathbar"><input id="pa" type="text" placeholder="from" /><input id="pb" type="text" placeholder="to" /><button id="trace">Trace</button></div>
+    <div class="sectionTitle">Results</div>
+    <ul class="results" id="results"></ul>
+  </div>
+  <div class="panel" id="panel">
+    <canvas id="cv"></canvas>
+    <div class="hud" id="hud" style="display:none"></div>
+    <div class="dash" id="dash" style="display:none"></div>
+    <div class="hint" id="hint">Search a symbol (e.g. <b>create_checkout_order</b>, <b>proxy</b>, <b>issueCustomerSession</b>) or pick a dashboard tab above. Click a node to explore its neighborhood.</div>
+  </div>
+</main>
+<script>
+const TABS=['overview','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
+const TLABEL={overview:'Overview',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
+const $=s=>document.querySelector(s);
+const cv=$('#cv'),ctx=cv.getContext('2d'),hud=$('#hud'),dash=$('#dash'),hint=$('#hint');
+let DPR=window.devicePixelRatio||1, sim=null, raf=null;
+
+function api(p){return fetch(p).then(r=>r.json());}
+function esc(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+
+async function boot(){
+  const s=await api('/api/stats');
+  $('#chips').innerHTML=[['nodes',s.nodes],['edges',s.edges],['communities',s.communities],['routes',s.routes],['pages',s.pages]]
+    .map(([k,v])=>`<span class="chip">${k} <b>${v.toLocaleString()}</b></span>`).join('')
+    +`<span class="chip">graph age <b>${s.freshness_minutes}m</b></span>`;
+  const tabs=$('#tabs'); tabs.innerHTML=TABS.map(t=>`<div class="tab" data-t="${t}">${TLABEL[t]}</div>`).join('');
+  tabs.querySelectorAll('.tab').forEach(el=>el.onclick=()=>selectTab(el.dataset.t));
+  selectTab('overview');
+}
+function setActive(t){document.querySelectorAll('.tab').forEach(e=>e.classList.toggle('active',e.dataset.t===t));}
+
+async function selectTab(t){
+  setActive(t); stopSim(); cv.style.display='none'; hud.style.display='none'; hint.style.display='none'; dash.style.display='block';
+  if(t==='overview'){return overview();}
+  const d=await api('/api/domain?key='+t);
+  if(!d){dash.innerHTML='<p class="hint">No data.</p>';return;}
+  const riskColor=d.risk>66?'var(--red)':d.risk>33?'var(--amber)':'var(--green)';
+  dash.innerHTML=`<h2 style="margin:0">${TLABEL[t]}</h2>
+   <div class="cards">
+     <div class="card"><div class="n">${d.nodes.toLocaleString()}</div><div class="k">nodes</div></div>
+     <div class="card"><div class="n">${d.files.toLocaleString()}</div><div class="k">files</div></div>
+     <div class="card"><div class="n">${d.relationships.toLocaleString()}</div><div class="k">relationships</div></div>
+     <div class="card"><div class="n">${d.avgDegree}</div><div class="k">avg degree</div></div>
+     <div class="card"><div class="n">${d.risk}</div><div class="k">attention score</div><div class="risk"><i style="width:${d.risk}%;background:${riskColor}"></i></div></div>
+   </div>
+   <div class="sectionTitle" style="color:var(--sub)">Top workspaces</div>
+   <div>${d.workspaces.map(w=>`<span class="chip" style="margin:2px">${esc(w.key)} <b>${w.count}</b></span>`).join('')}</div>
+   <div class="sectionTitle" style="color:var(--sub);margin-top:16px">Top nodes (by degree) — click to explore</div>
+   <table><thead><tr><th>Symbol</th><th>File</th><th>deg</th></tr></thead><tbody>
+   ${d.top.map(n=>`<tr class="clk" data-id="${encodeURIComponent(n.id)}"><td class="lbl"><a>${esc(n.label)}</a></td><td style="color:var(--sub);font-size:12px">${esc(n.source_file||'')}:${esc(n.source_location||'')}</td><td>${n.degree}</td></tr>`).join('')}
+   </tbody></table>`;
+  dash.querySelectorAll('tr.clk').forEach(tr=>tr.onclick=()=>loadNode(decodeURIComponent(tr.dataset.id)));
+}
+async function overview(){
+  const s=await api('/api/stats');
+  dash.innerHTML=`<h2 style="margin:0">Overview</h2>
+   <div class="cards">
+     <div class="card"><div class="n">${s.nodes.toLocaleString()}</div><div class="k">nodes</div></div>
+     <div class="card"><div class="n">${s.edges.toLocaleString()}</div><div class="k">edges</div></div>
+     <div class="card"><div class="n">${s.communities.toLocaleString()}</div><div class="k">communities</div></div>
+     <div class="card"><div class="n">${s.routes}</div><div class="k">API routes</div></div>
+     <div class="card"><div class="n">${s.pages}</div><div class="k">pages</div></div>
+   </div>
+   <div class="sectionTitle" style="color:var(--sub)">Languages</div>
+   <div>${s.languages.map(l=>`<span class="chip" style="margin:2px">${esc(l.key)} <b>${l.count.toLocaleString()}</b></span>`).join('')}</div>
+   <div class="sectionTitle" style="color:var(--sub);margin-top:16px">Workspaces (by node count) — click to explore the top symbol</div>
+   <table><thead><tr><th>Workspace</th><th>nodes</th></tr></thead><tbody>
+   ${s.workspaces.map(w=>`<tr class="clk" data-q="${encodeURIComponent(w.key)}"><td>${esc(w.key)}</td><td>${w.count.toLocaleString()}</td></tr>`).join('')}
+   </tbody></table>
+   <p class="hint">Built ${s.freshness_minutes} min ago${s.built_at_commit?` @ <code>${esc(s.built_at_commit.slice(0,8))}</code>`:''}. Refresh with <code>pnpm graph:update</code>.</p>`;
+  dash.querySelectorAll('tr.clk').forEach(tr=>tr.onclick=()=>{$('#q').value=decodeURIComponent(tr.dataset.q).split('/').pop();doSearch();});
+}
+
+async function doSearch(){
+  const q=$('#q').value.trim(); if(!q){return;}
+  const rs=await api('/api/search?q='+encodeURIComponent(q)+'&limit=40');
+  const ul=$('#results');
+  ul.innerHTML=rs.length?rs.map(n=>`<li data-id="${encodeURIComponent(n.id)}"><span class="deg">${n.degree}</span><span class="lbl">${esc(n.label)}</span><div class="sf">${esc(n.source_file||'')}:${esc(n.source_location||'')}</div></li>`).join(''):'<li class="hint">No matches.</li>';
+  ul.querySelectorAll('li[data-id]').forEach(li=>li.onclick=()=>loadNode(decodeURIComponent(li.dataset.id)));
+}
+
+async function loadNode(id){
+  const g=await api('/api/neighbors?id='+encodeURIComponent(id)+'&depth=1&limit=70');
+  if(!g.nodes||!g.nodes.length){return;}
+  const root=g.nodes.find(n=>n.id===id)||g.nodes[0];
+  hud.style.display='block';
+  hud.innerHTML=`<div class="lbl">${esc(root.label)}</div><div class="sf">${esc(root.source_file||'')}:${esc(root.source_location||'')}</div><div class="sf">degree ${root.degree} · community ${root.community} · ${g.nodes.length} neighbors shown</div>`;
+  showCanvas(); runSim(g,id);
+}
+
+function showCanvas(){dash.style.display='none';hint.style.display='none';cv.style.display='block';resize();}
+function resize(){const r=$('#panel').getBoundingClientRect();cv.width=r.width*DPR;cv.height=r.height*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
+window.addEventListener('resize',()=>{if(cv.style.display!=='none'){resize();}});
+function stopSim(){if(raf)cancelAnimationFrame(raf);raf=null;}
+
+function runSim(g,rootId){
+  stopSim();
+  const W=cv.width/DPR,H=cv.height/DPR;
+  const nodes=g.nodes.map((n,i)=>({...n,x:W/2+Math.cos(i)*120+(Math.random()*40-20),y:H/2+Math.sin(i)*120+(Math.random()*40-20),vx:0,vy:0,root:n.id===rootId}));
+  const idx=new Map(nodes.map((n,i)=>[n.id,i]));
+  const links=g.links.filter(l=>idx.has(l.source)&&idx.has(l.target));
+  let hover=null;
+  cv.onmousemove=e=>{const r=cv.getBoundingClientRect();const mx=e.clientX-r.left,my=e.clientY-r.top;hover=nodes.find(n=>Math.hypot(n.x-mx,n.y-my)<14)||null;cv.style.cursor=hover?'pointer':'default';};
+  cv.onclick=e=>{const r=cv.getBoundingClientRect();const mx=e.clientX-r.left,my=e.clientY-r.top;const hit=nodes.find(n=>Math.hypot(n.x-mx,n.y-my)<14);if(hit&&!hit.root)loadNode(hit.id);};
+  let iter=0;
+  function step(){
+    iter++;
+    for(let i=0;i<nodes.length;i++){const a=nodes[i];
+      for(let j=i+1;j<nodes.length;j++){const b=nodes[j];let dx=a.x-b.x,dy=a.y-b.y;let d2=dx*dx+dy*dy||0.01;let f=2400/d2;let d=Math.sqrt(d2);dx/=d;dy/=d;a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;}
+    }
+    for(const l of links){const a=nodes[idx.get(l.source)],b=nodes[idx.get(l.target)];let dx=b.x-a.x,dy=b.y-a.y;let d=Math.hypot(dx,dy)||0.01;let f=(d-90)*0.02;dx/=d;dy/=d;a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;}
+    for(const n of nodes){n.vx+=(W/2-n.x)*0.002;n.vy+=(H/2-n.y)*0.002;n.x+=Math.max(-12,Math.min(12,n.vx));n.y+=Math.max(-12,Math.min(12,n.vy));n.vx*=0.82;n.vy*=0.82;n.x=Math.max(20,Math.min(W-20,n.x));n.y=Math.max(20,Math.min(H-20,n.y));}
+    draw();
+    if(iter<400)raf=requestAnimationFrame(step);
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(139,148,158,.25)';ctx.lineWidth=1;
+    for(const l of links){const a=nodes[idx.get(l.source)],b=nodes[idx.get(l.target)];ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
+    for(const n of nodes){
+      const r=n.root?11:7;
+      ctx.beginPath();ctx.arc(n.x,n.y,r,0,7);
+      ctx.fillStyle=n.root?'#8B5CF6':(hover===n?'#58a6ff':'#21262d');
+      ctx.fill();ctx.strokeStyle=n.root?'#a371f7':'#30363d';ctx.lineWidth=1.5;ctx.stroke();
+      if(n.root||hover===n||nodes.length<40){ctx.fillStyle='#e6edf3';ctx.font=(n.root?'600 12px':'11px')+' sans-serif';ctx.fillText(n.label.slice(0,28),n.x+r+3,n.y+4);}
+    }
+  }
+  step();
+}
+
+async function trace(){
+  const a=$('#pa').value.trim(),b=$('#pb').value.trim(); if(!a||!b)return;
+  // resolve labels → ids via search
+  const [ra,rb]=await Promise.all([api('/api/search?q='+encodeURIComponent(a)+'&limit=1'),api('/api/search?q='+encodeURIComponent(b)+'&limit=1')]);
+  if(!ra[0]||!rb[0]){alert('Could not resolve one of the endpoints.');return;}
+  const r=await api('/api/path?a='+encodeURIComponent(ra[0].id)+'&b='+encodeURIComponent(rb[0].id));
+  if(!r.path||!r.path.length){alert('No path found.');return;}
+  showCanvas();hud.style.display='block';
+  hud.innerHTML=`<div class="lbl">Path (${r.path.length-1} hops)</div>`+r.nodes.map(n=>`<div class="sf">${esc(n.label)} <span style="color:#6e7681">${esc(n.source_file||'')}</span></div>`).join('');
+  runSim({nodes:r.nodes,links:r.links},r.path[0]);
+}
+
+$('#q').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
+$('#q').addEventListener('input',()=>{clearTimeout(window._t);window._t=setTimeout(doSearch,250);});
+$('#trace').onclick=trace;
+$('#reset').onclick=()=>selectTab('overview');
+boot();
+</script>
+</body>
+</html>
