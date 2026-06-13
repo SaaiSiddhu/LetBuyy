@@ -163,6 +163,69 @@ const LIQUID_RENDERED_HTML_DOMPURIFY_DOCUMENT_CONFIG: DOMPurifyConfig = {
   WHOLE_DOCUMENT: true,
 };
 
+// L2 — Asset Pipeline. Theme base stylesheet for Liquid `lb-*` sections, extracted from the React
+// storefront `globals.css` (the canary-OFF React path keeps its own copy) plus `lb-spotlight`/`lb-badge`.
+// Injected inline as a sanitizer-safe `<style>` (DOMPurify allows <style>; no <link>/asset-route, so no
+// forbid-list relaxation). Class-based only (DOMPurify forbids inline `style` attrs). A cacheable external
+// stylesheet is a deferred perf follow-up.
+export const LIQUID_THEME_BASE_CSS = [
+  '.lb-theme{min-height:100vh;background:var(--background);color:var(--foreground);font-family:var(--font-body);}',
+  '.lb-theme :where(a){color:inherit;text-decoration:none;}',
+  '.lb-header,.lb-footer,.lb-announcement-bar,.lb-hero-banner,.lb-category-grid,.lb-featured-products,.lb-product-grid,.lb-product-detail,.lb-newsletter-signup,.lb-first-party-spotlight,.lb-spotlight,.lb-about-section,.lb-banner-carousel,.lb-brand-marquee,.lb-contact-form,.lb-cta-section,.lb-experience-timeline,.lb-marquee,.lb-portfolio-grid,.lb-rich-content,.lb-services-grid,.lb-skills-section,.lb-testimonials,.lb-trust-badges,.lb-app-block-slot{margin-inline:auto;max-width:min(72rem,calc(100vw - 2rem));padding-block:clamp(1.5rem,4vw,4rem);}',
+  '.lb-header,.lb-footer,.lb-announcement-bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:1rem;}',
+  '.lb-header nav,.lb-footer nav,.lb-header__actions{display:flex;flex-wrap:wrap;gap:0.75rem;}',
+  '.lb-header__brand,.lb-hero-banner h1,.lb-featured-products h2,.lb-product-grid h2,.lb-category-grid h2,.lb-product-detail h1{font-family:var(--font-display);letter-spacing:0;}',
+  '.lb-hero-banner{display:grid;gap:1rem;min-height:28rem;align-content:center;}',
+  '.lb-hero-banner h1{max-width:14ch;font-size:clamp(2.5rem,7vw,5rem);line-height:0.95;}',
+  '.lb-hero-banner a,.lb-featured-products > a,.lb-newsletter-signup button,.lb-contact-form button,.lb-cta-section a{display:inline-flex;width:fit-content;border-radius:0.5rem;background:var(--primary);color:#fff;font-weight:700;padding:0.75rem 1rem;}',
+  '.lb-category-grid__items,.lb-featured-products__items,.lb-product-grid__items,.lb-first-party-spotlight__blocks,.lb-spotlight__blocks,.lb-banner-carousel__slides{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));}',
+  '.lb-product-grid__items[data-columns="4"]{grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));}',
+  '.lb-category-card,.lb-product-card,.lb-trust-badges article,.lb-testimonials blockquote,.lb-services-grid article,.lb-portfolio-grid article{border:1px solid var(--border-color,rgb(226 232 240));border-radius:0.5rem;background:var(--surface,rgb(255 255 255));padding:1rem;}',
+  '.lb-product-detail{display:grid;gap:1rem;}',
+  '.lb-product-detail__gallery{display:grid;gap:0.75rem;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));}',
+  '.lb-product-detail__gallery img,.lb-banner-carousel img{aspect-ratio:1;border-radius:0.5rem;object-fit:cover;width:100%;}',
+  '.lb-newsletter-signup form,.lb-contact-form form{display:flex;flex-wrap:wrap;gap:0.75rem;}',
+  '.lb-newsletter-signup input,.lb-contact-form input{min-width:min(100%,16rem);border:1px solid var(--border-color,rgb(226 232 240));border-radius:0.5rem;padding:0.75rem 1rem;}',
+  '.lb-badge{display:inline-flex;align-items:center;gap:0.375rem;border-radius:999px;background:var(--surface,rgb(241 245 249));padding:0.25rem 0.625rem;font-size:0.8125rem;font-weight:600;}',
+].join('');
+
+// Per-store theme tokens (settings_data.current) -> the CSS custom properties the lb-* stylesheet reads.
+const LIQUID_THEME_TOKEN_MAP: ReadonlyArray<readonly [string, string, string]> = [
+  ['primaryColor', '--primary', '#111827'],
+  ['secondaryColor', '--secondary', '#374151'],
+  ['accentColor', '--accent', '#2563eb'],
+  ['surfaceColor', '--surface', '#f8fafc'],
+  ['backgroundColor', '--background', '#ffffff'],
+  ['textColor', '--foreground', '#1a1a2e'],
+  ['bodyFontFamily', '--font-body', 'Inter, system-ui, sans-serif'],
+  ['headingFontFamily', '--font-display', 'Inter, system-ui, sans-serif'],
+];
+
+function sanitizeCssTokenValue(value: string): string {
+  // Defense-in-depth: token values are theme-controlled, but never let one break out of the declaration.
+  return value.replace(/[<>{};@()]/g, '').trim().slice(0, 120);
+}
+
+function buildLiquidRootTokenBlock(bundle: LiquidThemePackageBundle): string {
+  const current = (bundle.config?.settings_data?.current ?? {}) as Record<string, unknown>;
+  const seen = new Set<string>();
+  const decls: string[] = [];
+  for (const [key, cssVar, fallback] of LIQUID_THEME_TOKEN_MAP) {
+    const raw = current[key];
+    const value = typeof raw === 'string' && raw.trim().length > 0 ? raw : fallback;
+    decls.push(`${cssVar}:${sanitizeCssTokenValue(value)};`);
+    seen.add(cssVar);
+  }
+  if (!seen.has('--border-color')) decls.push('--border-color:rgba(0,0,0,0.1);');
+  return `:root{${decls.join('')}}`;
+}
+
+// Theme-controlled <head> assets injected into content_for_header (then sanitized by the layout-level
+// WHOLE_DOCUMENT DOMPurify pass): the per-store :root tokens + the lb-* base stylesheet, as one <style>.
+export function buildLiquidThemeHeadAssets(bundle: LiquidThemePackageBundle): string {
+  return `<style data-theme-renderer="liquid">${buildLiquidRootTokenBlock(bundle)}${LIQUID_THEME_BASE_CSS}</style>`;
+}
+
 export class JsonContractThemeRenderer implements ThemeRenderer {
   readonly engine = 'json-contract' as const;
   readonly interfaceVersion = THEME_RENDERER_INTERFACE_VERSION;
@@ -213,7 +276,9 @@ export class LiquidRenderer implements ThemeRenderer {
       };
     }
 
-    const contentForHeader = await renderLiquidEmbedRegion(input.liquidAppEmbeds?.header, { allowHeadMetadata: true });
+    const themeHeadAssets = buildLiquidThemeHeadAssets(bundle);
+    const embedHeader = await renderLiquidEmbedRegion(input.liquidAppEmbeds?.header, { allowHeadMetadata: true });
+    const contentForHeader = `${themeHeadAssets}${embedHeader}`;
     const contentForFooter = await renderLiquidEmbedRegion(input.liquidAppEmbeds?.footer);
     const engine = createLiquidEngine(bundle, {
       contentForHeader,
