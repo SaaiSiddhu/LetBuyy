@@ -2112,6 +2112,21 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           'newsletter-default',
         ],
       },
+      product: {
+        name: 'Urban Kicks product',
+        layout: 'theme',
+        sections: {
+          'product-detail-default': {
+            type: 'product-detail',
+            settings: { showGallery: true, showDescription: true },
+          },
+          'product-related': {
+            type: 'featured-products',
+            settings: { title: 'You may also like' },
+          },
+        },
+        order: ['product-detail-default', 'product-related'],
+      },
     },
     sections: {
       ...createLiquidParitySectionFiles(),
