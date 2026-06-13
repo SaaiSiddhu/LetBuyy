@@ -164,3 +164,38 @@ export function compilePortableToLiquidBundle(
   // Re-validate: the compiler can never emit an invalid Liquid bundle.
   return { bundle: parseLiquidThemePackageBundle(draft), warnings };
 }
+
+function configHasLiquidBundle(value: unknown): boolean {
+  return Boolean(value && typeof value === 'object' && (value as Record<string, unknown>).liquidBundle);
+}
+
+/**
+ * L13 desync guard. Returns true when publishing `next` over `current` would STRIP an existing Liquid
+ * bundle (a portable-only publish over a Liquid store) — the editor MUST block this to prevent the
+ * renderer.engine / liquidBundle desync described in PHASE_L13. Pass each store's `template_config`.
+ */
+export function liquidBundlePublishWouldDesync(current: unknown, next: unknown): boolean {
+  return configHasLiquidBundle(current) && !configHasLiquidBundle(next);
+}
+
+/**
+ * L13 editor entry point. Compile a merchant's portable template_config to a Liquid bundle and produce
+ * the `template_config` patch the editor publish/draft routes already accept (`liquidBundle` +
+ * `rendererEngine:'liquid'`). The MCP editor calls this in buildDraftConfig/handlePublish; the storefront
+ * resolver then renders Liquid for a canary store. Always schema-valid (compiler re-validates).
+ */
+export function compilePortableConfigForPublish(
+  templateConfig: PortableThemeTemplateConfig,
+  options: CompilePortableToLiquidOptions = {},
+): { templateConfigPatch: Record<string, unknown>; warnings: string[] } {
+  const { bundle, warnings } = compilePortableToLiquidBundle(templateConfig, options);
+  return {
+    templateConfigPatch: {
+      rendererEngine: 'liquid',
+      liquidBundle: bundle,
+      layout: bundle.layout,
+      schema_version: bundle.schema_version,
+    },
+    warnings,
+  };
+}
