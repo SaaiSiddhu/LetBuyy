@@ -517,13 +517,47 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
     const body = c.get('validatedBody') as JsonRecord & { idempotency_key: string; shipping_method: string; shipping_address: JsonRecord; cod_requested: boolean; shipping_quote: JsonRecord };
 
     return runIdempotentStep(c, verified.handoff, `checkout.delivery:${cartId}`, body.idempotency_key, body, async () => {
+        // V1 LB-7: server-resolve shipping price; ignore any client-supplied price in shipping_quote.
+        let serverResolvedQuote: JsonRecord = { cod_requested: body.cod_requested };
+        const shippingRateId = typeof (body.shipping_quote as JsonRecord)?.shipping_rate_id === 'string'
+            ? (body.shipping_quote as JsonRecord).shipping_rate_id as string
+            : null;
+
+        if (shippingRateId) {
+            try {
+                const { resolveShippingRate } = await import('../lib/shipping-rate-resolver');
+                const db = getSupabaseAdmin(c);
+                const resolved = await resolveShippingRate(db, verified.handoff.siteId, shippingRateId);
+                if (resolved) {
+                    serverResolvedQuote = {
+                        shipping_rate_id: resolved.id,
+                        amount: resolved.amount,
+                        currency: 'INR',
+                        cod_requested: body.cod_requested,
+                        server_resolved: true,
+                    };
+                }
+            } catch {
+                // Fall through to method-based quote if resolution fails.
+            }
+        }
+
+        if (!serverResolvedQuote.server_resolved) {
+            // No rate ID or resolution failed: use method-derived quote (no client price trusted).
+            const method = typeof body.shipping_method === 'string' ? body.shipping_method : 'standard';
+            serverResolvedQuote = {
+                shipping_method: method,
+                amount: method === 'express' ? 99 : 0,
+                currency: 'INR',
+                cod_requested: body.cod_requested,
+                server_resolved: true,
+            };
+        }
+
         const session = await persistCheckoutStep(c, verified.handoff, 'delivery', {
             shipping_method: body.shipping_method,
             shipping_address: body.shipping_address,
-            delivery_quote: {
-                ...body.shipping_quote,
-                cod_requested: body.cod_requested,
-            },
+            delivery_quote: serverResolvedQuote,
         });
         if (!session) return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout cannot move to delivery.' } }, status: 409 };
         return { body: success({ checkout: sessionPayload(session) }), status: 200, resourceId: session.id };

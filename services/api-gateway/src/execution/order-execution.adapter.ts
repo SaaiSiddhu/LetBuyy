@@ -143,7 +143,14 @@ export class OrderExecutionAdapter {
      * 4. Generate collision-free order number
      * 5. Insert order + items atomically through the inventory RPC
      */
-    async createOrder(input: CreateCheckoutOrderCommand, tenant: TenantContext, options: CreateOrderOptions = {}) {
+    async createOrder(
+        input: CreateCheckoutOrderCommand & {
+            shipping_rate_id?: string | null;
+            tax_amount?: number | null;
+        },
+        tenant: TenantContext,
+        options: CreateOrderOptions = {},
+    ) {
         await this.assertOrderQuota(tenant.siteId);
         const shippingAddress = { ...(input.shipping_address || {}) };
         if (input.customer_gstin) shippingAddress.gstin = input.customer_gstin;
@@ -163,6 +170,9 @@ export class OrderExecutionAdapter {
             p_idempotency_key: input.idempotency_key,
             p_actor_id: tenant.userId,
             p_request_id: tenant.requestId,
+            // V1 LB-7: thread server-resolved shipping rate ID and GST amount.
+            p_shipping_rate_id: input.shipping_rate_id ?? null,
+            p_tax_amount: typeof input.tax_amount === 'number' ? input.tax_amount : null,
         });
 
         if (error) {

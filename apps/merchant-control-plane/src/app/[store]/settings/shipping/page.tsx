@@ -32,6 +32,14 @@ interface ShippingRate {
     min_order_amount: number | null
 }
 
+interface AddRateFormState {
+    zoneId: string
+    name: string
+    price: string
+    saving: boolean
+    error: string | null
+}
+
 type ShippingPayload = {
     data?: unknown
     error?: string | { message?: string }
@@ -143,6 +151,8 @@ export default function ShippingSettingsPage() {
 
     const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : formMode ? 'unsaved' : 'saved'
     const totalRates = useMemo(() => rates.length, [rates])
+    const [addRateForm, setAddRateForm] = useState<AddRateFormState | null>(null)
+    const [deletingRateId, setDeletingRateId] = useState<string | null>(null)
 
     const loadData = useCallback(async (options?: { quiet?: boolean }) => {
         if (!options?.quiet) setLoading(true)
@@ -308,6 +318,62 @@ export default function ShippingSettingsPage() {
         }
     }, [deletingId, notify, store, zoneToDelete])
 
+    const handleAddRate = useCallback(async () => {
+        if (!addRateForm || addRateForm.saving) return
+        const name = addRateForm.name.trim()
+        const price = parseFloat(addRateForm.price)
+
+        if (!name || Number.isNaN(price) || price < 0) {
+            setAddRateForm(prev => prev ? { ...prev, error: 'Enter a valid rate name and price (0 for free).' } : null)
+            return
+        }
+
+        setAddRateForm(prev => prev ? { ...prev, saving: true, error: null } : null)
+
+        try {
+            const response = await fetch(
+                `/api/stores/${encodeURIComponent(store)}/shipping/rates`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ zone_id: addRateForm.zoneId, name, price, type: 'flat' }),
+                }
+            )
+            const payload = (await response.json().catch(() => null)) as ShippingPayload | null
+
+            if (!response.ok) throw new Error(getPayloadError(payload, 'Unable to add rate'))
+
+            setAddRateForm(null)
+            await loadData({ quiet: true })
+            notify({ title: 'Shipping rate added', description: `${name} will appear in checkout.`, variant: 'success' })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to add rate'
+            setAddRateForm(prev => prev ? { ...prev, saving: false, error: message } : null)
+            notify({ title: 'Could not add rate', description: message, variant: 'critical' })
+        }
+    }, [addRateForm, loadData, notify, store])
+
+    const handleDeleteRate = useCallback(async (rateId: string, rateName: string) => {
+        if (deletingRateId) return
+        setDeletingRateId(rateId)
+        try {
+            const response = await fetch(
+                `/api/stores/${encodeURIComponent(store)}/shipping/rates/${encodeURIComponent(rateId)}`,
+                { method: 'DELETE' }
+            )
+            const payload = (await response.json().catch(() => null)) as ShippingPayload | null
+            if (!response.ok) throw new Error(getPayloadError(payload, 'Unable to delete rate'))
+
+            setRates(current => current.filter(r => r.id !== rateId))
+            notify({ title: 'Shipping rate removed', description: `${rateName} removed from checkout.`, variant: 'success' })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to delete rate'
+            notify({ title: 'Could not remove rate', description: message, variant: 'critical' })
+        } finally {
+            setDeletingRateId(null)
+        }
+    }, [deletingRateId, notify, store])
+
     if (loading) {
         return (
             <SettingsPane
@@ -449,27 +515,86 @@ export default function ShippingSettingsPage() {
                             <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
                                 {zones.map((zone) => {
                                     const zoneRates = rates.filter((rate) => rate.zone_id === zone.id)
+                                    const isAddingRateHere = addRateForm?.zoneId === zone.id
                                     return (
-                                        <div key={zone.id} className="flex flex-col gap-[var(--lb-space-4)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
-                                            <div className="min-w-0 space-y-[var(--lb-space-2)]">
-                                                <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
-                                                    <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                                                        {zone.name}
-                                                    </h3>
-                                                    <Badge label={`${zoneRates.length} rate${zoneRates.length === 1 ? '' : 's'}`} variant={zoneRates.length > 0 ? 'success' : 'warning'} />
+                                        <div key={zone.id} className="flex flex-col gap-[var(--lb-space-3)] p-[var(--lb-space-4)]">
+                                            <div className="flex flex-col gap-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
+                                                <div className="min-w-0 space-y-[var(--lb-space-2)]">
+                                                    <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
+                                                        <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                            {zone.name}
+                                                        </h3>
+                                                        <Badge label={`${zoneRates.length} rate${zoneRates.length === 1 ? '' : 's'}`} variant={zoneRates.length > 0 ? 'success' : 'warning'} />
+                                                    </div>
+                                                    <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                        {formatCountries(zone.countries || [])}
+                                                    </p>
                                                 </div>
-                                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                                    {formatCountries(zone.countries || [])}
-                                                </p>
+                                                <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                                    <Button type="button" variant="secondary" size="sm"
+                                                        onClick={() => setAddRateForm(isAddingRateHere ? null : { zoneId: zone.id, name: '', price: '', saving: false, error: null })}
+                                                        disabled={Boolean(formMode)}
+                                                    >
+                                                        {isAddingRateHere ? 'Cancel' : 'Add rate'}
+                                                    </Button>
+                                                    <Button type="button" variant="secondary" size="sm" onClick={() => startEdit(zone)} disabled={Boolean(formMode)}>
+                                                        Edit
+                                                    </Button>
+                                                    <Button type="button" variant="destructive" size="sm" onClick={() => setZoneToDelete(zone)} disabled={deletingId === zone.id}>
+                                                        Delete
+                                                    </Button>
+                                                </div>
                                             </div>
-                                            <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                                                <Button type="button" variant="secondary" size="sm" onClick={() => startEdit(zone)} disabled={Boolean(formMode)}>
-                                                    Edit
-                                                </Button>
-                                                <Button type="button" variant="destructive" size="sm" onClick={() => setZoneToDelete(zone)} disabled={deletingId === zone.id}>
-                                                    Delete
-                                                </Button>
-                                            </div>
+
+                                            {/* Rate rows */}
+                                            {zoneRates.length > 0 && (
+                                                <div className="ml-[var(--lb-space-2)] divide-y divide-[var(--lb-color-border)] rounded-lg border border-[var(--lb-color-border)]">
+                                                    {zoneRates.map(rate => (
+                                                        <div key={rate.id} className="flex items-center justify-between gap-[var(--lb-space-3)] px-[var(--lb-space-3)] py-[var(--lb-space-2)]">
+                                                            <span className="text-[var(--lb-font-size-body)] text-[var(--lb-color-text)]">{rate.name}</span>
+                                                            <div className="flex items-center gap-[var(--lb-space-3)]">
+                                                                <span className="text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">
+                                                                    {rate.price === 0 ? 'Free' : `₹${rate.price.toLocaleString('en-IN')}`}
+                                                                </span>
+                                                                <Button type="button" variant="destructive" size="sm"
+                                                                    onClick={() => void handleDeleteRate(rate.id, rate.name)}
+                                                                    disabled={deletingRateId === rate.id}
+                                                                >
+                                                                    {deletingRateId === rate.id ? 'Removing' : 'Remove'}
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {/* Add rate inline form */}
+                                            {isAddingRateHere && addRateForm && (
+                                                <div className="ml-[var(--lb-space-2)] rounded-lg border border-[var(--lb-color-border)] p-[var(--lb-space-3)]">
+                                                    {addRateForm.error && (
+                                                        <p className="mb-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] text-[var(--lb-color-critical)]">{addRateForm.error}</p>
+                                                    )}
+                                                    <div className="flex flex-wrap items-end gap-[var(--lb-space-2)]">
+                                                        <Input
+                                                            label="Rate name"
+                                                            value={addRateForm.name}
+                                                            onChange={e => setAddRateForm(prev => prev ? { ...prev, name: e.target.value } : null)}
+                                                            placeholder="e.g. Standard delivery"
+                                                        />
+                                                        <Input
+                                                            label="Price (₹, 0 for free)"
+                                                            value={addRateForm.price}
+                                                            onChange={e => setAddRateForm(prev => prev ? { ...prev, price: e.target.value } : null)}
+                                                            placeholder="99"
+                                                            type="number"
+                                                            min={0}
+                                                        />
+                                                        <Button type="button" onClick={() => void handleAddRate()} loading={addRateForm.saving}>
+                                                            Add rate
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     )
                                 })}

@@ -23,7 +23,13 @@ import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-
 import { createStripePaymentProvider } from '@letbuyy/infrastructure/stripe-adapter';
 import { assertProviderPaymentNotReplayed } from '../../lib/payment-route-support';
 import type { CreateCheckoutOrderCommand } from '@letbuyy/checkout-core';
+import {
+    calculateGstLine,
+    normalizeIndianStateCode,
+    extractGstStateCode,
+} from '@letbuyy/checkout-core';
 import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
+import { resolveShippingRate } from '../../lib/shipping-rate-resolver';
 
 type AppContext = Context<{ Bindings: Env }>;
 type StorefrontJsonValue = null | boolean | number | string | StorefrontJsonValue[] | { [key: string]: StorefrontJsonValue };
@@ -53,6 +59,8 @@ type StorefrontCreateOrderBody = {
     couponCode?: string;
     giftCardCode?: string;
     idempotencyKey: string;
+    /** V1 shipping: optional server-side rate ID; back-compat when absent. */
+    shippingRateId?: string | null;
 };
 
 type OrderRpcResult = {
@@ -280,7 +288,90 @@ export function registerStorefrontCheckoutPaymentRoutes(
                 phone: body.customer.phone,
                 gstin: body.customer.gstin,
             };
-            const orderCommand: CreateCheckoutOrderCommand = {
+
+            // V1 server-side shipping rate resolution — never trust client price.
+            const resolvedRate = await resolveShippingRate(db, store.id, body.shippingRateId ?? null);
+
+            // V1 server-side GST computation.
+            // Source: tax_registrations (supplier GSTIN/state_code) + tax_rates.rate (site default).
+            // If the store has no tax registration or no active tax rate, tax = 0 (existing behavior).
+            let computedTaxAmount: number | null = null;
+            try {
+                const { data: taxRegData } = await db
+                    .from('tax_registrations')
+                    .select('gstin, state_code')
+                    .eq('site_id', store.id)
+                    .is('deleted_at', null)
+                    .order('effective_from', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                const { data: taxRateData } = await db
+                    .from('tax_rates')
+                    .select('rate')
+                    .eq('store_id', store.id)
+                    .eq('is_active', true)
+                    .eq('is_shipping', false)
+                    .is('deleted_at', null)
+                    .order('priority', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                const supplierStateCode = taxRegData
+                    ? normalizeIndianStateCode((taxRegData as { gstin?: string | null; state_code?: string | null }).state_code ?? null)
+                        || extractGstStateCode((taxRegData as { gstin?: string | null }).gstin ?? null)
+                    : null;
+                const recipientStateCode = normalizeIndianStateCode(
+                    body.customer.address.stateCode ?? null
+                );
+                const defaultRateBps = taxRateData
+                    ? (() => {
+                        const r = Number((taxRateData as { rate?: number | string | null }).rate ?? 0);
+                        return Number.isFinite(r) ? Math.round(r <= 1 ? r * 10_000 : r * 100) : 0;
+                    })()
+                    : 0;
+
+                if (supplierStateCode && recipientStateCode && defaultRateBps > 0) {
+                    const supplyType = supplierStateCode === recipientStateCode ? 'intra_state' : 'inter_state';
+                    let taxMinor = 0;
+                    for (const item of body.items) {
+                        const { data: productData } = await db
+                            .from('products')
+                            .select('price')
+                            .eq('id', item.productId)
+                            .eq('store_id', store.id)
+                            .is('deleted_at', null)
+                            .maybeSingle();
+
+                        const unitPrice = productData
+                            ? Math.round(Number((productData as { price?: number | string | null }).price ?? 0) * 100)
+                            : 0;
+
+                        const gstLine = calculateGstLine(
+                            {
+                                id: item.productId,
+                                description: 'Order item',
+                                quantity: item.quantity,
+                                unit_amount_minor: unitPrice,
+                                discount_amount_minor: 0,
+                                gst_rate_bps: defaultRateBps,
+                                tax_inclusive: false,
+                            },
+                            supplyType,
+                        );
+                        taxMinor += gstLine.tax_amount_minor;
+                    }
+                    computedTaxAmount = taxMinor / 100;
+                }
+            } catch {
+                // GST computation is best-effort; fall through to 0 if it fails.
+                computedTaxAmount = null;
+            }
+
+            const orderCommand: CreateCheckoutOrderCommand & {
+                shipping_rate_id?: string | null;
+                tax_amount?: number | null;
+            } = {
                 customer_name: body.customer.name,
                 customer_email: body.customer.email,
                 customer_phone: body.customer.phone,
@@ -297,6 +388,8 @@ export function registerStorefrontCheckoutPaymentRoutes(
                 coupon_code: body.couponCode,
                 gift_card_code: body.giftCardCode,
                 idempotency_key: body.idempotencyKey,
+                shipping_rate_id: resolvedRate ? resolvedRate.id : (body.shippingRateId ?? null),
+                tax_amount: computedTaxAmount,
             };
             const deferPostCommit = isCheckoutPostCommitDeferralEnabled(c.env);
             const order = await service.createOrder(orderCommand, tenant, { deferPostCommit }) as OrderRpcResult;

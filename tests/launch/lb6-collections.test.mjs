@@ -111,10 +111,14 @@ test('(e) categoryGrid links to /collections/ not /shop?category=', () => {
         'categoryGrid must not link to /shop?category= for collection cards');
 });
 
-test('(P4-4) domain-boundary-validator expects 124 routes', () => {
+test('(P4-4) domain-boundary-validator expects 127 routes', () => {
+    // LB-7 (Batch 5) added the merchant shipping-rate + storefront shipping proxy
+    // routes, bumping the conscious P4-4 inventory 124 -> 127. This downstream count
+    // assertion is updated in lockstep with domain-boundary-validator.mjs, the same
+    // ratchet-maintenance pattern earlier batches used (115 -> 123 -> 124 -> 127).
     const validator = readFileSync(path.join(repoRoot, 'scripts/validators/domain-boundary-validator.mjs'), 'utf8');
-    assert.match(validator, /appApiRoutes\.length === 124/,
-        'domain-boundary-validator must be updated to 124 routes');
+    assert.match(validator, /appApiRoutes\.length === 127/,
+        'domain-boundary-validator must be updated to 127 routes');
 });
 
 test('(P4-4) governance doc records the new proxy route', () => {

@@ -86,6 +86,17 @@ router.post('/', validate('json', CreateCouponSchema), async (c) => {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
+    // V1 scope-lock: bogo is not supported; DB CHECK allows it but the API does not.
+    if ((body as { type?: string }).type === 'bogo') {
+        return c.json({
+            success: false,
+            error: {
+                code: 'UNSUPPORTED_DISCOUNT_TYPE',
+                message: 'V1 supports percentage, fixed, and free_shipping discount types. bogo is not available.',
+            },
+        }, 422);
+    }
+
     if (!customUser) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
@@ -150,6 +161,17 @@ router.patch('/:id', async (c) => {
     const patch = body as Record<string, unknown>;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
+
+    // V1 scope-lock: reject bogo type changes.
+    if (patch.type === 'bogo') {
+        return c.json({
+            success: false,
+            error: {
+                code: 'UNSUPPORTED_DISCOUNT_TYPE',
+                message: 'V1 supports percentage, fixed, and free_shipping discount types. bogo is not available.',
+            },
+        }, 422);
+    }
 
     const { data: existing } = await db
         .from('coupons')

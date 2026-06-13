@@ -102,6 +102,15 @@ type ProviderOrderMethod = 'razorpay' | 'cod';
 const productImageFallback = '/images/banners/new-arrivals-1.png';
 const passthroughImageLoader = ({ src }: ImageLoaderProps) => src;
 
+interface StoreShippingRate {
+    id: string;
+    name: string;
+    type: string;
+    amount_minor: number;
+    estimated_days_min?: number | null;
+    estimated_days_max?: number | null;
+}
+
 interface CreateOrderResult {
     success?: boolean;
     error?: string;
@@ -157,6 +166,9 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const [isCheckingCoupon, setIsCheckingCoupon] = useState(false);
     const [checkoutError, setCheckoutError] = useState('');
     const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+    // V1 LB-7: real shipping rates from store config.
+    const [storeRates, setStoreRates] = useState<StoreShippingRate[] | null>(null);
+    const [selectedRateId, setSelectedRateId] = useState<string | null>(null);
     const idempotencyKeysRef = useRef<Record<string, string>>({});
 
     const [formData, setFormData] = useState<FormData>({
@@ -198,8 +210,45 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         }
     }, [isSuccess]);
 
+    // V1 LB-7: fetch real shipping rates for this store.
+    useEffect(() => {
+        let isMounted = true;
+        const subtotalMinor = Math.round(cartTotal * 100);
+        fetch('/api/shipping/rates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                store_id: storeId,
+                pincode: '000000', // placeholder — real pincode available at form-fill
+                subtotal_minor: subtotalMinor,
+            }),
+        })
+            .then(res => res.ok ? res.json() : null)
+            .then(payload => {
+                if (!isMounted) return;
+                const rates: StoreShippingRate[] = Array.isArray(payload?.data?.rates)
+                    ? (payload.data.rates as StoreShippingRate[]).filter(r => typeof r.id === 'string' && r.id && r.id !== 'sandbox-standard')
+                    : [];
+                if (rates.length > 0) {
+                    setStoreRates(rates);
+                    setSelectedRateId(rates[0].id);
+                } else {
+                    setStoreRates(null); // Fall back to hardcoded standard/express
+                }
+            })
+            .catch(() => {
+                if (isMounted) setStoreRates(null);
+            });
+        return () => {
+            isMounted = false;
+        };
+    }, [storeId, cartTotal]);
+
     // Delivery costs
-    const deliveryCharges = deliveryOption === 'express' ? 99 : 0;
+    const selectedRate = storeRates ? storeRates.find(r => r.id === selectedRateId) ?? storeRates[0] : null;
+    const deliveryCharges = selectedRate
+        ? (selectedRate.type === 'free' ? 0 : selectedRate.amount_minor / 100)
+        : (deliveryOption === 'express' ? 99 : 0);
     const discountAmount = appliedCoupon?.discount || 0;
     const effectiveDeliveryCharges = appliedCoupon?.freeShipping ? 0 : deliveryCharges;
     const totalAmount = Math.max(0, cartTotal + effectiveDeliveryCharges - discountAmount);
@@ -310,6 +359,8 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         paymentMethod: method,
         deliveryOption,
         couponCode: appliedCoupon?.code,
+        // V1 LB-7: send server-resolvable rate ID; back-compat when store has no rates.
+        shippingRateId: selectedRate?.id ?? null,
     });
 
     const applyCoupon = async () => {
@@ -766,40 +817,73 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             </div>
                                         </div>
 
-                                        {/* Delivery Options */}
+                                        {/* Delivery Options — real store rates when configured, fallback otherwise */}
                                         <div className="mt-6 pt-4 border-t border-card">
                                             <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
                                                 <Truck size={16} style={{ color: primaryColor }} />
                                                 Delivery Speed
                                             </h3>
-                                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                                <Button unstyled
-                                                    onClick={() => setDeliveryOption('standard')}
-                                                    className={`min-h-11 p-3 rounded-lg border-2 text-left transition-all ${deliveryOption === 'standard' ? 'border-opacity-100' : 'border-card'}`}
-                                                    style={{ borderColor: deliveryOption === 'standard' ? primaryColor : undefined }}
-                                                >
-                                                    <div className="flex items-center justify-between mb-1">
-                                                        <span className="font-semibold text-sm">Standard</span>
-                                                        <span className="text-green-600 text-xs font-medium">FREE</span>
-                                                    </div>
-                                                    <p className="text-xs text-theme-secondary flex items-center gap-1">
-                                                        <Clock size={12} /> 5-7 days
-                                                    </p>
-                                                </Button>
-                                                <Button unstyled
-                                                    onClick={() => setDeliveryOption('express')}
-                                                    className={`min-h-11 p-3 rounded-lg border-2 text-left transition-all ${deliveryOption === 'express' ? 'border-opacity-100' : 'border-card'}`}
-                                                    style={{ borderColor: deliveryOption === 'express' ? primaryColor : undefined }}
-                                                >
-                                                    <div className="flex items-center justify-between mb-1">
-                                                        <span className="font-semibold text-sm">Express</span>
-                                                        <span className="text-xs font-medium" style={{ color: primaryColor }}>₹99</span>
-                                                    </div>
-                                                    <p className="text-xs text-theme-secondary flex items-center gap-1">
-                                                        <Clock size={12} /> 2-3 days
-                                                    </p>
-                                                </Button>
-                                            </div>
+                                            {storeRates && storeRates.length > 0 ? (
+                                                <div className="grid grid-cols-1 gap-3">
+                                                    {storeRates.map(rate => {
+                                                        const isSelected = selectedRateId === rate.id;
+                                                        const rateAmount = rate.type === 'free' ? 0 : rate.amount_minor / 100;
+                                                        const daysLabel = rate.estimated_days_min != null && rate.estimated_days_max != null
+                                                            ? `${rate.estimated_days_min}–${rate.estimated_days_max} days`
+                                                            : null;
+                                                        return (
+                                                            <Button unstyled key={rate.id}
+                                                                onClick={() => {
+                                                                    setSelectedRateId(rate.id);
+                                                                    setDeliveryOption('standard');
+                                                                }}
+                                                                className={`min-h-11 p-3 rounded-lg border-2 text-left transition-all ${isSelected ? 'border-[color:var(--lb-color-primary)]' : 'border-card'}`}
+                                                            >
+                                                                <div className="flex items-center justify-between mb-1">
+                                                                    <span className="font-semibold text-sm">{rate.name}</span>
+                                                                    <span className="text-xs font-medium text-theme-secondary">
+                                                                        {rateAmount === 0 ? 'FREE' : `₹${rateAmount.toLocaleString('en-IN')}`}
+                                                                    </span>
+                                                                </div>
+                                                                {daysLabel && (
+                                                                    <p className="text-xs text-theme-secondary flex items-center gap-1">
+                                                                        <Clock size={12} /> {daysLabel}
+                                                                    </p>
+                                                                )}
+                                                            </Button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                                    <Button unstyled
+                                                        onClick={() => setDeliveryOption('standard')}
+                                                        className={`min-h-11 p-3 rounded-lg border-2 text-left transition-all ${deliveryOption === 'standard' ? 'border-opacity-100' : 'border-card'}`}
+                                                        style={{ borderColor: deliveryOption === 'standard' ? primaryColor : undefined }}
+                                                    >
+                                                        <div className="flex items-center justify-between mb-1">
+                                                            <span className="font-semibold text-sm">Standard</span>
+                                                            <span className="text-green-600 text-xs font-medium">FREE</span>
+                                                        </div>
+                                                        <p className="text-xs text-theme-secondary flex items-center gap-1">
+                                                            <Clock size={12} /> 5-7 days
+                                                        </p>
+                                                    </Button>
+                                                    <Button unstyled
+                                                        onClick={() => setDeliveryOption('express')}
+                                                        className={`min-h-11 p-3 rounded-lg border-2 text-left transition-all ${deliveryOption === 'express' ? 'border-opacity-100' : 'border-card'}`}
+                                                        style={{ borderColor: deliveryOption === 'express' ? primaryColor : undefined }}
+                                                    >
+                                                        <div className="flex items-center justify-between mb-1">
+                                                            <span className="font-semibold text-sm">Express</span>
+                                                            <span className="text-xs font-medium" style={{ color: primaryColor }}>₹99</span>
+                                                        </div>
+                                                        <p className="text-xs text-theme-secondary flex items-center gap-1">
+                                                            <Clock size={12} /> 2-3 days
+                                                        </p>
+                                                    </Button>
+                                                </div>
+                                            )}
                                         </div>
 
                                         <Button unstyled
