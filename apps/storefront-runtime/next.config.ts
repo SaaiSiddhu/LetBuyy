@@ -31,6 +31,20 @@ function storefrontGatewayBaseUrl(): string {
 const nextConfig: NextConfig = {
   compress: true, // Enable gzip compression for cost savings
 
+  // theme-engine's Liquid sanitizer dynamically imports jsdom for server-side
+  // DOMPurify (sanitizeRenderedHtml runs only during SSR). The barrel re-exports
+  // the renderer, so client section components transitively pull jsdom into the
+  // client graph. Keep jsdom server-external, and drop it from the client bundle
+  // (it is never executed client-side) so its node:* deps don't break the build.
+  serverExternalPackages: ['jsdom'],
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve = config.resolve || {};
+      config.resolve.fallback = { ...(config.resolve.fallback || {}), jsdom: false };
+    }
+    return config;
+  },
+
   // === COST OPTIMIZATION: Image Formats ===
   images: {
     formats: ['image/avif', 'image/webp'], // Modern formats = 50% smaller

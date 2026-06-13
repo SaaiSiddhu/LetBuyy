@@ -859,7 +859,9 @@ async function getThemeDomPurify(): Promise<ThemeDomPurifyRuntime> {
   domPurifyPromise ||= (async () => {
     const [{ default: createDOMPurify }, { JSDOM }] = await Promise.all([
       import('dompurify'),
-      import('jsdom'),
+      // jsdom is server-only (this runs during SSR sanitization). webpackIgnore keeps it
+      // a runtime require so bundlers never pull jsdom's node:* deps into a client build.
+      import(/* webpackIgnore: true */ 'jsdom'),
     ]);
     const { window } = new JSDOM('<!doctype html><html><body></body></html>');
     const purify = createDOMPurify(window as unknown as WindowLike);
