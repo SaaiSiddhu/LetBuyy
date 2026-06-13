@@ -138,6 +138,14 @@ const DEFAULT_EMAIL_TEMPLATES: Record<string, { subject: string; body: string }>
     subject: 'Your LetBuyy cart is waiting',
     body: '<mjml><mj-body><mj-section><mj-column><mj-text>Complete your cart at {{ checkout_url }}.</mj-text></mj-column></mj-section></mj-body></mjml>',
   },
+  order_cancelled: {
+    subject: 'Order {{ order_number }} cancelled',
+    body: '<mjml><mj-body><mj-section><mj-column><mj-text>Hello {{ customer.name }}, your order {{ order_number }} has been cancelled. If you were charged, your refund is being processed.</mj-text></mj-column></mj-section></mj-body></mjml>',
+  },
+  order_refunded: {
+    subject: 'Refund issued for order {{ order_number }}',
+    body: '<mjml><mj-body><mj-section><mj-column><mj-text>Hello {{ customer.name }}, a refund of {{ refund_amount }} for order {{ order_number }} has been issued and should reach your original payment method shortly.</mj-text></mj-column></mj-section></mj-body></mjml>',
+  },
 };
 
 function escapeHtml(value: unknown): string {
@@ -354,6 +362,31 @@ export function planWhatsAppNotificationForEvent(event: RuntimeEventEnvelope): P
         fail_closed_without_consent: true,
         data,
       };
+    default:
+      return null;
+  }
+}
+
+export interface PlannedEmailNotification {
+  template_key: string;
+  data: Record<string, unknown>;
+}
+
+// Canonical order-lifecycle email mapping (mirrors planWhatsAppNotificationForEvent). LB-10 adds the
+// cancelled/refunded templates so order.cancelled / order.refunded produce a real customer email.
+export function planEmailNotificationForEvent(event: RuntimeEventEnvelope): PlannedEmailNotification | null {
+  const data = notificationData(event);
+
+  switch (event.event_type) {
+    case 'order.created':
+    case 'order.paid':
+      return { template_key: 'order_confirmation', data };
+    case 'order.fulfilled':
+      return { template_key: 'shipment_update', data };
+    case 'order.cancelled':
+      return { template_key: 'order_cancelled', data };
+    case 'order.refunded':
+      return { template_key: 'order_refunded', data };
     default:
       return null;
   }
