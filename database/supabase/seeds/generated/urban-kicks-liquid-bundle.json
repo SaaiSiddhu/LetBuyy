@@ -354,9 +354,478 @@
         "spotlight-default",
         "newsletter-default"
       ]
+    },
+    "product": {
+      "name": "Urban Kicks product",
+      "layout": "theme",
+      "sections": {
+        "product-detail-default": {
+          "type": "product-detail",
+          "settings": {
+            "showGallery": true,
+            "showDescription": true
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
+        "product-related": {
+          "type": "featured-products",
+          "settings": {
+            "title": "You may also like"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "product-detail-default",
+        "product-related"
+      ]
+    },
+    "collection": {
+      "name": "Urban Kicks collection",
+      "layout": "theme",
+      "sections": {
+        "collection-banner-default": {
+          "type": "collection-banner",
+          "settings": {
+            "showDescription": true
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
+        "collection-products": {
+          "type": "collection-product-list",
+          "settings": {
+            "title": "Products"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "collection-banner-default",
+        "collection-products"
+      ]
+    },
+    "search": {
+      "name": "Urban Kicks search",
+      "layout": "theme",
+      "sections": {
+        "search-box-default": {
+          "type": "search-box",
+          "settings": {
+            "placeholder": "Search products"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
+        "search-results": {
+          "type": "collection-product-list",
+          "settings": {
+            "title": "Results"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "search-box-default",
+        "search-results"
+      ]
+    },
+    "cart": {
+      "name": "Urban Kicks cart",
+      "layout": "theme",
+      "sections": {
+        "cart-summary-default": {
+          "type": "cart-summary",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "cart-summary-default"
+      ]
+    },
+    "customers/login": {
+      "name": "Login",
+      "layout": "theme",
+      "sections": {
+        "customer-login-default": {
+          "type": "customer-login",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-login-default"
+      ]
+    },
+    "customers/register": {
+      "name": "Register",
+      "layout": "theme",
+      "sections": {
+        "customer-register-default": {
+          "type": "customer-register",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-register-default"
+      ]
+    },
+    "customers/account": {
+      "name": "Account",
+      "layout": "theme",
+      "sections": {
+        "customer-account-default": {
+          "type": "customer-account",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-account-default"
+      ]
+    },
+    "customers/orders": {
+      "name": "Order history",
+      "layout": "theme",
+      "sections": {
+        "customer-orders-default": {
+          "type": "customer-orders",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-orders-default"
+      ]
+    },
+    "customers/order": {
+      "name": "Order detail",
+      "layout": "theme",
+      "sections": {
+        "customer-order-detail-default": {
+          "type": "customer-order-detail",
+          "settings": {},
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        }
+      },
+      "order": [
+        "customer-order-detail-default"
+      ]
     }
   },
   "sections": {
+    "customer-orders": {
+      "path": "sections/customer-orders.liquid",
+      "source": "<section class=\"lb-orders\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  {% if customer.orders and customer.orders.size > 0 %}\n  <ul class=\"lb-orders__list\">{% for order in customer.orders %}<li class=\"lb-orders__row\"><a href=\"/account/orders/{{ order.id }}\"><span class=\"lb-orders__num\">#{{ order.number }}</span><span class=\"lb-orders__status\">{{ order.status }}</span><span class=\"lb-orders__total\">{{ order.total | money_with_currency: order.currency }}</span></a></li>{% endfor %}</ul>\n  {% else %}<p class=\"lb-orders__empty\">No orders yet.</p>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Order History\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your orders\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Order History\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "schema": {
+        "name": "Order History",
+        "tag": "section",
+        "settings": [
+          {
+            "type": "text",
+            "label": "Heading",
+            "default": "Your orders",
+            "id": "heading"
+          }
+        ],
+        "blocks": [],
+        "presets": [
+          {
+            "name": "Order History",
+            "settings": {},
+            "blocks": []
+          }
+        ],
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "disabled_on": {
+          "templates": []
+        }
+      }
+    },
+    "customer-order-detail": {
+      "path": "sections/customer-order-detail.liquid",
+      "source": "<section class=\"lb-order-detail\" data-section-id=\"{{ section.id }}\">\n  {% if order %}\n  <h1>Order #{{ order.number }}</h1>\n  <p class=\"lb-order-detail__status\">Status: {{ order.status }}</p>\n  <ul class=\"lb-order-detail__items\">{% for item in order.line_items %}<li><span class=\"lb-order-detail__title\">{{ item.title }}</span><span class=\"lb-order-detail__qty\">{{ item.quantity }}</span><span class=\"lb-order-detail__line\">{{ item.line_price | money_with_currency: order.currency }}</span></li>{% endfor %}</ul>\n  <p class=\"lb-order-detail__total\">Total: {{ order.total | money_with_currency: order.currency }}</p>\n  <ol class=\"lb-order-detail__timeline\">{% for step in order.timeline %}<li class=\"lb-order-detail__step{% if step.reached %} is-reached{% endif %}\">{{ step.label }}</li>{% endfor %}</ol>\n  {% if order.tracking_number != blank %}<p class=\"lb-order-detail__tracking\">Tracking: {{ order.tracking_number }}{% if order.carrier != blank %} ({{ order.carrier }}){% endif %}</p>{% endif %}\n  {% else %}<p class=\"lb-order-detail__missing\">Order not found.</p>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Order Detail\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Order\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Order Detail\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "schema": {
+        "name": "Order Detail",
+        "tag": "section",
+        "settings": [
+          {
+            "type": "text",
+            "label": "Heading",
+            "default": "Order",
+            "id": "heading"
+          }
+        ],
+        "blocks": [],
+        "presets": [
+          {
+            "name": "Order Detail",
+            "settings": {},
+            "blocks": []
+          }
+        ],
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "disabled_on": {
+          "templates": []
+        }
+      }
+    },
+    "customer-account": {
+      "path": "sections/customer-account.liquid",
+      "source": "<section class=\"lb-account\" data-section-id=\"{{ section.id }}\">\n  {% if customer %}\n  <h1>{{ section.settings.heading }}</h1>\n  <p class=\"lb-account__hello\">Signed in as {{ customer.name | default: customer.email }}</p>\n  <nav class=\"lb-account__nav\"><a href=\"/account/orders\">Orders</a><a href=\"/account/addresses\">Addresses</a><a href=\"/account/settings\">Settings</a><a href=\"/api/customer/logout\">Sign out</a></nav>\n  {% else %}\n  <p class=\"lb-account__guest\">Please <a href=\"/customers/login\">sign in</a> to view your account.</p>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Customer Account\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your account\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Customer Account\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "schema": {
+        "name": "Customer Account",
+        "tag": "section",
+        "settings": [
+          {
+            "type": "text",
+            "label": "Heading",
+            "default": "Your account",
+            "id": "heading"
+          }
+        ],
+        "blocks": [],
+        "presets": [
+          {
+            "name": "Customer Account",
+            "settings": {},
+            "blocks": []
+          }
+        ],
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "disabled_on": {
+          "templates": []
+        }
+      }
+    },
+    "customer-login": {
+      "path": "sections/customer-login.liquid",
+      "source": "<section class=\"lb-auth lb-auth--login\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  <form class=\"lb-auth__form\" method=\"post\" action=\"/api/customer/login\">\n    <label>Email<input type=\"email\" name=\"email\" autocomplete=\"email\" required></label>\n    <label>Password<input type=\"password\" name=\"password\" autocomplete=\"current-password\" required></label>\n    <button type=\"submit\">Sign in</button>\n  </form>\n  <a href=\"/customers/register\">Create an account</a>\n</section>\n{% schema %}\n{\n  \"name\": \"Customer Login\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Sign in\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Customer Login\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "schema": {
+        "name": "Customer Login",
+        "tag": "section",
+        "settings": [
+          {
+            "type": "text",
+            "label": "Heading",
+            "default": "Sign in",
+            "id": "heading"
+          }
+        ],
+        "blocks": [],
+        "presets": [
+          {
+            "name": "Customer Login",
+            "settings": {},
+            "blocks": []
+          }
+        ],
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "disabled_on": {
+          "templates": []
+        }
+      }
+    },
+    "customer-register": {
+      "path": "sections/customer-register.liquid",
+      "source": "<section class=\"lb-auth lb-auth--register\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  <form class=\"lb-auth__form\" method=\"post\" action=\"/api/customer/register\">\n    <label>Name<input type=\"text\" name=\"name\" autocomplete=\"name\"></label>\n    <label>Email<input type=\"email\" name=\"email\" autocomplete=\"email\" required></label>\n    <label>Password<input type=\"password\" name=\"password\" autocomplete=\"new-password\" required></label>\n    <button type=\"submit\">Create account</button>\n  </form>\n  <a href=\"/customers/login\">Already have an account?</a>\n</section>\n{% schema %}\n{\n  \"name\": \"Customer Register\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Create account\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Customer Register\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "schema": {
+        "name": "Customer Register",
+        "tag": "section",
+        "settings": [
+          {
+            "type": "text",
+            "label": "Heading",
+            "default": "Create account",
+            "id": "heading"
+          }
+        ],
+        "blocks": [],
+        "presets": [
+          {
+            "name": "Customer Register",
+            "settings": {},
+            "blocks": []
+          }
+        ],
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "disabled_on": {
+          "templates": []
+        }
+      }
+    },
+    "cart-summary": {
+      "path": "sections/cart-summary.liquid",
+      "source": "<section class=\"lb-cart\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  {% if cart.item_count > 0 %}\n  <ul class=\"lb-cart__items\">{% for item in cart.items %}<li class=\"lb-cart__item\"><span class=\"lb-cart__title\">{{ item.title }}</span><span class=\"lb-cart__qty\">{{ item.quantity }}</span><span class=\"lb-cart__line\">{{ item.line_price | money_with_currency: cart.currency }}</span></li>{% endfor %}</ul>\n  <p class=\"lb-cart__total\">Total: {{ cart.total_price | money_with_currency: cart.currency }}</p>\n  <a class=\"lb-cart__checkout\" href=\"{{ cart.checkout_url }}\">Checkout</a>\n  {% else %}<p class=\"lb-cart__empty\">Your cart is empty.</p>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Cart\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your cart\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Cart\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "schema": {
+        "name": "Cart",
+        "tag": "section",
+        "settings": [
+          {
+            "type": "text",
+            "label": "Heading",
+            "default": "Your cart",
+            "id": "heading"
+          }
+        ],
+        "blocks": [],
+        "presets": [
+          {
+            "name": "Cart",
+            "settings": {},
+            "blocks": []
+          }
+        ],
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "disabled_on": {
+          "templates": []
+        }
+      }
+    },
+    "search-box": {
+      "path": "sections/search-box.liquid",
+      "source": "<section class=\"lb-search\" data-section-id=\"{{ section.id }}\">\n  <lb-search data-lb-island=\"search\" data-search-url=\"/search\"><input type=\"search\" placeholder=\"{{ section.settings.placeholder }}\" aria-label=\"Search products\"></lb-search>\n  {% if search.terms %}<p class=\"lb-search__terms\">Results for \"{{ search.terms }}\"</p>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Search\",\n  \"settings\": [\n    {\n      \"id\": \"placeholder\",\n      \"type\": \"text\",\n      \"label\": \"Placeholder\",\n      \"default\": \"Search products\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Search\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "schema": {
+        "name": "Search",
+        "tag": "section",
+        "settings": [
+          {
+            "type": "text",
+            "label": "Placeholder",
+            "default": "Search products",
+            "id": "placeholder"
+          }
+        ],
+        "blocks": [],
+        "presets": [
+          {
+            "name": "Search",
+            "settings": {},
+            "blocks": []
+          }
+        ],
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "disabled_on": {
+          "templates": []
+        }
+      }
+    },
+    "collection-banner": {
+      "path": "sections/collection-banner.liquid",
+      "source": "<section class=\"lb-collection-banner\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ collection.title }}</h1>\n  {% if section.settings.showDescription and collection.description %}<div class=\"lb-collection-banner__desc\">{{ collection.description }}</div>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Collection Banner\",\n  \"settings\": [\n    {\n      \"id\": \"showDescription\",\n      \"type\": \"toggle\",\n      \"label\": \"Show description\",\n      \"default\": true\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Collection Banner\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "schema": {
+        "name": "Collection Banner",
+        "tag": "section",
+        "settings": [
+          {
+            "type": "toggle",
+            "label": "Show description",
+            "default": true,
+            "id": "showDescription"
+          }
+        ],
+        "blocks": [],
+        "presets": [
+          {
+            "name": "Collection Banner",
+            "settings": {},
+            "blocks": []
+          }
+        ],
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "disabled_on": {
+          "templates": []
+        }
+      }
+    },
+    "collection-product-list": {
+      "path": "sections/collection-product-list.liquid",
+      "source": "<section class=\"lb-product-grid\" data-section-id=\"{{ section.id }}\">\n  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}\n  <div class=\"lb-product-grid__items\">\n    {% for item in collection.products %}<article class=\"lb-product-card\"><a href=\"{{ item.url }}\"><strong>{{ item.title }}</strong><span>{{ item.price | money_with_currency: item.currency }}</span></a></article>{% endfor %}\n  </div>\n</section>\n{% schema %}\n{\n  \"name\": \"Collection Products\",\n  \"settings\": [\n    {\n      \"id\": \"title\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Products\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Collection Products\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "schema": {
+        "name": "Collection Products",
+        "tag": "section",
+        "settings": [
+          {
+            "type": "text",
+            "label": "Heading",
+            "default": "Products",
+            "id": "title"
+          }
+        ],
+        "blocks": [],
+        "presets": [
+          {
+            "name": "Collection Products",
+            "settings": {},
+            "blocks": []
+          }
+        ],
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "disabled_on": {
+          "templates": []
+        }
+      }
+    },
     "announcement-bar": {
       "path": "sections/announcement-bar.liquid",
       "source": "<section class=\"lb-announcement-bar\" data-section-id=\"{{ section.id }}\">\n  <span>{{ section.settings.text }}</span>\n  <a href=\"{{ section.settings.linkHref }}\">{{ section.settings.linkLabel }}</a>\n</section>\n{% schema %}\n{\n  \"name\": \"Announcement Bar\",\n  \"settings\": [\n    { \"id\": \"text\", \"type\": \"text\", \"label\": \"Message\", \"default\": \"Free shipping on fresh drops this week.\" },\n    { \"id\": \"linkLabel\", \"type\": \"text\", \"label\": \"Link label\", \"default\": \"Shop now\" },\n    { \"id\": \"linkHref\", \"type\": \"url\", \"label\": \"Link URL\", \"default\": \"/products\" }\n  ],\n  \"presets\": [{ \"name\": \"Announcement Bar\" }]\n}\n{% endschema %}",

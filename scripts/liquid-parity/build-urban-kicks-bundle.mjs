@@ -25,8 +25,11 @@ import {
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const GEN_DIR = resolve(ROOT, 'database/supabase/seeds/generated');
-const MIG_PATH = resolve(ROOT, 'database/supabase/migrations/171_liquid_bundle_persistence.sql');
+// 171 was the L1 baseline (index/header/footer). The generator now emits the CURRENT full fixture
+// (all L4-L13 templates) as a REFRESH migration; 171 stays committed/immutable.
+const MIG_PATH = resolve(ROOT, 'database/supabase/migrations/172_liquid_bundle_refresh.sql');
 const JSON_PATH = resolve(GEN_DIR, 'urban-kicks-liquid-bundle.json');
+const ATTACH_PATH = resolve(GEN_DIR, 'urban-kicks-liquid-attach.sql');
 
 // 1. Build + re-validate the bundle (the fixture already parses; re-parse to be explicit).
 const bundle = parseLiquidThemePackageBundle(createUrbanKicksLiquidThemeBundleFixture());
@@ -63,10 +66,11 @@ SET default_template = COALESCE(default_template, '{}'::jsonb)
 WHERE slug = 'urban-kicks';
 `;
 
-const migrationSql = `-- 171_liquid_bundle_persistence.sql
--- L1 — Bundle Persistence (Full Liquid V1). Backfills EXISTING databases whose urban-kicks theme
--- was seeded before the Liquid bundle existed. Fresh databases get the bundle from the seed
--- (database/supabase/seeds/urban-kicks-theme.sql) directly. Both carry the identical bundle.
+const migrationSql = `-- 172_liquid_bundle_refresh.sql
+-- L14 convergence — REFRESH the persisted urban-kicks Liquid bundle to the CURRENT full template set
+-- (L1 migration 171 only carried index/header/footer; L4-L13 added product/collection/search/cart/
+-- customers/login|register|account|orders|order). A canary store must carry the full set or it
+-- index-falls-back. Idempotent: the '||' merge re-sets the liquidBundle key.
 -- GENERATED — do not hand-edit the JSON; run scripts/liquid-parity/build-urban-kicks-bundle.mjs.
 --
 -- Safety: ADDITIVE jsonb merge (no column drop, no destructive replace); canary-gated rendering
@@ -78,6 +82,7 @@ ${attachSql}`;
 mkdirSync(GEN_DIR, { recursive: true });
 writeFileSync(JSON_PATH, JSON.stringify(bundle, null, 2) + '\n', 'utf8');
 writeFileSync(MIG_PATH, migrationSql, 'utf8');
+writeFileSync(ATTACH_PATH, attachSql, 'utf8'); // appended into the seed (fresh-DB path)
 
 // 4. Report.
 console.log('urban-kicks Liquid bundle — generated');
