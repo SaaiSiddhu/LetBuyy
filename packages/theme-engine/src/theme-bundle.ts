@@ -2127,8 +2127,41 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         },
         order: ['product-detail-default', 'product-related'],
       },
+      collection: {
+        name: 'Urban Kicks collection',
+        layout: 'theme',
+        sections: {
+          'collection-banner-default': { type: 'collection-banner', settings: { showDescription: true } },
+          'collection-products': { type: 'collection-product-list', settings: { title: 'Products' } },
+        },
+        order: ['collection-banner-default', 'collection-products'],
+      },
     },
     sections: {
+      'collection-banner': createLiquidSectionFile({
+        type: 'collection-banner',
+        name: 'Collection Banner',
+        settings: [liquidSetting('showDescription', 'toggle', 'Show description', { default: true })],
+        body: [
+          '<section class="lb-collection-banner" data-section-id="{{ section.id }}">',
+          '  <h1>{{ collection.title }}</h1>',
+          '  {% if section.settings.showDescription and collection.description %}<div class="lb-collection-banner__desc">{{ collection.description }}</div>{% endif %}',
+          '</section>',
+        ],
+      }),
+      'collection-product-list': createLiquidSectionFile({
+        type: 'collection-product-list',
+        name: 'Collection Products',
+        settings: [liquidSetting('title', 'text', 'Heading', { default: 'Products' })],
+        body: [
+          '<section class="lb-product-grid" data-section-id="{{ section.id }}">',
+          '  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}',
+          '  <div class="lb-product-grid__items">',
+          '    {% for item in collection.products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | money_with_currency: item.currency }}</span></a></article>{% endfor %}',
+          '  </div>',
+          '</section>',
+        ],
+      }),
       ...createLiquidParitySectionFiles(),
       'announcement-bar': {
         path: 'sections/announcement-bar.liquid',
