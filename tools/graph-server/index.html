@@ -1215,7 +1215,7 @@ async function bootExplain(){
   $('#explain').innerHTML=`<div class="xtree" id="xtree"><div class="xtree-hdr"><span class="xtitle">Navigation</span><button class="xtree-toggle" onclick="toggleNav()" title="Toggle sidebar" aria-label="Toggle sidebar"></button></div><div class="xtree-body" id="xtree-body"></div></div><div class="xmain fade" id="xmain"><div class="empty"><span class="spin"></span> Loading…</div></div><div class="xctx" id="xctx"></div><button class="xfab xfab-nav" id="xfab-nav" onclick="toggleMobNav()" title="Menu" aria-label="Menu">☰</button><div class="xmob-overlay" id="xmob-overlay" onclick="closeMobDrawers()"></div>`;
   XDATA=await api('/api/explain');
   if(!XDATA||XDATA.error){$('#xmain').innerHTML='<div class="empty">Explain data unavailable — run <code>pnpm graph:omega</code>.</div>';return;}
-  xRenderTree(); v10InitRouter();
+  xRenderTree(); xV11Nav(); v10InitRouter();
 }
 function xRenderTree(){
   const t=$('#xtree-body')||$('#xtree'); let h='';
@@ -1257,6 +1257,12 @@ function xSelect(key){
   if(key==='ai-context'){xCtxPanel(null);return xAiContextPage();}
   if(key==='merchant-journey'){xCtxPanel(null);return xEcosystem('merchant');}
   if(key==='customer-journey'){xCtxPanel(null);return xEcosystem('customer');}
+  if(key==='founder'){xCtxPanel(null);return xFounder();}
+  if(key==='ops-mode'){xCtxPanel(null);return xOperationsHub();}
+  if(key==='support'){xCtxPanel(null);return xSupport();}
+  if(key==='investor'){xCtxPanel(null);return xInvestor();}
+  if(key==='developer'){xCtxPanel(null);return xDeveloper();}
+  if(key==='business-flows'){xCtxPanel(null);return xBusinessFlows();}
   if(XDATA.nodes[key]){xCtxPanel(XDATA.nodes[key]);const _t0=performance.now();xArticle(XDATA.nodes[key]);v10Perf('workspace',key,performance.now()-_t0);return;}
   xCtxPanel(null);
   m.innerHTML='<div class="empty">Select a topic from the left.</div>';
@@ -1810,6 +1816,7 @@ function cmdkRun(x){
 }
 async function runCopilot(q){
   closeCmdk();
+  if(typeof v11Copilot==='function'&&v11Copilot(q))return;   // V11 — business/journey/mode routing first
   const r=await api('/api/search-v2?q='+encodeURIComponent(q));
   if(r&&r.domain&&isDomain(r.domain)){setMode('explain');xSelect(r.domain);const a=r.answer;
     const b=document.createElement('div');b.className='xcard';b.style.cssText='margin:14px 0;border-color:var(--brand)';b.innerHTML=`<div class="h">Search V2 · ${esc(r.intent)} · ${esc(r.domain)} <span style="color:var(--success);font-weight:600;float:right">repo scan: not required</span></div><div class="b">${esc(a.summary)}${a.flow?'<div class="mono" style="color:var(--muted);margin-top:5px">'+esc(a.flow.join(' → '))+'</div>':''}<div style="margin-top:5px;font-size:12px;color:var(--subdued)">engines: ${(r.sourceEngines||[]).map(e=>'<code>'+esc(e)+'</code>').join(' ')}</div></div>`;
@@ -1848,7 +1855,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </style>`);
 
 // Pages (non-domain xSelect targets) → /page/<key>; domains → /domain/<key>[/<perspective>].
-const V10_PAGES=new Set(['getting-started','infrastructure','database','ops-center','mission-control','launch','connections','ecosystem','live-integrations','readiness','ai-context','merchant-journey','customer-journey']);
+const V10_PAGES=new Set(['getting-started','infrastructure','database','ops-center','mission-control','launch','connections','ecosystem','live-integrations','readiness','ai-context','merchant-journey','customer-journey','founder','ops-mode','support','investor','developer','business-flows']);
 const V10_PERSP=WSPERSP.map(p=>p[0]);
 let _v10_suppress=false;                 // true while applying a route (suppress pushState)
 
@@ -1869,11 +1876,14 @@ function v10Parse(){
   if(m)return {key:decodeURIComponent(m[1]),persp:m[2]||sp.get('perspective')||'explain',level:sp.get('level'),q:sp.get('q')};
   m=path.match(/^\/page\/([^\/?#]+)$/);
   if(m)return {key:decodeURIComponent(m[1]),persp:null};
+  m=path.match(/^\/journey\/([^\/?#]+)$/);
+  if(m)return {kind:'journey',key:decodeURIComponent(m[1])};
   if(location.hash){const k=location.hash.slice(1).split('?')[0];if(k)return {key:k,persp:'explain'};}
   return null;
 }
 function v10Apply(t,push){
   if(!t||!t.key)return false;
+  if(t.kind==='journey'){ _v10_suppress=true; try{setMode('explain');xJourney(t.key);}finally{_v10_suppress=false;} try{push?history.pushState({journey:t.key},'','/journey/'+t.key):history.replaceState({journey:t.key},'','/journey/'+t.key);}catch(e){} return true; }
   _v10_suppress=true;
   try{
     if(V10_PAGES.has(t.key)){xSelect(t.key);}
@@ -1998,6 +2008,208 @@ function routeGo(key,persp){
   if(V10_PAGES.has(key)){setMode('explain');xSelect(key);return;}
   if(XDATA&&XDATA.nodes[key]){setMode('explain');xSelect(key);if(persp&&persp!=='explain'&&V10_PERSP.includes(persp))xPersp(key,persp);return;}
   xSelect('getting-started');
+}
+
+/* ================= V11 — Business + Operational Intelligence ================= */
+document.head.insertAdjacentHTML('beforeend',`<style>
+.v11nav-hdr{padding:12px 16px 4px;font:700 10px/1 var(--mono);letter-spacing:.8px;text-transform:uppercase;color:var(--brand-2);opacity:.85}
+.bicards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin:12px 0}
+.bicard{border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;background:var(--surface);cursor:pointer;transition:border-color .15s}
+.bicard:hover{border-color:var(--brand)}
+.bicard .t{font-weight:700;font-size:14px;margin-bottom:4px}
+.bicard .d{font-size:12px;color:var(--subdued);line-height:1.5}
+.bicard .m{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.bipanel{border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;margin:10px 0;background:var(--surface)}
+.bipanel .ph{font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.bipanel .pp{font-size:13.5px;line-height:1.6;color:var(--text)}
+.bipanel .pm{font-size:12px;color:var(--subdued);margin-top:6px}
+.readbar{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-soft)}
+.readbar .lbl{flex:0 0 180px;font-size:13px}.readbar .track{flex:1;height:7px;border-radius:4px;background:var(--border-soft);overflow:hidden}
+.readbar .fill{height:100%;border-radius:4px}.readbar .sc{flex:0 0 46px;text-align:right;font:700 13px var(--mono)}
+.qchips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.qchip{padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:var(--surface);cursor:pointer;font-size:12.5px;min-height:36px}
+.qchip:hover{border-color:var(--brand);color:var(--brand-2)}
+</style>`);
+
+// V11 nav — inject a Business Intelligence section into the left tree (after xRenderTree).
+const V11_MODES=[['founder','◆','Founder / Executive'],['ops-mode','◍','Operations'],['support','◌','Support'],['investor','◈','Investor'],['developer','✦','New Developer (30 min)'],['business-flows','⟿','Business Flows']];
+function xV11Nav(){
+  const t=$('#xtree-body')||$('#xtree'); if(!t||t.querySelector('[data-v11]'))return;
+  let h='<div class="v11nav-hdr" data-v11="1">Business Intelligence</div>';
+  h+=V11_MODES.map(([k,ic,l])=>`<div class="sec" data-page="${k}"><span class="ic">${ic}</span><span class="lbl">${esc(l)}</span></div>`).join('');
+  t.insertAdjacentHTML('beforeend',h);
+  t.querySelectorAll('.sec[data-page]').forEach(el=>{ if(el._v11)return; const k=el.dataset.page; if(V11_MODES.some(m=>m[0]===k)){el._v11=1;el.onclick=()=>{closeMobDrawers();xSelect(k);};} });
+}
+const readColor=v=>v>=90?'var(--success)':v>=70?'var(--warning)':'var(--critical)';
+
+// Phase 4 — Founder / Executive mode.
+function xFounder(){
+  $('#xmain').className='xmain article';$('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading founder dashboard…</div>';
+  api('/api/founder').then(o=>{ if(o.error){$('#xmain').innerHTML=`<div class="empty">${esc(o.error)}</div>`;return;}
+    const go=o.verdict==='NO-GO';const gc=go?'var(--critical)':'var(--success)';
+    $('#xmain').innerHTML=`<div class="xa-body"><div class="xhero"><h1>Founder Dashboard</h1><span class="crit" style="background:${gc}22;color:${gc};border:1px solid ${gc}">${esc(o.verdict)}</span></div>
+     <p class="xlede">Single-screen launch & business readiness. Scores are repository-truth; live revenue/traffic/uptime are NOT CONNECTED.</p>
+     ${wsCards([['Verdict',`<span style="font-size:20px;font-weight:800;color:${gc}">${esc(o.verdict)}</span>`],['Overall readiness',`<span style="font-size:20px;font-weight:800">${o.overallReadiness??'—'}%</span>`],['Open blockers',`<span style="font-size:20px;font-weight:800;color:var(--warning)">${o.openBlockers??'—'}</span>`],['Avg domain risk',`${o.health?.avgRisk??'—'}`,'warn']])}
+     <div class="xsection">Readiness</div>
+     ${(o.panels||[]).map(p=>`<div class="readbar"><span class="lbl">${esc(p.readiness)}</span><span class="track"><span class="fill" style="width:${p.score||0}%;background:${readColor(p.score||0)}"></span></span><span class="sc">${p.score==null?'n/a':p.score}</span></div>`).join('')}
+     <div class="xsection">Open blockers</div>
+     <table><thead><tr><th>ID</th><th>Severity</th><th>Title</th></tr></thead><tbody>${(o.blockers||[]).map(b=>`<tr><td class="lbl">${esc(b.id)}</td><td>${esc(b.severity)}</td><td>${esc(b.title)}</td></tr>`).join('')}</tbody></table>
+     <p class="pm" style="color:var(--subdued);font-size:12px;margin-top:10px">${esc(o.liveBoundary||'')}</p>
+     <div class="xatlas"><button class="primary" onclick="xSelect('investor')">◈ Investor view</button><button onclick="xSelect('launch')" style="margin-left:8px">⚑ Launch Command Center</button></div></div>`;
+  });
+}
+// Phase 5 — Operations mode.
+function xOperationsHub(){
+  $('#xmain').className='xmain article';$('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading operations…</div>';
+  api('/api/observability').then(o=>{ if(o.error){$('#xmain').innerHTML=`<div class="empty">${esc(o.error)}</div>`;return;}
+    const liveCell=v=>typeof v==='string'&&/NOT CONNECTED/.test(v)?`<span style="color:var(--warning)">⚠ NOT CONNECTED</span>`:esc(String(v));
+    $('#xmain').innerHTML=`<div class="xa-body"><div class="xhero"><h1>Operations</h1></div>
+     <p class="xlede">Live operational surface — topology is repository truth; logs/events/errors/queue-depth are NOT CONNECTED with their exact source.</p>
+     <div class="xsection">Topology (repository truth)</div>
+     ${wsCards([['Workers',o.workers?.count??'—'],['Queues (producers)',(o.queues?.producers||[]).length],['Queues (consumers)',(o.queues?.consumers||[]).length],['Dead-letter queues',o.queues?.deadLetters??'—'],['Deploy targets',(o.deployments?.targets||[]).length],['Open V1 blockers',o.incidents?.structuralOpenBlockers??'—']])}
+     <div class="xsection">Live signals</div>
+     <table><thead><tr><th>Signal</th><th>Status / source</th></tr></thead><tbody>
+     <tr><td class="lbl">Logs</td><td>${liveCell(o.logs?.live)} · ${esc(o.logs?.requires||'')}</td></tr>
+     <tr><td class="lbl">Events</td><td>${liveCell(o.events?.live)}</td></tr>
+     <tr><td class="lbl">Errors</td><td>${liveCell(o.errors?.live)} · ${esc(o.errors?.requires||'')}</td></tr>
+     <tr><td class="lbl">Queue depth</td><td>${liveCell(o.queues?.liveDepth)}</td></tr>
+     <tr><td class="lbl">Worker CPU</td><td>${liveCell(o.workers?.liveCpu)}</td></tr>
+     <tr><td class="lbl">Deployments</td><td>${liveCell(o.deployments?.live)}</td></tr>
+     <tr><td class="lbl">Incidents</td><td>${liveCell(o.incidents?.live)} · domains with blockers: ${(o.incidents?.domainsWithBlockers||[]).join(', ')||'none'}</td></tr>
+     </tbody></table>
+     <div class="xsection">Money domains — operational health</div>
+     <div class="bicards" id="opsmoney"></div>
+     <div class="xatlas"><button class="primary" onclick="xSelect('support')">◌ Support workspace</button><button onclick="xSelect('ops-center')" style="margin-left:8px">◐ Operations Center</button></div></div>`;
+    // money-domain health cards (reuse live-health)
+    Promise.all(['orders','payments','refunds','inventory'].map(d=>api('/api/live-health?domain='+d))).then(rs=>{
+      const host=document.getElementById('opsmoney');if(!host)return;
+      host.innerHTML=rs.filter(h=>h&&!h.error).map(h=>`<div class="bicard" onclick="routeGo('${h.domain}','live')"><div class="t">${esc(h.domain)}</div><div class="d">health ${h.healthScore} · risk ${h.riskScore} · blockers ${h.incidentCount?.structuralOpenBlockers||0}</div><div class="m"><span class="xpill">avail: NOT CONNECTED</span></div></div>`).join('');
+    });
+  });
+}
+// Phase 6 + 17 — Support mode (autonomous investigation from NL).
+function xSupport(){
+  $('#xmain').className='xmain article';
+  $('#xmain').innerHTML=`<div class="xa-body"><div class="xhero"><h1>Support</h1></div>
+   <p class="xlede">Ask an operational question — LCIS finds the journey, systems, owners and a diagnosis from repository truth. Live order/payment state is NOT CONNECTED.</p>
+   <div class="pathgrid" style="grid-template-columns:1fr auto"><input id="supq" type="text" placeholder="Where is my order? · Why did payment fail? · Why is refund pending?" value="Why did payment fail?"/><button id="supgo" class="primary">Investigate</button></div>
+   <div class="qchips">${['Where is my order?','Why did payment fail?','Why is refund pending?','What merchant is affected by checkout?'].map(q=>`<span class="qchip" data-q="${esc(q)}">${esc(q)}</span>`).join('')}</div>
+   <div id="supout"></div></div>`;
+  const go=async()=>{const q=$('#supq').value.trim();const out=$('#supout');out.innerHTML='<div class="empty"><span class="spin"></span></div>';
+    const t0=performance.now();const o=await api('/api/investigate?q='+encodeURIComponent(q));v10Perf&&v10Perf('workspace','support',performance.now()-t0);
+    if(o.error){out.innerHTML=`<p class="hint">${esc(o.error)}</p>`;return;}
+    const f=o.found||{};
+    out.innerHTML=`${wsCards([['Resolved domain',esc(o.label||o.resolvedDomain)],['Routes·RPCs·Tables',`${(f.routes||[]).length} · ${(f.rpcs||[]).length} · ${(f.tables||[]).length}`],['Owners',esc((f.owners||[]).join(', '))],['Live incidents',`<span style="color:var(--warning)">${esc(f.incidents?.live||'NOT CONNECTED')}</span>`,'warn']])}
+     <div class="xsection">Diagnosis</div>
+     <div class="bipanel"><div class="pp">${esc(o.diagnosis?.rootCause?.hint||o.diagnosis?.rootCause?.likelyOrigin||'See journey + dependencies below.')}</div></div>
+     <div class="xsection">Dependencies</div>
+     <div class="badges">${[...(o.dependencies?.dependsOn||[]),...(o.dependencies?.consumedBy||[])].map(d=>`<span class="xpill" onclick="routeGo('${d}','explain')">${esc(d)}</span>`).join('')||'—'}</div>
+     <div class="xsection">Open V1 blockers</div>
+     <div class="badges">${(f.incidents?.blockers||[]).map(b=>`<span class="xpill">${esc(b.id)} ${esc(b.title||'')}</span>`).join('')||'<span class="xpill">none</span>'}</div>
+     <p class="pm" style="color:var(--subdued);font-size:12px;margin-top:8px">${esc(o.liveBoundary||'')}</p>
+     <div class="xatlas"><button class="primary" onclick="routeGo('${o.resolvedDomain}','incidents')">⚠ Root cause</button><button onclick="routeGo('${o.resolvedDomain}','impact')" style="margin-left:8px">💥 Impact</button></div>`;};
+  $('#supgo').onclick=go;$('#supq').onkeydown=e=>{if(e.key==='Enter')go();};
+  $('#xmain').querySelectorAll('.qchip').forEach(c=>c.onclick=()=>{$('#supq').value=c.dataset.q;go();});
+  go();
+}
+// Phase 15 — Investor mode.
+function xInvestor(){
+  $('#xmain').className='xmain article';$('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading investor view…</div>';
+  api('/api/investor').then(o=>{ if(o.error){$('#xmain').innerHTML=`<div class="empty">${esc(o.error)}</div>`;return;}
+    const panel=(ic,t,obj,extra)=>`<div class="bipanel"><div class="ph">${ic} ${esc(t)}</div><div class="pp">${esc(obj.plain)}</div>${extra||''}${obj.live||obj.liveAmounts?`<div class="pm">⚠ live: ${esc(obj.live||obj.liveAmounts)}</div>`:''}</div>`;
+    $('#xmain').innerHTML=`<div class="xa-body"><div class="xhero"><h1>Investor View</h1><span class="crit ${o.readiness?.verdict==='NO-GO'?'t1':'t3'}">${esc(o.readiness?.verdict||'')}</span></div>
+     <p class="xlede">The platform explained simply. Structure is repository truth; all money/growth/traffic magnitudes are NOT CONNECTED (query-bound).</p>
+     ${panel('🏛','Platform overview',o.platformOverview,`<div class="m" style="margin-top:8px"><span class="xpill">${o.platformOverview.domains} domains</span><span class="xpill">${o.platformOverview.tables} tables</span><span class="xpill">${o.platformOverview.rpcs} RPCs</span></div>`)}
+     ${panel('💼','Business model',o.businessModel,`<div class="m" style="margin-top:8px">${(o.businessModel.paymentMethods||[]).map(p=>`<span class="xpill">${esc(p)}</span>`).join('')}</div>`)}
+     ${panel('🛍','Merchant lifecycle',o.merchantLifecycle)}
+     ${panel('📈','Growth systems',o.growthSystems)}
+     ${panel('💰','Revenue systems',o.revenueSystems)}
+     ${panel('🛡','Risk systems',o.riskSystems)}
+     <div class="xatlas"><button class="primary" onclick="xSelect('founder')">◆ Founder dashboard</button><button onclick="xSelect('business-flows')" style="margin-left:8px">⟿ Business flows</button></div></div>`;
+  });
+}
+// Phase 16 — New Developer mode (Understand LetBuyy in 30 minutes).
+function xDeveloper(){
+  $('#xmain').className='xmain article';$('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading…</div>';
+  api('/api/developer').then(o=>{ if(o.error){$('#xmain').innerHTML=`<div class="empty">${esc(o.error)}</div>`;return;}
+    const steps=o.gettingStarted?.steps||o.architecture||[];
+    const flowKeys=Object.keys(o.flows||{}).slice(0,8);
+    $('#xmain').innerHTML=`<div class="xa-body"><div class="xhero"><h1>Understand LetBuyy in 30 minutes</h1></div>
+     <p class="xlede">${esc(o.gettingStarted?.intro||'A guided path through the architecture, domains, flows, operations and launch systems.')}</p>
+     <div class="xsection">Architecture walk-through</div>
+     <div class="xflow">${steps.map((s,i)=>`<div class="xstep"><span class="num">${i+1}</span><div><b>${esc(s.t||s.title||('Step '+(i+1)))}</b><div style="font-size:13px;color:var(--subdued);margin-top:2px">${esc(s.d||s.detail||s)}</div></div></div>${i<steps.length-1?'<div class="arrow"></div>':''}`).join('')}</div>
+     <div class="xsection">Domains (${(o.domains||[]).length})</div>
+     <div class="badges">${(o.domains||[]).map(d=>`<span class="xpill" onclick="routeGo('${d}','explain')">${esc(d)}</span>`).join('')}</div>
+     <div class="xsection">Key flows</div>
+     ${flowKeys.map(k=>`<div class="bipanel"><div class="ph">⟿ ${esc(k)}</div><div class="pp mono" style="font-size:12.5px">${(o.flows[k]||[]).map(esc).join(' → ')}</div></div>`).join('')}
+     <div class="xsection">Business journeys</div>
+     <div class="badges">${(o.journeys||[]).map(j=>`<span class="xpill" onclick="xJourney('${j.key}')">${esc(j.label)}</span>`).join('')}</div>
+     <div class="xatlas"><button class="primary" onclick="xSelect('business-flows')">⟿ Business flows</button><button onclick="xSelect('launch')" style="margin-left:8px">⚑ Launch systems</button><button onclick="setMode('technical');selectTab('atlas')" style="margin-left:8px">★ Atlas</button></div></div>`;
+  });
+}
+// Phases 1/2/11 — Business Flows + journey index + business graph layers.
+function xBusinessFlows(){
+  $('#xmain').className='xmain article';$('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading business flows…</div>';
+  api('/api/business-flow').then(o=>{ if(o.error){$('#xmain').innerHTML=`<div class="empty">${esc(o.error)}</div>`;return;}
+    $('#xmain').innerHTML=`<div class="xa-body"><div class="xhero"><h1>Business Flows</h1></div>
+     <p class="xlede">The ${o.summary.journeys} business journeys composed from repository truth. ${o.summary.implemented} implemented; ${o.summary.notImplemented} reserved. Click a journey for its workspace. Live metrics are NOT CONNECTED.</p>
+     <div class="bicards">${o.journeys.map(j=>j.status==='NOT IMPLEMENTED'
+        ?`<div class="bicard" style="opacity:.7;cursor:default"><div class="t">${esc(j.label)} <span class="xpill" style="color:var(--warning)">NOT IMPLEMENTED</span></div><div class="d">${esc(j.note||j.purpose)}</div></div>`
+        :`<div class="bicard" onclick="xJourney('${j.key}')"><div class="t">${esc(j.label)}</div><div class="d">${esc(j.purpose)}</div><div class="m"><span class="xpill">${j.domains.length} domains</span>${j.money?'<span class="xpill" style="color:var(--brand-2)">money</span>':''}<span class="xpill">${(j.failurePoints||[]).length} failure pts</span></div></div>`).join('')}</div>
+     <div class="xsection">Business graph layers</div>
+     <div class="gl-tabs" id="bgltabs">${[['flow','Business Flow'],['customer','Customer Journey'],['merchant','Merchant Journey'],['revenue','Revenue Flow'],['operational','Operational Flow'],['support','Support Flow']].map((l,i)=>`<div class="gl-tab${i===0?' on':''}" data-l="${l[0]}">${esc(l[1])}</div>`).join('')}</div>
+     <div id="bglbody"><div class="empty"><span class="spin"></span></div></div></div>`;
+    const loadLayer=async(l)=>{const b=$('#bglbody');b.innerHTML='<div class="empty"><span class="spin"></span></div>';
+      if(l==='flow'){b.innerHTML=`<div class="badges" style="margin-bottom:8px"><span class="badge">${o.graph.nodes.length} journeys</span><span class="badge">${o.graph.edges.length} shared-domain edges</span></div>`+o.graph.edges.slice(0,24).map(e=>`<div class="gl-edge"><span class="from">${esc(e.from)}</span><span class="via">shares ${e.shared.join(', ')}</span><span>${esc(e.to)}</span></div>`).join('');return;}
+      if(l==='customer'||l==='merchant'){const d=await api(l==='customer'?'/api/customer-journey':'/api/merchant');const stages=d.stages||d.funnel||[];b.innerHTML=`<div class="xflow">${stages.map((s,i)=>`<div class="xstep"><span class="num">${i+1}</span>${esc(s.stage||s.label||s)}</div>${i<stages.length-1?'<div class="arrow"></div>':''}`).join('')||'—'}</div>`;return;}
+      if(l==='revenue'){const d=await api('/api/revenue-v2');b.innerHTML=`<p class="pp">${esc((d.summary&&d.summary.liveDataNote)||'Revenue moves through canonical-ledger RPCs.')}</p><div class="badges" style="margin-top:8px">${(d.summary&&d.summary.moneyRpcs?[].concat(d.summary.moneyRpcs):[]).map(r=>`<span class="xpill">${esc(r)}</span>`).join('')||'<span class="xpill">money RPCs (see /api/revenue-v2)</span>'}</div><p class="pm">Live amounts: NOT CONNECTED.</p>`;return;}
+      if(l==='operational'){const d=await api('/api/graph?kind=infrastructure');b.innerHTML=(d.edges||[]).slice(0,24).map(e=>`<div class="gl-edge"><span class="from">${esc(e.from)}</span><span class="via">${esc(e.rel||'→')}</span><span>${esc(e.to)}</span></div>`).join('')||notconn('operational layer');return;}
+      if(l==='support'){b.innerHTML=`<p class="pp">Support flow = a question → investigation → journey → owners → runbook. Open the <span class="xpill" onclick="xSelect('support')">Support workspace</span>.</p>`;return;}};
+    $('#xmain').querySelectorAll('#bgltabs .gl-tab').forEach(el=>el.onclick=()=>{$('#xmain').querySelectorAll('#bgltabs .gl-tab').forEach(x=>x.classList.toggle('on',x===el));loadLayer(el.dataset.l);});
+    loadLayer('flow');
+  });
+}
+// Phase 2/9 — Journey Workspace (Overview/Purpose/Actors/Dependencies/Systems/Failure/Recovery/Metrics/AI/Atlas).
+function xJourney(jkey){
+  if(_v10_suppress!==true){try{history.pushState({journey:jkey},'','/journey/'+jkey);}catch(e){}}
+  const t0=performance.now();
+  $('#xmain').className='xmain article';$('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading journey…</div>';
+  api('/api/business-flow?journey='+jkey).then(j=>{ if(j.error){$('#xmain').innerHTML=`<div class="empty">${esc(j.error)}</div>`;return;}
+    if(j.status==='NOT IMPLEMENTED'){$('#xmain').innerHTML=`<div class="xa-body"><div class="xhero"><h1>${esc(j.label)}</h1><span class="crit t1">NOT IMPLEMENTED</span></div><p class="xlede">${esc(j.note||j.purpose)}</p><div class="xatlas"><button class="primary" onclick="xSelect('business-flows')">⟵ Business flows</button></div></div>`;return;}
+    const sys=j.systems||{},dep=j.dependencies||{},rec=j.recovery;
+    $('#xmain').innerHTML=`<div class="xa-body">
+     <div class="xa-breadcrumb"><span class="xb" onclick="xSelect('business-flows')">Business Flows</span><span class="sep">›</span><span style="color:var(--text)">${esc(j.label)}</span></div>
+     <div class="xhero"><h1>${esc(j.label)}</h1>${j.money?'<span class="crit t1">money path</span>':''}</div>
+     <p class="xlede">${esc(j.purpose)}</p>
+     <div class="xsection">Actors</div><div class="badges">${(j.actors||[]).map(a=>`<span class="xpill b">${esc(a)}</span>`).join('')}</div>
+     <div class="xsection">Flow</div>
+     <div class="xflow">${(j.stages||[]).map((s,i)=>`<div class="xstep"><span class="num">${i+1}</span>${esc(s)}</div>${i<j.stages.length-1?'<div class="arrow"></div>':''}`).join('')}</div>
+     <div class="xsection">Systems</div>
+     ${wsCards([['Routes',sys.counts?.routes??0],['RPCs',sys.counts?.rpcs??0],['Tables',sys.counts?.tables??0],['Queues',sys.counts?.queues??0],['Workers',sys.counts?.workers??0],['Domains',(j.domains||[]).length]])}
+     <div class="badges" style="margin-top:8px">${(j.domains||[]).map(d=>`<span class="xpill" onclick="routeGo('${d}','explain')">${esc(d)}</span>`).join('')}</div>
+     <div class="xsection">Dependencies</div>
+     <div class="xrel"><div class="col"><div class="h">Depends on</div>${(dep.dependsOn||[]).map(d=>`<span class="xpill" onclick="routeGo('${d}','explain')">${esc(d)}</span>`).join('')||'<span class="xpill">none</span>'}</div><div class="col"><div class="h">Consumed by</div>${(dep.consumedBy||[]).map(d=>`<span class="xpill" onclick="routeGo('${d}','explain')">${esc(d)}</span>`).join('')||'<span class="xpill">none</span>'}</div></div>
+     <div class="xsection">Failure points</div>
+     <ul class="hint">${(j.failurePoints||[]).map(f=>`<li>${esc(f)}</li>`).join('')}</ul>
+     <div class="xsection">Recovery</div>
+     ${rec?`<div class="bipanel"><div class="ph">▶ Recovery steps</div><ol class="hint" style="padding-left:18px">${(rec.recovery||[]).map(s=>`<li>${esc(s)}</li>`).join('')||'<li>see runbook</li>'}</ol>${rec.rollback?`<div class="pm">rollback: <span class="mono">${esc(rec.rollback.command||rec.rollback)}</span></div>`:''}<div class="pm">owner: ${esc((rec.owner||[]).join(', '))} · <a href="${esc(rec.runbook)}" onclick="event.preventDefault();routeGo('${j.primaryDomain}','incidents')" style="cursor:pointer">full runbook →</a></div></div>`:notconn('No runbook for this journey')}
+     <div class="xsection">Metrics</div>
+     <div class="bipanel"><div class="pp"><span style="color:var(--warning)">⚠ ${esc(j.metrics?.live||'NOT CONNECTED')}</span></div><div class="pm">source: ${esc(j.metrics?.source||'')}</div></div>
+     <div class="xatlas"><button class="primary" onclick="routeGo('${j.primaryDomain}','impact')">💥 Business impact</button><button onclick="routeGo('${j.primaryDomain}','ai')" style="margin-left:8px">✦ AI context</button><button onclick="setMode('technical');selectTab('atlas')" style="margin-left:8px">★ Atlas</button></div></div>`;
+    v10Perf&&v10Perf('workspace','journey:'+jkey,performance.now()-t0);
+  });
+}
+// Phase 10 — AI Copilot V2: route business/journey/how-does-X NL questions to the right workspace.
+const V11_JOURNEY_KW={checkout:'checkout','merchant onboard':'merchant','merchant onboarding':'merchant',onboarding:'merchant',signup:'merchant','refund architecture':'refund',refund:'refund',payout:'payout','gift card':'gift-card',giftcard:'gift-card',subscription:'subscription',inventory:'inventory',payment:'payment','order journey':'order'};
+function v11Copilot(q){
+  const ql=(q||'').toLowerCase();
+  for(const[kw,jk]of Object.entries(V11_JOURNEY_KW)){if(ql.includes(kw)){if(/how|work|flow|journey|architecture|explain/.test(ql)){closeCmdk&&closeCmdk();setMode('explain');xJourney(jk);return true;}}}
+  if(/founder|executive|readiness|launch ready/.test(ql)){closeCmdk&&closeCmdk();xSelect('founder');return true;}
+  if(/investor|business model|platform overview/.test(ql)){closeCmdk&&closeCmdk();xSelect('investor');return true;}
+  if(/new (engineer|developer)|onboard me|understand letbuyy|30 min/.test(ql)){closeCmdk&&closeCmdk();xSelect('developer');return true;}
+  if(/operations|ops dashboard|queues|workers/.test(ql)){closeCmdk&&closeCmdk();xSelect('ops-mode');return true;}
+  if(/where is|why did|why is|support|refund pending|payment fail/.test(ql)){closeCmdk&&closeCmdk();xSelect('support');setTimeout(()=>{const i=$('#supq');if(i){i.value=q;const b=$('#supgo');if(b)b.click();}},150);return true;}
+  return false;
 }
 
 boot();

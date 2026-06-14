@@ -68,6 +68,7 @@ import { buildPack, allPacks } from './ai-context-intel.mjs';
 import { buildLaunchCommandCenter } from './launch-command-center.mjs';
 import { buildFederationIntel } from './federation-intel.mjs';
 import { buildLiveHealthIntel } from './live-health-intel.mjs';
+import { buildBusinessFlow } from './business-flow-intel.mjs';
 import { execSync } from 'node:child_process';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -148,6 +149,8 @@ const launchCenter = safe(() => buildLaunchCommandCenter());
 // ---- LCIS X: live federation (Phases 1-8) + live health (Phase 9) ----
 const federationIntel = safe(() => buildFederationIntel());
 const liveHealth = safe(() => buildLiveHealthIntel());
+// ---- LCIS V11: business flow intelligence (10 journeys + business flow graph) ----
+const businessFlow = safe(() => buildBusinessFlow());
 // Atlas 2.0 — one-click full trace: entity → route → rpcs → tables → policies/triggers → queues → emails → analytics → merchant dashboard
 function fullTrace(entity) {
   const root = lineage(entity);
@@ -473,6 +476,69 @@ function copilotX(q) {
   if (/health|status|availability|up|down/.test(ql)) { const k = resolveDomain(q); return { question: q, intent: 'health', answer: k ? (liveHealth.domains.find((d) => d.domain === k) || liveHealth.summary) : liveHealth.summary }; }
   if (/why is|failing|slow|broken|not working|error/.test(ql)) return { question: q, intent: 'investigate', answer: investigate(q) };
   return { question: q, intent: 'investigate', answer: investigate(q), note: 'Defaulted to investigation. Live values are CONNECTED or NOT CONNECTED — never fabricated.' };
+}
+
+// ====================================================================================
+// LCIS V11 — Business + Operational Intelligence. READ-ONLY composition over existing engines.
+// ====================================================================================
+// Phase 3 — Business Impact (plain language) — composes impact-score + explain.
+function businessImpact(key) {
+  const imp = safe(() => impactScore(key));
+  if (!imp || imp.error) return imp || { error: 'impact unavailable' };
+  const n = explainIntel?.nodes?.[key];
+  const money = n?.technical?.money, tenant = n?.technical?.tenant;
+  const w = imp.whatBreaksIf || {};
+  const label = n?.label || key;
+  return {
+    domain: key, label,
+    merchantImpact: { plain: money
+      ? `Every merchant's money flow runs through ${label}. A failure blocks orders/payments/payouts across ALL tenants (single shared Postgres + single deploy pipeline).`
+      : `${label} affects merchant ${String(w.merchantImpact || 'operations')}.`, affected: imp.affected.merchants },
+    customerImpact: { plain: money || tenant
+      ? `Shoppers feel ${label} failures directly at ${key === 'payments' ? 'payment' : key === 'orders' || key === 'checkout' ? 'checkout' : 'their journey'} — ${String(w.customerImpact || 'degraded experience')}.`
+      : `Indirect customer impact.`, affected: imp.affected.customers },
+    revenueImpact: { plain: money ? 'On the money path — revenue directly at risk. Magnitude is query-bound (ledger reconciliation) — NOT CONNECTED.' : 'Indirect — no direct money mutation.', paths: imp.affected.revenuePaths },
+    operationalImpact: { plain: `${imp.affected.workers.length} workers, ${imp.affected.queues.length} queues carry ${label}; ${String(w.operationalImpact || '')}.`, workers: imp.affected.workers, queues: imp.affected.queues },
+    growthImpact: { plain: tenant ? 'Tenant-scoped — scales per merchant, but blast radius is all tenants on the shared schema (scaling SPOF).' : 'Platform-internal — limited growth coupling.' },
+    launchImpact: { plain: String(imp.affected.launchReadiness || 'no open blocker') },
+    scores: imp.scores,
+    liveBoundary: 'Impact is repository-truth blast radius; magnitudes (revenue, merchant/customer counts) are NOT CONNECTED.',
+  };
+}
+// Phase 15 — Investor Mode — plain-language platform/business/growth/revenue/risk (composition).
+function investorMode() {
+  const di = domainIntel?.summary || {}, db = dbIntel?.summary || {};
+  const rv = readinessV2?.summary || {}, lc = launchCenter?.summary || {};
+  const sec = securityIntelV5?.summary || {}, mi = merchantIntelV5?.summary || {}, rev = revenueV2?.summary || {};
+  const bf = businessFlow?.summary || {};
+  return {
+    mode: 'Investor',
+    platformOverview: { plain: `LetBuyy is a multi-tenant, India-first commerce operating system: one platform hosts many merchant stores (every row scoped by site_id). ${di.domains || 22} business domains, ${db.tables || 414} tables, ${db.functions || 156} database functions, ${db.policies || 651} row-level-security policies.`,
+      domains: di.domains || 22, tables: db.tables || 0, rpcs: db.functions || 0, tenantModel: `${db.tenantTables || 0} tenant-scoped tables (RLS forced)` },
+    businessModel: { plain: 'Merchants run storefronts on shared infrastructure; orders, payments (Razorpay + COD), GST invoicing, refunds, gift cards and payouts are all platform-operated. Money is server-authoritative through a canonical Postgres ledger.', moneyJourneys: bf.moneyJourneys || [], paymentMethods: ['Razorpay', 'COD'] },
+    merchantLifecycle: { plain: 'Signup → store setup → catalog → inventory → orders → payments → payouts → analytics → growth.', operatingStages: mi.operatingStages || null, source: '/api/merchant + /api/business-flow?journey=merchant' },
+    growthSystems: { plain: 'Growth = more merchants (multi-tenant) × more orders per merchant. Adoption/growth signals are structural; live cohort/retention is query-bound.', live: 'NOT CONNECTED', source: '/api/merchant-growth, /api/merchant-adoption' },
+    revenueSystems: { plain: 'Revenue moves through a canonical ledger (SECURITY DEFINER RPCs): checkout → capture → settlement → payout; refunds and gift-card liability are ledger projections.', moneyRpcs: rev.moneyRpcs || null, giftCardLiability: rev.giftCardLiabilityModeled ?? null, liveAmounts: 'NOT CONNECTED', source: '/api/revenue-v2' },
+    riskSystems: { plain: `Primary risk is concentration: a single shared Postgres + single deploy pipeline = all-merchant blast radius. Launch verdict is ${lc.recommendation || 'NO-GO'} with ${lc.openBlockers ?? '5'} open blockers. ${sec.controlsPresent ?? ''}/${sec.controls ?? ''} security controls present; ${sec.crossTenantCandidates ?? 0} cross-tenant candidates to review.`,
+      launchVerdict: lc.recommendation || rv.launchVerdict || 'NO-GO', openBlockers: lc.openBlockers ?? null, securityControls: `${sec.controlsPresent ?? '?'}/${sec.controls ?? '?'}`, singleTenantSpof: true },
+    readiness: { overall: rv.overall ?? lc.overallReadiness ?? null, verdict: lc.recommendation || 'NO-GO' },
+    liveBoundary: 'Structural truth from the repository. All money/growth/traffic magnitudes are NOT CONNECTED (query-bound: Supabase ledger + Analytics Engine).',
+  };
+}
+// Phase 16 — New Developer Mode (30 minutes) — composes explain.gettingStarted + flows + journeys.
+function developerMode() {
+  const gs = explainIntel?.gettingStarted || null;
+  const flows = explainIntel?.flows || {};
+  return {
+    mode: 'New Developer — Understand LetBuyy in 30 minutes',
+    gettingStarted: gs,
+    architecture: gs?.steps || [],
+    domains: Object.keys(explainIntel?.nodes || {}),
+    flows: Object.fromEntries(Object.entries(flows).slice(0, 12)),
+    journeys: (businessFlow?.journeys || []).filter((j) => j.status === 'IMPLEMENTED').map((j) => ({ key: j.key, label: j.label, purpose: j.purpose })),
+    operations: '/api/operations', runbooks: '/api/runbook?domain=', launch: '/api/launch-command-center',
+    next: { onboardingDoc: 'docs/central-intelligence/ONBOARDING.md', aiPack: '/api/ai-context-pack?target=claude' },
+  };
 }
 
 // ---- v3: customer-journey (Phase 5) + secret intelligence (Phase 10), computed from loaded intel ----
@@ -930,6 +996,12 @@ const server = createServer((req, res) => {
     if (p === '/api/release-intel') return json(res, safe(() => releaseIntel()));
     if (p === '/api/observability') return json(res, safe(() => observability()));
     if (p === '/api/ops-copilot') return json(res, safe(() => copilotX(u.searchParams.get('q') || u.searchParams.get('question') || '')));
+    // ---- LCIS V11: business + operational intelligence. READ-ONLY composition. ----
+    if (p === '/api/business-flow') { const jk = u.searchParams.get('journey'); if (!businessFlow || businessFlow.error) return json(res, businessFlow || { error: 'business-flow missing' }); return json(res, jk ? (businessFlow.journeys.find((x) => x.key === jk) || { error: `journey '${jk}' not found`, journeys: businessFlow.journeys.map((x) => x.key) }) : businessFlow); }
+    if (p === '/api/business-impact') return json(res, safe(() => businessImpact(u.searchParams.get('domain') || 'payments')));
+    if (p === '/api/investor') return json(res, safe(() => investorMode()));
+    if (p === '/api/developer') return json(res, safe(() => developerMode()));
+    if (p === '/api/founder') return json(res, safe(() => executiveCenter()));
     if (p === '/api/live') {
       // Real read-only probe — only credentialed providers trigger a network call; the rest are NOT CONNECTED.
       const prov = u.searchParams.get('provider');
