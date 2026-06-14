@@ -183,3 +183,7 @@ graphify-out/relationship-intel.json
 graphify-out/environment-intel.json
 graphify-out/knowledge-graphs.json
 graphify-out/operations-center.json
+graphify-out/connections-intel.json
+graphify-out/production-health.json
+graphify-out/audit-engine-v2.json
+graphify-out/mission-control-dashboard.json

@@ -41,4 +41,4 @@ Inventory of the LCIS platform at the start of the Mission Control program. All 
 - **Heuristic layers** (domain classification, readiness scoring, drift) are clearly labeled as candidates with their verification command.
 - **No fabricated metrics** anywhere — verified by cross-checking every certification number against fresh extraction across v2–v6.
 
-> Baseline captured for the Mission Control program. See `MISSION_CONTROL_CERTIFICATION.md` for the post-program grade.
+> Baseline captured for the Mission Control program. See `CONTROL_CENTER_CERTIFICATION.md` for the post-program grade.

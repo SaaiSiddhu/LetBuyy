@@ -51,6 +51,7 @@ const FLOWS = {
 // The new Information Architecture (Phase 1) — Atlas is the deepest layer, not the first.
 const IA = [
   { key: 'getting-started', label: 'Getting Started', icon: '◎', kind: 'page' },
+  { key: 'mission-control', label: 'Mission Control', icon: '◉', kind: 'page' },
   { key: 'business', label: 'Business View', icon: '◷', kind: 'section', children: ['merchant', 'orders', 'payments', 'analytics'] },
   { key: 'merchant-journey', label: 'Merchant Journey', icon: '◵', kind: 'ecosystem', eco: 'merchant' },
   { key: 'customer-journey', label: 'Customer Journey', icon: '◴', kind: 'ecosystem', eco: 'customer' },
@@ -61,6 +62,7 @@ const IA = [
   { key: 'database', label: 'Database', icon: '▤', kind: 'page' },
   { key: 'infrastructure', label: 'Infrastructure', icon: '◰', kind: 'page' },
   { key: 'ops-center', label: 'Operations Center', icon: '◍', kind: 'page' },
+  { key: 'connections', label: 'Live & Connections', icon: '◌', kind: 'page' },
   { key: 'readiness', label: 'Readiness', icon: '◉', kind: 'page' },
   { key: 'ai-context', label: 'AI Context', icon: '✦', kind: 'page' },
   { key: 'technical', label: 'Technical View', icon: '⌥', kind: 'toggle' },

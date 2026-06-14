@@ -47,16 +47,37 @@ export function buildMerchantIntelligence() {
     { id: 'M-3', severity: 'info', finding: 'Merchant money is isolated per site_id in the canonical ledger.', evidence: 'ledger_entries/ledger_transactions carry site_id; resolve_money_ledger_source_site_id + refresh_money_ledger_site_reconciliation reconcile per-site balances.' },
   ];
 
+  // V7 — merchant lifecycle state machine (states are computed from live site-scoped rows; the
+  // model + the SQL signal per transition are repository truth).
+  const lifecycle = {
+    states: ['Created', 'Activated', 'First Product', 'First Order', 'First Revenue', 'Active', 'At Risk', 'Churned'],
+    transitions: [
+      { state: 'Created', signal: 'sites row exists', source: 'sites' },
+      { state: 'Activated', signal: 'onboarding complete + store published', source: 'onboarding_attempts, sites.status' },
+      { state: 'First Product', signal: 'first products row', source: 'products' },
+      { state: 'First Order', signal: 'first orders row', source: 'orders' },
+      { state: 'First Revenue', signal: 'first captured payment_transactions', source: 'payment_transactions, ledger_entries' },
+      { state: 'Active', signal: 'orders within trailing window', source: 'orders.created_at' },
+      { state: 'At Risk', signal: 'declining orders + billing dunning', source: 'orders, billing_dunning_events, subscriptions' },
+      { state: 'Churned', signal: 'subscription cancelled + inactive', source: 'subscriptions, orders' },
+    ],
+    funnels: {
+      activation: { steps: ['Created', 'Activated', 'First Product', 'First Order', 'First Revenue'], metric: 'count + conversion per step (per site_id)', value: 'live-query-required' },
+      retention: { steps: ['First Revenue', 'Active', 'At Risk', 'Churned'], metric: 'cohort retention over trailing windows', value: 'live-query-required' },
+    },
+    note: 'Per-merchant CURRENT state + funnel counts require live site rows; the 8-state machine + each transition signal/source are repository truth.',
+  };
   const summary = {
     operatingStages: operating.length,
     tenantTables,
     moneyStages: operating.filter((o) => o.money).map((o) => o.key),
     detectors: Object.keys(detectors).length,
+    lifecycleStates: lifecycle.states.length,
     singlePointOfDependency: true,
-    liveDataNote: 'Top/inactive/broken/high-risk merchants and revenue concentration require live site-scoped rows — query the sources named per detector. The repo holds the MODEL + the queries, not the merchant data.',
+    liveDataNote: 'Top/inactive/broken/high-risk merchants, lifecycle state and revenue concentration require live site-scoped rows — query the sources named per detector/transition. The repo holds the MODEL + the queries, not the merchant data.',
     generatedAt: db.summary.generatedAt,
   };
-  return { summary, operating, detectors, findings };
+  return { summary, operating, detectors, findings, lifecycle };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

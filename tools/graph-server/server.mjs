@@ -49,6 +49,10 @@ import { buildRelationshipIntel, relationshipsFor } from './relationship-intel.m
 import { buildEnvironmentIntel } from './environment-intel.mjs';
 import { buildKnowledgeGraphs } from './knowledge-graphs.mjs';
 import { buildOperationsCenter } from './operations-center.mjs';
+import { buildConnectionsIntel } from './connections-intel.mjs';
+import { buildProductionHealth } from './production-health.mjs';
+import { buildAuditEngineV2 } from './audit-engine-v2.mjs';
+import { buildMissionControlDashboard } from './mission-control-dashboard.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -111,6 +115,41 @@ const relIntel = loadOrBuild('relationship-intel.json', buildRelationshipIntel);
 const envIntel = safe(() => buildEnvironmentIntel());
 const knowledgeGraphs = loadOrBuild('knowledge-graphs.json', buildKnowledgeGraphs);
 const opsCenter = safe(() => buildOperationsCenter());
+// ---- V7: live operating system ----
+const connectionsIntel = loadOrBuild('connections-intel.json', buildConnectionsIntel);
+const productionHealth = safe(() => buildProductionHealth());
+const auditV2 = safe(() => buildAuditEngineV2());
+const missionDashboard = safe(() => buildMissionControlDashboard());
+// Atlas V2 — composed answer for a node (what breaks / who owns / tables / rpcs / queues / workers / merchants / customers / deployments)
+function atlasV2(key) {
+  if (!explainIntel || explainIntel.error) return { error: 'explain-intel missing' };
+  const n = explainIntel.nodes[key]; if (!n) return { error: `node '${key}' not found`, nodes: Object.keys(explainIntel.nodes) };
+  const blast = domainIntel ? blastDomain(domainIntel, key) : null;
+  const inc = (domainIntel && dbIntel) ? traceIncident(domainIntel, dbIntel, infraIntel, key) : null;
+  return {
+    node: key, label: n.label, criticality: n.criticality,
+    whatBreaks: blast && !blast.error ? blast.blastRadius.affected : n.consumers,
+    whoOwns: n.owner,
+    tables: n.technical.tables, rpcs: n.technical.rpcs, queues: n.technical.queues, workers: n.technical.workers,
+    relationships: n.technical.relationships,
+    merchants: inc && !inc.error ? inc.affectedMerchants : 'tenant-scoped (all merchants share schema)',
+    customers: n.technical.tenant ? 'all customers of affected stores (tenant-scoped)' : 'n/a (platform-internal)',
+    deployments: { workers: n.technical.workers, apps: n.technical.services },
+    atlas: { search: n.atlas.search },
+  };
+}
+function aiContextPack(pack) {
+  if (!explainIntel || explainIntel.error) return { error: 'explain-intel missing' };
+  const gs = explainIntel.gettingStarted, di = domainIntel, ex = executionIntel;
+  if (pack === 'domain') return { pack, perDomain: Object.fromEntries(Object.entries(explainIntel.nodes).map(([k, n]) => [k, n.aiContext])) };
+  const packs = {
+    project: `# LetBuyy — project context\n${gs.steps[0].d} ${gs.steps[1].d}\nDomains: ${di?.summary.domains}. Workers: ${connectionsIntel?.connections.filter((c) => c.provider === 'Cloudflare').length}. Gate: 107/107. Launch: ${ex?.summary.launchVerdict}.`,
+    architecture: `# LetBuyy — architecture context\n${gs.steps[1].d}\nCommerce: ${explainIntel.flows.orders.join(' → ')}\nPayments: ${explainIntel.flows.payments.join(' → ')}\nSecurity: ${gs.steps[6].d}`,
+    launch: `# LetBuyy — launch context\nVerdict: ${ex?.summary.launchVerdict}. Open blockers: ${(ex?.questions.whatRemainsBeforeLaunch || []).join('; ')}.\nReadiness: ${missionDashboard?.summary.structuralReadiness}% structural. Live data: ${connectionsIntel?.summary.notConnected} sources NOT CONNECTED (adapters ready).`,
+    feature: `# LetBuyy — feature context\nPer-domain packets at /api/ai-context?pack=domain or /api/explain?node=<key>.`,
+  };
+  return { pack, context: packs[pack] || packs.project, available: Object.keys(packs).concat('domain') };
+}
 
 // ---- v3: customer-journey (Phase 5) + secret intelligence (Phase 10), computed from loaded intel ----
 const JOURNEY = [
@@ -502,6 +541,13 @@ const server = createServer((req, res) => {
     if (p === '/api/environment') return json(res, envIntel);
     if (p === '/api/graph') { if (!knowledgeGraphs || knowledgeGraphs.error) return json(res, { error: 'knowledge-graphs missing' }); const kind = u.searchParams.get('kind'); return json(res, kind ? (knowledgeGraphs.graphs[kind] || { error: `unknown kind '${kind}'`, kinds: knowledgeGraphs.summary.kinds }) : knowledgeGraphs); }
     if (p === '/api/operations') return json(res, opsCenter);
+    // ---- V7: connections / health / audit / mission-control / atlas-v2 / ai-context ----
+    if (p === '/api/connections') return json(res, connectionsIntel);
+    if (p === '/api/production-health') return json(res, productionHealth);
+    if (p === '/api/audit') return json(res, auditV2);
+    if (p === '/api/mission-control') return json(res, missionDashboard);
+    if (p === '/api/atlas-v2') return json(res, atlasV2(u.searchParams.get('node') || 'payments'));
+    if (p === '/api/ai-context') return json(res, aiContextPack(u.searchParams.get('pack') || 'project'));
     if (p === '/api/database-control') return json(res, dbIntel ? { summary: dbIntel.summary, relationships: relIntel && !relIntel.error ? relIntel.summary : null, topTables: dbIntel.tables.sort((a, b) => (b.policies.length + b.triggers.length + b.indexes) - (a.policies.length + a.triggers.length + a.indexes)).slice(0, 25).map((t) => ({ name: t.name, columns: t.columns, rls: t.rls, force: t.force, tenant: t.tenant, money: t.money, policies: t.policies.length, triggers: t.triggers.length, indexes: t.indexes })), functions: dbIntel.functions.filter((f) => f.securityDefiner).slice(0, 30).map((f) => ({ name: f.name, money: f.money, idempotency: f.hasIdempotency, forUpdate: f.forUpdate, tables: f.touches.length })) } : { error: 'db-intel missing' });
     if (p === '/api/production-readiness-v2') return json(res, readinessV2);
     if (p === '/api/decision-v2') return json(res, decisionV2);

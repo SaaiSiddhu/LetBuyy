@@ -178,6 +178,12 @@ LCIS is now LetBuyy's operating system, readable by humans AND AIs. Three layers
 | What's live vs repository-only? | `/api/environment` (Local/Staging/Production; "Live Data Source Not Connected" until an adapter is wired — never mocked) |
 | Knowledge sub-graph (business/security/ownership/…) | `/api/graph?kind=<business\|journey\|security\|ownership\|infrastructure\|revenue\|ai>` |
 | Operations status (incident/deploy/runtime/queue/worker) | `/api/operations` · Explain → Operations Center |
+| Executive view (health + readiness + findings + actions) | `/api/mission-control` · Explain → Mission Control |
+| Production health (GREEN/YELLOW/RED + evidence) | `/api/production-health` (structural; live = NOT CONNECTED where telemetry needed) |
+| Is a live source connected? (NOT CONNECTED + exact source) | `/api/connections` · Explain → Live & Connections |
+| Autonomous audit (missing auth/rate-limit/RLS, dead X) | `/api/audit` (candidates; gate is authoritative — 0 hard violations) |
+| Atlas V2 composed answer (breaks/owns/tables/rpcs/merchants/…) | `/api/atlas-v2?node=X` |
+| AI context pack (project/launch/architecture/domain) | `/api/ai-context?pack=X` |
 | Database control (schema/relationship/policy/function explorers) | `/api/database-control` · Explain → Database |
 | Deep investigation | Atlas (Technical mode → ★ Atlas) — the deepest layer |
 

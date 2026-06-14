@@ -30,14 +30,21 @@
   ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:#2a2538;border-radius:8px;border:2px solid transparent;background-clip:content-box}
   ::-webkit-scrollbar-thumb:hover{background:#3a3450;background-clip:content-box}
 
-  header{display:flex;align-items:center;gap:var(--s4);padding:13px 22px;border-bottom:1px solid var(--border-soft);
-    background:linear-gradient(180deg,rgba(255,255,255,.02),transparent),var(--bg2);backdrop-filter:blur(8px)}
-  .brand{display:flex;align-items:center;gap:13px}
-  .brand .logo{height:30px;width:auto;display:block;filter:drop-shadow(0 2px 8px rgba(68,98,255,.3))}
-  .brand .sub{color:var(--subdued);font-weight:600;font-size:11px;letter-spacing:.7px;text-transform:uppercase;padding-left:13px;border-left:1px solid var(--border)}
-  .chips{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
-  .chip{display:flex;gap:6px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);
-    padding:4px 12px;font-size:12px;color:var(--subdued);transition:.15s}
+  header{display:flex;align-items:center;gap:8px;padding:0 22px;height:56px;flex-shrink:0;border-bottom:1px solid var(--border-soft);
+    background:linear-gradient(180deg,rgba(255,255,255,.025),transparent),var(--bg2);backdrop-filter:blur(12px);position:relative;z-index:10}
+  .brand{display:flex;align-items:center;gap:10px;flex-shrink:0;margin-right:12px}
+  .brand .logo{height:28px;width:auto;display:block;flex-shrink:0;filter:drop-shadow(0 2px 8px rgba(68,98,255,.3))}
+  .brand .sub{color:var(--subdued);font-weight:700;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding-left:10px;border-left:1px solid var(--border);white-space:nowrap}
+  .hdr-spacer{flex:1 1 0;min-width:4px;max-width:36px}
+  .chips-bar{display:flex;align-items:center;padding:5px 22px;border-bottom:1px solid var(--border-soft);
+    background:var(--bg2);overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;flex-shrink:0;
+    scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  .chips-bar::-webkit-scrollbar{height:3px}
+  .chips-bar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+  .chips-bar::-webkit-scrollbar-track{background:transparent}
+  .chips{display:flex;gap:6px;align-items:center;flex-shrink:0;min-width:max-content}
+  .chip{display:flex;gap:5px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);
+    padding:3px 10px;font-size:11.5px;color:var(--subdued);transition:.15s;white-space:nowrap;flex-shrink:0;cursor:default}
   .chip:hover{border-color:#3a3450;color:var(--text)}
   .chip b{color:var(--text);font-variant-numeric:tabular-nums}
   .chip.key b{color:var(--brand-2)}
@@ -49,7 +56,7 @@
   .tab.active{color:#fff;background:linear-gradient(180deg,var(--brand),var(--brand-cta));border-color:var(--brand);box-shadow:0 4px 14px rgba(109,40,217,.45)}
   .tab.star{color:var(--brand-2)} .tab.star.active{color:#fff}
 
-  main{display:grid;grid-template-columns:1fr 332px;height:calc(100vh - 108px)}
+  main{display:grid;grid-template-columns:1fr 332px;height:calc(100vh - 144px)}
   .stage{position:relative;overflow:hidden}
   .inspector{border-left:1px solid var(--border-soft);background:var(--sidebar);overflow:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
 
@@ -133,19 +140,20 @@
   .fade{animation:fade .25s ease}@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
 
   /* ============ v6 dual-mode operating system ============ */
-  .modetoggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);overflow:hidden;margin-left:auto}
-  .modetoggle button{border:0;border-radius:0;background:transparent;padding:6px 16px;color:var(--subdued);font-weight:600;font-size:12.5px}
+  .modetoggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);overflow:hidden;flex-shrink:0}
+  .modetoggle button{border:0;border-radius:0;background:transparent;padding:6px 14px;color:var(--subdued);font-weight:600;font-size:12.5px;white-space:nowrap;cursor:pointer;transition:.15s}
+  .modetoggle button:hover{color:var(--text)}
   .modetoggle button.on{background:linear-gradient(180deg,var(--brand),var(--brand-cta));color:#fff}
-  .envswitch{display:flex;align-items:center;gap:7px;margin-left:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);padding:3px 10px 3px 12px}
+  .envswitch{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);padding:4px 12px;flex-shrink:0}
   .envswitch select{background:transparent;border:0;color:var(--text);font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;outline:none}
   .envswitch select option{background:var(--raised);color:var(--text)}
   .envdot{width:8px;height:8px;border-radius:50%;background:var(--warning);box-shadow:0 0 7px var(--warning);flex:none}
   .notconn{display:inline-flex;align-items:center;gap:7px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.32);color:#fcd34d;border-radius:var(--r-md);padding:8px 13px;font-size:12.5px;font-weight:600;margin:4px 0}
   .notconn .d{width:7px;height:7px;border-radius:50%;background:var(--warning);flex:none}
-  .kbtn{margin-left:10px;color:var(--subdued);font-size:12px;border-radius:var(--r-md)}
-  .kbtn kbd{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:0 5px;font-family:var(--mono);font-size:11px;margin-left:5px}
+  .kbtn{color:var(--subdued);font-size:12px;border-radius:var(--r-md);flex-shrink:0;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+  .kbtn kbd{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:var(--mono);font-size:11px}
 
-  #explain{height:calc(100vh - 56px);display:grid;grid-template-columns:268px 1fr;overflow:hidden}
+  #explain{height:calc(100vh - 92px);display:grid;grid-template-columns:268px 1fr;overflow:hidden}
   .xtree{border-right:1px solid var(--border-soft);background:var(--sidebar);overflow:auto;padding:12px 10px}
   .xtree .grp{margin-bottom:3px}
   .xtree .sec{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:var(--r-md);cursor:pointer;color:var(--text);font-weight:600;font-size:13.5px;transition:.12s}
@@ -215,21 +223,42 @@
   .cmdk .ask{padding:11px 14px;border-top:1px solid var(--border-soft);font-size:12px;color:var(--subdued)}
 
   .empty{color:var(--muted);padding:40px;text-align:center;font-size:14px}
+  /* Tablet portrait — chips-bar always scrolls, collapse search label only */
+  @media (max-width:1024px){header{padding:0 16px}.chips-bar{padding:5px 16px}}
   @media (max-width:880px){
     main{grid-template-columns:1fr} .inspector{display:none}
-    #explain{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 56px)}
+    #explain{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 92px)}
     .xtree{border-right:0;border-bottom:1px solid var(--border-soft);max-height:38vh}
     .xmain{padding:18px 16px}
-    .tabs{padding:8px 10px} header{padding:11px 14px;flex-wrap:wrap;gap:10px} .brand .sub{display:none}
-    #chips{display:none} .modetoggle{margin-left:0} .kbtn{margin-left:auto}
+    .tabs{padding:8px 10px}
+    .kbtn-label{display:none}
     .xhero h1{font-size:21px} table{display:block;overflow-x:auto;white-space:nowrap}
     .xgrid{grid-template-columns:1fr} .xrel{gap:14px}
+  }
+
+  /* Large mobile — drop brand subtitle, tighten gaps */
+  @media (max-width:640px){
+    header{padding:0 12px;gap:6px}
+    .brand .sub{display:none}
+    .brand{margin-right:6px}
+    .hdr-spacer{display:none}
+    .modetoggle button{padding:6px 11px;font-size:12px}
+    .envswitch{padding:4px 8px;gap:5px}
+    .envswitch select{font-size:12px}
+  }
+
+  /* Small mobile — two-row header, hide search */
+  @media (max-width:400px){
+    header{height:auto;min-height:52px;padding:8px 12px;flex-wrap:wrap;gap:8px}
+    .kbtn{display:none}
+    .modetoggle button{padding:5px 10px;font-size:11.5px}
   }
 </style>
 </head>
 <body>
 <header>
   <div class="brand"><img class="logo" src="/logo.svg" alt="LetBuyy" /><span class="sub">Operating System</span></div>
+  <div class="hdr-spacer"></div>
   <div class="modetoggle" id="modetoggle">
     <button data-m="explain" class="on">◷ Explain</button>
     <button data-m="technical">⌥ Technical</button>
@@ -238,8 +267,8 @@
     <span class="envdot" id="envdot"></span>
     <select id="envsel"><option value="local">Local</option><option value="staging">Staging</option><option value="production">Production</option></select>
   </div>
-  <button class="kbtn" id="cmdkBtn">Search everything <kbd>⌘K</kbd></button>
-  <div class="chips" id="chips" style="margin-left:14px"></div>
+  <button class="kbtn" id="cmdkBtn"><span class="kbtn-label">Search everything</span><kbd>⌘K</kbd></button>
+  <div class="chips" id="chips"></div>
 </header>
 <div id="explain"></div>
 <div class="tabs" id="tabs" style="display:none"></div>
@@ -1070,6 +1099,8 @@ function xSelect(key){
   if(key==='infrastructure')return xInfra();
   if(key==='database')return xDatabase();
   if(key==='ops-center')return xOps();
+  if(key==='mission-control')return xMission();
+  if(key==='connections')return xConnections();
   if(key==='readiness')return xReadiness();
   if(key==='ai-context')return xAiContextPage();
   if(key==='merchant-journey')return xEcosystem('merchant');
@@ -1235,6 +1266,54 @@ function xOps(){
      </tbody></table>
      <div class="xatlas"><button class="primary" onclick="setMode('technical');selectTab('depstate')">◉ Deployment State</button>
        <button onclick="setMode('technical');selectTab('robs')" style="margin-left:8px">◐ Runtime Observability</button></div>`;
+  });
+}
+const HC=s=>s==='GREEN'?'var(--success)':s==='YELLOW'?'var(--warning)':s==='RED'?'var(--critical)':'var(--subdued)';
+function xMission(){
+  $('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading mission control…</div>';
+  api('/api/mission-control').then(o=>{
+    if(o.error){$('#xmain').innerHTML=`<div class="empty">${esc(o.error)} — run <code>pnpm graph:v7</code>.</div>`;return;}
+    const s=o.summary;
+    $('#xmain').innerHTML=`<div class="xhero"><h1>Mission Control</h1><span class="crit" style="background:${HC(s.overallHealth)}22;color:${HC(s.overallHealth)};border:1px solid ${HC(s.overallHealth)}">${esc(s.overallHealth)}</span><span class="crit ${s.launchVerdict==='NO-GO'?'t1':'t3'}">${esc(s.launchVerdict)}</span></div>
+     <p class="xlede">Executive view — structural health is repo-derived; live health is honest about what isn't connected.</p>
+     ${envBanner()}
+     <div class="xgrid">
+       ${o.tiles.map(t=>`<div class="xcard"><div class="h">${esc(t.tile)}</div><div class="b" style="font-size:20px;font-weight:700;color:${t.kind==='status'?HC(t.value):t.kind==='warn'?'var(--warning)':'var(--text)'}">${esc(t.value)}</div><div class="b" style="font-size:12px;color:var(--subdued);margin-top:3px">${esc(t.detail)}</div></div>`).join('')}
+     </div>
+     <div class="xsection">Production health — GREEN / YELLOW / RED</div>
+     <table><thead><tr><th>System</th><th>Status</th><th style="text-align:right">structural</th><th>Live</th><th>Evidence</th></tr></thead><tbody>
+     ${o.health.map(h=>`<tr><td class="lbl">${esc(h.system)}</td><td><span style="color:${HC(h.status)};font-weight:700">●</span> ${esc(h.status)}</td><td style="text-align:right"><b>${h.score}%</b></td><td>${/NOT CONNECTED/.test(h.live)?'<span style="color:var(--warning)">⚠ NOT CONNECTED</span>':esc(h.live).slice(0,40)}</td><td><span class="mono" style="color:var(--muted)">${esc(h.evidence)}</span></td></tr>`).join('')}
+     </tbody></table>
+     <div class="xsection">Open findings (candidates — gate authoritative)</div>
+     <table><thead><tr><th>ID</th><th>Category</th><th style="text-align:right">count</th><th>Authority</th></tr></thead><tbody>
+     ${o.openFindings.map(f=>`<tr><td class="lbl">${esc(f.id)}</td><td>${esc(f.category)}</td><td style="text-align:right"><span class="deg">${f.count}</span></td><td><span class="mono" style="color:var(--muted)">${esc(f.authority)}</span></td></tr>`).join('')}
+     </tbody></table>
+     <div class="xsection">Critical risks</div>
+     <table><tbody>${o.criticalRisks.map(r=>`<tr><td class="lbl">${esc(r.type)}</td><td>${esc(r.detail)}</td><td>${esc(r.severity||'')}</td></tr>`).join('')}</tbody></table>
+     <div class="xsection">Recommended next actions</div>
+     <div class="xflow">${o.recommendedActions.map((a,i)=>`<div class="xstep"><span class="num">${i+1}</span>${esc(a.id)} — ${esc(a.action)} <span style="color:var(--muted);margin-left:6px">${esc(a.severity||'')}</span></div>`).join('')}</div>
+     <div class="xatlas"><button class="primary" onclick="setMode('technical');selectTab('readiness')">◐ Readiness detail</button>
+       <button onclick="xSelect('connections')" style="margin-left:8px">◌ Live & Connections</button></div>`;
+  });
+}
+function xConnections(){
+  $('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading connection registry…</div>';
+  Promise.all([api('/api/connections'),api('/api/production-health')]).then(([c,h])=>{
+    if(c.error){$('#xmain').innerHTML=`<div class="empty">${esc(c.error)}</div>`;return;}
+    $('#xmain').innerHTML=`<div class="xhero"><h1>Live &amp; Connections</h1></div>
+     <p class="xlede">${esc(c.summary.policy)}</p>
+     ${envBanner()}
+     <div class="xgrid">
+       <div class="xcard"><div class="h">Data sources</div><div class="b" style="font-size:22px;font-weight:700">${c.summary.sources}</div></div>
+       <div class="xcard"><div class="h">Connected</div><div class="b" style="font-size:22px;font-weight:700;color:var(--success)">${c.summary.connected}</div></div>
+       <div class="xcard warn"><div class="h">Not connected</div><div class="b" style="font-size:22px;font-weight:700;color:var(--warning)">${c.summary.notConnected}</div></div>
+       <div class="xcard"><div class="h">Adapters ready</div><div class="b" style="font-size:22px;font-weight:700">${c.summary.adapterReady}</div></div>
+     </div>
+     <div class="xsection">Connection registry — status · exact source required · integration status</div>
+     <table><thead><tr><th>Source</th><th>Metrics</th><th>Status</th><th>Exact source required</th><th>Integration</th></tr></thead><tbody>
+     ${c.connections.map(x=>`<tr><td class="lbl">${esc(x.source)}</td><td><span class="mono" style="color:var(--muted)">${esc(x.metrics.join(', '))}</span></td><td><span class="notconn" style="margin:0;padding:3px 9px"><span class="d"></span>${esc(x.status)}</span></td><td><span class="mono" style="color:var(--muted)">${esc(x.exactSource)}</span></td><td>${esc(x.integrationStatus)}</td></tr>`).join('')}
+     </tbody></table>
+     <p class="xlede" style="font-size:13px">To activate the live layer, connect a staging environment (Supabase + Cloudflare read tokens, Razorpay/Resend keys) — the adapters in <code>telemetry-intelligence.mjs</code> are ready. No value is shown until a source is connected.</p>`;
   });
 }
 
