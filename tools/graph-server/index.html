@@ -155,8 +155,8 @@
   </aside>
 </main>
 <script>
-const TABS=['overview','atlas','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
-const TLABEL={overview:'Overview',atlas:'★ Atlas',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
+const TABS=['overview','atlas','data','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
+const TLABEL={overview:'Overview',atlas:'★ Atlas',data:'◆ Data Layer',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
 const ATLAS_DOMAINS={atlas:'',services:'services',apps:'apps',packages:'packages',payments:'payments',identity:'identity',database:'database',marketplace:'marketplace',themes:'themes',developer:'developer',security:'security',tenancy:'tenancy'};
 const $=s=>document.querySelector(s);
 const cv=$('#cv'),ctx=cv.getContext('2d'),dash=$('#dash'),hint=$('#hint'),atlasbar=$('#atlasbar'),ibody=$('#inspectorBody');
@@ -208,6 +208,7 @@ async function selectTab(t){
   if(t==='atlas')return renderAtlas('');
   showDash();
   if(t==='overview')return overview();
+  if(t==='data')return renderData();
   const d=await api('/api/domain?key='+t);
   if(!d){dash.innerHTML='<p class="hint">No data.</p>';return;}
   const rc=d.risk>66?'var(--critical)':d.risk>33?'var(--warning)':'var(--success)';
@@ -239,6 +240,32 @@ async function overview(){
    </tbody></table>
    <p class="hint" style="padding:16px 0">Built ${s.freshness_minutes} min ago${s.built_at_commit?` @ <code>${esc(s.built_at_commit.slice(0,8))}</code>`:''} · refresh with <code>pnpm graph:update</code>.</p>`;
   dash.querySelectorAll('tr.clk').forEach(tr=>tr.onclick=()=>{$('#q').value=decodeURIComponent(tr.dataset.q).split('/').pop();searchPanel();doSearch();});
+}
+
+// ---------- Data Layer (database intelligence) ----------
+async function renderData(){
+  dash.className='dash fade';
+  dash.innerHTML='<div class="row" style="color:var(--subdued)"><span class="spin"></span> Loading database intelligence…</div>';
+  const d=await api('/api/db');
+  if(d.error){dash.innerHTML=`<h2>Data Layer</h2><p class="hint">${esc(d.error)} — run <code>pnpm graph:db</code>.</p>`;return;}
+  const s=d.summary;
+  dash.innerHTML=`<h2>◆ Data Layer Intelligence</h2>
+   <p class="hint" style="padding:6px 0">The Postgres schema Graphify's tree-sitter cannot index — parsed from ${s.migrationFiles} migrations.</p>
+   <div class="cards">
+     ${card(fmt(s.tables),'tables')}${card(fmt(s.functions),'functions / RPCs')}${card(fmt(s.securityDefiner),'SECURITY DEFINER')}${card(fmt(s.moneyFunctions),'money RPCs')}
+     ${card(fmt(s.policies),'RLS policies')}${card(fmt(s.triggers),'triggers')}${card(fmt(s.indexes),'indexes')}${card(fmt(s.rlsTables),'RLS tables')}
+     ${card(fmt(s.tenantTables),'tenant tables')}${card(fmt(s.rpcsCalledByGateway),'RPCs via gateway')}
+   </div>
+   <div class="sectionTitle">Money RPC → table flow — server-authoritative ledger mutations</div>
+   <table><thead><tr><th>RPC</th><th>SD</th><th>idem</th><th>lock</th><th>tables</th><th>called by</th></tr></thead><tbody>
+   ${d.moneyRpcs.slice(0,18).map(r=>`<tr><td class="lbl">${esc(r.rpc)}</td><td>${r.securityDefiner?'✓':'<span style="color:var(--critical)">✗</span>'}</td><td>${r.idempotency?'✓':'<span style="color:var(--warning)">·</span>'}</td><td>${r.forUpdate?'✓':'·'}</td><td><span class="mono">${esc(r.tables.join(', ')||'—')}</span></td><td><span class="mono" style="color:var(--muted)">${esc(r.calledBy)}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Most-governed tables (policies · triggers · indexes)</div>
+   <table><thead><tr><th>Table</th><th>RLS</th><th>tenant</th><th style="text-align:right">pol</th><th style="text-align:right">trg</th><th style="text-align:right">idx</th></tr></thead><tbody>
+   ${d.topTables.map(t=>`<tr><td class="lbl">${esc(t.name)}${t.money?' <span class="badge brand" style="padding:1px 7px">money</span>':''}</td><td>${t.force?'FORCE':t.rls?'on':'<span style="color:var(--warning)">—</span>'}</td><td>${t.tenant?'✓':'·'}</td><td style="text-align:right"><span class="deg">${t.policies}</span></td><td style="text-align:right"><span class="deg">${t.triggers}</span></td><td style="text-align:right"><span class="deg">${t.indexes}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">SECURITY DEFINER RPCs not invoked via gateway db.rpc — review candidates (may be trigger/internal)</div>
+   <div class="badges">${d.uncalledRpcs.map(r=>`<span class="badge">${esc(r)}</span>`).join('')||'<span class="hint">none</span>'}</div>`;
 }
 
 // ---------- neighborhood (live force sim) ----------

@@ -22,6 +22,8 @@ const raw = JSON.parse(readFileSync(GRAPH_PATH, 'utf8'));
 const stat = statSync(GRAPH_PATH);
 const nodes = raw.nodes || [];
 const links = raw.links || raw.edges || [];
+const DB_INTEL_PATH = join(REPO_ROOT, 'graphify-out', 'db-intel.json');
+const dbIntel = existsSync(DB_INTEL_PATH) ? JSON.parse(readFileSync(DB_INTEL_PATH, 'utf8')) : null;
 
 // ---- indexes ----
 const byId = new Map();
@@ -164,6 +166,26 @@ function domain(key, limit = 60) {
   return { key, nodes: matched.length, files: files.size, relationships: edgeCount, avgDegree: Number(avgDeg.toFixed(1)), risk, workspaces: topN(ws, 12), top };
 }
 
+// ---- central intelligence: blast radius (inbound BFS = who breaks if this changes) ----
+function blastRadius(id, depth = 3) {
+  if (!byId.has(id)) return null;
+  const seen = new Set([id]); let frontier = [id]; const layers = [];
+  for (let d = 0; d < depth; d++) { const next = []; for (const cur of frontier) for (const e of (inAdj.get(cur) || [])) if (!seen.has(e.id)) { seen.add(e.id); next.push(e.id); } if (!next.length) break; layers.push(next.length); frontier = next; }
+  const impacted = [...seen].filter((x) => x !== id);
+  const files = new Set(impacted.map((x) => byId.get(x)?.source_file).filter(Boolean));
+  return { node: nodeView(id), impactedNodes: impacted.length, impactedFiles: files.size, layers, top: impacted.map(nodeView).sort((a, b) => b.degree - a.degree).slice(0, 14) };
+}
+function dbView() {
+  if (!dbIntel) return { error: 'db-intel.json missing — run pnpm graph:db' };
+  const s = dbIntel.summary;
+  return {
+    summary: s,
+    moneyRpcs: dbIntel.functions.filter((f) => f.money).map((f) => ({ rpc: f.name, securityDefiner: f.securityDefiner, idempotency: f.hasIdempotency, forUpdate: f.forUpdate, tables: f.touches.filter((t) => s.moneyTablesPresent.includes(t)), calledBy: (f.callers[0] || '').replace('services/api-gateway/src/', '') || '(internal/trigger)' })),
+    topTables: dbIntel.tables.sort((a, b) => (b.policies.length + b.triggers.length + b.indexes) - (a.policies.length + a.triggers.length + a.indexes)).slice(0, 20).map((t) => ({ name: t.name, columns: t.columns, rls: t.rls, force: t.force, tenant: t.tenant, money: t.money, policies: t.policies.length, triggers: t.triggers.length, indexes: t.indexes })),
+    uncalledRpcs: dbIntel.functions.filter((f) => !f.callers.length && f.securityDefiner).map((f) => f.name).slice(0, 30),
+  };
+}
+
 // ---- atlas (full-graph community-colored layout, computed server-side + cached) ----
 const PALETTE = ['#8B5CF6', '#58a6ff', '#3fb950', '#d29922', '#f85149', '#db61a2', '#39c5cf', '#bc8cff', '#e3b341', '#7ee787', '#ffa657', '#a5d6ff', '#ff7b72', '#56d364', '#e2c08d', '#79c0ff', '#f0883e', '#6ca0f6'];
 const communitySizes = (() => { const m = {}; for (const n of nodes) m[n.community] = (m[n.community] || 0) + 1; return m; })();
@@ -294,7 +316,9 @@ const server = createServer((req, res) => {
       const top = [...ns].sort((a, b) => (degree.get(b.id) || 0) - (degree.get(a.id) || 0)).slice(0, 12).map((n) => nodeView(n.id));
       return json(res, { ...pr, files: files.size, color: communityColor.get(cid) || '#8b949e', workspaces: topN(ws, 6), top });
     }
-    if (p === '/api/health') return json(res, { ok: true, nodes: nodes.length });
+    if (p === '/api/db') return json(res, dbView());
+    if (p === '/api/blast') { const id = u.searchParams.get('id'); const q = u.searchParams.get('q'); let nid = id; if (!nid && q) { const r = search(q, 1); nid = r[0] && r[0].id; } return json(res, nid ? blastRadius(nid, Number(u.searchParams.get('depth') || 3)) : { error: 'not found' }); }
+    if (p === '/api/health') return json(res, { ok: true, nodes: nodes.length, dbIntel: !!dbIntel });
     res.writeHead(404, { 'content-type': 'application/json' }); res.end('{"error":"not found"}');
   } catch (err) { json(res, { error: String(err) }, 500); }
 });

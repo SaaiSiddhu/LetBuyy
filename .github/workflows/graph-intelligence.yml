@@ -1,0 +1,46 @@
+name: Graph Intelligence (DB layer)
+
+# Regenerates the database intelligence on every push/PR and uploads it as an artifact.
+# Pure Node — parses database/supabase/migrations + the gateway's db.rpc call sites.
+# Does NOT need the Graphify binary or the (gitignored) code graph, so it always runs in CI.
+# Advisory only; the authoritative blocking gate remains scripts/validate-governance.mjs.
+
+on:
+  push:
+    paths:
+      - 'database/supabase/migrations/**'
+      - 'services/api-gateway/src/**'
+      - 'tools/graph-server/**'
+  pull_request:
+    paths:
+      - 'database/supabase/migrations/**'
+      - 'services/api-gateway/src/**'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  db-intelligence:
+    name: Extract + sanity-check the database graph
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Extract database intelligence
+        run: node tools/graph-server/db-intel.mjs
+      - name: Regenerate data-driven reports
+        run: node tools/graph-server/gen-reports.mjs
+      - name: Sanity gate — schema must parse to non-trivial counts
+        run: |
+          node -e "const s=require('./graphify-out/db-intel.json').summary; if(s.tables<100||s.functions<50){console.error('DB intel parse looks degraded',s);process.exit(1)} console.log('DB intel OK:',s.tables,'tables,',s.functions,'functions,',s.policies,'policies')"
+      - name: Upload database intelligence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-intelligence
+          path: |
+            graphify-out/db-intel.json
+            docs/central-intelligence/DATABASE_INTELLIGENCE_REPORT.generated.md
+          retention-days: 14

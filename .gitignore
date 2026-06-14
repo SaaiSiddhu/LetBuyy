@@ -146,3 +146,5 @@ packages/dart/**/build/
 # Graphify code-knowledge-graph artifacts (generated, not committed)
 graphify-out/
 .graphify/
+
+graphify-out/db-intel.json

@@ -79,3 +79,10 @@ A multi-tenant India-first commerce platform. Core entities: **site** (the tenan
 - **Graphify** code graph: `uv tool install graphifyy` → `graphify update .` (output gitignored). Queries in `docs/ai-infrastructure/graphify-queries.md`.
 - **Security:** `.github/workflows/security-review.yml` (PR) + `full-security-audit.yml` (weekly), Anthropic's `claude-code-security-review` (needs `ANTHROPIC_API_KEY`).
 - **Slash commands:** `.claude/commands/*-audit.md` (per-domain audits) + `full-security-review.md` + `build-component.md`.
+
+## Central Intelligence System (LCIS) — the architecture knowledge layer
+- **Code graph + DB graph.** `pnpm graph:ui` → http://localhost:3333 (Atlas, **◆ Data Layer**, domain dashboards). The Graphify code graph does NOT index SQL — `pnpm graph:db` extracts the data layer (414 tables, 156 RPCs, 651 policies, 395 triggers, 826 indexes → `graphify-out/db-intel.json`, gitignored).
+- **Query before you change.** `pnpm graph:intel blast "<symbol>"` (impact/blast radius), `… deps|consumers|critical|payment|tenant|flow`. HTTP for Claude: `/api/db`, `/api/blast?q=`, `/api/atlas`, `/api/domain?key=`, `/api/community?id=`, `/api/search`, `/api/path`. `graphify-mcp` is also installed (operator-registered; not auto-added to `.claude/`).
+- **Change-control hotspots** (highest blast radius — run `graph:intel blast` on any PR touching them): `getSupabaseAdmin` (115 files), `@letbuyy/shared-types`, `@letbuyy/api-client`, `create_checkout_order`.
+- **Audit agents:** `.claude/commands/agent-*.md` (12: security/architecture/payment/tenant/identity/checkout/marketplace/theme/developer/release/infrastructure/compliance) + `graph-*` commands — each queries the graph, then inspects code, then reports.
+- **Reports:** `docs/central-intelligence/` (audit, quality, DB intelligence, flows, cross-app, domain, autonomous discovery, production intelligence, certification). Heuristic findings are candidates; the 107 deterministic validators stay authoritative. Refresh: `pnpm graph:db && pnpm graph:reports`.
