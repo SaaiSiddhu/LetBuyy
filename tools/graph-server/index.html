@@ -1266,6 +1266,7 @@ function xSelect(key){
   if(key==='ai-ops'){xCtxPanel(null);return xAiOps();}
   if(key==='merchant-mode'){xCtxPanel(null);return xMerchantMode();}
   if(key==='customer-mode'){xCtxPanel(null);return xCustomerMode();}
+  if(key==='live-ops'){xCtxPanel(null);return xLiveOps();}
   if(XDATA.nodes[key]){xCtxPanel(XDATA.nodes[key]);const _t0=performance.now();xArticle(XDATA.nodes[key]);v10Perf('workspace',key,performance.now()-_t0);return;}
   xCtxPanel(null);
   m.innerHTML='<div class="empty">Select a topic from the left.</div>';
@@ -1861,7 +1862,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </style>`);
 
 // Pages (non-domain xSelect targets) → /page/<key>; domains → /domain/<key>[/<perspective>].
-const V10_PAGES=new Set(['getting-started','infrastructure','database','ops-center','mission-control','launch','connections','ecosystem','live-integrations','readiness','ai-context','merchant-journey','customer-journey','founder','ops-mode','support','investor','developer','business-flows','ai-ops','merchant-mode','customer-mode']);
+const V10_PAGES=new Set(['getting-started','infrastructure','database','ops-center','mission-control','launch','connections','ecosystem','live-integrations','readiness','ai-context','merchant-journey','customer-journey','founder','ops-mode','support','investor','developer','business-flows','ai-ops','merchant-mode','customer-mode','live-ops']);
 const V10_PERSP=WSPERSP.map(p=>p[0]);
 let _v10_suppress=false;                 // true while applying a route (suppress pushState)
 
@@ -2041,7 +2042,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 </style>`);
 
 // V11 nav — inject a Business Intelligence section into the left tree (after xRenderTree).
-const V11_MODES=[['founder','◆','Founder / Executive'],['ops-mode','◍','Operations'],['support','◌','Support'],['investor','◈','Investor'],['developer','✦','New Developer (30 min)'],['business-flows','⟿','Business Flows'],['ai-ops','◉','AI Operations'],['merchant-mode','◑','Merchant OS'],['customer-mode','◒','Customer OS']];
+const V11_MODES=[['live-ops','◉','Live Operations'],['founder','◆','Founder / Executive'],['ops-mode','◍','Operations'],['support','◌','Support'],['investor','◈','Investor'],['developer','✦','New Developer (30 min)'],['business-flows','⟿','Business Flows'],['ai-ops','◉','AI Operations'],['merchant-mode','◑','Merchant OS'],['customer-mode','◒','Customer OS']];
 function xV11Nav(){
   const t=$('#xtree-body')||$('#xtree'); if(!t||t.querySelector('[data-v11]'))return;
   let h='<div class="v11nav-hdr" data-v11="1">Business Intelligence</div>';
@@ -2213,6 +2214,7 @@ const V11_JOURNEY_KW={checkout:'checkout','merchant onboard':'merchant','merchan
 function v11Copilot(q){
   const ql=(q||'').toLowerCase();
   for(const[kw,jk]of Object.entries(V11_JOURNEY_KW)){if(ql.includes(kw)){if(/how|work|flow|journey|architecture|explain/.test(ql)){closeCmdk&&closeCmdk();setMode('explain');xJourney(jk);return true;}}}
+  if(/what.?s happening|happening now|what failed|will (fail|break) next|live ops|real.?time|what is wrong/.test(ql)){closeCmdk&&closeCmdk();xSelect('live-ops');return true;}
   if(/fix next|what should i fix|blocks? (launch|scale|100|1k|10k|100k|merchants|users)|highest risk|ai ?ops|what should i do/.test(ql)){closeCmdk&&closeCmdk();xSelect('ai-ops');return true;}
   if(/blocks? launch|launch status|launch ready|go.?no.?go/.test(ql)){closeCmdk&&closeCmdk();xSelect('launch');return true;}
   if(/founder|executive|readiness/.test(ql)){closeCmdk&&closeCmdk();xSelect('founder');return true;}
@@ -2244,7 +2246,7 @@ function omegaFillLaunchStatus(){
   }).catch(()=>{});
 }
 // Robust formatter for ranked decision answers (arrays/objects/strings).
-const omegaFmt=x=>typeof x==='string'?esc(x):(x&&typeof x==='object'?[x.rank?('#'+x.rank):'',esc(x.id||x.ref||''),esc(x.title||x.detail||x.label||''),x.severity||'',x.status?('— '+esc(x.status)):''].filter(Boolean).join(' '):esc(String(x)));
+const omegaFmt=x=>typeof x==='string'?esc(x):(x&&typeof x==='object'?(x.domain&&x.predisposition!=null?esc(x.domain)+' <b style="color:var(--warning)">'+x.predisposition+'</b> — '+esc((x.why||[]).join('; ')):[x.rank?('#'+x.rank):'',esc(x.id||x.ref||''),esc(x.title||x.detail||x.label||''),x.severity||'',x.status?('— '+esc(x.status)):''].filter(Boolean).join(' ')):esc(String(x)));
 function omegaAnswer(a){
   if(!a)return [];
   if(Array.isArray(a))return a.map(omegaFmt);
@@ -2299,6 +2301,28 @@ function xCustomerMode(){
      <div class="xsection">Support impact (live)</div>${notconn(o.supportHealth?.requires||'support feed — NOT CONNECTED')}
      <div class="xatlas"><button class="primary" onclick="routeGo('orders','explain')">⟿ Customer journey</button><button onclick="xSelect('support')" style="margin-left:8px">◌ Support</button></div></div>`;
   });
+}
+
+// LCIS INFINITY — Live Operations Center: the real-time answer board for the 7 stop-condition questions.
+function xLiveOps(){
+  $('#xmain').className='xmain article';$('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading live operations…</div>';
+  Promise.all([api('/api/federation'),api('/api/live-metrics'),api('/api/detection'),api('/api/predict'),api('/api/launch-status'),api('/api/ai-ops')]).then(([fed,lm,det,pr,ls,ao])=>{
+    if(fed.error){$('#xmain').innerHTML=`<div class="empty">${esc(fed.error)}</div>`;return;}
+    const q=(n,title,body)=>`<div class="bipanel"><div class="ph">${n}. ${esc(title)}</div>${body}</div>`;
+    const fixNext=((ao.questions&&ao.questions[0]&&ao.questions[0].answer)||[]).slice(0,4);
+    const willFail=(pr.whatFailsNext||[]).slice(0,5);
+    const moneyDet=det.detectors.filter(d=>d.category==='money'||d.category==='commerce').map(d=>d.label);
+    $('#xmain').innerHTML=`<div class="xa-body"><div class="xhero"><h1>Live Operations Center</h1><span class="crit t1">LIVE: NOT CONNECTED (dev)</span></div>
+     <p class="xlede">The real-time answer board. Topology + structural risk are repository truth (available now); live signals/metrics are NOT CONNECTED with their exact source. No mocks, no estimates, no simulations.</p>
+     ${q('1','What is happening now?',`<div class="omst">${fed.providers.map(p=>`<div class="c"><div class="a">${esc(p.provider)}</div><span class="s ${p.connection.status==='CONNECTED'?'READY':'BLOCKED'}">${esc(p.connection.status)}</span></div>`).join('')}</div><p class="pm">${lm.summary.total} live metrics mapped · <span style="color:var(--warning)">${lm.summary.notConnected} NOT CONNECTED</span> — real-source bound, never estimated.</p>`)}
+     ${q('2','What failed?',`<p class="pp">${det.detectors.length} autonomous detectors armed — each fires on a live signal (NOT CONNECTED) bound to a structural risk.</p><div class="badges">${det.detectors.map(d=>`<span class="xpill" title="${esc(d.structuralRisk)}">${esc(d.label)} <b style="color:var(--warning)">⚠</b></span>`).join('')}</div>`)}
+     ${q('3','What will fail next?',`<ol class="hint" style="padding-left:18px;margin:4px 0">${willFail.map(w=>`<li>${esc(w.domain)} <b style="color:var(--warning)">${w.predisposition}</b> — ${esc((w.why||[]).join('; '))}</li>`).join('')}</ol><div class="pm">ranked structural predisposition (repository truth); confirming live signal NOT CONNECTED.</div>`)}
+     ${q('4','Who is affected?',`<p class="pp">Per incident → blast radius (domains / merchants / customers): <span class="xpill" onclick="routeGo('payments','impact')">/api/impact-score</span>. When a money domain fails the blast radius is <b>ALL tenants</b> (single shared Postgres).</p>`)}
+     ${q('5','How much revenue is affected?',`<p class="pp">Money / commerce detectors on the hot path: <b>${esc(moneyDet.join(', '))}</b>. Revenue magnitude is <span style="color:var(--warning)">NOT CONNECTED</span> (ledger reconciliation → <span class="xpill" onclick="xSelect('investor')">/api/revenue-v2</span>).</p>`)}
+     ${q('6','How do we recover?',`<div class="badges">${willFail.slice(0,4).map(w=>`<span class="xpill" onclick="routeGo('${w.domain}','incidents')">${esc(w.domain)} runbook</span>`).join('')}</div><p class="pm">Recovery / rollback / verification / escalation per domain (repository-truth procedures, available now).</p>`)}
+     ${q('7','What should we fix next?',`<ol class="hint" style="padding-left:18px;margin:4px 0">${fixNext.map(f=>`<li>${omegaFmt(f)}</li>`).join('')||'<li>see AI Operations</li>'}</ol><div class="pm">launch verdict <b>${esc(ls.verdict)}</b> · ${ls.openBlockers} open blockers.</div>`)}
+     <div class="xatlas"><button class="primary" onclick="xSelect('ai-ops')">◉ AI Operations</button><button onclick="xSelect('launch')" style="margin-left:8px">⚑ Launch status</button><button onclick="xSelect('live-integrations')" style="margin-left:8px">◉ Connect live data</button></div></div>`;
+  }).catch(e=>{$('#xmain').innerHTML=`<div class="empty">${esc(String(e))}</div>`;});
 }
 
 boot();

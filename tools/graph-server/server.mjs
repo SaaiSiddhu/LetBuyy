@@ -69,6 +69,7 @@ import { buildLaunchCommandCenter } from './launch-command-center.mjs';
 import { buildFederationIntel } from './federation-intel.mjs';
 import { buildLiveHealthIntel } from './live-health-intel.mjs';
 import { buildBusinessFlow } from './business-flow-intel.mjs';
+import { buildDetectionPrediction, incidentTimeline } from './detection-prediction-intel.mjs';
 import { execSync } from 'node:child_process';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -151,6 +152,8 @@ const federationIntel = safe(() => buildFederationIntel());
 const liveHealth = safe(() => buildLiveHealthIntel());
 // ---- LCIS V11: business flow intelligence (10 journeys + business flow graph) ----
 const businessFlow = safe(() => buildBusinessFlow());
+// ---- LCIS INFINITY: autonomous detection + predictive intelligence ----
+const detectPredict = safe(() => buildDetectionPrediction());
 // Atlas 2.0 — one-click full trace: entity → route → rpcs → tables → policies/triggers → queues → emails → analytics → merchant dashboard
 function fullTrace(entity) {
   const root = lineage(entity);
@@ -574,10 +577,12 @@ function launchStatus() {
 function aiOps() {
   const d = decisionV2;
   if (!d || d.error) return d || { error: 'decision-v2 missing — run pnpm graph:omega' };
+  const willFail = detectPredict && !detectPredict.error ? detectPredict.prediction.whatFailsNext : [];
   return {
-    mode: 'AI Operations Center',
+    mode: 'AI Operations Commander',
     questions: [
       { q: 'What should I fix next?', answer: d.fixNext || [], evidence: 'ranked by blast radius + launch impact (open V1 blockers first)' },
+      { q: 'What will break next?', answer: willFail, evidence: 'ranked structural predisposition (money path + degraded deps + open blockers + blast radius); confirming live signal NOT CONNECTED' },
       { q: 'What blocks launch?', answer: d.blocksLaunch || [], evidence: 'open V1 blockers + readiness gaps' },
       { q: 'What blocks 100 merchants / 1k / 10k merchants / 10k / 100k users?', answer: d.blocksScale || [], evidence: `scale tiers: ${(d.summary?.scaleTiers || []).join(', ')}` },
       { q: 'What are my highest risks?', answer: d.highestRisk || [], evidence: 'risk = money + tenant + open blockers + fan-in (blast radius)' },
@@ -1051,6 +1056,12 @@ const server = createServer((req, res) => {
     // ---- LCIS OMEGA: production-OS connective surfaces ----
     if (p === '/api/launch-status') return json(res, safe(() => launchStatus()));
     if (p === '/api/ai-ops') return json(res, safe(() => aiOps()));
+    // ---- LCIS INFINITY: autonomous detection + predictive intelligence ----
+    if (p === '/api/detection') return json(res, detectPredict && !detectPredict.error ? detectPredict.detection : (detectPredict || { error: 'detection missing' }));
+    if (p === '/api/live-metrics') return json(res, detectPredict && !detectPredict.error ? detectPredict.liveMetrics : (detectPredict || { error: 'live-metrics missing' }));
+    if (p === '/api/predict') return json(res, detectPredict && !detectPredict.error ? detectPredict.prediction : (detectPredict || { error: 'predict missing' }));
+    if (p === '/api/detection-prediction') return json(res, detectPredict);
+    if (p === '/api/incident-timeline') return json(res, safe(() => incidentTimeline(u.searchParams.get('domain') || 'payments')));
     if (p === '/api/live') {
       // Real read-only probe — only credentialed providers trigger a network call; the rest are NOT CONNECTED.
       const prov = u.searchParams.get('provider');
