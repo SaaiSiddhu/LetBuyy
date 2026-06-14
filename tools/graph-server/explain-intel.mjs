@@ -59,6 +59,7 @@ const IA = [
   { key: 'payments-engine', label: 'Payments Engine', icon: '▦', kind: 'section', children: ['payments', 'refunds', 'payouts', 'gift-cards', 'gst'] },
   { key: 'security', label: 'Security', icon: '⛨', kind: 'section', children: ['authentication', 'authorization', 'identity'] },
   { key: 'operations', label: 'Operations', icon: '◍', kind: 'section', children: ['operations', 'notifications'] },
+  { key: 'ecosystem', label: 'Ecosystem (Theme/Apps/Dev)', icon: '◇', kind: 'page' },
   { key: 'database', label: 'Database', icon: '▤', kind: 'page' },
   { key: 'infrastructure', label: 'Infrastructure', icon: '◰', kind: 'page' },
   { key: 'ops-center', label: 'Operations Center', icon: '◍', kind: 'page' },
@@ -108,18 +109,32 @@ export function buildExplainIntel() {
     return { references: [...out].slice(0, 20), referencedBy: [...inc].slice(0, 20) };
   };
   const policiesFor = (tables) => db.policies.filter((p) => tables.includes(p.table)).length;
+  const tblMap = new Map(db.tables.map((t) => [t.name, t]));
+  const trigFor = (tables) => tables.reduce((a, t) => a + (tblMap.get(t)?.triggers.length || 0), 0);
+  const idxFor = (tables) => tables.reduce((a, t) => a + (tblMap.get(t)?.indexes || 0), 0);
+  const CUSTOMER_FACING = new Set(['storefront', 'products', 'collections', 'orders', 'payments', 'refunds', 'shipping', 'notifications', 'gift-cards']);
+  const blockerHit = (key) => (exec?.blockers || []).filter((b) => !/done|resolved|complete|hidden|fixed/i.test(b.status) && new RegExp(key.replace('-', '.?').replace(/s$/, ''), 'i').test(b.title)).map((b) => b.id);
   const nodes = {};
   for (const d of di.domains) {
     const nar = NARRATIVE[d.key] || { purpose: `${d.label} domain.`, importance: '—', failureImpact: '—' };
+    const consumers = d.consumedBy.map((x) => x.domain);
     const node = {
       key: d.key, label: d.label, kind: 'domain',
-      purpose: nar.purpose, importance: nar.importance, failureImpact: nar.failureImpact,
+      purpose: nar.purpose, importance: nar.importance, businessValue: nar.importance, failureImpact: nar.failureImpact,
       criticality: criticality(d),
       owner: d.owners,
       dependsOn: d.dependsOn.map((x) => x.domain),
-      consumers: d.consumedBy.map((x) => x.domain),
+      consumers,
       operationalNotes: `${d.money ? 'Money mutations only via SECURITY DEFINER RPCs (db.rpc). ' : ''}${d.tenant ? 'Tenant-scoped: every row carries site_id; RLS forced. ' : ''}Runs through ${d.workers.join(', ')}.`,
-      technical: { routes: d.routes, rpcs: d.rpcs, tables: d.tables, policies: policiesFor(d.tables), workers: d.workers, queues: d.queues, secrets: d.secrets, services: d.apps, money: d.money, tenant: d.tenant, relationships: fkFor(d.tables) },
+      // Explain V2 (P3) — impact / recovery / runbooks / launch
+      merchantImpact: d.tenant ? `Affects ALL merchant stores (shared schema); downstream domains: ${consumers.join(', ') || 'none'}.` : 'Platform-internal — no direct merchant impact.',
+      customerImpact: CUSTOMER_FACING.has(d.key) ? 'Directly visible to shoppers (storefront/checkout/order experience).' : 'Indirect — supports the customer experience but not directly shopper-facing.',
+      recoveryPath: d.money ? 'Rollback the worker version (production-rollback.mjs); migrations are forward-fix-only; reconcile with ledger_balance_breaks / refresh_money_ledger_site_reconciliation.' : 'Rollback the worker version (production-rollback.mjs); forward-fix migrations.',
+      runbooks: [`/api/incident-intelligence?domain=${d.key}`, 'docs/runbooks/', 'MERGE_RUNBOOK.md'],
+      launchRelevance: blockerHit(d.key).length ? `Open launch blocker(s): ${blockerHit(d.key).join(', ')}` : 'No open launch blocker for this domain.',
+      relatedDomains: [...new Set([...d.dependsOn.map((x) => x.domain), ...consumers])].slice(0, 8),
+      // Technical V2 (P4)
+      technical: { routes: d.routes, rpcs: d.rpcs, tables: d.tables, policies: policiesFor(d.tables), triggers: trigFor(d.tables), indexes: idxFor(d.tables), workers: d.workers, queues: d.queues, secrets: d.secrets, services: d.apps, money: d.money, tenant: d.tenant, relationships: fkFor(d.tables), blastRadius: { directConsumers: consumers.length, query: `/api/change-impact?key=${d.key}` } },
       atlas: { search: d.rpcs[0] || d.tables[0] || d.label, blast: d.key },
       flow: FLOWS[d.key] || null,
     };

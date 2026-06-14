@@ -116,7 +116,9 @@
     "foundation:pg:start": "node scripts/governance/foundation-ephemeral-postgres.mjs start",
     "foundation:pg:stop": "node scripts/governance/foundation-ephemeral-postgres.mjs stop",
     "foundation:restore-drill:plan": "node scripts/governance/foundation-restore-drill.mjs --plan",
-    "money:invariants": "node scripts/money-certification/check-invariants.mjs"
+    "money:invariants": "node scripts/money-certification/check-invariants.mjs",
+    "graph:ecosystem": "node tools/graph-server/ecosystem-intel.mjs",
+    "graph:search": "node tools/graph-server/search-intel.mjs"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20260525.1",

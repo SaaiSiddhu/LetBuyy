@@ -30,23 +30,24 @@
   ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:#2a2538;border-radius:8px;border:2px solid transparent;background-clip:content-box}
   ::-webkit-scrollbar-thumb:hover{background:#3a3450;background-clip:content-box}
 
-  header{display:flex;align-items:center;gap:8px;padding:0 22px;height:56px;flex-shrink:0;border-bottom:1px solid var(--border-soft);
+  header{display:flex;flex-direction:column;flex-shrink:0;
     background:linear-gradient(180deg,rgba(255,255,255,.025),transparent),var(--bg2);backdrop-filter:blur(12px);position:relative;z-index:10}
+  .hdr-top{display:flex;align-items:center;gap:8px;padding:0 22px;height:56px}
   .brand{display:flex;align-items:center;gap:10px;flex-shrink:0;margin-right:12px}
   .brand .logo{height:28px;width:auto;display:block;flex-shrink:0;filter:drop-shadow(0 2px 8px rgba(68,98,255,.3))}
   .brand .sub{color:var(--subdued);font-weight:700;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding-left:10px;border-left:1px solid var(--border);white-space:nowrap}
   .hdr-spacer{flex:1 1 0;min-width:4px;max-width:36px}
-  .chips-bar{display:flex;align-items:center;padding:5px 22px;border-bottom:1px solid var(--border-soft);
-    background:var(--bg2);overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;flex-shrink:0;
-    scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-  .chips-bar::-webkit-scrollbar{height:3px}
-  .chips-bar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-  .chips-bar::-webkit-scrollbar-track{background:transparent}
-  .chips{display:flex;gap:6px;align-items:center;flex-shrink:0;min-width:max-content}
-  .chip{display:flex;gap:5px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);
-    padding:3px 10px;font-size:11.5px;color:var(--subdued);transition:.15s;white-space:nowrap;flex-shrink:0;cursor:default}
-  .chip:hover{border-color:#3a3450;color:var(--text)}
-  .chip b{color:var(--text);font-variant-numeric:tabular-nums}
+  .chips-bar{display:flex;padding:0;border-bottom:1px solid var(--border-soft);
+    overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;flex-shrink:0;
+    scrollbar-width:none}
+  .chips-bar::-webkit-scrollbar{display:none}
+  .chips{display:flex;width:100%;min-width:max-content}
+  .chip{flex:1;display:flex;gap:4px;align-items:center;justify-content:center;min-width:80px;
+    padding:5px 10px;font-size:11px;color:var(--subdued);background:transparent;
+    border:none;border-right:1px solid var(--border-soft);border-radius:0;white-space:nowrap;flex-shrink:0;cursor:default;transition:background .15s}
+  .chip:last-child{border-right:none}
+  .chip:hover{background:var(--brand-soft);color:var(--text)}
+  .chip b{color:var(--text);font-variant-numeric:tabular-nums;font-size:12px;font-weight:600}
   .chip.key b{color:var(--brand-2)}
 
   .tabs{display:flex;gap:3px;padding:9px 18px;border-bottom:1px solid var(--border-soft);overflow-x:auto;background:var(--bg2)}
@@ -56,7 +57,7 @@
   .tab.active{color:#fff;background:linear-gradient(180deg,var(--brand),var(--brand-cta));border-color:var(--brand);box-shadow:0 4px 14px rgba(109,40,217,.45)}
   .tab.star{color:var(--brand-2)} .tab.star.active{color:#fff}
 
-  main{display:grid;grid-template-columns:1fr 332px;height:calc(100vh - 144px)}
+  main{display:grid;grid-template-columns:1fr 332px;height:calc(100vh - 138px)}
   .stage{position:relative;overflow:hidden}
   .inspector{border-left:1px solid var(--border-soft);background:var(--sidebar);overflow:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
 
@@ -150,10 +151,13 @@
   .envdot{width:8px;height:8px;border-radius:50%;background:var(--warning);box-shadow:0 0 7px var(--warning);flex:none}
   .notconn{display:inline-flex;align-items:center;gap:7px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.32);color:#fcd34d;border-radius:var(--r-md);padding:8px 13px;font-size:12.5px;font-weight:600;margin:4px 0}
   .notconn .d{width:7px;height:7px;border-radius:50%;background:var(--warning);flex:none}
-  .kbtn{color:var(--subdued);font-size:12px;border-radius:var(--r-md);flex-shrink:0;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
-  .kbtn kbd{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:var(--mono);font-size:11px}
+  .kbtn{margin-left:auto;width:220px;min-width:120px;justify-content:space-between;padding:7px 12px;
+    background:var(--bg);border:1px solid var(--border);border-radius:var(--r-md);
+    color:var(--subdued);font-size:12.5px;font-weight:500;flex-shrink:0;white-space:nowrap;display:inline-flex;align-items:center;gap:8px}
+  .kbtn:hover{border-color:var(--brand);color:var(--text);background:#1c1827}
+  .kbtn kbd{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--muted);flex-shrink:0}
 
-  #explain{height:calc(100vh - 92px);display:grid;grid-template-columns:268px 1fr;overflow:hidden}
+  #explain{height:calc(100vh - 86px);display:grid;grid-template-columns:268px 1fr;overflow:hidden}
   .xtree{border-right:1px solid var(--border-soft);background:var(--sidebar);overflow:auto;padding:12px 10px}
   .xtree .grp{margin-bottom:3px}
   .xtree .sec{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:var(--r-md);cursor:pointer;color:var(--text);font-weight:600;font-size:13.5px;transition:.12s}
@@ -223,11 +227,11 @@
   .cmdk .ask{padding:11px 14px;border-top:1px solid var(--border-soft);font-size:12px;color:var(--subdued)}
 
   .empty{color:var(--muted);padding:40px;text-align:center;font-size:14px}
-  /* Tablet portrait — chips-bar always scrolls, collapse search label only */
-  @media (max-width:1024px){header{padding:0 16px}.chips-bar{padding:5px 16px}}
+  /* Tablet — tighten padding */
+  @media (max-width:1024px){.hdr-top{padding:0 16px}}
   @media (max-width:880px){
     main{grid-template-columns:1fr} .inspector{display:none}
-    #explain{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 92px)}
+    #explain{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 86px)}
     .xtree{border-right:0;border-bottom:1px solid var(--border-soft);max-height:38vh}
     .xmain{padding:18px 16px}
     .tabs{padding:8px 10px}
@@ -236,20 +240,21 @@
     .xgrid{grid-template-columns:1fr} .xrel{gap:14px}
   }
 
-  /* Large mobile — drop brand subtitle, tighten gaps */
+  /* Large mobile — drop brand subtitle, tighten gaps, shrink search */
   @media (max-width:640px){
-    header{padding:0 12px;gap:6px}
+    .hdr-top{padding:0 12px;gap:6px}
     .brand .sub{display:none}
     .brand{margin-right:6px}
     .hdr-spacer{display:none}
+    .kbtn{width:160px;min-width:100px}
     .modetoggle button{padding:6px 11px;font-size:12px}
     .envswitch{padding:4px 8px;gap:5px}
     .envswitch select{font-size:12px}
   }
 
-  /* Small mobile — two-row header, hide search */
+  /* Small mobile — nav wraps, hide search */
   @media (max-width:400px){
-    header{height:auto;min-height:52px;padding:8px 12px;flex-wrap:wrap;gap:8px}
+    .hdr-top{height:auto;min-height:52px;padding:8px 12px;flex-wrap:wrap;gap:8px}
     .kbtn{display:none}
     .modetoggle button{padding:5px 10px;font-size:11.5px}
   }
@@ -257,18 +262,20 @@
 </head>
 <body>
 <header>
-  <div class="brand"><img class="logo" src="/logo.svg" alt="LetBuyy" /><span class="sub">Operating System</span></div>
-  <div class="hdr-spacer"></div>
-  <div class="modetoggle" id="modetoggle">
-    <button data-m="explain" class="on">◷ Explain</button>
-    <button data-m="technical">⌥ Technical</button>
+  <div class="hdr-top">
+    <div class="brand"><img class="logo" src="/logo.svg" alt="LetBuyy" /><span class="sub">Operating System</span></div>
+    <div class="hdr-spacer"></div>
+    <div class="modetoggle" id="modetoggle">
+      <button data-m="explain" class="on">◷ Explain</button>
+      <button data-m="technical">⌥ Technical</button>
+    </div>
+    <div class="envswitch" id="envswitch" title="Environment — repository intelligence renders in all; live data needs a connected env">
+      <span class="envdot" id="envdot"></span>
+      <select id="envsel"><option value="local">Local</option><option value="staging">Staging</option><option value="production">Production</option></select>
+    </div>
+    <button class="kbtn" id="cmdkBtn"><span class="kbtn-label">Search everything</span><kbd>⌘K</kbd></button>
   </div>
-  <div class="envswitch" id="envswitch" title="Environment — repository intelligence renders in all; live data needs a connected env">
-    <span class="envdot" id="envdot"></span>
-    <select id="envsel"><option value="local">Local</option><option value="staging">Staging</option><option value="production">Production</option></select>
-  </div>
-  <button class="kbtn" id="cmdkBtn"><span class="kbtn-label">Search everything</span><kbd>⌘K</kbd></button>
-  <div class="chips" id="chips"></div>
+  <div class="chips-bar"><div class="chips" id="chips"></div></div>
 </header>
 <div id="explain"></div>
 <div class="tabs" id="tabs" style="display:none"></div>
@@ -1101,6 +1108,7 @@ function xSelect(key){
   if(key==='ops-center')return xOps();
   if(key==='mission-control')return xMission();
   if(key==='connections')return xConnections();
+  if(key==='ecosystem')return xEcosystemIntel();
   if(key==='readiness')return xReadiness();
   if(key==='ai-context')return xAiContextPage();
   if(key==='merchant-journey')return xEcosystem('merchant');
@@ -1118,7 +1126,12 @@ function xNode(n){
       <div class="xcard"><div class="h">Business importance</div><div class="b">${esc(n.importance)}</div></div>
       <div class="xcard warn"><div class="h">Failure impact</div><div class="b">${esc(n.failureImpact)}</div></div>
       <div class="xcard"><div class="h">Operational notes</div><div class="b">${esc(n.operationalNotes)}</div></div>
+      ${n.merchantImpact?`<div class="xcard"><div class="h">Merchant impact</div><div class="b">${esc(n.merchantImpact)}</div></div>`:''}
+      ${n.customerImpact?`<div class="xcard"><div class="h">Customer impact</div><div class="b">${esc(n.customerImpact)}</div></div>`:''}
+      ${n.recoveryPath?`<div class="xcard"><div class="h">Recovery path</div><div class="b">${esc(n.recoveryPath)}</div></div>`:''}
+      ${n.launchRelevance?`<div class="xcard${/Open launch/.test(n.launchRelevance)?' warn':''}"><div class="h">Launch relevance</div><div class="b">${esc(n.launchRelevance)}</div></div>`:''}
     </div>
+    ${n.runbooks?`<div class="xrel"><div class="col"><div class="h">Runbooks</div>${n.runbooks.map(r=>`<span class="xpill">${esc(r)}</span>`).join('')}</div></div>`:''}
     <div class="xrel">
       <div class="col"><div class="h">Owner</div>${(n.owner.length?n.owner:['unowned']).map(o=>`<span class="xpill b">${esc(o)}</span>`).join('')}</div>
       <div class="col"><div class="h">Depends on</div>${n.dependsOn.length?n.dependsOn.map(d=>xpill(d,d)).join(''):'<span class="xpill">none</span>'}</div>
@@ -1137,6 +1150,8 @@ function xNode(n){
       <div class="xrow"><div class="k">Services</div><div class="v">${esc(tech.services.join(', ')||'—')}</div></div>
       ${tech.relationships?`<div class="xrow"><div class="k">FK → references</div><div class="v">${esc(tech.relationships.references.join(', ')||'—')}</div></div>
       <div class="xrow"><div class="k">FK ← referenced by</div><div class="v">${esc(tech.relationships.referencedBy.join(', ')||'—')}</div></div>`:''}
+      <div class="xrow"><div class="k">Triggers · indexes</div><div class="v">${tech.triggers||0} triggers · ${tech.indexes||0} indexes</div></div>
+      ${tech.blastRadius?`<div class="xrow"><div class="k">Blast radius</div><div class="v">${tech.blastRadius.directConsumers} direct consumers · full: ${esc(tech.blastRadius.query)}</div></div>`:''}
       <div class="xrow"><div class="k">Security</div><div class="v">${tech.money?'money path (SECURITY DEFINER + canonical-ledger-only)':'standard'} · ${tech.tenant?'tenant-scoped (RLS + verifySiteOwnership)':'platform-internal'}</div></div>
     </div></div>
     <div class="xsection">AI context — copy for Claude / Gemini / Codex</div>
@@ -1268,6 +1283,23 @@ function xOps(){
        <button onclick="setMode('technical');selectTab('robs')" style="margin-left:8px">◐ Runtime Observability</button></div>`;
   });
 }
+function xEcosystemIntel(){
+  $('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading ecosystem…</div>';
+  api('/api/ecosystem').then(o=>{
+    if(o.error){$('#xmain').innerHTML=`<div class="empty">${esc(o.error)} — run <code>pnpm graph:ecosystem</code>.</div>`;return;}
+    const card=(L)=>`<div class="xsection">${esc(L.label)} <span style="color:var(--warning);font-size:11px;margin-left:8px">FROZEN</span></div>
+      <div class="xgrid"><div class="xcard"><div class="h">Tables</div><div class="b" style="font-size:20px;font-weight:700">${L.summary.tables}</div></div><div class="xcard"><div class="h">RPCs</div><div class="b" style="font-size:20px;font-weight:700">${L.summary.rpcs}</div></div><div class="xcard"><div class="h">Capabilities</div><div class="b" style="font-size:20px;font-weight:700">${L.capabilities.length}</div></div></div>
+      <table><thead><tr><th>Capability</th><th>Detail</th><th>Tables</th></tr></thead><tbody>
+      ${L.capabilities.map(c=>`<tr><td class="lbl">${esc(c.capability)}</td><td>${esc(c.detail)}</td><td><span class="mono" style="color:var(--muted)">${esc(c.tables.slice(0,6).join(', '))}</span></td></tr>`).join('')}
+      </tbody></table>
+      ${L.rateLimits?`<p class="xlede" style="font-size:12.5px">Rate limits: ${esc(L.rateLimits.source)} — <span style="color:var(--warning)">${esc(L.rateLimits.status||'')}</span></p>`:''}
+      <div class="badges" style="margin-top:6px">${L.risk.map(r=>`<span class="badge">${esc(r.id)}: ${esc(r.risk)}</span>`).join('')}</div>`;
+    $('#xmain').innerHTML=`<div class="xhero"><h1>Ecosystem — Theme / Apps / Developer</h1></div>
+     <p class="xlede">${esc(o.summary.note)}</p>
+     ${envBanner()}
+     ${card(o.layers.themes)}${card(o.layers.apps)}${card(o.layers.developer)}`;
+  });
+}
 const HC=s=>s==='GREEN'?'var(--success)':s==='YELLOW'?'var(--warning)':s==='RED'?'var(--critical)':'var(--subdued)';
 function xMission(){
   $('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading mission control…</div>';
@@ -1351,9 +1383,9 @@ function cmdkRun(x){
 }
 async function runCopilot(q){
   closeCmdk();
-  const r=await api('/api/copilot?q='+encodeURIComponent(q));
-  if(r&&r.domain&&isDomain(r.domain)){setMode('explain');xSelect(r.domain);
-    const b=document.createElement('div');b.className='xcard';b.style.cssText='margin:14px 0;border-color:var(--brand)';b.innerHTML=`<div class="h">Copilot · ${esc(r.intent)}</div><div class="b">Routed to <code>${esc(r.engine)}</code>${r.flow?' · flow: '+esc(r.flow.join(' → ')):''}</div>`;
+  const r=await api('/api/search-v2?q='+encodeURIComponent(q));
+  if(r&&r.domain&&isDomain(r.domain)){setMode('explain');xSelect(r.domain);const a=r.answer;
+    const b=document.createElement('div');b.className='xcard';b.style.cssText='margin:14px 0;border-color:var(--brand)';b.innerHTML=`<div class="h">Search V2 · ${esc(r.intent)} · ${esc(r.domain)} <span style="color:var(--success);font-weight:600;float:right">repo scan: not required</span></div><div class="b">${esc(a.summary)}${a.flow?'<div class="mono" style="color:var(--muted);margin-top:5px">'+esc(a.flow.join(' → '))+'</div>':''}<div style="margin-top:5px;font-size:12px;color:var(--subdued)">engines: ${(r.sourceEngines||[]).map(e=>'<code>'+esc(e)+'</code>').join(' ')}</div></div>`;
     const m=$('#xmain');m.insertBefore(b,m.children[1]);}
   else if(r&&r.intent==='security'){setMode('technical');selectTab('rsec');}
   else if(r){setMode('technical');$('#q').value=q;searchPanel();doSearch();}

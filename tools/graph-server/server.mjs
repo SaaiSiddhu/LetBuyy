@@ -53,6 +53,8 @@ import { buildConnectionsIntel } from './connections-intel.mjs';
 import { buildProductionHealth } from './production-health.mjs';
 import { buildAuditEngineV2 } from './audit-engine-v2.mjs';
 import { buildMissionControlDashboard } from './mission-control-dashboard.mjs';
+import { buildEcosystemIntel } from './ecosystem-intel.mjs';
+import { searchV2 } from './search-intel.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -120,6 +122,30 @@ const connectionsIntel = loadOrBuild('connections-intel.json', buildConnectionsI
 const productionHealth = safe(() => buildProductionHealth());
 const auditV2 = safe(() => buildAuditEngineV2());
 const missionDashboard = safe(() => buildMissionControlDashboard());
+const ecosystemIntel = loadOrBuild('ecosystem-intel.json', buildEcosystemIntel);
+// Multi-AI context pack (Phase 26) — self-contained, < ~20k tokens, no repo scan required.
+function aiPack(target) {
+  if (!explainIntel || explainIntel.error) return { error: 'explain-intel missing' };
+  const gs = explainIntel.gettingStarted, ex = executionIntel, di = domainIntel;
+  const domains = Object.values(explainIntel.nodes).map((n) => `- ${n.label} [${n.criticality.split('—')[0].trim()}]: ${n.purpose} (owner ${n.owner.join(',')}; depends ${n.dependsOn.join('/') || 'none'}; breaks→ ${n.consumers.join('/') || 'none'})`).join('\n');
+  const body = [
+    `# LetBuyy — self-contained context pack for ${target}`,
+    `${gs.steps[0].d}`,
+    `Architecture: ${gs.steps[1].d}`,
+    `Commerce flow: ${explainIntel.flows.orders.join(' → ')}`,
+    `Payments flow: ${explainIntel.flows.payments.join(' → ')}`,
+    `Refund flow: ${explainIntel.flows.refunds.join(' → ')}`,
+    `Security: ${gs.steps[6].d}`,
+    `Infrastructure: ${gs.steps[7].d}`,
+    `Launch: ${ex?.summary.launchVerdict} — blockers: ${(ex?.questions.whatRemainsBeforeLaunch || []).join('; ')}`,
+    `Live data: ${connectionsIntel?.summary.notConnected} sources NOT CONNECTED (adapters ready).`,
+    `## Domains (${di?.summary.domains})`, domains,
+    `## How to query LCIS instead of scanning the repo`,
+    `/api/search-v2?q=<question> · /api/explain?node=<key> · /api/change-impact?key=<key> · /api/atlas-v2?node=<key> · /api/mission-control · /api/connections`,
+  ].join('\n');
+  const approxTokens = Math.round(body.length / 4);
+  return { target, approxTokens, withinBudget: approxTokens < 20000, selfContained: true, repoScan: 'not required', pack: body };
+}
 // Atlas V2 — composed answer for a node (what breaks / who owns / tables / rpcs / queues / workers / merchants / customers / deployments)
 function atlasV2(key) {
   if (!explainIntel || explainIntel.error) return { error: 'explain-intel missing' };
@@ -548,6 +574,13 @@ const server = createServer((req, res) => {
     if (p === '/api/mission-control') return json(res, missionDashboard);
     if (p === '/api/atlas-v2') return json(res, atlasV2(u.searchParams.get('node') || 'payments'));
     if (p === '/api/ai-context') return json(res, aiContextPack(u.searchParams.get('pack') || 'project'));
+    // ---- V7 master (OS): semantic search / ecosystem layers / multi-AI packs ----
+    if (p === '/api/search-v2') return json(res, safe(() => searchV2(u.searchParams.get('q') || '', explainIntel)));
+    if (p === '/api/theme-intelligence') return json(res, ecosystemIntel && !ecosystemIntel.error ? ecosystemIntel.layers.themes : { error: 'ecosystem-intel missing' });
+    if (p === '/api/apps-intelligence') return json(res, ecosystemIntel && !ecosystemIntel.error ? ecosystemIntel.layers.apps : { error: 'ecosystem-intel missing' });
+    if (p === '/api/developer-intelligence') return json(res, ecosystemIntel && !ecosystemIntel.error ? ecosystemIntel.layers.developer : { error: 'ecosystem-intel missing' });
+    if (p === '/api/ecosystem') return json(res, ecosystemIntel);
+    if (p === '/api/ai-pack') return json(res, aiPack(u.searchParams.get('target') || 'claude'));
     if (p === '/api/database-control') return json(res, dbIntel ? { summary: dbIntel.summary, relationships: relIntel && !relIntel.error ? relIntel.summary : null, topTables: dbIntel.tables.sort((a, b) => (b.policies.length + b.triggers.length + b.indexes) - (a.policies.length + a.triggers.length + a.indexes)).slice(0, 25).map((t) => ({ name: t.name, columns: t.columns, rls: t.rls, force: t.force, tenant: t.tenant, money: t.money, policies: t.policies.length, triggers: t.triggers.length, indexes: t.indexes })), functions: dbIntel.functions.filter((f) => f.securityDefiner).slice(0, 30).map((f) => ({ name: f.name, money: f.money, idempotency: f.hasIdempotency, forUpdate: f.forUpdate, tables: f.touches.length })) } : { error: 'db-intel missing' });
     if (p === '/api/production-readiness-v2') return json(res, readinessV2);
     if (p === '/api/decision-v2') return json(res, decisionV2);

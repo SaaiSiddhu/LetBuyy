@@ -184,6 +184,9 @@ LCIS is now LetBuyy's operating system, readable by humans AND AIs. Three layers
 | Autonomous audit (missing auth/rate-limit/RLS, dead X) | `/api/audit` (candidates; gate is authoritative — 0 hard violations) |
 | Atlas V2 composed answer (breaks/owns/tables/rpcs/merchants/…) | `/api/atlas-v2?node=X` |
 | AI context pack (project/launch/architecture/domain) | `/api/ai-context?pack=X` |
+| **Ask a question in English** ("How does Orders work?") | `/api/search-v2?q=...` (semantic; returns the domain answer + flow; repo scan not required) |
+| Theme / App-marketplace / Developer platform (all FROZEN) | `/api/theme-intelligence` · `/api/apps-intelligence` · `/api/developer-intelligence` |
+| Self-contained AI pack (< 20k tokens) for any model | `/api/ai-pack?target=claude\|gemini\|codex\|cursor` |
 | Database control (schema/relationship/policy/function explorers) | `/api/database-control` · Explain → Database |
 | Deep investigation | Atlas (Technical mode → ★ Atlas) — the deepest layer |
 
