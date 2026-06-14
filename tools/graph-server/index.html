@@ -5,280 +5,356 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>LetBuyy Graph Intelligence</title>
 <style>
-  :root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--sub:#8b949e;--accent:#8B5CF6;--green:#3fb950;--amber:#d29922;--red:#f85149;--blue:#58a6ff;}
+  /* Dark adaptation of the LetBuyy design system (config/tailwind/letbuyy-tokens.css):
+     brand violet, semantic palette, radii 8/12/16, the --lb-space rhythm. */
+  :root{
+    --bg:#0a0912; --bg2:#0d0b16; --surface:#15131f; --raised:#1b1827; --sidebar:#0d0b15;
+    --border:#272234; --border-soft:#1d1929; --overlay:rgba(13,11,21,.86);
+    --text:#ECEAF5; --subdued:#9b94ae; --muted:#6e6883;
+    --brand:#8B5CF6; --brand-cta:#6D28D9; --brand-2:#a78bfa; --brand-soft:rgba(139,92,246,.13); --glow:rgba(139,92,246,.5);
+    --success:#22C55E; --warning:#F59E0B; --critical:#EF4444; --info:#3B82F6;
+    --r-sm:4px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-pill:999px;
+    --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px;
+    --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,monospace;
+    --shadow:0 8px 30px rgba(0,0,0,.5); --shadow-sm:0 2px 10px rgba(0,0,0,.4);
+  }
   *{box-sizing:border-box}
-  body{margin:0;font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text)}
-  header{display:flex;align-items:center;gap:16px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--panel);flex-wrap:wrap}
-  header h1{font-size:15px;margin:0;font-weight:650;letter-spacing:.2px}
-  header h1 b{color:var(--accent)}
-  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
-  .chip{background:#21262d;border:1px solid var(--border);border-radius:20px;padding:3px 11px;font-size:12px;color:var(--sub)}
-  .chip b{color:var(--text)}
-  .tabs{display:flex;gap:4px;padding:8px 18px;border-bottom:1px solid var(--border);overflow-x:auto;background:var(--panel)}
-  .tab{padding:5px 12px;border-radius:6px;cursor:pointer;color:var(--sub);white-space:nowrap;border:1px solid transparent;font-size:13px}
-  .tab:hover{color:var(--text);background:#21262d}
-  .tab.active{color:#fff;background:var(--accent);border-color:var(--accent)}
-  main{display:grid;grid-template-columns:340px 1fr;height:calc(100vh - 104px)}
-  .side{border-right:1px solid var(--border);overflow:auto;padding:14px}
-  .panel{flex:1;position:relative;overflow:hidden}
-  input,button{font:inherit}
-  input[type=text]{width:100%;padding:8px 10px;background:#0d1117;border:1px solid var(--border);border-radius:6px;color:var(--text);margin-bottom:8px}
-  button{padding:7px 10px;background:#21262d;border:1px solid var(--border);border-radius:6px;color:var(--text);cursor:pointer}
-  button:hover{border-color:var(--accent)}
-  .results{list-style:none;margin:6px 0 0;padding:0}
-  .results li{padding:8px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;cursor:pointer;background:#0d1117}
-  .results li:hover{border-color:var(--accent)}
-  .results .lbl{font-weight:600;color:var(--blue)}
-  .results .sf{font-size:11px;color:var(--sub);word-break:break-all}
-  .results .deg{float:right;font-size:11px;color:var(--sub)}
-  .sectionTitle{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--sub);margin:16px 0 6px}
+  html,body{height:100%}
+  body{margin:0;font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);
+    background:radial-gradient(1200px 700px at 78% -8%,rgba(139,92,246,.10),transparent 60%),
+               radial-gradient(900px 600px at 0% 110%,rgba(59,130,246,.07),transparent 55%),var(--bg);
+    -webkit-font-smoothing:antialiased;overflow:hidden}
+  ::selection{background:rgba(139,92,246,.35)}
+  ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:#2a2538;border-radius:8px;border:2px solid transparent;background-clip:content-box}
+  ::-webkit-scrollbar-thumb:hover{background:#3a3450;background-clip:content-box}
+
+  header{display:flex;align-items:center;gap:var(--s4);padding:13px 22px;border-bottom:1px solid var(--border-soft);
+    background:linear-gradient(180deg,rgba(255,255,255,.02),transparent),var(--bg2);backdrop-filter:blur(8px)}
+  .brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:680;letter-spacing:.2px}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#c4b5fd,var(--brand));box-shadow:0 0 14px var(--glow)}
+  .brand b{background:linear-gradient(90deg,var(--brand-2),var(--brand));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .brand small{color:var(--muted);font-weight:500;font-size:11px;letter-spacing:.6px;text-transform:uppercase;margin-left:2px}
+  .chips{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+  .chip{display:flex;gap:6px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);
+    padding:4px 12px;font-size:12px;color:var(--subdued);transition:.15s}
+  .chip:hover{border-color:#3a3450;color:var(--text)}
+  .chip b{color:var(--text);font-variant-numeric:tabular-nums}
+  .chip.key b{color:var(--brand-2)}
+
+  .tabs{display:flex;gap:3px;padding:9px 18px;border-bottom:1px solid var(--border-soft);overflow-x:auto;background:var(--bg2)}
+  .tab{padding:6px 13px;border-radius:var(--r-md);cursor:pointer;color:var(--subdued);white-space:nowrap;font-size:13px;font-weight:500;
+    border:1px solid transparent;transition:.15s}
+  .tab:hover{color:var(--text);background:var(--surface)}
+  .tab.active{color:#fff;background:linear-gradient(180deg,var(--brand),var(--brand-cta));border-color:var(--brand);box-shadow:0 4px 14px rgba(109,40,217,.45)}
+  .tab.star{color:var(--brand-2)} .tab.star.active{color:#fff}
+
+  main{display:grid;grid-template-columns:1fr 332px;height:calc(100vh - 108px)}
+  .stage{position:relative;overflow:hidden}
+  .inspector{border-left:1px solid var(--border-soft);background:var(--sidebar);overflow:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+
+  .field{position:relative}
+  .field svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+  input[type=text]{width:100%;padding:9px 11px 9px 34px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-md);
+    color:var(--text);font-family:inherit;font-size:13px;transition:.15s}
+  input[type=text]:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+  input::placeholder{color:var(--muted)}
+  button{padding:8px 11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);color:var(--text);
+    cursor:pointer;font-family:inherit;font-size:13px;font-weight:500;transition:.15s;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+  button:hover{border-color:var(--brand);background:#1c1827}
+  button.primary{background:linear-gradient(180deg,var(--brand),var(--brand-cta));border-color:var(--brand);color:#fff}
+  button.primary:hover{filter:brightness(1.08)}
+  .label{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:600;margin:2px 0 7px}
+  .pathbar{display:flex;gap:6px} .pathbar input{padding-left:11px}
+  .pathbar input{width:auto;flex:1}
+
+  .results{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+  .results li{padding:9px 11px;border:1px solid var(--border);border-radius:var(--r-md);cursor:pointer;background:var(--bg);transition:.12s;position:relative}
+  .results li:hover{border-color:var(--brand);background:#1a1626;transform:translateX(2px)}
+  .results .lbl{font-weight:600;color:var(--brand-2);font-size:13px}
+  .results .sf{font-size:11px;color:var(--muted);word-break:break-all;margin-top:2px;font-family:var(--mono)}
+  .results .deg{position:absolute;right:10px;top:9px;font-size:10px;color:var(--subdued);background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);padding:1px 7px;font-variant-numeric:tabular-nums}
+
   canvas{display:block;width:100%;height:100%}
-  .hud{position:absolute;top:10px;left:10px;background:rgba(22,27,34,.92);border:1px solid var(--border);border-radius:8px;padding:10px 12px;max-width:420px;font-size:12px}
-  .hud .lbl{color:var(--accent);font-weight:650;font-size:13px}
-  .hud .sf{color:var(--sub);word-break:break-all;margin-top:2px}
-  .hint{color:var(--sub);font-size:12px;padding:10px}
-  .dash{padding:18px;overflow:auto;height:100%}
-  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin:12px 0}
-  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px}
-  .card .n{font-size:24px;font-weight:700}
-  .card .k{font-size:12px;color:var(--sub);text-transform:uppercase;letter-spacing:.4px}
-  .risk{height:8px;border-radius:4px;background:#21262d;overflow:hidden;margin-top:6px}
-  .risk>i{display:block;height:100%}
-  .row{display:flex;gap:8px;align-items:center}
-  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
-  td,th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border)}
-  th{color:var(--sub);font-weight:600;font-size:11px;text-transform:uppercase}
-  tr.clk{cursor:pointer} tr.clk:hover td{background:#21262d}
-  a{color:var(--blue);text-decoration:none}
-  .pathbar{display:flex;gap:6px;margin-top:6px}
-  .pathbar input{margin:0}
+  .hint{color:var(--subdued);font-size:13px;padding:24px;max-width:560px;line-height:1.7}
+  .hint b{color:var(--brand-2)} .hint code{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:var(--mono);font-size:12px}
+
+  /* dashboards */
+  .dash{padding:22px 26px;overflow:auto;height:100%}
+  .dash h2{margin:0;font-size:20px;font-weight:680;letter-spacing:-.2px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:13px;margin:16px 0}
+  .card{position:relative;background:linear-gradient(180deg,var(--raised),var(--surface));border:1px solid var(--border);border-radius:var(--r-lg);
+    padding:15px 16px;overflow:hidden;transition:.18s}
+  .card:hover{transform:translateY(-2px);border-color:#352f48;box-shadow:var(--shadow-sm)}
+  .card::before{content:'';position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,var(--brand),transparent)}
+  .card .n{font-size:26px;font-weight:720;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+  .card .k{font-size:11px;color:var(--subdued);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+  .risk{height:7px;border-radius:var(--r-pill);background:#241f33;overflow:hidden;margin-top:9px}
+  .risk>i{display:block;height:100%;border-radius:var(--r-pill)}
+  .badges{display:flex;gap:6px;flex-wrap:wrap}
+  .badge{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);padding:3px 11px;font-size:12px;color:var(--subdued)}
+  .badge b{color:var(--text);font-variant-numeric:tabular-nums}
+  .badge.brand{background:var(--brand-soft);border-color:rgba(139,92,246,.3);color:var(--brand-2)}
+  .sectionTitle{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:600;margin:20px 0 8px}
+  .row{display:flex;gap:10px;align-items:center}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+  th{text-align:left;padding:7px 10px;color:var(--muted);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+  td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border-soft)}
+  tr.clk{cursor:pointer;transition:.1s} tr.clk:hover td{background:var(--brand-soft)}
+  td.lbl a{color:var(--brand-2);font-weight:600;text-decoration:none} td .mono{font-family:var(--mono);color:var(--muted);font-size:12px}
+  td .deg{font-variant-numeric:tabular-nums;color:var(--subdued)}
+
+  /* atlas */
+  .atlasbar{position:absolute;top:14px;right:14px;display:flex;gap:8px;align-items:center;z-index:5}
+  .seg{display:flex;background:var(--overlay);border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;backdrop-filter:blur(8px)}
+  .seg button{border:0;border-radius:0;background:transparent;padding:7px 11px;color:var(--subdued);font-size:12px}
+  .seg button:hover{background:var(--surface);color:var(--text)}
+  .seg button.on{background:var(--brand);color:#fff}
+  .iconbtn{background:var(--overlay);border:1px solid var(--border);border-radius:var(--r-md);width:34px;height:34px;padding:0;backdrop-filter:blur(8px)}
+  .atlasPanel{display:flex;flex-direction:column;gap:12px}
+  .legend{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px}
+  .legend .li{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--subdued);cursor:pointer;padding:2px 4px;border-radius:4px;transition:.1s}
+  .legend .li:hover{background:var(--surface);color:var(--text)}
+  .legend .sw{width:10px;height:10px;border-radius:3px;flex:none;box-shadow:0 0 6px currentColor}
+  .legend .li b{color:var(--text);margin-left:auto;font-variant-numeric:tabular-nums}
+  .nodecard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:13px;box-shadow:var(--shadow-sm)}
+  .nodecard .t{font-weight:660;color:var(--brand-2);font-size:14px;word-break:break-word}
+  .nodecard .m{font-size:11.5px;color:var(--subdued);margin-top:3px;font-family:var(--mono);word-break:break-all}
+  .nodecard .nb{font-size:12.5px;color:var(--info);cursor:pointer;padding:3px 0} .nodecard .nb:hover{color:var(--brand-2)}
+  .nodecard a{color:var(--brand-2);text-decoration:none;font-size:12.5px}
+  .spin{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--brand);border-radius:50%;animation:sp 0.7s linear infinite;display:inline-block}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .fade{animation:fade .25s ease}@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
 </style>
 </head>
 <body>
 <header>
-  <h1>Let<b>Buyy</b> Graph Intelligence</h1>
+  <div class="brand"><span class="dot"></span>Let<b>Buyy</b><small>Graph Intelligence</small></div>
   <div class="chips" id="chips"></div>
 </header>
 <div class="tabs" id="tabs"></div>
 <main>
-  <div class="side">
-    <input id="q" type="text" placeholder="Search nodes, files, routes, symbols…" autocomplete="off" />
-    <div class="row"><button id="reset" style="flex:1">Reset view</button></div>
-    <div class="sectionTitle">Trace shortest path</div>
-    <div class="pathbar"><input id="pa" type="text" placeholder="from" /><input id="pb" type="text" placeholder="to" /><button id="trace">Trace</button></div>
-    <div class="sectionTitle">Results</div>
-    <ul class="results" id="results"></ul>
-  </div>
-  <div class="panel" id="panel">
+  <div class="stage" id="stage">
     <canvas id="cv"></canvas>
-    <div class="hud" id="hud" style="display:none"></div>
-    <div class="dash" id="dash" style="display:none"></div>
-    <div class="hint" id="hint">Search a symbol (e.g. <b>create_checkout_order</b>, <b>proxy</b>, <b>issueCustomerSession</b>) or pick a dashboard tab above. Click a node to explore its neighborhood.</div>
+    <div class="atlasbar" id="atlasbar" style="display:none"></div>
+    <div class="dash fade" id="dash" style="display:none"></div>
+    <div class="hint" id="hint">Search a symbol — try <b>create_checkout_order</b>, <b>verifySiteOwnership</b>, <b>issueCustomerSession</b> — or open <b>★ Atlas</b> for the full architecture galaxy. Click any node to explore its neighborhood.</div>
   </div>
+  <aside class="inspector" id="inspector">
+    <div>
+      <div class="field"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="q" type="text" placeholder="Search nodes, files, routes, symbols…" autocomplete="off" /></div>
+    </div>
+    <div id="inspectorBody"></div>
+  </aside>
 </main>
 <script>
 const TABS=['overview','atlas','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
-const TLABEL={overview:'Overview',atlas:'★ Atlas (full graph)',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
+const TLABEL={overview:'Overview',atlas:'★ Atlas',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
 const ATLAS_DOMAINS={atlas:'',services:'services',apps:'apps',packages:'packages',payments:'payments',identity:'identity',database:'database',marketplace:'marketplace',themes:'themes',developer:'developer',security:'security',tenancy:'tenancy'};
 const $=s=>document.querySelector(s);
-const cv=$('#cv'),ctx=cv.getContext('2d'),hud=$('#hud'),dash=$('#dash'),hint=$('#hint');
-let DPR=window.devicePixelRatio||1, sim=null, raf=null, atlasRedraw=null;
-function clearCanvasHandlers(){cv.onwheel=cv.onmousedown=cv.onmousemove=cv.onmouseup=cv.onclick=cv.onmouseleave=null;atlasRedraw=null;}
+const cv=$('#cv'),ctx=cv.getContext('2d'),dash=$('#dash'),hint=$('#hint'),atlasbar=$('#atlasbar'),ibody=$('#inspectorBody');
+let DPR=window.devicePixelRatio||1, raf=null, atlasRedraw=null, atlasCtl=null;
+const api=p=>fetch(p).then(r=>r.json());
+const esc=s=>(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const fmt=n=>Number(n).toLocaleString();
 
-function api(p){return fetch(p).then(r=>r.json());}
-function esc(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function clearCanvas(){cv.onwheel=cv.onmousedown=cv.onmousemove=cv.onmouseup=cv.onclick=cv.onmouseleave=null;atlasRedraw=null;atlasCtl=null;}
+function stopSim(){if(raf)cancelAnimationFrame(raf);raf=null;}
+function showCanvas(){dash.style.display='none';hint.style.display='none';cv.style.display='block';resize();}
+function showDash(){stopSim();clearCanvas();cv.style.display='none';atlasbar.style.display='none';hint.style.display='none';dash.style.display='block';}
+function resize(){const r=$('#stage').getBoundingClientRect();cv.width=r.width*DPR;cv.height=r.height*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
+window.addEventListener('resize',()=>{if(cv.style.display!=='none')resize();});
 
+// ---------- default inspector (search results) ----------
+function searchPanel(){
+  ibody.innerHTML=`<div class="label">Trace shortest path</div>
+    <div class="pathbar"><input id="pa" type="text" placeholder="from"/><input id="pb" type="text" placeholder="to"/><button id="trace" class="primary">Trace</button></div>
+    <div class="label" style="margin-top:14px">Results</div><ul class="results" id="results"></ul>`;
+  $('#trace').onclick=trace;
+}
+async function doSearch(){
+  const q=$('#q').value.trim();
+  const ul=$('#results'); if(!ul)return;
+  if(!q){ul.innerHTML='';return;}
+  const rs=await api('/api/search?q='+encodeURIComponent(q)+'&limit=40');
+  ul.innerHTML=rs.length?rs.map(n=>`<li data-id="${encodeURIComponent(n.id)}"><span class="deg">${n.degree}</span><span class="lbl">${esc(n.label)}</span><div class="sf">${esc(n.source_file||'')}${n.source_location?':'+esc(n.source_location):''}</div></li>`).join('')
+    :'<li class="sf" style="border:0;background:none;padding:6px">No matches.</li>';
+  ul.querySelectorAll('li[data-id]').forEach(li=>li.onclick=()=>loadNode(decodeURIComponent(li.dataset.id)));
+}
+
+// ---------- boot ----------
 async function boot(){
   const s=await api('/api/stats');
-  $('#chips').innerHTML=[['nodes',s.nodes],['edges',s.edges],['communities',s.communities],['routes',s.routes],['pages',s.pages]]
-    .map(([k,v])=>`<span class="chip">${k} <b>${v.toLocaleString()}</b></span>`).join('')
+  $('#chips').innerHTML=[['nodes',s.nodes,1],['edges',s.edges,0],['communities',s.communities,0],['routes',s.routes,1],['pages',s.pages,0]]
+    .map(([k,v,key])=>`<span class="chip${key?' key':''}">${k} <b>${fmt(v)}</b></span>`).join('')
     +`<span class="chip">graph age <b>${s.freshness_minutes}m</b></span>`;
-  const tabs=$('#tabs'); tabs.innerHTML=TABS.map(t=>`<div class="tab" data-t="${t}">${TLABEL[t]}</div>`).join('');
-  tabs.querySelectorAll('.tab').forEach(el=>el.onclick=()=>selectTab(el.dataset.t));
+  $('#tabs').innerHTML=TABS.map(t=>`<div class="tab${t==='atlas'?' star':''}" data-t="${t}">${TLABEL[t]}</div>`).join('');
+  $('#tabs').querySelectorAll('.tab').forEach(el=>el.onclick=()=>selectTab(el.dataset.t));
   selectTab('overview');
 }
 function setActive(t){document.querySelectorAll('.tab').forEach(e=>e.classList.toggle('active',e.dataset.t===t));}
 
 async function selectTab(t){
-  setActive(t); stopSim(); cv.style.display='none'; hud.style.display='none'; hint.style.display='none'; dash.style.display='block';
-  if(t==='overview'){return overview();}
-  if(t==='atlas'){return renderAtlas('');}
+  setActive(t);
+  if(t!=='atlas')searchPanel();
+  if(t==='atlas')return renderAtlas('');
+  showDash();
+  if(t==='overview')return overview();
   const d=await api('/api/domain?key='+t);
   if(!d){dash.innerHTML='<p class="hint">No data.</p>';return;}
-  const riskColor=d.risk>66?'var(--red)':d.risk>33?'var(--amber)':'var(--green)';
-  dash.innerHTML=`<div class="row" style="justify-content:space-between"><h2 style="margin:0">${TLABEL[t]}</h2><button id="asGraph">★ View as graph</button></div>
+  const rc=d.risk>66?'var(--critical)':d.risk>33?'var(--warning)':'var(--success)';
+  dash.className='dash fade';
+  dash.innerHTML=`<div class="row" style="justify-content:space-between"><h2>${TLABEL[t]}</h2><button id="asGraph" class="primary">★ View as graph</button></div>
    <div class="cards">
-     <div class="card"><div class="n">${d.nodes.toLocaleString()}</div><div class="k">nodes</div></div>
-     <div class="card"><div class="n">${d.files.toLocaleString()}</div><div class="k">files</div></div>
-     <div class="card"><div class="n">${d.relationships.toLocaleString()}</div><div class="k">relationships</div></div>
-     <div class="card"><div class="n">${d.avgDegree}</div><div class="k">avg degree</div></div>
-     <div class="card"><div class="n">${d.risk}</div><div class="k">attention score</div><div class="risk"><i style="width:${d.risk}%;background:${riskColor}"></i></div></div>
+     ${card(fmt(d.nodes),'nodes')}${card(fmt(d.files),'files')}${card(fmt(d.relationships),'relationships')}${card(d.avgDegree,'avg degree')}
+     <div class="card"><div class="n">${d.risk}</div><div class="k">attention score</div><div class="risk"><i style="width:${d.risk}%;background:linear-gradient(90deg,var(--success),${rc})"></i></div></div>
    </div>
-   <div class="sectionTitle" style="color:var(--sub)">Top workspaces</div>
-   <div>${d.workspaces.map(w=>`<span class="chip" style="margin:2px">${esc(w.key)} <b>${w.count}</b></span>`).join('')}</div>
-   <div class="sectionTitle" style="color:var(--sub);margin-top:16px">Top nodes (by degree) — click to explore</div>
-   <table><thead><tr><th>Symbol</th><th>File</th><th>deg</th></tr></thead><tbody>
-   ${d.top.map(n=>`<tr class="clk" data-id="${encodeURIComponent(n.id)}"><td class="lbl"><a>${esc(n.label)}</a></td><td style="color:var(--sub);font-size:12px">${esc(n.source_file||'')}:${esc(n.source_location||'')}</td><td>${n.degree}</td></tr>`).join('')}
+   <div class="sectionTitle">Top workspaces</div><div class="badges">${d.workspaces.map(w=>`<span class="badge">${esc(w.key)} <b>${w.count}</b></span>`).join('')}</div>
+   <div class="sectionTitle">Top nodes by degree — click to explore</div>
+   <table><thead><tr><th>Symbol</th><th>File</th><th style="text-align:right">deg</th></tr></thead><tbody>
+   ${d.top.map(n=>`<tr class="clk" data-id="${encodeURIComponent(n.id)}"><td class="lbl"><a>${esc(n.label)}</a></td><td><span class="mono">${esc(n.source_file||'')}${n.source_location?':'+esc(n.source_location):''}</span></td><td style="text-align:right"><span class="deg">${n.degree}</span></td></tr>`).join('')}
    </tbody></table>`;
   dash.querySelectorAll('tr.clk').forEach(tr=>tr.onclick=()=>loadNode(decodeURIComponent(tr.dataset.id)));
-  const ag=document.getElementById('asGraph'); if(ag)ag.onclick=()=>renderAtlas(ATLAS_DOMAINS[t]||'');
+  $('#asGraph').onclick=()=>renderAtlas(ATLAS_DOMAINS[t]||'');
 }
+const card=(n,k)=>`<div class="card"><div class="n">${n}</div><div class="k">${k}</div></div>`;
+
 async function overview(){
   const s=await api('/api/stats');
-  dash.innerHTML=`<h2 style="margin:0">Overview</h2>
-   <div class="cards">
-     <div class="card"><div class="n">${s.nodes.toLocaleString()}</div><div class="k">nodes</div></div>
-     <div class="card"><div class="n">${s.edges.toLocaleString()}</div><div class="k">edges</div></div>
-     <div class="card"><div class="n">${s.communities.toLocaleString()}</div><div class="k">communities</div></div>
-     <div class="card"><div class="n">${s.routes}</div><div class="k">API routes</div></div>
-     <div class="card"><div class="n">${s.pages}</div><div class="k">pages</div></div>
-   </div>
-   <div class="sectionTitle" style="color:var(--sub)">Languages</div>
-   <div>${s.languages.map(l=>`<span class="chip" style="margin:2px">${esc(l.key)} <b>${l.count.toLocaleString()}</b></span>`).join('')}</div>
-   <div class="sectionTitle" style="color:var(--sub);margin-top:16px">Workspaces (by node count) — click to explore the top symbol</div>
-   <table><thead><tr><th>Workspace</th><th>nodes</th></tr></thead><tbody>
-   ${s.workspaces.map(w=>`<tr class="clk" data-q="${encodeURIComponent(w.key)}"><td>${esc(w.key)}</td><td>${w.count.toLocaleString()}</td></tr>`).join('')}
+  dash.className='dash fade';
+  dash.innerHTML=`<h2>Overview</h2>
+   <div class="cards">${card(fmt(s.nodes),'nodes')}${card(fmt(s.edges),'edges')}${card(fmt(s.communities),'communities')}${card(s.routes,'API routes')}${card(s.pages,'pages')}</div>
+   <div class="sectionTitle">Languages</div><div class="badges">${s.languages.map(l=>`<span class="badge">${esc(l.key)} <b>${fmt(l.count)}</b></span>`).join('')}</div>
+   <div class="sectionTitle">Workspaces by node count — click to explore the top symbol</div>
+   <table><thead><tr><th>Workspace</th><th style="text-align:right">nodes</th></tr></thead><tbody>
+   ${s.workspaces.map(w=>`<tr class="clk" data-q="${encodeURIComponent(w.key)}"><td>${esc(w.key)}</td><td style="text-align:right"><span class="deg">${fmt(w.count)}</span></td></tr>`).join('')}
    </tbody></table>
-   <p class="hint">Built ${s.freshness_minutes} min ago${s.built_at_commit?` @ <code>${esc(s.built_at_commit.slice(0,8))}</code>`:''}. Refresh with <code>pnpm graph:update</code>.</p>`;
-  dash.querySelectorAll('tr.clk').forEach(tr=>tr.onclick=()=>{$('#q').value=decodeURIComponent(tr.dataset.q).split('/').pop();doSearch();});
+   <p class="hint" style="padding:16px 0">Built ${s.freshness_minutes} min ago${s.built_at_commit?` @ <code>${esc(s.built_at_commit.slice(0,8))}</code>`:''} · refresh with <code>pnpm graph:update</code>.</p>`;
+  dash.querySelectorAll('tr.clk').forEach(tr=>tr.onclick=()=>{$('#q').value=decodeURIComponent(tr.dataset.q).split('/').pop();searchPanel();doSearch();});
 }
 
-async function doSearch(){
-  const q=$('#q').value.trim(); if(!q){return;}
-  const rs=await api('/api/search?q='+encodeURIComponent(q)+'&limit=40');
-  const ul=$('#results');
-  ul.innerHTML=rs.length?rs.map(n=>`<li data-id="${encodeURIComponent(n.id)}"><span class="deg">${n.degree}</span><span class="lbl">${esc(n.label)}</span><div class="sf">${esc(n.source_file||'')}:${esc(n.source_location||'')}</div></li>`).join(''):'<li class="hint">No matches.</li>';
-  ul.querySelectorAll('li[data-id]').forEach(li=>li.onclick=()=>loadNode(decodeURIComponent(li.dataset.id)));
-}
-
+// ---------- neighborhood (live force sim) ----------
 async function loadNode(id){
   const g=await api('/api/neighbors?id='+encodeURIComponent(id)+'&depth=1&limit=70');
-  if(!g.nodes||!g.nodes.length){return;}
+  if(!g.nodes||!g.nodes.length)return;
   const root=g.nodes.find(n=>n.id===id)||g.nodes[0];
-  hud.style.display='block';
-  hud.innerHTML=`<div class="lbl">${esc(root.label)}</div><div class="sf">${esc(root.source_file||'')}:${esc(root.source_location||'')}</div><div class="sf">degree ${root.degree} · community ${root.community} · ${g.nodes.length} neighbors shown</div>`;
-  showCanvas(); runSim(g,id);
+  searchPanel();
+  ibody.insertAdjacentHTML('afterbegin',`<div class="nodecard fade" id="nc"><div class="t">${esc(root.label)}</div><div class="m">${esc(root.source_file||'')}${root.source_location?':'+esc(root.source_location):''}</div><div class="m" style="font-family:var(--font);color:var(--subdued)">degree ${root.degree} · community ${root.community} · ${g.nodes.length} neighbors</div></div>`);
+  atlasbar.style.display='none'; showCanvas(); runSim(g,id);
 }
-
-function showCanvas(){dash.style.display='none';hint.style.display='none';cv.style.display='block';resize();}
-function resize(){const r=$('#panel').getBoundingClientRect();cv.width=r.width*DPR;cv.height=r.height*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
-window.addEventListener('resize',()=>{if(cv.style.display!=='none'){resize();}});
-function stopSim(){if(raf)cancelAnimationFrame(raf);raf=null;}
-
 function runSim(g,rootId){
-  stopSim(); clearCanvasHandlers();
-  const W=cv.width/DPR,H=cv.height/DPR;
+  stopSim();clearCanvas();const W=cv.width/DPR,H=cv.height/DPR;
   const nodes=g.nodes.map((n,i)=>({...n,x:W/2+Math.cos(i)*120+(Math.random()*40-20),y:H/2+Math.sin(i)*120+(Math.random()*40-20),vx:0,vy:0,root:n.id===rootId}));
   const idx=new Map(nodes.map((n,i)=>[n.id,i]));
   const links=g.links.filter(l=>idx.has(l.source)&&idx.has(l.target));
-  let hover=null;
-  cv.onmousemove=e=>{const r=cv.getBoundingClientRect();const mx=e.clientX-r.left,my=e.clientY-r.top;hover=nodes.find(n=>Math.hypot(n.x-mx,n.y-my)<14)||null;cv.style.cursor=hover?'pointer':'default';};
-  cv.onclick=e=>{const r=cv.getBoundingClientRect();const mx=e.clientX-r.left,my=e.clientY-r.top;const hit=nodes.find(n=>Math.hypot(n.x-mx,n.y-my)<14);if(hit&&!hit.root)loadNode(hit.id);};
-  let iter=0;
-  function step(){
-    iter++;
-    for(let i=0;i<nodes.length;i++){const a=nodes[i];
-      for(let j=i+1;j<nodes.length;j++){const b=nodes[j];let dx=a.x-b.x,dy=a.y-b.y;let d2=dx*dx+dy*dy||0.01;let f=2400/d2;let d=Math.sqrt(d2);dx/=d;dy/=d;a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;}
-    }
-    for(const l of links){const a=nodes[idx.get(l.source)],b=nodes[idx.get(l.target)];let dx=b.x-a.x,dy=b.y-a.y;let d=Math.hypot(dx,dy)||0.01;let f=(d-90)*0.02;dx/=d;dy/=d;a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;}
-    for(const n of nodes){n.vx+=(W/2-n.x)*0.002;n.vy+=(H/2-n.y)*0.002;n.x+=Math.max(-12,Math.min(12,n.vx));n.y+=Math.max(-12,Math.min(12,n.vy));n.vx*=0.82;n.vy*=0.82;n.x=Math.max(20,Math.min(W-20,n.x));n.y=Math.max(20,Math.min(H-20,n.y));}
-    draw();
-    if(iter<400)raf=requestAnimationFrame(step);
-  }
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-    ctx.strokeStyle='rgba(139,148,158,.25)';ctx.lineWidth=1;
-    for(const l of links){const a=nodes[idx.get(l.source)],b=nodes[idx.get(l.target)];ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
-    for(const n of nodes){
-      const r=n.root?11:7;
-      ctx.beginPath();ctx.arc(n.x,n.y,r,0,7);
-      ctx.fillStyle=n.root?'#8B5CF6':(hover===n?'#58a6ff':'#21262d');
-      ctx.fill();ctx.strokeStyle=n.root?'#a371f7':'#30363d';ctx.lineWidth=1.5;ctx.stroke();
-      if(n.root||hover===n||nodes.length<40){ctx.fillStyle='#e6edf3';ctx.font=(n.root?'600 12px':'11px')+' sans-serif';ctx.fillText(n.label.slice(0,28),n.x+r+3,n.y+4);}
-    }
-  }
+  let hover=null,iter=0;
+  cv.onmousemove=e=>{const r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;hover=nodes.find(n=>Math.hypot(n.x-mx,n.y-my)<14)||null;cv.style.cursor=hover?'pointer':'default';};
+  cv.onclick=e=>{const r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;const hit=nodes.find(n=>Math.hypot(n.x-mx,n.y-my)<14);if(hit&&!hit.root)loadNode(hit.id);};
+  function step(){iter++;
+    for(let i=0;i<nodes.length;i++){const a=nodes[i];for(let j=i+1;j<nodes.length;j++){const b=nodes[j];let dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy||.01,f=2600/d2,d=Math.sqrt(d2);dx/=d;dy/=d;a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;}}
+    for(const l of links){const a=nodes[idx.get(l.source)],b=nodes[idx.get(l.target)];let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||.01,f=(d-95)*.02;dx/=d;dy/=d;a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;}
+    for(const n of nodes){n.vx+=(W/2-n.x)*.002;n.vy+=(H/2-n.y)*.002;n.x+=Math.max(-12,Math.min(12,n.vx));n.y+=Math.max(-12,Math.min(12,n.vy));n.vx*=.82;n.vy*=.82;n.x=Math.max(24,Math.min(W-24,n.x));n.y=Math.max(24,Math.min(H-24,n.y));}
+    draw();if(iter<420)raf=requestAnimationFrame(step);}
+  function draw(){ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(139,148,158,.22)';ctx.lineWidth=1;for(const l of links){const a=nodes[idx.get(l.source)],b=nodes[idx.get(l.target)];ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
+    for(const n of nodes){const r=n.root?12:7;
+      if(n.root){ctx.beginPath();ctx.arc(n.x,n.y,r+7,0,7);ctx.fillStyle='rgba(139,92,246,.18)';ctx.fill();}
+      ctx.beginPath();ctx.arc(n.x,n.y,r,0,7);ctx.fillStyle=n.root?'#8B5CF6':(hover===n?'#a78bfa':'#221d31');ctx.fill();
+      ctx.strokeStyle=n.root?'#c4b5fd':'#2f2a40';ctx.lineWidth=1.5;ctx.stroke();
+      if(n.root||hover===n||nodes.length<40){ctx.fillStyle='#ECEAF5';ctx.font=(n.root?'600 12px ':'11px ')+'Inter,sans-serif';ctx.fillText(n.label.slice(0,30),n.x+r+4,n.y+4);}}}
   step();
 }
 
-async function trace(){
-  const a=$('#pa').value.trim(),b=$('#pb').value.trim(); if(!a||!b)return;
-  // resolve labels → ids via search
-  const [ra,rb]=await Promise.all([api('/api/search?q='+encodeURIComponent(a)+'&limit=1'),api('/api/search?q='+encodeURIComponent(b)+'&limit=1')]);
-  if(!ra[0]||!rb[0]){alert('Could not resolve one of the endpoints.');return;}
-  const r=await api('/api/path?a='+encodeURIComponent(ra[0].id)+'&b='+encodeURIComponent(rb[0].id));
-  if(!r.path||!r.path.length){alert('No path found.');return;}
-  showCanvas();hud.style.display='block';
-  hud.innerHTML=`<div class="lbl">Path (${r.path.length-1} hops)</div>`+r.nodes.map(n=>`<div class="sf">${esc(n.label)} <span style="color:#6e7681">${esc(n.source_file||'')}</span></div>`).join('');
-  runSim({nodes:r.nodes,links:r.links},r.path[0]);
-}
-
-// ---- Atlas: full-graph community-colored view (server-precomputed layout) ----
+// ---------- Atlas (full graph) ----------
+let atlasState={domain:'',limit:1500};
 async function renderAtlas(domain){
-  stopSim(); clearCanvasHandlers();
-  showCanvas(); hud.style.display='block';
-  hud.innerHTML='<div class="lbl">Loading atlas…</div><div class="sf">computing force layout server-side</div>';
-  const limit=domain?900:1500;
-  const a=await api('/api/atlas?limit='+limit+(domain?'&domain='+domain:''));
-  if(!a.nodes||!a.nodes.length){hud.innerHTML='<div class="lbl">No nodes.</div>';return;}
+  stopSim();clearCanvas();showCanvas();
+  atlasState.domain=domain; if(!atlasState.limit)atlasState.limit=1500;
+  ibody.innerHTML=`<div class="row" style="color:var(--subdued);font-size:13px"><span class="spin"></span> Computing layout…</div>`;
+  const a=await api('/api/atlas?limit='+atlasState.limit+(domain?'&domain='+domain:''));
+  if(!a.nodes||!a.nodes.length){ibody.innerHTML='<p class="hint">No nodes.</p>';return;}
   const W=cv.width/DPR,H=cv.height/DPR;
-  let minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9;
-  for(const n of a.nodes){if(n.x<minX)minX=n.x;if(n.y<minY)minY=n.y;if(n.x>maxX)maxX=n.x;if(n.y>maxY)maxY=n.y;}
-  const pad=46,scale0=Math.min((W-pad*2)/((maxX-minX)||1),(H-pad*2)/((maxY-minY)||1));
-  let scale=scale0, tx=(W-(minX+maxX)*scale)/2, ty=(H-(minY+maxY)*scale)/2;
+  let minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9;for(const n of a.nodes){if(n.x<minX)minX=n.x;if(n.y<minY)minY=n.y;if(n.x>maxX)maxX=n.x;if(n.y>maxY)maxY=n.y;}
+  const fit=()=>{const sc=Math.min((W-90)/((maxX-minX)||1),(H-90)/((maxY-minY)||1));scale=sc;tx=(W-(minX+maxX)*sc)/2;ty=(H-(minY+maxY)*sc)/2;draw();};
+  let scale=1,tx=0,ty=0;
   const maxD=Math.max(1,...a.nodes.map(n=>n.d));
-  let hover=null,drag=null,q='';
+  const labelSet=new Set([...a.nodes].sort((x,y)=>y.d-x.d).slice(0,26).map(n=>n.id));
+  const adj=new Map(); for(const[s,t]of a.links){(adj.get(s)||adj.set(s,[]).get(s)).push(t);(adj.get(t)||adj.set(t,[]).get(t)).push(s);}
+  let hover=null,sel=null,drag=null,q='';
   const S=n=>({x:n.x*scale+tx,y:n.y*scale+ty});
   function draw(){
     ctx.clearRect(0,0,W,H);
-    ctx.strokeStyle='rgba(139,148,158,.10)';ctx.lineWidth=.6;ctx.beginPath();
-    for(const [s,t] of a.links){const A=S(a.nodes[s]),B=S(a.nodes[t]);ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);}
-    ctx.stroke();
-    for(const n of a.nodes){const P=S(n),r=Math.max(1.6,2+(n.d/maxD)*7*Math.min(1,scale*2.2));
-      const match=q&&n.label.toLowerCase().includes(q);
-      ctx.globalAlpha=(q&&!match)?.16:1;ctx.beginPath();ctx.arc(P.x,P.y,r,0,7);ctx.fillStyle=match?'#fff':n.color;ctx.fill();ctx.globalAlpha=1;
-      if(match){ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();}}
-    if(hover){const P=S(hover);ctx.beginPath();ctx.arc(P.x,P.y,9,0,7);ctx.strokeStyle='#58a6ff';ctx.lineWidth=2;ctx.stroke();
-      ctx.fillStyle='rgba(13,17,23,.85)';const w=ctx.measureText(hover.label).width+12;ctx.fillRect(P.x+10,P.y-9,Math.min(w,260),18);
-      ctx.fillStyle='#e6edf3';ctx.font='12px sans-serif';ctx.fillText(hover.label.slice(0,38),P.x+15,P.y+4);}
+    ctx.fillStyle='rgba(139,92,246,.02)';ctx.beginPath();ctx.arc(W/2,H/2,Math.max(W,H)*.5,0,7);ctx.fill();
+    const selSet=sel?new Set([sel.id,...(adj.get(a.nodes.indexOf(sel))||[])]):null;
+    // edges
+    for(const[s,t]of a.links){const A=S(a.nodes[s]),B=S(a.nodes[t]);const hot=sel&&(a.nodes[s]===sel||a.nodes[t]===sel);
+      ctx.strokeStyle=hot?'rgba(167,139,250,.55)':'rgba(139,148,158,.08)';ctx.lineWidth=hot?1.3:.6;ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);ctx.stroke();}
+    // nodes
+    for(let i=0;i<a.nodes.length;i++){const n=a.nodes[i],P=S(n),r=Math.max(1.6,2+(n.d/maxD)*8*Math.min(1,scale*2));
+      const match=q&&n.label.toLowerCase().includes(q);const dim=(q&&!match)||(sel&&!(n===sel||(selSet&&selSet.has(i))));
+      if(n.d>maxD*.35){ctx.globalAlpha=dim?.08:.5;ctx.beginPath();ctx.arc(P.x,P.y,r+5,0,7);ctx.fillStyle=n.color;ctx.globalAlpha=dim?.04:.16;ctx.fill();}
+      ctx.globalAlpha=dim?.14:1;ctx.beginPath();ctx.arc(P.x,P.y,r,0,7);ctx.fillStyle=match?'#fff':n.color;ctx.fill();
+      if(n===sel){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();}ctx.globalAlpha=1;}
+    // labels for hubs + hovered + selected
+    ctx.font='11px Inter,sans-serif';
+    for(let i=0;i<a.nodes.length;i++){const n=a.nodes[i];const show=(labelSet.has(n.id)&&scale>0.35)||n===hover||n===sel;if(!show)continue;
+      const P=S(n);const txt=n.label.slice(0,34);const w=ctx.measureText(txt).width;
+      ctx.fillStyle='rgba(10,9,18,.72)';ctx.fillRect(P.x+8,P.y-8,w+8,16);
+      ctx.fillStyle=(n===hover||n===sel)?'#fff':'#cfc9de';ctx.fillText(txt,P.x+12,P.y+4);}
   }
-  function pick(mx,my){let best=null,bd=12;for(const n of a.nodes){const P=S(n),d=Math.hypot(P.x-mx,P.y-my);if(d<bd){bd=d;best=n;}}return best;}
-  cv.onwheel=e=>{e.preventDefault();const r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,f=e.deltaY<0?1.12:0.89,wx=(mx-tx)/scale,wy=(my-ty)/scale;scale*=f;tx=mx-wx*scale;ty=my-wy*scale;draw();};
+  function pick(mx,my){let b=null,bd=13;for(const n of a.nodes){const P=S(n),d=Math.hypot(P.x-mx,P.y-my);if(d<bd){bd=d;b=n;}}return b;}
+  cv.onwheel=e=>{e.preventDefault();const r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,f=e.deltaY<0?1.13:.88,wx=(mx-tx)/scale,wy=(my-ty)/scale;scale=Math.max(.08,Math.min(8,scale*f));tx=mx-wx*scale;ty=my-wy*scale;draw();};
   cv.onmousedown=e=>{drag={x:e.clientX,y:e.clientY,tx,ty,moved:false};};
-  cv.onmouseup=()=>{drag=null;};
-  cv.onmouseleave=()=>{drag=null;};
+  cv.onmouseup=()=>{drag=null;};cv.onmouseleave=()=>{drag=null;};
   cv.onmousemove=e=>{const r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
     if(drag){tx=drag.tx+(e.clientX-drag.x);ty=drag.ty+(e.clientY-drag.y);drag.moved=true;cv.style.cursor='grabbing';draw();return;}
     const h=pick(mx,my);if(h!==hover){hover=h;cv.style.cursor=h?'pointer':'grab';draw();}};
-  cv.onclick=e=>{if(drag&&drag.moved)return;const r=cv.getBoundingClientRect(),h=pick(e.clientX-r.left,e.clientY-r.top);if(h)atlasNodeInfo(h,()=>showAtlasHud(a,domain));};
+  cv.onclick=e=>{if(drag&&drag.moved)return;const r=cv.getBoundingClientRect(),h=pick(e.clientX-r.left,e.clientY-r.top);sel=h;draw();if(h)atlasNodeInfo(h,a);else atlasLegend(a,domain);};
   atlasRedraw=()=>{q=($('#q').value||'').toLowerCase();draw();};
-  showAtlasHud(a,domain); draw();
+  atlasCtl={fit,zoom:f=>{const wx=(W/2-tx)/scale,wy=(H/2-ty)/scale;scale=Math.max(.08,Math.min(8,scale*f));tx=W/2-wx*scale;ty=H/2-wy*scale;draw();}};
+  // toolbar
+  atlasbar.style.display='flex';
+  atlasbar.innerHTML=`<div class="seg" id="dens">${[['1k',1000],['1.5k',1500],['2.5k',2500]].map(([l,v])=>`<button data-v="${v}" class="${atlasState.limit===v?'on':''}">${l}</button>`).join('')}</div>
+    <button class="iconbtn" id="zin" title="Zoom in">+</button><button class="iconbtn" id="zout" title="Zoom out">−</button><button class="iconbtn" id="zfit" title="Fit">⊡</button>`;
+  atlasbar.querySelectorAll('#dens button').forEach(b=>b.onclick=()=>{atlasState.limit=+b.dataset.v;renderAtlas(domain);});
+  $('#zin').onclick=()=>atlasCtl.zoom(1.25);$('#zout').onclick=()=>atlasCtl.zoom(.8);$('#zfit').onclick=()=>{sel=null;fit();atlasLegend(a,domain);};
+  atlasLegend(a,domain);fit();
 }
-function showAtlasHud(a,domain){
-  hud.innerHTML=`<div class="lbl">★ Atlas${domain?' · '+domain:''}</div>`
-    +`<div class="sf">${a.shown.toLocaleString()} of ${a.total.toLocaleString()} nodes (highest-degree backbone) · ${a.links.length.toLocaleString()} edges · scroll to zoom, drag to pan, click a node, type to highlight</div>`
-    +`<div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:2px 10px">`
-    +a.communities.map(c=>`<div class="sf" style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:2px;background:${c.color};display:inline-block"></span>community ${c.id} <b style="color:#e6edf3">${c.count}</b></div>`).join('')
-    +`</div>`;
+function atlasLegend(a,domain){
+  ibody.innerHTML=`<div class="atlasPanel fade"><div>
+    <div style="color:var(--brand-2);font-weight:660;font-size:14px">★ Atlas${domain?' · '+esc(domain):''}</div>
+    <div class="m" style="color:var(--subdued);font-size:12px;margin-top:4px;line-height:1.6">${fmt(a.shown)} of ${fmt(a.total)} nodes (highest-degree backbone) · ${fmt(a.links.length)} edges.<br>Scroll to zoom · drag to pan · click a node · type in search to highlight.</div></div>
+    <div><div class="label">Communities</div><div class="legend">${a.communities.map(c=>`<div class="li"><span class="sw" style="background:${c.color};color:${c.color}"></span>community ${c.id}<b>${c.count}</b></div>`).join('')}</div></div></div>`;
 }
-async function atlasNodeInfo(n,back){
-  hud.innerHTML=`<div class="lbl">${esc(n.label)}</div><div class="sf">loading…</div>`;
+async function atlasNodeInfo(n,a){
+  ibody.innerHTML=`<div class="nodecard fade"><div class="t">${esc(n.label)}</div><div class="row" style="color:var(--subdued);font-size:12px"><span class="spin"></span> loading…</div></div>`;
   const r=await api('/api/node?id='+encodeURIComponent(n.id));
-  const v=r.node||{};const nb=(r.graph&&r.graph.nodes||[]).filter(x=>x.id!==n.id).slice(0,12);
-  hud.innerHTML=`<div class="lbl">${esc(v.label||n.label)}</div>`
-    +`<div class="sf">type ${esc(v.file_type||'code')} · community ${esc(String(v.community??n.c))} · degree ${v.degree??n.d}</div>`
-    +(v.source_file?`<div class="sf">${esc(v.source_file)}:${esc(v.source_location||'')}</div>`:'')
-    +`<div class="sf" style="margin-top:6px;color:#8b949e">neighbors (${nb.length})</div>`
-    +nb.map(x=>`<div class="sf" style="cursor:pointer;color:#58a6ff" data-id="${encodeURIComponent(x.id)}">↳ ${esc(x.label)}</div>`).join('')
-    +`<div style="margin-top:8px"><a href="#" id="atExplore" style="color:#58a6ff">explore neighborhood →</a> · <a href="#" id="atBack" style="color:#8b949e">back to legend</a></div>`;
-  hud.querySelectorAll('[data-id]').forEach(el=>el.onclick=()=>atlasNodeInfo({id:decodeURIComponent(el.dataset.id),label:el.textContent.replace('↳ ',''),c:n.c,d:0},back));
-  const ex=document.getElementById('atExplore');if(ex)ex.onclick=e=>{e.preventDefault();loadNode(n.id);};
-  const bk=document.getElementById('atBack');if(bk)bk.onclick=e=>{e.preventDefault();back();};
+  const v=r.node||{};const nb=(r.graph&&r.graph.nodes||[]).filter(x=>x.id!==n.id).slice(0,14);
+  ibody.innerHTML=`<div class="nodecard fade"><div class="t">${esc(v.label||n.label)}</div>
+    <div class="m" style="font-family:var(--font);color:var(--subdued)">type ${esc(v.file_type||'code')} · community ${esc(String(v.community??n.c))} · degree ${v.degree??n.d}</div>
+    ${v.source_file?`<div class="m">${esc(v.source_file)}${v.source_location?':'+esc(v.source_location):''}</div>`:''}
+    <div class="label" style="margin:10px 0 4px">Neighbors (${nb.length})</div>
+    ${nb.map(x=>`<div class="nb" data-id="${encodeURIComponent(x.id)}">↳ ${esc(x.label)}</div>`).join('')}
+    <div style="margin-top:10px"><a href="#" id="atExplore">explore neighborhood →</a></div></div>`;
+  ibody.querySelectorAll('.nb').forEach(el=>el.onclick=()=>atlasNodeInfo({id:decodeURIComponent(el.dataset.id),label:el.textContent.replace('↳ ',''),c:n.c,d:0},a));
+  $('#atExplore').onclick=e=>{e.preventDefault();loadNode(n.id);};
 }
 
-$('#q').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
-$('#q').addEventListener('input',()=>{clearTimeout(window._t);window._t=setTimeout(()=>{doSearch();if(atlasRedraw)atlasRedraw();},250);});
-$('#trace').onclick=trace;
-$('#reset').onclick=()=>selectTab('overview');
+async function trace(){
+  const a=$('#pa').value.trim(),b=$('#pb').value.trim();if(!a||!b)return;
+  const [ra,rb]=await Promise.all([api('/api/search?q='+encodeURIComponent(a)+'&limit=1'),api('/api/search?q='+encodeURIComponent(b)+'&limit=1')]);
+  if(!ra[0]||!rb[0]){alert('Could not resolve one of the endpoints.');return;}
+  const r=await api('/api/path?a='+encodeURIComponent(ra[0].id)+'&b='+encodeURIComponent(rb[0].id));
+  if(!r.path||!r.path.length){alert('No path found between those nodes.');return;}
+  atlasbar.style.display='none';showCanvas();
+  searchPanel();
+  ibody.insertAdjacentHTML('afterbegin',`<div class="nodecard fade"><div class="t">Path · ${r.path.length-1} hops</div>${r.nodes.map(n=>`<div class="m" style="font-family:var(--font)">${esc(n.label)} <span style="color:var(--muted)">${esc(n.source_file||'')}</span></div>`).join('')}</div>`);
+  runSim({nodes:r.nodes,links:r.links},r.path[0]);
+}
+
+$('#q').addEventListener('keydown',e=>{if(e.key==='Enter'){if(!$('#results'))searchPanel();doSearch();}});
+$('#q').addEventListener('input',()=>{clearTimeout(window._t);window._t=setTimeout(()=>{if($('#results'))doSearch();if(atlasRedraw)atlasRedraw();},220);});
 boot();
 </script>
 </body>
