@@ -31,6 +31,8 @@ jobs:
           node-version: 20
       - name: Extract database intelligence
         run: node tools/graph-server/db-intel.mjs
+      - name: Extract infrastructure intelligence
+        run: node tools/graph-server/infra-intel.mjs
       - name: Regenerate data-driven reports
         run: node tools/graph-server/gen-reports.mjs
       - name: Sanity gate — schema must parse to non-trivial counts
@@ -42,5 +44,6 @@ jobs:
           name: db-intelligence
           path: |
             graphify-out/db-intel.json
+            graphify-out/infra-intel.json
             docs/central-intelligence/DATABASE_INTELLIGENCE_REPORT.generated.md
           retention-days: 14

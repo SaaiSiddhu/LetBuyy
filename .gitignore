@@ -148,3 +148,4 @@ graphify-out/
 .graphify/
 
 graphify-out/db-intel.json
+graphify-out/infra-intel.json

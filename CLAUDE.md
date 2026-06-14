@@ -85,4 +85,22 @@ A multi-tenant India-first commerce platform. Core entities: **site** (the tenan
 - **Query before you change.** `pnpm graph:intel blast "<symbol>"` (impact/blast radius), `… deps|consumers|critical|payment|tenant|flow`. HTTP for Claude: `/api/db`, `/api/blast?q=`, `/api/atlas`, `/api/domain?key=`, `/api/community?id=`, `/api/search`, `/api/path`. `graphify-mcp` is also installed (operator-registered; not auto-added to `.claude/`).
 - **Change-control hotspots** (highest blast radius — run `graph:intel blast` on any PR touching them): `getSupabaseAdmin` (115 files), `@letbuyy/shared-types`, `@letbuyy/api-client`, `create_checkout_order`.
 - **Audit agents:** `.claude/commands/agent-*.md` (12: security/architecture/payment/tenant/identity/checkout/marketplace/theme/developer/release/infrastructure/compliance) + `graph-*` commands — each queries the graph, then inspects code, then reports.
-- **Reports:** `docs/central-intelligence/` (audit, quality, DB intelligence, flows, cross-app, domain, autonomous discovery, production intelligence, certification). Heuristic findings are candidates; the 107 deterministic validators stay authoritative. Refresh: `pnpm graph:db && pnpm graph:reports`.
+- **Reports:** `docs/central-intelligence/` (audit, quality, DB intelligence, flows, cross-app, domain, ownership, infrastructure, autonomous discovery, production intelligence, certification). Heuristic findings are candidates; the 107 deterministic validators stay authoritative. Refresh: `pnpm graph:db && pnpm graph:infra && pnpm graph:reports`.
+
+## LCIS query strategy — query the intelligence layer BEFORE scanning the repo
+For these questions, get the answer from LCIS first (one command) instead of grepping the whole tree:
+
+| Question | LCIS query (CLI or `curl localhost:3333/api/...`) |
+|----------|---------------------------------------------------|
+| Where is X implemented? | `pnpm graph:intel deps "X"` / `consumers "X"` · `/api/search?q=X` |
+| What breaks if I change X? | `pnpm graph:intel blast "X"` · `/api/blast?q=X` |
+| Who owns X? | `pnpm graph:intel owner "X"` · `/api/owner?q=X` (CODEOWNERS) |
+| What tables/policies/triggers affect table T? | `pnpm graph:intel table T` · `/api/table?name=T` |
+| What does RPC R touch / who calls it? | `pnpm graph:intel rpc R` · `/api/rpc?name=R` |
+| What policies are on table T? | `pnpm graph:intel policy T` · `/api/policy?table=T` |
+| Money / refund / payout / tenant flow? | `pnpm graph:intel payment\|refund\|payout\|tenant` |
+| Route → rpc → table chain? | `pnpm graph:intel flow "<route>"` |
+| Most critical / highest-blast systems? | `pnpm graph:intel critical` |
+| What infrastructure (workers/queues/secrets/deploy)? | `pnpm graph:intel infra` · `/api/infra` |
+
+Fall back to a full repo scan only when LCIS returns nothing or the data layer is stale (`pnpm graph:update && graph:db && graph:infra`). Change-control hotspots above always warrant a `graph:intel blast` before merge.

@@ -55,6 +55,7 @@
     "graph:validate": "node tools/graph-server/validate-graph.mjs",
     "graph:stats": "node tools/graph-server/graph-stats.mjs",
     "graph:db": "node tools/graph-server/db-intel.mjs",
+    "graph:infra": "node tools/graph-server/infra-intel.mjs",
     "graph:intel": "node tools/graph-server/intelligence.mjs",
     "graph:reports": "node tools/graph-server/gen-reports.mjs",
     "test": "node --test --test-concurrency=1 tests/*/*.test.mjs && pnpm run test:contracts",

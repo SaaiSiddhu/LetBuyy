@@ -155,8 +155,8 @@
   </aside>
 </main>
 <script>
-const TABS=['overview','atlas','data','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
-const TLABEL={overview:'Overview',atlas:'★ Atlas',data:'◆ Data Layer',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
+const TABS=['overview','atlas','data','infra','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
+const TLABEL={overview:'Overview',atlas:'★ Atlas',data:'◆ Data Layer',infra:'◇ Infrastructure',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
 const ATLAS_DOMAINS={atlas:'',services:'services',apps:'apps',packages:'packages',payments:'payments',identity:'identity',database:'database',marketplace:'marketplace',themes:'themes',developer:'developer',security:'security',tenancy:'tenancy'};
 const $=s=>document.querySelector(s);
 const cv=$('#cv'),ctx=cv.getContext('2d'),dash=$('#dash'),hint=$('#hint'),atlasbar=$('#atlasbar'),ibody=$('#inspectorBody');
@@ -209,6 +209,7 @@ async function selectTab(t){
   showDash();
   if(t==='overview')return overview();
   if(t==='data')return renderData();
+  if(t==='infra')return renderInfra();
   const d=await api('/api/domain?key='+t);
   if(!d){dash.innerHTML='<p class="hint">No data.</p>';return;}
   const rc=d.risk>66?'var(--critical)':d.risk>33?'var(--warning)':'var(--success)';
@@ -266,6 +267,30 @@ async function renderData(){
    </tbody></table>
    <div class="sectionTitle">SECURITY DEFINER RPCs not invoked via gateway db.rpc — review candidates (may be trigger/internal)</div>
    <div class="badges">${d.uncalledRpcs.map(r=>`<span class="badge">${esc(r)}</span>`).join('')||'<span class="hint">none</span>'}</div>`;
+}
+
+// ---------- Infrastructure ----------
+async function renderInfra(){
+  dash.className='dash fade';
+  dash.innerHTML='<div class="row" style="color:var(--subdued)"><span class="spin"></span> Loading infrastructure…</div>';
+  const s=await api('/api/infra');
+  if(s.error){dash.innerHTML=`<h2>Infrastructure</h2><p class="hint">${esc(s.error)} — run <code>pnpm graph:infra</code>.</p>`;return;}
+  const chips=(a)=>a&&a.length?a.map(x=>`<span class="badge">${esc(x)}</span>`).join(''):'<span class="hint">—</span>';
+  dash.innerHTML=`<h2>◇ Infrastructure Intelligence</h2>
+   <p class="hint" style="padding:6px 0">Parsed from wrangler.toml + production-deploy.yml + CODEOWNERS.</p>
+   <div class="cards">
+     ${card(s.workers,'CF Workers')}${card(s.vercelApps.length,'Vercel apps')}${card(s.queueProducers.length+'/'+s.queueConsumers.length,'queue prod/cons')}${card(s.secretsRequired,'prod secrets')}
+     ${card(s.r2.length,'R2 buckets')}${card(s.hyperdrive?'✓':'—','Hyperdrive')}${card(s.crons.length,'cron triggers')}${card(s.ownerRules,'CODEOWNERS rules')}
+   </div>
+   <div class="sectionTitle">Cloudflare queues</div>
+   <div style="margin-bottom:6px"><span class="badge brand">producers</span> ${chips(s.queueProducers)}</div>
+   <div><span class="badge brand">consumers</span> ${chips(s.queueConsumers)}</div>
+   <div class="sectionTitle">Storage & bindings</div>
+   <div>R2: ${chips(s.r2)} · KV: ${chips(s.kv)} · D1: ${chips(s.d1)} · Durable Objects: ${chips(s.durableObjects)}</div>
+   <div class="sectionTitle">Vercel deploy targets</div><div class="badges">${chips(s.vercelApps)}</div>
+   <div class="sectionTitle">External providers</div><div class="badges">${chips(s.providers)}</div>
+   <div class="sectionTitle">Deploy gate</div>
+   <div class="badges"><span class="badge">migrate gate ${s.hasMigrateGate?'✓':'✗'}</span><span class="badge">applies migrations ${s.appliesMigrations?'✓':'✗'}</span><span class="badge">${s.secretsRequired} secrets required</span></div>`;
 }
 
 // ---------- neighborhood (live force sim) ----------

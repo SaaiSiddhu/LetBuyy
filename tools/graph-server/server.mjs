@@ -6,6 +6,7 @@ import { createServer } from 'node:http';
 import { readFileSync, statSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
+import { traceTable, traceRPC, tracePolicy, findOwnership, infraSummary } from './intelligence.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -24,6 +25,8 @@ const nodes = raw.nodes || [];
 const links = raw.links || raw.edges || [];
 const DB_INTEL_PATH = join(REPO_ROOT, 'graphify-out', 'db-intel.json');
 const dbIntel = existsSync(DB_INTEL_PATH) ? JSON.parse(readFileSync(DB_INTEL_PATH, 'utf8')) : null;
+const INFRA_INTEL_PATH = join(REPO_ROOT, 'graphify-out', 'infra-intel.json');
+const infraIntel = existsSync(INFRA_INTEL_PATH) ? JSON.parse(readFileSync(INFRA_INTEL_PATH, 'utf8')) : null;
 
 // ---- indexes ----
 const byId = new Map();
@@ -317,6 +320,11 @@ const server = createServer((req, res) => {
       return json(res, { ...pr, files: files.size, color: communityColor.get(cid) || '#8b949e', workspaces: topN(ws, 6), top });
     }
     if (p === '/api/db') return json(res, dbView());
+    if (p === '/api/infra') return json(res, infraIntel ? infraIntel.summary : { error: 'infra-intel.json missing — run pnpm graph:infra' });
+    if (p === '/api/table') return json(res, traceTable({ db: dbIntel }, u.searchParams.get('name') || ''));
+    if (p === '/api/rpc') return json(res, traceRPC({ db: dbIntel }, u.searchParams.get('name') || ''));
+    if (p === '/api/policy') return json(res, tracePolicy({ db: dbIntel }, u.searchParams.get('table') || ''));
+    if (p === '/api/owner') return json(res, findOwnership({ nodes, byId, deg: degree, infra: infraIntel }, u.searchParams.get('q') || ''));
     if (p === '/api/blast') { const id = u.searchParams.get('id'); const q = u.searchParams.get('q'); let nid = id; if (!nid && q) { const r = search(q, 1); nid = r[0] && r[0].id; } return json(res, nid ? blastRadius(nid, Number(u.searchParams.get('depth') || 3)) : { error: 'not found' }); }
     if (p === '/api/health') return json(res, { ok: true, nodes: nodes.length, dbIntel: !!dbIntel });
     res.writeHead(404, { 'content-type': 'application/json' }); res.end('{"error":"not found"}');
