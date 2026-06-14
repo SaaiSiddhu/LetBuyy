@@ -33,8 +33,12 @@ jobs:
         run: node tools/graph-server/db-intel.mjs
       - name: Extract infrastructure intelligence
         run: node tools/graph-server/infra-intel.mjs
+      - name: Extract domain intelligence (v3)
+        run: node tools/graph-server/domain-intel.mjs
       - name: Regenerate data-driven reports
         run: node tools/graph-server/gen-reports.mjs
+      - name: Regenerate v3 domain reports
+        run: node tools/graph-server/gen-v3-reports.mjs
       - name: Sanity gate — schema must parse to non-trivial counts
         run: |
           node -e "const s=require('./graphify-out/db-intel.json').summary; if(s.tables<100||s.functions<50){console.error('DB intel parse looks degraded',s);process.exit(1)} console.log('DB intel OK:',s.tables,'tables,',s.functions,'functions,',s.policies,'policies')"
@@ -45,5 +49,7 @@ jobs:
           path: |
             graphify-out/db-intel.json
             graphify-out/infra-intel.json
+            graphify-out/domain-intel.json
             docs/central-intelligence/DATABASE_INTELLIGENCE_REPORT.generated.md
+            docs/central-intelligence/DOMAIN_INTELLIGENCE_REPORT.generated.md
           retention-days: 14

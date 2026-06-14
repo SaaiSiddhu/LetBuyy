@@ -103,4 +103,23 @@ For these questions, get the answer from LCIS first (one command) instead of gre
 | Most critical / highest-blast systems? | `pnpm graph:intel critical` |
 | What infrastructure (workers/queues/secrets/deploy)? | `pnpm graph:intel infra` · `/api/infra` |
 
-Fall back to a full repo scan only when LCIS returns nothing or the data layer is stale (`pnpm graph:update && graph:db && graph:infra`). Change-control hotspots above always warrant a `graph:intel blast` before merge.
+### LCIS v3 — domain intelligence (ALWAYS query LCIS FIRST; only scan the repo if LCIS cannot answer)
+Before scanning the repository for any of the questions below, run the LCIS query. The domain layer is built by `pnpm graph:domain` (output `graphify-out/domain-intel.json`, gitignored). 22 business domains; cross-domain edges = an RPC in A touches a table in B.
+
+| Question | LCIS query (CLI or `/api/...`) |
+|----------|--------------------------------|
+| What domains exist / what's in domain D? | `pnpm graph:domain list` · `/api/domains` · `/api/domain?key=D` |
+| What domains depend on D / what breaks if D changes? | `pnpm graph:cross D` · `/api/cross-domain?key=D` |
+| What domains consume / are consumed by D? | `/api/domain?key=D` → `dependsOn` / `consumedBy` |
+| What breaks if payments change (tables/rpcs/queues)? | `pnpm graph:payment` · `/api/payment` |
+| Security/attack surface (identity/JWT/webhook/RLS/tenant)? | `pnpm graph:security` · `/api/security` |
+| What deploys X (Actions/workers/Vercel/migrations/subdomains)? | `pnpm graph:deployment` · `/api/deployment` |
+| Incident: root cause / blast / affected domains+merchants? | `pnpm graph:incident <domain>` · `/api/incident?domain=D` |
+| Merchant lifecycle (store→products→orders→payments→…)? | `pnpm graph:merchant` · `/api/merchant` |
+| Customer journey (landing→checkout→payment→refund→tracking)? | `/api/customer-journey` |
+| What feature/service/domain uses secret S? | `/api/secrets` |
+| What's new / unclassified (autonomous discovery)? | `pnpm graph:discover` |
+
+**The LCIS-first protocol** for "what breaks if I change X / who owns X / what routes·rpcs·tables·workers·secrets·deployments use X": (1) query the domain graph (`/api/domain`, `/api/cross-domain`), (2) blast radius (`/api/blast` for symbols, `/api/cross-domain` for domains), (3) ownership (`/api/owner`), (4) deployment graph (`/api/deployment`), (5) payment graph (`/api/payment`). Refresh everything with `pnpm graph:v3` (db + infra + domain + reports).
+
+Fall back to a full repo scan only when LCIS returns nothing or the data layer is stale (`pnpm graph:update && graph:db && graph:infra && graph:domain`). Change-control hotspots above always warrant a `graph:intel blast` before merge.

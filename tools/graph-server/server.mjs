@@ -7,6 +7,13 @@ import { readFileSync, statSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import { traceTable, traceRPC, tracePolicy, findOwnership, infraSummary } from './intelligence.mjs';
+import { traceDomain, listDomains, findDomainDependencies, findDomainConsumers, findDomainOwners, findDomainSecrets, findDomainWorkflows } from './domain-intel.mjs';
+import { blastDomain, couplingMatrix } from './cross-domain-engine.mjs';
+import { buildPaymentIntel } from './payment-intel.mjs';
+import { buildSecurityGraph } from './security-intel.mjs';
+import { buildDeploymentIntel } from './deployment-intel.mjs';
+import { traceIncident } from './incident-intel.mjs';
+import { buildMerchantIntel } from './merchant-intel.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -27,6 +34,44 @@ const DB_INTEL_PATH = join(REPO_ROOT, 'graphify-out', 'db-intel.json');
 const dbIntel = existsSync(DB_INTEL_PATH) ? JSON.parse(readFileSync(DB_INTEL_PATH, 'utf8')) : null;
 const INFRA_INTEL_PATH = join(REPO_ROOT, 'graphify-out', 'infra-intel.json');
 const infraIntel = existsSync(INFRA_INTEL_PATH) ? JSON.parse(readFileSync(INFRA_INTEL_PATH, 'utf8')) : null;
+const DOMAIN_INTEL_PATH = join(REPO_ROOT, 'graphify-out', 'domain-intel.json');
+const domainIntel = existsSync(DOMAIN_INTEL_PATH) ? JSON.parse(readFileSync(DOMAIN_INTEL_PATH, 'utf8')) : null;
+
+// ---- v3: customer-journey (Phase 5) + secret intelligence (Phase 10), computed from loaded intel ----
+const JOURNEY = [
+  { stage: 'Landing', domains: ['storefront'], app: 'marketing-site / storefront-runtime' },
+  { stage: 'Storefront', domains: ['storefront'], app: 'storefront-runtime' },
+  { stage: 'Product', domains: ['products', 'collections'], app: 'storefront-runtime' },
+  { stage: 'Cart', domains: ['orders'], app: 'storefront-runtime' },
+  { stage: 'Checkout', domains: ['orders', 'discounts', 'gst', 'shipping'], app: 'storefront-runtime' },
+  { stage: 'Payment', domains: ['payments', 'gift-cards'], app: 'storefront-runtime → api-gateway' },
+  { stage: 'Order', domains: ['orders', 'inventory'], app: 'api-gateway → queue-workers' },
+  { stage: 'Refund', domains: ['refunds'], app: 'merchant-control-plane' },
+  { stage: 'Tracking', domains: ['shipping', 'notifications'], app: 'storefront-runtime' },
+];
+function customerJourney() {
+  if (!domainIntel) return { error: 'domain-intel.json missing — run pnpm graph:domain' };
+  const byKey = Object.fromEntries(domainIntel.domains.map((d) => [d.key, d]));
+  const stages = JOURNEY.map((s) => {
+    const ds = s.domains.map((k) => byKey[k]).filter(Boolean);
+    return { stage: s.stage, app: s.app, domains: s.domains,
+      routes: [...new Set(ds.flatMap((d) => d.routes))], rpcs: [...new Set(ds.flatMap((d) => d.rpcs))].slice(0, 20),
+      tables: [...new Set(ds.flatMap((d) => d.tables))], money: ds.some((d) => d.money) };
+  });
+  return { funnel: JOURNEY.map((s) => s.stage), stages };
+}
+function secretIntel() {
+  if (!infraIntel || !domainIntel) return { error: 'infra-intel.json / domain-intel.json missing' };
+  return {
+    secrets: infraIntel.secrets.map((name) => {
+      const domains = domainIntel.domains.filter((d) => d.secrets.includes(name));
+      const workers = [...new Set(domains.flatMap((d) => d.workers))];
+      return { secret: name, services: workers.length ? workers : ['letbuyy-api'],
+        domains: domains.map((d) => d.key), features: domains.map((d) => d.label) };
+    }),
+    note: 'secrets are set via `wrangler secret put` at deploy (production-deploy.yml); never stored in the repo',
+  };
+}
 
 // ---- indexes ----
 const byId = new Map();
@@ -308,7 +353,7 @@ const server = createServer((req, res) => {
     if (p === '/api/node') { const v = neighbors(u.searchParams.get('id'), 1, 60); const n = byId.get(u.searchParams.get('id')); return json(res, { node: nodeView(u.searchParams.get('id')), graph: v, raw: n || null }); }
     if (p === '/api/neighbors') return json(res, neighbors(u.searchParams.get('id'), Number(u.searchParams.get('depth') || 1), Number(u.searchParams.get('limit') || 80)));
     if (p === '/api/path') return json(res, shortestPath(u.searchParams.get('a'), u.searchParams.get('b')));
-    if (p === '/api/domain') return json(res, domain(u.searchParams.get('key') || 'services'));
+    if (p === '/api/graph-domain') return json(res, domain(u.searchParams.get('key') || 'services'));
     if (p === '/api/atlas') return json(res, atlas({ limit: Number(u.searchParams.get('limit') || 1400), domain: u.searchParams.get('domain') || '', community: u.searchParams.get('community') || '' }));
     if (p === '/api/community') {
       const cid = String(u.searchParams.get('id') || '');
@@ -325,6 +370,21 @@ const server = createServer((req, res) => {
     if (p === '/api/rpc') return json(res, traceRPC({ db: dbIntel }, u.searchParams.get('name') || ''));
     if (p === '/api/policy') return json(res, tracePolicy({ db: dbIntel }, u.searchParams.get('table') || ''));
     if (p === '/api/owner') return json(res, findOwnership({ nodes, byId, deg: degree, infra: infraIntel }, u.searchParams.get('q') || ''));
+    // ---- v3 domain / cross-domain / payment / security / deployment / incident / merchant / journey / secrets ----
+    if (p === '/api/domains') return json(res, domainIntel ? listDomains(domainIntel) : { error: 'domain-intel.json missing — run pnpm graph:domain' });
+    if (p === '/api/domain') {
+      if (!domainIntel) return json(res, { error: 'domain-intel.json missing — run pnpm graph:domain' });
+      const key = u.searchParams.get('key') || '';
+      return json(res, key ? traceDomain(domainIntel, key) : { summary: domainIntel.summary, domains: listDomains(domainIntel), edges: domainIntel.edges });
+    }
+    if (p === '/api/cross-domain') return json(res, domainIntel ? (u.searchParams.get('key') ? blastDomain(domainIntel, u.searchParams.get('key')) : { edges: couplingMatrix(domainIntel) }) : { error: 'domain-intel.json missing' });
+    if (p === '/api/payment') return json(res, buildPaymentIntel(dbIntel, domainIntel));
+    if (p === '/api/security') return json(res, buildSecurityGraph(dbIntel, infraIntel, domainIntel));
+    if (p === '/api/deployment') return json(res, buildDeploymentIntel(infraIntel, domainIntel));
+    if (p === '/api/incident') return json(res, traceIncident(domainIntel, dbIntel, infraIntel, u.searchParams.get('domain') || u.searchParams.get('q') || 'payments'));
+    if (p === '/api/merchant') return json(res, buildMerchantIntel(domainIntel));
+    if (p === '/api/customer-journey') return json(res, customerJourney());
+    if (p === '/api/secrets') return json(res, secretIntel());
     if (p === '/api/blast') { const id = u.searchParams.get('id'); const q = u.searchParams.get('q'); let nid = id; if (!nid && q) { const r = search(q, 1); nid = r[0] && r[0].id; } return json(res, nid ? blastRadius(nid, Number(u.searchParams.get('depth') || 3)) : { error: 'not found' }); }
     if (p === '/api/health') return json(res, { ok: true, nodes: nodes.length, dbIntel: !!dbIntel });
     res.writeHead(404, { 'content-type': 'application/json' }); res.end('{"error":"not found"}');

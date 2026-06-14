@@ -155,8 +155,8 @@
   </aside>
 </main>
 <script>
-const TABS=['overview','atlas','data','infra','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
-const TLABEL={overview:'Overview',atlas:'★ Atlas',data:'◆ Data Layer',infra:'◇ Infrastructure',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
+const TABS=['overview','atlas','data','infra','domains','merchant','journey','dpay','dsec','deploy','incidents','secrets','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
+const TLABEL={overview:'Overview',atlas:'★ Atlas',data:'◆ Data Layer',infra:'◇ Infrastructure',domains:'◈ Domains',merchant:'◈ Merchant',journey:'◈ Customer Journey',dpay:'◈ Payments',dsec:'◈ Security',deploy:'◈ Deployment',incidents:'◈ Incidents',secrets:'◈ Secrets',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
 const ATLAS_DOMAINS={atlas:'',services:'services',apps:'apps',packages:'packages',payments:'payments',identity:'identity',database:'database',marketplace:'marketplace',themes:'themes',developer:'developer',security:'security',tenancy:'tenancy'};
 const $=s=>document.querySelector(s);
 const cv=$('#cv'),ctx=cv.getContext('2d'),dash=$('#dash'),hint=$('#hint'),atlasbar=$('#atlasbar'),ibody=$('#inspectorBody');
@@ -210,7 +210,15 @@ async function selectTab(t){
   if(t==='overview')return overview();
   if(t==='data')return renderData();
   if(t==='infra')return renderInfra();
-  const d=await api('/api/domain?key='+t);
+  if(t==='domains')return renderDomains();
+  if(t==='merchant')return renderMerchant();
+  if(t==='journey')return renderJourney();
+  if(t==='dpay')return renderDPay();
+  if(t==='dsec')return renderDSec();
+  if(t==='deploy')return renderDeploy();
+  if(t==='incidents')return renderIncidents();
+  if(t==='secrets')return renderSecrets();
+  const d=await api('/api/graph-domain?key='+t);
   if(!d){dash.innerHTML='<p class="hint">No data.</p>';return;}
   const rc=d.risk>66?'var(--critical)':d.risk>33?'var(--warning)':'var(--success)';
   dash.className='dash fade';
@@ -291,6 +299,126 @@ async function renderInfra(){
    <div class="sectionTitle">External providers</div><div class="badges">${chips(s.providers)}</div>
    <div class="sectionTitle">Deploy gate</div>
    <div class="badges"><span class="badge">migrate gate ${s.hasMigrateGate?'✓':'✗'}</span><span class="badge">applies migrations ${s.appliesMigrations?'✓':'✗'}</span><span class="badge">${s.secretsRequired} secrets required</span></div>`;
+}
+
+// ---------- v3 domain intelligence ----------
+const bd=(a,cls)=>(a&&a.length?a.map(x=>`<span class="badge${cls?' '+cls:''}">${esc(String(x))}</span>`).join(''):'<span class="hint">—</span>');
+async function v3wrap(title,sub){dash.className='dash fade';dash.innerHTML=`<div class="row" style="color:var(--subdued)"><span class="spin"></span> Loading ${esc(title)}…</div>`;}
+function v3err(title,e){dash.innerHTML=`<h2>${esc(title)}</h2><p class="hint">${esc(e)} — run <code>pnpm graph:domain</code>.</p>`;return true;}
+
+async function renderDomains(){
+  await v3wrap('domains');const o=await api('/api/domain');if(o.error)return v3err('◈ Domains',o.error);
+  const s=o.summary;
+  dash.innerHTML=`<h2>◈ Domain Intelligence</h2>
+   <p class="hint" style="padding:6px 0">${s.domains} business domains discovered by joining db-intel + infra-intel + the route inventory. Cross-domain edges = an RPC in A touches a table in B.</p>
+   <div class="cards">${card(s.domains,'domains')}${card(s.crossDomainEdges,'cross-domain edges')}${card(s.classifiedRoutes+'/'+s.totalRoutes,'routes classified')}${card(s.classifiedTables+'/'+s.totalTables,'tables classified')}${card(s.classifiedRpcs+'/'+s.totalRpcs,'rpcs classified')}</div>
+   <div class="sectionTitle">Domains — click a row to see its blast radius</div>
+   <table><thead><tr><th>Domain</th><th style="text-align:right">routes</th><th style="text-align:right">rpcs</th><th style="text-align:right">tables</th><th>flags</th><th style="text-align:right">→ depends</th><th style="text-align:right">consumed ←</th></tr></thead><tbody>
+   ${o.domains.map(d=>`<tr class="clk" data-k="${d.key}"><td class="lbl"><a>${esc(d.label)}</a></td><td style="text-align:right"><span class="deg">${d.routes}</span></td><td style="text-align:right"><span class="deg">${d.rpcs}</span></td><td style="text-align:right"><span class="deg">${d.tables}</span></td><td>${d.money?'<span class="badge brand" style="padding:1px 7px">money</span>':''}${d.tenant?'<span class="badge" style="padding:1px 7px">tenant</span>':''}</td><td style="text-align:right">${d.dependsOn}</td><td style="text-align:right">${d.consumedBy}</td></tr>`).join('')}
+   </tbody></table>`;
+  dash.querySelectorAll('tr.clk').forEach(tr=>tr.onclick=()=>domainDetail(tr.dataset.k));
+}
+async function domainDetail(key){
+  const d=await api('/api/cross-domain?key='+key);if(d.error)return;
+  const full=await api('/api/domain?key='+key);
+  dash.innerHTML=`<div class="row" style="justify-content:space-between"><h2>◈ ${esc(d.label)}</h2><button id="back" class="primary">← all domains</button></div>
+   <div class="cards">${card(d.blastRadius.domains,'domains break if changed')}${card(full.counts.routes,'routes')}${card(full.counts.rpcs,'rpcs')}${card(full.counts.tables,'tables')}${card(full.counts.policies,'policies')}</div>
+   <div class="sectionTitle">Blast radius (transitive consumers) — layers ${JSON.stringify(d.blastRadius.layers)}</div><div class="badges">${bd(d.blastRadius.affected,'brand')}</div>
+   <div class="sectionTitle">Directly depends on</div><div class="badges">${bd(full.dependsOn.map(x=>x.domain+' ('+x.strength+')'))}</div>
+   <div class="sectionTitle">Routes</div><div class="badges">${bd(full.routes)}</div>
+   <div class="sectionTitle">RPCs</div><div class="badges">${bd(full.rpcs.slice(0,40))}</div>
+   <div class="sectionTitle">Tables</div><div class="badges">${bd(full.tables)}</div>
+   <div class="sectionTitle">Apps · workers · queues · secrets · owners</div>
+   <div>apps: ${bd(full.apps)}</div><div style="margin-top:4px">workers: ${bd(full.workers)}</div><div style="margin-top:4px">queues: ${bd(full.queues)}</div><div style="margin-top:4px">secrets: ${bd(full.secrets)}</div><div style="margin-top:4px">owners: ${bd(full.owners)}</div>`;
+  $('#back').onclick=()=>renderDomains();
+}
+async function renderMerchant(){
+  await v3wrap('merchant');const o=await api('/api/merchant');if(o.error)return v3err('◈ Merchant',o.error);
+  dash.innerHTML=`<h2>◈ Merchant Intelligence</h2>
+   <p class="hint" style="padding:6px 0">Merchant → Store → Products → Orders → Payments → Shipping → GST → Gift Cards → Themes, mapped onto the domain graph.</p>
+   <div class="cards">${card(o.summary.stages,'lifecycle stages')}${card(o.summary.totalRoutes,'routes')}${card(o.summary.totalRpcs,'rpcs')}${card(o.summary.totalTables,'tables')}${card(o.merchantFacingApps.length,'merchant apps')}</div>
+   <div class="sectionTitle">Merchant-facing apps</div><div class="badges">${bd(o.merchantFacingApps,'brand')}</div>
+   <div class="sectionTitle">Lifecycle stages</div>
+   <table><thead><tr><th>Stage</th><th>Apps</th><th style="text-align:right">routes</th><th style="text-align:right">rpcs</th><th style="text-align:right">tables</th><th>depends on</th></tr></thead><tbody>
+   ${o.stages.map(s=>`<tr><td class="lbl">${esc(s.stage)}${s.money?' <span class="badge brand" style="padding:1px 7px">money</span>':''}</td><td><span class="mono">${esc(s.apps.join(', '))}</span></td><td style="text-align:right"><span class="deg">${s.routes}</span></td><td style="text-align:right"><span class="deg">${s.rpcs}</span></td><td style="text-align:right"><span class="deg">${s.tables}</span></td><td><span class="mono" style="color:var(--muted)">${esc(s.dependsOn.join(', ')||'—')}</span></td></tr>`).join('')}
+   </tbody></table>`;
+}
+async function renderJourney(){
+  await v3wrap('journey');const o=await api('/api/customer-journey');if(o.error)return v3err('◈ Customer Journey',o.error);
+  dash.innerHTML=`<h2>◈ Customer Journey Intelligence</h2>
+   <p class="hint" style="padding:6px 0">${o.funnel.join(' → ')}</p>
+   <table><thead><tr><th>Stage</th><th>Runtime</th><th>Domains</th><th style="text-align:right">routes</th><th style="text-align:right">tables</th></tr></thead><tbody>
+   ${o.stages.map(s=>`<tr><td class="lbl">${esc(s.stage)}${s.money?' <span class="badge brand" style="padding:1px 7px">money</span>':''}</td><td><span class="mono" style="color:var(--muted)">${esc(s.app)}</span></td><td>${bd(s.domains)}</td><td style="text-align:right"><span class="deg">${s.routes.length}</span></td><td style="text-align:right"><span class="deg">${s.tables.length}</span></td></tr>`).join('')}
+   </tbody></table>`;
+}
+async function renderDPay(){
+  await v3wrap('payments');const o=await api('/api/payment');if(o.error)return v3err('◈ Payments',o.error);
+  const fl=o.flows,wb=o.whatBreaksIfPaymentChanges;
+  dash.innerHTML=`<h2>◈ Payment Intelligence</h2>
+   <p class="hint" style="padding:6px 0">${esc(o.summary.invariant)}</p>
+   <div class="cards">${card(o.summary.moneyRpcs,'money RPCs')}${card(o.summary.moneyTables,'money tables')}${card(wb?wb.domainsAffected:'—','domains break if changed')}${card(wb?wb.tablesAffected:'—','tables affected')}${card(wb?wb.rpcsAffected:'—','rpcs affected')}</div>
+   <div class="sectionTitle">Money sub-flows (extracted RPC + table signals)</div>
+   <table><thead><tr><th>Flow</th><th style="text-align:right">rpcs</th><th style="text-align:right">tables</th><th>all SD</th><th>idem core</th><th>locked core</th></tr></thead><tbody>
+   ${Object.entries(fl).map(([k,v])=>`<tr><td class="lbl">${esc(k)}</td><td style="text-align:right"><span class="deg">${v.rpcs.length}</span></td><td style="text-align:right"><span class="deg">${v.tables.length}</span></td><td>${v.integrity?(v.integrity.allSecurityDefiner?'✓':'<span style="color:var(--warning)">partial</span>'):'—'}</td><td>${v.integrity?(v.integrity.idempotentCore?'✓':'·'):'—'}</td><td>${v.integrity?(v.integrity.rowLockedCore?'✓':'·'):'—'}</td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">What breaks if Payments changes</div><div class="badges">${bd(wb?wb.affected:[],'brand')}</div>
+   <p class="hint" style="padding:6px 0">Owners: ${bd(wb?wb.owners:[])} · "partial SD" rows = reconciliation/backfill helpers; canonical mutation RPCs are SECURITY DEFINER + idempotent + row-locked (canonical-ledger-only-validator authoritative).</p>`;
+}
+async function renderDSec(){
+  await v3wrap('security');const o=await api('/api/security');if(o.error)return v3err('◈ Security',o.error);
+  const g=o.graphs,ti=g.tenantIsolation,rls=g.rls,as=g.attackSurface;
+  dash.innerHTML=`<h2>◈ Security Attack Graph</h2>
+   <div class="cards">${card(ti.tenantTables,'tenant tables')}${card(ti.withRls,'with RLS')}${card(rls.policies,'RLS policies')}${card(rls.serviceRole,'service-role policies')}${card(as.productionSecrets,'prod secrets')}${card(as.securityDefinerFns,'SECURITY DEFINER fns')}</div>
+   <div class="sectionTitle">Tenant isolation</div><div class="badges"><span class="badge">${ti.tenantTables} tenant tables</span><span class="badge">${ti.withRls} RLS</span><span class="badge">${ti.withForce} FORCE</span><span class="badge">${ti.candidatesWithoutDetectedRls} candidates w/o detected RLS</span></div>
+   <p class="hint" style="padding:4px 0">${esc(ti.anchor)}</p>
+   <div class="sectionTitle">Identity issuers</div><div class="badges"><span class="badge brand">${esc(g.identity.issuers.customer)}</span><span class="badge brand">${esc(g.identity.issuers.merchant)}</span></div>
+   <div class="sectionTitle">Webhook surface (HMAC-signed)</div><div class="badges">${bd(g.webhook.tables)}</div>
+   <div class="sectionTitle">If auth fails — the tenant boundary must hold these</div>
+   <div class="badges"><span class="badge">${as.exposedIfAuthFails.routes.length} routes</span><span class="badge">${as.exposedIfAuthFails.tenantTablesAtRisk} tenant tables</span>${bd(as.exposedIfAuthFails.workers)}</div>
+   <p class="hint" style="padding:4px 0">Backstop: ${esc(as.exposedIfAuthFails.backstop)}</p>
+   <div class="sectionTitle">Deterministic validators (authoritative, green)</div><div class="badges">${bd(o.deterministicValidators)}</div>`;
+}
+async function renderDeploy(){
+  await v3wrap('deployment');const o=await api('/api/deployment');if(o.error)return v3err('◈ Deployment',o.error);
+  dash.innerHTML=`<h2>◈ Deployment Intelligence</h2>
+   <p class="hint" style="padding:6px 0">${o.pipeline.order.join(' → ')}</p>
+   <div class="cards">${card(o.workflows.length,'workflows')}${card(o.workers.length,'workers')}${card(o.vercelApps.length,'Vercel apps')}${card(o.secrets.required,'secrets')}${card(o.subdomains.length,'subdomains')}</div>
+   <div class="sectionTitle">GitHub Actions</div>
+   <table><thead><tr><th>Workflow</th><th>workers</th><th>vercel</th><th>migrations</th><th>gates</th></tr></thead><tbody>
+   ${o.workflows.map(w=>`<tr><td class="lbl">${esc(w.file)}</td><td>${w.deploysWorkers?'✓':'·'}</td><td>${w.deploysVercel?'✓':'·'}</td><td>${w.runsMigrations?'✓':'·'}</td><td><span class="mono" style="color:var(--muted)">${esc((w.gates||[]).join(', ')||'—')}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Subdomains</div>
+   <table><thead><tr><th>Host</th><th>App</th><th>Via</th></tr></thead><tbody>
+   ${o.subdomains.map(s=>`<tr><td class="lbl">${esc(s.host)}</td><td><span class="mono">${esc(s.app)}</span></td><td><span class="mono" style="color:var(--muted)">${esc(s.via)}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Rollback</div><p class="hint" style="padding:4px 0"><code>${esc(o.rollback.script)}</code> — ${esc(o.rollback.policy)}</p>`;
+}
+async function renderIncidents(){
+  await v3wrap('incidents');
+  dash.className='dash fade';
+  const dl=await api('/api/domains');
+  dash.innerHTML=`<h2>◈ Incident Intelligence</h2>
+   <p class="hint" style="padding:6px 0">Pick a domain to trace Incident → Route → RPC → Table → Queue → Worker → Owner and the blast radius.</p>
+   <div class="pathgrid" style="grid-template-columns:1fr auto"><input id="incq" type="text" placeholder="domain / route / table (e.g. payments, gift_card_accounts)" value="payments"/><button id="incgo" class="primary">Trace</button></div>
+   <div id="incout" style="margin-top:14px"></div>
+   <div class="sectionTitle">Domains</div><div class="badges">${bd((dl||[]).map(d=>d.key))}</div>`;
+  const go=async()=>{const q=$('#incq').value.trim();if(!q)return;const o=await api('/api/incident?domain='+encodeURIComponent(q));const out=$('#incout');
+    if(o.error){out.innerHTML=`<p class="hint">${esc(o.error)}</p>`;return;}
+    out.innerHTML=`<div class="cards">${card(o.blastRadius.domains,'domains affected')}${card(o.blastRadius.routes,'routes')}${card(o.blastRadius.rpcs,'rpcs')}${card(o.blastRadius.tables,'tables')}</div>
+     <div class="sectionTitle">Chain — ${esc(o.label)}</div>
+     <div>routes: ${bd(o.chain.routes)}</div><div style="margin-top:4px">workers: ${bd(o.chain.workers)}</div><div style="margin-top:4px">queues: ${bd(o.chain.queues)}</div><div style="margin-top:4px">owners: ${bd(o.chain.owners)}</div>
+     <div class="sectionTitle">Affected domains</div><div class="badges">${bd(o.affectedDomains,'brand')}</div>
+     <div class="sectionTitle">Affected merchants</div><p class="hint" style="padding:4px 0">${esc(o.affectedMerchants)}</p>`;};
+  $('#incgo').onclick=go;$('#incq').onkeydown=e=>{if(e.key==='Enter')go();};go();
+}
+async function renderSecrets(){
+  await v3wrap('secrets');const o=await api('/api/secrets');if(o.error)return v3err('◈ Secrets',o.error);
+  dash.innerHTML=`<h2>◈ Secret Intelligence</h2>
+   <p class="hint" style="padding:6px 0">Secret → Service (worker) → Domains (features). ${esc(o.note)}</p>
+   <div class="cards">${card(o.secrets.length,'production secrets')}</div>
+   <table><thead><tr><th>Secret</th><th>Services</th><th>Domains / features</th></tr></thead><tbody>
+   ${o.secrets.map(s=>`<tr><td class="lbl">${esc(s.secret)}</td><td><span class="mono">${esc(s.services.join(', '))}</span></td><td>${bd(s.domains)}</td></tr>`).join('')}
+   </tbody></table>`;
 }
 
 // ---------- neighborhood (live force sim) ----------
