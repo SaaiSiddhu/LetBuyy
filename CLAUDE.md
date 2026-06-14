@@ -174,6 +174,11 @@ LCIS is now LetBuyy's operating system, readable by humans AND AIs. Three layers
 | Paste-ready AI context per domain | `/api/explain?node=<key>` → `aiContext` · `docs/central-intelligence/AI_CONTEXT_PACK.md` |
 | Natural-language question → right engine | `/api/copilot?q=...` (routes to change-impact/owner/memory/security/flow; repo scan last) |
 | Executive readiness | `/api/explain` → `readiness` · `/api/production-readiness-v2` |
+| Table relationships (foreign keys) | `/api/relationships?table=X` (705 FKs; tenant root `sites`) · Explain → Database |
+| What's live vs repository-only? | `/api/environment` (Local/Staging/Production; "Live Data Source Not Connected" until an adapter is wired — never mocked) |
+| Knowledge sub-graph (business/security/ownership/…) | `/api/graph?kind=<business\|journey\|security\|ownership\|infrastructure\|revenue\|ai>` |
+| Operations status (incident/deploy/runtime/queue/worker) | `/api/operations` · Explain → Operations Center |
+| Database control (schema/relationship/policy/function explorers) | `/api/database-control` · Explain → Database |
 | Deep investigation | Atlas (Technical mode → ★ Atlas) — the deepest layer |
 
 Fall back to a full repo scan only when LCIS returns nothing or the data layer is stale (`pnpm graph:update && graph:omega`). Change-control hotspots above always warrant a `graph:intel blast` before merge.

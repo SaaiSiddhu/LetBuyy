@@ -58,7 +58,9 @@ const IA = [
   { key: 'payments-engine', label: 'Payments Engine', icon: '▦', kind: 'section', children: ['payments', 'refunds', 'payouts', 'gift-cards', 'gst'] },
   { key: 'security', label: 'Security', icon: '⛨', kind: 'section', children: ['authentication', 'authorization', 'identity'] },
   { key: 'operations', label: 'Operations', icon: '◍', kind: 'section', children: ['operations', 'notifications'] },
+  { key: 'database', label: 'Database', icon: '▤', kind: 'page' },
   { key: 'infrastructure', label: 'Infrastructure', icon: '◰', kind: 'page' },
+  { key: 'ops-center', label: 'Operations Center', icon: '◍', kind: 'page' },
   { key: 'readiness', label: 'Readiness', icon: '◉', kind: 'page' },
   { key: 'ai-context', label: 'AI Context', icon: '✦', kind: 'page' },
   { key: 'technical', label: 'Technical View', icon: '⌥', kind: 'toggle' },
@@ -94,8 +96,15 @@ function aiContext(node) {
 export function buildExplainIntel() {
   const di = g('domain-intel.json'), db = g('db-intel.json'), infra = g('infra-intel.json');
   const pr = g('production-readiness-v2.json'), de = g('decision-engine-v2.json'), exec = g('execution-intel.json');
+  const rel = g('relationship-intel.json');
   if (!di || !db) return { error: 'domain-intel.json / db-intel.json missing — run pnpm graph:omega' };
 
+  const relMap = rel ? new Map(rel.tables.map((t) => [t.name, t])) : new Map();
+  const fkFor = (tables) => {
+    const set = new Set(tables); const out = new Set(), inc = new Set();
+    for (const t of tables) { const r = relMap.get(t); if (!r) continue; r.references.forEach((x) => { if (!set.has(x)) out.add(x); }); r.referencedBy.forEach((x) => { if (!set.has(x)) inc.add(x); }); }
+    return { references: [...out].slice(0, 20), referencedBy: [...inc].slice(0, 20) };
+  };
   const policiesFor = (tables) => db.policies.filter((p) => tables.includes(p.table)).length;
   const nodes = {};
   for (const d of di.domains) {
@@ -108,7 +117,7 @@ export function buildExplainIntel() {
       dependsOn: d.dependsOn.map((x) => x.domain),
       consumers: d.consumedBy.map((x) => x.domain),
       operationalNotes: `${d.money ? 'Money mutations only via SECURITY DEFINER RPCs (db.rpc). ' : ''}${d.tenant ? 'Tenant-scoped: every row carries site_id; RLS forced. ' : ''}Runs through ${d.workers.join(', ')}.`,
-      technical: { routes: d.routes, rpcs: d.rpcs, tables: d.tables, policies: policiesFor(d.tables), workers: d.workers, queues: d.queues, secrets: d.secrets, services: d.apps, money: d.money, tenant: d.tenant },
+      technical: { routes: d.routes, rpcs: d.rpcs, tables: d.tables, policies: policiesFor(d.tables), workers: d.workers, queues: d.queues, secrets: d.secrets, services: d.apps, money: d.money, tenant: d.tenant, relationships: fkFor(d.tables) },
       atlas: { search: d.rpcs[0] || d.tables[0] || d.label, blast: d.key },
       flow: FLOWS[d.key] || null,
     };

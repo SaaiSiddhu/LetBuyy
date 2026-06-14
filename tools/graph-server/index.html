@@ -136,6 +136,12 @@
   .modetoggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);overflow:hidden;margin-left:auto}
   .modetoggle button{border:0;border-radius:0;background:transparent;padding:6px 16px;color:var(--subdued);font-weight:600;font-size:12.5px}
   .modetoggle button.on{background:linear-gradient(180deg,var(--brand),var(--brand-cta));color:#fff}
+  .envswitch{display:flex;align-items:center;gap:7px;margin-left:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);padding:3px 10px 3px 12px}
+  .envswitch select{background:transparent;border:0;color:var(--text);font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;outline:none}
+  .envswitch select option{background:var(--raised);color:var(--text)}
+  .envdot{width:8px;height:8px;border-radius:50%;background:var(--warning);box-shadow:0 0 7px var(--warning);flex:none}
+  .notconn{display:inline-flex;align-items:center;gap:7px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.32);color:#fcd34d;border-radius:var(--r-md);padding:8px 13px;font-size:12.5px;font-weight:600;margin:4px 0}
+  .notconn .d{width:7px;height:7px;border-radius:50%;background:var(--warning);flex:none}
   .kbtn{margin-left:10px;color:var(--subdued);font-size:12px;border-radius:var(--r-md)}
   .kbtn kbd{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:0 5px;font-family:var(--mono);font-size:11px;margin-left:5px}
 
@@ -227,6 +233,10 @@
   <div class="modetoggle" id="modetoggle">
     <button data-m="explain" class="on">◷ Explain</button>
     <button data-m="technical">⌥ Technical</button>
+  </div>
+  <div class="envswitch" id="envswitch" title="Environment — repository intelligence renders in all; live data needs a connected env">
+    <span class="envdot" id="envdot"></span>
+    <select id="envsel"><option value="local">Local</option><option value="staging">Staging</option><option value="production">Production</option></select>
   </div>
   <button class="kbtn" id="cmdkBtn">Search everything <kbd>⌘K</kbd></button>
   <div class="chips" id="chips" style="margin-left:14px"></div>
@@ -1058,6 +1068,8 @@ function xSelect(key){
   XSEL=key; xActive(key); const m=$('#xmain'); m.className='xmain fade'; m.scrollTop=0;
   if(key==='getting-started')return xGettingStarted();
   if(key==='infrastructure')return xInfra();
+  if(key==='database')return xDatabase();
+  if(key==='ops-center')return xOps();
   if(key==='readiness')return xReadiness();
   if(key==='ai-context')return xAiContextPage();
   if(key==='merchant-journey')return xEcosystem('merchant');
@@ -1092,6 +1104,8 @@ function xNode(n){
       <div class="xrow"><div class="k">Queues</div><div class="v">${esc(tech.queues.join(', '))}</div></div>
       <div class="xrow"><div class="k">Secrets</div><div class="v">${esc(tech.secrets.join(', ')||'—')}</div></div>
       <div class="xrow"><div class="k">Services</div><div class="v">${esc(tech.services.join(', ')||'—')}</div></div>
+      ${tech.relationships?`<div class="xrow"><div class="k">FK → references</div><div class="v">${esc(tech.relationships.references.join(', ')||'—')}</div></div>
+      <div class="xrow"><div class="k">FK ← referenced by</div><div class="v">${esc(tech.relationships.referencedBy.join(', ')||'—')}</div></div>`:''}
       <div class="xrow"><div class="k">Security</div><div class="v">${tech.money?'money path (SECURITY DEFINER + canonical-ledger-only)':'standard'} · ${tech.tenant?'tenant-scoped (RLS + verifySiteOwnership)':'platform-internal'}</div></div>
     </div></div>
     <div class="xsection">AI context — copy for Claude / Gemini / Codex</div>
@@ -1165,6 +1179,65 @@ function xAiContextPage(){
 }
 function xAiPick(k){const n=XDATA.nodes[k];$('#aipick').innerHTML=`<div class="xsection">${esc(n.label)} — AI context</div>${xAi(n.aiContext)}`;}
 
+/* ---- environment switcher (honest live-binding; NO mock values) ---- */
+let ENV='local', ENVDATA=null;
+const notconn=label=>`<div class="notconn"><span class="d"></span>${esc(label||'Live Data Source Not Connected')}</div>`;
+async function bootEnv(){
+  ENVDATA=await api('/api/environment'); if(!ENVDATA||ENVDATA.error)return;
+  $('#envdot').style.background=ENVDATA.summary.anyLiveConnected?'var(--success)':'var(--warning)';
+  $('#envsel').onchange=()=>{ENV=$('#envsel').value; if(XSEL)xSelect(XSEL);};
+}
+function envBanner(){
+  if(!ENVDATA)return '';
+  const e=ENVDATA.environments.find(x=>x.key===ENV); if(!e)return '';
+  return `<div class="xcard" style="margin:0 0 14px"><div class="h">Environment · ${esc(e.label)}</div><div class="b">Repository intelligence: <b style="color:var(--success)">${esc(e.repositoryIntelligence.split('(')[0].trim())}</b>. Live data: ${e.liveData==='connected'?'<b style="color:var(--success)">connected</b>':notconn(e.liveData)}</div></div>`;
+}
+function xDatabase(){
+  $('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading database control…</div>';
+  Promise.all([api('/api/database-control'),api('/api/relationships')]).then(([d,r])=>{
+    if(d.error){$('#xmain').innerHTML=`<div class="empty">${esc(d.error)} — run <code>pnpm graph:db</code>.</div>`;return;}
+    const s=d.summary;
+    $('#xmain').innerHTML=`<div class="xhero"><h1>Database Mission Control</h1></div>
+     <p class="xlede">The Supabase Postgres schema — the source of truth. Schema, relationships (foreign keys), policies and functions explorers.</p>
+     ${envBanner()}
+     <div class="xgrid">
+       <div class="xcard"><div class="h">Tables</div><div class="b" style="font-size:22px;font-weight:700">${s.tables}</div></div>
+       <div class="xcard"><div class="h">Functions / RPCs</div><div class="b" style="font-size:22px;font-weight:700">${s.functions} <span style="font-size:12px;color:var(--subdued)">(${s.securityDefiner} SD)</span></div></div>
+       <div class="xcard"><div class="h">RLS policies</div><div class="b" style="font-size:22px;font-weight:700">${s.policies}</div></div>
+       <div class="xcard"><div class="h">Foreign keys</div><div class="b" style="font-size:22px;font-weight:700">${r&&!r.error?r.summary.foreignKeys:'—'}</div></div>
+       <div class="xcard"><div class="h">Triggers · indexes</div><div class="b" style="font-size:22px;font-weight:700">${s.triggers} · ${s.indexes}</div></div>
+     </div>
+     <div class="xsection">Relationship explorer — most-referenced tables (the tenant root + hubs)</div>
+     ${r&&!r.error?`<table><thead><tr><th>Table</th><th style="text-align:right">referenced by (fan-in)</th></tr></thead><tbody>
+       ${r.summary.mostReferenced.map(t=>`<tr><td class="lbl">${esc(t.table)}</td><td style="text-align:right"><span class="deg">${t.fanIn}</span></td></tr>`).join('')}</tbody></table>
+       <p class="xlede" style="font-size:13px">Tenant root: <b>${esc(r.summary.tenantRoot.table)}</b> — referenced by ${r.summary.tenantRoot.fanIn} tables (every tenant row chains to site_id).</p>`:notconn('Relationship graph unavailable — run pnpm graph:relationships')}
+     <div class="xsection">Schema explorer — most-governed tables</div>
+     <table><thead><tr><th>Table</th><th>RLS</th><th>tenant</th><th style="text-align:right">pol</th><th style="text-align:right">trg</th><th style="text-align:right">idx</th></tr></thead><tbody>
+     ${d.topTables.map(t=>`<tr><td class="lbl">${esc(t.name)}${t.money?' <span class="badge brand" style="padding:1px 7px">money</span>':''}</td><td>${t.force?'FORCE':t.rls?'on':'—'}</td><td>${t.tenant?'✓':'·'}</td><td style="text-align:right"><span class="deg">${t.policies}</span></td><td style="text-align:right"><span class="deg">${t.triggers}</span></td><td style="text-align:right"><span class="deg">${t.indexes}</span></td></tr>`).join('')}
+     </tbody></table>
+     <div class="xsection">Function explorer — SECURITY DEFINER RPCs</div>
+     <table><thead><tr><th>Function</th><th>money</th><th>idem</th><th>lock</th><th style="text-align:right">tables</th></tr></thead><tbody>
+     ${d.functions.map(f=>`<tr><td class="lbl">${esc(f.name)}</td><td>${f.money?'💰':'·'}</td><td>${f.idempotency?'✓':'·'}</td><td>${f.forUpdate?'✓':'·'}</td><td style="text-align:right"><span class="deg">${f.tables}</span></td></tr>`).join('')}
+     </tbody></table>
+     <div class="xatlas"><button class="primary" onclick="setMode('technical');selectTab('data')">◆ Open Data Layer (technical)</button></div>`;
+  });
+}
+function xOps(){
+  $('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading operations…</div>';
+  api('/api/operations').then(o=>{
+    if(o.error){$('#xmain').innerHTML=`<div class="empty">${esc(o.error)}</div>`;return;}
+    $('#xmain').innerHTML=`<div class="xhero"><h1>Operations Center</h1><span class="crit ${o.summary.launchVerdict==='NO-GO'?'t1':'t3'}">${esc(o.summary.launchVerdict)}</span></div>
+     <p class="xlede">${esc(o.summary.note)}</p>
+     ${envBanner()}
+     <div class="xsection">Status by area</div>
+     <table><thead><tr><th>Area</th><th>Declared / structural (repo)</th><th>Live</th></tr></thead><tbody>
+     ${o.statuses.map(s=>`<tr><td class="lbl">${esc(s.area)}</td><td>${esc(s.declared)}</td><td>${/Not Connected/.test(s.live)?'<span style="color:var(--warning)">⚠ '+esc(s.live)+'</span>':esc(s.live)}</td></tr>`).join('')}
+     </tbody></table>
+     <div class="xatlas"><button class="primary" onclick="setMode('technical');selectTab('depstate')">◉ Deployment State</button>
+       <button onclick="setMode('technical');selectTab('robs')" style="margin-left:8px">◐ Runtime Observability</button></div>`;
+  });
+}
+
 /* ---- command palette + copilot ---- */
 const cmdkbg=document.createElement('div');cmdkbg.className='cmdk-bg';cmdkbg.id='cmdkbg';
 cmdkbg.innerHTML=`<div class="cmdk"><input id="cmdkin" type="text" placeholder="Search domains, routes, RPCs, tables, owners… or ask a question" autocomplete="off"/><div class="res" id="cmdkres"></div><div class="ask" id="cmdkask"></div></div>`;
@@ -1212,6 +1285,7 @@ $('#cmdkin')&&($('#cmdkin').onkeydown=e=>{if(e.key==='Enter'){const first=$('#cm
 boot();
 setMode('explain');
 bootExplain();
+bootEnv();
 </script>
 </body>
 </html>

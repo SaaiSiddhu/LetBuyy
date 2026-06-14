@@ -80,6 +80,12 @@ jobs:
           node tools/graph-server/unified-intelligence-engine.mjs
       - name: Regenerate Omega reports
         run: node tools/graph-server/gen-omega-reports.mjs
+      - name: Extract Mission Control intelligence (relationships/environment/graphs/operations)
+        run: |
+          node tools/graph-server/relationship-intel.mjs
+          node tools/graph-server/environment-intel.mjs
+          node tools/graph-server/knowledge-graphs.mjs
+          node tools/graph-server/operations-center.mjs
       - name: Regenerate v6 explain/onboarding docs (dual-mode operating system)
         run: node tools/graph-server/gen-explain-docs.mjs
       - name: Sanity gate — schema must parse to non-trivial counts

@@ -179,3 +179,7 @@ graphify-out/unified-intelligence.json
 graphify-out/discovery-v2.json
 graphify-out/production-readiness-v2.json
 graphify-out/decision-engine-v2.json
+graphify-out/relationship-intel.json
+graphify-out/environment-intel.json
+graphify-out/knowledge-graphs.json
+graphify-out/operations-center.json

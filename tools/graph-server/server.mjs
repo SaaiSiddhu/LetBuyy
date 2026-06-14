@@ -45,6 +45,10 @@ import { buildDiscoveryV2 } from './discovery-v2.mjs';
 import { buildProductionReadinessV2 } from './production-readiness-v2.mjs';
 import { buildDecisionEngineV2 } from './decision-engine-v2.mjs';
 import { buildExplainIntel, copilot } from './explain-intel.mjs';
+import { buildRelationshipIntel, relationshipsFor } from './relationship-intel.mjs';
+import { buildEnvironmentIntel } from './environment-intel.mjs';
+import { buildKnowledgeGraphs } from './knowledge-graphs.mjs';
+import { buildOperationsCenter } from './operations-center.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -103,6 +107,10 @@ const discoveryV2 = loadOrBuild('discovery-v2.json', buildDiscoveryV2);
 const readinessV2 = loadOrBuild('production-readiness-v2.json', buildProductionReadinessV2);
 const decisionV2 = loadOrBuild('decision-engine-v2.json', buildDecisionEngineV2);
 const explainIntel = safe(() => buildExplainIntel());
+const relIntel = loadOrBuild('relationship-intel.json', buildRelationshipIntel);
+const envIntel = safe(() => buildEnvironmentIntel());
+const knowledgeGraphs = loadOrBuild('knowledge-graphs.json', buildKnowledgeGraphs);
+const opsCenter = safe(() => buildOperationsCenter());
 
 // ---- v3: customer-journey (Phase 5) + secret intelligence (Phase 10), computed from loaded intel ----
 const JOURNEY = [
@@ -489,6 +497,12 @@ const server = createServer((req, res) => {
       return json(res, node ? (explainIntel.nodes[node] || { error: `node '${node}' not found` }) : explainIntel);
     }
     if (p === '/api/copilot') return json(res, safe(() => copilot(u.searchParams.get('q') || '')));
+    // ---- Mission Control: relationships / environment / knowledge graphs / operations / database control ----
+    if (p === '/api/relationships') { const t = u.searchParams.get('table'); return json(res, !relIntel || relIntel.error ? { error: 'relationship-intel missing — run pnpm graph:relationships' } : (t ? relationshipsFor(relIntel, t) : relIntel)); }
+    if (p === '/api/environment') return json(res, envIntel);
+    if (p === '/api/graph') { if (!knowledgeGraphs || knowledgeGraphs.error) return json(res, { error: 'knowledge-graphs missing' }); const kind = u.searchParams.get('kind'); return json(res, kind ? (knowledgeGraphs.graphs[kind] || { error: `unknown kind '${kind}'`, kinds: knowledgeGraphs.summary.kinds }) : knowledgeGraphs); }
+    if (p === '/api/operations') return json(res, opsCenter);
+    if (p === '/api/database-control') return json(res, dbIntel ? { summary: dbIntel.summary, relationships: relIntel && !relIntel.error ? relIntel.summary : null, topTables: dbIntel.tables.sort((a, b) => (b.policies.length + b.triggers.length + b.indexes) - (a.policies.length + a.triggers.length + a.indexes)).slice(0, 25).map((t) => ({ name: t.name, columns: t.columns, rls: t.rls, force: t.force, tenant: t.tenant, money: t.money, policies: t.policies.length, triggers: t.triggers.length, indexes: t.indexes })), functions: dbIntel.functions.filter((f) => f.securityDefiner).slice(0, 30).map((f) => ({ name: f.name, money: f.money, idempotency: f.hasIdempotency, forUpdate: f.forUpdate, tables: f.touches.length })) } : { error: 'db-intel missing' });
     if (p === '/api/production-readiness-v2') return json(res, readinessV2);
     if (p === '/api/decision-v2') return json(res, decisionV2);
     if (p === '/api/memory') {
