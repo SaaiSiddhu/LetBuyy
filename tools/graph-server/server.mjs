@@ -21,6 +21,14 @@ import { changeImpact } from './change-impact.mjs';
 import { incidentResponse } from './incident-response.mjs';
 import { buildMerchantOperatingGraph } from './merchant-operating-graph.mjs';
 import { buildExecutionIntel } from './execution-intel.mjs';
+import { buildRuntimeObservability } from './runtime-observability-intel.mjs';
+import { buildMerchantIntelligence } from './merchant-intelligence.mjs';
+import { buildRevenueIntelligence } from './revenue-intelligence.mjs';
+import { buildSecurityIntelligenceV5 } from './security-intelligence-v5.mjs';
+import { incidentIntelligenceV5 } from './incident-intelligence-v5.mjs';
+import { buildCustomerJourneyIntelligence } from './customer-journey-intelligence.mjs';
+import { buildProductionReadiness } from './production-readiness-intel.mjs';
+import { buildDecisionEngine } from './decision-engine-v5.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -51,6 +59,15 @@ const memoryIntel = safe(() => existsSync(MEM_INTEL_PATH) ? JSON.parse(readFileS
 const runtimeIntel = safe(() => buildRuntimeIntel());
 const deploymentStateData = safe(() => buildDeploymentState(infraIntel));
 const executionIntel = safe(() => buildExecutionIntel());
+
+// ---- v5: live operating intelligence (built fresh at startup) ----
+const runtimeObs = safe(() => buildRuntimeObservability());
+const merchantIntelV5 = safe(() => buildMerchantIntelligence());
+const revenueIntel = safe(() => buildRevenueIntelligence());
+const securityIntelV5 = safe(() => buildSecurityIntelligenceV5());
+const journeyIntel = safe(() => buildCustomerJourneyIntelligence());
+const readinessIntel = safe(() => buildProductionReadiness());
+const decisionEngine = safe(() => buildDecisionEngine());
 
 // ---- v3: customer-journey (Phase 5) + secret intelligence (Phase 10), computed from loaded intel ----
 const JOURNEY = [
@@ -407,6 +424,15 @@ const server = createServer((req, res) => {
     if (p === '/api/execution') return json(res, executionIntel);
     if (p === '/api/merchant-operating') return json(res, buildMerchantOperatingGraph(domainIntel, dbIntel));
     if (p === '/api/incident-response') return json(res, incidentResponse(domainIntel, dbIntel, infraIntel, u.searchParams.get('domain') || u.searchParams.get('q') || 'payments'));
+    // ---- v5: live operating intelligence ----
+    if (p === '/api/runtime-intelligence') return json(res, runtimeObs);
+    if (p === '/api/merchant-intelligence') return json(res, merchantIntelV5);
+    if (p === '/api/revenue-intelligence') return json(res, revenueIntel);
+    if (p === '/api/security-intelligence') return json(res, securityIntelV5);
+    if (p === '/api/incident-intelligence') return json(res, incidentIntelligenceV5(u.searchParams.get('domain') || u.searchParams.get('q') || 'payments'));
+    if (p === '/api/customer-intelligence') return json(res, journeyIntel);
+    if (p === '/api/production-readiness') return json(res, readinessIntel);
+    if (p === '/api/decision-engine') return json(res, decisionEngine);
     if (p === '/api/memory') {
       if (!memoryIntel || memoryIntel.error) return json(res, memoryIntel || { error: 'memory-intel missing' });
       const q = u.searchParams.get('q') || '', mig = u.searchParams.get('migration'), mode = u.searchParams.get('mode');

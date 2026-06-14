@@ -155,8 +155,8 @@
   </aside>
 </main>
 <script>
-const TABS=['overview','atlas','data','infra','domains','merchant','journey','dpay','dsec','deploy','incidents','secrets','runtime','depstate','execution','memory','impact','mgraph','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
-const TLABEL={overview:'Overview',atlas:'★ Atlas',data:'◆ Data Layer',infra:'◇ Infrastructure',domains:'◈ Domains',merchant:'◈ Merchant',journey:'◈ Customer Journey',dpay:'◈ Payments',dsec:'◈ Security',deploy:'◈ Deployment',incidents:'◈ Incidents',secrets:'◈ Secrets',runtime:'◉ Runtime',depstate:'◉ Deployments',execution:'◉ Execution',memory:'◉ Memory',impact:'◉ Impact',mgraph:'◉ Merchant Graph',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
+const TABS=['overview','atlas','data','infra','domains','merchant','journey','dpay','dsec','deploy','incidents','secrets','runtime','depstate','execution','memory','impact','mgraph','robs','rmerch','rrev','rsec','rinc','rjourney','readiness','decisions','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
+const TLABEL={overview:'Overview',atlas:'★ Atlas',data:'◆ Data Layer',infra:'◇ Infrastructure',domains:'◈ Domains',merchant:'◈ Merchant',journey:'◈ Customer Journey',dpay:'◈ Payments',dsec:'◈ Security',deploy:'◈ Deployment',incidents:'◈ Incidents',secrets:'◈ Secrets',runtime:'◉ Runtime',depstate:'◉ Deployments',execution:'◉ Execution',memory:'◉ Memory',impact:'◉ Impact',mgraph:'◉ Merchant Graph',robs:'◐ Runtime Obs',rmerch:'◐ Merchants',rrev:'◐ Revenue',rsec:'◐ Security',rinc:'◐ Incidents',rjourney:'◐ Journey',readiness:'◐ Readiness',decisions:'◐ Decisions',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
 const ATLAS_DOMAINS={atlas:'',services:'services',apps:'apps',packages:'packages',payments:'payments',identity:'identity',database:'database',marketplace:'marketplace',themes:'themes',developer:'developer',security:'security',tenancy:'tenancy'};
 const $=s=>document.querySelector(s);
 const cv=$('#cv'),ctx=cv.getContext('2d'),dash=$('#dash'),hint=$('#hint'),atlasbar=$('#atlasbar'),ibody=$('#inspectorBody');
@@ -224,6 +224,14 @@ async function selectTab(t){
   if(t==='memory')return renderMemory();
   if(t==='impact')return renderImpact();
   if(t==='mgraph')return renderMgraph();
+  if(t==='robs')return renderRobs();
+  if(t==='rmerch')return renderRmerch();
+  if(t==='rrev')return renderRrev();
+  if(t==='rsec')return renderRsec();
+  if(t==='rinc')return renderRinc();
+  if(t==='rjourney')return renderRjourney();
+  if(t==='readiness')return renderReadiness();
+  if(t==='decisions')return renderDecisions();
   const d=await api('/api/graph-domain?key='+t);
   if(!d){dash.innerHTML='<p class="hint">No data.</p>';return;}
   const rc=d.risk>66?'var(--critical)':d.risk>33?'var(--warning)':'var(--success)';
@@ -521,6 +529,140 @@ async function renderMgraph(){
    ${o.chain.map(c=>`<tr><td class="lbl">${esc(c.node)}${c.money?' <span class="badge brand" style="padding:1px 7px">money</span>':''}</td><td><span class="mono">${esc(c.apps.join(', '))}</span></td><td style="text-align:right"><span class="deg">${c.routes}</span></td><td style="text-align:right"><span class="deg">${c.rpcs}</span></td><td style="text-align:right"><span class="deg">${c.tables}</span></td><td style="text-align:right"><span class="deg">${c.tenantTables}</span></td><td><span class="mono" style="color:var(--muted)">${esc(c.feeds.join(', ')||'—')}</span></td></tr>`).join('')}
    </tbody></table>
    <div class="sectionTitle">Affected merchants</div><p class="hint" style="padding:4px 0">${esc(o.affectedMerchants)}</p>`;
+}
+
+// ---------- v5 live operating intelligence ----------
+async function renderRobs(){
+  await v3wrap('runtime observability');const o=await api('/api/runtime-intelligence');if(o.error)return v3err('◐ Runtime Obs',o.error);
+  const s=o.summary;
+  dash.innerHTML=`<h2>◐ Runtime Observability Graph</h2>
+   <p class="hint" style="padding:6px 0">${esc(s.chainSpec)}. <b>${esc(s.metricsNote)}</b></p>
+   <div class="cards">${card(s.workers,'workers')}${card(s.queues,'queue edges')}${card(s.deadLetterQueues,'dead-letter queues')}${card(s.telemetryEmitters,'telemetry emitters')}${card(s.liveSnapshot?'snapshot':'live','metrics')}</div>
+   <div class="sectionTitle">Worker → domain → data chain</div>
+   <table><thead><tr><th>Worker</th><th>Domains</th><th style="text-align:right">rpcs</th><th style="text-align:right">tables</th><th style="text-align:right">money</th><th style="text-align:right">tenant</th><th>telemetry</th></tr></thead><tbody>
+   ${o.chain.map(c=>`<tr><td class="lbl">${esc(c.worker)}</td><td><span class="mono" style="color:var(--muted)">${esc(c.domains.join(', ')||'—')}</span></td><td style="text-align:right"><span class="deg">${c.rpcs}</span></td><td style="text-align:right"><span class="deg">${c.tables}</span></td><td style="text-align:right">${c.moneyTables}</td><td style="text-align:right">${c.tenantTables}</td><td>${c.telemetry.length?'✓ '+esc(c.telemetry.join(',')):'·'}</td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Metric → source (live-query-bound)</div>
+   <table><thead><tr><th>Metric</th><th>Source</th><th>How to read</th></tr></thead><tbody>
+   ${Object.entries(o.metrics).map(([k,v])=>`<tr><td class="lbl">${esc(k)}</td><td><span class="mono">${esc(v.source)}</span></td><td><span class="mono" style="color:var(--muted)">${esc(v.query)}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Dead-letter queues</div><div class="badges">${bd(o.deadLetterQueues)}</div>`;
+}
+async function renderRmerch(){
+  await v3wrap('merchants');const o=await api('/api/merchant-intelligence');if(o.error)return v3err('◐ Merchants',o.error);
+  const s=o.summary;
+  dash.innerHTML=`<h2>◐ Merchant Intelligence</h2>
+   <p class="hint" style="padding:6px 0">⚠ ${esc(s.liveDataNote)}</p>
+   <div class="cards">${card(s.operatingStages,'operating stages')}${card(s.tenantTables,'tenant tables')}${card(s.detectors,'live detectors')}${card(s.singlePointOfDependency?'YES':'no','single point of dependency')}</div>
+   <div class="sectionTitle">Structural findings (repository truth)</div>
+   <table><thead><tr><th>ID</th><th>Finding</th><th>Evidence</th></tr></thead><tbody>
+   ${o.findings.map(f=>`<tr><td class="lbl">${esc(f.id)}</td><td>${esc(f.finding)}</td><td><span class="mono" style="color:var(--muted)">${esc(f.evidence)}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Live detectors (query-bound)</div>
+   <table><thead><tr><th>Detector</th><th>Source</th><th>Query</th></tr></thead><tbody>
+   ${Object.entries(o.detectors).map(([k,v])=>`<tr><td class="lbl">${esc(k)}</td><td><span class="mono">${esc(v.source)}</span></td><td><span class="mono" style="color:var(--muted)">${esc(v.query)}</span></td></tr>`).join('')}
+   </tbody></table>`;
+}
+async function renderRrev(){
+  await v3wrap('revenue');const o=await api('/api/revenue-intelligence');if(o.error)return v3err('◐ Revenue',o.error);
+  const s=o.summary;
+  dash.innerHTML=`<h2>◐ Revenue Intelligence</h2>
+   <p class="hint" style="padding:6px 0">⚠ ${esc(s.liveDataNote)}</p>
+   <div class="cards">${card(s.moneyRpcs,'money RPCs')}${card(s.canonicalMutationRpcs,'canonical mutations (SD+idem+lock)')}${card(s.moneyTables,'money tables')}${card(s.highRiskPaths,'high-risk paths')}</div>
+   <p class="hint" style="padding:4px 0"><b>Balance invariant:</b> ${esc(s.balanceInvariant)}</p>
+   <div class="sectionTitle">Leak / anomaly detectors (reconciliation RPCs — value query-bound)</div>
+   <table><thead><tr><th>Detector</th><th>Check</th><th>RPC(s)</th></tr></thead><tbody>
+   ${Object.entries(o.detectors).map(([k,v])=>`<tr><td class="lbl">${esc(k)}</td><td>${esc(v.check)}</td><td><span class="mono" style="color:var(--muted)">${esc((v.rpc||[]).join(', ')||'—')}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">High-risk money paths (structural — no SD/idem/lock)</div>
+   <p class="hint" style="padding:4px 0">${esc(s.note)}</p>
+   <table><thead><tr><th>RPC</th><th>SD</th><th>idem</th><th>lock</th><th>why</th></tr></thead><tbody>
+   ${o.highRiskPaths.map(r=>`<tr><td class="lbl">${esc(r.rpc)}</td><td>${r.securityDefiner?'✓':'<span style="color:var(--warning)">✗</span>'}</td><td>${r.idempotency?'✓':'·'}</td><td>${r.forUpdate?'✓':'·'}</td><td><span class="mono" style="color:var(--muted)">${esc(r.why)}</span></td></tr>`).join('')}
+   </tbody></table>`;
+}
+async function renderRsec(){
+  await v3wrap('security');const o=await api('/api/security-intelligence');if(o.error)return v3err('◐ Security',o.error);
+  const s=o.summary;
+  dash.innerHTML=`<h2>◐ Security Intelligence v5</h2>
+   <div class="cards">${card(s.controlsPresent+'/'+s.controls,'controls present')}${card(s.trustBoundaries,'trust boundaries')}${card(s.crossTenantCandidates,'cross-tenant candidates')}${card(s.tenantTables,'tenant tables')}${card(s.policies,'RLS policies')}</div>
+   <div class="sectionTitle">Controls</div>
+   <table><thead><tr><th>Control</th><th>Present</th><th>Detail</th></tr></thead><tbody>
+   ${Object.entries(o.controls).map(([k,v])=>`<tr><td class="lbl">${esc(k)}</td><td>${v.present?'✓':'<span style="color:var(--warning)">·</span>'}</td><td><span class="mono" style="color:var(--muted)">${esc(v.detail)}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Trust boundaries</div>
+   <table><thead><tr><th>From</th><th>To</th><th>Control</th></tr></thead><tbody>
+   ${o.trustBoundaries.map(t=>`<tr><td class="lbl">${esc(t.from)}</td><td>${esc(t.to)}</td><td><span class="mono" style="color:var(--muted)">${esc(t.control)}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Security hotspots</div>
+   <table><thead><tr><th>Area</th><th>Why</th><th>Control</th></tr></thead><tbody>
+   ${o.hotspots.map(h=>`<tr><td class="lbl">${esc(h.area)}</td><td>${esc(h.why)}</td><td><span class="mono" style="color:var(--muted)">${esc(h.control)}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Deterministic validators (authoritative)</div><div class="badges">${bd(s.deterministicValidators)}</div>`;
+}
+async function renderRinc(){
+  await v3wrap('incidents');dash.className='dash fade';
+  const dl=await api('/api/domains');
+  dash.innerHTML=`<h2>◐ Live Incident Intelligence</h2>
+   <p class="hint" style="padding:6px 0">One call → what failed · who/which merchants/tables/rpcs/queues/workers/deployments · rollback · owner.</p>
+   <div class="pathgrid" style="grid-template-columns:1fr auto"><input id="rincq" type="text" placeholder="domain / route / table (e.g. payments)" value="payments"/><button id="rincgo" class="primary">Trace</button></div>
+   <div id="rincout" style="margin-top:14px"></div>
+   <div class="sectionTitle">Domains</div><div class="badges">${bd((dl||[]).map(d=>d.key))}</div>`;
+  const go=async()=>{const q=$('#rincq').value.trim();if(!q)return;const o=await api('/api/incident-intelligence?domain='+encodeURIComponent(q));const out=$('#rincout');
+    if(o.error){out.innerHTML=`<p class="hint">${esc(o.error)}</p>`;return;}const a=o.answers;
+    out.innerHTML=`<div class="cards">${card(o.blastRadius.domains,'domains')}${card(a.whichTables.length,'tables')}${card(a.whichRpcs.length,'rpcs')}${card(a.whichWorkers.length,'workers')}</div>
+     <table><tbody>
+     <tr><td class="lbl">What failed</td><td>${esc(a.whatFailed)}</td></tr>
+     <tr><td class="lbl">Who/owner</td><td>${esc(a.whatOwner.join(', '))}</td></tr>
+     <tr><td class="lbl">Which merchants</td><td>${esc(a.whichMerchants)}</td></tr>
+     <tr><td class="lbl">Workers</td><td><span class="mono">${esc(a.whichWorkers.join(', '))}</span></td></tr>
+     <tr><td class="lbl">Queues</td><td><span class="mono">${esc(a.whichQueues.join(', '))}</span></td></tr>
+     <tr><td class="lbl">Deployment</td><td><span class="mono">${esc(a.whichDeployments.worker)} @ ${esc(a.whichDeployments.head||'')} (${esc(a.whichDeployments.branch||'')})</span></td></tr>
+     <tr><td class="lbl">Rollback</td><td><span class="mono" style="color:var(--muted)">${esc(a.whatRollback||'')}</span></td></tr>
+     </tbody></table>
+     <div class="sectionTitle">Tables</div><div class="badges">${bd(a.whichTables)}</div>`;};
+  $('#rincgo').onclick=go;$('#rincq').onkeydown=e=>{if(e.key==='Enter')go();};go();
+}
+async function renderRjourney(){
+  await v3wrap('journey');const o=await api('/api/customer-intelligence');if(o.error)return v3err('◐ Journey',o.error);
+  const s=o.summary;
+  dash.innerHTML=`<h2>◐ Customer Journey Intelligence</h2>
+   <p class="hint" style="padding:6px 0">${s.funnel.join(' → ')}. ⚠ ${esc(s.dropoffNote)}</p>
+   <div class="cards">${card(s.stages,'stages')}${card(s.criticalStages.length,'critical stages')}${card(s.externalDependencies.length,'external deps')}</div>
+   <table><thead><tr><th>Stage</th><th>Risk</th><th>Domains</th><th style="text-align:right">routes</th><th>External deps</th><th>Failure points</th></tr></thead><tbody>
+   ${o.stages.map(st=>`<tr><td class="lbl">${esc(st.stage)}${st.money?' <span class="badge brand" style="padding:1px 7px">money</span>':''}</td><td>${esc(st.risk)}</td><td>${bd(st.domains)}</td><td style="text-align:right"><span class="deg">${st.routes.length}</span></td><td><span class="mono" style="color:var(--muted)">${esc(st.externalDependencies.join(', ')||'—')}</span></td><td><span class="mono" style="color:var(--muted)">${esc(st.failurePoints.join('; ')||'—')}</span></td></tr>`).join('')}
+   </tbody></table>`;
+}
+async function renderReadiness(){
+  await v3wrap('readiness');const o=await api('/api/production-readiness');if(o.error)return v3err('◐ Readiness',o.error);
+  const s=o.summary;const oc=s.overall>85?'var(--success)':s.overall>60?'var(--warning)':'var(--critical)';
+  const bar=(n)=>`<div class="risk" style="width:90px;display:inline-block;vertical-align:middle"><i style="width:${n}%;background:${n>85?'var(--success)':n>60?'var(--warning)':'var(--critical)'}"></i></div>`;
+  dash.innerHTML=`<h2>◐ Production Readiness</h2>
+   <p class="hint" style="padding:6px 0">${esc(s.scope)}</p>
+   <div class="cards"><div class="card"><div class="n" style="color:${oc}">${s.overall}%</div><div class="k">overall structural</div></div>${card(s.systems,'systems')}<div class="card"><div class="n" style="color:var(--critical)">${esc(s.launchVerdict)}</div><div class="k">launch verdict</div></div>${card(s.openBlockers,'open blockers')}</div>
+   <p class="hint" style="padding:4px 0">High structural completeness + NO-GO launch = the foundation is intact; the open blockers are launch-scope features.</p>
+   <div class="sectionTitle">Per-system readiness (with evidence)</div>
+   <table><thead><tr><th>System</th><th style="text-align:right">score</th><th></th><th>evidence</th></tr></thead><tbody>
+   ${o.systems.map(sy=>`<tr><td class="lbl">${esc(sy.system)}${sy.blockers.length?' <span class="badge" style="padding:1px 7px;color:var(--critical)">'+esc(sy.blockers.join(','))+'</span>':''}</td><td style="text-align:right"><b>${sy.score}%</b></td><td>${bar(sy.score)}</td><td><span class="mono" style="color:var(--muted)">${esc(sy.evidence.join(' · '))}</span></td></tr>`).join('')}
+   </tbody></table>`;
+}
+async function renderDecisions(){
+  await v3wrap('decisions');const o=await api('/api/decision-engine');if(o.error)return v3err('◐ Decisions',o.error);
+  const s=o.summary;
+  dash.innerHTML=`<h2>◐ AI Decision Engine</h2>
+   <p class="hint" style="padding:6px 0">${esc(s.note)}</p>
+   <div class="cards"><div class="card"><div class="n" style="color:var(--critical)">${esc(s.launchVerdict)}</div><div class="k">launch verdict</div></div>${card(s.overallReadiness+'%','overall readiness')}${card(s.fixNextCount,'open to fix')}${card(s.highestRiskCount,'risk items')}</div>
+   <div class="sectionTitle">Fix next (ranked by severity)</div>
+   <table><thead><tr><th>#</th><th>ID</th><th>Severity</th><th>Title</th><th>Status</th></tr></thead><tbody>
+   ${o.fixNext.map(f=>`<tr><td>${f.rank}</td><td class="lbl">${esc(f.id)}</td><td>${esc(f.severity)}</td><td>${esc(f.title)}</td><td><span class="mono" style="color:var(--muted)">${esc(f.status)}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Highest risk</div>
+   <table><thead><tr><th>Type</th><th>Ref</th><th>Detail</th></tr></thead><tbody>
+   ${o.highestRisk.map(r=>`<tr><td>${esc(r.type)}</td><td class="lbl">${esc(r.ref)}</td><td>${esc(r.detail)}</td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">What blocks launch — ${esc(o.blocksLaunch.verdict)}</div><div class="badges">${bd(o.blocksLaunch.blockers)}</div>
+   <div class="sectionTitle">What blocks 100 merchants</div><ul class="hint">${o.blocksScale.blocks100Merchants.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+   <div class="sectionTitle">What blocks 10k users</div><ul class="hint">${o.blocksScale.blocks10kUsers.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+   <div class="sectionTitle">What blocks 100k concurrent users</div><ul class="hint">${o.blocksScale.blocks100kConcurrentUsers.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
 }
 
 // ---------- neighborhood (live force sim) ----------

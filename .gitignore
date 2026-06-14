@@ -154,3 +154,13 @@ graphify-out/memory-intel.json
 graphify-out/runtime-intel.json
 graphify-out/deployment-state.json
 graphify-out/execution-intel.json
+graphify-out/runtime-observability.json
+graphify-out/merchant-intelligence.json
+graphify-out/revenue-intelligence.json
+graphify-out/deployment-intelligence-v5.json
+graphify-out/security-intelligence-v5.json
+graphify-out/incident-intelligence-v5.json
+graphify-out/customer-journey-intelligence.json
+graphify-out/production-readiness.json
+graphify-out/decision-engine.json
+graphify-out/autonomous-discovery-v5.json

@@ -47,6 +47,20 @@ jobs:
           node tools/graph-server/execution-intel.mjs
       - name: Regenerate v4 reports
         run: node tools/graph-server/gen-v4-reports.mjs
+      - name: Extract v5 live operating intelligence
+        run: |
+          node tools/graph-server/runtime-observability-intel.mjs
+          node tools/graph-server/merchant-intelligence.mjs
+          node tools/graph-server/revenue-intelligence.mjs
+          node tools/graph-server/deployment-intelligence-v5.mjs
+          node tools/graph-server/security-intelligence-v5.mjs
+          node tools/graph-server/incident-intelligence-v5.mjs
+          node tools/graph-server/customer-journey-intelligence.mjs
+          node tools/graph-server/production-readiness-intel.mjs
+          node tools/graph-server/decision-engine-v5.mjs
+          node tools/graph-server/autonomous-discovery-v5.mjs
+      - name: Regenerate v5 reports
+        run: node tools/graph-server/gen-v5-reports.mjs
       - name: Sanity gate — schema must parse to non-trivial counts
         run: |
           node -e "const s=require('./graphify-out/db-intel.json').summary; if(s.tables<100||s.functions<50){console.error('DB intel parse looks degraded',s);process.exit(1)} console.log('DB intel OK:',s.tables,'tables,',s.functions,'functions,',s.policies,'policies')"

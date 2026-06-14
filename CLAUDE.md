@@ -135,4 +135,17 @@ Before scanning the repository, query in this order: **1. LCIS** (code/domain gr
 | **What should be fixed next?** | `pnpm graph:execution` · `/api/execution` (open blockers, gaps, launch verdict) |
 | **Which merchants use a feature?** | `/api/merchant-operating` (multi-tenant: all stores share the schema) |
 
-Fall back to a full repo scan only when LCIS returns nothing or the data layer is stale (`pnpm graph:update && graph:v4`). Change-control hotspots above always warrant a `graph:intel blast` before merge.
+### LCIS v5 — live operating intelligence (LCIS-V5-FIRST policy)
+Before scanning the repository, query LCIS v5 first — **Runtime → Merchant → Revenue → Security → Incident → Decision**. Built by `pnpm graph:v5`. Live values (latency/errors, revenue/refund amounts, top merchants, funnel dropoff, live deploy versions) are **query-bound**: LCIS maps the topology + the exact source-of-truth (Analytics Engine, ledger reconciliation RPCs, site-scoped rows) and never fabricates them.
+
+| Question | LCIS query (CLI or `/api/...`) |
+|----------|--------------------------------|
+| **What is running / failing?** | `/api/runtime-intelligence` (Worker→Queue→Cron→RPC→Table→Merchant→Customer→Deployment→Domain + metric sources) |
+| **How much revenue / money risk?** | `/api/revenue-intelligence` (ledger model + reconciliation RPCs; amounts query-bound) · high-risk money paths |
+| **Which merchants / who's affected?** | `/api/merchant-intelligence` (single-tenant SPOF) · `/api/incident-intelligence?domain=X` |
+| **Security posture / attack surface?** | `/api/security-intelligence` (11 controls, trust boundaries, cross-tenant candidates) |
+| **Is it production-ready?** | `/api/production-readiness` (structural %, per-system evidence) — NO-GO + high structural = foundation intact, launch-scope blockers open |
+| **What should be fixed next / what blocks scale?** | `/api/decision-engine` (ranked fix order; blocks launch / 100 merchants / 10k / 100k users) |
+| **What's dead/unused?** | `pnpm graph:discover-v5` (candidates; validators authoritative) |
+
+Fall back to a full repo scan only when LCIS returns nothing or the data layer is stale (`pnpm graph:update && graph:v5`). Change-control hotspots above always warrant a `graph:intel blast` before merge.
