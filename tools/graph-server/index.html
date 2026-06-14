@@ -131,15 +131,109 @@
   .spin{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--brand);border-radius:50%;animation:sp 0.7s linear infinite;display:inline-block}
   @keyframes sp{to{transform:rotate(360deg)}}
   .fade{animation:fade .25s ease}@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
+
+  /* ============ v6 dual-mode operating system ============ */
+  .modetoggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);overflow:hidden;margin-left:auto}
+  .modetoggle button{border:0;border-radius:0;background:transparent;padding:6px 16px;color:var(--subdued);font-weight:600;font-size:12.5px}
+  .modetoggle button.on{background:linear-gradient(180deg,var(--brand),var(--brand-cta));color:#fff}
+  .kbtn{margin-left:10px;color:var(--subdued);font-size:12px;border-radius:var(--r-md)}
+  .kbtn kbd{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:0 5px;font-family:var(--mono);font-size:11px;margin-left:5px}
+
+  #explain{height:calc(100vh - 56px);display:grid;grid-template-columns:268px 1fr;overflow:hidden}
+  .xtree{border-right:1px solid var(--border-soft);background:var(--sidebar);overflow:auto;padding:12px 10px}
+  .xtree .grp{margin-bottom:3px}
+  .xtree .sec{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:var(--r-md);cursor:pointer;color:var(--text);font-weight:600;font-size:13.5px;transition:.12s}
+  .xtree .sec:hover{background:var(--surface)} .xtree .sec.active{background:var(--brand-soft);color:var(--brand-2);box-shadow:inset 2px 0 0 var(--brand)}
+  .xtree .sec .ic{width:18px;text-align:center;color:var(--brand-2);font-size:14px}
+  .xtree .sec .caret{margin-left:auto;color:var(--muted);transition:.15s;font-size:11px}
+  .xtree .sec.open .caret{transform:rotate(90deg)}
+  .xtree .kids{margin:2px 0 6px 0;overflow:hidden}
+  .xtree .kid{padding:7px 11px 7px 38px;border-radius:var(--r-md);cursor:pointer;color:var(--subdued);font-size:12.5px;transition:.1s;display:flex;justify-content:space-between;gap:6px;align-items:center}
+  .xtree .kid:hover{background:var(--surface);color:var(--text)} .xtree .kid.active{background:var(--brand-soft);color:var(--brand-2)}
+  .xtree .kid .tier{font-size:9px;color:var(--muted)}
+
+  .xmain{overflow:auto;padding:26px 32px;max-width:1080px}
+  .xhero{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+  .xhero h1{margin:0;font-size:26px;font-weight:740;letter-spacing:-.4px}
+  .xhero .crit{font-size:11px;font-weight:700;padding:4px 12px;border-radius:var(--r-pill);white-space:nowrap}
+  .crit.t1{background:rgba(239,68,68,.14);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+  .crit.t2{background:rgba(245,158,11,.14);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
+  .crit.t3{background:var(--surface);color:var(--subdued);border:1px solid var(--border)}
+  .xlede{color:var(--subdued);font-size:15px;line-height:1.65;margin:14px 0 4px;max-width:760px}
+  .xgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:13px;margin:18px 0}
+  .xcard{background:linear-gradient(180deg,var(--raised),var(--surface));border:1px solid var(--border);border-radius:var(--r-lg);padding:15px 17px}
+  .xcard .h{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:700;margin-bottom:6px}
+  .xcard .b{font-size:13.5px;line-height:1.55;color:var(--text)}
+  .xcard.warn{border-color:rgba(239,68,68,.25)} .xcard.warn .h{color:#fca5a5}
+  .xrel{display:flex;gap:24px;flex-wrap:wrap;margin:8px 0 4px}
+  .xrel .col .h{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:700;margin-bottom:7px}
+  .xpill{display:inline-flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);padding:4px 12px;font-size:12.5px;color:var(--subdued);cursor:pointer;margin:0 5px 5px 0;transition:.12s}
+  .xpill:hover{border-color:var(--brand);color:var(--brand-2)}
+  .xpill.b{background:var(--brand-soft);border-color:rgba(139,92,246,.3);color:var(--brand-2)}
+
+  .xflow{display:flex;flex-direction:column;gap:0;margin:6px 0}
+  .xstep{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);position:relative;cursor:default;transition:.12s}
+  .xstep:hover{border-color:#352f48}
+  .xstep .num{width:22px;height:22px;border-radius:50%;background:var(--brand-soft);color:var(--brand-2);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+  .xstep .arrow{height:14px;width:1px;background:var(--border);margin:2px 0 2px 24px}
+  .xsection{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:700;margin:26px 0 10px;display:flex;align-items:center;gap:10px}
+  .xsection:after{content:'';flex:1;height:1px;background:var(--border-soft)}
+
+  .xreveal{border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin:8px 0}
+  .xreveal .hd{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;background:var(--surface);font-weight:600;font-size:13.5px}
+  .xreveal .hd:hover{background:#1c1827} .xreveal .hd .caret{margin-left:auto;color:var(--muted);transition:.15s}
+  .xreveal.open .hd .caret{transform:rotate(90deg)}
+  .xreveal .bd{padding:4px 16px 16px;display:none} .xreveal.open .bd{display:block}
+  .xrow{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-soft);font-size:13px;align-items:baseline}
+  .xrow .k{width:96px;flex:none;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+  .xrow .v{flex:1;min-width:0;font-family:var(--mono);font-size:12px;color:var(--subdued);word-break:break-word}
+
+  .xai{background:#0c0a14;border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+  .xai .hd{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border-soft);font-size:12px;color:var(--subdued)}
+  .xai pre{margin:0;padding:15px;font-family:var(--mono);font-size:12px;line-height:1.65;color:#c9c3da;white-space:pre-wrap;max-height:340px;overflow:auto}
+  .copybtn{margin-left:auto}
+  .xatlas{margin-top:18px}
+
+  /* command palette */
+  .cmdk-bg{position:fixed;inset:0;background:rgba(5,4,10,.7);backdrop-filter:blur(3px);z-index:50;display:none;align-items:flex-start;justify-content:center;padding-top:12vh}
+  .cmdk-bg.on{display:flex}
+  .cmdk{width:min(640px,92vw);background:var(--raised);border:1px solid var(--border);border-radius:var(--r-xl);box-shadow:var(--shadow);overflow:hidden}
+  .cmdk input{border:0;border-bottom:1px solid var(--border-soft);border-radius:0;padding:16px 18px;font-size:15px;background:transparent}
+  .cmdk input:focus{box-shadow:none;border-color:var(--border-soft)}
+  .cmdk .res{max-height:52vh;overflow:auto;padding:8px}
+  .cmdk .cat{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:700;padding:10px 12px 5px}
+  .cmdk .item{padding:9px 12px;border-radius:var(--r-md);cursor:pointer;display:flex;gap:10px;align-items:center;font-size:13.5px}
+  .cmdk .item:hover,.cmdk .item.sel{background:var(--brand-soft);color:var(--brand-2)}
+  .cmdk .item .ic{color:var(--brand-2);width:16px;text-align:center}
+  .cmdk .item .meta{margin-left:auto;color:var(--muted);font-size:11px;font-family:var(--mono)}
+  .cmdk .ask{padding:11px 14px;border-top:1px solid var(--border-soft);font-size:12px;color:var(--subdued)}
+
+  .empty{color:var(--muted);padding:40px;text-align:center;font-size:14px}
+  @media (max-width:880px){
+    main{grid-template-columns:1fr} .inspector{display:none}
+    #explain{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 56px)}
+    .xtree{border-right:0;border-bottom:1px solid var(--border-soft);max-height:38vh}
+    .xmain{padding:18px 16px}
+    .tabs{padding:8px 10px} header{padding:11px 14px;flex-wrap:wrap;gap:10px} .brand .sub{display:none}
+    #chips{display:none} .modetoggle{margin-left:0} .kbtn{margin-left:auto}
+    .xhero h1{font-size:21px} table{display:block;overflow-x:auto;white-space:nowrap}
+    .xgrid{grid-template-columns:1fr} .xrel{gap:14px}
+  }
 </style>
 </head>
 <body>
 <header>
-  <div class="brand"><img class="logo" src="/logo.svg" alt="LetBuyy" /><span class="sub">Graph Intelligence</span></div>
-  <div class="chips" id="chips"></div>
+  <div class="brand"><img class="logo" src="/logo.svg" alt="LetBuyy" /><span class="sub">Operating System</span></div>
+  <div class="modetoggle" id="modetoggle">
+    <button data-m="explain" class="on">◷ Explain</button>
+    <button data-m="technical">⌥ Technical</button>
+  </div>
+  <button class="kbtn" id="cmdkBtn">Search everything <kbd>⌘K</kbd></button>
+  <div class="chips" id="chips" style="margin-left:14px"></div>
 </header>
-<div class="tabs" id="tabs"></div>
-<main>
+<div id="explain"></div>
+<div class="tabs" id="tabs" style="display:none"></div>
+<main style="display:none">
   <div class="stage" id="stage">
     <canvas id="cv"></canvas>
     <div class="atlasbar" id="atlasbar" style="display:none"></div>
@@ -916,7 +1010,208 @@ async function trace(){
 
 $('#q').addEventListener('keydown',e=>{if(e.key==='Enter'){if(!$('#results'))searchPanel();doSearch();}});
 $('#q').addEventListener('input',()=>{clearTimeout(window._t);window._t=setTimeout(()=>{if($('#results'))doSearch();if(atlasRedraw)atlasRedraw();},220);});
+
+/* ============ v6 dual-mode operating system ============ */
+let MODE='explain', XDATA=null, XSEL=null;
+function setMode(m){
+  MODE=m;
+  document.querySelectorAll('#modetoggle button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  $('#explain').style.display = m==='explain'?'grid':'none';
+  $('#tabs').style.display = m==='technical'?'flex':'none';
+  document.querySelector('main').style.display = m==='technical'?'grid':'none';
+}
+document.querySelectorAll('#modetoggle button').forEach(b=>b.onclick=()=>{ if(b.dataset.m==='technical'&&!window._tech){window._tech=1;} setMode(b.dataset.m); });
+
+const CRIT=c=>/Tier 1/.test(c)?'t1':/Tier 2/.test(c)?'t2':'t3';
+const isDomain=k=>XDATA&&XDATA.nodes[k];
+async function bootExplain(){
+  $('#explain').innerHTML=`<div class="xtree" id="xtree"></div><div class="xmain fade" id="xmain"><div class="empty"><span class="spin"></span> Loading…</div></div>`;
+  XDATA=await api('/api/explain');
+  if(!XDATA||XDATA.error){$('#xmain').innerHTML='<div class="empty">Explain data unavailable — run <code>pnpm graph:omega</code>.</div>';return;}
+  xRenderTree(); xSelect('getting-started');
+}
+function xRenderTree(){
+  const t=$('#xtree'); let h='';
+  for(const it of XDATA.ia){
+    if(it.kind==='section'){
+      h+=`<div class="grp"><div class="sec" data-sec="${it.key}"><span class="ic">${it.icon}</span>${esc(it.label)}<span class="caret">▸</span></div><div class="kids" data-kids="${it.key}" style="display:none">`+
+        (it.children||[]).map(ck=>{const n=XDATA.nodes[ck];return n?`<div class="kid" data-node="${ck}">${esc(n.label)}<span class="tier">${esc(n.criticality.split(' ')[0]+' '+n.criticality.split(' ')[1])}</span></div>`:'';}).join('')+`</div></div>`;
+    } else if(it.kind==='ecosystem'){
+      h+=`<div class="sec" data-page="${it.key}"><span class="ic">${it.icon}</span>${esc(it.label)}</div>`;
+    } else if(it.kind==='toggle'){
+      h+=`<div class="sec" data-toggle="technical"><span class="ic">${it.icon}</span>${esc(it.label)}</div>`;
+    } else if(it.kind==='atlas'){
+      h+=`<div class="sec" data-atlas="1"><span class="ic">${it.icon}</span>${esc(it.label)}</div>`;
+    } else {
+      h+=`<div class="sec" data-page="${it.key}"><span class="ic">${it.icon}</span>${esc(it.label)}</div>`;
+    }
+  }
+  t.innerHTML=h;
+  t.querySelectorAll('.sec[data-sec]').forEach(el=>el.onclick=()=>{const k=el.dataset.sec;const kids=t.querySelector(`[data-kids="${k}"]`);const open=kids.style.display!=='none';kids.style.display=open?'none':'block';el.classList.toggle('open',!open);});
+  t.querySelectorAll('.kid[data-node]').forEach(el=>el.onclick=()=>xSelect(el.dataset.node));
+  t.querySelectorAll('.sec[data-page]').forEach(el=>el.onclick=()=>xSelect(el.dataset.page));
+  t.querySelectorAll('.sec[data-toggle]').forEach(el=>el.onclick=()=>setMode('technical'));
+  t.querySelectorAll('.sec[data-atlas]').forEach(el=>el.onclick=()=>{setMode('technical');selectTab('atlas');});
+}
+function xActive(key){document.querySelectorAll('#xtree .sec,#xtree .kid').forEach(e=>e.classList.toggle('active',e.dataset.node===key||e.dataset.page===key));}
+function xSelect(key){
+  XSEL=key; xActive(key); const m=$('#xmain'); m.className='xmain fade'; m.scrollTop=0;
+  if(key==='getting-started')return xGettingStarted();
+  if(key==='infrastructure')return xInfra();
+  if(key==='readiness')return xReadiness();
+  if(key==='ai-context')return xAiContextPage();
+  if(key==='merchant-journey')return xEcosystem('merchant');
+  if(key==='customer-journey')return xEcosystem('customer');
+  if(XDATA.nodes[key])return xNode(XDATA.nodes[key]);
+  m.innerHTML='<div class="empty">Select a topic from the left.</div>';
+}
+const xpill=(txt,key)=>isDomain(key)?`<span class="xpill" onclick="xSelect('${key}')">${esc(txt)}</span>`:`<span class="xpill">${esc(txt)}</span>`;
+function xNode(n){
+  const tech=n.technical;
+  $('#xmain').innerHTML=`
+    <div class="xhero"><h1>${esc(n.label)}</h1><span class="crit ${CRIT(n.criticality)}">${esc(n.criticality)}</span></div>
+    <p class="xlede">${esc(n.purpose)}</p>
+    <div class="xgrid">
+      <div class="xcard"><div class="h">Business importance</div><div class="b">${esc(n.importance)}</div></div>
+      <div class="xcard warn"><div class="h">Failure impact</div><div class="b">${esc(n.failureImpact)}</div></div>
+      <div class="xcard"><div class="h">Operational notes</div><div class="b">${esc(n.operationalNotes)}</div></div>
+    </div>
+    <div class="xrel">
+      <div class="col"><div class="h">Owner</div>${(n.owner.length?n.owner:['unowned']).map(o=>`<span class="xpill b">${esc(o)}</span>`).join('')}</div>
+      <div class="col"><div class="h">Depends on</div>${n.dependsOn.length?n.dependsOn.map(d=>xpill(d,d)).join(''):'<span class="xpill">none</span>'}</div>
+      <div class="col"><div class="h">Consumed by (failure blast)</div>${n.consumers.length?n.consumers.map(d=>xpill(d,d)).join(''):'<span class="xpill">none</span>'}</div>
+    </div>
+    ${n.flow?`<div class="xsection">How it works</div><div class="xflow">${n.flow.map((s,i)=>`<div class="xstep"><span class="num">${i+1}</span>${esc(s)}</div>${i<n.flow.length-1?'<div class="arrow"></div>':''}`).join('')}</div>`:''}
+    <div class="xsection">Technical</div>
+    <div class="xreveal" id="reveal"><div class="hd">⌥ Show technical details <span class="caret">▸</span></div><div class="bd">
+      <div class="xrow"><div class="k">Routes</div><div class="v">${esc(tech.routes.join(', ')||'—')}</div></div>
+      <div class="xrow"><div class="k">RPCs (${tech.rpcs.length})</div><div class="v">${esc(tech.rpcs.join(', ')||'—')}</div></div>
+      <div class="xrow"><div class="k">Tables (${tech.tables.length})</div><div class="v">${esc(tech.tables.join(', ')||'—')}</div></div>
+      <div class="xrow"><div class="k">Policies</div><div class="v">${tech.policies}</div></div>
+      <div class="xrow"><div class="k">Workers</div><div class="v">${esc(tech.workers.join(', '))}</div></div>
+      <div class="xrow"><div class="k">Queues</div><div class="v">${esc(tech.queues.join(', '))}</div></div>
+      <div class="xrow"><div class="k">Secrets</div><div class="v">${esc(tech.secrets.join(', ')||'—')}</div></div>
+      <div class="xrow"><div class="k">Services</div><div class="v">${esc(tech.services.join(', ')||'—')}</div></div>
+      <div class="xrow"><div class="k">Security</div><div class="v">${tech.money?'money path (SECURITY DEFINER + canonical-ledger-only)':'standard'} · ${tech.tenant?'tenant-scoped (RLS + verifySiteOwnership)':'platform-internal'}</div></div>
+    </div></div>
+    <div class="xsection">AI context — copy for Claude / Gemini / Codex</div>
+    ${xAi(n.aiContext)}
+    <div class="xatlas"><button class="primary" onclick="xViewInAtlas('${n.key}')">★ View in Atlas</button>
+      <button onclick="setMode('technical');selectTab('impact')" style="margin-left:8px">⟶ Open Change-Impact</button></div>`;
+  const rv=$('#reveal'); rv.querySelector('.hd').onclick=()=>rv.classList.toggle('open');
+}
+function xAi(text){
+  const id='ai'+Math.floor(performance.now());
+  return `<div class="xai"><div class="hd">AI-optimized context <button class="copybtn" onclick="xCopy('${id}',this)">Copy</button></div><pre id="${id}">${esc(text)}</pre></div>`;
+}
+function xCopy(id,btn){const el=document.getElementById(id);navigator.clipboard.writeText(el.textContent).then(()=>{btn.textContent='Copied ✓';setTimeout(()=>btn.textContent='Copy',1400);});}
+function xViewInAtlas(key){setMode('technical');const ad={payments:'payments',identity:'identity',authentication:'identity',authorization:'security',operations:'security',themes:'themes',marketplace:'marketplace',developer:'developer',storefront:'apps'}[key]||'';selectTab('atlas');setTimeout(()=>renderAtlas(ad),60);}
+function xEcosystem(eco){
+  const e=XDATA.ecosystems[eco];
+  $('#xmain').innerHTML=`<div class="xhero"><h1>${esc(e.label)}</h1></div>
+    <p class="xlede">The end-to-end ${eco} journey. Each stage links to its domain — click to dive in.</p>
+    <div class="xsection">Flow</div>
+    <div class="xflow">${e.steps.map((s,i)=>`<div class="xstep"><span class="num">${i+1}</span>${esc(s)}</div>${i<e.steps.length-1?'<div class="arrow"></div>':''}`).join('')}</div>
+    <div class="xsection">Domains in this journey</div>
+    <div>${e.stages.map(k=>{const n=XDATA.nodes[k];return n?`<span class="xpill b" onclick="xSelect('${k}')">${esc(n.label)} · ${esc(n.criticality.split('—')[0].trim())}</span>`:'';}).join('')}</div>`;
+}
+function xGettingStarted(){
+  const gs=XDATA.gettingStarted;
+  $('#xmain').innerHTML=`<div class="xhero"><h1>${esc(gs.title)}</h1></div>
+    <p class="xlede">A new engineer (or AI) should understand LetBuyy from this page alone. Each step links into the deeper Explain pages; Atlas is the deepest layer for investigation.</p>
+    ${gs.steps.map((s,i)=>`<div class="xsection">${i+1}. ${esc(s.t)}</div><div class="xcard"><div class="b">${esc(s.d)}</div></div>`).join('')}
+    <div class="xatlas"><button class="primary" onclick="xSelect('readiness')">◉ See Readiness</button>
+      <button onclick="xSelect('ai-context')" style="margin-left:8px">✦ AI Context</button>
+      <button onclick="setMode('technical');selectTab('atlas')" style="margin-left:8px">★ Open Atlas</button></div>`;
+}
+function xInfra(){
+  const f=XDATA.infrastructure; if(!f){$('#xmain').innerHTML='<div class="empty">Infrastructure data unavailable.</div>';return;}
+  const chips=a=>a&&a.length?a.map(x=>`<span class="xpill">${esc(x)}</span>`).join(''):'<span class="xpill">—</span>';
+  $('#xmain').innerHTML=`<div class="xhero"><h1>Infrastructure</h1></div>
+    <p class="xlede">Cloudflare Workers + Queues + R2 + Hyperdrive → Supabase Postgres, fronted by Vercel apps. Single deploy pipeline with a migrate gate and rollback.</p>
+    <div class="xgrid">
+      <div class="xcard"><div class="h">Workers</div><div class="b">${chips(f.workers)}</div></div>
+      <div class="xcard"><div class="h">Queues (producers)</div><div class="b">${chips(f.queues)}</div></div>
+      <div class="xcard warn"><div class="h">Dead-letter queues</div><div class="b">${chips(f.deadLetters)}</div></div>
+      <div class="xcard"><div class="h">Storage</div><div class="b">R2: ${chips(f.storage.r2)} · Hyperdrive: ${f.storage.hyperdrive?'✓':'—'}</div></div>
+      <div class="xcard"><div class="h">Vercel apps</div><div class="b">${chips(f.vercelApps)}</div></div>
+      <div class="xcard"><div class="h">Secrets · crons</div><div class="b">${f.secrets} production secrets · ${chips(f.crons)}</div></div>
+    </div>
+    <p class="xlede" style="font-size:13px">Live runtime metrics (latency/errors/queue-depth) are emitted to the Cloudflare Analytics Engine (RUNTIME_TELEMETRY) and are queried live — not stored in the repo.</p>
+    <div class="xatlas"><button class="primary" onclick="setMode('technical');selectTab('robs')">◐ Runtime Observability</button></div>`;
+}
+function xReadiness(){
+  const r=XDATA.readiness; if(!r){$('#xmain').innerHTML='<div class="empty">Readiness data unavailable.</div>';return;}
+  const oc=r.overall>85?'var(--success)':r.overall>60?'var(--warning)':'var(--critical)';
+  const bar=n=>`<div class="risk" style="width:120px;display:inline-block;vertical-align:middle"><i style="width:${n}%;background:${n>85?'var(--success)':n>60?'var(--warning)':'var(--critical)'}"></i></div>`;
+  $('#xmain').innerHTML=`<div class="xhero"><h1>Readiness Center</h1><span class="crit ${r.verdict==='NO-GO'?'t1':'t3'}">${esc(r.verdict)}</span></div>
+    <p class="xlede">Executive view. <b style="color:${oc}">${r.overall}% structural</b> readiness across ${r.dimensions.length} dimensions (repository evidence, not a live SLA). NO-GO + high structural = the foundation is intact; the open blockers are launch-scope features.</p>
+    <div class="xsection">Per-dimension</div>
+    <table><thead><tr><th>Dimension</th><th style="text-align:right">score</th><th></th><th>evidence</th></tr></thead><tbody>
+    ${r.dimensions.map(d=>`<tr><td class="lbl">${esc(d.dimension)}</td><td style="text-align:right"><b>${d.score}%</b></td><td>${bar(d.score)}</td><td><span class="mono" style="color:var(--muted)">${esc(d.evidence)}</span></td></tr>`).join('')}
+    </tbody></table>
+    <div class="xsection">Open blockers</div>
+    ${r.openBlockers.length?`<table><thead><tr><th>ID</th><th>Severity</th><th>Title</th></tr></thead><tbody>${r.openBlockers.map(b=>`<tr><td class="lbl">${esc(b.id)}</td><td>${esc(b.severity)}</td><td>${esc(b.title)}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">No open blockers.</div>'}
+    <div class="xsection">Recommended next actions</div>
+    <div class="xflow">${r.nextActions.map((a,i)=>`<div class="xstep"><span class="num">${i+1}</span>${esc(a.id)} — ${esc(a.title)} <span style="color:var(--muted);margin-left:6px">${esc(a.severity)}</span></div>`).join('')||'<div class="empty">—</div>'}</div>`;
+}
+function xAiContextPage(){
+  const keys=Object.keys(XDATA.nodes);
+  $('#xmain').innerHTML=`<div class="xhero"><h1>AI Context</h1></div>
+    <p class="xlede">Copy-paste context for Claude / Gemini / Codex — so an AI understands a LetBuyy domain without scanning the repository. Pick a domain:</p>
+    <div style="margin:10px 0">${keys.map(k=>`<span class="xpill" onclick="xAiPick('${k}')">${esc(XDATA.nodes[k].label)}</span>`).join('')}</div>
+    <div id="aipick"></div>`;
+  xAiPick('payments');
+}
+function xAiPick(k){const n=XDATA.nodes[k];$('#aipick').innerHTML=`<div class="xsection">${esc(n.label)} — AI context</div>${xAi(n.aiContext)}`;}
+
+/* ---- command palette + copilot ---- */
+const cmdkbg=document.createElement('div');cmdkbg.className='cmdk-bg';cmdkbg.id='cmdkbg';
+cmdkbg.innerHTML=`<div class="cmdk"><input id="cmdkin" type="text" placeholder="Search domains, routes, RPCs, tables, owners… or ask a question" autocomplete="off"/><div class="res" id="cmdkres"></div><div class="ask" id="cmdkask"></div></div>`;
+document.body.appendChild(cmdkbg);
+function openCmdk(){cmdkbg.classList.add('on');const i=$('#cmdkin');i.value='';$('#cmdkres').innerHTML='';$('#cmdkask').textContent='Type to search, or ask "what breaks if checkout changes?"';i.focus();}
+function closeCmdk(){cmdkbg.classList.remove('on');}
+cmdkbg.onclick=e=>{if(e.target===cmdkbg)closeCmdk();};
+$('#cmdkBtn').onclick=openCmdk;
+window.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openCmdk();}if(e.key==='Escape')closeCmdk();});
+async function cmdkSearch(q){
+  const res=$('#cmdkres'),ask=$('#cmdkask');if(!q){res.innerHTML='';ask.textContent='Type to search, or ask a question';return;}
+  let h='';
+  // domains (explain)
+  const dom=XDATA?Object.keys(XDATA.nodes).filter(k=>XDATA.nodes[k].label.toLowerCase().includes(q.toLowerCase())||k.includes(q.toLowerCase())):[];
+  if(dom.length){h+='<div class="cat">Domains</div>'+dom.slice(0,6).map(k=>`<div class="item" data-x="dom:${k}"><span class="ic">◷</span>${esc(XDATA.nodes[k].label)}<span class="meta">${esc(XDATA.nodes[k].criticality.split('—')[0].trim())}</span></div>`).join('');}
+  // pages
+  const pages=[['getting-started','Getting Started'],['readiness','Readiness Center'],['infrastructure','Infrastructure'],['ai-context','AI Context']].filter(([k,l])=>l.toLowerCase().includes(q.toLowerCase()));
+  if(pages.length){h+='<div class="cat">Pages</div>'+pages.map(([k,l])=>`<div class="item" data-x="page:${k}"><span class="ic">◎</span>${esc(l)}</div>`).join('');}
+  // code symbols
+  try{const rs=await api('/api/search?q='+encodeURIComponent(q)+'&limit=6');if(rs.length){h+='<div class="cat">Code & data</div>'+rs.map(n=>`<div class="item" data-x="node:${encodeURIComponent(n.id)}"><span class="ic">▦</span>${esc(n.label)}<span class="meta">${esc((n.source_file||'').split('/').pop())}</span></div>`).join('');}}catch{}
+  res.innerHTML=h||'<div class="cat">No matches</div>';
+  res.querySelectorAll('.item').forEach(el=>el.onclick=()=>cmdkRun(el.dataset.x));
+  ask.innerHTML=`Ask LCIS → <span style="color:var(--brand-2);cursor:pointer" id="askgo">"${esc(q)}"</span>`;
+  const ag=$('#askgo');if(ag)ag.onclick=()=>runCopilot(q);
+}
+function cmdkRun(x){
+  const [t,...rest]=x.split(':');const v=rest.join(':');
+  closeCmdk();
+  if(t==='dom'){setMode('explain');xSelect(v);}
+  else if(t==='page'){setMode('explain');xSelect(v);}
+  else if(t==='node'){setMode('technical');loadNode(decodeURIComponent(v));}
+}
+async function runCopilot(q){
+  closeCmdk();
+  const r=await api('/api/copilot?q='+encodeURIComponent(q));
+  if(r&&r.domain&&isDomain(r.domain)){setMode('explain');xSelect(r.domain);
+    const b=document.createElement('div');b.className='xcard';b.style.cssText='margin:14px 0;border-color:var(--brand)';b.innerHTML=`<div class="h">Copilot · ${esc(r.intent)}</div><div class="b">Routed to <code>${esc(r.engine)}</code>${r.flow?' · flow: '+esc(r.flow.join(' → ')):''}</div>`;
+    const m=$('#xmain');m.insertBefore(b,m.children[1]);}
+  else if(r&&r.intent==='security'){setMode('technical');selectTab('rsec');}
+  else if(r){setMode('technical');$('#q').value=q;searchPanel();doSearch();}
+}
+$('#cmdkin')&&($('#cmdkin').oninput=()=>{clearTimeout(window._ck);window._ck=setTimeout(()=>cmdkSearch($('#cmdkin').value.trim()),160);});
+$('#cmdkin')&&($('#cmdkin').onkeydown=e=>{if(e.key==='Enter'){const first=$('#cmdkres .item');if(first)first.click();else runCopilot($('#cmdkin').value.trim());}});
+
 boot();
+setMode('explain');
+bootExplain();
 </script>
 </body>
 </html>

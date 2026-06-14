@@ -44,6 +44,7 @@ import { buildUnifiedIntelligence } from './unified-intelligence-engine.mjs';
 import { buildDiscoveryV2 } from './discovery-v2.mjs';
 import { buildProductionReadinessV2 } from './production-readiness-v2.mjs';
 import { buildDecisionEngineV2 } from './decision-engine-v2.mjs';
+import { buildExplainIntel, copilot } from './explain-intel.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -101,6 +102,7 @@ const unifiedIntel = loadOrBuild('unified-intelligence.json', buildUnifiedIntell
 const discoveryV2 = loadOrBuild('discovery-v2.json', buildDiscoveryV2);
 const readinessV2 = loadOrBuild('production-readiness-v2.json', buildProductionReadinessV2);
 const decisionV2 = loadOrBuild('decision-engine-v2.json', buildDecisionEngineV2);
+const explainIntel = safe(() => buildExplainIntel());
 
 // ---- v3: customer-journey (Phase 5) + secret intelligence (Phase 10), computed from loaded intel ----
 const JOURNEY = [
@@ -480,6 +482,13 @@ const server = createServer((req, res) => {
     if (p === '/api/fix-engine') return json(res, fixEngine);
     if (p === '/api/unified-intelligence') return json(res, unifiedIntel);
     if (p === '/api/discovery-v2') return json(res, discoveryV2);
+    // ---- v6: explain (dual-mode operating system) + copilot ----
+    if (p === '/api/explain') {
+      if (!explainIntel || explainIntel.error) return json(res, explainIntel || { error: 'explain-intel missing' });
+      const node = u.searchParams.get('node');
+      return json(res, node ? (explainIntel.nodes[node] || { error: `node '${node}' not found` }) : explainIntel);
+    }
+    if (p === '/api/copilot') return json(res, safe(() => copilot(u.searchParams.get('q') || '')));
     if (p === '/api/production-readiness-v2') return json(res, readinessV2);
     if (p === '/api/decision-v2') return json(res, decisionV2);
     if (p === '/api/memory') {

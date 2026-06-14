@@ -80,6 +80,8 @@ jobs:
           node tools/graph-server/unified-intelligence-engine.mjs
       - name: Regenerate Omega reports
         run: node tools/graph-server/gen-omega-reports.mjs
+      - name: Regenerate v6 explain/onboarding docs (dual-mode operating system)
+        run: node tools/graph-server/gen-explain-docs.mjs
       - name: Sanity gate — schema must parse to non-trivial counts
         run: |
           node -e "const s=require('./graphify-out/db-intel.json').summary; if(s.tables<100||s.functions<50){console.error('DB intel parse looks degraded',s);process.exit(1)} console.log('DB intel OK:',s.tables,'tables,',s.functions,'functions,',s.policies,'policies')"

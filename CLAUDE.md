@@ -164,4 +164,16 @@ LCIS is one queryable brain across 13 layers. Execution order before any repo sc
 | What blocks 1k / 10k merchants / 100k users? | `/api/decision-v2` · `/api/production-readiness-v2` (structural) |
 | Architecture / security / RLS / ownership drift? | `/api/discovery-v2` (gate is the authoritative drift gate) |
 
+### LCIS v6 — the dual-mode operating system (Explain default · Technical · Atlas deepest)
+LCIS is now LetBuyy's operating system, readable by humans AND AIs. Three layers: **Explain mode** (default — plain-language Purpose/Importance/Criticality/Owner/Dependencies/Consumers/Failure-impact + flows per domain), **Technical mode** (the engineering tabs/engines), **Atlas** (the deepest 52k-node galaxy). A new engineer onboards via "Understand LetBuyy in 30 minutes"; an AI ingests a domain via the AI-context pack — neither scans the repo.
+
+| Need | Surface |
+|------|---------|
+| Explain a domain (what/why/owner/failure) | `/api/explain?node=<key>` · Explain mode |
+| Onboard in 30 minutes | `/api/explain` → `gettingStarted` · `docs/central-intelligence/ONBOARDING.md` |
+| Paste-ready AI context per domain | `/api/explain?node=<key>` → `aiContext` · `docs/central-intelligence/AI_CONTEXT_PACK.md` |
+| Natural-language question → right engine | `/api/copilot?q=...` (routes to change-impact/owner/memory/security/flow; repo scan last) |
+| Executive readiness | `/api/explain` → `readiness` · `/api/production-readiness-v2` |
+| Deep investigation | Atlas (Technical mode → ★ Atlas) — the deepest layer |
+
 Fall back to a full repo scan only when LCIS returns nothing or the data layer is stale (`pnpm graph:update && graph:omega`). Change-control hotspots above always warrant a `graph:intel blast` before merge.
