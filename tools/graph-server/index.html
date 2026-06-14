@@ -1019,12 +1019,8 @@ async function renderBrain(){
 
 // ---------- neighborhood (live force sim) ----------
 async function loadNode(id){
-  const g=await api('/api/neighbors?id='+encodeURIComponent(id)+'&depth=1&limit=70');
-  if(!g.nodes||!g.nodes.length)return;
-  const root=g.nodes.find(n=>n.id===id)||g.nodes[0];
-  searchPanel();
-  ibody.insertAdjacentHTML('afterbegin',`<div class="nodecard fade" id="nc"><div class="t">${esc(root.label)}</div><div class="m">${esc(root.source_file||'')}${root.source_location?':'+esc(root.source_location):''}</div><div class="m" style="font-family:var(--font);color:var(--subdued)">degree ${root.degree} · community ${root.community} · ${g.nodes.length} neighbors</div></div>`);
-  atlasbar.style.display='none'; showCanvas(); runSim(g,id);
+  // V10 — leveled, typed-edge node graph (Phases 7,8). Level control + edge legend in the inspector.
+  return v10NodeGraph(id, window._v10Level||2);
 }
 function runSim(g,rootId){
   stopSim();clearCanvas();const W=cv.width/DPR,H=cv.height/DPR;
@@ -1040,12 +1036,14 @@ function runSim(g,rootId){
     for(const n of nodes){n.vx+=(W/2-n.x)*.002;n.vy+=(H/2-n.y)*.002;n.x+=Math.max(-12,Math.min(12,n.vx));n.y+=Math.max(-12,Math.min(12,n.vy));n.vx*=.82;n.vy*=.82;n.x=Math.max(24,Math.min(W-24,n.x));n.y=Math.max(24,Math.min(H-24,n.y));}
     draw();if(iter<420)raf=requestAnimationFrame(step);}
   function draw(){ctx.clearRect(0,0,W,H);
-    ctx.strokeStyle='rgba(139,148,158,.22)';ctx.lineWidth=1;for(const l of links){const a=nodes[idx.get(l.source)],b=nodes[idx.get(l.target)];ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
+    // V10 typed edges — colour by relation, skip filtered relations.
+    ctx.lineWidth=1;for(const l of links){if(window._v10RelOff&&window._v10RelOff.has(l.relation))continue;const a=nodes[idx.get(l.source)],b=nodes[idx.get(l.target)];ctx.strokeStyle=v10RelColor(l.relation);ctx.globalAlpha=.5;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}ctx.globalAlpha=1;
     for(const n of nodes){const r=n.root?12:7;
       if(n.root){ctx.beginPath();ctx.arc(n.x,n.y,r+7,0,7);ctx.fillStyle='rgba(139,92,246,.18)';ctx.fill();}
       ctx.beginPath();ctx.arc(n.x,n.y,r,0,7);ctx.fillStyle=n.root?'#8B5CF6':(hover===n?'#a78bfa':'#221d31');ctx.fill();
       ctx.strokeStyle=n.root?'#c4b5fd':'#2f2a40';ctx.lineWidth=1.5;ctx.stroke();
       if(n.root||hover===n||nodes.length<40){ctx.fillStyle='#ECEAF5';ctx.font=(n.root?'600 12px ':'11px ')+'Inter,sans-serif';ctx.fillText(n.label.slice(0,30),n.x+r+4,n.y+4);}}}
+  window._v10Redraw=draw;   // legend filter re-draws the settled layout without re-fetch
   step();
 }
 
@@ -1158,7 +1156,9 @@ async function trace(){
   if(!r.path||!r.path.length){alert('No path found between those nodes.');return;}
   atlasbar.style.display='none';showCanvas();
   searchPanel();
-  ibody.insertAdjacentHTML('afterbegin',`<div class="nodecard fade"><div class="t">Path · ${r.path.length-1} hops</div>${r.nodes.map(n=>`<div class="m" style="font-family:var(--font)">${esc(n.label)} <span style="color:var(--muted)">${esc(n.source_file||'')}</span></div>`).join('')}</div>`);
+  // V10 — path explanations: numbered, human step per typed edge.
+  const steps=(r.steps&&r.steps.length)?r.steps:r.nodes.slice(1).map((n,i)=>({n:i+1,from:r.nodes[i].label,to:n.label,relation:(r.links[i]&&r.links[i].relation)||'relates_to',explanation:r.nodes[i].label+' → '+n.label}));
+  ibody.insertAdjacentHTML('afterbegin',`<div class="nodecard fade"><div class="t">Path · ${r.path.length-1} hops</div><div style="margin-top:8px">${steps.map(s=>`<div class="v10step"><div class="sn">${s.n}</div><div class="sx"><div class="rel">${esc(V10_REL_LABEL[s.relation]||s.relation)}</div><div>${esc(s.explanation)}</div></div></div>`).join('')}</div></div>`);
   runSim({nodes:r.nodes,links:r.links},r.path[0]);
 }
 
@@ -1215,7 +1215,7 @@ async function bootExplain(){
   $('#explain').innerHTML=`<div class="xtree" id="xtree"><div class="xtree-hdr"><span class="xtitle">Navigation</span><button class="xtree-toggle" onclick="toggleNav()" title="Toggle sidebar" aria-label="Toggle sidebar"></button></div><div class="xtree-body" id="xtree-body"></div></div><div class="xmain fade" id="xmain"><div class="empty"><span class="spin"></span> Loading…</div></div><div class="xctx" id="xctx"></div><button class="xfab xfab-nav" id="xfab-nav" onclick="toggleMobNav()" title="Menu" aria-label="Menu">☰</button><div class="xmob-overlay" id="xmob-overlay" onclick="closeMobDrawers()"></div>`;
   XDATA=await api('/api/explain');
   if(!XDATA||XDATA.error){$('#xmain').innerHTML='<div class="empty">Explain data unavailable — run <code>pnpm graph:omega</code>.</div>';return;}
-  xRenderTree(); xSelect('getting-started');
+  xRenderTree(); v10InitRouter();
 }
 function xRenderTree(){
   const t=$('#xtree-body')||$('#xtree'); let h='';
@@ -1243,6 +1243,7 @@ function xRenderTree(){
 function xActive(key){document.querySelectorAll('#xtree .sec,#xtree .kid').forEach(e=>e.classList.toggle('active',e.dataset.node===key||e.dataset.page===key));}
 function xSelect(key){
   XSEL=key; xActive(key); const m=$('#xmain'); m.className='xmain fade'; m.scrollTop=0;
+  v10RecordRecent(key,'explain'); v10RecordLast(key,'explain'); v10Push(key,'explain');
   if(key==='getting-started'){xCtxPanel(null);return xGettingStarted();}
   if(key==='infrastructure'){xCtxPanel(null);return xInfra();}
   if(key==='database'){xCtxPanel(null);return xDatabase();}
@@ -1256,7 +1257,7 @@ function xSelect(key){
   if(key==='ai-context'){xCtxPanel(null);return xAiContextPage();}
   if(key==='merchant-journey'){xCtxPanel(null);return xEcosystem('merchant');}
   if(key==='customer-journey'){xCtxPanel(null);return xEcosystem('customer');}
-  if(XDATA.nodes[key]){xCtxPanel(XDATA.nodes[key]);return xArticle(XDATA.nodes[key]);}
+  if(XDATA.nodes[key]){xCtxPanel(XDATA.nodes[key]);const _t0=performance.now();xArticle(XDATA.nodes[key]);v10Perf('workspace',key,performance.now()-_t0);return;}
   xCtxPanel(null);
   m.innerHTML='<div class="empty">Select a topic from the left.</div>';
 }
@@ -1298,6 +1299,8 @@ function xWsLive(key){
   });
 }
 function xPersp(key,p){
+  v10Push(key,p); v10RecordRecent(key,p); v10RecordLast(key,p);
+  const _t0=performance.now(); setTimeout(()=>v10Perf('perspective',key+'·'+p,performance.now()-_t0),0);
   if(p==='overview')return xWsOverview(key);
   if(p==='explain')return xArticle(XDATA.nodes[key]);
   if(p==='technical')return xWsTech(key);
@@ -1317,7 +1320,14 @@ function xPersp(key,p){
   if(p==='related')return xWsRelated(key);
   if(p==='ai')return xWsAi(key);
 }
-function xCopyLink(key){const url=location.origin+'/#'+key;navigator.clipboard&&navigator.clipboard.writeText(url);}
+function xCopyLink(key){
+  // current path already reflects domain+perspective (pushed by xSelect/xPersp) → shareable deep link.
+  const path=(location.pathname&&location.pathname!=='/')?location.pathname:v10Url(key,'explain');
+  const url=location.origin+path;
+  if(navigator.clipboard)navigator.clipboard.writeText(url).catch(()=>{});
+  let tt=document.getElementById('v10toast');if(!tt){tt=document.createElement('div');tt.id='v10toast';tt.style.cssText='position:fixed;left:50%;bottom:60px;transform:translateX(-50%);background:var(--raised);border:1px solid var(--brand);color:var(--text);padding:9px 16px;border-radius:var(--r-md);font-size:13px;z-index:80;box-shadow:var(--shadow);transition:opacity .25s';document.body.appendChild(tt);}
+  tt.textContent='🔗 Link copied — '+path;tt.style.opacity='1';clearTimeout(window._v10tt);window._v10tt=setTimeout(()=>{tt.style.opacity='0';},1900);
+}
 const wsHero=(n,p)=>`<div class="xa-body"><div class="xa-breadcrumb"><span class="xb" onclick="xSelect('getting-started')">Home</span><span class="sep">›</span><span style="color:var(--text)">${esc(n.label)}</span></div>${wsBar(n.key,p)}<div class="xhero"><h1>${esc(n.label)}</h1><span class="crit ${CRIT(n.criticality)}">${esc(n.criticality)}</span></div>`;
 function xWsTech(key){const n=XDATA.nodes[key],t=n.technical;$('#xmain').className='xmain article';
   $('#xmain').innerHTML=wsHero(n,'technical')+`<p class="xlede" style="font-size:13px">Engineering documentation — every surface this domain touches. Live row values are query-bound (NOT CONNECTED).</p>
@@ -1758,14 +1768,25 @@ function xConnections(){
 const cmdkbg=document.createElement('div');cmdkbg.className='cmdk-bg';cmdkbg.id='cmdkbg';
 cmdkbg.innerHTML=`<div class="cmdk"><input id="cmdkin" type="text" placeholder="Search domains, routes, RPCs, tables, owners… or ask a question" autocomplete="off"/><div class="res" id="cmdkres"></div><div class="ask" id="cmdkask"></div></div>`;
 document.body.appendChild(cmdkbg);
-function openCmdk(){cmdkbg.classList.add('on');const i=$('#cmdkin');i.value='';$('#cmdkres').innerHTML='';$('#cmdkask').textContent='Type to search, or ask "what breaks if checkout changes?"';i.focus();}
+function openCmdk(){cmdkbg.classList.add('on');const i=$('#cmdkin');i.value='';v10CmdkHome();$('#cmdkask').textContent='Type to search · "what breaks if payments fail" · "open orders impact" · "show inventory dependencies"';i.focus();}
+// V10 — palette home: recent (pinned first) + quick actions.
+function v10CmdkHome(){
+  const res=$('#cmdkres');const recent=v10Recent();let h='';
+  if(recent.length){h+='<div class="cat">Recent workspaces</div>'+recent.slice(0,8).map(r=>`<div class="item" data-x="dom:${r.key}"><span class="ic">◷</span>${esc(r.label)}<span class="meta">${esc(r.persp||'explain')}</span><span class="pin${r.pinned?' on':''}" data-pin="${r.key}" title="Pin">📌</span></div>`).join('');}
+  h+='<div class="cat">Quick actions</div>'+[['page:mission-control','◆','Mission Control'],['page:launch','⚑','Launch Command Center'],['atlas:1','★','Open Atlas (full graph)'],['page:database','▤','Database'],['page:readiness','✓','Readiness']].map(([x,ic,l])=>`<div class="item" data-x="${x}"><span class="ic">${ic}</span>${esc(l)}</div>`).join('');
+  res.innerHTML=h;
+  res.querySelectorAll('.item').forEach(el=>el.onclick=(e)=>{if(e.target.dataset&&e.target.dataset.pin){v10TogglePin(e.target.dataset.pin);v10CmdkHome();e.stopPropagation();return;}cmdkRun(el.dataset.x);});
+}
 function closeCmdk(){cmdkbg.classList.remove('on');}
 cmdkbg.onclick=e=>{if(e.target===cmdkbg)closeCmdk();};
 $('#cmdkBtn').onclick=openCmdk;
 window.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openCmdk();}if(e.key==='Escape')closeCmdk();});
 async function cmdkSearch(q){
-  const res=$('#cmdkres'),ask=$('#cmdkask');if(!q){res.innerHTML='';ask.textContent='Type to search, or ask a question';return;}
+  const res=$('#cmdkres'),ask=$('#cmdkask');if(!q){v10CmdkHome();ask.textContent='Type to search, or ask a question';return;}
   let h='';
+  // V10 — command actions (navigation grammar / NL) first
+  const cmds=v10Commands(q);window._v10cmds=cmds;
+  if(cmds.length){h+='<div class="cat">Commands</div>'+cmds.map((c,i)=>`<div class="item cmd" data-ci="${i}"><span class="ic">${c.ic}</span>${esc(c.label)}</div>`).join('');}
   // domains (explain)
   const dom=XDATA?Object.keys(XDATA.nodes).filter(k=>XDATA.nodes[k].label.toLowerCase().includes(q.toLowerCase())||k.includes(q.toLowerCase())):[];
   if(dom.length){h+='<div class="cat">Domains</div>'+dom.slice(0,6).map(k=>`<div class="item" data-x="dom:${k}"><span class="ic">◷</span>${esc(XDATA.nodes[k].label)}<span class="meta">${esc(XDATA.nodes[k].criticality.split('—')[0].trim())}</span></div>`).join('');}
@@ -1775,7 +1796,7 @@ async function cmdkSearch(q){
   // code symbols
   try{const rs=await api('/api/search?q='+encodeURIComponent(q)+'&limit=6');if(rs.length){h+='<div class="cat">Code & data</div>'+rs.map(n=>`<div class="item" data-x="node:${encodeURIComponent(n.id)}"><span class="ic">▦</span>${esc(n.label)}<span class="meta">${esc((n.source_file||'').split('/').pop())}</span></div>`).join('');}}catch{}
   res.innerHTML=h||'<div class="cat">No matches</div>';
-  res.querySelectorAll('.item').forEach(el=>el.onclick=()=>cmdkRun(el.dataset.x));
+  res.querySelectorAll('.item').forEach(el=>el.onclick=()=>{if(el.dataset.ci!==undefined&&window._v10cmds&&window._v10cmds[+el.dataset.ci]){window._v10cmds[+el.dataset.ci].run();return;}cmdkRun(el.dataset.x);});
   ask.innerHTML=`Ask LCIS → <span style="color:var(--brand-2);cursor:pointer" id="askgo">"${esc(q)}"</span>`;
   const ag=$('#askgo');if(ag)ag.onclick=()=>runCopilot(q);
 }
@@ -1785,6 +1806,7 @@ function cmdkRun(x){
   if(t==='dom'){setMode('explain');xSelect(v);}
   else if(t==='page'){setMode('explain');xSelect(v);}
   else if(t==='node'){setMode('technical');loadNode(decodeURIComponent(v));}
+  else if(t==='atlas'){setMode('technical');selectTab('atlas');}
 }
 async function runCopilot(q){
   closeCmdk();
@@ -1797,6 +1819,186 @@ async function runCopilot(q){
 }
 $('#cmdkin')&&($('#cmdkin').oninput=()=>{clearTimeout(window._ck);window._ck=setTimeout(()=>cmdkSearch($('#cmdkin').value.trim()),160);});
 $('#cmdkin')&&($('#cmdkin').onkeydown=e=>{if(e.key==='Enter'){const first=$('#cmdkres .item');if(first)first.click();else runCopilot($('#cmdkin').value.trim());}});
+
+/* ================= V10 — Navigation & Intelligence Foundation ================= */
+// Injected styles for V10 components (perf HUD, level bar, edge legend, recent list) —
+// kept here so the big <style> block is untouched.
+document.head.insertAdjacentHTML('beforeend',`<style>
+/* V10 — universal no-horizontal-overflow guard (Phase 16) + always-scrollable perspective bar */
+html,body{max-width:100%;overflow-x:hidden}
+.ws-tabs{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:thin}
+.v10perf{position:fixed;right:12px;bottom:12px;z-index:60;background:var(--raised);border:1px solid var(--border);border-radius:var(--r-md);padding:6px 10px;font:600 11px/1.4 var(--mono);color:var(--muted);cursor:pointer;display:flex;gap:8px;align-items:center;box-shadow:var(--shadow);opacity:.9}
+.v10perf b{color:var(--brand-2)}.v10perf .ok{color:var(--success)}.v10perf .over{color:var(--warning)}
+.v10perf.exp{flex-direction:column;align-items:flex-start;max-width:260px}
+.v10bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0}
+.v10lv{padding:5px 10px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface);color:var(--muted);cursor:pointer;font-size:12px;min-height:30px}
+.v10lv.on{background:var(--brand-soft);color:var(--brand-2);border-color:var(--brand)}
+.v10leg{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.v10leg .lg{display:inline-flex;gap:5px;align-items:center;padding:3px 8px;border:1px solid var(--border);border-radius:999px;font-size:11px;cursor:pointer;color:var(--subdued);user-select:none}
+.v10leg .lg.off{opacity:.35;text-decoration:line-through}
+.v10leg .lg .sw{width:9px;height:9px;border-radius:2px;display:inline-block}
+.v10recent{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.v10recent .rw{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface);cursor:pointer;font-size:12.5px;min-height:34px}
+.v10recent .rw:hover{border-color:var(--brand)}
+.v10recent .rw .pin{color:var(--muted);cursor:pointer}.v10recent .rw .pin.on{color:var(--brand-2)}
+.v10step{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border-soft)}
+.v10step .sn{flex:0 0 22px;height:22px;border-radius:6px;background:var(--brand-soft);color:var(--brand-2);font:700 11px/22px var(--mono);text-align:center}
+.v10step .sx .rel{font:600 10px var(--mono);color:var(--brand-2);text-transform:uppercase;letter-spacing:.5px}
+.cmdk .item .pin{margin-left:8px;color:var(--muted);cursor:pointer}.cmdk .item .pin.on{color:var(--brand-2)}
+</style>`);
+
+// Pages (non-domain xSelect targets) → /page/<key>; domains → /domain/<key>[/<perspective>].
+const V10_PAGES=new Set(['getting-started','infrastructure','database','ops-center','mission-control','launch','connections','ecosystem','live-integrations','readiness','ai-context','merchant-journey','customer-journey']);
+const V10_PERSP=WSPERSP.map(p=>p[0]);
+let _v10_suppress=false;                 // true while applying a route (suppress pushState)
+
+// ---- URL builders / parser / router (Phases 1,2,3,15) ----
+function v10Url(key,persp){
+  if(V10_PAGES.has(key))return '/page/'+key;
+  if(persp&&persp!=='explain'&&V10_PERSP.includes(persp))return '/domain/'+key+'/'+persp;
+  return '/domain/'+key;
+}
+function v10Push(key,persp){
+  if(_v10_suppress)return;
+  const url=v10Url(key,persp);
+  try{if(location.pathname!==url)history.pushState({key,persp},'',url);}catch(e){}
+}
+function v10Parse(){
+  const path=location.pathname,sp=new URLSearchParams(location.search);
+  let m=path.match(/^\/domain\/([^\/?#]+)(?:\/([^\/?#]+))?$/);
+  if(m)return {key:decodeURIComponent(m[1]),persp:m[2]||sp.get('perspective')||'explain',level:sp.get('level'),q:sp.get('q')};
+  m=path.match(/^\/page\/([^\/?#]+)$/);
+  if(m)return {key:decodeURIComponent(m[1]),persp:null};
+  if(location.hash){const k=location.hash.slice(1).split('?')[0];if(k)return {key:k,persp:'explain'};}
+  return null;
+}
+function v10Apply(t,push){
+  if(!t||!t.key)return false;
+  _v10_suppress=true;
+  try{
+    if(V10_PAGES.has(t.key)){xSelect(t.key);}
+    else if(XDATA&&XDATA.nodes[t.key]){xSelect(t.key);if(t.persp&&t.persp!=='explain'&&V10_PERSP.includes(t.persp))xPersp(t.key,t.persp);}
+    else{xSelect('getting-started');_v10_suppress=false;return false;}
+  }finally{_v10_suppress=false;}
+  const url=v10Url(t.key,t.persp);
+  try{push?history.pushState({key:t.key,persp:t.persp},'',url):history.replaceState({key:t.key,persp:t.persp},'',url);}catch(e){}
+  return true;
+}
+function v10InitRouter(){
+  const t=v10Parse();
+  if(t&&v10Apply(t,false))return;
+  const last=v10RestoreLast();
+  if(last&&last.key&&v10Apply(last,false))return;
+  _v10_suppress=true;try{xSelect('getting-started');}finally{_v10_suppress=false;}
+  try{history.replaceState({key:'getting-started'},'','/page/getting-started');}catch(e){}
+}
+window.addEventListener('popstate',()=>{const t=v10Parse();if(t)v10Apply(t,false);});
+
+// ---- Last workspace + recent workspaces (Phases 4,5) ----
+function v10RecordLast(key,persp){try{localStorage.setItem('lcis-last',JSON.stringify({key,persp:persp||'explain'}));}catch(e){}}
+function v10RestoreLast(){try{const v=JSON.parse(localStorage.getItem('lcis-last')||'null');return v&&v.key?v:null;}catch(e){return null;}}
+function v10Recent(){try{return JSON.parse(localStorage.getItem('lcis-recent')||'[]');}catch(e){return [];}}
+function v10SaveRecent(list){try{localStorage.setItem('lcis-recent',JSON.stringify(list.slice(0,20)));}catch(e){}}
+function v10RecordRecent(key,persp){
+  if(key==='getting-started'||!key)return;
+  const label=(XDATA&&XDATA.nodes[key]&&XDATA.nodes[key].label)||key;
+  let list=v10Recent();const ex=list.find(x=>x.key===key);
+  const entry={key,persp:persp||'explain',label,ts:Date.now(),pinned:ex?ex.pinned:false};
+  list=[entry,...list.filter(x=>x.key!==key)];
+  list.sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
+  v10SaveRecent(list);
+}
+function v10TogglePin(key){let list=v10Recent();const e=list.find(x=>x.key===key);if(e)e.pinned=!e.pinned;list.sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));v10SaveRecent(list);}
+
+// ---- Performance budget (Phase 17) ----
+const V10_BUDGET={search:200,workspace:500,perspective:200,graph:1000};
+window.__perf={last:{},log:[]};
+function v10Perf(kind,label,ms){
+  const budget=V10_BUDGET[kind]||500,over=ms>budget;
+  window.__perf.last[kind]={label,ms:Math.round(ms),budget,over};
+  window.__perf.log.unshift({kind,label,ms:Math.round(ms),budget,over,t:Date.now()});window.__perf.log=window.__perf.log.slice(0,50);
+  (over?console.warn:console.log)(`[perf] ${kind} "${label}" ${ms.toFixed(1)}ms ${over?'>':'<'} ${budget}ms`);
+  v10PerfHud();
+}
+function v10PerfHud(){
+  let h=document.getElementById('v10perf');
+  if(!h){h=document.createElement('div');h.id='v10perf';h.className='v10perf';h.title='LCIS performance budget — click to expand';h.onclick=()=>h.classList.toggle('exp');document.body.appendChild(h);}
+  const L=window.__perf.last,row=k=>L[k]?`<span class="${L[k].over?'over':'ok'}">${k} ${L[k].ms}ms</span>`:'';
+  h.innerHTML=`<b>⚡</b>${row('search')}${row('workspace')}${row('perspective')}${row('graph')}`;
+}
+
+// ---- Typed edges + graph levels (Phases 7,8) ----
+const V10_REL_COLOR={imports:'#60a5fa',imports_from:'#60a5fa',re_exports:'#22d3ee',exports:'#22d3ee',calls:'#f472b6',method:'#f472b6',references:'#34d399',defines:'#a78bfa',contains:'#8b949e',inherits:'#fbbf24',extends:'#fbbf24',implements:'#fbbf24',mixes_in:'#fbbf24',navigates:'#fb923c',path:'#a78bfa',relates_to:'#8b949e'};
+const V10_REL_LABEL={imports:'imports',imports_from:'imports',re_exports:'re-exports',exports:'exports',calls:'calls',method:'calls',references:'references (fk/read)',defines:'defines (owns)',contains:'contains',inherits:'inherits',extends:'extends',implements:'implements',mixes_in:'mixes in',navigates:'navigates',path:'path'};
+function v10RelColor(r){return V10_REL_COLOR[r]||'#8b949e';}
+window._v10RelOff=new Set();
+const V10_LEVELS=[{n:1,label:'Direct',depth:1,limit:40},{n:2,label:'Neighborhood',depth:2,limit:90},{n:3,label:'Domain',depth:2,limit:160},{n:4,label:'Cross Domain',depth:3,limit:280},{n:5,label:'System',depth:3,limit:450},{n:6,label:'Platform',depth:4,limit:650}];
+window._v10Level=2;
+// Typed-edge legend + filter chips for the active graph; re-draws on toggle.
+function v10Legend(g,host){
+  const rels=[...new Set((g.links||[]).map(l=>l.relation).filter(Boolean))];
+  if(!rels.length){host.innerHTML='';return;}
+  host.innerHTML=`<div class="v10leg">${rels.map(r=>`<span class="lg${window._v10RelOff.has(r)?' off':''}" data-r="${esc(r)}"><span class="sw" style="background:${v10RelColor(r)}"></span>${esc(V10_REL_LABEL[r]||r)}</span>`).join('')}</div>`;
+  host.querySelectorAll('.lg').forEach(el=>el.onclick=()=>{const r=el.dataset.r;if(window._v10RelOff.has(r))window._v10RelOff.delete(r);else window._v10RelOff.add(r);el.classList.toggle('off');if(window._v10Redraw)window._v10Redraw();});
+}
+// Node graph view with Level 1-6 + typed edges + legend (used by loadNode).
+async function v10NodeGraph(id,level){
+  window._v10Level=level||window._v10Level||2;
+  const lv=V10_LEVELS.find(x=>x.n===window._v10Level)||V10_LEVELS[1];
+  const t0=performance.now();
+  const g=await api('/api/neighbors?id='+encodeURIComponent(id)+'&depth='+lv.depth+'&limit='+lv.limit);
+  if(!g.nodes||!g.nodes.length)return;
+  const root=g.nodes.find(n=>n.id===id)||g.nodes[0];
+  searchPanel();
+  const lvbar=V10_LEVELS.map(L=>`<button class="v10lv${L.n===window._v10Level?' on':''}" data-lv="${L.n}" title="depth ${L.depth} · ${L.limit} nodes">L${L.n} ${L.label}</button>`).join('');
+  ibody.insertAdjacentHTML('afterbegin',`<div class="nodecard fade" id="nc"><div class="t">${esc(root.label)}</div><div class="m">${esc(root.source_file||'')}${root.source_location?':'+esc(root.source_location):''}</div><div class="m" style="font-family:var(--font);color:var(--subdued)">degree ${root.degree} · community ${root.community} · ${g.nodes.length} nodes · ${(g.links||[]).length} typed edges</div><div class="label" style="margin:10px 0 2px">Graph level</div><div class="v10bar" id="v10lvbar">${lvbar}</div><div class="label" style="margin:6px 0 2px">Edge types (click to filter)</div><div id="v10legend"></div></div>`);
+  atlasbar.style.display='none';showCanvas();runSim(g,id);
+  v10Legend(g,document.getElementById('v10legend'));
+  document.querySelectorAll('#v10lvbar .v10lv').forEach(b=>b.onclick=()=>v10NodeGraph(id,+b.dataset.lv));
+  v10Perf('graph',root.label+' · L'+window._v10Level,performance.now()-t0);
+}
+
+// ---- Command Palette V2 helpers (Phase 6) ----
+function v10ResolveDomain(q){
+  if(!XDATA)return null;const keys=Object.keys(XDATA.nodes),ql=q.toLowerCase();
+  let k=keys.find(k=>XDATA.nodes[k].label.toLowerCase()===ql||k===ql);if(k)return k;
+  k=keys.find(k=>ql.includes(k)||XDATA.nodes[k].label.toLowerCase().includes(ql)||ql.includes(XDATA.nodes[k].label.toLowerCase()));if(k)return k;
+  const hints={checkout:'orders',cart:'orders',pay:'payments',refund:'refunds',payout:'payouts',ship:'shipping',tax:'gst',login:'authentication',signup:'authentication',register:'authentication',theme:'themes',store:'storefront',email:'notifications',gift:'gift-cards',discount:'discounts',stock:'inventory',product:'products',onboard:'merchant',merchant:'merchant'};
+  for(const[w,d]of Object.entries(hints))if(ql.includes(w)&&keys.includes(d))return d;
+  return null;
+}
+// Recognise navigation commands in a palette query → [{label, ic, run}]
+function v10Commands(q){
+  const out=[],ql=q.toLowerCase();
+  // "what breaks if X (fails)" → impact of X
+  let m=ql.match(/what breaks if (.+?)( fail| fails| changes| breaks| down)?$/);
+  if(m){const d=v10ResolveDomain(m[1]);if(d)out.push({label:`What breaks if ${XDATA.nodes[d].label} fails`,ic:'💥',run:()=>{closeCmdk();routeGo(d,'impact');}});}
+  // "show dependencies of X" / "X dependencies"
+  m=ql.match(/(?:show )?dependenc(?:y|ies)(?: of | for )?(.+)?/)||ql.match(/(.+?) dependenc/);
+  if(m&&m[1]){const d=v10ResolveDomain(m[1]);if(d)out.push({label:`Dependencies · ${XDATA.nodes[d].label}`,ic:'⚯',run:()=>{closeCmdk();routeGo(d,'dependencies');}});}
+  // "blast radius X" / "X blast"
+  m=ql.match(/blast(?: radius)?(?: of | for )?(.+)?/)||ql.match(/(.+?) blast/);
+  if(m&&m[1]){const d=v10ResolveDomain(m[1]);if(d)out.push({label:`Blast radius · ${XDATA.nodes[d].label}`,ic:'💥',run:()=>{closeCmdk();routeGo(d,'impact');}});}
+  // "open X <perspective>" / "X technical|impact|runbook|atlas|graph|incidents|database|api|security|operations|live"
+  m=ql.match(/(?:open |show )?(.+?) (technical|impact|runbook|atlas|graph|graphs|incidents|database|api|security|operations|live|dependencies|overview)$/);
+  if(m){const d=v10ResolveDomain(m[1]);if(d){let p=m[2];if(p==='runbook')p='incidents';if(p==='graph')p='graphs';out.push({label:`Open ${XDATA.nodes[d].label} · ${p}`,ic:'→',run:()=>{closeCmdk();routeGo(d,p);}});}}
+  // direct domain → quick perspectives
+  const d=v10ResolveDomain(q);
+  if(d&&out.length<2){out.push({label:`Open ${XDATA.nodes[d].label}`,ic:'◷',run:()=>{closeCmdk();routeGo(d,'explain');}});
+    out.push({label:`${XDATA.nodes[d].label} · Impact`,ic:'💥',run:()=>{closeCmdk();routeGo(d,'impact');}});
+    out.push({label:`${XDATA.nodes[d].label} · Dependencies`,ic:'⚯',run:()=>{closeCmdk();routeGo(d,'dependencies');}});}
+  // global quick commands
+  if(/atlas/.test(ql))out.push({label:'Open Atlas (full graph)',ic:'★',run:()=>{closeCmdk();setMode('technical');selectTab('atlas');}});
+  if(/mission|control/.test(ql))out.push({label:'Open Mission Control',ic:'◆',run:()=>{closeCmdk();routeGo('mission-control');}});
+  if(/launch|go.?no.?go|readiness/.test(ql))out.push({label:'Open Launch Command Center',ic:'⚑',run:()=>{closeCmdk();routeGo('launch');}});
+  return out;
+}
+// Master navigation entry used by router/palette/recent (records history + restoration).
+function routeGo(key,persp){
+  if(V10_PAGES.has(key)){setMode('explain');xSelect(key);return;}
+  if(XDATA&&XDATA.nodes[key]){setMode('explain');xSelect(key);if(persp&&persp!=='explain'&&V10_PERSP.includes(persp))xPersp(key,persp);return;}
+  xSelect('getting-started');
+}
 
 boot();
 setMode('explain');

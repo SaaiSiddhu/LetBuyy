@@ -620,22 +620,40 @@ function dedupeLinks(ls) {
   return [...m.values()];
 }
 
+// V10 — human verb for a typed edge relation (used in path explanations).
+const RELATION_VERB = {
+  imports: 'imports', imports_from: 'imports from', re_exports: 're-exports', exports: 'exports',
+  calls: 'calls', method: 'calls method on', references: 'references', defines: 'defines',
+  contains: 'contains', inherits: 'inherits from', extends: 'extends', implements: 'implements',
+  mixes_in: 'mixes in', navigates: 'navigates to', path: 'connects to', relates_to: 'relates to',
+};
+function explainRelation(rel, from, to) {
+  const v = RELATION_VERB[rel] || 'connects to';
+  return `${from} ${v} ${to}`;
+}
 function shortestPath(a, b) {
   if (!byId.has(a) || !byId.has(b)) return { path: [], reason: 'unknown node' };
   const prev = new Map([[a, null]]);
+  const relTo = new Map();              // node id -> relation of the edge that discovered it
   const queue = [a];
   while (queue.length) {
     const cur = queue.shift();
     if (cur === b) break;
     const nbrs = [...(outAdj.get(cur) || []), ...(inAdj.get(cur) || [])];
-    for (const e of nbrs) { if (!prev.has(e.id)) { prev.set(e.id, cur); queue.push(e.id); } }
+    for (const e of nbrs) { if (!prev.has(e.id)) { prev.set(e.id, cur); relTo.set(e.id, e.relation || 'relates_to'); queue.push(e.id); } }
   }
   if (!prev.has(b)) return { path: [], reason: 'no path' };
   const path = []; let c = b; while (c != null) { path.unshift(c); c = prev.get(c); }
   const ns = path.map(nodeView);
   const ls = [];
-  for (let i = 0; i < path.length - 1; i++) ls.push({ source: path[i], target: path[i + 1], relation: 'path' });
-  return { path, nodes: ns, links: ls };
+  const steps = [];
+  for (let i = 0; i < path.length - 1; i++) {
+    const rel = relTo.get(path[i + 1]) || 'relates_to';
+    ls.push({ source: path[i], target: path[i + 1], relation: rel });
+    const fromL = ns[i]?.label || path[i], toL = ns[i + 1]?.label || path[i + 1];
+    steps.push({ n: i + 1, from: fromL, to: toL, relation: rel, explanation: explainRelation(rel, fromL, toL) });
+  }
+  return { path, nodes: ns, links: ls, steps };
 }
 
 function domain(key, limit = 60) {
@@ -934,6 +952,9 @@ const server = createServer((req, res) => {
     }
     if (p === '/api/blast') { const id = u.searchParams.get('id'); const q = u.searchParams.get('q'); let nid = id; if (!nid && q) { const r = search(q, 1); nid = r[0] && r[0].id; } return json(res, nid ? blastRadius(nid, Number(u.searchParams.get('depth') || 3)) : { error: 'not found' }); }
     if (p === '/api/health') return json(res, { ok: true, nodes: nodes.length, dbIntel: !!dbIntel });
+    // V10 — SPA fallback: deep links like /domain/orders/impact, /page/launch serve the app shell
+    // so a refresh / shared URL restores state client-side. Only /api/* paths 404 as JSON.
+    if (!p.startsWith('/api/')) { res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }); return res.end(indexHtml); }
     res.writeHead(404, { 'content-type': 'application/json' }); res.end('{"error":"not found"}');
   } catch (err) { json(res, { error: String(err) }, 500); }
 });
