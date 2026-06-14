@@ -193,6 +193,17 @@ LCIS is now LetBuyy's operating system, readable by humans AND AIs. Three layers
 | Autonomous runbook (detection/diagnosis/recovery/rollback/verification) | `/api/runbook?domain=X` |
 
 **Live-data law:** every live value is real-source or **NOT CONNECTED + the exact env var** — never fabricated. No provider credential is in the repo (deploy-time); adapters are read-only and probe only when credentials are present.
+
+### LCIS Genesis — Control Centers (composition over the existing stack; never scan the repo for these)
+| Need | Surface |
+|------|---------|
+| **Full lineage** for any entity (table↔rpc, route→rpc, worker/queue/migration/policy/trigger/index→table, FK) | `/api/lineage?entity=X` |
+| **One-click full trace** (entity → route → rpc → tables → policies → triggers → queues → emails → analytics → merchant dashboard) | `/api/trace?entity=checkout` |
+| **Launch GO/NO-GO** (10 readiness dims + blockers + risks + missing secrets/incidents/migrations/tests) | `/api/launch-command-center` · Explain → Launch Command Center |
+| Environment control (graph/health/dependency/ownership/secrets + activation steps) | `/api/environment-control` |
+| Infrastructure / Commerce / Incident control centers | `/api/infrastructure-control` · `/api/commerce-control` · `/api/incident-control?target=X` |
+| AI packs (Claude/Gemini/Codex/Cursor/OpenAI, < 20k) | `/api/ai-context-pack?target=X` |
+| Docs-grade explain (tags, reading time, difficulty, problem solved, code/db refs, deep-dive) | `/api/explain?node=X` → `docs` |
 | Database control (schema/relationship/policy/function explorers) | `/api/database-control` · Explain → Database |
 | Deep investigation | Atlas (Technical mode → ★ Atlas) — the deepest layer |
 

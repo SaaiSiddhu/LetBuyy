@@ -98,6 +98,13 @@ jobs:
         run: |
           node tools/graph-server/environment-registry.mjs
           node tools/graph-server/runbook-engine.mjs
+      - name: Extract Genesis control centers (composition; live values stay NOT CONNECTED in CI)
+        run: |
+          node tools/graph-server/database-control-intel.mjs
+          node tools/graph-server/environment-control-intel.mjs
+          node tools/graph-server/infrastructure-control-intel.mjs
+          node tools/graph-server/commerce-control-intel.mjs
+          node tools/graph-server/launch-command-center.mjs
       - name: Regenerate v6 explain/onboarding docs (dual-mode operating system)
         run: node tools/graph-server/gen-explain-docs.mjs
       - name: Sanity gate — schema must parse to non-trivial counts

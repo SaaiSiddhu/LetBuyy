@@ -190,3 +190,8 @@ graphify-out/mission-control-dashboard.json
 graphify-out/ecosystem-intel.json
 graphify-out/environment-registry.json
 graphify-out/runbooks.json
+graphify-out/database-control-intel.json
+graphify-out/environment-control-intel.json
+graphify-out/infrastructure-control-intel.json
+graphify-out/commerce-control-intel.json
+graphify-out/launch-command-center.json

@@ -1110,6 +1110,7 @@ function xSelect(key){
   if(key==='database')return xDatabase();
   if(key==='ops-center')return xOps();
   if(key==='mission-control')return xMission();
+  if(key==='launch')return xLaunch();
   if(key==='connections')return xConnections();
   if(key==='ecosystem')return xEcosystemIntel();
   if(key==='live-integrations')return xLive();
@@ -1135,6 +1136,8 @@ function xNode(n){
       ${n.recoveryPath?`<div class="xcard"><div class="h">Recovery path</div><div class="b">${esc(n.recoveryPath)}</div></div>`:''}
       ${n.launchRelevance?`<div class="xcard${/Open launch/.test(n.launchRelevance)?' warn':''}"><div class="h">Launch relevance</div><div class="b">${esc(n.launchRelevance)}</div></div>`:''}
     </div>
+    ${n.docs?`<div class="badges" style="margin:2px 0 6px">${n.docs.tags.map(t=>`<span class="badge brand" style="padding:2px 9px">${esc(t)}</span>`).join('')}<span class="badge">📖 ${esc(n.docs.readingTime)}</span><span class="badge">${esc(n.docs.difficulty)}</span></div>
+    <p class="xlede" style="font-size:13.5px;margin:6px 0"><b>Problem solved:</b> ${esc(n.docs.problemSolved)}</p>`:''}
     ${n.runbooks?`<div class="xrel"><div class="col"><div class="h">Runbooks</div>${n.runbooks.map(r=>`<span class="xpill">${esc(r)}</span>`).join('')}</div></div>`:''}
     <div class="xrel">
       <div class="col"><div class="h">Owner</div>${(n.owner.length?n.owner:['unowned']).map(o=>`<span class="xpill b">${esc(o)}</span>`).join('')}</div>
@@ -1285,6 +1288,35 @@ function xOps(){
      </tbody></table>
      <div class="xatlas"><button class="primary" onclick="setMode('technical');selectTab('depstate')">◉ Deployment State</button>
        <button onclick="setMode('technical');selectTab('robs')" style="margin-left:8px">◐ Runtime Observability</button></div>`;
+  });
+}
+function xLaunch(){
+  $('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading launch command center…</div>';
+  api('/api/launch-command-center').then(o=>{
+    if(o.error){$('#xmain').innerHTML=`<div class="empty">${esc(o.error)} — run <code>pnpm graph:v7</code>.</div>`;return;}
+    const s=o.summary;const go=s.recommendation==='NO-GO';const gc=go?'var(--critical)':'var(--success)';
+    const bar=n=>`<div class="risk" style="width:90px;display:inline-block;vertical-align:middle"><i style="width:${n}%;background:${n>85?'var(--success)':n>60?'var(--warning)':'var(--critical)'}"></i></div>`;
+    $('#xmain').innerHTML=`<div class="xhero"><h1>Launch Command Center</h1><span class="crit" style="background:${gc}22;color:${gc};border:1px solid ${gc};font-size:13px">${go?'NO GO':'GO'}</span></div>
+     <p class="xlede">${esc(s.note)}</p>
+     <div class="xgrid"><div class="xcard"><div class="h">Recommendation</div><div class="b" style="font-size:24px;font-weight:800;color:${gc}">${go?'NO GO':'GO'}</div></div><div class="xcard"><div class="h">Overall readiness</div><div class="b" style="font-size:24px;font-weight:800">${s.overallReadiness}%</div></div><div class="xcard"><div class="h">Structural health</div><div class="b" style="font-size:20px;font-weight:700;color:${HC(s.structuralHealth)}">${esc(s.structuralHealth)}</div></div><div class="xcard warn"><div class="h">Open blockers</div><div class="b" style="font-size:24px;font-weight:800;color:var(--warning)">${s.openBlockers}</div></div></div>
+     <div class="xsection">Readiness (10 dimensions · structural)</div>
+     <table><thead><tr><th>Dimension</th><th style="text-align:right">score</th><th></th><th>evidence</th></tr></thead><tbody>
+     ${o.readiness.map(d=>`<tr><td class="lbl">${esc(d.dimension)}</td><td style="text-align:right"><b>${d.score}%</b></td><td>${bar(d.score)}</td><td><span class="mono" style="color:var(--muted)">${esc(d.evidence)}</span></td></tr>`).join('')}
+     </tbody></table>
+     <div class="xsection">Blockers</div>
+     <table><thead><tr><th>ID</th><th>Severity</th><th>Title</th></tr></thead><tbody>${o.blockers.map(b=>`<tr><td class="lbl">${esc(b.id)}</td><td>${esc(b.severity)}</td><td>${esc(b.title)}</td></tr>`).join('')}</tbody></table>
+     <div class="xsection">Critical risks</div><ul class="hint">${o.criticalRisks.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>
+     <div class="xsection">Warnings · missing secrets · open incidents · open migrations · missing tests</div>
+     <table><tbody>
+     ${o.warnings.map(w=>`<tr><td class="lbl">Warning</td><td>${esc(w)}</td></tr>`).join('')}
+     <tr><td class="lbl">Missing secrets</td><td>${o.missingSecrets.required} required — ${esc(o.missingSecrets.note)}</td></tr>
+     <tr><td class="lbl">Open incidents</td><td><span style="color:var(--warning)">${esc(o.openIncidents.count)}</span> — ${esc(o.openIncidents.source)}</td></tr>
+     <tr><td class="lbl">Open migrations</td><td>${esc(o.openMigrations.appliedState)}</td></tr>
+     <tr><td class="lbl">Missing tests</td><td>${esc(o.missingTests.signal)}</td></tr>
+     </tbody></table>
+     <div class="xsection">Recommendation</div>
+     <div class="xcard" style="border-color:${gc}"><div class="b" style="font-size:15px">${esc(o.recommendation)}</div></div>
+     <div class="xatlas"><button class="primary" onclick="xSelect('mission-control')">◉ Mission Control</button><button onclick="xSelect('live-integrations')" style="margin-left:8px">◉ Connect live data</button></div>`;
   });
 }
 function xLive(){

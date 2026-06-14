@@ -59,6 +59,13 @@ import { ADAPTERS, probeAdapter, probeAll, summarize as adapterSummary } from '.
 import { buildEnvironmentRegistry } from './environment-registry.mjs';
 import { diagnose } from './diagnosis-engine.mjs';
 import { buildRunbooks, runbookOf } from './runbook-engine.mjs';
+import { buildDatabaseControl, lineage } from './database-control-intel.mjs';
+import { buildEnvironmentControl } from './environment-control-intel.mjs';
+import { buildInfrastructureControl } from './infrastructure-control-intel.mjs';
+import { buildCommerceControl } from './commerce-control-intel.mjs';
+import { incidentControl } from './incident-control-intel.mjs';
+import { buildPack, allPacks } from './ai-context-intel.mjs';
+import { buildLaunchCommandCenter } from './launch-command-center.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -129,6 +136,34 @@ const missionDashboard = safe(() => buildMissionControlDashboard());
 const ecosystemIntel = loadOrBuild('ecosystem-intel.json', buildEcosystemIntel);
 const envRegistry = safe(() => buildEnvironmentRegistry());
 const runbooksIntel = safe(() => buildRunbooks());
+// ---- LCIS Genesis: control centers (composition; built at startup) ----
+const envControl = safe(() => buildEnvironmentControl());
+const dbControlGenesis = safe(() => buildDatabaseControl());
+const infraControl = safe(() => buildInfrastructureControl());
+const commerceControl = safe(() => buildCommerceControl());
+const launchCenter = safe(() => buildLaunchCommandCenter());
+// Atlas 2.0 — one-click full trace: entity → route → rpcs → tables → policies/triggers → queues → emails → analytics → merchant dashboard
+function fullTrace(entity) {
+  const root = lineage(entity);
+  if (root.error && !root.type) return root;
+  const di = domainIntel;
+  const tablesOf = root.type === 'route' ? root.tables : root.type === 'rpc' ? root.tables : root.type === 'table' ? [root.entity] : [];
+  const rpcsOf = root.type === 'route' ? root.rpcs : root.type === 'rpc' ? [root.entity] : (root.touchedByRpcs || []);
+  const tableTraces = tablesOf.slice(0, 12).map((t) => { const l = lineage(t); return { table: t, policies: l.policies || [], triggers: l.triggers || [], indexes: l.indexes || 0 }; });
+  const dom = di?.domains.find((d) => (root.type === 'route' ? d.routes.includes(entity) : d.tables.includes(tablesOf[0]) || d.rpcs.includes(entity)));
+  return {
+    entity, rootType: root.type || 'unknown',
+    chain: ['Route', 'RPC', 'Table', 'Policy/Trigger', 'Queue', 'Email', 'Analytics', 'Merchant Dashboard'],
+    route: root.type === 'route' ? root.file : (rpcsOf.length ? 'via ' + rpcsOf[0] : null),
+    rpcs: rpcsOf, tables: tableTraces,
+    queues: dom?.queues || [], workers: dom?.workers || [],
+    emails: dom && /payment|order|refund|ship|notif/.test(dom.key) ? 'NOTIFICATION_QUEUE → Resend (transactional)' : 'n/a',
+    analytics: 'ANALYTICS_QUEUE → analytics_event_stream (rollups)',
+    merchantDashboard: dom ? `merchant-control-plane → ${dom.label}` : 'merchant-control-plane',
+    owner: dom?.owners || ['@saai-sidd'],
+    note: 'Structural trace (repository truth). Row-level values are live (Supabase) — NOT CONNECTED.',
+  };
+}
 // Multi-AI context pack (Phase 26) — self-contained, < ~20k tokens, no repo scan required.
 function aiPack(target) {
   if (!explainIntel || explainIntel.error) return { error: 'explain-intel missing' };
@@ -592,6 +627,16 @@ const server = createServer((req, res) => {
     if (p === '/api/environment-registry') return json(res, envRegistry);
     if (p === '/api/diagnose') return json(res, safe(() => diagnose(u.searchParams.get('target') || 'payments', u.searchParams.get('error') || '')));
     if (p === '/api/runbook') return json(res, u.searchParams.get('domain') ? safe(() => runbookOf(u.searchParams.get('domain'))) : runbooksIntel);
+    // ---- LCIS Genesis: control centers + lineage + full trace + launch + AI packs ----
+    if (p === '/api/lineage') return json(res, safe(() => lineage(u.searchParams.get('entity') || 'orders')));
+    if (p === '/api/database-control-genesis') return json(res, dbControlGenesis);
+    if (p === '/api/environment-control') return json(res, envControl);
+    if (p === '/api/infrastructure-control') return json(res, infraControl);
+    if (p === '/api/commerce-control') return json(res, commerceControl);
+    if (p === '/api/incident-control') return json(res, safe(() => incidentControl(u.searchParams.get('target') || 'payments', u.searchParams.get('error') || '')));
+    if (p === '/api/launch-command-center') return json(res, launchCenter);
+    if (p === '/api/trace') return json(res, safe(() => fullTrace(u.searchParams.get('entity') || 'checkout')));
+    if (p === '/api/ai-context-pack') { const t = u.searchParams.get('target'); return json(res, t ? safe(() => buildPack(t)) : safe(() => allPacks())); }
     if (p === '/api/live') {
       // Real read-only probe — only credentialed providers trigger a network call; the rest are NOT CONNECTED.
       const prov = u.searchParams.get('provider');

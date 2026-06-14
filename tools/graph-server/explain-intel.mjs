@@ -52,6 +52,7 @@ const FLOWS = {
 const IA = [
   { key: 'getting-started', label: 'Getting Started', icon: '◎', kind: 'page' },
   { key: 'mission-control', label: 'Mission Control', icon: '◉', kind: 'page' },
+  { key: 'launch', label: 'Launch Command Center', icon: '⏏', kind: 'page' },
   { key: 'business', label: 'Business View', icon: '◷', kind: 'section', children: ['merchant', 'orders', 'payments', 'analytics'] },
   { key: 'merchant-journey', label: 'Merchant Journey', icon: '◵', kind: 'ecosystem', eco: 'merchant' },
   { key: 'customer-journey', label: 'Customer Journey', icon: '◴', kind: 'ecosystem', eco: 'customer' },
@@ -138,6 +139,21 @@ export function buildExplainIntel() {
       technical: { routes: d.routes, rpcs: d.rpcs, tables: d.tables, policies: policiesFor(d.tables), triggers: trigFor(d.tables), indexes: idxFor(d.tables), workers: d.workers, queues: d.queues, secrets: d.secrets, services: d.apps, money: d.money, tenant: d.tenant, relationships: fkFor(d.tables), blastRadius: { directConsumers: consumers.length, query: `/api/change-impact?key=${d.key}` } },
       atlas: { search: d.rpcs[0] || d.tables[0] || d.label, blast: d.key },
       flow: FLOWS[d.key] || null,
+    };
+    // Explain 2.0 (P6) — docs-platform fields (Stripe/Linear/Notion style)
+    const tags = [d.money ? 'money' : null, d.tenant ? 'multi-tenant' : null, criticality(d).split('—')[0].trim().toLowerCase().replace(' ', '-'), CUSTOMER_FACING.has(d.key) ? 'customer-facing' : 'internal'].filter(Boolean);
+    const words = (nar.purpose + ' ' + nar.importance + ' ' + (FLOWS[d.key] || []).join(' ') + ' ' + node.operationalNotes).split(/\s+/).length + d.rpcs.length + d.tables.length;
+    node.docs = {
+      overview: nar.purpose,
+      problemSolved: `Without it: ${nar.failureImpact}`,
+      tags,
+      readingTime: `${Math.max(1, Math.round(words / 180))} min`,
+      difficulty: d.money ? 'Advanced' : d.tenant ? 'Intermediate' : 'Beginner',
+      relatedConcepts: node.relatedDomains,
+      nextConcepts: consumers.slice(0, 4),
+      codeReferences: d.routes.slice(0, 3).map((r) => `services/api-gateway/src/routes/${r}.ts`),
+      databaseReferences: { tables: d.tables.slice(0, 6), rpcs: d.rpcs.slice(0, 4) },
+      deepDive: { lineage: `/api/database-control` /* lineage(<table>) */, blast: `/api/change-impact?key=${d.key}`, runbook: `/api/runbook?domain=${d.key}`, atlas: `/api/atlas-v2?node=${d.key}` },
     };
     node.aiContext = aiContext(node);
     nodes[d.key] = node;

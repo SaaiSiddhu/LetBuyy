@@ -122,7 +122,15 @@
     "graph:live": "node tools/graph-server/live-adapters.mjs",
     "graph:env-registry": "node tools/graph-server/environment-registry.mjs",
     "graph:diagnose": "node tools/graph-server/diagnosis-engine.mjs",
-    "graph:runbooks": "node tools/graph-server/runbook-engine.mjs"
+    "graph:runbooks": "node tools/graph-server/runbook-engine.mjs",
+    "graph:db-control": "node tools/graph-server/database-control-intel.mjs",
+    "graph:env-control": "node tools/graph-server/environment-control-intel.mjs",
+    "graph:infra-control": "node tools/graph-server/infrastructure-control-intel.mjs",
+    "graph:commerce": "node tools/graph-server/commerce-control-intel.mjs",
+    "graph:incident-control": "node tools/graph-server/incident-control-intel.mjs",
+    "graph:ai-pack": "node tools/graph-server/ai-context-intel.mjs",
+    "graph:launch": "node tools/graph-server/launch-command-center.mjs",
+    "graph:genesis": "node tools/graph-server/database-control-intel.mjs && node tools/graph-server/environment-control-intel.mjs && node tools/graph-server/infrastructure-control-intel.mjs && node tools/graph-server/commerce-control-intel.mjs && node tools/graph-server/launch-command-center.mjs"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20260525.1",
