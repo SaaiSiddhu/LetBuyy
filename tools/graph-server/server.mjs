@@ -29,6 +29,21 @@ import { incidentIntelligenceV5 } from './incident-intelligence-v5.mjs';
 import { buildCustomerJourneyIntelligence } from './customer-journey-intelligence.mjs';
 import { buildProductionReadiness } from './production-readiness-intel.mjs';
 import { buildDecisionEngine } from './decision-engine-v5.mjs';
+import { buildMerchantHealth } from './merchant-health-intel.mjs';
+import { buildMerchantGrowth } from './merchant-growth-intel.mjs';
+import { buildMerchantAdoption } from './merchant-adoption-intel.mjs';
+import { buildMerchantRisk } from './merchant-risk-intel.mjs';
+import { buildMerchantChurn } from './merchant-churn-intel.mjs';
+import { buildCustomerIntelligenceV2 } from './customer-intelligence-v2.mjs';
+import { buildRevenueIntelligenceV2 } from './revenue-intelligence-v2.mjs';
+import { buildCostIntelligence } from './cost-intelligence.mjs';
+import { buildTelemetryIntelligence } from './telemetry-intelligence.mjs';
+import { buildMemoryV2 } from './memory-v2.mjs';
+import { buildFixEngine } from './fix-engine.mjs';
+import { buildUnifiedIntelligence } from './unified-intelligence-engine.mjs';
+import { buildDiscoveryV2 } from './discovery-v2.mjs';
+import { buildProductionReadinessV2 } from './production-readiness-v2.mjs';
+import { buildDecisionEngineV2 } from './decision-engine-v2.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -68,6 +83,24 @@ const securityIntelV5 = safe(() => buildSecurityIntelligenceV5());
 const journeyIntel = safe(() => buildCustomerJourneyIntelligence());
 const readinessIntel = safe(() => buildProductionReadiness());
 const decisionEngine = safe(() => buildDecisionEngine());
+
+// ---- Omega: prefer the pre-built JSON artifact (cheap), fall back to live build ----
+const loadOrBuild = (file, fn) => { const p = join(REPO_ROOT, 'graphify-out', file); return existsSync(p) ? safe(() => JSON.parse(readFileSync(p, 'utf8'))) : safe(fn); };
+const merchantHealth = loadOrBuild('merchant-health.json', buildMerchantHealth);
+const merchantGrowth = loadOrBuild('merchant-growth.json', buildMerchantGrowth);
+const merchantAdoption = loadOrBuild('merchant-adoption.json', buildMerchantAdoption);
+const merchantRisk = loadOrBuild('merchant-risk.json', buildMerchantRisk);
+const merchantChurn = loadOrBuild('merchant-churn.json', buildMerchantChurn);
+const customerV2 = loadOrBuild('customer-intelligence.json', buildCustomerIntelligenceV2);
+const revenueV2 = loadOrBuild('revenue-intelligence-v2.json', buildRevenueIntelligenceV2);
+const costIntel = loadOrBuild('cost-intelligence.json', buildCostIntelligence);
+const telemetryIntel = loadOrBuild('telemetry-intelligence.json', buildTelemetryIntelligence);
+const memoryV2 = loadOrBuild('memory-v2.json', buildMemoryV2);
+const fixEngine = loadOrBuild('fix-engine.json', buildFixEngine);
+const unifiedIntel = loadOrBuild('unified-intelligence.json', buildUnifiedIntelligence);
+const discoveryV2 = loadOrBuild('discovery-v2.json', buildDiscoveryV2);
+const readinessV2 = loadOrBuild('production-readiness-v2.json', buildProductionReadinessV2);
+const decisionV2 = loadOrBuild('decision-engine-v2.json', buildDecisionEngineV2);
 
 // ---- v3: customer-journey (Phase 5) + secret intelligence (Phase 10), computed from loaded intel ----
 const JOURNEY = [
@@ -433,6 +466,22 @@ const server = createServer((req, res) => {
     if (p === '/api/customer-intelligence') return json(res, journeyIntel);
     if (p === '/api/production-readiness') return json(res, readinessIntel);
     if (p === '/api/decision-engine') return json(res, decisionEngine);
+    // ---- Omega: merchant / customer / revenue / cost / telemetry / memory / fix / unified ----
+    if (p === '/api/merchant-health') return json(res, merchantHealth);
+    if (p === '/api/merchant-growth') return json(res, merchantGrowth);
+    if (p === '/api/merchant-adoption') return json(res, merchantAdoption);
+    if (p === '/api/merchant-risk') return json(res, merchantRisk);
+    if (p === '/api/merchant-churn') return json(res, merchantChurn);
+    if (p === '/api/customer-intelligence-v2') return json(res, customerV2);
+    if (p === '/api/revenue-v2') return json(res, revenueV2);
+    if (p === '/api/cost-intelligence') return json(res, costIntel);
+    if (p === '/api/telemetry') return json(res, telemetryIntel);
+    if (p === '/api/memory-v2') return json(res, memoryV2);
+    if (p === '/api/fix-engine') return json(res, fixEngine);
+    if (p === '/api/unified-intelligence') return json(res, unifiedIntel);
+    if (p === '/api/discovery-v2') return json(res, discoveryV2);
+    if (p === '/api/production-readiness-v2') return json(res, readinessV2);
+    if (p === '/api/decision-v2') return json(res, decisionV2);
     if (p === '/api/memory') {
       if (!memoryIntel || memoryIntel.error) return json(res, memoryIntel || { error: 'memory-intel missing' });
       const q = u.searchParams.get('q') || '', mig = u.searchParams.get('migration'), mode = u.searchParams.get('mode');

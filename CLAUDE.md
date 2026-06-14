@@ -148,4 +148,20 @@ Before scanning the repository, query LCIS v5 first — **Runtime → Merchant �
 | **What should be fixed next / what blocks scale?** | `/api/decision-engine` (ranked fix order; blocks launch / 100 merchants / 10k / 100k users) |
 | **What's dead/unused?** | `pnpm graph:discover-v5` (candidates; validators authoritative) |
 
-Fall back to a full repo scan only when LCIS returns nothing or the data layer is stale (`pnpm graph:update && graph:v5`). Change-control hotspots above always warrant a `graph:intel blast` before merge.
+### LCIS OMEGA — the unified brain (OMEGA-FIRST policy; the repository scan is the FINAL fallback)
+LCIS is one queryable brain across 13 layers. Execution order before any repo scan: **Unified Brain → Fix Engine → Telemetry → Revenue → Merchant → Customer → Runtime → Domain → DB → Code**. Built by `pnpm graph:omega`. Live values (telemetry, revenue, merchant scores, cost-usage, deploy versions) are **query-bound** — LCIS supplies the model + the exact source; it never fabricates them.
+
+| Question | LCIS query (CLI or `/api/...`) |
+|----------|--------------------------------|
+| The whole picture / how layers connect? | `/api/unified-intelligence` (13 layers, cross-layer spine) |
+| What should be fixed (with plans)? | `/api/fix-engine` (fix/verify/test/rollback plans — none applied) |
+| Merchant health / risk / growth / adoption / churn? | `/api/merchant-{health,risk,growth,adoption,churn}` (scores query-bound) |
+| Customer funnel / conversion / retention / loyalty? | `/api/customer-intelligence-v2` (8 graphs; rates query-bound) |
+| Revenue funnel / gift-card liability / payout dependency? | `/api/revenue-v2` (amounts query-bound) |
+| How much does it cost / cost hotspots? | `/api/cost-intelligence` (pricing model; usage + totals query-bound) |
+| Live telemetry / how to read a metric? | `/api/telemetry` (12 adapters; values query-bound) |
+| Why / who decided / what was rejected / what failed? | `/api/memory-v2` |
+| What blocks 1k / 10k merchants / 100k users? | `/api/decision-v2` · `/api/production-readiness-v2` (structural) |
+| Architecture / security / RLS / ownership drift? | `/api/discovery-v2` (gate is the authoritative drift gate) |
+
+Fall back to a full repo scan only when LCIS returns nothing or the data layer is stale (`pnpm graph:update && graph:omega`). Change-control hotspots above always warrant a `graph:intel blast` before merge.

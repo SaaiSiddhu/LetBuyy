@@ -61,6 +61,25 @@ jobs:
           node tools/graph-server/autonomous-discovery-v5.mjs
       - name: Regenerate v5 reports
         run: node tools/graph-server/gen-v5-reports.mjs
+      - name: Extract Omega intelligence (merchant/customer/revenue/cost/telemetry/memory/fix/unified)
+        run: |
+          node tools/graph-server/merchant-health-intel.mjs
+          node tools/graph-server/merchant-growth-intel.mjs
+          node tools/graph-server/merchant-adoption-intel.mjs
+          node tools/graph-server/merchant-risk-intel.mjs
+          node tools/graph-server/merchant-churn-intel.mjs
+          node tools/graph-server/customer-intelligence-v2.mjs
+          node tools/graph-server/revenue-intelligence-v2.mjs
+          node tools/graph-server/cost-intelligence.mjs
+          node tools/graph-server/telemetry-intelligence.mjs
+          node tools/graph-server/memory-v2.mjs
+          node tools/graph-server/fix-engine.mjs
+          node tools/graph-server/discovery-v2.mjs
+          node tools/graph-server/production-readiness-v2.mjs
+          node tools/graph-server/decision-engine-v2.mjs
+          node tools/graph-server/unified-intelligence-engine.mjs
+      - name: Regenerate Omega reports
+        run: node tools/graph-server/gen-omega-reports.mjs
       - name: Sanity gate — schema must parse to non-trivial counts
         run: |
           node -e "const s=require('./graphify-out/db-intel.json').summary; if(s.tables<100||s.functions<50){console.error('DB intel parse looks degraded',s);process.exit(1)} console.log('DB intel OK:',s.tables,'tables,',s.functions,'functions,',s.policies,'policies')"

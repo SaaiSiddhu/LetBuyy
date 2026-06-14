@@ -155,8 +155,8 @@
   </aside>
 </main>
 <script>
-const TABS=['overview','atlas','data','infra','domains','merchant','journey','dpay','dsec','deploy','incidents','secrets','runtime','depstate','execution','memory','impact','mgraph','robs','rmerch','rrev','rsec','rinc','rjourney','readiness','decisions','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
-const TLABEL={overview:'Overview',atlas:'★ Atlas',data:'◆ Data Layer',infra:'◇ Infrastructure',domains:'◈ Domains',merchant:'◈ Merchant',journey:'◈ Customer Journey',dpay:'◈ Payments',dsec:'◈ Security',deploy:'◈ Deployment',incidents:'◈ Incidents',secrets:'◈ Secrets',runtime:'◉ Runtime',depstate:'◉ Deployments',execution:'◉ Execution',memory:'◉ Memory',impact:'◉ Impact',mgraph:'◉ Merchant Graph',robs:'◐ Runtime Obs',rmerch:'◐ Merchants',rrev:'◐ Revenue',rsec:'◐ Security',rinc:'◐ Incidents',rjourney:'◐ Journey',readiness:'◐ Readiness',decisions:'◐ Decisions',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
+const TABS=['overview','atlas','data','infra','domains','merchant','journey','dpay','dsec','deploy','incidents','secrets','runtime','depstate','execution','memory','impact','mgraph','robs','rmerch','rrev','rsec','rinc','rjourney','readiness','decisions','brain','mhealth','mrisk','mgrowth','custi','revv2','cost','telem','memv2','fixeng','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
+const TLABEL={overview:'Overview',atlas:'★ Atlas',data:'◆ Data Layer',infra:'◇ Infrastructure',domains:'◈ Domains',merchant:'◈ Merchant',journey:'◈ Customer Journey',dpay:'◈ Payments',dsec:'◈ Security',deploy:'◈ Deployment',incidents:'◈ Incidents',secrets:'◈ Secrets',runtime:'◉ Runtime',depstate:'◉ Deployments',execution:'◉ Execution',memory:'◉ Memory',impact:'◉ Impact',mgraph:'◉ Merchant Graph',robs:'◐ Runtime Obs',rmerch:'◐ Merchants',rrev:'◐ Revenue',rsec:'◐ Security',rinc:'◐ Incidents',rjourney:'◐ Journey',readiness:'◐ Readiness',decisions:'◐ Decisions',brain:'⬢ Unified Brain',mhealth:'⬢ Merchant Health',mrisk:'⬢ Merchant Risk',mgrowth:'⬢ Merchant Growth',custi:'⬢ Customer Intel',revv2:'⬢ Revenue V2',cost:'⬢ Cost',telem:'⬢ Telemetry',memv2:'⬢ Memory V2',fixeng:'⬢ Fix Engine',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
 const ATLAS_DOMAINS={atlas:'',services:'services',apps:'apps',packages:'packages',payments:'payments',identity:'identity',database:'database',marketplace:'marketplace',themes:'themes',developer:'developer',security:'security',tenancy:'tenancy'};
 const $=s=>document.querySelector(s);
 const cv=$('#cv'),ctx=cv.getContext('2d'),dash=$('#dash'),hint=$('#hint'),atlasbar=$('#atlasbar'),ibody=$('#inspectorBody');
@@ -232,6 +232,16 @@ async function selectTab(t){
   if(t==='rjourney')return renderRjourney();
   if(t==='readiness')return renderReadiness();
   if(t==='decisions')return renderDecisions();
+  if(t==='brain')return renderBrain();
+  if(t==='mhealth')return renderModelTab('◆ Merchant Health','/api/merchant-health');
+  if(t==='mrisk')return renderModelTab('◆ Merchant Risk','/api/merchant-risk');
+  if(t==='mgrowth')return renderModelTab('◆ Merchant Growth','/api/merchant-growth');
+  if(t==='custi')return renderCusti();
+  if(t==='revv2')return renderRevv2();
+  if(t==='cost')return renderCost();
+  if(t==='telem')return renderTelem();
+  if(t==='memv2')return renderMemv2();
+  if(t==='fixeng')return renderFixeng();
   const d=await api('/api/graph-domain?key='+t);
   if(!d){dash.innerHTML='<p class="hint">No data.</p>';return;}
   const rc=d.risk>66?'var(--critical)':d.risk>33?'var(--warning)':'var(--success)';
@@ -663,6 +673,100 @@ async function renderDecisions(){
    <div class="sectionTitle">What blocks 100 merchants</div><ul class="hint">${o.blocksScale.blocks100Merchants.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
    <div class="sectionTitle">What blocks 10k users</div><ul class="hint">${o.blocksScale.blocks10kUsers.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
    <div class="sectionTitle">What blocks 100k concurrent users</div><ul class="hint">${o.blocksScale.blocks100kConcurrentUsers.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
+}
+
+// ---------- Omega: unified brain + model tabs ----------
+const kvtab=(obj,kk,vk)=>`<table><thead><tr><th>${kk}</th><th>${vk}</th></tr></thead><tbody>${Object.entries(obj).map(([k,v])=>`<tr><td class="lbl">${esc(k)}</td><td>${esc(typeof v==='object'?JSON.stringify(v):String(v))}</td></tr>`).join('')}</tbody></table>`;
+async function renderModelTab(title,ep){
+  await v3wrap(title);const o=await api(ep);if(o.error)return v3err(title,o.error);
+  const s=o.summary;const dims=o.model?(o.model.dimensions||o.model.signals||o.model.features||[]):[];
+  dash.innerHTML=`<h2>${esc(title)}</h2>
+   <p class="hint" style="padding:6px 0">⚠ ${esc(s.liveDataNote||'model is repository truth; live values query-bound')}</p>
+   <div class="cards">${Object.entries(s).filter(([k,v])=>typeof v==='number').map(([k,v])=>card(v,esc(k))).join('')}</div>
+   ${dims.length?`<div class="sectionTitle">Model dimensions (real source tables)</div>
+   <table><thead><tr><th>Dimension</th><th>Signal</th><th>Source tables</th></tr></thead><tbody>
+   ${dims.map(d=>`<tr><td class="lbl">${esc(d.name)}</td><td>${esc(d.signal)}</td><td><span class="mono" style="color:var(--muted)">${esc((d.sources||[]).join(', '))}</span></td></tr>`).join('')}
+   </tbody></table>`:''}
+   <div class="sectionTitle">Detectors (live-query-bound)</div>
+   <table><thead><tr><th>Detector</th><th>Source</th><th>Query</th></tr></thead><tbody>
+   ${Object.entries(o.detectors||{}).map(([k,v])=>`<tr><td class="lbl">${esc(k)}</td><td><span class="mono">${esc(v.source||'')}</span></td><td><span class="mono" style="color:var(--muted)">${esc(v.query||v.metric||'')}</span></td></tr>`).join('')}
+   </tbody></table>
+   ${o.structuralFindings?`<div class="sectionTitle">Structural findings (repository truth)</div><table><tbody>${o.structuralFindings.map(f=>`<tr><td class="lbl">${esc(f.id)}</td><td>${esc(f.finding)}<div class="mono" style="color:var(--muted);margin-top:3px">${esc(f.evidence)}</div></td></tr>`).join('')}</tbody></table>`:''}`;
+}
+async function renderCusti(){
+  await v3wrap('customer intel');const o=await api('/api/customer-intelligence-v2');if(o.error)return v3err('⬢ Customer Intel',o.error);
+  dash.innerHTML=`<h2>⬢ Customer Intelligence</h2>
+   <p class="hint" style="padding:6px 0">⚠ ${esc(o.summary.liveDataNote)}</p>
+   <div class="cards">${card(o.summary.graphs,'graphs')}${card(o.summary.graphsBacked,'schema-backed')}</div>
+   <table><thead><tr><th>Graph</th><th>Metric</th><th>Source tables</th></tr></thead><tbody>
+   ${Object.entries(o.graphs).map(([k,v])=>`<tr><td class="lbl">${esc(k)}</td><td>${esc(v.metric||(v.stages?v.stages.join(' → '):''))}</td><td><span class="mono" style="color:var(--muted)">${esc((v.sources||[]).join(', '))}</span></td></tr>`).join('')}
+   </tbody></table>`;
+}
+async function renderRevv2(){
+  await v3wrap('revenue v2');const o=await api('/api/revenue-v2');if(o.error)return v3err('⬢ Revenue V2',o.error);
+  dash.innerHTML=`<h2>⬢ Revenue Intelligence v2</h2>
+   <p class="hint" style="padding:6px 0">⚠ ${esc(o.summary.liveDataNote)}</p>
+   <div class="cards">${card(o.summary.models,'revenue models')}${card(o.summary.moneyRpcs,'money RPCs')}${card(o.summary.giftCardLiabilityModeled?'YES':'no','gift-card liability')}</div>
+   <table><thead><tr><th>Model</th><th>Metric</th><th>Sources / RPCs</th></tr></thead><tbody>
+   ${Object.entries(o.models).map(([k,v])=>`<tr><td class="lbl">${esc(k)}</td><td>${esc(v.metric||(v.stages?v.stages.join(' → '):''))}${v.note?'<div class="mono" style="color:var(--muted)">'+esc(v.note)+'</div>':''}</td><td><span class="mono" style="color:var(--muted)">${esc([...(v.sources||[]),...(v.rpcs||[]),...(v.domains||[])].join(', '))}</span></td></tr>`).join('')}
+   </tbody></table>`;
+}
+async function renderCost(){
+  await v3wrap('cost');const o=await api('/api/cost-intelligence');if(o.error)return v3err('⬢ Cost',o.error);
+  dash.innerHTML=`<h2>⬢ Cost Intelligence</h2>
+   <p class="hint" style="padding:6px 0">⚠ ${esc(o.summary.liveDataNote)}</p>
+   <div class="cards">${card(o.summary.services,'services priced')}${card(o.summary.hotspots,'cost hotspots')}${card('query-bound','total cost')}</div>
+   <div class="sectionTitle">Pricing model (published-list reference · usage live)</div>
+   <table><thead><tr><th>Service</th><th>Free tier</th><th>List rate (reference)</th><th>Usage driver (live)</th></tr></thead><tbody>
+   ${o.pricing.map(p=>`<tr><td class="lbl">${esc(p.service)}</td><td>${esc(p.freeTier)}</td><td><span class="mono">${esc(p.listRate)}</span></td><td><span class="mono" style="color:var(--muted)">${esc(p.usageMetric)} ← ${esc(p.source)}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Cost hotspots (scale-driven ranking)</div>
+   <table><thead><tr><th>#</th><th>Service</th><th>Why</th><th>Lever</th></tr></thead><tbody>
+   ${o.hotspots.map(h=>`<tr><td>${h.rank}</td><td class="lbl">${esc(h.service)}</td><td>${esc(h.why)}</td><td><span class="mono" style="color:var(--muted)">${esc(h.lever)}</span></td></tr>`).join('')}
+   </tbody></table>
+   <p class="hint" style="padding:6px 0"><b>Forecast:</b> ${esc(o.forecastEngine.formula)}</p>`;
+}
+async function renderTelem(){
+  await v3wrap('telemetry');const o=await api('/api/telemetry');if(o.error)return v3err('⬢ Telemetry',o.error);
+  dash.innerHTML=`<h2>⬢ Telemetry Intelligence</h2>
+   <p class="hint" style="padding:6px 0">⚠ ${esc(o.summary.liveDataNote)}</p>
+   <div class="cards">${card(o.summary.sources,'sources')}${card(o.summary.metricsCovered,'metrics')}${card(o.summary.liveSnapshot?'present':'none','snapshot')}</div>
+   <div class="sectionTitle">Ingestion adapters (where/how to read — values live)</div>
+   <table><thead><tr><th>Source</th><th>Metrics</th><th>Adapter</th><th>Binding</th></tr></thead><tbody>
+   ${o.adapters.map(a=>`<tr><td class="lbl">${esc(a.source)}</td><td>${esc(a.metrics.join(', '))}</td><td><span class="mono" style="color:var(--muted)">${esc(a.adapter)}</span></td><td><span class="mono">${esc(a.binding)}</span></td></tr>`).join('')}
+   </tbody></table>
+   <p class="hint" style="padding:6px 0">${esc(o.ingestion.contract)}</p>`;
+}
+async function renderMemv2(){
+  await v3wrap('memory v2');const o=await api('/api/memory-v2');if(o.error)return v3err('⬢ Memory V2',o.error);
+  dash.innerHTML=`<h2>⬢ Organizational Memory v2</h2>
+   <div class="cards">${card(o.summary.decisions,'decisions')}${card(o.summary.migrationDecisions,'migration decisions')}${card(o.summary.categories,'categories')}${card(o.summary.sourcedCategories,'sourced')}</div>
+   <div class="sectionTitle">Answers</div>${kvtab(o.answers,'Question','Source')}
+   <div class="sectionTitle">Decision categories</div><div class="badges">${Object.entries(o.categories).map(([k,v])=>`<span class="badge">${esc(k)} <b>${v}</b></span>`).join('')}</div>`;
+}
+async function renderFixeng(){
+  await v3wrap('fix engine');const o=await api('/api/fix-engine');if(o.error)return v3err('⬢ Fix Engine',o.error);
+  dash.innerHTML=`<h2>⬢ Autonomous Fix Engine</h2>
+   <p class="hint" style="padding:6px 0"><b>${esc(o.summary.policy)}</b></p>
+   <div class="cards">${card(o.summary.plans,'fix plans')}${card(o.summary.deadCandidates,'dead candidates')}${card(o.summary.openBlockers,'open blockers')}${card(o.summary.applied?'YES':'NONE','changes applied')}</div>
+   <div class="sectionTitle">Fix / Verify / Test / Rollback plans (not applied)</div>
+   <table><thead><tr><th>Finding</th><th>Fix</th><th>Verify</th><th>Rollback</th></tr></thead><tbody>
+   ${o.plans.map(p=>`<tr><td class="lbl">${esc(p.finding)}</td><td>${esc(p.fixPlan)}</td><td><span class="mono" style="color:var(--muted)">${esc(p.verificationPlan)}</span></td><td><span class="mono" style="color:var(--muted)">${esc(p.rollbackPlan)}</span></td></tr>`).join('')}
+   </tbody></table>`;
+}
+async function renderBrain(){
+  await v3wrap('unified brain');const o=await api('/api/unified-intelligence');if(o.error)return v3err('⬢ Unified Brain',o.error);
+  dash.innerHTML=`<h2>⬢ Unified Intelligence (Brain)</h2>
+   <p class="hint" style="padding:6px 0">${esc(o.summary.note)}</p>
+   <div class="cards">${card(o.summary.layersPresent+'/'+o.summary.layers,'layers connected')}${card(o.summary.edges,'cross-layer edges')}${card(o.summary.coverage+'%','coverage')}</div>
+   <div class="sectionTitle">Layers</div>
+   <table><thead><tr><th>Layer</th><th>Present</th><th>Join key</th><th>Metric</th></tr></thead><tbody>
+   ${o.layers.map(l=>`<tr><td class="lbl">${esc(l.layer)}</td><td>${l.present?'✓':'<span style="color:var(--warning)">·</span>'}</td><td><span class="mono">${esc(l.joinKey)}</span></td><td><span class="mono" style="color:var(--muted)">${esc(l.metric)}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Cross-layer spine</div>
+   <table><thead><tr><th>From</th><th>To</th><th>Via</th></tr></thead><tbody>
+   ${o.edges.map(e=>`<tr><td class="lbl">${esc(e.from)}</td><td>${esc(e.to)}</td><td><span class="mono" style="color:var(--muted)">${esc(e.via)}</span></td></tr>`).join('')}
+   </tbody></table>`;
 }
 
 // ---------- neighborhood (live force sim) ----------
