@@ -187,6 +187,12 @@ LCIS is now LetBuyy's operating system, readable by humans AND AIs. Three layers
 | **Ask a question in English** ("How does Orders work?") | `/api/search-v2?q=...` (semantic; returns the domain answer + flow; repo scan not required) |
 | Theme / App-marketplace / Developer platform (all FROZEN) | `/api/theme-intelligence` · `/api/apps-intelligence` · `/api/developer-intelligence` |
 | Self-contained AI pack (< 20k tokens) for any model | `/api/ai-pack?target=claude\|gemini\|codex\|cursor` |
+| **Live provider status** (Supabase/Cloudflare/Vercel/GitHub/Resend/Razorpay/Turnstile) | `/api/live-adapters` (status + exact env vars) · `/api/live` (real read-only probe — NOT CONNECTED until creds set) |
+| Environment registry (local/staging/production credential presence) | `/api/environment-registry` · Explain → Live Integrations |
+| Autonomous diagnosis (root cause / affected / confidence) | `/api/diagnose?target=X&error=Y` |
+| Autonomous runbook (detection/diagnosis/recovery/rollback/verification) | `/api/runbook?domain=X` |
+
+**Live-data law:** every live value is real-source or **NOT CONNECTED + the exact env var** — never fabricated. No provider credential is in the repo (deploy-time); adapters are read-only and probe only when credentials are present.
 | Database control (schema/relationship/policy/function explorers) | `/api/database-control` · Explain → Database |
 | Deep investigation | Atlas (Technical mode → ★ Atlas) — the deepest layer |
 

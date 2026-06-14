@@ -42,8 +42,8 @@
     scrollbar-width:none}
   .chips-bar::-webkit-scrollbar{display:none}
   .chips{display:flex;width:100%;min-width:max-content}
-  .chip{flex:1;display:flex;gap:4px;align-items:center;justify-content:center;min-width:80px;
-    padding:5px 10px;font-size:11px;color:var(--subdued);background:transparent;
+  .chip{flex:1;display:flex;gap:4px;align-items:center;justify-content:center;min-width:120px;
+    padding:5px 16px;font-size:11px;color:var(--subdued);background:transparent;
     border:none;border-right:1px solid var(--border-soft);border-radius:0;white-space:nowrap;flex-shrink:0;cursor:default;transition:background .15s}
   .chip:last-child{border-right:none}
   .chip:hover{background:var(--brand-soft);color:var(--text)}
@@ -156,6 +156,7 @@
     color:var(--subdued);font-size:12.5px;font-weight:500;flex-shrink:0;white-space:nowrap;display:inline-flex;align-items:center;gap:8px}
   .kbtn:hover{border-color:var(--brand);color:var(--text);background:#1c1827}
   .kbtn kbd{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--muted);flex-shrink:0}
+  .kbtn-icon{display:none;flex-shrink:0}
 
   #explain{height:calc(100vh - 86px);display:grid;grid-template-columns:268px 1fr;overflow:hidden}
   .xtree{border-right:1px solid var(--border-soft);background:var(--sidebar);overflow:auto;padding:12px 10px}
@@ -240,13 +241,15 @@
     .xgrid{grid-template-columns:1fr} .xrel{gap:14px}
   }
 
-  /* Large mobile — drop brand subtitle, tighten gaps, shrink search */
+  /* Large mobile — drop brand subtitle, tighten gaps, icon-only search */
   @media (max-width:640px){
     .hdr-top{padding:0 12px;gap:6px}
     .brand .sub{display:none}
     .brand{margin-right:6px}
     .hdr-spacer{display:none}
-    .kbtn{width:160px;min-width:100px}
+    .kbtn{width:36px;min-width:0;padding:8px;justify-content:center}
+    .kbtn-label,.kbtn kbd{display:none}
+    .kbtn-icon{display:block}
     .modetoggle button{padding:6px 11px;font-size:12px}
     .envswitch{padding:4px 8px;gap:5px}
     .envswitch select{font-size:12px}
@@ -273,7 +276,7 @@
       <span class="envdot" id="envdot"></span>
       <select id="envsel"><option value="local">Local</option><option value="staging">Staging</option><option value="production">Production</option></select>
     </div>
-    <button class="kbtn" id="cmdkBtn"><span class="kbtn-label">Search everything</span><kbd>⌘K</kbd></button>
+    <button class="kbtn" id="cmdkBtn"><svg class="kbtn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="kbtn-label">Search everything</span><kbd>⌘K</kbd></button>
   </div>
   <div class="chips-bar"><div class="chips" id="chips"></div></div>
 </header>
@@ -1109,6 +1112,7 @@ function xSelect(key){
   if(key==='mission-control')return xMission();
   if(key==='connections')return xConnections();
   if(key==='ecosystem')return xEcosystemIntel();
+  if(key==='live-integrations')return xLive();
   if(key==='readiness')return xReadiness();
   if(key==='ai-context')return xAiContextPage();
   if(key==='merchant-journey')return xEcosystem('merchant');
@@ -1281,6 +1285,45 @@ function xOps(){
      </tbody></table>
      <div class="xatlas"><button class="primary" onclick="setMode('technical');selectTab('depstate')">◉ Deployment State</button>
        <button onclick="setMode('technical');selectTab('robs')" style="margin-left:8px">◐ Runtime Observability</button></div>`;
+  });
+}
+function xLive(){
+  $('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading live integrations…</div>';
+  Promise.all([api('/api/environment-registry'),api('/api/live-adapters')]).then(([reg,ad])=>{
+    if(reg.error){$('#xmain').innerHTML=`<div class="empty">${esc(reg.error)}</div>`;return;}
+    const dl=Object.keys(XDATA.nodes);
+    $('#xmain').innerHTML=`<div class="xhero"><h1>Live Integrations</h1></div>
+     <p class="xlede">${esc(ad.policy)}</p>
+     ${envBanner()}
+     <div class="xgrid"><div class="xcard"><div class="h">Providers</div><div class="b" style="font-size:22px;font-weight:700">${ad.providers}</div></div><div class="xcard"><div class="h">Configured</div><div class="b" style="font-size:22px;font-weight:700;color:var(--success)">${ad.configured}</div></div><div class="xcard warn"><div class="h">Not connected</div><div class="b" style="font-size:22px;font-weight:700;color:var(--warning)">${ad.notConnected}</div></div><div class="xcard"><div class="h">Current env</div><div class="b" style="font-size:18px;font-weight:700">${esc(reg.summary.currentEnv)}</div></div></div>
+     <div class="xsection">Provider adapters (read-only) — status · exact source · integration</div>
+     <table><thead><tr><th>Provider</th><th>Metrics</th><th>Status</th><th>Exact source required</th></tr></thead><tbody>
+     ${ad.statuses.map(s=>`<tr><td class="lbl">${esc(s.provider)}</td><td><span class="mono" style="color:var(--muted)">${esc(s.metrics.join(', '))}</span></td><td>${s.credentialsPresent?'<span style="color:var(--success)">CONFIGURED</span>':'<span class="notconn" style="margin:0;padding:3px 9px"><span class="d"></span>NOT CONNECTED</span>'}</td><td><span class="mono" style="color:var(--muted)">${esc(s.exactSource)}</span></td></tr>`).join('')}
+     </tbody></table>
+     <p class="xlede" style="font-size:13px">Probe live (only credentialed providers make a network call): <code>/api/live</code> · <code>/api/live?provider=Supabase</code>. Adapters are read-only.</p>
+     <div class="xsection">Autonomous diagnosis</div>
+     <div class="pathgrid" style="grid-template-columns:1fr 1fr auto"><input id="dgt" type="text" placeholder="domain/route/table (e.g. checkout)" value="checkout"/><input id="derr" type="text" placeholder="error (optional)"/><button id="dgo" class="primary">Diagnose</button></div>
+     <div id="dgout" style="margin-top:12px"></div>
+     <div class="xsection">Autonomous runbook</div>
+     <div class="pathgrid" style="grid-template-columns:1fr auto"><input id="rbq" type="text" placeholder="domain (e.g. payments)" value="payments"/><button id="rbgo" class="primary">Runbook</button></div>
+     <div id="rbout" style="margin-top:12px"></div>`;
+    const dgo=async()=>{const t=$('#dgt').value.trim();const e=$('#derr').value.trim();const o=await api('/api/diagnose?target='+encodeURIComponent(t)+'&error='+encodeURIComponent(e));const out=$('#dgout');
+      if(o.error){out.innerHTML=`<p class="hint">${esc(o.error)}</p>`;return;}
+      out.innerHTML=`<div class="xcard"><div class="h">Diagnosis · ${esc(o.domain)} · confidence ${o.confidence}% <span style="color:var(--success);float:right">repo scan: not required</span></div><div class="b">
+        <b>Root cause:</b> ${esc(o.rootCause.likelyOrigin)} (${esc(o.rootCause.hint)})<br>
+        <b>Affected domains:</b> ${esc(o.affectedDomains.join(', '))}<br>
+        <b>Affected merchants:</b> ${esc(o.affectedMerchants)}<br>
+        <b>Affected revenue:</b> ${esc(o.affectedRevenue)}<br>
+        <b>Suggested fixes:</b><ul style="margin:5px 0">${o.suggestedFixes.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>
+        <span style="color:var(--muted);font-size:12px">${esc(o.confidenceNote)}</span></div></div>`;};
+    const rbgo=async()=>{const q=$('#rbq').value.trim();const o=await api('/api/runbook?domain='+encodeURIComponent(q));const out=$('#rbout');
+      if(o.error){out.innerHTML=`<p class="hint">${esc(o.error)}</p>`;return;}
+      out.innerHTML=`<div class="xcard"><div class="h">Runbook · ${esc(o.label)}</div><div class="b">
+        <b>Detection:</b> ${o.detection.signals.map(s=>esc(s)).join(' · ')}<div class="mono" style="color:var(--warning);font-size:12px">${esc(o.detection.source)}</div>
+        <b>Recovery:</b><ul style="margin:5px 0">${o.recovery.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>
+        <b>Rollback:</b> <span class="mono" style="color:var(--muted)">${esc(o.rollback.command)}</span><br>
+        <b>Verification:</b> ${o.verification.map(s=>esc(s)).join(' · ')}</div></div>`;};
+    $('#dgo').onclick=dgo;$('#rbgo').onclick=rbgo;dgo();rbgo();
   });
 }
 function xEcosystemIntel(){

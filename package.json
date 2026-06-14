@@ -118,7 +118,11 @@
     "foundation:restore-drill:plan": "node scripts/governance/foundation-restore-drill.mjs --plan",
     "money:invariants": "node scripts/money-certification/check-invariants.mjs",
     "graph:ecosystem": "node tools/graph-server/ecosystem-intel.mjs",
-    "graph:search": "node tools/graph-server/search-intel.mjs"
+    "graph:search": "node tools/graph-server/search-intel.mjs",
+    "graph:live": "node tools/graph-server/live-adapters.mjs",
+    "graph:env-registry": "node tools/graph-server/environment-registry.mjs",
+    "graph:diagnose": "node tools/graph-server/diagnosis-engine.mjs",
+    "graph:runbooks": "node tools/graph-server/runbook-engine.mjs"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20260525.1",

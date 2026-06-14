@@ -94,6 +94,10 @@ jobs:
           node tools/graph-server/mission-control-dashboard.mjs
       - name: Extract OS ecosystem intelligence (theme/apps/developer)
         run: node tools/graph-server/ecosystem-intel.mjs
+      - name: Extract Omega live layer (environment registry + runbooks; adapters stay NOT CONNECTED in CI)
+        run: |
+          node tools/graph-server/environment-registry.mjs
+          node tools/graph-server/runbook-engine.mjs
       - name: Regenerate v6 explain/onboarding docs (dual-mode operating system)
         run: node tools/graph-server/gen-explain-docs.mjs
       - name: Sanity gate — schema must parse to non-trivial counts

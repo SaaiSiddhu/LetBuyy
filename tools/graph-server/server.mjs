@@ -55,6 +55,10 @@ import { buildAuditEngineV2 } from './audit-engine-v2.mjs';
 import { buildMissionControlDashboard } from './mission-control-dashboard.mjs';
 import { buildEcosystemIntel } from './ecosystem-intel.mjs';
 import { searchV2 } from './search-intel.mjs';
+import { ADAPTERS, probeAdapter, probeAll, summarize as adapterSummary } from './live-adapters.mjs';
+import { buildEnvironmentRegistry } from './environment-registry.mjs';
+import { diagnose } from './diagnosis-engine.mjs';
+import { buildRunbooks, runbookOf } from './runbook-engine.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -123,6 +127,8 @@ const productionHealth = safe(() => buildProductionHealth());
 const auditV2 = safe(() => buildAuditEngineV2());
 const missionDashboard = safe(() => buildMissionControlDashboard());
 const ecosystemIntel = loadOrBuild('ecosystem-intel.json', buildEcosystemIntel);
+const envRegistry = safe(() => buildEnvironmentRegistry());
+const runbooksIntel = safe(() => buildRunbooks());
 // Multi-AI context pack (Phase 26) — self-contained, < ~20k tokens, no repo scan required.
 function aiPack(target) {
   if (!explainIntel || explainIntel.error) return { error: 'explain-intel missing' };
@@ -581,6 +587,20 @@ const server = createServer((req, res) => {
     if (p === '/api/developer-intelligence') return json(res, ecosystemIntel && !ecosystemIntel.error ? ecosystemIntel.layers.developer : { error: 'ecosystem-intel missing' });
     if (p === '/api/ecosystem') return json(res, ecosystemIntel);
     if (p === '/api/ai-pack') return json(res, aiPack(u.searchParams.get('target') || 'claude'));
+    // ---- LCIS Omega: live integrations / environment registry / diagnosis / runbooks ----
+    if (p === '/api/live-adapters') return json(res, adapterSummary());
+    if (p === '/api/environment-registry') return json(res, envRegistry);
+    if (p === '/api/diagnose') return json(res, safe(() => diagnose(u.searchParams.get('target') || 'payments', u.searchParams.get('error') || '')));
+    if (p === '/api/runbook') return json(res, u.searchParams.get('domain') ? safe(() => runbookOf(u.searchParams.get('domain'))) : runbooksIntel);
+    if (p === '/api/live') {
+      // Real read-only probe — only credentialed providers trigger a network call; the rest are NOT CONNECTED.
+      const prov = u.searchParams.get('provider');
+      const match = prov ? ADAPTERS.filter((a) => a.provider.toLowerCase() === prov.toLowerCase()) : null;
+      const run = match && match.length ? probeAdapter(match[0]) : probeAll();
+      run.then((r) => json(res, prov ? { provider: prov, result: r } : { summary: adapterSummary(), probes: r }))
+        .catch((e) => json(res, { error: String(e) }, 500));
+      return;
+    }
     if (p === '/api/database-control') return json(res, dbIntel ? { summary: dbIntel.summary, relationships: relIntel && !relIntel.error ? relIntel.summary : null, topTables: dbIntel.tables.sort((a, b) => (b.policies.length + b.triggers.length + b.indexes) - (a.policies.length + a.triggers.length + a.indexes)).slice(0, 25).map((t) => ({ name: t.name, columns: t.columns, rls: t.rls, force: t.force, tenant: t.tenant, money: t.money, policies: t.policies.length, triggers: t.triggers.length, indexes: t.indexes })), functions: dbIntel.functions.filter((f) => f.securityDefiner).slice(0, 30).map((f) => ({ name: f.name, money: f.money, idempotency: f.hasIdempotency, forUpdate: f.forUpdate, tables: f.touches.length })) } : { error: 'db-intel missing' });
     if (p === '/api/production-readiness-v2') return json(res, readinessV2);
     if (p === '/api/decision-v2') return json(res, decisionV2);

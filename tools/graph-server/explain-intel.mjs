@@ -64,6 +64,7 @@ const IA = [
   { key: 'infrastructure', label: 'Infrastructure', icon: '◰', kind: 'page' },
   { key: 'ops-center', label: 'Operations Center', icon: '◍', kind: 'page' },
   { key: 'connections', label: 'Live & Connections', icon: '◌', kind: 'page' },
+  { key: 'live-integrations', label: 'Live Integrations', icon: '◉', kind: 'page' },
   { key: 'readiness', label: 'Readiness', icon: '◉', kind: 'page' },
   { key: 'ai-context', label: 'AI Context', icon: '✦', kind: 'page' },
   { key: 'technical', label: 'Technical View', icon: '⌥', kind: 'toggle' },
