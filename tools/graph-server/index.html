@@ -228,6 +228,29 @@
   .cmdk .ask{padding:11px 14px;border-top:1px solid var(--border-soft);font-size:12px;color:var(--subdued)}
 
   .empty{color:var(--muted);padding:40px;text-align:center;font-size:14px}
+
+  /* ====== V8 domain workspace (search → workspace) ====== */
+  .ws-crumb{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap}
+  .ws-crumb a{color:var(--subdued);cursor:pointer;text-decoration:none} .ws-crumb a:hover{color:var(--brand-2)}
+  .ws-crumb .sep{color:var(--border)}
+  .ws-tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--border-soft);margin:14px 0 18px;position:sticky;top:0;background:var(--bg);z-index:4;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+  .ws-tab{padding:9px 15px;border-radius:var(--r-md) var(--r-md) 0 0;cursor:pointer;color:var(--subdued);white-space:nowrap;font-size:13.5px;font-weight:600;border:1px solid transparent;border-bottom:0;min-height:40px;display:flex;align-items:center;gap:6px}
+  .ws-tab:hover{color:var(--text);background:var(--surface)}
+  .ws-tab.on{color:#fff;background:linear-gradient(180deg,var(--brand),var(--brand-cta));box-shadow:0 4px 14px rgba(109,40,217,.35)}
+  .ws-share{display:flex;gap:7px;margin-left:auto}
+  .ws-share button{min-height:34px;padding:6px 12px;font-size:12px}
+  .ws-toc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 16px;margin:0 0 16px}
+  .ws-toc .h{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:700;margin-bottom:7px}
+  .ws-toc a{display:inline-block;color:var(--brand-2);font-size:12.5px;cursor:pointer;margin:0 12px 4px 0;text-decoration:none} .ws-toc a:hover{color:#fff}
+  .faq{border:1px solid var(--border);border-radius:var(--r-md);margin:6px 0;overflow:hidden}
+  .faq .q{padding:12px 15px;cursor:pointer;font-weight:600;font-size:13.5px;display:flex;justify-content:space-between;min-height:44px;align-items:center}
+  .faq .q:hover{background:var(--surface)} .faq .a{padding:0 15px 13px;color:var(--subdued);font-size:13px;display:none} .faq.open .a{display:block}
+  .gl-tabs{display:flex;gap:5px;overflow-x:auto;margin:0 0 14px;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+  .gl-tab{padding:6px 12px;border-radius:var(--r-pill);cursor:pointer;color:var(--subdued);white-space:nowrap;font-size:12.5px;border:1px solid var(--border);min-height:34px;display:flex;align-items:center}
+  .gl-tab.on{background:var(--brand-soft);border-color:var(--brand);color:var(--brand-2)}
+  .gl-edge{display:flex;align-items:center;gap:8px;padding:7px 10px;border-bottom:1px solid var(--border-soft);font-size:12.5px}
+  .gl-edge .from{color:var(--brand-2)} .gl-edge .via{color:var(--muted);font-family:var(--mono);font-size:11px}
+
   /* Tablet — tighten padding */
   @media (max-width:1024px){.hdr-top{padding:0 16px}}
   @media (max-width:880px){
@@ -237,6 +260,8 @@
     .xmain{padding:18px 16px}
     .tabs{padding:8px 10px}
     .kbtn-label{display:none}
+    .hdr-top{flex-wrap:wrap;height:auto;min-height:52px;padding-top:8px;padding-bottom:8px}
+    .chips{flex-wrap:wrap}
     .xhero h1{font-size:21px} table{display:block;overflow-x:auto;white-space:nowrap}
     .xgrid{grid-template-columns:1fr} .xrel{gap:14px}
   }
@@ -261,6 +286,46 @@
     .kbtn{display:none}
     .modetoggle button{padding:5px 10px;font-size:11.5px}
   }
+
+  /* === V8 article blog system === */
+  .xmain.article{padding:0}
+  .xa-prog{position:sticky;top:0;height:3px;background:var(--border-soft);z-index:20}
+  .xa-prog-bar{height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-2));width:0%;transition:width .08s}
+  .xa-body{padding:20px 32px 48px}
+  .xa-breadcrumb{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);margin-bottom:18px;flex-wrap:wrap}
+  .xa-breadcrumb .xb{cursor:pointer;color:var(--subdued)} .xa-breadcrumb .xb:hover{color:var(--brand-2)}
+  .xa-breadcrumb .sep{color:var(--border)}
+  .xa-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 20px}
+  .xa-readtime{font-size:11px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);padding:3px 10px}
+  .xa-opill{display:inline-flex;align-items:center;gap:5px;background:var(--brand-soft);border:1px solid rgba(139,92,246,.3);border-radius:var(--r-pill);padding:3px 11px;font-size:11.5px;color:var(--brand-2)}
+  .xa-sec{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700;margin:28px 0 10px;display:flex;align-items:center;gap:10px}
+  .xa-sec:after{content:'';flex:1;height:1px;background:var(--border-soft)}
+  .xa-toc{background:var(--sidebar);border:1px solid var(--border-soft);border-radius:var(--r-lg);padding:14px 16px;margin:0 0 24px}
+  .xa-toc .th{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700;margin-bottom:10px}
+  .xa-toc-a{display:block;padding:4px 0 4px 10px;color:var(--subdued);font-size:12.5px;cursor:pointer;border-left:2px solid transparent;margin:1px 0;transition:.12s}
+  .xa-toc-a:hover{color:var(--brand-2);border-left-color:var(--brand)}
+  .xa-faq{margin:8px 0}
+  .xa-faq-it{border:1px solid var(--border-soft);border-radius:var(--r-md);overflow:hidden;margin-bottom:6px}
+  .xa-faq-q{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;font-size:13.5px;font-weight:600;background:var(--surface)}
+  .xa-faq-q:hover{background:#1c1827} .xa-faq-q .c{margin-left:auto;color:var(--muted);transition:.15s}
+  .xa-faq-it.open .c{transform:rotate(90deg)} .xa-faq-it.open .xa-faq-a{display:block}
+  .xa-faq-a{padding:8px 14px 14px;font-size:13.5px;line-height:1.65;color:var(--subdued);display:none}
+  .xa-runbook{background:linear-gradient(180deg,rgba(59,130,246,.07),rgba(59,130,246,.03));border:1px solid rgba(59,130,246,.2);border-radius:var(--r-lg);padding:16px 18px;margin:8px 0}
+  .xa-runbook .rh{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#93c5fd;font-weight:700;margin-bottom:10px}
+  .xa-runbook .rs{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid rgba(59,130,246,.12);font-size:13px;align-items:flex-start}
+  .xa-runbook .rs:last-child{border-bottom:0}
+  .xa-runbook .rn{width:20px;height:20px;border-radius:50%;background:rgba(59,130,246,.2);color:#93c5fd;font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px}
+  .xa-rel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:10px 0}
+  .xa-rel-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 15px;cursor:pointer;transition:.15s}
+  .xa-rel-card:hover{border-color:var(--brand);transform:translateY(-1px)}
+  .xa-rel-card .rt{font-weight:650;color:var(--brand-2);font-size:13px;margin-bottom:4px}
+  .xa-rel-card .rd{font-size:12px;color:var(--muted);line-height:1.4}
+  .xa-prevnext{display:flex;gap:12px;margin:32px 0 8px;flex-wrap:wrap}
+  .xa-pnav{flex:1;min-width:160px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 16px;cursor:pointer;transition:.15s}
+  .xa-pnav:hover{border-color:var(--brand);background:#1a1626}
+  .xa-pnav .pd{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:700;margin-bottom:4px}
+  .xa-pnav .pn{font-size:13.5px;font-weight:650;color:var(--brand-2)}
+  @media(max-width:640px){.xa-body{padding:16px 16px 48px}}
 </style>
 </head>
 <body>
@@ -1118,10 +1183,163 @@ function xSelect(key){
   if(key==='ai-context')return xAiContextPage();
   if(key==='merchant-journey')return xEcosystem('merchant');
   if(key==='customer-journey')return xEcosystem('customer');
-  if(XDATA.nodes[key])return xNode(XDATA.nodes[key]);
+  if(XDATA.nodes[key])return xArticle(XDATA.nodes[key]);
   m.innerHTML='<div class="empty">Select a topic from the left.</div>';
 }
 const xpill=(txt,key)=>isDomain(key)?`<span class="xpill" onclick="xSelect('${key}')">${esc(txt)}</span>`:`<span class="xpill">${esc(txt)}</span>`;
+function xScrollTo(id){const e=document.getElementById(id);const m=$('#xmain');if(e&&m)m.scrollTo({top:e.offsetTop-16,behavior:'smooth'});}
+function getPrevNext(key){const all=Object.keys(XDATA.nodes);const i=all.indexOf(key);return{prev:i>0?XDATA.nodes[all[i-1]]:null,next:i<all.length-1?XDATA.nodes[all[i+1]]:null};}
+function readMins(n){return Math.max(2,Math.round(((n.purpose||'')+(n.importance||'')+(n.failureImpact||'')).split(' ').length/180));}
+function genFAQ(n){const q=[];if(n.failureImpact)q.push({q:'What happens if '+n.label+' goes down?',a:n.failureImpact});if(n.recoveryPath)q.push({q:'How do you recover?',a:n.recoveryPath});if(n.merchantImpact)q.push({q:'How does this affect merchants?',a:n.merchantImpact});if(n.customerImpact)q.push({q:'How does this affect customers?',a:n.customerImpact});if(n.operationalNotes)q.push({q:'Key operational considerations?',a:n.operationalNotes});return q;}
+function xFaqToggle(el){el.closest('.xa-faq-it').classList.toggle('open');}
+// ====== V8 domain workspace — perspective switcher (Explain/Technical/Graphs/Trace/Related/AI) ======
+const WSPERSP=[['explain','📖 Explain'],['technical','⚙ Technical'],['graphs','◈ Graphs'],['trace','⟿ Trace'],['related','⚯ Related'],['ai','✦ AI']];
+function wsBar(key,active){
+  return `<div class="ws-tabs">${WSPERSP.map(([k,l])=>`<div class="ws-tab${k===active?' on':''}" onclick="xPersp('${key}','${k}')">${l}</div>`).join('')}<div class="ws-share"><button onclick="xCopyLink('${key}')">🔗 Copy link</button></div></div>`;
+}
+function xPersp(key,p){
+  if(p==='explain')return xArticle(XDATA.nodes[key]);
+  if(p==='technical')return xWsTech(key);
+  if(p==='graphs')return xWsGraphs(key);
+  if(p==='trace')return xWsTrace(key);
+  if(p==='related')return xWsRelated(key);
+  if(p==='ai')return xWsAi(key);
+}
+function xCopyLink(key){const url=location.origin+'/#'+key;navigator.clipboard&&navigator.clipboard.writeText(url);}
+const wsHero=(n,p)=>`<div class="xa-body"><div class="xa-breadcrumb"><span class="xb" onclick="xSelect('getting-started')">Home</span><span class="sep">›</span><span style="color:var(--text)">${esc(n.label)}</span></div>${wsBar(n.key,p)}<div class="xhero"><h1>${esc(n.label)}</h1><span class="crit ${CRIT(n.criticality)}">${esc(n.criticality)}</span></div>`;
+function xWsTech(key){const n=XDATA.nodes[key],t=n.technical;$('#xmain').className='xmain article';
+  $('#xmain').innerHTML=wsHero(n,'technical')+`<p class="xlede" style="font-size:13px">Engineering documentation — every surface this domain touches. Live row values are query-bound (NOT CONNECTED).</p>
+   <table><tbody>
+   <tr><td class="lbl" style="width:140px">Routes</td><td><span class="mono">${esc(t.routes.join(', ')||'—')}</span></td></tr>
+   <tr><td class="lbl">RPCs (${t.rpcs.length})</td><td><span class="mono">${esc(t.rpcs.join(', ')||'—')}</span></td></tr>
+   <tr><td class="lbl">Tables (${t.tables.length})</td><td><span class="mono">${esc(t.tables.join(', ')||'—')}</span></td></tr>
+   <tr><td class="lbl">Policies · triggers · indexes</td><td>${t.policies} · ${t.triggers||0} · ${t.indexes||0}</td></tr>
+   <tr><td class="lbl">FK → references</td><td><span class="mono">${esc((t.relationships&&t.relationships.references.join(', '))||'—')}</span></td></tr>
+   <tr><td class="lbl">FK ← referenced by</td><td><span class="mono">${esc((t.relationships&&t.relationships.referencedBy.join(', '))||'—')}</span></td></tr>
+   <tr><td class="lbl">Workers</td><td><span class="mono">${esc(t.workers.join(', '))}</span></td></tr>
+   <tr><td class="lbl">Queues</td><td><span class="mono">${esc(t.queues.join(', ')||'—')}</span></td></tr>
+   <tr><td class="lbl">Secrets</td><td><span class="mono">${esc(t.secrets.join(', ')||'—')}</span></td></tr>
+   <tr><td class="lbl">Services</td><td><span class="mono">${esc(t.services.join(', ')||'—')}</span></td></tr>
+   <tr><td class="lbl">Blast radius</td><td>${t.blastRadius?t.blastRadius.directConsumers+' direct consumers · '+esc(t.blastRadius.query):'—'}</td></tr>
+   <tr><td class="lbl">Owner</td><td>${esc(n.owner.join(', '))}</td></tr>
+   <tr><td class="lbl">Security</td><td>${t.money?'money path (SECURITY DEFINER + canonical-ledger-only)':'standard'} · ${t.tenant?'tenant-scoped (RLS + verifySiteOwnership)':'platform-internal'}</td></tr>
+   </tbody></table>
+   <div class="xatlas" style="margin-top:14px"><button class="primary" onclick="setMode('technical');selectTab('data')">◆ Open Data Layer</button><button onclick="xPersp('${key}','trace')" style="margin-left:8px">⟿ Full trace</button></div></div>`;
+}
+function xWsGraphs(key){const n=XDATA.nodes[key];$('#xmain').className='xmain article';
+  const layers=['business','journey','security','ownership','infrastructure','revenue','ai'];
+  $('#xmain').innerHTML=wsHero(n,'graphs')+`<p class="xlede" style="font-size:13px">Isolated graph layers — each from its own intelligence engine. Pick a layer.</p>
+   <div class="gl-tabs" id="gltabs">${layers.map((l,i)=>`<div class="gl-tab${i===0?' on':''}" data-l="${l}">${esc(l)}</div>`).join('')}</div>
+   <div id="glbody"><div class="empty"><span class="spin"></span></div></div>
+   <div class="xatlas" style="margin-top:14px;padding:0 0 20px"><button class="primary" onclick="setMode('technical');selectTab('atlas')">★ Open full Atlas (zoom/pan)</button></div></div>`;
+  const load=async(l)=>{const o=await api('/api/graph?kind='+l);const b=$('#glbody');
+    if(o.error){b.innerHTML=`<p class="hint">${esc(o.error)}</p>`;return;}
+    b.innerHTML=`<div class="badges" style="margin-bottom:8px"><span class="badge">${o.nodes.length} nodes</span><span class="badge">${o.edges.length} edges</span></div>`+
+      o.edges.slice(0,40).map(e=>`<div class="gl-edge"><span class="from">${esc(e.from)}</span><span class="via">${esc(e.rel||'→')}</span><span>${esc(e.to)}</span></div>`).join('');};
+  document.querySelectorAll('#gltabs .gl-tab').forEach(el=>el.onclick=()=>{document.querySelectorAll('#gltabs .gl-tab').forEach(x=>x.classList.toggle('on',x===el));load(el.dataset.l);});
+  load(layers[0]);
+}
+function xWsTrace(key){const n=XDATA.nodes[key];$('#xmain').className='xmain article';
+  $('#xmain').innerHTML=wsHero(n,'trace')+`<p class="xlede" style="font-size:13px">Natural-language trace — flow · path · impact · blast radius. Repo scan not required.</p>
+   <div class="pathgrid" style="grid-template-columns:1fr auto"><input id="trq" type="text" placeholder="How does ${esc(key)} work? · What breaks if ${esc(key)} fails?" value="How does ${esc(key)} work"/><button id="trgo" class="primary">Trace</button></div>
+   <div id="trout" style="margin-top:14px"></div></div>`;
+  const go=async()=>{const q=$('#trq').value.trim();const [sv,tr]=await Promise.all([api('/api/search-v2?q='+encodeURIComponent(q)),api('/api/trace?entity='+encodeURIComponent(key))]);const out=$('#trout');
+    const a=sv.answer||{};
+    out.innerHTML=`<div class="xcard"><div class="h">Answer · ${esc(sv.intent||'')} · ${esc(sv.domain||key)}</div><div class="b">${esc(a.summary||n.purpose)}${a.flow?'<div class="mono" style="color:var(--muted);margin-top:6px">'+esc(a.flow.join(' → '))+'</div>':''}</div></div>
+     <div class="xsection">Full trace (path)</div>
+     <div class="xflow">${(tr.chain||[]).map((s,i)=>`<div class="xstep"><span class="num">${i+1}</span>${esc(s)}</div>${i<tr.chain.length-1?'<div class="arrow"></div>':''}`).join('')}</div>
+     <p class="hint" style="padding:6px 0">tables ${tr.tables?tr.tables.length:0} · rpcs ${tr.rpcs?tr.rpcs.length:0} · ${esc(tr.merchantDashboard||'')}</p>
+     <div class="xatlas"><button class="primary" onclick="setMode('technical');selectTab('impact')">⟶ Blast radius (Change-Impact)</button></div>`;};
+  $('#trgo').onclick=go;$('#trq').onkeydown=e=>{if(e.key==='Enter')go();};go();
+}
+function xWsRelated(key){const n=XDATA.nodes[key];$('#xmain').className='xmain article';
+  $('#xmain').innerHTML=wsHero(n,'related')+`<div id="relbody"><div class="empty"><span class="spin"></span></div></div></div>`;
+  api('/api/related?domain='+key).then(o=>{const b=$('#relbody');if(o.error){b.innerHTML=`<p class="hint">${esc(o.error)}</p>`;return;}
+    const sect=(t,items,fn)=>items&&items.length?`<div class="xa-sec">${t}</div><div class="badges">${items.map(fn).join('')}</div>`:'';
+    b.innerHTML=
+      sect('Related domains',o.relatedDomains,d=>`<span class="xpill" onclick="xSelect('${d}')">${esc(d)}</span>`)+
+      sect('Related services',[...o.relatedServices.workers,...o.relatedServices.apps],s=>`<span class="xpill">${esc(s)}</span>`)+
+      sect('Related tables',o.relatedTables,t=>`<span class="xpill">${esc(t)}</span>`)+
+      sect('FK-neighbor tables',o.relatedFkTables,t=>`<span class="xpill">${esc(t)}</span>`)+
+      sect('Related routes',o.relatedRoutes,r=>`<span class="xpill">${esc(r)}</span>`)+
+      `<div class="xa-sec">Related runbooks · incidents · docs</div><div class="badges"><span class="xpill">${esc(o.relatedRunbooks[0])}</span><span class="xpill">${esc(o.relatedIncidents)}</span>${o.relatedDocs.map(d=>`<span class="xpill">${esc(d)}</span>`).join('')}</div>`+
+      `<div class="xa-sec">Related AI packs</div><div class="badges">${o.relatedAiPacks.map(p=>`<span class="xpill" onclick="xPersp('${key}','ai')">${esc(p.target)}</span>`).join('')}</div>`;
+  });
+}
+function xWsAi(key){const n=XDATA.nodes[key];$('#xmain').className='xmain article';
+  $('#xmain').innerHTML=wsHero(n,'ai')+`<p class="xlede" style="font-size:13px">Self-contained context packs (&lt; 20k tokens) — copy or download for any AI. No repo scan required.</p>
+   <div class="gl-tabs" id="aitabs">${['Claude','Gemini','Codex','Cursor','OpenAI'].map((t,i)=>`<div class="gl-tab${i===0?' on':''}" data-t="${t}">${esc(t)}</div>`).join('')}</div>
+   <div id="aibody"><div class="empty"><span class="spin"></span></div></div></div>`;
+  const load=async(t)=>{const o=await api('/api/ai-context-pack?target='+t);const b=$('#aibody');
+    if(o.error){b.innerHTML=`<p class="hint">${esc(o.error)}</p>`;return;}
+    const id='aip_'+t;
+    b.innerHTML=`<div class="badges" style="margin-bottom:8px"><span class="badge">~${o.approxTokens} tokens</span><span class="badge${o.withinBudget?' brand':''}">${o.withinBudget?'< 20k ✓':'over budget'}</span><button class="copybtn" onclick="xCopy('${id}',this)" style="min-height:34px">Copy</button><button onclick="xDownload('${id}','${esc(key)}_${t}.md')" style="min-height:34px">Download</button></div>
+     <div class="xai"><pre id="${id}">${esc(o.pack)}</pre></div>`;};
+  document.querySelectorAll('#aitabs .gl-tab').forEach(el=>el.onclick=()=>{document.querySelectorAll('#aitabs .gl-tab').forEach(x=>x.classList.toggle('on',x===el));load(el.dataset.t);});
+  load('Claude');
+}
+function xDownload(id,name){const el=document.getElementById(id);if(!el)return;const blob=new Blob([el.textContent],{type:'text/markdown'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
+
+function xArticle(n){
+  const tech=n.technical;
+  const{prev,next}=getPrevNext(n.key);
+  const mins=readMins(n);
+  const uid=n.key.replace(/[^a-z0-9]/gi,'_');
+  const faq=genFAQ(n);
+  const relNodes=[...(n.dependsOn||[]),...(n.consumers||[])].filter(k=>XDATA&&XDATA.nodes[k]).slice(0,6);
+  const toc=[
+    {id:'xs-pur-'+uid,label:'Purpose & Importance'},
+    n.flow&&n.flow.length?{id:'xs-flow-'+uid,label:'How it works'}:null,
+    {id:'xs-imp-'+uid,label:'Impact & Failure'},
+    {id:'xs-dep-'+uid,label:'Dependencies'},
+    faq.length?{id:'xs-faq-'+uid,label:'FAQ'}:null,
+    n.runbooks&&n.runbooks.length?{id:'xs-rb-'+uid,label:'Runbooks'}:null,
+    {id:'xs-tech-'+uid,label:'Technical'},
+    {id:'xs-ai-'+uid,label:'AI Context'},
+  ].filter(Boolean);
+  const m=$('#xmain');
+  m.classList.add('article');
+  m.innerHTML=`<div class="xa-prog"><div class="xa-prog-bar" id="xpb-${uid}"></div></div>
+<div class="xa-body">
+<div class="xa-breadcrumb"><span class="xb" onclick="xSelect('getting-started')">Home</span><span class="sep">›</span><span class="xb">${esc(n.domain||'Domain')}</span><span class="sep">›</span><span style="color:var(--text)">${esc(n.label)}</span></div>
+${wsBar(n.key,'explain')}
+<div class="xhero"><h1>${esc(n.label)}</h1><span class="crit ${CRIT(n.criticality)}">${esc(n.criticality)}</span></div>
+<div class="xa-meta"><span class="xa-readtime">⏱ ${mins} min read</span>${(n.owner||[]).map(o=>`<span class="xa-opill">◎ ${esc(o)}</span>`).join('')}</div>
+${toc.length?`<div class="xa-toc"><div class="th">On this page</div>${toc.map(t=>`<div class="xa-toc-a" onclick="xScrollTo('${t.id}')">${esc(t.label)}</div>`).join('')}</div>`:''}
+<div id="xs-pur-${uid}"><div class="xa-sec">Purpose &amp; importance</div>
+<p class="xlede">${esc(n.purpose)}</p>
+<div class="xgrid"><div class="xcard"><div class="h">Business importance</div><div class="b">${esc(n.importance)}</div></div>${n.launchRelevance?`<div class="xcard${/Open launch/.test(n.launchRelevance)?' warn':''}"><div class="h">Launch relevance</div><div class="b">${esc(n.launchRelevance)}</div></div>`:''}</div></div>
+${n.flow&&n.flow.length?`<div id="xs-flow-${uid}"><div class="xa-sec">How it works</div><div class="xflow">${n.flow.map((s,i)=>`<div class="xstep"><span class="num">${i+1}</span>${esc(s)}</div>${i<n.flow.length-1?'<div class="arrow"></div>':''}`).join('')}</div></div>`:''}
+<div id="xs-imp-${uid}"><div class="xa-sec">Impact &amp; failure</div>
+<div class="xgrid"><div class="xcard warn"><div class="h">Failure impact</div><div class="b">${esc(n.failureImpact)}</div></div>${n.operationalNotes?`<div class="xcard"><div class="h">Operational notes</div><div class="b">${esc(n.operationalNotes)}</div></div>`:''}${n.merchantImpact?`<div class="xcard"><div class="h">Merchant impact</div><div class="b">${esc(n.merchantImpact)}</div></div>`:''}${n.customerImpact?`<div class="xcard"><div class="h">Customer impact</div><div class="b">${esc(n.customerImpact)}</div></div>`:''}${n.recoveryPath?`<div class="xcard"><div class="h">Recovery path</div><div class="b">${esc(n.recoveryPath)}</div></div>`:''}</div></div>
+<div id="xs-dep-${uid}"><div class="xa-sec">Dependencies</div>
+<div class="xrel"><div class="col"><div class="h">Owner</div>${(n.owner&&n.owner.length?n.owner:['unowned']).map(o=>`<span class="xpill b">${esc(o)}</span>`).join('')}</div><div class="col"><div class="h">Depends on</div>${n.dependsOn&&n.dependsOn.length?n.dependsOn.map(d=>xpill(d,d)).join(''):'<span class="xpill">none</span>'}</div><div class="col"><div class="h">Consumed by</div>${n.consumers&&n.consumers.length?n.consumers.map(d=>xpill(d,d)).join(''):'<span class="xpill">none</span>'}</div></div>
+${relNodes.length?`<div class="xa-rel-grid" style="margin-top:14px">${relNodes.map(k=>{const rn=XDATA.nodes[k];return `<div class="xa-rel-card" onclick="xSelect('${k}')"><div class="rt">${esc(rn.label)}</div><div class="rd">${esc((rn.purpose||'').slice(0,80))}…</div></div>`;}).join('')}</div>`:''}</div>
+${faq.length?`<div id="xs-faq-${uid}"><div class="xa-sec">FAQ</div><div class="xa-faq">${faq.map(f=>`<div class="xa-faq-it"><div class="xa-faq-q" onclick="xFaqToggle(this)">${esc(f.q)}<span class="c">▸</span></div><div class="xa-faq-a">${esc(f.a)}</div></div>`).join('')}</div></div>`:''}
+${n.runbooks&&n.runbooks.length?`<div id="xs-rb-${uid}"><div class="xa-sec">Runbooks</div><div class="xa-runbook"><div class="rh">Recovery steps</div>${n.runbooks.map((r,i)=>`<div class="rs"><span class="rn">${i+1}</span><span>${esc(r)}</span></div>`).join('')}</div></div>`:''}
+<div id="xs-tech-${uid}"><div class="xa-sec">Technical details</div>
+<div class="xreveal" id="xrv-${uid}"><div class="hd">⌥ Show technical details <span class="caret">▸</span></div><div class="bd">
+<div class="xrow"><div class="k">Routes</div><div class="v">${esc(tech.routes.join(', ')||'—')}</div></div>
+<div class="xrow"><div class="k">RPCs (${tech.rpcs.length})</div><div class="v">${esc(tech.rpcs.join(', ')||'—')}</div></div>
+<div class="xrow"><div class="k">Tables (${tech.tables.length})</div><div class="v">${esc(tech.tables.join(', ')||'—')}</div></div>
+<div class="xrow"><div class="k">Policies</div><div class="v">${tech.policies}</div></div>
+<div class="xrow"><div class="k">Workers</div><div class="v">${esc(tech.workers.join(', '))}</div></div>
+<div class="xrow"><div class="k">Queues</div><div class="v">${esc(tech.queues.join(', '))}</div></div>
+<div class="xrow"><div class="k">Secrets</div><div class="v">${esc(tech.secrets.join(', ')||'—')}</div></div>
+<div class="xrow"><div class="k">Services</div><div class="v">${esc(tech.services.join(', ')||'—')}</div></div>
+${tech.relationships?`<div class="xrow"><div class="k">FK → refs</div><div class="v">${esc(tech.relationships.references.join(', ')||'—')}</div></div><div class="xrow"><div class="k">FK ← ref by</div><div class="v">${esc(tech.relationships.referencedBy.join(', ')||'—')}</div></div>`:''}
+<div class="xrow"><div class="k">Triggers/idx</div><div class="v">${tech.triggers||0} triggers · ${tech.indexes||0} indexes</div></div>
+${tech.blastRadius?`<div class="xrow"><div class="k">Blast radius</div><div class="v">${tech.blastRadius.directConsumers} direct consumers</div></div>`:''}
+<div class="xrow"><div class="k">Security</div><div class="v">${tech.money?'money path (SECURITY DEFINER)':'standard'} · ${tech.tenant?'tenant-scoped (RLS)':'platform-internal'}</div></div>
+</div></div>
+<div class="xatlas" style="margin-top:14px"><button class="primary" onclick="xViewInAtlas('${n.key}')">★ View in Atlas</button><button onclick="setMode('technical');selectTab('impact')" style="margin-left:8px">⟶ Change-Impact</button></div>
+</div>
+<div id="xs-ai-${uid}"><div class="xa-sec">AI context</div>${xAi(n.aiContext)}</div>
+${prev||next?`<div class="xa-prevnext">${prev?`<div class="xa-pnav" onclick="xSelect('${prev.key}')"><div class="pd">← Previous</div><div class="pn">${esc(prev.label)}</div></div>`:''}${next?`<div class="xa-pnav" onclick="xSelect('${next.key}')"><div class="pd">Next →</div><div class="pn">${esc(next.label)}</div></div>`:''}</div>`:''}
+</div>`;
+  const rv=document.getElementById('xrv-'+uid);if(rv)rv.querySelector('.hd').onclick=()=>rv.classList.toggle('open');
+  m.onscroll=()=>{const b=document.getElementById('xpb-'+uid);if(b)b.style.width=(m.scrollTop/(m.scrollHeight-m.clientHeight)*100||0)+'%';};
+}
 function xNode(n){
   const tech=n.technical;
   $('#xmain').innerHTML=`

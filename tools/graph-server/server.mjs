@@ -218,6 +218,46 @@ function aiContextPack(pack) {
   return { pack, context: packs[pack] || packs.project, available: Object.keys(packs).concat('domain') };
 }
 
+// ---- V8: Domain Workspace (search → workspace) + Related Knowledge. Pure composition over existing intel. ----
+function relatedKnowledge(key) {
+  if (!explainIntel || explainIntel.error) return { error: 'explain-intel missing' };
+  const n = explainIntel.nodes[key]; if (!n) return { error: `domain '${key}' not found` };
+  const rel = (typeof relIntel !== 'undefined' && relIntel && !relIntel.error) ? relIntel : null;
+  const fkNeighbors = rel ? [...new Set(n.technical.tables.flatMap((t) => { const r = rel.tables.find((x) => x.name === t); return r ? [...r.references, ...r.referencedBy] : []; }).filter((t) => !n.technical.tables.includes(t)))].slice(0, 10) : [];
+  return {
+    domain: key, label: n.label,
+    relatedDomains: n.relatedDomains || [...new Set([...n.dependsOn, ...n.consumers])],
+    relatedServices: { workers: n.technical.workers, apps: n.technical.services },
+    relatedTables: n.technical.tables.slice(0, 12),
+    relatedRoutes: n.technical.routes,
+    relatedFkTables: fkNeighbors,
+    relatedRunbooks: [`/api/runbook?domain=${key}`],
+    relatedIncidents: `/api/incident-control?target=${key}`,
+    relatedDocs: ['docs/operating-system/', 'docs/central-intelligence/', `/api/explain?node=${key}`],
+    relatedAiPacks: ['Claude', 'Gemini', 'Codex', 'Cursor', 'OpenAI'].map((t) => ({ target: t, url: `/api/ai-context-pack?target=${t}` })),
+  };
+}
+const GRAPH_LAYERS = ['business', 'journey', 'technical', 'database', 'infrastructure', 'security', 'ownership', 'dependency', 'revenue', 'ai'];
+function workspace(key) {
+  if (!explainIntel || explainIntel.error) return { error: 'explain-intel missing' };
+  const n = explainIntel.nodes[key];
+  if (!n) return { error: `domain '${key}' not found`, domains: Object.keys(explainIntel.nodes) };
+  return {
+    domain: key, label: n.label, criticality: n.criticality,
+    perspectives: ['explain', 'technical', 'graphs', 'trace', 'related', 'ai'],
+    explain: { overview: n.purpose, docs: n.docs, importance: n.importance, businessValue: n.businessValue,
+      customerImpact: n.customerImpact, merchantImpact: n.merchantImpact, failureImpact: n.failureImpact,
+      operationalNotes: n.operationalNotes, recoveryPath: n.recoveryPath, launchRelevance: n.launchRelevance,
+      flow: n.flow, owner: n.owner, dependsOn: n.dependsOn, consumers: n.consumers },
+    technical: n.technical,
+    graphs: GRAPH_LAYERS,
+    trace: `/api/trace?entity=${key}`,
+    related: relatedKnowledge(key),
+    aiPacks: ['Claude', 'Gemini', 'Codex', 'Cursor', 'OpenAI'],
+    aiContext: n.aiContext,
+  };
+}
+
 // ---- v3: customer-journey (Phase 5) + secret intelligence (Phase 10), computed from loaded intel ----
 const JOURNEY = [
   { stage: 'Landing', domains: ['storefront'], app: 'marketing-site / storefront-runtime' },
@@ -637,6 +677,9 @@ const server = createServer((req, res) => {
     if (p === '/api/launch-command-center') return json(res, launchCenter);
     if (p === '/api/trace') return json(res, safe(() => fullTrace(u.searchParams.get('entity') || 'checkout')));
     if (p === '/api/ai-context-pack') { const t = u.searchParams.get('target'); return json(res, t ? safe(() => buildPack(t)) : safe(() => allPacks())); }
+    // ---- V8: domain workspace (search → workspace) + related knowledge ----
+    if (p === '/api/workspace') return json(res, safe(() => workspace(u.searchParams.get('domain') || 'orders')));
+    if (p === '/api/related') return json(res, safe(() => relatedKnowledge(u.searchParams.get('domain') || 'orders')));
     if (p === '/api/live') {
       // Real read-only probe — only credentialed providers trigger a network call; the rest are NOT CONNECTED.
       const prov = u.searchParams.get('provider');
