@@ -173,6 +173,49 @@ const communityColor = (() => {
 })();
 const atlasCache = new Map();
 
+// ---- community profiling: derive a human-readable name + what-it-is from the graph ----
+const WS_NAMES = {
+  'services/api-gateway': 'API Gateway', 'services/queue-workers': 'Queue Workers', 'services/webhook-service': 'Webhook Service', 'services/mobile-bff': 'Mobile BFF',
+  'apps/merchant-control-plane': 'Merchant Control Plane', 'apps/storefront-runtime': 'Storefront Runtime', 'apps/identity-platform': 'Identity Platform', 'apps/platform-console': 'Platform Console', 'apps/marketing-site': 'Marketing Site', 'apps/app-marketplace': 'App Marketplace', 'apps/theme-marketplace': 'Theme Marketplace', 'apps/developer-portal': 'Developer Portal', 'apps/platform-operations-portal': 'Ops Portal',
+  'apps/mobile/merchant-app': 'Merchant Mobile App',
+  'packages/theme-engine': 'Theme Engine', 'packages/shared-types': 'Shared Types', 'packages/commerce-core': 'Commerce Core', 'packages/checkout-core': 'Checkout Core', 'packages/auth-core': 'Auth Core', 'packages/identity-core': 'Identity Core', 'packages/session-core': 'Session Core', 'packages/permission-core': 'Permission Core', 'packages/infrastructure': 'Infrastructure', 'packages/notification-core': 'Notification Core', 'packages/event-core': 'Event Core', 'packages/billing-core': 'Billing Core', 'packages/tenant-core': 'Tenant Core', 'packages/cms-core': 'CMS Core', 'packages/audit-core': 'Audit Core',
+  'packages/typescript/ui': 'UI Design System', 'packages/typescript/api-client': 'API Client', 'packages/typescript/api-types': 'API Types',
+  'packages/dart/models': 'Dart Models', 'packages/dart/core': 'Dart Core', 'packages/dart/api_client': 'Dart API Client', 'packages/dart/ui_kit': 'Dart UI Kit',
+  '(root)': 'Repository root / governance',
+};
+function humanizeWs(ws) {
+  if (WS_NAMES[ws]) return WS_NAMES[ws];
+  const seg = (ws.split('/').pop() || ws).replace(/[-_]/g, ' ');
+  return seg.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+function deriveHint(ns) {
+  const ext = {}; let routes = 0;
+  for (const n of ns) { const sf = n.source_file || ''; const m = sf.match(/\.([a-z0-9]+)$/i); if (m) ext[m[1]] = (ext[m[1]] || 0) + 1; if (/\/route\.ts$/.test(sf)) routes++; }
+  const top = Object.entries(ext).sort((a, b) => b[1] - a[1])[0]?.[0];
+  if (routes > ns.length * 0.15) return 'API routes';
+  if (top === 'tsx') return 'React UI';
+  if (top === 'dart') return 'Flutter';
+  if (top === 'sql') return 'database / migrations';
+  if (top === 'mjs') return 'tooling / tests';
+  if (top === 'md') return 'docs / governance';
+  if (top === 'ts') return 'TypeScript';
+  return top || 'mixed';
+}
+let nodesByCommunity = null;
+const profileCache = new Map();
+function communityProfile(cid) {
+  cid = String(cid);
+  if (profileCache.has(cid)) return profileCache.get(cid);
+  if (!nodesByCommunity) { nodesByCommunity = new Map(); for (const n of nodes) { const c = String(n.community); (nodesByCommunity.get(c) || nodesByCommunity.set(c, []).get(c)).push(n); } }
+  const ns = nodesByCommunity.get(cid) || [];
+  const ws = {}; for (const n of ns) { const w = workspaceOf(n.source_file); ws[w] = (ws[w] || 0) + 1; }
+  const topWs = Object.entries(ws).sort((a, b) => b[1] - a[1]);
+  const dom = topWs[0] ? topWs[0][0] : '(root)';
+  const top = [...ns].sort((a, b) => (degree.get(b.id) || 0) - (degree.get(a.id) || 0)).slice(0, 5).map((n) => n.label.slice(0, 40));
+  const p = { id: cid, name: humanizeWs(dom), hint: deriveHint(ns), workspace: dom, size: ns.length, share: ns.length ? Math.round((topWs[0][1] / ns.length) * 100) : 0, top };
+  profileCache.set(cid, p); return p;
+}
+
 function buildLayout(pool, edgeList) {
   const N = pool.length;
   const pos = pool.map((_, i) => ({ x: Math.cos((i / N) * 6.283) * 420 + (Math.random() * 60 - 30), y: Math.sin((i / N) * 6.283) * 420 + (Math.random() * 60 - 30), vx: 0, vy: 0 }));
@@ -211,7 +254,10 @@ function atlas({ limit = 1400, domain = '', community = '' } = {}) {
   const outNodes = pool.map((n, i) => ({ id: n.id, label: (n.label || '').slice(0, 60), x: Math.round(pos[i].x), y: Math.round(pos[i].y), c: String(n.community), d: degree.get(n.id) || 0, color: communityColor.get(String(n.community)) || '#8b949e' }));
   const cc = {};
   for (const n of pool) cc[n.community] = (cc[n.community] || 0) + 1;
-  const comms = Object.entries(cc).sort((a, b) => b[1] - a[1]).slice(0, 16).map(([id, count]) => ({ id, count, color: communityColor.get(String(id)) || '#8b949e' }));
+  const comms = Object.entries(cc).sort((a, b) => b[1] - a[1]).slice(0, 18).map(([id, count]) => {
+    const pr = communityProfile(id);
+    return { id, count, color: communityColor.get(String(id)) || '#8b949e', name: pr.name, hint: pr.hint, workspace: pr.workspace, share: pr.share, size: pr.size, top: pr.top.slice(0, 3) };
+  });
   const result = { total, shown: outNodes.length, nodes: outNodes, links: edgeList, communities: comms };
   atlasCache.set(key, result);
   return result;
@@ -239,6 +285,15 @@ const server = createServer((req, res) => {
     if (p === '/api/path') return json(res, shortestPath(u.searchParams.get('a'), u.searchParams.get('b')));
     if (p === '/api/domain') return json(res, domain(u.searchParams.get('key') || 'services'));
     if (p === '/api/atlas') return json(res, atlas({ limit: Number(u.searchParams.get('limit') || 1400), domain: u.searchParams.get('domain') || '', community: u.searchParams.get('community') || '' }));
+    if (p === '/api/community') {
+      const cid = String(u.searchParams.get('id') || '');
+      const pr = communityProfile(cid);
+      const ns = (nodesByCommunity.get(cid) || []);
+      const ws = {}; const files = new Set();
+      for (const n of ns) { ws[workspaceOf(n.source_file)] = (ws[workspaceOf(n.source_file)] || 0) + 1; if (n.source_file) files.add(n.source_file); }
+      const top = [...ns].sort((a, b) => (degree.get(b.id) || 0) - (degree.get(a.id) || 0)).slice(0, 12).map((n) => nodeView(n.id));
+      return json(res, { ...pr, files: files.size, color: communityColor.get(cid) || '#8b949e', workspaces: topN(ws, 6), top });
+    }
     if (p === '/api/health') return json(res, { ok: true, nodes: nodes.length });
     res.writeHead(404, { 'content-type': 'application/json' }); res.end('{"error":"not found"}');
   } catch (err) { json(res, { error: String(err) }, 500); }
