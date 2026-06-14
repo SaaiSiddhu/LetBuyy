@@ -66,6 +66,9 @@ import { buildCommerceControl } from './commerce-control-intel.mjs';
 import { incidentControl } from './incident-control-intel.mjs';
 import { buildPack, allPacks } from './ai-context-intel.mjs';
 import { buildLaunchCommandCenter } from './launch-command-center.mjs';
+import { buildFederationIntel } from './federation-intel.mjs';
+import { buildLiveHealthIntel } from './live-health-intel.mjs';
+import { execSync } from 'node:child_process';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -142,6 +145,9 @@ const dbControlGenesis = safe(() => buildDatabaseControl());
 const infraControl = safe(() => buildInfrastructureControl());
 const commerceControl = safe(() => buildCommerceControl());
 const launchCenter = safe(() => buildLaunchCommandCenter());
+// ---- LCIS X: live federation (Phases 1-8) + live health (Phase 9) ----
+const federationIntel = safe(() => buildFederationIntel());
+const liveHealth = safe(() => buildLiveHealthIntel());
 // Atlas 2.0 — one-click full trace: entity → route → rpcs → tables → policies/triggers → queues → emails → analytics → merchant dashboard
 function fullTrace(entity) {
   const root = lineage(entity);
@@ -285,6 +291,188 @@ function workspace(key) {
     aiPacks: ['Claude', 'Gemini', 'Codex', 'Cursor', 'OpenAI'],
     aiContext: n.aiContext,
   };
+}
+
+// ====================================================================================
+// LCIS X — Live Federation + Autonomous Operations (Phases 10-20). READ-ONLY composition.
+// Every function reuses existing engines; live values are CONNECTED or NOT CONNECTED only.
+// ====================================================================================
+function resolveDomain(q) {
+  const keys = explainIntel && !explainIntel.error ? Object.keys(explainIntel.nodes) : (domainIntel?.domains || []).map((d) => d.key);
+  const ql = (q || '').toLowerCase();
+  const direct = keys.find((k) => ql.includes(k.replace('-', ' ')) || ql.includes(k));
+  if (direct) return direct;
+  const hints = { checkout: 'orders', cart: 'orders', pay: 'payments', payment: 'payments', refund: 'refunds', payout: 'payouts',
+    ship: 'shipping', delivery: 'shipping', tax: 'gst', gst: 'gst', login: 'authentication', signup: 'authentication', register: 'authentication',
+    auth: 'authentication', theme: 'themes', store: 'storefront', email: 'notifications', notif: 'notifications', gift: 'gift-cards',
+    discount: 'discounts', coupon: 'discounts', inventory: 'inventory', stock: 'inventory', product: 'products', collection: 'collections',
+    order: 'orders', merchant: 'merchant', identity: 'identity' };
+  for (const [kw, dom] of Object.entries(hints)) if (ql.includes(kw) && keys.includes(dom)) return dom;
+  const sv = safe(() => searchV2(q, explainIntel));
+  const top = sv && sv.results && sv.results[0];
+  if (top && top.domain && keys.includes(top.domain)) return top.domain;
+  return null;
+}
+function domainHealthCard(key, list) {
+  const h = (list || liveHealth?.domains || []).find((d) => d.domain === key);
+  if (!h) return { domain: key, live: 'NOT CONNECTED' };
+  return { domain: key, healthScore: h.healthScore, riskScore: h.riskScore, openBlockers: h.incidentCount.structuralOpenBlockers, dependency: h.dependencyHealth.health, liveVolume: 'NOT CONNECTED' };
+}
+// Phase 10 — Autonomous Investigation.
+function investigate(question) {
+  const key = resolveDomain(question) || 'orders';
+  const n = explainIntel?.nodes?.[key];
+  const dom = domainIntel?.domains?.find((d) => d.key === key);
+  const dg = safe(() => diagnose(key, ''));
+  const health = (liveHealth?.domains || []).find((d) => d.domain === key) || null;
+  const dep = dom ? { dependsOn: (domainIntel.edges || []).filter((e) => e.from === key).map((e) => e.to), consumedBy: (domainIntel.edges || []).filter((e) => e.to === key).map((e) => e.from) } : null;
+  return {
+    question, resolvedDomain: key, label: n?.label || dom?.label || key,
+    found: {
+      routes: dom?.routes || n?.technical?.routes || [], rpcs: dom?.rpcs || n?.technical?.rpcs || [], tables: dom?.tables || n?.technical?.tables || [],
+      queues: dom?.queues || [], workers: dom?.workers || [], deployments: deploymentStateData?.targets || deploymentStateData?.declared || [],
+      incidents: { live: 'NOT CONNECTED', liveRequires: 'incident feed / Cloudflare logs', structuralOpenBlockers: health?.incidentCount?.structuralOpenBlockers || 0, blockers: health?.incidentCount?.blockers || [] },
+      owners: n?.owner || dom?.owners || ['@saai-sidd'],
+    },
+    dependencies: dep, diagnosis: dg,
+    health: health ? { healthScore: health.healthScore, riskScore: health.riskScore, availability: health.availability } : null,
+    liveBoundary: 'Structural findings are repository truth. Live failure signals (error rate, latency, logs) are NOT CONNECTED — wire Cloudflare/Supabase read-only tokens.',
+    next: { rootCause: `/api/root-cause?domain=${key}`, runbook: `/api/runbook?domain=${key}`, impact: `/api/impact-score?domain=${key}` },
+  };
+}
+// Phase 11 — Autonomous Root Cause.
+function rootCause(target, error) {
+  const key = resolveDomain(target) || target || 'payments';
+  const ic = safe(() => incidentControl(key, error || ''));
+  const imp = safe(() => impactScore(key));
+  const health = (liveHealth?.domains || []).find((d) => d.domain === key) || null;
+  const aff = imp && !imp.error ? imp.affected : {};
+  return {
+    incident: { target: key, error: error || null },
+    rootCause: ic && !ic.error ? ic : { note: 'incident-control unavailable', raw: ic },
+    affectedDomains: imp?.whatBreaksIf ? [imp.whatBreaksIf.immediate, imp.whatBreaksIf.secondary].flat().filter(Boolean) : [],
+    affectedMerchants: aff.merchants || 'NOT CONNECTED (count via /api/merchant-intelligence live)',
+    affectedCustomers: aff.customers || 'NOT CONNECTED', affectedRevenue: aff.revenuePaths || 'NOT CONNECTED',
+    affectedInfrastructure: { workers: aff.workers || [], queues: aff.queues || [] },
+    recoverySteps: imp?.recoveryPath || [], rollbackSteps: imp?.rollbackPath || null, verificationSteps: imp?.verificationChecklist || [],
+    riskScore: imp?.scores?.riskScore ?? health?.riskScore ?? null,
+    liveBoundary: 'Root cause + recovery are repository-truth procedures. Live blast counts (merchants/customers/revenue) are NOT CONNECTED.',
+  };
+}
+// Phase 12 — Time Travel.
+function git(cmd, fb = '') { try { return execSync('git ' + cmd, { cwd: REPO_ROOT, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); } catch { return fb; } }
+function timeTravel() {
+  const head = git('log -1 --format=%h|%ci|%s'); const [h, date, ...msg] = head.split('|');
+  const lastMigration = git('log -1 --format=%h|%ci -- database/supabase/migrations').split('|');
+  const migFile = git('ls-files database/supabase/migrations').split('\n').filter(Boolean).sort().pop() || null;
+  const lastTag = git('describe --tags --abbrev=0', '') || null;
+  const lastTagDate = lastTag ? git(`log -1 --format=%ci ${lastTag}`) : null;
+  return {
+    points: [
+      { point: 'Now', basis: 'repository HEAD', status: 'CONNECTED', commit: h, when: date, subject: msg.join('|') },
+      { point: 'Last Deployment', basis: 'git (no deploy log wired)', status: 'PARTIAL', commit: h, when: date, note: 'HEAD is the deployable state; actual deploy timestamps are NOT CONNECTED (Vercel/GitHub deployments API).' },
+      { point: 'Last Migration', basis: 'git history (database/supabase/migrations)', status: 'CONNECTED', commit: lastMigration[0] || null, when: lastMigration[1] || null, file: migFile },
+      { point: 'Last Release', basis: 'git tag', status: lastTag ? 'CONNECTED' : 'NOT CONNECTED', tag: lastTag, when: lastTagDate, note: lastTag ? null : 'No git tags — releases are not tagged.' },
+      { point: '1 Hour Ago', basis: 'live state snapshot', status: 'NOT CONNECTED', requires: 'time-series store (Analytics Engine / metrics) — no historical live state retained.' },
+      { point: 'Yesterday', basis: 'live state snapshot', status: 'NOT CONNECTED', requires: 'time-series store — NOT CONNECTED.' },
+    ],
+    compare: 'Repository time-points (commit/migration/release) are diffable via git. Live operational time-points need a wired metrics store.',
+    liveBoundary: 'CONNECTED time-points are git-derived repository truth; live snapshots (1h ago / yesterday) are NOT CONNECTED.',
+  };
+}
+// Phase 13 — Executive Command Center.
+function executiveCenter() {
+  const dims = launchCenter?.readiness || [];
+  const find = (re) => dims.find((d) => re.test(d.dimension)) || null;
+  const hs = liveHealth?.summary || {};
+  const row = (label, dim, extra) => ({ readiness: label, score: dim?.score ?? null, evidence: dim?.evidence || extra || 'repository truth', status: dim ? (dim.score >= 90 ? 'GREEN' : dim.score >= 70 ? 'AMBER' : 'RED') : 'n/a' });
+  return {
+    mode: 'Founder', verdict: launchCenter?.summary?.recommendation || 'NO-GO', overallReadiness: launchCenter?.summary?.overallReadiness ?? null,
+    panels: [
+      row('Launch Readiness', find(/launch/i)),
+      row('Merchant Readiness', find(/merchant/i), `${(merchantIntelV5?.summary?.operatingStages) || 0} operating stages`),
+      row('Revenue Readiness', find(/revenue|commerce|payment/i), 'canonical ledger RPCs present; live GMV NOT CONNECTED'),
+      row('Operations Readiness', find(/operation|infra/i), `${(infraIntel?.summary?.workers) || 0} workers`),
+      row('Risk Readiness', find(/security|risk/i), `avg domain risk ${hs.avgRisk}`),
+      row('Growth Readiness', find(/growth|adoption/i), 'merchant adoption structural'),
+      row('Platform Readiness', find(/platform|deployment/i), 'migrate gate + rollback present'),
+    ],
+    openBlockers: launchCenter?.summary?.openBlockers ?? (launchCenter?.blockers || []).length, blockers: launchCenter?.blockers || [],
+    health: { avgHealth: hs.avgHealth, avgRisk: hs.avgRisk, highRisk: hs.highRisk, availability: 'NOT CONNECTED' },
+    liveBoundary: 'Readiness dimensions are repository-truth scores. Live revenue/traffic/uptime are NOT CONNECTED.',
+  };
+}
+// Phase 14 — Merchant Operations Center.
+function merchantOps() {
+  const moneyDomains = ['orders', 'payments', 'refunds', 'payouts', 'gift-cards'];
+  const health = (liveHealth?.domains || []).filter((d) => moneyDomains.includes(d.domain));
+  return {
+    merchantHealth: { structural: merchantHealth?.summary || null, live: 'NOT CONNECTED (active/inactive merchant counts → Supabase)' },
+    storeHealth: { tenantTables: dbIntel?.summary?.tenantTables ?? null, rlsForced: dbIntel?.summary?.forceRlsTables ?? null, live: 'NOT CONNECTED' },
+    orders: domainHealthCard('orders', health), payments: domainHealthCard('payments', health), refunds: domainHealthCard('refunds', health), payouts: domainHealthCard('payouts', health),
+    supportSignals: { live: 'NOT CONNECTED', requires: 'support/ticketing feed' },
+    liveBoundary: 'Money-domain structure + risk are repository truth; order/payment/refund/payout volumes are NOT CONNECTED.',
+  };
+}
+// Phase 15 — Customer Operations Center.
+function customerOps() {
+  return {
+    journeyHealth: { stages: journeyIntel?.summary?.stages ?? (journeyIntel?.stages || []).length, criticalStages: journeyIntel?.summary?.criticalStages || ['Payment', 'Refund'], live: 'NOT CONNECTED (funnel conversion → analytics)' },
+    checkoutHealth: domainHealthCard('orders'), paymentHealth: domainHealthCard('payments'),
+    supportHealth: { live: 'NOT CONNECTED', requires: 'support feed' },
+    liveBoundary: 'Journey structure is repository truth; conversion/drop-off/support metrics are NOT CONNECTED.',
+  };
+}
+// Phase 16 — Autonomous Change Impact (pre-deployment).
+function changeImpactLive(key) {
+  const imp = safe(() => impactScore(key));
+  if (!imp || imp.error) return imp || { error: 'impact unavailable' };
+  return {
+    preDeployment: true, domain: key, whatBreaks: imp.whatBreaksIf,
+    merchantsAffected: imp.affected.merchants, customersAffected: imp.affected.customers, revenueAffected: imp.affected.revenuePaths,
+    scores: imp.scores, recovery: imp.recoveryPath, rollback: imp.rollbackPath, verification: imp.verificationChecklist,
+    gate: imp.scores.riskScore >= 60 ? 'HIGH RISK — require step-up review + staged rollout' : imp.scores.riskScore >= 35 ? 'MODERATE — review owner + runbook' : 'LOW — standard review',
+    liveBoundary: 'Blast radius is repository truth; affected merchant/customer/revenue magnitudes are NOT CONNECTED.',
+  };
+}
+// Phase 17 — Autonomous Release Intelligence.
+function releaseIntel() {
+  const lastTag = git('describe --tags --abbrev=0', '') || null;
+  const headLine = git('log -1 --format=%h|%ci|%s'); const [h, date, ...msg] = headLine.split('|');
+  const ahead = lastTag ? git(`rev-list --count ${lastTag}..HEAD`, '?') : null;
+  return {
+    deploymentSummary: { head: h, when: date, subject: msg.join('|'), lastTag, commitsSinceTag: ahead, targets: (deploymentStateData?.targets || deploymentStateData?.declared || []) },
+    riskScore: { value: Math.min(100, 40 + (launchCenter?.summary?.openBlockers || 0) * 10), basis: `${launchCenter?.summary?.openBlockers || 0} open blockers, ${launchCenter?.summary?.criticalRisks || 0} critical risks` },
+    rollbackScore: { value: deploymentStateData?.rollback ? 'AVAILABLE' : 'UNKNOWN', basis: 'rollback script + migrate gate (infra-intel)' },
+    recoveryPlan: { gate: infraIntel?.summary?.hasMigrateGate ? 'migrate gate present' : 'no gate', rollback: deploymentStateData?.rollback || 'see infra-intel', verdict: launchCenter?.summary?.recommendation || 'NO-GO' },
+    liveBoundary: 'Release structure is git + repo truth; live deployment status/traffic are NOT CONNECTED (Vercel/GitHub deployments API).',
+  };
+}
+// Phase 19 — Observability Hub.
+function observability() {
+  const hs = liveHealth?.summary || {};
+  return {
+    logs: { live: 'NOT CONNECTED', requires: 'Cloudflare Workers logs / Logpush' },
+    events: { queues: runtimeObs?.summary?.queues ?? null, telemetryEmitters: runtimeObs?.summary?.telemetryEmitters ?? null, live: 'NOT CONNECTED (event volume → Analytics Engine)' },
+    deployments: { targets: deploymentStateData?.targets || deploymentStateData?.declared || [], gate: deploymentStateData?.gate || null, live: 'NOT CONNECTED' },
+    incidents: { structuralOpenBlockers: launchCenter?.summary?.openBlockers ?? null, domainsWithBlockers: hs.domainsWithOpenBlockers || [], live: 'NOT CONNECTED' },
+    errors: { live: 'NOT CONNECTED', requires: 'error tracking (Cloudflare / Sentry)' },
+    queues: { producers: infraIntel?.summary?.queueProducers || [], consumers: infraIntel?.summary?.queueConsumers || [], deadLetters: runtimeObs?.summary?.deadLetterQueues ?? null, liveDepth: 'NOT CONNECTED' },
+    workers: { count: infraIntel?.summary?.workers ?? null, list: (infraIntel?.workers || []).map((w) => w.name), liveCpu: 'NOT CONNECTED' },
+    connections: connectionsIntel?.summary || null,
+    liveBoundary: 'Topology (workers/queues/deployments) is repository truth; logs/events/errors/live depth are NOT CONNECTED.',
+  };
+}
+// Phase 20 — AI Operations Copilot.
+function copilotX(q) {
+  const ql = (q || '').toLowerCase();
+  if (/what changed|yesterday|last (deploy|release|migration)|time travel|when did/.test(ql)) return { question: q, intent: 'time-travel', answer: timeTravel() };
+  if (/root cause|why did|caused|incident/.test(ql)) return { question: q, intent: 'root-cause', answer: rootCause(q, '') };
+  if (/risk|breaks if|impact|blast/.test(ql)) { const k = resolveDomain(q) || 'payments'; return { question: q, intent: 'impact', domain: k, answer: changeImpactLive(k) }; }
+  if (/cost|spend|bill|forecast/.test(ql)) return { question: q, intent: 'cost', answer: costIntel?.summary || costIntel };
+  if (/health|status|availability|up|down/.test(ql)) { const k = resolveDomain(q); return { question: q, intent: 'health', answer: k ? (liveHealth.domains.find((d) => d.domain === k) || liveHealth.summary) : liveHealth.summary }; }
+  if (/why is|failing|slow|broken|not working|error/.test(ql)) return { question: q, intent: 'investigate', answer: investigate(q) };
+  return { question: q, intent: 'investigate', answer: investigate(q), note: 'Defaulted to investigation. Live values are CONNECTED or NOT CONNECTED — never fabricated.' };
 }
 
 // ---- v3: customer-journey (Phase 5) + secret intelligence (Phase 10), computed from loaded intel ----
@@ -710,6 +898,20 @@ const server = createServer((req, res) => {
     if (p === '/api/workspace') return json(res, safe(() => workspace(u.searchParams.get('domain') || 'orders')));
     if (p === '/api/related') return json(res, safe(() => relatedKnowledge(u.searchParams.get('domain') || 'orders')));
     if (p === '/api/impact-score') return json(res, safe(() => impactScore(u.searchParams.get('domain') || 'payments')));
+    // ---- LCIS X: live federation + autonomous operations (Phases 1-20). READ-ONLY. ----
+    if (p === '/api/federation') { const prov = u.searchParams.get('provider'); if (!federationIntel || federationIntel.error) return json(res, federationIntel || { error: 'federation-intel missing' }); return json(res, prov ? (federationIntel.providers.find((x) => x.provider.toLowerCase() === prov.toLowerCase()) || { error: `provider '${prov}' not found`, providers: federationIntel.providers.map((x) => x.provider) }) : federationIntel); }
+    if (p === '/api/live-graph') return json(res, federationIntel && !federationIntel.error ? federationIntel.unifiedGraph : { error: 'federation-intel missing' });
+    if (p === '/api/live-health') { const dom = u.searchParams.get('domain'); if (!liveHealth || liveHealth.error) return json(res, liveHealth || { error: 'live-health-intel missing' }); return json(res, dom ? (liveHealth.domains.find((d) => d.domain === dom) || { error: `domain '${dom}' not found`, domains: liveHealth.domains.map((d) => d.domain) }) : liveHealth); }
+    if (p === '/api/investigate') return json(res, safe(() => investigate(u.searchParams.get('q') || u.searchParams.get('question') || 'why is checkout failing')));
+    if (p === '/api/root-cause') return json(res, safe(() => rootCause(u.searchParams.get('domain') || u.searchParams.get('target') || 'payments', u.searchParams.get('error') || '')));
+    if (p === '/api/time-travel') return json(res, safe(() => timeTravel()));
+    if (p === '/api/executive-center') return json(res, safe(() => executiveCenter()));
+    if (p === '/api/merchant-ops') return json(res, safe(() => merchantOps()));
+    if (p === '/api/customer-ops') return json(res, safe(() => customerOps()));
+    if (p === '/api/change-impact-live') return json(res, safe(() => changeImpactLive(u.searchParams.get('domain') || 'payments')));
+    if (p === '/api/release-intel') return json(res, safe(() => releaseIntel()));
+    if (p === '/api/observability') return json(res, safe(() => observability()));
+    if (p === '/api/ops-copilot') return json(res, safe(() => copilotX(u.searchParams.get('q') || u.searchParams.get('question') || '')));
     if (p === '/api/live') {
       // Real read-only probe — only credentialed providers trigger a network call; the rest are NOT CONNECTED.
       const prov = u.searchParams.get('provider');

@@ -102,6 +102,13 @@ For these questions, get the answer from LCIS first (one command) instead of gre
 | Route → rpc → table chain? | `pnpm graph:intel flow "<route>"` |
 | Most critical / highest-blast systems? | `pnpm graph:intel critical` |
 | What infrastructure (workers/queues/secrets/deploy)? | `pnpm graph:intel infra` · `/api/infra` |
+| Live provider federation (Supabase/Cloudflare/Vercel/GitHub/Razorpay/Resend/Turnstile)? | `/api/federation` (or `?provider=`) · unified live graph `/api/live-graph` (LCIS X — CONNECTED/NOT CONNECTED) |
+| Live health/risk/availability for a domain? | `/api/live-health` (all 22) · `/api/live-health?domain=D` |
+| "Why is X failing?" / root cause of an incident? | `/api/investigate?q=` · `/api/root-cause?domain=` |
+| What changed / time-travel (now/last migration/release)? | `/api/time-travel` |
+| Founder/exec readiness · merchant ops · customer ops? | `/api/executive-center` · `/api/merchant-ops` · `/api/customer-ops` |
+| Pre-deploy change impact · release risk/rollback? | `/api/change-impact-live?domain=` · `/api/release-intel` |
+| Observability (logs/events/deploys/incidents/queues/workers) · NL ops question? | `/api/observability` · `/api/ops-copilot?q=` |
 
 ### LCIS v3 — domain intelligence (ALWAYS query LCIS FIRST; only scan the repo if LCIS cannot answer)
 Before scanning the repository for any of the questions below, run the LCIS query. The domain layer is built by `pnpm graph:domain` (output `graphify-out/domain-intel.json`, gitignored). 22 business domains; cross-domain edges = an RPC in A touches a table in B.
