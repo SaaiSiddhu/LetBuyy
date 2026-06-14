@@ -158,7 +158,7 @@
   .kbtn kbd{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--muted);flex-shrink:0}
   .kbtn-icon{display:none;flex-shrink:0}
 
-  #explain{height:calc(100vh - 86px);display:grid;grid-template-columns:268px 1fr;overflow:hidden}
+  #explain{height:calc(100vh - 86px);display:grid;grid-template-columns:var(--snav,268px) 1fr;overflow:hidden;transition:grid-template-columns .22s ease}
   .xtree{border-right:1px solid var(--border-soft);background:var(--sidebar);overflow:auto;padding:12px 10px}
   .xtree .grp{margin-bottom:3px}
   .xtree .sec{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:var(--r-md);cursor:pointer;color:var(--text);font-weight:600;font-size:13.5px;transition:.12s}
@@ -261,7 +261,8 @@
     .tabs{padding:8px 10px}
     .kbtn-label{display:none}
     .hdr-top{flex-wrap:wrap;height:auto;min-height:52px;padding-top:8px;padding-bottom:8px}
-    .chips{flex-wrap:wrap}
+    .chips{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;scrollbar-width:none}
+    .chips::-webkit-scrollbar{display:none}
     .xhero h1{font-size:21px} table{display:block;overflow-x:auto;white-space:nowrap}
     .xgrid{grid-template-columns:1fr} .xrel{gap:14px}
   }
@@ -326,6 +327,45 @@
   .xa-pnav .pd{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:700;margin-bottom:4px}
   .xa-pnav .pn{font-size:13.5px;font-weight:650;color:var(--brand-2)}
   @media(max-width:640px){.xa-body{padding:16px 16px 48px}}
+
+  /* === V8 Shell: collapsible left nav === */
+  .xtree{overflow:hidden;padding:0;display:flex;flex-direction:column}
+  .xtree-hdr{display:flex;align-items:center;gap:8px;padding:10px 10px 8px;border-bottom:1px solid var(--border-soft);margin-bottom:4px;flex-shrink:0}
+  .xtitle{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;flex:1;white-space:nowrap;overflow:hidden;transition:opacity .18s}
+  .xtree-toggle{width:26px;height:26px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;flex:none;transition:border-color .12s,color .12s}
+  .xtree-toggle:hover{border-color:var(--brand);color:var(--brand-2)}
+  .xtree-toggle::before{content:'◁'}
+  #explain.nav-off .xtree-toggle::before{content:'▷'}
+  .xtree-body{flex:1;overflow-y:auto;padding:4px 10px 12px}
+  #explain.nav-off .xtree-body{padding:4px 4px 12px}
+  #explain.nav-off .xtitle{opacity:0}
+  #explain.nav-off .xtree .sec{padding:9px 7px;justify-content:center;gap:0}
+  #explain.nav-off .xtree .sec .lbl{display:none}
+  #explain.nav-off .xtree .sec .caret{display:none}
+  #explain.nav-off .xtree .kids{display:none!important}
+
+  /* === V8 Shell: right context panel === */
+  .xctx{display:none;overflow-y:auto;border-left:1px solid var(--border-soft);background:var(--sidebar);padding:14px 12px}
+  @media(min-width:1201px){#explain.ctx-on{grid-template-columns:var(--snav,268px) 1fr 260px}#explain.ctx-on .xctx{display:block}}
+  .xctx-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);padding-bottom:8px;border-bottom:1px solid var(--border-soft);margin-bottom:12px}
+  .xctx-row{margin-bottom:12px}
+  .xctx-row .ck{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:4px}
+  .xctx-row .cv{font-size:12.5px;color:var(--subdued);line-height:1.45}
+  .xctx-action{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+  .xctx-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:7px 10px;font-size:12.5px;color:var(--subdued);cursor:pointer;text-align:left;transition:border-color .12s,color .12s;width:100%}
+  .xctx-btn:hover{border-color:var(--brand);color:var(--brand-2)}
+
+  /* === V8 Shell: mobile drawers + FABs === */
+  .xfab{display:none;position:fixed;width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--sidebar);color:var(--text);cursor:pointer;align-items:center;justify-content:center;font-size:18px;z-index:90;box-shadow:0 2px 12px rgba(0,0,0,.35)}
+  .xfab-nav{bottom:20px;left:16px}
+  .xmob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:80}
+  .xmob-overlay.on{display:block}
+  @media(max-width:880px){
+    .xtree{position:fixed;left:0;top:86px;bottom:0;z-index:85;width:268px;transform:translateX(-120%);transition:transform .25s ease;border-right:1px solid var(--border-soft);border-bottom:none;max-height:none;box-shadow:4px 0 24px rgba(0,0,0,.3)}
+    .xtree.mob-open{transform:translateX(0)}
+    .xfab{display:flex}
+    .xtree-toggle{display:none}
+  }
 </style>
 </head>
 <body>
@@ -1138,52 +1178,86 @@ document.querySelectorAll('#modetoggle button').forEach(b=>b.onclick=()=>{ if(b.
 
 const CRIT=c=>/Tier 1/.test(c)?'t1':/Tier 2/.test(c)?'t2':'t3';
 const isDomain=k=>XDATA&&XDATA.nodes[k];
+function toggleNav(){
+  const off=$('#explain').classList.toggle('nav-off');
+  try{localStorage.setItem('lcis-nav',off?'off':'on');}catch(e){}
+}
+function xCtxPanel(n){
+  const el=$('#xctx');if(!el)return;
+  if(!n){$('#explain').classList.remove('ctx-on');el.innerHTML='';return;}
+  $('#explain').classList.add('ctx-on');
+  const c=CRIT(n.criticality);
+  el.innerHTML=`<div class="xctx-hdr">Domain Context</div>
+<div class="xctx-row"><div class="ck">Criticality</div><div class="cv"><span class="crit ${c}">${esc(n.criticality)}</span></div></div>
+${n.owner&&n.owner.length?`<div class="xctx-row"><div class="ck">Owner</div><div class="cv">${n.owner.map(o=>`<span class="xpill b">${esc(o)}</span>`).join(' ')}</div></div>`:''}
+${n.dependsOn&&n.dependsOn.length?`<div class="xctx-row"><div class="ck">Depends on (${n.dependsOn.length})</div><div class="cv">${n.dependsOn.slice(0,5).map(d=>isDomain(d)?`<span class="xpill" style="cursor:pointer" onclick="xSelect('${d}')">${esc(d)}</span>`:`<span class="xpill">${esc(d)}</span>`).join(' ')}</div></div>`:''}
+${n.consumers&&n.consumers.length?`<div class="xctx-row"><div class="ck">Consumed by (${n.consumers.length})</div><div class="cv">${n.consumers.slice(0,5).map(d=>isDomain(d)?`<span class="xpill" style="cursor:pointer" onclick="xSelect('${d}')">${esc(d)}</span>`:`<span class="xpill">${esc(d)}</span>`).join(' ')}</div></div>`:''}
+<div class="xctx-action">
+<button class="xctx-btn" onclick="xPersp('${n.key}','technical')">⚙ Technical details</button>
+<button class="xctx-btn" onclick="xPersp('${n.key}','trace')">⟿ Trace flow</button>
+<button class="xctx-btn" onclick="xPersp('${n.key}','ai')">✦ AI context pack</button>
+<button class="xctx-btn" onclick="xViewInAtlas('${n.key}')">★ View in Atlas</button>
+</div>`;
+}
+function closeMobDrawers(){
+  const t=$('#xtree'),ov=$('#xmob-overlay');
+  if(t)t.classList.remove('mob-open');
+  if(ov)ov.classList.remove('on');
+}
+function toggleMobNav(){
+  const t=$('#xtree'),ov=$('#xmob-overlay');
+  if(!t||!ov)return;
+  const open=t.classList.toggle('mob-open');
+  ov.classList.toggle('on',open);
+}
 async function bootExplain(){
-  $('#explain').innerHTML=`<div class="xtree" id="xtree"></div><div class="xmain fade" id="xmain"><div class="empty"><span class="spin"></span> Loading…</div></div>`;
+  try{if(localStorage.getItem('lcis-nav')==='off')$('#explain').classList.add('nav-off');}catch(e){}
+  $('#explain').innerHTML=`<div class="xtree" id="xtree"><div class="xtree-hdr"><span class="xtitle">Navigation</span><button class="xtree-toggle" onclick="toggleNav()" title="Toggle sidebar" aria-label="Toggle sidebar"></button></div><div class="xtree-body" id="xtree-body"></div></div><div class="xmain fade" id="xmain"><div class="empty"><span class="spin"></span> Loading…</div></div><div class="xctx" id="xctx"></div><button class="xfab xfab-nav" id="xfab-nav" onclick="toggleMobNav()" title="Menu" aria-label="Menu">☰</button><div class="xmob-overlay" id="xmob-overlay" onclick="closeMobDrawers()"></div>`;
   XDATA=await api('/api/explain');
   if(!XDATA||XDATA.error){$('#xmain').innerHTML='<div class="empty">Explain data unavailable — run <code>pnpm graph:omega</code>.</div>';return;}
   xRenderTree(); xSelect('getting-started');
 }
 function xRenderTree(){
-  const t=$('#xtree'); let h='';
+  const t=$('#xtree-body')||$('#xtree'); let h='';
   for(const it of XDATA.ia){
     if(it.kind==='section'){
-      h+=`<div class="grp"><div class="sec" data-sec="${it.key}"><span class="ic">${it.icon}</span>${esc(it.label)}<span class="caret">▸</span></div><div class="kids" data-kids="${it.key}" style="display:none">`+
+      h+=`<div class="grp"><div class="sec" data-sec="${it.key}"><span class="ic">${it.icon}</span><span class="lbl">${esc(it.label)}</span><span class="caret">▸</span></div><div class="kids" data-kids="${it.key}" style="display:none">`+
         (it.children||[]).map(ck=>{const n=XDATA.nodes[ck];return n?`<div class="kid" data-node="${ck}">${esc(n.label)}<span class="tier">${esc(n.criticality.split(' ')[0]+' '+n.criticality.split(' ')[1])}</span></div>`:'';}).join('')+`</div></div>`;
     } else if(it.kind==='ecosystem'){
-      h+=`<div class="sec" data-page="${it.key}"><span class="ic">${it.icon}</span>${esc(it.label)}</div>`;
+      h+=`<div class="sec" data-page="${it.key}"><span class="ic">${it.icon}</span><span class="lbl">${esc(it.label)}</span></div>`;
     } else if(it.kind==='toggle'){
-      h+=`<div class="sec" data-toggle="technical"><span class="ic">${it.icon}</span>${esc(it.label)}</div>`;
+      h+=`<div class="sec" data-toggle="technical"><span class="ic">${it.icon}</span><span class="lbl">${esc(it.label)}</span></div>`;
     } else if(it.kind==='atlas'){
-      h+=`<div class="sec" data-atlas="1"><span class="ic">${it.icon}</span>${esc(it.label)}</div>`;
+      h+=`<div class="sec" data-atlas="1"><span class="ic">${it.icon}</span><span class="lbl">${esc(it.label)}</span></div>`;
     } else {
-      h+=`<div class="sec" data-page="${it.key}"><span class="ic">${it.icon}</span>${esc(it.label)}</div>`;
+      h+=`<div class="sec" data-page="${it.key}"><span class="ic">${it.icon}</span><span class="lbl">${esc(it.label)}</span></div>`;
     }
   }
   t.innerHTML=h;
   t.querySelectorAll('.sec[data-sec]').forEach(el=>el.onclick=()=>{const k=el.dataset.sec;const kids=t.querySelector(`[data-kids="${k}"]`);const open=kids.style.display!=='none';kids.style.display=open?'none':'block';el.classList.toggle('open',!open);});
-  t.querySelectorAll('.kid[data-node]').forEach(el=>el.onclick=()=>xSelect(el.dataset.node));
-  t.querySelectorAll('.sec[data-page]').forEach(el=>el.onclick=()=>xSelect(el.dataset.page));
+  t.querySelectorAll('.kid[data-node]').forEach(el=>el.onclick=()=>{closeMobDrawers();xSelect(el.dataset.node);});
+  t.querySelectorAll('.sec[data-page]').forEach(el=>el.onclick=()=>{closeMobDrawers();xSelect(el.dataset.page);});
   t.querySelectorAll('.sec[data-toggle]').forEach(el=>el.onclick=()=>setMode('technical'));
   t.querySelectorAll('.sec[data-atlas]').forEach(el=>el.onclick=()=>{setMode('technical');selectTab('atlas');});
 }
 function xActive(key){document.querySelectorAll('#xtree .sec,#xtree .kid').forEach(e=>e.classList.toggle('active',e.dataset.node===key||e.dataset.page===key));}
 function xSelect(key){
   XSEL=key; xActive(key); const m=$('#xmain'); m.className='xmain fade'; m.scrollTop=0;
-  if(key==='getting-started')return xGettingStarted();
-  if(key==='infrastructure')return xInfra();
-  if(key==='database')return xDatabase();
-  if(key==='ops-center')return xOps();
-  if(key==='mission-control')return xMission();
-  if(key==='launch')return xLaunch();
-  if(key==='connections')return xConnections();
-  if(key==='ecosystem')return xEcosystemIntel();
-  if(key==='live-integrations')return xLive();
-  if(key==='readiness')return xReadiness();
-  if(key==='ai-context')return xAiContextPage();
-  if(key==='merchant-journey')return xEcosystem('merchant');
-  if(key==='customer-journey')return xEcosystem('customer');
-  if(XDATA.nodes[key])return xArticle(XDATA.nodes[key]);
+  if(key==='getting-started'){xCtxPanel(null);return xGettingStarted();}
+  if(key==='infrastructure'){xCtxPanel(null);return xInfra();}
+  if(key==='database'){xCtxPanel(null);return xDatabase();}
+  if(key==='ops-center'){xCtxPanel(null);return xOps();}
+  if(key==='mission-control'){xCtxPanel(null);return xMission();}
+  if(key==='launch'){xCtxPanel(null);return xLaunch();}
+  if(key==='connections'){xCtxPanel(null);return xConnections();}
+  if(key==='ecosystem'){xCtxPanel(null);return xEcosystemIntel();}
+  if(key==='live-integrations'){xCtxPanel(null);return xLive();}
+  if(key==='readiness'){xCtxPanel(null);return xReadiness();}
+  if(key==='ai-context'){xCtxPanel(null);return xAiContextPage();}
+  if(key==='merchant-journey'){xCtxPanel(null);return xEcosystem('merchant');}
+  if(key==='customer-journey'){xCtxPanel(null);return xEcosystem('customer');}
+  if(XDATA.nodes[key]){xCtxPanel(XDATA.nodes[key]);return xArticle(XDATA.nodes[key]);}
+  xCtxPanel(null);
   m.innerHTML='<div class="empty">Select a topic from the left.</div>';
 }
 const xpill=(txt,key)=>isDomain(key)?`<span class="xpill" onclick="xSelect('${key}')">${esc(txt)}</span>`:`<span class="xpill">${esc(txt)}</span>`;
@@ -1193,12 +1267,36 @@ function readMins(n){return Math.max(2,Math.round(((n.purpose||'')+(n.importance
 function genFAQ(n){const q=[];if(n.failureImpact)q.push({q:'What happens if '+n.label+' goes down?',a:n.failureImpact});if(n.recoveryPath)q.push({q:'How do you recover?',a:n.recoveryPath});if(n.merchantImpact)q.push({q:'How does this affect merchants?',a:n.merchantImpact});if(n.customerImpact)q.push({q:'How does this affect customers?',a:n.customerImpact});if(n.operationalNotes)q.push({q:'Key operational considerations?',a:n.operationalNotes});return q;}
 function xFaqToggle(el){el.closest('.xa-faq-it').classList.toggle('open');}
 // ====== V8 domain workspace — perspective switcher (Explain/Technical/Graphs/Trace/Related/AI) ======
-const WSPERSP=[['explain','📖 Explain'],['technical','⚙ Technical'],['graphs','◈ Graphs'],['trace','⟿ Trace'],['related','⚯ Related'],['ai','✦ AI']];
+const WSPERSP=[['overview','◆ Overview'],['explain','📖 Explain'],['technical','⚙ Technical'],['database','▤ Database'],['api','⇄ API'],['infrastructure','◰ Infra'],['security','⛨ Security'],['operations','◍ Ops'],['incidents','⚠ Incidents'],['dependencies','⚯ Deps'],['impact','💥 Impact'],['graphs','◈ Graphs'],['trace','⟿ Trace'],['related','⚯ Related'],['ai','✦ AI'],['atlas','★ Atlas']];
 function wsBar(key,active){
   return `<div class="ws-tabs">${WSPERSP.map(([k,l])=>`<div class="ws-tab${k===active?' on':''}" onclick="xPersp('${key}','${k}')">${l}</div>`).join('')}<div class="ws-share"><button onclick="xCopyLink('${key}')">🔗 Copy link</button></div></div>`;
 }
+const wsCards=arr=>`<div class="xgrid">${arr.map(a=>`<div class="xcard${a[2]?' '+a[2]:''}"><div class="h">${esc(a[0])}</div><div class="b">${a[1]}</div></div>`).join('')}</div>`;
+function xWsOverview(key){const n=XDATA.nodes[key],t=n.technical;$('#xmain').className='xmain article';
+  $('#xmain').innerHTML=wsHero(n,'overview')+`<p class="xlede">${esc(n.purpose)}</p>${wsCards([['Criticality',`<span class="crit ${CRIT(n.criticality)}" style="font-size:12px">${esc(n.criticality)}</span>`],['Owner',esc(n.owner.join(', '))],['Routes·RPCs·Tables',`${t.routes.length} · ${t.rpcs.length} · ${t.tables.length}`],['Workers',esc(t.workers.join(', '))],['Depends on',esc(n.dependsOn.join(', ')||'none')],['Consumed by',esc(n.consumers.join(', ')||'none')]])}<p class="xlede" style="font-size:13px">Use the perspective tabs above to drill into Database (lineage), API, Infra, Security, Operations, Incidents, Dependencies, Impact, Graphs, Trace, Related, AI. Live row values are NOT CONNECTED.</p><div class="xatlas"><button class="primary" onclick="xPersp('${key}','impact')">💥 Impact analysis</button><button onclick="xPersp('${key}','dependencies')" style="margin-left:8px">⚯ Dependencies</button></div></div>`;
+}
+const wsFetch=(key,p,lede,url,render)=>{const n=XDATA.nodes[key];$('#xmain').className='xmain article';$('#xmain').innerHTML=wsHero(n,p)+`<p class="xlede" style="font-size:13px">${esc(lede)}</p><div id="wsb"><div class="empty"><span class="spin"></span></div></div></div>`;api(url).then(o=>{const b=$('#wsb');if(b)b.innerHTML=(o&&o.error)?`<p class="hint">${esc(o.error)}</p>`:render(o,n);});};
+function xWsDatabase(key){const n=XDATA.nodes[key];wsFetch(key,'database','Full lineage for this domain primary table — policies/triggers/indexes/RPCs/routes/FK.','/api/lineage?entity='+(n.technical.tables[0]||key),(o)=>o.type==='table'?`${wsCards([['Policies',o.policies.length],['Triggers',o.triggers.length],['Indexes',o.indexes],['Touched by RPCs',o.touchedByRpcs.length],['FK → references',o.fk.references.length],['FK ← referenced by',o.fk.referencedBy.length]])}<div class="xsection">Tables in domain</div><div class="badges">${n.technical.tables.map(t=>`<span class="xpill">${esc(t)}</span>`).join('')}</div>`:`<p class="hint">primary entity has no FK lineage row.</p>`);}
+function xWsApi(key){const n=XDATA.nodes[key],t=n.technical;$('#xmain').className='xmain article';$('#xmain').innerHTML=wsHero(n,'api')+`<p class="xlede" style="font-size:13px">Gateway routes → RPCs → tables. Every route proxies the api-gateway (/v1).</p><div class="xsection">Routes (${t.routes.length})</div><div class="badges">${t.routes.map(r=>`<span class="xpill">${esc(r)}</span>`).join('')||'—'}</div><div class="xsection">RPCs (${t.rpcs.length})</div><div class="badges">${t.rpcs.slice(0,40).map(r=>`<span class="xpill">${esc(r)}</span>`).join('')||'—'}</div><div class="xatlas"><button class="primary" onclick="xPersp('${key}','trace')">⟿ Trace route→rpc→table</button></div></div>`;}
+function xWsInfra(key){wsFetch(key,'infrastructure','Workers/queues/storage carrying this domain. Live metrics NOT CONNECTED (Analytics Engine).','/api/infrastructure-control',(o,n)=>`${wsCards([['Workers',esc(n.technical.workers.join(', '))],['Queues',esc(n.technical.queues.join(', ')||'—')],['Platform workers',o.summary.workers],['Queues',o.summary.queues],['DLQ',o.summary.deadLetterQueues],['Hyperdrive',o.summary.hyperdrive?'✓':'✗']])}<p class="xlede" style="font-size:13px">${esc(o.chain.spec)}: ${esc(o.chain.example.join(' → '))}</p>`);}
+function xWsSecurity(key){wsFetch(key,'security','Controls protecting this domain. Tenant/money flags from the schema.','/api/security-intelligence',(o,n)=>`${wsCards([['Money path',n.technical.money?'SECURITY DEFINER + canonical-ledger-only':'standard'],['Tenant',n.technical.tenant?'RLS forced + verifySiteOwnership':'platform-internal'],['Controls',o.summary.controlsPresent+'/'+o.summary.controls],['Cross-tenant candidates',o.summary.crossTenantCandidates]])}<div class="xsection">Deterministic validators (authoritative)</div><div class="badges">${o.summary.deterministicValidators.map(v=>`<span class="xpill">${esc(v)}</span>`).join('')}</div>`);}
+function xWsOps(key){wsFetch(key,'operations','Deploy/runtime/queue/worker status. Live status NOT CONNECTED.','/api/operations',(o)=>`<table><thead><tr><th>Area</th><th>Declared</th><th>Live</th></tr></thead><tbody>${o.statuses.map(s=>`<tr><td class="lbl">${esc(s.area)}</td><td>${esc(s.declared)}</td><td>${/Not Connected/.test(s.live)?'<span style="color:var(--warning)">⚠ NOT CONNECTED</span>':esc(s.live)}</td></tr>`).join('')}</tbody></table>`);}
+function xWsIncidents(key){wsFetch(key,'incidents','Root cause + affected + recovery for an incident in this domain.','/api/incident-control?target='+key,(o)=>o.affected?`${wsCards([['Root cause',esc(o.rootCause.likelyOrigin)],['Confidence',o.confidence+'%'],['Affected domains',o.affected.domains.length],['Affected tables',o.affected.tables.length]])}<div class="xsection">Recovery</div><ul class="hint">${o.recoveryPlan.map(s=>`<li>${esc(s)}</li>`).join('')}</ul><div class="xsection">Rollback</div><p class="mono" style="color:var(--muted)">${esc(o.rollbackPlan.command)}</p>`:`<p class="hint">${esc(o.error||'n/a')}</p>`);}
+function xWsDeps(key){wsFetch(key,'dependencies','Depends-on / consumed-by / database / API / infrastructure dependencies.','/api/related?domain='+key,(o,n)=>`${wsCards([['Depends on (upstream)',n.dependsOn.map(d=>`<span class="xpill" onclick="xSelect('${d}')">${esc(d)}</span>`).join('')||'none'],['Consumed by (downstream)',n.consumers.map(d=>`<span class="xpill" onclick="xSelect('${d}')">${esc(d)}</span>`).join('')||'none']])}<div class="xsection">Database deps (FK neighbors)</div><div class="badges">${o.relatedFkTables.map(t=>`<span class="xpill">${esc(t)}</span>`).join('')||'—'}</div><div class="xsection">API deps</div><div class="badges">${o.relatedRoutes.map(r=>`<span class="xpill">${esc(r)}</span>`).join('')||'—'}</div><div class="xsection">Infra deps</div><div class="badges">${[...o.relatedServices.workers,...o.relatedServices.apps].map(s=>`<span class="xpill">${esc(s)}</span>`).join('')}</div>`);}
+function xWsImpact(key){wsFetch(key,'impact','What breaks if this domain changes/fails — impact · risk · recovery scores.','/api/impact-score?domain='+key,(o)=>{const sc=o.scores,col=v=>v>66?'var(--critical)':v>33?'var(--warning)':'var(--success)';return `${wsCards([['Impact score',`<span style="font-size:22px;font-weight:800;color:${col(sc.impactScore)}">${sc.impactScore}</span>`],['Risk score',`<span style="font-size:22px;font-weight:800;color:${col(sc.riskScore)}">${sc.riskScore}</span>`],['Recovery',`<span style="font-size:13px">${esc(sc.recoveryDifficulty)}</span>`,'warn']])}<div class="xsection">Affected</div><table><tbody><tr><td class="lbl">APIs · Tables</td><td>${o.affected.apis.length} routes · ${o.affected.tables.length} tables</td></tr><tr><td class="lbl">Workers · queues</td><td>${o.affected.workers.length} · ${o.affected.queues.length}</td></tr><tr><td class="lbl">Domains</td><td>${esc(o.affected.domains.join(', '))}</td></tr><tr><td class="lbl">Merchants</td><td>${esc(o.affected.merchants)}</td></tr><tr><td class="lbl">Revenue paths</td><td>${esc(o.affected.revenuePaths)}</td></tr><tr><td class="lbl">Launch readiness</td><td>${esc(o.affected.launchReadiness)}</td></tr><tr><td class="lbl">Security · RLS</td><td>${esc(o.affected.securityRules)} · ${esc(o.affected.rls)}</td></tr><tr><td class="lbl">FK relationships</td><td>${o.affected.fkRelationships}</td></tr></tbody></table><div class="xsection">Recovery · rollback · verification</div><ul class="hint">${o.recoveryPath.map(s=>`<li>${esc(s)}</li>`).join('')}</ul><p class="mono" style="color:var(--muted)">${esc(o.rollbackPath?o.rollbackPath.command:'')}</p><div class="badges">${o.verificationChecklist.map(v=>`<span class="xpill">✓ ${esc(v)}</span>`).join('')}</div>`;});}
 function xPersp(key,p){
+  if(p==='overview')return xWsOverview(key);
   if(p==='explain')return xArticle(XDATA.nodes[key]);
+  if(p==='technical')return xWsTech(key);
+  if(p==='database')return xWsDatabase(key);
+  if(p==='api')return xWsApi(key);
+  if(p==='infrastructure')return xWsInfra(key);
+  if(p==='security')return xWsSecurity(key);
+  if(p==='operations')return xWsOps(key);
+  if(p==='incidents')return xWsIncidents(key);
+  if(p==='dependencies')return xWsDeps(key);
+  if(p==='impact')return xWsImpact(key);
+  if(p==='atlas'){setMode('technical');selectTab('atlas');return;}
   if(p==='technical')return xWsTech(key);
   if(p==='graphs')return xWsGraphs(key);
   if(p==='trace')return xWsTrace(key);

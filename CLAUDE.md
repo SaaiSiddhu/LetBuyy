@@ -206,6 +206,8 @@ LCIS is now LetBuyy's operating system, readable by humans AND AIs. Three layers
 | Docs-grade explain (tags, reading time, difficulty, problem solved, code/db refs, deep-dive) | `/api/explain?node=X` → `docs` |
 | **Domain workspace** (one search → 6 perspectives: explain/technical/graphs/trace/related/ai) | `/api/workspace?domain=X` · Explain mode → select a domain |
 | Related knowledge (domains/services/tables/FK/routes/runbooks/incidents/docs/AI packs) | `/api/related?domain=X` |
+| **Impact / risk / what-breaks-if** (impact·risk·recovery scores + affected APIs/tables/workers/domains/merchants/revenue/RLS/FK) | `/api/impact-score?domain=X` |
+| 16-perspective workspace (Overview/Explain/Technical/Database/API/Infra/Security/Ops/Incidents/Deps/Impact/Graphs/Trace/Related/AI/Atlas) | `/api/workspace?domain=X` · Explain mode → select a domain |
 | Database control (schema/relationship/policy/function explorers) | `/api/database-control` · Explain → Database |
 | Deep investigation | Atlas (Technical mode → ★ Atlas) — the deepest layer |
 

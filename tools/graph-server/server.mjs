@@ -238,13 +238,42 @@ function relatedKnowledge(key) {
   };
 }
 const GRAPH_LAYERS = ['business', 'journey', 'technical', 'database', 'infrastructure', 'security', 'ownership', 'dependency', 'revenue', 'ai'];
+// V9 — Change-Impact / What-Breaks-If with impact/risk/recovery scores. Composition over change-impact + db + execution + runbook.
+function impactScore(key) {
+  if (!explainIntel || explainIntel.error) return { error: 'explain-intel missing' };
+  const n = explainIntel.nodes[key]; if (!n) return { error: `domain '${key}' not found`, domains: Object.keys(explainIntel.nodes) };
+  const ci = (domainIntel && dbIntel) ? changeImpact(domainIntel, dbIntel, infraIntel, key) : null;
+  if (!ci || ci.error) return ci || { error: 'change-impact unavailable' };
+  const b = ci.breaks, money = n.technical.money, tenant = n.technical.tenant;
+  const totalDomains = domainIntel.summary.domains || 22;
+  const blockers = (executionIntel?.blockers || []).filter((x) => !/done|resolved|complete|hidden|fixed/i.test(x.status) && new RegExp(key.replace('-', '.?').replace(/s$/, ''), 'i').test(x.title)).map((x) => x.id);
+  const crossTenant = (dbIntel?.summary.tenantTablesWithoutRls || []).filter((t) => n.technical.tables.includes(t)).length;
+  const impact = Math.min(100, Math.round((b.domains.count / totalDomains) * 55 + (money ? 25 : 0) + (tenant ? 20 : 0)));
+  const risk = Math.min(100, Math.round((money ? 40 : 10) + (crossTenant ? 15 : 0) + blockers.length * 15 + (b.domains.count > 5 ? 20 : 0)));
+  const recoveryDifficulty = money ? 'Hard — ledger reconciliation required before retry' : b.domains.count > 5 ? 'Moderate — multi-domain rollback' : 'Easy — single-worker rollback';
+  const rb = runbookOf(key);
+  return {
+    domain: key, label: n.label,
+    affected: { apis: b.routes, tables: b.tables, workers: b.workers, queues: b.queues, domains: b.domains.list,
+      merchants: b.merchants, customers: n.customerImpact, revenuePaths: money ? 'impacted — quantify via /api/revenue-v2 (live; NOT CONNECTED)' : 'none',
+      launchReadiness: blockers.length ? `affected — open blockers ${blockers.join(', ')}` : 'no open blocker',
+      securityRules: money ? 'SECURITY DEFINER + canonical-ledger-only + step-up' : (tenant ? 'RLS + verifySiteOwnership' : 'standard'),
+      rls: tenant ? `${n.technical.tables.length} tenant tables (RLS forced)` : 'n/a', fkRelationships: (n.technical.relationships ? n.technical.relationships.references.length + n.technical.relationships.referencedBy.length : 0) },
+    scores: { impactScore: impact, riskScore: risk, recoveryDifficulty },
+    whatBreaksIf: { immediate: [key, ...b.domains.list.slice(0, 3)], secondary: b.domains.list.slice(3), revenueImpact: money ? 'yes' : 'no',
+      merchantImpact: b.merchants, customerImpact: n.customerImpact, operationalImpact: `${b.workers.length} workers, ${b.queues.length} queues` },
+    recoveryPath: rb.recovery || [], rollbackPath: rb.rollback || null, runbook: `/api/runbook?domain=${key}`,
+    verificationChecklist: rb.verification || ['gate 107/107', 'reconcile ledger if money', 'queue drained'],
+    repoScan: 'not required',
+  };
+}
 function workspace(key) {
   if (!explainIntel || explainIntel.error) return { error: 'explain-intel missing' };
   const n = explainIntel.nodes[key];
   if (!n) return { error: `domain '${key}' not found`, domains: Object.keys(explainIntel.nodes) };
   return {
     domain: key, label: n.label, criticality: n.criticality,
-    perspectives: ['explain', 'technical', 'graphs', 'trace', 'related', 'ai'],
+    perspectives: ['overview', 'explain', 'business', 'merchant', 'customer', 'database', 'api', 'infrastructure', 'security', 'operations', 'incidents', 'dependencies', 'impact', 'technical', 'graphs', 'trace', 'related', 'ai', 'atlas'],
     explain: { overview: n.purpose, docs: n.docs, importance: n.importance, businessValue: n.businessValue,
       customerImpact: n.customerImpact, merchantImpact: n.merchantImpact, failureImpact: n.failureImpact,
       operationalNotes: n.operationalNotes, recoveryPath: n.recoveryPath, launchRelevance: n.launchRelevance,
@@ -680,6 +709,7 @@ const server = createServer((req, res) => {
     // ---- V8: domain workspace (search → workspace) + related knowledge ----
     if (p === '/api/workspace') return json(res, safe(() => workspace(u.searchParams.get('domain') || 'orders')));
     if (p === '/api/related') return json(res, safe(() => relatedKnowledge(u.searchParams.get('domain') || 'orders')));
+    if (p === '/api/impact-score') return json(res, safe(() => impactScore(u.searchParams.get('domain') || 'payments')));
     if (p === '/api/live') {
       // Real read-only probe — only credentialed providers trigger a network call; the rest are NOT CONNECTED.
       const prov = u.searchParams.get('provider');
