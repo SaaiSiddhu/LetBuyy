@@ -36,6 +36,14 @@ function runbookFor(node) {
       `blast radius re-checked: /api/change-impact?key=${node.key}`,
     ],
     owner: node.owner,
+    // OMEGA Phase 11 — escalation chain (severity-laddered; money/tenant paths escalate hardest).
+    escalation: {
+      tier1: `Owner (${(node.owner || ['@saai-sidd']).join(', ')}) — acknowledge + run Detection/Diagnosis.`,
+      tier2: money ? 'Payments on-call + ARB (money-path change-control) — step-up auth required before any mutation.' : (t.tenant ? 'Platform on-call (SRE) — tenant-impacting; confirm no cross-tenant exposure.' : 'Platform on-call (SRE).'),
+      tier3: money ? 'Founder + finance reconciliation — single shared Postgres = all-merchant blast radius.' : 'Founder — if blast radius spans multiple domains or all tenants.',
+      trigger: money ? 'Any ledger discrepancy, failed reconciliation, or step-up gate bypass → escalate immediately.' : 'No recovery within the runbook SLA, or blast radius widening → escalate.',
+      note: 'Escalation contacts are role-based (repository ownership); live on-call rotation is NOT CONNECTED.',
+    },
   };
 }
 
@@ -43,7 +51,7 @@ export function buildRunbooks() {
   const ex = buildExplainIntel();
   if (ex.error) return { error: ex.error };
   const runbooks = Object.fromEntries(Object.values(ex.nodes).map((n) => [n.key, runbookFor(n)]));
-  return { summary: { domains: Object.keys(runbooks).length, structure: ['detection', 'diagnosis', 'recovery', 'rollback', 'verification'],
+  return { summary: { domains: Object.keys(runbooks).length, structure: ['detection', 'diagnosis', 'recovery', 'rollback', 'verification', 'escalation'],
     note: 'Runbooks are deterministic operational procedures derived from the domain graph + rollback script + canonical invariants. Detection signals name the live source (NOT CONNECTED until wired).',
     generatedAt: ex.summary.generatedAt }, runbooks };
 }

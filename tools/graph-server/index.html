@@ -1263,6 +1263,9 @@ function xSelect(key){
   if(key==='investor'){xCtxPanel(null);return xInvestor();}
   if(key==='developer'){xCtxPanel(null);return xDeveloper();}
   if(key==='business-flows'){xCtxPanel(null);return xBusinessFlows();}
+  if(key==='ai-ops'){xCtxPanel(null);return xAiOps();}
+  if(key==='merchant-mode'){xCtxPanel(null);return xMerchantMode();}
+  if(key==='customer-mode'){xCtxPanel(null);return xCustomerMode();}
   if(XDATA.nodes[key]){xCtxPanel(XDATA.nodes[key]);const _t0=performance.now();xArticle(XDATA.nodes[key]);v10Perf('workspace',key,performance.now()-_t0);return;}
   xCtxPanel(null);
   m.innerHTML='<div class="empty">Select a topic from the left.</div>';
@@ -1644,6 +1647,8 @@ function xLaunch(){
     const bar=n=>`<div class="risk" style="width:90px;display:inline-block;vertical-align:middle"><i style="width:${n}%;background:${n>85?'var(--success)':n>60?'var(--warning)':'var(--critical)'}"></i></div>`;
     $('#xmain').innerHTML=`<div class="xhero"><h1>Launch Command Center</h1><span class="crit" style="background:${gc}22;color:${gc};border:1px solid ${gc};font-size:13px">${go?'NO GO':'GO'}</span></div>
      <p class="xlede">${esc(s.note)}</p>
+     <div class="xsection">Readiness by area (generated — no manual status)</div>
+     <div id="omega-ls"><div class="empty"><span class="spin"></span></div></div>
      <div class="xgrid"><div class="xcard"><div class="h">Recommendation</div><div class="b" style="font-size:24px;font-weight:800;color:${gc}">${go?'NO GO':'GO'}</div></div><div class="xcard"><div class="h">Overall readiness</div><div class="b" style="font-size:24px;font-weight:800">${s.overallReadiness}%</div></div><div class="xcard"><div class="h">Structural health</div><div class="b" style="font-size:20px;font-weight:700;color:${HC(s.structuralHealth)}">${esc(s.structuralHealth)}</div></div><div class="xcard warn"><div class="h">Open blockers</div><div class="b" style="font-size:24px;font-weight:800;color:var(--warning)">${s.openBlockers}</div></div></div>
      <div class="xsection">Readiness (10 dimensions · structural)</div>
      <table><thead><tr><th>Dimension</th><th style="text-align:right">score</th><th></th><th>evidence</th></tr></thead><tbody>
@@ -1662,7 +1667,8 @@ function xLaunch(){
      </tbody></table>
      <div class="xsection">Recommendation</div>
      <div class="xcard" style="border-color:${gc}"><div class="b" style="font-size:15px">${esc(o.recommendation)}</div></div>
-     <div class="xatlas"><button class="primary" onclick="xSelect('mission-control')">◉ Mission Control</button><button onclick="xSelect('live-integrations')" style="margin-left:8px">◉ Connect live data</button></div>`;
+     <div class="xatlas"><button class="primary" onclick="xSelect('mission-control')">◉ Mission Control</button><button onclick="xSelect('ai-ops')" style="margin-left:8px">◉ AI Operations</button><button onclick="xSelect('live-integrations')" style="margin-left:8px">◉ Connect live data</button></div>`;
+    omegaFillLaunchStatus();
   });
 }
 function xLive(){
@@ -1855,7 +1861,7 @@ html,body{max-width:100%;overflow-x:hidden}
 </style>`);
 
 // Pages (non-domain xSelect targets) → /page/<key>; domains → /domain/<key>[/<perspective>].
-const V10_PAGES=new Set(['getting-started','infrastructure','database','ops-center','mission-control','launch','connections','ecosystem','live-integrations','readiness','ai-context','merchant-journey','customer-journey','founder','ops-mode','support','investor','developer','business-flows']);
+const V10_PAGES=new Set(['getting-started','infrastructure','database','ops-center','mission-control','launch','connections','ecosystem','live-integrations','readiness','ai-context','merchant-journey','customer-journey','founder','ops-mode','support','investor','developer','business-flows','ai-ops','merchant-mode','customer-mode']);
 const V10_PERSP=WSPERSP.map(p=>p[0]);
 let _v10_suppress=false;                 // true while applying a route (suppress pushState)
 
@@ -1876,6 +1882,9 @@ function v10Parse(){
   if(m)return {key:decodeURIComponent(m[1]),persp:m[2]||sp.get('perspective')||'explain',level:sp.get('level'),q:sp.get('q')};
   m=path.match(/^\/page\/([^\/?#]+)$/);
   if(m)return {key:decodeURIComponent(m[1]),persp:null};
+  // OMEGA — bare production-OS routes
+  if(path==='/launch')return {key:'launch',persp:null};
+  if(path==='/ai-ops')return {key:'ai-ops',persp:null};
   m=path.match(/^\/journey\/([^\/?#]+)$/);
   if(m)return {kind:'journey',key:decodeURIComponent(m[1])};
   if(location.hash){const k=location.hash.slice(1).split('?')[0];if(k)return {key:k,persp:'explain'};}
@@ -2032,7 +2041,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 </style>`);
 
 // V11 nav — inject a Business Intelligence section into the left tree (after xRenderTree).
-const V11_MODES=[['founder','◆','Founder / Executive'],['ops-mode','◍','Operations'],['support','◌','Support'],['investor','◈','Investor'],['developer','✦','New Developer (30 min)'],['business-flows','⟿','Business Flows']];
+const V11_MODES=[['founder','◆','Founder / Executive'],['ops-mode','◍','Operations'],['support','◌','Support'],['investor','◈','Investor'],['developer','✦','New Developer (30 min)'],['business-flows','⟿','Business Flows'],['ai-ops','◉','AI Operations'],['merchant-mode','◑','Merchant OS'],['customer-mode','◒','Customer OS']];
 function xV11Nav(){
   const t=$('#xtree-body')||$('#xtree'); if(!t||t.querySelector('[data-v11]'))return;
   let h='<div class="v11nav-hdr" data-v11="1">Business Intelligence</div>';
@@ -2204,12 +2213,92 @@ const V11_JOURNEY_KW={checkout:'checkout','merchant onboard':'merchant','merchan
 function v11Copilot(q){
   const ql=(q||'').toLowerCase();
   for(const[kw,jk]of Object.entries(V11_JOURNEY_KW)){if(ql.includes(kw)){if(/how|work|flow|journey|architecture|explain/.test(ql)){closeCmdk&&closeCmdk();setMode('explain');xJourney(jk);return true;}}}
-  if(/founder|executive|readiness|launch ready/.test(ql)){closeCmdk&&closeCmdk();xSelect('founder');return true;}
+  if(/fix next|what should i fix|blocks? (launch|scale|100|1k|10k|100k|merchants|users)|highest risk|ai ?ops|what should i do/.test(ql)){closeCmdk&&closeCmdk();xSelect('ai-ops');return true;}
+  if(/blocks? launch|launch status|launch ready|go.?no.?go/.test(ql)){closeCmdk&&closeCmdk();xSelect('launch');return true;}
+  if(/founder|executive|readiness/.test(ql)){closeCmdk&&closeCmdk();xSelect('founder');return true;}
   if(/investor|business model|platform overview/.test(ql)){closeCmdk&&closeCmdk();xSelect('investor');return true;}
   if(/new (engineer|developer)|onboard me|understand letbuyy|30 min/.test(ql)){closeCmdk&&closeCmdk();xSelect('developer');return true;}
   if(/operations|ops dashboard|queues|workers/.test(ql)){closeCmdk&&closeCmdk();xSelect('ops-mode');return true;}
   if(/where is|why did|why is|support|refund pending|payment fail/.test(ql)){closeCmdk&&closeCmdk();xSelect('support');setTimeout(()=>{const i=$('#supq');if(i){i.value=q;const b=$('#supgo');if(b)b.click();}},150);return true;}
   return false;
+}
+
+/* ================= LCIS OMEGA — Production OS surfaces ================= */
+document.head.insertAdjacentHTML('beforeend',`<style>
+.omst{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:8px 0 14px}
+.omst .c{border:1px solid var(--border);border-radius:var(--r-lg);padding:12px;background:var(--surface)}
+.omst .c .a{font-weight:700;font-size:13px;margin-bottom:6px}
+.omst .c .s{display:inline-block;font:700 10px var(--mono);letter-spacing:.6px;padding:3px 9px;border-radius:999px}
+.omst .c .s.READY{background:rgba(52,211,153,.16);color:var(--success)}
+.omst .c .s.AT{background:rgba(251,191,36,.16);color:var(--warning)}
+.omst .c .s.BLOCKED{background:rgba(248,113,113,.16);color:var(--critical)}
+.omst .c .e{font-size:11.5px;color:var(--subdued);margin-top:7px;line-height:1.5}
+</style>`);
+const OM_STCLASS=s=>s==='READY'?'READY':s==='BLOCKED'?'BLOCKED':'AT';
+// Phase 1 — fill the Launch Command Center READY/AT-RISK/BLOCKED area status.
+function omegaFillLaunchStatus(){
+  const host=document.getElementById('omega-ls'); if(!host)return;
+  api('/api/launch-status').then(o=>{ if(!host)return; if(o.error){host.innerHTML=`<p class="hint">${esc(o.error)}</p>`;return;}
+    host.innerHTML=`<div class="omst">${o.areas.map(a=>`<div class="c"><div class="a">${esc(a.area)}</div><span class="s ${OM_STCLASS(a.status)}">${esc(a.status)}</span>${a.score!=null?`<span style="margin-left:8px;font:700 12px var(--mono)">${a.score}</span>`:''}<div class="e">${esc(a.evidence)}${a.blockers.length?` · <span style="color:var(--warning)">${esc(a.blockers.join(', '))}</span>`:''}</div></div>`).join('')}</div>
+      <p class="hint" style="font-size:11.5px">READY = score ≥ 90 & no open blocker · AT RISK = 70–89 · BLOCKED = open blocker or &lt; 70. ${esc(o.note)}</p>`;
+  }).catch(()=>{});
+}
+// Robust formatter for ranked decision answers (arrays/objects/strings).
+const omegaFmt=x=>typeof x==='string'?esc(x):(x&&typeof x==='object'?[x.rank?('#'+x.rank):'',esc(x.id||x.ref||''),esc(x.title||x.detail||x.label||''),x.severity||'',x.status?('— '+esc(x.status)):''].filter(Boolean).join(' '):esc(String(x)));
+function omegaAnswer(a){
+  if(!a)return [];
+  if(Array.isArray(a))return a.map(omegaFmt);
+  if(typeof a==='object'){const out=[];for(const[k,v]of Object.entries(a)){if(Array.isArray(v)&&v.length)out.push('<b>'+esc(k)+'</b>: '+v.map(omegaFmt).join('; '));else if(typeof v==='string'&&!['note','verdict'].includes(k))out.push('<b>'+esc(k)+'</b>: '+esc(v));}return out;}
+  return [esc(String(a))];
+}
+// Phase 6 — AI Operations Center.
+function xAiOps(){
+  $('#xmain').className='xmain article';$('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading AI operations…</div>';
+  api('/api/ai-ops').then(o=>{ if(o.error){$('#xmain').innerHTML=`<div class="empty">${esc(o.error)}</div>`;return;}
+    $('#xmain').innerHTML=`<div class="xa-body"><div class="xhero"><h1>AI Operations Center</h1><span class="crit ${o.summary?.launchVerdict==='NO-GO'?'t1':'t3'}">${esc(o.summary?.launchVerdict||'')}</span></div>
+     <p class="xlede">Ranked operational answers from repository truth — what to fix, what blocks launch and scale, and the highest risks. No repository scan required.</p>
+     ${(o.questions||[]).map(q=>`<div class="bipanel"><div class="ph">◉ ${esc(q.q)}</div><ol class="hint" style="padding-left:18px;margin:4px 0">${omegaAnswer(q.answer).map(li=>`<li>${li}</li>`).join('')||'<li>—</li>'}</ol><div class="pm">${esc(q.evidence||'')}</div></div>`).join('')}
+     <p class="pm" style="color:var(--subdued);font-size:12px">${esc(o.liveBoundary||'')}</p>
+     <div class="xatlas"><button class="primary" onclick="xSelect('launch')">⚑ Launch status</button><button onclick="xSelect('founder')" style="margin-left:8px">◆ Founder</button><button onclick="xSelect('readiness')" style="margin-left:8px">✓ Production readiness</button></div></div>`;
+  });
+}
+// Phase 9 — Merchant Operating System.
+function xMerchantMode(){
+  $('#xmain').className='xmain article';$('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading merchant OS…</div>';
+  Promise.all([api('/api/merchant-ops'),api('/api/merchant-intelligence')]).then(([o,mi])=>{ if(o.error){$('#xmain').innerHTML=`<div class="empty">${esc(o.error)}</div>`;return;}
+    const card=c=>c&&c.domain?`<div class="bicard" onclick="routeGo('${c.domain}','live')"><div class="t">${esc(c.domain)}</div><div class="d">health ${c.healthScore} · risk ${c.riskScore} · blockers ${c.openBlockers} · dep ${esc(c.dependency||'—')}</div><div class="m"><span class="xpill" style="color:var(--warning)">volume: NOT CONNECTED</span></div></div>`:'';
+    const states=mi.lifecycle?.states||[];
+    $('#xmain').innerHTML=`<div class="xa-body"><div class="xhero"><h1>Merchant Operating System</h1></div>
+     <p class="xlede">Operational view of every merchant store (multi-tenant). Structure + risk are repository truth; merchant counts / volumes / churn are NOT CONNECTED.</p>
+     ${wsCards([['Tenant tables',o.storeHealth?.tenantTables??'—'],['RLS forced',o.storeHealth?.rlsForced??'—'],['Operating stages',mi.summary?.operatingStages??'—'],['Lifecycle states',(states.length||mi.summary?.lifecycleStates)??'—'],['Merchant health (live)','NOT CONNECTED','warn'],['Scaling SPOF',mi.summary?.singlePointOfDependency?'single shared Postgres':'—','warn']])}
+     <div class="xsection">Merchant revenue / money-domain health (orders · payments · refunds · payouts)</div>
+     <div class="bicards">${[o.orders,o.payments,o.refunds,o.payouts].map(card).join('')}</div>
+     <div class="xsection">Merchant lifecycle</div>
+     <div class="xflow">${states.map((s,i)=>`<div class="xstep"><span class="num">${i+1}</span>${esc(s)}</div>${i<states.length-1?'<div class="arrow"></div>':''}`).join('')||'<p class="hint">see /api/merchant</p>'}</div>
+     <div class="xsection">Merchant risk · failures · incidents · readiness</div>
+     <div class="bipanel"><div class="pp">Merchant risk = money exposure × tenant blast radius (single shared Postgres). Failures/incidents surface via the Support workspace; merchant readiness rolls into the Founder dashboard.</div><div class="pm">live merchant incidents / churn: NOT CONNECTED</div></div>
+     <div class="xsection">Support signals (live)</div>${notconn(o.supportSignals?.requires||'support/ticketing feed — NOT CONNECTED')}
+     <div class="xatlas"><button class="primary" onclick="xSelect('founder')">◆ Founder</button><button onclick="routeGo('merchant','explain')" style="margin-left:8px">⟿ Merchant journey</button><button onclick="xSelect('support')" style="margin-left:8px">◌ Support</button></div></div>`;
+  });
+}
+// Phase 10 — Customer Operating System.
+function xCustomerMode(){
+  $('#xmain').className='xmain article';$('#xmain').innerHTML='<div class="empty"><span class="spin"></span> Loading customer OS…</div>';
+  Promise.all([api('/api/customer-ops'),api('/api/customer-journey')]).then(([o,cj])=>{ if(o.error){$('#xmain').innerHTML=`<div class="empty">${esc(o.error)}</div>`;return;}
+    const card=c=>c&&c.domain?`<div class="bicard" onclick="routeGo('${c.domain}','live')"><div class="t">${esc(c.domain)}</div><div class="d">health ${c.healthScore} · risk ${c.riskScore} · dep ${esc(c.dependency||'—')}</div><div class="m"><span class="xpill" style="color:var(--warning)">conversion: NOT CONNECTED</span></div></div>`:'';
+    const stages=cj.stages||cj.funnel||[];
+    $('#xmain').innerHTML=`<div class="xa-body"><div class="xhero"><h1>Customer Operating System</h1></div>
+     <p class="xlede">Operational view of the customer experience. Journey structure is repository truth; conversion / drop-off / support volumes are NOT CONNECTED.</p>
+     ${wsCards([['Journey stages',o.journeyHealth?.stages??stages.length??'—'],['Critical stages',esc((o.journeyHealth?.criticalStages||['Payment','Refund']).join(', '))],['Checkout health',o.checkoutHealth?.healthScore??'—'],['Payment health',o.paymentHealth?.healthScore??'—'],['Conversion (live)','NOT CONNECTED','warn'],['Support (live)','NOT CONNECTED','warn']])}
+     <div class="xsection">Customer journey</div>
+     <div class="xflow">${stages.map((s,i)=>`<div class="xstep"><span class="num">${i+1}</span>${esc(s.stage||s.label||s)}</div>${i<stages.length-1?'<div class="arrow"></div>':''}`).join('')||'<p class="hint">see /api/customer-journey</p>'}</div>
+     <div class="xsection">Customer payments · orders health</div>
+     <div class="bicards">${[o.checkoutHealth,o.paymentHealth].map(card).join('')}</div>
+     <div class="xsection">Customer incidents · failures · risk</div>
+     <div class="bipanel"><div class="pp">Customer-facing failures concentrate at Payment & Refund (critical stages). Risk = checkout/payment dependency health × blast radius. Live incident/conversion data is NOT CONNECTED.</div></div>
+     <div class="xsection">Support impact (live)</div>${notconn(o.supportHealth?.requires||'support feed — NOT CONNECTED')}
+     <div class="xatlas"><button class="primary" onclick="routeGo('orders','explain')">⟿ Customer journey</button><button onclick="xSelect('support')" style="margin-left:8px">◌ Support</button></div></div>`;
+  });
 }
 
 boot();

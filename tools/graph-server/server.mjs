@@ -541,6 +541,52 @@ function developerMode() {
   };
 }
 
+// ====================================================================================
+// LCIS OMEGA — Production OS. READ-ONLY composition over existing engines. No manual status.
+// ====================================================================================
+// Phase 1 — Launch status: per-area READY / AT RISK / BLOCKED from repository truth.
+function launchStatus() {
+  const dims = readinessV2?.dimensions || readinessV2?.summary?.dimensions || [];
+  const dimOf = (re) => { const d = dims.find((x) => new RegExp(re, 'i').test(x.dimension)); return d ? { score: d.score, evidence: d.evidence } : { score: null, evidence: 'n/a' }; };
+  const blockers = launchCenter?.blockers || [];
+  // V1 blockers mapped to launch areas (repository titles).
+  const BLK = { payment: ['LB-7'], tenant: [], auth: ['LB-12'], marketplace: ['LB-8', 'LB-9'], operational: ['LB-10', 'LB-7'] };
+  const classify = (score, blk) => blk.length ? 'BLOCKED' : score == null ? 'AT RISK' : score >= 90 ? 'READY' : score >= 70 ? 'AT RISK' : 'BLOCKED';
+  const area = (key, label, dimRe, extra) => { const d = dimOf(dimRe); const blk = blockers.filter((b) => (BLK[key] || []).includes(b.id)); return { area: label, status: classify(d.score, blk), score: d.score, evidence: `${extra} ${d.evidence}`.trim(), blockers: blk.map((b) => `${b.id} ${b.title || ''}`.trim()) }; };
+  const areas = [
+    area('payment', 'Payment readiness', 'Revenue', 'Canonical ledger RPCs + Razorpay HMAC + COD.'),
+    area('tenant', 'Tenant readiness', 'Security', 'RLS forced on tenant tables + verifySiteOwnership.'),
+    area('auth', 'Auth readiness', 'Security', 'Two issuers (HS256 customer / ES256 merchant) + step-up.'),
+    area('marketplace', 'Marketplace readiness', 'Architecture', 'app/theme/developer marketplace frozen (not deploy targets).'),
+    area('operational', 'Operational readiness', 'Operations', 'workers/queues + migrate gate + rollback script.'),
+  ];
+  const counts = areas.reduce((a, x) => (a[x.status] = (a[x.status] || 0) + 1, a), {});
+  return {
+    verdict: launchCenter?.summary?.recommendation || 'NO-GO',
+    overallReadiness: launchCenter?.summary?.overallReadiness ?? null,
+    openBlockers: launchCenter?.summary?.openBlockers ?? blockers.length,
+    blockers, areas, counts, dimensions: dims,
+    legend: { READY: 'score ≥ 90 and no open blocker', 'AT RISK': 'score 70–89', BLOCKED: 'open blocker or score < 70' },
+    note: 'Status is generated from repository truth (production-readiness-v2 + V1 blockers). No manual status. Live readiness needs a connected environment.',
+  };
+}
+// Phase 6 — AI Operations Center: ranked answers + evidence (composes decision-engine-v2).
+function aiOps() {
+  const d = decisionV2;
+  if (!d || d.error) return d || { error: 'decision-v2 missing — run pnpm graph:omega' };
+  return {
+    mode: 'AI Operations Center',
+    questions: [
+      { q: 'What should I fix next?', answer: d.fixNext || [], evidence: 'ranked by blast radius + launch impact (open V1 blockers first)' },
+      { q: 'What blocks launch?', answer: d.blocksLaunch || [], evidence: 'open V1 blockers + readiness gaps' },
+      { q: 'What blocks 100 merchants / 1k / 10k merchants / 10k / 100k users?', answer: d.blocksScale || [], evidence: `scale tiers: ${(d.summary?.scaleTiers || []).join(', ')}` },
+      { q: 'What are my highest risks?', answer: d.highestRisk || [], evidence: 'risk = money + tenant + open blockers + fan-in (blast radius)' },
+    ],
+    summary: d.summary, ranked: true, repoScan: 'not required',
+    liveBoundary: 'Rankings are repository-truth heuristics; live incident frequency / usage magnitudes are NOT CONNECTED.',
+  };
+}
+
 // ---- v3: customer-journey (Phase 5) + secret intelligence (Phase 10), computed from loaded intel ----
 const JOURNEY = [
   { stage: 'Landing', domains: ['storefront'], app: 'marketing-site / storefront-runtime' },
@@ -1002,6 +1048,9 @@ const server = createServer((req, res) => {
     if (p === '/api/investor') return json(res, safe(() => investorMode()));
     if (p === '/api/developer') return json(res, safe(() => developerMode()));
     if (p === '/api/founder') return json(res, safe(() => executiveCenter()));
+    // ---- LCIS OMEGA: production-OS connective surfaces ----
+    if (p === '/api/launch-status') return json(res, safe(() => launchStatus()));
+    if (p === '/api/ai-ops') return json(res, safe(() => aiOps()));
     if (p === '/api/live') {
       // Real read-only probe — only credentialed providers trigger a network call; the rest are NOT CONNECTED.
       const prov = u.searchParams.get('provider');
