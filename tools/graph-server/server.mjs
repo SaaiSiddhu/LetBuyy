@@ -14,6 +14,13 @@ import { buildSecurityGraph } from './security-intel.mjs';
 import { buildDeploymentIntel } from './deployment-intel.mjs';
 import { traceIncident } from './incident-intel.mjs';
 import { buildMerchantIntel } from './merchant-intel.mjs';
+import { buildMemoryIntel, whyBuilt, ruleWhy, migrationWhy, decisionsAffecting } from './memory-intel.mjs';
+import { buildRuntimeIntel } from './runtime-intel.mjs';
+import { buildDeploymentState } from './deployment-state.mjs';
+import { changeImpact } from './change-impact.mjs';
+import { incidentResponse } from './incident-response.mjs';
+import { buildMerchantOperatingGraph } from './merchant-operating-graph.mjs';
+import { buildExecutionIntel } from './execution-intel.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -36,6 +43,14 @@ const INFRA_INTEL_PATH = join(REPO_ROOT, 'graphify-out', 'infra-intel.json');
 const infraIntel = existsSync(INFRA_INTEL_PATH) ? JSON.parse(readFileSync(INFRA_INTEL_PATH, 'utf8')) : null;
 const DOMAIN_INTEL_PATH = join(REPO_ROOT, 'graphify-out', 'domain-intel.json');
 const domainIntel = existsSync(DOMAIN_INTEL_PATH) ? JSON.parse(readFileSync(DOMAIN_INTEL_PATH, 'utf8')) : null;
+
+// ---- v4: runtime / memory / deployment-state / execution (built fresh at startup; cheap) ----
+const safe = (fn) => { try { return fn(); } catch (e) { return { error: String(e) }; } };
+const MEM_INTEL_PATH = join(REPO_ROOT, 'graphify-out', 'memory-intel.json');
+const memoryIntel = safe(() => existsSync(MEM_INTEL_PATH) ? JSON.parse(readFileSync(MEM_INTEL_PATH, 'utf8')) : buildMemoryIntel());
+const runtimeIntel = safe(() => buildRuntimeIntel());
+const deploymentStateData = safe(() => buildDeploymentState(infraIntel));
+const executionIntel = safe(() => buildExecutionIntel());
 
 // ---- v3: customer-journey (Phase 5) + secret intelligence (Phase 10), computed from loaded intel ----
 const JOURNEY = [
@@ -385,6 +400,21 @@ const server = createServer((req, res) => {
     if (p === '/api/merchant') return json(res, buildMerchantIntel(domainIntel));
     if (p === '/api/customer-journey') return json(res, customerJourney());
     if (p === '/api/secrets') return json(res, secretIntel());
+    // ---- v4: runtime / deployment-state / change-impact / execution / memory / merchant-operating ----
+    if (p === '/api/runtime') return json(res, runtimeIntel);
+    if (p === '/api/deployment-state') return json(res, deploymentStateData);
+    if (p === '/api/change-impact') return json(res, domainIntel ? changeImpact(domainIntel, dbIntel, infraIntel, u.searchParams.get('key') || 'payments') : { error: 'domain-intel.json missing — run pnpm graph:domain' });
+    if (p === '/api/execution') return json(res, executionIntel);
+    if (p === '/api/merchant-operating') return json(res, buildMerchantOperatingGraph(domainIntel, dbIntel));
+    if (p === '/api/incident-response') return json(res, incidentResponse(domainIntel, dbIntel, infraIntel, u.searchParams.get('domain') || u.searchParams.get('q') || 'payments'));
+    if (p === '/api/memory') {
+      if (!memoryIntel || memoryIntel.error) return json(res, memoryIntel || { error: 'memory-intel missing' });
+      const q = u.searchParams.get('q') || '', mig = u.searchParams.get('migration'), mode = u.searchParams.get('mode');
+      if (mig) return json(res, migrationWhy(memoryIntel, mig));
+      if (mode === 'rule') return json(res, ruleWhy(memoryIntel, q));
+      if (mode === 'affecting') return json(res, decisionsAffecting(memoryIntel, q));
+      return json(res, q ? whyBuilt(memoryIntel, q) : { summary: memoryIntel.summary, decisions: memoryIntel.decisions.slice(0, 40), migrations: memoryIntel.migrations.slice(-12), sources: memoryIntel.sources });
+    }
     if (p === '/api/blast') { const id = u.searchParams.get('id'); const q = u.searchParams.get('q'); let nid = id; if (!nid && q) { const r = search(q, 1); nid = r[0] && r[0].id; } return json(res, nid ? blastRadius(nid, Number(u.searchParams.get('depth') || 3)) : { error: 'not found' }); }
     if (p === '/api/health') return json(res, { ok: true, nodes: nodes.length, dbIntel: !!dbIntel });
     res.writeHead(404, { 'content-type': 'application/json' }); res.end('{"error":"not found"}');

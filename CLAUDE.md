@@ -122,4 +122,17 @@ Before scanning the repository for any of the questions below, run the LCIS quer
 
 **The LCIS-first protocol** for "what breaks if I change X / who owns X / what routes·rpcs·tables·workers·secrets·deployments use X": (1) query the domain graph (`/api/domain`, `/api/cross-domain`), (2) blast radius (`/api/blast` for symbols, `/api/cross-domain` for domains), (3) ownership (`/api/owner`), (4) deployment graph (`/api/deployment`), (5) payment graph (`/api/payment`). Refresh everything with `pnpm graph:v3` (db + infra + domain + reports).
 
-Fall back to a full repo scan only when LCIS returns nothing or the data layer is stale (`pnpm graph:update && graph:db && graph:infra && graph:domain`). Change-control hotspots above always warrant a `graph:intel blast` before merge.
+### LCIS v4 — runtime + memory + execution (the repository scan is the LAST resort)
+Before scanning the repository, query in this order: **1. LCIS** (code/domain graph) → **2. Runtime** → **3. Impact** → **4. Ownership** → **5. Memory** → **6. Deployment**. Built by `pnpm graph:v4` (also runs db/infra/domain). Live runtime/deploy *values* are telemetry/API-bound (Cloudflare Analytics Engine / deploy APIs) — LCIS maps the topology + emission points, it does not fabricate metrics.
+
+| Question | LCIS query (CLI or `/api/...`) |
+|----------|--------------------------------|
+| **Why?** (rule / architecture / migration) | `pnpm graph:memory rule "X"` · `migration <n>` · `/api/memory?mode=rule&q=X` |
+| **What breaks if I modify X?** | `pnpm graph:impact X` · `/api/change-impact?key=X` (routes·rpcs·tables·workers·queues·deployments·merchants·domains·owners) |
+| **What is live?** (declared state) | `pnpm graph:depstate` · `/api/deployment-state` (HEAD + latest migration + targets) |
+| **What is failing / slow / backed up?** | `pnpm graph:runtime` · `/api/runtime` → emission points + `wrangler tail`/Analytics Engine (values not in-repo) |
+| **Who is affected?** (incident) | `pnpm graph:incident-response X` · `/api/incident-response?domain=X` (root cause → rollback → owner) |
+| **What should be fixed next?** | `pnpm graph:execution` · `/api/execution` (open blockers, gaps, launch verdict) |
+| **Which merchants use a feature?** | `/api/merchant-operating` (multi-tenant: all stores share the schema) |
+
+Fall back to a full repo scan only when LCIS returns nothing or the data layer is stale (`pnpm graph:update && graph:v4`). Change-control hotspots above always warrant a `graph:intel blast` before merge.

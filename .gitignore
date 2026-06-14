@@ -150,3 +150,7 @@ graphify-out/
 graphify-out/db-intel.json
 graphify-out/infra-intel.json
 graphify-out/domain-intel.json
+graphify-out/memory-intel.json
+graphify-out/runtime-intel.json
+graphify-out/deployment-state.json
+graphify-out/execution-intel.json

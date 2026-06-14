@@ -155,8 +155,8 @@
   </aside>
 </main>
 <script>
-const TABS=['overview','atlas','data','infra','domains','merchant','journey','dpay','dsec','deploy','incidents','secrets','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
-const TLABEL={overview:'Overview',atlas:'★ Atlas',data:'◆ Data Layer',infra:'◇ Infrastructure',domains:'◈ Domains',merchant:'◈ Merchant',journey:'◈ Customer Journey',dpay:'◈ Payments',dsec:'◈ Security',deploy:'◈ Deployment',incidents:'◈ Incidents',secrets:'◈ Secrets',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
+const TABS=['overview','atlas','data','infra','domains','merchant','journey','dpay','dsec','deploy','incidents','secrets','runtime','depstate','execution','memory','impact','mgraph','services','apps','packages','payments','identity','database','marketplace','themes','developer','security','tenancy'];
+const TLABEL={overview:'Overview',atlas:'★ Atlas',data:'◆ Data Layer',infra:'◇ Infrastructure',domains:'◈ Domains',merchant:'◈ Merchant',journey:'◈ Customer Journey',dpay:'◈ Payments',dsec:'◈ Security',deploy:'◈ Deployment',incidents:'◈ Incidents',secrets:'◈ Secrets',runtime:'◉ Runtime',depstate:'◉ Deployments',execution:'◉ Execution',memory:'◉ Memory',impact:'◉ Impact',mgraph:'◉ Merchant Graph',services:'Services',apps:'Apps',packages:'Packages',payments:'Payments',identity:'Identity',database:'Database',marketplace:'Marketplace',themes:'Themes',developer:'Developer',security:'Security',tenancy:'Multi-Tenancy'};
 const ATLAS_DOMAINS={atlas:'',services:'services',apps:'apps',packages:'packages',payments:'payments',identity:'identity',database:'database',marketplace:'marketplace',themes:'themes',developer:'developer',security:'security',tenancy:'tenancy'};
 const $=s=>document.querySelector(s);
 const cv=$('#cv'),ctx=cv.getContext('2d'),dash=$('#dash'),hint=$('#hint'),atlasbar=$('#atlasbar'),ibody=$('#inspectorBody');
@@ -218,6 +218,12 @@ async function selectTab(t){
   if(t==='deploy')return renderDeploy();
   if(t==='incidents')return renderIncidents();
   if(t==='secrets')return renderSecrets();
+  if(t==='runtime')return renderRuntime();
+  if(t==='depstate')return renderDepState();
+  if(t==='execution')return renderExecution();
+  if(t==='memory')return renderMemory();
+  if(t==='impact')return renderImpact();
+  if(t==='mgraph')return renderMgraph();
   const d=await api('/api/graph-domain?key='+t);
   if(!d){dash.innerHTML='<p class="hint">No data.</p>';return;}
   const rc=d.risk>66?'var(--critical)':d.risk>33?'var(--warning)':'var(--success)';
@@ -419,6 +425,102 @@ async function renderSecrets(){
    <table><thead><tr><th>Secret</th><th>Services</th><th>Domains / features</th></tr></thead><tbody>
    ${o.secrets.map(s=>`<tr><td class="lbl">${esc(s.secret)}</td><td><span class="mono">${esc(s.services.join(', '))}</span></td><td>${bd(s.domains)}</td></tr>`).join('')}
    </tbody></table>`;
+}
+
+// ---------- v4 runtime / memory / execution intelligence ----------
+async function renderRuntime(){
+  await v3wrap('runtime');const o=await api('/api/runtime');if(o.error)return v3err('◉ Runtime',o.error);
+  const s=o.summary;
+  dash.innerHTML=`<h2>◉ Runtime Intelligence</h2>
+   <p class="hint" style="padding:6px 0">Runtime topology from wrangler.toml. <b>Live latency/error/queue-depth are NOT in the repo</b> — they emit to ${esc(s.metricsSource)}.</p>
+   <div class="cards">${card(s.workers,'workers')}${card(s.routesDeclared,'routes declared')}${card(s.queues,'queue edges')}${card(s.telemetryWorkers,'telemetry emitters')}${card(s.liveSnapshot?'snapshot':'live-API','metrics source')}</div>
+   <div class="sectionTitle">Queue graph (producer → queue → consumer)</div>
+   <table><thead><tr><th>Queue</th><th>Producer</th><th>Consumers</th></tr></thead><tbody>
+   ${o.queueGraph.map(q=>`<tr><td class="lbl">${esc(q.queue)}</td><td><span class="mono">${esc(q.producer)}</span></td><td><span class="mono" style="color:var(--muted)">${esc(q.consumers.join(', '))}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Worker graph</div>
+   <table><thead><tr><th>Worker</th><th>routes</th><th>crons</th><th>R2</th><th>cache</th><th>HD</th></tr></thead><tbody>
+   ${o.runtimeGraph.workers.map(w=>`<tr><td class="lbl">${esc(w.name)}</td><td><span class="mono">${esc(w.routes.join(', ')||'—')}</span></td><td>${esc(w.crons.join(', ')||'·')}</td><td>${w.r2.length?'✓':'·'}</td><td>${w.cache?'✓':'·'}</td><td>${w.hyperdrive?'✓':'·'}</td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Live questions (telemetry-bound)</div>
+   <div class="badges"><span class="badge">what's failing → ${esc(o.questions.whatIsFailingNow.source)}</span><span class="badge">what's slow → ${esc(o.questions.whatWorkerIsSlow.source)}</span><span class="badge">queue backed up → ${esc(o.questions.whatQueueIsBackedUp.source)}</span></div>
+   <p class="hint" style="padding:6px 0">${esc(o.questions.whatIsFailingNow.how||'snapshot present')}</p>`;
+}
+async function renderDepState(){
+  await v3wrap('deployments');const o=await api('/api/deployment-state');if(o.error)return v3err('◉ Deployments',o.error);
+  dash.innerHTML=`<h2>◉ Deployment State</h2>
+   <p class="hint" style="padding:6px 0">Repository-DECLARED intended state at HEAD. ⚠ ${esc(o.liveStateGap)}</p>
+   <div class="cards">${card(esc(o.declared.headCommit||'—'),'HEAD')}${card(esc(o.declared.branch||'—'),'branch')}${card('#'+(o.declared.latestMigration?.n||'—'),'latest migration')}${card(o.targets.workers.length,'workers')}${card(o.targets.vercelApps.length,'Vercel apps')}${card(o.targets.secretsRequired,'secrets')}</div>
+   <div class="sectionTitle">Declared</div>
+   <div class="badges"><span class="badge">HEAD ${esc(o.declared.headCommit||'—')}</span><span class="badge">${esc(o.declared.branch||'—')}</span>${o.declared.lastTag?`<span class="badge">tag ${esc(o.declared.lastTag)}</span>`:''}<span class="badge">${o.declared.totalMigrations} migrations</span></div>
+   <p class="hint" style="padding:4px 0">latest: <code>${esc(o.declared.latestMigration?.file||'—')}</code> · HEAD subject: ${esc(o.declared.headSubject||'—')}</p>
+   <div class="sectionTitle">Targets</div>
+   <div>workers: ${bd(o.targets.workers)}</div><div style="margin-top:4px">vercel: ${bd(o.targets.vercelApps)}</div>
+   <div class="sectionTitle">Deploy gate & rollback</div>
+   <div class="badges"><span class="badge">migrate gate ${o.gate.migrateGate?'✓':'✗'}</span><span class="badge">order: ${esc(o.gate.order.join(' → '))}</span></div>
+   <p class="hint" style="padding:4px 0">rollback: <code>${esc(o.rollback.script)}</code> ${o.rollback.present?'✓':'✗'}</p>`;
+}
+async function renderExecution(){
+  await v3wrap('execution');const o=await api('/api/execution');if(o.error)return v3err('◉ Execution',o.error);
+  const s=o.summary;const vc=/NO-?GO|NOT PRODUCTION|BLOCKED/i.test(s.launchVerdict)?'var(--critical)':'var(--success)';
+  dash.innerHTML=`<h2>◉ Execution Intelligence</h2>
+   <p class="hint" style="padding:6px 0">What remains before launch — parsed from the blocker/gap/certification docs.</p>
+   <div class="cards">${card(s.openBlockers+'/'+s.totalBlockers,'open blockers')}${card(s.codeTodos,'code TODOs')}${card(s.openGapDocs,'open gap docs')}<div class="card"><div class="n" style="color:${vc}">${esc(s.launchVerdict)}</div><div class="k">launch verdict</div></div></div>
+   <div class="sectionTitle">Open blockers</div>
+   <table><thead><tr><th>ID</th><th>Title</th><th>Severity</th><th>Status</th></tr></thead><tbody>
+   ${o.blockers.map(b=>`<tr><td class="lbl">${esc(b.id)}</td><td>${esc(b.title)}</td><td>${esc(b.severity)}</td><td><span class="mono" style="color:var(--muted)">${esc(b.status)}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Certification verdicts</div>
+   <table><thead><tr><th>Doc</th><th>Verdict</th></tr></thead><tbody>
+   ${o.verdicts.map(v=>`<tr><td class="lbl"><span class="mono">${esc(v.doc.split('/').pop())}</span></td><td>${esc(v.verdict)}</td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Open gap / risk docs</div><div class="badges">${bd(o.openDocs.map(d=>d.doc.split('/').pop()))}</div>
+   ${o.todos.length?`<div class="sectionTitle">Code TODO/FIXME</div><div class="badges">${bd(o.todos.map(t=>t.kind+': '+t.file.split('/').pop()))}</div>`:''}`;
+}
+async function renderMemory(){
+  await v3wrap('memory');const o=await api('/api/memory');if(o.error)return v3err('◉ Memory',o.error);
+  const s=o.summary;
+  dash.innerHTML=`<h2>◉ Memory / Decision Intelligence</h2>
+   <p class="hint" style="padding:6px 0">The decision graph — why rules/architecture/migrations exist, parsed from the governance + architecture docs and the migration ledger.</p>
+   <div class="cards">${card(s.decisions,'decisions')}${card(s.sources,'sources')}${card(s.migrationDecisions,'migration decisions')}${card(Object.keys(s.byType).length,'decision types')}</div>
+   <div class="pathgrid" style="grid-template-columns:1fr auto auto"><input id="memq" type="text" placeholder="why / rule keyword (e.g. refund, rls, ledger)" value="ledger"/><button id="memrule" class="primary">Rules</button><button id="memwhy" class="primary">Why</button></div>
+   <div id="memout" style="margin-top:14px"></div>
+   <div class="sectionTitle">Decisions by type</div><div class="badges">${Object.entries(s.byType).map(([k,v])=>`<span class="badge">${esc(k)} <b>${v}</b></span>`).join('')}</div>
+   <div class="sectionTitle">Sources</div><div class="badges">${bd((o.sources||[]).map(x=>x.split('/').pop()).slice(0,24))}</div>`;
+  const run=async(mode)=>{const q=$('#memq').value.trim();const r=await api('/api/memory?mode='+mode+'&q='+encodeURIComponent(q));const items=r.rules||r.decisions||[];
+    $('#memout').innerHTML=`<div class="sectionTitle">${items.length} match${items.length===1?'':'es'} for "${esc(q)}"</div>`+
+      `<table><thead><tr><th>type</th><th>rule / decision</th><th>source</th></tr></thead><tbody>${items.map(d=>`<tr><td>${esc(d.type||'')}</td><td class="lbl">${esc(d.rule||'')}</td><td><span class="mono" style="color:var(--muted)">${esc((d.source||'').split('/').pop())}</span></td></tr>`).join('')}</tbody></table>`;};
+  $('#memrule').onclick=()=>run('rule');$('#memwhy').onclick=()=>run('why');$('#memq').onkeydown=e=>{if(e.key==='Enter')run('rule');};run('rule');
+}
+async function renderImpact(){
+  await v3wrap('impact');
+  dash.className='dash fade';
+  const dl=await api('/api/domains');
+  dash.innerHTML=`<h2>◉ Change Impact</h2>
+   <p class="hint" style="padding:6px 0">"What breaks if I modify X?" → routes · rpcs · tables · workers · queues · deployments · merchants · domains · owners.</p>
+   <div class="pathgrid" style="grid-template-columns:1fr auto"><input id="impq" type="text" placeholder="domain (e.g. refunds, payments, gift-cards)" value="refunds"/><button id="impgo" class="primary">Impact</button></div>
+   <div id="impout" style="margin-top:14px"></div>
+   <div class="sectionTitle">Domains</div><div class="badges">${bd((dl||[]).map(d=>d.key))}</div>`;
+  const go=async()=>{const q=$('#impq').value.trim();if(!q)return;const o=await api('/api/change-impact?key='+encodeURIComponent(q));const out=$('#impout');
+    if(o.error){out.innerHTML=`<p class="hint">${esc(o.error)}</p>`;return;}const b=o.breaks;
+    out.innerHTML=`<div class="cards">${card(b.domains.count,'domains break')}${card(b.routes.length,'routes')}${card(b.rpcs.length,'rpcs')}${card(b.tables.length,'tables')}${card(b.workers.length,'workers')}${card(b.queues.length,'queues')}</div>
+     <p class="hint" style="padding:4px 0">${o.risk.money?'💰 ':''}${esc(o.risk.note)}</p>
+     <div class="sectionTitle">Domains that break</div><div class="badges">${bd(b.domains.list,'brand')}</div>
+     <div class="sectionTitle">Workers · queues · apps · owners</div>
+     <div>workers: ${bd(b.workers)}</div><div style="margin-top:4px">queues: ${bd(b.queues)}</div><div style="margin-top:4px">apps: ${bd(b.deployments.apps)}</div><div style="margin-top:4px">owners: ${bd(b.owners)}</div>
+     <div class="sectionTitle">Merchants</div><p class="hint" style="padding:4px 0">${esc(b.merchants)}</p>
+     <div class="sectionTitle">Routes</div><div class="badges">${bd(b.routes)}</div>`;};
+  $('#impgo').onclick=go;$('#impq').onkeydown=e=>{if(e.key==='Enter')go();};go();
+}
+async function renderMgraph(){
+  await v3wrap('merchant graph');const o=await api('/api/merchant-operating');if(o.error)return v3err('◉ Merchant Graph',o.error);
+  dash.innerHTML=`<h2>◉ Merchant Operating Graph</h2>
+   <p class="hint" style="padding:6px 0">${o.chain.map(c=>c.node).join(' → ')}</p>
+   <div class="cards">${card(o.summary.nodes,'operating nodes')}${card(o.summary.tenantTables,'tenant tables')}${card(o.summary.moneyNodes.length,'money nodes')}</div>
+   <table><thead><tr><th>Node</th><th>Apps</th><th style="text-align:right">routes</th><th style="text-align:right">rpcs</th><th style="text-align:right">tables</th><th style="text-align:right">tenant</th><th>feeds</th></tr></thead><tbody>
+   ${o.chain.map(c=>`<tr><td class="lbl">${esc(c.node)}${c.money?' <span class="badge brand" style="padding:1px 7px">money</span>':''}</td><td><span class="mono">${esc(c.apps.join(', '))}</span></td><td style="text-align:right"><span class="deg">${c.routes}</span></td><td style="text-align:right"><span class="deg">${c.rpcs}</span></td><td style="text-align:right"><span class="deg">${c.tables}</span></td><td style="text-align:right"><span class="deg">${c.tenantTables}</span></td><td><span class="mono" style="color:var(--muted)">${esc(c.feeds.join(', ')||'—')}</span></td></tr>`).join('')}
+   </tbody></table>
+   <div class="sectionTitle">Affected merchants</div><p class="hint" style="padding:4px 0">${esc(o.affectedMerchants)}</p>`;
 }
 
 // ---------- neighborhood (live force sim) ----------
