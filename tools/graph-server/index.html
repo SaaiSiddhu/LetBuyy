@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>LetBuyy Graph Intelligence</title>
+<link rel="icon" type="image/svg+xml" href="/mark.svg" />
 <style>
   /* Dark adaptation of the LetBuyy design system (config/tailwind/letbuyy-tokens.css):
      brand violet, semantic palette, radii 8/12/16, the --lb-space rhythm. */
@@ -31,10 +32,9 @@
 
   header{display:flex;align-items:center;gap:var(--s4);padding:13px 22px;border-bottom:1px solid var(--border-soft);
     background:linear-gradient(180deg,rgba(255,255,255,.02),transparent),var(--bg2);backdrop-filter:blur(8px)}
-  .brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:680;letter-spacing:.2px}
-  .brand .dot{width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#c4b5fd,var(--brand));box-shadow:0 0 14px var(--glow)}
-  .brand b{background:linear-gradient(90deg,var(--brand-2),var(--brand));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-  .brand small{color:var(--muted);font-weight:500;font-size:11px;letter-spacing:.6px;text-transform:uppercase;margin-left:2px}
+  .brand{display:flex;align-items:center;gap:13px}
+  .brand .logo{height:30px;width:auto;display:block;filter:drop-shadow(0 2px 8px rgba(68,98,255,.3))}
+  .brand .sub{color:var(--subdued);font-weight:600;font-size:11px;letter-spacing:.7px;text-transform:uppercase;padding-left:13px;border-left:1px solid var(--border)}
   .chips{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
   .chip{display:flex;gap:6px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-pill);
     padding:4px 12px;font-size:12px;color:var(--subdued);transition:.15s}
@@ -65,8 +65,8 @@
   button.primary{background:linear-gradient(180deg,var(--brand),var(--brand-cta));border-color:var(--brand);color:#fff}
   button.primary:hover{filter:brightness(1.08)}
   .label{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:600;margin:2px 0 7px}
-  .pathbar{display:flex;gap:6px} .pathbar input{padding-left:11px}
-  .pathbar input{width:auto;flex:1}
+  .pathgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .pathgrid input{padding-left:11px;min-width:0}
 
   .results{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
   .results li{padding:9px 11px;border:1px solid var(--border);border-radius:var(--r-md);cursor:pointer;background:var(--bg);transition:.12s;position:relative}
@@ -129,7 +129,7 @@
 </head>
 <body>
 <header>
-  <div class="brand"><span class="dot"></span>Let<b>Buyy</b><small>Graph Intelligence</small></div>
+  <div class="brand"><img class="logo" src="/logo.svg" alt="LetBuyy" /><span class="sub">Graph Intelligence</span></div>
   <div class="chips" id="chips"></div>
 </header>
 <div class="tabs" id="tabs"></div>
@@ -169,8 +169,9 @@ window.addEventListener('resize',()=>{if(cv.style.display!=='none')resize();});
 // ---------- default inspector (search results) ----------
 function searchPanel(){
   ibody.innerHTML=`<div class="label">Trace shortest path</div>
-    <div class="pathbar"><input id="pa" type="text" placeholder="from"/><input id="pb" type="text" placeholder="to"/><button id="trace" class="primary">Trace</button></div>
-    <div class="label" style="margin-top:14px">Results</div><ul class="results" id="results"></ul>`;
+    <div class="pathgrid"><input id="pa" type="text" placeholder="from"/><input id="pb" type="text" placeholder="to"/></div>
+    <button id="trace" class="primary" style="width:100%;margin-top:6px">Trace path</button>
+    <div class="label" style="margin-top:16px">Results</div><ul class="results" id="results"></ul>`;
   $('#trace').onclick=trace;
 }
 async function doSearch(){

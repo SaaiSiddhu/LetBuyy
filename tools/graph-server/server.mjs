@@ -226,6 +226,12 @@ const server = createServer((req, res) => {
   const p = u.pathname;
   try {
     if (p === '/' || p === '/index.html') { res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }); return res.end(indexHtml); }
+    if (p === '/logo.svg' || p === '/mark.svg') {
+      const file = p === '/mark.svg' ? 'letbuyy-mark.svg' : 'letbuyy-logo-dark.svg';
+      const fp = join(REPO_ROOT, 'apps/marketing-site/public/icons', file);
+      if (existsSync(fp)) { res.writeHead(200, { 'content-type': 'image/svg+xml', 'cache-control': 'max-age=3600' }); return res.end(readFileSync(fp)); }
+      res.writeHead(404); return res.end();
+    }
     if (p === '/api/stats') return json(res, stats);
     if (p === '/api/search') return json(res, search(u.searchParams.get('q') || '', Number(u.searchParams.get('limit') || 50)));
     if (p === '/api/node') { const v = neighbors(u.searchParams.get('id'), 1, 60); const n = byId.get(u.searchParams.get('id')); return json(res, { node: nodeView(u.searchParams.get('id')), graph: v, raw: n || null }); }
