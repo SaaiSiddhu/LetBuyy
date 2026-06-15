@@ -220,16 +220,29 @@ export interface StorefrontTemplateResolverOptions {
     liquidEnabled?: boolean;
 }
 
+/**
+ * Dev/preview-only engine override. `?engine=liquid` or `?engine=react` forces the render engine for
+ * local verification (bypasses the per-theme canary gate). Ignored in production. Returns options to
+ * pass straight into resolveStorefrontTemplate.
+ */
+export function resolveDevEngineOverride(engine: string | null | undefined): StorefrontTemplateResolverOptions {
+    if (process.env.NODE_ENV === 'production' || !engine) return {};
+    if (engine === 'liquid') return { liquidEnabled: true };
+    if (engine === 'react') return { liquidEnabled: false };
+    return {};
+}
+
 export function resolveStorefrontTemplate(
     store: StoreModel,
     route: StorefrontRouteContext,
     options: StorefrontTemplateResolverOptions = {},
 ): StorefrontRenderPlan {
     const templateKey = resolveTemplateKey(route.type);
-    const liquidEnabled = options.liquidEnabled ?? resolveThemeLiquidRenderingEnabled({
-        templateConfig: store.templateConfig,
-        defaultEnabled: THEME_LIQUID_RENDERING_DEFAULT_ENABLED,
-    });
+    const liquidEnabled = options.liquidEnabled
+        ?? resolveThemeLiquidRenderingEnabled({
+            templateConfig: store.templateConfig,
+            defaultEnabled: THEME_LIQUID_RENDERING_DEFAULT_ENABLED,
+        });
     const liquidBundle = liquidEnabled ? resolveLiquidBundle(store) : undefined;
     if (liquidBundle) {
         const liquidTemplateKey = resolveLiquidTemplateKey(liquidBundle, route, route.type);

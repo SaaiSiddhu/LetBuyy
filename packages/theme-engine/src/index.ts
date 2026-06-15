@@ -127,6 +127,7 @@ export interface StoreTemplateConfig {
   templates?: Record<string, StorefrontTemplateConfig>;
   liquidBundle?: LiquidThemePackageBundle;
   liquidRenderingCanary?: boolean;
+  rendererEngine?: 'react' | 'liquid' | string;
   appBlocks?: unknown;
   releaseManifest?: Record<string, unknown>;
   createdAt?: string;
@@ -736,7 +737,15 @@ export function collectThemeTemplateValidationIssues(input: {
   }
 
   validateThemeSettings(settingsSchema, collectTemplateSettings(input.templateConfig), issues);
-  validateSafeThemeJson(input.templateConfig, 'template_config', issues);
+  // The Liquid bundle + release manifest are first-party, schema-validated artifacts
+  // (LiquidThemePackageBundleSchema) sanitized at render — they must NOT pass through the React-template
+  // safe-JSON validator, whose safe-key + 5000-char limits reject Liquid template keys (e.g.
+  // "customers/login") and section sources. Validate everything else.
+  const safeTemplateConfig: ThemeTemplateRecord = { ...input.templateConfig };
+  delete safeTemplateConfig.liquidBundle;
+  delete safeTemplateConfig.releaseManifest;
+  delete safeTemplateConfig.rendererEngine;
+  validateSafeThemeJson(safeTemplateConfig, 'template_config', issues);
 
   return issues;
 }

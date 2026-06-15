@@ -287,6 +287,15 @@ function collectLiquidCart(
     };
 }
 
+function collectLiquidCollectionMeta(
+    sectionData: Map<string, SectionRenderData>,
+): SectionRenderData['collection'] | null {
+    for (const data of sectionData.values()) {
+        if (data.collection && typeof data.collection === 'object') return data.collection;
+    }
+    return null;
+}
+
 function buildLiquidCommerceContext({
     store,
     plan,
@@ -298,11 +307,16 @@ function buildLiquidCommerceContext({
 }): LiquidCommerceDrops {
     const products = collectLiquidProducts(sectionData);
     const product = products[0] || null;
+    const boundCollection = collectLiquidCollectionMeta(sectionData);
     const collection = plan.route.type === 'collection' || products.length > 0
         ? {
-            id: plan.route.resourceId || plan.route.resourceSlug || 'all-products',
+            id: boundCollection?.id || plan.route.resourceId || plan.route.resourceSlug || 'all-products',
             handle: plan.route.resourceSlug || 'all-products',
-            title: plan.route.resourceSlug === 'all-products' || !plan.route.resourceSlug ? 'All Products' : plan.route.resourceSlug,
+            // Fix (collection binding): prefer the real collection title/description the route already
+            // resolved into SectionRenderData.collection; fall back to the route-derived synthesis.
+            title: boundCollection?.title
+                || (plan.route.resourceSlug === 'all-products' || !plan.route.resourceSlug ? 'All Products' : plan.route.resourceSlug),
+            description: boundCollection?.description ?? null,
             products,
         }
         : null;
@@ -365,7 +379,12 @@ async function renderLiquidPlan({
 
     if (result.status !== 'rendered' || !result.liquid) return null;
 
-    return result.liquid.layoutHtml;
+    // Full-Liquid page: header + body + footer are ALL rendered by the Liquid engine (each fragment is
+    // sanitized per-section in theme-renderer.ts), so nothing in the storefront chrome is React.
+    // layout.tsx drops its React header/footer when rendererEngine === 'liquid'. We concatenate the
+    // sanitized fragments (not the full <!doctype> layout document, which can't nest inside a <div>).
+    const { header, contentForLayout, footer } = result.liquid;
+    return `${header || ''}${contentForLayout}${footer || ''}`;
 }
 
 export default async function StorefrontCompositionEngine({

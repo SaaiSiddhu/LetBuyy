@@ -1,6 +1,6 @@
 import { StoreService } from '@/lib/store-service';
 import { notFound } from 'next/navigation';
-import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver';
+import { resolveStorefrontTemplate, resolveDevEngineOverride } from '@/lib/theme-engine/template-resolver';
 import { buildSectionDataPlan } from '@/lib/theme-engine/data-binding-engine';
 import StorefrontCompositionEngine from '@/lib/theme-engine/composition-engine';
 import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
@@ -28,7 +28,7 @@ export default async function StorePage({
     searchParams,
 }: {
     params: Promise<{ subdomain: string }>;
-    searchParams?: Promise<{ theme_preview_token?: string; editor?: string }>;
+    searchParams?: Promise<{ theme_preview_token?: string; editor?: string; engine?: string }>;
 }) {
     const { subdomain } = await params;
     const query = await searchParams;
@@ -46,7 +46,7 @@ export default async function StorePage({
         type: 'index',
         path,
         subdomain,
-    });
+    }, resolveDevEngineOverride(query?.engine));
     const sectionData = await buildSectionDataPlan({
         store,
         sections: renderPlan.template.sections,

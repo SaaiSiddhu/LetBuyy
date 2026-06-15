@@ -145,6 +145,20 @@ export function resolveThemeLiquidRenderingEnabled(input: ThemeLiquidRenderingDe
   const releaseManifest = asGovernanceRecord(input.templateConfig.releaseManifest);
   const rendererManifest = asGovernanceRecord(releaseManifest.renderer || releaseManifest.renderer_manifest);
   const themeSettings = asGovernanceRecord(input.templateConfig.themeSettings);
+
+  // Explicit per-theme renderer engine — the production activation switch (Phase 9). A published Liquid
+  // release sets release_manifest.renderer_engine = 'liquid' (gateway buildReleaseArtifacts, set whenever
+  // the theme has a liquidBundle); a Liquid theme/store may also carry templateConfig.rendererEngine =
+  // 'liquid'. Either flips the store to Liquid. React / json-contract themes have no such signal and fall
+  // through to the canary checks + default-off below, untouched.
+  const explicitEngine = [
+    asGovernanceRecord(input.templateConfig).rendererEngine,
+    releaseManifest.renderer_engine,
+    releaseManifest.rendererEngine,
+    rendererManifest.engine,
+  ].map((value) => (typeof value === 'string' ? value.toLowerCase() : undefined));
+  if (explicitEngine.includes('liquid')) return true;
+
   const candidates = [
     input.templateConfig.liquidRenderingCanary,
     themeSettings.liquidRenderingCanary,

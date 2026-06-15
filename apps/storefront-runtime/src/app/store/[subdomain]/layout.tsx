@@ -13,6 +13,7 @@ import { StorefrontSectionGroupRenderer } from '@/lib/theme-engine/composition-e
 import type { SectionRenderData } from '@/lib/theme-engine/types';
 import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
 import { buildStoreMetadata, isStorefrontIndexable } from '@/lib/seo';
+import './liquid-theme.css';
 
 export const revalidate = 60;
 
@@ -113,6 +114,9 @@ export default async function StoreLayout({ children, params }: Props) {
     for (const section of [...renderPlan.sectionGroups.header, ...renderPlan.sectionGroups.footer]) {
         sectionGroupData.set(section.id, { products });
     }
+    // Full-Liquid page: the Liquid engine renders header + body + footer (composition-engine), so the
+    // React chrome below is skipped entirely — nothing storefront-visible is React.
+    const liquidPage = renderPlan.rendererEngine === 'liquid';
     const isDark = Boolean(ts.isDark);
     const fontCss = FONT_MAP[ts.fontFamily] || FONT_MAP['Inter'];
     const headingFontCss = FONT_MAP[ts.headingFontFamily] || fontCss;
@@ -211,46 +215,54 @@ export default async function StoreLayout({ children, params }: Props) {
                     <CartProvider>
                         <WishlistProvider storeId={store.id}>
                             <div className={`min-h-screen flex flex-col ${isDark ? 'dark' : ''}`} style={{ backgroundColor: 'var(--background)' }}>
-                                <StorefrontSectionGroupRenderer
-                                    store={store}
-                                    plan={renderPlan}
-                                    groupKey="header"
-                                    sectionData={sectionGroupData}
-                                    editorMode={isEditorPreview}
-                                />
-                                <main className="flex-grow">
-                                    {children}
-                                </main>
-                                <StorefrontSectionGroupRenderer
-                                    store={store}
-                                    plan={renderPlan}
-                                    groupKey="footer"
-                                    sectionData={sectionGroupData}
-                                    editorMode={isEditorPreview}
-                                />
+                                {liquidPage ? children : (
+                                    <>
+                                        <StorefrontSectionGroupRenderer
+                                            store={store}
+                                            plan={renderPlan}
+                                            groupKey="header"
+                                            sectionData={sectionGroupData}
+                                            editorMode={isEditorPreview}
+                                        />
+                                        <main className="flex-grow">
+                                            {children}
+                                        </main>
+                                        <StorefrontSectionGroupRenderer
+                                            store={store}
+                                            plan={renderPlan}
+                                            groupKey="footer"
+                                            sectionData={sectionGroupData}
+                                            editorMode={isEditorPreview}
+                                        />
+                                    </>
+                                )}
                             </div>
                         </WishlistProvider>
                     </CartProvider>
                 </CustomerAuthProvider>
             ) : (
                 <div className={`min-h-screen flex flex-col ${isDark ? 'dark' : ''}`} style={{ backgroundColor: 'var(--background)' }}>
-                    <StorefrontSectionGroupRenderer
-                        store={store}
-                        plan={renderPlan}
-                        groupKey="header"
-                        sectionData={sectionGroupData}
-                        editorMode={isEditorPreview}
-                    />
-                    <main className="flex-grow">
-                        {children}
-                    </main>
-                    <StorefrontSectionGroupRenderer
-                        store={store}
-                        plan={renderPlan}
-                        groupKey="footer"
-                        sectionData={sectionGroupData}
-                        editorMode={isEditorPreview}
-                    />
+                    {liquidPage ? children : (
+                        <>
+                            <StorefrontSectionGroupRenderer
+                                store={store}
+                                plan={renderPlan}
+                                groupKey="header"
+                                sectionData={sectionGroupData}
+                                editorMode={isEditorPreview}
+                            />
+                            <main className="flex-grow">
+                                {children}
+                            </main>
+                            <StorefrontSectionGroupRenderer
+                                store={store}
+                                plan={renderPlan}
+                                groupKey="footer"
+                                sectionData={sectionGroupData}
+                                editorMode={isEditorPreview}
+                            />
+                        </>
+                    )}
                 </div>
             )}
         </>

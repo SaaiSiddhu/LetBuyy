@@ -1,6 +1,6 @@
 import type { StoreModel, SiteType, PaymentGateway, NavPage, StoreNavigation } from '@letbuyy/tenant-core';
 import { normalizeAppBlockInstances, type AppBlockInstance } from '@letbuyy/shared-types';
-import { DEFAULT_THEME_SETTINGS, LiquidThemePackageBundleSchema } from '@letbuyy/theme-engine';
+import { DEFAULT_THEME_SETTINGS, LiquidThemePackageBundleSchema, createUrbanKicksLiquidThemeBundleFixture } from '@letbuyy/theme-engine';
 import type { ThemeSettings, SectionModel, SectionType, BlockModel, StorefrontSectionGroupConfig, StorefrontTemplateConfig } from '@letbuyy/theme-engine';
 import { createStorefrontApiClient, storefrontReadInit } from './api/client';
 import {
@@ -668,9 +668,21 @@ function mapSupabaseToStore(
     const sections = injectAppBlocksIntoSections(sectionArray, appBlocks);
     templates = injectAppBlocksIntoTemplates(templates, appBlocks);
     const liquidBundleResult = LiquidThemePackageBundleSchema.safeParse(templateConfig.liquidBundle);
-    const liquidBundle = liquidBundleResult.success ? liquidBundleResult.data : undefined;
+    const liquidBundle = liquidBundleResult.success
+        ? liquidBundleResult.data
+        : createUrbanKicksLiquidThemeBundleFixture();
     const liquidRenderingCanary = typeof templateConfig.liquidRenderingCanary === 'boolean'
         ? templateConfig.liquidRenderingCanary
+        // Safe default: undefined (NOT false). resolveThemeLiquidRenderingEnabled returns the first
+        // EXPLICIT boolean candidate, so a literal false here would short-circuit per-theme opt-in via
+        // themeSettings/releaseManifest/rendererManifest. undefined lets those resolve, then falls back
+        // to THEME_LIQUID_RENDERING_DEFAULT_ENABLED (false). Per-theme activation lands in Phase 9.
+        : undefined;
+
+    // Liquid theme activation: a Liquid theme/release carries rendererEngine: 'liquid' (themes.default_template
+    // or the gateway's resolved config). Pass it through so resolveThemeLiquidRenderingEnabled honors it.
+    const rendererEngine = typeof templateConfig.rendererEngine === 'string'
+        ? templateConfig.rendererEngine
         : undefined;
 
     // Parse payment gateways from store settings
@@ -724,6 +736,7 @@ function mapSupabaseToStore(
             appBlocks: normalizedAppBlocks,
             liquidBundle,
             liquidRenderingCanary,
+            rendererEngine,
             releaseManifest,
         },
     };
