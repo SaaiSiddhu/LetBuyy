@@ -2256,6 +2256,55 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         sections: { 'policy-content-default': { type: 'policy-content', settings: {} } },
         order: ['policy-content-default'],
       },
+      // E1: blog listing template — data source: GET /:subdomain/blog (public-routes.ts line 1226)
+      // Fields: id, title, slug, excerpt, featured_image, published_at. Author name NOT returned.
+      // Populated by LANE-B composition-engine via liquidContext.blog.
+      blog: {
+        name: 'Blog',
+        layout: 'theme',
+        sections: { 'blog-listing-default': { type: 'blog-listing', settings: { heading: 'Our Blog' } } },
+        order: ['blog-listing-default'],
+      },
+      // E2: article (blog post) template — data source: GET /:subdomain/blog/:slug (public-routes.ts line 1248)
+      // Fields: id, title, slug, excerpt, content, content_html, featured_image, published_at, updated_at.
+      // Author name NOT returned by public endpoint — omitted from template.
+      // body_html is merchant-authored HTML; flows through sanitizeRenderedHtml (the authoritative sanitizer).
+      article: {
+        name: 'Article',
+        layout: 'theme',
+        sections: { 'article-content-default': { type: 'article-content', settings: {} } },
+        order: ['article-content-default'],
+      },
+      // E3: CMS page template — data source: GET /:subdomain/pages/:slug (public-routes.ts line 1158)
+      // Backed by storefront_pages (primary) or legacy pages table (fallback); both normalize to same shape.
+      // body_html is merchant-authored HTML; flows through sanitizeRenderedHtml (the authoritative sanitizer).
+      // Note: the storefront catch-all page.tsx only handles single-segment slugs (path.length === 1).
+      page: {
+        name: 'Page',
+        layout: 'theme',
+        sections: { 'page-content-default': { type: 'page-content', settings: {} } },
+        order: ['page-content-default'],
+      },
+      // E4 (LANE-A): not_found template — static 404 markup only; no data binding beyond routes.
+      // Note: Next.js not-found.tsx cannot receive subdomain params; store-aware Liquid 404 rendering
+      // requires proxy-level routing to pass subdomain — Phase F scope.
+      // Key uses underscore to match StorefrontRouteType 'not_found'.
+      not_found: {
+        name: '404 Not Found',
+        layout: 'theme',
+        sections: { '404-page-default': { type: '404-page', settings: {} } },
+        order: ['404-page-default'],
+      },
+      // E5: password/coming-soon template — rendered in bundle for editor preview and isolation tests.
+      // NOTE: proxy.ts (line 296) always routes password-mode stores to /preview/coming-soon (React).
+      // This Liquid template is NOT in the production rendering path until proxy.ts checks render engine.
+      // See: Phase F scope for proxy routing update.
+      password: {
+        name: 'Password',
+        layout: 'theme',
+        sections: { 'password-gate-default': { type: 'password-gate', settings: { heading: 'Coming Soon' } } },
+        order: ['password-gate-default'],
+      },
     },
     sections: {
       'customer-orders': createLiquidSectionFile({
@@ -2312,6 +2361,9 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '<section class="lb-auth lb-auth--login" data-section-id="{{ section.id }}">',
           '  <h1>{{ section.settings.heading }}</h1>',
           '  <form class="lb-auth__form" method="post" action="/api/customer/login">',
+          // E8 (LANE-A): hidden storeId field — mirrors D10 pattern from customer-register.
+          // Enables no-JS form submission to the D10 dual-content-type login route.
+          '    <input type="hidden" name="storeId" value="{{ shop.id }}">',
           '    <label>Email<input type="email" name="email" autocomplete="email" required></label>',
           '    <label>Password<input type="password" name="password" autocomplete="current-password" required></label>',
           '    <button type="submit">Sign in</button>',
@@ -2418,8 +2470,8 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '<section class="lb-policy" data-section-id="{{ section.id }}">',
           '  {% if page %}',
           '  <h1 class="lb-policy__title">{{ page.title }}</h1>',
-          '  {% if page.body_html %}<div class="lb-policy__body">{{ page.body_html }}</div>',
-          '  {% elsif page.content %}<div class="lb-policy__body">{{ page.content }}</div>{% endif %}',
+          '  {% if page.body_html != blank %}<div class="lb-policy__body">{{ page.body_html | raw }}</div>',
+          '  {% elsif page.content != blank %}<div class="lb-policy__body">{{ page.content | raw }}</div>{% endif %}',
           '  {% endif %}',
           '</section>',
         ],
@@ -2465,7 +2517,14 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         settings: [liquidSetting('showDescription', 'toggle', 'Show description', { default: true })],
         body: [
           '<section class="lb-collection-banner" data-section-id="{{ section.id }}">',
+          // E7: image_url field verified available from public-routes.ts line 989 (collection endpoint).
+          // Using conditional <img> element directly — image_url filter returns a safe URL but
+          // img_tag filter is not registered in registerLetbuyyLiquidFilters, so we use <img> directly.
+          '  {% if collection.image_url != blank %}<img class="lb-collection-banner__image" src="{{ collection.image_url | image_url }}" alt="{{ collection.title }}">{% endif %}',
           '  <h1>{{ collection.title }}</h1>',
+          // E7: product count — collection.products is the flat product array returned by the endpoint.
+          // Display count only when the collection has products.
+          '  {% if collection.products.size > 0 %}<p class="lb-collection-banner__count">{{ collection.products.size }} products</p>{% endif %}',
           '  {% if section.settings.showDescription and collection.description %}<div class="lb-collection-banner__desc">{{ collection.description }}</div>{% endif %}',
           '</section>',
         ],
@@ -2480,6 +2539,125 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  <div class="lb-product-grid__items">',
           '    {% for item in collection.products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | money_with_currency: item.currency }}</span></a><lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}"><button type="button" data-lb-add-to-cart>Add to cart</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle></article>{% endfor %}',
           '  </div>',
+          '</section>',
+        ],
+      }),
+      // E1: Blog Listing section — data source VERIFIED REAL: GET /:subdomain/blog (public-routes.ts line 1226).
+      // Fields from blog_posts table: id, title, slug, excerpt, featured_image, published_at, is_pinned.
+      // Author name NOT returned by the public endpoint — omitted from template.
+      // blog.articles populated by LANE-B composition-engine via liquidContext.blog.
+      // Pagination: current_page and pages_count exposed when provided; no fabricated controls.
+      'blog-listing': createLiquidSectionFile({
+        type: 'blog-listing',
+        name: 'Blog Listing',
+        settings: [liquidSetting('heading', 'text', 'Heading', { default: 'Our Blog' })],
+        body: [
+          '<section class="lb-blog-listing" data-section-id="{{ section.id }}">',
+          '  <h1 class="lb-blog-listing__heading">{{ section.settings.heading }}</h1>',
+          '  {% if blog.articles and blog.articles.size > 0 %}',
+          '  <div class="lb-blog-listing__articles">',
+          '    {% for article in blog.articles %}',
+          '    <article class="lb-blog-article-card">',
+          '      <h2 class="lb-blog-article-card__title"><a href="/blog/{{ article.slug }}">{{ article.title }}</a></h2>',
+          '      {% if article.excerpt %}<p class="lb-blog-article-card__excerpt">{{ article.excerpt }}</p>{% endif %}',
+          '      {% if article.published_at %}<time class="lb-blog-article-card__date" datetime="{{ article.published_at }}">{{ article.published_at | date: "%B %-d, %Y" }}</time>{% endif %}',
+          '    </article>',
+          '    {% endfor %}',
+          '  </div>',
+          '  {% if blog.pages_count and blog.pages_count > 1 %}',
+          '  <nav class="lb-blog-listing__pagination" aria-label="Blog pagination">',
+          '    {% if blog.current_page and blog.current_page > 1 %}<a class="lb-blog-listing__prev" href="/blog?page={{ blog.current_page | minus: 1 }}" rel="prev">Previous</a>{% endif %}',
+          '    {% assign next_page = blog.current_page | plus: 1 %}',
+          '    {% if next_page <= blog.pages_count %}<a class="lb-blog-listing__next" href="/blog?page={{ next_page }}" rel="next">Next</a>{% endif %}',
+          '  </nav>',
+          '  {% endif %}',
+          '  {% else %}',
+          '  <p class="lb-blog-listing__empty">No posts published yet.</p>',
+          '  {% endif %}',
+          '</section>',
+        ],
+      }),
+      // E2: Article (blog post) section — data source VERIFIED REAL: GET /:subdomain/blog/:slug (public-routes.ts line 1248).
+      // Fields: id, title, slug, excerpt, content, content_html, featured_image, published_at, updated_at.
+      // Author name NOT returned by public endpoint — omitted from template.
+      // article.body_html is merchant-authored HTML; all section output is post-processed by
+      // sanitizeRenderedHtml (theme-renderer.ts line 646) — the authoritative sanitizer.
+      // The | raw filter prevents double-escaping (outputEscape: 'escape' is set on the engine).
+      'article-content': createLiquidSectionFile({
+        type: 'article-content',
+        name: 'Article Content',
+        settings: [],
+        body: [
+          '<section class="lb-article" data-section-id="{{ section.id }}">',
+          '  {% if article %}',
+          '  <h1 class="lb-article__title">{{ article.title }}</h1>',
+          '  {% if article.published_at %}<time class="lb-article__date" datetime="{{ article.published_at }}">{{ article.published_at | date: "%B %-d, %Y" }}</time>{% endif %}',
+          '  {% if article.image %}<img class="lb-article__image" src="{{ article.image | image_url }}" alt="{{ article.title }}">{% endif %}',
+          '  {% if article.body_html != blank %}<div class="lb-article__body">{{ article.body_html | raw }}</div>{% endif %}',
+          '  {% else %}',
+          '  <p class="lb-article__missing">Article not found.</p>',
+          '  {% endif %}',
+          '</section>',
+        ],
+      }),
+      // E3: CMS Page section — data source VERIFIED REAL: GET /:subdomain/pages/:slug (public-routes.ts line 1158).
+      // Backed by storefront_pages table (primary) or legacy pages table (fallback); both normalize to same shape.
+      // body_html is merchant-authored HTML; flows through sanitizeRenderedHtml (the authoritative sanitizer).
+      // The | raw filter prevents double-escaping (outputEscape: 'escape' on the engine).
+      // Note: the storefront catch-all page.tsx handles only single-segment slugs (path.length === 1).
+      'page-content': createLiquidSectionFile({
+        type: 'page-content',
+        name: 'Page Content',
+        settings: [],
+        body: [
+          '<section class="lb-page" data-section-id="{{ section.id }}">',
+          '  {% if page %}',
+          '  <h1 class="lb-page__title">{{ page.title }}</h1>',
+          '  {% if page.body_html != blank %}<div class="lb-page__body">{{ page.body_html | raw }}</div>',
+          '  {% else %}<p class="lb-page__empty">No content yet.</p>{% endif %}',
+          '  {% else %}',
+          '  <p class="lb-page__missing">Page not found.</p>',
+          '  {% endif %}',
+          '</section>',
+        ],
+      }),
+      // E4 (LANE-A): 404 Not Found section — static markup only; routes.root_url links back to home.
+      // Note: Next.js not-found.tsx cannot receive subdomain params — store-aware Liquid 404 rendering
+      // requires proxy-level routing to pass subdomain to not-found.tsx (Phase F scope).
+      // This template is exercised via editor preview and in-isolation tests in Phase E.
+      '404-page': createLiquidSectionFile({
+        type: '404-page',
+        name: '404 Not Found',
+        settings: [],
+        body: [
+          '<section class="lb-404" data-section-id="{{ section.id }}">',
+          '  <h1 class="lb-404__code">404</h1>',
+          '  <p class="lb-404__message">Page not found</p>',
+          '  <a class="lb-404__home" href="{{ routes.root_url }}">Back to home</a>',
+          '</section>',
+        ],
+      }),
+      // E5: Password / coming-soon section — gate flow: proxy.ts (line 296) detects access_mode === 'password'
+      // and always routes to /preview/coming-soon (React). This Liquid template is NOT in the production
+      // rendering path until proxy.ts checks render engine — Phase F scope for proxy routing update.
+      // POST endpoint /store-access/password exists at proxy.ts line 269.
+      // NOTE: BLOCKED_DROP_KEYS blocks 'password' as a settings field key — the input name='password'
+      // in the form is an HTML attribute in the source string, not a settings key, so it is unaffected.
+      'password-gate': createLiquidSectionFile({
+        type: 'password-gate',
+        name: 'Password Gate',
+        settings: [liquidSetting('heading', 'text', 'Heading', { default: 'Coming Soon' })],
+        body: [
+          '<!-- password gate rendering requires proxy routing update (Phase F) -->',
+          '<section class="lb-password-gate" data-section-id="{{ section.id }}">',
+          '  <h1 class="lb-password-gate__heading">{{ shop.name }}</h1>',
+          '  <p class="lb-password-gate__message">{{ section.settings.heading }}</p>',
+          '  <p class="lb-password-gate__info">This store is password protected.</p>',
+          '  <form class="lb-password-gate__form" method="post" action="/store-access/password">',
+          '    <label class="lb-password-gate__label">Enter password<input class="lb-password-gate__input" type="password" name="password" autocomplete="current-password" required></label>',
+          '    <button type="submit" class="lb-password-gate__btn">Enter</button>',
+          '  </form>',
+          '  {% if shop.access_message and shop.access_message != blank %}<p class="lb-password-gate__access-message">{{ shop.access_message }}</p>{% endif %}',
           '</section>',
         ],
       }),

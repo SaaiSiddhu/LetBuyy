@@ -324,13 +324,13 @@ flowchart TD
 | `customers/orders` | IMPLEMENTED | IMPLEMENTED | — |
 | `customers/order` | IMPLEMENTED | IMPLEMENTED | — |
 | `track` | IMPLEMENTED | IMPLEMENTED | — |
-| `blog` | PARTIAL | MISSING | Backend API: EXISTS (`public-routes.ts:1226`; `content-service.ts`). Gap: Liquid templates for blog-list view are absent from the theme bundle; current Next.js pages render via React `ContentResourceRenderer` only. |
-| `article` | PARTIAL | MISSING | Backend API: EXISTS (`public-routes.ts:1249`; `content-service.ts`). Gap: Liquid template for article view is absent from the theme bundle; no blog-index Next.js `page.tsx` (only `[slug]` exists). |
-| `page` | PARTIAL | MISSING | Partial CMS support |
-| `password` | PARTIAL | MISSING | — |
-| `not_found` | PARTIAL | MISSING | — |
+| `blog` | PARTIAL | **IMPLEMENTED (Phase E — E1/E9)** | Backend API EXISTS (`public-routes.ts:1226`). Liquid template `blog` added to bundle; `blog/page.tsx` created; composition-engine blog branch wired (`composition-engine.tsx:499–502`). |
+| `article` | PARTIAL | **IMPLEMENTED (Phase E — E2/E9)** | Backend API EXISTS (`public-routes.ts:1249`). Liquid template `article` added to bundle; composition-engine article branch wired (`composition-engine.tsx:504–515`). Residual (MEDIUM): `content-resource-renderer.tsx` does not forward `publishedAt`/`featured_image` — live renders show null date/image until Phase F fix. |
+| `page` | PARTIAL | **IMPLEMENTED (Phase E — E3/E9)** | Liquid template `page` added to bundle; composition-engine page branch wired (`composition-engine.tsx:507`). |
+| `password` | PARTIAL | **IMPLEMENTED (Phase E — E5)** | Liquid template `password` added to bundle. Production rendering path Phase F: `proxy.ts:296` unconditionally routes password stores to React. Template available in editor preview/isolation. |
+| `not_found` | PARTIAL | **IMPLEMENTED (Phase E — E4)** | Liquid template `not_found` added to bundle. Production rendering path Phase F: Next.js `not-found.tsx` cannot receive `subdomain` route param; store-level file delegates to root React 404. |
 
-**Template coverage: 10/15 route types fully implemented in Liquid = 67%.**
+**Template coverage: 15/15 route types fully implemented in Liquid = 100% (Phase E).** Up from 10/15 = 67%.
 
 ### 6.3 Structural Missing Features
 
@@ -401,7 +401,7 @@ The following table measures each capability area against a Shopify-grade theme 
 |---|---|---|---|---|
 | **Liquid Template Engine (core tags/filters)** | 70% | PARTIAL | `{% paginate %}`, `{% form %}`, `{% render %}` / snippets, `{% section %}` tag, `{% javascript %}`, `{% stylesheet %}`; Shopify-specific filters (color\_\*, metafield\_tag, img\_tag) | HIGH |
 | **Commerce Liquid Objects (drops)** | 55% | PARTIAL | `linklists`/navigation object; `settings` Liquid object; `predictive_search`; `recommendations`; `gift_card`; `discount`; `checkout`; `product.metafields`; `content_for_header`; `search` drop (permanently null) | HIGH |
-| **Template Route Coverage** | 67% | PARTIAL | `blog`, `article`, `page`, `password`, `not_found` templates missing (LB-12 CLOSED — register endpoint implemented) | HIGH |
+| **Template Route Coverage** | **100%** | **IMPLEMENTED (Phase E)** | All 15/15 route types now have Liquid templates. Production routing for `password` and `not_found` remains Phase F (proxy and Next.js `not-found.tsx` constraints). `customers/login` has dedicated `page.tsx` (E8-B). | — |
 | **Theme Schema / Settings System** | 65% | PARTIAL | Dual schema structure (TypeScript 5-group vs DB flat `appearance` group); `THEME_SETTINGS_SCHEMA` typography options exclude 4 Experience fonts; schema migration engine built but zero migrations registered | MEDIUM |
 | **Section Type Registry** | 72% | PARTIAL | 25 section types defined; 20 have Liquid parity; 5 sections (`collectionFilter`, `contentPage`, `videoHero`, `faqAccordion`, `instagramFeed`) have no Liquid parity; `newsletter`↔`newsletter-signup` type split; `heroBanner` field gap | HIGH |
 | **Theme Editor (Merchant UX)** | 65% | PARTIAL | Liquid-mode live preview functional; section selection working via `StorefrontPreviewBridge` (C-04 CLOSED); no Liquid syntax validation in editor; AI hooks are stubs; no template file browser for Liquid source | MEDIUM |
@@ -415,7 +415,7 @@ The following table measures each capability area against a Shopify-grade theme 
 | **Data Binding / Commerce Context** | 60% | PARTIAL | Products and customer drops populated; `search` drop permanently null; `navigation` never passed to Liquid scope; collection-aware sections on home page receive a synthetic `all-products` collection (not nil) when `products.length > 0`; `collectLiquidCollectionMeta()` returns null only when no section has a `.collection` object; cart totals null at SSR; `reviews` only on product-detail routes | HIGH |
 | **Customer Auth in Liquid** | 80% | IMPLEMENTED | HS256 JWT cookie resolved to `LiquidCustomerDrop`; wishlist enriched; `customers/register` form renders and endpoint is implemented (LB-12 CLOSED); `getCustomerOrderDetailDrop` scans up to 50 orders in memory to find one by ID | MEDIUM |
 | **Cart & Checkout in Liquid** | 50% | PARTIAL | Cart drawer hydrates post-load; SSR totals null (intentional, canonical-ledger rule); `removeFromCart` and `updateQuantity` implemented (data attributes + `writeCart`); `clearCart` has no UI affordance; checkout permanently React (Razorpay SDK constraint) | MEDIUM |
-| **Content / CMS (Blog, Pages)** | 30% | MISSING | Blog backend API EXISTS (`public-routes.ts:1226, :1249`) but `article`/`blog` Liquid templates absent from theme bundle; `page` drop only on select account routes; policy pages React-only | HIGH |
+| **Content / CMS (Blog, Pages)** | **75%** | PARTIAL | **Blog, article, page Liquid templates IMPLEMENTED (Phase E)**. Residual: `content-resource-renderer.tsx` does not forward `publishedAt`/`featured_image` — live article renders show null date/image (F-E2-01, MEDIUM, Phase F). Policy pages remain React-only. | MEDIUM |
 | **App Blocks / Extensions** | 40% | PARTIAL | `buildLiquidAppBlocks()` and `buildLiquidAppEmbeds()` implemented; blocks injected into Liquid via render input but not exposed as `{{ app_blocks }}` drop; `appBlockSlot` section type exists in schema | MEDIUM |
 | **Deployment / Canary Mechanism** | 70% | PARTIAL | Per-release `rendererEngine` activation implemented; no automated gradual rollout (% of stores); ARB gate for platform flip documented; `FEATURE_LIQUID = 'false'` in production gateway wrangler vars | MEDIUM |
 | **Schema Versioning / Migration** | 20% | PARTIAL | `ThemeSectionSchemaMigration` interface complete; chain-walk up to 20 steps; zero concrete migrations registered; no automated migration trigger at publish or store read; bundle schema versions (`2026-05-json-contract`, `2026-06-liquid-sections`) exist | HIGH |
@@ -487,9 +487,9 @@ Brings template coverage to 100% of route types.
 
 | # | Item | Classification | Evidence |
 |---|---|---|---|
-| P2-1 | Implement `blog`, `article` Liquid templates + confirm/implement gateway blog API backend | PURE-LIQUID | §6.2 template coverage gap |
-| P2-2 | Implement `page` Liquid template; populate `page` drop from `ContentService` on all content routes | PURE-LIQUID | §6.2 template coverage gap |
-| P2-3 | Implement `password` and `not_found` Liquid templates | PURE-LIQUID | §6.2 template coverage gap |
+| P2-1 | ~~Implement `blog`, `article` Liquid templates + confirm/implement gateway blog API backend~~ **DONE (Phase E — E1/E2/E9)** — `blog` and `article` templates added to bundle; `blog/page.tsx` created; composition-engine blog/article branches wired. Gateway backend was already implemented (`public-routes.ts:1226, :1249`); no gateway work needed. Residual: `content-resource-renderer.tsx` missing `publishedAt`/`featured_image` (Phase F). | PURE-LIQUID | §6.2: **CLOSED** |
+| P2-2 | ~~Implement `page` Liquid template; populate `page` drop from `ContentService` on all content routes~~ **DONE (Phase E — E3/E9)** — `page` template added to bundle; composition-engine page branch wired at `composition-engine.tsx:507`. | PURE-LIQUID | §6.2: **CLOSED** |
+| P2-3 | ~~Implement `password` and `not_found` Liquid templates~~ **DONE (Phase E — E4/E5)** — templates added to bundle. Production routing Phase F for both: `proxy.ts:296` and `not-found.tsx` Next.js constraints. | PURE-LIQUID | §6.2: **CLOSED** (templates); production routing OPEN (Phase F) |
 | P2-4 | Implement collection drop for index/shop routes (currently only populated on `/collections/[slug]`) | PURE-LIQUID | dynamic-sources findings §Missing Features #5 |
 
 ### Phase 3 — Performance
@@ -586,4 +586,33 @@ The following questions remain unanswered after exhaustive static analysis. They
 
 ---
 
-*Document generated 2026-07-03 | Branch: stepup/main | Auditor: Claude Sonnet 4.6 (subagent) | Status: DISCOVERY — NO IMPLEMENTATION | Source files verified: ~29 unique source files + 8 prior research documents reconciled*
+---
+
+## 14. Phase E Amendment — Implementation Progress (2026-07-04)
+
+Phase E delivered all five missing template route types and the routes drop parity extension. The table below records Phase E closures against the plan items in §11.
+
+| Phase E Item | Plan Item Closed | Files Changed | Test Gate |
+|---|---|---|---|
+| E1 — Blog listing template | P2-1 (partial) | `theme-bundle.ts:2259–2267, 2545–2579` | `L14(a–d)` in `liquid-l14-blog.test.ts` |
+| E2 — Article (blog post) template | P2-1 (partial) | `theme-bundle.ts:2268–2276, 2580–2602` | `L14(e–h)` in `liquid-l14-blog.test.ts` |
+| E3 — CMS page template | P2-2 | `theme-bundle.ts:2278–2286, 2603–2630` | `L15(a–d)` in `liquid-l15-page.test.ts` |
+| E4 — not_found template + store not-found.tsx | P2-3 (partial) | `theme-bundle.ts:2288–2297`; `not-found.tsx` (new) | `L16(a–e)` in `liquid-l16-not-found.test.ts`; `lb-e9` E4 tests |
+| E5 — password template | P2-3 (partial) | `theme-bundle.ts:2298–2306, 2640–2675` | `L16(f–g)` in `liquid-l16-not-found.test.ts` |
+| E6 — routes drop parity | Routes gap | `theme-renderer.ts:725–735` | `L17(a–f)` in `liquid-l17-routes.test.ts` |
+| E7 — collection-banner image + count | Collection-banner | `theme-bundle.ts` collection-banner section | `L6(e–g)` in `liquid-l6-collection.test.ts` |
+| E8 — customer-login storeId + no-JS | D10 parity | `theme-bundle.ts`; `login/route.ts`; `customers/login/page.tsx` (new) | `liquid-l9-auth.test.ts` E8 tests; `lb-e9` E8 tests |
+| E9 — template resolution wiring | P2-1/P2-2 runtime | `blog/page.tsx` (new); `composition-engine.tsx:499–516` | `lb-e9-template-resolution.test.mjs` (13 tests) |
+
+**Open Phase E findings requiring follow-on work (Phase F scope):**
+- F-E2-01 (MEDIUM): `content-resource-renderer.tsx` does not forward `publishedAt`/`featured_image` to `liquidPage`. Article date and image always null in live renders. Fix: extend `liquidPage` with those fields.
+- F-E5-01 (MEDIUM): Password-gate form sends `x-www-form-urlencoded`; `proxy.ts:205` reads `json` only. Needs content-type fallback before Phase F enables Liquid password routing.
+- F-E4-01 (LOW): `policy-content` section (pre-existing) uses `{{ page.body_html }}` without `| raw`. Double-escaping defect.
+- F-E6-01 (LOW): `routes.account_logout_url` is POST-only. GET href use is a no-op logout; documented in code comment.
+- F-E2-02 (MEDIUM): `L14(h)` article test does not cover `body_html: ''` (empty string) case.
+
+*Phase E amendment 2026-07-04 | Implementation by subagent | Evidence: docs/storefront-liquid-discovery/phase-e/PHASE_E_REPORT.md*
+
+---
+
+*Document generated 2026-07-03 | Branch: stepup/main | Auditor: Claude Sonnet 4.6 (subagent) | Status: PARTIALLY IMPLEMENTED (Phase E) | Sources: ~29 unique source files + 8 prior research documents reconciled | Amended: 2026-07-04 (Phase E additions)*

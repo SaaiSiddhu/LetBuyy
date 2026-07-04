@@ -55,6 +55,15 @@ export interface LiquidCommerceDrops {
   // D1-A: LANE-B populates this from StoreModel.navigation via navToLinklists() in composition-engine.tsx.
   // Optional so LANE-A gate is green independently of LANE-B landing.
   linklists?: unknown;
+  // E1: blog listing drop — populated by LANE-B composition-engine when route.type === 'blog'.
+  // Shape: { articles: Array<{id, title, slug, excerpt, featured_image, published_at}>, current_page?, pages_count? }
+  blog?: unknown;
+  // E2: article drop — populated by LANE-B composition-engine when route.type === 'article'.
+  // Shape: { title, body_html, slug, published_at, image }
+  article?: unknown;
+  // E3: page drop — populated by LANE-B composition-engine when route.type === 'page'.
+  // Shape: { title, body_html, slug, page_type }
+  page?: unknown;
 }
 
 export interface LiquidRenderedBlock {
@@ -712,6 +721,18 @@ function buildLiquidScope(
       root_url: '/',
       cart_url: '/cart',
       search_url: '/search',
+      // E6: Shopify-convention account routes backed by existing storefront-runtime pages/routes.
+      // account_url: /store/[subdomain]/account/page.tsx
+      // account_login_url: /store/[subdomain]/customers/login/page.tsx (created in E8/LANE-B)
+      // account_register_url: /store/[subdomain]/customers/register (existing)
+      // account_logout_url: POST /api/customer/logout — NOTE: POST endpoint only; use inside a form,
+      //   not a plain anchor href, to avoid CSRF and accidental GET logout.
+      // all_products_collection_url: /store/[subdomain]/products/page.tsx (existing)
+      account_url: '/account',
+      account_login_url: '/customers/login',
+      account_register_url: '/customers/register',
+      account_logout_url: '/api/customer/logout',
+      all_products_collection_url: '/products',
     },
     product: commerceDrops.product,
     collection: commerceDrops.collection,
@@ -723,6 +744,12 @@ function buildLiquidScope(
     // D1-A: linklists drop (Shopify convention). Populated by LANE-B (composition-engine.tsx).
     // toLiquidDrop safely sanitizes the nested nav structure; falls back to empty object.
     linklists: toLiquidDrop(input.liquidContext?.linklists) ?? {},
+    // E1: blog listing drop. Populated by LANE-B when route.type === 'blog'.
+    blog: toLiquidDrop(input.liquidContext?.blog) ?? null,
+    // E2: article drop. Populated by LANE-B when route.type === 'article'.
+    article: toLiquidDrop(input.liquidContext?.article) ?? null,
+    // E3: page drop. Populated by LANE-B when route.type === 'page'.
+    page: toLiquidDrop(input.liquidContext?.page) ?? null,
     ...extra,
   };
 }

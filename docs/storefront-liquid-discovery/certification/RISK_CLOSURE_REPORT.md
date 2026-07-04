@@ -216,4 +216,73 @@ The following 11 discovery documents received corrections during Phase B static 
 
 ---
 
-*End of Risk Closure Report — amended 2026-07-04 (Phase D additions)*
+---
+
+---
+
+## 8. Phase E Amendment — Summary Counts and Closure Updates
+
+> This section amends Sections 1, 6, and 7 to reflect Phase E closures (2026-07-04).
+
+### 8.1 Updated Summary Counts
+
+| Category | Phase D Count | Phase E Change | Updated Count |
+|---|---|---|---|
+| CLOSED-VERIFIED (Phase B static) | 12 | +0 | 12 |
+| CLOSED-IMPLEMENTED (Phase C) | 5 | +0 | 5 |
+| CLOSED-IMPLEMENTED (Phase D) | 7 | +0 | 7 |
+| CLOSED-IMPLEMENTED (Phase E) | 0 | +3 (OQ-11 template gap, OQ-15-blog-route, plan P2-1/P2-2/P2-3) | 3 |
+| PARTIAL-IMPLEMENTED (Phase D) | 1 | +0 (OQ-21/UC-11 still partial) | 1 |
+| OPEN-CONFIRMED-RISK | 13 | +0 (Phase E items documented below; no register rows opened or closed) | 13 |
+| OPEN-UNVERIFIABLE | 1 | +0 | 1 |
+| REFUTED | 7 | +0 | 7 |
+| PARTIAL | 9 | +0 | 9 |
+
+### 8.2 Register Row Updates
+
+The following Phase B register rows receive Phase E closure status:
+
+| ID | Prior Closure Status | Phase E Update |
+|---|---|---|
+| **OQ-11** | OPEN-CONFIRMED-RISK — Phase D (Liquid Templates) | **CLOSED-IMPLEMENTED (Phase E — E1/E2/E9)** — `blog` and `article` template keys added to Urban Kicks Liquid bundle (`theme-bundle.ts:2259–2276`); `blog-listing` and `article-content` sections added to `createLiquidParitySectionFiles()`. `blog/page.tsx` created in `apps/storefront-runtime` fetching `ContentService.listBlogPosts()`; composition-engine extended with blog/article E9 branches (`composition-engine.tsx:499–515`). Data sources VERIFIED REAL: `GET /:subdomain/blog` (`public-routes.ts:1226`) and `GET /:subdomain/blog/:slug` (`public-routes.ts:1248`). Tests: `L14(a–h)` in `liquid-l14-blog.test.ts`; `E9(a–d)` in `lb-e9-template-resolution.test.mjs`. Residual (MEDIUM): `content-resource-renderer.tsx` does not forward `publishedAt` and `featured_image` to `liquidPage` — article date stamp and hero image always null in live renders (Phase F: extend `liquidPage`). |
+
+### 8.3 Template Route Coverage Row Update
+
+The `§6.2 Template Route Coverage Gaps` row in the Risk Closure Report evidence base updates to:
+
+**Template coverage: 15/15 route types fully implemented in Liquid = 100%.** (Up from 10/15 = 67% after Phase D.)
+
+The five previously MISSING Liquid templates (`blog`, `article`, `page`, `password`, `not_found`) are now IMPLEMENTED as Phase E bundle entries. Production routing for `password` and `not_found` templates remains Phase F scope — `proxy.ts:296` unconditionally routes password stores to React and `not-found.tsx` cannot receive `subdomain` from Next.js route params. Templates exist in the Liquid bundle and are testable in isolation; end-to-end production activation requires a Phase F routing update.
+
+### 8.4 Phase E New Findings (not in the B register)
+
+Seven findings were surfaced during Phase E implementation. They are documented in `docs/storefront-liquid-discovery/phase-e/PHASE_E_REPORT.md §5` with full disposition. Summary:
+
+| ID | Severity | File | Summary | Disposition |
+|---|---|---|---|---|
+| F-E2-01 | MEDIUM | `content-resource-renderer.tsx` | Article `liquidPage` missing `publishedAt` and `featured_image`; always null in live renders | OPEN — Phase F |
+| F-E5-01 | MEDIUM | `composition-engine.tsx` | Password-gate form sends `x-www-form-urlencoded`; `proxy.ts` reads `json` only | OPEN — Phase F |
+| F-E6-01 | LOW | `theme-bundle.ts` | `routes.account_logout_url` is POST-only; GET href use is a no-op logout | OPEN — documented in code comment |
+| F-E4-01 | LOW | `theme-bundle.ts` | `policy-content` section (pre-existing) uses `{{ page.body_html }}` without `\| raw`; double-escaping | OPEN — pre-existing, Phase F |
+| F-E2-02 | MEDIUM | `liquid-l14-blog.test.ts` | `L14(h)` does not cover `body_html: ''` empty-string case for article template | OPEN — test coverage gap |
+| F-E5-02 | MEDIUM | `theme-bundle.ts` | Password Liquid template is not in production rendering path; no tracking issue exists for Phase F update to `proxy.ts:296` | OPEN — documentation/tracking gap |
+| F-E8-01 | LOW | `customers/login/page.tsx` | `customers/login` template key resolution chain should be verified end-to-end | OPEN — covered by `lb-e9` test |
+
+### 8.5 Phase Ownership Updates
+
+| Item | Old Owner | Phase E Status |
+|---|---|---|
+| OQ-11 blog/article Liquid templates | Phase D (Liquid Templates) | **CLOSED-IMPLEMENTED (Phase E)** |
+| Plan P2-1 (blog + article) | Phase 2 | **CLOSED-IMPLEMENTED (Phase E)** |
+| Plan P2-2 (page template) | Phase 2 | **CLOSED-IMPLEMENTED (Phase E)** |
+| Plan P2-3 (password + not_found) | Phase 2 | **CLOSED-IMPLEMENTED (Phase E)** — templates complete; production routing is Phase F |
+| R-15 (OQ-19 auth hardening) | Phase E (Auth Hardening) | OPEN — not addressed in Phase E scope (Phase E focused on template completeness) |
+| OQ-12 (migrateThemeTemplateSchemas publish path) | Phase E (Governance/Publish) | OPEN — not addressed in Phase E scope |
+| UC-18 (two draft tables deprecation) | Phase E (Schema/Deprecation) | OPEN — not addressed in Phase E scope |
+| UC-19 (FEATURE_LIQUID gateway kill-switch) | Phase E (Governance) | OPEN — not addressed in Phase E scope |
+
+> **Phase E scope note:** The "Phase E" ownership in the risk register referred to governance, auth hardening, schema deprecation, and kill-switch items (R-15, OQ-12, UC-18, UC-19). The actual Phase E implementation focused on template completeness per the plan items P2-1/P2-2/P2-3. The governance/auth/schema items remain OPEN-CONFIRMED-RISK and carry forward to a future phase.
+
+---
+
+*End of Risk Closure Report — amended 2026-07-04 (Phase E additions)*

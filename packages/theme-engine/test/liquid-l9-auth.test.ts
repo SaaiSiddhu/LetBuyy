@@ -73,6 +73,32 @@ test('D10 /api/customer/register proxy route exists and exports POST handler', (
   assert.match(routeSource, /registerCustomer/, 'route must call registerCustomer (proxy to gateway)');
 });
 
+// ============================================================================
+// E8 — Login D10 parity (static contract tests)
+// ============================================================================
+
+test('E8 login section source contains hidden storeId field (D10 parity)', () => {
+  const bundle = createUrbanKicksLiquidThemeBundleFixture();
+  const loginSection = bundle.sections['customer-login'];
+  assert.ok(loginSection, 'customer-login section must exist in bundle');
+  assert.match(
+    loginSection.source,
+    /name="storeId"/,
+    'customer-login section source must contain hidden storeId field (D10 parity with register)',
+  );
+});
+
+test('E8 login section storeId field uses shop.id value', () => {
+  const bundle = createUrbanKicksLiquidThemeBundleFixture();
+  const loginSection = bundle.sections['customer-login'];
+  assert.ok(loginSection, 'customer-login section must exist in bundle');
+  assert.match(
+    loginSection.source,
+    /value="{{ shop\.id }}"/,
+    'storeId hidden field must bind to {{ shop.id }}',
+  );
+});
+
 test('D10 register Liquid template action matches the existing proxy route path', () => {
   // Verify the Liquid register template posts to /api/customer/register which is served by the route above.
   const bundle = createUrbanKicksLiquidThemeBundleFixture();

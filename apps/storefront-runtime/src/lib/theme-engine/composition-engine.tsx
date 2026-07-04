@@ -485,6 +485,44 @@ async function buildLiquidCommerceContext({
     // active is computed from plan.route.path for the top-level links.
     const linklists = navToLinklists(store.navigation, plan.route.path);
 
+    // E9: Route-type-aware scope drops for blog/article/page templates.
+    // - blog route: liquidPage carries _blog sentinel (set by blog/page.tsx) → scope.blog
+    // - article route: liquidPage carries article fields from content-resource-renderer → scope.article
+    // - page route: liquidPage carries page fields from content-resource-renderer → scope.page
+    //   (policy route also uses page scope for policy-content section compat)
+    // The 'page' key was already forwarded via ...(page ? { page } : {}). We add article and blog
+    // alongside it. All are optional — absence means the template renders its own empty state.
+    let blogDrop: Record<string, unknown> | undefined;
+    let articleDrop: Record<string, unknown> | undefined;
+    let pageDrop: Record<string, unknown> | undefined;
+
+    if (plan.route.type === 'blog' && page?._blog && typeof page._blog === 'object') {
+        // E9: blog listing — _blog sentinel from blog/page.tsx
+        blogDrop = page._blog as Record<string, unknown>;
+    }
+
+    if (plan.route.type === 'article' && page) {
+        // E9: article detail — liquidPage from content-resource-renderer carries title/body_html/slug/published_at
+        articleDrop = {
+            title: page.title ?? null,
+            body_html: page.body_html ?? null,
+            slug: page.slug ?? null,
+            published_at: page.publishedAt ?? page.published_at ?? null,
+            // image: not returned by public endpoint author — omit author_name per honesty contract
+            image: page.featuredImage ?? page.featured_image ?? null,
+        };
+    }
+
+    if ((plan.route.type === 'page' || plan.route.type === 'policy') && page) {
+        // E9: CMS page/policy — liquidPage from content-resource-renderer
+        pageDrop = {
+            title: page.title ?? null,
+            body_html: page.body_html ?? null,
+            slug: page.slug ?? null,
+            page_type: page.page_type ?? page.policy_type ?? null,
+        };
+    }
+
     return {
         shop: {
             id: store.id,
@@ -504,7 +542,13 @@ async function buildLiquidCommerceContext({
         // D1-B: linklists is passed through to buildLiquidScope via LiquidCommerceDrops.
         // LANE-A reads input.liquidContext?.linklists in buildLiquidScope.
         linklists,
-        ...(page ? { page } : {}),
+        // Legacy: 'page' key was spread directly for policy/page templates before E9.
+        // Keep for backwards compat with policy-content section which reads {{ page.title }}.
+        ...(page && !pageDrop ? { page } : {}),
+        // E9: typed scope drops — only set when route type matches (no fabrication for other routes).
+        ...(blogDrop ? { blog: blogDrop } : {}),
+        ...(articleDrop ? { article: articleDrop } : {}),
+        ...(pageDrop ? { page: pageDrop } : {}),
     } as LiquidCommerceDrops & { linklists: Record<string, unknown> };
 }
 

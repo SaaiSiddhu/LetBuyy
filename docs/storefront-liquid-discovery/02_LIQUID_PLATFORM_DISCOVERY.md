@@ -129,7 +129,7 @@ flowchart TD
 | `predictive_search`, `recommendations`, `gift_card`, `discount`, `checkout` objects | MISSING |
 | Metafields system | MISSING — no metafields domain |
 | Font loading (`<link>` injection) | MISSING — `buildGoogleFontsHref()` implemented in `experience-fonts.ts`; no call site in storefront `<head>` |
-| Blog API backend | MISSING — no `/storefront/{sub}/blog` or `/storefront/{sub}/articles` gateway routes confirmed |
+| Blog API backend | **IMPLEMENTED** — `GET /:subdomain/blog` (`public-routes.ts:1226`) and `GET /:subdomain/blog/:slug` (`public-routes.ts:1248`) confirmed; Liquid templates added in Phase E |
 | `newsletter` / `newsletter-signup` type reconciliation | MISSING — type split between JSON-contract (`newsletter`) and Liquid bundle (`newsletter-signup`) at `theme-governance.ts:35` |
 | Error handling around `engine.parseAndRender()` | MISSING — no try/catch; malformed template crashes the Next.js server component |
 
@@ -306,13 +306,13 @@ flowchart TD
 | `customers/orders` | IMPLEMENTED | IMPLEMENTED | — |
 | `customers/order` | IMPLEMENTED | IMPLEMENTED | — |
 | `track` | IMPLEMENTED | IMPLEMENTED | — |
-| `blog` | PARTIAL | MISSING | No blog backend API confirmed |
-| `article` | PARTIAL | MISSING | No blog backend API confirmed |
-| `page` | PARTIAL | MISSING | Partial CMS support only |
-| `password` | PARTIAL | MISSING | — |
-| `not_found` | PARTIAL | MISSING | — |
+| `blog` | PARTIAL | **IMPLEMENTED (Phase E — E1/E9)** | Template added (`theme-bundle.ts:2259–2267`); `blog/page.tsx` created; composition-engine wired at line 499 |
+| `article` | PARTIAL | **IMPLEMENTED (Phase E — E2/E9)** | Template added (`theme-bundle.ts:2268–2276`); composition-engine article branch at line 504 |
+| `page` | PARTIAL | **IMPLEMENTED (Phase E — E3/E9)** | Template added (`theme-bundle.ts:2278–2286`); composition-engine page branch at line 507 |
+| `password` | PARTIAL | **IMPLEMENTED (Phase E — E5)** | Template added; production routing Phase F (`proxy.ts:296` still routes to React) |
+| `not_found` | PARTIAL | **IMPLEMENTED (Phase E — E4)** | Template added; production routing Phase F (Next.js `not-found.tsx` cannot receive `subdomain`) |
 
-**Template coverage: 10/15 route types fully implemented in Liquid = 67%.**
+**Template coverage: 15/15 route types fully implemented in Liquid = 100% (Phase E).** Up from 10/15 = 67%.
 
 ### 6.3 Structural Missing Features
 

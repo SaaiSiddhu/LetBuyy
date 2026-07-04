@@ -34,11 +34,25 @@ export default async function ContentResourceRenderer({
         route: renderPlan.route,
     });
 
+    const resourceContent = resource.content as Record<string, unknown> | null | undefined;
+    const liquidPage: Record<string, unknown> = {
+        title: resource.title,
+        content: resource.content,
+        body_html: typeof resource.content?.html === 'string' ? resource.content.html : null,
+        slug: resource.slug,
+        policy_type: resource.policyType ?? null,
+        // The composition-engine article branch reads these for article.published_at / article.image;
+        // without them the date stamp and hero image never render on live articles.
+        publishedAt: resource.publishedAt ?? null,
+        featured_image: typeof resourceContent?.image === 'string' ? resourceContent.image : null,
+    };
+
     return (
         <StorefrontCompositionEngine
             store={store}
             plan={renderPlan}
             sectionData={sectionData}
+            liquidPage={liquidPage}
         />
     );
 }

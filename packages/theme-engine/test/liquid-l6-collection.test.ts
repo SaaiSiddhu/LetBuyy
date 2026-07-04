@@ -59,3 +59,30 @@ test('L6: hostile collection strings are escaped', async () => {
   const html = result.liquid?.layoutHtml ?? '';
   assert.doesNotMatch(html, /<script/i);
 });
+
+// E7: collection-banner improvements — image_url and product count.
+// Data source VERIFIED: image_url field available from public-routes.ts line 989 (collection endpoint).
+// Product count: collection.products.size — the flat product array returned by the endpoint.
+
+test('L6(e): collection-banner renders image when collection.image_url is set', async () => {
+  const result = await renderCollection({ ...COLLECTION, image_url: 'https://cdn.example.com/banner.jpg' });
+  assert.equal(result.status, 'rendered');
+  const html = result.liquid?.layoutHtml ?? '';
+  assert.match(html, /lb-collection-banner__image/, 'image element must appear when image_url is set');
+  assert.match(html, /src="https:\/\/cdn\.example\.com\/banner\.jpg"/, 'image src must be the image_url');
+});
+
+test('L6(f): collection-banner renders product count from collection.products.size', async () => {
+  const result = await renderCollection(COLLECTION);
+  assert.equal(result.status, 'rendered');
+  const html = result.liquid?.layoutHtml ?? '';
+  // COLLECTION has 2 products — should render "2 products"
+  assert.match(html, /2 products/, 'product count must appear when collection has products');
+});
+
+test('L6(g): collection-banner omits image when image_url is null or blank', async () => {
+  const resultNull = await renderCollection({ ...COLLECTION, image_url: null });
+  const resultBlank = await renderCollection({ ...COLLECTION, image_url: '' });
+  assert.doesNotMatch(resultNull.liquid?.layoutHtml ?? '', /lb-collection-banner__image/, 'image must not render when image_url is null');
+  assert.doesNotMatch(resultBlank.liquid?.layoutHtml ?? '', /lb-collection-banner__image/, 'image must not render when image_url is blank');
+});
