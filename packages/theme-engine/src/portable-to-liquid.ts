@@ -11,6 +11,7 @@ import {
   parseLiquidThemePackageBundle,
   type LiquidThemePackageBundle,
 } from './theme-bundle';
+import { BLOCKED_DROP_KEYS } from './theme-renderer';
 
 export interface PortableSectionInstance {
   id?: string;
@@ -42,6 +43,7 @@ export interface CompilePortableToLiquidResult {
 // Portable React section types whose kebab form does not equal the Liquid section type.
 // NOTE: 'newsletter' -> 'newsletter-signup' must stay in sync with LIQUID_SECTION_TYPE_ALIASES in
 // theme-renderer.ts, which covers the render-time alias path for bundles persisted outside the compiler.
+// D9: 'contentPage' and 'content-page' -> 'rich-content' must also stay in sync with LIQUID_SECTION_TYPE_ALIASES.
 const PORTABLE_TO_LIQUID_TYPE_OVERRIDES: Record<string, string> = {
   hero: 'hero-banner',
   heroBanner: 'hero-banner',
@@ -52,6 +54,9 @@ const PORTABLE_TO_LIQUID_TYPE_OVERRIDES: Record<string, string> = {
   appBlockSlot: 'app-block-slot',
   richContent: 'rich-content',
   productDetail: 'product-detail',
+  // D9: contentPage maps to rich-content (both camelCase and kebab forms)
+  contentPage: 'rich-content',
+  'content-page': 'rich-content',
 };
 
 function toKebabCase(value: string): string {
@@ -76,7 +81,7 @@ function plainSettings(settings: unknown): Record<string, unknown> {
   if (!settings || typeof settings !== 'object' || Array.isArray(settings)) return {};
   const out: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(settings as Record<string, unknown>)) {
-    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) continue;
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key) || BLOCKED_DROP_KEYS.has(key)) continue;
     try {
       const cloned = JSON.parse(JSON.stringify(value ?? null));
       out[key] = cloned;

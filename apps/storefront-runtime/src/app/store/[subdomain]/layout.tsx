@@ -13,11 +13,14 @@ import { StorefrontSectionGroupRenderer } from '@/lib/theme-engine/composition-e
 import type { SectionRenderData } from '@/lib/theme-engine/types';
 import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
 import { buildStoreMetadata, isStorefrontIndexable } from '@/lib/seo';
+// D7: wire experience font hrefs into the store layout head.
+import { buildGoogleFontsHref } from '@letbuyy/theme-engine';
 import './liquid-theme.css';
 
 export const revalidate = 60;
 
 // ============= THEME FONT MAPPING =============
+// D7: extended with the four missing experience font families.
 const FONT_MAP: Record<string, string> = {
     'Inter': 'var(--font-inter)',
     'Outfit': 'var(--font-outfit)',
@@ -29,6 +32,11 @@ const FONT_MAP: Record<string, string> = {
     'Open Sans': 'var(--font-open-sans)',
     'DM Sans': 'var(--font-dm-sans)',
     'Montserrat': 'var(--font-montserrat)',
+    // D7 additions:
+    'Cormorant Garamond': 'var(--font-cormorant)',
+    'Libre Baskerville': 'var(--font-libre-baskerville)',
+    'Source Sans Pro': 'var(--font-source-sans)',
+    'Lato': 'var(--font-lato)',
 };
 
 type Props = {
@@ -123,12 +131,30 @@ export default async function StoreLayout({ children, params }: Props) {
     const isDark = Boolean(ts.isDark);
     const fontCss = FONT_MAP[ts.fontFamily] || FONT_MAP['Inter'];
     const headingFontCss = FONT_MAP[ts.headingFontFamily] || fontCss;
+
+    // D7: build Google Fonts href for the active experience fonts.
+    // buildGoogleFontsHref returns null when all fonts are system fonts (already loaded locally).
+    // preconnect links are emitted only when the href is non-null to avoid unnecessary DNS lookups.
+    const googleFontsHref = buildGoogleFontsHref(
+        // Pass both font families; buildGoogleFontsHref deduplicates and filters to known Google Fonts only.
+        [ts.fontFamily, ts.headingFontFamily].filter((f): f is string => typeof f === 'string' && f.length > 0),
+    );
     const backgroundColor = ts.backgroundColor || (isDark ? ts.primaryColor : 'rgb(255 255 255)');
     const textColor = ts.textColor || (isDark ? 'rgb(255 255 255)' : 'rgb(26 26 46)');
     const surfaceColor = ts.surfaceColor || (isDark ? 'rgb(30 41 59)' : 'rgb(249 250 251)');
 
     return (
         <>
+            {/* D7: Google Fonts preconnect + stylesheet — only emitted when the active theme uses a
+                Google Font (buildGoogleFontsHref returns null for local/system fonts). display=swap
+                is baked into the href by buildGoogleFontsHref to avoid invisible text during load. */}
+            {googleFontsHref && (
+                <>
+                    <link rel="preconnect" href="https://fonts.googleapis.com" />
+                    <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+                    <link rel="stylesheet" href={googleFontsHref} />
+                </>
+            )}
             {/* Theme Variables - Dynamic based on store theme */}
             <style>{`
         :root {

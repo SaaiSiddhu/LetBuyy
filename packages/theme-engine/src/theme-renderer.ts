@@ -52,6 +52,9 @@ export interface LiquidCommerceDrops {
   customer?: unknown;
   search?: unknown;
   order?: unknown;
+  // D1-A: LANE-B populates this from StoreModel.navigation via navToLinklists() in composition-engine.tsx.
+  // Optional so LANE-A gate is green independently of LANE-B landing.
+  linklists?: unknown;
 }
 
 export interface LiquidRenderedBlock {
@@ -258,6 +261,9 @@ export const LIQUID_SECTION_TYPE_ALIASES: Readonly<Record<string, string>> = Obj
     'newsletter': 'newsletter-signup',
     // Reverse: Liquid bundle type -> same (idempotent lookup, makes the map clearly extensible)
     'newsletter-signup': 'newsletter-signup',
+    // D9: contentPage -> rich-content (both camelCase and kebab forms)
+    'contentPage': 'rich-content',
+    'content-page': 'rich-content',
 });
 
 export class JsonContractThemeRenderer implements ThemeRenderer {
@@ -679,10 +685,29 @@ function buildLiquidScope(
       request_id: input.context.requestId,
       ...(asRecord(input.liquidContext?.request)),
     },
-    settings: {
-      ...asRecord(bundle.config.settings_data.current),
-      ...(asRecord(input.liquidContext?.settings)),
-    },
+    // D2: settings drop resolves both flat and grouped key paths.
+    // bundle.config.settings_schema has shape { schema_version, settings: { [groupKey]: { fields: { [fieldKey]: ... } } } }.
+    // Templates use flat keys ({{ settings.primaryColor }}) which continue to work.
+    // We also build grouped sub-objects ({{ settings.colors.primaryColor }}) for forward parity.
+    // Flat keys win the outer spread so grouped sub-objects never shadow a flat value.
+    // Only fields that exist in the flat current object are included in grouped objects (no fabricated defaults).
+    settings: (() => {
+      const flat = filterBlockedSettingsKeys(asRecord(bundle.config.settings_data.current));
+      const groups = bundle.config.settings_schema.settings;
+      const grouped: Record<string, unknown> = {};
+      if (groups && typeof groups === 'object') {
+        for (const [groupKey, group] of Object.entries(groups)) {
+          if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(groupKey) || BLOCKED_DROP_KEYS.has(groupKey)) continue;
+          const fields = group.fields ?? {};
+          const groupObj: Record<string, unknown> = {};
+          for (const fieldKey of Object.keys(fields)) {
+            if (fieldKey in flat) groupObj[fieldKey] = flat[fieldKey];
+          }
+          grouped[groupKey] = groupObj;
+        }
+      }
+      return { ...grouped, ...flat, ...filterBlockedSettingsKeys(asRecord(input.liquidContext?.settings)) };
+    })(),
     routes: {
       root_url: '/',
       cart_url: '/cart',
@@ -695,6 +720,9 @@ function buildLiquidScope(
     customer: commerceDrops.customer,
     search: commerceDrops.search,
     order: commerceDrops.order,
+    // D1-A: linklists drop (Shopify convention). Populated by LANE-B (composition-engine.tsx).
+    // toLiquidDrop safely sanitizes the nested nav structure; falls back to empty object.
+    linklists: toLiquidDrop(input.liquidContext?.linklists) ?? {},
     ...extra,
   };
 }
@@ -708,7 +736,19 @@ function asRecord(value: unknown): Record<string, unknown> {
 const MAX_LIQUID_DROP_DEPTH = 4;
 const MAX_LIQUID_DROP_KEYS = 80;
 const MAX_LIQUID_DROP_ARRAY_ITEMS = 100;
-const BLOCKED_DROP_KEYS = new Set(['__proto__', 'constructor', 'prototype', 'password', 'password_hash', 'access_token', 'refresh_token', 'signing_secret', 'client_secret']);
+// UC-15: also block credential-adjacent keys that should never reach Liquid template scope.
+export const BLOCKED_DROP_KEYS = new Set(['__proto__', 'constructor', 'prototype', 'password', 'password_hash', 'access_token', 'refresh_token', 'signing_secret', 'client_secret', 'api_key', 'secret_key', 'private_key', 'webhook_secret']);
+
+// Merchant settings bypass toLiquidDrop (the settings object must stay a plain spreadable record),
+// so the same key discipline applies here: identifier-shaped keys only, credential-named keys never.
+function filterBlockedSettingsKeys(record: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(record)) {
+    if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(key) || BLOCKED_DROP_KEYS.has(key)) continue;
+    out[key] = value;
+  }
+  return out;
+}
 
 function buildLiquidCommerceDrops(context?: LiquidCommerceDrops): {
   product: unknown;

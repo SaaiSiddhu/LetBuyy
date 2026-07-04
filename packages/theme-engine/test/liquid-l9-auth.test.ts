@@ -1,8 +1,10 @@
 // L9 — Customer Registration (engine templates only). Liquid customers/login + customers/register render.
-// NOTE: the live register flow is BLOCKED on LB-12 (POST /storefront/customer/register does not yet exist);
-// see EXECUTABLE_HUMAN_REQUIRED.md HR-LB12-REGISTER. Login posts to the existing /api/customer/login.
+// D10: LB-12 is CLOSED (2026-06-19). POST /api/customer/register proxy route now exists in storefront-runtime.
+// Login posts to /api/customer/login; register posts to /api/customer/register (both same-origin proxies).
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import {
   LiquidRenderer,
   createUrbanKicksLiquidThemeBundleFixture,
@@ -36,7 +38,7 @@ test('L9: login template renders a form posting to the existing /api/customer/lo
   assert.match(html, /type="password"/);
 });
 
-test('L9: register template renders a form posting to the (LB-12) register endpoint', async () => {
+test('L9: register template renders a form posting to the register endpoint', async () => {
   const result = await renderAuth('customers/register');
   const html = result.liquid?.layoutHtml ?? '';
   assert.match(html, /<form[^>]+action="\/api\/customer\/register"/);
@@ -48,4 +50,46 @@ test('L9: auth pages are sanitized (no active content) — auth surface, highest
   const html = (await renderAuth('customers/login')).liquid?.layoutHtml ?? '';
   assert.doesNotMatch(html, /<script/i);
   assert.doesNotMatch(html, /\son\w+=/i);
+});
+
+// ============================================================================
+// D10 — Registration wiring verification (static contract tests)
+// ============================================================================
+
+test('D10 /api/customer/register proxy route exists and exports POST handler', () => {
+  // Verify the storefront-runtime route file exists and wires to the gateway correctly.
+  // This is a static contract test — read-only source inspection, no network calls.
+  const routePath = resolve(
+    import.meta.dirname ?? __dirname,
+    '../../../apps/storefront-runtime/src/app/api/customer/register/route.ts',
+  );
+  let routeSource: string;
+  try {
+    routeSource = readFileSync(routePath, 'utf-8');
+  } catch {
+    assert.fail(`Route file not found at expected path: ${routePath}. LB-12 wiring verification failed.`);
+  }
+  assert.match(routeSource, /export\s+async\s+function\s+POST/, 'route must export an async POST handler');
+  assert.match(routeSource, /registerCustomer/, 'route must call registerCustomer (proxy to gateway)');
+});
+
+test('D10 register Liquid template action matches the existing proxy route path', () => {
+  // Verify the Liquid register template posts to /api/customer/register which is served by the route above.
+  const bundle = createUrbanKicksLiquidThemeBundleFixture();
+  const registerTemplate = bundle.templates['customers/register'];
+  assert.ok(registerTemplate, 'customers/register template must exist in bundle');
+
+  // The register template sections must contain a section whose source has the register action.
+  const sectionTypes = Object.values(registerTemplate.sections).map((s) => s.type);
+  assert.ok(sectionTypes.length > 0, 'register template must have at least one section');
+
+  // Check the section source in the bundle for the form action
+  const registerSectionType = sectionTypes[0];
+  const registerSection = bundle.sections[registerSectionType!];
+  assert.ok(registerSection, `register section type "${registerSectionType}" must exist in bundle sections`);
+  assert.match(
+    registerSection.source,
+    /action="\/api\/customer\/register"/,
+    'register section source must contain action="/api/customer/register"',
+  );
 });

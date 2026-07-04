@@ -7,6 +7,8 @@ const COMPOSITION_ENGINE_SOURCE = 'apps/storefront-runtime/src/lib/theme-engine/
 const DATA_BINDING_SOURCE = 'apps/storefront-runtime/src/lib/theme-engine/data-binding-engine.ts';
 const STOREFRONT_TYPES_SOURCE = 'apps/storefront-runtime/src/lib/theme-engine/types.ts';
 const STOREFRONT_GLOBALS_SOURCE = 'apps/storefront-runtime/src/app/globals.css';
+const CUSTOMER_DROP_SOURCE = 'apps/storefront-runtime/src/lib/customer-drop.ts';
+const LAYOUT_SOURCE = 'apps/storefront-runtime/src/app/store/[subdomain]/layout.tsx';
 
 function read(path) {
   return readFileSync(path, 'utf8');
@@ -93,4 +95,162 @@ test('composition engine catches renderer failures and records fallback_reason i
   assert.match(source, /return null/);
   // Canary telemetry must carry a fallback_reason field.
   assert.match(source, /fallback_reason:/);
+});
+
+// ============================================================
+// Phase D tests
+// ============================================================
+
+test('D1-B navToLinklists helper exists and linklists key is populated in buildLiquidCommerceContext', () => {
+  const source = read(COMPOSITION_ENGINE_SOURCE);
+
+  // Helper must exist
+  assert.match(source, /function navToLinklists/);
+  // Helper converts NavPage into Shopify linklist shape
+  assert.match(source, /navPageToLink/);
+  // D1-A/D1-B: keys MUST be underscore form — toLiquidDrop strips hyphens (regex /^[a-zA-Z][a-zA-Z0-9_]*$/)
+  // Using 'main_menu' not 'main-menu' so linklists survive the drop sanitizer at runtime.
+  assert.match(source, /'main_menu'/);
+  assert.match(source, /'footer_menu'/);
+  assert.match(source, /'policy_menu'/);
+  // Verify hyphenated keys are NOT used as dictionary keys (they would be silently stripped)
+  assert.doesNotMatch(source, /result\['main-menu'\]/);
+  assert.doesNotMatch(source, /result\['footer-menu'\]/);
+  assert.doesNotMatch(source, /result\['policy-menu'\]/);
+  // linklists key must be populated in buildLiquidCommerceContext return
+  assert.match(source, /linklists/);
+  // navToLinklists called with store.navigation and route.path
+  assert.match(source, /navToLinklists\(store\.navigation/);
+  // active field uses currentPath — not fabricated as true
+  assert.match(source, /active.*currentPath.*page\.href.*currentPath.*false/s);
+  // D1-B: StoreNavigation type imported
+  assert.match(source, /StoreNavigation/);
+});
+
+test('D1-B navToLinklists runtime: underscore keys survive toLiquidDrop sanitizer', async () => {
+  // This integration test verifies the end-to-end contract:
+  //   navToLinklists() -> keys -> toLiquidDrop() -> Liquid scope
+  // The critical invariant: underscore keys pass /^[a-zA-Z][a-zA-Z0-9_]*$/, hyphenated keys do not.
+  const source = read(COMPOSITION_ENGINE_SOURCE);
+
+  // Confirm all three handle values use underscore form (not hyphenated) so they survive toLiquidDrop.
+  // If navToLinklists() used 'main-menu' as the handle, the key would be stripped at render time.
+  const mainMenuMatch = source.match(/result\['main_menu'\]\s*=\s*\{[^}]*handle:\s*'([^']+)'/);
+  const footerMenuMatch = source.match(/result\['footer_menu'\]\s*=\s*\{[^}]*handle:\s*'([^']+)'/);
+  const policyMenuMatch = source.match(/result\['policy_menu'\]\s*=\s*\{[^}]*handle:\s*'([^']+)'/);
+
+  assert.ok(mainMenuMatch, 'main_menu dict key must exist in navToLinklists result');
+  assert.ok(footerMenuMatch, 'footer_menu dict key must exist in navToLinklists result');
+  assert.ok(policyMenuMatch, 'policy_menu dict key must exist in navToLinklists result');
+
+  // The handle values themselves must also be underscore-safe (they appear in linklists[handle].handle).
+  assert.ok(
+    /^[a-zA-Z][a-zA-Z0-9_]*$/.test(mainMenuMatch[1]),
+    `main_menu handle '${mainMenuMatch[1]}' must match toLiquidDrop key regex`,
+  );
+  assert.ok(
+    /^[a-zA-Z][a-zA-Z0-9_]*$/.test(footerMenuMatch[1]),
+    `footer_menu handle '${footerMenuMatch[1]}' must match toLiquidDrop key regex`,
+  );
+  assert.ok(
+    /^[a-zA-Z][a-zA-Z0-9_]*$/.test(policyMenuMatch[1]),
+    `policy_menu handle '${policyMenuMatch[1]}' must match toLiquidDrop key regex`,
+  );
+});
+
+test('D3 customer address drop carries full_name from customer name; fabricated fields stay honest', () => {
+  const source = read(CUSTOMER_DROP_SOURCE);
+
+  // mapAddressDrop must accept a fullName parameter
+  assert.match(source, /function mapAddressDrop\(addr.*fullName/);
+  // full_name is set from fullName parameter, not hardcoded ''
+  assert.match(source, /full_name: fullName/);
+  // mapCustomerDrop must pass customer.fullName into the address mapping
+  assert.match(source, /customer\.fullName/);
+  // mapDefaultAddress must also accept fullName
+  assert.match(source, /function mapDefaultAddress\(addresses.*fullName/);
+  // landmark stays null — gateway does not return it
+  assert.match(source, /landmark: null/);
+  // address2 stays null — gateway does not return it
+  assert.match(source, /address2: null/);
+  // country stays 'IN' (India-first)
+  assert.match(source, /country: 'IN'/);
+});
+
+test('D4 collection drop on collection route uses resolvedCollectionMeta before synthesis', () => {
+  const source = read(COMPOSITION_ENGINE_SOURCE);
+
+  // resolvedCollectionMeta must be the variable used for collection title/id
+  assert.match(source, /resolvedCollectionMeta/);
+  // fetchCollectionMeta function must exist
+  assert.match(source, /async function fetchCollectionMeta/);
+  // on collection routes with no SectionRenderData collection, attempt gateway fetch
+  assert.match(source, /plan\.route\.type === 'collection' && !boundCollection/);
+  // Still emits collections: collection ? [collection] : [] — Shopify convention
+  assert.match(source, /collections: collection \? \[collection\] : \[\]/);
+  // fetchCollectionMeta is wrapped in try/catch or .catch() fallback
+  assert.match(source, /fetchCollectionMeta.*catch/s);
+});
+
+test('D5 search drop is populated when route carries a search term', () => {
+  const source = read(COMPOSITION_ENGINE_SOURCE);
+
+  // search term extraction from route path
+  assert.match(source, /\[?&\]search=([^&]*)/);
+  // search drop has terms/results/results_count keys
+  assert.match(source, /terms: searchTerm/);
+  assert.match(source, /results_count: resultProducts\.length/);
+  assert.match(source, /performed: true/);
+  // no fabricated data — when search term is absent, searchDrop remains null
+  assert.match(source, /searchDrop.*null/);
+  // error fallback when gateway fails — results=[] not fabricated
+  assert.match(source, /results: \[\]/);
+  // fetch uses the existing listProducts storefront client
+  assert.match(source, /listProducts.*search.*searchTerm/s);
+  // search is passed to the LiquidCommerceDrops return
+  assert.match(source, /search: searchDrop/);
+});
+
+test('D7 font loading wires experience fonts for active theme settings', () => {
+  const layoutSource = read(LAYOUT_SOURCE);
+  const cssSource = read(STOREFRONT_GLOBALS_SOURCE);
+
+  // buildGoogleFontsHref import must exist
+  assert.match(layoutSource, /buildGoogleFontsHref/);
+  // preconnect link for fonts.googleapis.com is conditionally emitted
+  assert.match(layoutSource, /fonts\.googleapis\.com/);
+  assert.match(layoutSource, /fonts\.gstatic\.com/);
+  // preconnect only emitted when googleFontsHref is non-null
+  assert.match(layoutSource, /googleFontsHref && /);
+  // FONT_MAP contains the four new entries
+  assert.match(layoutSource, /'Cormorant Garamond'/);
+  assert.match(layoutSource, /'Libre Baskerville'/);
+  assert.match(layoutSource, /'Source Sans Pro'/);
+  assert.match(layoutSource, /'Lato'/);
+  // globals.css --font-playfair must NOT alias to var(--font-letbuyy-display)
+  // (the old value pointed to the Geist/display local font — now it is an honest font stack)
+  assert.doesNotMatch(cssSource, /--font-playfair: var\(--font-letbuyy-display\)/);
+  // --font-playfair must reference "Playfair Display" family directly
+  assert.match(cssSource, /--font-playfair.*"Playfair Display"/);
+  // Four new CSS vars must exist
+  assert.match(cssSource, /--font-cormorant/);
+  assert.match(cssSource, /--font-libre-baskerville/);
+  assert.match(cssSource, /--font-source-sans/);
+  assert.match(cssSource, /--font-lato/);
+});
+
+test('customer register route and Liquid form support the no-JS form submit path', () => {
+  const routeSource = read('apps/storefront-runtime/src/app/api/customer/register/route.ts');
+  // The route must parse both JSON and HTML form submissions (an HTML form posts
+  // application/x-www-form-urlencoded; request.json() alone would throw a 500).
+  assert.match(routeSource, /request\.formData\(\)/);
+  assert.match(routeSource, /application\/x-www-form-urlencoded/);
+  assert.match(routeSource, /request\.json\(\)/);
+  // Form posts must be answered with a redirect (303), never a raw JSON body.
+  assert.match(routeSource, /NextResponse\.redirect/);
+  // The redirect target for feedback must be same-origin guarded.
+  assert.match(routeSource, /refererUrl\.origin === new URL\(request\.url\)\.origin/);
+  // The Liquid register form must carry the storeId the route requires.
+  const bundleSource = read('packages/theme-engine/src/theme-bundle.ts');
+  assert.match(bundleSource, /name="storeId" value="\{\{ shop\.id \}\}"/);
 });

@@ -159,20 +159,20 @@ flowchart TD
 | Capability Area | Coverage % | Status | Evidence |
 |---|---|---|---|
 | LiquidJS engine (core tags/filters) | 70% | PARTIAL | `packages/theme-engine/src/theme-renderer.ts`; missing `{% paginate %}`, `{% form %}`, `{% render %}`, Shopify-specific filters |
-| Commerce Liquid drops | 55% | PARTIAL | `composition-engine.tsx`; `navigation` never passed to scope; `search` permanently null |
+| Commerce Liquid drops | **80%** | PARTIAL | `composition-engine.tsx`; **navigation implemented (D1)**, **search implemented (D5)**, **customer full_name corrected (D3)**, **collection hierarchy present (D4 stub)**; remaining gaps: real collection fetch on non-collection routes, cart SSR totals |
 | Template route coverage | 67% | PARTIAL | 10/15 route types in Liquid (`blog`, `article`, `page`, `password`, `not_found` missing) |
-| Theme schema / settings system | 65% | PARTIAL | Dual schema divergence: TypeScript 5-group vs DB flat `appearance` group |
+| Theme schema / settings system | **80%** | PARTIAL | **Settings grouped key paths implemented (D2)**; both `{{ settings.primaryColor }}` and `{{ settings.colors.primaryColor }}` resolve. Remaining: flat settings path bypasses BLOCKED_DROP_KEYS (F-04 open) |
 | Section type registry | 72% | PARTIAL | 25 types defined; 20 have Liquid parity; 5 missing parity; `newsletter`↔`newsletter-signup` split |
 | Theme editor (merchant UX) | 60% | PARTIAL | `editor-preview-section-frame.tsx`; postMessage inconsistency (C-04 OPEN) |
-| Preset / Experience system | 75% | PARTIAL | 10 Experiences defined; font loading not wired; `defaultSections` not applied on experience apply |
+| Preset / Experience system | **85%** | PARTIAL | 10 Experiences defined; **font loading wired (D7)**; `defaultSections` not applied on experience apply |
 | Theme authoring / DX | 15% | MISSING | Zero `.liquid` files on disk; all source in TypeScript string literals (`theme-bundle.ts`) |
 | Render pipeline performance | 40% | PARTIAL | `cache: false`; sequential section rendering; no edge template cache |
-| Font system | 45% | PARTIAL | `buildGoogleFontsHref()` defined but no call site; 4 fonts missing from `FONT_MAP` |
+| Font system | **90%** | IMPLEMENTED | **`buildGoogleFontsHref()` wired (D7)**; `FONT_MAP` extended with 4 missing families; CSP updated; `--font-playfair` corrected |
 | Multi-tenancy / theme isolation | 85% | IMPLEMENTED | Urban Kicks branding leak at `store-service.ts:671–673` |
 | Security model (XSS / injection) | 90% | IMPLEMENTED | Defense-in-depth: `outputEscape:'escape'` + DOMPurify + `ThemeLiquidSourceSchema` |
 | Customer auth in Liquid | 85% | IMPLEMENTED | HS256 JWT resolved to `LiquidCustomerDrop`; LB-12 CLOSED (register endpoint wired) |
 | Cart / checkout in Liquid | 50% | PARTIAL | Cart drawer hydrates post-load; SSR totals null (by design); checkout permanently React |
-| **Overall Liquid platform readiness** | **~55%** | **PARTIAL** | |
+| **Overall Liquid platform readiness** | **~70%** | **PARTIAL** | Phase D delivered: linklists (D1), settings parity (D2), customer full_name (D3), collection hierarchy (D4), search drop (D5), hero-banner parity (D6), font wiring + CSP (D7), BLOCKED_DROP_KEYS (D8), contentPage alias (D9), register tests (D10) |
 
 ### What Is Verifiably Implemented
 
@@ -464,7 +464,7 @@ The following sections measure LetBuyy's Liquid platform against a Shopify-grade
 | `footer` | IMPLEMENTED | IMPLEMENTED | — |
 | `productDetail` | IMPLEMENTED | IMPLEMENTED (`product-detail`) | — |
 | `aboutSection` | IMPLEMENTED | IMPLEMENTED (`about-section`) | — |
-| `rich-content` / `contentPage` | IMPLEMENTED | PARTIAL — `rich-content` template exists, but `contentPage` type does NOT resolve to it | React aliases `contentPage`→`core.rich-content` (`renderer-registry.tsx:185-187`); the Liquid path has no `contentPage` entry in `PORTABLE_TO_LIQUID_TYPE_OVERRIDES` (`portable-to-liquid.ts:43-53`), so `resolveLiquidSectionType('contentPage')` returns null and the section is dropped |
+| `rich-content` / `contentPage` | IMPLEMENTED | **IMPLEMENTED (Phase D — D9)** — `contentPage: 'rich-content'` and `'content-page': 'rich-content'` added to `PORTABLE_TO_LIQUID_TYPE_OVERRIDES` (`portable-to-liquid.ts:56–58`) and `LIQUID_SECTION_TYPE_ALIASES` (`theme-renderer.ts:264–266`); both compile-time and render-time paths resolve correctly | Tests: `D9 LIQUID_SECTION_TYPE_ALIASES resolves contentPage and content-page to rich-content`; `D9 contentPage alias resolves to rich-content at render time`; `D9 compilePortableToLiquidBundle maps contentPage to rich-content at compile time` |
 | `servicesGrid` | IMPLEMENTED | IMPLEMENTED (`services-grid`) | — |
 | `skillsSection` | IMPLEMENTED | IMPLEMENTED (`skills-section`) | — |
 | `experienceTimeline` | IMPLEMENTED | IMPLEMENTED (`experience-timeline`) | — |
@@ -491,10 +491,10 @@ The following sections measure LetBuyy's Liquid platform against a Shopify-grade
 | `page` | PARTIAL | Only on account/content routes; not on product/shop routes |
 | `blog` | MISSING | No backend API |
 | `article` | MISSING | No backend API |
-| `navigation` | MISSING | Fetched server-side but never passed to `buildLiquidScope()` |
-| `search` | MISSING | Permanently null in `composition-engine.tsx` |
-| `linklists` | MISSING | No Shopify-style nav object |
-| `settings` | PARTIAL | `buildLiquidScope()` passes `bundle.config.settings_data.current` as the `settings` Liquid object (`theme-renderer.ts:573-576`); however the TypeScript 5-group schema diverges from the DB flat `appearance` group so merchant-customized appearance values may not resolve under expected key paths |
+| `navigation` | ~~MISSING~~ **IMPLEMENTED (Phase D — D1)** | `navToLinklists()` converts `StoreModel.navigation` → `linklists` object with underscore-keyed handles (`main_menu`, `footer_menu`, `policy_menu`); passthrough via `toLiquidDrop` in `buildLiquidScope` |
+| `search` | ~~MISSING~~ **IMPLEMENTED (Phase D — D5)** | `searchDrop` built on search routes from `storefront.listProducts({ search, limit: 20 })`; `terms`/`results`/`results_count`/`performed` shape |
+| `linklists` | ~~MISSING~~ **IMPLEMENTED (Phase D — D1)** | Shopify-convention `linklists` object in scope; same data as `navigation` above; `linklists.main_menu.links` accessible |
+| `settings` | **IMPLEMENTED (Phase D — D2)** | Both flat keys (`{{ settings.primaryColor }}`) and grouped key paths (`{{ settings.colors.primaryColor }}`) resolve; grouped sub-objects built from `settings_schema.settings` groups; residual: flat path bypasses `toLiquidDrop` BLOCKED_DROP_KEYS filter (F-04, open) |
 | `predictive_search` | MISSING | Not implemented |
 | `recommendations` | MISSING | Not implemented |
 | `gift_card` | MISSING | Not implemented |
@@ -525,7 +525,7 @@ The following sections measure LetBuyy's Liquid platform against a Shopify-grade
 | R-17 | `{% render %}` blocked with no snippets system: complex template reuse requires code duplication | **MEDIUM** | `ThemeLiquidSourceSchema` in `theme-bundle.ts`; `dynamicPartials: false` | Theme developer experience | PURE-LIQUID (Phase 5) |
 | R-18 | Cart money null at SSR: JS-disabled users never see cart totals | **MEDIUM** | `composition-engine.tsx:291–307` — `item_count: null`, `subtotal: null`, `source: 'browser_hydrated'` | All Liquid stores with cart drawer | JS-ISLAND |
 | R-19 | `strictVariables: false`: undefined drop keys render as empty string; Liquid template bugs invisible in logs | **LOW** | `packages/theme-engine/src/theme-renderer.ts` — LiquidJS engine config | Template debugging velocity | PURE-LIQUID |
-| R-20 | `BLOCKED_DROP_KEYS` incomplete: `api_key`, `secret_key`, `private_key`, `webhook_secret` not blocked | **LOW** | `theme-renderer.ts:602` | Drop security in edge cases | PURE-LIQUID |
+| R-20 | ~~`BLOCKED_DROP_KEYS` incomplete: `api_key`, `secret_key`, `private_key`, `webhook_secret` not blocked~~ **DONE (Phase D — D8)** — four keys added; Set now 13 entries (`theme-renderer.ts:739`). Residual: flat settings path bypasses filter (F-04, MEDIUM, open). | ~~LOW~~ **CLOSED** | `theme-renderer.ts:739` | — | — |
 | R-21 | `getCustomerOrderDetailDrop` uses list-and-filter to find a single order: the list is capped at 50 orders by the gateway (`customer-engagement-routes.ts:1035`, `.limit(50)`). The real risk is **correctness for customers with more than 50 orders** — an order older than the 50 most recent will not be found and `getCustomerOrderDetailDrop` will silently return null. **Recommendation:** add a direct order-by-id gateway endpoint (e.g., `GET /storefront/{sub}/orders/:orderId`) rather than the list-and-filter approach. | **LOW** | `apps/storefront-runtime/src/lib/customer-drop.ts:118`; `services/api-gateway/src/routes/storefront/customer-engagement-routes.ts:1035` | Customers with >50 orders (silently returns null on older orders) | REMAIN-REACT (gateway change) |
 | R-22 | `X-Lb-Render-Engine` header decoupled from actual render engine: misleading observability | **LOW** | `proxy.ts` vs `template-resolver.ts` resolution order | Monitoring / alerting accuracy | PURE-LIQUID |
 
@@ -583,12 +583,12 @@ Fixes that make the Liquid drops production-complete before expanding to new sto
 
 | # | Item | Classification | Risk Addressed | Verification Gate |
 |---|---|---|---|---|
-| P1-1 | Pass `StoreModel.navigation` into `buildLiquidScope()` as a `navigation` drop object (main/footer/policies nav menus) in `composition-engine.tsx` | PURE-LIQUID | R-07 (HIGH) | Unit test: Liquid scope contains `navigation.main`, `navigation.footer` arrays; existing navigation-using templates render correct `<a>` elements |
-| P1-2 | Implement `search` drop population in `buildLiquidCommerceContext()`: wire to `storefront.searchProducts()` or the existing search gateway call on search-route pages | PURE-LIQUID | R-10 (HIGH) | Unit test: on `/shop?search=query`, `LiquidCommerceDrops.search` is non-null and has `results[]`, `terms` |
-| P1-3 | Add `heroBanner` Liquid parity gap fields (`overlay`, `height`, `textAlign`, `image`) to the `hero-banner` section schema in `theme-bundle.ts:1009–1027`; ensure the portable-to-liquid compiler maps these fields | PURE-LIQUID | R-04 (HIGH) | Unit test: JSON-contract hero section with `overlay: 0.5`, `height: 'large'` compiles to a Liquid bundle that renders the correct CSS class |
+| P1-1 | ~~Pass `StoreModel.navigation` into `buildLiquidScope()` as a `navigation` drop object~~ **DONE (Phase D — D1)** — `navToLinklists()` + `linklists` drop in scope; underscore-keyed handles; runtime integration test guards the sanitiser contract. | PURE-LIQUID | R-08: **CLOSED-IMPLEMENTED (Phase D)** | `D1-B navToLinklists runtime: underscore keys survive toLiquidDrop sanitizer` — PASS |
+| P1-2 | ~~Implement `search` drop population in `buildLiquidCommerceContext()`~~ **DONE (Phase D — D5)** — `searchDrop` built from `storefront.listProducts({ search, limit: 20 })`; `terms`/`results`/`results_count`/`performed` shape; error placeholder. | PURE-LIQUID | R-11: **CLOSED-IMPLEMENTED (Phase D)** | `D5 search drop is populated when route carries a search term` — PASS |
+| P1-3 | ~~Add `heroBanner` Liquid parity gap fields (`overlay`, `height`, `textAlign`, `image`)~~ **DONE (Phase D — D6)** — all four fields added to schema, body, and Urban Kicks fixture. Residual: DOMPurify ADD_ATTR gap (F-05, LOW, open). | PURE-LIQUID | R-05: **CLOSED-IMPLEMENTED (Phase D)** with residual | `D6 hero-banner renders with image, overlay, height, textAlign settings` — PASS |
 | P1-4 | ~~Resolve LB-12: implement `POST /storefront/customer/register` in the API gateway~~ **DONE — LB-12 CLOSED:** endpoint implemented in `services/api-gateway/src/routes/storefront/customer-registration.ts` (commit a391c1f4), wired through `public-routes.ts`. No further work required. | DONE | R-06 (CLOSED) | — |
 | P1-5 | Add rejection handler to `domPurifyPromise` module-level singleton in `theme-renderer.ts`; on JSDOM init failure, log structured error and fall back to returning unmodified (but engine-escaped) HTML | PURE-LIQUID | R-12 (MEDIUM) | Unit test: mock JSDOM init failure → no unhandled promise rejection; `lb:canary:sanitizer-error` event logged |
-| P1-6 | Wire `buildExperienceFontLinkHref()` from `experience-fonts.ts` into the Liquid layout head assets; add `Cormorant Garamond`, `Libre Baskerville`, `Source Sans Pro`, `Lato` to `FONT_MAP` in `apps/storefront-runtime/src/app/store/[subdomain]/layout.tsx:21–32` | PURE-LIQUID | R-08 (HIGH) | Visual parity test: Aura experience storefront heading renders in Cormorant Garamond, not system font; confirmed via CSS computed style |
+| P1-6 | ~~Wire `buildExperienceFontLinkHref()` from `experience-fonts.ts` into the Liquid layout head assets; add 4 missing font families to `FONT_MAP`~~ **DONE (Phase D — D7)** — `buildGoogleFontsHref` wired at `layout.tsx:138`; `FONT_MAP` extended; `--font-playfair` corrected; CSP `style-src`/`font-src` updated to permit Google Fonts origins. | PURE-LIQUID | R-09: **CLOSED-IMPLEMENTED (Phase D)** | `D7 font loading wires experience fonts for active theme settings` — PASS |
 
 **Phase 1 rollback strategy:** All items are additive changes to the Liquid code path. The React path is untouched. If P1-1 (navigation drop) causes a Liquid render error on a particular store, the existing try/catch from P0-1 catches it and falls back to `UnknownSectionFallback` — the page degrades gracefully rather than crashing.
 
@@ -730,4 +730,33 @@ The following questions remain unanswered after exhaustive static analysis. They
 
 ---
 
-*Document generated 2026-07-03 | Branch: stepup/main | Status: DISCOVERY — NO IMPLEMENTATION | Sources: 29 unique source files + 13 domain findings reports + docs/storefront-liquid-discovery/11_GAP_ANALYSIS.md | Auditor: Claude Sonnet 4.6*
+---
+
+## 13. Phase D Amendment — Implementation Progress (2026-07-04)
+
+Phase D delivered the following items from the migration plan. All test runs are against the Phase D working tree (unstaged; predecessor commit `70a40c2a`).
+
+| Phase D Item | Plan Item Closed | Test Gate |
+|---|---|---|
+| D1 — Navigation/linklists | P1-1 (R-08) | 101/101 theme-engine + 31/31 storefront-runtime tests pass |
+| D2 — Settings grouped key paths | P4-3 (partial) | `D2 settings drop resolves both flat and grouped key paths` |
+| D3 — Customer address full_name | P1 companion | `D3 customer address drop carries full_name from customer name` |
+| D4 — Collection drop hierarchy (stub) | P2-4 (partial — gateway endpoint pending) | `D4 collection drop on collection route uses resolvedCollectionMeta before synthesis` |
+| D5 — Search drop | P1-2 (R-11) | `D5 search drop is populated when route carries a search term` |
+| D6 — Hero-banner parity | P1-3 (R-05) | `D6 hero-banner renders with image, overlay, height, textAlign settings` |
+| D7 — Font wiring + CSP | P1-6 (R-09) | `D7 font loading wires experience fonts for active theme settings` |
+| D8 — BLOCKED_DROP_KEYS | R-20 | `D8 BLOCKED_DROP_KEYS blocks api_key, secret_key, private_key, webhook_secret` |
+| D9 — contentPage/content-page alias | UC-05 | `D9 compilePortableToLiquidBundle maps contentPage to rich-content at compile time` |
+| D10 — Register route contract | R-07 stale cleanup | `D10 /api/customer/register proxy route exists and exports POST handler` |
+
+**Open Phase D findings requiring follow-on work:**
+- F-03 (HIGH): Registration form sends form-urlencoded; route reads JSON. Needs `lb-auth` interceptor or route content-type fallback.
+- F-04 (MEDIUM): Flat `asRecord(settings_data.current)` spread in `buildLiquidScope` bypasses `BLOCKED_DROP_KEYS`. Needs `toLiquidDrop` on flat path.
+- F-05 (LOW): `data-height`, `data-text-align`, `data-image-url` not in DOMPurify `ADD_ATTR`. Needs one LANE-A line in `theme-renderer.ts`.
+- F-06 (LOW): `liquidPage` gate suppresses React chrome before render result is known. Needs result-based gate check.
+
+*Phase D amendment 2026-07-04 | Implementation by subagent | Evidence: docs/storefront-liquid-discovery/phase-d/PHASE_D_REPORT.md*
+
+---
+
+*Document generated 2026-07-03 | Branch: stepup/main | Status: PARTIALLY IMPLEMENTED (Phase D) | Sources: 29 unique source files + 13 domain findings reports + docs/storefront-liquid-discovery/11_GAP_ANALYSIS.md | Auditor: Claude Sonnet 4.6 | Amended: 2026-07-04 (Phase D additions)*

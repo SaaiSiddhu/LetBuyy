@@ -10,6 +10,18 @@ function splitOrigins(value: string | undefined): string[] {
     .filter(Boolean);
 }
 
+// CSP source-lists must be ORIGINS, not full URLs: a source with a path and no
+// trailing slash matches only that exact path. e.g. NEXT_PUBLIC_API_URL is
+// "http://localhost:9010/v1", which would block "/v1/custom/domains". Reduce each
+// configured value to its scheme://host:port so any gateway path is allowed.
+function toOrigin(value: string): string {
+  try {
+    return new URL(value).origin;
+  } catch {
+    return value; // wildcards / non-URL entries (e.g. https://*.letbuyy.com) pass through
+  }
+}
+
 function configuredOrigins(): string[] {
   return [
     process.env.NEXT_PUBLIC_APP_URL,
@@ -22,7 +34,9 @@ function configuredOrigins(): string[] {
     process.env.NEXT_PUBLIC_APP_MARKETPLACE_URL,
     process.env.NEXT_PUBLIC_DEVELOPER_PORTAL_URL,
     ...splitOrigins(process.env.CORS_CREDENTIAL_ORIGINS),
-  ].filter((origin): origin is string => Boolean(origin));
+  ]
+    .filter((origin): origin is string => Boolean(origin))
+    .map(toOrigin);
 }
 
 function unique(values: string[]): string[] {
@@ -44,7 +58,13 @@ export function createContentSecurityPolicy(options: SecurityHeaderOptions = {})
     ...(isDevelopmentRuntime() ? ["'unsafe-eval'"] : []),
     'https://challenges.cloudflare.com',
   ]);
-  const styleSrc = unique(["'self'", "'unsafe-inline'"]);
+  // D7: Google Fonts stylesheet (fonts.googleapis.com) must be in style-src, and the actual
+  // font file downloads (fonts.gstatic.com) must be in font-src. Without these, the browser
+  // silently blocks both the stylesheet load and the font file download in production — fonts
+  // appear to work in dev only because some deployments relax CSP. The preconnect links in
+  // layout.tsx are emitted correctly but have no effect when the CSP blocks the stylesheet.
+  const styleSrc = unique(["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com']);
+  const fontSrc = unique(["'self'", 'data:', 'https://fonts.gstatic.com']);
   const frameSrc = unique(["'self'", 'https://challenges.cloudflare.com', ...origins]);
 
   return [
@@ -53,7 +73,7 @@ export function createContentSecurityPolicy(options: SecurityHeaderOptions = {})
     `style-src ${styleSrc.join(' ')}`,
     `connect-src ${connectSrc.join(' ')}`,
     `img-src ${imgSrc.join(' ')}`,
-    "font-src 'self' data:",
+    `font-src ${fontSrc.join(' ')}`,
     `frame-src ${frameSrc.join(' ')}`,
     `frame-ancestors ${frameAncestors.join(' ')}`,
     "base-uri 'self'",

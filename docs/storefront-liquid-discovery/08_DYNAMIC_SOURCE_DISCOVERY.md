@@ -426,11 +426,11 @@ The following capabilities are absent from the current implementation:
 |-----------|---------------|--------------------------|
 | Product drop | Implemented; price in paise (use `money` filter) | Shopify: `product.price` in cents, richer variant objects |
 | Collection drop | Partial; home/shop routes synthesise from route info, no DB title/description | Shopify: full `collection` object on all routes |
-| Search drop | Not populated (`null`) | Shopify: `predictive_search`, AJAX Search API |
-| Navigation drop | Not available | Shopify: `linklists`, `linklist` |
-| Customer drop | Implemented for authenticated session | Shopify: `customer.metafields`, multi-address |
+| Search drop | **IMPLEMENTED (Phase D — D5)** — populated on search routes; `terms`/`results`/`results_count`/`performed` fields; structural placeholder on fetch error | Shopify: `predictive_search`, AJAX Search API |
+| Navigation drop | **IMPLEMENTED (Phase D — D1)** — `linklists` object added to scope; underscore-keyed handles (`main_menu`, `footer_menu`, `policy_menu`); Shopify-convention shape | Shopify: `linklists`, `linklist` |
+| Customer drop | Implemented for authenticated session; **`full_name` on address drop corrected (Phase D — D3)** | Shopify: `customer.metafields`, multi-address |
 | Cart drop | Browser-hydrated only; SSR totals null | Shopify: server-authoritative cart |
-| Settings drop | CSS tokens only; no `{{ settings }}` Liquid object | Shopify: global `settings` object |
+| Settings drop | **IMPLEMENTED (Phase D — D2)** — both flat keys (`{{ settings.primaryColor }}`) and grouped key paths (`{{ settings.colors.primaryColor }}`) resolve; `asRecord` flat spread still bypasses `toLiquidDrop` security filter (open finding F-04) | Shopify: global `settings` object |
 | Page drop | Optional, often absent | Shopify: always present on page routes |
 | Metafields | Not implemented | Shopify: `product.metafields`, `variant.metafields` |
 | Pagination | `{% paginate %}` not implemented | Shopify: native `{% paginate %}` tag |
@@ -439,7 +439,7 @@ The following capabilities are absent from the current implementation:
 | Color filters | Not registered | Shopify: `color_to_rgb`, `color_modify` |
 | HTML helper filters | Not registered | Shopify: `img_tag`, `script_tag`, `stylesheet_tag` |
 | Content-for-header injection | Not available | Shopify: `{{ content_for_header }}` |
-| `api_key` / `webhook_secret` in BLOCKED_DROP_KEYS | Absent | Expected defence-in-depth |
+| `api_key` / `webhook_secret` in BLOCKED_DROP_KEYS | **IMPLEMENTED (Phase D — D8)** — 4 keys added (`api_key`, `secret_key`, `private_key`, `webhook_secret`); residual: flat settings path bypasses `toLiquidDrop` (F-04 open) | Expected defence-in-depth |
 | `announcementBar` Liquid section | ARB-gated flip | Shopify: native announcement bar tag |
 | Template caching | `cache: false` (per-request parse) | Production Liquid engines cache compiled templates |
 | App block drops | Injected to HTML but not as Liquid drop object | Shopify: `{{ content_for_additional_checkout_buttons }}` |
@@ -450,12 +450,12 @@ The following capabilities are absent from the current implementation:
 
 | Risk | Level | Evidence |
 |------|-------|----------|
-| `search` drop permanently null | MEDIUM | `composition-engine.tsx:380–396` does not include `search` in return. `buildLiquidCommerceDrops` passes `toLiquidDrop(context?.search) \|\| null` → always `null`. |
-| Navigation menus not available as Liquid drops | MEDIUM | `buildLiquidScope` (`theme-renderer.ts:559–590`) has no `navigation` key; `StoreModel.navigation` never passed. |
+| ~~`search` drop permanently null~~ **DONE (Phase D — D5)** | ~~MEDIUM~~ CLOSED | `composition-engine.tsx:451–480` — `searchDrop` built when `plan.route.path` contains `?search=` or route.type === 'search'. Uses `storefront.listProducts({ search, limit: 20 })`. On error: structural placeholder `{ terms, results: [], performed: true, error: true }`. |
+| ~~Navigation menus not available as Liquid drops~~ **DONE (Phase D — D1)** | ~~MEDIUM~~ CLOSED | `composition-engine.tsx:320–355` — `navToLinklists()` converts `StoreModel.navigation` to `linklists` object (underscore handles); `theme-renderer.ts:57,722` — interface field + scope passthrough via `toLiquidDrop`. |
 | Cart totals null at SSR in Liquid path | MEDIUM | `composition-engine.tsx:294–303`: `item_count: null`, `subtotal: null`, `total: null`, `source: 'browser_hydrated'`. JS-off users see no totals. |
 | Urban Kicks fixture as universal fallback | MEDIUM | `store-service.ts:670–673`: stores without a valid Liquid bundle receive the Urban Kicks fixture. If `rendererEngine` is somehow `'liquid'` for such a store, it renders the Urban Kicks Liquid theme rather than their own. |
 | Collection binding gap on index pages without product sections | MEDIUM | `buildSectionDataPlan` never sets `SectionRenderData.collection`. On `'index'` pages with no product sections `collection` is null; when product sections are present, `composition-engine.tsx:367` synthesises a collection (id='all-products') rather than fetching from DB. |
-| `toLiquidDrop` truncation silent; partial `BLOCKED_DROP_KEYS` | MEDIUM | `theme-renderer.ts:599,602`: truncation silent; keys like `api_key`, `private_key`, `webhook_secret` absent from block list. Defence relies on gateway-filtered payloads. |
+| `toLiquidDrop` truncation silent; partial `BLOCKED_DROP_KEYS` | MEDIUM | `theme-renderer.ts:599,739`: truncation still silent (UC-14, open). **BLOCKED_DROP_KEYS extended (Phase D — D8)** to include `api_key`, `secret_key`, `private_key`, `webhook_secret` (13 entries total). Residual: flat `asRecord(settings_data.current)` spread in `buildLiquidScope` bypasses `toLiquidDrop` — merchants can render blocked keys from their own `settings_data` (F-04, MEDIUM, open). |
 | Liquid canary flip lacks automated rollout mechanism | HIGH | `resolveThemeLiquidRenderingEnabled` reads `rendererEngine` from release manifest. No percentage-based rollout exists. An accidental `liquidRenderingCanary: true` in `templateConfig` or `themeSettings` activates the Liquid path without ARB. Additionally, `readBooleanDecision` (`theme-governance.ts:125–142`) recurses into object-typed candidates checking nested keys `'enabled'`, `'liquid_enabled'`, `'liquidEnabled'`, `'canary'`, `'value'` — so the effective trigger surface is broader than the 11 top-level key paths in the `candidates` array. The '11 canary key aliases' count is accurate for the literal `candidates` array entries only. |
 | `getStoreCustomers` and `getProductsBySellerId` are stubs | HIGH | `customer-service.ts:244–255`, `product-service.ts:85–88` return empty data silently. As of current code, no caller outside the definition files invokes either stub, so the blast radius of silent empty data is presently zero active features. The stubs remain a latent defect if callers are added without fixing the stubs first. |
 | `domPurifyPromise` singleton never GC'd | LOW-MEDIUM | `theme-renderer.ts:868`: module-level singleton; jsdom accumulates in memory across many requests in long-lived Node.js processes. |
@@ -474,23 +474,15 @@ explicit ARB sign-off per the LetBuyy Constitution.
 
 ### Priority 1 — Data correctness (high-impact gaps)
 
-1. **Populate `search` drop.** Design a server-side search endpoint and wire its result into
-   `buildLiquidCommerceContext()`. Requires a gateway route and an update to the
-   `LiquidCommerceDrops` assembly in `composition-engine.tsx`.
+1. ~~**Populate `search` drop.**~~ **DONE (Phase D — D5)** `searchDrop` built in `composition-engine.tsx:451–480`; uses `storefront.listProducts({ search, limit: 20 })`; structural placeholder on error.
 
-2. **Expose navigation as a Liquid drop.** Thread `StoreModel.navigation` through
-   `buildLiquidCommerceContext()` and add a `navigation` key to `buildLiquidScope`. No DB
-   schema change required — data is already fetched.
+2. ~~**Expose navigation as a Liquid drop.**~~ **DONE (Phase D — D1)** `navToLinklists()` added (`composition-engine.tsx:320–355`); `linklists` in `LiquidCommerceDrops` interface and `buildLiquidScope`; underscore-keyed handles survive `toLiquidDrop` sanitiser.
 
-3. **Add `collection` binding to `buildSectionDataPlan`.** Extend the data-binding engine to
-   detect collection-scoped sections and pre-fetch collection metadata, populating
-   `SectionRenderData.collection`. This removes the synthesised-from-route-info fallback on
-   home and shop pages.
+3. **Add `collection` binding to `buildSectionDataPlan`.** Structural resolution path in place (Phase D — D4 stub). Real gateway call pending `GET /storefront/:subdomain/collections/:slug` endpoint addition to `api-client`. Extend `data-binding-engine.ts` to call it for home/shop route types.
 
 ### Priority 2 — Reliability and observability
 
-4. **Add `api_key`, `private_key`, `webhook_secret` to `BLOCKED_DROP_KEYS`** in
-   `theme-renderer.ts:602`. Defence-in-depth improvement; low-risk one-line change.
+4. ~~**Add `api_key`, `private_key`, `webhook_secret` to `BLOCKED_DROP_KEYS`**~~ **DONE (Phase D — D8)** `theme-renderer.ts:739` — 13 entries now blocked. Residual: flat settings path bypasses filter (F-04, open).
 
 5. **Add warning telemetry to `toLiquidDrop` truncation.** When depth or key limits are hit,
    emit a structured log at `warn` level so template authors can diagnose missing fields.

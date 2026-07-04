@@ -22,12 +22,20 @@
   --font-poppins: var(--font-letbuyy-display), var(--font-letbuyy-sans), ui-sans-serif, system-ui, sans-serif;
   --font-lora: var(--font-letbuyy-display), Georgia, "Times New Roman", serif;
   --font-space-grotesk: var(--font-letbuyy-display), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-playfair: var(--font-letbuyy-display), Georgia, "Times New Roman", serif;
+  /* D7: --font-playfair is now an honest fallback stack — Playfair Display loaded via Google Fonts
+     (buildGoogleFontsHref / layout.tsx). Previously this aliased to var(--font-letbuyy-display)
+     (a local sans-serif) which silently misrepresented the typeface. Georgia is the honest fallback. */
+  --font-playfair: "Playfair Display", Georgia, "Times New Roman", serif;
   --font-nunito: var(--font-letbuyy-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-open-sans: var(--font-letbuyy-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-dm-sans: var(--font-letbuyy-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-montserrat: var(--font-letbuyy-display), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono-premium: var(--font-letbuyy-mono), "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  /* D7: four experience font families missing from the original FONT_MAP, loaded via Google Fonts. */
+  --font-cormorant: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-libre-baskerville: "Libre Baskerville", Georgia, "Times New Roman", serif;
+  --font-source-sans: "Source Sans Pro", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-lato: "Lato", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
   --background: rgb(255 255 255);
   --foreground: rgb(15 23 42);

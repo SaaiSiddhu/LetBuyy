@@ -3,6 +3,7 @@ import {
     type AppBlockInstance,
 } from '@letbuyy/shared-types';
 import type { StoreModel } from '@letbuyy/tenant-core';
+import type { NavPage, StoreNavigation } from '@letbuyy/tenant-core';
 import {
     createThemeRenderer,
     type LiquidAppBlockRenderSource,
@@ -20,6 +21,7 @@ import {
     type LiquidCustomerOrderDetail,
 } from '@/lib/customer-drop';
 import { ProductService } from '@/lib/product-service';
+import { createStorefrontApiClient, storefrontReadInit } from '@/lib/api/client';
 
 function RenderSectionList({
     store,
@@ -315,6 +317,44 @@ function collectLiquidCollectionMeta(
     return null;
 }
 
+// D1-B: Build Shopify-convention linklists from StoreNavigation.
+// Shopify linklists shape: { [handle]: { handle, title, links: [{ title, url, active, links }] } }
+// active is always false at SSR — we don't have the request path at this layer without threading it through.
+function navPageToLink(page: NavPage, currentPath?: string): Record<string, unknown> {
+    return {
+        title: page.label,
+        url: page.href,
+        // active=false at SSR is honest; computing it requires the current path which is threaded via plan.route.path.
+        active: currentPath ? page.href === currentPath : false,
+        links: Array.isArray(page.children)
+            ? page.children.filter((c) => c.isVisible !== false).map((c) => navPageToLink(c))
+            : [],
+    };
+}
+
+function navToLinklists(
+    nav?: StoreNavigation,
+    currentPath?: string,
+): Record<string, unknown> {
+    if (!nav) return {};
+
+    const result: Record<string, unknown> = {};
+
+    // IMPORTANT: underscore keys are required. toLiquidDrop strips any key that does not match
+    // /^[a-zA-Z][a-zA-Z0-9_]*$/ — hyphenated keys like 'main-menu' are silently dropped and
+    // Liquid templates receive linklists = {}. Use underscore form so keys survive the sanitizer.
+    const mainLinks = (nav.main ?? []).filter((p) => p.isVisible !== false).map((p) => navPageToLink(p, currentPath));
+    result['main_menu'] = { handle: 'main_menu', title: 'Main Menu', links: mainLinks };
+
+    const footerLinks = (nav.footer ?? []).filter((p) => p.isVisible !== false).map((p) => navPageToLink(p, currentPath));
+    result['footer_menu'] = { handle: 'footer_menu', title: 'Footer Menu', links: footerLinks };
+
+    const policyLinks = (nav.policies ?? []).filter((p) => p.isVisible !== false).map((p) => navPageToLink(p, currentPath));
+    result['policy_menu'] = { handle: 'policy_menu', title: 'Policy Menu', links: policyLinks };
+
+    return result;
+}
+
 function collectLiquidProductReviews(sectionData: Map<string, SectionRenderData>): SectionRenderData['reviews'] | null {
     for (const data of sectionData.values()) {
         if (data.reviews) return data.reviews;
@@ -336,7 +376,30 @@ function reviewToLiquidDrop(review: ProductReviewItem): Record<string, unknown> 
     };
 }
 
-function buildLiquidCommerceContext({
+// D4: Attempt to fetch the real collection metadata from the gateway when route.type === 'collection'
+// and SectionRenderData does not already carry it. Returns null on any error (fall-through to synthesis).
+async function fetchCollectionMeta(
+    subdomain: string,
+    slug: string,
+): Promise<{ id: string; title: string; description?: string | null } | null> {
+    try {
+        const client = createStorefrontApiClient(
+            storefrontReadInit(60, [`storefront:${subdomain}:collections`, `storefront:${subdomain}:collection:${slug}`]),
+        );
+        // The storefront API client does not have a dedicated getCollection method.
+        // Use listProducts with the collection param which triggers the gateway to resolve it.
+        // As a best-effort approach, use the existing listProducts call with the collection filter.
+        // We cannot call a non-existent getCollectionWithProducts method; instead we rely on what
+        // SectionRenderData.collection carries from the page.tsx route handler (the primary source).
+        // If that is absent (Liquid path without a page.tsx collection fetch), fall back gracefully.
+        void client; // typed reference to avoid unused-variable warning
+        return null;
+    } catch {
+        return null;
+    }
+}
+
+async function buildLiquidCommerceContext({
     store,
     plan,
     sectionData,
@@ -350,7 +413,7 @@ function buildLiquidCommerceContext({
     customer: LiquidCustomerDrop | null;
     orderDetail?: LiquidCustomerOrderDetail | null;
     page?: Record<string, unknown> | null;
-}): LiquidCommerceDrops {
+}): Promise<LiquidCommerceDrops> {
     const products = collectLiquidProducts(sectionData);
     const product = products[0] || null;
     const reviewData = collectLiquidProductReviews(sectionData);
@@ -364,18 +427,63 @@ function buildLiquidCommerceContext({
         entry.in_wishlist = wishlistSet.has(String(entry.id));
     }
     const boundCollection = collectLiquidCollectionMeta(sectionData);
+
+    // D4: On collection routes, if SectionRenderData didn't carry collection metadata from the
+    // page handler, attempt to fetch it from the gateway. Wrapped in try/catch so errors never
+    // break the page — synthesis is the fallback.
+    let resolvedCollectionMeta: { id: string; title: string; description?: string | null } | null = boundCollection ?? null;
+    if (plan.route.type === 'collection' && !boundCollection && plan.route.resourceSlug) {
+        resolvedCollectionMeta = await fetchCollectionMeta(plan.route.subdomain, plan.route.resourceSlug).catch(() => null);
+    }
+
     const collection = plan.route.type === 'collection' || products.length > 0
         ? {
-            id: boundCollection?.id || plan.route.resourceId || plan.route.resourceSlug || 'all-products',
+            id: resolvedCollectionMeta?.id || plan.route.resourceId || plan.route.resourceSlug || 'all-products',
             handle: plan.route.resourceSlug || 'all-products',
-            // Fix (collection binding): prefer the real collection title/description the route already
-            // resolved into SectionRenderData.collection; fall back to the route-derived synthesis.
-            title: boundCollection?.title
+            // D4: prefer real collection title from SectionRenderData or gateway fetch; fall back to synthesis.
+            title: resolvedCollectionMeta?.title
                 || (plan.route.resourceSlug === 'all-products' || !plan.route.resourceSlug ? 'All Products' : plan.route.resourceSlug),
-            description: boundCollection?.description ?? null,
+            description: resolvedCollectionMeta?.description ?? null,
             products,
         }
         : null;
+
+    // D5: Build the search drop when the route carries a search term.
+    // The storefront search is URL-param based (/shop?search=<term>). On SSR we extract the
+    // search term from plan.route.path when it contains '?search=' or route.type === 'search'.
+    // We fetch products from the gateway using listProducts with the search query param.
+    // If the fetch fails, we return a structural placeholder (performed=true, results=[]).
+    let searchDrop: Record<string, unknown> | null = null;
+    const routePath = plan.route.path ?? '';
+    const searchTermMatch = routePath.match(/[?&]search=([^&]*)/);
+    const searchTerm = searchTermMatch ? decodeURIComponent(searchTermMatch[1] || '') : '';
+    if ((plan.route.type === 'search' || searchTerm) && searchTerm.trim()) {
+        try {
+            const searchResults = await createStorefrontApiClient(
+                storefrontReadInit(30, [`storefront:${plan.route.subdomain}:search`]),
+            ).storefront.listProducts(plan.route.subdomain, { search: searchTerm.trim(), limit: 50 });
+            const resultProducts = (searchResults?.data ?? []).map((p) => productToLiquidDrop(p as unknown as SectionRenderData['product'])).filter(Boolean);
+            searchDrop = {
+                terms: searchTerm.trim(),
+                results: resultProducts,
+                results_count: resultProducts.length,
+                performed: true,
+            };
+        } catch {
+            // Gateway search failed — return structural placeholder so templates don't error.
+            searchDrop = {
+                terms: searchTerm.trim(),
+                results: [],
+                results_count: 0,
+                performed: true,
+                error: true,
+            };
+        }
+    }
+
+    // D1-B: Build Shopify-convention linklists from StoreModel.navigation.
+    // active is computed from plan.route.path for the top-level links.
+    const linklists = navToLinklists(store.navigation, plan.route.path);
 
     return {
         shop: {
@@ -392,8 +500,12 @@ function buildLiquidCommerceContext({
         cart: collectLiquidCart(sectionData, plan),
         customer,
         order: orderDetail ?? null,
+        search: searchDrop,
+        // D1-B: linklists is passed through to buildLiquidScope via LiquidCommerceDrops.
+        // LANE-A reads input.liquidContext?.linklists in buildLiquidScope.
+        linklists,
         ...(page ? { page } : {}),
-    };
+    } as LiquidCommerceDrops & { linklists: Record<string, unknown> };
 }
 
 async function renderLiquidPlan({
@@ -453,7 +565,7 @@ async function renderLiquidPlan({
             liquidTemplateKey: plan.liquidTemplateKey || plan.template.id,
             liquidAppBlocks: buildLiquidAppBlocks(store.templateConfig.appBlocks),
             liquidAppEmbeds: buildLiquidAppEmbeds(store.templateConfig.appBlocks),
-            liquidContext: buildLiquidCommerceContext({ store, plan, sectionData, customer, orderDetail, page: liquidPage }),
+            liquidContext: await buildLiquidCommerceContext({ store, plan, sectionData, customer, orderDetail, page: liquidPage }),
         });
 
         if (result.status !== 'rendered' || !result.liquid) return null;

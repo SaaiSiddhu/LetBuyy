@@ -21,6 +21,7 @@ import {
   resolveThemeLiquidRenderingEnabled,
   sanitizeRenderedHtml,
   LIQUID_SECTION_TYPE_ALIASES,
+  compilePortableToLiquidBundle,
 } from '../src/index.ts';
 
 const STORE_ID = '11111111-1111-4111-8111-111111111111';
@@ -562,4 +563,545 @@ test('D7 Liquid renderer auto-escapes merchant settings before sanitized raw blo
   assert.doesNotMatch(html, /<[^>]+onclick=/i);
   assert.doesNotMatch(html, /<[^>]+onerror=/i);
   assert.doesNotMatch(html, /<script/i);
+});
+
+// ============================================================================
+// D1-A — linklists interface + scope passthrough
+// ============================================================================
+
+test('D1-A linklists key is in LiquidCommerceDrops and passes through toLiquidDrop into scope', async () => {
+  const bundle = createMinimalLiquidThemeBundleFixture();
+  const renderer = new LiquidRenderer();
+
+  // toLiquidDrop requires keys matching /^[a-zA-Z][a-zA-Z0-9_]*$/ (security filter).
+  // Shopify handles use hyphens (e.g. 'main-menu') but toLiquidDrop strips those.
+  // LANE-B's navToLinklists helper must use underscore-safe handle keys (e.g. 'main_menu').
+  // The test uses underscore keys to match what the sanitizer will pass through.
+  const linklistBundle = {
+    ...bundle,
+    sections: {
+      ...bundle.sections,
+      'linklists-test': {
+        path: 'sections/linklists-test.liquid',
+        source: [
+          '<section data-section-id="{{ section.id }}" class="lb-linklists-test">',
+          '  {{ linklists.main_menu.title }}',
+          '  {% if linklists.main_menu.links %}',
+          '    {% for link in linklists.main_menu.links %}<a href="{{ link.url }}">{{ link.title }}</a>{% endfor %}',
+          '  {% endif %}',
+          '</section>',
+          '{% schema %}{"name":"Linklists Test","settings":[],"blocks":[],"presets":[]}{% endschema %}',
+        ].join('\n'),
+        schema: { name: 'Linklists Test', settings: [], blocks: [], presets: [] },
+      },
+    },
+    templates: {
+      ...bundle.templates,
+      index: {
+        ...bundle.templates.index,
+        sections: {
+          'll-test': {
+            type: 'linklists-test',
+            settings: {},
+            blocks: {},
+            block_order: [],
+            disabled: false,
+          },
+        },
+        order: ['ll-test'],
+      },
+    },
+  };
+
+  // Note: toLiquidDrop strips keys with hyphens (security: /^[a-zA-Z][a-zA-Z0-9_]*$/).
+  // LANE-B's navToLinklists must convert handle 'main-menu' -> 'main_menu' for safe drop access.
+  const linklists = {
+    main_menu: {
+      handle: 'main_menu',
+      title: 'Main Menu',
+      links: [
+        { title: 'Home', url: '/', active: false, links: [] },
+        { title: 'Products', url: '/products', active: false, links: [] },
+      ],
+    },
+  };
+
+  const result = await renderer.render({
+    context: { storeId: STORE_ID, subdomain: 'test-store', path: '/', previewMode: false, locale: 'en' },
+    storeTemplate: { storeId: STORE_ID, themeId: 'liquid-starter', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
+    routeTemplate: { id: 'index', type: 'index' as const, layoutKey: 'theme', sections: [] },
+    liquidBundle: linklistBundle as Parameters<typeof renderer.render>[0]['liquidBundle'],
+    liquidTemplateKey: 'index',
+    liquidContext: { linklists },
+  });
+
+  assert.equal(result.status, 'rendered', `Expected rendered. Warnings: ${result.warnings.join(', ')}`);
+  const html = result.liquid?.contentForLayout ?? '';
+  // linklists.main-menu.title should appear in the rendered HTML
+  assert.match(html, /Main Menu/, 'linklists title must render in scope');
+  // nav links should also render
+  assert.match(html, /href="\/products"/, 'linklists link url must render');
+  assert.match(html, /Products/, 'linklists link title must render');
+});
+
+test('D1-A linklists falls back to empty object when not provided in liquidContext', async () => {
+  const bundle = createMinimalLiquidThemeBundleFixture();
+  const renderer = new LiquidRenderer();
+
+  // A template that safely accesses linklists (it should be an empty object, not crash).
+  const noLinkBundle = {
+    ...bundle,
+    sections: {
+      ...bundle.sections,
+      'linklists-empty': {
+        path: 'sections/linklists-empty.liquid',
+        source: [
+          '<section data-section-id="{{ section.id }}" class="lb-linklists-empty">',
+          '  {% if linklists %}ok{% else %}missing{% endif %}',
+          '</section>',
+          '{% schema %}{"name":"Linklists Empty","settings":[],"blocks":[],"presets":[]}{% endschema %}',
+        ].join('\n'),
+        schema: { name: 'Linklists Empty', settings: [], blocks: [], presets: [] },
+      },
+    },
+    templates: {
+      ...bundle.templates,
+      index: {
+        ...bundle.templates.index,
+        sections: {
+          'll-empty': {
+            type: 'linklists-empty',
+            settings: {},
+            blocks: {},
+            block_order: [],
+            disabled: false,
+          },
+        },
+        order: ['ll-empty'],
+      },
+    },
+  };
+
+  const result = await renderer.render({
+    context: { storeId: STORE_ID, subdomain: 'test-store', path: '/', previewMode: false, locale: 'en' },
+    storeTemplate: { storeId: STORE_ID, themeId: 'liquid-starter', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
+    routeTemplate: { id: 'index', type: 'index' as const, layoutKey: 'theme', sections: [] },
+    liquidBundle: noLinkBundle as Parameters<typeof renderer.render>[0]['liquidBundle'],
+    liquidTemplateKey: 'index',
+    // No liquidContext.linklists provided — must default to {} without crashing
+  });
+
+  assert.equal(result.status, 'rendered', `Expected rendered even without linklists. Warnings: ${result.warnings.join(', ')}`);
+});
+
+// ============================================================================
+// D2 — settings drop resolves both flat and grouped key paths
+// ============================================================================
+
+test('D2 settings drop resolves both flat and grouped key paths', async () => {
+  const bundle = createMinimalLiquidThemeBundleFixture();
+  const renderer = new LiquidRenderer();
+
+  // The minimal fixture has settings_schema with a 'colors' group containing 'primaryColor'.
+  // Its settings_data.current is { primaryColor: '#00B3B3' }.
+  // Build a section that renders both the flat key and the grouped key.
+  const settingsBundle = {
+    ...bundle,
+    sections: {
+      ...bundle.sections,
+      'settings-test': {
+        path: 'sections/settings-test.liquid',
+        source: [
+          '<section data-section-id="{{ section.id }}" class="lb-settings-test">',
+          '  <span class="flat">{{ settings.primaryColor }}</span>',
+          '  <span class="grouped">{{ settings.colors.primaryColor }}</span>',
+          '</section>',
+          '{% schema %}{"name":"Settings Test","settings":[],"blocks":[],"presets":[]}{% endschema %}',
+        ].join('\n'),
+        schema: { name: 'Settings Test', settings: [], blocks: [], presets: [] },
+      },
+    },
+    templates: {
+      ...bundle.templates,
+      index: {
+        ...bundle.templates.index,
+        sections: {
+          'settings-sec': {
+            type: 'settings-test',
+            settings: {},
+            blocks: {},
+            block_order: [],
+            disabled: false,
+          },
+        },
+        order: ['settings-sec'],
+      },
+    },
+  };
+
+  const result = await renderer.render({
+    context: { storeId: STORE_ID, subdomain: 'test-store', path: '/', previewMode: false, locale: 'en' },
+    storeTemplate: { storeId: STORE_ID, themeId: 'liquid-starter', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
+    routeTemplate: { id: 'index', type: 'index' as const, layoutKey: 'theme', sections: [] },
+    liquidBundle: settingsBundle as Parameters<typeof renderer.render>[0]['liquidBundle'],
+    liquidTemplateKey: 'index',
+  });
+
+  assert.equal(result.status, 'rendered', `Expected rendered. Warnings: ${result.warnings.join(', ')}`);
+  const html = result.liquid?.contentForLayout ?? '';
+  // Both flat and grouped key paths must resolve to the same value (#00B3B3)
+  assert.match(html, /<span class="flat">#00B3B3<\/span>/, 'flat settings.primaryColor must render');
+  assert.match(html, /<span class="grouped">#00B3B3<\/span>/, 'grouped settings.colors.primaryColor must render');
+});
+
+test('D2 settings drop blocks credential-named keys (BLOCKED_DROP_KEYS)', async () => {
+  // settings_data.current is merchant-writable passthrough JSON; credential-named keys written there
+  // must never reach Liquid template scope, while legitimate settings keep rendering.
+  const bundle = createMinimalLiquidThemeBundleFixture();
+  const renderer = new LiquidRenderer();
+
+  const poisonedBundle = {
+    ...bundle,
+    config: {
+      ...bundle.config,
+      settings_data: {
+        ...bundle.config.settings_data,
+        current: {
+          ...bundle.config.settings_data.current,
+          api_key: 'sk_secret_must_never_render',
+          webhook_secret: 'whsec_must_never_render',
+        },
+      },
+    },
+    sections: {
+      ...bundle.sections,
+      'settings-leak-test': {
+        path: 'sections/settings-leak-test.liquid',
+        source: [
+          '<section data-section-id="{{ section.id }}" class="lb-settings-leak-test">',
+          '  <span class="legit">{{ settings.primaryColor }}</span>',
+          '  <span class="leak-a">{{ settings.api_key }}</span>',
+          '  <span class="leak-b">{{ settings.webhook_secret }}</span>',
+          '</section>',
+          '{% schema %}{"name":"Settings Leak Test","settings":[],"blocks":[],"presets":[]}{% endschema %}',
+        ].join('\n'),
+        schema: { name: 'Settings Leak Test', settings: [], blocks: [], presets: [] },
+      },
+    },
+    templates: {
+      ...bundle.templates,
+      index: {
+        ...bundle.templates.index,
+        sections: {
+          'settings-leak-sec': { type: 'settings-leak-test', settings: {}, blocks: {}, block_order: [], disabled: false },
+        },
+        order: ['settings-leak-sec'],
+      },
+    },
+  };
+
+  const result = await renderer.render({
+    context: { storeId: STORE_ID, subdomain: 'test-store', path: '/', previewMode: false, locale: 'en' },
+    storeTemplate: { storeId: STORE_ID, themeId: 'liquid-starter', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
+    routeTemplate: { id: 'index', type: 'index' as const, layoutKey: 'theme', sections: [] },
+    liquidBundle: poisonedBundle as Parameters<typeof renderer.render>[0]['liquidBundle'],
+    liquidTemplateKey: 'index',
+  });
+
+  assert.equal(result.status, 'rendered', `Expected rendered. Warnings: ${result.warnings.join(', ')}`);
+  const html = result.liquid?.contentForLayout ?? '';
+  assert.match(html, /<span class="legit">#00B3B3<\/span>/, 'legitimate settings keys must still render');
+  assert.doesNotMatch(html, /sk_secret_must_never_render/, 'settings.api_key must never reach Liquid output');
+  assert.doesNotMatch(html, /whsec_must_never_render/, 'settings.webhook_secret must never reach Liquid output');
+});
+
+test('D2 settings drop with flat-only schema (no grouped settings wrapper) resolves flat keys correctly', async () => {
+  // createUrbanKicksLiquidThemeBundleFixture has a settings_schema with a grouped 'settings' key.
+  // Test a bundle with minimal flat-like schema to ensure flat keys still work.
+  const bundle = createMinimalLiquidThemeBundleFixture();
+  const renderer = new LiquidRenderer();
+
+  const flatBundle = {
+    ...bundle,
+    sections: {
+      ...bundle.sections,
+      'flat-test': {
+        path: 'sections/flat-test.liquid',
+        source: [
+          '<section data-section-id="{{ section.id }}" class="lb-flat-test">{{ settings.primaryColor }}</section>',
+          '{% schema %}{"name":"Flat Test","settings":[],"blocks":[],"presets":[]}{% endschema %}',
+        ].join('\n'),
+        schema: { name: 'Flat Test', settings: [], blocks: [], presets: [] },
+      },
+    },
+    templates: {
+      ...bundle.templates,
+      index: {
+        ...bundle.templates.index,
+        sections: {
+          'flat-sec': { type: 'flat-test', settings: {}, blocks: {}, block_order: [], disabled: false },
+        },
+        order: ['flat-sec'],
+      },
+    },
+  };
+
+  const result = await renderer.render({
+    context: { storeId: STORE_ID, subdomain: 'test-store', path: '/', previewMode: false, locale: 'en' },
+    storeTemplate: { storeId: STORE_ID, themeId: 'liquid-starter', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
+    routeTemplate: { id: 'index', type: 'index' as const, layoutKey: 'theme', sections: [] },
+    liquidBundle: flatBundle as Parameters<typeof renderer.render>[0]['liquidBundle'],
+    liquidTemplateKey: 'index',
+  });
+
+  assert.equal(result.status, 'rendered', `Expected rendered. Warnings: ${result.warnings.join(', ')}`);
+  assert.match(result.liquid?.contentForLayout ?? '', /#00B3B3/, 'flat key settings.primaryColor must still render');
+});
+
+// ============================================================================
+// D6 — hero-banner Liquid section has image/overlay/height/textAlign schema fields
+// ============================================================================
+
+test('D6 hero-banner Liquid section has image, overlay, height, textAlign schema fields', () => {
+  const bundle = createUrbanKicksLiquidThemeBundleFixture();
+  const heroBanner = bundle.sections['hero-banner'];
+  assert.ok(heroBanner, 'hero-banner section must exist in Urban Kicks fixture');
+
+  const settingIds = heroBanner.schema.settings.map((s) => s.id);
+  assert.ok(settingIds.includes('image'), 'hero-banner must have image setting');
+  assert.ok(settingIds.includes('overlay'), 'hero-banner must have overlay setting');
+  assert.ok(settingIds.includes('height'), 'hero-banner must have height setting');
+  assert.ok(settingIds.includes('textAlign'), 'hero-banner must have textAlign setting');
+  // Existing fields must still be present
+  assert.ok(settingIds.includes('heading'), 'hero-banner must keep heading setting');
+  assert.ok(settingIds.includes('ctaText'), 'hero-banner must keep ctaText setting');
+
+  // Verify schema types
+  const overlaySetting = heroBanner.schema.settings.find((s) => s.id === 'overlay');
+  assert.equal(overlaySetting?.type, 'range', 'overlay must be range type');
+  assert.equal(overlaySetting?.default, 0.4, 'overlay default must be 0.4');
+
+  const heightSetting = heroBanner.schema.settings.find((s) => s.id === 'height');
+  assert.equal(heightSetting?.type, 'select', 'height must be select type');
+  assert.deepEqual(heightSetting?.options, ['full', 'large', 'medium', 'small'], 'height must have correct options');
+
+  const textAlignSetting = heroBanner.schema.settings.find((s) => s.id === 'textAlign');
+  assert.equal(textAlignSetting?.type, 'select', 'textAlign must be select type');
+  assert.deepEqual(textAlignSetting?.options, ['left', 'center', 'right'], 'textAlign must have correct options');
+});
+
+test('D6 hero-banner renders with image, overlay, height, textAlign settings', async () => {
+  const bundle = createUrbanKicksLiquidThemeBundleFixture();
+  const renderer = new LiquidRenderer();
+
+  const heroBundle = {
+    ...bundle,
+    templates: {
+      ...bundle.templates,
+      index: {
+        name: 'Home page',
+        sections: {
+          'hero-test': {
+            type: 'hero-banner',
+            settings: {
+              heading: 'D6 Test Heading',
+              image: 'https://example.com/hero-img.jpg',
+              overlay: 0.6,
+              height: 'large',
+              textAlign: 'left',
+              ctaText: 'Shop',
+              ctaLink: '/products',
+            },
+            blocks: {},
+            block_order: [],
+            disabled: false,
+          },
+        },
+        order: ['hero-test'],
+      },
+    },
+  };
+
+  const result = await renderer.render({
+    context: { storeId: STORE_ID, subdomain: 'test-store', path: '/', previewMode: false, locale: 'en' },
+    storeTemplate: { storeId: STORE_ID, themeId: 'urban-kicks-liquid', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
+    routeTemplate: { id: 'index', type: 'index' as const, layoutKey: 'theme', sections: [] },
+    liquidBundle: heroBundle as Parameters<typeof renderer.render>[0]['liquidBundle'],
+    liquidTemplateKey: 'index',
+  });
+
+  assert.equal(result.status, 'rendered', `Expected rendered. Warnings: ${result.warnings.join(', ')}`);
+  const html = result.liquid?.contentForLayout ?? '';
+  assert.match(html, /data-height="large"/, 'rendered HTML must include data-height attribute');
+  assert.match(html, /data-text-align="left"/, 'rendered HTML must include data-text-align attribute');
+  assert.match(html, /data-image-url="https:\/\/example\.com\/hero-img\.jpg"/, 'rendered HTML must include data-image-url');
+  assert.match(html, /D6 Test Heading/, 'rendered HTML must include heading text');
+});
+
+// ============================================================================
+// D8 — BLOCKED_DROP_KEYS blocks api_key, secret_key, private_key, webhook_secret
+// ============================================================================
+
+test('D8 BLOCKED_DROP_KEYS blocks api_key, secret_key, private_key, webhook_secret', async () => {
+  const bundle = createMinimalLiquidThemeBundleFixture();
+  const renderer = new LiquidRenderer();
+
+  // Build a section that tries to render all 4 blocked credential keys alongside a safe key.
+  const blockedBundle = {
+    ...bundle,
+    sections: {
+      ...bundle.sections,
+      'blocked-test': {
+        path: 'sections/blocked-test.liquid',
+        source: [
+          '<section data-section-id="{{ section.id }}" class="lb-blocked-test">',
+          '  <span class="safe">{{ product.safe_field }}</span>',
+          '  <span class="api">{{ product.api_key }}</span>',
+          '  <span class="secret">{{ product.secret_key }}</span>',
+          '  <span class="private">{{ product.private_key }}</span>',
+          '  <span class="webhook">{{ product.webhook_secret }}</span>',
+          '</section>',
+          '{% schema %}{"name":"Blocked Test","settings":[],"blocks":[],"presets":[]}{% endschema %}',
+        ].join('\n'),
+        schema: { name: 'Blocked Test', settings: [], blocks: [], presets: [] },
+      },
+    },
+    templates: {
+      ...bundle.templates,
+      index: {
+        ...bundle.templates.index,
+        sections: {
+          'blocked-sec': { type: 'blocked-test', settings: {}, blocks: {}, block_order: [], disabled: false },
+        },
+        order: ['blocked-sec'],
+      },
+    },
+  };
+
+  const result = await renderer.render({
+    context: { storeId: STORE_ID, subdomain: 'test-store', path: '/', previewMode: false, locale: 'en' },
+    storeTemplate: { storeId: STORE_ID, themeId: 'liquid-starter', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
+    routeTemplate: { id: 'index', type: 'index' as const, layoutKey: 'theme', sections: [] },
+    liquidBundle: blockedBundle as Parameters<typeof renderer.render>[0]['liquidBundle'],
+    liquidTemplateKey: 'index',
+    // liquidContext.product has all 4 blocked keys plus a safe field
+    liquidContext: {
+      product: {
+        safe_field: 'VISIBLE',
+        api_key: 'sk-secret-api-key-DO-NOT-EXPOSE',
+        secret_key: 'secret-key-DO-NOT-EXPOSE',
+        private_key: '-----BEGIN PRIVATE KEY-----',
+        webhook_secret: 'whsec_DO-NOT-EXPOSE',
+      },
+    },
+  });
+
+  assert.equal(result.status, 'rendered', `Expected rendered. Warnings: ${result.warnings.join(', ')}`);
+  const html = result.liquid?.contentForLayout ?? '';
+  // Safe field must appear
+  assert.match(html, /VISIBLE/, 'safe field must render in scope');
+  // None of the blocked key values must appear in rendered output
+  assert.doesNotMatch(html, /sk-secret-api-key-DO-NOT-EXPOSE/, 'api_key value must be blocked');
+  assert.doesNotMatch(html, /secret-key-DO-NOT-EXPOSE/, 'secret_key value must be blocked');
+  assert.doesNotMatch(html, /BEGIN PRIVATE KEY/, 'private_key value must be blocked');
+  assert.doesNotMatch(html, /whsec_DO-NOT-EXPOSE/, 'webhook_secret value must be blocked');
+});
+
+// ============================================================================
+// D9 — contentPage aliases resolve to rich-content at both compile and render time
+// ============================================================================
+
+test('D9 LIQUID_SECTION_TYPE_ALIASES resolves contentPage and content-page to rich-content', () => {
+  assert.equal(LIQUID_SECTION_TYPE_ALIASES['contentPage'], 'rich-content', "contentPage must resolve to rich-content");
+  assert.equal(LIQUID_SECTION_TYPE_ALIASES['content-page'], 'rich-content', "content-page must resolve to rich-content");
+  // Existing aliases must still work
+  assert.equal(LIQUID_SECTION_TYPE_ALIASES['newsletter'], 'newsletter-signup', "newsletter alias unchanged");
+});
+
+test('D9 contentPage alias resolves to rich-content at render time', async () => {
+  const bundle = createUrbanKicksLiquidThemeBundleFixture();
+  const renderer = new LiquidRenderer();
+
+  // Verify rich-content section exists in the bundle
+  assert.ok(bundle.sections['rich-content'], 'rich-content section must exist in Urban Kicks fixture');
+
+  // Set up a template where section type is 'content-page' — the alias must redirect to 'rich-content'.
+  // The bundle schema requires each template section.type to exist in bundle.sections.
+  // We add a 'content-page' dummy section (valid lowercase key) to satisfy schema validation.
+  // The alias maps 'content-page' -> 'rich-content' at render time, bypassing the dummy file.
+  const DUMMY_CONTENT = 'lb-content-page-KEBAB-ALIAS-DUMMY';
+  const aliasBundle = {
+    ...bundle,
+    sections: {
+      ...bundle.sections,
+      // 'content-page' is a valid lowercase key and path (passes bundle schema validation).
+      // The render-time alias redirects to 'rich-content' so this dummy source must NOT appear in output.
+      'content-page': {
+        path: 'sections/content-page.liquid',
+        source: `<section class="${DUMMY_CONTENT}" data-section-id="{{ section.id }}"></section>\n{% schema %}{"name":"Content Page Dummy","settings":[],"blocks":[],"presets":[]}{% endschema %}`,
+        schema: { name: 'Content Page Dummy', settings: [], blocks: [], presets: [] },
+      },
+    },
+    templates: {
+      ...bundle.templates,
+      index: {
+        ...bundle.templates.index,
+        sections: {
+          'content-only': {
+            type: 'content-page',
+            settings: { title: 'About Us' },
+            blocks: {},
+            block_order: [],
+            disabled: false,
+          },
+        },
+        order: ['content-only'],
+      },
+    },
+  };
+
+  const result = await renderer.render({
+    context: { storeId: STORE_ID, subdomain: 'test-store', path: '/pages/about', previewMode: false, locale: 'en' },
+    storeTemplate: { storeId: STORE_ID, themeId: 'urban-kicks-liquid', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
+    routeTemplate: { id: 'index', type: 'index' as const, layoutKey: 'theme', sections: [] },
+    liquidBundle: aliasBundle as Parameters<typeof renderer.render>[0]['liquidBundle'],
+    liquidTemplateKey: 'index',
+  });
+
+  assert.equal(result.status, 'rendered', `content-page alias must resolve and render; got ${result.status}. Warnings: ${result.warnings.join(', ')}`);
+  // The alias must have used rich-content, so the dummy file content must NOT appear
+  assert.ok(
+    !result.liquid?.contentForLayout.includes(DUMMY_CONTENT),
+    'dummy content-page content must NOT appear — alias must have used rich-content',
+  );
+  // The rich-content section's class must appear in the output
+  assert.match(
+    result.liquid?.contentForLayout ?? '',
+    /lb-rich-content/,
+    'rich-content HTML must appear in output after content-page alias resolution',
+  );
+});
+
+test('D9 compilePortableToLiquidBundle maps contentPage to rich-content at compile time', () => {
+  const result = compilePortableToLiquidBundle({
+    sections: {
+      template: [
+        {
+          id: 'page-section',
+          type: 'contentPage',
+          settings: { title: 'About Us' },
+          isVisible: true,
+        },
+      ],
+    },
+  });
+  // Must compile without errors (the contentPage type maps to rich-content which exists in the base bundle)
+  assert.equal(result.warnings.length, 0, `contentPage must compile without warnings. Got: ${result.warnings.join(', ')}`);
+  // The compiled template must contain a rich-content section type
+  const indexSections = result.bundle.templates.index?.sections ?? {};
+  const sectionEntries = Object.values(indexSections);
+  assert.ok(
+    sectionEntries.some((s) => s.type === 'rich-content'),
+    'compiled template must have a rich-content section (mapped from contentPage)',
+  );
 });
