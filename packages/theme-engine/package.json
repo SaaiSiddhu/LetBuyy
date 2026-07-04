@@ -9,7 +9,8 @@
     ".": "./src/index.ts",
     "./theme-bundle": "./src/theme-bundle.ts",
     "./theme-renderer": "./src/theme-renderer.ts",
-    "./theme-registry": "./src/theme-registry.ts"
+    "./theme-registry": "./src/theme-registry.ts",
+    "./editor-bridge-protocol": "./src/editor-bridge-protocol.ts"
   },
   "scripts": {
     "build": "tsc -b",

@@ -26,7 +26,10 @@ import type {
 } from './index';
 
 export type ThemeRendererEngine = 'json-contract' | 'liquid';
-export type ThemeRendererStatus = 'rendered' | 'unsupported';
+// 'rendered' = success; 'unsupported' = no bundle/template; 'error' = tried Liquid but all sections failed
+// or the layout template itself threw. Callers that check `status !== 'rendered'` already handle 'error'
+// correctly (they fall back to React) — no caller change required.
+export type ThemeRendererStatus = 'rendered' | 'unsupported' | 'error';
 
 export interface LiquidAppBlockRenderSource {
   html: string;
@@ -109,6 +112,11 @@ const LIQUID_HYDRATION_CUSTOM_ELEMENTS = [
   'lb-cart-drawer',
   'lb-search',
   'lb-variant-picker',
+  'lb-review-form',
+  'lb-wishlist-toggle',
+  'lb-cart',
+  'lb-customer-settings',
+  'lb-address-manager',
 ] as const;
 
 export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
@@ -132,14 +140,21 @@ export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
     'data-editor-mode',
     'data-lb-add-to-cart',
     'data-lb-add-to-cart-status',
+    'data-authenticated',
+    'data-base-path',
+    'data-in-wishlist',
     'data-lb-island',
     'data-lb-variant-option',
+    'data-store-id',
     'data-letbuyy-app-block',
     'data-product-currency',
     'data-product-id',
     'data-product-name',
     'data-product-price',
     'data-product-url',
+    'data-email',
+    'data-name',
+    'data-phone',
     'data-search-url',
     'data-section-id',
     'data-theme-renderer',
@@ -156,7 +171,7 @@ export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
     'width',
   ],
   CUSTOM_ELEMENT_HANDLING: {
-    tagNameCheck: /^lb-(?:add-to-cart|cart-drawer|search|variant-picker)$/,
+    tagNameCheck: /^lb-(?:add-to-cart|cart-drawer|search|variant-picker|review-form|wishlist-toggle|cart|customer-settings|address-manager)$/,
     attributeNameCheck: /^(?:aria-[a-z0-9-]+|data-[a-z0-9-]+|class|id|role|slot|title|type|name|value|href|src)$/i,
     allowCustomizedBuiltInElements: false,
   },
@@ -232,6 +247,19 @@ export function buildLiquidThemeHeadAssets(bundle: LiquidThemePackageBundle): st
   return `<style data-theme-renderer="liquid">${buildLiquidRootTokenBlock(bundle)}${LIQUID_THEME_BASE_CSS}</style>`;
 }
 
+// C4 — Render-time section-type alias map. Resolves bundle section entries whose persisted type differs
+// from the canonical first-party Liquid section file name. Extend here when Phase D adds contentPage.
+// Only newsletter is wired now — see CERTIFIED_PLATFORM_FACTS C4.
+// Note: PORTABLE_TO_LIQUID_TYPE_OVERRIDES in portable-to-liquid.ts handles the compiler path at build
+// time; this map covers the render-time path for bundles persisted outside the compiler (manual DB writes)
+// whose section.type is 'newsletter' rather than 'newsletter-signup'. Keep both maps in sync for newsletter.
+export const LIQUID_SECTION_TYPE_ALIASES: Readonly<Record<string, string>> = Object.freeze({
+    // React/schema type -> Liquid bundle section type
+    'newsletter': 'newsletter-signup',
+    // Reverse: Liquid bundle type -> same (idempotent lookup, makes the map clearly extensible)
+    'newsletter-signup': 'newsletter-signup',
+});
+
 export class JsonContractThemeRenderer implements ThemeRenderer {
   readonly engine = 'json-contract' as const;
   readonly interfaceVersion = THEME_RENDERER_INTERFACE_VERSION;
@@ -256,66 +284,90 @@ export class JsonContractThemeRenderer implements ThemeRenderer {
 
 // Render every section of one Liquid template to sanitized HTML. Shared by the page body and by the
 // header/footer chrome templates (L4) so chrome and body go through the identical sanitized pipeline.
+// C1: returns sectionErrors count so the caller can determine 'rendered' vs 'error' status.
 async function renderLiquidTemplateSections(
-  template: LiquidThemePackageBundle['templates'][string],
-  engine: Liquid,
-  input: ThemeRendererInput,
-  bundle: LiquidThemePackageBundle,
-  warnings: string[],
-): Promise<{ sections: LiquidRenderedSection[]; html: string }> {
-  const renderedSections: LiquidRenderedSection[] = [];
-  const sectionOrder = orderedKeys(template.sections, template.order);
+    template: LiquidThemePackageBundle['templates'][string],
+    engine: Liquid,
+    input: ThemeRendererInput,
+    bundle: LiquidThemePackageBundle,
+    warnings: string[],
+): Promise<{ sections: LiquidRenderedSection[]; html: string; sectionErrors: number }> {
+    const renderedSections: LiquidRenderedSection[] = [];
+    const sectionOrder = orderedKeys(template.sections, template.order);
+    let sectionErrors = 0;
 
-  for (const sectionId of sectionOrder) {
-    const templateSection = template.sections[sectionId];
-    if (!templateSection || templateSection.disabled) continue;
+    for (const sectionId of sectionOrder) {
+        const templateSection = template.sections[sectionId];
+        if (!templateSection || templateSection.disabled) continue;
 
-    const sectionFile = bundle.sections[templateSection.type];
-    if (!sectionFile) {
-      warnings.push(`Liquid section "${templateSection.type}" was not found and was skipped.`);
-      continue;
+        // C4: resolve the section type via the alias map before looking up the bundle file.
+        // This handles bundles persisted outside the compiler whose section.type is 'newsletter'
+        // (React/schema name) rather than 'newsletter-signup' (Liquid bundle file name).
+        const resolvedType = LIQUID_SECTION_TYPE_ALIASES[templateSection.type] ?? templateSection.type;
+        const sectionFile = bundle.sections[resolvedType];
+        if (!sectionFile) {
+            warnings.push(`Liquid section "${templateSection.type}" was not found and was skipped.`);
+            continue;
+        }
+
+        // C1: per-section try/catch — a single bad section must not crash the full page render.
+        // On error we push an HTML comment placeholder and continue; the caller decides whether to
+        // return 'rendered' (partial) or 'error' (all sections failed).
+        try {
+            const renderedBlocks = await renderLiquidSectionBlocks({
+                engine,
+                bundle,
+                input,
+                sectionId,
+                sectionType: resolvedType,
+                section: templateSection,
+            });
+            const sectionHtml = await engine.parseAndRender(
+                stripLiquidSchemaBlocks(sectionFile.source),
+                buildLiquidScope(input, bundle, {
+                    section: {
+                        id: sectionId,
+                        type: resolvedType,
+                        settings: templateSection.settings,
+                        blocks: renderedBlocks.map((block) => ({
+                            id: block.id,
+                            type: block.type,
+                            settings: block.settings,
+                            content: block.html,
+                            html: block.html,
+                            is_app_block: block.isAppBlock,
+                        })),
+                        block_order: renderedBlocks.map((block) => block.id),
+                        schema: sectionFile.schema,
+                    },
+                }),
+                liquidRenderOptions,
+            );
+
+            renderedSections.push({
+                id: sectionId,
+                type: resolvedType,
+                settings: templateSection.settings,
+                html: await sanitizeRenderedHtml(String(sectionHtml)),
+                blocks: renderedBlocks,
+            });
+        } catch (sectionErr: unknown) {
+            sectionErrors++;
+            const message = sectionErr instanceof Error ? sectionErr.message : String(sectionErr);
+            warnings.push(`Liquid section "${sectionId}" (type "${templateSection.type}") failed to render and was skipped: ${message.slice(0, 200)}`);
+            // Push an HTML comment placeholder so the caller can identify the gap without leaking source.
+            renderedSections.push({
+                id: sectionId,
+                type: resolvedType,
+                settings: templateSection.settings,
+                // Placeholder is safe static HTML — no merchant data, no Liquid source.
+                html: `<!-- lb:section-error sectionId="${sectionId.replace(/"/g, '')}" type="${resolvedType.replace(/"/g, '')}" -->`,
+                blocks: [],
+            });
+        }
     }
 
-    const renderedBlocks = await renderLiquidSectionBlocks({
-      engine,
-      bundle,
-      input,
-      sectionId,
-      sectionType: templateSection.type,
-      section: templateSection,
-    });
-    const sectionHtml = await engine.parseAndRender(
-      stripLiquidSchemaBlocks(sectionFile.source),
-      buildLiquidScope(input, bundle, {
-        section: {
-          id: sectionId,
-          type: templateSection.type,
-          settings: templateSection.settings,
-          blocks: renderedBlocks.map((block) => ({
-            id: block.id,
-            type: block.type,
-            settings: block.settings,
-            content: block.html,
-            html: block.html,
-            is_app_block: block.isAppBlock,
-          })),
-          block_order: renderedBlocks.map((block) => block.id),
-          schema: sectionFile.schema,
-        },
-      }),
-      liquidRenderOptions,
-    );
-
-    renderedSections.push({
-      id: sectionId,
-      type: templateSection.type,
-      settings: templateSection.settings,
-      html: await sanitizeRenderedHtml(String(sectionHtml)),
-      blocks: renderedBlocks,
-    });
-  }
-
-  return { sections: renderedSections, html: renderedSections.map((section) => section.html).join('\n') };
+    return { sections: renderedSections, html: renderedSections.map((section) => section.html).join('\n'), sectionErrors };
 }
 
 export class LiquidRenderer implements ThemeRenderer {
@@ -355,31 +407,88 @@ export class LiquidRenderer implements ThemeRenderer {
       contentForFooter,
       locale: input.context.locale || 'en',
     });
-    const main = await renderLiquidTemplateSections(template, engine, input, bundle, warnings);
+
+    // C1: wrap each region's renderLiquidTemplateSections in its own try/catch.
+    // A failure in one region (e.g. main body) is not fatal — we degrade to empty string for that region
+    // so the page can still be assembled with whatever partial content is available.
+    let main: { sections: LiquidRenderedSection[]; html: string; sectionErrors: number };
+    try {
+      main = await renderLiquidTemplateSections(template, engine, input, bundle, warnings);
+    } catch (mainErr: unknown) {
+      const msg = mainErr instanceof Error ? mainErr.message : String(mainErr);
+      warnings.push(`Liquid main template failed to render: ${msg.slice(0, 200)}`);
+      main = { sections: [], html: '', sectionErrors: 1 };
+    }
     const renderedSections = main.sections;
     const contentForLayout = main.html;
+    // If every section attempted for the main template resulted in an error, the page is unrenderable.
+    const totalMainSections = Object.values(template.sections).filter((s) => s && !s.disabled).length;
+    const allMainSectionsFailed = totalMainSections > 0 && main.sectionErrors >= totalMainSections;
 
     // L4 — Liquid chrome: render the header/footer templates (if present) so a Liquid page can wear
     // Liquid header/footer instead of React. Each section is sanitized inside the helper.
-    const headerHtml = bundle.templates.header
-      ? (await renderLiquidTemplateSections(bundle.templates.header, engine, input, bundle, warnings)).html
-      : '';
-    const footerHtml = bundle.templates.footer
-      ? (await renderLiquidTemplateSections(bundle.templates.footer, engine, input, bundle, warnings)).html
-      : '';
+    // C1: chrome failures are non-fatal — degrade to empty string so the page body still renders.
+    let headerHtml = '';
+    if (bundle.templates.header) {
+      try {
+        headerHtml = (await renderLiquidTemplateSections(bundle.templates.header, engine, input, bundle, warnings)).html;
+      } catch (headerErr: unknown) {
+        const msg = headerErr instanceof Error ? headerErr.message : String(headerErr);
+        warnings.push(`Liquid header template failed to render and was skipped: ${msg.slice(0, 200)}`);
+      }
+    }
 
-    const layoutHtml = await engine.parseAndRender(
-      bundle.layout.theme.source,
-      buildLiquidScope(input, bundle, {
-        content_for_layout: contentForLayout,
-        content_for_header: contentForHeader,
-        content_for_footer: contentForFooter,
-      }),
-      liquidRenderOptions,
-    );
+    let footerHtml = '';
+    if (bundle.templates.footer) {
+      try {
+        footerHtml = (await renderLiquidTemplateSections(bundle.templates.footer, engine, input, bundle, warnings)).html;
+      } catch (footerErr: unknown) {
+        const msg = footerErr instanceof Error ? footerErr.message : String(footerErr);
+        warnings.push(`Liquid footer template failed to render and was skipped: ${msg.slice(0, 200)}`);
+      }
+    }
+
+    // C1: wrap the layout parseAndRender — if the layout template itself is broken the page is unrenderable.
+    let layoutHtml: string;
+    try {
+      const rawLayoutHtml = await engine.parseAndRender(
+        bundle.layout.theme.source,
+        buildLiquidScope(input, bundle, {
+          content_for_layout: contentForLayout,
+          content_for_header: contentForHeader,
+          content_for_footer: contentForFooter,
+        }),
+        liquidRenderOptions,
+      );
+      layoutHtml = await sanitizeRenderedHtml(String(rawLayoutHtml), { wholeDocument: true });
+    } catch (layoutErr: unknown) {
+      const msg = layoutErr instanceof Error ? layoutErr.message : String(layoutErr);
+      warnings.push(`Liquid layout template failed to render: ${msg.slice(0, 200)}`);
+      return {
+        engine: this.engine,
+        status: 'error',
+        composition: composeStorefrontTheme(input),
+        warnings,
+        liquid: undefined,
+      };
+    }
+
+    // C1: if every section in the main template failed, there is nothing useful to show — signal 'error'
+    // so composition-engine falls back to React rather than emitting an empty page body.
+    if (allMainSectionsFailed) {
+      warnings.push('All Liquid sections failed to render; falling back to React.');
+      return {
+        engine: this.engine,
+        status: 'error',
+        composition: composeStorefrontTheme(input),
+        warnings,
+        liquid: undefined,
+      };
+    }
+
     const liquid: LiquidRenderedTheme = {
       templateKey,
-      layoutHtml: await sanitizeRenderedHtml(String(layoutHtml), { wholeDocument: true }),
+      layoutHtml,
       contentForLayout,
       sections: renderedSections,
       header: headerHtml,
@@ -507,29 +616,41 @@ async function renderLiquidSectionBlocks(input: {
       continue;
     }
 
-    const html = await input.engine.parseAndRender(
-      blockFile.source,
-      buildLiquidScope(input.input, input.bundle, {
-        section: {
-          id: input.sectionId,
-          type: input.sectionType,
-          settings: input.section.settings,
-        },
-        block: {
-          id: blockId,
-          type: block.type,
-          settings: block.settings,
-          schema: blockFile.schema,
-        },
-      }),
-      liquidRenderOptions,
-    );
+    // C1: block-level try/catch — a broken block source must not crash the enclosing section render.
+    // On error the block is included with empty html so the section template can still render its structure.
+    let blockHtml = '';
+    try {
+      const rawBlockHtml = await input.engine.parseAndRender(
+        blockFile.source,
+        buildLiquidScope(input.input, input.bundle, {
+          section: {
+            id: input.sectionId,
+            type: input.sectionType,
+            settings: input.section.settings,
+          },
+          block: {
+            id: blockId,
+            type: block.type,
+            settings: block.settings,
+            schema: blockFile.schema,
+          },
+        }),
+        liquidRenderOptions,
+      );
+      blockHtml = await sanitizeRenderedHtml(String(rawBlockHtml));
+    } catch (blockErr: unknown) {
+      const msg = blockErr instanceof Error ? blockErr.message : String(blockErr);
+      // Push warning into the input.input context is not available here; we swallow and leave html=''.
+      // The section template will render without this block's HTML (it may still use block.settings).
+      // eslint-disable-next-line no-console
+      console.warn(JSON.stringify({ event: 'lb:liquid:block-error', blockId, blockType: block.type, error: msg.slice(0, 200) }));
+    }
 
     blocks.push({
       id: blockId,
       type: block.type,
       settings: block.settings,
-      html: await sanitizeRenderedHtml(String(html)),
+      html: blockHtml,
       isAppBlock: false,
     });
   }

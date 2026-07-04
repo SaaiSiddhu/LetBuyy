@@ -1,6 +1,6 @@
 import type { StoreModel, SiteType, PaymentGateway, NavPage, StoreNavigation } from '@letbuyy/tenant-core';
 import { normalizeAppBlockInstances, type AppBlockInstance } from '@letbuyy/shared-types';
-import { DEFAULT_THEME_SETTINGS, LiquidThemePackageBundleSchema, createUrbanKicksLiquidThemeBundleFixture } from '@letbuyy/theme-engine';
+import { DEFAULT_THEME_SETTINGS, LiquidThemePackageBundleSchema } from '@letbuyy/theme-engine';
 import type { ThemeSettings, SectionModel, SectionType, BlockModel, StorefrontSectionGroupConfig, StorefrontTemplateConfig } from '@letbuyy/theme-engine';
 import { createStorefrontApiClient, storefrontReadInit } from './api/client';
 import {
@@ -668,9 +668,9 @@ function mapSupabaseToStore(
     const sections = injectAppBlocksIntoSections(sectionArray, appBlocks);
     templates = injectAppBlocksIntoTemplates(templates, appBlocks);
     const liquidBundleResult = LiquidThemePackageBundleSchema.safeParse(templateConfig.liquidBundle);
-    const liquidBundle = liquidBundleResult.success
-        ? liquidBundleResult.data
-        : createUrbanKicksLiquidThemeBundleFixture();
+    // Do not fall back to the Urban Kicks fixture: a store without a valid liquidBundle should render
+    // React (canary off or no bundle), not silently wear the Urban Kicks demo theme.
+    const liquidBundle = liquidBundleResult.success ? liquidBundleResult.data : undefined;
     const liquidRenderingCanary = typeof templateConfig.liquidRenderingCanary === 'boolean'
         ? templateConfig.liquidRenderingCanary
         // Safe default: undefined (NOT false). resolveThemeLiquidRenderingEnabled returns the first

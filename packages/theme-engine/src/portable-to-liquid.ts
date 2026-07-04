@@ -40,6 +40,8 @@ export interface CompilePortableToLiquidResult {
 }
 
 // Portable React section types whose kebab form does not equal the Liquid section type.
+// NOTE: 'newsletter' -> 'newsletter-signup' must stay in sync with LIQUID_SECTION_TYPE_ALIASES in
+// theme-renderer.ts, which covers the render-time alias path for bundles persisted outside the compiler.
 const PORTABLE_TO_LIQUID_TYPE_OVERRIDES: Record<string, string> = {
   hero: 'hero-banner',
   heroBanner: 'hero-banner',

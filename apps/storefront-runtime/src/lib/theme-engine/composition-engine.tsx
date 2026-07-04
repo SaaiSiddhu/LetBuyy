@@ -9,10 +9,17 @@ import {
     type LiquidAppEmbeds,
     type LiquidCommerceDrops,
 } from '@letbuyy/theme-engine';
-import type { SectionRenderData, StorefrontRenderPlan } from './types';
+import type { ProductReviewItem, SectionRenderData, StorefrontRenderPlan } from './types';
 import EditorPreviewSectionFrame from './editor-preview-section-frame';
 import LiquidHydrationIslands from './liquid-hydration-islands';
 import { renderRegisteredSection } from './renderer-registry';
+import {
+    getStorefrontCustomerDrop,
+    getCustomerOrderDetailDrop,
+    type LiquidCustomerDrop,
+    type LiquidCustomerOrderDetail,
+} from '@/lib/customer-drop';
+import { ProductService } from '@/lib/product-service';
 
 function RenderSectionList({
     store,
@@ -247,6 +254,10 @@ function productToLiquidDrop(product: SectionRenderData['product']): Record<stri
         tags: product.tags || [],
         variants: product.variants || [],
         options: product.variantOptions || [],
+        rating: product.rating ?? 0,
+        review_count: product.reviewCount ?? 0,
+        reviews: [],
+        in_wishlist: false,
     };
 }
 
@@ -276,10 +287,18 @@ function collectLiquidCart(
         }
     }
 
+    // Server-authoritative: at SSR there is no cart token (the token lives in the browser), so the
+    // money totals are genuinely absent here. They are returned as null (never fabricated/estimated)
+    // and hydrated client-side by the lb-cart-drawer island straight from the gateway cart response.
     return {
-        item_count: 0,
+        item_count: null,
         items: [],
-        total_price: 0,
+        subtotal: null,
+        discount_total: null,
+        shipping_total: null,
+        tax_total: null,
+        total: null,
+        coupon_codes: [],
         currency: 'INR',
         source: 'browser_hydrated',
         cart_url: '/cart',
@@ -296,17 +315,54 @@ function collectLiquidCollectionMeta(
     return null;
 }
 
+function collectLiquidProductReviews(sectionData: Map<string, SectionRenderData>): SectionRenderData['reviews'] | null {
+    for (const data of sectionData.values()) {
+        if (data.reviews) return data.reviews;
+    }
+    return null;
+}
+
+function reviewToLiquidDrop(review: ProductReviewItem): Record<string, unknown> {
+    return {
+        id: review.id,
+        author: review.author,
+        rating: review.rating,
+        title: review.title,
+        body: review.body,
+        images: review.images,
+        is_verified: review.isVerified,
+        helpful_count: review.helpfulCount,
+        created_at: review.createdAt,
+    };
+}
+
 function buildLiquidCommerceContext({
     store,
     plan,
     sectionData,
+    customer,
+    orderDetail,
+    page,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
     sectionData: Map<string, SectionRenderData>;
+    customer: LiquidCustomerDrop | null;
+    orderDetail?: LiquidCustomerOrderDetail | null;
+    page?: Record<string, unknown> | null;
 }): LiquidCommerceDrops {
     const products = collectLiquidProducts(sectionData);
     const product = products[0] || null;
+    const reviewData = collectLiquidProductReviews(sectionData);
+    if (product && reviewData) {
+        product.reviews = reviewData.reviews.map(reviewToLiquidDrop);
+        product.rating = reviewData.rating || product.rating || 0;
+        product.review_count = reviewData.reviewCount || product.review_count || 0;
+    }
+    const wishlistSet = new Set(customer?.wishlist ?? []);
+    for (const entry of products) {
+        entry.in_wishlist = wishlistSet.has(String(entry.id));
+    }
     const boundCollection = collectLiquidCollectionMeta(sectionData);
     const collection = plan.route.type === 'collection' || products.length > 0
         ? {
@@ -334,7 +390,9 @@ function buildLiquidCommerceContext({
         collection,
         collections: collection ? [collection] : [],
         cart: collectLiquidCart(sectionData, plan),
-        customer: null,
+        customer,
+        order: orderDetail ?? null,
+        ...(page ? { page } : {}),
     };
 }
 
@@ -343,48 +401,82 @@ async function renderLiquidPlan({
     plan,
     sectionData,
     editorMode,
+    liquidPage,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
     sectionData: Map<string, SectionRenderData>;
     editorMode: boolean;
+    liquidPage?: Record<string, unknown> | null;
 }): Promise<string | null> {
     if (plan.rendererEngine !== 'liquid' || !plan.liquidBundle) return null;
 
+    const includeOrders = plan.route.type === 'customer_orders' || plan.route.type === 'customer_order';
+    const customer = await getStorefrontCustomerDrop(store.id, { includeOrders });
+
+    // Order detail: find the specific order from the path's trailing segment.
+    let orderDetail: LiquidCustomerOrderDetail | null = null;
+    if (plan.route.type === 'customer_order') {
+        const orderId = plan.route.path.split('/').filter(Boolean).at(-1) ?? '';
+        if (orderId) {
+            orderDetail = await getCustomerOrderDetailDrop(store.id, orderId);
+        }
+    }
+
+    // Wishlist products: enrich the customer wishlist IDs into full product drops.
+    if (plan.route.type === 'customer_wishlist' && customer && customer.wishlist.length > 0) {
+        const enriched = await ProductService.getProductsByIds(customer.wishlist, plan.route.subdomain);
+        customer.wishlist_products = enriched.map((p) => productToLiquidDrop(p));
+    }
+
     const renderer = createThemeRenderer('liquid');
-    const result = await renderer.render({
-        context: {
-            storeId: store.id,
-            subdomain: plan.route.subdomain,
-            path: plan.route.path,
-            previewMode: editorMode,
-            locale: store.locale,
-        },
-        storeTemplate: {
-            ...store.templateConfig,
+    try {
+        const result = await renderer.render({
+            context: {
+                storeId: store.id,
+                subdomain: plan.route.subdomain,
+                path: plan.route.path,
+                previewMode: editorMode,
+                locale: store.locale,
+            },
+            storeTemplate: {
+                ...store.templateConfig,
+                liquidBundle: plan.liquidBundle,
+            },
+            routeTemplate: {
+                id: plan.liquidTemplateKey || plan.template.id,
+                type: plan.template.type,
+                layoutKey: plan.template.layoutKey,
+                sections: plan.template.sections,
+            },
             liquidBundle: plan.liquidBundle,
-        },
-        routeTemplate: {
-            id: plan.liquidTemplateKey || plan.template.id,
-            type: plan.template.type,
-            layoutKey: plan.template.layoutKey,
-            sections: plan.template.sections,
-        },
-        liquidBundle: plan.liquidBundle,
-        liquidTemplateKey: plan.liquidTemplateKey || plan.template.id,
-        liquidAppBlocks: buildLiquidAppBlocks(store.templateConfig.appBlocks),
-        liquidAppEmbeds: buildLiquidAppEmbeds(store.templateConfig.appBlocks),
-        liquidContext: buildLiquidCommerceContext({ store, plan, sectionData }),
-    });
+            liquidTemplateKey: plan.liquidTemplateKey || plan.template.id,
+            liquidAppBlocks: buildLiquidAppBlocks(store.templateConfig.appBlocks),
+            liquidAppEmbeds: buildLiquidAppEmbeds(store.templateConfig.appBlocks),
+            liquidContext: buildLiquidCommerceContext({ store, plan, sectionData, customer, orderDetail, page: liquidPage }),
+        });
 
-    if (result.status !== 'rendered' || !result.liquid) return null;
+        if (result.status !== 'rendered' || !result.liquid) return null;
 
-    // Full-Liquid page: header + body + footer are ALL rendered by the Liquid engine (each fragment is
-    // sanitized per-section in theme-renderer.ts), so nothing in the storefront chrome is React.
-    // layout.tsx drops its React header/footer when rendererEngine === 'liquid'. We concatenate the
-    // sanitized fragments (not the full <!doctype> layout document, which can't nest inside a <div>).
-    const { header, contentForLayout, footer } = result.liquid;
-    return `${header || ''}${contentForLayout}${footer || ''}`;
+        // Full-Liquid page: header + body + footer are ALL rendered by the Liquid engine (each fragment is
+        // sanitized per-section in theme-renderer.ts), so nothing in the storefront chrome is React.
+        // layout.tsx drops its React header/footer when rendererEngine === 'liquid'. We concatenate the
+        // sanitized fragments (not the full <!doctype> layout document, which can't nest inside a <div>).
+        const { header, contentForLayout, footer } = result.liquid;
+        return `${header || ''}${contentForLayout}${footer || ''}`;
+    } catch (err: unknown) {
+        // Defense-in-depth: renderer should not throw after C1, but guard any unexpected failure
+        // (e.g. OOM in LiquidJS, JSDOM init failure). Fall back to React; the lb:canary:render
+        // event below will record engine='react'.
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        console.warn(JSON.stringify({
+            event: 'lb:canary:render:fallback',
+            reason: errorMessage.slice(0, 200), // truncate to avoid log bloat
+            subdomain: plan.route.subdomain,
+            template: plan.template.id,
+        }));
+        return null;
+    }
 }
 
 export default async function StorefrontCompositionEngine({
@@ -392,14 +484,16 @@ export default async function StorefrontCompositionEngine({
     plan,
     sectionData,
     editorMode = false,
+    liquidPage,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
     sectionData: Map<string, SectionRenderData>;
     editorMode?: boolean;
+    liquidPage?: Record<string, unknown> | null;
 }) {
     const renderStart = Date.now();
-    const liquidHtml = await renderLiquidPlan({ store, plan, sectionData, editorMode });
+    const liquidHtml = await renderLiquidPlan({ store, plan, sectionData, editorMode, liquidPage });
     const engine = liquidHtml ? 'liquid' : 'react';
     // Canary telemetry (Document 6 §4): structured log consumed by monitoring pipeline.
     console.log(JSON.stringify({
@@ -410,6 +504,7 @@ export default async function StorefrontCompositionEngine({
         route_type: plan.route.type,
         latency_ms: Date.now() - renderStart,
         editor_mode: editorMode,
+        fallback_reason: liquidHtml ? null : 'renderer_returned_null', // null when engine=liquid
     }));
 
     if (liquidHtml) {

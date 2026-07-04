@@ -1,9 +1,14 @@
 'use client';
 
 import { useEffect, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
+import {
+    EDITOR_SECTION_SELECT_MESSAGE,
+    EDITOR_SELECTION_MESSAGE,
+} from '@letbuyy/theme-engine/editor-bridge-protocol';
 
-const SELECT_MESSAGE = 'letbuyy:theme-editor:section-select';
-const SELECTED_MESSAGE = 'letbuyy:theme-editor:section-selected';
+// Alias to local names for readability within this file; the shared module is the source of truth.
+const SELECT_MESSAGE = EDITOR_SECTION_SELECT_MESSAGE;
+const SELECTED_MESSAGE = EDITOR_SELECTION_MESSAGE;
 
 type EditorPreviewSectionFrameProps = {
     children: ReactNode;

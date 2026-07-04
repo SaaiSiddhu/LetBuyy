@@ -42,7 +42,10 @@ test('storefront resolver and composition engine render full Liquid documents wi
   assert.match(resolverSource, /footer: coerceLiquidTemplateSections\(bundle, 'footer'\)/);
   assert.match(source, /createThemeRenderer\('liquid'\)/);
   assert.match(source, /plan\.rendererEngine !== 'liquid'/);
-  assert.match(source, /result\.liquid\.layoutHtml/);
+  // After the render-result refactor, composition-engine destructures header/contentForLayout/footer
+  // from result.liquid (not layoutHtml directly). Verify the destructuring + concatenation contract.
+  assert.match(source, /const \{ header, contentForLayout, footer \} = result\.liquid/);
+  assert.match(source, /`\$\{header \|\| ''\}\$\{contentForLayout\}\$\{footer \|\| ''\}`/);
   assert.doesNotMatch(source, /return result\.liquid\.contentForLayout/);
   assert.match(source, /data-theme-renderer="liquid"/);
   assert.match(source, /dangerouslySetInnerHTML=\{\{ __html: html \}\}/);
@@ -76,4 +79,18 @@ test('storefront composition engine maps installed app blocks into Liquid app sl
   assert.match(source, /\[`app:\$\{block\.extension_id\}`, source\]/);
   assert.match(source, /liquidAppBlocks: buildLiquidAppBlocks\(store\.templateConfig\.appBlocks\)/);
   assert.match(source, /data-app-block-slot/);
+});
+
+test('composition engine catches renderer failures and records fallback_reason in telemetry', () => {
+  const source = read(COMPOSITION_ENGINE_SOURCE);
+
+  // Defense-in-depth: renderLiquidPlan must catch anything the renderer throws.
+  assert.match(source, /catch.*err.*unknown/);
+  // The catch path must emit the fallback event so monitoring can distinguish managed fallback from normal React render.
+  assert.match(source, /lb:canary:render:fallback/);
+  // The catch path must return null so StorefrontCompositionEngine falls back to React.
+  // (null causes engine='react' in the outer telemetry log)
+  assert.match(source, /return null/);
+  // Canary telemetry must carry a fallback_reason field.
+  assert.match(source, /fallback_reason:/);
 });

@@ -1,13 +1,22 @@
 'use client';
 
 import { useEffect } from 'react';
+import {
+    EDITOR_LEGACY_SELECTION_MESSAGE,
+    EDITOR_SELECTION_MESSAGE,
+    EDITOR_SCROLL_MESSAGE,
+    EDITOR_VIEWPORT_MESSAGE,
+    EDITOR_LEGACY_VIEWPORT_MESSAGE,
+    EDITOR_READY_MESSAGE,
+} from '@letbuyy/theme-engine/editor-bridge-protocol';
 
-const LEGACY_SELECTION_MESSAGE = 'LETBUYY_THEME_EDITOR_SELECTION';
-const SELECTED_MESSAGE = 'letbuyy:theme-editor:section-selected';
-const SCROLL_MESSAGE = 'letbuyy:theme-editor:section-scroll';
-const VIEWPORT_MESSAGE = 'letbuyy:theme-editor:viewport';
-const LEGACY_VIEWPORT_MESSAGE = 'LETBUYY_THEME_EDITOR_VIEWPORT';
-const READY_MESSAGE = 'letbuyy:storefront-preview:ready';
+// Alias to local names for readability within this file; the shared module is the source of truth.
+const LEGACY_SELECTION_MESSAGE = EDITOR_LEGACY_SELECTION_MESSAGE;
+const SELECTED_MESSAGE = EDITOR_SELECTION_MESSAGE;
+const SCROLL_MESSAGE = EDITOR_SCROLL_MESSAGE;
+const VIEWPORT_MESSAGE = EDITOR_VIEWPORT_MESSAGE;
+const LEGACY_VIEWPORT_MESSAGE = EDITOR_LEGACY_VIEWPORT_MESSAGE;
+const READY_MESSAGE = EDITOR_READY_MESSAGE;
 
 type PreviewViewport = 'desktop' | 'tablet' | 'mobile';
 
@@ -67,7 +76,11 @@ export default function StorefrontPreviewBridge({
             const data = asRecord(event.data);
             const type = data.type;
 
-            if (type === LEGACY_SELECTION_MESSAGE || type === SELECTED_MESSAGE || type === SCROLL_MESSAGE) {
+            // Translate ONLY external editor messages (legacy + scroll). SELECTED_MESSAGE must never
+            // match here: selectSection() below re-posts SELECTED_MESSAGE to this same window, so
+            // matching it re-enters this handler and loops forever. Modern messages posted by the
+            // editor reach EditorPreviewSectionFrame listeners on this window directly.
+            if (type === LEGACY_SELECTION_MESSAGE || type === SCROLL_MESSAGE) {
                 const sectionId = typeof data.sectionId === 'string'
                     ? data.sectionId
                     : typeof data.selectedSectionId === 'string' ? data.selectedSectionId : '';

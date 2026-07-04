@@ -17,6 +17,11 @@ export * from './theme-governance';
 export * from './theme-bundle';
 export * from './theme-renderer';
 export * from './portable-to-liquid';
+export * from './theme-presets';
+export * from './industry-experience-map';
+export * from './theme-bundle-core';
+export * from './experience-fonts';
+export * from './editor-bridge-protocol';
 
 export type BuiltInSectionType =
   | 'header'

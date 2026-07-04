@@ -116,6 +116,9 @@ export default async function StoreLayout({ children, params }: Props) {
     }
     // Full-Liquid page: the Liquid engine renders header + body + footer (composition-engine), so the
     // React chrome below is skipped entirely — nothing storefront-visible is React.
+    // NOTE: liquidPage is true for any Liquid-engine plan regardless of whether composition-engine
+    // later falls back to React. A render failure in the canary-ON path will suppress the React chrome.
+    // Tracked for Phase D fix.
     const liquidPage = renderPlan.rendererEngine === 'liquid';
     const isDark = Boolean(ts.isDark);
     const fontCss = FONT_MAP[ts.fontFamily] || FONT_MAP['Inter'];
