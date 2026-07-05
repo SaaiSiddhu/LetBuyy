@@ -35,8 +35,8 @@
 
 | ID | Claim | Verdict | Evidence | Closure Status |
 |---|---|---|---|---|
-| **R-01** | `cache: false` is set on the LiquidJS engine; no cross-request engine reuse; 23 sections re-parsed per pageview | **CONFIRMED** | `packages/theme-engine/src/theme-renderer.ts:436–437` (`new Liquid({ cache: false, ... })`); line 365 shows engine created fresh per `LiquidRenderer.render()` call; line 299 shows `parseAndRender()` called per section with no cached parse result | **OPEN-CONFIRMED-RISK — Phase C (Performance)** owns the fix: introduce a cross-request engine singleton and enable LiquidJS template caching. |
-| **R-03** | Every storefront request triggers an uncached gateway fetch to `/v1/internal/store-access/resolve` — a SPOF for access-control integrity | **CONFIRMED** | `apps/storefront-runtime/src/proxy.ts:106` (`cache: 'no-store'`); lines 98–120 show no in-memory/KV/edge cache; `services/api-gateway/src/routes/internal-store-access.ts:30–62` has no `Cache-Control` response header. Nuance: gateway outage degrades to `NextResponse.next()` (access bypass) rather than hard 500. | **OPEN-CONFIRMED-RISK — Phase C (Performance/Resilience)** owns the fix: introduce KV-backed access resolution caching with a short TTL. |
+| **R-01** | `cache: false` is set on the LiquidJS engine; no cross-request engine reuse; 23 sections re-parsed per pageview | **CONFIRMED** | `packages/theme-engine/src/theme-renderer.ts:436–437` (`new Liquid({ cache: false, ... })`); line 365 shows engine created fresh per `LiquidRenderer.render()` call; line 299 shows `parseAndRender()` called per section with no cached parse result | **PARTIALLY-CLOSED-IMPLEMENTED (Phase F — F1+F2)** — `cache: true` enabled in `createLiquidEngine()` (line 643); `Promise.allSettled` parallel section rendering in `renderLiquidTemplateSections()`. **Remaining gap:** LRU is engine-instance-local — `createLiquidEngine()` is called fresh per request (lifecycle assumption documented at line 643 with a `LIFECYCLE ASSUMPTION` comment). Cross-request LRU benefit requires engine pooling (not implemented; requires re-evaluation for tenant-isolation safety before adding). Intra-request steady-state parse reduction confirmed; cross-request parse cost unchanged. See PHASE_F_REPORT.md §F1. |
+| **R-03** | Every storefront request triggers an uncached gateway fetch to `/v1/internal/store-access/resolve` — a SPOF for access-control integrity | **CONFIRMED** | `apps/storefront-runtime/src/proxy.ts:106` (`cache: 'no-store'`); lines 98–120 show no in-memory/KV/edge cache; `services/api-gateway/src/routes/internal-store-access.ts:30–62` has no `Cache-Control` response header. Nuance: gateway outage degrades to `NextResponse.next()` (access bypass) rather than hard 500. | **PARTIALLY-CLOSED (Phase F — H3 validGateCookie staleness fix)** — `validGateCookie()` in `proxy.ts:208` now re-validates against `site.access_mode` fetched live from the DB, closing the staleness window where a cached gate cookie would not reflect a merchant's `access_mode` change. **Remaining gap:** The `cache: 'no-store'` gateway fetch on every request (the KV-backed cache) is NOT implemented. R-03 core resilience risk (gateway-outage → access bypass) remains OPEN-CONFIRMED-RISK. KV caching still deferred. See PHASE_F_REPORT.md §H3. |
 
 #### Domain: Error Handling
 
@@ -261,8 +261,8 @@ Seven findings were surfaced during Phase E implementation. They are documented 
 | ID | Severity | File | Summary | Disposition |
 |---|---|---|---|---|
 | F-E2-01 | MEDIUM | `content-resource-renderer.tsx` | Article `liquidPage` missing `publishedAt` and `featured_image`; always null in live renders | OPEN — Phase F |
-| F-E5-01 | MEDIUM | `composition-engine.tsx` | Password-gate form sends `x-www-form-urlencoded`; `proxy.ts` reads `json` only | OPEN — Phase F |
-| F-E6-01 | LOW | `theme-bundle.ts` | `routes.account_logout_url` is POST-only; GET href use is a no-op logout | OPEN — documented in code comment |
+| F-E5-01 | MEDIUM | `composition-engine.tsx` | Password-gate form sends `x-www-form-urlencoded`; `proxy.ts` reads `json` only | **PARTIALLY-CLOSED (Phase F — F5/F6 chrome-seam hardening)** — `fallback_reason` telemetry fix (H4) prevents false-positive `renderer_returned_null` on non-Liquid plan failures. `validGateCookie` staleness fix (H3) closes the stale cookie `access_mode` read. Core `x-www-form-urlencoded` vs JSON mismatch: confirmed STILL OPEN — content-type alignment between password-gate form POST and `proxy.ts` JSON reader not implemented in Phase F scope. Carries to Phase G. |
+| F-E6-01 | LOW | `theme-bundle.ts` | `routes.account_logout_url` is POST-only; GET href use is a no-op logout | **CLOSED-IMPLEMENTED (Phase F — F7)** — GET anchor replaced by `<lb-logout>` Web Component island with `<form method="post">` no-JS fallback. CSRF guard added to logout route. See PHASE_F_REPORT.md §F7. |
 | F-E4-01 | LOW | `theme-bundle.ts` | `policy-content` section (pre-existing) uses `{{ page.body_html }}` without `\| raw`; double-escaping | OPEN — pre-existing, Phase F |
 | F-E2-02 | MEDIUM | `liquid-l14-blog.test.ts` | `L14(h)` does not cover `body_html: ''` empty-string case for article template | OPEN — test coverage gap |
 | F-E5-02 | MEDIUM | `theme-bundle.ts` | Password Liquid template is not in production rendering path; no tracking issue exists for Phase F update to `proxy.ts:296` | OPEN — documentation/tracking gap |
@@ -286,3 +286,66 @@ Seven findings were surfaced during Phase E implementation. They are documented 
 ---
 
 *End of Risk Closure Report — amended 2026-07-04 (Phase E additions)*
+
+---
+
+---
+
+## 9. Phase F Amendment — Summary Counts and Closure Updates
+
+> This section amends Sections 1, 6, 7, and 8 to reflect Phase F closures (2026-07-05).
+
+### 9.1 Updated Summary Counts
+
+| Category | Phase E Count | Phase F Change | Updated Count |
+|---|---|---|---|
+| CLOSED-VERIFIED (Phase B static) | 12 | +0 | 12 |
+| CLOSED-IMPLEMENTED (Phase C) | 5 | +0 | 5 |
+| CLOSED-IMPLEMENTED (Phase D) | 7 | +0 | 7 |
+| CLOSED-IMPLEMENTED (Phase E) | 3 | +0 | 3 |
+| CLOSED-IMPLEMENTED (Phase F) | 0 | +1 (F-E6-01 logout GET href trap) | 1 |
+| PARTIALLY-CLOSED-IMPLEMENTED (Phase F) | 0 | +2 (R-01 per-request parse, R-03 validGateCookie staleness) | 2 |
+| PARTIAL-IMPLEMENTED (Phase D) | 1 | +0 (OQ-21/UC-11 still partial) | 1 |
+| OPEN-CONFIRMED-RISK | 13 | -1 (F-E6-01 closed) | 12 |
+| OPEN-UNVERIFIABLE | 1 | +0 | 1 |
+| REFUTED | 7 | +0 | 7 |
+| PARTIAL | 9 | +0 | 9 |
+
+### 9.2 Register Row Updates
+
+| ID | Prior Closure Status | Phase F Update |
+|---|---|---|
+| **R-01** | OPEN-CONFIRMED-RISK — Phase C (Performance) | **PARTIALLY-CLOSED-IMPLEMENTED (Phase F — F1+F2)** — `cache:true` LRU + `Promise.allSettled` parallel sections reduce intra-request parse cost. Cross-request LRU requires engine pooling (not implemented). |
+| **R-03** | OPEN-CONFIRMED-RISK — Phase C (Performance/Resilience) | **PARTIALLY-CLOSED (Phase F — H3)** — `validGateCookie` staleness closed by live `site.access_mode` re-validation. KV-backed per-request caching still OPEN. |
+| **F-E6-01** | OPEN — Phase F (from Phase E §8.4) | **CLOSED-IMPLEMENTED (Phase F — F7)** — lb-logout Web Component island replaces GET anchor. CSRF guard on logout route. 8 tests in `liquid-f7-logout.test.ts`. |
+| **F-E5-01** | OPEN — Phase F (from Phase E §8.4) | **PARTIALLY-CLOSED (Phase F — H3/H4)** — `validGateCookie` staleness + `fallback_reason` telemetry fixed. Core `x-www-form-urlencoded` vs JSON mismatch still OPEN — carries to Phase G. |
+
+### 9.3 Phase F New Findings (not in prior register)
+
+Five hardening findings discovered and addressed in Phase F:
+
+| ID | Severity | File | Summary | Disposition |
+|---|---|---|---|---|
+| F-F-H1 | MEDIUM | `theme-renderer.ts` | HTML-comment injection via `sectionId`/`resolvedType` in error placeholders | **CLOSED (Phase F — H1)** — `escapeHtmlCommentValue()` strips `--` sequences |
+| F-F-H2 | LOW | `theme-renderer.ts` | LRU mutation hazard if template source reference is externally mutated before LRU population | **CLOSED (Phase F — H2)** — `String()` defensive copies in templates map |
+| F-F-H3 | MEDIUM | `proxy.ts` | `validGateCookie()` reads stale `access_mode` from cookie rather than live DB | **CLOSED (Phase F — H3)** — re-validates against `site.access_mode` |
+| F-F-H4 | LOW | `composition-engine.tsx` | `fallback_reason` set unconditionally when `liquidHtml === null` regardless of plan engine | **CLOSED (Phase F — H4)** — conditional on `plan.rendererEngine === 'liquid'` |
+| F-F-H5 | LOW | `theme-renderer.ts` | Error placeholder `LiquidRenderedSection` had no `isError` flag; consumers had to parse the HTML comment string | **CLOSED (Phase F — H5)** — `isError: true` on placeholder entries |
+
+### 9.4 Phase Ownership Updates
+
+| Item | Old Owner | Phase F Status |
+|---|---|---|
+| R-01 (per-request-parse HIGH) | Phase C (Performance) | PARTIALLY-CLOSED — F1+F2 reduce intra-request cost; cross-request scope deferred |
+| R-03 (validGateCookie staleness) | Phase C (Performance/Resilience) | PARTIALLY-CLOSED — H3 staleness closed; KV cache deferred |
+| F-E6-01 (logout GET href trap) | Phase F (documented in Phase E) | CLOSED-IMPLEMENTED (Phase F — F7) |
+| F-E5-01 (password chrome-seam content-type) | Phase F (documented in Phase E) | PARTIALLY-CLOSED — H3/H4 hardening applied; core content-type mismatch deferred to Phase G |
+| F-E2-01 (article liquidPage fields) | Phase F (documented in Phase E) | OPEN — not implemented in Phase F scope; carries to Phase G |
+| F-E4-01 (policy-content double-escaping) | Phase F (documented in Phase E) | OPEN — carries to Phase G |
+| F-E5-02 (password template production routing) | Phase F (documented in Phase E) | OPEN — `proxy.ts:296` unconditional React routing not updated; carries to Phase G |
+
+> **Phase F scope note:** Phase F addressed render pipeline performance (F1, F2), logout security (F7), benchmark harness (F9), and 5 hardening items (H1–H5). Template production routing for password/not_found pages (`proxy.ts:296`), article field forwarding (`content-resource-renderer.tsx`), policy-content double-escaping, and password form content-type mismatch carry forward. LANE-A test gate was blocked during session — orchestrator must re-run `pnpm --filter @letbuyy/theme-engine test`.
+
+---
+
+*End of Risk Closure Report — amended 2026-07-05 (Phase F additions)*

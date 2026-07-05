@@ -635,6 +635,14 @@ async function renderLiquidPlan({
     }
 }
 
+// F5 — Chrome-Fallback Seam Fix.
+//
+// The seam is closed inside StorefrontCompositionEngine: when the plan calls for Liquid
+// (rendererEngine==='liquid') but the render fails (liquidHtml===null), the fallback renders
+// chrome sections (header/footer from plan.sectionGroups) around the React body sections.
+// This ensures a Liquid→React fallback always has a complete page with header and footer.
+// LiquidJS 10.27.0 re-entrancy is confirmed safe — see reentrancyVerdict in the Phase F plan.
+
 export default async function StorefrontCompositionEngine({
     store,
     plan,
@@ -660,7 +668,12 @@ export default async function StorefrontCompositionEngine({
         route_type: plan.route.type,
         latency_ms: Date.now() - renderStart,
         editor_mode: editorMode,
-        fallback_reason: liquidHtml ? null : 'renderer_returned_null', // null when engine=liquid
+        // F5 fix: only set fallback_reason when the plan intended Liquid and the renderer returned null.
+        // A React plan (rendererEngine !== 'liquid') also yields liquidHtml===null, but that is not a
+        // fallback — it is the normal React path. Setting fallback_reason on React plans produced
+        // misleading monitoring data where every non-Liquid page logged 'renderer_returned_null'.
+        fallback_reason: (liquidHtml === null && plan.rendererEngine === 'liquid') ? 'renderer_returned_null' : null,
+        cache_hit: null, // field present; NOT CONNECTED until per-request render cache is wired
     }));
 
     if (liquidHtml) {
@@ -671,6 +684,53 @@ export default async function StorefrontCompositionEngine({
                 basePath={`/store/${plan.route.subdomain}`}
                 storeId={store.id}
             />
+        );
+    }
+
+    // F5 — Chrome-Fallback Seam Fix.
+    //
+    // When the plan calls for Liquid (rendererEngine==='liquid') but the render failed (liquidHtml
+    // is null), layout.tsx has already suppressed its React chrome because liquidPage was true.
+    // To ensure the fallback React page still has a header and footer, composition-engine renders
+    // chrome sections from plan.sectionGroups when falling back from a Liquid plan.
+    //
+    // This is correct because:
+    // 1. plan.sectionGroups.header / plan.sectionGroups.footer carry the same sections that
+    //    layout.tsx would have rendered for the React chrome path.
+    // 2. sectionData here includes the products fetched by the page, which is a superset of what
+    //    layout would have provided (layout provides only { products } per header/footer section).
+    // 3. StorefrontSectionGroupRenderer already handles empty sectionGroups gracefully (returns null).
+    // 4. This path is only reached when the Liquid renderer itself failed — a defense-in-depth path.
+    //    Normal React plans (rendererEngine!=='liquid') go through layout's React chrome as before.
+    const isLiquidFallback = plan.rendererEngine === 'liquid';
+
+    if (isLiquidFallback) {
+        return (
+            <>
+                <StorefrontSectionGroupRenderer
+                    store={store}
+                    plan={plan}
+                    groupKey="header"
+                    sectionData={sectionData}
+                    editorMode={editorMode}
+                />
+                <main className="flex-grow">
+                    <RenderSectionList
+                        store={store}
+                        plan={plan}
+                        sections={plan.template.sections}
+                        sectionData={sectionData}
+                        editorMode={editorMode}
+                    />
+                </main>
+                <StorefrontSectionGroupRenderer
+                    store={store}
+                    plan={plan}
+                    groupKey="footer"
+                    sectionData={sectionData}
+                    editorMode={editorMode}
+                />
+            </>
         );
     }
 

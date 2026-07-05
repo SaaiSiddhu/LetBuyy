@@ -27,6 +27,10 @@ interface StorefrontAccessContext {
   access_message: string | null;
   published: boolean;
   status: string;
+  // Multi-domain (migration 185): set when the request host is a connected
+  // secondary/redirect domain that should 301 to the store's primary host.
+  matched_domain_role?: 'primary' | 'redirect' | null;
+  redirect_to?: string | null;
 }
 
 type StorefrontAccessResolution =
@@ -194,12 +198,35 @@ async function validPreview(req: NextRequest, site: StorefrontAccessContext, hos
 async function validGateCookie(req: NextRequest, site: StorefrontAccessContext, host: string): Promise<boolean> {
   const token = req.cookies.get(LETBUYY_STOREFRONT_GATE_COOKIE)?.value;
   const result = await verifyStorefrontGateToken(token, signingKey('STORE_ACCESS_SIGNING_KEY'), { expectedHost: host });
-  return Boolean(result.valid && result.payload?.sid === site.site_id);
+  if (!result.valid || result.payload?.sid !== site.site_id) return false;
+  // MEDIUM fix: a valid gate cookie may survive a merchant switching access_mode away from 'password'.
+  // The token's exp guards the maximum staleness window (LETBUYY_STOREFRONT_GATE_TTL_SECONDS), but
+  // a store that moves to 'preview_only' or 'offline' within that window must NOT be admitted by the
+  // gate cookie. resolveAccess is already cache:no-store on every request, so this check adds no
+  // extra latency; it simply validates that the current resolved access_mode is still 'password'
+  // before honouring the stored gate.
+  return site.access_mode === 'password';
 }
 
 async function handlePasswordSubmit(req: NextRequest, site: StorefrontAccessContext, host: string): Promise<NextResponse> {
-  const body = await req.json().catch(() => null) as { password?: unknown } | null;
-  const password = typeof body?.password === 'string' ? body.password : '';
+  // F6 — Dual content-type parsing following the D10 pattern.
+  // The E5 Liquid password-gate form posts application/x-www-form-urlencoded; the existing
+  // JSON path handles fetch()-based submissions. Both are accepted. Fail-closed: if both
+  // parse paths throw (malformed body), password remains '' and the 400 below fires.
+  let password = '';
+  try {
+    const contentType = req.headers.get('content-type') || '';
+    if (contentType.startsWith('application/x-www-form-urlencoded')) {
+      const fd = await req.formData();
+      const raw = fd.get('password');
+      password = typeof raw === 'string' ? raw : '';
+    } else {
+      const body = await req.json().catch(() => null) as { password?: unknown } | null;
+      password = typeof body?.password === 'string' ? body.password : '';
+    }
+  } catch {
+    // Both parse paths threw — password stays '' → 400 below (fail-closed).
+  }
   if (!password) return NextResponse.json({ ok: false, error: 'PASSWORD_REQUIRED' }, { status: 400 });
 
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null;
@@ -247,6 +274,19 @@ export async function proxy(req: NextRequest) {
   const site = resolution.status === 'ok' ? resolution.site : null;
   if (!site?.subdomain) {
     return noIndex(new NextResponse('Store not found', { status: 404 }));
+  }
+
+  // Multi-domain (185): a connected *redirect* domain 301s to the store's primary host.
+  // Only fires when the resolver matched a site_domains redirect row, so primary-domain
+  // and subdomain traffic is unaffected.
+  if (parsed.kind === 'custom_domain' && site.matched_domain_role === 'redirect') {
+    const target = normalizeRequestHost(site.redirect_to || site.custom_domain || '');
+    if (target && target !== host) {
+      const redirectUrl = req.nextUrl.clone();
+      redirectUrl.protocol = 'https:';
+      redirectUrl.host = target;
+      return NextResponse.redirect(redirectUrl, 301);
+    }
   }
 
   if (req.nextUrl.pathname === '/store-access/password' && req.method === 'POST') {

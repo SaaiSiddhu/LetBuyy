@@ -254,3 +254,62 @@ test('customer register route and Liquid form support the no-JS form submit path
   const bundleSource = read('packages/theme-engine/src/theme-bundle.ts');
   assert.match(bundleSource, /name="storeId" value="\{\{ shop\.id \}\}"/);
 });
+
+// ============================================================
+// Phase F tests
+// ============================================================
+
+test('F5 chrome-fallback seam: composition-engine renders React chrome on Liquid→React fallback', () => {
+  const source = read(COMPOSITION_ENGINE_SOURCE);
+
+  // F5: when the plan is liquid but the render fails (liquidHtml===null), the composition engine
+  // must render chrome sections (header + footer from plan.sectionGroups) around the React body,
+  // so the fallback page is never chrome-less.
+  assert.match(source, /isLiquidFallback/);
+  // The fallback path must check that the plan was liquid (not just that render failed for a React plan).
+  assert.match(source, /plan\.rendererEngine === 'liquid'/);
+  // Header and footer chrome sections must be rendered in the fallback path.
+  assert.match(source, /StorefrontSectionGroupRenderer/);
+  assert.match(source, /groupKey="header"/);
+  assert.match(source, /groupKey="footer"/);
+  // The layout source must document the F5 fix.
+  const layoutSource = read(LAYOUT_SOURCE);
+  assert.match(layoutSource, /F5/);
+  // cache_hit field must be present in the canary telemetry event (present but NOT CONNECTED).
+  assert.match(source, /cache_hit:/);
+});
+
+test('F6 proxy password gate accepts both JSON and urlencoded form bodies', () => {
+  const proxySource = read('apps/storefront-runtime/src/proxy.ts');
+
+  // F6: handlePasswordSubmit must branch on Content-Type.
+  assert.match(proxySource, /application\/x-www-form-urlencoded/);
+  // urlencoded path must use formData() to extract the password field.
+  assert.match(proxySource, /req\.formData\(\)/);
+  // JSON path must still be the fallback (existing behaviour preserved).
+  assert.match(proxySource, /req\.json\(\)/);
+  // Both paths must set the `password` variable before the guard.
+  // Fail-closed: if both throw, password stays '' and the 400 fires.
+  assert.match(proxySource, /PASSWORD_REQUIRED/);
+  // Rate-limit and gateway verify call remain unchanged (not duplicated for each path).
+  assert.match(proxySource, /verifyStorePassword/);
+});
+
+test('F7-Lane-B lb-logout island is registered and implements progressive-enhancement POST logout', () => {
+  const source = read('apps/storefront-runtime/src/lib/theme-engine/liquid-hydration-islands.tsx');
+
+  // lb-logout must be defined as a custom element.
+  assert.match(source, /class LbLogoutElement/);
+  assert.match(source, /defineLiquidIsland\('lb-logout', LbLogoutElement\)/);
+  // Island must intercept button clicks and call performLogout.
+  assert.match(source, /performLogout/);
+  // Logout fetch must use POST method and credentials: 'include'.
+  assert.match(source, /method: 'POST'/);
+  assert.match(source, /credentials: 'include'/);
+  // On success, island must redirect to /customers/login.
+  assert.match(source, /\/customers\/login/);
+  // Fallback path: when fetch fails, native form.submit() is called (no-JS guarantee).
+  assert.match(source, /form\.submit\(\)/);
+  // The island reads the logout URL from data-logout-url dataset attribute.
+  assert.match(source, /dataset\.logoutUrl/);
+});

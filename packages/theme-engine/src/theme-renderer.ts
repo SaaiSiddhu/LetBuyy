@@ -80,6 +80,10 @@ export interface LiquidRenderedSection {
   html: string;
   settings: Record<string, unknown>;
   blocks: LiquidRenderedBlock[];
+  // true when this section failed to render and html contains an error-comment placeholder.
+  // Callers iterating result.liquid.sections can gate on !section.isError to skip placeholders.
+  // contentForLayout always includes all sections (including placeholders) for page assembly.
+  isError?: boolean;
 }
 
 export interface LiquidRenderedTheme {
@@ -129,6 +133,10 @@ const LIQUID_HYDRATION_CUSTOM_ELEMENTS = [
   'lb-cart',
   'lb-customer-settings',
   'lb-address-manager',
+  // F7-Lane-A: lb-logout island — progressive enhancement wrapper around a no-JS <form method="post">.
+  // Must be in ADD_TAGS and tagNameCheck so DOMPurify does not strip the element.
+  // LANE-B (liquid-hydration-islands.tsx) registers LbLogoutElement via defineLiquidIsland.
+  'lb-logout',
 ] as const;
 
 export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
@@ -154,6 +162,8 @@ export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
     'data-lb-add-to-cart-status',
     'data-authenticated',
     'data-base-path',
+    // F7-Lane-A: lb-logout island attribute
+    'data-logout-url',
     'data-in-wishlist',
     'data-lb-island',
     'data-lb-variant-option',
@@ -183,7 +193,8 @@ export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
     'width',
   ],
   CUSTOM_ELEMENT_HANDLING: {
-    tagNameCheck: /^lb-(?:add-to-cart|cart-drawer|search|variant-picker|review-form|wishlist-toggle|cart|customer-settings|address-manager)$/,
+    // F7-Lane-A: lb-logout added. Keep in sync with LIQUID_HYDRATION_CUSTOM_ELEMENTS above.
+    tagNameCheck: /^lb-(?:add-to-cart|cart-drawer|search|variant-picker|review-form|wishlist-toggle|cart|customer-settings|address-manager|logout)$/,
     attributeNameCheck: /^(?:aria-[a-z0-9-]+|data-[a-z0-9-]+|class|id|role|slot|title|type|name|value|href|src)$/i,
     allowCustomizedBuiltInElements: false,
   },
@@ -300,6 +311,18 @@ export class JsonContractThemeRenderer implements ThemeRenderer {
 // Render every section of one Liquid template to sanitized HTML. Shared by the page body and by the
 // header/footer chrome templates (L4) so chrome and body go through the identical sanitized pipeline.
 // C1: returns sectionErrors count so the caller can determine 'rendered' vs 'error' status.
+//
+// F2 — Parallel Section Rendering: sections are rendered concurrently via Promise.allSettled.
+// Re-entrancy is CONFIRMED SAFE for LiquidJS 10.27.0 (verified from node_modules source):
+//   (1) Liquid.parse() constructs a new Parser(this) on every call — no shared mutable parser state.
+//   (2) Liquid._render() constructs a new Context on every call — all per-render mutable state
+//       (scopes, registers, limiters) is fresh per invocation and never shared between concurrent calls.
+//   (3) The shared Render instance is stateless; its methods are pure functions over their arguments.
+//   (4) Tags/filters are only mutated during construction/registration, never during rendering.
+//   (5) LRU cache (F1) is written only during parse(), not during render() — concurrent parse calls
+//       for different source strings are independent. ASSUMPTION: LiquidJS >=10.27.0; verify on upgrade.
+// DOMPurify.sanitize is re-entrant (documented). Output ORDER is preserved via sectionOrder index mapping.
+// Block rendering stays sequential within each section (renderLiquidSectionBlocks) — no change in Phase F.
 async function renderLiquidTemplateSections(
     template: LiquidThemePackageBundle['templates'][string],
     engine: Liquid,
@@ -307,13 +330,17 @@ async function renderLiquidTemplateSections(
     bundle: LiquidThemePackageBundle,
     warnings: string[],
 ): Promise<{ sections: LiquidRenderedSection[]; html: string; sectionErrors: number }> {
-    const renderedSections: LiquidRenderedSection[] = [];
     const sectionOrder = orderedKeys(template.sections, template.order);
-    let sectionErrors = 0;
 
-    for (const sectionId of sectionOrder) {
+    // Build a task per enabled section. Skipped sections (missing file / disabled) are filtered
+    // out of the task list; their slot is filled with null so index alignment is preserved.
+    type SectionTask =
+        | { kind: 'skip' }
+        | { kind: 'render'; sectionId: string; resolvedType: string; templateSection: ThemeBundleTemplateSection };
+
+    const tasks: SectionTask[] = sectionOrder.map((sectionId) => {
         const templateSection = template.sections[sectionId];
-        if (!templateSection || templateSection.disabled) continue;
+        if (!templateSection || templateSection.disabled) return { kind: 'skip' };
 
         // C4: resolve the section type via the alias map before looking up the bundle file.
         // This handles bundles persisted outside the compiler whose section.type is 'newsletter'
@@ -322,63 +349,117 @@ async function renderLiquidTemplateSections(
         const sectionFile = bundle.sections[resolvedType];
         if (!sectionFile) {
             warnings.push(`Liquid section "${templateSection.type}" was not found and was skipped.`);
+            return { kind: 'skip' };
+        }
+
+        return { kind: 'render', sectionId, resolvedType, templateSection };
+    });
+
+    // Execute all render tasks concurrently. Promise.allSettled never rejects — each task carries
+    // its own C1 try/catch so one bad section still produces an error-comment placeholder while
+    // others render normally.
+    const settled = await Promise.allSettled(
+        tasks.map(async (task): Promise<LiquidRenderedSection | null> => {
+            if (task.kind === 'skip') return null;
+            const { sectionId, resolvedType, templateSection } = task;
+            const sectionFile = bundle.sections[resolvedType]!;
+
+            // C1: per-section try/catch — a single bad section must not crash the full page render.
+            // On error we push an HTML comment placeholder and continue.
+            try {
+                const renderedBlocks = await renderLiquidSectionBlocks({
+                    engine,
+                    bundle,
+                    input,
+                    sectionId,
+                    sectionType: resolvedType,
+                    section: templateSection,
+                });
+                const sectionHtml = await engine.parseAndRender(
+                    stripLiquidSchemaBlocks(sectionFile.source),
+                    buildLiquidScope(input, bundle, {
+                        section: {
+                            id: sectionId,
+                            type: resolvedType,
+                            settings: templateSection.settings,
+                            blocks: renderedBlocks.map((block) => ({
+                                id: block.id,
+                                type: block.type,
+                                settings: block.settings,
+                                content: block.html,
+                                html: block.html,
+                                is_app_block: block.isAppBlock,
+                            })),
+                            block_order: renderedBlocks.map((block) => block.id),
+                            schema: sectionFile.schema,
+                        },
+                    }),
+                    liquidRenderOptions,
+                );
+
+                return {
+                    id: sectionId,
+                    type: resolvedType,
+                    settings: templateSection.settings,
+                    html: await sanitizeRenderedHtml(String(sectionHtml)),
+                    blocks: renderedBlocks,
+                };
+            } catch (sectionErr: unknown) {
+                const message = sectionErr instanceof Error ? sectionErr.message : String(sectionErr);
+                // Placeholder is safe static HTML — no merchant data, no Liquid source.
+                return {
+                    id: sectionId,
+                    type: resolvedType,
+                    settings: templateSection.settings,
+                    // HTML-comment safe: escapeHtmlAttribute handles ", ', <, >, & and we additionally
+                    // strip '--' sequences so a crafted sectionId/type cannot break out of the comment.
+                    html: `<!-- lb:section-error sectionId="${escapeHtmlCommentValue(sectionId)}" type="${escapeHtmlCommentValue(resolvedType)}" -->`,
+                    blocks: [],
+                    _error: message, // ephemeral: extracted below for warnings, not part of LiquidRenderedSection
+                } as LiquidRenderedSection & { _error?: string };
+            }
+        }),
+    );
+
+    // Collect results in original order; accumulate warnings and error count.
+    const renderedSections: LiquidRenderedSection[] = [];
+    let sectionErrors = 0;
+
+    for (let i = 0; i < settled.length; i++) {
+        const result = settled[i]!;
+        const task = tasks[i]!;
+
+        // Promise.allSettled only rejects if the executor function itself throws synchronously,
+        // which cannot happen here since each task's body is fully wrapped in try/catch. The
+        // rejection branch is a defensive guard.
+        if (result.status === 'rejected') {
+            sectionErrors++;
+            const msg = result.reason instanceof Error ? result.reason.message : String(result.reason);
+            if (task.kind === 'render') {
+                warnings.push(`Liquid section "${task.sectionId}" (type "${task.resolvedType}") failed to render and was skipped: ${msg.slice(0, 200)}`);
+            }
             continue;
         }
 
-        // C1: per-section try/catch — a single bad section must not crash the full page render.
-        // On error we push an HTML comment placeholder and continue; the caller decides whether to
-        // return 'rendered' (partial) or 'error' (all sections failed).
-        try {
-            const renderedBlocks = await renderLiquidSectionBlocks({
-                engine,
-                bundle,
-                input,
-                sectionId,
-                sectionType: resolvedType,
-                section: templateSection,
-            });
-            const sectionHtml = await engine.parseAndRender(
-                stripLiquidSchemaBlocks(sectionFile.source),
-                buildLiquidScope(input, bundle, {
-                    section: {
-                        id: sectionId,
-                        type: resolvedType,
-                        settings: templateSection.settings,
-                        blocks: renderedBlocks.map((block) => ({
-                            id: block.id,
-                            type: block.type,
-                            settings: block.settings,
-                            content: block.html,
-                            html: block.html,
-                            is_app_block: block.isAppBlock,
-                        })),
-                        block_order: renderedBlocks.map((block) => block.id),
-                        schema: sectionFile.schema,
-                    },
-                }),
-                liquidRenderOptions,
-            );
+        const section = result.value;
+        if (section === null) continue; // 'skip' task
 
-            renderedSections.push({
-                id: sectionId,
-                type: resolvedType,
-                settings: templateSection.settings,
-                html: await sanitizeRenderedHtml(String(sectionHtml)),
-                blocks: renderedBlocks,
-            });
-        } catch (sectionErr: unknown) {
+        // Check if this section carried an error marker from the inner try/catch.
+        const sectionWithError = section as LiquidRenderedSection & { _error?: string };
+        if (sectionWithError._error !== undefined) {
             sectionErrors++;
-            const message = sectionErr instanceof Error ? sectionErr.message : String(sectionErr);
-            warnings.push(`Liquid section "${sectionId}" (type "${templateSection.type}") failed to render and was skipped: ${message.slice(0, 200)}`);
-            // Push an HTML comment placeholder so the caller can identify the gap without leaking source.
-            renderedSections.push({
-                id: sectionId,
-                type: resolvedType,
-                settings: templateSection.settings,
-                // Placeholder is safe static HTML — no merchant data, no Liquid source.
-                html: `<!-- lb:section-error sectionId="${sectionId.replace(/"/g, '')}" type="${resolvedType.replace(/"/g, '')}" -->`,
-                blocks: [],
-            });
+            if (task.kind === 'render') {
+                warnings.push(`Liquid section "${section.id}" (type "${section.type}") failed to render and was skipped: ${sectionWithError._error.slice(0, 200)}`);
+            }
+            // Clean ephemeral _error field and mark isError=true so callers can distinguish
+            // placeholder-html entries from successfully-rendered sections. contentForLayout
+            // still joins all entries (including placeholders) for page assembly — this only
+            // lets downstream consumers filter result.liquid.sections reliably.
+            const { _error, ...cleanSection } = sectionWithError;
+            void _error;
+            renderedSections.push({ ...cleanSection, isError: true } as LiquidRenderedSection);
+        } else {
+            renderedSections.push(section);
         }
     }
 
@@ -545,8 +626,21 @@ function createLiquidEngine(
   const contentForHeader = globals.contentForHeader || '';
   const contentForFooter = globals.contentForFooter || '';
   const locale = globals.locale || 'en';
+  // F1 — Template Parse Cache: cache:true enables LiquidJS v10.27.0 built-in LRU keyed on template
+  // source strings. Content-addressed by construction → different tenants with different source text
+  // get different LRU entries; there is no cross-tenant risk. The LRU is engine-instance-local
+  // (createLiquidEngine is called fresh per render inside LiquidRenderer.render), so cache state
+  // is per-request, not global across requests. The default LRU limit is 1000 entries (cacheSize
+  // option); since the engine is discarded after each render, intra-request LRU growth is bounded
+  // by the number of distinct template sources in the bundle (small). Cross-request LRU growth
+  // cannot occur with this per-render lifecycle.
+  // LIFECYCLE ASSUMPTION: if the engine is ever cached across requests (e.g., to amortize
+  // construction cost), verify that cacheSize is set to a per-tenant bound and that the
+  // cross-tenant isolation argument is re-evaluated before merging that change.
+  // Assumption: LiquidJS >=10.27.0 (version-pinned in packages/theme-engine/package.json).
+  // If LiquidJS is upgraded, re-verify LRU keying semantics.
   const engine = new Liquid({
-    cache: false,
+    cache: true,
     dynamicPartials: false,
     strictFilters: true,
     strictVariables: false,
@@ -556,10 +650,16 @@ function createLiquidEngine(
     parseLimit: 300_000,
     renderLimit: liquidRenderOptions.renderLimit,
     memoryLimit: liquidRenderOptions.memoryLimit,
+    // Defensive copy: the LRU is keyed on the string value passed at construction time.
+    // String() forces a primitive copy of each source value so that a caller who holds a
+    // reference to the same bundle object and later mutates section.source cannot silently
+    // invalidate (or be served stale entries from) the engine's LRU.
+    // NOTE: if the engine lifecycle changes from per-render to cross-request, re-evaluate
+    // tenant isolation — the LRU is currently per-engine-instance (created fresh each render).
     templates: Object.fromEntries([
-      [bundle.layout.theme.path, bundle.layout.theme.source],
-      ...Object.values(bundle.sections).map((section) => [section.path, stripLiquidSchemaBlocks(section.source)]),
-      ...Object.values(bundle.blocks).map((block) => [block.path, block.source]),
+      [bundle.layout.theme.path, String(bundle.layout.theme.source)],
+      ...Object.values(bundle.sections).map((section) => [section.path, String(stripLiquidSchemaBlocks(section.source))]),
+      ...Object.values(bundle.blocks).map((block) => [block.path, String(block.source)]),
     ]),
     globals: {
       content_for_header: contentForHeader,
@@ -1041,6 +1141,15 @@ interface ThemeDomPurifyRuntime {
   createDocument(html: string): { head: { innerHTML: string } };
 }
 
+// DOMPurify singleton — one instance shared across all concurrent requests in this worker.
+// Re-entrancy safety: DOMPurify.sanitize() is synchronous and Node.js is single-threaded;
+// async/await does not interleave synchronous DOM manipulation, so concurrent callers that
+// each await sanitizeRenderedHtml() are serialized at the micro-task level with no shared
+// mutable state between their sanitize() calls. The uponSanitizeAttribute hook registered
+// below is on the shared instance but is itself a pure function over its arguments (no hook
+// state is written between calls). Verified against DOMPurify 3.x (JSDOM-backed server usage).
+// ASSUMPTION: DOMPurify.sanitize remains synchronous. If a future DOMPurify version introduces
+// async hooks, this assumption breaks — create one DOMPurify instance per call at that point.
 let domPurifyPromise: Promise<ThemeDomPurifyRuntime> | undefined;
 
 async function getThemeDomPurify(): Promise<ThemeDomPurifyRuntime> {
@@ -1105,4 +1214,15 @@ function escapeHtmlAttribute(value: string): string {
     .replace(/'/g, '&#39;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+// HTML-comment-safe escape: applies escapeHtmlAttribute AND strips '--' sequences so a
+// crafted value cannot close the comment prematurely (e.g. type='foo-->bar').
+// Used only for values injected into HTML comments (<!-- ... -->).
+function escapeHtmlCommentValue(value: string): string {
+  // First apply full attribute escaping (handles <, >, ", ', &).
+  const escaped = escapeHtmlAttribute(value);
+  // Then strip any '--' that survive (e.g. from a value like '&gt;--&lt;' after escaping,
+  // or a literal '--' in the raw input). Replaces with a single '-' to preserve readability.
+  return escaped.replace(/--/g, '-');
 }

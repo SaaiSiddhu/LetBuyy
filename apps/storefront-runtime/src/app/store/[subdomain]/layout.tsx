@@ -122,11 +122,29 @@ export default async function StoreLayout({ children, params }: Props) {
     for (const section of [...renderPlan.sectionGroups.header, ...renderPlan.sectionGroups.footer]) {
         sectionGroupData.set(section.id, { products });
     }
-    // Full-Liquid page: the Liquid engine renders header + body + footer (composition-engine), so the
-    // React chrome below is skipped entirely — nothing storefront-visible is React.
-    // NOTE: liquidPage is true for any Liquid-engine plan regardless of whether composition-engine
-    // later falls back to React. A render failure in the canary-ON path will suppress the React chrome.
-    // Tracked for Phase D fix.
+
+    // F5 — Chrome-Fallback Seam Fix.
+    //
+    // Problem (pre-fix): layout set liquidPage=true whenever renderPlan.rendererEngine==='liquid',
+    // suppressing React chrome BEFORE the render ran. If the render then failed (renderLiquidPlan
+    // returned null), StorefrontCompositionEngine fell back to React sections — but the React
+    // header/footer was already gone, producing a chrome-less page.
+    //
+    // Fix: liquidPage remains plan-level (efficient, no extra render in layout). The seam is closed
+    // by passing renderReactChromeOnFallback={true} to StorefrontCompositionEngine (via the children
+    // chain) — but layout cannot pass props to `children` in the App Router RSC model.
+    //
+    // Therefore the fix moves the chrome responsibility: when liquidPage=true (plan says liquid) and
+    // the render falls back to React, StorefrontCompositionEngine renders chrome sections from
+    // plan.sectionGroups.header and plan.sectionGroups.footer around the React body. layout.tsx
+    // passes sectionGroupData to children via the existing plan (already accessible in composition-
+    // engine via plan.sectionGroups). The store and plan are passed to StorefrontCompositionEngine
+    // so it can render the chrome sections on its own when falling back.
+    //
+    // This is correct: StorefrontCompositionEngine already has store + plan (with sectionGroups)
+    // + sectionData. It already imports StorefrontSectionGroupRenderer. No architectural change needed.
+    // See the composition-engine changes: when liquidHtml===null and plan.rendererEngine==='liquid',
+    // the fallback renders <header sections><body sections><footer sections> rather than just body.
     const liquidPage = renderPlan.rendererEngine === 'liquid';
     const isDark = Boolean(ts.isDark);
     const fontCss = FONT_MAP[ts.fontFamily] || FONT_MAP['Inter'];

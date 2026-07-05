@@ -33,7 +33,12 @@ test('L10: logged-in account renders the customer greeting + nav', async () => {
   const html = result.liquid?.layoutHtml ?? '';
   assert.match(html, /Signed in as Ravi K/);
   assert.match(html, /href="\/account\/orders"/);
-  assert.match(html, /href="\/api\/customer\/logout"/);
+  // F7: logout is now a POST form (lb-logout island + no-JS fallback), not a GET anchor.
+  // Verify the form POSTs to the correct endpoint rather than an anchor href.
+  assert.match(html, /method="post"/);
+  assert.match(html, /action="\/api\/customer\/logout"/);
+  // The old GET anchor must not be present (regression guard).
+  assert.doesNotMatch(html, /<a[^>]+href="\/api\/customer\/logout"/);
 });
 
 test('L10: logged-out account renders the sign-in prompt (auth-gated)', async () => {

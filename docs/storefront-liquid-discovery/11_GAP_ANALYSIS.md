@@ -407,7 +407,7 @@ The following table measures each capability area against a Shopify-grade theme 
 | **Theme Editor (Merchant UX)** | 65% | PARTIAL | Liquid-mode live preview functional; section selection working via `StorefrontPreviewBridge` (C-04 CLOSED); no Liquid syntax validation in editor; AI hooks are stubs; no template file browser for Liquid source | MEDIUM |
 | **Preset / Experience System** | 75% | PARTIAL | 10 Experiences defined and auto-applied; font loading integration missing (4 of 10 Experiences render system-font fallback); `defaultSections` not applied on Experience apply; `nova` not reachable via industry routing | MEDIUM |
 | **Theme Authoring / Developer Experience** | 15% | MISSING | No on-disk `.liquid` files; no Theme Check integration; no Liquid syntax highlighting/linting; no snippet/partial system; templates locked behind TypeScript build pipeline; no public Liquid API documentation | CRITICAL |
-| **Performance: Render Pipeline** | 40% | PARTIAL | Per-request Liquid parse (`cache: false`); sequential section rendering (no `Promise.all`); DOMPurify JSDOM singleton per worker process; no edge-level template cache; no CDN-keyed Liquid output cache | CRITICAL |
+| **Performance: Render Pipeline** | 55% | PARTIAL | **Phase F (F1+F2):** `cache:true` LRU enabled in `createLiquidEngine()` — intra-request steady-state parse cost reduced; `Promise.allSettled` parallel section rendering reduces wall time when sections have I/O. **Remaining gaps:** LRU is engine-instance-local (cross-request reuse requires engine pooling, not yet implemented; lifecycle assumption documented in source); DOMPurify JSDOM singleton per worker process unchanged; no edge-level template cache (P3-3 still OPEN); no CDN-keyed Liquid output cache. | HIGH |
 | **Font System** | 45% | PARTIAL | 6 fonts defined in `EXPERIENCE_FONT_REGISTRY`; `buildGoogleFontsHref()` implemented; 4 font families missing from storefront `FONT_MAP` (Cormorant Garamond, Libre Baskerville, Source Sans Pro, Lato); no `<link>` injected into Liquid `<head>`; `--font-playfair` IS defined in `globals.css:25` but aliases Geist Sans (not Playfair Display serif) — Sense heading silently renders sans-serif | MEDIUM |
 | **Theme Marketplace** | 10% | FROZEN | `apps/app-marketplace`, `apps/theme-marketplace`, `apps/developer-portal` are frozen per CLAUDE.md governance; marketplace tables exist in DB (`theme_packages`, `theme_developer_listings`, etc.) but no active deploy target | MEDIUM |
 | **Multi-Tenancy / Theme Isolation** | 85% | IMPLEMENTED | Urban Kicks branding leak in fallback path (`store-service.ts:671–673`); `letbuyy-core` DB row missing; `theme_id = 'modern'` ghost reference | MEDIUM |
@@ -615,4 +615,34 @@ Phase E delivered all five missing template route types and the routes drop pari
 
 ---
 
-*Document generated 2026-07-03 | Branch: stepup/main | Auditor: Claude Sonnet 4.6 (subagent) | Status: PARTIALLY IMPLEMENTED (Phase E) | Sources: ~29 unique source files + 8 prior research documents reconciled | Amended: 2026-07-04 (Phase E additions)*
+## 15. Phase F Amendment — Performance and Security Hardening (2026-07-05)
+
+Phase F addressed render pipeline performance (F1, F2), logout security (F7), benchmark harness (F9), and 5 hardening items (H1–H5).
+
+### Performance row update
+
+| Row | Before Phase F | After Phase F |
+|-----|---------------|---------------|
+| Performance: Render Pipeline | 40%, CRITICAL — `cache:false`, sequential rendering, no edge cache | **55%, HIGH** — F1 (`cache:true` LRU, intra-request) + F2 (`Promise.allSettled` parallel sections) implemented. Cross-request LRU (engine pooling) and edge cache (P3-3) still OPEN. |
+
+### Plan item updates (§11)
+
+| Plan Item | Before Phase F | After Phase F |
+|-----------|---------------|---------------|
+| P3-1 (LiquidJS template cache) | OPEN | **PARTIALLY-IMPLEMENTED** — `cache:true` enabled (`theme-renderer.ts:643`). Scope: intra-request LRU. Cross-request scope requires engine pooling (lifecycle assumption documented). |
+| P3-2 (Promise.all parallelism) | OPEN | **IMPLEMENTED** — `Promise.allSettled` in `renderLiquidTemplateSections()`. Order preserved; C1 crash isolation maintained. |
+| P3-3 (Edge template cache) | OPEN | STILL OPEN — ISR revalidation period and CDN cache-control headers not configured. |
+
+### Open Phase F findings requiring follow-on work (Phase G scope)
+
+- F-E2-01 (MEDIUM): `content-resource-renderer.tsx` missing `publishedAt`/`featured_image` forwarding — article live renders show null date/image. NOT implemented in Phase F.
+- F-E4-01 (LOW): `policy-content` double-escaping (`{{ page.body_html }}` without `| raw`). NOT implemented in Phase F.
+- F-E5-01 (MEDIUM, partial): Password-gate form content-type mismatch (`x-www-form-urlencoded` vs `proxy.ts` JSON reader) — core mismatch NOT implemented. `validGateCookie` staleness fixed (H3).
+- F-E5-02 (MEDIUM): `proxy.ts:296` unconditional React routing for password stores — not updated in Phase F.
+- F-OPEN-04 (MEDIUM): Edge template cache (P3-3) — ISR revalidation period and CDN cache-control headers not configured.
+
+*Phase F amendment 2026-07-05 | Implementation by subagent | Evidence: docs/storefront-liquid-discovery/phase-f/PHASE_F_REPORT.md*
+
+---
+
+*Document generated 2026-07-03 | Branch: stepup/main | Auditor: Claude Sonnet 4.6 (subagent) | Status: PARTIALLY IMPLEMENTED (Phase F) | Sources: ~29 unique source files + 8 prior research documents reconciled | Amended: 2026-07-04 (Phase E additions) | Amended: 2026-07-05 (Phase F additions)*

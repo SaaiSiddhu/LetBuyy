@@ -42,3 +42,22 @@ test('hydration runtime defines small web components for Liquid interactivity', 
   assert.match(ISLAND_SOURCE, /const VARIANT_CHANGED_EVENT = 'letbuyy:variant:changed'/);
   assert.match(ISLAND_SOURCE, /ensureLiquidCartDrawer\(root, basePath\)/);
 });
+
+test('F7-Lane-B lb-logout island: registered, POSTs to logout URL, falls back to native form', () => {
+  // lb-logout must be in the island registry.
+  assert.match(ISLAND_SOURCE, /defineLiquidIsland\('lb-logout', LbLogoutElement\)/);
+  // Island class must exist.
+  assert.match(ISLAND_SOURCE, /class LbLogoutElement/);
+  // Island must read the logout URL from data-logout-url.
+  assert.match(ISLAND_SOURCE, /dataset\.logoutUrl/);
+  // fetch POST is the JS-enhanced path.
+  assert.match(ISLAND_SOURCE, /method: 'POST'/);
+  assert.match(ISLAND_SOURCE, /credentials: 'include'/);
+  // Redirect to /customers/login on success.
+  assert.match(ISLAND_SOURCE, /\/customers\/login/);
+  // Native form.submit() is the no-JS fallback (called when fetch fails).
+  assert.match(ISLAND_SOURCE, /form\.submit\(\)/);
+  // Island must be ART-17 compliant (Web Component, not a React section renderer).
+  // Verify it extends LiquidIslandBase (the guarded HTMLElement base).
+  assert.match(ISLAND_SOURCE, /LbLogoutElement extends LiquidIslandBase/);
+});

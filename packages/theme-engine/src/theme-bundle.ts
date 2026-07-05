@@ -2346,7 +2346,18 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  {% if customer %}',
           '  <h1>{{ section.settings.heading }}</h1>',
           '  <p class="lb-account__hello">Signed in as {{ customer.name | default: customer.email }}</p>',
-          '  <nav class="lb-account__nav"><a href="/account/orders">Orders</a><a href="/account/addresses">Addresses</a><a href="/account/settings">Settings</a><a href="/api/customer/logout">Sign out</a></nav>',
+          // F7-Lane-A: Replace GET anchor with lb-logout island + no-JS <form method="post"> fallback.
+          // routes.account_logout_url resolves to /api/customer/logout (POST-only endpoint).
+          // The no-JS <form method="post"> is the authoritative behavior; lb-logout is a progressive
+          // enhancement island registered by LANE-B (liquid-hydration-islands.tsx via defineLiquidIsland).
+          // lb-logout is in LIQUID_HYDRATION_CUSTOM_ELEMENTS and DOMPurify ADD_TAGS/tagNameCheck so it
+          // passes sanitization. data-logout-url is in ADD_ATTR for the same reason.
+          // F7-Lane-A: lb-logout island wraps a no-JS <form method="post"> fallback.
+          // style="display:contents" is intentionally omitted — DOMPurify FORBID_ATTR:['style'] strips
+          // inline styles from sanitized HTML. The form remains functional without it.
+          // LANE-B (liquid-hydration-islands.tsx) registers LbLogoutElement to intercept the click
+          // and do fetch(logoutUrl, {method:'POST'}) + redirect; falls back to native form.submit().
+          '  <nav class="lb-account__nav"><a href="/account/orders">Orders</a><a href="/account/addresses">Addresses</a><a href="/account/settings">Settings</a><lb-logout data-logout-url="{{ routes.account_logout_url }}"><form method="post" action="{{ routes.account_logout_url }}"><button type="submit" class="lb-account__nav-link">Sign out</button></form></lb-logout></nav>',
           '  {% else %}',
           '  <p class="lb-account__guest">Please <a href="/customers/login">sign in</a> to view your account.</p>',
           '  {% endif %}',
