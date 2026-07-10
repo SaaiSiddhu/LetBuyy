@@ -1,8 +1,8 @@
 # LetBuyy Theme Editor — Shell Architecture Guide
 
 **Program:** LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor (M→AE)
-**Last updated:** 2026-07-11 (post Phase U)
-**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), undo/redo, autosave, draft CAS
+**Last updated:** 2026-07-11 (post Phase V)
+**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), template switcher, undo/redo, autosave, draft CAS
 
 ---
 
@@ -26,6 +26,7 @@ apps/merchant-control-plane/src/components/theme-editor/
   PreviewInspectorOverlay.tsx  — hover chip overlay for the live preview (Phase S, CLEAN)
   SchemaFormRenderer.tsx       — settings form renderer; 26-type Shopify-parity control set (Phase U, CLEAN)
   SectionTreePanel.tsx         — ARIA section tree with drag-to-reorder (Phase R, CLEAN)
+  TemplateSwitcherPanel.tsx    — Phase V: template type selector + alternate-variant list (CLEAN)
   controls/                    — Phase U: one file per extended control type
     CheckboxControl.tsx        — native input[type=checkbox]; distinct from Toggle
     ColorBackgroundControl.tsx — solid colour picker OR CSS gradient string
@@ -83,13 +84,40 @@ Icon buttons keyed on `panelMode` state. Active state via `theme-os-icon-btn--ac
 ### 3.2 Center Zone
 
 - **Theme-name pill**: `Blocks` icon + `themeName` state + `@letbuyy/ui Badge` (`'Draft'` / `'Saved'` variant driven by `isDirty`).
-- **Template selector**: native `<select>` driven by `templateOptions` array; calls `handleTemplateChange` on change; disabled during `isSaving || isPublishing`.
+- **Template selector**: native `<select>` driven by `templateOptions` array; calls `handleTemplateChange` on change; disabled during `isSaving || isPublishing`. Phase V introduces `TemplateSwitcherPanel` as a standalone component for this role (see §3.4); wiring into `page.tsx` rides as WIP.
 
 ### 3.3 Right Zone
 
 - **Undo / Redo**: `Undo2` / `Redo2` buttons; disabled via `canUndo` / `canRedo`; keyboard: `Cmd+Z` / `Cmd+Shift+Z` / `Cmd+Y`.
 - **Save**: disabled when `isSaving || isPublishing || !isDirty`; shows `Loader2` spinner during save.
 - **Publish**: disabled when `isSaving || isPublishing || isDirty` (draft must be saved clean before publishing); shows `Loader2` spinner during publish.
+
+### 3.4 Template Switcher (`TemplateSwitcherPanel`) — Phase V
+
+Source: `apps/merchant-control-plane/src/components/theme-editor/TemplateSwitcherPanel.tsx`
+
+A standalone `'use client'` component (Phase V) providing template selection and alternate-variant browsing for the editor header. Driven entirely by caller-supplied props — no internal API calls.
+
+**Props:**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `templateOptions` | `TemplateSwitcherOption[]` | Yes | All available template keys (`{ key, label, type }`) |
+| `selectedKey` | `string` | Yes | Currently selected template key |
+| `onChange` | `(key: string) => void` | Yes | Emits key string only (RISK-DUAL-N01) |
+| `disabled` | `boolean` | No | Guards all interactions |
+| `alternateVariants` | `TemplateSwitcherVariant[]` | No | Named alternates for the current base type |
+| `onCreateAlternate` | `(baseType: string) => void` | No | Intent signal only; never creates a template directly |
+| `isLoading` | `boolean` | No | Shows skeleton state (`aria-busy`) |
+| `error` | `string` | No | Shows error message |
+
+**`useTemplateSwitcher(key)`** (exported): pure string parser. Splits on first `.`; `'customers/login'` → `{ baseType: 'customers/login', suffix: null }`. The `use*` naming is conventional; the function has no hook semantics and may be called anywhere.
+
+**RISK-DUAL-N01 contract:** `onChange` and `onCreateAlternate` emit only string values. The component never accesses or mutates `section_definitions` or `block_definitions`. Contract is tested statically in `tests/theme-editor-v.test.mjs`.
+
+**Alternate variant list:** When `alternateVariants` is provided, a `role="listbox"` container renders `role="option"` items with `aria-selected` + `tabIndex` + `Enter`/`Space` keyboard handler. Slash-containing keys (e.g., `'customers/login'`) are passed through as raw `<option value>` or listbox option values without encoding.
+
+**Editor wiring:** The component is standalone and testable without `page.tsx`. Wiring into the editor header rides as foreign WIP alongside existing `page.tsx` edits, identical to the Phase R pattern (ConflictDialog, SectionTreePanel).
 
 ---
 
@@ -337,6 +365,8 @@ Same POST as `syncPreviewDraft` but:
 
 `baseConfig` holds the draft configuration as returned by the editor API at load time. `buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)` merges the mutable `editorState` (sections, settings, selected template) over `baseConfig`. The immutable `section_definitions` and `block_definitions` (Liquid source) always come from `baseConfig`, never from `editorState`. This mechanically enforces RISK-DUAL-N01.
 
+**Phase V extension:** `TemplateSwitcherPanel.onChange(key)` emits only the key string; the caller passes it as `selectedTemplateKey` to `buildDraftConfig`. The panel never receives `section_definitions` or `block_definitions` — it has no props for them. `onCreateAlternate(baseType)` is an intent signal only; the caller is responsible for creating a `ThemeDocumentTemplate` instance via the normal `applyChange()` + `buildDraftConfig()` path. RISK-DUAL-N01 is preserved.
+
 ---
 
 ## 9. ConflictDialog (Phase R)
@@ -513,7 +543,7 @@ type EditorSelection =
 
 | Risk ID | Severity | Description | Target |
 |---|---|---|---|
-| RISK-DUAL-N01 | MEDIUM | Editor save must reconstruct `section_definitions`/`block_definitions` from `baseConfig`, not `editorState` | Enforced mechanically by `buildDraftConfig`; Phase T/U controls receive value+onChange only (RISK preserved) |
+| RISK-DUAL-N01 | MEDIUM | Editor save must reconstruct `section_definitions`/`block_definitions` from `baseConfig`, not `editorState` | Enforced mechanically by `buildDraftConfig`; Phase T/U controls receive value+onChange only; Phase V TemplateSwitcherPanel emits key string only (RISK preserved) |
 | RISK-SEC-P01 | MEDIUM | `theme_editor_drafts` RLS checks `user_id` only, not `custom_user_id` | No client-side realtime subscription may be added until fixed |
 | RISK-PERF-N01 | LOW | Large document serialization on each draft save | `buildDraftConfig` sends only mutable state; Liquid source comes from `baseConfig` not re-serialized |
 | RISK-SEC-002 | INFO | AI hooks are stubs; must not be presented as connected | Phase AC |
