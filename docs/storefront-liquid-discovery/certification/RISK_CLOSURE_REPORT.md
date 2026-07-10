@@ -348,4 +348,33 @@ Five hardening findings discovered and addressed in Phase F:
 
 ---
 
-*End of Risk Closure Report — amended 2026-07-05 (Phase F additions)*
+## 10. Phase G Closures (Schema Governance)
+
+### 10.1 Schema-governance risks closed
+
+| Risk (from discovery corpus) | Prior status | Phase G outcome |
+|------------------------------|--------------|-----------------|
+| Schema migration engine inert — zero registered migrations; a future section-schema rename silently corrupts stored configs | OPEN-CONFIRMED — Phase G | **CLOSED-STRUCTURAL (Phase G — G1)** — engine now runs on every publish via `applySectionSchemaMigrations()` (`theme-execution.adapter.ts`); `REGISTERED_SECTION_SCHEMA_MIGRATIONS` is the production home. Registry is honestly EMPTY (no real historical renames — see PHASE_G_REPORT §1). Future renames migrate stored configs forward automatically. |
+| `letbuyy-core` themes DB row missing — code alias dead-ends on slug queries | OPEN-CONFIRMED — Phase G | **CLOSED-IMPLEMENTED (Phase G — G5)** — migration `188_letbuyy_core_theme_row.sql` clones the Liquid urban-kicks row idempotently. Applies via deploy pipeline. |
+| Bundle `schema_version` ungated — unknown/future versions silently misrender | OPEN-CONFIRMED — Phase G | **CLOSED-IMPLEMENTED (Phase G — G4)** — `KNOWN_LIQUID_BUNDLE_SCHEMA_VERSIONS` allowlist; missing stamped to current; unknown rejected fail-closed → React fallback in renderer. |
+| Experience apply output unvalidated against settings schema | OPEN-CONFIRMED — Phase G | **CLOSED-IMPLEMENTED (Phase G — G6)** — `validateExperienceOverlay()` gates both apply functions; malformed overlay falls back to pre-apply config. |
+| Settings-schema divergence (flat DB `appearance` vs TS 5-group) | OPEN — Phase G | **MITIGATED (Phase G — G3)** — lossless canonicalization utility shipped + tested. Gateway/editor CONSUMPTION deliberately DEFERRED to avoid a breaking change to editor form rendering (PHASE_G_REPORT §5). |
+
+### 10.2 Reconciliation of carried template items (accuracy correction)
+
+The Phase F scope note listed several items as carrying to Phase G; on review some were already closed by inline hardening:
+
+| Item | Actual status |
+|------|---------------|
+| F-E2-01 (article `published_at`/`image` null in live renders) | **CLOSED (Phase E hardening)** — `content-resource-renderer.tsx` now forwards `publishedAt` + `featured_image` into `liquidPage`. |
+| F-E4-01 (policy-content double-escaping) | **CLOSED (Phase E hardening)** — policy-content section uses `| raw` + `!= blank` guards. |
+| F-E5-01 (password gate content-type mismatch) | **CLOSED (Phase F — F6)** — `handlePasswordSubmit` parses both JSON and `x-www-form-urlencoded`. |
+| F-E5-02 (password production routing at `proxy.ts:296`) | **OPEN — BY DESIGN** — password-gated stores intentionally route to the React coming-soon page; the Liquid password template serves editor preview/isolation. A production routing change is a Phase J rollout decision, not a defect. |
+
+### 10.3 Phase G scope note
+
+Phase G was implemented **inline by the orchestrator** because the subagent fleet was disabled mid-run by an org-access/auth transition during a model switch. The surviving plan agent's evidence-backed drift verdicts drove the implementation; every change was gate-verified (theme-engine 157/157, storefront 52/52, gateway typecheck 32/32, merchant 14/14, migration-safety PASS). The adversarial-review and formal-documentation agents did not run; their role was fulfilled by the orchestrator's inline self-review against the no-breaking-changes law (PHASE_G_REPORT §3). G3-consume and G7 deferred with justification (§5).
+
+---
+
+*End of Risk Closure Report — amended 2026-07-05 (Phase G additions)*

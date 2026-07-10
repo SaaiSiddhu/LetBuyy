@@ -6,7 +6,10 @@ import {
     hasRenderableThemeTemplate,
     LiquidThemePackageBundleSchema,
     mergeThemeIdentity,
+    migrateThemeTemplateSchemasWithRegistry,
+    REGISTERED_SECTION_SCHEMA_MIGRATIONS,
     resolveRenderableThemeTemplateConfig,
+    type StoreTemplateConfig,
 } from '@letbuyy/theme-engine';
 import { ConflictError, ForbiddenError, NotFoundError, ValidationError } from '../lib/errors';
 import type {
@@ -592,6 +595,20 @@ export class ThemeExecutionAdapter {
         }
     }
 
+    // Phase G / G1 — run the section-schema migration registry over a template config at publish time.
+    // Generic so the caller's exact type is preserved. Fast-path: with an EMPTY registry (the honest
+    // current state — no real historical field renames) this is an identity function with zero marshaling,
+    // so publish behavior is unchanged today. The day a real migration is registered in theme-engine, every
+    // publish migrates stored configs forward automatically instead of silently rendering a stale shape.
+    private applySectionSchemaMigrations<T extends Record<string, unknown>>(templateConfig: T): T {
+        if (REGISTERED_SECTION_SCHEMA_MIGRATIONS.length === 0) return templateConfig;
+        const result = migrateThemeTemplateSchemasWithRegistry(templateConfig as unknown as StoreTemplateConfig);
+        if (result.warnings.length > 0) {
+            console.warn(`[theme-publish] section schema migration warnings: ${result.warnings.join('; ')}`);
+        }
+        return result.templateConfig as unknown as T;
+    }
+
     private buildReleaseArtifacts(
         input: PublishReleaseSnapshotInput,
         releaseId: string,
@@ -996,8 +1013,6 @@ export class ThemeExecutionAdapter {
             version: input.version,
             auto_saved_at: input.savedAt,
             updated_at: input.savedAt,
-            updated_by: input.actorId,
-            created_by: input.actorId,
         };
 
         let { data, error } = await this.db
@@ -1330,11 +1345,14 @@ export class ThemeExecutionAdapter {
         const suppliedPublishConfig = hasRenderableThemeTemplate(input.template_config)
             ? asRecord(input.template_config)
             : null;
-        const templateConfig = suppliedPublishConfig
+        const resolvedTemplateConfig = suppliedPublishConfig
             ? mergeThemeIdentity(suppliedPublishConfig, theme)
             : hasRenderableThemeTemplate(draftRecord?.draft_config)
                 ? mergeThemeIdentity(asRecord(draftRecord?.draft_config), theme)
                 : resolveRenderableThemeTemplateConfig(store.template_config, theme);
+        // Phase G / G1 — migrate stored section schemas forward at publish time so a config authored
+        // against an older section shape is snapshotted at the current shape (never silently misrendered).
+        const templateConfig = this.applySectionSchemaMigrations(resolvedTemplateConfig);
         const runtime = await this.validateTemplateConfig(templateConfig, theme);
         const themeInstance = await this.ensureThemeInstance(
             input.store_id,

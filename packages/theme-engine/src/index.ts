@@ -21,6 +21,8 @@ export * from './theme-presets';
 export * from './industry-experience-map';
 export * from './theme-bundle-core';
 export * from './experience-fonts';
+export * from './section-schema-migrations';
+export * from './settings-schema-canonical';
 export * from './editor-bridge-protocol';
 
 export type BuiltInSectionType =

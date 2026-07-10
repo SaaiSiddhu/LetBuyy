@@ -5,6 +5,34 @@ export const THEME_BUNDLE_RENDERER_VERSION = '1.0.0';
 export const THEME_LIQUID_BUNDLE_SCHEMA_VERSION = '2026-06-liquid-sections';
 export const THEME_LIQUID_RENDERER_VERSION = '0.1.0';
 
+// Phase G / G4 — Liquid bundle schema_version compatibility window.
+// The Zod schema already stamps a MISSING schema_version to the current version via `.default(...)`.
+// This set is the explicit allowlist of versions the current renderer understands. A bundle carrying an
+// UNKNOWN (e.g. future) schema_version must be rejected LOUDLY at parse time rather than silently
+// misrendered against a shape the engine does not understand. When a new bundle format ships, add its
+// version string here alongside the migration/compat that makes older bundles renderable.
+export const KNOWN_LIQUID_BUNDLE_SCHEMA_VERSIONS: readonly string[] = Object.freeze([
+  THEME_LIQUID_BUNDLE_SCHEMA_VERSION,
+]);
+
+export class UnsupportedLiquidBundleSchemaVersionError extends Error {
+  readonly schemaVersion: string;
+  readonly known: readonly string[];
+  constructor(schemaVersion: string) {
+    super(
+      `Unsupported Liquid bundle schema_version "${schemaVersion}". Known versions: ${KNOWN_LIQUID_BUNDLE_SCHEMA_VERSIONS.join(', ')}. `
+      + 'Refusing to render an unrecognized bundle format (fail-closed).',
+    );
+    this.name = 'UnsupportedLiquidBundleSchemaVersionError';
+    this.schemaVersion = schemaVersion;
+    this.known = KNOWN_LIQUID_BUNDLE_SCHEMA_VERSIONS;
+  }
+}
+
+export function isKnownLiquidBundleSchemaVersion(version: string): boolean {
+  return KNOWN_LIQUID_BUNDLE_SCHEMA_VERSIONS.includes(version);
+}
+
 export const THEME_BUNDLE_PATHS = {
   layout: 'layout/theme.liquid',
   settingsSchema: 'config/settings_schema.json',
@@ -1327,7 +1355,13 @@ export function parseThemePackageBundle(input: unknown): ThemePackageBundle {
 }
 
 export function parseLiquidThemePackageBundle(input: unknown): LiquidThemePackageBundle {
-  return LiquidThemePackageBundleSchema.parse(input);
+  const bundle = LiquidThemePackageBundleSchema.parse(input);
+  // G4: fail-closed on an unrecognized schema_version. A missing version was already stamped to the
+  // current version by the schema `.default(...)`, so this only rejects an EXPLICIT unknown/future value.
+  if (!isKnownLiquidBundleSchemaVersion(bundle.schema_version)) {
+    throw new UnsupportedLiquidBundleSchemaVersionError(bundle.schema_version);
+  }
+  return bundle;
 }
 
 export function parsePortableThemePackageBundle(input: unknown): PortableThemePackageBundle {

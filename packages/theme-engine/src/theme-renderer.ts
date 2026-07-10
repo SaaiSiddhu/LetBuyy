@@ -14,6 +14,7 @@ import {
 import {
   isLiquidAppBlockType,
   parseLiquidThemePackageBundle,
+  UnsupportedLiquidBundleSchemaVersionError,
   type LiquidThemePackageBundle,
   type ThemeBundleTemplateBlock,
   type ThemeBundleTemplateSection,
@@ -481,7 +482,22 @@ export class LiquidRenderer implements ThemeRenderer {
     }
 
     const warnings: string[] = [];
-    const bundle = parseLiquidThemePackageBundle(input.liquidBundle);
+    // G4: an unsupported (e.g. future) bundle schema_version must NOT crash the render — it degrades to
+    // 'unsupported' so the caller falls back to React, same as a missing/invalid bundle.
+    let bundle: LiquidThemePackageBundle;
+    try {
+      bundle = parseLiquidThemePackageBundle(input.liquidBundle);
+    } catch (parseErr: unknown) {
+      if (parseErr instanceof UnsupportedLiquidBundleSchemaVersionError) {
+        return {
+          engine: this.engine,
+          status: 'unsupported',
+          composition: composeStorefrontTheme(input),
+          warnings: [parseErr.message],
+        };
+      }
+      throw parseErr;
+    }
     const templateKey = resolveLiquidTemplateKey(input, bundle);
     const template = bundle.templates[templateKey];
 
