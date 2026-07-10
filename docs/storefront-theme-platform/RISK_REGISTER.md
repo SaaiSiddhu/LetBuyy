@@ -37,7 +37,7 @@ Living register. Each entry: ID · severity · status · evidence · owner/targe
 - **Status:** OPEN · pre-existing (not introduced by Phase P).
 - **Evidence:** `database/supabase/migrations/000_baseline.sql:12618` — `theme_editor_drafts` table; 4 RLS policies (SELECT / INSERT / UPDATE / DELETE) all scoped to `EXISTS(SELECT 1 FROM sites WHERE sites.id = theme_editor_drafts.store_id AND sites.user_id = auth.uid())`. The `custom_user_id` column on `sites` is not checked. Contrast with `theme_instance_drafts_owner_manage` which correctly checks `(sites.user_id = auth.uid() OR sites.custom_user_id = auth.uid())`.
 - **Why it matters:** Merchants who authenticate via `custom_user_id` (the primary identity path in this platform) cannot perform direct client-side reads/writes against `theme_editor_drafts` under their own auth token. Today the gateway bypasses via `service_role` so no live route relies on these RLS policies for protection. But any future client-side subscription or realtime listener would silently fail for `custom_user_id` merchants.
-- **Disposition:** Discovered in Phase P security review. Not patched (pre-existing baseline change; requires careful migration + RLS update). **Target:** dedicated security migration before Phase R realtime subscriptions are added, or earliest phase that adds client-side `theme_editor_drafts` access. Owner: security / Phase R architect.
+- **Disposition:** Discovered in Phase P security review. Not patched (pre-existing baseline change; requires careful migration + RLS update). Phase R did not add any client-side realtime subscription over `theme_editor_drafts`, so the risk remains bounded to the gateway service-role path. **Target:** dedicated security migration before Phase S realtime subscriptions are added, or earliest phase that adds client-side `theme_editor_drafts` access. Owner: security / Phase S architect.
 
 ### RISK-TOCTOU-P01 — Publish idempotency pre-check has a concurrent-window TOCTOU gap — [LOW]
 - **Status:** OPEN · known residual; ARB-gated.
@@ -81,16 +81,27 @@ Living register. Each entry: ID · severity · status · evidence · owner/targe
 - **Disposition:** Adding the two section definition files to the Urban Kicks / LetBuyy Core bundle in a future bundle-expansion phase would automatically make all collection filter and craft FAQ compositions fully compatible — no changes to Phase O code required. Until then, the advisory diff entries ensure transparency.
 - **Target:** Future bundle expansion phase (beyond AE scope unless marketplace content requires these types).
 
+## Phase R risks
+
+### RISK-R01 — Local type mirrors in `page.tsx` and `SectionTreePanel.tsx` will drift — [LOW]
+- **Status:** OPEN · known tech debt · deferred.
+- **Introduced:** Phase R (2026-07-10).
+- **Evidence:** `apps/merchant-control-plane/src/components/theme-editor/SectionTreePanel.tsx` lines 38–77 declares `JsonRecord`, `BlockEntry`, `SectionEntry`, `EditorState`, `EditorSelection`, `AvailableSection` as local types. These mirror the identical type declarations in `apps/merchant-control-plane/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx`. The comment in `SectionTreePanel.tsx` acknowledges: "avoids cross-file coupling." Since both files use the types at a prop boundary (page passes props typed against page-local types; panel accepts props typed against panel-local types), TypeScript structurally checks them and a shape change in `page.tsx` that is not mirrored in `SectionTreePanel.tsx` will silently typecheck because the structural shapes happen to remain compatible — until they diverge.
+- **Why it matters:** If a future phase adds a new required field to `SectionEntry` in `page.tsx` (e.g. `publishedAt: string`), the prop passed to `SectionTreePanel` will structurally satisfy the panel's narrower local `SectionEntry` type. The missing field won't cause a typecheck error; it will only fail at runtime when `SectionTreePanel` destructures the field it doesn't know about.
+- **Disposition:** Extract `SectionEntry`, `BlockEntry`, `EditorState`, `EditorSelection`, `AvailableSection` to `apps/merchant-control-plane/src/lib/theme-editor-types.ts` and import from both files. Deferred from Phase R (extracting to a new shared module requires additional touch of `page.tsx`, a foreign WIP file, to remove the duplicate declarations). Candidate for Phase S or a standalone cleanup task when `page.tsx` is next touched for substantive changes.
+- **Target:** Phase S or first phase that adds a new field to any of the five shared types.
+
 ## Phase N risks
 
 ### RISK-DUAL-N01 — `section_definitions` / `block_definitions` dual-truth risk in Phase R-S editor — [MEDIUM]
-- **Status:** OPEN · architectural risk for Phase R-S.
-- **Introduced:** Phase N (2026-07-10).
+- **Status:** OPEN · mechanically guarded in Phase R; must be preserved in Phase S+.
+- **Introduced:** Phase N (2026-07-10). Partially mitigated Phase R (2026-07-10).
 - **Evidence:** `ThemeDocumentSchema` embeds `section_definitions` (= bundle's `sections` Liquid source files) and `block_definitions` (= bundle's `blocks` Liquid source files). If the Phase R-S editor mutates these fields when saving a draft, the embedded Liquid source would diverge from the canonical theme package version in the DB. Phase N marks these fields READ-ONLY in code comments (`packages/theme-engine/src/theme-document.ts` lines 285–297) but does not mechanically prevent editor mutation.
 - **Why it matters:** A divergent `section_definitions` would mean `fromThemeDocumentV2` produces a bundle with different Liquid source than what the theme package was published with — silently different rendering behaviour for the same theme version.
 - **Mechanical backstop:** `fromThemeDocumentV2` calls `parseLiquidThemePackageBundle(raw)` as its last step. If `section_definitions` has been mutated so that template section types no longer match, the `superRefine` on the bundle will reject the document before it reaches persistence.
-- **Disposition:** Phase R-S editor save adapter MUST reconstruct `section_definitions`, `block_definitions`, and `layout` from the original load-time bundle (not from editor state). This must be enforced mechanically in the Phase R-S implementation and documented in the editor architecture. Do NOT add a mutation path for these fields.
-- **Target:** Phase R (Visual editor shell).
+- **Phase R mitigation:** `buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)` in `page.tsx` always merges the mutable `editorState` (template/settings) over `baseConfig`. The immutable `section_definitions` and `block_definitions` come from `baseConfig` (loaded from the API at editor open), never from `editorState`. No Phase R code path writes these fields from editor state. The `EDITOR_GUIDE.md` section "8.5 baseConfig and RISK-DUAL-N01" documents this constraint explicitly.
+- **Disposition:** Phase R constraint is mechanically enforced. Phase S (live preview inspector) and all subsequent editor phases MUST NOT add a mutation path for `section_definitions` or `block_definitions`. Any future feature that needs to update Liquid source must go through the theme package publish pipeline, not the draft save path.
+- **Target:** ONGOING — all editor phases from S onward.
 
 ### RISK-ARCH-N01 — Forward-compat gap: `.strict()` + version gate requires version bump for future schema additions — [LOW]
 - **Status:** OPEN · ongoing process requirement.
@@ -101,9 +112,11 @@ Living register. Each entry: ID · severity · status · evidence · owner/targe
 - **Target:** Phase AA (Custom CSS + code workspace) and any phase that modifies `ThemeDocumentSchema`.
 
 ### RISK-PERF-N01 — Large document size: ThemeDocument may exceed 8MB for complex themes — [LOW]
-- **Status:** OPEN · deferred to Phase R-S.
-- **Introduced:** Phase N (2026-07-10).
+- **Status:** OPEN · partially mitigated in Phase R; hard bound deferred to Phase S.
+- **Introduced:** Phase N (2026-07-10). Partially mitigated Phase R (2026-07-10).
 - **Evidence:** `ThemeLiquidSectionFileSchema` allows source up to 200kB per section file (enforced in `theme-bundle.ts`). Urban Kicks has ~40+ section definition files. A full `ThemeDocument` for a complex theme can approach 8MB of JSONB. Deserializing 8MB on every editor load is a performance concern; Supabase JSONB has no hard column-size limit but large payloads increase query latency and memory pressure.
-- **Why it matters:** Phase R-S editor load and draft save are on the critical path for merchant editing latency. An 8MB document serialization/deserialization cycle on each section drag or setting change would cause visible lag.
-- **Mitigation candidates:** (a) Total `section_definitions` source byte bound added to `ThemeDocumentSchema.superRefine` (e.g. sum ≤ 10MB). (b) Phase R-S loads `section_definitions`/`block_definitions` lazily (from the canonical bundle, not embedded in the draft). (c) Draft storage uses a split representation: mutable template/settings in `theme_editor_drafts`, immutable Liquid source in the theme package row.
-- **Target:** Phase R (Visual editor shell) — must profile and choose a mitigation before implementing the draft save path.
+- **Why it matters:** Editor load and draft save are on the critical path for merchant editing latency. An 8MB serialization/deserialization cycle on each section drag or setting change would cause visible lag.
+- **Phase R mitigation:** `buildDraftConfig` sends only the mutable state (template/settings JSON) in the draft POST body, not the full `ThemeDocument`. `section_definitions` / `block_definitions` (Liquid source) come from `baseConfig` and are not re-serialized from the Liquid source on each autosave cycle. This substantially reduces the per-save payload for complex themes.
+- **Remaining gap:** No hard `superRefine` total-source-byte bound has been added. The draft endpoint still receives the full `draftConfig` which includes `section_definitions` as stored in `baseConfig`. For a 40+-section theme, this can still be large on the first load.
+- **Mitigation candidates remaining:** (a) Total `section_definitions` source byte bound in `ThemeDocumentSchema.superRefine`. (b) Split representation: mutable template/settings in `theme_editor_drafts`, immutable Liquid source in the theme package row (load separately, never in the draft PUT body).
+- **Target:** Phase S (live preview inspector) or a dedicated performance pass. The split-representation approach (candidate (b)) aligns naturally with Phase S's lazy-load requirements.

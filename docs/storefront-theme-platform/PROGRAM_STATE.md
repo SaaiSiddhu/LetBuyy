@@ -1,6 +1,6 @@
 # M→AE Program State
 
-**Updated:** 2026-07-10 (post Phase Q) · **Branch:** `stepup/main` · **Starting HEAD (program):** `29f87115`
+**Updated:** 2026-07-10 (post Phase R) · **Branch:** `stepup/main` · **Starting HEAD (program):** `29f87115`
 
 ## Scoreboard
 | Phase | Title | Status | Commit |
@@ -10,7 +10,7 @@
 | O | Preset & Experience Engine 2.0 | COMPLETE | _(see PHASE_O_REPORT.md)_ |
 | P | Drafts/revisions/publish/rollback | COMPLETE | _(see phase-p/PHASE_P_REPORT.md)_ |
 | Q | Merchant theme library | COMPLETE | _(see phase-q/PHASE_Q_REPORT.md)_ |
-| R | Visual editor shell | PENDING | — |
+| R | Visual editor shell | COMPLETE | _(see phase-r/PHASE_R_REPORT.md)_ |
 | S | Live preview inspector | PENDING | — |
 | T | Section groups + nested blocks | PENDING | — |
 | U | Settings control renderer | PENDING | — |
@@ -31,6 +31,7 @@
 - All 11 B→L commits real + ancestors of HEAD. Phase L = HEAD (`29f87115`).
 - `THEME_LIQUID_RENDERING_DEFAULT_ENABLED=false` (theme-governance.ts:14). Frozen apps confirmed frozen.
 - Phase Q gates: api-gateway **41/41** (file-scoped, `theme-library-q.test.ts`) · merchant **39/39** (24 Q + 15 pre-existing) · typecheck 32/32 api-gateway tasks + 14/14 merchant turbo tasks. 3 pre-existing failures unchanged.
+- Phase R gates: merchant **65/65** (26 R + 25 Q + 14 pre-existing) · typecheck clean. No gateway, no migration, no new dependencies. 3 pre-existing failures unchanged.
 
 ## Foreign WIP (PRESERVE — never stage)
 - ~360 modified/untracked files from prior user work (apps/identity-platform, marketing-site, merchant-control-plane, services, database, tests/launch/lb*.mjs, next-env.d.ts).
@@ -39,7 +40,7 @@
 - `tenant-tables.registry.ts` drift.
 
 ## Active risks
-See RISK_REGISTER.md: RISK-SEC-001 (theme_purchases wide-open RLS, HIGH, → AE), RISK-SEC-002 (editor AI stub), RISK-GOV-001 (tenant-registry, affects W), RISK-DATA-001 (migrations 186/187/188/189/190), RISK-DUAL-N01 (section_definitions dual-truth, → R), RISK-ARCH-N01 (version gate must be bumped for future schema additions, ongoing), RISK-PERF-N01 (large document size, → R), RISK-O01 (Nova/Summit distinctness collapses if cta-section removed from bundle, LOW), RISK-O02 (collectionFilter/faqAccordion permanently incompatible until bundle expanded, LOW), RISK-SEC-P01 (theme_editor_drafts RLS checks user_id only, MEDIUM, → security migration before Phase R realtime), RISK-TOCTOU-P01 (publish TOCTOU concurrent window, LOW, ARB-gated), RISK-TOCTOU-P02 (rollback CAS TS-level only, LOW, ARB-gated), RISK-TOCTOU-Q01 (plan-limit count-then-insert non-atomic, MEDIUM, ARB-gated → Phase AB or earlier).
+See RISK_REGISTER.md: RISK-SEC-001 (theme_purchases wide-open RLS, HIGH, → AE), RISK-SEC-002 (editor AI stub), RISK-GOV-001 (tenant-registry, affects W), RISK-DATA-001 (migrations 186/187/188/189/190), RISK-DUAL-N01 (section_definitions dual-truth, OPEN, mechanically guarded by buildDraftConfig in Phase R; must be preserved in Phase S+), RISK-ARCH-N01 (version gate must be bumped for future schema additions, ongoing), RISK-PERF-N01 (large document size, OPEN, buildDraftConfig mitigates on save path; hard bound deferred to Phase S), RISK-O01 (Nova/Summit distinctness collapses if cta-section removed from bundle, LOW), RISK-O02 (collectionFilter/faqAccordion permanently incompatible until bundle expanded, LOW), RISK-SEC-P01 (theme_editor_drafts RLS checks user_id only, MEDIUM, no realtime subscription added in Phase R; still targeted at security migration before Phase S realtime), RISK-TOCTOU-P01 (publish TOCTOU concurrent window, LOW, ARB-gated), RISK-TOCTOU-P02 (rollback CAS TS-level only, LOW, ARB-gated), RISK-TOCTOU-Q01 (plan-limit count-then-insert non-atomic, MEDIUM, ARB-gated → Phase AB or earlier), RISK-R01 (local type mirrors in page.tsx and SectionTreePanel.tsx will drift, LOW, deferred).
 
 ## Parity snapshot (Phase M matrix)
 COMPLETE 37 · PARTIAL 15 · MISSING 13 · NOT_CONNECTED 4 · STUB 1 (70 capability rows). Editor is the largest gap cluster (shell/inspector/tree/nested-blocks/templates/media/markets/code editor all PARTIAL or MISSING).
@@ -75,6 +76,17 @@ COMPLETE 37 · PARTIAL 15 · MISSING 13 · NOT_CONNECTED 4 · STUB 1 (70 capabil
 - **Hardening (3 findings fixed before close):** renameSiteTheme catalog contamination (HIGH) → `owned_by_site_id` app-level check + DB-level UPDATE scope. IDOR plan-limit leak (MEDIUM) → `verifyStoreOwner` before `resolveStoreThemeLimit` on create/duplicate. `handlePublish` 400 on every click (MEDIUM) → `store_name` moved to URL query param.
 - **RISK-TOCTOU-Q01 registered:** Plan limit count-then-insert is non-atomic. Sequential requests correctly gated; concurrent race ARB-gated for DB-level enforcement.
 
+## Phase R deliverables
+- `apps/merchant-control-plane/src/components/theme-editor/ConflictDialog.tsx` (NEW, 68 lines): wraps `@letbuyy/ui ConfirmDialog`; safe light-dismiss → reload; explicit button → force-save; `ConflictSource` discriminates autosave vs manual-save context.
+- `apps/merchant-control-plane/src/components/theme-editor/SectionTreePanel.tsx` (NEW, 447 lines): extracted from inline `SectionTree`/`TreeGroup`/`TreeSection`; `role="tree"` container; `role="treeitem"` + `aria-selected` + roving `tabIndex` on rows; action buttons `tabIndex={-1}`; `isActiveParent` for block-selection state; `ArrowUp`/`ArrowDown` keyboard nav via event delegation; HTML5 drag-to-reorder with full step-distance loop; drag-over via `.theme-os-tree-section--drag-over` CSS class (token-only); block-count `aria-label` on section rows. `TreeGroup` re-exported for `ThemeSettingsTree` and `VersionTree`.
+- `apps/merchant-control-plane/tests/theme-editor-r.test.mjs` (NEW, 212 lines, 26 tests): static contract tests — file existence, `@letbuyy/ui` import, design ratchet, ARIA tree attributes, D&D handlers, `TreeGroup` re-export, `page.tsx` imports, inline declaration removal, conflict state, 409 detection, `onReload`/`onForce` wiring, no Supabase in new components.
+- `apps/merchant-control-plane/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx` (FOREIGN WIP, 4 hunks): import block + conflict state + 409 detection in `saveDraft`/`syncPreviewDraft` + JSX replacement of inline tree + inline declaration deletion + `undo()` dirty-state fix + `onForce` `.catch()` hardening.
+- `apps/merchant-control-plane/src/app/globals.css` (FOREIGN WIP, 5 lines): `.theme-os-tree-section--drag-over` rule, token-only, no hex.
+- `apps/merchant-control-plane/package.json` (CLEAN): `theme-editor-r.test.mjs` appended to test script.
+- **RISK-DUAL-N01:** mechanically guarded by `buildDraftConfig` (immutable fields from `baseConfig`, never `editorState`). Risk remains OPEN for future phases.
+- **RISK-PERF-N01:** `buildDraftConfig` mitigates the save-path serialization concern (mutable state only, not Liquid source). Hard bound deferred to Phase S.
+- **8 HIGH/MEDIUM findings fixed in hardening** (ConflictDialog light-dismiss swap, drag multi-step loop, block-selection roving tabindex, drag-over CSS class, action button tabIndex, ChevronDown removal, undo dirty-state, onForce .catch()). 2 LOW findings deferred.
+
 ## Next action
-- **Next phase: R — Visual Editor Shell.** Editor shell: main editing canvas, section/block tree panel, settings sidebar, basic drag-and-drop section reorder. Consumes `theme_editor_drafts` (Phase P) + `theme_instances` (Phase Q) as the library entry point to the editor. MUST address RISK-SEC-P01 (`theme_editor_drafts` RLS checks `user_id` only, not `custom_user_id`) before adding any client-side realtime subscription over drafts. MUST address RISK-DUAL-N01 (editor save adapter must reconstruct `section_definitions`/`block_definitions` from the original bundle, not editor state).
-- **Gate entering R:** api-gateway baseline **438** (Phase P) + **41** (Phase Q file-scoped, `theme-library-q.test.ts`) + theme-engine **1034**.
+- **Next phase: S — Live Preview Inspector.** Phase S adds the live-preview inspector: section highlight on hover, click-to-select from the storefront preview, inspector overlay, and (if RLS is patched) potential realtime draft sync. MUST continue to enforce RISK-DUAL-N01 (no `section_definitions` mutation) and MUST address RISK-SEC-P01 before adding any client-side realtime subscription over `theme_editor_drafts`.
+- **Gate entering S:** merchant **65/65** (post Phase R) · api-gateway **479** (438 P + 41 Q) · theme-engine **1034** · all typechecks clean.
