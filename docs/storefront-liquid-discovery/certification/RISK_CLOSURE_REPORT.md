@@ -497,3 +497,79 @@ Phase I changed only test files and doc files. Production source files, frozen c
 ---
 
 *End of Risk Closure Report — amended 2026-07-10 (Phase I QA Certification)*
+
+---
+
+---
+
+## 13. Phase J Amendment — Production Rollout Readiness (2026-07-10)
+
+Phase J is a documentation-only phase. No product source files, test files, migration files, or governance constants were changed. The phase produced five planning and evidence documents in `docs/storefront-liquid-discovery/phase-j/` and this amendment. The platform-wide Liquid flip remains ARB-AUTHORITY. `THEME_LIQUID_RENDERING_DEFAULT_ENABLED = false` at `packages/theme-engine/src/theme-governance.ts:14`. `THEME_LIQUID_PLATFORM_WIDE_FLIP_DECISION.status = 'deferred'` at the same file, lines 16–21.
+
+### 13.1 Updated Summary Counts
+
+| Category | Phase I Count | Phase J Change | Updated Count |
+|---|---|---|---|
+| CLOSED-VERIFIED (Phase B static) | 12 | +0 | 12 |
+| CLOSED-IMPLEMENTED (Phase C) | 5 | +0 | 5 |
+| CLOSED-IMPLEMENTED (Phase D) | 7 | +0 | 7 |
+| CLOSED-IMPLEMENTED (Phase E) | 3 | +0 | 3 |
+| CLOSED-IMPLEMENTED (Phase F) | 1 | +0 | 1 |
+| PARTIALLY-CLOSED-IMPLEMENTED (Phase F) | 2 | +0 | 2 |
+| CLOSED-STRUCTURAL (Phase G) | 1 | +0 | 1 |
+| CLOSED-IMPLEMENTED (Phase G) | 2 | +0 | 2 |
+| MITIGATED (Phase G) | 1 | +0 | 1 |
+| PARTIALLY-CLOSED-IMPLEMENTED (Phase H) | 1 | +0 | 1 |
+| PARTIAL-IMPLEMENTED (Phase D) | 1 | +0 | 1 |
+| OPEN-CONFIRMED-RISK | 11 | +0 | 11 |
+| OPEN-UNVERIFIABLE | 1 | +0 | 1 |
+| REFUTED | 7 | +0 | 7 |
+| PARTIAL | 9 | +0 | 9 |
+
+> No register row status changes in Phase J. Phase J is a documentation and evidence consolidation pass. No previously open risk was closed; no new code paths were introduced that would expose new risks.
+
+### 13.2 Phase H/I Finding Disposition (Confirmed in Phase J Review)
+
+The Phase J review process confirmed the following dispositions for findings carried from Phases H and I. These supersede the OPEN status recorded in §11.3 and §12.4 of this report.
+
+| ID | Severity | Summary | Phase J Confirmed Status |
+|---|---|---|---|
+| **H-F1** | MEDIUM | `theme-linter.ts:64` — `forbidAttrs` declared; `for (const attr of forbidAttrs)` at line 101 iterates FORBID_ATTR from `LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG`. Rule named `forbidden-attr`. Previously described as using a hardcoded regex. | **CONFIRMED CLOSED** — Code on `stepup/main` confirms iteration at `theme-linter.ts:101`. The linter and renderer share a single source of truth. §11.3 characterization of this finding as OPEN was inaccurate; the code was already correct. |
+| **H-F2** | MEDIUM | `packages/theme-engine/src/theme-artifact-exporter.ts:58–68` — `assertSafeArtifactPath()` throws `UnsafeThemeArtifactPathError` on absolute paths or `..` segments. Called at all path composition points (lines 75, 82, 90, 116, 124). Previously described as an OPEN path-traversal risk. | **CONFIRMED CLOSED** — Code on `stepup/main` confirms the guard is present and applied at all composition points. §11.3 characterization as OPEN was inaccurate; the fix was already in place. Note: the wrong file path (`apps/storefront-runtime/src/lib/theme-engine/theme-artifact-exporter.ts`) was referenced in some Phase J draft documents; the correct path is `packages/theme-engine/src/theme-artifact-exporter.ts`. |
+| **H-F3** | LOW | `theme-artifact-exporter.ts:101–107` — `settings_data` exported verbatim; code comment documents this as intentional. `BLOCKED_DROP_KEYS` is a render-time defence; settings_data holds design tokens. | **OPEN (acknowledged design choice)** — Risk remains if untrusted merchant data reaches the export pipeline. No code change made. ARB to assess at Gate 2. |
+| **I-F1** | HIGH | DOMPurify 3.x clobbering guard strips `name="name"` from customer-register `<input type="text">`; no-JS POST omits customer name; account created with null/empty name. | **OPEN — requires ARB judgment as GO-gate for no-JS registration on Liquid stores.** Fix: rename to `name="customer_name"` in `theme-bundle.ts` and update gateway input parser. No fix applied in Phase J. |
+
+### 13.3 ARB-Gate Blocker Summary (Confirmed in Phase J)
+
+| # | Blocker | Phase Closed | Status (Confirmed Phase J) |
+|---|---|---|---|
+| B-1 | postMessage key mismatch (editor section-selection) | Phase C | **CLOSED** |
+| B-2 | `newsletter` / `newsletter-signup` type split | Phase C + D | **CLOSED** |
+| B-3 | Fonts not wired, wrong typeface | Phase D | **CLOSED** |
+| B-4 | `linklists` absent from Liquid scope | Phase D | **CLOSED** |
+| B-5 | Schema migration engine — zero concrete migrations | Phase G | **MITIGATED** |
+| B-6 | `letbuyy-core` DB row missing | Phase G | **CLOSED** (conditional on migration 188 running against production DB) |
+| B-7 | Settings dual-shape (DB flat vs TS 5-group) | Phase G | **MITIGATED** |
+
+**5 of 7 CLOSED, 2 MITIGATED, 0 still OPEN as blockers.**
+
+### 13.4 Rollout Readiness Verdict (Honest — 2026-07-10)
+
+The platform is **structurally ready for a cautious per-store canary rollout**. The safety net is complete: 5-layer crash-recovery architecture ensures every Liquid failure degrades to a full React page with no blank-page or hard-500 outcome. Five of seven ARB-gate blockers are CLOSED; two are MITIGATED (non-blocking for the render path). The test gate is green at 221/221 theme-engine, 78/78 storefront-runtime, 15/15 merchant-control-plane. Security assertions (SSTI, XSS, prototype-pollution, FORBID_TAGS/ATTR, drop limits) all PASS in unit scope.
+
+**The platform-wide flip is NOT ready to proceed without the following acknowledgments:**
+
+1. **I-F1 (HIGH, OPEN)** — DOMPurify clobbering strips `name="name"` from the customer-register form. No-JS registration silently omits the customer name. The ARB must decide whether this is a hard GO-gate or a supervised fast-follow before any store activation.
+2. **Live observability is NOT-CONNECTED** — Cloudflare Logpush and Analytics Engine are not wired. Fallback rate, render latency under production traffic, production memory behavior, and the count of stores currently on the Liquid path are all unknown. The ARB should require at minimum `wrangler tail --format=json` monitoring before a canary cohort is activated.
+3. **No percentage-of-stores rollout mechanism exists** — Per-store activation via `theme_releases.release_manifest.renderer_engine` is the only available staged path. A gradual percentage rollout would require net-new infrastructure.
+4. **`FEATURE_LIQUID` gateway flag is dormant** — `featureGate('FEATURE_LIQUID', ...)` is never called. The ARB should decide whether to wire it as a gateway-level kill switch before the platform flip.
+
+The platform-wide flip (changing `THEME_LIQUID_RENDERING_DEFAULT_ENABLED` to `true`) requires a recorded ARB decision, a human-authored commit, and a supervised storefront-runtime redeploy. The Phase J package provides the evidence for that decision; it does not make it.
+
+### 13.5 Phase J Scope Note
+
+Phase J scope: `docs/storefront-liquid-discovery/phase-j/` (5 new documents), `docs/storefront-liquid-discovery/certification/RISK_CLOSURE_REPORT.md` (this amendment). No source files, test files, migration files, or governance constants modified. No test gate count changes. ART-17 frozen section registry untouched. `THEME_LIQUID_RENDERING_DEFAULT_ENABLED` default unchanged. The two pre-existing validator failures (`validate-governance.mjs` — tenant-table registry; `sequential-migration-validator.mjs` — uncommitted WIP migrations 186/187) remain unchanged and were present before Phase B.
+
+---
+
+*End of Risk Closure Report — amended 2026-07-10 (Phase J Production Rollout Readiness)*
