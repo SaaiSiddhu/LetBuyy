@@ -258,3 +258,54 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Mitigation candidates remaining:** (a) Total `section_definitions` source byte bound in `ThemeDocumentSchema.superRefine`. (b) Split representation: mutable template/settings in `theme_editor_drafts`, immutable Liquid source in the theme package row (load separately, never in the draft PUT body).
 - **Phase S note:** Phase S did not add a hard byte bound. The `buildDraftConfig` mitigation from Phase R remains active. The split-representation approach (candidate (b)) is still the preferred long-term mitigation.
 - **Target:** Phase T (section groups) or a dedicated performance pass.
+
+## Phase W risks
+
+### RISK-W01 — `BINDING_BLOCKED_KEYS` is a manually-maintained copy of `BLOCKED_DROP_KEYS` — no parity enforcement — [MEDIUM]
+- **Status:** OPEN · known residual; deferred.
+- **Introduced:** Phase W (2026-07-11).
+- **Evidence:** `packages/theme-engine/src/dynamic-source-binding.ts` — `BINDING_BLOCKED_KEYS` is a hand-maintained set of 14 credential-adjacent key names. `BLOCKED_DROP_KEYS` in `packages/theme-engine/src/theme-renderer.ts` has the same 14 keys. Both sets are currently identical. No compile-time import relationship enforces this parity. If `BLOCKED_DROP_KEYS` gains a new key name in a future patch (e.g., `session_token`, `bearer_token`) and `BINDING_BLOCKED_KEYS` is not updated simultaneously, resolved resource drops containing that key would pass `filterDropKeys` in `resolveDynamicSourceDescriptors` and reach Liquid scope via a `ResourceBinding` descriptor — even though the same key is blocked on plain settings by the renderer's own `filterBlockedSettingsKeys`.
+- **Why it matters:** The two blocklists must stay in sync to prevent a credential-adjacent key from becoming accessible via the resource-binding code path after being blocked on the direct-settings path.
+- **Disposition:** Export `BLOCKED_DROP_KEYS` from `theme-renderer.ts` (it is already `export const`) and import it into `dynamic-source-binding.ts` as the single source of truth, removing the duplicated set. Alternatively, add a unit test that imports both sets and asserts strict set equality — so any future `BLOCKED_DROP_KEYS` addition that is not mirrored fails the test gate immediately.
+- **Target:** Earliest phase touching `dynamic-source-binding.ts` or `theme-renderer.ts`.
+
+### RISK-W02 — `auth.user.storeId` optional in ES256 tokens — session-bound fast-fail in `verifySiteOwnership` bypassed when absent — [LOW]
+- **Status:** OPEN · known residual; deferred.
+- **Introduced:** Phase W (2026-07-11).
+- **Evidence:** `services/api-gateway/src/lib/auth-user.ts` — `storeId?: string` (optional). The fast-fail inside `verifySiteOwnership` (`if (sessionStoreId && sessionStoreId !== siteId) return false`) is vacuously bypassed when `storeId` is absent from the token — pre-date tokens or internal-SSO flows where the store header is not supplied. The DB ownership check still enforces tenant isolation; no cross-tenant read is possible. However, the stronger of the two controls disappears silently for these token shapes.
+- **Why it matters:** The fast-fail prevents even a DB round-trip for cross-tenant access attempts from merchants with well-formed session tokens. Its absence for legacy/internal tokens degrades defence-in-depth without breaking correctness.
+- **Disposition:** Add a test case in `resource-search-w.test.ts` proving the route still 403s when `auth.user.storeId` is undefined and the actor does not own the store (DB check still enforced). Long-term: require `storeId` in all ES256 merchant tokens at issuance to make the fast-fail unconditional.
+- **Target:** Earliest phase touching `resource-search.ts` or the token issuance path.
+
+### RISK-W03 — `siteDrops` tenant-scoping trust boundary is comment-only; block-level bindings unresolved — [LOW]
+- **Status:** OPEN · trust boundary documentation gap + functional gap.
+- **Introduced:** Phase W (2026-07-11).
+- **Evidence:** `packages/theme-engine/src/theme-renderer.ts` line 393 comment: `// siteDrops is already tenant-scoped by the caller`. No assertion, schema check, or integration test validates that the storefront composition layer (which will populate `siteDrops` in a future phase) actually scopes the map to the current site. In Phase W, `siteDrops` defaults to `{}` so no resources can resolve at all, making this latent rather than active. The trust contract is invisible to a future implementer.
+- **Why it matters:** A future Phase X implementer building the storefront `siteDrops` hydration could inadvertently pass an unscoped map, allowing a descriptor's `id` from any site to resolve to a drop from another site.
+- **Disposition:** Add a mandatory `siteId` field to `SiteDrops` interface so the resolver can log or assert the scope at development time. Document the per-field scoping requirement in `DYNAMIC_SOURCES_REFERENCE.md`. Create an integration test shell for the composition-to-renderer `siteDrops` pipeline before the storefront hydration service is built.
+- **Target:** Phase X (Files & media library) or the phase that builds the storefront hydration service.
+
+### RISK-W04 — `ArrowUp` key handler in `ResourcePickerControl` selects item 0 when no item is selected — [LOW]
+- **Status:** OPEN · WAI-ARIA 1.2 combobox non-conformance; deferred.
+- **Introduced:** Phase W (2026-07-11).
+- **Evidence:** `apps/merchant-control-plane/src/components/theme-editor/controls/ResourcePickerControl.tsx` — `ArrowUp` handler: `setActiveIndex((prev) => Math.max(prev - 1, 0))`. When `activeIndex` starts at `-1` (no item selected), `Math.max(-1 - 1, 0) = Math.max(-2, 0) = 0`. The first `ArrowUp` press silently selects item 0 before the user has pressed `ArrowDown`. WAI-ARIA 1.2 combobox pattern expects `ArrowUp` from a no-selection state to either do nothing or focus the last item in the list.
+- **Why it matters:** Assistive technology users expect `ArrowDown` to be the initial navigation key into a combobox. The `-1→0` snap on `ArrowUp` is unexpected and may confuse screen reader users.
+- **Disposition:** Guard the `ArrowUp` handler: `setActiveIndex((prev) => prev <= 0 ? 0 : prev - 1)` at minimum (clamps without the `-2→0` snap). Alternatively, `ArrowUp` from `-1` → set to `results.length - 1` (focus last item), matching the ARIA pattern for list wrap-around.
+- **Target:** Phase X or first `ResourcePickerControl.tsx` touch.
+
+### RISK-W05 — Loading indicator hidden during 300 ms debounce window on first keystroke — [LOW]
+- **Status:** OPEN · UX gap; deferred.
+- **Introduced:** Phase W (2026-07-11).
+- **Evidence:** `apps/merchant-control-plane/src/components/theme-editor/controls/ResourcePickerControl.tsx` — the loading `<li>` spinner is rendered inside `{isOpen ? <ul role="listbox"> … </ul> : null}`. The state transitions to `loading` immediately on each keystroke, but `isOpen` remains `false` until the 300 ms `setTimeout` resolves and results arrive to set `setIsOpen(true)`. On the first keystroke of a fresh session, there is zero visible feedback for the entire debounce window. Subsequent keystrokes (when `isOpen` is already `true` from prior results) do show the spinner.
+- **Why it matters:** Merchants who type a single character and pause experience dead silence for 300 ms, then results appear abruptly. This is noticeable on slow connections where the fetch takes additional time after the debounce fires.
+- **Disposition:** Set `setIsOpen(true)` immediately when the query becomes non-empty (before the `setTimeout`), so the `{isOpen?…}` conditional is satisfied and the loading `<li>` is visible during the debounce window. The empty-query early-return already calls `setIsOpen(false)`, so the close-on-clear behavior is unaffected.
+- **Target:** Phase X or first `ResourcePickerControl.tsx` touch.
+
+### RISK-W06 — Block-level settings not resolved through `resolveDynamicSourceDescriptors` — [LOW]
+- **Status:** OPEN · functional gap; CONFIRMED by code review.
+- **Introduced:** Phase W (2026-07-11).
+- **Evidence:** `packages/theme-engine/src/theme-renderer.ts` — `resolveDynamicSourceDescriptors` is called on section-level `templateSection.settings` (line ~395) but is NOT called on block-level `block.settings` anywhere inside `renderLiquidSectionBlocks` (line ~755). Block settings (`block.settings`) are passed unchanged to `buildLiquidScope` and to the returned `LiquidRenderedBlock.settings`. A `ResourceBinding` descriptor stored as a block setting (rather than a section setting) will reach Liquid as the raw object `{ __lb_binding: true, source: 'resource', resourceType: 'product', id: '...' }` and render as `[object Object]` or an empty string via LiquidJS coercion.
+- **Why it matters:** Phase W's primary user-visible value is the resource picker. If a merchant picks a product for a block-level field (e.g., a carousel block with a `featured_product` field), the pick will store correctly in the section's `settings.blocks[id].settings.featured_product`, but the storefront will not resolve it to a drop — the block template will receive the raw descriptor instead.
+- **Disposition:** Apply `resolveDynamicSourceDescriptors(block.settings, siteDrops)` at the top of the per-block render loop inside `renderLiquidSectionBlocks`, mirroring the section-level resolution pattern. This is a one-function-call addition at the correct call site; no structural changes required.
+- **Related:** See also RISK-T03 (block settings bypass `filterBlockedSettingsKeys`) — fixing RISK-W06 simultaneously provides the defence-in-depth benefit of RISK-T03 for the binding-resolution path.
+- **Target:** Phase X or first `theme-renderer.ts` touch.

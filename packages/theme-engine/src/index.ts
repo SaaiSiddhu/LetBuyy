@@ -65,6 +65,8 @@ export type {
 } from './ai-optimizer';
 export { applyPersonalizationOverlay, applyPersonalizationOverlayToBundle } from './ai-personalization';
 export type { SegmentTokens, PersonalizationResult } from './ai-personalization';
+// Phase W — Dynamic Source Binding (descriptor type + tenant-safe resolver)
+export * from './dynamic-source-binding';
 
 export type BuiltInSectionType =
   | 'header'

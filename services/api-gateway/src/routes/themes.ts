@@ -56,8 +56,13 @@ import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { SchemaRegistryExecutionAdapter } from '../execution/schema-registry-execution.adapter';
 import { ThemeExecutionAdapter } from '../execution/theme-execution.adapter';
 import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
+import resourceSearchRouter from './resource-search';
 
 const router = new Hono<{ Bindings: Env }>();
+
+// Phase W — resource-search registered FIRST (static path, before all /:slug/* catch-all
+// middleware registrations) to prevent route-shadowing ambiguity.
+router.use('/resource-search', authMiddleware);
 
 // Phase Q — library routes authMiddleware registered FIRST (before /:slug/* catch-all
 // middleware registrations) to prevent any route-shadowing ambiguity.
@@ -570,6 +575,9 @@ router.get('/industries', async (c) => {
 });
 
 mountThemeMarketplaceAuxiliaryRoutes(router);
+
+// Phase W — resource-search sub-router (static path; must appear before /:slug catch-alls)
+router.route('/resource-search', resourceSearchRouter);
 
 // GET /themes/:slug/schema — Return editable schemas for a theme
 router.get('/:slug/schema', async (c) => {

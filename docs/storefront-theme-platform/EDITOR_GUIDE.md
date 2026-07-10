@@ -1,8 +1,8 @@
 # LetBuyy Theme Editor — Shell Architecture Guide
 
 **Program:** LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor (M→AE)
-**Last updated:** 2026-07-11 (post Phase V)
-**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), template switcher, undo/redo, autosave, draft CAS
+**Last updated:** 2026-07-11 (post Phase W)
+**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), template switcher, resource picker (Phase W live combobox), undo/redo, autosave, draft CAS
 
 ---
 
@@ -37,7 +37,7 @@ apps/merchant-control-plane/src/components/theme-editor/
     VideoControl.tsx           — video URL + file upload (video/*)
     VideoUrlControl.tsx        — YouTube / Vimeo URL; protocol + domain validated
     InfoControls.tsx           — FieldHeader (role=heading) + FieldParagraph (display-only)
-    ResourcePickerControl.tsx  — product/collection/blog/page/menu id entry + NOT-CONNECTED badge
+    ResourcePickerControl.tsx  — product/collection/blog/page/menu: Phase W WAI-ARIA 1.2 combobox (live search) or Phase U NOT-CONNECTED fallback
     controls.module.css        — supplemental styles; --lb-* tokens only
 ```
 
@@ -282,11 +282,11 @@ Three view modes keyed on `selection.kind`:
 | `video_url` | `VideoUrlControl` | U | YouTube / Vimeo HTTPS URL; `isUnsafeUrl` + pattern validation |
 | `header` | `FieldHeader` | U | Display-only heading (`role="heading"`); no value; no onChange |
 | `paragraph` | `FieldParagraph` | U | Display-only text block; no value; no onChange |
-| `product` | `ResourcePickerControl` | U | ID/handle text + NOT-CONNECTED badge; live search Phase W |
-| `collection` | `ResourcePickerControl` | U | Same as product |
-| `blog` | `ResourcePickerControl` | U | Same as product |
-| `page` | `ResourcePickerControl` | U | Same as product |
-| `menu` | `ResourcePickerControl` | U | Same as product |
+| `product` | `ResourcePickerControl` | W | WAI-ARIA 1.2 combobox (live search via `/api/stores/[store]/resource-search`); Phase U text-input fallback when `storeName` absent |
+| `collection` | `ResourcePickerControl` | W | Same as product |
+| `blog` | `ResourcePickerControl` | W | Same as product |
+| `page` | `ResourcePickerControl` | W | Same as product |
+| `menu` | `ResourcePickerControl` | W | Same as product |
 
 Unknown types fall through to `TextInput` and never crash (backward compatibility).
 
@@ -295,6 +295,48 @@ Unknown types fall through to `TextInput` and never crash (backward compatibilit
 **Sanitize law:** `HtmlControl` and `LiquidControl` store the raw value in a `<textarea>`. No `dangerouslySetInnerHTML` in any control. HTML/Liquid → DOM rendering and DOMPurify sanitisation are the storefront renderer's responsibility.
 
 For the complete per-type schema shape, validation rules, ARIA patterns, and sanitize notes, see `docs/storefront-theme-platform/phase-u/CONTROL_TYPE_REFERENCE.md`.
+
+### 6.3 ResourcePickerControl (Phase W — Live Combobox)
+
+Source: `apps/merchant-control-plane/src/components/theme-editor/controls/ResourcePickerControl.tsx`
+
+Phase W upgrades `ResourcePickerControl` from a Phase U text-input placeholder to a live WAI-ARIA 1.2 combobox for the five resource field types (`product`, `collection`, `page`, `blog`, `menu`).
+
+**Props:**
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `value` | `string \| null` | Yes | Current resource id |
+| `onChange` | `(id: string) => void` | Yes | Emits resource id string only (RISK-DUAL-N01) |
+| `resourceType` | `string` | Yes | One of `product \| collection \| page \| blog \| menu` |
+| `storeName` | `string` | No | Store URL path param; enables live combobox branch |
+| `label` | `string` | No | Accessible label |
+| `helpText` | `string` | No | Help text (linked via `aria-describedby`) |
+| `error` | `string` | No | Error message |
+
+**Branches:**
+
+- **Live combobox** (when `storeName` is supplied): fetches from `/api/stores/{storeName}/resource-search?type={resourceType}&q={query}&limit=20` with 300 ms debounce. Shows the selected resource as a chip with title + clear button.
+- **NOT-CONNECTED fallback** (when `storeName` is absent): Phase U plain text-input with NOT-CONNECTED badge. Backward-compat for any call site that does not pass `storeName`.
+
+**WAI-ARIA 1.2 Combobox pattern:**
+
+```
+<div role="combobox" aria-expanded aria-haspopup="listbox" aria-controls aria-autocomplete="list" aria-activedescendant>
+  <input type="text" />
+</div>
+<ul role="listbox">
+  <li role="option" aria-selected id="…">Title</li>
+</ul>
+```
+
+Keyboard: `ArrowDown` / `ArrowUp` navigate options; `Enter` selects; `Escape` closes. See RISK-W04 for a known ArrowUp edge case at initial state.
+
+**Fetch proxy:** same-origin `/api/stores/{storeName}/resource-search`. The browser never accesses the gateway directly. `storeName` is resolved server-side by `resolveOwnedStoreId` before any gateway call — no cross-tenant access is possible from the component itself.
+
+**RISK-DUAL-N01:** `onChange` emits only the resource id string. The component never handles `DynamicSourceDescriptor` objects. The caller (or `applyChange()` upstream) decides whether to wrap the id in a `ResourceBinding` descriptor for storage.
+
+For the binding descriptor model and render-time resolution, see `docs/storefront-theme-platform/phase-w/DYNAMIC_SOURCES_REFERENCE.md`.
 
 ---
 
@@ -548,12 +590,16 @@ type EditorSelection =
 | RISK-PERF-N01 | LOW | Large document serialization on each draft save | `buildDraftConfig` sends only mutable state; Liquid source comes from `baseConfig` not re-serialized |
 | RISK-SEC-002 | INFO | AI hooks are stubs; must not be presented as connected | Phase AC |
 | RISK-R01 | LOW | **CLOSED (Phase T)** — `BlockEntry.children` added to canonical type; remaining four shared types still mirrored | Next substantive `page.tsx` touch |
-| RISK-T05 | MEDIUM | `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead | Phase V or first `SectionTreePanel.tsx` touch |
-| RISK-T04 | LOW | `RENDERER_MAX_BLOCK_DEPTH` is private — depth parity test cannot directly assert it | Phase V or first `theme-renderer.ts` touch |
-| RISK-SEC-U01 | MEDIUM | `isUnsafeUrl` narrow blocklist — `data:image/svg+xml`, `data:text/javascript`, `blob:` not blocked | Phase V |
-| RISK-SEC-U02 | MEDIUM | `ColorBackgroundControl` gradient mode: no `url()` CSS content check | Phase V |
-| RISK-SEC-U03 | MEDIUM | `required: true` on `checkbox`/`toggle` is a validation no-op | Phase V |
-| RISK-A11Y-U01 | MEDIUM | `TextInput`/`TextareaInput` missing `aria-describedby` on error element | Phase V |
-| RISK-A11Y-U02 | LOW | `CheckboxControl`/`FontPickerControl`/`ColorSchemeControl` ternary `aria-describedby` drops helpText when error present | Phase V |
-| RISK-STYLE-U01 | LOW | `LiquidControl` `fontSize: 12` raw pixel | Phase V |
-| RISK-STYLE-U02 | LOW | `controls.module.css` raw `px` spacing values | Phase V |
+| RISK-T05 | MEDIUM | `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead | Phase X or first `SectionTreePanel.tsx` touch |
+| RISK-T04 | LOW | `RENDERER_MAX_BLOCK_DEPTH` is private — depth parity test cannot directly assert it | Phase X or first `theme-renderer.ts` touch |
+| RISK-SEC-U01 | MEDIUM | `isUnsafeUrl` narrow blocklist — `data:image/svg+xml`, `data:text/javascript`, `blob:` not blocked | Phase X |
+| RISK-SEC-U02 | MEDIUM | `ColorBackgroundControl` gradient mode: no `url()` CSS content check | Phase X |
+| RISK-SEC-U03 | MEDIUM | `required: true` on `checkbox`/`toggle` is a validation no-op | Phase X |
+| RISK-A11Y-U01 | MEDIUM | `TextInput`/`TextareaInput` missing `aria-describedby` on error element | Phase X |
+| RISK-A11Y-U02 | LOW | `CheckboxControl`/`FontPickerControl`/`ColorSchemeControl` ternary `aria-describedby` drops helpText when error present | Phase X |
+| RISK-STYLE-U01 | LOW | `LiquidControl` `fontSize: 12` raw pixel | Phase X |
+| RISK-STYLE-U02 | LOW | `controls.module.css` raw `px` spacing values (pre-Phase-W classes; new Phase W classes use tokens) | Phase X |
+| RISK-W01 | MEDIUM | `BINDING_BLOCKED_KEYS` parity with `BLOCKED_DROP_KEYS` not compile-time enforced | Phase X or first `dynamic-source-binding.ts` touch |
+| RISK-W04 | LOW | `ResourcePickerControl` `ArrowUp` from no-selection snaps to item 0 — WAI-ARIA 1.2 non-conformance | Phase X or first `ResourcePickerControl.tsx` touch |
+| RISK-W05 | LOW | Loading spinner invisible during 300 ms debounce window on first keystroke | Phase X or first `ResourcePickerControl.tsx` touch |
+| RISK-W06 | LOW | Block-level settings not resolved through `resolveDynamicSourceDescriptors` — raw descriptors reach Liquid | Phase X or first `theme-renderer.ts` touch |

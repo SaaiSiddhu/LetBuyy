@@ -19,6 +19,11 @@ import {
   type ThemeBundleTemplateBlock,
   type ThemeBundleTemplateSection,
 } from './theme-bundle';
+// Phase W — Dynamic Source Binding: descriptor resolution at render time.
+import {
+  resolveDynamicSourceDescriptors,
+  type SiteDrops,
+} from './dynamic-source-binding';
 import type {
   BlockModel,
   SectionModel,
@@ -65,6 +70,14 @@ export interface LiquidCommerceDrops {
   // E3: page drop — populated by LANE-B composition-engine when route.type === 'page'.
   // Shape: { title, body_html, slug, page_type }
   page?: unknown;
+  /**
+   * Phase W — site-scoped resource drops for dynamic-source binding resolution.
+   * Populated by the storefront composition layer with tenant-scoped product/collection/etc
+   * drops fetched for this render. Passed into resolveDynamicSourceDescriptors() before
+   * section settings reach the Liquid scope so descriptors are transparent to LiquidJS.
+   * Optional: absent when no bindings are in use (no-op path is backward-compatible).
+   */
+  siteDrops?: SiteDrops;
 }
 
 export interface LiquidRenderedBlock {
@@ -375,6 +388,15 @@ async function renderLiquidTemplateSections(
             // C1: per-section try/catch — a single bad section must not crash the full page render.
             // On error we push an HTML comment placeholder and continue.
             try {
+                // Phase W: resolve any dynamic-source binding descriptors in section settings
+                // BEFORE the scope is built. Plain literal values are unchanged (no-op when no
+                // descriptors are present). siteDrops is already tenant-scoped by the caller.
+                const siteDrops: SiteDrops = (input.liquidContext?.siteDrops as SiteDrops | undefined) ?? {};
+                const resolvedSectionSettings = resolveDynamicSourceDescriptors(
+                    templateSection.settings,
+                    siteDrops,
+                );
+
                 const renderedBlocks = await renderLiquidSectionBlocks({
                     engine,
                     bundle,
@@ -389,7 +411,7 @@ async function renderLiquidTemplateSections(
                         section: {
                             id: sectionId,
                             type: resolvedType,
-                            settings: templateSection.settings,
+                            settings: resolvedSectionSettings,
                             blocks: renderedBlocks.map((block) => ({
                                 id: block.id,
                                 type: block.type,
