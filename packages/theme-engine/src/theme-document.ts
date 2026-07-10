@@ -31,6 +31,14 @@ import {
   type ThemeBundleJson,
   type ThemeBundleTemplateBlock,
 } from './theme-bundle';
+// Phase V — Template Registry: path-safety + charset validation for template keys,
+// alternate-variant cap enforcement, and allowed-drops context isolation.
+import {
+  validateTemplateKey,
+  InvalidTemplateKeyError,
+  findExcessiveVariantCounts,
+  MAX_TEMPLATE_VARIANTS_PER_TYPE,
+} from './template-registry';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // VERSION CONSTANTS
@@ -282,7 +290,23 @@ export const ThemeDocumentTemplateSchema = z
     layout: z.string().max(120).optional(),
     sections: z.array(ThemeDocumentSectionSchema).max(MAX_SECTIONS_PER_TEMPLATE).default([]),
   })
-  .strict();
+  .strict()
+  .superRefine((template, ctx) => {
+    // Phase V: charset + path-safety guard on template key.
+    // validateTemplateKey throws InvalidTemplateKeyError on failure.
+    // All existing bundle keys pass (index, product, customers/login, not_found, gift_card, …).
+    try {
+      validateTemplateKey(template.key);
+    } catch (e) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['key'],
+        message: e instanceof InvalidTemplateKeyError
+          ? e.message
+          : `Invalid template key "${template.key}"`,
+      });
+    }
+  });
 
 // ──────────────────────────────────────────────────────────────────────────────
 // SETTINGS DATA SCHEMA (V2 variant uses ThemeDocumentSettingsSchema for values)
@@ -434,6 +458,24 @@ export const ThemeDocumentSchema = z
         );
       }
     }
+
+    // ── 6. Phase V — Per-type alternate variant cap (MAX_TEMPLATE_VARIANTS_PER_TYPE) ──
+    // Build a synthetic Record<key, true> from the templates array so we can reuse
+    // findExcessiveVariantCounts without duplicating the counting logic.
+    const templateKeyRecord: Record<string, unknown> = {};
+    for (const t of doc.templates) {
+      templateKeyRecord[t.key] = true;
+    }
+    const excessVariants = findExcessiveVariantCounts(templateKeyRecord);
+    for (const [baseType, count] of Object.entries(excessVariants)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['templates'],
+        message:
+          `Template type "${baseType}" has ${count} alternate variants, exceeding the ` +
+          `maximum of ${MAX_TEMPLATE_VARIANTS_PER_TYPE} per base type`,
+      });
+    }
   });
 
 export type ThemeDocument = z.infer<typeof ThemeDocumentSchema>;
@@ -557,10 +599,26 @@ function docBlockToBundleBlock(b: ThemeDocumentBlock): ThemeBundleTemplateBlock 
  * Determinism guarantee: templates are sorted alphabetically by key so that
  * doc→bundle→doc round-trips produce identical output regardless of the
  * original bundle's JS object insertion order.
+ *
+ * **Key-safety narrowing:** ThemeDocumentTemplateSchema imposes a stricter charset
+ * restriction on template keys ([a-z0-9_\-/.] starting with [a-z0-9]) than
+ * LiquidThemePackageBundleSchema does. A bundle template key with uppercase letters,
+ * spaces, or characters outside that set will cause this function to throw an
+ * {@link InvalidTemplateKeyError} rather than a ZodError buried inside parseThemeDocument.
+ * All committed fixtures (Urban Kicks, LetBuyy Core, minimal) use conforming keys;
+ * the risk is merchant-defined themes with non-standard keys created outside the editor.
  */
 export function toThemeDocumentV2(bundle: LiquidThemePackageBundle): ThemeDocument {
   // 1. Re-validate the source bundle (enforces G4 version gate).
   const parsed = parseLiquidThemePackageBundle(bundle);
+
+  // 1b. Phase V pre-conversion sanity pass: validate every bundle template key against
+  //     the stricter ThemeDocument key charset BEFORE building the document. This surfaces
+  //     an InvalidTemplateKeyError with a precise message rather than a ZodError mid-parse,
+  //     making it actionable for callers (e.g. the editor's error-handling layer).
+  for (const key of Object.keys(parsed.templates)) {
+    validateTemplateKey(key);
+  }
 
   // 2. Convert templates: keyed record → alphabetically-sorted array.
   //    Each section in the template follows template.order[] for position.

@@ -27,6 +27,8 @@ export * from './settings-schema-canonical';
 export * from './schema-field-extensions';
 // Phase N — Theme Document V2 (editor-facing stable-id view; lossless adapters)
 export * from './theme-document';
+// Phase V — Template Type Registry (canonical registry + alternate resolution + context isolation)
+export * from './template-registry';
 export * from './theme-document-migrations';
 export * from './editor-bridge-protocol';
 export * from './theme-sdk';

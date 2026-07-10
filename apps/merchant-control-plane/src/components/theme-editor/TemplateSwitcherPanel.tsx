@@ -123,6 +123,13 @@ export interface TemplateSwitcherPanelProps {
  * customer-facing template keys such as 'customers/login'.
  *
  * Pure + deterministic; no side-effects; no I/O; no document mutation.
+ *
+ * @note The `use*` prefix follows React hook naming convention intentionally.
+ * This allows the function to be promoted to a full hook (calling useState /
+ * useEffect) in a future phase without a rename or API break. It contains no
+ * hook calls and is safe to invoke conditionally or outside React component
+ * bodies. ESLint react-hooks/rules-of-hooks callers should suppress if needed,
+ * or wait for the hook promotion to land.
  */
 export function useTemplateSwitcher(selectedKey: string): { baseType: string; suffix: string | null } {
     const dotIdx = selectedKey.indexOf('.')
