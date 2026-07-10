@@ -28,6 +28,10 @@ export * from './theme-document';
 export * from './theme-document-migrations';
 export * from './editor-bridge-protocol';
 export * from './theme-sdk';
+// Phase O — Complete Experience Design (section-type bridge + compositions + apply engine)
+export * from './section-type-map';
+export * from './experience-compositions';
+export * from './experience-apply';
 export * from './theme-artifact-exporter';
 export * from './theme-linter';
 export * from './theme-packager';
