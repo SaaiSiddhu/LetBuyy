@@ -143,6 +143,12 @@ export interface BlockModel {
   schemaVersion?: string;
   settings: Record<string, unknown>;
   isVisible: boolean;
+  /**
+   * Phase T — nested child blocks (optional; absent on flat/legacy blocks).
+   * Populated by the editor bridge when a block carries nested ThemeDocumentBlock.children.
+   * RISK-DUAL-N01: mutating children mutates the INSTANCE tree, never block_definitions.
+   */
+  children?: BlockModel[];
 }
 
 export interface StorefrontTemplateConfig {
@@ -963,6 +969,7 @@ export const PublishThemeSchema = z.object({
   base_version: z.number().int().positive().optional(),
   make_store_live: z.boolean().default(true),
   publish_message: z.string().max(500).optional(),
+  idempotency_key: z.string().min(8).max(200).optional(),
 });
 
 export const PreviewTokenSchema = z.object({
@@ -975,6 +982,13 @@ export const RollbackThemeReleaseSchema = z.object({
   store_id: UuidSchema,
   make_store_live: z.boolean().default(true),
   rollback_message: z.string().max(500).optional(),
+  expected_current_release_id: z.string().uuid().optional(),
+});
+
+export const ValidateThemeDocumentSchema = z.object({
+  store_id: UuidSchema,
+  theme_document: z.record(z.string(), z.unknown()),
+  bundle: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const ThemePurchaseOrderSchema = z.object({
@@ -1060,6 +1074,7 @@ export type SaveThemeDraftInput = z.infer<typeof SaveThemeDraftSchema>;
 export type PublishThemeInput = z.infer<typeof PublishThemeSchema>;
 export type PreviewTokenInput = z.infer<typeof PreviewTokenSchema>;
 export type RollbackThemeReleaseInput = z.infer<typeof RollbackThemeReleaseSchema>;
+export type ValidateThemeDocumentInput = z.infer<typeof ValidateThemeDocumentSchema>;
 export type ThemePurchaseOrderInput = z.infer<typeof ThemePurchaseOrderSchema>;
 export type ThemePurchaseVerifyInput = z.infer<typeof ThemePurchaseVerifySchema>;
 export type ThemeReviewCreateInput = z.infer<typeof ThemeReviewCreateSchema>;

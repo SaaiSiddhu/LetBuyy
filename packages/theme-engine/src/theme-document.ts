@@ -29,6 +29,7 @@ import {
   isLiquidAppBlockType,
   type LiquidThemePackageBundle,
   type ThemeBundleJson,
+  type ThemeBundleTemplateBlock,
 } from './theme-bundle';
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -174,6 +175,49 @@ function collectBlockIds(blocks: ThemeDocumentBlock[], seen: Map<string, number>
   for (const block of blocks) {
     seen.set(block.id, (seen.get(block.id) ?? 0) + 1);
     collectBlockIds(block.children, seen);
+  }
+}
+
+/**
+ * Phase T — recursively validates that each block's children are of types listed in
+ * block_definitions[parentType].schema.allowed_child_types (when defined).
+ * Short-circuits gracefully when allowed_child_types is undefined (unrestricted, backward-compat).
+ * RISK-DUAL-N01 preserved: block_definitions is the TYPE catalog; blocks are INSTANCES.
+ */
+function validateBlockChildTypes(
+  blocks: ThemeDocumentBlock[],
+  blockDefs: Record<string, z.infer<typeof ThemeLiquidBlockFileSchema>>,
+  ctx: z.RefinementCtx,
+  basePath: (string | number)[],
+): void {
+  for (let bi = 0; bi < blocks.length; bi++) {
+    const block = blocks[bi];
+    const parentDef = blockDefs[block.type];
+    const allowedChildTypes = parentDef?.schema.allowed_child_types;
+
+    if (allowedChildTypes !== undefined) {
+      const allowedSet = new Set(allowedChildTypes);
+      for (let ci = 0; ci < block.children.length; ci++) {
+        const child = block.children[ci];
+        if (!allowedSet.has(child.type)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [...basePath, bi, 'children', ci, 'type'],
+            message: `Child block type "${child.type}" is not in allowed_child_types for parent type "${block.type}"`,
+          });
+        }
+      }
+    }
+
+    // Recurse into children regardless — a child may also restrict its own children.
+    if (block.children.length > 0) {
+      validateBlockChildTypes(
+        block.children,
+        blockDefs,
+        ctx,
+        [...basePath, bi, 'children'],
+      );
+    }
   }
 }
 
@@ -380,6 +424,14 @@ export const ThemeDocumentSchema = z
             });
           }
         }
+
+        // ── 5. Phase T — allowed child types (per block_definitions catalog) ──────
+        validateBlockChildTypes(
+          s.blocks,
+          doc.block_definitions,
+          ctx,
+          ['templates', ti, 'sections', si, 'blocks'],
+        );
       }
     }
   });
@@ -450,6 +502,55 @@ export function parseThemeDocument(input: unknown): ThemeDocument {
 // ADAPTER: bundle → ThemeDocument
 // ──────────────────────────────────────────────────────────────────────────────
 
+// ──────────────────────────────────────────────────────────────────────────────
+// PHASE T HELPERS — recursive block conversion (bundle ↔ doc)
+// ──────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Phase T — convert a single bundle template block (and its nested block.blocks record)
+ * into a ThemeDocumentBlock with populated children[].
+ * Lossless: block_order[] is honoured for ordering; ids not in block_order come after.
+ */
+function bundleBlockToDocBlock(
+  blockId: string,
+  block: ThemeBundleTemplateBlock,
+): z.input<typeof ThemeDocumentBlockSchema> {
+  const orderedChildIds = block.block_order.filter((id) => id in block.blocks);
+  const unorderedChildIds = Object.keys(block.blocks).filter(
+    (id) => !block.block_order.includes(id),
+  );
+  const allChildIds = [...orderedChildIds, ...unorderedChildIds];
+
+  return {
+    id: blockId,
+    type: block.type,
+    settings: block.settings,
+    disabled: block.disabled,
+    children: allChildIds.map((childId) => bundleBlockToDocBlock(childId, block.blocks[childId])),
+  };
+}
+
+/**
+ * Phase T — convert a ThemeDocumentBlock (and its children[]) back into the bundle
+ * template block shape: { type, settings, disabled, blocks: Record<id, Block>, block_order }.
+ * Lossless: children array order is preserved in block_order[].
+ */
+function docBlockToBundleBlock(b: ThemeDocumentBlock): ThemeBundleTemplateBlock {
+  const childBlocks: Record<string, ThemeBundleTemplateBlock> = {};
+  const childBlockOrder: string[] = [];
+  for (const child of b.children) {
+    childBlocks[child.id] = docBlockToBundleBlock(child);
+    childBlockOrder.push(child.id);
+  }
+  return {
+    type: b.type,
+    settings: b.settings,
+    disabled: b.disabled,
+    blocks: childBlocks,
+    block_order: childBlockOrder,
+  };
+}
+
 /**
  * Converts a LiquidThemePackageBundle to a ThemeDocument.
  *
@@ -489,16 +590,8 @@ export function toThemeDocumentV2(bundle: LiquidThemePackageBundle): ThemeDocume
           type: s.type,
           settings: s.settings,
           disabled: s.disabled,
-          blocks: allBlockIds.map((blockId) => {
-            const b = s.blocks[blockId];
-            return {
-              id: blockId,
-              type: b.type,
-              settings: b.settings,
-              disabled: b.disabled,
-              children: [] as ThemeDocumentBlock[],
-            };
-          }),
+          // Phase T: recursively convert nested bundle block.blocks → ThemeDocumentBlock.children
+          blocks: allBlockIds.map((blockId) => bundleBlockToDocBlock(blockId, s.blocks[blockId])),
         };
       });
 
@@ -557,20 +650,8 @@ export function fromThemeDocumentV2(doc: ThemeDocument): LiquidThemePackageBundl
   // 1. Validate the source document first.
   const validDoc = parseThemeDocument(doc);
 
-  // 1a. Fail-closed: block.children are MODELLED in Phase N but bundle serialisation
-  //     is deferred to Phase T.  Silently discarding children would make the round-trip
-  //     claim false for docs that actually contain them.  Throw now so the caller knows.
-  for (const t of validDoc.templates) {
-    for (const s of t.sections) {
-      for (const b of s.blocks) {
-        if (b.children.length > 0) {
-          throw new UnsupportedThemeDocumentFeatureError(
-            'block.children are not yet supported in fromThemeDocumentV2 — deferred to Phase T',
-          );
-        }
-      }
-    }
-  }
+  // Phase N fail-closed guard REMOVED in Phase T: block.children are now fully supported
+  // via the recursive docBlockToBundleBlock helper (defined above).
 
   // 2. Rebuild templates as a keyed Record (array → map, preserving section array order).
   const templates: Record<
@@ -581,7 +662,7 @@ export function fromThemeDocumentV2(doc: ThemeDocument): LiquidThemePackageBundl
       sections: Record<string, {
         type: string;
         settings: Record<string, ThemeBundleJson>;
-        blocks: Record<string, { type: string; settings: Record<string, ThemeBundleJson>; disabled: boolean }>;
+        blocks: Record<string, ThemeBundleTemplateBlock>;
         block_order: string[];
         disabled: boolean;
       }>;
@@ -594,15 +675,12 @@ export function fromThemeDocumentV2(doc: ThemeDocument): LiquidThemePackageBundl
     const order: string[] = [];
 
     for (const s of t.sections) {
-      const blocks: typeof sections[string]['blocks'] = {};
+      const blocks: Record<string, ThemeBundleTemplateBlock> = {};
       const block_order: string[] = [];
 
       for (const b of s.blocks) {
-        blocks[b.id] = {
-          type: b.type,
-          settings: b.settings,
-          disabled: b.disabled,
-        };
+        // Phase T: recursively serialise ThemeDocumentBlock.children → bundle block.blocks + block_order
+        blocks[b.id] = docBlockToBundleBlock(b);
         block_order.push(b.id);
       }
 

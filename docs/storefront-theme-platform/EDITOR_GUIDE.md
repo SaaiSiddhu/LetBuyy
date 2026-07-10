@@ -1,8 +1,8 @@
 # LetBuyy Theme Editor — Shell Architecture Guide
 
 **Program:** LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor (M→AE)
-**Last updated:** 2026-07-10 (post Phase S)
-**Covers:** editor header, section/block tree, live preview inspector, settings panel, undo/redo, autosave, draft CAS
+**Last updated:** 2026-07-11 (post Phase T)
+**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel, undo/redo, autosave, draft CAS
 
 ---
 
@@ -19,6 +19,7 @@ It is a **FOREIGN WIP FILE** — it carries prior user modifications. All phase-
 Supporting components live under:
 ```
 apps/merchant-control-plane/src/components/theme-editor/
+  BlockChildRow.tsx            — recursive child-block tree row (Phase T, CLEAN)
   CenterPanel.tsx              — preview iframe, postMessage bridge, and inspector overlay host (CLEAN)
   ConflictDialog.tsx           — draft CAS conflict resolution dialog (Phase R, CLEAN)
   ExperiencePicker.tsx         — experience list and apply UI (CLEAN)
@@ -105,7 +106,16 @@ Below the footer group: a section-type selector (`Select`) and "Add" button.
 
 **Block selection state**: when `selection.kind === 'block'`, the parent section row is the "active parent" — it receives `aria-selected=true` and `tabIndex=0` but does NOT get the visual selection highlight (`selected` prop stays `false`). This lets screen readers announce the structural context while the visual highlight correctly shows the parent as active-but-not-selected.
 
-**Block sub-rows**: rendered as `Button unstyled` elements inside the section row when `section.blocks.length > 0`.
+**Block sub-rows**: rendered via `BlockChildRow` (Phase T, see §4.5) inside the section row when `section.blocks.length > 0`. Flat blocks (no children) render byte-identically to Phase R.
+
+**Child block callbacks (Phase T):** Three optional callbacks are available on `SectionTreePanelProps`:
+- `onAddChildBlock(sectionId, parentBlockId, childType)` — add a new child block of `childType` under `parentBlockId`.
+- `onRemoveChildBlock(sectionId, parentBlockId, childId)` — remove a child block by id.
+- `onMoveChildBlock(sectionId, parentBlockId, childId, direction: -1|1)` — reorder a child block.
+
+These are optional; callers that do not pass them (`page.tsx`) continue to function with the static nested block display. Wiring to `applyChange()` + `buildDraftConfig()` is a follow-up for the next phase that touches `page.tsx`.
+
+**Add-child affordance (RISK-T05):** The add-child button in `BlockChildRow` renders only when `allowedChildTypes` is passed from the parent and `depth < MAX_EDITOR_BLOCK_DEPTH`. As of Phase T, `allowedChildTypes` is not yet resolved from the `blocks_schema` at the `SectionTreePanel` → `BlockChildRow` call site. The button is non-functional until RISK-T05 is addressed.
 
 ### 4.2 Settings Panel (`ThemeSettingsTree`)
 
@@ -363,6 +373,41 @@ CenterPanel, SchemaFormRenderer, and PreviewInspectorOverlay use `te-*` classes 
 
 ---
 
+## 4.5 BlockChildRow (Phase T)
+
+Source: `apps/merchant-control-plane/src/components/theme-editor/BlockChildRow.tsx`
+
+`BlockChildRow` is a recursive `'use client'` component that renders a single block instance and, when the block has children and `depth < MAX_EDITOR_BLOCK_DEPTH`, renders each child as a nested `<BlockChildRow depth={depth + 1} ...>`.
+
+**Props:**
+```typescript
+type BlockChildRowProps = {
+    block: BlockEntry;           // the block instance (may have .children)
+    depth: 1 | 2 | 3;           // current nesting level (1 = direct section child)
+    sectionId: string;
+    parentBlockId: string;       // section.id at depth=1; parent block.id at depth 2+
+    selectedBlockId?: string;
+    blockLabel?: string;         // resolved from blocks_schema[block.type].name
+    allowedChildTypes?: string[]; // types the parent allows as children
+    onSelectBlock?: (blockId: string) => void;
+    onAddChildBlock?: (sectionId: string, parentBlockId: string, childType: string) => void;
+    onRemoveChildBlock?: (sectionId: string, parentBlockId: string, childId: string) => void;
+    onMoveChildBlock?: (sectionId: string, parentBlockId: string, childId: string, direction: -1 | 1) => void;
+}
+```
+
+**Depth cap:** `MAX_EDITOR_BLOCK_DEPTH = 3` (exported from `BlockChildRow.tsx`). The nested children container is rendered only when `depth < MAX_EDITOR_BLOCK_DEPTH && hasChildren`. Beyond depth 3 the recursion stops silently — any block at the depth cap displays without a child list.
+
+**ARIA:** Each block row is wrapped in `div[role="treeitem"][aria-level={depth + 1}]` (1-indexed from section level). The `theme-os-tree-block--depth-N` CSS class modifier is applied for styling hooks.
+
+**CSS classes (existing, no new rules required):**
+- `.theme-os-tree-block` — the block button row (same as Phase R flat blocks)
+- `.theme-os-tree-block--selected` — active selection highlight
+- `.theme-os-tree-block--hidden` — visibility toggled off
+- `.theme-os-tree-block--depth-N` — depth level modifier (N = 1, 2, or 3)
+
+---
+
 ## 11. Editor State Model
 
 ```typescript
@@ -384,12 +429,15 @@ type SectionEntry = {
     blocks: BlockEntry[] // ordered blocks within this section
 }
 
+// Phase T: BlockEntry is the canonical type; exported from SectionTreePanel.tsx.
+// children is optional so all existing flat-block callers compile unchanged.
 type BlockEntry = {
     id: string
     type: string
     order: number
     visible: boolean
     settings: JsonRecord
+    children?: BlockEntry[]   // Phase T — nested child blocks; absent on flat/legacy blocks
 }
 
 type EditorSelection =
@@ -397,6 +445,8 @@ type EditorSelection =
     | { kind: 'block'; sectionId: string; blockId: string }
     | { kind: 'theme'; groupKey: string }
 ```
+
+**Nested block depth:** `BlockEntry.children` supports up to `MAX_EDITOR_BLOCK_DEPTH = 3` levels. The `applyChange()` + `buildDraftConfig()` path serialises this to `ThemeBundleTemplateBlock.blocks` (keyed Record) + `block_order` (ordered ids). `block_definitions` (the type catalog, including `allowed_child_types`) always comes from `baseConfig` and is never mutated by child operations (RISK-DUAL-N01 preserved).
 
 `applyChange(updater)` is the only mutation entry point. It: (1) derives the next state from the updater, (2) pushes the current state onto `history.past`, (3) sets `isDirty=true`, (4) sets the next state.
 
@@ -406,8 +456,10 @@ type EditorSelection =
 
 | Risk ID | Severity | Description | Target |
 |---|---|---|---|
-| RISK-DUAL-N01 | MEDIUM | Editor save must reconstruct `section_definitions`/`block_definitions` from `baseConfig`, not `editorState` | Enforced mechanically by `buildDraftConfig`; Phase S preview sends intent only (RISK preserved) |
+| RISK-DUAL-N01 | MEDIUM | Editor save must reconstruct `section_definitions`/`block_definitions` from `baseConfig`, not `editorState` | Enforced mechanically by `buildDraftConfig`; Phase T child callbacks mutate instance tree only (RISK preserved) |
 | RISK-SEC-P01 | MEDIUM | `theme_editor_drafts` RLS checks `user_id` only, not `custom_user_id` | No client-side realtime subscription may be added until fixed |
 | RISK-PERF-N01 | LOW | Large document serialization on each draft save | `buildDraftConfig` sends only mutable state; Liquid source comes from `baseConfig` not re-serialized |
 | RISK-SEC-002 | INFO | AI hooks are stubs; must not be presented as connected | Phase AC |
-| RISK-R01 | LOW | Local type mirrors in `page.tsx` and `SectionTreePanel.tsx` will drift | Phase T or first substantive `page.tsx` touch |
+| RISK-R01 | LOW | **CLOSED (Phase T)** — `BlockEntry.children` added to canonical type; remaining four shared types still mirrored | Next substantive `page.tsx` touch |
+| RISK-T05 | MEDIUM | `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead | Phase U or first `SectionTreePanel.tsx` touch |
+| RISK-T04 | LOW | `RENDERER_MAX_BLOCK_DEPTH` is private — depth parity test cannot directly assert it | Phase U or first `theme-renderer.ts` touch |

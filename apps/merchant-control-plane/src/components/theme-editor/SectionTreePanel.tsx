@@ -32,17 +32,31 @@ import {
     Trash2,
 } from 'lucide-react'
 import type { SectionSchema } from '@/lib/theme-schemas'
+import { BlockChildRow } from './BlockChildRow'
 
 // ── Local type mirrors (match page.tsx; avoids cross-file coupling) ────────────
 
 type JsonRecord = Record<string, unknown>
 
-type BlockEntry = {
+/**
+ * BlockEntry — one block instance in a section's block tree.
+ *
+ * Exported so BlockChildRow (Phase T) can share this type without duplicating it.
+ * The children field is optional so all existing callers compile unchanged.
+ * RISK-DUAL-N01: children here are INSTANCE children — block_definitions (the
+ * type catalog) are never stored in BlockEntry.
+ */
+export type BlockEntry = {
     id: string
     type: string
     order: number
     visible: boolean
     settings: JsonRecord
+    /**
+     * Phase T: nested child block instances (populated when the document contains
+     * nested blocks). Optional so flat-block callers require no changes.
+     */
+    children?: BlockEntry[]
 }
 
 type SectionEntry = {
@@ -134,6 +148,27 @@ type TreeSectionRowProps = {
     onDragOver?: React.DragEventHandler
     onDrop?: React.DragEventHandler
     onDragEnd?: React.DragEventHandler
+    // ── Phase T: nested block child callbacks ───────────────────────────────────
+    /**
+     * Add a child block of childType to parentBlockId's instance children list.
+     * RISK-DUAL-N01: mutates the template instance tree, never block_definitions.
+     */
+    onAddChildBlock?: (sectionId: string, parentBlockId: string, childType: string) => void
+    /**
+     * Remove childId from parentBlockId's instance children list.
+     * RISK-DUAL-N01: mutates the template instance tree, never block_definitions.
+     */
+    onRemoveChildBlock?: (sectionId: string, parentBlockId: string, childId: string) => void
+    /**
+     * Reorder childId within parentBlockId's instance children list.
+     * RISK-DUAL-N01: mutates the template instance tree, never block_definitions.
+     */
+    onMoveChildBlock?: (
+        sectionId: string,
+        parentBlockId: string,
+        childId: string,
+        direction: -1 | 1,
+    ) => void
 }
 
 function TreeSectionRow({
@@ -158,6 +193,9 @@ function TreeSectionRow({
     onDragOver,
     onDrop,
     onDragEnd,
+    onAddChildBlock,
+    onRemoveChildBlock,
+    onMoveChildBlock,
 }: TreeSectionRowProps) {
     const hasBlocks = section.blocks.length > 0
     const sectionName = schema?.name || labelFromKey(section.type)
@@ -219,18 +257,26 @@ function TreeSectionRow({
                     </>
                 ) : null}
             </div>
+            {/* Phase T: block tree rendered via BlockChildRow (nested children support).
+                Flat blocks (no children) render byte-identically to Phase R — the extra
+                wrapper div has no CSS and BlockChildRow falls back to the same Button
+                structure with theme-os-tree-block class. */}
             {hasBlocks ? (
                 <div className="theme-os-tree-blocks">
                     {section.blocks.map((block) => (
-                        <Button unstyled
+                        <BlockChildRow
                             key={block.id}
-                            className={`theme-os-tree-block ${blockSelection === block.id ? 'theme-os-tree-block--selected' : ''} ${!block.visible ? 'theme-os-tree-block--hidden' : ''}`}
-                            type="button"
-                            onClick={() => onSelectBlock(block.id)}
-                        >
-                            <span className="theme-os-tree-block__line" aria-hidden="true" />
-                            <span>{schema?.blocks_schema?.[block.type]?.name || labelFromKey(block.type)}</span>
-                        </Button>
+                            block={block}
+                            depth={1}
+                            sectionId={section.id}
+                            parentBlockId={section.id}
+                            selectedBlockId={blockSelection}
+                            blockLabel={schema?.blocks_schema?.[block.type]?.name || labelFromKey(block.type)}
+                            onSelectBlock={onSelectBlock}
+                            onAddChildBlock={onAddChildBlock}
+                            onRemoveChildBlock={onRemoveChildBlock}
+                            onMoveChildBlock={onMoveChildBlock}
+                        />
                     ))}
                 </div>
             ) : null}
@@ -252,6 +298,30 @@ export type SectionTreePanelProps = {
     onMoveSection: (sectionId: string, direction: -1 | 1) => void
     onToggleSection: (sectionId: string) => void
     onRemoveSection: (section: SectionEntry) => void
+    // ── Phase T: nested block child callbacks ───────────────────────────────────
+    /**
+     * Add a child block of childType to the instance children list of parentBlockId
+     * within the given section. Autosaved via the existing P draft CAS mechanism.
+     * RISK-DUAL-N01: mutates template instance data, never block_definitions.
+     */
+    onAddChildBlock?: (sectionId: string, parentBlockId: string, childType: string) => void
+    /**
+     * Remove childId from the instance children list of parentBlockId within the given
+     * section. Autosaved via the existing P draft CAS mechanism.
+     * RISK-DUAL-N01: mutates template instance data, never block_definitions.
+     */
+    onRemoveChildBlock?: (sectionId: string, parentBlockId: string, childId: string) => void
+    /**
+     * Reorder childId within the instance children list of parentBlockId in the given
+     * section. Autosaved via the existing P draft CAS mechanism.
+     * RISK-DUAL-N01: mutates template instance data, never block_definitions.
+     */
+    onMoveChildBlock?: (
+        sectionId: string,
+        parentBlockId: string,
+        childId: string,
+        direction: -1 | 1,
+    ) => void
 }
 
 /**
@@ -276,6 +346,9 @@ export default function SectionTreePanel({
     onMoveSection,
     onToggleSection,
     onRemoveSection,
+    onAddChildBlock,
+    onRemoveChildBlock,
+    onMoveChildBlock,
 }: SectionTreePanelProps) {
     const [dragIndex, setDragIndex] = useState<number | null>(null)
     const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
@@ -404,6 +477,9 @@ export default function SectionTreePanel({
                                 onDragOver={handleDragOver(index)}
                                 onDrop={handleDrop(index)}
                                 onDragEnd={handleDragEnd}
+                                onAddChildBlock={onAddChildBlock}
+                                onRemoveChildBlock={onRemoveChildBlock}
+                                onMoveChildBlock={onMoveChildBlock}
                             />
                         )
                     })}

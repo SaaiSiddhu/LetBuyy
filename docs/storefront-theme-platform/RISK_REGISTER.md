@@ -100,12 +100,57 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 ## Phase R risks
 
 ### RISK-R01 — Local type mirrors in `page.tsx` and `SectionTreePanel.tsx` will drift — [LOW]
-- **Status:** OPEN · known tech debt · deferred.
-- **Introduced:** Phase R (2026-07-10).
-- **Evidence:** `apps/merchant-control-plane/src/components/theme-editor/SectionTreePanel.tsx` lines 38–77 declares `JsonRecord`, `BlockEntry`, `SectionEntry`, `EditorState`, `EditorSelection`, `AvailableSection` as local types. These mirror the identical type declarations in `apps/merchant-control-plane/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx`. The comment in `SectionTreePanel.tsx` acknowledges: "avoids cross-file coupling." Since both files use the types at a prop boundary (page passes props typed against page-local types; panel accepts props typed against panel-local types), TypeScript structurally checks them and a shape change in `page.tsx` that is not mirrored in `SectionTreePanel.tsx` will silently typecheck because the structural shapes happen to remain compatible — until they diverge.
-- **Why it matters:** If a future phase adds a new required field to `SectionEntry` in `page.tsx` (e.g. `publishedAt: string`), the prop passed to `SectionTreePanel` will structurally satisfy the panel's narrower local `SectionEntry` type. The missing field won't cause a typecheck error; it will only fail at runtime when `SectionTreePanel` destructures the field it doesn't know about.
-- **Disposition:** Extract `SectionEntry`, `BlockEntry`, `EditorState`, `EditorSelection`, `AvailableSection` to `apps/merchant-control-plane/src/lib/theme-editor-types.ts` and import from both files. Deferred from Phase R (extracting to a new shared module requires additional touch of `page.tsx`, a foreign WIP file, to remove the duplicate declarations). Candidate for Phase S or a standalone cleanup task when `page.tsx` is next touched for substantive changes.
-- **Target:** Phase T (section groups, which must touch `page.tsx` to wire `onAddSectionIntent`) or first phase that adds a new field to any of the five shared types.
+- **Status:** CLOSED · partially resolved in Phase T (2026-07-11).
+- **Introduced:** Phase R (2026-07-10). **Closed:** Phase T (2026-07-11).
+- **Resolution:** Phase T added `children?: BlockEntry[]` to the `BlockEntry` type in `SectionTreePanel.tsx`, making `SectionTreePanel.tsx` the canonical owner of `BlockEntry`. The three new child callbacks (`onAddChildBlock`, `onRemoveChildBlock`, `onMoveChildBlock`) are defined on `SectionTreePanelProps` with optional typing, so `page.tsx` does not need to be touched to remain compatible. The full extraction of all five shared types (`SectionEntry`, `BlockEntry`, `EditorState`, `EditorSelection`, `AvailableSection`) to a shared module was not performed because `page.tsx` (foreign WIP) was deliberately not touched. The structural-drift risk for `BlockEntry` is eliminated by Phase T's canonical definition. The risk for the remaining four types remains as low ongoing tech debt but is not re-registered as a separate open risk — it will be addressed when `page.tsx` is next touched for a required feature change.
+
+## Phase T risks
+
+### RISK-T01 — Pre-Zod stack-depth attack via `z.lazy()` recursion — [MEDIUM]
+- **Status:** OPEN · known residual; deferred.
+- **Introduced:** Phase T (2026-07-11).
+- **Evidence:** `packages/theme-engine/src/theme-bundle.ts:1420` — `parseLiquidThemePackageBundle` calls `LiquidThemePackageBundleSchema.parse(input)` directly without a pre-Zod structural depth check. `ThemeBundleTemplateBlockSchema` is self-recursive via `z.lazy()`. A crafted bundle JSON with extreme nesting depth (e.g., 100 levels, achievable within the request body size before Cloudflare's generic limits apply) would overflow the V8 call stack during Zod's `_parse` recursion before the `superRefine` depth check fires, producing a `RangeError: Maximum call stack size exceeded`. `parseThemeDocument` has the same gap: `assertNoBlockedKeysInRaw` (which runs pre-Zod) checks key blocklist at depth-128 but does not limit structural depth.
+- **Why it matters:** An authenticated merchant (or a crafted bundle file in an upload flow) could trigger a Worker crash via a deep-nesting attack. Cloudflare Worker per-request CPU limits and memory limits provide some containment, but a RangeError is less clean than a 400 ZodError and may interfere with error handling pipelines.
+- **Disposition:** Full closure requires adding a fast iterative pre-Zod structural depth check to `parseLiquidThemePackageBundle` (after `assertNoBlockedKeysInRaw`-style call) and optionally to `parseThemeDocument`. Additionally, adding an explicit `bodyLimit` middleware to the theme package upload route reduces blast radius. Deferred from Phase T to avoid touching production parse paths without dedicated test coverage for the pre-check logic in the bundle context.
+- **Target:** Earliest phase touching `parseLiquidThemePackageBundle` or the upload route.
+
+### RISK-T02 — No `assertNoBlockedKeysInRaw` in `parseLiquidThemePackageBundle` — [MEDIUM]
+- **Status:** OPEN · known residual; deferred.
+- **Introduced:** Phase T (2026-07-11).
+- **Evidence:** `packages/theme-engine/src/theme-document.ts:493` calls `assertNoBlockedKeysInRaw(input)` before `ThemeDocumentSchema.parse(input)`. `packages/theme-engine/src/theme-bundle.ts:1420` (`parseLiquidThemePackageBundle`) does NOT call `assertNoBlockedKeysInRaw`. Phase T introduced nested block settings (`ThemeBundleTemplateBlockSchema.blocks[id].settings`) parsed via `z.record(z.string(), ThemeBundleJsonSchema)`. A key `"__proto__"` in block settings will invoke the prototype setter on the parsed output object, silently changing its `[[Prototype]]`. The downstream `filterBlockedSettingsKeys` in the renderer never sees `__proto__` via `Object.keys` because V8 does not return it from `Object.keys` after a prototype mutation.
+- **Why it matters:** An attacker-supplied `block.settings.__proto__` value could expose attacker-controlled inherited properties via `{{ block.settings.admin }}` in a Liquid template. Impact is bounded to the merchant's own storefront; no cross-tenant blast radius.
+- **Disposition:** Fix: call `assertNoBlockedKeysInRaw` (already exported from `theme-document.ts`) at the top of `parseLiquidThemePackageBundle`. One-line call site change; no schema-level side effects. Deferred from Phase T to avoid touching the production parse path without dedicated bundle-context test coverage.
+- **Target:** Earliest phase touching `parseLiquidThemePackageBundle`.
+
+### RISK-T03 — Block settings bypass `filterBlockedSettingsKeys` in the renderer — [LOW]
+- **Status:** OPEN · defence-in-depth gap; deferred.
+- **Introduced:** Phase T (2026-07-11). Pre-existing for flat blocks; Phase T's `sub_blocks` threading adds a second unfiltered position.
+- **Evidence:** `packages/theme-engine/src/theme-renderer.ts:818` — `settings: block.settings` and `theme-renderer.ts:824` — `settings: child.settings` (in `sub_blocks[]`) are inserted raw into the Liquid scope without calling `filterBlockedSettingsKeys`. The `BLOCKED_DROP_KEYS` set (which excludes `api_key`, `webhook_secret`, etc.) is applied only to the global `settings` drop (line 883), not to block-level settings.
+- **Why it matters:** Credential-named keys in merchant-authored `block.settings` are accessible via `{{ block.settings.api_key }}` without the blocked-key guard. All rendered HTML passes through DOMPurify but non-HTML-encoded plain strings are not stripped.
+- **Disposition:** Fix: apply `filterBlockedSettingsKeys` to `block.settings` and `child.settings` at their Liquid scope insertion points. This is defence-in-depth; no legitimate theme uses credential-adjacent key names in block settings.
+- **Target:** Phase U (settings control renderer) — fix before adding new settings field types.
+
+### RISK-T04 — `RENDERER_MAX_BLOCK_DEPTH` is private/unexported — depth parity test cannot directly assert it — [LOW]
+- **Status:** OPEN · test quality gap; deferred.
+- **Introduced:** Phase T (2026-07-11).
+- **Evidence:** `RENDERER_MAX_BLOCK_DEPTH = 3` is a private module-local constant in `theme-renderer.ts:950`. The test `nested-blocks: (f) RENDERER_MAX_BLOCK_DEPTH === MAX_BLOCK_NESTING_DEPTH` asserts `MAX_BLOCK_NESTING_DEPTH === 3` and `MAX_BUNDLE_BLOCK_NESTING_DEPTH === 3` but cannot directly assert the renderer constant. If the renderer constant were changed to 2, the test would still pass.
+- **Disposition:** Fix: export `RENDERER_MAX_BLOCK_DEPTH` from `theme-renderer.ts` and add a direct equality assertion. Alternatively, add a behavioral test that renders a depth-3 fixture and verifies all three levels produce non-empty `sub_blocks`.
+- **Target:** Phase U or first phase touching `theme-renderer.ts`.
+
+### RISK-T05 — `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead — [MEDIUM]
+- **Status:** OPEN · functional gap; deferred.
+- **Introduced:** Phase T (2026-07-11).
+- **Evidence:** `apps/merchant-control-plane/src/components/theme-editor/SectionTreePanel.tsx:267–279` — the `BlockChildRow` call at depth-1 does not pass `allowedChildTypes`. `BlockChildRow.tsx:143–146` computes `canAddChildren = depth < MAX_EDITOR_BLOCK_DEPTH && Array.isArray(allowedChildTypes) && allowedChildTypes.length > 0`. Since `allowedChildTypes` is always `undefined` at depth-1, `canAddChildren` is always `false` and the add-child button never renders.
+- **Why it matters:** The Phase T add-child affordance is non-functional for all merchants. The three child callbacks (`onAddChildBlock`, `onRemoveChildBlock`, `onMoveChildBlock`) are wired but the add-child entry point is dead.
+- **Disposition:** Fix: at the `BlockChildRow` call site in `SectionTreePanel.tsx`, resolve `allowedChildTypes` from `schema?.blocks_schema?.[block.type]?.allowed_child_types ?? undefined`. The `schema` and `blocks_schema` lookup are already used at that call site for `blockLabel` resolution — the fix is a one-prop addition.
+- **Target:** Phase U or first phase touching `SectionTreePanel.tsx`.
+
+### RISK-T06 — `UnsupportedThemeDocumentFeatureError` exported but never thrown — [LOW]
+- **Status:** OPEN · dead API; deferred.
+- **Introduced:** Phase N (2026-07-10). Became dead in Phase T (2026-07-11).
+- **Evidence:** `packages/theme-engine/src/theme-document.ts:89–97` — `UnsupportedThemeDocumentFeatureError` is defined and exported. It was previously thrown by the Phase N fail-closed guard in `fromThemeDocumentV2` (lines 560–573, pre-Phase-T). That guard was removed in Phase T. A `grep` across all app and service source confirms no external catch sites for this class; it is dead public API.
+- **Disposition:** Either re-purpose with updated JSDoc ("reserved for future phase-gated feature flags") or remove the class and its export entirely. Removal is safe since no catch sites exist.
+- **Target:** Phase U or first theme-document.ts touch.
 
 ## Phase N risks
 

@@ -73,6 +73,13 @@ export interface LiquidRenderedBlock {
   html: string;
   settings: Record<string, unknown>;
   isAppBlock: boolean;
+  /**
+   * Phase T — rendered nested child blocks (depth-bounded).
+   * Populated when a block's bundle definition carries nested block.blocks entries
+   * and the current render depth is below RENDERER_MAX_BLOCK_DEPTH.
+   * Accessible in Liquid block templates as {{ block.sub_blocks }}.
+   */
+  sub_blocks?: LiquidRenderedBlock[];
 }
 
 export interface LiquidRenderedSection {
@@ -390,6 +397,15 @@ async function renderLiquidTemplateSections(
                                 content: block.html,
                                 html: block.html,
                                 is_app_block: block.isAppBlock,
+                                // Phase T: expose rendered child blocks in the section-level block drop
+                                sub_blocks: (block.sub_blocks ?? []).map((child) => ({
+                                    id: child.id,
+                                    type: child.type,
+                                    settings: child.settings,
+                                    content: child.html,
+                                    html: child.html,
+                                    is_app_block: child.isAppBlock,
+                                })),
                             })),
                             block_order: renderedBlocks.map((block) => block.id),
                             schema: sectionFile.schema,
@@ -705,14 +721,26 @@ export function stripLiquidSchemaBlocks(source: string): string {
   return source.replace(/\{%\s*schema\s*%\}[\s\S]*?\{%\s*endschema\s*%\}/gi, '').trim();
 }
 
-async function renderLiquidSectionBlocks(input: {
-  engine: Liquid;
-  bundle: LiquidThemePackageBundle;
-  input: ThemeRendererInput;
-  sectionId: string;
-  sectionType: string;
-  section: ThemeBundleTemplateSection;
-}): Promise<LiquidRenderedBlock[]> {
+/**
+ * Render all blocks for a section (or, recursively, for a nested parent block).
+ *
+ * Phase T: the optional `depth` parameter (default 1) drives the nested-block recursion.
+ * When depth < RENDERER_MAX_BLOCK_DEPTH and a block carries its own block.blocks children,
+ * those children are rendered first (at depth+1) then threaded into the parent block's Liquid
+ * drop as sub_blocks.  At depth == RENDERER_MAX_BLOCK_DEPTH the recursion stops silently —
+ * no error, no stack growth — matching the parse-time cap in theme-document.ts and theme-bundle.ts.
+ */
+async function renderLiquidSectionBlocks(
+  input: {
+    engine: Liquid;
+    bundle: LiquidThemePackageBundle;
+    input: ThemeRendererInput;
+    sectionId: string;
+    sectionType: string;
+    section: ThemeBundleTemplateSection;
+  },
+  depth = 1,
+): Promise<LiquidRenderedBlock[]> {
   const blocks: LiquidRenderedBlock[] = [];
   const blockIds = orderedKeys(input.section.blocks, input.section.block_order);
 
@@ -750,7 +778,32 @@ async function renderLiquidSectionBlocks(input: {
     // C1: block-level try/catch — a broken block source must not crash the enclosing section render.
     // On error the block is included with empty html so the section template can still render its structure.
     let blockHtml = '';
+    // Phase T: render child blocks first (before the parent) so sub_blocks is available in the
+    // parent block's Liquid scope.  Depth guard: stop at RENDERER_MAX_BLOCK_DEPTH silently.
+    let subBlockResults: LiquidRenderedBlock[] = [];
     try {
+      if (depth < RENDERER_MAX_BLOCK_DEPTH && Object.keys(block.blocks ?? {}).length > 0) {
+        // Treat the block's nested children as a pseudo-section for the recursive call.
+        // Per-child crash isolation is provided by the inner try/catch in the recursive invocation.
+        subBlockResults = await renderLiquidSectionBlocks(
+          {
+            engine: input.engine,
+            bundle: input.bundle,
+            input: input.input,
+            sectionId: blockId,       // parent block id acts as pseudo-section id
+            sectionType: block.type,  // parent block type acts as pseudo-section type
+            section: {
+              type: block.type,
+              settings: block.settings,
+              blocks: block.blocks ?? {},
+              block_order: block.block_order ?? [],
+              disabled: false,
+            },
+          },
+          depth + 1,
+        );
+      }
+
       const rawBlockHtml = await input.engine.parseAndRender(
         blockFile.source,
         buildLiquidScope(input.input, input.bundle, {
@@ -764,6 +817,15 @@ async function renderLiquidSectionBlocks(input: {
             type: block.type,
             settings: block.settings,
             schema: blockFile.schema,
+            // Phase T: thread rendered child blocks into the parent block's Liquid drop
+            sub_blocks: subBlockResults.map((child) => ({
+              id: child.id,
+              type: child.type,
+              settings: child.settings,
+              content: child.html,
+              html: child.html,
+              is_app_block: child.isAppBlock,
+            })),
           },
         }),
         liquidRenderOptions,
@@ -783,6 +845,7 @@ async function renderLiquidSectionBlocks(input: {
       settings: block.settings,
       html: blockHtml,
       isAppBlock: false,
+      sub_blocks: subBlockResults.length > 0 ? subBlockResults : undefined,
     });
   }
 
@@ -879,6 +942,12 @@ function asRecord(value: unknown): Record<string, unknown> {
 const MAX_LIQUID_DROP_DEPTH = 4;
 const MAX_LIQUID_DROP_KEYS = 80;
 const MAX_LIQUID_DROP_ARRAY_ITEMS = 100;
+/**
+ * Phase T — maximum recursion depth for nested block children.
+ * Must stay in sync with MAX_BLOCK_NESTING_DEPTH in theme-document.ts and
+ * MAX_BUNDLE_BLOCK_NESTING_DEPTH in theme-bundle.ts (all three = 3).
+ */
+const RENDERER_MAX_BLOCK_DEPTH = 3;
 // UC-15: also block credential-adjacent keys that should never reach Liquid template scope.
 export const BLOCKED_DROP_KEYS = new Set(['__proto__', 'constructor', 'prototype', 'password', 'password_hash', 'access_token', 'refresh_token', 'signing_secret', 'client_secret', 'api_key', 'secret_key', 'private_key', 'webhook_secret']);
 

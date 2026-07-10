@@ -485,6 +485,85 @@ All errors follow the gateway's standard error envelope:
 - `LiquidThemePackageBundle` G4: defined by `packages/theme-engine/src/theme-bundle.ts` `parseLiquidThemePackageBundle`.
 - Rollback created releases always use the same `schema_manifest_version` as the release being rolled back to.
 
+### 13.1 Nested Blocks (Phase T)
+
+Phase T extends both the `ThemeDocument` V2 and `LiquidThemePackageBundle` block shapes to support recursive nesting. The changes are backward-compatible for all callers:
+
+**`ThemeDocumentBlock`** (document layer, `theme-document.ts`):
+
+```typescript
+interface ThemeDocumentBlock {
+  id: string;
+  type: string;
+  settings: Record<string, ThemeBundleJson>;
+  disabled: boolean;
+  children: ThemeDocumentBlock[];   // recursive; always present (defaults to [])
+}
+```
+
+`children` was already present in the schema from Phase N. Phase T activates the full round-trip: `fromThemeDocumentV2` now serialises `children[]` recursively into `ThemeBundleTemplateBlock.blocks` + `block_order`.
+
+**`ThemeBundleTemplateBlock`** (bundle layer, `theme-bundle.ts`):
+
+```typescript
+interface ThemeBundleTemplateBlock {
+  type: string;
+  settings: Record<string, ThemeBundleJson>;
+  disabled: boolean;
+  blocks: Record<string, ThemeBundleTemplateBlock>;   // keyed child blocks (Phase T)
+  block_order: string[];                               // ordered child ids (Phase T)
+}
+```
+
+`blocks` and `block_order` default to `{}` and `[]` respectively. Existing flat-block bundles that omit these fields parse correctly via Zod defaults.
+
+**`ThemeLiquidReusableBlockSchema`** (block-type catalog, `theme-bundle.ts`):
+
+```typescript
+{
+  // ...existing fields...
+  schema: {
+    // ...
+    allowed_child_types?: string[];  // Phase T — restrict which child block types are permitted
+  }
+}
+```
+
+`allowed_child_types` is optional; omitting it means the block type accepts any child type. When present, `parseThemeDocument` enforces that all `ThemeDocumentBlock.children[].type` values are in the set.
+
+**Depth bound:** All three parse layers enforce a maximum block nesting depth of **3**:
+
+| Constant | Value | Enforcement point |
+|---|---|---|
+| `MAX_BLOCK_NESTING_DEPTH` | 3 | `ThemeDocumentSchema.superRefine` — document parse |
+| `MAX_BUNDLE_BLOCK_NESTING_DEPTH` | 3 | `ThemeBundleTemplateSectionSchema.superRefine` — bundle parse |
+| `RENDERER_MAX_BLOCK_DEPTH` (private) | 3 | `renderLiquidSectionBlocks` recursion cap — render time |
+
+Depth is counted as: flat blocks = 1; one level of children = 2; grandchildren = 3. Inputs exceeding depth 3 are rejected at parse time with a ZodError containing the message `Block nesting depth N exceeds maximum 3`.
+
+**`sub_blocks` in Liquid:** Parent block Liquid templates can iterate rendered child blocks via the `block.sub_blocks` drop:
+
+```liquid
+{% for sub in block.sub_blocks %}
+  <div class="sub-block">{{ sub.content }}</div>
+{% endfor %}
+```
+
+Each `sub_blocks[]` entry has: `id`, `type`, `settings`, `content` (rendered HTML), `html` (alias for `content`), `is_app_block`.
+
+**`BlockModel` (SDK layer):**
+
+```typescript
+interface BlockModel {
+  id: string; type: string; order: number;
+  rendererKey?: string; schemaVersion?: string;
+  settings: Record<string, unknown>; isVisible: boolean;
+  children?: BlockModel[];   // Phase T — additive, optional; absent on flat/legacy blocks
+}
+```
+
+`children` is optional so all existing `BlockModel` consumers compile without change.
+
 ---
 
 ## 14. Rate Limiting and Idempotency Best Practices

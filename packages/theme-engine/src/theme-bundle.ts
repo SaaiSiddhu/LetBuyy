@@ -219,6 +219,12 @@ export const ThemeLiquidReusableBlockSchema = z.object({
   name: z.string().min(1).max(120),
   settings: z.array(ThemeLiquidSchemaSettingFieldSchema).max(100).default([]),
   presets: z.array(ThemeLiquidPresetSchema).max(50).default([]),
+  /**
+   * Phase T — allowed child types: when defined, only blocks whose type appears in this array
+   * may be added as children of this block type. Undefined = unrestricted (backward-compatible).
+   * Lives on the block DEFINITION (the type catalog), never on block instances.
+   */
+  allowed_child_types: z.array(z.string().min(1).max(120)).max(50).optional(),
 }).strict();
 
 function containsLiquidSchemaBlock(source: string): boolean {
@@ -283,19 +289,75 @@ export const ThemeBundleSettingsDataSchema = z.object({
   presets: z.record(z.string(), ThemeBundleJsonObjectSchema).default({}),
 }).passthrough();
 
-export const ThemeBundleTemplateBlockSchema = z.object({
-  type: z.string().min(1).max(120),
-  settings: ThemeBundleJsonObjectSchema.default({}),
-  disabled: z.boolean().default(false),
-}).strict();
+/**
+ * Phase T — max nesting depth for bundle template blocks (must stay in sync with
+ * MAX_BLOCK_NESTING_DEPTH in theme-document.ts and RENDERER_MAX_BLOCK_DEPTH in theme-renderer.ts).
+ */
+export const MAX_BUNDLE_BLOCK_NESTING_DEPTH = 3;
 
-export const ThemeBundleTemplateSectionSchema = z.object({
-  type: z.string().min(1).max(120),
-  settings: ThemeBundleJsonObjectSchema.default({}),
-  blocks: z.record(z.string(), ThemeBundleTemplateBlockSchema).default({}),
-  block_order: z.array(z.string().min(1).max(120)).default([]),
-  disabled: z.boolean().default(false),
-}).strict();
+/**
+ * Explicit TypeScript interface for the self-recursive bundle template block.
+ * Using an interface (not z.infer<...>) breaks the circular type reference that
+ * would cause "Type instantiation is excessively deep" with z.lazy().
+ *
+ * RISK-DUAL-N01: this is an INSTANCE shape (carries per-block state: settings, children).
+ * block_definitions / ThemeLiquidReusableBlockSchema carries the TYPE catalog (allowed_child_types etc.).
+ */
+export interface ThemeBundleTemplateBlock {
+  type: string;
+  settings: Record<string, ThemeBundleJson>;
+  disabled: boolean;
+  /** Nested child blocks — keyed Record mirroring the section-level blocks shape. */
+  blocks: Record<string, ThemeBundleTemplateBlock>;
+  /** Ordered ids of child blocks (same semantics as section-level block_order). */
+  block_order: string[];
+}
+
+/** Compute the maximum nesting depth of a bundle block tree (flat → 1; one child level → 2; …). */
+function maxBundleBlockDepth(blocks: Record<string, ThemeBundleTemplateBlock>): number {
+  const values = Object.values(blocks);
+  if (values.length === 0) return 0;
+  return 1 + Math.max(...values.map((b) => maxBundleBlockDepth(b.blocks)));
+}
+
+/**
+ * Self-recursive bundle template block schema.
+ *
+ * z.lazy() + explicit z.ZodType<ThemeBundleTemplateBlock> annotation breaks the TS circular
+ * type inference cycle.  .strict() is applied on the inner object so unknown keys in serialised
+ * bundles are rejected at parse time (prevents schema drift silently passing validation).
+ */
+export const ThemeBundleTemplateBlockSchema: z.ZodType<ThemeBundleTemplateBlock> = z.lazy(() =>
+  z.object({
+    type: z.string().min(1).max(120),
+    settings: ThemeBundleJsonObjectSchema.default({}),
+    disabled: z.boolean().default(false),
+    blocks: z.record(z.string(), ThemeBundleTemplateBlockSchema).default({}),
+    block_order: z.array(z.string()).default([]),
+  }).strict(),
+);
+
+export const ThemeBundleTemplateSectionSchema = z
+  .object({
+    type: z.string().min(1).max(120),
+    settings: ThemeBundleJsonObjectSchema.default({}),
+    blocks: z.record(z.string(), ThemeBundleTemplateBlockSchema).default({}),
+    block_order: z.array(z.string().min(1).max(120)).default([]),
+    disabled: z.boolean().default(false),
+  })
+  .strict()
+  .superRefine((section, ctx) => {
+    // Depth-bound enforcement (Phase T): reject block trees that exceed the maximum nesting depth.
+    // This mirrors MAX_BLOCK_NESTING_DEPTH in theme-document.ts and RENDERER_MAX_BLOCK_DEPTH in
+    // theme-renderer.ts — all three constants must stay in sync at value 3.
+    const depth = maxBundleBlockDepth(section.blocks);
+    if (depth > MAX_BUNDLE_BLOCK_NESTING_DEPTH) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Block nesting depth ${depth} exceeds maximum ${MAX_BUNDLE_BLOCK_NESTING_DEPTH}`,
+      });
+    }
+  });
 
 export const ThemeBundleTemplateSchema = z.object({
   name: z.string().min(1).max(120).optional(),
@@ -574,7 +636,8 @@ export type UploadThemePackageInput = z.infer<typeof UploadThemePackageSchema>;
 export type UploadPortableThemePackageInput = z.infer<typeof UploadPortableThemePackageSchema>;
 export type ThemeBundleTemplate = z.infer<typeof ThemeBundleTemplateSchema>;
 export type ThemeBundleTemplateSection = z.infer<typeof ThemeBundleTemplateSectionSchema>;
-export type ThemeBundleTemplateBlock = z.infer<typeof ThemeBundleTemplateBlockSchema>;
+// ThemeBundleTemplateBlock is the explicit interface defined above (not z.infer<...>) so that
+// the self-recursive type resolves correctly without "excessively deep" TypeScript errors.
 export type ThemeBundleSectionDefinition = z.infer<typeof ThemeBundleSectionDefinitionSchema>;
 export type ThemeBundleBlockDefinition = z.infer<typeof ThemeBundleBlockDefinitionSchema>;
 export type ThemeLiquidSectionFile = z.infer<typeof ThemeLiquidSectionFileSchema>;
