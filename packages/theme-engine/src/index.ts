@@ -34,6 +34,26 @@ export * from './theme-upgrade';
 export * from './theme-install';
 export * from './theme-publish';
 export * from './theme-analytics';
+// Phase L — AI Theme Platform SDK (deterministic generative primitives + merchant facade)
+export * from './theme-ai-sdk';
+// Phase L individual modules — selective exports to avoid re-exporting names already
+// provided by theme-ai-sdk (relativeLuminance/contrastRatio/meetsWcagAA, OptimizationReport,
+// optimizeThemeBundle, MerchantProfile, MerchantExperienceResolution, selectExperienceForMerchant).
+// New / unique Phase L exports:
+export { generateColorSystem, meetsWcagAAA } from './ai-color-system';
+export type { GeneratedColorSystem } from './ai-color-system';
+export * from './ai-typography';
+export * from './ai-layout';
+export * from './ai-theme-generator';
+export * from './ai-accessibility';
+export { analyzeThemeOptimizations, collectLintErrors } from './ai-optimizer';
+export type {
+  OptimizationSuggestion,
+  OptimizationSuggestionType,
+  OptimizationSuggestionSeverity,
+} from './ai-optimizer';
+export { applyPersonalizationOverlay, applyPersonalizationOverlayToBundle } from './ai-personalization';
+export type { SegmentTokens, PersonalizationResult } from './ai-personalization';
 
 export type BuiltInSectionType =
   | 'header'

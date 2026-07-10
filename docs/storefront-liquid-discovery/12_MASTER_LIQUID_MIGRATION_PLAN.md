@@ -936,4 +936,85 @@ Phase K Lane-B 55 contract tests formally enforce the following at every test ru
 
 ---
 
-*Document generated 2026-07-03 | Branch: stepup/main | Status: PARTIALLY IMPLEMENTED (Phase K) | Sources: 29 unique source files + 13 domain findings reports + docs/storefront-liquid-discovery/11_GAP_ANALYSIS.md | Auditor: Claude Sonnet 4.6 | Amended: 2026-07-04 (Phase D additions, Phase E additions) | Amended: 2026-07-05 (Phase F, Phase G, Phase H additions) | Amended: 2026-07-10 (Phase K additions)*
+---
+
+## Phase L Amendment — AI Theme Platform SDK (2026-07-10)
+
+Phase L is a **pure library addition**. No render-path, gateway, storefront-runtime, database, or governance-constant code was changed. Test gate: **theme-engine 643/643 PASS** (was 311; +332); **storefront-runtime 687/687 PASS** (was 133; +554).
+
+### Phase 7 plan items delivered
+
+Phase L constitutes the Phase 7 plan block — AI Theme Platform (deterministic generative layer). All items are net-new.
+
+| # | Item | Classification | Verification Gate |
+|---|------|----------------|------------------|
+| **P7-1** | WCAG 2.1 contrast utility — `relativeLuminance`, `contrastRatio`, `meetsWcagAA`, `meetsWcagAAA` | PURE-LIBRARY | `test/ai-color-system.test.ts` 29 tests — PASS |
+| **P7-2** | Parametric palette generator — `generateColorSystem`, `deterministicPalette` (5 variants); fail-closed WCAG AA assertion | PURE-LIBRARY | `test/ai-color-system.test.ts` — PASS |
+| **P7-3** | Typography pairing generator — `generateTypographyPairing`, `TYPOGRAPHY_PAIRING_CATALOG` (5 intents; all fonts from EXPERIENCE_FONT_REGISTRY) | PURE-LIBRARY | `test/ai-typography.test.ts` 20 tests — PASS |
+| **P7-4** | Section-order generator — `generateSectionOrder(industry, goals)` constrained to BUILT_IN_SECTION_TYPES with Liquid parity | PURE-LIBRARY | `test/ai-layout.test.ts` 16 tests — PASS |
+| **P7-5** | A11y advisory mapper — `generateA11yReport`, `a11ySuggestFixForLintIssue`; 5 lint rules → WCAG SC references | PURE-LIBRARY | `test/ai-accessibility.test.ts` 17 tests — PASS |
+| **P7-6** | Bundle optimizer — `analyzeThemeOptimizations`; `Object.values(template.sections)` collection; parseLiquidThemePackageBundle gate | PURE-LIBRARY | `test/ai-optimizer.test.ts` 18 tests — PASS |
+| **P7-7** | Merchant personalization overlay — `applyPersonalizationOverlay`, `selectExperienceForMerchant`; 3-priority confidence chain; G6 gate | PURE-LIBRARY | `test/ai-personalization.test.ts` 21 tests — PASS |
+| **P7-8** | Merchant AI SDK facade — `ThemeAISDK` interface + `THEME_AI_SDK` singleton; `generateTheme(brief)` end-to-end composition; `MODEL_BOUNDARY` NOT-CONNECTED | PURE-LIBRARY | `test/theme-ai-sdk.test.ts` 57 tests + `tests/launch/lb-l-ai-theme-platform.test.mjs` 45 source-contract tests — PASS |
+
+### Phase 6 items — Phase L disposition
+
+The Phase 6 plan items remain unchanged after Phase L. Phase L does not advance P6 items; all Phase K P6 items remain at their Phase K status.
+
+| P6 Item | Status after Phase L |
+|---------|---------------------|
+| P6-1: Epoch comparator | IMPLEMENTED (Phase K) |
+| P6-2: Upgrade planner | IMPLEMENTED (Phase K) |
+| P6-3: Install validation pipeline | IMPLEMENTED (Phase K) |
+| P6-4: Publish manifest builder | IMPLEMENTED (Phase K) |
+| P6-5: Analytics event contract | IMPLEMENTED (Phase K) |
+
+### Phase 5 items — Phase L disposition
+
+| P5 Item | Status after Phase L |
+|---------|---------------------|
+| P5-1: On-disk `.liquid` file authoring pipeline | **STILL OPEN** — Phase H exported `.liquid` view artifacts; source-of-truth flip open |
+| P5-2: Theme Check / linter in CI | **STILL OPEN** — `lintThemeBundle` exists; not yet wired into `validate-governance.mjs` |
+| P5-3: Snippets / partials | OPEN |
+| P5-4: `{% paginate %}` tag | OPEN |
+
+### Overall plan status (Phase L final)
+
+| Plan Phase | Status |
+|-----------|--------|
+| Phase 1 — Critical fixes (C, D) | **COMPLETE** |
+| Phase 2 — Template coverage (E) | **COMPLETE** (15/15 route types; 100%) |
+| Phase 3 — Performance (F, partial) | **PARTIAL** — intra-request LRU + parallelism done; edge cache open |
+| Phase 4 — Data completeness (D, G) | **SUBSTANTIALLY COMPLETE** — open: OQ-21/UC-11 gateway collection endpoint |
+| Phase 5 — Developer experience (H, partial) | **PARTIAL** — SDK/linter/CLI done; authoring pipeline + CI wire open |
+| Phase 6 — Platform primitives (K) | **COMPLETE** |
+| Phase 7 — AI Theme Platform (L) | **COMPLETE** (deterministic generative layer; MODEL_BOUNDARY NOT-CONNECTED) |
+| **Platform-wide flip (ARB gate)** | **BLOCKED** — I-F1 (HIGH) must be resolved; observability must be wired; ARB decision required |
+
+### Risk register row updates
+
+| Risk | After Phase L |
+|------|---------------|
+| **L-G1** (WCAG contrast utility absent) | **CLOSED (Phase L — ai-color-system.ts)** — `meetsWcagAA` fail-closed; 29 tests; single source of truth |
+| **L-G2** (parametric palette generator absent) | **CLOSED (Phase L — ai-color-system.ts, theme-ai-sdk.ts)** — 5 variants; WCAG AA fail-closed |
+| **L-G3** (typography pairing generator absent) | **CLOSED (Phase L — ai-typography.ts, theme-ai-sdk.ts)** — 5 intents; EXPERIENCE_FONT_REGISTRY; 20 tests |
+| **L-G4** (section-order generator absent) | **CLOSED (Phase L — ai-layout.ts, theme-ai-sdk.ts)** — constrained to 20 parity types; throws on unknown; 16 tests |
+| **L-G5** (A11y advisory mapper absent) | **CLOSED (Phase L — ai-accessibility.ts)** — 5 rules → WCAG SCs; HSL sweep; 17 tests |
+| **L-G6** (bundle optimizer absent) | **CLOSED (Phase L — ai-optimizer.ts)** — parseLiquidThemePackageBundle gate; 18 tests |
+| **L-G7** (merchant personalization absent) | **CLOSED (Phase L — ai-personalization.ts, theme-ai-sdk.ts)** — 3-priority chain; G6 gate; 21 tests |
+| **MODEL_BOUNDARY** (NL→ThemeBrief seam) | **NOT-CONNECTED — documented** — `THEME_AI_PROVIDER_API_KEY`; `POST /v1/theme-ai/parse-brief` does not exist; source-contract test asserts zero AI provider imports on every run |
+
+### Test Gate (Phase L final baseline)
+
+| Suite | Result | Baseline Progression |
+|---|---|---|
+| `pnpm typecheck test --filter=@letbuyy/theme-engine` | **643/643 PASS** | B:82 → C:89 → D:101 → E:109 → F:157 → G:157 → H:198 → I:221 → J:221 → K:311 → **L:643** |
+| `pnpm typecheck test --filter=@letbuyy/storefront-runtime` | **687/687 PASS** | B:18 → C:19 → D:31 → E:52 → F:52 → G:52 → H:52 → I:78 → J:78 → K:133 → **L:687** |
+| `pnpm typecheck --filter=@letbuyy/api-gateway` | **32 turbo tasks, exit 0** | Unchanged |
+| `pnpm typecheck test --filter=@letbuyy/merchant-control-plane` | **15/15 PASS** | Unchanged |
+
+*Phase L amendment 2026-07-10 | AI Theme Platform SDK by documentation engineer | Evidence: docs/storefront-liquid-discovery/phase-l/PHASE_L_REPORT.md + AI_THEME_PLATFORM_CONTRACT.md + PROGRAM_CAPSTONE.md*
+
+---
+
+*Document generated 2026-07-03 | Branch: stepup/main | Status: PARTIALLY IMPLEMENTED (Phase L) | Sources: 29 unique source files + 13 domain findings reports + docs/storefront-liquid-discovery/11_GAP_ANALYSIS.md | Auditor: Claude Sonnet 4.6 | Amended: 2026-07-04 (Phase D additions, Phase E additions) | Amended: 2026-07-05 (Phase F, Phase G, Phase H additions) | Amended: 2026-07-10 (Phase K additions, Phase L additions)*

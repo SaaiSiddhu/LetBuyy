@@ -778,3 +778,54 @@ Phase K is a **pure library addition**. No render-path, gateway, storefront-runt
 | K-F3 | LOW | `apps/app-marketplace/next-env.d.ts`, `apps/developer-portal/next-env.d.ts` | Auto-generated Next.js files dirty before Phase K; not a Phase K deliverable |
 
 *Phase K amendment 2026-07-10 | Theme platform primitives by documentation engineer | Evidence: docs/storefront-liquid-discovery/phase-k/PHASE_K_REPORT.md + THEME_PLATFORM_CONTRACT.md*
+
+---
+
+---
+
+## 19. Phase L Amendment — AI Theme Platform SDK (2026-07-10)
+
+Phase L is a **pure library addition**. No render-path, gateway, storefront-runtime, database, or governance-constant code was changed. Seven new modules were added to `packages/theme-engine/src/`, along with 8 new test files (134 lane-a unit tests + 57 lane-b facade tests), 45 source-contract tests, a 9-section contract document, and 2 phase docs. Test gate: **theme-engine 643/643 PASS** (was 311; +332); **storefront-runtime 687/687 PASS** (was 133; +554).
+
+### Enterprise Gap Coverage — updated rows (§9)
+
+| Capability Area | Before Phase L | After Phase L |
+|---|---|---|
+| **AI Theme Platform / Generative Primitives** | NOT IMPLEMENTED — 10 experiences had hardcoded hex values; no parametric palette generator; no WCAG contrast utility; no typography pairing from EXPERIENCE_FONT_REGISTRY; no section-order generator; no a11y advisory mapper; no bundle optimizer; no merchant personalization overlay | **IMPLEMENTED (Phase L)** — 7 new deterministic generators: WCAG 2.1 contrast math (sRGB linearization, L=0.2126R+0.7152G+0.0722B, fail-closed AA assertions), parametric palette (5 variants), typography pairing (5 intents from 6-family registry), section-order generator (BUILT_IN_SECTION_TYPES constrained to 20 parity types), a11y advisory mapper (5 lint-rule → WCAG-SC mappings), bundle optimizer (validates via parseLiquidThemePackageBundle before returning), merchant personalization overlay (3-priority chain with G6 gate). All functions are deterministic. No LLM wired. MODEL_BOUNDARY explicitly NOT-CONNECTED. |
+| **WCAG Contrast Safety** | NOT IMPLEMENTED — no contrast-ratio function existed anywhere in packages/theme-engine | **IMPLEMENTED (Phase L — ai-color-system.ts)** — `relativeLuminance`, `contrastRatio`, `meetsWcagAA`, `meetsWcagAAA`; single source of truth (theme-ai-sdk.ts imports from ai-color-system.ts after L-F6 hardening). Every palette-generating path calls meetsWcagAA fail-closed before returning. 29 tests. |
+| **Merchant AI SDK Facade** | PARTIAL — `theme-ai-sdk.ts` existed but was a stub; no `generateTheme` entry point; no `MODEL_BOUNDARY` constant | **IMPLEMENTED (Phase L — theme-ai-sdk.ts expanded)** — `ThemeAISDK` interface + `THEME_AI_SDK` singleton; `generateTheme(brief)` composes all primitives and enforces parseLiquidThemePackageBundle + lintThemeBundle + WCAG AA before returning; `MODEL_BOUNDARY` constant documents the NOT-CONNECTED seam; source-contract test asserts zero AI provider imports. 57 facade tests + 45 source-contract tests. |
+
+### Plan item updates (§11)
+
+| Plan Item | Before Phase L | After Phase L |
+|-----------|---------------|---------------|
+| **P7-1** — WCAG 2.1 contrast utility | OPEN (L-G1 gap) | **IMPLEMENTED (Phase L — ai-color-system.ts)** — 29 tests; imported by theme-ai-sdk.ts; single source of truth |
+| **P7-2** — Parametric palette generator with WCAG AA gate | OPEN (L-G2 gap) | **IMPLEMENTED (Phase L — ai-color-system.ts + theme-ai-sdk.ts)** — 5 variants; fail-closed WCAG AA assertions |
+| **P7-3** — Typography pairing generator | OPEN (L-G3 gap) | **IMPLEMENTED (Phase L — ai-typography.ts + theme-ai-sdk.ts)** — 5 intents; all fonts from EXPERIENCE_FONT_REGISTRY; 20 tests |
+| **P7-4** — Section-order generator | OPEN (L-G4 gap) | **IMPLEMENTED (Phase L — ai-layout.ts + theme-ai-sdk.ts)** — constrained to 20 Liquid-parity types; throws on unknown; 16 tests |
+| **P7-5** — A11y advisory mapper | OPEN (L-G5 gap) | **IMPLEMENTED (Phase L — ai-accessibility.ts)** — 5 lint rules mapped to WCAG SCs; HSL lightness sweep; 17 tests |
+| **P7-6** — Bundle optimizer | OPEN (L-G6 gap) | **IMPLEMENTED (Phase L — ai-optimizer.ts)** — Object.values(template.sections) for referenced-type collection; parseLiquidThemePackageBundle validation gate; 18 tests |
+| **P7-7** — Merchant personalization overlay | OPEN (L-G7 gap) | **IMPLEMENTED (Phase L — ai-personalization.ts + theme-ai-sdk.ts)** — 3-priority confidence chain; G6 gate; 21 tests |
+| **P7-8** — Merchant AI SDK facade + MODEL_BOUNDARY contract | OPEN (L-G7 gap) | **IMPLEMENTED (Phase L — theme-ai-sdk.ts + lb-l contract test)** — ThemeAISDK interface + THEME_AI_SDK singleton; MODEL_BOUNDARY NOT_CONNECTED; source-contract test asserts zero AI provider imports on every test run; 57 + 45 tests |
+
+### Phase L New Findings — all CLOSED within Phase L
+
+| ID | Severity | File | Summary | Disposition |
+|----|----------|------|---------|-------------|
+| **L-F1** | HIGH | `ai-optimizer.ts` | `optimizeThemeBundle` iterated only `template.order`; sections in `template.sections` but absent from `order` incorrectly deleted, causing parseLiquidThemePackageBundle throw | **CLOSED (Phase L hardening)** — `Object.values(template.sections)`; try/catch; returns original on failure |
+| **L-F2** | HIGH | `ai-theme-generator.ts` | `generateThemeFromBrief` documented "zero lint errors" but never called `lintThemeBundle` | **CLOSED (Phase L hardening)** — lintThemeBundle called; throws on error-level issues |
+| **L-F3** | MEDIUM | `ai-color-system.ts` | Dark-mode safety loop exited at `textL >= 1.0` with no post-loop WCAG assertion | **CLOSED (Phase L hardening)** — fail-closed post-loop meetsWcagAA assertion |
+| **L-F4** | MEDIUM | `theme-ai-sdk.ts` | `friendly` intent: `headingFontFamily='Lato'` vs `ai-typography.ts` `headingFontFamily='Inter'`; integration-level non-determinism | **CLOSED (Phase L hardening)** — FONT_PAIRING_CATALOG corrected to Inter/Lato |
+| **L-F5** | LOW | `ai-accessibility.ts` | Multiplicative RGB adjustment exhausted all 100 steps for dark-on-dark pairs; always fell back to #FFFFFF | **CLOSED (Phase L hardening)** — HSL-lightness sweep (L=0.9 → 0.5 for dark backgrounds) |
+| **L-F6** | LOW | `theme-ai-sdk.ts` | ~90-line WCAG math duplicate; future fix required in two places | **CLOSED (Phase L hardening)** — imported from ai-color-system.ts; duplicate removed |
+
+### Test Gate (Phase L baseline)
+
+| Suite | Result | Baseline Progression |
+|---|---|---|
+| `pnpm typecheck test --filter=@letbuyy/theme-engine` | **643/643 PASS** | K 311 → L **643** (+332) |
+| `pnpm typecheck test --filter=@letbuyy/storefront-runtime` | **687/687 PASS** | K 133 → L **687** (+554) |
+| `pnpm typecheck --filter=@letbuyy/api-gateway` | **32 turbo tasks, exit 0** | Unchanged |
+| `pnpm typecheck test --filter=@letbuyy/merchant-control-plane` | **15/15 PASS** | Unchanged |
+
+*Phase L amendment 2026-07-10 | AI Theme Platform SDK by documentation engineer | Evidence: docs/storefront-liquid-discovery/phase-l/PHASE_L_REPORT.md + AI_THEME_PLATFORM_CONTRACT.md*

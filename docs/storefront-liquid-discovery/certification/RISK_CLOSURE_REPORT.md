@@ -658,3 +658,86 @@ Phase K scope: `packages/theme-engine/src/` (5 new modules), `packages/theme-eng
 ---
 
 *End of Risk Closure Report — amended 2026-07-10 (Phase K Theme Platform Primitives)*
+
+---
+
+---
+
+## 15. Phase L Amendment — AI Theme Platform SDK (2026-07-10)
+
+Phase L is a **pure library addition** delivering 7 deterministic generative primitives, a unified Merchant AI SDK facade, 6 adversarial hardening fixes, and a source-contract test asserting zero LLM/AI provider imports anywhere in `packages/theme-engine/src/`. No render-path, gateway, storefront-runtime, database, or governance-constant code was changed. Test gate: **theme-engine 643/643 PASS** (was 311; +332); **storefront-runtime 687/687 PASS** (was 133; +554).
+
+### 15.1 Updated Summary Counts
+
+| Category | Phase K Count | Phase L Change | Updated Count |
+|---|---|---|---|
+| CLOSED-VERIFIED (Phase B static) | 12 | +0 | 12 |
+| CLOSED-IMPLEMENTED (Phase C) | 5 | +0 | 5 |
+| CLOSED-IMPLEMENTED (Phase D) | 7 | +0 | 7 |
+| CLOSED-IMPLEMENTED (Phase E) | 3 | +0 | 3 |
+| CLOSED-IMPLEMENTED (Phase F) | 1 | +0 | 1 |
+| PARTIALLY-CLOSED-IMPLEMENTED (Phase F) | 2 | +0 | 2 |
+| CLOSED-STRUCTURAL (Phase G) | 1 | +0 | 1 |
+| CLOSED-IMPLEMENTED (Phase G) | 2 | +0 | 2 |
+| MITIGATED (Phase G) | 1 | +0 | 1 |
+| PARTIALLY-CLOSED-IMPLEMENTED (Phase H) | 1 | +0 | 1 |
+| PARTIAL-IMPLEMENTED (Phase D) | 1 | +0 | 1 |
+| OPEN-CONFIRMED-RISK | 11 | +0 | 11 |
+| OPEN-UNVERIFIABLE | 1 | +0 | 1 |
+| REFUTED | 7 | +0 | 7 |
+| PARTIAL | 9 | +0 | 9 |
+
+> No Phase B register row status changes in Phase L. Phase L is a pure library primitive pass — it closes no previously open risks and introduces no new production code paths. Six adversarial findings (L-F1 through L-F6) were discovered in a cross-lane review and fixed within the phase; none of these were in the Phase B corpus. The one safety guardrail that did not exist before Phase L — WCAG 2.1 contrast math (`meetsWcagAA`) — is now CONNECTED.
+
+### 15.2 New Gap Register (Phase L gaps — closed by Phase L)
+
+Seven gaps identified in the Phase L Ground document. These are net-new capabilities that did not exist as prior Phase B corpus rows; they are recorded here as closure evidence.
+
+| Gap | Description | Phase L closure |
+|-----|-------------|-----------------|
+| **L-G1** | No WCAG 2.1 contrast utility (`relativeLuminance`, `contrastRatio`, `meetsWcagAA`) existed anywhere in `packages/theme-engine` | **CLOSED (Phase L — ai-color-system.ts)** — sRGB linearisation per IEC 61966-2-1; L=0.2126R+0.7152G+0.0722B; ratio=(L1+0.05)/(L2+0.05); AA=4.5:1 normal / 3:1 large; 29 tests. `theme-ai-sdk.ts` imports from this single source (L-F6 hardening). |
+| **L-G2** | No parametric palette generator; 10 experiences had hardcoded hex values | **CLOSED (Phase L — ai-color-system.ts, theme-ai-sdk.ts)** — `deterministicPalette(seed, variant)` with 5 variants (warm/cool/bold/muted/neutral); fail-closed WCAG AA assertion; `generateColorSystem` with Zod validation. |
+| **L-G3** | No typography pairing generator from EXPERIENCE_FONT_REGISTRY | **CLOSED (Phase L — ai-typography.ts, theme-ai-sdk.ts)** — `generateTypographyPairing` + `TYPOGRAPHY_PAIRING_CATALOG`; 5 intents; all fonts from EXPERIENCE_FONT_REGISTRY; 20 tests. |
+| **L-G4** | No section-order generator from merchant goals | **CLOSED (Phase L — ai-layout.ts, theme-ai-sdk.ts)** — `generateSectionOrder(industry, goals)` constrained to BUILT_IN_SECTION_TYPES with Liquid parity; heroBanner/newsletter anchors enforced; throws on unknown types; 16 tests. |
+| **L-G5** | No A11y advisory mapper for lint issues | **CLOSED (Phase L — ai-accessibility.ts)** — `generateA11yReport` maps 5 lint rules to WCAG SC references; HSL-lightness sweep for text adjustment; 17 tests. |
+| **L-G6** | No bundle optimizer (unused section removal, locale dedup) | **CLOSED (Phase L — ai-optimizer.ts)** — `analyzeThemeOptimizations` collects references via `Object.values(template.sections)` (not order-only; L-F1 hardening); validates via `parseLiquidThemePackageBundle` before returning; 18 tests. |
+| **L-G7** | No merchant personalization overlay generator from segment signals | **CLOSED (Phase L — ai-personalization.ts, theme-ai-sdk.ts)** — `applyPersonalizationOverlay` + `selectExperienceForMerchant`; priority chain: override (0.95) → industry (0.75) → fallback (0.40); G6 gate via `validateExperienceOverlay`; 21 tests. |
+
+### 15.3 Adversarial Findings (Phase L — all CLOSED)
+
+| ID | Severity | File | Finding | Fix |
+|----|----------|------|---------|-----|
+| **L-F1** | HIGH | `ai-optimizer.ts` | `optimizeThemeBundle` iterated only `template.order`; sections in `template.sections` but absent from `order` (disabled/hidden — valid schema state) were classified as unreferenced, deleted, then caused `parseLiquidThemePackageBundle` to throw | Replaced order-scoped loop with `Object.values(template.sections)`; wrapped parse in try/catch; returns original bundle on failure |
+| **L-F2** | HIGH | `ai-theme-generator.ts` | `generateThemeFromBrief` documented "zero error-level lint issues" but never called `lintThemeBundle`; a future `style=` attribute in fixture source would silently return a lint-failing bundle | Added `lintThemeBundle` call; throws on any error-level issue |
+| **L-F3** | MEDIUM | `ai-color-system.ts` | Dark-mode safety loop exited at `textL >= 1.0` with no post-loop WCAG assertion; future lightness change would silently break the guarantee | Post-loop `meetsWcagAA` assertion added; fail-closed throw on failure |
+| **L-F4** | MEDIUM | `theme-ai-sdk.ts` | `FONT_PAIRING_CATALOG` `friendly` entry: `headingFontFamily='Lato'` vs `ai-typography.ts` mapping `headingFontFamily='Inter'`; same intent via different code paths produced different heading fonts | Corrected to `headingFontFamily='Inter'`, `fontFamily='Lato'`; both catalogs now agree |
+| **L-F5** | LOW | `ai-accessibility.ts` | `adjustTextForAA` multiplicative RGB loop exhausted all 100 steps for dark-on-dark pairs (e.g. `#0A0A0A`) and always fell back to `#FFFFFF`, skipping valid mid-range options | Replaced with HSL-lightness sweep (L=0.9 → 0.5 for dark backgrounds) |
+| **L-F6** | LOW | `theme-ai-sdk.ts` | ~90-line WCAG math duplicate from `ai-color-system.ts`; future fix must be applied twice | `relativeLuminance`, `contrastRatio`, `meetsWcagAA` imported from `./ai-color-system`; re-exported for backward compatibility; duplicate removed |
+
+All six findings are CLOSED. No finding remains open from Phase L.
+
+### 15.4 UC-01 Row Update
+
+| ID | Prior Closure Status | Phase L Update |
+|----|---------------------|----------------|
+| **UC-01** | Updated baseline at Phase K: theme-engine 311/311; storefront-runtime 133/133; merchant 15/15; api-gateway typecheck clean. | **Updated test baseline: theme-engine 643/643; storefront-runtime 687/687; api-gateway typecheck clean; merchant-control-plane 15/15 unchanged.** Phase L added 332 theme-engine tests (7 new unit test files + expanded theme-ai-sdk.test.ts) and 554 storefront-runtime tests (lb-l-ai-theme-platform.test.mjs source-contract tests + accumulated launch suite). All prior baselines hold. |
+
+### 15.5 Model Boundary (NOT-CONNECTED)
+
+Phase L introduces the first explicit `MODEL_BOUNDARY` constant in `packages/theme-engine/src/theme-ai-sdk.ts`:
+
+```ts
+MODEL_BOUNDARY.status       = 'NOT_CONNECTED'
+MODEL_BOUNDARY.envVar       = 'THEME_AI_PROVIDER_API_KEY'
+MODEL_BOUNDARY.gatewayRoute = 'POST /v1/theme-ai/parse-brief (does not exist)'
+```
+
+The contract test (`lb-l-ai-theme-platform.test.mjs`) asserts no AI provider imports in any `packages/theme-engine/src/` file. This assertion runs on every storefront-runtime test gate. The NL→ThemeBrief seam, NL→seed-hex seam, and NL→SectionGoal[] seam are all NOT-CONNECTED; only the deterministic downstream generators are implemented.
+
+### 15.6 Phase L Scope Note
+
+Phase L changed only: `packages/theme-engine/src/` (7 new files + `theme-ai-sdk.ts` expanded + `index.ts` additive re-exports); `packages/theme-engine/test/` (7 new test files + `theme-ai-sdk.test.ts` expanded); `tests/launch/lb-l-ai-theme-platform.test.mjs` (new); `docs/storefront-liquid-discovery/phase-l/` (2 new doc files). No gateway, database migration, storefront-runtime source, identity-platform, merchant-control-plane, or governance-constant changes. ART-17 frozen section registry untouched. DOMPurify config untouched. `THEME_LIQUID_RENDERING_DEFAULT_ENABLED = false` unchanged. Urban Kicks fixture untouched. Render path is byte-identical.
+
+---
+
+*End of Risk Closure Report — amended 2026-07-10 (Phase L AI Theme Platform SDK)*
