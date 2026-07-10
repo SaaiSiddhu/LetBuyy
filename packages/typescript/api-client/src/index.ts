@@ -4553,6 +4553,19 @@ export class LetbuyyApiClient {
       this.requestData<ThemeRelease[]>(`/themes/${encodePathSegment(slug)}/releases`, { ...options, query: { store_id: storeId } }),
     rollbackRelease: (slug: string, releaseId: string, input: RollbackThemeReleaseInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemeRollbackResult>(`/themes/${encodePathSegment(slug)}/releases/${encodePathSegment(releaseId)}/rollback`, { ...options, method: 'POST', body: input }),
+    // Phase Q — theme library management (site-scoped, tenant-safe)
+    listSiteLibrary: (storeId: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<JsonRecord>('/themes/library', { ...options, query: { ...(options?.query || {}), store_id: storeId } }),
+    createTheme: (storeId: string, input: { name: string; template_slug?: string }, options?: LetbuyyRequestOptions) =>
+      this.requestData<JsonRecord>('/themes/library/create', { ...options, method: 'POST', body: { store_id: storeId, ...input } }),
+    duplicateTheme: (slug: string, storeId: string, input: { name?: string }, options?: LetbuyyRequestOptions) =>
+      this.requestData<JsonRecord>(`/themes/${encodePathSegment(slug)}/duplicate`, { ...options, method: 'POST', body: { store_id: storeId, ...input } }),
+    renameTheme: (slug: string, storeId: string, name: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<JsonRecord>(`/themes/${encodePathSegment(slug)}/rename`, { ...options, method: 'PATCH', body: { store_id: storeId, name } }),
+    archiveTheme: (slug: string, storeId: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<JsonRecord>(`/themes/${encodePathSegment(slug)}/archive`, { ...options, method: 'POST', body: { store_id: storeId } }),
+    deleteUnpublishedTheme: (slug: string, storeId: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<JsonRecord>(`/themes/${encodePathSegment(slug)}/unpublished`, { ...options, method: 'DELETE', query: { ...(options?.query || {}), store_id: storeId } }),
   };
 
   readonly payments = {

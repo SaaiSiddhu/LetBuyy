@@ -26,10 +26,10 @@ Living register. Each entry: ID · severity · status · evidence · owner/targe
 
 ## Data / migrations
 
-### RISK-DATA-001 — Migrations 186/187 are untracked WIP; 188/189 require production apply — [MEDIUM]
-- **Status:** OPEN · foreign (186/187) + committed-but-unapplied (188/189).
-- **Evidence:** `git log -- database/supabase/migrations/186_*.sql` and `187_*.sql` return empty (untracked). `188_letbuyy_core_theme_row.sql` committed in `40741cb8` (idempotent `INSERT … ON CONFLICT (slug) DO NOTHING`); the `letbuyy-core` DB row does not exist until 188 runs against the DB. Migration 187 (`sites.site_settings`) is referenced by `storefront-runtime` `mapSupabaseToStore` — a real deployment risk if the DB is reset before it is committed/applied. Migration 189 (`189_theme_persistence_idempotency.sql`, committed in Phase P) adds nullable `idempotency_key` + partial unique index to `theme_releases`; additive and safe to apply, but MUST NOT be applied to production without ARB sign-off. Rollback of 189 requires `DROP COLUMN` (ARB-repaired).
-- **Disposition:** program authors migrations for its own phases and tests them locally/staging only; it does NOT apply migrations to production and does NOT commit foreign migrations 186/187. Apply order: 186 → 187 (untracked, foreign) → 188 → 189.
+### RISK-DATA-001 — Migrations 186/187 are untracked WIP; 188/189/190 require production apply — [MEDIUM]
+- **Status:** OPEN · foreign (186/187) + committed-but-unapplied (188/189/190).
+- **Evidence:** `git log -- database/supabase/migrations/186_*.sql` and `187_*.sql` return empty (untracked). `188_letbuyy_core_theme_row.sql` committed in `40741cb8` (idempotent `INSERT … ON CONFLICT (slug) DO NOTHING`); the `letbuyy-core` DB row does not exist until 188 runs against the DB. Migration 187 (`sites.site_settings`) is referenced by `storefront-runtime` `mapSupabaseToStore` — a real deployment risk if the DB is reset before it is committed/applied. Migration 189 (`189_theme_persistence_idempotency.sql`, committed in Phase P) adds nullable `idempotency_key` + partial unique index to `theme_releases`; additive and safe to apply, but MUST NOT be applied to production without ARB sign-off. Migration 190 (`190_theme_library_q.sql`, committed in Phase Q) adds `owned_by_site_id uuid NULL` + `is_site_private boolean DEFAULT false` to `themes` plus two indexes; additive and idempotent (`ADD COLUMN IF NOT EXISTS`, `CREATE INDEX IF NOT EXISTS`), but MUST NOT be applied to production without ARB sign-off. Rollback of 189 or 190 requires `DROP COLUMN` (ARB-repaired).
+- **Disposition:** program authors migrations for its own phases and tests them locally/staging only; it does NOT apply migrations to production and does NOT commit foreign migrations 186/187. Apply order: 186 → 187 (untracked, foreign) → 188 → 189 → 190.
 
 ## Phase P risks
 
@@ -52,6 +52,16 @@ Living register. Each entry: ID · severity · status · evidence · owner/targe
 - **Evidence:** `services/api-gateway/src/execution/theme-execution.adapter.ts` — `rollbackRelease()` CAS guard at ~line 1516-1529. The guard checks `is_current` in a `SELECT` before calling `publishReleaseSnapshot`. Two concurrent rollbacks both passing the same TS check window can both call the RPC; the second write wins the `is_current` pointer.
 - **Why it matters:** Two rollback operations in flight simultaneously can produce an unintended final state where the `is_current` pointer points to whichever rollback's release was committed last, which may not be the one the merchant intended.
 - **Disposition:** Full closure requires adding `p_expected_current_release_version` to the SECURITY DEFINER RPC for an atomic CAS at the Postgres level — ARB-gated. **Target:** ARB follow-up. Documented at code level in the adapter. Sequential rollback case (the realistic pattern) is correctly handled by Phase P's optional `expected_current_release_id` field.
+
+## Phase Q risks
+
+### RISK-TOCTOU-Q01 — Plan limit enforcement is non-atomic (count-then-insert race) — [MEDIUM]
+- **Status:** OPEN · known residual; ARB-gated for full closure.
+- **Introduced:** Phase Q (2026-07-10).
+- **Evidence:** `services/api-gateway/src/routes/themes.ts` — `POST /themes/library/create` and `POST /themes/:slug/duplicate` handlers call `countInstalledSiteThemes` and then `service.createSiteTheme` / `service.duplicateSiteTheme` as two separate DB round-trips with no advisory lock or DB-level CHECK constraint. `countInstalledSiteThemes` counts `theme_instances WHERE store_id=storeId AND instance_status NOT IN ('archived','deleted') AND deleted_at IS NULL`. There is no UNIQUE constraint or row-level lock bounding the gap between the count read and the insert.
+- **Why it matters:** Two concurrent create or duplicate requests for the same store that both read `count < limit` before either write completes will both succeed, allowing the store to exceed its billing-tier theme cap by one or more. The window is narrow (~1-5ms per round-trip); sequential requests (the dominant real-world pattern) are correctly blocked once the count reaches the limit.
+- **Disposition:** Full closure requires either (a) a `SECURITY DEFINER` RPC wrapping the count + insert in a transaction with a per-store advisory lock (`pg_advisory_xact_lock(hashtext(store_id))`), or (b) a DB-level `CHECK` constraint on `theme_instances` referencing a materialized count. Both require ARB sign-off (SECURITY DEFINER touch or schema constraint addition). Documented at code level in the route handlers.
+- **Target:** Phase AB (theme versioning) or an earlier ARB-gated follow-up, whichever first touches the `theme_instances` schema or `publish_theme_release` SECURITY DEFINER surface.
 
 ## Phase O risks
 

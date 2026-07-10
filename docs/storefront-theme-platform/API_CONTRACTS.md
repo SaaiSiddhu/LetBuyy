@@ -1,7 +1,7 @@
 # Theme Platform API Contracts
 
 **Program:** LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor (M→AE)
-**Last updated:** 2026-07-10 (post Phase P)
+**Last updated:** 2026-07-10 (post Phase Q)
 **Branch:** `stepup/main`
 
 This document records the API contracts for the theme persistence surface: request/response shapes, auth requirements, error codes, and known limitations. Update when a new phase adds or modifies routes.
@@ -199,7 +199,273 @@ Array of release records ordered by `release_version DESC`. Each record includes
 
 ---
 
-## 6. Common Error Shape
+---
+
+## 6. GET /themes/library
+
+**Status:** NEW (added Phase Q)  
+**Purpose:** List all themes installed on a store, with per-theme metadata: draft state, publish state, and update availability.  
+**Auth:** ES256 merchant token + `verifyStoreOwner` (required for all Phase Q library routes).  
+**Requires:** Migration 190 (`190_theme_library_q.sql`) applied.
+
+### Request
+
+Query parameters: `store_id=<uuid>` (required; `ListSiteThemesQuerySchema`)
+
+### Response (200 OK)
+
+```typescript
+{
+  themes: Array<{
+    slug: string;
+    name: string;
+    instance_status: 'installed' | 'archived' | 'deleted';
+    installed_at: string;           // ISO 8601
+    last_published_at: string | null;
+    last_modified_at: string | null;
+    hasDraft: boolean;
+    isCurrentlyPublished: boolean;  // derived from sites.theme_id === slug
+    updateAvailable: boolean;
+    theme_package_version_id: string | null;
+    active_release_id: string | null;
+  }>;
+}
+```
+
+### Error Responses
+
+| Code | Condition |
+|---|---|
+| 400 Bad Request | `store_id` missing or not a UUID |
+| 401 Unauthorized | Missing or invalid merchant token |
+| 403 Forbidden | `store_id` not owned by authenticated merchant |
+
+### Tenancy Notes
+
+`verifyStoreOwner` is the first adapter call. All sub-queries (theme_instances, theme_releases, theme_editor_drafts) carry `.eq('store_id', storeId)` as the first filter. Site-private themes (`is_active=false`) are included in the listing; the public marketplace catalog (`GET /themes`) continues to exclude them.
+
+---
+
+## 7. POST /themes/library/create
+
+**Status:** NEW (added Phase Q)  
+**Purpose:** Create a blank site-private theme. The new theme is not visible in the public marketplace catalog (`is_active=false`, `is_site_private=true`).
+
+### Request
+
+```typescript
+// CreateSiteThemeSchema
+{
+  store_id: string;        // uuid
+  name: string;            // 1–120 characters
+  template_slug?: string;  // optional starting template
+}
+```
+
+### Response (200 OK)
+
+```typescript
+{
+  slug: string;        // generated uuid-based slug (e.g. "site-theme-<uuid>")
+  instance_id: string; // uuid of the created theme_instances row
+  name: string;
+}
+```
+
+### Error Responses
+
+| Code | Condition |
+|---|---|
+| 400 Bad Request | Name empty or > 120 chars |
+| 401 Unauthorized | Missing or invalid merchant token |
+| 403 Forbidden | `store_id` not owned by authenticated merchant |
+| 409 Conflict | `THEME_LIMIT_REACHED` — store has reached its plan's theme cap |
+
+### Plan Limit Contract
+
+`verifyStoreOwner` is called before `resolveStoreThemeLimit`. A cross-tenant `store_id` returns 403 without reading the foreign store's billing data. The limit is plan-tier-driven (`billing-core`): free=1, starter=3, business=10, enterprise=unlimited, launch=3, growth=5. The count+insert is non-atomic (see RISK-TOCTOU-Q01).
+
+### Audit Event
+
+`theme.create` emitted after successful insert.
+
+---
+
+## 8. POST /themes/:slug/duplicate
+
+**Status:** NEW (added Phase Q)  
+**Purpose:** Duplicate an installed theme (marketplace or site-private). The duplicate is always site-private to this store.
+
+### Request
+
+```typescript
+// DuplicateSiteThemeSchema
+{
+  store_id: string;  // uuid
+  name?: string;     // 1–120 chars; defaults to "<original name> (copy)" if omitted
+}
+```
+
+### Response (200 OK)
+
+```typescript
+{
+  slug: string;        // new uuid-based slug
+  instance_id: string;
+  name: string;
+  source_slug: string; // slug of the duplicated theme
+}
+```
+
+### Error Responses
+
+| Code | Condition |
+|---|---|
+| 401 Unauthorized | Missing or invalid merchant token |
+| 403 Forbidden | `store_id` not owned by authenticated merchant |
+| 404 Not Found | `:slug` not found as an installed theme for this store (enumeration prevention — not 403) |
+| 409 Conflict | `THEME_LIMIT_REACHED` — plan cap exceeded |
+
+### Enumeration Prevention
+
+If the source theme_instances row is not found for this store, the adapter returns `NotFoundError` (404), not `ForbiddenError` (403). This prevents a merchant from learning which theme slugs are installed in other stores by distinguishing "forbidden" from "not found."
+
+### Audit Event
+
+`theme.duplicate` emitted.
+
+---
+
+## 9. PATCH /themes/:slug/rename
+
+**Status:** NEW (added Phase Q)  
+**Purpose:** Rename a site-private theme. Marketplace themes (shared catalog rows) cannot be renamed — the merchant must duplicate first.
+
+### Request
+
+```typescript
+// RenameSiteThemeSchema
+{
+  store_id: string;  // uuid
+  name: string;      // 1–120 characters (required)
+}
+```
+
+### Response (200 OK)
+
+```typescript
+{
+  slug: string;
+  name: string;  // new name
+}
+```
+
+### Error Responses
+
+| Code | Condition |
+|---|---|
+| 400 Bad Request | Name empty or > 120 chars |
+| 401 Unauthorized | Missing or invalid merchant token |
+| 403 Forbidden | `store_id` not owned by authenticated merchant; OR theme has `owned_by_site_id IS NULL` (marketplace theme); OR `owned_by_site_id` belongs to a different store |
+
+### Catalog Integrity
+
+Three layers prevent a merchant from mutating a shared marketplace theme catalog row:
+
+1. `verifyStoreOwner` blocks cross-tenant `store_id`.
+2. Application-level: `themes.owned_by_site_id` is read; if `null` or not equal to `storeId`, throws `ForbiddenError` (message: "Marketplace themes cannot be renamed. Duplicate the theme first...").
+3. DB-level: the UPDATE carries `.eq('owned_by_site_id', storeId)` — if check (2) were bypassed, the UPDATE matches zero rows.
+
+### Audit Event
+
+`theme.rename` emitted.
+
+---
+
+## 10. POST /themes/:slug/archive
+
+**Status:** NEW (added Phase Q)  
+**Purpose:** Archive an installed (non-published) theme instance. Sets `instance_status='archived'` on the `theme_instances` row. Cannot archive the currently published theme.
+
+### Request
+
+```typescript
+// ArchiveSiteThemeSchema
+{
+  store_id: string;  // uuid
+}
+```
+
+### Response (200 OK)
+
+```typescript
+{
+  slug: string;
+  instance_status: 'archived';
+}
+```
+
+### Error Responses
+
+| Code | Condition |
+|---|---|
+| 401 Unauthorized | Missing or invalid merchant token |
+| 403 Forbidden | `store_id` not owned by authenticated merchant |
+| 409 Conflict | `THEME_CURRENTLY_PUBLISHED` — theme is the store's active live theme |
+
+### Published-Theme Block
+
+`sites.theme_id` is read (scoped by `store_id`); if it equals `:slug`, the route returns 409 `THEME_CURRENTLY_PUBLISHED`. The merchant must publish a different theme before archiving this one.
+
+### Audit Event
+
+`theme.archive` emitted.
+
+---
+
+## 11. DELETE /themes/:slug/unpublished
+
+**Status:** NEW (added Phase Q)  
+**Purpose:** Soft-delete an unpublished theme instance. Sets `deleted_at=now()` and `instance_status='deleted'` on the `theme_instances` row. Cannot delete the currently published theme.
+
+### Request
+
+Query parameters: `store_id=<uuid>` (required; `DeleteUnpublishedThemeQuerySchema`)
+
+### Response (200 OK)
+
+```typescript
+{
+  slug: string;
+  deleted: true;
+}
+```
+
+### Error Responses
+
+| Code | Condition |
+|---|---|
+| 400 Bad Request | `store_id` missing or not a UUID |
+| 401 Unauthorized | Missing or invalid merchant token |
+| 403 Forbidden | `store_id` not owned by authenticated merchant |
+| 409 Conflict | `CANNOT_DELETE_PUBLISHED_THEME` — theme is published (either via sites.theme_id or theme_releases.is_current=true) |
+
+### Two-Layer Published-Theme Block
+
+1. `sites.theme_id` check (scoped by `store_id`): if equals `:slug` → 409.
+2. `theme_releases WHERE store_id=storeId AND theme_id=slug AND is_current=true` check: if found → 409. This second guard handles edge cases where `sites.theme_id` may not reflect the most recent publish.
+
+### Soft-Delete Semantics
+
+The `theme_instances` row is not hard-deleted. `deleted_at` is set and `instance_status` is set to `'deleted'`. The `themes` catalog row (if site-private) is not deleted; it remains accessible for potential recovery.
+
+### Audit Event
+
+`theme.delete` emitted.
+
+---
+
+## 12. Common Error Shape
 
 All errors follow the gateway's standard error envelope:
 
@@ -213,7 +479,7 @@ All errors follow the gateway's standard error envelope:
 
 ---
 
-## 7. Schema Version Notes
+## 13. Schema Version Notes
 
 - `ThemeDocument` V2: `schema_version: "2.0.0"` — defined by `packages/theme-engine/src/theme-document.ts` `THEME_DOCUMENT_VERSION`. The validate route verifies the supplied document is V2 or can be migrated to V2.
 - `LiquidThemePackageBundle` G4: defined by `packages/theme-engine/src/theme-bundle.ts` `parseLiquidThemePackageBundle`.
@@ -221,7 +487,7 @@ All errors follow the gateway's standard error envelope:
 
 ---
 
-## 8. Rate Limiting and Idempotency Best Practices
+## 14. Rate Limiting and Idempotency Best Practices
 
 | Operation | Recommended client behaviour |
 |---|---|
@@ -229,3 +495,9 @@ All errors follow the gateway's standard error envelope:
 | Rollback | Always supply `expected_current_release_id`; do not retry on 409 (read new current first) |
 | Validate | Idempotent by design; retry freely on 5xx; stop on 400 (schema error) |
 | List releases | Idempotent; cache for 60s; refresh before a rollback call |
+| List library (GET /library) | Idempotent; retry freely on 5xx |
+| Create theme | Not idempotent — do not retry on 5xx without checking if the theme was created |
+| Duplicate theme | Not idempotent — same caveat as create |
+| Rename theme | Idempotent (same name = same result); retry freely on 5xx |
+| Archive theme | Idempotent for the same slug; retry freely on 5xx; stop on 409 |
+| Delete (soft-delete) | Idempotent for the same slug (already-deleted → 200); retry freely on 5xx; stop on 409 |

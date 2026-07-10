@@ -15,9 +15,13 @@ import {
 } from '@letbuyy/theme-engine';
 import { ConflictError, ForbiddenError, NotFoundError, ValidationError } from '../lib/errors';
 import type {
+    ArchiveSiteThemeInput,
+    CreateSiteThemeInput,
+    DuplicateSiteThemeInput,
     InstallThemeInput,
     PreviewTokenInput,
     PublishThemeInput,
+    RenameSiteThemeInput,
     RollbackThemeReleaseInput,
     SaveThemeDraftInput,
     ValidateThemeDocumentInput,
@@ -1775,5 +1779,499 @@ export class ThemeExecutionAdapter {
             draft_version: data.draft_version,
             template_key: templateKey,
         };
+    }
+
+    // ─── Phase Q — Theme Library Management ───────────────────────────────────
+    // All methods call verifyStoreOwner FIRST (before any theme_instances query)
+    // and scope ALL subsequent queries by store_id. Cross-tenant isolation is
+    // proven at the logic level in theme-library-q.test.ts.
+
+    async listSiteThemes(storeId: string, userId: string) {
+        // Tenancy step 1: verify ownership (throws ForbiddenError if not owner)
+        await this.verifyStoreOwner(storeId, userId);
+
+        // Tenancy step 2: get current published theme_id from authenticated store
+        const { data: siteData } = await this.db
+            .from('sites')
+            .select('theme_id')
+            .eq('id', storeId)
+            .maybeSingle();
+        const currentThemeId = (siteData as DbRecord | null)?.theme_id as string | null ?? null;
+
+        // Tenancy step 3: list theme_instances scoped to this store only
+        const { data: instances, error: instancesError } = await this.db
+            .from('theme_instances')
+            .select('id, theme_slug, instance_status, created_at, updated_at, active_release_id, theme_package_version_id')
+            .eq('store_id', storeId)
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false });
+
+        if (instancesError) {
+            throw new Error(`Theme library load failed: ${instancesError.message}`);
+        }
+
+        const instanceList = (instances || []) as DbRecord[];
+
+        // Tenancy step 4: for each instance enrich with theme metadata and release info
+        // All sub-queries are also scoped by store_id where applicable
+        const themes = await Promise.all(instanceList.map(async (instance) => {
+            const themeSlug = String(instance.theme_slug || '');
+
+            // Fetch theme metadata (no is_active filter — site-private themes have is_active=false)
+            const { data: themeData } = await this.db
+                .from('themes')
+                .select('id, name, slug, description, schema_version')
+                .eq('slug', themeSlug)
+                .maybeSingle();
+
+            // Fetch last published release for this store + theme (scoped by store_id first)
+            const { data: lastRelease } = await this.db
+                .from('theme_releases')
+                .select('published_at, release_version, theme_package_version_id')
+                .eq('store_id', storeId)
+                .eq('theme_id', themeSlug)
+                .eq('is_current', true)
+                .maybeSingle();
+
+            // Check if there is any draft for this store + theme (scoped by store_id first)
+            const { data: draft } = await this.db
+                .from('theme_editor_drafts')
+                .select('id')
+                .eq('store_id', storeId)
+                .eq('theme_id', themeSlug)
+                .is('deleted_at', null)
+                .maybeSingle();
+
+            const theme = themeData as DbRecord | null;
+            const release = lastRelease as DbRecord | null;
+
+            return {
+                slug: themeSlug,
+                name: (theme?.name as string | null) || themeSlug,
+                description: (theme?.description as string | null) || null,
+                instance_id: String(instance.id || ''),
+                instance_status: String(instance.instance_status || 'installed'),
+                installed_at: String(instance.created_at || ''),
+                last_published_at: release?.published_at ? String(release.published_at) : null,
+                last_modified_at: String(instance.updated_at || instance.created_at || ''),
+                hasDraft: Boolean(draft),
+                isCurrentlyPublished: currentThemeId === themeSlug,
+                updateAvailable: false,
+                theme_package_version_id: (release?.theme_package_version_id || instance.theme_package_version_id || null) as string | null,
+                active_release_id: (instance.active_release_id || null) as string | null,
+            };
+        }));
+
+        return { themes };
+    }
+
+    async createSiteTheme(
+        storeId: string,
+        input: CreateSiteThemeInput,
+        userId: string,
+        requestId?: string | null
+    ) {
+        // Tenancy step 1: verify ownership
+        await this.verifyStoreOwner(storeId, userId);
+
+        const now = new Date().toISOString();
+        const newSlug = `site-theme-${crypto.randomUUID()}`;
+
+        // Insert a site-private themes row. is_active=false keeps it out of the public catalog
+        // (GET /themes filters by is_active=true). owned_by_site_id scopes ownership.
+        // Requires migration 190_theme_library_q.sql to add owned_by_site_id + is_site_private.
+        const { data: themeRow, error: themeError } = await this.db
+            .from('themes')
+            .insert({
+                slug: newSlug,
+                name: input.name,
+                is_active: false,
+                is_site_private: true,
+                owned_by_site_id: storeId,
+                created_at: now,
+                updated_at: now,
+            })
+            .select('id, slug, name')
+            .single();
+
+        if (themeError || !themeRow) {
+            throw new Error(`Theme create failed: ${themeError?.message || 'Unknown error'}`);
+        }
+
+        const themeRecord = themeRow as DbRecord;
+
+        // Insert theme_instance scoped to this store
+        const { data: instanceRow, error: instanceError } = await this.db
+            .from('theme_instances')
+            .insert({
+                store_id: storeId,
+                theme_slug: newSlug,
+                instance_status: 'installed',
+                created_by: userId,
+                updated_by: userId,
+                created_at: now,
+                updated_at: now,
+            })
+            .select('id, theme_slug, instance_status, created_at')
+            .single();
+
+        if (instanceError || !instanceRow) {
+            throw new Error(`Theme instance create failed: ${instanceError?.message || 'Unknown error'}`);
+        }
+
+        const events = new EventExecutionAdapter(this.db);
+        await events.emitAuditEvent({
+            storeId,
+            actorId: userId,
+            action: 'theme.create',
+            resourceType: 'theme_instance',
+            resourceId: String((instanceRow as DbRecord).id || ''),
+            requestId,
+            afterState: {
+                theme_slug: newSlug,
+                name: input.name,
+                template_slug: input.template_slug || null,
+            },
+        });
+
+        return {
+            slug: String(themeRecord.slug),
+            name: String(themeRecord.name),
+            instance_id: String((instanceRow as DbRecord).id || ''),
+            instance_status: 'installed',
+            created_at: now,
+        };
+    }
+
+    async duplicateSiteTheme(
+        slug: string,
+        storeId: string,
+        input: DuplicateSiteThemeInput,
+        userId: string,
+        requestId?: string | null
+    ) {
+        // Tenancy step 1: verify ownership
+        await this.verifyStoreOwner(storeId, userId);
+
+        // Tenancy step 2: confirm the source theme_instance belongs to this store
+        // (cross-tenant: no row returned → 404 not 403 to prevent enumeration)
+        const { data: sourceInstance } = await this.db
+            .from('theme_instances')
+            .select('id, theme_slug, active_release_id')
+            .eq('store_id', storeId)
+            .eq('theme_slug', slug)
+            .is('deleted_at', null)
+            .maybeSingle();
+
+        if (!sourceInstance) {
+            throw new NotFoundError('Theme not found in your store');
+        }
+
+        // Tenancy step 3: get theme metadata for the source
+        const { data: sourceTheme } = await this.db
+            .from('themes')
+            .select('id, slug, name')
+            .eq('slug', slug)
+            .maybeSingle();
+
+        const sourceThemeRecord = sourceTheme as DbRecord | null;
+        const sourceName = (sourceThemeRecord?.name as string | null) || slug;
+        const newName = input.name || `Copy of ${sourceName}`;
+        const newSlug = `site-theme-${crypto.randomUUID()}`;
+        const now = new Date().toISOString();
+
+        // Tenancy step 4: get the release config for cloning (scoped to this store)
+        let cloneConfig: DbRecord = {};
+        if ((sourceInstance as DbRecord).active_release_id) {
+            const { data: releaseData } = await this.db
+                .from('theme_releases')
+                .select('release_config, template_snapshot')
+                .eq('id', String((sourceInstance as DbRecord).active_release_id))
+                .eq('store_id', storeId)
+                .maybeSingle();
+            const release = releaseData as DbRecord | null;
+            cloneConfig = (release?.template_snapshot as DbRecord | null) ||
+                (release?.release_config as DbRecord | null) || {};
+        }
+
+        // Insert site-private themes row (duplicate)
+        const { data: themeRow, error: themeError } = await this.db
+            .from('themes')
+            .insert({
+                slug: newSlug,
+                name: newName,
+                is_active: false,
+                is_site_private: true,
+                owned_by_site_id: storeId,
+                created_at: now,
+                updated_at: now,
+            })
+            .select('id, slug, name')
+            .single();
+
+        if (themeError || !themeRow) {
+            throw new Error(`Theme duplicate (themes row) failed: ${themeError?.message || 'Unknown error'}`);
+        }
+
+        // Insert new theme_instance for this store
+        const { data: instanceRow, error: instanceError } = await this.db
+            .from('theme_instances')
+            .insert({
+                store_id: storeId,
+                theme_slug: newSlug,
+                instance_status: 'installed',
+                installed_config: Object.keys(cloneConfig).length > 0 ? cloneConfig : null,
+                created_by: userId,
+                updated_by: userId,
+                created_at: now,
+                updated_at: now,
+            })
+            .select('id, theme_slug, instance_status, created_at')
+            .single();
+
+        if (instanceError || !instanceRow) {
+            throw new Error(`Theme duplicate (instance) failed: ${instanceError?.message || 'Unknown error'}`);
+        }
+
+        const events = new EventExecutionAdapter(this.db);
+        await events.emitAuditEvent({
+            storeId,
+            actorId: userId,
+            action: 'theme.duplicate',
+            resourceType: 'theme_instance',
+            resourceId: String((instanceRow as DbRecord).id || ''),
+            requestId,
+            afterState: {
+                source_slug: slug,
+                new_slug: newSlug,
+                new_name: newName,
+            },
+        });
+
+        return {
+            slug: newSlug,
+            name: newName,
+            source_slug: slug,
+            instance_id: String((instanceRow as DbRecord).id || ''),
+            instance_status: 'installed',
+            created_at: now,
+        };
+    }
+
+    async renameSiteTheme(
+        slug: string,
+        storeId: string,
+        input: RenameSiteThemeInput,
+        userId: string,
+        requestId?: string | null
+    ) {
+        // Tenancy step 1: verify ownership
+        await this.verifyStoreOwner(storeId, userId);
+
+        // Tenancy step 2: confirm theme_instance belongs to this store
+        const { data: instance } = await this.db
+            .from('theme_instances')
+            .select('id')
+            .eq('store_id', storeId)
+            .eq('theme_slug', slug)
+            .is('deleted_at', null)
+            .maybeSingle();
+
+        if (!instance) {
+            throw new NotFoundError('Theme not found in your store');
+        }
+
+        const now = new Date().toISOString();
+
+        // Tenancy step 3: verify theme is site-owned (not a shared marketplace theme).
+        // Marketplace themes (owned_by_site_id IS NULL) cannot be renamed via this path —
+        // they are shared catalog rows visible to every tenant. Merchants must duplicate
+        // first to create a site-private copy, then rename the copy.
+        const { data: themeRow } = await this.db
+            .from('themes')
+            .select('owned_by_site_id')
+            .eq('slug', slug)
+            .maybeSingle();
+
+        const ownedBySiteId = (themeRow as DbRecord | null)?.owned_by_site_id as string | null ?? null;
+        if (ownedBySiteId === null || ownedBySiteId !== storeId) {
+            throw new ForbiddenError(
+                'Marketplace themes cannot be renamed. Duplicate the theme first to create a site-owned copy.',
+            );
+        }
+
+        // Tenancy step 4: UPDATE scoped by owned_by_site_id — belt-and-suspenders guard that
+        // ensures the DB-level WHERE clause prevents mutations to shared catalog rows even if
+        // the application-level check above were somehow bypassed.
+        const { error: renameError } = await this.db
+            .from('themes')
+            .update({ name: input.name, updated_at: now })
+            .eq('slug', slug)
+            .eq('owned_by_site_id', storeId);
+
+        if (renameError) {
+            throw new Error(`Theme rename failed: ${renameError.message}`);
+        }
+
+        const events = new EventExecutionAdapter(this.db);
+        await events.emitAuditEvent({
+            storeId,
+            actorId: userId,
+            action: 'theme.rename',
+            resourceType: 'theme',
+            resourceId: slug,
+            requestId,
+            afterState: {
+                slug,
+                name: input.name,
+            },
+        });
+
+        return { slug, name: input.name };
+    }
+
+    async archiveSiteTheme(
+        slug: string,
+        storeId: string,
+        input: ArchiveSiteThemeInput,
+        userId: string,
+        requestId?: string | null
+    ) {
+        // Tenancy step 1: verify ownership
+        await this.verifyStoreOwner(storeId, userId);
+
+        // Tenancy step 2: load site to check currently published theme (scoped by store_id)
+        const { data: siteData } = await this.db
+            .from('sites')
+            .select('theme_id')
+            .eq('id', storeId)
+            .maybeSingle();
+
+        const currentThemeId = (siteData as DbRecord | null)?.theme_id as string | null ?? null;
+
+        // SAFETY: block archive if this is the currently-published theme
+        if (currentThemeId === slug) {
+            throw new ConflictError('THEME_CURRENTLY_PUBLISHED: Cannot archive the currently published theme');
+        }
+
+        // Tenancy step 3: confirm theme_instance belongs to this store
+        const { data: instance } = await this.db
+            .from('theme_instances')
+            .select('id, instance_status')
+            .eq('store_id', storeId)
+            .eq('theme_slug', slug)
+            .is('deleted_at', null)
+            .maybeSingle();
+
+        if (!instance) {
+            throw new NotFoundError('Theme not found in your store');
+        }
+
+        const now = new Date().toISOString();
+
+        // Tenancy step 4: update instance_status to 'archived' scoped by store_id AND id
+        const { error: archiveError } = await this.db
+            .from('theme_instances')
+            .update({ instance_status: 'archived', updated_at: now, updated_by: userId })
+            .eq('store_id', storeId)
+            .eq('id', String((instance as DbRecord).id));
+
+        if (archiveError) {
+            throw new Error(`Theme archive failed: ${archiveError.message}`);
+        }
+
+        const events = new EventExecutionAdapter(this.db);
+        await events.emitAuditEvent({
+            storeId,
+            actorId: userId,
+            action: 'theme.archive',
+            resourceType: 'theme_instance',
+            resourceId: String((instance as DbRecord).id),
+            requestId,
+            afterState: { slug, instance_status: 'archived' },
+        });
+
+        return { slug, archived: true };
+    }
+
+    async deleteUnpublishedSiteTheme(
+        slug: string,
+        storeId: string,
+        userId: string,
+        requestId?: string | null
+    ) {
+        // Tenancy step 1: verify ownership
+        await this.verifyStoreOwner(storeId, userId);
+
+        // Tenancy step 2: load site to check currently published theme (scoped by store_id)
+        const { data: siteData } = await this.db
+            .from('sites')
+            .select('theme_id')
+            .eq('id', storeId)
+            .maybeSingle();
+
+        const currentThemeId = (siteData as DbRecord | null)?.theme_id as string | null ?? null;
+
+        // SAFETY: block delete of the currently-published theme (hard guard)
+        if (currentThemeId === slug) {
+            throw new ConflictError('CANNOT_DELETE_PUBLISHED_THEME: Cannot delete the currently published theme');
+        }
+
+        // Also check theme_releases for any is_current=true release scoped to this store
+        const { data: currentRelease } = await this.db
+            .from('theme_releases')
+            .select('id')
+            .eq('store_id', storeId)
+            .eq('theme_id', slug)
+            .eq('is_current', true)
+            .maybeSingle();
+
+        if (currentRelease) {
+            throw new ConflictError('CANNOT_DELETE_PUBLISHED_THEME: Cannot delete the currently published theme');
+        }
+
+        // Tenancy step 3: confirm theme_instance belongs to this store
+        const { data: instance } = await this.db
+            .from('theme_instances')
+            .select('id')
+            .eq('store_id', storeId)
+            .eq('theme_slug', slug)
+            .is('deleted_at', null)
+            .maybeSingle();
+
+        if (!instance) {
+            throw new NotFoundError('Theme not found in your store');
+        }
+
+        const now = new Date().toISOString();
+
+        // Tenancy step 4: soft-delete — set deleted_at + instance_status='deleted', scoped by store_id AND id
+        const { error: deleteError } = await this.db
+            .from('theme_instances')
+            .update({
+                deleted_at: now,
+                instance_status: 'deleted',
+                updated_at: now,
+                updated_by: userId,
+            })
+            .eq('store_id', storeId)
+            .eq('id', String((instance as DbRecord).id));
+
+        if (deleteError) {
+            throw new Error(`Theme delete failed: ${deleteError.message}`);
+        }
+
+        const events = new EventExecutionAdapter(this.db);
+        await events.emitAuditEvent({
+            storeId,
+            actorId: userId,
+            action: 'theme.delete',
+            resourceType: 'theme_instance',
+            resourceId: String((instance as DbRecord).id),
+            requestId,
+            afterState: { slug, deleted_at: now },
+        });
+
+        return { slug, deleted: true };
     }
 }

@@ -13,9 +13,15 @@ import {
 } from '../lib/marketplace-review-records';
 import { mountThemeMarketplaceAuxiliaryRoutes } from '../lib/theme-marketplace-auxiliary-routes';
 import {
+    ArchiveSiteThemeSchema,
+    CreateSiteThemeSchema,
+    DeleteUnpublishedThemeQuerySchema,
+    DuplicateSiteThemeSchema,
     InstallThemeSchema,
+    ListSiteThemesQuerySchema,
     PreviewTokenSchema,
     PublishThemeSchema,
+    RenameSiteThemeSchema,
     RollbackThemeReleaseSchema,
     SaveThemeDraftSchema,
     ThemePurchaseOrderSchema,
@@ -27,9 +33,13 @@ import {
     ThemeStoreQuerySchema,
     UploadThemePackageSchema,
     ValidateThemeDocumentSchema,
+    type ArchiveSiteThemeInput,
+    type CreateSiteThemeInput,
+    type DuplicateSiteThemeInput,
     type InstallThemeInput,
     type PreviewTokenInput,
     type PublishThemeInput,
+    type RenameSiteThemeInput,
     type RollbackThemeReleaseInput,
     type SaveThemeDraftInput,
     type ThemePurchaseOrderInput,
@@ -41,12 +51,22 @@ import {
     type UploadThemePackageInput,
     type ValidateThemeDocumentInput,
 } from '../schemas/theme.schema';
+import { applyStorePlanTierDefaults, type BillingPlanCatalogRecord } from '@letbuyy/billing-core';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { SchemaRegistryExecutionAdapter } from '../execution/schema-registry-execution.adapter';
 import { ThemeExecutionAdapter } from '../execution/theme-execution.adapter';
 import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
 
 const router = new Hono<{ Bindings: Env }>();
+
+// Phase Q — library routes authMiddleware registered FIRST (before /:slug/* catch-all
+// middleware registrations) to prevent any route-shadowing ambiguity.
+router.use('/library', authMiddleware);
+router.use('/library/*', authMiddleware);
+router.use('/:slug/duplicate', authMiddleware);
+router.use('/:slug/rename', authMiddleware);
+router.use('/:slug/archive', authMiddleware);
+router.use('/:slug/unpublished', authMiddleware);
 
 router.use('/', optionalAuth);
 router.use('/packages/upload', authMiddleware);
@@ -280,6 +300,73 @@ async function requireCustomUser(c: Context<{ Bindings: Env }>): Promise<CustomU
     }
 
     return customUser;
+}
+
+// ─── Phase Q: Theme library plan-limit helper ─────────────────────────────────
+// Follows the identical pattern as resolveStoreStaffLimit in employee.ts:
+// subscription → plan → applyStorePlanTierDefaults → read limits.themes.
+// null limit = unlimited (Enterprise).
+interface StoreThemeLimit {
+    limit: number | null;
+    plan_name: string;
+}
+
+async function resolveStoreThemeLimit(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    storeId: string,
+): Promise<StoreThemeLimit> {
+    const { data: site } = await db
+        .from('sites')
+        .select('site_type')
+        .eq('id', storeId)
+        .maybeSingle();
+    const siteType = typeof site?.site_type === 'string' && site.site_type ? site.site_type : 'store';
+
+    const { data: sub } = await db
+        .from('subscriptions')
+        .select('plan')
+        .eq('store_id', storeId)
+        .in('status', ['active', 'past_due', 'failed'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+    const slug = typeof sub?.plan === 'string' && sub.plan ? sub.plan : 'free';
+
+    const { data: planRow } = await db
+        .from('plans')
+        .select('*')
+        .eq('site_type', siteType)
+        .eq('slug', slug)
+        .eq('is_active', true)
+        .maybeSingle();
+
+    const plan = applyStorePlanTierDefaults(
+        (planRow as BillingPlanCatalogRecord) ||
+            ({ slug, site_type: siteType, name: slug } as unknown as BillingPlanCatalogRecord),
+    );
+
+    const rawThemeLimit = (plan.limits as Record<string, unknown> | null | undefined)?.themes;
+    const themeLimit = rawThemeLimit === null || rawThemeLimit === undefined
+        ? null
+        : Number(rawThemeLimit);
+
+    return {
+        limit: Number.isFinite(themeLimit) ? themeLimit : null,
+        plan_name: plan.name || slug,
+    };
+}
+
+async function countInstalledSiteThemes(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    storeId: string,
+): Promise<number> {
+    const { count } = await db
+        .from('theme_instances')
+        .select('id', { count: 'exact', head: true })
+        .eq('store_id', storeId)
+        .not('instance_status', 'in', '(archived,deleted)')
+        .is('deleted_at', null);
+    return count || 0;
 }
 
 async function emitThemeSubmittedEvent(
@@ -987,6 +1074,250 @@ router.post('/:slug/refunds', validate('json', ThemeRefundRequestSchema), async 
     if (error || !data) return c.json(dbErrorBody(), 500);
     return c.json(success(data), 201);
 });
+
+// ─── Phase Q: Theme Library Management Routes ────────────────────────────────
+// All six routes are registered BEFORE the GET /:slug catch-all to prevent
+// route shadowing. All are authMiddleware-protected (see top of file).
+// Tenancy law: site resolved from authenticated merchant context only;
+// store_id from body/query is verified via adapter.verifyStoreOwner.
+
+// GET /themes/library?store_id= — List themes installed on a site
+router.get('/library', async (c) => {
+    const auth = c.get('auth');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const query = ListSiteThemesQuerySchema.safeParse({ store_id: c.req.query('store_id') });
+    if (!query.success) {
+        return c.json({ error: { code: 'VALIDATION_ERROR', message: 'store_id is required and must be a valid UUID', issues: query.error.issues } }, 400);
+    }
+
+    const service = new ThemeExecutionAdapter(db);
+    try {
+        const result = await service.listSiteThemes(query.data.store_id, customUser.id);
+        return c.json(success(result));
+    } catch (err: unknown) {
+        if ((err as { name?: string })?.name === 'ForbiddenError') {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Store not found or not owned by this user' } }, 403);
+        }
+        throw err;
+    }
+});
+
+// POST /themes/library/create — Create a blank site-owned theme
+router.post('/library/create', validate('json', CreateSiteThemeSchema), async (c) => {
+    const auth = c.get('auth');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const body = c.get('validatedBody') as CreateSiteThemeInput;
+    const service = new ThemeExecutionAdapter(db);
+
+    // Ownership check FIRST — prevents leaking plan/billing details of a foreign store
+    // to any authenticated merchant who submits a cross-tenant store_id.
+    try {
+        await service.verifyStoreOwner(body.store_id, customUser.id);
+    } catch (err: unknown) {
+        if ((err as { name?: string })?.name === 'ForbiddenError') {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Store not found or not owned by this user' } }, 403);
+        }
+        throw err;
+    }
+
+    // Plan limit check (server-authoritative; never trust client counts).
+    // Runs after ownership is confirmed so billing info is only visible to the owner.
+    const { limit, plan_name } = await resolveStoreThemeLimit(db, body.store_id);
+    if (limit !== null) {
+        const used = await countInstalledSiteThemes(db, body.store_id);
+        if (used >= limit) {
+            return c.json({
+                error: {
+                    code: 'THEME_LIMIT_REACHED',
+                    message: `Your ${plan_name} plan allows up to ${limit} theme(s). Upgrade to add more.`,
+                    details: { limit, used, plan_name },
+                },
+            }, 409);
+        }
+    }
+
+    try {
+        const result = await service.createSiteTheme(body.store_id, body, customUser.id, getRequestId(c));
+        return c.json(success(result), 201);
+    } catch (err: unknown) {
+        if ((err as { name?: string })?.name === 'ForbiddenError') {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Store not found or not owned by this user' } }, 403);
+        }
+        throw err;
+    }
+});
+
+// POST /themes/:slug/duplicate — Duplicate an installed theme for a site
+// Registered BEFORE GET /:slug to prevent route shadowing.
+router.post('/:slug/duplicate', validate('json', DuplicateSiteThemeSchema), async (c) => {
+    const auth = c.get('auth');
+    const slug = c.req.param('slug');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const body = c.get('validatedBody') as DuplicateSiteThemeInput;
+    const service = new ThemeExecutionAdapter(db);
+
+    // Ownership check FIRST — prevents leaking plan/billing details of a foreign store
+    // to any authenticated merchant who submits a cross-tenant store_id.
+    try {
+        await service.verifyStoreOwner(body.store_id, customUser.id);
+    } catch (err: unknown) {
+        if ((err as { name?: string })?.name === 'ForbiddenError') {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Store not found or not owned by this user' } }, 403);
+        }
+        throw err;
+    }
+
+    // Plan limit check — runs after ownership is confirmed so billing info is
+    // only visible to the store owner, not to cross-tenant callers.
+    const { limit, plan_name } = await resolveStoreThemeLimit(db, body.store_id);
+    if (limit !== null) {
+        const used = await countInstalledSiteThemes(db, body.store_id);
+        if (used >= limit) {
+            return c.json({
+                error: {
+                    code: 'THEME_LIMIT_REACHED',
+                    message: `Your ${plan_name} plan allows up to ${limit} theme(s). Upgrade to add more.`,
+                    details: { limit, used, plan_name },
+                },
+            }, 409);
+        }
+    }
+
+    try {
+        const result = await service.duplicateSiteTheme(slug, body.store_id, body, customUser.id, getRequestId(c));
+        return c.json(success(result), 201);
+    } catch (err: unknown) {
+        const name = (err as { name?: string })?.name;
+        if (name === 'ForbiddenError') {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Store not found or not owned by this user' } }, 403);
+        }
+        if (name === 'NotFoundError') {
+            return c.json({ error: { code: 'NOT_FOUND', message: 'Theme not found in your store' } }, 404);
+        }
+        throw err;
+    }
+});
+
+// PATCH /themes/:slug/rename — Rename a site theme
+// Registered BEFORE GET /:slug to prevent route shadowing.
+router.patch('/:slug/rename', validate('json', RenameSiteThemeSchema), async (c) => {
+    const auth = c.get('auth');
+    const slug = c.req.param('slug');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const body = c.get('validatedBody') as RenameSiteThemeInput;
+    const service = new ThemeExecutionAdapter(db);
+    try {
+        const result = await service.renameSiteTheme(slug, body.store_id, body, customUser.id, getRequestId(c));
+        return c.json(success(result));
+    } catch (err: unknown) {
+        const name = (err as { name?: string })?.name;
+        if (name === 'ForbiddenError') {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Store not found or not owned by this user' } }, 403);
+        }
+        if (name === 'NotFoundError') {
+            return c.json({ error: { code: 'NOT_FOUND', message: 'Theme not found in your store' } }, 404);
+        }
+        throw err;
+    }
+});
+
+// POST /themes/:slug/archive — Archive an unpublished theme
+// Registered BEFORE GET /:slug to prevent route shadowing.
+router.post('/:slug/archive', validate('json', ArchiveSiteThemeSchema), async (c) => {
+    const auth = c.get('auth');
+    const slug = c.req.param('slug');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const body = c.get('validatedBody') as ArchiveSiteThemeInput;
+    const service = new ThemeExecutionAdapter(db);
+    try {
+        const result = await service.archiveSiteTheme(slug, body.store_id, body, customUser.id, getRequestId(c));
+        return c.json(success(result));
+    } catch (err: unknown) {
+        const name = (err as { name?: string })?.name;
+        if (name === 'ForbiddenError') {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Store not found or not owned by this user' } }, 403);
+        }
+        if (name === 'NotFoundError') {
+            return c.json({ error: { code: 'NOT_FOUND', message: 'Theme not found in your store' } }, 404);
+        }
+        if (name === 'ConflictError') {
+            return c.json({
+                error: {
+                    code: 'THEME_CURRENTLY_PUBLISHED',
+                    message: 'Cannot archive the currently published theme. Publish another theme first.',
+                },
+            }, 409);
+        }
+        throw err;
+    }
+});
+
+// DELETE /themes/:slug/unpublished?store_id= — Delete an unpublished site theme
+// SAFETY: blocked if the theme is currently published. Registered BEFORE GET /:slug.
+router.delete('/:slug/unpublished', async (c) => {
+    const auth = c.get('auth');
+    const slug = c.req.param('slug');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const query = DeleteUnpublishedThemeQuerySchema.safeParse({ store_id: c.req.query('store_id') });
+    if (!query.success) {
+        return c.json({ error: { code: 'VALIDATION_ERROR', message: 'store_id is required and must be a valid UUID', issues: query.error.issues } }, 400);
+    }
+
+    const service = new ThemeExecutionAdapter(db);
+    try {
+        const result = await service.deleteUnpublishedSiteTheme(slug, query.data.store_id, customUser.id, getRequestId(c));
+        return c.json(success(result));
+    } catch (err: unknown) {
+        const name = (err as { name?: string })?.name;
+        if (name === 'ForbiddenError') {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Store not found or not owned by this user' } }, 403);
+        }
+        if (name === 'NotFoundError') {
+            return c.json({ error: { code: 'NOT_FOUND', message: 'Theme not found in your store' } }, 404);
+        }
+        if (name === 'ConflictError') {
+            return c.json({
+                error: {
+                    code: 'CANNOT_DELETE_PUBLISHED_THEME',
+                    message: 'Cannot delete the currently published theme. Publish another theme first.',
+                },
+            }, 409);
+        }
+        throw err;
+    }
+});
+
+// ─── End Phase Q routes ───────────────────────────────────────────────────────
 
 // POST /themes/:slug/validate — Validate a ThemeDocument V2 + optional Liquid bundle (no DB writes)
 // Auth: ES256 merchant session -> resolveCustomUser -> verifyStoreOwner inside adapter.

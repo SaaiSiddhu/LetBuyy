@@ -24,6 +24,7 @@ import { Button, Input,
     useToast,
 } from '@letbuyy/ui'
 import { getStorefrontStoreUrl, getThemeMarketplaceUrl } from '@/lib/public-urls'
+import { ThemeLibraryWorkspace } from '@/components/theme-library/ThemeLibraryWorkspace'
 
 interface ThemeConfig {
     colors?: {
@@ -123,6 +124,7 @@ export default function ThemesPage() {
     const store = params.store as string
     const { notify } = useToast()
     const [versionOpen, setVersionOpen] = useState(false)
+    const [libraryTab, setLibraryTab] = useState<'library' | 'discover'>('library')
 
     const [loading, setLoading] = useState(true)
     const [themes, setThemes] = useState<ThemeRecord[]>([])
@@ -450,7 +452,66 @@ export default function ThemesPage() {
                 </section>
             )}
 
-            <section className="themes-discover-section" aria-label="Discover themes">
+            {/* ── Tab strip: My themes / Discover ─────────────────────────── */}
+            <div
+                role="tablist"
+                aria-label="Theme workspace"
+                className="flex items-center gap-0 border-b border-[var(--lb-color-border)]"
+            >
+                <Button
+                    unstyled
+                    type="button"
+                    role="tab"
+                    aria-selected={libraryTab === 'library'}
+                    aria-controls="themes-library-panel"
+                    id="themes-library-tab"
+                    className={[
+                        'inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] border-b-2 px-[var(--lb-space-4)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-none focus-visible:outline focus-visible:outline-[var(--lb-color-focus-ring)]',
+                        libraryTab === 'library'
+                            ? 'border-[var(--lb-color-primary)] text-[color:var(--lb-color-primary)]'
+                            : 'border-transparent text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)]',
+                    ].join(' ')}
+                    onClick={() => setLibraryTab('library')}
+                >
+                    My themes
+                </Button>
+                <Button
+                    unstyled
+                    type="button"
+                    role="tab"
+                    aria-selected={libraryTab === 'discover'}
+                    aria-controls="themes-discover-panel"
+                    id="themes-discover-tab"
+                    className={[
+                        'inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] border-b-2 px-[var(--lb-space-4)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-none focus-visible:outline focus-visible:outline-[var(--lb-color-focus-ring)]',
+                        libraryTab === 'discover'
+                            ? 'border-[var(--lb-color-primary)] text-[color:var(--lb-color-primary)]'
+                            : 'border-transparent text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)]',
+                    ].join(' ')}
+                    onClick={() => setLibraryTab('discover')}
+                >
+                    Discover themes
+                </Button>
+            </div>
+
+            {/* ── My themes panel ──────────────────────────────────────────── */}
+            <div
+                id="themes-library-panel"
+                role="tabpanel"
+                aria-labelledby="themes-library-tab"
+                hidden={libraryTab !== 'library'}
+            >
+                <ThemeLibraryWorkspace store={store} storeId={storeId} />
+            </div>
+
+            <section
+                id="themes-discover-panel"
+                role="tabpanel"
+                aria-labelledby="themes-discover-tab"
+                className="themes-discover-section"
+                aria-label="Discover themes"
+                hidden={libraryTab !== 'discover'}
+            >
                 <div className="themes-section-header">
                     <h2>Discover themes</h2>
                     <div className="themes-section-actions">
