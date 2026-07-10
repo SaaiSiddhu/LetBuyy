@@ -1,8 +1,8 @@
 # LetBuyy Theme Editor — Shell Architecture Guide
 
 **Program:** LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor (M→AE)
-**Last updated:** 2026-07-10 (post Phase R)
-**Covers:** editor header, section/block tree, live preview, settings panel, undo/redo, autosave, draft CAS
+**Last updated:** 2026-07-10 (post Phase S)
+**Covers:** editor header, section/block tree, live preview inspector, settings panel, undo/redo, autosave, draft CAS
 
 ---
 
@@ -19,11 +19,12 @@ It is a **FOREIGN WIP FILE** — it carries prior user modifications. All phase-
 Supporting components live under:
 ```
 apps/merchant-control-plane/src/components/theme-editor/
-  CenterPanel.tsx         — preview iframe and postMessage bridge (CLEAN)
-  ConflictDialog.tsx      — draft CAS conflict resolution dialog (Phase R, CLEAN)
-  ExperiencePicker.tsx    — experience list and apply UI (CLEAN)
-  SchemaFormRenderer.tsx  — generic settings form renderer (CLEAN)
-  SectionTreePanel.tsx    — ARIA section tree with drag-to-reorder (Phase R, CLEAN)
+  CenterPanel.tsx              — preview iframe, postMessage bridge, and inspector overlay host (CLEAN)
+  ConflictDialog.tsx           — draft CAS conflict resolution dialog (Phase R, CLEAN)
+  ExperiencePicker.tsx         — experience list and apply UI (CLEAN)
+  PreviewInspectorOverlay.tsx  — hover chip overlay for the live preview (Phase S, CLEAN)
+  SchemaFormRenderer.tsx       — generic settings form renderer (CLEAN)
+  SectionTreePanel.tsx         — ARIA section tree with drag-to-reorder (Phase R, CLEAN)
 ```
 
 All CSS is in `apps/merchant-control-plane/src/app/globals.css` (FOREIGN WIP FILE). The editor uses the `theme-os-*` token system throughout — no raw px or hex values.
@@ -132,19 +133,49 @@ URL: `{storefrontBaseUrl}/preview?subdomain={store}&editor=1&viewport={device}&t
 
 Keyed on `previewUrl` — a new iframe is mounted only when the URL changes. Device CSS classes: `te-preview-frame--desktop` / `te-preview-frame--tablet` / `te-preview-frame--mobile`.
 
-### 5.2 PostMessage Bridge
+### 5.2 PostMessage Bridge (Phase S)
 
-**Outbound** (editor → storefront): after `iframeLoadedRef.current === true`, both `EDITOR_LEGACY_SELECTION_MESSAGE` (`'LETBUYY_THEME_EDITOR_SELECTION'`) and `EDITOR_SELECTION_MESSAGE` (`'letbuyy:theme-editor:section-selected'`) are posted with `{ selectedSectionId }`. The `iframeLoadedRef` guard prevents posting to an unloaded frame.
+The bridge is a cross-origin protocol between the editor (`http://localhost:9001` dev / `https://admin.letbuyy.com` prod) and the preview iframe (`http://localhost:9000` dev / `https://store.letbuyy.com` prod). All constants are defined in `packages/theme-engine/src/editor-bridge-protocol.ts`.
 
-**Inbound** (storefront → editor): `EDITOR_SECTION_SELECT_MESSAGE` (`'letbuyy:theme-editor:section-select'`) from the storefront drives `onSelectSection` in the editor.
+**Outbound** (editor → preview): after `iframeLoadedRef.current === true`, three messages are posted to `targetOrigin = previewOrigin` (derived from `new URL(previewUrl).origin`):
+- `EDITOR_LEGACY_SELECTION_MESSAGE` (`'LETBUYY_THEME_EDITOR_SELECTION'`) — backward compat; bridge translates this without scrolling (double-scroll fix, Phase S).
+- `EDITOR_SELECTION_MESSAGE` (`'letbuyy:theme-editor:section-selected'`) — modern name; picked up directly by `EditorPreviewSectionFrame` listeners.
+- `EDITOR_SCROLL_MESSAGE` (`'letbuyy:theme-editor:section-scroll'`) — explicit scroll intent; triggers `scrollIntoView` + flash in the bridge.
 
-Constants: `@letbuyy/theme-engine/editor-bridge-protocol` (`editor-bridge-protocol.ts`).
+`previewOrigin` is `null` when `previewUrl` is empty. No message is ever sent when `previewOrigin` is null. No `'*'` wildcard is used.
 
-### 5.3 Device Switcher
+**Inbound** (preview → editor) — `CenterPanel.handleMessage` with origin guard `if (!previewOrigin || event.origin !== previewOrigin) return`:
+
+| Message type | Action |
+|---|---|
+| `EDITOR_SECTION_SELECT_MESSAGE` | Calls `onSelectSection(sectionId)` — user clicked a section in preview |
+| `INSPECTOR_SECTION_HOVERED` | Sets `hoveredSection` state → `PreviewInspectorOverlay` shows chip; calls `onHoverSection?.(sectionId)` |
+| `INSPECTOR_HOVER_CLEARED` | Clears `hoveredSection` state; calls `onHoverSection?.(null)` |
+| `INSPECTOR_ADD_SECTION_INTENT` | Validates `adjacentSectionId` + `position` then calls `onAddSectionIntent?.(adjacentSectionId, position)` |
+
+**Preview → editor send rule:** `EditorPreviewSectionFrame` reads `NEXT_PUBLIC_ADMIN_URL` via `getEditorOrigin()` for all sends. Sends are skipped (never `'*'`) when `getEditorOrigin()` returns empty string.
+
+**Same-window dispatches:** The bridge (`StorefrontPreviewBridge`) re-posts `EDITOR_SELECTION_MESSAGE` and `INSPECTOR_SECTION_SCROLLED_TO` to `window.location.origin` only. `EditorPreviewSectionFrame` accepts these via `if (event.origin !== window.location.origin) return`.
+
+**No-echo self-loop guard (preserved from Phase C):** The bridge translation branch matches only `LEGACY_SELECTION_MESSAGE || SCROLL_MESSAGE` — never `EDITOR_SELECTION_MESSAGE`. `INSPECTOR_SECTION_SCROLLED_TO` is excluded from the bridge's cross-origin handler by the origin guard (same-window dispatch origin ≠ editor origin).
+
+### 5.3 PreviewInspectorOverlay (Phase S)
+
+Source: `apps/merchant-control-plane/src/components/theme-editor/PreviewInspectorOverlay.tsx`
+
+Rendered inside `.te-preview-body` by `CenterPanel`. Returns `null` when `hoveredSection` is null. When a section is hovered:
+- Renders `.te-inspector-overlay` (`position: absolute; inset: 0; pointer-events: none; aria-hidden="true"`).
+- Inside: `.te-inspector-hover-chip` with `MaterialIcon name="touch_app"` + `formatSectionLabel(sectionType)` text.
+- The chip uses `--lb-*` tokens for colour, spacing, and radius (no raw hex or px).
+- Animation: `te-inspector-chip-in` (0.12s ease; `prefers-reduced-motion: reduce` → `animation: none`).
+
+This component contains no postMessage logic. All messaging is owned by `CenterPanel`. The overlay is purely visual — keyboard selection is handled by the section tree panel.
+
+### 5.4 Device Switcher
 
 Three buttons (`Monitor`, `Tablet`, `Smartphone`) in a `role="group" aria-label="Preview device"` container. Each button has `aria-pressed`. CSS: `.theme-os-device-toggle__btn--active` on the active button.
 
-### 5.4 States
+### 5.5 States
 
 - **Syncing overlay**: shown when `isPreviewRefreshing` — spinner with "Syncing" label overlaid on the iframe.
 - **Preview error overlay**: shown when `previewError` — error message with "Try again" button wired to `syncPreviewDraft()`.
@@ -311,7 +342,24 @@ All editor CSS uses the `theme-os-*` naming convention in `apps/merchant-control
 | `.theme-os-state` | Loading/error state container |
 | `.theme-os-muted` | Muted/empty state text |
 
-CenterPanel and SchemaFormRenderer use `te-*` classes (also in `globals.css`).
+CenterPanel, SchemaFormRenderer, and PreviewInspectorOverlay use `te-*` classes (also in `globals.css`).
+
+**Phase S inspector classes (merchant-control-plane):**
+
+| Class | Purpose |
+|---|---|
+| `.te-inspector-overlay` | `position: absolute; inset: 0; pointer-events: none; z-index: 10` — sits above iframe without intercepting clicks |
+| `.te-inspector-hover-chip` | Hover label chip; `--lb-color-primary` background; `--lb-radius-full` border-radius; `te-inspector-chip-in` animation |
+| `.te-inspector-hover-chip__label` | Chip text, `line-height: 1` |
+
+**Phase S section-frame classes (storefront-runtime):**
+
+| Class | Purpose |
+|---|---|
+| `.storefront-editor-section-frame--flash` | Transient 700 ms `sf-section-frame-flash` animation on scroll-to; `prefers-reduced-motion: reduce` → `animation: none` |
+| `.storefront-editor-section-insert` | Base insert-button styles (hidden by default, revealed on section hover/focus/selection) |
+| `.storefront-editor-section-insert--before` | Positioned above the section |
+| `.storefront-editor-section-insert--after` | Positioned below the section |
 
 ---
 
@@ -358,7 +406,8 @@ type EditorSelection =
 
 | Risk ID | Severity | Description | Target |
 |---|---|---|---|
-| RISK-DUAL-N01 | MEDIUM | Editor save must reconstruct `section_definitions`/`block_definitions` from `baseConfig`, not `editorState` | Enforced mechanically by `buildDraftConfig`; must be preserved in Phase S+ |
+| RISK-DUAL-N01 | MEDIUM | Editor save must reconstruct `section_definitions`/`block_definitions` from `baseConfig`, not `editorState` | Enforced mechanically by `buildDraftConfig`; Phase S preview sends intent only (RISK preserved) |
 | RISK-SEC-P01 | MEDIUM | `theme_editor_drafts` RLS checks `user_id` only, not `custom_user_id` | No client-side realtime subscription may be added until fixed |
 | RISK-PERF-N01 | LOW | Large document serialization on each draft save | `buildDraftConfig` sends only mutable state; Liquid source comes from `baseConfig` not re-serialized |
 | RISK-SEC-002 | INFO | AI hooks are stubs; must not be presented as connected | Phase AC |
+| RISK-R01 | LOW | Local type mirrors in `page.tsx` and `SectionTreePanel.tsx` will drift | Phase T or first substantive `page.tsx` touch |

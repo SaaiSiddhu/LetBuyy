@@ -553,6 +553,89 @@ html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas .
   transform: translateY(0);
 }
 
+/* ── Phase S Inspector: flash animation ───────────────────────────────────── */
+/* Applied transiently by EditorPreviewSectionFrame when the bridge dispatches  */
+/* INSPECTOR_SECTION_SCROLLED_TO for this section (editor → scroll → flash).   */
+/* Duration must match FLASH_DURATION_MS in editor-preview-section-frame.tsx.  */
+@keyframes sf-section-frame-flash {
+  0%   {
+    outline-color: rgb(37 99 235);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.35), inset 0 0 0 2px rgba(37, 99, 235, 0.9);
+  }
+  60%  {
+    outline-color: rgba(37, 99, 235, 0.5);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15), inset 0 0 0 1px rgba(37, 99, 235, 0.4);
+  }
+  100% {
+    outline-color: transparent;
+    box-shadow: none;
+  }
+}
+
+.storefront-editor-section-frame--flash {
+  animation: sf-section-frame-flash 700ms ease-out forwards;
+}
+
+/* Honour the user's reduced-motion preference — the 700 ms FLASH_DURATION_MS timeout  */
+/* in editor-preview-section-frame.tsx still fires so the class is removed correctly;   */
+/* the frame just does not animate. (Editor-mode only; end-shoppers never see this.)    */
+@media (prefers-reduced-motion: reduce) {
+  .storefront-editor-section-frame--flash {
+    animation: none;
+  }
+}
+
+/* ── Phase S Inspector: section insert markers ─────────────────────────────── */
+/* Add-section intent buttons rendered at section boundaries.                   */
+/* pointer-enhancement only — tabIndex=-1, not reachable via keyboard Tab.     */
+.storefront-editor-section-insert {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  z-index: 2147483647;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--lb-space-6, 1.5rem);
+  height: var(--lb-space-6, 1.5rem);
+  padding: 0;
+  background: var(--lb-color-interactive, rgb(37 99 235));
+  color: var(--lb-color-text-inverse, rgb(255 255 255));
+  border: 2px solid var(--lb-color-text-inverse, rgb(255 255 255));
+  border-radius: 50%;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 150ms ease, transform 150ms ease;
+  pointer-events: auto;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.storefront-editor-section-insert--before {
+  top: -0.75rem;
+}
+
+.storefront-editor-section-insert--after {
+  bottom: -0.75rem;
+}
+
+/* Show insert markers when the section frame is hovered, focused, or selected */
+.storefront-editor-section-frame:hover .storefront-editor-section-insert,
+.storefront-editor-section-frame:focus-visible .storefront-editor-section-insert,
+.storefront-editor-section-frame--selected .storefront-editor-section-insert {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+.storefront-editor-section-insert:hover,
+.storefront-editor-section-insert:focus-visible {
+  transform: translateX(-50%) scale(1.15);
+  background: var(--lb-color-interactive-hover, rgb(29 78 216));
+  outline: 2px solid var(--lb-color-focus-ring, rgb(147 197 253));
+  outline-offset: 1px;
+}
+
 @media (min-width: 768px) {
   .product-grid-dynamic {
     grid-template-columns: repeat(var(--product-grid-columns, 3), minmax(0, 1fr));

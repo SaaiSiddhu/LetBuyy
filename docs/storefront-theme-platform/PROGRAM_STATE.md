@@ -1,6 +1,6 @@
 # M→AE Program State
 
-**Updated:** 2026-07-10 (post Phase R) · **Branch:** `stepup/main` · **Starting HEAD (program):** `29f87115`
+**Updated:** 2026-07-10 (post Phase S) · **Branch:** `stepup/main` · **Starting HEAD (program):** `29f87115`
 
 ## Scoreboard
 | Phase | Title | Status | Commit |
@@ -11,7 +11,7 @@
 | P | Drafts/revisions/publish/rollback | COMPLETE | _(see phase-p/PHASE_P_REPORT.md)_ |
 | Q | Merchant theme library | COMPLETE | _(see phase-q/PHASE_Q_REPORT.md)_ |
 | R | Visual editor shell | COMPLETE | _(see phase-r/PHASE_R_REPORT.md)_ |
-| S | Live preview inspector | PENDING | — |
+| S | Live preview inspector | COMPLETE | _(see phase-s/PHASE_S_REPORT.md)_ |
 | T | Section groups + nested blocks | PENDING | — |
 | U | Settings control renderer | PENDING | — |
 | V | Template system | PENDING | — |
@@ -32,6 +32,7 @@
 - `THEME_LIQUID_RENDERING_DEFAULT_ENABLED=false` (theme-governance.ts:14). Frozen apps confirmed frozen.
 - Phase Q gates: api-gateway **41/41** (file-scoped, `theme-library-q.test.ts`) · merchant **39/39** (24 Q + 15 pre-existing) · typecheck 32/32 api-gateway tasks + 14/14 merchant turbo tasks. 3 pre-existing failures unchanged.
 - Phase R gates: merchant **65/65** (26 R + 25 Q + 14 pre-existing) · typecheck clean. No gateway, no migration, no new dependencies. 3 pre-existing failures unchanged.
+- Phase S gates: merchant **93/93** (28 S + 26 R + 25 Q + 14 pre-existing) · storefront-runtime **795/795** (+33 inspector-bridge tests) · theme-engine **1048/1048** (+14 protocol tests) · all typechecks clean. No gateway, no migration, no new npm dependencies. 3 pre-existing failures unchanged.
 
 ## Foreign WIP (PRESERVE — never stage)
 - ~360 modified/untracked files from prior user work (apps/identity-platform, marketing-site, merchant-control-plane, services, database, tests/launch/lb*.mjs, next-env.d.ts).
@@ -40,7 +41,7 @@
 - `tenant-tables.registry.ts` drift.
 
 ## Active risks
-See RISK_REGISTER.md: RISK-SEC-001 (theme_purchases wide-open RLS, HIGH, → AE), RISK-SEC-002 (editor AI stub), RISK-GOV-001 (tenant-registry, affects W), RISK-DATA-001 (migrations 186/187/188/189/190), RISK-DUAL-N01 (section_definitions dual-truth, OPEN, mechanically guarded by buildDraftConfig in Phase R; must be preserved in Phase S+), RISK-ARCH-N01 (version gate must be bumped for future schema additions, ongoing), RISK-PERF-N01 (large document size, OPEN, buildDraftConfig mitigates on save path; hard bound deferred to Phase S), RISK-O01 (Nova/Summit distinctness collapses if cta-section removed from bundle, LOW), RISK-O02 (collectionFilter/faqAccordion permanently incompatible until bundle expanded, LOW), RISK-SEC-P01 (theme_editor_drafts RLS checks user_id only, MEDIUM, no realtime subscription added in Phase R; still targeted at security migration before Phase S realtime), RISK-TOCTOU-P01 (publish TOCTOU concurrent window, LOW, ARB-gated), RISK-TOCTOU-P02 (rollback CAS TS-level only, LOW, ARB-gated), RISK-TOCTOU-Q01 (plan-limit count-then-insert non-atomic, MEDIUM, ARB-gated → Phase AB or earlier), RISK-R01 (local type mirrors in page.tsx and SectionTreePanel.tsx will drift, LOW, deferred).
+See RISK_REGISTER.md: RISK-SEC-001 (theme_purchases wide-open RLS, HIGH, → AE), RISK-SEC-002 (editor AI stub), RISK-GOV-001 (tenant-registry, affects W), RISK-DATA-001 (migrations 186/187/188/189/190), RISK-DUAL-N01 (section_definitions dual-truth, OPEN, mechanically guarded by buildDraftConfig; Phase S preview sends intent-only — guard preserved), RISK-ARCH-N01 (version gate must be bumped for future schema additions, ongoing), RISK-PERF-N01 (large document size, OPEN, buildDraftConfig mitigates on save path; hard bound deferred to Phase T), RISK-O01 (Nova/Summit distinctness collapses if cta-section removed from bundle, LOW), RISK-O02 (collectionFilter/faqAccordion permanently incompatible until bundle expanded, LOW), RISK-SEC-P01 (theme_editor_drafts RLS checks user_id only, MEDIUM, no realtime subscription added in Phase S; still targeted at security migration before any realtime), RISK-TOCTOU-P01 (publish TOCTOU concurrent window, LOW, ARB-gated), RISK-TOCTOU-P02 (rollback CAS TS-level only, LOW, ARB-gated), RISK-TOCTOU-Q01 (plan-limit count-then-insert non-atomic, MEDIUM, ARB-gated → Phase AB or earlier), RISK-R01 (local type mirrors in page.tsx and SectionTreePanel.tsx will drift, LOW, deferred to Phase T).
 
 ## Parity snapshot (Phase M matrix)
 COMPLETE 37 · PARTIAL 15 · MISSING 13 · NOT_CONNECTED 4 · STUB 1 (70 capability rows). Editor is the largest gap cluster (shell/inspector/tree/nested-blocks/templates/media/markets/code editor all PARTIAL or MISSING).
@@ -87,6 +88,22 @@ COMPLETE 37 · PARTIAL 15 · MISSING 13 · NOT_CONNECTED 4 · STUB 1 (70 capabil
 - **RISK-PERF-N01:** `buildDraftConfig` mitigates the save-path serialization concern (mutable state only, not Liquid source). Hard bound deferred to Phase S.
 - **8 HIGH/MEDIUM findings fixed in hardening** (ConflictDialog light-dismiss swap, drag multi-step loop, block-selection roving tabindex, drag-over CSS class, action button tabIndex, ChevronDown removal, undo dirty-state, onForce .catch()). 2 LOW findings deferred.
 
+## Phase S deliverables
+- `packages/theme-engine/src/editor-bridge-protocol.ts` (MODIFIED): 4 new `INSPECTOR_*` constants (`INSPECTOR_SECTION_HOVERED`, `INSPECTOR_HOVER_CLEARED`, `INSPECTOR_ADD_SECTION_INTENT`, `INSPECTOR_SECTION_SCROLLED_TO`) with JSDoc documenting same-window-only constraint for `SCROLLED_TO`.
+- `apps/merchant-control-plane/src/components/theme-editor/PreviewInspectorOverlay.tsx` (NEW, 57 lines): pointer-enhancement hover chip; `aria-hidden`; `pointer-events: none`; no messaging; `--lb-*` tokens; `prefers-reduced-motion` guard on chip animation.
+- `apps/merchant-control-plane/src/components/theme-editor/CenterPanel.tsx` (MODIFIED): `previewOrigin` memo; fail-closed receive guard; `hoveredSection` state; optional `onHoverSection` / `onAddSectionIntent` props; 3 new switch cases; `EDITOR_SCROLL_MESSAGE` send; `<PreviewInspectorOverlay>`; clears hover on URL change.
+- `apps/merchant-control-plane/src/app/globals.css` (FOREIGN WIP, CSS addition): `.te-inspector-overlay`, `.te-inspector-hover-chip`, `@keyframes te-inspector-chip-in`, `prefers-reduced-motion` guard — all `--lb-*` tokens.
+- `apps/merchant-control-plane/tests/theme-editor-s.test.mjs` (NEW, 28 tests: 24 Phase S + 4 hardening).
+- `packages/theme-engine/test/editor-bridge-protocol.test.ts` (NEW, 15 tests: constant values, uniqueness, namespace, count).
+- `apps/storefront-runtime/src/app/preview/storefront-preview-bridge.tsx` (MODIFIED): `getEditorOrigin()`; fail-closed guard; READY_MESSAGE suppressed not `'*'`; double-scroll fix (`LEGACY` → `shouldScroll=false`); `INSPECTOR_SECTION_SCROLLED_TO` same-window dispatch after scroll.
+- `apps/storefront-runtime/src/lib/theme-engine/editor-preview-section-frame.tsx` (MODIFIED): `getEditorOrigin()`; same-window receive guard; `notifyHover` sends; `sendAddIntent`; `triggerFlash` with reflow; insert-before/after buttons; `flashTimerRef` unmount cleanup.
+- `apps/storefront-runtime/src/app/globals.css` (FOREIGN WIP, CSS addition): `@keyframes sf-section-frame-flash`, `.storefront-editor-section-frame--flash`, `prefers-reduced-motion` guard, `.storefront-editor-section-insert` family — `--lb-*` tokens.
+- `tests/theme-engine/inspector-bridge.test.mjs` (NEW, 33 tests: 29 Phase S + 4 hardening).
+- **8 findings resolved in hardening** (HIGH: `INSPECTOR_ADD_SECTION_INTENT` unhandled; 2×MEDIUM: fail-open guard + double-scroll; 5×LOW: READY wildcard, raw px/hex, reduced-motion guard, token compliance). No deferred findings.
+- **RISK-DUAL-N01**: preserved — `sendAddIntent` sends intent only (`adjacentSectionId` + `position`); no section object or template mutation from preview.
+- **RISK-SEC-P01**: unchanged — no realtime subscription added. Still targeted before any Phase T+ realtime feature.
+- **RISK-PERF-N01**: hard byte bound still deferred. `buildDraftConfig` mitigation unchanged.
+
 ## Next action
-- **Next phase: S — Live Preview Inspector.** Phase S adds the live-preview inspector: section highlight on hover, click-to-select from the storefront preview, inspector overlay, and (if RLS is patched) potential realtime draft sync. MUST continue to enforce RISK-DUAL-N01 (no `section_definitions` mutation) and MUST address RISK-SEC-P01 before adding any client-side realtime subscription over `theme_editor_drafts`.
-- **Gate entering S:** merchant **65/65** (post Phase R) · api-gateway **479** (438 P + 41 Q) · theme-engine **1034** · all typechecks clean.
+- **Next phase: T — Section Groups and Nested Blocks.** Phase T wires `onAddSectionIntent` in `page.tsx`, adds section-group containers, and implements nested block rendering. MUST preserve RISK-DUAL-N01, MUST NOT add realtime subscriptions until RISK-SEC-P01 resolved, MUST extract shared types (RISK-R01) when touching `page.tsx`.
+- **Gate entering T:** merchant **93/93** · api-gateway **479** · theme-engine **1048** · storefront-runtime **795** · all typechecks clean.

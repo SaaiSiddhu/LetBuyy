@@ -37,7 +37,7 @@ Living register. Each entry: ID · severity · status · evidence · owner/targe
 - **Status:** OPEN · pre-existing (not introduced by Phase P).
 - **Evidence:** `database/supabase/migrations/000_baseline.sql:12618` — `theme_editor_drafts` table; 4 RLS policies (SELECT / INSERT / UPDATE / DELETE) all scoped to `EXISTS(SELECT 1 FROM sites WHERE sites.id = theme_editor_drafts.store_id AND sites.user_id = auth.uid())`. The `custom_user_id` column on `sites` is not checked. Contrast with `theme_instance_drafts_owner_manage` which correctly checks `(sites.user_id = auth.uid() OR sites.custom_user_id = auth.uid())`.
 - **Why it matters:** Merchants who authenticate via `custom_user_id` (the primary identity path in this platform) cannot perform direct client-side reads/writes against `theme_editor_drafts` under their own auth token. Today the gateway bypasses via `service_role` so no live route relies on these RLS policies for protection. But any future client-side subscription or realtime listener would silently fail for `custom_user_id` merchants.
-- **Disposition:** Discovered in Phase P security review. Not patched (pre-existing baseline change; requires careful migration + RLS update). Phase R did not add any client-side realtime subscription over `theme_editor_drafts`, so the risk remains bounded to the gateway service-role path. **Target:** dedicated security migration before Phase S realtime subscriptions are added, or earliest phase that adds client-side `theme_editor_drafts` access. Owner: security / Phase S architect.
+- **Disposition:** Discovered in Phase P security review. Not patched (pre-existing baseline change; requires careful migration + RLS update). Phase R and Phase S both did not add any client-side realtime subscription over `theme_editor_drafts`, so the risk remains bounded to the gateway service-role path. **Target:** dedicated security migration before any realtime subscriptions are added over `theme_editor_drafts`, or earliest phase that adds client-side `theme_editor_drafts` access. Owner: security / Phase T architect.
 
 ### RISK-TOCTOU-P01 — Publish idempotency pre-check has a concurrent-window TOCTOU gap — [LOW]
 - **Status:** OPEN · known residual; ARB-gated.
@@ -81,6 +81,22 @@ Living register. Each entry: ID · severity · status · evidence · owner/targe
 - **Disposition:** Adding the two section definition files to the Urban Kicks / LetBuyy Core bundle in a future bundle-expansion phase would automatically make all collection filter and craft FAQ compositions fully compatible — no changes to Phase O code required. Until then, the advisory diff entries ensure transparency.
 - **Target:** Future bundle expansion phase (beyond AE scope unless marketplace content requires these types).
 
+## Phase S risks
+
+Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) were resolved in the hardening pass before phase close.
+
+**Cleared by Phase S hardening (not registered as ongoing risks):**
+
+| Severity | Finding | Resolution |
+|---|---|---|
+| HIGH | `INSPECTOR_ADD_SECTION_INTENT` unhandled in `CenterPanel.handleMessage` | `case INSPECTOR_ADD_SECTION_INTENT` added with full payload validation |
+| MEDIUM | Bridge receive guard fail-open when `NEXT_PUBLIC_ADMIN_URL` absent | Changed to `!editorOrigin \|\| event.origin !== editorOrigin` — fail-closed |
+| MEDIUM | Double-scroll jank: both `LEGACY_SELECTION_MESSAGE` and `SCROLL_MESSAGE` triggered `shouldScroll=true` | `LEGACY_SELECTION_MESSAGE` now calls `selectSection(id, false)` |
+| LOW | READY_MESSAGE fell back to `'*'` when env var absent | Suppressed (not `'*'`) with `console.warn` |
+| LOW | Inspector chip CSS used raw px/hex | Replaced with `--lb-*` tokens throughout |
+| LOW | Insert-button CSS used raw `rgb()` colors | Replaced with `var(--lb-color-interactive/hover/focus-ring)` |
+| LOW | No `prefers-reduced-motion: reduce` guard on flash animation | Guard added |
+
 ## Phase R risks
 
 ### RISK-R01 — Local type mirrors in `page.tsx` and `SectionTreePanel.tsx` will drift — [LOW]
@@ -89,7 +105,7 @@ Living register. Each entry: ID · severity · status · evidence · owner/targe
 - **Evidence:** `apps/merchant-control-plane/src/components/theme-editor/SectionTreePanel.tsx` lines 38–77 declares `JsonRecord`, `BlockEntry`, `SectionEntry`, `EditorState`, `EditorSelection`, `AvailableSection` as local types. These mirror the identical type declarations in `apps/merchant-control-plane/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx`. The comment in `SectionTreePanel.tsx` acknowledges: "avoids cross-file coupling." Since both files use the types at a prop boundary (page passes props typed against page-local types; panel accepts props typed against panel-local types), TypeScript structurally checks them and a shape change in `page.tsx` that is not mirrored in `SectionTreePanel.tsx` will silently typecheck because the structural shapes happen to remain compatible — until they diverge.
 - **Why it matters:** If a future phase adds a new required field to `SectionEntry` in `page.tsx` (e.g. `publishedAt: string`), the prop passed to `SectionTreePanel` will structurally satisfy the panel's narrower local `SectionEntry` type. The missing field won't cause a typecheck error; it will only fail at runtime when `SectionTreePanel` destructures the field it doesn't know about.
 - **Disposition:** Extract `SectionEntry`, `BlockEntry`, `EditorState`, `EditorSelection`, `AvailableSection` to `apps/merchant-control-plane/src/lib/theme-editor-types.ts` and import from both files. Deferred from Phase R (extracting to a new shared module requires additional touch of `page.tsx`, a foreign WIP file, to remove the duplicate declarations). Candidate for Phase S or a standalone cleanup task when `page.tsx` is next touched for substantive changes.
-- **Target:** Phase S or first phase that adds a new field to any of the five shared types.
+- **Target:** Phase T (section groups, which must touch `page.tsx` to wire `onAddSectionIntent`) or first phase that adds a new field to any of the five shared types.
 
 ## Phase N risks
 
@@ -100,8 +116,9 @@ Living register. Each entry: ID · severity · status · evidence · owner/targe
 - **Why it matters:** A divergent `section_definitions` would mean `fromThemeDocumentV2` produces a bundle with different Liquid source than what the theme package was published with — silently different rendering behaviour for the same theme version.
 - **Mechanical backstop:** `fromThemeDocumentV2` calls `parseLiquidThemePackageBundle(raw)` as its last step. If `section_definitions` has been mutated so that template section types no longer match, the `superRefine` on the bundle will reject the document before it reaches persistence.
 - **Phase R mitigation:** `buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)` in `page.tsx` always merges the mutable `editorState` (template/settings) over `baseConfig`. The immutable `section_definitions` and `block_definitions` come from `baseConfig` (loaded from the API at editor open), never from `editorState`. No Phase R code path writes these fields from editor state. The `EDITOR_GUIDE.md` section "8.5 baseConfig and RISK-DUAL-N01" documents this constraint explicitly.
-- **Disposition:** Phase R constraint is mechanically enforced. Phase S (live preview inspector) and all subsequent editor phases MUST NOT add a mutation path for `section_definitions` or `block_definitions`. Any future feature that needs to update Liquid source must go through the theme package publish pipeline, not the draft save path.
-- **Target:** ONGOING — all editor phases from S onward.
+- **Phase S mitigation (inspector):** `INSPECTOR_ADD_SECTION_INTENT` carries only `{ adjacentSectionId, position }` — no section object, no Liquid source, no template mutation. `EditorPreviewSectionFrame.sendAddIntent()` has no access to `template.sections`. Contract test "section frame never mutates template sections" asserts `sections.push / splice / filter` are absent from the file. The editor (`CenterPanel.handleMessage` → `onAddSectionIntent?.(...)`) receives the intent and is responsible for any section mutation through the normal `applyChange()` + `buildDraftConfig()` path.
+- **Disposition:** Mechanically enforced through Phase S. Phase T (section groups + nested blocks) and all subsequent editor phases MUST NOT add a mutation path for `section_definitions` or `block_definitions`. Any future feature that needs to update Liquid source must go through the theme package publish pipeline, not the draft save path.
+- **Target:** ONGOING — all editor phases from T onward.
 
 ### RISK-ARCH-N01 — Forward-compat gap: `.strict()` + version gate requires version bump for future schema additions — [LOW]
 - **Status:** OPEN · ongoing process requirement.
@@ -119,4 +136,5 @@ Living register. Each entry: ID · severity · status · evidence · owner/targe
 - **Phase R mitigation:** `buildDraftConfig` sends only the mutable state (template/settings JSON) in the draft POST body, not the full `ThemeDocument`. `section_definitions` / `block_definitions` (Liquid source) come from `baseConfig` and are not re-serialized from the Liquid source on each autosave cycle. This substantially reduces the per-save payload for complex themes.
 - **Remaining gap:** No hard `superRefine` total-source-byte bound has been added. The draft endpoint still receives the full `draftConfig` which includes `section_definitions` as stored in `baseConfig`. For a 40+-section theme, this can still be large on the first load.
 - **Mitigation candidates remaining:** (a) Total `section_definitions` source byte bound in `ThemeDocumentSchema.superRefine`. (b) Split representation: mutable template/settings in `theme_editor_drafts`, immutable Liquid source in the theme package row (load separately, never in the draft PUT body).
-- **Target:** Phase S (live preview inspector) or a dedicated performance pass. The split-representation approach (candidate (b)) aligns naturally with Phase S's lazy-load requirements.
+- **Phase S note:** Phase S did not add a hard byte bound. The `buildDraftConfig` mitigation from Phase R remains active. The split-representation approach (candidate (b)) is still the preferred long-term mitigation.
+- **Target:** Phase T (section groups) or a dedicated performance pass.
