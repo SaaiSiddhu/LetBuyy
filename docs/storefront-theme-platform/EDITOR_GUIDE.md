@@ -1,8 +1,8 @@
 # LetBuyy Theme Editor — Shell Architecture Guide
 
 **Program:** LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor (M→AE)
-**Last updated:** 2026-07-11 (post Phase T)
-**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel, undo/redo, autosave, draft CAS
+**Last updated:** 2026-07-11 (post Phase U)
+**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), undo/redo, autosave, draft CAS
 
 ---
 
@@ -24,8 +24,20 @@ apps/merchant-control-plane/src/components/theme-editor/
   ConflictDialog.tsx           — draft CAS conflict resolution dialog (Phase R, CLEAN)
   ExperiencePicker.tsx         — experience list and apply UI (CLEAN)
   PreviewInspectorOverlay.tsx  — hover chip overlay for the live preview (Phase S, CLEAN)
-  SchemaFormRenderer.tsx       — generic settings form renderer (CLEAN)
+  SchemaFormRenderer.tsx       — settings form renderer; 26-type Shopify-parity control set (Phase U, CLEAN)
   SectionTreePanel.tsx         — ARIA section tree with drag-to-reorder (Phase R, CLEAN)
+  controls/                    — Phase U: one file per extended control type
+    CheckboxControl.tsx        — native input[type=checkbox]; distinct from Toggle
+    ColorBackgroundControl.tsx — solid colour picker OR CSS gradient string
+    ColorSchemeControl.tsx     — select from named experience colour schemes
+    FontPickerControl.tsx      — font family select constrained to EXPERIENCE_FONT_REGISTRY
+    HtmlControl.tsx            — sanitised HTML textarea; no DOM injection in editor
+    LiquidControl.tsx          — Liquid code textarea; NOT-CONNECTED badge (canary-OFF)
+    VideoControl.tsx           — video URL + file upload (video/*)
+    VideoUrlControl.tsx        — YouTube / Vimeo URL; protocol + domain validated
+    InfoControls.tsx           — FieldHeader (role=heading) + FieldParagraph (display-only)
+    ResourcePickerControl.tsx  — product/collection/blog/page/menu id entry + NOT-CONNECTED badge
+    controls.module.css        — supplemental styles; --lb-* tokens only
 ```
 
 All CSS is in `apps/merchant-control-plane/src/app/globals.css` (FOREIGN WIP FILE). The editor uses the `theme-os-*` token system throughout — no raw px or hex values.
@@ -200,7 +212,7 @@ Inline function in `page.tsx` (lines 1658–1793). Rendered in `<aside.theme-os-
 
 Three buttons: Copy / Layout / Block. All call `applyAiHook(mode)` which applies hardcoded string/value changes to the selected section's settings. **This is a stub** — no AI service is called. See RISK-SEC-002. Phase AC must wire the real AI pipeline.
 
-### 6.2 Settings Form
+### 6.2 Settings Form (Phase U — full Shopify-parity control set)
 
 Rendered via `SchemaFormRenderer` from `apps/merchant-control-plane/src/components/theme-editor/SchemaFormRenderer.tsx`.
 
@@ -209,7 +221,52 @@ Three view modes keyed on `selection.kind`:
 - `'section'`: renders `selectedSectionSchema.settings_schema` fields; block sub-list (click to enter block mode); add-block control.
 - `'block'`: renders `selectedBlockSchema.fields` fields; back-to-section button (`X` icon).
 
-`SchemaFormRenderer` supports field types: `text`, `textarea`, `richtext`, `radio`, `color`, `image` (uploads to `/api/stores/[store]/upload`), `select`, `toggle`, `range`, `url`, `number`.
+**Schema type:** `SchemaFormRenderer` accepts `Record<string, ExtendedSchemaField>` (from `@letbuyy/theme-engine` via `@/lib/theme-schemas`). `ExtendedSchemaField` is a strict superset of the frozen `SchemaField` — all existing schemas remain valid.
+
+**Conditional visibility:** fields with `visible_if: { field, value }` are skipped (not rendered) when the referenced sibling field's stored value does not strictly equal `value`. The hidden field's value is preserved in the settings record.
+
+**Required validation:** fields with `required: true` show a `*` indicator. `validateFieldValue` returns an error string when the value is `null`, `undefined`, or `''`. Boolean controls (`toggle`, `checkbox`) do not raise a required error when `false` (RISK-SEC-U03).
+
+**Type-safe defaults:** `resolveFieldDefault(field)` provides the display default when no stored value exists: `false` for boolean types, `field.min ?? 0` for numeric types, `null` for info types, `''` for all others.
+
+**Supported field types (26 total):**
+
+| Type | Component | Phase | Notes |
+|------|-----------|-------|-------|
+| `text` | `TextInput` | M (frozen) | `Input type=text`; required check; maxLength |
+| `textarea` | `TextareaInput` | M (frozen) | `<textarea rows=3>`; required; maxLength |
+| `richtext` | `TextareaInput` | M (frozen) | Same as textarea; no rich editor widget; no ARIA distinction |
+| `radio` | `RadioInput` | M (frozen) | Button-group pills; `role="group"` + per-option `role="radio" aria-checked` |
+| `color` | `ColorInput` | M (frozen) | Colour picker + hex text |
+| `image` | `ImageInput` | M (frozen) | URL text + upload to `/api/stores/[store]/upload`; storeName-gated |
+| `select` | `SelectInput` | M (frozen) | Native `<select>` from `field.options` |
+| `toggle` | `ToggleInput` | M (frozen) | Slide switch; `role="switch" aria-checked` |
+| `range` | `RangeInput` | M (frozen) | `input[type=range]`; min/max/step wired (Phase U fix) |
+| `url` | `UrlInput` | M (frozen) | `Input type=url`; `isUnsafeUrl` guard (Phase U fix) |
+| `number` | `NumberInput` | M (frozen) | `Input type=number`; min/max/step passed (Phase U fix) |
+| `color_background` | `ColorBackgroundControl` | U | Solid colour picker OR CSS gradient string input |
+| `color_scheme` | `ColorSchemeControl` | U | Select from named experience colour schemes |
+| `font_picker` | `FontPickerControl` | U | Select from `EXPERIENCE_FONT_REGISTRY` (6 families); injection guard; font preview |
+| `html` | `HtmlControl` | U | Textarea; no DOM injection; sanitise disclaimer; DOMPurify at renderer |
+| `liquid` | `LiquidControl` | U | Monospace textarea; NOT-CONNECTED badge (canary-OFF) |
+| `checkbox` | `CheckboxControl` | U | Native `input[type=checkbox]`; distinct from Toggle slide switch |
+| `video` | `VideoControl` | U | URL + `video/*` upload; `isUnsafeUrl` guard |
+| `video_url` | `VideoUrlControl` | U | YouTube / Vimeo HTTPS URL; `isUnsafeUrl` + pattern validation |
+| `header` | `FieldHeader` | U | Display-only heading (`role="heading"`); no value; no onChange |
+| `paragraph` | `FieldParagraph` | U | Display-only text block; no value; no onChange |
+| `product` | `ResourcePickerControl` | U | ID/handle text + NOT-CONNECTED badge; live search Phase W |
+| `collection` | `ResourcePickerControl` | U | Same as product |
+| `blog` | `ResourcePickerControl` | U | Same as product |
+| `page` | `ResourcePickerControl` | U | Same as product |
+| `menu` | `ResourcePickerControl` | U | Same as product |
+
+Unknown types fall through to `TextInput` and never crash (backward compatibility).
+
+**RISK-DUAL-N01:** all controls receive `(value, onChange)` only. The `field` descriptor is read-only schema metadata. No control mutates the schema. `onChange` writes to the instance settings value via `applyChange()`.
+
+**Sanitize law:** `HtmlControl` and `LiquidControl` store the raw value in a `<textarea>`. No `dangerouslySetInnerHTML` in any control. HTML/Liquid → DOM rendering and DOMPurify sanitisation are the storefront renderer's responsibility.
+
+For the complete per-type schema shape, validation rules, ARIA patterns, and sanitize notes, see `docs/storefront-theme-platform/phase-u/CONTROL_TYPE_REFERENCE.md`.
 
 ---
 
@@ -456,10 +513,17 @@ type EditorSelection =
 
 | Risk ID | Severity | Description | Target |
 |---|---|---|---|
-| RISK-DUAL-N01 | MEDIUM | Editor save must reconstruct `section_definitions`/`block_definitions` from `baseConfig`, not `editorState` | Enforced mechanically by `buildDraftConfig`; Phase T child callbacks mutate instance tree only (RISK preserved) |
+| RISK-DUAL-N01 | MEDIUM | Editor save must reconstruct `section_definitions`/`block_definitions` from `baseConfig`, not `editorState` | Enforced mechanically by `buildDraftConfig`; Phase T/U controls receive value+onChange only (RISK preserved) |
 | RISK-SEC-P01 | MEDIUM | `theme_editor_drafts` RLS checks `user_id` only, not `custom_user_id` | No client-side realtime subscription may be added until fixed |
 | RISK-PERF-N01 | LOW | Large document serialization on each draft save | `buildDraftConfig` sends only mutable state; Liquid source comes from `baseConfig` not re-serialized |
 | RISK-SEC-002 | INFO | AI hooks are stubs; must not be presented as connected | Phase AC |
 | RISK-R01 | LOW | **CLOSED (Phase T)** — `BlockEntry.children` added to canonical type; remaining four shared types still mirrored | Next substantive `page.tsx` touch |
-| RISK-T05 | MEDIUM | `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead | Phase U or first `SectionTreePanel.tsx` touch |
-| RISK-T04 | LOW | `RENDERER_MAX_BLOCK_DEPTH` is private — depth parity test cannot directly assert it | Phase U or first `theme-renderer.ts` touch |
+| RISK-T05 | MEDIUM | `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead | Phase V or first `SectionTreePanel.tsx` touch |
+| RISK-T04 | LOW | `RENDERER_MAX_BLOCK_DEPTH` is private — depth parity test cannot directly assert it | Phase V or first `theme-renderer.ts` touch |
+| RISK-SEC-U01 | MEDIUM | `isUnsafeUrl` narrow blocklist — `data:image/svg+xml`, `data:text/javascript`, `blob:` not blocked | Phase V |
+| RISK-SEC-U02 | MEDIUM | `ColorBackgroundControl` gradient mode: no `url()` CSS content check | Phase V |
+| RISK-SEC-U03 | MEDIUM | `required: true` on `checkbox`/`toggle` is a validation no-op | Phase V |
+| RISK-A11Y-U01 | MEDIUM | `TextInput`/`TextareaInput` missing `aria-describedby` on error element | Phase V |
+| RISK-A11Y-U02 | LOW | `CheckboxControl`/`FontPickerControl`/`ColorSchemeControl` ternary `aria-describedby` drops helpText when error present | Phase V |
+| RISK-STYLE-U01 | LOW | `LiquidControl` `fontSize: 12` raw pixel | Phase V |
+| RISK-STYLE-U02 | LOW | `controls.module.css` raw `px` spacing values | Phase V |

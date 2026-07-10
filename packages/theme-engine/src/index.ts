@@ -23,6 +23,8 @@ export * from './theme-bundle-core';
 export * from './experience-fonts';
 export * from './section-schema-migrations';
 export * from './settings-schema-canonical';
+// Phase U — Schema Field Extensions (ExtendedSchemaField + validation/default/visibility helpers)
+export * from './schema-field-extensions';
 // Phase N — Theme Document V2 (editor-facing stable-id view; lossless adapters)
 export * from './theme-document';
 export * from './theme-document-migrations';

@@ -1,0 +1,132 @@
+/**
+ * controls.module.css — Phase U supplemental styles for new SchemaFormRenderer controls.
+ *
+ * Rules:
+ * - Uses --lb-* design tokens only (no raw px values except where unavoidable for
+ *   browser-compatibility of native elements).
+ * - NO rounded-[Npx] Tailwind classes.
+ * - apps/merchant-control-plane/src/app/globals.css is NOT modified.
+ * - Reuses te-field* global classes defined in globals.css wherever possible;
+ *   this file only adds styling for elements that globals.css does not cover.
+ */
+
+/* ── NOT-CONNECTED badge ─────────────────────────────────────────────────── */
+.notConnectedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--lb-radius-sm, 4px);
+  background: var(--bg-secondary, rgb(244 244 245));
+  color: var(--text-secondary, rgb(102 102 102));
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin-top: 4px;
+}
+
+/* ── Disclaimer / note text ──────────────────────────────────────────────── */
+.disclaimerNote {
+  font-size: 11px;
+  color: var(--text-secondary, rgb(102 102 102));
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+/* ── Color background control ────────────────────────────────────────────── */
+.colorBgWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gradientToggleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--lb-font-size-caption, 12px);
+  color: var(--text-secondary, rgb(102 102 102));
+}
+
+/* ── Color scheme control ────────────────────────────────────────────────── */
+.colorSchemeWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Font picker control ─────────────────────────────────────────────────── */
+.fontPreview {
+  padding: 6px 8px;
+  border: 1px solid var(--border, rgb(229 229 229));
+  border-radius: var(--lb-radius-md, 6px);
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--bg, rgb(255 255 255));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 4px;
+}
+
+/* ── Checkbox control (distinct from Toggle) ─────────────────────────────── */
+.checkboxWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.checkboxInput {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary, rgb(139 92 246));
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── Info controls (header / paragraph) — display-only ──────────────────── */
+.infoHeader {
+  font-size: var(--lb-font-size-small, 13px);
+  font-weight: 600;
+  color: var(--text-primary);
+  padding-top: 6px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--border, rgb(229 229 229));
+  margin-bottom: 2px;
+}
+
+.infoParagraph {
+  font-size: 12px;
+  color: var(--text-secondary, rgb(102 102 102));
+  line-height: 1.5;
+}
+
+/* ── Resource picker ─────────────────────────────────────────────────────── */
+.resourcePickerWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.resourceTypeHint {
+  font-size: 11px;
+  color: var(--text-tertiary, rgb(153 153 153));
+  text-transform: capitalize;
+}
+
+/* ── Validation error (used by new controls in addition to .te-field-error) */
+.fieldError {
+  color: var(--error, rgb(239 68 68));
+  font-size: 11px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* ── Video control ───────────────────────────────────────────────────────── */
+.videoWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}

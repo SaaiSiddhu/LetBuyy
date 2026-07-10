@@ -1,6 +1,6 @@
 # M→AE Program State
 
-**Updated:** 2026-07-11 (post Phase T) · **Branch:** `stepup/main` · **Starting HEAD (program):** `29f87115`
+**Updated:** 2026-07-11 (post Phase U) · **Branch:** `stepup/main` · **Starting HEAD (program):** `29f87115`
 
 ## Scoreboard
 | Phase | Title | Status | Commit |
@@ -13,7 +13,7 @@
 | R | Visual editor shell | COMPLETE | _(see phase-r/PHASE_R_REPORT.md)_ |
 | S | Live preview inspector | COMPLETE | _(see phase-s/PHASE_S_REPORT.md)_ |
 | T | Section groups + nested blocks | COMPLETE | _(see phase-t/PHASE_T_REPORT.md)_ |
-| U | Settings control renderer | PENDING | — |
+| U | Settings control renderer | COMPLETE | _(see phase-u/PHASE_U_REPORT.md)_ |
 | V | Template system | PENDING | — |
 | W | Dynamic sources + custom data | PENDING | — |
 | X | Files & media library | PENDING | — |
@@ -34,6 +34,7 @@
 - Phase R gates: merchant **65/65** (26 R + 25 Q + 14 pre-existing) · typecheck clean. No gateway, no migration, no new dependencies. 3 pre-existing failures unchanged.
 - Phase S gates: merchant **93/93** (28 S + 26 R + 25 Q + 14 pre-existing) · storefront-runtime **795/795** (+33 inspector-bridge tests) · theme-engine **1048/1048** (+14 protocol tests) · all typechecks clean. No gateway, no migration, no new npm dependencies. 3 pre-existing failures unchanged.
 - Phase T gates: merchant **120/120** (27 T + 28 S + 26 R + 25 Q + 14 pre-existing) · theme-engine **1063/1063** (+15 nested-block tests) · api-gateway **479/479** (unchanged) · storefront-runtime **795/795** (unchanged) · all typechecks clean. No gateway, no migration, no new npm dependencies. 3 pre-existing failures unchanged. Phase N fail-closed guard in `fromThemeDocumentV2` REMOVED (N-deferral CLOSED). RISK-R01 (local type mirrors) CLOSED — `BlockEntry.children` added to `SectionTreePanel.tsx` canonical `BlockEntry` type; `page.tsx` not touched (callbacks optional). RISK-T01/T02/T03/T04/T05/T06 registered (see RISK_REGISTER.md).
+- Phase U gates: theme-engine **1136/1136** (baseline 1063 + 73 new) · merchant **196/196** (baseline 120 + 76 new) · api-gateway **479/479** (unchanged) · storefront-runtime **795/795** (unchanged) · all typechecks clean. No gateway, no migration, no new npm dependencies. 3 pre-existing failures unchanged. `validate-governance.mjs` EXIT=1 (pre-existing tenant drift; anti-fabrication PASS — unchanged). RISK-SEC-U01/U02/U03, RISK-A11Y-U01/U02, RISK-STYLE-U01/U02 registered (see RISK_REGISTER.md). RISK-T03/T04/T05/T06 target updated to Phase V.
 
 ## Foreign WIP (PRESERVE — never stage)
 - ~360 modified/untracked files from prior user work (apps/identity-platform, marketing-site, merchant-control-plane, services, database, tests/launch/lb*.mjs, next-env.d.ts).
@@ -42,7 +43,7 @@
 - `tenant-tables.registry.ts` drift.
 
 ## Active risks
-See RISK_REGISTER.md: RISK-SEC-001 (theme_purchases wide-open RLS, HIGH, → AE), RISK-SEC-002 (editor AI stub), RISK-GOV-001 (tenant-registry, affects W), RISK-DATA-001 (migrations 186/187/188/189/190), RISK-DUAL-N01 (section_definitions dual-truth, OPEN, mechanically guarded by buildDraftConfig; Phase T callbacks mutate instance tree only — guard preserved), RISK-ARCH-N01 (version gate must be bumped for future schema additions, ongoing), RISK-PERF-N01 (large document size, OPEN, buildDraftConfig mitigates on save path; hard bound deferred), RISK-O01 (Nova/Summit distinctness collapses if cta-section removed from bundle, LOW), RISK-O02 (collectionFilter/faqAccordion permanently incompatible until bundle expanded, LOW), RISK-SEC-P01 (theme_editor_drafts RLS checks user_id only, MEDIUM, no realtime subscription added in Phase T; still targeted at security migration before any realtime), RISK-TOCTOU-P01 (publish TOCTOU concurrent window, LOW, ARB-gated), RISK-TOCTOU-P02 (rollback CAS TS-level only, LOW, ARB-gated), RISK-TOCTOU-Q01 (plan-limit count-then-insert non-atomic, MEDIUM, ARB-gated → Phase AB or earlier), **RISK-R01 CLOSED** (BlockEntry.children added to SectionTreePanel canonical type; page.tsx callbacks deferred as optional). **Phase T new risks:** RISK-T01 (pre-Zod stack-depth attack via z.lazy(), MEDIUM), RISK-T02 (no assertNoBlockedKeysInRaw in parseLiquidThemePackageBundle, MEDIUM), RISK-T03 (block settings bypass filterBlockedSettingsKeys, LOW), RISK-T04 (RENDERER_MAX_BLOCK_DEPTH private/unexported, LOW), RISK-T05 (allowedChildTypes not wired from SectionTreePanel to BlockChildRow — add-child dead, MEDIUM), RISK-T06 (UnsupportedThemeDocumentFeatureError dead export, LOW).
+See RISK_REGISTER.md: RISK-SEC-001 (theme_purchases wide-open RLS, HIGH, → AE), RISK-SEC-002 (editor AI stub), RISK-GOV-001 (tenant-registry, affects W), RISK-DATA-001 (migrations 186/187/188/189/190), RISK-DUAL-N01 (section_definitions dual-truth, OPEN, mechanically guarded by buildDraftConfig; Phase T/U callbacks+controls receive value+onChange only — guard preserved), RISK-ARCH-N01 (version gate must be bumped for future schema additions, ongoing), RISK-PERF-N01 (large document size, OPEN, buildDraftConfig mitigates on save path; hard bound deferred), RISK-O01 (Nova/Summit distinctness collapses if cta-section removed from bundle, LOW), RISK-O02 (collectionFilter/faqAccordion permanently incompatible until bundle expanded, LOW), RISK-SEC-P01 (theme_editor_drafts RLS checks user_id only, MEDIUM, no realtime subscription added in Phase U; still targeted at security migration before any realtime), RISK-TOCTOU-P01 (publish TOCTOU concurrent window, LOW, ARB-gated), RISK-TOCTOU-P02 (rollback CAS TS-level only, LOW, ARB-gated), RISK-TOCTOU-Q01 (plan-limit count-then-insert non-atomic, MEDIUM, ARB-gated → Phase AB or earlier), **RISK-R01 CLOSED** (BlockEntry.children added to SectionTreePanel canonical type; page.tsx callbacks deferred as optional). **Phase T risks (all OPEN → Phase V):** RISK-T01 (pre-Zod stack-depth attack via z.lazy(), MEDIUM), RISK-T02 (no assertNoBlockedKeysInRaw in parseLiquidThemePackageBundle, MEDIUM), RISK-T03 (block settings bypass filterBlockedSettingsKeys, LOW, target updated to Phase V), RISK-T04 (RENDERER_MAX_BLOCK_DEPTH private/unexported, LOW, target updated to Phase V), RISK-T05 (allowedChildTypes not wired from SectionTreePanel to BlockChildRow — add-child dead, MEDIUM, target updated to Phase V), RISK-T06 (UnsupportedThemeDocumentFeatureError dead export, LOW, target updated to Phase V). **Phase U new risks:** RISK-SEC-U01 (isUnsafeUrl narrow blocklist — missing data:image/svg+xml, data:text/javascript, blob:, MEDIUM), RISK-SEC-U02 (ColorBackgroundControl gradient mode no url() content check, MEDIUM), RISK-SEC-U03 (required:true on checkbox/toggle is a validation no-op, MEDIUM), RISK-A11Y-U01 (TextInput/TextareaInput missing aria-describedby linkage, MEDIUM), RISK-A11Y-U02 (CheckboxControl/FontPickerControl/ColorSchemeControl ternary aria-describedby drops helpText when error present, LOW), RISK-STYLE-U01 (LiquidControl fontSize:12 raw pixel, LOW), RISK-STYLE-U02 (controls.module.css raw px spacing, LOW).
 
 ## Parity snapshot (Phase M matrix)
 COMPLETE 37 · PARTIAL 15 · MISSING 13 · NOT_CONNECTED 4 · STUB 1 (70 capability rows). Editor is the largest gap cluster (shell/inspector/tree/nested-blocks/templates/media/markets/code editor all PARTIAL or MISSING).
@@ -121,6 +122,19 @@ COMPLETE 37 · PARTIAL 15 · MISSING 13 · NOT_CONNECTED 4 · STUB 1 (70 capabil
 - **RISK-SEC-P01**: unchanged — no realtime subscription added.
 - **RISK-R01**: CLOSED — `BlockEntry.children` added to canonical `BlockEntry` type in `SectionTreePanel.tsx`; `page.tsx` not touched (callbacks optional).
 
+## Phase U deliverables
+- `packages/theme-engine/src/schema-field-extensions.ts` (NEW): `ExtendedSchemaField` (26-type superset of frozen `SchemaField`), `ExtendedFieldType` (15 new type literals), `AllFieldType`, `isUnsafeUrl` (4-check URL safety helper, public re-expression of private `isUnsafeThemeUrl`), `validateFieldValue` (pure; bounds/URL/font/maxLength/required checks), `isFieldVisible` (strict-equality `visible_if` guard), `resolveFieldDefault` (type-safe defaults for boolean/numeric/info/text controls).
+- `packages/theme-engine/test/schema-field-extensions.test.ts` (NEW): 73 new tests; theme-engine total **1136/1136**.
+- `packages/theme-engine/src/index.ts` (MODIFIED): one `export *` line added.
+- `apps/merchant-control-plane/src/lib/theme-schemas.ts` (MODIFIED): re-exports all 4 helpers + 3 types from `@letbuyy/theme-engine`.
+- `apps/merchant-control-plane/src/components/theme-editor/SchemaFormRenderer.tsx` (MODIFIED): upgraded to `ExtendedSchemaField`; `isFieldVisible` loop; `resolveFieldDefault`; 15 new switch cases; `number` now enforces min/max/step; `url` now checks `isUnsafeUrl`.
+- `apps/merchant-control-plane/src/components/theme-editor/controls/` (NEW DIRECTORY): 11 files — `CheckboxControl.tsx`, `ColorBackgroundControl.tsx`, `ColorSchemeControl.tsx`, `FontPickerControl.tsx`, `HtmlControl.tsx`, `LiquidControl.tsx`, `VideoControl.tsx`, `VideoUrlControl.tsx`, `InfoControls.tsx`, `ResourcePickerControl.tsx`, `controls.module.css`.
+- `apps/merchant-control-plane/tests/theme-editor-u.test.mjs` (NEW): 76 new Phase U static-contract tests; merchant total **196/196**.
+- `apps/merchant-control-plane/package.json` (MODIFIED, FOREIGN WIP): `theme-editor-u.test.mjs` appended to test script.
+- 7 Phase U findings — 0 fixed before close (Hardening: null). All 7 registered in RISK_REGISTER.md as RISK-SEC-U01/U02/U03, RISK-A11Y-U01/U02, RISK-STYLE-U01/U02.
+- RISK-T03/T04/T05/T06 carry-over targets updated to Phase V (not addressed in Phase U).
+
 ## Next action
-- **Next phase: U — Settings Control Renderer.** Phase U implements the full field type set for the right-panel settings form. Phase U MUST address RISK-T03 (`block.settings` bypass of `filterBlockedSettingsKeys`) before adding new settings field types that amplify the gap. Phase U MUST NOT add realtime subscriptions until RISK-SEC-P01 resolved.
-- **Gate entering U:** merchant **120/120** · api-gateway **479** · theme-engine **1063** · storefront-runtime **795** · all typechecks clean.
+- **Next phase: V — Template System.** Phase V implements template create/duplicate/delete, template-specific section schemas, and the template switcher UX in the editor header.
+- **Phase V must:** address RISK-T05 (`allowedChildTypes` not wired to `BlockChildRow`) if touching `SectionTreePanel.tsx`; address RISK-T03 (`block.settings` bypass of `filterBlockedSettingsKeys`) if touching `theme-renderer.ts`; not add realtime subscriptions until RISK-SEC-P01 resolved; continue using `--lb-*` design tokens.
+- **Gate entering V:** merchant **196/196** · api-gateway **479** · theme-engine **1136** · storefront-runtime **795** · all typechecks clean.

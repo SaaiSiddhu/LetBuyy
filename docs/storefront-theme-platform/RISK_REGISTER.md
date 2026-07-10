@@ -123,34 +123,97 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Target:** Earliest phase touching `parseLiquidThemePackageBundle`.
 
 ### RISK-T03 — Block settings bypass `filterBlockedSettingsKeys` in the renderer — [LOW]
-- **Status:** OPEN · defence-in-depth gap; deferred.
+- **Status:** OPEN · defence-in-depth gap; deferred past Phase U.
 - **Introduced:** Phase T (2026-07-11). Pre-existing for flat blocks; Phase T's `sub_blocks` threading adds a second unfiltered position.
 - **Evidence:** `packages/theme-engine/src/theme-renderer.ts:818` — `settings: block.settings` and `theme-renderer.ts:824` — `settings: child.settings` (in `sub_blocks[]`) are inserted raw into the Liquid scope without calling `filterBlockedSettingsKeys`. The `BLOCKED_DROP_KEYS` set (which excludes `api_key`, `webhook_secret`, etc.) is applied only to the global `settings` drop (line 883), not to block-level settings.
 - **Why it matters:** Credential-named keys in merchant-authored `block.settings` are accessible via `{{ block.settings.api_key }}` without the blocked-key guard. All rendered HTML passes through DOMPurify but non-HTML-encoded plain strings are not stripped.
 - **Disposition:** Fix: apply `filterBlockedSettingsKeys` to `block.settings` and `child.settings` at their Liquid scope insertion points. This is defence-in-depth; no legitimate theme uses credential-adjacent key names in block settings.
-- **Target:** Phase U (settings control renderer) — fix before adding new settings field types.
+- **Phase U note:** Phase U added 15 new field types to the editor renderer (SchemaFormRenderer) but did not touch `theme-renderer.ts`. The Phase T field types that amplify the gap (nested block settings) are now fully wired in the editor; the defence-in-depth gap in the storefront renderer remains.
+- **Target:** Phase V or first phase touching `theme-renderer.ts`.
 
 ### RISK-T04 — `RENDERER_MAX_BLOCK_DEPTH` is private/unexported — depth parity test cannot directly assert it — [LOW]
-- **Status:** OPEN · test quality gap; deferred.
+- **Status:** OPEN · test quality gap; deferred past Phase U.
 - **Introduced:** Phase T (2026-07-11).
 - **Evidence:** `RENDERER_MAX_BLOCK_DEPTH = 3` is a private module-local constant in `theme-renderer.ts:950`. The test `nested-blocks: (f) RENDERER_MAX_BLOCK_DEPTH === MAX_BLOCK_NESTING_DEPTH` asserts `MAX_BLOCK_NESTING_DEPTH === 3` and `MAX_BUNDLE_BLOCK_NESTING_DEPTH === 3` but cannot directly assert the renderer constant. If the renderer constant were changed to 2, the test would still pass.
 - **Disposition:** Fix: export `RENDERER_MAX_BLOCK_DEPTH` from `theme-renderer.ts` and add a direct equality assertion. Alternatively, add a behavioral test that renders a depth-3 fixture and verifies all three levels produce non-empty `sub_blocks`.
-- **Target:** Phase U or first phase touching `theme-renderer.ts`.
+- **Phase U note:** Phase U did not touch `theme-renderer.ts`.
+- **Target:** Phase V or first phase touching `theme-renderer.ts`.
 
 ### RISK-T05 — `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead — [MEDIUM]
-- **Status:** OPEN · functional gap; deferred.
+- **Status:** OPEN · functional gap; deferred past Phase U.
 - **Introduced:** Phase T (2026-07-11).
 - **Evidence:** `apps/merchant-control-plane/src/components/theme-editor/SectionTreePanel.tsx:267–279` — the `BlockChildRow` call at depth-1 does not pass `allowedChildTypes`. `BlockChildRow.tsx:143–146` computes `canAddChildren = depth < MAX_EDITOR_BLOCK_DEPTH && Array.isArray(allowedChildTypes) && allowedChildTypes.length > 0`. Since `allowedChildTypes` is always `undefined` at depth-1, `canAddChildren` is always `false` and the add-child button never renders.
 - **Why it matters:** The Phase T add-child affordance is non-functional for all merchants. The three child callbacks (`onAddChildBlock`, `onRemoveChildBlock`, `onMoveChildBlock`) are wired but the add-child entry point is dead.
 - **Disposition:** Fix: at the `BlockChildRow` call site in `SectionTreePanel.tsx`, resolve `allowedChildTypes` from `schema?.blocks_schema?.[block.type]?.allowed_child_types ?? undefined`. The `schema` and `blocks_schema` lookup are already used at that call site for `blockLabel` resolution — the fix is a one-prop addition.
-- **Target:** Phase U or first phase touching `SectionTreePanel.tsx`.
+- **Phase U note:** Phase U did not touch `SectionTreePanel.tsx`. The gap remains.
+- **Target:** Phase V or first phase touching `SectionTreePanel.tsx`.
 
 ### RISK-T06 — `UnsupportedThemeDocumentFeatureError` exported but never thrown — [LOW]
-- **Status:** OPEN · dead API; deferred.
+- **Status:** OPEN · dead API; deferred past Phase U.
 - **Introduced:** Phase N (2026-07-10). Became dead in Phase T (2026-07-11).
 - **Evidence:** `packages/theme-engine/src/theme-document.ts:89–97` — `UnsupportedThemeDocumentFeatureError` is defined and exported. It was previously thrown by the Phase N fail-closed guard in `fromThemeDocumentV2` (lines 560–573, pre-Phase-T). That guard was removed in Phase T. A `grep` across all app and service source confirms no external catch sites for this class; it is dead public API.
 - **Disposition:** Either re-purpose with updated JSDoc ("reserved for future phase-gated feature flags") or remove the class and its export entirely. Removal is safe since no catch sites exist.
-- **Target:** Phase U or first theme-document.ts touch.
+- **Phase U note:** Phase U did not touch `theme-document.ts`.
+- **Target:** Phase V or first `theme-document.ts` touch.
+
+## Phase U risks
+
+### RISK-SEC-U01 — `isUnsafeUrl` blocklist is too narrow — missing `data:image/svg+xml`, `data:text/javascript`, `blob:` — [MEDIUM]
+- **Status:** OPEN · known residual; deferred.
+- **Introduced:** Phase U (2026-07-11).
+- **Evidence:** `packages/theme-engine/src/schema-field-extensions.ts` — `isUnsafeUrl` checks only 4 patterns: `javascript:`, `vbscript:`, `data:text/html`, `data:application/xhtml`. These are identical to the private `isUnsafeThemeUrl` they re-implement. A `data:image/svg+xml` URL containing an embedded `<script>` tag executes JavaScript when used as an `<img src>` or `<iframe src>` attribute. A `data:text/javascript,alert(1)` URL is executable when used as `<a href>`. A `blob:` URL wrapping a JavaScript blob has the same property.
+- **Why it matters:** `UrlInput` and `VideoControl` use `isUnsafeUrl` as their only protocol guard. `VideoUrlControl` has an additional YouTube/Vimeo HTTPS domain pattern that covers the practical attack surface there. The gap is most material for `url` and `video` fields where the merchant can enter arbitrary URLs.
+- **Disposition:** Widen the blocklist in `isUnsafeUrl`: add `normalized.startsWith('data:image/svg+xml')`, `normalized.startsWith('data:text/javascript')`, `normalized.startsWith('blob:')`. Consider a broader allowlist approach: default-block all `data:` URIs except `data:image/png`, `data:image/jpeg`, `data:image/gif`, `data:image/webp`. Update the private `isUnsafeThemeUrl` in `index.ts` identically to keep both in sync.
+- **Target:** Phase V or first `schema-field-extensions.ts` touch.
+
+### RISK-SEC-U02 — `ColorBackgroundControl` gradient mode accepts arbitrary CSS content including `url()` — [MEDIUM]
+- **Status:** OPEN · editor-side gap; render-time concern.
+- **Introduced:** Phase U (2026-07-11).
+- **Evidence:** `apps/merchant-control-plane/src/components/theme-editor/controls/ColorBackgroundControl.tsx` — in gradient mode, the `<Input type="text">` accepts any CSS string without validation. `validateFieldValue` for `color_background` has no type-specific CSS content check (falls through to `break`). A gradient string like `linear-gradient(to right, url(javascript:alert(1)), red)` passes the editor without rejection.
+- **Why it matters:** The storefront renderer applies the `color_background` value as a CSS `background` property. If the frozen renderer does not sanitise `url()` expressions inside gradient strings, a CSS-injection attack path exists at render time. The editor itself does not apply the value as CSS, so no XSS in the editor. The risk is at render time in the storefront.
+- **Disposition:** Add a gradient-mode validation rule in `validateFieldValue` for `color_background`: reject values containing `url(` or `expression(` (case-insensitive regex: `/url\s*\(/i`). This should live in `schema-field-extensions.ts` and mirror whatever the storefront renderer strips.
+- **Target:** Phase V or first `schema-field-extensions.ts` touch.
+
+### RISK-SEC-U03 — `required: true` on `checkbox` / `toggle` is a validation no-op — [MEDIUM]
+- **Status:** OPEN · API design gap.
+- **Introduced:** Phase U (2026-07-11).
+- **Evidence:** `packages/theme-engine/src/schema-field-extensions.ts:validateFieldValue` — the required check rejects `null | undefined | ''`. `resolveFieldDefault` returns `false` for `checkbox` and `toggle`. `SchemaFormRenderer` passes `Boolean(value)` to boolean controls. A field with no stored value resolves to `false`, which passes the required check. A required checkbox never produces a validation error regardless of whether the merchant checked it.
+- **Why it matters:** Theme schema authors who mark a checkbox `required` expect validation feedback when the merchant leaves it unchecked. The current behaviour silently ignores the requirement.
+- **Disposition:** Options: (1) add a type-specific required guard for `checkbox`/`toggle`: `if (field.required && (type === 'checkbox' || type === 'toggle') && value === false) → error`. (2) Document `required` as inapplicable to boolean controls and omit `required` from `ToggleInput` / `CheckboxControl` rendering. (3) Introduce a separate property `must_be_checked?: boolean` for boolean consent fields.
+- **Target:** Phase V.
+
+## Phase U accessibility risks
+
+### RISK-A11Y-U01 — `TextInput` and `TextareaInput` missing `aria-describedby` linkage to error element — [MEDIUM]
+- **Status:** OPEN · a11y gap in pre-Phase-U controls; not fixed in Phase U.
+- **Introduced:** Pre-Phase-U baseline; confirmed in Phase U review (2026-07-11).
+- **Evidence:** `apps/merchant-control-plane/src/components/theme-editor/SchemaFormRenderer.tsx` — `TextInput` (line ~344) sets `aria-invalid={error ? 'true' : undefined}` on the `<Input>` element but does not set `aria-describedby` pointing to the `<FieldError id="${id}-error">` element. `TextareaInput` (line ~379) has the same pattern. Screen readers will announce the field as invalid but will not read the error message when the user focuses the field — the announcement depends on the element being inside the `<label>`, which is browser- and screen-reader-dependent.
+- **Why it matters:** All Phase U new controls (CheckboxControl, FontPickerControl, etc.) correctly link `aria-describedby`; this pre-existing gap in the two most common field types (`text`, `textarea`) leaves the baseline controls inconsistent with the Phase U controls.
+- **Disposition:** Add `aria-describedby={error ? `${id}-error` : helpText ? `${id}-help` : undefined}` to the `<Input>` inside `TextInput` and to the `<textarea>` inside `TextareaInput`, mirroring the pattern used by `NumberInput` and all Phase U controls.
+- **Target:** Phase V.
+
+### RISK-A11Y-U02 — `CheckboxControl`, `FontPickerControl`, `ColorSchemeControl` use ternary `aria-describedby` — drops `helpText` when error present — [LOW]
+- **Status:** OPEN · a11y inconsistency; deferred.
+- **Introduced:** Phase U (2026-07-11).
+- **Evidence:** `aria-describedby={error ? `${id}-error` : helpText ? `${id}-help` : undefined}` in `CheckboxControl.tsx`, `FontPickerControl.tsx`, `ColorSchemeControl.tsx`. When both an error and `helpText` are present, only the error id is linked; the `helpText` span is rendered in the DOM but not programmatically associated. `HtmlControl`, `LiquidControl`, `VideoUrlControl`, and `ResourcePickerControl` correctly use the array-filter-join pattern: `[error ? `${id}-error` : null, helpText ? `${id}-help` : null].filter(Boolean).join(' ') || undefined`.
+- **Disposition:** Replace the ternary with the array-join pattern in the three affected controls.
+- **Target:** Phase V.
+
+## Phase U style risks
+
+### RISK-STYLE-U01 — `LiquidControl.tsx` uses raw `fontSize: 12` inline style — [LOW]
+- **Status:** OPEN · design token violation; deferred.
+- **Introduced:** Phase U (2026-07-11).
+- **Evidence:** `apps/merchant-control-plane/src/components/theme-editor/controls/LiquidControl.tsx:68` — `style={{ fontFamily: '"Fira Code", "Consolas", monospace', fontSize: 12 }}`. React resolves `fontSize: 12` to `12px` — a raw pixel value. The `--lb-*` tokens mandate `var(--lb-font-size-caption, 12px)` for this size range.
+- **Disposition:** Change `fontSize: 12` to `fontSize: 'var(--lb-font-size-caption, 12px)'`.
+- **Target:** Phase V.
+
+### RISK-STYLE-U02 — `controls.module.css` uses raw `px` spacing values — [LOW]
+- **Status:** OPEN · design token inconsistency; deferred.
+- **Introduced:** Phase U (2026-07-11).
+- **Evidence:** `apps/merchant-control-plane/src/components/theme-editor/controls/controls.module.css` — several rules use raw `px` spacing (`gap: 4px`, `padding: 3px 8px`, `margin-top: 4px`). The design ratchet tests check for `rounded-[Npx]` patterns and `--lb-` token presence; these raw values pass the gate but are inconsistent with the stated `--lb-*` tokens-only rule.
+- **Disposition:** Replace literal spacing values with `--lb-*` spacing tokens where they exist (e.g., `var(--lb-space-1)` for 4px, `var(--lb-space-2)` for 8px). Where tokens are absent, document the gap and add the tokens to the design system.
+- **Target:** Phase V or first `controls.module.css` touch.
 
 ## Phase N risks
 
