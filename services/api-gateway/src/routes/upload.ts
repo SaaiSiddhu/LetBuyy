@@ -2,6 +2,7 @@ import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership, type WorkerAuthUser } from '../lib/auth-user';
 import { getSupabaseAdmin } from '../lib/supabase';
+import { validateUploadMime } from '../lib/upload-mime';
 
 const router = new Hono<{ Bindings: Env }>();
 type UploadContext = Context<{ Bindings: Env }>;
@@ -146,6 +147,12 @@ router.post('/', async (c) => {
             return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized to upload for this store' } }, 403);
         }
 
+        // Phase X — MIME allowlist gate (SVG and other unsafe types rejected).
+        const mimeCheck = validateUploadMime(file);
+        if (!mimeCheck.ok) {
+            return c.json({ error: { code: 'MIME_NOT_ALLOWED', message: mimeCheck.error } }, 400);
+        }
+
         const mediaKind = mediaKindForUpload(file);
         const sizeLimit = uploadLimitForKind(mediaKind);
         const mediaType = uploadMediaType(file, mediaKind);
@@ -155,7 +162,10 @@ router.post('/', async (c) => {
 
         // Generate unique path
         const ext = safeFileExtension(file.name);
-        const key = `${folder}/${auth.user.id}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+        // Use the full UUID (122 bits) rather than an 8-char slice (~32 bits) to
+        // eliminate any theoretical brute-force enumeration of CDN URLs within a
+        // specific store + millisecond window.
+        const key = `${folder}/${auth.user.id}/${Date.now()}-${crypto.randomUUID().replace(/-/g, '')}.${ext}`;
 
         if (!c.env.R2_BUCKET) {
             if (isProductionEnv(c.env)) {

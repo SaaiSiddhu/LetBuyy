@@ -1,8 +1,8 @@
 # LetBuyy Theme Editor — Shell Architecture Guide
 
 **Program:** LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor (M→AE)
-**Last updated:** 2026-07-11 (post Phase W)
-**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), template switcher, resource picker (Phase W live combobox), undo/redo, autosave, draft CAS
+**Last updated:** 2026-07-11 (post Phase X)
+**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), template switcher, resource picker (Phase W live combobox), media library (Phase X modal image/video picker), undo/redo, autosave, draft CAS
 
 ---
 
@@ -34,11 +34,13 @@ apps/merchant-control-plane/src/components/theme-editor/
     FontPickerControl.tsx      — font family select constrained to EXPERIENCE_FONT_REGISTRY
     HtmlControl.tsx            — sanitised HTML textarea; no DOM injection in editor
     LiquidControl.tsx          — Liquid code textarea; NOT-CONNECTED badge (canary-OFF)
-    VideoControl.tsx           — video URL + file upload (video/*)
+    VideoControl.tsx           — video URL + file upload (video/*); Phase X adds Browse Library button (MediaLibrary mediaType="video")
     VideoUrlControl.tsx        — YouTube / Vimeo URL; protocol + domain validated
     InfoControls.tsx           — FieldHeader (role=heading) + FieldParagraph (display-only)
     ResourcePickerControl.tsx  — product/collection/blog/page/menu: Phase W WAI-ARIA 1.2 combobox (live search) or Phase U NOT-CONNECTED fallback
-    controls.module.css        — supplemental styles; --lb-* tokens only
+    ImagePickerControl.tsx     — Phase X: URL text + upload + Browse Library button; replaces inline ImageInput for 'image' type in SchemaFormRenderer
+    MediaLibrary.tsx           — Phase X: full-screen modal grid picker for uploaded images and videos; keyboard navigation + ARIA; same-origin proxy only
+    controls.module.css        — supplemental styles; --lb-* tokens only; Phase X adds browseLibraryBtn, mediaLibrary* classes
 ```
 
 All CSS is in `apps/merchant-control-plane/src/app/globals.css` (FOREIGN WIP FILE). The editor uses the `theme-os-*` token system throughout — no raw px or hex values.
@@ -266,7 +268,7 @@ Three view modes keyed on `selection.kind`:
 | `richtext` | `TextareaInput` | M (frozen) | Same as textarea; no rich editor widget; no ARIA distinction |
 | `radio` | `RadioInput` | M (frozen) | Button-group pills; `role="group"` + per-option `role="radio" aria-checked` |
 | `color` | `ColorInput` | M (frozen) | Colour picker + hex text |
-| `image` | `ImageInput` | M (frozen) | URL text + upload to `/api/stores/[store]/upload`; storeName-gated |
+| `image` | `ImagePickerControl` | X | URL text + upload + Browse Library button (opens MediaLibrary modal); storeName-gated; `isUnsafeUrl` guard on library-selected URLs |
 | `select` | `SelectInput` | M (frozen) | Native `<select>` from `field.options` |
 | `toggle` | `ToggleInput` | M (frozen) | Slide switch; `role="switch" aria-checked` |
 | `range` | `RangeInput` | M (frozen) | `input[type=range]`; min/max/step wired (Phase U fix) |
@@ -338,6 +340,91 @@ Keyboard: `ArrowDown` / `ArrowUp` navigate options; `Enter` selects; `Escape` cl
 
 For the binding descriptor model and render-time resolution, see `docs/storefront-theme-platform/phase-w/DYNAMIC_SOURCES_REFERENCE.md`.
 
+### 6.4 ImagePickerControl (Phase X — Browse Library)
+
+Source: `apps/merchant-control-plane/src/components/theme-editor/controls/ImagePickerControl.tsx`
+
+Phase X replaces the inline `ImageInput` for the `'image'` schema type with `ImagePickerControl`, which adds a Browse Library button that opens the `MediaLibrary` modal.
+
+**Props:**
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `value` | `string \| null` | Yes | Current image URL |
+| `onChange` | `(url: string) => void` | Yes | Emits URL string only (RISK-DUAL-N01) |
+| `storeName` | `string` | No | Store URL path param; enables Browse Library branch |
+| `label` | `string` | No | Accessible label |
+| `helpText` | `string` | No | Help text |
+
+**Branches:**
+
+- **URL text field** (always present): backward-compat; same as pre-X `ImageInput`. `isUnsafeUrl` guard on `handleUrlChange`.
+- **File upload** (always present): POSTs to `/api/stores/{storeName}/upload` (pre-X path, unchanged).
+- **Browse Library button** (when `storeName` is supplied): opens `MediaLibrary` modal with `mediaType="image"`. `handleLibrarySelect` applies `isUnsafeUrl` guard before calling `onChange`.
+
+**Safety guards:**
+
+- `isUnsafeUrl` is imported from `@/lib/theme-schemas` and applied on both the URL text path and the library-selected URL path.
+- SVG rejection: the `MediaLibrary` component rejects `image/svg+xml` at the client-side `validateUploadFile` step before any R2 upload. A library-selected URL is also checked by `isUnsafeUrl` (which recognises `data:image/svg+xml` prefix). Double-layer defence.
+- `onChange` emits a URL string only. RISK-DUAL-N01 is preserved.
+
+**SchemaFormRenderer wiring:** `case 'image':` in `SchemaFormRenderer.tsx` renders `<ImagePickerControl label={...} value={...} onChange={...} storeName={storeName} helpText={...} />`. The `storeName` prop is threaded from `SchemaFormRenderer`'s own prop (not hardcoded).
+
+### 6.5 MediaLibrary (Phase X — Modal Grid Picker)
+
+Source: `apps/merchant-control-plane/src/components/theme-editor/controls/MediaLibrary.tsx`
+
+`MediaLibrary` is a full-screen modal grid picker for browsing and selecting previously uploaded images or videos. It is opened by `ImagePickerControl` (for images) and `VideoControl` (for videos via `mediaType="video"`).
+
+**Props:**
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `storeName` | `string` | Yes | Store URL path param; used in same-origin proxy URL |
+| `mediaType` | `'image' \| 'video' \| 'all'` | No | Filter passed to the proxy; default `'all'` |
+| `onSelect` | `(url: string) => void` | Yes | Called with the selected asset URL; caller guards with `isUnsafeUrl` |
+| `onClose` | `() => void` | Yes | Called on Escape or close button |
+
+**States:** Loading skeleton → grid of thumbnail cells → empty state (no media) → error state (network/503). All three non-success states are distinct rendered branches with accessible labels.
+
+**Grid layout:** CSS 2-column default; 3-column at ≥ 400 px (CSS breakpoint in `controls.module.css`). `ResizeObserver` on the grid element reads `getComputedStyle().gridTemplateColumns` to keep a `gridCols` React state value accurate across CSS breakpoints.
+
+**Keyboard navigation:**
+
+| Key | Action |
+|---|---|
+| `ArrowRight` | Move focus to next cell (or wrap to next row) |
+| `ArrowLeft` | Move focus to previous cell (or wrap to previous row) |
+| `ArrowDown` | Move focus down one row (`activeIndex + gridCols`) |
+| `ArrowUp` | Move focus up one row (`activeIndex - gridCols`) |
+| `Enter` / `Space` | Select focused cell → `onSelect(url)` |
+| `Escape` | Close modal → `onClose()` |
+
+`activeIndex` state drives focus: a `useEffect` calls `cellRefs.current[activeIndex]?.focus()` on every `activeIndex` change, ensuring the DOM focus moves with the keyboard. ArrowDown/Up arithmetic uses the `gridCols` state (not a hardcoded constant) so it remains correct when the CSS breakpoint changes the number of columns.
+
+**ARIA structure:**
+
+```html
+<div role="dialog" aria-modal="true" aria-labelledby="media-library-title">
+  <h2 id="media-library-title">Media Library</h2>
+  <!-- search input, type filter, close button -->
+  <div role="grid">
+    <div role="gridcell" aria-label="Select {filename}" tabIndex={0 or -1}>
+      <img aria-hidden="true" src={url} />
+    </div>
+    <!-- … -->
+  </div>
+</div>
+```
+
+`<img>` carries `aria-hidden="true"` so screen readers announce only the parent `gridcell` label and do not double-announce the filename.
+
+**Upload affordance:** a file input inside the modal accepts images and videos (excluding `image/svg+xml`). `validateUploadFile` runs client-side MIME + size checks before posting to `/api/stores/{storeName}/upload`. On success the grid refreshes.
+
+**NOT-CONNECTED:** the proxy fetches from `/api/stores/{storeName}/themes/media-library`. If R2 or the `media` table is unavailable the component shows the error state and does not crash. See `docs/storefront-theme-platform/phase-x/MEDIA_LIBRARY_REFERENCE.md` §8 for the full NOT-CONNECTED inventory.
+
+For the complete API contract, storage architecture, MIME policy, and testing reference, see `docs/storefront-theme-platform/phase-x/MEDIA_LIBRARY_REFERENCE.md`.
+
 ---
 
 ## 7. Undo / Redo
@@ -408,6 +495,8 @@ Same POST as `syncPreviewDraft` but:
 `baseConfig` holds the draft configuration as returned by the editor API at load time. `buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)` merges the mutable `editorState` (sections, settings, selected template) over `baseConfig`. The immutable `section_definitions` and `block_definitions` (Liquid source) always come from `baseConfig`, never from `editorState`. This mechanically enforces RISK-DUAL-N01.
 
 **Phase V extension:** `TemplateSwitcherPanel.onChange(key)` emits only the key string; the caller passes it as `selectedTemplateKey` to `buildDraftConfig`. The panel never receives `section_definitions` or `block_definitions` — it has no props for them. `onCreateAlternate(baseType)` is an intent signal only; the caller is responsible for creating a `ThemeDocumentTemplate` instance via the normal `applyChange()` + `buildDraftConfig()` path. RISK-DUAL-N01 is preserved.
+
+**Phase X extension:** `ImagePickerControl.onChange(url)` and `VideoControl.handleLibrarySelect(url)` both emit only a URL string. Neither component receives a `DynamicSourceDescriptor`. When a merchant selects an asset from the `MediaLibrary` modal, the URL is checked by `isUnsafeUrl` and then emitted via `onChange`. The caller (`SchemaFormRenderer` → `applyChange()`) is responsible for any wrapping. RISK-DUAL-N01 is preserved for both new controls.
 
 ---
 
@@ -590,16 +679,17 @@ type EditorSelection =
 | RISK-PERF-N01 | LOW | Large document serialization on each draft save | `buildDraftConfig` sends only mutable state; Liquid source comes from `baseConfig` not re-serialized |
 | RISK-SEC-002 | INFO | AI hooks are stubs; must not be presented as connected | Phase AC |
 | RISK-R01 | LOW | **CLOSED (Phase T)** — `BlockEntry.children` added to canonical type; remaining four shared types still mirrored | Next substantive `page.tsx` touch |
-| RISK-T05 | MEDIUM | `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead | Phase X or first `SectionTreePanel.tsx` touch |
-| RISK-T04 | LOW | `RENDERER_MAX_BLOCK_DEPTH` is private — depth parity test cannot directly assert it | Phase X or first `theme-renderer.ts` touch |
-| RISK-SEC-U01 | MEDIUM | `isUnsafeUrl` narrow blocklist — `data:image/svg+xml`, `data:text/javascript`, `blob:` not blocked | Phase X |
-| RISK-SEC-U02 | MEDIUM | `ColorBackgroundControl` gradient mode: no `url()` CSS content check | Phase X |
-| RISK-SEC-U03 | MEDIUM | `required: true` on `checkbox`/`toggle` is a validation no-op | Phase X |
-| RISK-A11Y-U01 | MEDIUM | `TextInput`/`TextareaInput` missing `aria-describedby` on error element | Phase X |
-| RISK-A11Y-U02 | LOW | `CheckboxControl`/`FontPickerControl`/`ColorSchemeControl` ternary `aria-describedby` drops helpText when error present | Phase X |
-| RISK-STYLE-U01 | LOW | `LiquidControl` `fontSize: 12` raw pixel | Phase X |
-| RISK-STYLE-U02 | LOW | `controls.module.css` raw `px` spacing values (pre-Phase-W classes; new Phase W classes use tokens) | Phase X |
-| RISK-W01 | MEDIUM | `BINDING_BLOCKED_KEYS` parity with `BLOCKED_DROP_KEYS` not compile-time enforced | Phase X or first `dynamic-source-binding.ts` touch |
-| RISK-W04 | LOW | `ResourcePickerControl` `ArrowUp` from no-selection snaps to item 0 — WAI-ARIA 1.2 non-conformance | Phase X or first `ResourcePickerControl.tsx` touch |
-| RISK-W05 | LOW | Loading spinner invisible during 300 ms debounce window on first keystroke | Phase X or first `ResourcePickerControl.tsx` touch |
-| RISK-W06 | LOW | Block-level settings not resolved through `resolveDynamicSourceDescriptors` — raw descriptors reach Liquid | Phase X or first `theme-renderer.ts` touch |
+| RISK-T05 | MEDIUM | `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead | Phase Y or first `SectionTreePanel.tsx` touch |
+| RISK-T04 | LOW | `RENDERER_MAX_BLOCK_DEPTH` is private — depth parity test cannot directly assert it | Phase Y or first `theme-renderer.ts` touch |
+| RISK-SEC-U01 | MEDIUM | `isUnsafeUrl` narrow blocklist — `data:image/svg+xml`, `data:text/javascript`, `blob:` not blocked | **PARTIALLY ADDRESSED Phase X** — `isUnsafeUrl` extended to cover SVG data URIs and `blob:` in hardening; remaining `data:text/javascript` entries carried to Phase Y |
+| RISK-SEC-U02 | MEDIUM | `ColorBackgroundControl` gradient mode: no `url()` CSS content check | Phase Y or first `ColorBackgroundControl.tsx` touch |
+| RISK-SEC-U03 | MEDIUM | `required: true` on `checkbox`/`toggle` is a validation no-op | Phase Y or first `SchemaFormRenderer.tsx` touch |
+| RISK-A11Y-U01 | MEDIUM | `TextInput`/`TextareaInput` missing `aria-describedby` on error element | Phase Y or first `TextInput.tsx`/`TextareaInput.tsx` touch |
+| RISK-A11Y-U02 | LOW | `CheckboxControl`/`FontPickerControl`/`ColorSchemeControl` ternary `aria-describedby` drops helpText when error present | Phase Y or first affected control touch |
+| RISK-STYLE-U01 | LOW | `LiquidControl` `fontSize: 12` raw pixel | Phase Y or first `LiquidControl.tsx` touch |
+| RISK-STYLE-U02 | LOW | `controls.module.css` raw `px` spacing values (pre-Phase-W classes; Phase X new classes use tokens) | Phase Y or first `controls.module.css` token-pass touch |
+| RISK-W01 | MEDIUM | `BINDING_BLOCKED_KEYS` parity with `BLOCKED_DROP_KEYS` not compile-time enforced | Phase Y or first `dynamic-source-binding.ts` touch |
+| RISK-W04 | LOW | `ResourcePickerControl` `ArrowUp` from no-selection snaps to item 0 — WAI-ARIA 1.2 non-conformance | Phase Y or first `ResourcePickerControl.tsx` touch |
+| RISK-W05 | LOW | Loading spinner invisible during 300 ms debounce window on first keystroke | Phase Y or first `ResourcePickerControl.tsx` touch |
+| RISK-W06 | LOW | Block-level settings not resolved through `resolveDynamicSourceDescriptors` — raw descriptors reach Liquid | Phase Y or first `theme-renderer.ts` touch |
+| RISK-X01 | LOW | R2 key path is user-scoped (`user.id`) not site-scoped — no cross-user isolation within a site bucket prefix | Phase Y or first storage-architecture review |

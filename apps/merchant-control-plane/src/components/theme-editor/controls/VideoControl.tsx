@@ -9,14 +9,17 @@
  * - URL field: guards against unsafe protocols (isUnsafeUrl check).
  * - File upload: posts to /api/stores/[store]/upload (same endpoint as image).
  * - storeName-gated: upload is disabled without storeName context.
+ * - Phase X: "Browse Library" button opens MediaLibrary with mediaType='video'.
+ *   All existing behaviour (URL entry, file upload) is unchanged (additive only).
  *
  * RISK-DUAL-N01: receives value + onChange; never mutates the schema object.
  */
 
-import { useState, useId, type ChangeEvent } from 'react'
+import { useState, useId, useCallback, type ChangeEvent } from 'react'
 import type { ExtendedSchemaField } from '@/lib/theme-schemas'
 import { validateFieldValue, isUnsafeUrl } from '@/lib/theme-schemas'
 import { Button, Input, MaterialIcon } from '@letbuyy/ui'
+import { MediaLibrary } from './MediaLibrary'
 import styles from './controls.module.css'
 
 interface VideoControlProps {
@@ -38,9 +41,27 @@ export function VideoControl({ field, value, onChange, storeName }: VideoControl
     const id = useId()
     const [isUploading, setIsUploading] = useState(false)
     const [uploadError, setUploadError] = useState<string | null>(null)
+    // Phase X: media library state
+    const [isLibraryOpen, setIsLibraryOpen] = useState(false)
     const schemaError = validateFieldValue(field, value)
     const error = schemaError || uploadError
     const helpText = field.info || field.description
+
+    // Phase X: handle selection from media library
+    const handleLibrarySelect = useCallback(
+        (url: string) => {
+            // Guard against unsafe protocols from the library (mirrors handleUrlChange
+            // which already rejects unsafe URLs on manual text entry). Mitigated in
+            // production by R2 always producing HTTPS CDN URLs, but adding the check
+            // here closes the gap for local-dev data: URIs or a hypothetical DB
+            // insertion of a malicious URL.
+            if (url && isUnsafeUrl(url)) return
+            // RISK-DUAL-N01: emit URL only; never touches section_definitions
+            onChange(url)
+            setIsLibraryOpen(false)
+        },
+        [onChange]
+    )
 
     const handleUrlChange = (raw: string) => {
         // Reject unsafe protocols immediately
@@ -89,6 +110,7 @@ export function VideoControl({ field, value, onChange, storeName }: VideoControl
     }
 
     return (
+        <>
         <div className="te-field">
             <label htmlFor={id} className="te-field-label">
                 {field.label}
@@ -118,12 +140,26 @@ export function VideoControl({ field, value, onChange, storeName }: VideoControl
                         unstyled
                         className="te-field-file-input"
                         type="file"
-                        accept="video/*"
+                        accept="video/mp4,video/webm,video/quicktime"
                         disabled={isUploading}
                         onChange={handleFileChange}
                         aria-label="Upload video file"
                     />
                 </label>
+
+                {/* Phase X: Browse library button (additive — all existing behaviour unchanged) */}
+                {storeName ? (
+                    <Button
+                        unstyled
+                        type="button"
+                        className={styles.browseLibraryBtn}
+                        onClick={() => setIsLibraryOpen(true)}
+                        aria-label={`Browse media library for ${field.label}`}
+                    >
+                        <MaterialIcon name="video_library" size={15} aria-hidden />
+                        Browse library
+                    </Button>
+                ) : null}
 
                 {error ? (
                     <p id={`${id}-error`} className={styles.fieldError} role="alert">
@@ -136,5 +172,16 @@ export function VideoControl({ field, value, onChange, storeName }: VideoControl
                 ) : null}
             </div>
         </div>
+
+        {/* Phase X: MediaLibrary modal — rendered outside the field div for correct stacking */}
+        {isLibraryOpen && storeName ? (
+            <MediaLibrary
+                storeName={storeName}
+                mediaType="video"
+                onSelect={handleLibrarySelect}
+                onClose={() => setIsLibraryOpen(false)}
+            />
+        ) : null}
+        </>
     )
 }

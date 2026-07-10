@@ -57,8 +57,13 @@ import { SchemaRegistryExecutionAdapter } from '../execution/schema-registry-exe
 import { ThemeExecutionAdapter } from '../execution/theme-execution.adapter';
 import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
 import resourceSearchRouter from './resource-search';
+import mediaLibraryRouter from './themes/media-library';
 
 const router = new Hono<{ Bindings: Env }>();
+
+// Phase X — media-library registered BEFORE resource-search and all /:slug/* catch-alls
+// to prevent route-shadowing ambiguity. Read-only picker; ES256 merchant auth required.
+router.use('/media-library', authMiddleware);
 
 // Phase W — resource-search registered FIRST (static path, before all /:slug/* catch-all
 // middleware registrations) to prevent route-shadowing ambiguity.
@@ -575,6 +580,9 @@ router.get('/industries', async (c) => {
 });
 
 mountThemeMarketplaceAuxiliaryRoutes(router);
+
+// Phase X — media-library sub-router (static path; must appear before /:slug catch-alls)
+router.route('/media-library', mediaLibraryRouter);
 
 // Phase W — resource-search sub-router (static path; must appear before /:slug catch-alls)
 router.route('/resource-search', resourceSearchRouter);

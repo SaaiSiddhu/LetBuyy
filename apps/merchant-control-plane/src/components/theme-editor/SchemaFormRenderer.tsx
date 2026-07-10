@@ -37,6 +37,8 @@ import { VideoControl } from './controls/VideoControl'
 import { VideoUrlControl } from './controls/VideoUrlControl'
 import { FieldHeader, FieldParagraph } from './controls/InfoControls'
 import { ResourcePickerControl } from './controls/ResourcePickerControl'
+// Phase X: image browsing via MediaLibrary picker
+import { ImagePickerControl } from './controls/ImagePickerControl'
 
 interface SchemaFormRendererProps {
     schema: Record<string, ExtendedSchemaField>
@@ -135,8 +137,10 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
                 />
             )
         case 'image':
+            // Phase X: replaced with ImagePickerControl (adds Browse Library button).
+            // Backward compat: plain URL entry works identically (RISK-DUAL-N01 preserved).
             return (
-                <ImageInput
+                <ImagePickerControl
                     label={field.label}
                     value={String(value ?? '')}
                     onChange={handleChange}
@@ -274,6 +278,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
             return <FieldParagraph field={field} />
 
         // Resource pickers: product / collection / blog / page / menu
+        // Phase W: pass storeName so ResourcePickerControl can use live search.
         case 'product':
         case 'collection':
         case 'blog':
@@ -284,6 +289,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
                     field={field}
                     value={String(value ?? '')}
                     onChange={handleChange}
+                    storeName={storeName}
                 />
             )
 
