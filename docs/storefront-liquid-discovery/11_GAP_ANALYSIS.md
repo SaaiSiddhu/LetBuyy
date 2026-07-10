@@ -734,3 +734,47 @@ Phase I is test-only: 48 new tests authored across 4 files, adversarial review, 
 | H-F3 | LOW | `packages/theme-engine/src/theme-artifact-exporter.ts:76–79` | `settings_data` exported without BLOCKED_DROP_KEYS filter |
 
 *Phase I amendment 2026-07-10 | QA certification by subagent | Evidence: docs/storefront-liquid-discovery/phase-i/PHASE_I_REPORT.md + QA_CERTIFICATION.md*
+
+---
+
+## 18. Phase K Amendment — Theme Platform Primitives (2026-07-10)
+
+Phase K is a **pure library addition**. No render-path, gateway, storefront-runtime, database, or governance-constant code was changed. Five new modules were added to `packages/theme-engine/src/`. Test gate: **theme-engine 311/311 PASS** (was 221; +90); **storefront-runtime 133/133 PASS** (was 78; +55 via K5 contract tests).
+
+### Enterprise Gap Coverage — updated rows (§9)
+
+| Capability Area | Before Phase K | After Phase K |
+|---|---|---|
+| **Theme versioning / compat** | Integer `release_version` + rollback connected; semantic versioning absent; no compat-range comparator; no upgrade planner | **~70%, IMPLEMENTED** — epoch comparator + compat checker (`theme-version.ts:K1`); upgrade planner composing migrations + settings diff + risk level (`theme-upgrade.ts:K2`); install-validation pipeline 5 stages (`theme-install.ts:K3`); publish manifest builder (`theme-publish.ts:K4`). Gateway-side persistence routes are future scope. |
+| **Theme marketplace / publish surface** | No publish contract; no event shapes; `install_count`/`review_count` are query-time aggregates with no event contract | **Contract DEFINED, NOT-CONNECTED** — `ThemeAnalyticsEvent` discriminated union (5 event types); `describeThemeMetrics` with `connected: false` + exact source per field; `describeThemeEventEmissionPoints` with `implemented: false` per event (`theme-analytics.ts:K6`). Live values remain NOT-CONNECTED. |
+| **Developer experience (theme validation)** | `validateTheme` (Zod + G4 gate) and `lintThemeBundle` existed but no composed pre-publish pipeline | **~80%, IMPLEMENTED** — `validateThemeInstall` composes schema gate + lint + compat-range + checksum + migration readiness in one call. No new gateway route yet. |
+
+### Plan item updates (§11)
+
+| Plan Item | Before Phase K | After Phase K |
+|-----------|---------------|---------------|
+| **P6-1** — Version / compat comparator for `compatibility_range` epoch strings | OPEN (gap K-G1/K-G2) | **IMPLEMENTED (Phase K — K1)** — `theme-version.ts`; 31 tests; fail-closed design |
+| **P6-2** — Upgrade planner (section migration diff + settings diff + risk level) | OPEN (gap K-G3) | **IMPLEMENTED (Phase K — K2)** — `theme-upgrade.ts`; 12 tests; migration wiring no-op today |
+| **P6-3** — Install validation pipeline (5-stage pure function) | OPEN (gap K-G4) | **IMPLEMENTED (Phase K — K3)** — `theme-install.ts`; 13 tests; storefront 410 guard untouched |
+| **P6-4** — Publish manifest builder | OPEN (gap K-G5) | **IMPLEMENTED (Phase K — K4)** — `theme-publish.ts`; 17 tests; deterministic, gateway-owned persistence |
+| **P6-5** — Analytics event contract + emission-point annotations | OPEN (gap K-G6) | **IMPLEMENTED (Phase K — K6)** — `theme-analytics.ts`; 17 tests; all `connected:false` / `implemented:false` |
+| **K5** — Source-contract tests for freeze + H/G foundation exports | New (Lane-B) | **IMPLEMENTED (Phase K — K5)** — `tests/launch/lb-k-theme-platform.test.mjs`; 55 tests wired into storefront-runtime |
+
+### Test Gate (Phase K baseline)
+
+| Suite | Result | Baseline Progression |
+|---|---|---|
+| `pnpm typecheck test --filter=@letbuyy/theme-engine` | **311/311 PASS** | I 221 → K **311** (+90) |
+| `pnpm typecheck test --filter=@letbuyy/storefront-runtime` | **133/133 PASS** | I 78 → K **133** (+55) |
+| `pnpm typecheck --filter=@letbuyy/api-gateway` | **32 turbo tasks, exit 0** | Unchanged |
+| `pnpm typecheck test --filter=@letbuyy/merchant-control-plane` | **15/15 PASS** | Unchanged |
+
+### Phase K findings requiring follow-on work
+
+| ID | Severity | File | Summary |
+|---|---|---|---|
+| K-F1 | MEDIUM | `packages/theme-engine/test/theme-version.test.ts` | Test `'^ with different family returns false'` exercises same-family (`true`) path; cross-family rejection untestable with one-entry epoch list |
+| K-F2 | LOW | `packages/theme-engine/test/theme-install.test.ts` | Stage 3 compat-range path in `validateThemeInstall` not independently exercised; unknown `schema_version` causes Stage 1 to fire first |
+| K-F3 | LOW | `apps/app-marketplace/next-env.d.ts`, `apps/developer-portal/next-env.d.ts` | Auto-generated Next.js files dirty before Phase K; not a Phase K deliverable |
+
+*Phase K amendment 2026-07-10 | Theme platform primitives by documentation engineer | Evidence: docs/storefront-liquid-discovery/phase-k/PHASE_K_REPORT.md + THEME_PLATFORM_CONTRACT.md*

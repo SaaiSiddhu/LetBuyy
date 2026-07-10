@@ -28,6 +28,12 @@ export * from './theme-sdk';
 export * from './theme-artifact-exporter';
 export * from './theme-linter';
 export * from './theme-packager';
+// Phase K — theme platform primitives
+export * from './theme-version';
+export * from './theme-upgrade';
+export * from './theme-install';
+export * from './theme-publish';
+export * from './theme-analytics';
 
 export type BuiltInSectionType =
   | 'header'

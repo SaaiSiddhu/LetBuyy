@@ -875,4 +875,65 @@ Phase H delivered the public SDK facade, Liquid artifact exporter, linter, packa
 
 ---
 
-*Document generated 2026-07-03 | Branch: stepup/main | Status: PARTIALLY IMPLEMENTED (Phase H) | Sources: 29 unique source files + 13 domain findings reports + docs/storefront-liquid-discovery/11_GAP_ANALYSIS.md | Auditor: Claude Sonnet 4.6 | Amended: 2026-07-04 (Phase D additions, Phase E additions) | Amended: 2026-07-05 (Phase F, Phase G, Phase H additions)*
+---
+
+## Phase K Amendment — Theme Platform Primitives (2026-07-10)
+
+Phase K is a **pure library addition**. No render-path, gateway, storefront-runtime, database, or governance-constant code was changed. Test gate: **theme-engine 311/311 PASS** (was 221; +90); **storefront-runtime 133/133 PASS** (was 78; +55 via K5 contract tests).
+
+### Phase 6 plan items delivered
+
+Phase K constitutes the Phase 6 plan block — theme platform primitives. The plan items below are all net-new (no P5-* item is modified).
+
+| # | Item | Classification | Verification Gate |
+|---|---|---|---|
+| **P6-1** | Epoch comparator for `compatibility_range` date-string fields — `parseSchemaRange`, `satisfiesSchemaRange`, `isThemeBundleSchemaCompatible` | PURE-LIBRARY | `test/theme-version.test.ts` 31 tests — PASS |
+| **P6-2** | Upgrade planner — `planThemeUpgrade({ installed, next }): ThemeUpgradePlan` composing migration registry + settings diff + risk classification | PURE-LIBRARY | `test/theme-upgrade.test.ts` 12 tests — PASS |
+| **P6-3** | Install validation pipeline — `validateThemeInstall({ bundle, targetSlug? }): ThemeInstallValidationResult` — 5-stage pure function; storefront 410 guard untouched | PURE-LIBRARY | `test/theme-install.test.ts` 13 tests — PASS |
+| **P6-4** | Publish manifest builder — `buildThemePublishManifest(bundle): ThemePublishManifest` — deterministic; gateway-owned persistence | PURE-LIBRARY | `test/theme-publish.test.ts` 17 tests — PASS |
+| **P6-5** | Analytics event contract — `ThemeAnalyticsEvent` (5 event union); `describeThemeMetrics` with `connected:false`; `describeThemeEventEmissionPoints` with `implemented:false` | PURE-LIBRARY | `test/theme-analytics.test.ts` 17 tests — PASS |
+| **K5** | Source-contract tests — freeze assertions + H/G foundation export coverage | PURE-LIBRARY | `tests/launch/lb-k-theme-platform.test.mjs` 55 tests wired into storefront-runtime — PASS |
+
+### Phase 5 items — Phase K disposition
+
+The Phase 5 plan items remain unchanged after Phase K. Phase K does not advance P5-1 (authoring pipeline) or P5-2 (CI linter wire). The Phase H finding H-F1 (confirmed CLOSED by Phase J review) means `lintThemeBundle` correctly iterates `FORBID_ATTR`.
+
+| P5 Item | Status after Phase K |
+|---------|---------------------|
+| P5-1: On-disk `.liquid` file authoring pipeline (source-of-truth flip) | **STILL OPEN** — Phase H exported `.liquid` view artifacts; source-of-truth remains TypeScript |
+| P5-2: Theme Check / linter in CI | **STILL OPEN** — `lintThemeBundle` exists; not yet wired into `validate-governance.mjs` |
+| P5-3: Snippets / partials (`{% render %}` alternative) | OPEN |
+| P5-4: `{% paginate %}` tag | OPEN |
+
+### Freeze compliance (confirmed Phase K)
+
+Phase K Lane-B 55 contract tests formally enforce the following at every test run:
+
+- `apps/storefront-runtime/src/app/api/themes/install/route.ts` returns 410 — no bypass path added
+- `apps/theme-marketplace`, `apps/app-marketplace`, `apps/developer-portal` — all three confirmed `frozen-next-app` / `frozen-not-deployed` via `runtime.manifest.json` assertions
+- `config/runtime/production-topology.json` records all three as `status: "frozen"` with empty `deploymentManifests`
+- Gateway symbols for all theme DB writes are confirmed present at declared file paths
+
+### New Phase K findings
+
+| ID | Severity | File | Summary | Owner |
+|----|----------|------|---------|-------|
+| K-F1 | MEDIUM | `packages/theme-engine/test/theme-version.test.ts` | `'^ with different family returns false'` test name is misleading — exercises same-family (`true`) path; cross-family rejection untestable with single-entry epoch list | Future Phase when second epoch is added |
+| K-F2 | LOW | `packages/theme-engine/test/theme-install.test.ts` | Stage 3 compat-range rejection not independently exercised inside `validateThemeInstall` pipeline | Future Phase |
+| K-F3 | LOW | `apps/app-marketplace/next-env.d.ts`, `apps/developer-portal/next-env.d.ts` | Auto-generated dirty files from before Phase K; not a Phase K deliverable | No action needed |
+
+### Risk register row updates
+
+| Risk | After Phase K |
+|------|---------------|
+| **K-G1/K-G2** (epoch comparator / compat checker) | **CLOSED (Phase K — K1)** — pure closed comparator; fail-closed; 31 tests |
+| **K-G3** (upgrade planner) | **CLOSED (Phase K — K2)** — `planThemeUpgrade`; no-op today (empty migration registry); 12 tests |
+| **K-G4** (install validation pipeline) | **CLOSED (Phase K — K3)** — `validateThemeInstall`; 5-stage; 13 tests |
+| **K-G5** (publish manifest) | **CLOSED (Phase K — K4)** — `buildThemePublishManifest`; deterministic; 17 tests |
+| **K-G6** (analytics contract) | **CLOSED (Phase K — K6)** — all `connected:false` / `implemented:false`; 17 tests |
+
+*Phase K amendment 2026-07-10 | Theme platform primitives by documentation engineer | Evidence: docs/storefront-liquid-discovery/phase-k/PHASE_K_REPORT.md + THEME_PLATFORM_CONTRACT.md*
+
+---
+
+*Document generated 2026-07-03 | Branch: stepup/main | Status: PARTIALLY IMPLEMENTED (Phase K) | Sources: 29 unique source files + 13 domain findings reports + docs/storefront-liquid-discovery/11_GAP_ANALYSIS.md | Auditor: Claude Sonnet 4.6 | Amended: 2026-07-04 (Phase D additions, Phase E additions) | Amended: 2026-07-05 (Phase F, Phase G, Phase H additions) | Amended: 2026-07-10 (Phase K additions)*

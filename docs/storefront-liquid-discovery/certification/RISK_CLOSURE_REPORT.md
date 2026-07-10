@@ -573,3 +573,88 @@ Phase J scope: `docs/storefront-liquid-discovery/phase-j/` (5 new documents), `d
 ---
 
 *End of Risk Closure Report — amended 2026-07-10 (Phase J Production Rollout Readiness)*
+
+---
+
+---
+
+## 14. Phase K Amendment — Theme Platform Primitives (2026-07-10)
+
+Phase K is a **pure library addition**. No render-path, gateway, storefront-runtime, database, or governance-constant code was changed. Five new modules were added to `packages/theme-engine/src/`, along with a 12-section contract document, 55 source-contract tests, and 90 unit tests. Test gate: **theme-engine 311/311 PASS** (was 221; +90); **storefront-runtime 133/133 PASS** (was 78; +55).
+
+### 14.1 Updated Summary Counts
+
+| Category | Phase J Count | Phase K Change | Updated Count |
+|---|---|---|---|
+| CLOSED-VERIFIED (Phase B static) | 12 | +0 | 12 |
+| CLOSED-IMPLEMENTED (Phase C) | 5 | +0 | 5 |
+| CLOSED-IMPLEMENTED (Phase D) | 7 | +0 | 7 |
+| CLOSED-IMPLEMENTED (Phase E) | 3 | +0 | 3 |
+| CLOSED-IMPLEMENTED (Phase F) | 1 | +0 | 1 |
+| PARTIALLY-CLOSED-IMPLEMENTED (Phase F) | 2 | +0 | 2 |
+| CLOSED-STRUCTURAL (Phase G) | 1 | +0 | 1 |
+| CLOSED-IMPLEMENTED (Phase G) | 2 | +0 | 2 |
+| MITIGATED (Phase G) | 1 | +0 | 1 |
+| PARTIALLY-CLOSED-IMPLEMENTED (Phase H) | 1 | +0 | 1 |
+| PARTIAL-IMPLEMENTED (Phase D) | 1 | +0 | 1 |
+| OPEN-CONFIRMED-RISK | 11 | +0 | 11 |
+| OPEN-UNVERIFIABLE | 1 | +0 | 1 |
+| REFUTED | 7 | +0 | 7 |
+| PARTIAL | 9 | +0 | 9 |
+
+> No register row status changes in Phase K. Phase K is a pure library primitive pass — it closes no previously open risks and introduces no new production code paths. Three adversarial findings were recorded (K-F1 MEDIUM, K-F2 LOW, K-F3 LOW); all are non-blocking and carry to future phases.
+
+### 14.2 Theme Platform Gap Closure (new gap register, Phase K)
+
+The six gaps identified in the Phase K Ground document were all closed by Lane-A. These are net-new capabilities that did not exist as prior gap register rows in the Phase B corpus; they are recorded here as the authoritative closure evidence.
+
+| Gap ID | Gap description | Phase K closure |
+|--------|----------------|-----------------|
+| **K-G1** | No epoch comparator for `compatibility_range` date-string fields; no `node-semver` dep exists anywhere in the workspace | **CLOSED (Phase K — K1)** — `theme-version.ts`: `parseSchemaRange`, `schemaVersionIndex`, `satisfiesSchemaRange`, `isThemeBundleSchemaCompatible` — fail-closed; 31 tests. |
+| **K-G2** | No function checking a bundle's `compatibility_range` against `KNOWN_LIQUID_BUNDLE_SCHEMA_VERSIONS` | **CLOSED (Phase K — K1)** — `isThemeBundleSchemaCompatible` composes the G4 gate + the epoch comparator. Result: `boolean` (fail-closed). |
+| **K-G3** | No upgrade/update planner composing section migrations + settings diff + risk classification | **CLOSED (Phase K — K2)** — `theme-upgrade.ts`: `planThemeUpgrade` — composes `migrateThemeTemplateSchemasWithRegistry` (correctly wired, no-op today) + `groupSettingsFields` + comparator. 12 tests. |
+| **K-G4** | No install-validation pipeline (lint + schema gate + compat + checksum + section migration readiness) | **CLOSED (Phase K — K3)** — `theme-install.ts`: `validateThemeInstall` — 5-stage pure pipeline; stops at first blocking gate; slug coherence via `resolveCanonicalThemeSlug`. 13 tests. |
+| **K-G5** | No publish manifest builder; `ThemePackageManifest` (H5) covers content-addressed checksums but not the gateway-level semantic record for `theme_package_versions.release_manifest` | **CLOSED (Phase K — K4)** — `theme-publish.ts`: `buildThemePublishManifest` — deterministic, no timestamps, no random values; SHA-256 `content_hash` via H5 delegation. 17 tests. |
+| **K-G6** | No analytics event shapes or emission-point annotations; query-time DB aggregates (`install_count` etc.) have no event contract | **CLOSED (Phase K — K6)** — `theme-analytics.ts`: `ThemeAnalyticsEvent` (5 event union), `describeThemeMetrics` (4 metrics with `connected: false` + exact source), `describeThemeEventEmissionPoints` (5 events with `implemented: false`). 17 tests. |
+
+### 14.3 Freeze Compliance (Confirmed in Phase K)
+
+Phase K Lane-B's 55 contract tests (`tests/launch/lb-k-theme-platform.test.mjs`) formally assert the freeze boundaries on every test run:
+
+| Assertion | Evidence |
+|-----------|---------|
+| `apps/storefront-runtime/src/app/api/themes/install/route.ts` returns 410 | Test group "Storefront install route freeze" (2 tests) confirms the route body and no bypass was added |
+| `apps/theme-marketplace` is `frozen-next-app` with `frozen-not-deployed` authority | Test group "Frozen-app manifests" (5 tests per app) asserts `runtime.manifest.json` fields |
+| `apps/app-marketplace` is `frozen-next-app` with `frozen-not-deployed` authority | Same group |
+| `apps/developer-portal` is `frozen-next-app` with `frozen-not-deployed` authority | Same group |
+| `config/runtime/production-topology.json` records all three as `status: "frozen"` | Test group "Production topology" (1 test) |
+
+### 14.4 Phase K New Findings
+
+| ID | Severity | File | Summary | Disposition |
+|----|----------|------|---------|-------------|
+| **K-F1** | MEDIUM | `packages/theme-engine/test/theme-version.test.ts` | Test `'^ with different family returns false'` exercises same-family path (returns `true`), not the cross-family rejection. The `versionFamily` mismatch branch in `satisfiesSchemaRange` is architecturally untestable with a single-entry `KNOWN_LIQUID_BUNDLE_SCHEMA_VERSIONS`. Test name is misleading. | OPEN — when a second epoch is added to the known-versions list, a cross-family negative test must be added and the test name corrected. |
+| **K-F2** | LOW | `packages/theme-engine/test/theme-install.test.ts` | Stage 3 (compat-range) rejection in `validateThemeInstall` is never exercised independently — an unknown `schema_version` causes Stage 1 to fire first. A bundle with a known schema_version but an unresolvable `compatibility_range` is not covered. | OPEN — add a test with `schema_version` in the known list but `compatibility_range: '>=future-epoch-not-in-list'` to exercise Stage 3 independently. |
+| **K-F3** | LOW | `apps/app-marketplace/next-env.d.ts`, `apps/developer-portal/next-env.d.ts` | Auto-generated Next.js files whose import path changed from `.next/types/routes.d.ts` to `.next/dev/types/routes.d.ts`; these were dirty before Phase K and are not Phase K deliverables. | Not a Phase K issue — commit or reset independently. |
+
+### 14.5 Test Gate Baseline (Post Phase K)
+
+| Suite | Command | Result | Notes |
+|---|---|---|---|
+| theme-engine | `pnpm typecheck test --filter=@letbuyy/theme-engine` | **311/311 PASS** | +90 from Phase K (K1:31, K2:12, K3:13, K4:17, K6:17) |
+| storefront-runtime | `pnpm typecheck test --filter=@letbuyy/storefront-runtime` | **133/133 PASS** | +55 from Phase K (K5 contract tests) |
+| api-gateway typecheck | `pnpm typecheck --filter=@letbuyy/api-gateway` | **32 turbo tasks, exit 0** | Unchanged |
+
+### 14.6 UC-01 Row Update
+
+| ID | Prior Closure Status | Phase K Update |
+|---|---|---|
+| **UC-01** | Updated baseline at Phase I: theme-engine 221/221; storefront-runtime 78/78; merchant 15/15; api-gateway typecheck clean. | **Updated test baseline: theme-engine 311/311; storefront-runtime 133/133; api-gateway typecheck clean. merchant-control-plane 15/15 unchanged.** Phase K added 90 theme-engine tests (K1–K4, K6 unit tests) and 55 storefront-runtime tests (K5 contract tests). All baselines hold. |
+
+### 14.7 Phase K Scope Note
+
+Phase K scope: `packages/theme-engine/src/` (5 new modules), `packages/theme-engine/test/` (5 new test files), `docs/storefront-liquid-discovery/phase-k/` (contract doc + this report), `tests/launch/lb-k-theme-platform.test.mjs` (55 contract tests), `apps/storefront-runtime/package.json` (one-line test-script extension). No gateway, database migration, storefront-runtime source, identity-platform, or governance-constant changes. ART-17 frozen section registry untouched. DOMPurify config untouched. `THEME_LIQUID_RENDERING_DEFAULT_ENABLED` default unchanged. The three frozen apps are untouched. The 410 install route is untouched. Render path is byte-identical.
+
+---
+
+*End of Risk Closure Report — amended 2026-07-10 (Phase K Theme Platform Primitives)*
