@@ -693,3 +693,44 @@ Three findings were identified during Phase H implementation review:
 ---
 
 *Document generated 2026-07-03 | Branch: stepup/main | Auditor: Claude Sonnet 4.6 (subagent) | Status: PARTIALLY IMPLEMENTED (Phase H) | Sources: ~29 unique source files + 8 prior research documents reconciled | Amended: 2026-07-04 (Phase E additions) | Amended: 2026-07-05 (Phase F, Phase G, Phase H additions)*
+
+---
+
+## 17. Phase I Amendment — QA Certification (2026-07-10)
+
+Phase I is test-only: 48 new tests authored across 4 files, adversarial review, 3 hardening fixes. No product source modified.
+
+### Implementation Coverage Table — updated rows
+
+| Capability Area | Before Phase I | After Phase I |
+|---|---|---|
+| **Security Model (XSS / injection)** | 90%, IMPLEMENTED — DOMPurify + `outputEscape:'escape'`; `BLOCKED_DROP_KEYS` 13 keys; source schema FORBID lists; no automated security test suite | **90%, IMPLEMENTED + TEST-CONNECTED** — `qi-security.test.ts` (13 tests) now asserts DOMPurify FORBID_TAGS (base/embed/object), FORBID_ATTR (style=), SSTI non-evaluation, DROP depth/key limits, BLOCKED_DROP_KEYS completeness (13 keys), CSS injection in head assets, data-* XSS hook, javascript:/data: href block. SEC-6b covers real JSON.parse `__proto__` injection path. DAST (live browser, CSP enforcement) remains NOT-CONNECTED. New confirmed product bug: DOMPurify clobbering strips `name="name"` from customer-register form (I-F1, OPEN Phase J). |
+| **Customer Auth in Liquid** | 80%, IMPLEMENTED — HS256 JWT; `LiquidCustomerDrop`; register endpoint implemented; no test coverage for no-JS login form contract | **80%, IMPLEMENTED + TEST-CONNECTED** — `lb-storefront-ssr-contracts.test.mjs` (Phase I lane-b) adds 5 E8 tests: dual content-type dispatch, 303 redirect contract, same-origin guard, storeId form body extraction, storeId hidden field in Liquid login template. No-JS registration form `name="name"` attribute stripping tracked as I-F1 (HIGH, OPEN). |
+| **Hydration Islands** | 9/10 islands tested in `liquid-hydration-islands.test.mjs` (40 assertions); islands 5–9 + lb-logout SSR attribute contracts not covered | **10/10 islands covered** — `liquid-hydration-islands-parity.test.mjs` (Phase I lane-b, 13 tests) adds SSR parity for lb-review-form, lb-wishlist-toggle, lb-cart, lb-customer-settings, lb-address-manager; LIQUID_HYDRATION_CUSTOM_ELEMENTS completeness (all 10 tags); DOMPurify tagNameCheck + ADD_ATTR data-logout-url coverage; LiquidIslandBase server-safe guard for islands 5–9 + lb-logout; lb-logout no-JS form structural containment. Included in storefront-runtime 78/78 PASS. |
+
+### QA Coverage Row (new)
+
+| Capability Area | Coverage | Status | Missing Pieces | Risk Level |
+|---|---|---|---|---|
+| **QA / Test Coverage** | ~35% | PARTIAL | Unit (CONNECTED, 221+78+15 tests), Integration-contract (CONNECTED, 8 contract test files), Accessibility (CONNECTED, 8 A11Y tests — browser axe-core NOT-CONNECTED), Performance-benchmark (CONNECTED, F9 in-process gate — production profiling NOT-CONNECTED), Hydration (CONNECTED, 13+40 tests), SSR-contracts (CONNECTED, 13+140 tests), Regression (CONNECTED, all baselines hold). NOT-CONNECTED: SEO, Load, Stress, Memory, Browser E2E, Mobile, Visual-Diff, Chaos, DAST. Full enterprise QA requires live deployment + Playwright + k6 + Percy/Chromatic. See `docs/storefront-liquid-discovery/phase-i/QA_CERTIFICATION.md` for per-category breakdown. | MEDIUM |
+
+### Test Gate (Phase I baseline)
+
+| Suite | Result | Baseline Progression |
+|---|---|---|
+| `pnpm typecheck test --filter=@letbuyy/theme-engine` | **221/221 PASS** | Phase C 89 → D 101 → E 109 → F 157 → G 157 → H 198 → I **221** |
+| `pnpm typecheck test --filter=@letbuyy/storefront-runtime` | **78/78 PASS** | Phase C 19 → D 31 → E 52 → F 52 → G 52 → H 52 → I **78** |
+| `pnpm typecheck --filter=@letbuyy/api-gateway` | **32 turbo tasks, exit 0** | Unchanged |
+| `pnpm typecheck test --filter=@letbuyy/merchant-control-plane` | **15/15 PASS** | Unchanged |
+
+### Phase I findings requiring follow-on work (Phase J)
+
+| ID | Severity | File | Summary |
+|---|---|---|---|
+| I-F1 | HIGH | `packages/theme-engine/src/theme-bundle.ts` (customer-register template) | DOMPurify clobbering strips `name="name"` from register form — no-JS POST omits customer name; rename field to `customer_name` |
+| I-F3 | MEDIUM | `packages/theme-engine/test/qi-a11y.test.ts` (A11Y-5) | Test pins clobbered state as green without explicit failure marker; requires explicit xfail or TODO wrapper |
+| H-F1 | MEDIUM | `packages/theme-engine/src/theme-linter.ts:64` | `forbidAttrs` variable declared but never iterated |
+| H-F2 | MEDIUM | `packages/theme-engine/src/theme-artifact-exporter.ts:83–93` | Path-traversal via unsanitised template key |
+| H-F3 | LOW | `packages/theme-engine/src/theme-artifact-exporter.ts:76–79` | `settings_data` exported without BLOCKED_DROP_KEYS filter |
+
+*Phase I amendment 2026-07-10 | QA certification by subagent | Evidence: docs/storefront-liquid-discovery/phase-i/PHASE_I_REPORT.md + QA_CERTIFICATION.md*

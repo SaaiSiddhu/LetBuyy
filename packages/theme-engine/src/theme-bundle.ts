@@ -2426,7 +2426,11 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  <h1>{{ section.settings.heading }}</h1>',
           '  <form class="lb-auth__form" method="post" action="/api/customer/register">',
           '    <input type="hidden" name="storeId" value="{{ shop.id }}">',
-          '    <label>Name<input type="text" name="name" autocomplete="name"></label>',
+          // Field is named "fullName" (not "name"): DOMPurify 3.x DOM-clobbering protection strips
+          // name="name" from an <input> because the value "name" collides with the HTMLInputElement.name
+          // property, which would silently drop the customer name from a no-JS POST. The register route
+          // reads form.get("fullName") first (falling back to "name"), so this is the correct field name.
+          '    <label>Name<input type="text" name="fullName" autocomplete="name"></label>',
           '    <label>Email<input type="email" name="email" autocomplete="email" required></label>',
           '    <label>Password<input type="password" name="password" autocomplete="new-password" required></label>',
           '    <button type="submit">Create account</button>',

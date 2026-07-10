@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "cd ../.. && node --test tests/federation/web-app-contract-boundary.test.mjs tests/theme-engine/storefront-liquid-runtime.test.mjs tests/theme-engine/liquid-hydration-islands.test.mjs tests/theme-engine/editor-bridge-contract.test.mjs tests/launch/lb-e9-template-resolution.test.mjs tests/launch/lb-g-schema-governance.test.mjs tests/localization/theme-localization.test.mjs"
+    "test": "cd ../.. && node --test tests/federation/web-app-contract-boundary.test.mjs tests/theme-engine/storefront-liquid-runtime.test.mjs tests/theme-engine/liquid-hydration-islands.test.mjs tests/theme-engine/liquid-hydration-islands-parity.test.mjs tests/theme-engine/editor-bridge-contract.test.mjs tests/launch/lb-e9-template-resolution.test.mjs tests/launch/lb-g-schema-governance.test.mjs tests/launch/lb-storefront-ssr-contracts.test.mjs tests/localization/theme-localization.test.mjs"
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",

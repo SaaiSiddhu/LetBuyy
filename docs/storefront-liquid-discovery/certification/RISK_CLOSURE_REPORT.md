@@ -426,3 +426,74 @@ Phase H scope: `packages/theme-engine/src/` (5 new modules + index re-exports), 
 ---
 
 *End of Risk Closure Report — amended 2026-07-05 (Phase H additions)*
+
+---
+
+---
+
+## 12. Phase I Amendment — QA Certification (2026-07-10)
+
+Phase I is test-only: 48 new tests authored across 4 files (2 per lane), adversarial self-review, and 3 hardening fixes. No product source files were modified.
+
+### 12.1 Updated Summary Counts
+
+| Category | Phase H Count | Phase I Change | Updated Count |
+|---|---|---|---|
+| CLOSED-VERIFIED (Phase B static) | 12 | +0 | 12 |
+| CLOSED-IMPLEMENTED (Phase C) | 5 | +0 | 5 |
+| CLOSED-IMPLEMENTED (Phase D) | 7 | +0 | 7 |
+| CLOSED-IMPLEMENTED (Phase E) | 3 | +0 | 3 |
+| CLOSED-IMPLEMENTED (Phase F) | 1 | +0 | 1 |
+| PARTIALLY-CLOSED-IMPLEMENTED (Phase F) | 2 | +0 | 2 |
+| CLOSED-STRUCTURAL (Phase G) | 1 | +0 | 1 |
+| CLOSED-IMPLEMENTED (Phase G) | 2 | +0 | 2 |
+| MITIGATED (Phase G) | 1 | +0 | 1 |
+| PARTIALLY-CLOSED-IMPLEMENTED (Phase H) | 1 | +0 | 1 |
+| PARTIAL-IMPLEMENTED (Phase D) | 1 | +0 | 1 |
+| OPEN-CONFIRMED-RISK | 11 | +0 | 11 |
+| OPEN-UNVERIFIABLE | 1 | +0 | 1 |
+| REFUTED | 7 | +0 | 7 |
+| PARTIAL | 9 | +0 | 9 |
+
+> No register row status changes in Phase I. Phase I is a QA certification pass — it added tests that will detect future regressions; it did not close previously open risks. One new HIGH product bug (I-F1: DOMPurify clobbering strips `name="name"` from customer-register form) was discovered and is tracked for Phase J.
+
+### 12.2 Test Gate Baseline (Post Phase I)
+
+| Suite | Command | Result | Notes |
+|---|---|---|---|
+| theme-engine | `pnpm typecheck test --filter=@letbuyy/theme-engine` | **221/221 PASS** | Baseline was 199; +21 lane-a (8 A11Y + 13 SEC); +1 hardening (SEC-6b) |
+| storefront-runtime | `pnpm typecheck test --filter=@letbuyy/storefront-runtime` | **78/78 PASS** | Baseline was 52; +26 lane-b (13 hydration parity + 13 SSR contracts) |
+| api-gateway | `pnpm typecheck --filter=@letbuyy/api-gateway` | **32 turbo tasks, exit 0** | No type errors; unchanged |
+| merchant-control-plane | `pnpm typecheck test --filter=@letbuyy/merchant-control-plane` | **15/15 PASS** | Unchanged |
+
+### 12.3 UC-01 Row Update
+
+| ID | Prior Closure Status | Phase I Update |
+|---|---|---|
+| **UC-01** | CLOSED-IMPLEMENTED (Phase C) — "89/89 theme-engine tests pass; 19/19 storefront-runtime tests pass" (Phase C updated count from stale 56 to 89+7=96; Phase D→E→F→H updated to 101/31→109/52→157/52→198/52) | **Updated test baseline: theme-engine 221/221; storefront-runtime 78/78; merchant 15/15; api-gateway typecheck clean.** Phase I added 48 new tests across 4 files targeting enterprise QA categories (Accessibility 8, Security 13, Hydration 13, SSR 13). All baselines hold. |
+
+### 12.4 Phase I New Findings
+
+| ID | Severity | File | Summary | Disposition |
+|---|---|---|---|---|
+| **I-F1** | HIGH | `packages/theme-engine/src/theme-bundle.ts` (customer-register template) + `packages/theme-engine/src/theme-renderer.ts` (DOMPurify config) | DOMPurify 3.x clobbering guard strips `name="name"` from the customer-register `<input type="text">`; no-JS POST omits customer name; account created without name | **OPEN** — Phase J. Fix: rename form field to `customer_name` or suppress clobbering guard for that input. Test A11Y-5 now asserts `autocomplete="name"` as honest observable; a TODO comment documents the broken state. |
+| **I-F2** | HIGH | `packages/theme-engine/test/qi-security.test.ts` (original SEC-6) | `__proto__` sub-assertion tautological for JS literal path — always passed regardless of BLOCKED_DROP_KEYS | **FIXED (Phase I hardening)** — SEC-6b added to test the real JSON.parse injection path |
+| **I-F3** | MEDIUM | `packages/theme-engine/test/qi-a11y.test.ts` (A11Y-5) | Test pins clobbered state as passing without explicit xfail or skip marker; green CI hides the broken form field | **PARTIALLY MITIGATED** — honest observable + TODO comment added; explicit xfail mechanism deferred to Phase J |
+| **I-F4** | MEDIUM | `tests/launch/lb-storefront-ssr-contracts.test.mjs` (initial lb-logout regex) | lb-logout form-nesting assertion satisfied by JS comment text, not structural template containment | **FIXED (Phase I hardening)** — regex anchored to `<lb-logout\b[^>]*>` |
+| **I-F5** | LOW | `tests/launch/lb-storefront-ssr-contracts.test.mjs` (initial SEC-3a) | SSTI probe assertion used global `/\b49\b/` with implicit fixture-isolation coupling | **FIXED (Phase I hardening)** — narrowed to `/<p>[^<]*49[^<]*<\/p>/` |
+
+### 12.5 Phase H Findings — Phase I Disposition
+
+| ID | Severity | Summary | Phase I Disposition |
+|---|---|---|---|
+| **H-F1** | MEDIUM | `theme-linter.ts:64` — `forbidAttrs` declared but never iterated; silent gap if FORBID_ATTR grows | OPEN — carries to Phase J |
+| **H-F2** | MEDIUM | `theme-artifact-exporter.ts:83–93` — path-traversal via unsanitised template/locale keys | OPEN — carries to Phase J |
+| **H-F3** | LOW | `theme-artifact-exporter.ts:76–79` — `settings_data` exported without BLOCKED_DROP_KEYS filter | OPEN — carries to Phase J |
+
+### 12.6 Phase I Scope Note
+
+Phase I changed only test files and doc files. Production source files, frozen components (theme-registry.ts, sanitizer FORBID config, `THEME_LIQUID_RENDERING_DEFAULT_ENABLED`, ART-17 section registry), and database migrations are untouched. The two pre-existing validator failures (`validate-governance.mjs` — tenant-table registry; `sequential-migration-validator.mjs` — uncommitted migrations 186/187) remain unchanged and were present before Phase I.
+
+---
+
+*End of Risk Closure Report — amended 2026-07-10 (Phase I QA Certification)*
