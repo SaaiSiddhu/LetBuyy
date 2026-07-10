@@ -30,3 +30,30 @@ Living register. Each entry: ID · severity · status · evidence · owner/targe
 - **Status:** OPEN · foreign (186/187) + committed-but-unapplied (188).
 - **Evidence:** `git log -- database/supabase/migrations/186_*.sql` and `187_*.sql` return empty (untracked). `188_letbuyy_core_theme_row.sql` committed in `40741cb8` (idempotent `INSERT … ON CONFLICT (slug) DO NOTHING`); the `letbuyy-core` DB row does not exist until 188 runs against the DB. Migration 187 (`sites.site_settings`) is referenced by `storefront-runtime` `mapSupabaseToStore` — a real deployment risk if the DB is reset before it is committed/applied.
 - **Disposition:** program authors migrations for its own phases and tests them locally/staging only; it does NOT apply migrations to production and does NOT commit foreign migrations 186/187.
+
+## Phase N risks
+
+### RISK-DUAL-N01 — `section_definitions` / `block_definitions` dual-truth risk in Phase R-S editor — [MEDIUM]
+- **Status:** OPEN · architectural risk for Phase R-S.
+- **Introduced:** Phase N (2026-07-10).
+- **Evidence:** `ThemeDocumentSchema` embeds `section_definitions` (= bundle's `sections` Liquid source files) and `block_definitions` (= bundle's `blocks` Liquid source files). If the Phase R-S editor mutates these fields when saving a draft, the embedded Liquid source would diverge from the canonical theme package version in the DB. Phase N marks these fields READ-ONLY in code comments (`packages/theme-engine/src/theme-document.ts` lines 285–297) but does not mechanically prevent editor mutation.
+- **Why it matters:** A divergent `section_definitions` would mean `fromThemeDocumentV2` produces a bundle with different Liquid source than what the theme package was published with — silently different rendering behaviour for the same theme version.
+- **Mechanical backstop:** `fromThemeDocumentV2` calls `parseLiquidThemePackageBundle(raw)` as its last step. If `section_definitions` has been mutated so that template section types no longer match, the `superRefine` on the bundle will reject the document before it reaches persistence.
+- **Disposition:** Phase R-S editor save adapter MUST reconstruct `section_definitions`, `block_definitions`, and `layout` from the original load-time bundle (not from editor state). This must be enforced mechanically in the Phase R-S implementation and documented in the editor architecture. Do NOT add a mutation path for these fields.
+- **Target:** Phase R (Visual editor shell).
+
+### RISK-ARCH-N01 — Forward-compat gap: `.strict()` + version gate requires version bump for future schema additions — [LOW]
+- **Status:** OPEN · ongoing process requirement.
+- **Introduced:** Phase N (2026-07-10).
+- **Evidence:** `ThemeDocumentSchema` uses `.strict()`. Any future phase that adds new top-level fields to `ThemeDocumentSchema` without bumping `THEME_DOCUMENT_VERSION` and adding it to `KNOWN_THEME_DOCUMENT_VERSIONS` will silently strip those new fields when Phase N code reads a Phase-AA-written document from the DB. The Zod `.strict()` mode strips unknown fields on parse without error.
+- **Why it matters:** A Phase-AA document written by a newer editor could have fields silently dropped when read by any code that has not been updated to the new version. The stripped document would then pass all schema checks and appear valid, masking the data loss.
+- **Disposition:** Every phase that adds fields to `ThemeDocumentSchema` MUST: (1) bump `THEME_DOCUMENT_VERSION` to a new string, (2) add the new version to `KNOWN_THEME_DOCUMENT_VERSIONS`, (3) write a `migrateToThemeDocumentV2`-style upgrade function for old-version docs. This is a process rule, not a code enforcement. Phase AA (Custom CSS + code workspace) is the most likely next adder.
+- **Target:** Phase AA (Custom CSS + code workspace) and any phase that modifies `ThemeDocumentSchema`.
+
+### RISK-PERF-N01 — Large document size: ThemeDocument may exceed 8MB for complex themes — [LOW]
+- **Status:** OPEN · deferred to Phase R-S.
+- **Introduced:** Phase N (2026-07-10).
+- **Evidence:** `ThemeLiquidSectionFileSchema` allows source up to 200kB per section file (enforced in `theme-bundle.ts`). Urban Kicks has ~40+ section definition files. A full `ThemeDocument` for a complex theme can approach 8MB of JSONB. Deserializing 8MB on every editor load is a performance concern; Supabase JSONB has no hard column-size limit but large payloads increase query latency and memory pressure.
+- **Why it matters:** Phase R-S editor load and draft save are on the critical path for merchant editing latency. An 8MB document serialization/deserialization cycle on each section drag or setting change would cause visible lag.
+- **Mitigation candidates:** (a) Total `section_definitions` source byte bound added to `ThemeDocumentSchema.superRefine` (e.g. sum ≤ 10MB). (b) Phase R-S loads `section_definitions`/`block_definitions` lazily (from the canonical bundle, not embedded in the draft). (c) Draft storage uses a split representation: mutable template/settings in `theme_editor_drafts`, immutable Liquid source in the theme package row.
+- **Target:** Phase R (Visual editor shell) — must profile and choose a mitigation before implementing the draft save path.
