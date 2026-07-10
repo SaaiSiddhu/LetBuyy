@@ -26,6 +26,7 @@ import {
     ThemeRefundRequestSchema,
     ThemeStoreQuerySchema,
     UploadThemePackageSchema,
+    ValidateThemeDocumentSchema,
     type InstallThemeInput,
     type PreviewTokenInput,
     type PublishThemeInput,
@@ -38,6 +39,7 @@ import {
     type ThemeReportInput,
     type ThemeRefundRequestInput,
     type UploadThemePackageInput,
+    type ValidateThemeDocumentInput,
 } from '../schemas/theme.schema';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { SchemaRegistryExecutionAdapter } from '../execution/schema-registry-execution.adapter';
@@ -51,6 +53,7 @@ router.use('/packages/upload', authMiddleware);
 router.use('/:slug/editor', authMiddleware);
 router.use('/:slug/editor/*', authMiddleware);
 router.use('/:slug/publish', authMiddleware);
+router.use('/:slug/validate', authMiddleware);
 router.use('/:slug/preview-session', authMiddleware);
 router.use('/:slug/releases', authMiddleware);
 router.use('/:slug/releases/*', authMiddleware);
@@ -983,6 +986,23 @@ router.post('/:slug/refunds', validate('json', ThemeRefundRequestSchema), async 
 
     if (error || !data) return c.json(dbErrorBody(), 500);
     return c.json(success(data), 201);
+});
+
+// POST /themes/:slug/validate — Validate a ThemeDocument V2 + optional Liquid bundle (no DB writes)
+// Auth: ES256 merchant session -> resolveCustomUser -> verifyStoreOwner inside adapter.
+// Must be registered BEFORE the GET /:slug catch-all to prevent route shadowing.
+router.post('/:slug/validate', validate('json', ValidateThemeDocumentSchema), async (c) => {
+    const auth = c.get('auth');
+    const slug = c.req.param('slug');
+    const body = c.get('validatedBody') as ValidateThemeDocumentInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+    const service = new ThemeExecutionAdapter(db);
+    const result = await service.validateDocument(slug, body, customUser.id);
+    return c.json(success(result));
 });
 
 // GET /themes/:slug — Get theme details by slug

@@ -29,6 +29,7 @@ export {
   ThemeMarketplaceSettingsSchema,
   ThemeSavedSearchSchema,
   ThemeDeveloperListingSchema,
+  ValidateThemeDocumentSchema,
   type InstallThemeInput,
   type SaveThemeDraftInput,
   type PublishThemeInput,
@@ -44,4 +45,5 @@ export {
   type ThemeMarketplaceSettingsInput,
   type ThemeSavedSearchInput,
   type ThemeDeveloperListingInput,
+  type ValidateThemeDocumentInput,
 } from '@letbuyy/theme-engine';

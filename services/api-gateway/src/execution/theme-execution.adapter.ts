@@ -7,6 +7,8 @@ import {
     LiquidThemePackageBundleSchema,
     mergeThemeIdentity,
     migrateThemeTemplateSchemasWithRegistry,
+    parseLiquidThemePackageBundle,
+    parseThemeDocument,
     REGISTERED_SECTION_SCHEMA_MIGRATIONS,
     resolveRenderableThemeTemplateConfig,
     type StoreTemplateConfig,
@@ -18,6 +20,7 @@ import type {
     PublishThemeInput,
     RollbackThemeReleaseInput,
     SaveThemeDraftInput,
+    ValidateThemeDocumentInput,
 } from '../schemas/theme.schema';
 import { EventExecutionAdapter } from './event-execution.adapter';
 import { SchemaRegistryExecutionAdapter, type ThemeRuntimeSchema } from './schema-registry-execution.adapter';
@@ -379,6 +382,7 @@ export class ThemeExecutionAdapter {
                     updated_by: actorId,
                 })
                 .eq('id', String((existing as DbRecord).id))
+                .eq('store_id', storeId)
                 .select('id, theme_package_id, theme_package_version_id, active_release_id, current_draft_id')
                 .single();
 
@@ -456,6 +460,7 @@ export class ThemeExecutionAdapter {
                 .from('theme_instance_drafts')
                 .update(draftPayload)
                 .eq('id', String(existingRecord.id))
+                .eq('store_id', input.storeId)
                 .select('id')
                 .single()
             : await this.db
@@ -496,7 +501,8 @@ export class ThemeExecutionAdapter {
             await this.db
                 .from('theme_instances')
                 .update({ current_draft_id: draftId, updated_at: now, updated_by: input.actorId })
-                .eq('id', input.themeInstanceId);
+                .eq('id', input.themeInstanceId)
+                .eq('store_id', input.storeId);
         }
 
         if (patchError && !isThemeEngineSchemaUnavailable(patchError)) {
@@ -732,7 +738,7 @@ export class ThemeExecutionAdapter {
             releaseVersion = Number(latestVersion) + 1;
         }
 
-        await this.db
+        const { error: supersededError } = await this.db
             .from('theme_releases')
             .update({
                 release_status: 'superseded',
@@ -741,6 +747,14 @@ export class ThemeExecutionAdapter {
             })
             .eq('store_id', input.storeId)
             .eq('is_current', true);
+
+        // Fail before inserting the new release: if the supersede UPDATE fails and we proceed,
+        // the INSERT would create a new is_current=true row while the previous row is still
+        // is_current=true, leaving two live releases. Failing here keeps is_current consistent
+        // and avoids a manual-repair situation.
+        if (supersededError) {
+            throw new Error(`Theme release supersede failed: ${supersededError.message}`);
+        }
 
         const { data: release } = await this.db
             .from('theme_releases')
@@ -1195,6 +1209,13 @@ export class ThemeExecutionAdapter {
 
         const existingVersion = (existing?.version || 0);
 
+        // KNOWN BYPASS: isStaleThemeEditorBaseVersion returns false when base_version is
+        // undefined/null (see its implementation). Clients that omit base_version skip the
+        // CAS check and last-writer-wins silently. The DB-level upsert on
+        // (store_id, theme_id, template_key) does not carry a version predicate, so two
+        // concurrent omitted-base_version saves can both overwrite at the same version.
+        // Full closure: make base_version required in SaveThemeDraftSchema for editors
+        // that issue concurrent saves (ARB-gated follow-up — documented as TOCTOU residual).
         if (isStaleThemeEditorBaseVersion(existingVersion, input.base_version)) {
             throw new ConflictError('Theme draft has changed in another session');
         }
@@ -1335,9 +1356,48 @@ export class ThemeExecutionAdapter {
         const store = await this.verifyStoreOwner(input.store_id, userId);
         const theme = await this.getTheme(slug);
 
+        // Idempotency pre-check: if caller supplied a key and a release already exists for this
+        // (store_id, idempotency_key) pair, return the existing release without any DB mutation or
+        // audit event. store_id is always the first filter — cross-tenant collision is structurally
+        // impossible because the query is scoped to the authenticated site.
+        if (input.idempotency_key) {
+            const { data: existingRelease } = await this.db
+                .from('theme_releases')
+                .select('id, release_version, published_at')
+                .eq('store_id', input.store_id)
+                .eq('idempotency_key', input.idempotency_key)
+                .is('deleted_at', null)
+                .maybeSingle();
+
+            if (existingRelease) {
+                const existing = existingRelease as ThemeReleaseRecord;
+                const { data: updatedStore } = await this.db
+                    .from('sites')
+                    .select('id, status, theme_id, updated_at, current_theme_release_id, storefront_release_version')
+                    .eq('id', input.store_id)
+                    .single();
+                return {
+                    store: updatedStore,
+                    theme: { id: theme.id, slug: theme.slug, name: theme.name },
+                    release: {
+                        release_id: existing.id,
+                        release_version: existing.release_version,
+                        published_at: existing.published_at || new Date().toISOString(),
+                    },
+                    template_key: templateKey,
+                    published_at: existing.published_at || new Date().toISOString(),
+                    idempotent: true,
+                };
+            }
+        }
+
         const draftRecord = await this.loadEditorDraft(input.store_id, theme.slug, templateKey);
         const draftVersion = draftRecord?.version || 0;
 
+        // KNOWN BYPASS: isStaleThemeEditorBaseVersion returns false when base_version is
+        // undefined/null. A publish that omits base_version skips the draft-staleness check.
+        // Full closure: enforce base_version in PublishThemeSchema for web-editor clients
+        // (ARB-gated follow-up — documented as TOCTOU residual alongside publish/rollback).
         if (isStaleThemeEditorBaseVersion(draftVersion, input.base_version)) {
             throw new ConflictError('Theme draft has changed in another session');
         }
@@ -1386,6 +1446,50 @@ export class ThemeExecutionAdapter {
         });
 
         await this.deleteDraft(theme.slug, input.store_id, userId, requestId, templateKey);
+
+        // Idempotency post-enrich: persist the caller-supplied key on the new release so
+        // subsequent retries hit the pre-check above. Both store_id and release id are required
+        // in the WHERE clause — the update is always scoped to the authenticated site.
+        if (input.idempotency_key && !release.release_id.startsWith('local-fallback:')) {
+            const { error: keyError } = await this.db
+                .from('theme_releases')
+                .update({ idempotency_key: input.idempotency_key })
+                .eq('id', release.release_id)
+                .eq('store_id', input.store_id);
+            if (keyError) {
+                // A unique-constraint violation means a concurrent publish with the same key
+                // already persisted the key (both passed the TS pre-check in the ~1-5ms window).
+                // The release is committed and valid; tolerate the duplicate. Any other error is
+                // a data-integrity risk — log it for forensic repair but do not block the caller
+                // (the release id is already committed and the caller must receive it).
+                if (
+                    !keyError.message?.includes('duplicate key') &&
+                    !keyError.message?.includes('unique constraint')
+                ) {
+                    console.error(
+                        `[theme-publish] idempotency key post-enrich failed for release ` +
+                        `${release.release_id} (store ${input.store_id}): ${keyError.message}. ` +
+                        `Manual back-patch: UPDATE theme_releases SET idempotency_key='${input.idempotency_key}' ` +
+                        `WHERE id='${release.release_id}' AND store_id='${input.store_id}'`
+                    );
+                }
+            }
+        }
+
+        const events = new EventExecutionAdapter(this.db);
+        await events.emitAuditEvent({
+            storeId: input.store_id,
+            actorId: userId,
+            action: 'theme.publish',
+            resourceType: 'theme_release',
+            resourceId: release.release_id,
+            requestId,
+            afterState: {
+                theme_id: theme.slug,
+                release_version: release.release_version,
+                make_store_live: input.make_store_live,
+            },
+        });
 
         const { data: updatedStore } = await this.db
             .from('sites')
@@ -1442,6 +1546,27 @@ export class ThemeExecutionAdapter {
     ) {
         await this.verifyStoreOwner(input.store_id, userId);
         const theme = await this.getTheme(slug);
+
+        // CAS guard: if the caller supplied expected_current_release_id, verify the current
+        // release pointer has not changed since the client listed releases. The query is always
+        // scoped by store_id — a different site's is_current row can never match.
+        // KNOWN TOCTOU RESIDUAL: this check is TS-level only; two truly concurrent rollbacks
+        // both passing this window can both reach publishReleaseSnapshot. Full closure requires
+        // adding p_expected_current_release_version to the SECURITY DEFINER RPC (ARB-gated).
+        if (input.expected_current_release_id) {
+            const { data: currentRelease } = await this.db
+                .from('theme_releases')
+                .select('id')
+                .eq('store_id', input.store_id)
+                .eq('is_current', true)
+                .is('deleted_at', null)
+                .maybeSingle();
+
+            const currentId = (currentRelease as ThemeReleaseRecord | null)?.id;
+            if (currentId !== input.expected_current_release_id) {
+                throw new ConflictError('Current release has changed since listing');
+            }
+        }
 
         const selectRelease = (includeDeletedAtFilter: boolean) => {
             const query = this.db
@@ -1501,6 +1626,24 @@ export class ThemeExecutionAdapter {
             activate: input.make_store_live,
         });
 
+        const events = new EventExecutionAdapter(this.db);
+        await events.emitAuditEvent({
+            storeId: input.store_id,
+            actorId: userId,
+            action: 'theme.rollback',
+            resourceType: 'theme_release',
+            resourceId: rollback.release_id,
+            requestId,
+            beforeState: {
+                rollback_of_release_id: releaseRecord.id,
+                rollback_of_version: releaseRecord.release_version,
+            },
+            afterState: {
+                new_release_id: rollback.release_id,
+                new_release_version: rollback.release_version,
+            },
+        });
+
         return {
             rollback,
             restored_release: {
@@ -1513,6 +1656,47 @@ export class ThemeExecutionAdapter {
                 slug: theme.slug,
                 name: theme.name,
             },
+        };
+    }
+
+    async validateDocument(
+        slug: string,
+        input: ValidateThemeDocumentInput,
+        userId: string
+    ) {
+        // Auth: verify the authenticated merchant owns the supplied store_id.
+        // site_id is NEVER derived from slug or path — always from the validated body.
+        await this.verifyStoreOwner(input.store_id, userId);
+
+        // Validate the ThemeDocument V2 structure. parseThemeDocument throws ValidationError
+        // on any structural violation. No DB writes occur in this method.
+        const doc = parseThemeDocument(input.theme_document);
+
+        // If an optional Liquid bundle is supplied, enforce the G4 version gate.
+        if (input.bundle !== undefined) {
+            parseLiquidThemePackageBundle(input.bundle);
+        }
+
+        // Fire-and-forget audit trail: emit a lightweight audit event for forensic replay
+        // (e.g. repeated validation probing with adversarial bundles). The method remains
+        // logically read-only — no await, errors are swallowed intentionally.
+        const events = new EventExecutionAdapter(this.db);
+        events.emitAuditEvent({
+            storeId: input.store_id,
+            actorId: userId,
+            action: 'theme.document.validate',
+            resourceType: 'theme',
+            resourceId: slug,
+            afterState: {
+                schema_version: doc.document_version ?? '2.0',
+                bundle_supplied: input.bundle !== undefined,
+            },
+        }).catch(() => { /* best-effort — validation result is not gated on audit write */ });
+
+        return {
+            valid: true,
+            schema_version: doc.document_version ?? '2.0',
+            issues: [] as string[],
         };
     }
 

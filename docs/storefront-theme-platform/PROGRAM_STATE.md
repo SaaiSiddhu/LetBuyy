@@ -1,6 +1,6 @@
 # M→AE Program State
 
-**Updated:** 2026-07-10 (post Phase O) · **Branch:** `stepup/main` · **Starting HEAD (program):** `29f87115`
+**Updated:** 2026-07-10 (post Phase P) · **Branch:** `stepup/main` · **Starting HEAD (program):** `29f87115`
 
 ## Scoreboard
 | Phase | Title | Status | Commit |
@@ -8,7 +8,7 @@
 | M | Repository truth + Shopify parity | COMPLETE | _(baseline commit)_ |
 | N | Canonical Theme Document V2 | COMPLETE | _(see PHASE_N_REPORT.md)_ |
 | O | Preset & Experience Engine 2.0 | COMPLETE | _(see PHASE_O_REPORT.md)_ |
-| P | Drafts/revisions/publish/rollback | PENDING | — |
+| P | Drafts/revisions/publish/rollback | COMPLETE | _(see phase-p/PHASE_P_REPORT.md)_ |
 | Q | Merchant theme library | PENDING | — |
 | R | Visual editor shell | PENDING | — |
 | S | Live preview inspector | PENDING | — |
@@ -38,7 +38,7 @@
 - `tenant-tables.registry.ts` drift.
 
 ## Active risks
-See RISK_REGISTER.md: RISK-SEC-001 (theme_purchases wide-open RLS, HIGH, → AE), RISK-SEC-002 (editor AI stub), RISK-GOV-001 (tenant-registry, affects P/W), RISK-DATA-001 (migrations 186/187/188), RISK-DUAL-N01 (section_definitions dual-truth, → R), RISK-ARCH-N01 (version gate must be bumped for future schema additions, ongoing), RISK-PERF-N01 (large document size, → R), RISK-O01 (Nova/Summit distinctness collapses if cta-section removed from bundle, LOW), RISK-O02 (collectionFilter/faqAccordion permanently incompatible until bundle expanded, LOW).
+See RISK_REGISTER.md: RISK-SEC-001 (theme_purchases wide-open RLS, HIGH, → AE), RISK-SEC-002 (editor AI stub), RISK-GOV-001 (tenant-registry, affects W), RISK-DATA-001 (migrations 186/187/188/189), RISK-DUAL-N01 (section_definitions dual-truth, → R), RISK-ARCH-N01 (version gate must be bumped for future schema additions, ongoing), RISK-PERF-N01 (large document size, → R), RISK-O01 (Nova/Summit distinctness collapses if cta-section removed from bundle, LOW), RISK-O02 (collectionFilter/faqAccordion permanently incompatible until bundle expanded, LOW), RISK-SEC-P01 (theme_editor_drafts RLS checks user_id only, MEDIUM, → security migration), RISK-TOCTOU-P01 (publish TOCTOU concurrent window, LOW, ARB-gated), RISK-TOCTOU-P02 (rollback CAS TS-level only, LOW, ARB-gated).
 
 ## Parity snapshot (Phase M matrix)
 COMPLETE 37 · PARTIAL 15 · MISSING 13 · NOT_CONNECTED 4 · STUB 1 (70 capability rows). Editor is the largest gap cluster (shell/inspector/tree/nested-blocks/templates/media/markets/code editor all PARTIAL or MISSING).
@@ -60,6 +60,14 @@ COMPLETE 37 · PARTIAL 15 · MISSING 13 · NOT_CONNECTED 4 · STUB 1 (70 capabil
 - `packages/theme-engine/src/index.ts`: 3 export lines added.
 - 1034/1034 tests pass (+345). 5 code review findings resolved (2 HIGH, 3 LOW). All 10 index compositions structurally distinct (composition-level and post-apply). Nova and Summit proven distinct via `cta-section`. Content never silently lost: block loss surfaced in diff; `requiresDuplicateBeforeApply` fires independent of `preserveContent`.
 
+## Phase P deliverables
+- `database/supabase/migrations/189_theme_persistence_idempotency.sql` (NEW): nullable `idempotency_key` column + partial unique index `(store_id, idempotency_key) WHERE NOT NULL AND deleted_at IS NULL` on `theme_releases`. PRODUCTION APPLY IS ARB/HUMAN-GATED.
+- `services/api-gateway/src/schemas/theme.schema.ts` (MODIFIED): `ValidateThemeDocumentSchema` added; `idempotency_key` added to `PublishThemeSchema`; `expected_current_release_id` added to `RollbackThemeReleaseSchema`.
+- `services/api-gateway/src/execution/theme-execution.adapter.ts` (MODIFIED): `validateDocument()` new method; `publish()` gains idempotency pre-check + post-enrich (with error handling) + audit event; `rollbackRelease()` gains CAS guard + audit event; 3 new `store_id` guards on pre-existing UPDATE calls; fallback supersede error captured.
+- `services/api-gateway/src/routes/themes.ts` (MODIFIED): `POST /:slug/validate` registered before GET catch-all.
+- `services/api-gateway/src/__tests__/theme-persistence-p.test.ts` (NEW): 24 tests; cross-tenant proof via mock-db + source-pattern layers.
+- api-gateway unit gate: **438/438** pass (3 pre-existing failures unchanged). theme-engine: **1034/1034** unchanged. Typecheck: **32/32** clean.
+
 ## Next action
-- **Next phase: P — Drafts, Revisions, Publish, and Rollback.** Implement `theme_editor_drafts` persistence, `apply_preset` gateway route using `applyExperienceToDocument`, draft/published version management, and rollback. Must maintain `fromThemeDocumentV2` round-trip invariant on every draft save.
-- **Gate:** `pnpm typecheck test --filter=@letbuyy/theme-engine`, baseline **1034**.
+- **Next phase: Q — Merchant Theme Library.** Browse global themes catalog, preview themes, install/uninstall to a store, theme instance lifecycle. Consumes `theme_releases` + `themes` catalog + `publish_theme_release` RPC. Does not modify Phase P's draft/publish/rollback surface.
+- **Gate:** `pnpm --filter=@letbuyy/api-gateway run test:unit` baseline **438** + `pnpm --filter=@letbuyy/theme-engine typecheck test` baseline **1034**.
