@@ -835,4 +835,44 @@ Phase F addressed render pipeline performance (F1, F2), logout security (F7), be
 
 ---
 
-*Document generated 2026-07-03 | Branch: stepup/main | Status: PARTIALLY IMPLEMENTED (Phase F) | Sources: 29 unique source files + 13 domain findings reports + docs/storefront-liquid-discovery/11_GAP_ANALYSIS.md | Auditor: Claude Sonnet 4.6 | Amended: 2026-07-04 (Phase D additions, Phase E additions) | Amended: 2026-07-05 (Phase F additions)*
+---
+
+## Phase H Amendment — Developer Experience Layer (2026-07-05)
+
+Phase H delivered the public SDK facade, Liquid artifact exporter, linter, packager, CLI, committed example artifacts, and developer docs. No render-path, gateway, or storefront-runtime code was changed. Test gate: **198/198 pass, 0 fail** (was 157; +41 new).
+
+### Plan item updates (§11)
+
+| Plan Item | Before Phase H | After Phase H |
+|-----------|---------------|---------------|
+| **P5-1** — On-disk `.liquid` file build pipeline | OPEN | **PARTIALLY-IMPLEMENTED (Phase H — H2/H3)** — `exportThemeBundleToFiles` (`theme-artifact-exporter.ts`) is the export pipeline; `generate-examples.mjs` commits the artifacts; `theme-examples.test.ts` detects drift. Scope: read-only view exports. The source-of-truth flip (TypeScript out, `.liquid` in) is the remaining P5-1 work. |
+| **P5-2** — Theme Check / linter in CI | OPEN | **PARTIALLY-IMPLEMENTED (Phase H — H4/H6)** — `lintThemeBundle` provides a 5-rule in-process linter importing deny-lists from `LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG`. CLI command `letbuyy-theme lint bundle.json` is callable. Not yet wired into `validate-governance.mjs`. |
+
+### Phase 5 progress summary
+
+| P5 Item | Status |
+|---------|--------|
+| P5-1: On-disk `.liquid` file build pipeline | **PARTIALLY-IMPLEMENTED** — view exports exist; authoring pipeline open |
+| P5-2: Theme Check / linter in CI | **PARTIALLY-IMPLEMENTED** — linter implemented; CI wire open |
+| P5-3: Snippets / partials alternative to `{% render %}` | OPEN |
+| P5-4: `{% paginate %}` tag | OPEN |
+
+### New hardening findings (not in prior register)
+
+| ID | Severity | Summary | Owner |
+|----|----------|---------|-------|
+| H-F1 | MEDIUM | `forbidAttrs` dead code in `theme-linter.ts` — `forbidden-style-attr` uses hardcoded regex, not the `FORBID_ATTR` list | Phase I |
+| H-F2 | MEDIUM | Template/locale key path traversal in `theme-artifact-exporter.ts` | Phase I |
+| H-F3 | LOW | `settings_data` exported without `BLOCKED_DROP_KEYS` filter | Phase I |
+
+### Risk register row update
+
+| Risk | After Phase H |
+|------|---------------|
+| **R-11 / R-12** — zero `.liquid` files; Theme Check not applicable | **PARTIALLY-CLOSED-IMPLEMENTED (Phase H — H2/H3)** — on-disk `.liquid` files committed; linter and CLI available. Authoring pipeline (P5-1) and CI wire (P5-2) remain open. |
+
+*Phase H amendment 2026-07-05 | Implementation by subagent | Evidence: docs/storefront-liquid-discovery/phase-h/PHASE_H_REPORT.md*
+
+---
+
+*Document generated 2026-07-03 | Branch: stepup/main | Status: PARTIALLY IMPLEMENTED (Phase H) | Sources: 29 unique source files + 13 domain findings reports + docs/storefront-liquid-discovery/11_GAP_ANALYSIS.md | Auditor: Claude Sonnet 4.6 | Amended: 2026-07-04 (Phase D additions, Phase E additions) | Amended: 2026-07-05 (Phase F, Phase G, Phase H additions)*

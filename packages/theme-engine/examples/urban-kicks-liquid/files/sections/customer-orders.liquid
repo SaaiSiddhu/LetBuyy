@@ -1,0 +1,27 @@
+<section class="lb-orders" data-section-id="{{ section.id }}">
+  <h1>{{ section.settings.heading }}</h1>
+  {% if customer.orders and customer.orders.size > 0 %}
+  <ul class="lb-orders__list">{% for order in customer.orders %}<li class="lb-orders__row"><a href="/account/orders/{{ order.id }}"><span class="lb-orders__num">#{{ order.number }}</span><span class="lb-orders__status">{{ order.status }}</span><span class="lb-orders__total">{{ order.total | money_with_currency: order.currency }}</span></a></li>{% endfor %}</ul>
+  {% else %}<p class="lb-orders__empty">No orders yet.</p>{% endif %}
+</section>
+{% schema %}
+{
+  "name": "Order History",
+  "settings": [
+    {
+      "id": "heading",
+      "type": "text",
+      "label": "Heading",
+      "default": "Your orders"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Order History",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

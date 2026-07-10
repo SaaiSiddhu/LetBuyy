@@ -1,0 +1,29 @@
+<section class="lb-rich-content" data-section-id="{{ section.id }}">
+  <h1>{{ section.settings.title }}</h1>
+  <div>{{ section.settings.body }}</div>
+</section>
+{% schema %}
+{
+  "name": "Rich Content",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title"
+    },
+    {
+      "id": "body",
+      "type": "richtext",
+      "label": "Body"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Rich Content",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

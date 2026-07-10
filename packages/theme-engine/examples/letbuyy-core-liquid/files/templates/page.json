@@ -1,0 +1,16 @@
+{
+  "name": "Page",
+  "layout": "theme",
+  "sections": {
+    "page-content-default": {
+      "type": "page-content",
+      "settings": {},
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "page-content-default"
+  ]
+}

@@ -1,0 +1,41 @@
+<section class="lb-settings" data-section-id="{{ section.id }}">
+  {% if customer %}
+  <h1>{{ section.settings.heading }}</h1>
+  <div class="lb-settings__current">
+    <p class="lb-settings__email">{{ customer.email }}</p>
+    {% if customer.name %}<p class="lb-settings__name">{{ customer.name }}</p>{% endif %}
+    {% if customer.phone %}<p class="lb-settings__phone">{{ customer.phone }}</p>{% endif %}
+  </div>
+  <lb-customer-settings
+    data-lb-island="customer-settings"
+    data-email="{{ customer.email | escape }}"
+    data-name="{{ customer.name | default: "" | escape }}"
+    data-phone="{{ customer.phone | default: "" | escape }}"
+    data-base-path="/store/{{ shop.subdomain }}"
+    data-authenticated="true"
+  ></lb-customer-settings>
+  {% else %}
+  <p class="lb-settings__guest">Please <a href="/customers/login">sign in</a> to manage your settings.</p>
+  {% endif %}
+</section>
+{% schema %}
+{
+  "name": "Account Settings",
+  "settings": [
+    {
+      "id": "heading",
+      "type": "text",
+      "label": "Heading",
+      "default": "Account settings"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Account Settings",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

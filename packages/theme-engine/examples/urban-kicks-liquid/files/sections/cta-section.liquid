@@ -1,0 +1,43 @@
+<section class="lb-cta-section" data-section-id="{{ section.id }}">
+  <h2>{{ section.settings.heading }}</h2>
+  <p>{{ section.settings.subheading }}</p>
+  <a href="{{ section.settings.ctaLink }}">{{ section.settings.ctaText }}</a>
+</section>
+{% schema %}
+{
+  "name": "Call to Action",
+  "settings": [
+    {
+      "id": "heading",
+      "type": "text",
+      "label": "Heading",
+      "default": "Ready to get started?"
+    },
+    {
+      "id": "subheading",
+      "type": "text",
+      "label": "Subheading"
+    },
+    {
+      "id": "ctaText",
+      "type": "text",
+      "label": "Button text",
+      "default": "Shop now"
+    },
+    {
+      "id": "ctaLink",
+      "type": "url",
+      "label": "Button link",
+      "default": "/products"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Call to Action",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

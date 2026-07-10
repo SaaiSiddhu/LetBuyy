@@ -1,0 +1,47 @@
+<section class="lb-experience-timeline" data-section-id="{{ section.id }}">
+  <h2>{{ section.settings.title }}</h2>
+  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.company }}</p><time>{{ block.settings.period }}</time></article>{% endfor %}
+</section>
+{% schema %}
+{
+  "name": "Experience Timeline",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title",
+      "default": "Experience"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "experience",
+      "name": "Experience",
+      "settings": [
+        {
+          "id": "title",
+          "type": "text",
+          "label": "Title"
+        },
+        {
+          "id": "company",
+          "type": "text",
+          "label": "Company"
+        },
+        {
+          "id": "period",
+          "type": "text",
+          "label": "Period"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Experience Timeline",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

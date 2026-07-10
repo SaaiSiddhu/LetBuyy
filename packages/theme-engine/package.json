@@ -12,6 +12,9 @@
     "./theme-registry": "./src/theme-registry.ts",
     "./editor-bridge-protocol": "./src/editor-bridge-protocol.ts"
   },
+  "bin": {
+    "letbuyy-theme": "./src/theme-cli.ts"
+  },
   "scripts": {
     "build": "tsc -b",
     "test": "tsx --test test/*.test.ts",

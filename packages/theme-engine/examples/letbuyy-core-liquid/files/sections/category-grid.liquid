@@ -1,0 +1,20 @@
+<section class="lb-category-grid" data-section-id="{{ section.id }}">
+  <h2>{{ section.settings.title }}</h2>
+  <p>{{ section.settings.subtitle }}</p>
+  <div class="lb-category-grid__items">
+    {% for block in section.blocks %}
+      {{ block.content | raw }}
+    {% endfor %}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Category Grid",
+  "settings": [
+    { "id": "title", "type": "text", "label": "Heading", "default": "Shop by style" },
+    { "id": "subtitle", "type": "text", "label": "Subheading" }
+  ],
+  "blocks": [{ "type": "category", "name": "Category" }],
+  "presets": [{ "name": "Category Grid" }]
+}
+{% endschema %}

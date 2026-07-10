@@ -1,0 +1,23 @@
+<section class="lb-page" data-section-id="{{ section.id }}">
+  {% if page %}
+  <h1 class="lb-page__title">{{ page.title }}</h1>
+  {% if page.body_html != blank %}<div class="lb-page__body">{{ page.body_html | raw }}</div>
+  {% else %}<p class="lb-page__empty">No content yet.</p>{% endif %}
+  {% else %}
+  <p class="lb-page__missing">Page not found.</p>
+  {% endif %}
+</section>
+{% schema %}
+{
+  "name": "Page Content",
+  "settings": [],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Page Content",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

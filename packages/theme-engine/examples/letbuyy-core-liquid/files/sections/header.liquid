@@ -1,0 +1,55 @@
+<header class="lb-header" data-section-id="{{ section.id }}">
+  <a class="lb-header__brand" href="/">{{ section.settings.storeName }}</a>
+  <nav>{% for block in section.blocks %}<a href="{{ block.settings.href }}">{{ block.settings.label }}</a>{% endfor %}</nav>
+  <div class="lb-header__actions">{% if section.settings.showSearch %}<lb-search data-lb-island="search" data-search-url="/search"></lb-search>{% endif %}{% if section.settings.showCart %}<a href="/cart">{{ "general.cart" | t }} ({{ cart.item_count }})</a>{% endif %}</div>
+</header>
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "id": "storeName",
+      "type": "text",
+      "label": "Store name",
+      "default": "{{ shop.name }}"
+    },
+    {
+      "id": "showSearch",
+      "type": "toggle",
+      "label": "Show search",
+      "default": true
+    },
+    {
+      "id": "showCart",
+      "type": "toggle",
+      "label": "Show cart",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Link",
+      "settings": [
+        {
+          "id": "label",
+          "type": "text",
+          "label": "Label"
+        },
+        {
+          "id": "href",
+          "type": "url",
+          "label": "URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

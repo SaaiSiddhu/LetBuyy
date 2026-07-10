@@ -377,4 +377,52 @@ Phase G was implemented **inline by the orchestrator** because the subagent flee
 
 ---
 
-*End of Risk Closure Report — amended 2026-07-05 (Phase G additions)*
+---
+
+## 11. Phase H Amendment — Developer Experience Layer (2026-07-05)
+
+Phase H delivered the theme SDK public facade, Liquid artifact exporter, theme linter, theme packager, CLI, committed example artifacts, and developer docs. No render-path, gateway, or storefront-runtime code was changed. Test gate: **198/198 pass, 0 fail** (was 157; +41 new tests).
+
+### 11.1 Updated Summary Counts
+
+| Category | Phase G Count | Phase H Change | Updated Count |
+|----------|--------------|----------------|---------------|
+| CLOSED-VERIFIED (Phase B static) | 12 | +0 | 12 |
+| CLOSED-IMPLEMENTED (Phase C) | 5 | +0 | 5 |
+| CLOSED-IMPLEMENTED (Phase D) | 7 | +0 | 7 |
+| CLOSED-IMPLEMENTED (Phase E) | 3 | +0 | 3 |
+| CLOSED-IMPLEMENTED (Phase F) | 1 | +0 | 1 |
+| PARTIALLY-CLOSED-IMPLEMENTED (Phase F) | 2 | +0 | 2 |
+| CLOSED-STRUCTURAL (Phase G) | 1 | +0 | 1 |
+| CLOSED-IMPLEMENTED (Phase G) | 2 | +0 | 2 |
+| MITIGATED (Phase G) | 1 | +0 | 1 |
+| **PARTIALLY-CLOSED-IMPLEMENTED (Phase H)** | 0 | **+1 (R-12 `.liquid` files / DX)** | **1** |
+| PARTIAL-IMPLEMENTED (Phase D) | 1 | +0 | 1 |
+| OPEN-CONFIRMED-RISK | 12 | -0 (R-12 moved to PARTIALLY-CLOSED) | **11** |
+| OPEN-UNVERIFIABLE | 1 | +0 | 1 |
+| REFUTED | 7 | +0 | 7 |
+| PARTIAL | 9 | +0 | 9 |
+
+### 11.2 Register Row Updates
+
+| ID | Prior Closure Status | Phase H Update |
+|----|---------------------|----------------|
+| **R-12** | OPEN-CONFIRMED-RISK — Phase D (DX/Tooling). Claim: zero `.liquid` files on disk; all templates TypeScript string literals; Theme Check not applicable | **PARTIALLY-CLOSED-IMPLEMENTED (Phase H — H2/H3)** — `exportThemeBundleToFiles` (`theme-artifact-exporter.ts`) produces a deterministic flat list of `{path, contents}` pairs covering `layout/theme.liquid`, `sections/<type>.liquid` (42+ files per fixture), `blocks/`, `config/`, `templates/`, `locales/`, and `letbuyy-theme.json`. Both the Urban Kicks and letbuyy-core bundles are committed under `packages/theme-engine/examples/`. Byte-identity is proven by `theme-artifact-exporter.test.ts` (7 tests) — section source is copied verbatim with no escaping. Drift-detection CI (`theme-examples.test.ts`, 7 tests) fails immediately when `theme-bundle.ts` changes without regenerating. **Remaining gap:** the TypeScript string literals in `theme-bundle.ts` remain the authoritative source. A proper authoring pipeline where `.liquid` files are the primary source and TypeScript is the compiled artifact (Plan P5-1) is still OPEN. |
+
+### 11.3 Phase H New Findings
+
+Three findings were identified during Phase H implementation review. None blocks production (all Phase H code is exporter/linter/CLI — no render path). They are registered here for Phase I tracking.
+
+| ID | Severity | File | Summary | Disposition |
+|----|----------|------|---------|-------------|
+| **H-F1** | MEDIUM | `packages/theme-engine/src/theme-linter.ts:64` | `forbidAttrs` variable declared but never iterated; `forbidden-style-attr` rule uses hardcoded `/\bstyle\s*=/i` regex instead of looping over `FORBID_ATTR`; if `FORBID_ATTR` grows to include `onload` or similar the linter silently misses it despite its comment claiming `LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG` as source of truth | OPEN — Phase I DX hardening |
+| **H-F2** | MEDIUM | `packages/theme-engine/src/theme-artifact-exporter.ts:83–93` | Template and locale keys embedded in `templates/${templateKey}.json` and `locales/${localeKey}.json` paths without sanitization; a Zod-valid key of `../../evil` produces a path-traversal path; `generate-examples.mjs` resolves `..` segments via `path.join` which can write files outside the intended `examples/` output directory | OPEN — Phase I schema/exporter hardening |
+| **H-F3** | LOW | `packages/theme-engine/src/theme-artifact-exporter.ts:76–79` | `settings_data` exported verbatim to `config/settings_data.json` without applying `BLOCKED_DROP_KEYS` discipline enforced by the renderer at render time; asymmetry is undocumented and untested | OPEN — Phase I documentation or defensive-code pass |
+
+### 11.4 Phase H Scope Note
+
+Phase H scope: `packages/theme-engine/src/` (5 new modules + index re-exports), `packages/theme-engine/examples/` (generated artifacts), `packages/theme-engine/test/` (41 new tests), `docs/storefront-liquid-discovery/developer/` (5 docs). No gateway, storefront-runtime, identity-platform, or database changes. ART-17 frozen section registry untouched. DOMPurify config untouched. `THEME_LIQUID_RENDERING_DEFAULT_ENABLED` default untouched.
+
+---
+
+*End of Risk Closure Report — amended 2026-07-05 (Phase H additions)*

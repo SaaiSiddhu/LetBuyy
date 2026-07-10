@@ -1,0 +1,16 @@
+{
+  "name": "Policy page",
+  "layout": "theme",
+  "sections": {
+    "policy-content-default": {
+      "type": "policy-content",
+      "settings": {},
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "policy-content-default"
+  ]
+}

@@ -1,0 +1,31 @@
+<section class="lb-order-detail" data-section-id="{{ section.id }}">
+  {% if order %}
+  <h1>Order #{{ order.number }}</h1>
+  <p class="lb-order-detail__status">Status: {{ order.status }}</p>
+  <ul class="lb-order-detail__items">{% for item in order.line_items %}<li><span class="lb-order-detail__title">{{ item.title }}</span><span class="lb-order-detail__qty">{{ item.quantity }}</span><span class="lb-order-detail__line">{{ item.line_price | money_with_currency: order.currency }}</span></li>{% endfor %}</ul>
+  <p class="lb-order-detail__total">Total: {{ order.total | money_with_currency: order.currency }}</p>
+  <ol class="lb-order-detail__timeline">{% for step in order.timeline %}<li class="lb-order-detail__step{% if step.reached %} is-reached{% endif %}">{{ step.label }}</li>{% endfor %}</ol>
+  {% if order.tracking_number != blank %}<p class="lb-order-detail__tracking">Tracking: {{ order.tracking_number }}{% if order.carrier != blank %} ({{ order.carrier }}){% endif %}</p>{% endif %}
+  {% else %}<p class="lb-order-detail__missing">Order not found.</p>{% endif %}
+</section>
+{% schema %}
+{
+  "name": "Order Detail",
+  "settings": [
+    {
+      "id": "heading",
+      "type": "text",
+      "label": "Heading",
+      "default": "Order"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Order Detail",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

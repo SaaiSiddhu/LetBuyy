@@ -1,0 +1,40 @@
+<section class="lb-addresses" data-section-id="{{ section.id }}">
+  <h1>{{ section.settings.heading }}</h1>
+  {% if customer %}
+  {% if customer.addresses and customer.addresses.size > 0 %}
+  <div class="lb-addresses__grid">
+    {% for addr in customer.addresses %}<div class="lb-address-card{% if addr.is_default %} lb-address-card--default{% endif %}"><span class="lb-address-card__label">{{ addr.label | default: "address" }}</span>{% if addr.is_default %}<span class="lb-address-card__default-badge">Default</span>{% endif %}<p class="lb-address-card__address">{{ addr.address1 }}{% if addr.address2 %}, {{ addr.address2 }}{% endif %}</p><p class="lb-address-card__city">{{ addr.city }}, {{ addr.province }} {{ addr.zip }}</p></div>{% endfor %}
+  </div>
+  {% else %}
+  <p class="lb-addresses__empty">No saved addresses.</p>
+  {% endif %}
+  <lb-address-manager
+    data-lb-island="address-manager"
+    data-base-path="/store/{{ shop.subdomain }}"
+    data-authenticated="true"
+  ></lb-address-manager>
+  {% else %}
+  <p class="lb-addresses__guest">Please <a href="/customers/login">sign in</a> to manage your addresses.</p>
+  {% endif %}
+</section>
+{% schema %}
+{
+  "name": "Addresses",
+  "settings": [
+    {
+      "id": "heading",
+      "type": "text",
+      "label": "Heading",
+      "default": "Your addresses"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Addresses",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

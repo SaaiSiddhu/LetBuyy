@@ -1,0 +1,201 @@
+{
+  "name": "Urban Kicks home page",
+  "layout": "theme",
+  "sections": {
+    "announcement-default": {
+      "type": "announcement-bar",
+      "settings": {
+        "text": "Free shipping on fresh drops this week.",
+        "linkLabel": "Shop now",
+        "linkHref": "/products"
+      },
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    },
+    "hero-default": {
+      "type": "hero-banner",
+      "settings": {
+        "eyebrow": "New season essentials",
+        "heading": "Fresh drops for daily buyers",
+        "subheading": "Launch-ready sneakers, apparel, and accessories for a commerce storefront.",
+        "ctaText": "Shop Now",
+        "ctaLink": "/products",
+        "height": "full",
+        "textAlign": "center",
+        "overlay": 0.4
+      },
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    },
+    "category-grid-default": {
+      "type": "category-grid",
+      "settings": {
+        "title": "Shop by style",
+        "subtitle": "Launch-ready groupings for daily buyers."
+      },
+      "blocks": {
+        "category-sneakers": {
+          "type": "category",
+          "settings": {
+            "name": "Sneakers",
+            "slug": "sneakers",
+            "tagline": "Fresh pairs"
+          },
+          "disabled": false
+        },
+        "category-apparel": {
+          "type": "category",
+          "settings": {
+            "name": "Apparel",
+            "slug": "apparel",
+            "tagline": "Daily fits"
+          },
+          "disabled": false
+        },
+        "category-accessories": {
+          "type": "category",
+          "settings": {
+            "name": "Accessories",
+            "slug": "accessories",
+            "tagline": "Finish the look"
+          },
+          "disabled": false
+        }
+      },
+      "block_order": [
+        "category-sneakers",
+        "category-apparel",
+        "category-accessories"
+      ],
+      "disabled": false
+    },
+    "featured-collection-default": {
+      "type": "featured-products",
+      "settings": {
+        "title": "Drop-ready collection",
+        "subtitle": "Curated items for the first storefront launch.",
+        "viewAllLabel": "View collection",
+        "viewAllHref": "/collections/new-arrivals"
+      },
+      "blocks": {
+        "product-sneaker": {
+          "type": "product-card",
+          "settings": {
+            "title": "Velocity Runner",
+            "price": "Rs 4,999",
+            "url": "/products/velocity-runner"
+          },
+          "disabled": false
+        },
+        "product-hoodie": {
+          "type": "product-card",
+          "settings": {
+            "title": "Everyday Hoodie",
+            "price": "Rs 2,499",
+            "url": "/products/everyday-hoodie"
+          },
+          "disabled": false
+        },
+        "product-cap": {
+          "type": "product-card",
+          "settings": {
+            "title": "Street Cap",
+            "price": "Rs 899",
+            "url": "/products/street-cap"
+          },
+          "disabled": false
+        }
+      },
+      "block_order": [
+        "product-sneaker",
+        "product-hoodie",
+        "product-cap"
+      ],
+      "disabled": false
+    },
+    "product-grid-default": {
+      "type": "product-grid",
+      "settings": {
+        "title": "Featured Products",
+        "subtitle": "Products selected from your catalog.",
+        "columns": 4
+      },
+      "blocks": {
+        "grid-sneaker": {
+          "type": "product-card",
+          "settings": {
+            "title": "Court Sneaker",
+            "price": "Rs 3,499",
+            "url": "/products/court-sneaker"
+          },
+          "disabled": false
+        },
+        "grid-backpack": {
+          "type": "product-card",
+          "settings": {
+            "title": "Transit Backpack",
+            "price": "Rs 1,999",
+            "url": "/products/transit-backpack"
+          },
+          "disabled": false
+        }
+      },
+      "block_order": [
+        "grid-sneaker",
+        "grid-backpack"
+      ],
+      "disabled": false
+    },
+    "spotlight-default": {
+      "type": "spotlight",
+      "settings": {
+        "heading": "A brand-new Liquid section",
+        "subheading": "Added as sections/spotlight.liquid without changing the storefront React registry."
+      },
+      "blocks": {
+        "spotlight-badge": {
+          "type": "badge",
+          "settings": {
+            "label": "Zero storefront code change"
+          },
+          "disabled": false
+        },
+        "spotlight-app": {
+          "type": "@app",
+          "settings": {
+            "extension_handle": "urban-offer",
+            "slot": "home.spotlight.offer"
+          },
+          "disabled": false
+        }
+      },
+      "block_order": [
+        "spotlight-badge",
+        "spotlight-app"
+      ],
+      "disabled": false
+    },
+    "newsletter-default": {
+      "type": "newsletter-signup",
+      "settings": {
+        "title": "Get first access",
+        "subtitle": "Store updates, new drops, and offers sent to your inbox.",
+        "buttonLabel": "Sign up"
+      },
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "announcement-default",
+    "hero-default",
+    "category-grid-default",
+    "featured-collection-default",
+    "product-grid-default",
+    "spotlight-default",
+    "newsletter-default"
+  ]
+}

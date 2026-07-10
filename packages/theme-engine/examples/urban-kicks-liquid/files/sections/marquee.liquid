@@ -1,0 +1,24 @@
+<section class="lb-marquee" data-section-id="{{ section.id }}">
+  <p>{{ section.settings.text }}</p>
+</section>
+{% schema %}
+{
+  "name": "Marquee",
+  "settings": [
+    {
+      "id": "text",
+      "type": "text",
+      "label": "Text",
+      "default": "Featured announcement"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Marquee",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

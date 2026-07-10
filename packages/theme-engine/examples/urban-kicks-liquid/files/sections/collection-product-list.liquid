@@ -1,0 +1,27 @@
+<section class="lb-product-grid" data-section-id="{{ section.id }}">
+  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
+  <div class="lb-product-grid__items">
+    {% for item in collection.products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | money_with_currency: item.currency }}</span></a><lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}"><button type="button" data-lb-add-to-cart>Add to cart</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle></article>{% endfor %}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Collection Products",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Heading",
+      "default": "Products"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Collection Products",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

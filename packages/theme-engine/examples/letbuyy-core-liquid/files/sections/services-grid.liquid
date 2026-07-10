@@ -1,0 +1,47 @@
+<section class="lb-services-grid" data-section-id="{{ section.id }}">
+  <h2>{{ section.settings.title }}</h2>
+  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.description }}</p><a href="{{ block.settings.link }}">Learn more</a></article>{% endfor %}
+</section>
+{% schema %}
+{
+  "name": "Services Grid",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title",
+      "default": "Services"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "service",
+      "name": "Service",
+      "settings": [
+        {
+          "id": "title",
+          "type": "text",
+          "label": "Title"
+        },
+        {
+          "id": "description",
+          "type": "textarea",
+          "label": "Description"
+        },
+        {
+          "id": "link",
+          "type": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Services Grid",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

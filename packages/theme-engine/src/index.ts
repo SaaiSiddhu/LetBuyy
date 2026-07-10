@@ -24,6 +24,10 @@ export * from './experience-fonts';
 export * from './section-schema-migrations';
 export * from './settings-schema-canonical';
 export * from './editor-bridge-protocol';
+export * from './theme-sdk';
+export * from './theme-artifact-exporter';
+export * from './theme-linter';
+export * from './theme-packager';
 
 export type BuiltInSectionType =
   | 'header'

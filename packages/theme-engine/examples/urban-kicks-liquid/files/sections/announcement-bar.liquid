@@ -1,0 +1,15 @@
+<section class="lb-announcement-bar" data-section-id="{{ section.id }}">
+  <span>{{ section.settings.text }}</span>
+  <a href="{{ section.settings.linkHref }}">{{ section.settings.linkLabel }}</a>
+</section>
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "settings": [
+    { "id": "text", "type": "text", "label": "Message", "default": "Free shipping on fresh drops this week." },
+    { "id": "linkLabel", "type": "text", "label": "Link label", "default": "Shop now" },
+    { "id": "linkHref", "type": "url", "label": "Link URL", "default": "/products" }
+  ],
+  "presets": [{ "name": "Announcement Bar" }]
+}
+{% endschema %}

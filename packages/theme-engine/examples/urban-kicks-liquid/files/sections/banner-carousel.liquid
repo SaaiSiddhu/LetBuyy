@@ -1,0 +1,54 @@
+<section class="lb-banner-carousel" data-section-id="{{ section.id }}" data-autoplay="{{ section.settings.autoplay }}">
+  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
+  <div class="lb-banner-carousel__slides">
+    {% for block in section.blocks %}<a href="{{ block.settings.link }}">{% if block.settings.image %}<img src="{{ block.settings.image | image_url }}" alt="{{ block.settings.heading }}">{% endif %}<span>{{ block.settings.heading }}</span></a>{% endfor %}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Banner Carousel",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title"
+    },
+    {
+      "id": "autoplay",
+      "type": "toggle",
+      "label": "Autoplay",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "id": "heading",
+          "type": "text",
+          "label": "Heading"
+        },
+        {
+          "id": "image",
+          "type": "image",
+          "label": "Image"
+        },
+        {
+          "id": "link",
+          "type": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Banner Carousel",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

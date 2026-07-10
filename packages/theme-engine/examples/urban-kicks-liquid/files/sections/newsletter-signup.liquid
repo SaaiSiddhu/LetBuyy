@@ -1,0 +1,19 @@
+<section class="lb-newsletter-signup" data-section-id="{{ section.id }}">
+  <h2>{{ section.settings.title }}</h2>
+  <p>{{ section.settings.subtitle }}</p>
+  <form action="/contact" method="post">
+    <input type="email" name="email" aria-label="Email" required>
+    <button type="submit">{{ section.settings.buttonLabel }}</button>
+  </form>
+</section>
+{% schema %}
+{
+  "name": "Newsletter Signup",
+  "settings": [
+    { "id": "title", "type": "text", "label": "Heading", "default": "Get first access" },
+    { "id": "subtitle", "type": "text", "label": "Subheading" },
+    { "id": "buttonLabel", "type": "text", "label": "Button label", "default": "Sign up" }
+  ],
+  "presets": [{ "name": "Newsletter Signup" }]
+}
+{% endschema %}

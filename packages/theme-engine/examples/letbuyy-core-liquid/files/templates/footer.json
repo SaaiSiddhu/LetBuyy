@@ -1,0 +1,39 @@
+{
+  "name": "LetBuyy Core footer",
+  "layout": "theme",
+  "sections": {
+    "footer-default": {
+      "type": "footer",
+      "settings": {
+        "storeName": "LetBuyy Core",
+        "tagline": "First-party Liquid commerce storefront."
+      },
+      "blocks": {
+        "footer-contact": {
+          "type": "link",
+          "settings": {
+            "label": "Contact",
+            "href": "/contact"
+          },
+          "disabled": false
+        },
+        "footer-policy": {
+          "type": "link",
+          "settings": {
+            "label": "Policies",
+            "href": "/policies/shipping-policy"
+          },
+          "disabled": false
+        }
+      },
+      "block_order": [
+        "footer-contact",
+        "footer-policy"
+      ],
+      "disabled": false
+    }
+  },
+  "order": [
+    "footer-default"
+  ]
+}

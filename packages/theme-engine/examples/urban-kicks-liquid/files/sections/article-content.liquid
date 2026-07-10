@@ -1,0 +1,24 @@
+<section class="lb-article" data-section-id="{{ section.id }}">
+  {% if article %}
+  <h1 class="lb-article__title">{{ article.title }}</h1>
+  {% if article.published_at %}<time class="lb-article__date" datetime="{{ article.published_at }}">{{ article.published_at | date: "%B %-d, %Y" }}</time>{% endif %}
+  {% if article.image %}<img class="lb-article__image" src="{{ article.image | image_url }}" alt="{{ article.title }}">{% endif %}
+  {% if article.body_html != blank %}<div class="lb-article__body">{{ article.body_html | raw }}</div>{% endif %}
+  {% else %}
+  <p class="lb-article__missing">Article not found.</p>
+  {% endif %}
+</section>
+{% schema %}
+{
+  "name": "Article Content",
+  "settings": [],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Article Content",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,29 @@
+{
+  "name": "Urban Kicks product",
+  "layout": "theme",
+  "sections": {
+    "product-detail-default": {
+      "type": "product-detail",
+      "settings": {
+        "showGallery": true,
+        "showDescription": true
+      },
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    },
+    "product-related": {
+      "type": "featured-products",
+      "settings": {
+        "title": "You may also like"
+      },
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "product-detail-default",
+    "product-related"
+  ]
+}

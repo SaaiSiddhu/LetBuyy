@@ -1,0 +1,15 @@
+{
+  "schema_version": "2026-06-liquid-sections",
+  "package": {
+    "slug": "urban-kicks-liquid",
+    "name": "Urban Kicks Liquid",
+    "version": "1.0.0",
+    "author_name": "LetBuyy",
+    "description": "First-party Urban Kicks storefront converted to portable Liquid sections and blocks."
+  },
+  "renderer": {
+    "engine": "liquid",
+    "renderer_version": "0.1.0",
+    "liquid_ready": true
+  }
+}

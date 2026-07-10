@@ -1,0 +1,47 @@
+<section class="lb-about-section" data-section-id="{{ section.id }}">
+  <h2>{{ section.settings.title }}</h2>
+  <div>{{ section.settings.content }}</div>
+  {% if section.settings.imageUrl %}<img src="{{ section.settings.imageUrl | image_url }}" alt="{{ section.settings.title }}">{% endif %}
+</section>
+{% schema %}
+{
+  "name": "About Section",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title",
+      "default": "About us"
+    },
+    {
+      "id": "content",
+      "type": "richtext",
+      "label": "Content"
+    },
+    {
+      "id": "imageUrl",
+      "type": "image",
+      "label": "Image"
+    },
+    {
+      "id": "layout",
+      "type": "select",
+      "label": "Layout",
+      "default": "left",
+      "options": [
+        "left",
+        "right",
+        "center"
+      ]
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "About Section",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

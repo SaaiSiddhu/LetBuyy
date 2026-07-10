@@ -1,0 +1,25 @@
+<section class="lb-featured-products" data-section-id="{{ section.id }}">
+  <div>
+    <h2>{{ section.settings.title }}</h2>
+    <p>{{ section.settings.subtitle }}</p>
+  </div>
+  <div class="lb-featured-products__items">
+    {% for block in section.blocks %}
+      {{ block.content | raw }}
+    {% endfor %}
+  </div>
+  <a href="{{ section.settings.viewAllHref }}">{{ section.settings.viewAllLabel }}</a>
+</section>
+{% schema %}
+{
+  "name": "Featured Products",
+  "settings": [
+    { "id": "title", "type": "text", "label": "Heading", "default": "Drop-ready collection" },
+    { "id": "subtitle", "type": "text", "label": "Subheading" },
+    { "id": "viewAllLabel", "type": "text", "label": "View all label", "default": "View collection" },
+    { "id": "viewAllHref", "type": "url", "label": "View all URL", "default": "/collections/new-arrivals" }
+  ],
+  "blocks": [{ "type": "product-card", "name": "Product card" }],
+  "presets": [{ "name": "Featured Products" }]
+}
+{% endschema %}

@@ -1,0 +1,16 @@
+{
+  "name": "Login",
+  "layout": "theme",
+  "sections": {
+    "customer-login-default": {
+      "type": "customer-login",
+      "settings": {},
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "customer-login-default"
+  ]
+}

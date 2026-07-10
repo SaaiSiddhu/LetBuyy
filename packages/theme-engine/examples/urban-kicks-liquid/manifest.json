@@ -1,0 +1,435 @@
+{
+  "slug": "urban-kicks-liquid",
+  "schema_version": "2026-06-liquid-sections",
+  "files": [
+    {
+      "path": "blocks/badge.liquid",
+      "checksum": "b6df6b7c33c20125bf7146488bf554c22e03ab06e338933fc66add551033e805",
+      "sizeBytes": 87
+    },
+    {
+      "path": "blocks/category.liquid",
+      "checksum": "1978324169429743b29a6866e03389790fb785f6ad6897569f08d1ea2fef1304",
+      "sizeBytes": 199
+    },
+    {
+      "path": "blocks/product-card.liquid",
+      "checksum": "f99fb1d1af15ea2972aa931625c9c25506cf17f386a871a91247b41c7de1b936",
+      "sizeBytes": 212
+    },
+    {
+      "path": "config/settings_data.json",
+      "checksum": "a3122ceea41973df5be257b59b4bf2e99e02bf60f852b6919df056f95f6d647e",
+      "sizeBytes": 195
+    },
+    {
+      "path": "config/settings_schema.json",
+      "checksum": "cbd1bf33e6c9e6585d050a68c4219222d088320796442d947c7b12890de738af",
+      "sizeBytes": 1032
+    },
+    {
+      "path": "layout/theme.liquid",
+      "checksum": "60a451d86f9828724d3deba60688a6b83c339527379b9d271d25701af992bb61",
+      "sizeBytes": 423
+    },
+    {
+      "path": "letbuyy-theme.json",
+      "checksum": "c8ff5bc4ceb9a12e4d24ac0d788367b39e275434cb05b7211e05577d20a1bafd",
+      "sizeBytes": 400
+    },
+    {
+      "path": "locales/en.json",
+      "checksum": "30f3b36c69a3f24b34d8b8983ba99c55063fee2c3d355a89c0e5c9487643adde",
+      "sizeBytes": 41
+    },
+    {
+      "path": "sections/404-page.liquid",
+      "checksum": "df22e42ee70bc8b9dfb958f6cc8cf8afb848a2a6315fc9f5c3d8c86e225975f3",
+      "sizeBytes": 423
+    },
+    {
+      "path": "sections/about-section.liquid",
+      "checksum": "1d914b1292628e4fec2febfca9a833b6e357a41e8896b45dbf6227311736b181",
+      "sizeBytes": 965
+    },
+    {
+      "path": "sections/announcement-bar.liquid",
+      "checksum": "06dc3d5a4331bf10ffcca35274aa578529e40577622f7686426e4f903c5de8cb",
+      "sizeBytes": 623
+    },
+    {
+      "path": "sections/app-block-slot.liquid",
+      "checksum": "7202f98fbda4b0d0bc6c5bdf7ad836175a6cfdd7c0c2cccc23059cc8008a7a38",
+      "sizeBytes": 703
+    },
+    {
+      "path": "sections/article-content.liquid",
+      "checksum": "a2411dfe397f45cecadcd89e55db94262ba86e640dd60b3c43a9a74658ec6625",
+      "sizeBytes": 845
+    },
+    {
+      "path": "sections/banner-carousel.liquid",
+      "checksum": "165c8a595006cba164eab6a7385bde65db9bae5d4ea640d83ce884daf96eb32c",
+      "sizeBytes": 1299
+    },
+    {
+      "path": "sections/blog-listing.liquid",
+      "checksum": "4c6323320a7e1b8614d1e4ef456c63e786447f50cab429b178e2884b5aba6630",
+      "sizeBytes": 1692
+    },
+    {
+      "path": "sections/brand-marquee.liquid",
+      "checksum": "c879667325cdae4d5d4c0b61b2edd30cc9997ca531c0e7f80f565827ce80d938",
+      "sizeBytes": 716
+    },
+    {
+      "path": "sections/cart-summary.liquid",
+      "checksum": "537a368f9cbaffbb4b4395a5bd0272ae0cf00cf88bd86316f898bcf488aa5827",
+      "sizeBytes": 2077
+    },
+    {
+      "path": "sections/category-grid.liquid",
+      "checksum": "29b2643196f300647707c99ee9f1032c39c840c1668c7969e1d5ca0731103616",
+      "sizeBytes": 630
+    },
+    {
+      "path": "sections/collection-banner.liquid",
+      "checksum": "5373bde2d45fad3a3d8a93d535e50477b45a43c314088a2d5ac6e316eca5f02e",
+      "sizeBytes": 906
+    },
+    {
+      "path": "sections/collection-product-list.liquid",
+      "checksum": "8e42e69333c1a2028f16c8de0aae643abab5946b7034cd06e6dd724980143857",
+      "sizeBytes": 1314
+    },
+    {
+      "path": "sections/contact-form.liquid",
+      "checksum": "73fc42eae7975b542e3199ee829014a40768cb3b8cfe333217348c774b950aca",
+      "sizeBytes": 928
+    },
+    {
+      "path": "sections/cta-section.liquid",
+      "checksum": "d984d9175e6d186e483bc729a073ffba216f1a427c5e87c26bdc3172fbd3ec21",
+      "sizeBytes": 888
+    },
+    {
+      "path": "sections/customer-account.liquid",
+      "checksum": "dff9fd8af038688a1f4e7529af2557bead49246edfe51c73781a6d3d59de6faa",
+      "sizeBytes": 1046
+    },
+    {
+      "path": "sections/customer-addresses.liquid",
+      "checksum": "e66d788ae7b49e10da13b752fbbadec00fe2a82bc29b9c5bfcc9b40ccdf1bd05",
+      "sizeBytes": 1460
+    },
+    {
+      "path": "sections/customer-login.liquid",
+      "checksum": "cbafecf5bd80cc25e7ca3a6c3ef2053c0f6d4c47be7f35fe81359f8ae52e7e6a",
+      "sizeBytes": 880
+    },
+    {
+      "path": "sections/customer-order-detail.liquid",
+      "checksum": "62f4737899ceef7e17c4a1d1bd29308e195c0a6f8fa8ceb431accadf65cfc5c8",
+      "sizeBytes": 1394
+    },
+    {
+      "path": "sections/customer-orders.liquid",
+      "checksum": "aae7efe372e52bdb5e104709d19de2141cb72849c72860894e9253868ee364fb",
+      "sizeBytes": 919
+    },
+    {
+      "path": "sections/customer-register.liquid",
+      "checksum": "6b5f132ee885a277ae8af42f1c05c869ba31fc09eb01b17e668896dc2140aec4",
+      "sizeBytes": 981
+    },
+    {
+      "path": "sections/customer-settings.liquid",
+      "checksum": "63fdd49611f20bbb2c8abf634fa31a544d4c89aa99cfdab6339342f9c8f1f63f",
+      "sizeBytes": 1220
+    },
+    {
+      "path": "sections/customer-wishlist.liquid",
+      "checksum": "04f03498072ab728d119d31f5479a009d9030b7d9ce5ab83d8526163dc377d61",
+      "sizeBytes": 1425
+    },
+    {
+      "path": "sections/experience-timeline.liquid",
+      "checksum": "a99dd81e0ef878af79b1946f47333611c4d7a7c61e5c72d43be71ac9cf76a498",
+      "sizeBytes": 1025
+    },
+    {
+      "path": "sections/featured-products.liquid",
+      "checksum": "1464f2964753b1112abf0f3fd62b0edcd23032b00014db3cd9c41864405b038f",
+      "sizeBytes": 982
+    },
+    {
+      "path": "sections/footer.liquid",
+      "checksum": "9d3dfaaf167acaa76f57a86f59f373eda1984d6e600ff3ef523fc08d62a434cc",
+      "sizeBytes": 1012
+    },
+    {
+      "path": "sections/header.liquid",
+      "checksum": "cf9a15575740c58ddfa4daf3923fdb857170c422ff324696c151a9f82636d0fe",
+      "sizeBytes": 1361
+    },
+    {
+      "path": "sections/hero-banner.liquid",
+      "checksum": "74cfa38ce0fb3837c9fdcfd2b0603770ea7d2c8f6afca6b22e43d6fed89bad34",
+      "sizeBytes": 1910
+    },
+    {
+      "path": "sections/marquee.liquid",
+      "checksum": "19a77399e2d356880dd7e6723adaca4a251e6b0db4adb149575770da64a29a3c",
+      "sizeBytes": 417
+    },
+    {
+      "path": "sections/newsletter-signup.liquid",
+      "checksum": "649dd3bd2109f75e2090e36b59e11b1ecfa0237693b1c4a1865ba2a1153b76fb",
+      "sizeBytes": 730
+    },
+    {
+      "path": "sections/page-content.liquid",
+      "checksum": "eac1c3570c08f32a752f22d36458a402463d49f7787ff33c790a0f7fb455aa59",
+      "sizeBytes": 573
+    },
+    {
+      "path": "sections/password-gate.liquid",
+      "checksum": "b375dbd054f920a2df9529e5fab69c70e024cbb288d07715a8005c697820f220",
+      "sizeBytes": 1169
+    },
+    {
+      "path": "sections/policy-content.liquid",
+      "checksum": "6ed36b3f4f78af84237246fcaf3c05bd58c2c599e16e2f67030c5b760c9e1ff5",
+      "sizeBytes": 557
+    },
+    {
+      "path": "sections/portfolio-grid.liquid",
+      "checksum": "bcb1f305efae35e5cc39408f76255bf7a548f56c0bdd31bbdc8c8285f8ba0274",
+      "sizeBytes": 1006
+    },
+    {
+      "path": "sections/product-detail.liquid",
+      "checksum": "2a5845bb6b4d59f8d4a44018756f1e7e5f86631a8e311232b62b4cea5f9ba30a",
+      "sizeBytes": 3649
+    },
+    {
+      "path": "sections/product-grid.liquid",
+      "checksum": "dec10fa575fc0bbd2e7111150758203fdbc2695b49031a768136bd0c9eaaaeb4",
+      "sizeBytes": 791
+    },
+    {
+      "path": "sections/rich-content.liquid",
+      "checksum": "86452487b09bdc54e4d4029331e918250501a0e0ba2254d1e06a7dda39e9a62f",
+      "sizeBytes": 517
+    },
+    {
+      "path": "sections/search-box.liquid",
+      "checksum": "98a8ad3f779ef0d9ca921d79c00f83155b24da99260018175af773129a222dce",
+      "sizeBytes": 659
+    },
+    {
+      "path": "sections/services-grid.liquid",
+      "checksum": "5842412d36b0b38556e84e10eef72fc65efeb8110bab53c48de73abf91f44ca6",
+      "sizeBytes": 1020
+    },
+    {
+      "path": "sections/skills-section.liquid",
+      "checksum": "2423ebaf0aca2f3f368ab91efa5d776d0e6e378bb8e756ecf1f74453f1432a19",
+      "sizeBytes": 931
+    },
+    {
+      "path": "sections/spotlight.liquid",
+      "checksum": "e287ec661d74d75c00120a4c9dbdd7cae615a209d80bf7d2d631eecad667cd55",
+      "sizeBytes": 707
+    },
+    {
+      "path": "sections/testimonials.liquid",
+      "checksum": "c2be93aae75bccf8c0ced6999ea6b4498a53d23cb57e5415a4b2a3cc3fc6dc76",
+      "sizeBytes": 884
+    },
+    {
+      "path": "sections/trust-badges.liquid",
+      "checksum": "aaefec27b3aad16724fc19a68f7c973f13abe257b755785389d80198dd6c9a36",
+      "sizeBytes": 890
+    },
+    {
+      "path": "templates/article.json",
+      "checksum": "e0a21feaabe409b8f5febac5625176039f589b00fee566805e4e161766949fdd",
+      "sizeBytes": 276
+    },
+    {
+      "path": "templates/blog.json",
+      "checksum": "a114519f2a7de164568f3501891481ba3879cee137801e2fc791852256265d60",
+      "sizeBytes": 301
+    },
+    {
+      "path": "templates/cart.json",
+      "checksum": "04735d96af2b8011fda8ab331471bf345bd270e6124654a95d20c97297986941",
+      "sizeBytes": 276
+    },
+    {
+      "path": "templates/collection.json",
+      "checksum": "5d1dce8a1a15370e9d7768e45e3931e16f9c2cbcfbe73d98b30cbbc7988fd0ee",
+      "sizeBytes": 566
+    },
+    {
+      "path": "templates/customers/account.json",
+      "checksum": "8678c3f6b309c68d1b390af93247064d4c15c4b7f573422b416b7bc42d5090cb",
+      "sizeBytes": 279
+    },
+    {
+      "path": "templates/customers/addresses.json",
+      "checksum": "7e4a6189103b309bf0e180c3beaccfe92ba5f0f4fb4d50d915b279e9a65d8cc7",
+      "sizeBytes": 287
+    },
+    {
+      "path": "templates/customers/login.json",
+      "checksum": "3f26c2c862f590a21aa249b5e57642dd5ab4518e0279bc928fbca3378d3ab0bb",
+      "sizeBytes": 271
+    },
+    {
+      "path": "templates/customers/order.json",
+      "checksum": "9a3d863aec0d8efa3984c9769753b4e67ebe2c35a43c342fbd15e944ec64f81a",
+      "sizeBytes": 299
+    },
+    {
+      "path": "templates/customers/orders.json",
+      "checksum": "cea1e82a2ed9457fe96453c3a697d265ec90d0f0041a0522f02826d6f1b02bce",
+      "sizeBytes": 282
+    },
+    {
+      "path": "templates/customers/register.json",
+      "checksum": "d7a6b992699a1bc89698c66cbc959fdfafd0bf84944b49cbd51aa5026cb5781f",
+      "sizeBytes": 283
+    },
+    {
+      "path": "templates/customers/settings.json",
+      "checksum": "2d18698352dbacee5abc66b7d3d1948a9e9234bf0f06b436e7106a133a42b229",
+      "sizeBytes": 291
+    },
+    {
+      "path": "templates/customers/wishlist.json",
+      "checksum": "a54f47f482033ff99b71d1bfff8360bab8f4a54819b2b06410ea2a763f4588e4",
+      "sizeBytes": 283
+    },
+    {
+      "path": "templates/footer.json",
+      "checksum": "2f456c309bf185ea1b58f0a0b3925d3151b02e39834d4344adfff53669eb60e6",
+      "sizeBytes": 830
+    },
+    {
+      "path": "templates/header.json",
+      "checksum": "a1d7c6c3a03e78d9e8ee41fbacb76986d3b4e617a1fee80350ff7def86b47863",
+      "sizeBytes": 839
+    },
+    {
+      "path": "templates/index.json",
+      "checksum": "32e115ea6a24aa43c3afc989dffeda3ea5cc37a855b5b8a6a4fe26d0bcbb3eb4",
+      "sizeBytes": 5347
+    },
+    {
+      "path": "templates/not_found.json",
+      "checksum": "60d5e65dcf7a7e4f39575e775a5b4c63b18df80c5f8c6b87c96e39038de45924",
+      "sizeBytes": 261
+    },
+    {
+      "path": "templates/page.json",
+      "checksum": "3cc5b7a61db8a611335b3b14e33d221a60f9dfae12bb5652b6b08f0ea5986988",
+      "sizeBytes": 264
+    },
+    {
+      "path": "templates/password.json",
+      "checksum": "486fe9c62bf9ba4f36666dd315e0d5b7195e5c3ebb3fd48596ec21928ca95652",
+      "sizeBytes": 311
+    },
+    {
+      "path": "templates/policy.json",
+      "checksum": "8e65396b7cc9fd9403195f6e278561b392bf9955d71fc9f641909ecad552b6d4",
+      "sizeBytes": 277
+    },
+    {
+      "path": "templates/product.json",
+      "checksum": "0782536d9e51e4bebdf6d8acda7947d12dd2bfe15c0c108253143aaf55098552",
+      "sizeBytes": 578
+    },
+    {
+      "path": "templates/search.json",
+      "checksum": "1c2f3c312a09bdcebae0450874494f0dc07614a1f33f1c0264ec569a8c3d9385",
+      "sizeBytes": 539
+    }
+  ],
+  "checksums": {
+    "blocks/badge.liquid": "b6df6b7c33c20125bf7146488bf554c22e03ab06e338933fc66add551033e805",
+    "blocks/category.liquid": "1978324169429743b29a6866e03389790fb785f6ad6897569f08d1ea2fef1304",
+    "blocks/product-card.liquid": "f99fb1d1af15ea2972aa931625c9c25506cf17f386a871a91247b41c7de1b936",
+    "config/settings_data.json": "a3122ceea41973df5be257b59b4bf2e99e02bf60f852b6919df056f95f6d647e",
+    "config/settings_schema.json": "cbd1bf33e6c9e6585d050a68c4219222d088320796442d947c7b12890de738af",
+    "layout/theme.liquid": "60a451d86f9828724d3deba60688a6b83c339527379b9d271d25701af992bb61",
+    "letbuyy-theme.json": "c8ff5bc4ceb9a12e4d24ac0d788367b39e275434cb05b7211e05577d20a1bafd",
+    "locales/en.json": "30f3b36c69a3f24b34d8b8983ba99c55063fee2c3d355a89c0e5c9487643adde",
+    "sections/404-page.liquid": "df22e42ee70bc8b9dfb958f6cc8cf8afb848a2a6315fc9f5c3d8c86e225975f3",
+    "sections/about-section.liquid": "1d914b1292628e4fec2febfca9a833b6e357a41e8896b45dbf6227311736b181",
+    "sections/announcement-bar.liquid": "06dc3d5a4331bf10ffcca35274aa578529e40577622f7686426e4f903c5de8cb",
+    "sections/app-block-slot.liquid": "7202f98fbda4b0d0bc6c5bdf7ad836175a6cfdd7c0c2cccc23059cc8008a7a38",
+    "sections/article-content.liquid": "a2411dfe397f45cecadcd89e55db94262ba86e640dd60b3c43a9a74658ec6625",
+    "sections/banner-carousel.liquid": "165c8a595006cba164eab6a7385bde65db9bae5d4ea640d83ce884daf96eb32c",
+    "sections/blog-listing.liquid": "4c6323320a7e1b8614d1e4ef456c63e786447f50cab429b178e2884b5aba6630",
+    "sections/brand-marquee.liquid": "c879667325cdae4d5d4c0b61b2edd30cc9997ca531c0e7f80f565827ce80d938",
+    "sections/cart-summary.liquid": "537a368f9cbaffbb4b4395a5bd0272ae0cf00cf88bd86316f898bcf488aa5827",
+    "sections/category-grid.liquid": "29b2643196f300647707c99ee9f1032c39c840c1668c7969e1d5ca0731103616",
+    "sections/collection-banner.liquid": "5373bde2d45fad3a3d8a93d535e50477b45a43c314088a2d5ac6e316eca5f02e",
+    "sections/collection-product-list.liquid": "8e42e69333c1a2028f16c8de0aae643abab5946b7034cd06e6dd724980143857",
+    "sections/contact-form.liquid": "73fc42eae7975b542e3199ee829014a40768cb3b8cfe333217348c774b950aca",
+    "sections/cta-section.liquid": "d984d9175e6d186e483bc729a073ffba216f1a427c5e87c26bdc3172fbd3ec21",
+    "sections/customer-account.liquid": "dff9fd8af038688a1f4e7529af2557bead49246edfe51c73781a6d3d59de6faa",
+    "sections/customer-addresses.liquid": "e66d788ae7b49e10da13b752fbbadec00fe2a82bc29b9c5bfcc9b40ccdf1bd05",
+    "sections/customer-login.liquid": "cbafecf5bd80cc25e7ca3a6c3ef2053c0f6d4c47be7f35fe81359f8ae52e7e6a",
+    "sections/customer-order-detail.liquid": "62f4737899ceef7e17c4a1d1bd29308e195c0a6f8fa8ceb431accadf65cfc5c8",
+    "sections/customer-orders.liquid": "aae7efe372e52bdb5e104709d19de2141cb72849c72860894e9253868ee364fb",
+    "sections/customer-register.liquid": "6b5f132ee885a277ae8af42f1c05c869ba31fc09eb01b17e668896dc2140aec4",
+    "sections/customer-settings.liquid": "63fdd49611f20bbb2c8abf634fa31a544d4c89aa99cfdab6339342f9c8f1f63f",
+    "sections/customer-wishlist.liquid": "04f03498072ab728d119d31f5479a009d9030b7d9ce5ab83d8526163dc377d61",
+    "sections/experience-timeline.liquid": "a99dd81e0ef878af79b1946f47333611c4d7a7c61e5c72d43be71ac9cf76a498",
+    "sections/featured-products.liquid": "1464f2964753b1112abf0f3fd62b0edcd23032b00014db3cd9c41864405b038f",
+    "sections/footer.liquid": "9d3dfaaf167acaa76f57a86f59f373eda1984d6e600ff3ef523fc08d62a434cc",
+    "sections/header.liquid": "cf9a15575740c58ddfa4daf3923fdb857170c422ff324696c151a9f82636d0fe",
+    "sections/hero-banner.liquid": "74cfa38ce0fb3837c9fdcfd2b0603770ea7d2c8f6afca6b22e43d6fed89bad34",
+    "sections/marquee.liquid": "19a77399e2d356880dd7e6723adaca4a251e6b0db4adb149575770da64a29a3c",
+    "sections/newsletter-signup.liquid": "649dd3bd2109f75e2090e36b59e11b1ecfa0237693b1c4a1865ba2a1153b76fb",
+    "sections/page-content.liquid": "eac1c3570c08f32a752f22d36458a402463d49f7787ff33c790a0f7fb455aa59",
+    "sections/password-gate.liquid": "b375dbd054f920a2df9529e5fab69c70e024cbb288d07715a8005c697820f220",
+    "sections/policy-content.liquid": "6ed36b3f4f78af84237246fcaf3c05bd58c2c599e16e2f67030c5b760c9e1ff5",
+    "sections/portfolio-grid.liquid": "bcb1f305efae35e5cc39408f76255bf7a548f56c0bdd31bbdc8c8285f8ba0274",
+    "sections/product-detail.liquid": "2a5845bb6b4d59f8d4a44018756f1e7e5f86631a8e311232b62b4cea5f9ba30a",
+    "sections/product-grid.liquid": "dec10fa575fc0bbd2e7111150758203fdbc2695b49031a768136bd0c9eaaaeb4",
+    "sections/rich-content.liquid": "86452487b09bdc54e4d4029331e918250501a0e0ba2254d1e06a7dda39e9a62f",
+    "sections/search-box.liquid": "98a8ad3f779ef0d9ca921d79c00f83155b24da99260018175af773129a222dce",
+    "sections/services-grid.liquid": "5842412d36b0b38556e84e10eef72fc65efeb8110bab53c48de73abf91f44ca6",
+    "sections/skills-section.liquid": "2423ebaf0aca2f3f368ab91efa5d776d0e6e378bb8e756ecf1f74453f1432a19",
+    "sections/spotlight.liquid": "e287ec661d74d75c00120a4c9dbdd7cae615a209d80bf7d2d631eecad667cd55",
+    "sections/testimonials.liquid": "c2be93aae75bccf8c0ced6999ea6b4498a53d23cb57e5415a4b2a3cc3fc6dc76",
+    "sections/trust-badges.liquid": "aaefec27b3aad16724fc19a68f7c973f13abe257b755785389d80198dd6c9a36",
+    "templates/article.json": "e0a21feaabe409b8f5febac5625176039f589b00fee566805e4e161766949fdd",
+    "templates/blog.json": "a114519f2a7de164568f3501891481ba3879cee137801e2fc791852256265d60",
+    "templates/cart.json": "04735d96af2b8011fda8ab331471bf345bd270e6124654a95d20c97297986941",
+    "templates/collection.json": "5d1dce8a1a15370e9d7768e45e3931e16f9c2cbcfbe73d98b30cbbc7988fd0ee",
+    "templates/customers/account.json": "8678c3f6b309c68d1b390af93247064d4c15c4b7f573422b416b7bc42d5090cb",
+    "templates/customers/addresses.json": "7e4a6189103b309bf0e180c3beaccfe92ba5f0f4fb4d50d915b279e9a65d8cc7",
+    "templates/customers/login.json": "3f26c2c862f590a21aa249b5e57642dd5ab4518e0279bc928fbca3378d3ab0bb",
+    "templates/customers/order.json": "9a3d863aec0d8efa3984c9769753b4e67ebe2c35a43c342fbd15e944ec64f81a",
+    "templates/customers/orders.json": "cea1e82a2ed9457fe96453c3a697d265ec90d0f0041a0522f02826d6f1b02bce",
+    "templates/customers/register.json": "d7a6b992699a1bc89698c66cbc959fdfafd0bf84944b49cbd51aa5026cb5781f",
+    "templates/customers/settings.json": "2d18698352dbacee5abc66b7d3d1948a9e9234bf0f06b436e7106a133a42b229",
+    "templates/customers/wishlist.json": "a54f47f482033ff99b71d1bfff8360bab8f4a54819b2b06410ea2a763f4588e4",
+    "templates/footer.json": "2f456c309bf185ea1b58f0a0b3925d3151b02e39834d4344adfff53669eb60e6",
+    "templates/header.json": "a1d7c6c3a03e78d9e8ee41fbacb76986d3b4e617a1fee80350ff7def86b47863",
+    "templates/index.json": "32e115ea6a24aa43c3afc989dffeda3ea5cc37a855b5b8a6a4fe26d0bcbb3eb4",
+    "templates/not_found.json": "60d5e65dcf7a7e4f39575e775a5b4c63b18df80c5f8c6b87c96e39038de45924",
+    "templates/page.json": "3cc5b7a61db8a611335b3b14e33d221a60f9dfae12bb5652b6b08f0ea5986988",
+    "templates/password.json": "486fe9c62bf9ba4f36666dd315e0d5b7195e5c3ebb3fd48596ec21928ca95652",
+    "templates/policy.json": "8e65396b7cc9fd9403195f6e278561b392bf9955d71fc9f641909ecad552b6d4",
+    "templates/product.json": "0782536d9e51e4bebdf6d8acda7947d12dd2bfe15c0c108253143aaf55098552",
+    "templates/search.json": "1c2f3c312a09bdcebae0450874494f0dc07614a1f33f1c0264ec569a8c3d9385"
+  },
+  "contentHash": "ff06141aa921e8a05dc84bd37a98b0ed4ef3138451ae84abea667356e51b65dd"
+}

@@ -1,0 +1,21 @@
+<section class="lb-product-grid" data-section-id="{{ section.id }}">
+  <h2>{{ section.settings.title }}</h2>
+  <p>{{ section.settings.subtitle }}</p>
+  <div class="lb-product-grid__items" data-columns="{{ section.settings.columns }}">
+    {% for block in section.blocks %}
+      {{ block.content | raw }}
+    {% endfor %}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Product Grid",
+  "settings": [
+    { "id": "title", "type": "text", "label": "Heading", "default": "Featured Products" },
+    { "id": "subtitle", "type": "text", "label": "Subheading" },
+    { "id": "columns", "type": "range", "label": "Columns", "min": 2, "max": 4, "step": 1, "default": 4 }
+  ],
+  "blocks": [{ "type": "product-card", "name": "Product card" }],
+  "presets": [{ "name": "Product Grid" }]
+}
+{% endschema %}

@@ -1,0 +1,47 @@
+<section class="lb-portfolio-grid" data-section-id="{{ section.id }}">
+  <h2>{{ section.settings.title }}</h2>
+  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.summary }}</p><a href="{{ block.settings.link }}">View</a></article>{% endfor %}
+</section>
+{% schema %}
+{
+  "name": "Portfolio Grid",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title",
+      "default": "Portfolio"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "project",
+      "name": "Project",
+      "settings": [
+        {
+          "id": "title",
+          "type": "text",
+          "label": "Title"
+        },
+        {
+          "id": "summary",
+          "type": "textarea",
+          "label": "Summary"
+        },
+        {
+          "id": "link",
+          "type": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Portfolio Grid",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

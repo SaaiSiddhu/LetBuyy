@@ -1,0 +1,26 @@
+{% assign overlay_value = section.settings.overlay | default: 0.4 %}
+<section class="lb-hero-banner" data-section-id="{{ section.id }}" data-height="{{ section.settings.height | default: 'full' }}" data-text-align="{{ section.settings.textAlign | default: 'center' }}">
+  {% if section.settings.image %}<div class="lb-hero-banner__bg" data-image-url="{{ section.settings.image | image_url }}" data-overlay="{{ overlay_value }}"></div>{% endif %}
+  {% if section.settings.eyebrow %}<p class="lb-hero-banner__eyebrow">{{ section.settings.eyebrow }}</p>{% endif %}
+  <h1 class="lb-hero-banner__heading">{{ section.settings.heading }}</h1>
+  {% if section.settings.subheading %}<p class="lb-hero-banner__subheading">{{ section.settings.subheading }}</p>{% endif %}
+  <a href="{{ section.settings.ctaLink }}" class="lb-hero-banner__cta">{{ section.settings.ctaText }}</a>
+</section>
+{% schema %}
+{
+  "name": "Hero Banner",
+  "settings": [
+    { "id": "eyebrow", "type": "text", "label": "Eyebrow", "default": "New season essentials" },
+    { "id": "heading", "type": "text", "label": "Heading", "default": "Fresh drops for daily buyers" },
+    { "id": "subheading", "type": "textarea", "label": "Subheading" },
+    { "id": "ctaText", "type": "text", "label": "Button text", "default": "Shop Now" },
+    { "id": "ctaLink", "type": "url", "label": "Button link", "default": "/products" },
+    { "id": "image", "type": "image", "label": "Background Image" },
+    { "id": "overlay", "type": "range", "label": "Overlay Opacity", "default": 0.4, "min": 0, "max": 1, "step": 0.1 },
+    { "id": "height", "type": "select", "label": "Height", "options": ["full", "large", "medium", "small"], "default": "full" },
+    { "id": "textAlign", "type": "select", "label": "Text Alignment", "options": ["left", "center", "right"], "default": "center" }
+  ],
+  "blocks": [],
+  "presets": [{ "name": "Hero Banner" }]
+}
+{% endschema %}

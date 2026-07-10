@@ -1,0 +1,21 @@
+<section class="lb-policy" data-section-id="{{ section.id }}">
+  {% if page %}
+  <h1 class="lb-policy__title">{{ page.title }}</h1>
+  {% if page.body_html != blank %}<div class="lb-policy__body">{{ page.body_html | raw }}</div>
+  {% elsif page.content != blank %}<div class="lb-policy__body">{{ page.content | raw }}</div>{% endif %}
+  {% endif %}
+</section>
+{% schema %}
+{
+  "name": "Policy Content",
+  "settings": [],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Policy Content",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

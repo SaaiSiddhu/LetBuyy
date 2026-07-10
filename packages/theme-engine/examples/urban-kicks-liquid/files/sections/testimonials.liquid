@@ -1,0 +1,42 @@
+<section class="lb-testimonials" data-section-id="{{ section.id }}">
+  <h2>{{ section.settings.title }}</h2>
+  {% for block in section.blocks %}<blockquote><p>{{ block.settings.quote }}</p><cite>{{ block.settings.author }}</cite></blockquote>{% endfor %}
+</section>
+{% schema %}
+{
+  "name": "Testimonials",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title",
+      "default": "What customers say"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "id": "quote",
+          "type": "textarea",
+          "label": "Quote"
+        },
+        {
+          "id": "author",
+          "type": "text",
+          "label": "Author"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

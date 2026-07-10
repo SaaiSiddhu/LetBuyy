@@ -1,0 +1,45 @@
+<section class="lb-skills-section" data-section-id="{{ section.id }}">
+  <h2>{{ section.settings.title }}</h2>
+  {% for block in section.blocks %}<span data-level="{{ block.settings.level }}">{{ block.settings.name }} {{ block.settings.level }}%</span>{% endfor %}
+</section>
+{% schema %}
+{
+  "name": "Skills Section",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title",
+      "default": "Skills"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "skill",
+      "name": "Skill",
+      "settings": [
+        {
+          "id": "name",
+          "type": "text",
+          "label": "Skill"
+        },
+        {
+          "id": "level",
+          "type": "range",
+          "label": "Level",
+          "min": 0,
+          "max": 100,
+          "step": 5
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Skills Section",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

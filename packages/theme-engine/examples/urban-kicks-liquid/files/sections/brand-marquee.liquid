@@ -1,0 +1,37 @@
+<section class="lb-brand-marquee" data-section-id="{{ section.id }}">
+  <h2>{{ section.settings.title }}</h2>
+  <div>{% for block in section.blocks %}<span>{{ block.settings.name }}</span>{% endfor %}</div>
+</section>
+{% schema %}
+{
+  "name": "Brand Marquee",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title",
+      "default": "Featured brands"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Brand",
+      "settings": [
+        {
+          "id": "name",
+          "type": "text",
+          "label": "Name"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand Marquee",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,16 @@
+{
+  "name": "Register",
+  "layout": "theme",
+  "sections": {
+    "customer-register-default": {
+      "type": "customer-register",
+      "settings": {},
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "customer-register-default"
+  ]
+}

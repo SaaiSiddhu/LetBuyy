@@ -1,0 +1,40 @@
+{
+  "name": "LetBuyy Core header",
+  "layout": "theme",
+  "sections": {
+    "header-default": {
+      "type": "header",
+      "settings": {
+        "storeName": "LetBuyy Core",
+        "showSearch": true,
+        "showCart": true
+      },
+      "blocks": {
+        "header-products": {
+          "type": "link",
+          "settings": {
+            "label": "Products",
+            "href": "/products"
+          },
+          "disabled": false
+        },
+        "header-collections": {
+          "type": "link",
+          "settings": {
+            "label": "Collections",
+            "href": "/collections/new-arrivals"
+          },
+          "disabled": false
+        }
+      },
+      "block_order": [
+        "header-products",
+        "header-collections"
+      ],
+      "disabled": false
+    }
+  },
+  "order": [
+    "header-default"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Account",
+  "layout": "theme",
+  "sections": {
+    "customer-account-default": {
+      "type": "customer-account",
+      "settings": {},
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "customer-account-default"
+  ]
+}

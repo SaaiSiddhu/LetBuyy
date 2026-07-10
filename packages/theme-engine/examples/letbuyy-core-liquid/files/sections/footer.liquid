@@ -1,0 +1,47 @@
+<footer class="lb-footer" data-section-id="{{ section.id }}">
+  <div><strong>{{ section.settings.storeName }}</strong>{% if section.settings.tagline %}<p>{{ section.settings.tagline }}</p>{% endif %}</div>
+  <nav>{% for block in section.blocks %}<a href="{{ block.settings.href }}">{{ block.settings.label }}</a>{% endfor %}</nav>
+</footer>
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "id": "storeName",
+      "type": "text",
+      "label": "Store name",
+      "default": "{{ shop.name }}"
+    },
+    {
+      "id": "tagline",
+      "type": "text",
+      "label": "Tagline"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Link",
+      "settings": [
+        {
+          "id": "label",
+          "type": "text",
+          "label": "Label"
+        },
+        {
+          "id": "href",
+          "type": "url",
+          "label": "URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

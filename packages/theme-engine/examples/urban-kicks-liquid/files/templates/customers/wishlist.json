@@ -1,0 +1,16 @@
+{
+  "name": "Wishlist",
+  "layout": "theme",
+  "sections": {
+    "customer-wishlist-default": {
+      "type": "customer-wishlist",
+      "settings": {},
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "customer-wishlist-default"
+  ]
+}

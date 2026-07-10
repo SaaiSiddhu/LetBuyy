@@ -1,0 +1,42 @@
+{
+  "schema_version": "2026-05-json-contract",
+  "settings": {
+    "colors": {
+      "label": "Colors",
+      "description": "LetBuyy Core storefront color tokens.",
+      "fields": {
+        "primaryColor": {
+          "type": "color",
+          "label": "Primary color",
+          "default": "#8B5CF6"
+        },
+        "accentColor": {
+          "type": "color",
+          "label": "Accent color",
+          "default": "#F59E0B"
+        },
+        "surfaceColor": {
+          "type": "color",
+          "label": "Surface color",
+          "default": "#F8FAFC"
+        }
+      }
+    },
+    "typography": {
+      "label": "Typography",
+      "description": "First-party type settings mirrored from the JSON-contract LetBuyy Core theme.",
+      "fields": {
+        "headingFontFamily": {
+          "type": "text",
+          "label": "Heading font",
+          "default": "Inter"
+        },
+        "bodyFontFamily": {
+          "type": "text",
+          "label": "Body font",
+          "default": "Inter"
+        }
+      }
+    }
+  }
+}

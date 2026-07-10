@@ -1,0 +1,16 @@
+{
+  "name": "Article",
+  "layout": "theme",
+  "sections": {
+    "article-content-default": {
+      "type": "article-content",
+      "settings": {},
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "article-content-default"
+  ]
+}

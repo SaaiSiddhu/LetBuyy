@@ -1,0 +1,10 @@
+{
+  "current": {
+    "primaryColor": "#8B5CF6",
+    "accentColor": "#F59E0B",
+    "surfaceColor": "#F8FAFC",
+    "headingFontFamily": "Inter",
+    "bodyFontFamily": "Inter"
+  },
+  "presets": {}
+}

@@ -1,0 +1,35 @@
+<section class="lb-app-block-slot" data-section-id="{{ section.id }}">
+  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
+  {% for block in section.blocks %}{{ block.content | raw }}{% endfor %}
+</section>
+{% schema %}
+{
+  "name": "App Block Slot",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title"
+    },
+    {
+      "id": "slot",
+      "type": "text",
+      "label": "Slot",
+      "default": "storefront.home.after-hero"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app",
+      "name": "App block"
+    }
+  ],
+  "presets": [
+    {
+      "name": "App Block Slot",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

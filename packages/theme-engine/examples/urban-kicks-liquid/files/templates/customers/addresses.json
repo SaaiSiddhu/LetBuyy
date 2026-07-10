@@ -1,0 +1,16 @@
+{
+  "name": "Addresses",
+  "layout": "theme",
+  "sections": {
+    "customer-addresses-default": {
+      "type": "customer-addresses",
+      "settings": {},
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "customer-addresses-default"
+  ]
+}

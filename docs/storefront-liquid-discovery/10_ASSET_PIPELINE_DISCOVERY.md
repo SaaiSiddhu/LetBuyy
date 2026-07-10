@@ -347,7 +347,8 @@ The following capabilities are absent from the current codebase as confirmed by 
 | `t` (i18n) filter | COVERED | Custom: falls back to key on missing translation |
 | `color_to_rgb`, `color_modify`, Shopify color filters | NOT SUPPORTED | Not registered |
 | `img_tag`, `script_tag`, `stylesheet_tag` HTML helpers | NOT SUPPORTED | Not registered |
-| Shopify Theme Check (`.theme-check.yml`) | NOT APPLICABLE | Templates are TypeScript strings, not on-disk `.liquid` files |
+| Shopify Theme Check (`.theme-check.yml`) | PARTIAL | **Phase H:** On-disk `.liquid` files now exist as read-only view exports in `packages/theme-engine/examples/urban-kicks-liquid/files/sections/` (42+ files). Theme Check tooling can be pointed at these paths. The TypeScript string literals in `theme-bundle.ts` remain the authoritative source; `generate-examples.mjs` regenerates the on-disk files when the bundle changes. The `lintThemeBundle` function in `theme-linter.ts` provides an in-process equivalent. Full Theme Check CI integration is P5-2 (open). |
+| On-disk `.liquid` source files (for authoring) | **PARTIAL (Phase H)** | **Phase H — H2/H3:** Read-only `.liquid` exports committed to `packages/theme-engine/examples/`. Not yet an authoring pipeline (P5-1 open). TypeScript string literals remain the source of truth; on-disk files are views for tooling only. |
 
 ### Section Parity
 
@@ -413,3 +414,40 @@ The following capabilities are absent from the current codebase as confirmed by 
 12. **D-1: Platform-wide Liquid flip** — promote `THEME_LIQUID_RENDERING_DEFAULT_ENABLED` to `true` after all Phase A–C items are resolved. Requires ARB approval (`THEME_LIQUID_PLATFORM_WIDE_FLIP_DECISION.status = 'deferred'`).
 
 13. **D-2: Implement `search` drop** — design and implement a server-side search drop for Liquid templates. Likely requires a new gateway endpoint and Liquid scope integration. ARB approval for new capability scope.
+
+---
+
+## Phase H Amendment — Developer Experience Layer (2026-07-05)
+
+Phase H delivered the theme SDK facade, artifact exporter, linter, packager, CLI, example artifacts, and developer docs. No render-path code was changed; zero regressions.
+
+### New files added to packages/theme-engine/src/
+
+| File | Purpose | Status |
+|------|---------|--------|
+| `theme-sdk.ts` | Public facade: 6 functions wrapping real internals (H1) | IMPLEMENTED |
+| `theme-artifact-exporter.ts` | Pure deterministic bundle→files export (H2) | IMPLEMENTED |
+| `theme-linter.ts` | 5-rule linter importing deny-lists from DOMPurify config (H4) | IMPLEMENTED |
+| `theme-packager.ts` | Deterministic SHA-256 manifest via `node:crypto` (H5) | IMPLEMENTED |
+| `theme-cli.ts` | `COMMANDS` map + `main()` wrapping SDK; 4 commands (H6) | IMPLEMENTED (TS errors pre-existing, fixed) |
+
+### On-disk .liquid artifacts
+
+`packages/theme-engine/examples/urban-kicks-liquid/files/sections/` and the matching `letbuyy-core-liquid/files/sections/` now each contain 42+ `.liquid` files. These are read-only view exports — byte-identical to the TypeScript string literals in `theme-bundle.ts`. Drift-detection CI (`theme-examples.test.ts`, 7 tests) fails immediately when `theme-bundle.ts` changes without regenerating these files. The TypeScript source remains the authoring surface; P5-1 (on-disk authoring pipeline where `.liquid` files are the primary source) remains open.
+
+### Repository inventory additions (Phase H)
+
+| File | Lines | Role | Status |
+|------|-------|------|--------|
+| `packages/theme-engine/src/theme-sdk.ts` | ~200 | Public SDK facade (H1) | IMPLEMENTED |
+| `packages/theme-engine/src/theme-artifact-exporter.ts` | ~125 | Bundle→files export (H2) | IMPLEMENTED |
+| `packages/theme-engine/src/theme-linter.ts` | ~150 | 5-rule linter (H4) | IMPLEMENTED |
+| `packages/theme-engine/src/theme-packager.ts` | ~60 | SHA-256 packager (H5) | IMPLEMENTED |
+| `packages/theme-engine/examples/` | — | Committed `.liquid` artifacts + drift tests (H3) | IMPLEMENTED |
+| `docs/storefront-liquid-discovery/developer/` | — | 5 developer docs: SDK API, CLI, authoring, examples, README | IMPLEMENTED |
+
+### Test gate
+
+`pnpm --filter @letbuyy/theme-engine typecheck test` → **198/198 pass, 0 fail** (baseline 157; +41 new Phase H tests). 0 regressions.
+
+*Phase H amendment 2026-07-05 | Implementation by subagent | Evidence: docs/storefront-liquid-discovery/phase-h/PHASE_H_REPORT.md*

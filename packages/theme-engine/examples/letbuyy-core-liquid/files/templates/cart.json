@@ -1,0 +1,16 @@
+{
+  "name": "LetBuyy Core cart",
+  "layout": "theme",
+  "sections": {
+    "cart-summary-default": {
+      "type": "cart-summary",
+      "settings": {},
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "cart-summary-default"
+  ]
+}

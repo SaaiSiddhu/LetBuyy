@@ -645,4 +645,51 @@ Phase F addressed render pipeline performance (F1, F2), logout security (F7), be
 
 ---
 
-*Document generated 2026-07-03 | Branch: stepup/main | Auditor: Claude Sonnet 4.6 (subagent) | Status: PARTIALLY IMPLEMENTED (Phase F) | Sources: ~29 unique source files + 8 prior research documents reconciled | Amended: 2026-07-04 (Phase E additions) | Amended: 2026-07-05 (Phase F additions)*
+---
+
+## 16. Phase H Amendment — Developer Experience Layer (2026-07-05)
+
+Phase H delivered the theme SDK public facade, Liquid artifact exporter, theme linter, theme packager, CLI, committed example artifacts, and developer docs. No render-path, gateway, or storefront-runtime code was changed. Zero regressions; 198/198 tests pass.
+
+### Implementation Coverage Table — updated rows
+
+| Capability Area | Before Phase H | After Phase H |
+|---|---|---|
+| **Theme Authoring / DX** | 15%, MISSING — all Liquid source is TypeScript string literals; no on-disk `.liquid` files; no linter; no CLI | **~40%, PARTIAL** — on-disk `.liquid` files now exist as read-only view exports (`packages/theme-engine/examples/`); `lintThemeBundle` provides a 5-rule in-process linter; `theme-cli.ts` provides `validate`/`lint`/`compile`/`export` commands; public SDK (`theme-sdk.ts`) exposes 6 documented functions; developer docs cover SDK API, CLI, section authoring, and examples. TypeScript string literals remain the authoring source (P5-1 open). |
+| **Performance: Render Pipeline** | 55%, HIGH (Phase F) — no change in Phase H | **55%, HIGH** — no Phase H render-path changes |
+
+### Plan item updates (§11)
+
+| Plan Item | Before Phase H | After Phase H |
+|-----------|---------------|---------------|
+| P5-1 (on-disk .liquid file build pipeline) | OPEN | **PARTIALLY-IMPLEMENTED (Phase H — H2/H3)** — `exportThemeBundleToFiles` exports `.liquid` files deterministically; `generate-examples.mjs` regenerates committed artifacts. Scope: read-only view exports, not an authoring pipeline where `.liquid` is the primary source. Full P5-1 (source-of-truth flip) remains OPEN. |
+| P5-2 (Theme Check / linter in CI) | OPEN | **PARTIALLY-IMPLEMENTED (Phase H — H4/H6)** — `lintThemeBundle` + `COMMANDS.lint` implement a 5-rule linter (forbidden-tag, forbidden-style-attr, missing-schema-block, unknown-section-type, setting-referenced-not-in-schema) importing deny-lists from `LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG`. Not yet wired into `validate-governance.mjs` or a CI step. Full CI integration deferred. |
+
+### Risk register row update
+
+| Risk | Before Phase H | After Phase H |
+|------|---------------|---------------|
+| **R-12** — zero `.liquid` files on disk; Theme Check not applicable; templates locked behind TypeScript build pipeline | OPEN-CONFIRMED-RISK — Phase D (DX/Tooling) | **PARTIALLY-CLOSED-IMPLEMENTED (Phase H — H2/H3)** — `.liquid` files now committed in `packages/theme-engine/examples/` (42+ sections per fixture). Byte-identity confirmed by `theme-artifact-exporter.test.ts` (7 tests) and `theme-examples.test.ts` (7 drift tests). TypeScript source remains authoritative. A full authoring pipeline (P5-1) remains OPEN. |
+
+### New hardening findings (not in prior register)
+
+Three findings were identified during Phase H implementation review:
+
+| ID | Severity | File | Summary | Disposition |
+|----|----------|------|---------|-------------|
+| H-F1 | MEDIUM | `theme-linter.ts:64` | `forbidAttrs` variable declared but never iterated; `forbidden-style-attr` rule uses hardcoded regex instead of `FORBID_ATTR` list; silently fails if `FORBID_ATTR` grows beyond `['style']` | OPEN — Phase I DX hardening |
+| H-F2 | MEDIUM | `theme-artifact-exporter.ts:83–93` | Template/locale keys embedded in paths without sanitization; `../../evil` keys produce path-traversal paths; `generate-examples.mjs` resolves `..` via `path.join` | OPEN — Phase I schema/exporter hardening |
+| H-F3 | LOW | `theme-artifact-exporter.ts:76–79` | `settings_data` exported verbatim without `BLOCKED_DROP_KEYS` filter; renderer filters at render time but export does not | OPEN — Phase I documentation or defensive-code pass |
+
+### Test gate
+
+| Command | Result |
+|---------|--------|
+| `pnpm --filter @letbuyy/theme-engine typecheck` | 0 errors |
+| `pnpm --filter @letbuyy/theme-engine test` | **198/198 pass, 0 fail** (was 157; +41 new: H1=9, H2=7, H3=7, H4=7, H5=7, H6=4) |
+
+*Phase H amendment 2026-07-05 | Implementation by subagent | Evidence: docs/storefront-liquid-discovery/phase-h/PHASE_H_REPORT.md*
+
+---
+
+*Document generated 2026-07-03 | Branch: stepup/main | Auditor: Claude Sonnet 4.6 (subagent) | Status: PARTIALLY IMPLEMENTED (Phase H) | Sources: ~29 unique source files + 8 prior research documents reconciled | Amended: 2026-07-04 (Phase E additions) | Amended: 2026-07-05 (Phase F, Phase G, Phase H additions)*

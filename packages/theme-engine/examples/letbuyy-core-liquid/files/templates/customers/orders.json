@@ -1,0 +1,16 @@
+{
+  "name": "Order history",
+  "layout": "theme",
+  "sections": {
+    "customer-orders-default": {
+      "type": "customer-orders",
+      "settings": {},
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "customer-orders-default"
+  ]
+}

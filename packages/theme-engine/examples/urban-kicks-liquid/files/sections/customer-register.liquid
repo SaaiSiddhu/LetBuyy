@@ -1,0 +1,32 @@
+<section class="lb-auth lb-auth--register" data-section-id="{{ section.id }}">
+  <h1>{{ section.settings.heading }}</h1>
+  <form class="lb-auth__form" method="post" action="/api/customer/register">
+    <input type="hidden" name="storeId" value="{{ shop.id }}">
+    <label>Name<input type="text" name="name" autocomplete="name"></label>
+    <label>Email<input type="email" name="email" autocomplete="email" required></label>
+    <label>Password<input type="password" name="password" autocomplete="new-password" required></label>
+    <button type="submit">Create account</button>
+  </form>
+  <a href="/customers/login">Already have an account?</a>
+</section>
+{% schema %}
+{
+  "name": "Customer Register",
+  "settings": [
+    {
+      "id": "heading",
+      "type": "text",
+      "label": "Heading",
+      "default": "Create account"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Customer Register",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

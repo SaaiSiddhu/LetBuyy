@@ -1,0 +1,16 @@
+{
+  "name": "Order detail",
+  "layout": "theme",
+  "sections": {
+    "customer-order-detail-default": {
+      "type": "customer-order-detail",
+      "settings": {},
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "customer-order-detail-default"
+  ]
+}

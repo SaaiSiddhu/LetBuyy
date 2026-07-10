@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="{{ request.locale | default: "en" }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ shop.name }} - Urban Kicks</title>
+  {{ content_for_header | raw }}
+</head>
+<body class="lb-theme lb-theme--urban-kicks">
+  <main id="MainContent">
+    {{ content_for_layout | raw }}
+  </main>
+  {{ content_for_footer | raw }}
+</body>
+</html>

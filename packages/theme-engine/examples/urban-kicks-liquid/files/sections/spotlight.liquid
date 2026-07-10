@@ -1,0 +1,23 @@
+<section class="lb-first-party-spotlight" data-section-id="{{ section.id }}">
+  <p>{{ section.settings.subheading }}</p>
+  <h2>{{ section.settings.heading }}</h2>
+  <div class="lb-first-party-spotlight__blocks">
+    {% for block in section.blocks %}
+      {{ block.content | raw }}
+    {% endfor %}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Spotlight",
+  "settings": [
+    { "id": "heading", "type": "text", "label": "Heading", "default": "A brand-new Liquid section" },
+    { "id": "subheading", "type": "text", "label": "Subheading" }
+  ],
+  "blocks": [
+    { "type": "badge", "name": "Badge" },
+    { "type": "@app", "name": "App block" }
+  ],
+  "presets": [{ "name": "Spotlight" }]
+}
+{% endschema %}

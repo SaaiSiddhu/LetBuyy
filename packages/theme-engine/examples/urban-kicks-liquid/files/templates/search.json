@@ -1,0 +1,28 @@
+{
+  "name": "Urban Kicks search",
+  "layout": "theme",
+  "sections": {
+    "search-box-default": {
+      "type": "search-box",
+      "settings": {
+        "placeholder": "Search products"
+      },
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    },
+    "search-results": {
+      "type": "collection-product-list",
+      "settings": {
+        "title": "Results"
+      },
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "search-box-default",
+    "search-results"
+  ]
+}

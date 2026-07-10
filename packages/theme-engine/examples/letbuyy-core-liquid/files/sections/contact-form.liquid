@@ -1,0 +1,37 @@
+<section class="lb-contact-form" data-section-id="{{ section.id }}">
+  <h2>{{ section.settings.title }}</h2>
+  <p>{{ section.settings.subtitle }}</p>
+  <form action="/contact" method="post"><input name="name" aria-label="Name"><input type="email" name="email" aria-label="Email">{% if section.settings.showPhone %}<input name="phone" aria-label="Phone">{% endif %}<button type="submit">Send</button></form>
+</section>
+{% schema %}
+{
+  "name": "Contact Form",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title",
+      "default": "Contact us"
+    },
+    {
+      "id": "subtitle",
+      "type": "text",
+      "label": "Subtitle"
+    },
+    {
+      "id": "showPhone",
+      "type": "toggle",
+      "label": "Show phone field",
+      "default": true
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Contact Form",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

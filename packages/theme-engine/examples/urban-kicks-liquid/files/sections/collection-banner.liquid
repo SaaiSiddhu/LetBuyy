@@ -1,0 +1,27 @@
+<section class="lb-collection-banner" data-section-id="{{ section.id }}">
+  {% if collection.image_url != blank %}<img class="lb-collection-banner__image" src="{{ collection.image_url | image_url }}" alt="{{ collection.title }}">{% endif %}
+  <h1>{{ collection.title }}</h1>
+  {% if collection.products.size > 0 %}<p class="lb-collection-banner__count">{{ collection.products.size }} products</p>{% endif %}
+  {% if section.settings.showDescription and collection.description %}<div class="lb-collection-banner__desc">{{ collection.description }}</div>{% endif %}
+</section>
+{% schema %}
+{
+  "name": "Collection Banner",
+  "settings": [
+    {
+      "id": "showDescription",
+      "type": "toggle",
+      "label": "Show description",
+      "default": true
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Collection Banner",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

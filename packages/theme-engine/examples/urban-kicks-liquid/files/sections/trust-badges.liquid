@@ -1,0 +1,41 @@
+<section class="lb-trust-badges" data-section-id="{{ section.id }}">
+  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
+  {% for block in section.blocks %}<article><strong>{{ block.settings.label }}</strong><span>{{ block.settings.description }}</span></article>{% endfor %}
+</section>
+{% schema %}
+{
+  "name": "Trust Badges",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "Badge",
+      "settings": [
+        {
+          "id": "label",
+          "type": "text",
+          "label": "Label"
+        },
+        {
+          "id": "description",
+          "type": "text",
+          "label": "Description"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust Badges",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}
