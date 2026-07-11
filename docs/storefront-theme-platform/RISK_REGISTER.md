@@ -5,11 +5,13 @@ Living register. Each entry: ID · severity · status · evidence · owner/targe
 ## Security / tenancy
 
 ### RISK-SEC-001 — `theme_purchases` has wide-open RLS (`USING (true)` / `WITH CHECK (true)`) — [HIGH]
-- **Status:** OPEN · pre-existing baseline (NOT introduced by M→AE).
-- **Evidence:** `database/supabase/migrations/000_baseline.sql` — `theme_purchases` table at `:12820`; RLS policies `USING (true)` at `:24201` and `WITH CHECK (true)` at `:24159` (surfaced by the Phase M security-tenancy inventory, claim CL-20, verified).
-- **Why it matters:** violates the tenancy invariant (no public `USING (true)` on tenant tables). `theme_purchases` is marketplace-domain; the marketplace apps are FROZEN, so no live route currently exposes it, which bounds the blast radius today — but any future route over this table would leak cross-tenant purchase rows.
-- **Disposition:** documented, NOT patched in Phase M (discovery phase, no source edits). A baseline RLS change is a security-domain migration requiring care + review. **Target: Phase AE** (marketplace/entitlement contracts) or an earlier dedicated security migration, gated by the same cross-tenant negative tests the program mandates. Owner: whoever owns marketplace persistence + ARB, since it touches a frozen domain's data.
-- **Do NOT:** add a route over `theme_purchases` in any earlier phase until this policy is scoped by `site_id`.
+- **Status:** FIXED in Phase AE — Migration 191 committed; **ARB-gated for production apply.**
+- **Evidence (defect):** `database/supabase/migrations/000_baseline.sql` — `theme_purchases` table at `:12820`; RLS policies `USING (true)` at `:24201` and `WITH CHECK (true)` at `:24159` (surfaced by the Phase M security-tenancy inventory, claim CL-20, verified). Both policies omit a `TO` clause, making them effective for PUBLIC (anon + authenticated + service_role). No migration 073–190 narrows either policy.
+- **Why it mattered:** violates the tenancy invariant (no public `USING (true)` on tenant tables). Any future route over `theme_purchases` would leak cross-tenant purchase rows.
+- **Remediation (Phase AE):** `database/supabase/migrations/191_theme_purchases_rls_tenant_scope.sql` (NEW, 93 lines) drops both wide-open policies and replaces them with: (1) `tp_service_role FOR ALL TO service_role USING(true)` — explicit gateway pass-through, matches migration 163 D2 pattern; (2) `tp_authenticated_select FOR SELECT TO authenticated USING (user_id = auth.uid())`; (3) `tp_authenticated_insert FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid())`. Idempotent (DROP IF EXISTS). Migration-safety-validator PASS.
+- **Architecture note:** `theme_purchases.user_id` FK → `users_custom(id)`, a separate UUID space from `auth.uid()`. The effective posture is that direct authenticated-role clients cannot browse other users' purchase rows. Gateway always uses service_role. Long-term: add `auth_id uuid REFERENCES auth.users(id)` to `users_custom` and rewrite policies on that FK. See RISK-AE-SEC-003.
+- **Residual:** RISK-AE-SEC-003 (LOW — cross-UUID-space residual; deferred to first `users_custom` migration). Production apply remains ARB-gated.
+- **Do NOT:** add a route over `theme_purchases` in production until migration 191 is applied (ARB approval required).
 
 ### RISK-SEC-002 — Editor AI hooks are STUB, must not be presented as connected — [INFO]
 - **Status:** KNOWN · by design.
@@ -618,3 +620,28 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Why it matters:** False positive risk on future comments. Currently harmless.
 - **Suggested fix:** Anchor the patterns: e.g., `"from 'openai'"`, `"from '@anthropic-ai'"`.
 - **Target:** Phase AD or next `ai-intent-parser.test.ts` touch.
+
+## Phase AE risks
+
+### RISK-AE-SEC-001 (FIND-AE-SEC-001) — `walkStringLeaves` depth cap at 4 allows CSS injection bypass at settings_data.current depth ≥ 5 — [MEDIUM] — FIXED
+- **Status:** FIXED in Phase AE hardening (2026-07-11) · was: OPEN correctness gap introduced Phase AE.
+- **Introduced:** Phase AE (2026-07-11).
+- **Evidence (defect):** `packages/theme-engine/src/theme-marketplace-contract.ts` — the original `if (depth > 4) return;` silently stopped traversal. The `ThemeBundleJsonObjectSchema` (via `z.lazy()`) for `settings_data.current` has no depth bound, so a bundle with `settings_data.current.a.b.c.d.e = '@import url(evil);'` passed Stage K (Zod accepts arbitrary depth), had the CSS injection string silently skipped by Stage AA (depth 5 > cap), and returned `ok: true` — incorrectly.
+- **Why it mattered:** The documented contract promises "validate every string leaf in settings_data.current" but the implementation did not deliver that for depth ≥ 5 — a real bypass in the program's capstone marketplace safety gate.
+- **Remediation (Phase AE hardening):** two-part fail-closed fix in `theme-marketplace-contract.ts`: (1) the cap was raised to `MAX_SETTINGS_WALK_DEPTH = 12`, well above the deepest legitimate theme setting (nested blocks are themselves bounded at `MAX_BLOCK_DEPTH = 3`), so no clean bundle is ever truncated; (2) truncation is now **fail-closed** — if the walker reaches the cap with content still below it, it records the truncation and the caller pushes a blocking `AA:settings-too-deep` violation, so an over-deep bundle is REJECTED rather than admitted with an un-scanned blind spot. Locked by two new tests: `AE-AA-07` (depth-5 `@import` now rejected) and `AE-AA-08` (settings nested beyond the cap rejected fail-closed). theme-engine gate **1726/1726**, typecheck clean.
+- **Residual:** none. The fail-closed truncation means even an adversarially ultra-deep bundle cannot bypass the CSS scan.
+
+### RISK-AE-TEST-002 (FIND-AE-TEST-002) — AE-K-05 inner assertion uses a redundant OR condition — [LOW]
+- **Status:** OPEN · test quality; no correctness risk; introduced Phase AE (2026-07-11).
+- **Introduced:** Phase AE (2026-07-11).
+- **Evidence:** `packages/theme-engine/test/theme-marketplace-contract.test.ts` test `AE-K-05` — inner for-loop uses `v.code === \`K:${v.code.slice(2)}\` || v.stage === 'K'`. For any Stage K violation both disjuncts are true simultaneously; only `v.stage === 'K'` is meaningful.
+- **Suggested fix:** Replace with `assert.equal(v.stage, 'K', ...)`.
+- **Target:** Cosmetic; first touch of `theme-marketplace-contract.test.ts`.
+
+### RISK-AE-SEC-003 (FIND-AE-SEC-003) — user_id = auth.uid() cross-UUID-space residual in migration 191 — [LOW]
+- **Status:** OPEN · residual architectural risk; not introduced by Phase AE — it is a known limitation of the `users_custom.id` vs `auth.users.id` architecture.
+- **Introduced:** Documented in Phase AE (2026-07-11); pre-dates this program.
+- **Evidence:** `database/supabase/migrations/191_theme_purchases_rls_tenant_scope.sql` — `tp_authenticated_select` and `tp_authenticated_insert` use `user_id = auth.uid()`. `theme_purchases.user_id` FK → `users_custom(id)`, a separate UUID space from Supabase `auth.users.id`. If a `users_custom.id` value ever coincidentally matches a different user's `auth.uid()`, that user would gain access to the other's purchase rows. Current architecture makes this effectively impossible (UUID collision); gateway always uses service_role.
+- **Why it matters:** Structural dependency on UUID-space non-overlap rather than a FK relationship between the two tables.
+- **Suggested fix (long-term):** Add `auth_id uuid REFERENCES auth.users(id)` to `users_custom` and rewrite the RLS policies as `auth_id = auth.uid()`. Requires a separate migration + ARB approval.
+- **Target:** First `users_custom` schema migration (separate from theme program scope).

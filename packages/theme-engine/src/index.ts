@@ -84,6 +84,11 @@ export * from './theme-safe-update';
 // parity sections, a11y fix) -> a validated, diffable, reversible proposal. Free-text NLU is the
 // honestly NOT-CONNECTED model seam (MODEL_BOUNDARY). No fabricated model call.
 export * from './ai-intent-parser';
+// Phase AE — Theme Marketplace Partner-Submission Validation Contract
+// validateThemeForMarketplace: pure, deterministic, fail-closed gate that
+// composes all existing validators (K/AA/Y/N) for third-party theme submissions.
+// NOT a live marketplace pipeline — frozen apps are untouched.
+export * from './theme-marketplace-contract';
 
 export type BuiltInSectionType =
   | 'header'
