@@ -58,6 +58,7 @@ import { ThemeExecutionAdapter } from '../execution/theme-execution.adapter';
 import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
 import resourceSearchRouter from './resource-search';
 import mediaLibraryRouter from './themes/media-library';
+import { mountThemeUpdateRoutes } from './themes/theme-update-route';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -73,6 +74,11 @@ router.use('/resource-search', authMiddleware);
 // middleware registrations) to prevent any route-shadowing ambiguity.
 router.use('/library', authMiddleware);
 router.use('/library/*', authMiddleware);
+// Phase AB — version-update routes. Registered after all static sub-router prefixes
+// (media-library, resource-search, library) so those static tests stay green, but before
+// the existing /:slug/* catch-alls (duplicate, rename, …) so order still prevents shadowing.
+router.use('/:slug/update-preview', authMiddleware);
+router.use('/:slug/update', authMiddleware);
 router.use('/:slug/duplicate', authMiddleware);
 router.use('/:slug/rename', authMiddleware);
 router.use('/:slug/archive', authMiddleware);
@@ -586,6 +592,10 @@ router.route('/media-library', mediaLibraryRouter);
 
 // Phase W — resource-search sub-router (static path; must appear before /:slug catch-alls)
 router.route('/resource-search', resourceSearchRouter);
+
+// Phase AB — version-update routes (registered after static sub-routers; each path is
+// path-specific enough to avoid /:slug/* ambiguity with the slug catch-all handlers below)
+mountThemeUpdateRoutes(router);
 
 // GET /themes/:slug/schema — Return editable schemas for a theme
 router.get('/:slug/schema', async (c) => {

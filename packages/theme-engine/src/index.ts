@@ -75,6 +75,9 @@ export * from './theme-locale';
 // buildScopedCustomCss / hasUnsafeCssUrlScheme / CUSTOM_CSS_MAX_BYTES.
 // The gateway PATCH route and the editor UI import validateCustomCss from this barrel.
 export * from './custom-css-sanitizer';
+// Phase AB — Theme Safe Update Engine (Lane A): planThemeSafeUpdate / computeThemeUpdateDiff.
+// Tenant-safe, deterministic update that preserves merchant-content + bindings across versions.
+export * from './theme-safe-update';
 
 export type BuiltInSectionType =
   | 'header'
