@@ -1,8 +1,8 @@
 # LetBuyy Theme Editor — Shell Architecture Guide
 
 **Program:** LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor (M→AE)
-**Last updated:** 2026-07-11 (post Phase Y)
-**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), template switcher, resource picker (Phase W live combobox), media library (Phase X modal image/video picker), app-block slot panel (Phase Y), undo/redo, autosave, draft CAS
+**Last updated:** 2026-07-11 (post Phase Z)
+**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), template switcher, resource picker (Phase W live combobox), media library (Phase X modal image/video picker), app-block slot panel (Phase Y), translation editor (Phase Z), undo/redo, autosave, draft CAS
 
 ---
 
@@ -29,6 +29,16 @@ apps/merchant-control-plane/src/components/theme-editor/
   SectionTreePanel.tsx         — ARIA section tree with drag-to-reorder (Phase R, CLEAN)
   TemplateSwitcherPanel.tsx    — Phase V: template type selector + alternate-variant list (CLEAN)
   controls/                    — Phase U: one file per extended control type
+
+apps/merchant-control-plane/src/components/theme-locale/   — Phase Z: translation editor components
+  LocaleSwitcher.tsx           — locale dropdown; DEFAULT_ADMIN_LOCALE='en-IN'; India-first default
+  TranslationKeyList.tsx       — key/value list with missing-key detection; buildLocaleMap scopes to resource_type='theme'
+  TranslationValueEditor.tsx   — inline key/value editor; resource_type:'theme' as const (RISK-DUAL-N01)
+  theme-locale.module.css      — CSS module; --lb-* tokens only
+
+apps/merchant-control-plane/src/app/[store]/online-store/themes/[themeId]/editor/translations/
+  page.tsx                     — Phase Z: server component; sibling to editor/page.tsx; does NOT modify editor/page.tsx
+  TranslationEditorClient.tsx  — Phase Z: client component; useState(DEFAULT_ADMIN_LOCALE) India-first
     CheckboxControl.tsx        — native input[type=checkbox]; distinct from Toggle
     ColorBackgroundControl.tsx — solid colour picker OR CSS gradient string
     ColorSchemeControl.tsx     — select from named experience colour schemes
@@ -484,6 +494,60 @@ All classes use `--lb-*` design tokens only. No raw `px` or `rounded-[Npx]` valu
 
 For the full app-block model, validation API, render path, and NOT-CONNECTED inventory, see `docs/storefront-theme-platform/phase-y/APP_BLOCK_REFERENCE.md`.
 
+### 6.7 Translation Editor (Phase Z)
+
+The translation editor is a **sibling route** to the main editor, not embedded in `editor/page.tsx`. It lives at:
+
+```
+apps/merchant-control-plane/src/app/[store]/online-store/themes/[themeId]/editor/translations/
+```
+
+**Components:**
+
+| Component | File | Role |
+|-----------|------|------|
+| `LocaleSwitcher` | `src/components/theme-locale/LocaleSwitcher.tsx` | Locale dropdown; `DEFAULT_ADMIN_LOCALE = 'en-IN'`; India-first default |
+| `TranslationKeyList` | `src/components/theme-locale/TranslationKeyList.tsx` | Key/value list with missing-key detection |
+| `TranslationValueEditor` | `src/components/theme-locale/TranslationValueEditor.tsx` | Inline key/value editor |
+| `TranslationEditorClient` | `editor/translations/TranslationEditorClient.tsx` | Client component orchestrator |
+| `page.tsx` | `editor/translations/page.tsx` | Server component; does NOT touch `editor/page.tsx` |
+
+**Props flow:**
+- `LocaleSwitcher` → `selectedLocale` state in `TranslationEditorClient`.
+- `TranslationEditorClient` passes `defaultLocale={DEFAULT_ADMIN_LOCALE}` (`'en-IN'`) and `selectedLocale` to `TranslationKeyList`.
+- `TranslationKeyList` renders rows and calls `onEdit(key, value, translationId?)` on edit intent.
+- `TranslationValueEditor` handles the inline editing form and calls the proxy routes.
+
+**Missing-key detection:** `TranslationKeyList.buildLocaleMap` compares the set of keys in the `DEFAULT_ADMIN_LOCALE` (`'en-IN'`) reference against the selected locale's `storefront_translations` rows. Keys present in `en-IN` but absent in the selected locale are shown with a Missing badge (`aria-label` for a11y). This gives merchants a clear list of strings to translate.
+
+**Write boundary (RISK-DUAL-N01):**
+- `TranslationValueEditor` writes `{ resource_type: 'theme' as const, ... }` via proxy routes.
+- It NEVER writes to `section_definitions` or `block_definitions`.
+- `buildDraftConfig` in `editor/page.tsx` is unaffected (Phase Z does not touch that file).
+
+**Proxy routes:**
+
+| Method | Proxy path | Gateway call |
+|--------|-----------|-------------|
+| `POST` | `/api/stores/[store]/localization/translations` | `api.createTranslation` |
+| `PATCH` | `/api/stores/[store]/localization/translations/[translationId]` | `api.updateTranslation` |
+| `DELETE` | `/api/stores/[store]/localization/translations/[translationId]` | `api.deleteTranslation` |
+
+Both proxy routes use `resolveOwnedStoreId` + `createMerchantApiClient`. No direct Supabase access. Known gaps: RISK-Z03 (proxy `resource_type` not validated), RISK-Z04 (no default-locale deletion guard), RISK-Z05 (`resource_id` ownership not checked at proxy).
+
+**Locale and currency helpers (Phase Z engine additions):**
+
+`@letbuyy/theme-engine` now exports:
+
+```typescript
+THEME_DEFAULT_STORE_LOCALE  // 'en-IN'
+normalizeLocale(locale)     // null/undefined/'' → 'en-IN'; underscore → hyphen; region uppercased
+tLocale(key, locale, locales, replacements?)  // India-first 4-level fallback; prototype-safe
+formatThemeCurrencyDisplay(amountMinorUnits, currencyCode?, locale?)  // presentational; fxConnected: false always
+```
+
+See `docs/storefront-theme-platform/phase-z/LOCALIZATION_REFERENCE.md` for the full locale model, fallback chain, known limitation (RISK-Z01 for bare `'en'` locale), and currency display honesty record.
+
 ---
 
 ## 7. Undo / Redo
@@ -738,17 +802,23 @@ type EditorSelection =
 | RISK-PERF-N01 | LOW | Large document serialization on each draft save | `buildDraftConfig` sends only mutable state; Liquid source comes from `baseConfig` not re-serialized |
 | RISK-SEC-002 | INFO | AI hooks are stubs; must not be presented as connected | Phase AC |
 | RISK-R01 | LOW | **CLOSED (Phase T)** — `BlockEntry.children` added to canonical type; remaining four shared types still mirrored | Next substantive `page.tsx` touch |
-| RISK-T05 | MEDIUM | `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead | Phase Y or first `SectionTreePanel.tsx` touch |
-| RISK-T04 | LOW | `RENDERER_MAX_BLOCK_DEPTH` is private — depth parity test cannot directly assert it | Phase Y or first `theme-renderer.ts` touch |
-| RISK-SEC-U01 | MEDIUM | `isUnsafeUrl` narrow blocklist — `data:image/svg+xml`, `data:text/javascript`, `blob:` not blocked | **PARTIALLY ADDRESSED Phase X** — `isUnsafeUrl` extended to cover SVG data URIs and `blob:` in hardening; remaining `data:text/javascript` entries carried to Phase Y |
-| RISK-SEC-U02 | MEDIUM | `ColorBackgroundControl` gradient mode: no `url()` CSS content check | Phase Y or first `ColorBackgroundControl.tsx` touch |
-| RISK-SEC-U03 | MEDIUM | `required: true` on `checkbox`/`toggle` is a validation no-op | Phase Y or first `SchemaFormRenderer.tsx` touch |
-| RISK-A11Y-U01 | MEDIUM | `TextInput`/`TextareaInput` missing `aria-describedby` on error element | Phase Y or first `TextInput.tsx`/`TextareaInput.tsx` touch |
-| RISK-A11Y-U02 | LOW | `CheckboxControl`/`FontPickerControl`/`ColorSchemeControl` ternary `aria-describedby` drops helpText when error present | Phase Y or first affected control touch |
-| RISK-STYLE-U01 | LOW | `LiquidControl` `fontSize: 12` raw pixel | Phase Y or first `LiquidControl.tsx` touch |
-| RISK-STYLE-U02 | LOW | `controls.module.css` raw `px` spacing values (pre-Phase-W classes; Phase X new classes use tokens) | Phase Y or first `controls.module.css` token-pass touch |
-| RISK-W01 | MEDIUM | `BINDING_BLOCKED_KEYS` parity with `BLOCKED_DROP_KEYS` not compile-time enforced | Phase Y or first `dynamic-source-binding.ts` touch |
-| RISK-W04 | LOW | `ResourcePickerControl` `ArrowUp` from no-selection snaps to item 0 — WAI-ARIA 1.2 non-conformance | Phase Y or first `ResourcePickerControl.tsx` touch |
-| RISK-W05 | LOW | Loading spinner invisible during 300 ms debounce window on first keystroke | Phase Y or first `ResourcePickerControl.tsx` touch |
-| RISK-W06 | LOW | Block-level settings not resolved through `resolveDynamicSourceDescriptors` — raw descriptors reach Liquid | Phase Y or first `theme-renderer.ts` touch |
-| RISK-X01 | LOW | R2 key path is user-scoped (`user.id`) not site-scoped — no cross-user isolation within a site bucket prefix | Phase Y or first storage-architecture review |
+| RISK-T05 | MEDIUM | `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead | Phase AA or first `SectionTreePanel.tsx` touch |
+| RISK-T04 | LOW | `RENDERER_MAX_BLOCK_DEPTH` is private — depth parity test cannot directly assert it | Phase AA or first `theme-renderer.ts` touch |
+| RISK-SEC-U01 | MEDIUM | `isUnsafeUrl` narrow blocklist — `data:image/svg+xml`, `data:text/javascript`, `blob:` not blocked | **PARTIALLY ADDRESSED Phase X** — `isUnsafeUrl` extended to cover SVG data URIs and `blob:` in hardening; remaining `data:text/javascript` entries carried to Phase AA |
+| RISK-SEC-U02 | MEDIUM | `ColorBackgroundControl` gradient mode: no `url()` CSS content check | Phase AA or first `ColorBackgroundControl.tsx` touch |
+| RISK-SEC-U03 | MEDIUM | `required: true` on `checkbox`/`toggle` is a validation no-op | Phase AA or first `SchemaFormRenderer.tsx` touch |
+| RISK-A11Y-U01 | MEDIUM | `TextInput`/`TextareaInput` missing `aria-describedby` on error element | Phase AA or first `TextInput.tsx`/`TextareaInput.tsx` touch |
+| RISK-A11Y-U02 | LOW | `CheckboxControl`/`FontPickerControl`/`ColorSchemeControl` ternary `aria-describedby` drops helpText when error present | Phase AA or first affected control touch |
+| RISK-STYLE-U01 | LOW | `LiquidControl` `fontSize: 12` raw pixel | Phase AA or first `LiquidControl.tsx` touch |
+| RISK-STYLE-U02 | LOW | `controls.module.css` raw `px` spacing values (pre-Phase-W classes; Phase X new classes use tokens) | Phase AA or first `controls.module.css` token-pass touch |
+| RISK-W01 | MEDIUM | `BINDING_BLOCKED_KEYS` parity with `BLOCKED_DROP_KEYS` not compile-time enforced | Phase AA or first `dynamic-source-binding.ts` touch |
+| RISK-W04 | LOW | `ResourcePickerControl` `ArrowUp` from no-selection snaps to item 0 — WAI-ARIA 1.2 non-conformance | Phase AA or first `ResourcePickerControl.tsx` touch |
+| RISK-W05 | LOW | Loading spinner invisible during 300 ms debounce window on first keystroke | Phase AA or first `ResourcePickerControl.tsx` touch |
+| RISK-W06 | LOW | Block-level settings not resolved through `resolveDynamicSourceDescriptors` — raw descriptors reach Liquid | Phase AA or first `theme-renderer.ts` touch |
+| RISK-X01 | LOW | R2 key path is user-scoped (`user.id`) not site-scoped — no cross-user isolation within a site bucket prefix | Phase AA or first storage-architecture review |
+| RISK-Z01 | MEDIUM | `buildCandidates('en')` puts bare `'en'` before `'en-IN'` — India-first inverted for stores with `sites.locale='en'` | Phase AA or first `theme-locale.ts` touch |
+| RISK-Z02 | LOW | Pre-existing `lookupTranslation` in `theme-renderer.ts` lacks BLOCKED_PATH_SEGMENTS guard | Earliest phase touching `theme-renderer.ts` |
+| RISK-Z03 | LOW | Translation POST proxy does not validate `resource_type` at proxy layer | Phase AA or first translation proxy touch |
+| RISK-Z04 | LOW | Translation DELETE proxy has no server-side guard against deleting default-locale (en-IN) rows | Phase AA or earliest security migration |
+| RISK-Z05 | LOW | Translation POST proxy does not verify `resource_id` (themeId) belongs to resolved `storeId` | Phase AA or first translation proxy touch |
+| RISK-Z06 | LOW | Gateway `deleteTranslation` handler has no locale guard (backend view of RISK-Z04) | Phase AA or earliest security migration |

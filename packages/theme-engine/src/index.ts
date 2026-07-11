@@ -69,6 +69,8 @@ export type { SegmentTokens, PersonalizationResult } from './ai-personalization'
 export * from './dynamic-source-binding';
 // Phase Y — App-Block Model (typed reference, validation, settings filtering, NOT-CONNECTED constants)
 export * from './app-block-model';
+// Phase Z — Theme Markets & Localization (translation resolver + display currency, LANE A)
+export * from './theme-locale';
 
 export type BuiltInSectionType =
   | 'header'

@@ -1,0 +1,215 @@
+/**
+ * theme-locale.module.css — Phase Z: theme translation editor styles.
+ *
+ * All classes use --lb-* design tokens only.
+ * No raw rounded-[Npx] values; no hard-coded pixel sizes outside of token fallbacks.
+ * India-first: en-IN is the default locale. All UI is mobile-first (~360px).
+ */
+
+/* ── Locale switcher ──────────────────────────────────────────────────────── */
+
+.localeSwitcherRoot {
+  width: 100%;
+  min-width: 0;
+}
+
+.localeSwitcherLabel {
+  display: block;
+  font-size: var(--lb-font-size-caption, 12px);
+  font-weight: var(--lb-font-weight-medium, 500);
+  color: var(--lb-color-text-subdued);
+  margin-bottom: var(--lb-space-1, 4px);
+}
+
+.localeSwitcherHint {
+  font-size: var(--lb-font-size-caption, 12px);
+  color: var(--lb-color-text-subdued);
+  margin-top: var(--lb-space-1, 4px);
+  margin-bottom: 0;
+}
+
+/* ── Translation key list ─────────────────────────────────────────────────── */
+
+.translationKeyList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.translationKeyRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--lb-space-3, 12px);
+  padding: var(--lb-space-3, 12px) 0;
+  border-bottom: 1px solid var(--lb-color-border-subdued);
+}
+
+.translationKeyRow:last-child {
+  border-bottom: none;
+}
+
+.translationKeyMeta {
+  flex: 1;
+  min-width: 0;
+}
+
+.translationKeyHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-2, 8px);
+  flex-wrap: wrap;
+}
+
+.translationKeyCode {
+  font-size: var(--lb-font-size-caption, 12px);
+  font-family: var(--lb-font-family-mono, monospace);
+  color: var(--lb-color-text-subdued);
+  background: var(--lb-color-surface-subdued);
+  padding: 2px var(--lb-space-2, 6px);
+  border-radius: var(--lb-radius-sm);
+  word-break: break-all;
+}
+
+.translationKeyValue {
+  font-size: var(--lb-font-size-body, 14px);
+  color: var(--lb-color-text);
+  margin-top: var(--lb-space-1, 4px);
+  margin-bottom: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.translationKeyValueMissing {
+  color: var(--lb-color-text-subdued);
+}
+
+.translationKeyEditBtn {
+  flex-shrink: 0;
+  font-size: var(--lb-font-size-caption, 12px);
+  color: var(--lb-color-interactive);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--lb-space-1, 4px);
+  border-radius: var(--lb-radius-sm);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.translationKeyEditBtn:hover {
+  color: var(--lb-color-interactive-hovered);
+}
+
+.translationKeyEditBtn:focus-visible {
+  outline: 2px solid var(--lb-color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* ── Translation empty / loading / error states ───────────────────────────── */
+
+.translationEmpty {
+  padding: var(--lb-space-6, 24px);
+  text-align: center;
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-body, 14px);
+  border: 1px dashed var(--lb-color-border);
+  border-radius: var(--lb-radius-md);
+}
+
+.translationLoading {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-2, 8px);
+  padding: var(--lb-space-4, 16px);
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-body, 14px);
+}
+
+.translationError {
+  padding: var(--lb-space-4, 16px);
+  background: var(--lb-color-surface-critical-subdued, #fff4f4);
+  border-radius: var(--lb-radius-md);
+  color: var(--lb-color-text-critical);
+  font-size: var(--lb-font-size-body, 14px);
+}
+
+/* ── Translation value editor ─────────────────────────────────────────────── */
+
+.translationValueEditorRoot {
+  border: 1px solid var(--lb-color-border);
+  border-radius: var(--lb-radius-lg);
+  padding: var(--lb-space-4, 16px);
+  background: var(--lb-color-surface);
+}
+
+.translationValueEditorHeader {
+  font-size: var(--lb-font-size-caption, 12px);
+  font-weight: var(--lb-font-weight-medium, 500);
+  color: var(--lb-color-text-subdued);
+  margin-bottom: var(--lb-space-2, 8px);
+}
+
+.translationValueEditorKey {
+  font-family: var(--lb-font-family-mono, monospace);
+  color: var(--lb-color-text);
+}
+
+.translationValueEditorActions {
+  display: flex;
+  gap: var(--lb-space-2, 8px);
+  margin-top: var(--lb-space-3, 12px);
+  flex-wrap: wrap;
+}
+
+.translationValueEditorError {
+  font-size: var(--lb-font-size-caption, 12px);
+  color: var(--lb-color-text-critical);
+  margin-top: var(--lb-space-1, 4px);
+}
+
+/* ── Translation editor client (orchestrator) ─────────────────────────────── */
+
+.translationEditorRoot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-4, 16px);
+  padding: var(--lb-space-4, 16px);
+  max-width: 100%;
+}
+
+.translationEditorHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-3, 12px);
+}
+
+.translationEditorTitle {
+  font-size: var(--lb-font-size-heading-sm, 16px);
+  font-weight: var(--lb-font-weight-semibold, 600);
+  color: var(--lb-color-text);
+  margin: 0;
+}
+
+.translationEditorBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-4, 16px);
+}
+
+.translationEditorPageError {
+  padding: var(--lb-space-4, 16px);
+  background: var(--lb-color-surface-critical-subdued, #fff4f4);
+  border-radius: var(--lb-radius-md);
+  color: var(--lb-color-text-critical);
+  font-size: var(--lb-font-size-body, 14px);
+}
+
+.translationEditorPageLoading {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-2, 8px);
+  padding: var(--lb-space-4, 16px);
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-body, 14px);
+}
