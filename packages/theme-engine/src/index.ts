@@ -71,6 +71,10 @@ export * from './dynamic-source-binding';
 export * from './app-block-model';
 // Phase Z — Theme Markets & Localization (translation resolver + display currency, LANE A)
 export * from './theme-locale';
+// Phase AA — Custom CSS Sanitizer (Lane A): validateCustomCss / validateAndScopeCustomCss /
+// buildScopedCustomCss / hasUnsafeCssUrlScheme / CUSTOM_CSS_MAX_BYTES.
+// The gateway PATCH route and the editor UI import validateCustomCss from this barrel.
+export * from './custom-css-sanitizer';
 
 export type BuiltInSectionType =
   | 'header'

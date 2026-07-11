@@ -19,11 +19,16 @@ import { Button, Input,
     Section,
     Select,
     Skeleton,
-    Textarea,
     PenTool,
     letbuyyPrimitiveTokens,
     useToast,
 } from '@letbuyy/ui'
+// Phase AA — CustomCssWorkspace replaces the plain Textarea for custom_css.
+// RISK-DUAL-N01: writes to site_settings.custom_css (instance data), never section_definitions.
+import {
+    CustomCssWorkspace,
+    validateCustomCss,
+} from '@/components/theme-editor/controls/CustomCssWorkspace'
 
 interface AppearanceFormState {
     primary_color: string
@@ -160,6 +165,23 @@ export default function AppearancePage() {
 
     const handleSave = useCallback(async () => {
         if (saving || !hasUnsavedChanges) return
+
+        // Phase AA — pre-save CSS validation guard (SAFE-CSS LAW).
+        // validateCustomCss is a pure function: no DOM, no async.
+        // Blocks save and surfaces violations before hitting the network.
+        // RISK-DUAL-N01: this writes to site_settings.custom_css (instance), never section_definitions.
+        if (form.custom_css.trim()) {
+            const cssResult = validateCustomCss(form.custom_css)
+            if (!cssResult.valid) {
+                notify({
+                    title: 'CSS has security violations',
+                    description: `${cssResult.violations.length} unsafe construct${cssResult.violations.length === 1 ? '' : 's'} found (${cssResult.violations.map((v) => v.vector).join(', ')}). Fix them in the CSS editor before saving.`,
+                    variant: 'critical',
+                })
+                return
+            }
+        }
+
         setSaving(true)
 
         try {
@@ -379,16 +401,15 @@ export default function AppearancePage() {
                     <Card>
                         <Section
                             title="Custom CSS"
-                            description="Add small storefront CSS overrides when the theme settings are not enough."
+                            description="Add small storefront CSS overrides. Unsafe constructs are blocked on save and CSS is automatically scoped to .lb-theme."
                         >
-                            <Textarea
-                                label="CSS overrides"
-                                rows={8}
+                            {/* Phase AA — CustomCssWorkspace: validated plain-textarea, no CDN.
+                                RISK-DUAL-N01: writes instance custom_css value, never section_definitions. */}
+                            <CustomCssWorkspace
                                 value={form.custom_css}
-                                onChange={(event) => updateForm('custom_css', event.target.value)}
-                                placeholder="/* Add custom CSS */"
-                                className="font-mono text-[var(--lb-font-size-caption)]"
-                                helperText="Saved as part of existing site settings. Keep overrides scoped to storefront selectors."
+                                onChange={(css) => updateForm('custom_css', css)}
+                                saving={saving}
+                                disabled={loading}
                             />
                         </Section>
                     </Card>

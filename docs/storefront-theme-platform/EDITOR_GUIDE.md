@@ -1,8 +1,8 @@
 # LetBuyy Theme Editor — Shell Architecture Guide
 
 **Program:** LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor (M→AE)
-**Last updated:** 2026-07-11 (post Phase Z)
-**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), template switcher, resource picker (Phase W live combobox), media library (Phase X modal image/video picker), app-block slot panel (Phase Y), translation editor (Phase Z), undo/redo, autosave, draft CAS
+**Last updated:** 2026-07-11 (post Phase AA)
+**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), template switcher, resource picker (Phase W live combobox), media library (Phase X modal image/video picker), app-block slot panel (Phase Y), translation editor (Phase Z), custom CSS workspace (Phase AA), undo/redo, autosave, draft CAS
 
 ---
 
@@ -29,6 +29,7 @@ apps/merchant-control-plane/src/components/theme-editor/
   SectionTreePanel.tsx         — ARIA section tree with drag-to-reorder (Phase R, CLEAN)
   TemplateSwitcherPanel.tsx    — Phase V: template type selector + alternate-variant list (CLEAN)
   controls/                    — Phase U: one file per extended control type
+  controls/CustomCssWorkspace.tsx — Phase AA: merchant custom CSS editor with inline validation (SAFE-CSS LAW)
 
 apps/merchant-control-plane/src/components/theme-locale/   — Phase Z: translation editor components
   LocaleSwitcher.tsx           — locale dropdown; DEFAULT_ADMIN_LOCALE='en-IN'; India-first default
@@ -548,6 +549,58 @@ formatThemeCurrencyDisplay(amountMinorUnits, currencyCode?, locale?)  // present
 
 See `docs/storefront-theme-platform/phase-z/LOCALIZATION_REFERENCE.md` for the full locale model, fallback chain, known limitation (RISK-Z01 for bare `'en'` locale), and currency display honesty record.
 
+### 6.8 Custom CSS Workspace (Phase AA)
+
+The custom CSS workspace is a standalone controlled component used on the **Appearance** page (`apps/merchant-control-plane/src/app/[store]/appearance/page.tsx`). It is NOT embedded in the main theme editor `editor/page.tsx`.
+
+**Component:** `apps/merchant-control-plane/src/components/theme-editor/controls/CustomCssWorkspace.tsx`
+
+```
+import { CustomCssWorkspace, validateCustomCss, CUSTOM_CSS_MAX_BYTES } from
+  '@/components/theme-editor/controls/CustomCssWorkspace';
+```
+
+**Props:**
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `value` | `string` | Current CSS string (controlled) |
+| `onChange` | `(css: string) => void` | Called on every textarea change; no pre-validation |
+| `onValidate?` | `(result: CssValidationResult) => void` | Called on blur with the validation result |
+| `disabled?` | `boolean` | Disables textarea and save; default `false` |
+| `label?` | `string` | Accessible label override; default `'Custom CSS'` |
+
+**SAFE-CSS LAW contract:**
+- `onChange` is called with the raw textarea value on every keystroke; the component does NOT validate on every keypress.
+- `onValidate` (and the internal inline violation list) fires on `blur`.
+- `appearance/page.tsx#handleSave` calls `validateCustomCss(form.custom_css)` before issuing the PATCH; blocks save if any violations are present.
+- Server-side enforcement: `apps/merchant-control-plane/src/app/api/stores/[store]/settings/route.ts` PATCH handler re-validates the CSS before forwarding to the gateway; returns HTTP 422 with `violations[]` if invalid.
+
+**Self-contained validator:** `CustomCssWorkspace.tsx` exports its own `validateCustomCss` function. It does NOT import from `@letbuyy/theme-engine`. This is intentional — the component is a `'use client'` file; tree-shaking and bundle isolation are preserved. The inline validator mirrors all 22 vector classes blocked by Lane A.
+
+**RISK-DUAL-N01:** `CustomCssWorkspace` writes only `site_settings.custom_css` via `onChange`. It has no access to `section_definitions` or `block_definitions`. The appearance/page.tsx write path is `PATCH /api/stores/:store/settings` with `{ site_settings: { custom_css: <validated string> } }`.
+
+**UX:**
+- Byte counter: `N / 50 000 bytes` with `aria-live="polite"`.
+- Violation list: `role="alert"` on blur; Escape to dismiss.
+- Save button: `aria-disabled` when violations are present.
+- Textarea: `aria-label`, `aria-invalid={hasViolations}`, `aria-describedby` pointing at violation block, help text, and byte counter.
+- Monospace plain `<textarea>` — no CDN; no external editor library.
+
+**CSS scope class:** valid CSS is scoped by the engine as `.lb-theme { <merchant css> }` when stored in the DB and eventually injected into the storefront `<head>` (render path NOT-CONNECTED in Phase AA — Phase AB wires the call site).
+
+**Render path status (Phase AA):**
+```
+[CustomCssWorkspace] → onChange → form.custom_css
+→ handleSave validates → PATCH /api/stores/:store/settings
+→ settings/route.ts validates → gateway → Supabase JSONB
+→ storefront layout.tsx line 585: buildLiquidThemeHeadAssets(bundle)  ← NOT wired yet
+                                                   ↑
+                                       rawCustomCss argument absent (Phase AB)
+```
+
+**Known gaps (Phase AA):** RISK-AA-01 (tautological unicode-decode test), RISK-AA-02 (`expression()` comment-split coverage gap), RISK-AA-03 (CSS nesting browser floor Chrome 112+). See RISK_REGISTER.md.
+
 ---
 
 ## 7. Undo / Redo
@@ -802,23 +855,26 @@ type EditorSelection =
 | RISK-PERF-N01 | LOW | Large document serialization on each draft save | `buildDraftConfig` sends only mutable state; Liquid source comes from `baseConfig` not re-serialized |
 | RISK-SEC-002 | INFO | AI hooks are stubs; must not be presented as connected | Phase AC |
 | RISK-R01 | LOW | **CLOSED (Phase T)** — `BlockEntry.children` added to canonical type; remaining four shared types still mirrored | Next substantive `page.tsx` touch |
-| RISK-T05 | MEDIUM | `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead | Phase AA or first `SectionTreePanel.tsx` touch |
-| RISK-T04 | LOW | `RENDERER_MAX_BLOCK_DEPTH` is private — depth parity test cannot directly assert it | Phase AA or first `theme-renderer.ts` touch |
-| RISK-SEC-U01 | MEDIUM | `isUnsafeUrl` narrow blocklist — `data:image/svg+xml`, `data:text/javascript`, `blob:` not blocked | **PARTIALLY ADDRESSED Phase X** — `isUnsafeUrl` extended to cover SVG data URIs and `blob:` in hardening; remaining `data:text/javascript` entries carried to Phase AA |
-| RISK-SEC-U02 | MEDIUM | `ColorBackgroundControl` gradient mode: no `url()` CSS content check | Phase AA or first `ColorBackgroundControl.tsx` touch |
-| RISK-SEC-U03 | MEDIUM | `required: true` on `checkbox`/`toggle` is a validation no-op | Phase AA or first `SchemaFormRenderer.tsx` touch |
-| RISK-A11Y-U01 | MEDIUM | `TextInput`/`TextareaInput` missing `aria-describedby` on error element | Phase AA or first `TextInput.tsx`/`TextareaInput.tsx` touch |
-| RISK-A11Y-U02 | LOW | `CheckboxControl`/`FontPickerControl`/`ColorSchemeControl` ternary `aria-describedby` drops helpText when error present | Phase AA or first affected control touch |
-| RISK-STYLE-U01 | LOW | `LiquidControl` `fontSize: 12` raw pixel | Phase AA or first `LiquidControl.tsx` touch |
-| RISK-STYLE-U02 | LOW | `controls.module.css` raw `px` spacing values (pre-Phase-W classes; Phase X new classes use tokens) | Phase AA or first `controls.module.css` token-pass touch |
-| RISK-W01 | MEDIUM | `BINDING_BLOCKED_KEYS` parity with `BLOCKED_DROP_KEYS` not compile-time enforced | Phase AA or first `dynamic-source-binding.ts` touch |
-| RISK-W04 | LOW | `ResourcePickerControl` `ArrowUp` from no-selection snaps to item 0 — WAI-ARIA 1.2 non-conformance | Phase AA or first `ResourcePickerControl.tsx` touch |
-| RISK-W05 | LOW | Loading spinner invisible during 300 ms debounce window on first keystroke | Phase AA or first `ResourcePickerControl.tsx` touch |
-| RISK-W06 | LOW | Block-level settings not resolved through `resolveDynamicSourceDescriptors` — raw descriptors reach Liquid | Phase AA or first `theme-renderer.ts` touch |
-| RISK-X01 | LOW | R2 key path is user-scoped (`user.id`) not site-scoped — no cross-user isolation within a site bucket prefix | Phase AA or first storage-architecture review |
-| RISK-Z01 | MEDIUM | `buildCandidates('en')` puts bare `'en'` before `'en-IN'` — India-first inverted for stores with `sites.locale='en'` | Phase AA or first `theme-locale.ts` touch |
-| RISK-Z02 | LOW | Pre-existing `lookupTranslation` in `theme-renderer.ts` lacks BLOCKED_PATH_SEGMENTS guard | Earliest phase touching `theme-renderer.ts` |
-| RISK-Z03 | LOW | Translation POST proxy does not validate `resource_type` at proxy layer | Phase AA or first translation proxy touch |
-| RISK-Z04 | LOW | Translation DELETE proxy has no server-side guard against deleting default-locale (en-IN) rows | Phase AA or earliest security migration |
-| RISK-Z05 | LOW | Translation POST proxy does not verify `resource_id` (themeId) belongs to resolved `storeId` | Phase AA or first translation proxy touch |
-| RISK-Z06 | LOW | Gateway `deleteTranslation` handler has no locale guard (backend view of RISK-Z04) | Phase AA or earliest security migration |
+| RISK-T05 | MEDIUM | `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead | Phase AB or first `SectionTreePanel.tsx` touch (NOT addressed Phase AA) |
+| RISK-T04 | LOW | `RENDERER_MAX_BLOCK_DEPTH` is private — depth parity test cannot directly assert it | Phase AB or first `theme-renderer.ts` touch (Phase AA touched renderer for head-assets only; const not exported) |
+| RISK-SEC-U01 | MEDIUM | `isUnsafeUrl` narrow blocklist — `data:image/svg+xml`, `data:text/javascript`, `blob:` not blocked | Phase AB or first `schema-field-extensions.ts` touch (NOT addressed Phase AA) |
+| RISK-SEC-U02 | MEDIUM | `ColorBackgroundControl` gradient mode: no `url()` CSS content check | Phase AB or first `ColorBackgroundControl.tsx` touch (NOT addressed Phase AA) |
+| RISK-SEC-U03 | MEDIUM | `required: true` on `checkbox`/`toggle` is a validation no-op | Phase AB or first `SchemaFormRenderer.tsx` touch (NOT addressed Phase AA) |
+| RISK-A11Y-U01 | MEDIUM | `TextInput`/`TextareaInput` missing `aria-describedby` on error element | Phase AB or first `TextInput.tsx`/`TextareaInput.tsx` touch (NOT addressed Phase AA) |
+| RISK-A11Y-U02 | LOW | `CheckboxControl`/`FontPickerControl`/`ColorSchemeControl` ternary `aria-describedby` drops helpText when error present | Phase AB or first affected control touch (NOT addressed Phase AA) |
+| RISK-STYLE-U01 | LOW | `LiquidControl` `fontSize: 12` raw pixel | Phase AB or first `LiquidControl.tsx` touch (NOT addressed Phase AA) |
+| RISK-STYLE-U02 | LOW | `controls.module.css` raw `px` spacing values (pre-Phase-W classes; Phase X new classes use tokens) | Phase AB or first `controls.module.css` token-pass touch (NOT addressed Phase AA) |
+| RISK-W01 | MEDIUM | `BINDING_BLOCKED_KEYS` parity with `BLOCKED_DROP_KEYS` not compile-time enforced | Phase AB or first `dynamic-source-binding.ts` touch (Phase AA touched renderer for head-assets; BINDING_BLOCKED_KEYS path not modified) |
+| RISK-W04 | LOW | `ResourcePickerControl` `ArrowUp` from no-selection snaps to item 0 — WAI-ARIA 1.2 non-conformance | Phase AB or first `ResourcePickerControl.tsx` touch (NOT addressed Phase AA) |
+| RISK-W05 | LOW | Loading spinner invisible during 300 ms debounce window on first keystroke | Phase AB or first `ResourcePickerControl.tsx` touch (NOT addressed Phase AA) |
+| RISK-W06 | LOW | Block-level settings not resolved through `resolveDynamicSourceDescriptors` — raw descriptors reach Liquid | Phase AB or first `theme-renderer.ts` touch affecting block-level settings (Phase AA touched renderer for head-assets only) |
+| RISK-X01 | LOW | R2 key path is user-scoped (`user.id`) not site-scoped — no cross-user isolation within a site bucket prefix | Phase AB or first storage-architecture review (NOT addressed Phase AA) |
+| RISK-Z01 | MEDIUM | `buildCandidates('en')` puts bare `'en'` before `'en-IN'` — India-first inverted for stores with `sites.locale='en'` | Phase AB or first `theme-locale.ts` touch (NOT addressed Phase AA) |
+| RISK-Z02 | LOW | Pre-existing `lookupTranslation` in `theme-renderer.ts` lacks BLOCKED_PATH_SEGMENTS guard | Phase AB or first `theme-renderer.ts` touch after line-585 wiring (Phase AA touched renderer; lookupTranslation at lines 1118–1136 not modified) |
+| RISK-Z03 | LOW | Translation POST proxy does not validate `resource_type` at proxy layer | Phase AB or first translation proxy touch (NOT addressed Phase AA) |
+| RISK-Z04 | LOW | Translation DELETE proxy has no server-side guard against deleting default-locale (en-IN) rows | Phase AB or earliest security migration (NOT addressed Phase AA) |
+| RISK-Z05 | LOW | Translation POST proxy does not verify `resource_id` (themeId) belongs to resolved `storeId` | Phase AB or first translation proxy touch (NOT addressed Phase AA) |
+| RISK-Z06 | LOW | Gateway `deleteTranslation` handler has no locale guard (backend view of RISK-Z04) | Phase AB or earliest security migration (NOT addressed Phase AA) |
+| RISK-AA-01 | LOW | Test AA-SEC-07b tautological — unicode-decode Step 2 not proven as sole blocking mechanism for `</style>` escape | Phase AB or next `custom-css-sanitizer.test.ts` touch |
+| RISK-AA-02 | LOW | `expression()` comment-split coverage gap — `ex/**/pression` test not explicitly added (Step 1 ordering is correct but untested) | Phase AB or next `custom-css-sanitizer.test.ts` touch |
+| RISK-AA-03 | LOW | CSS nesting browser floor — `.lb-theme{}` wrapper requires Chrome 112+/Firefox 117+/Safari 17.2+; older browsers receive unscoped CSS | Accepted for India-first market; revisit if browser floor requirements change |

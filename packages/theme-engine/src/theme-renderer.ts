@@ -29,6 +29,8 @@ import {
   filterAppBlockSettings,
   APP_BLOCK_ERROR_PLACEHOLDER_CLASS,
 } from './app-block-model';
+// Phase AA — SAFE-CSS LAW: single enforcement point for merchant custom CSS.
+import { validateAndScopeCustomCss } from './custom-css-sanitizer';
 import type {
   BlockModel,
   SectionModel,
@@ -292,8 +294,35 @@ function buildLiquidRootTokenBlock(bundle: LiquidThemePackageBundle): string {
 
 // Theme-controlled <head> assets injected into content_for_header (then sanitized by the layout-level
 // WHOLE_DOCUMENT DOMPurify pass): the per-store :root tokens + the lb-* base stylesheet, as one <style>.
-export function buildLiquidThemeHeadAssets(bundle: LiquidThemePackageBundle): string {
-  return `<style data-theme-renderer="liquid">${buildLiquidRootTokenBlock(bundle)}${LIQUID_THEME_BASE_CSS}</style>`;
+//
+// Phase AA — SAFE-CSS LAW single enforcement point:
+//   • Accepts the RAW merchant custom CSS from the caller (DB value / gateway input).
+//   • Validates and scopes the CSS internally via validateAndScopeCustomCss().
+//     Fail-closed: invalid CSS is silently dropped (no injection) and only the base style is returned.
+//   • Callers MUST pass the raw stored value; do NOT pre-scope before calling this function
+//     (pre-scoping would produce a double-wrapped selector).
+//   • Absent / empty rawCustomCss → output is byte-identical to the no-custom-CSS baseline.
+//   • LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG is NOT modified (DOMPurify already allows <style>).
+export function buildLiquidThemeHeadAssets(
+  bundle: LiquidThemePackageBundle,
+  rawCustomCss?: string,
+): string {
+  const baseStyle = `<style data-theme-renderer="liquid">${buildLiquidRootTokenBlock(bundle)}${LIQUID_THEME_BASE_CSS}</style>`;
+  if (!rawCustomCss || rawCustomCss.trim() === '') {
+    return baseStyle;
+  }
+  // Validate and scope the raw CSS — this is the SINGLE ENFORCEMENT POINT.
+  // Fail-closed: if validation fails for any reason, drop the custom CSS and return only the base.
+  // The caller never needs to call validateAndScopeCustomCss separately before this function.
+  const result = validateAndScopeCustomCss(rawCustomCss);
+  if (!result.ok || !result.safeCss) {
+    // Drop invalid CSS. The storefront is protected; the caller should surface violations
+    // via the dedicated validate endpoint (validateCustomCss) if user feedback is needed.
+    return baseStyle;
+  }
+  // DOMPurify allows <style> tags (USE_PROFILES.html:true). The CSS text is already validated
+  // and scope-wrapped by validateAndScopeCustomCss(); no further sanitisation is needed.
+  return baseStyle + `<style data-lb-custom-css="1">${result.safeCss}</style>`;
 }
 
 // C4 — Render-time section-type alias map. Resolves bundle section entries whose persisted type differs
