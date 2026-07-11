@@ -79,6 +79,12 @@ export * from './custom-css-sanitizer';
 // Tenant-safe, deterministic update that preserves merchant-content + bindings across versions.
 export * from './theme-safe-update';
 
+// Phase AC — AI Customization Intent parser (deterministic): proposeThemeCustomization maps a
+// STRUCTURED merchant intent to the Phase L primitives (WCAG-AA palette, known-font typography,
+// parity sections, a11y fix) -> a validated, diffable, reversible proposal. Free-text NLU is the
+// honestly NOT-CONNECTED model seam (MODEL_BOUNDARY). No fabricated model call.
+export * from './ai-intent-parser';
+
 export type BuiltInSectionType =
   | 'header'
   | 'announcementBar'

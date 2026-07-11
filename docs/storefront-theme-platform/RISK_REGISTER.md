@@ -62,7 +62,8 @@ Living register. Each entry: ID · severity · status · evidence · owner/targe
 - **Why it matters:** Two concurrent create or duplicate requests for the same store that both read `count < limit` before either write completes will both succeed, allowing the store to exceed its billing-tier theme cap by one or more. The window is narrow (~1-5ms per round-trip); sequential requests (the dominant real-world pattern) are correctly blocked once the count reaches the limit.
 - **Disposition:** Full closure requires either (a) a `SECURITY DEFINER` RPC wrapping the count + insert in a transaction with a per-store advisory lock (`pg_advisory_xact_lock(hashtext(store_id))`), or (b) a DB-level `CHECK` constraint on `theme_instances` referencing a materialized count. Both require ARB sign-off (SECURITY DEFINER touch or schema constraint addition). Documented at code level in the route handlers.
 - **Phase AB note:** Phase AB did not touch `theme_instances` or the `publish_theme_release` SECURITY DEFINER RPC. The plan-limit non-atomic count-then-insert gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or an ARB-gated follow-up whichever first touches the `theme_instances` schema or `publish_theme_release` SECURITY DEFINER surface.
+- **Phase AC note:** Phase AC did not touch `theme_instances` or the `publish_theme_release` SECURITY DEFINER RPC. The gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or an ARB-gated follow-up whichever first touches the `theme_instances` schema or `publish_theme_release` SECURITY DEFINER surface.
 
 ## Phase O risks
 
@@ -119,6 +120,7 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `upload.ts`. The gap remains.
 - **Phase AA note:** Phase AA did not touch `upload.ts`. Gap remains.
 - **Phase AB note:** Phase AB did not touch `upload.ts`. Gap remains. Retarget: Phase AC.
+- **Phase AC note:** Phase AC did not touch `upload.ts`. Gap remains. Retarget: Phase AD.
 - **Current isolation:** API-level `verifySiteOwnership` is tested (X-T04), enforced consistently, and provides the correct boundary for all current attack scenarios.
 
 ### RISK-T01 — Pre-Zod stack-depth attack via `z.lazy()` recursion — [MEDIUM]
@@ -132,7 +134,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `theme-bundle.ts` or `parseLiquidThemePackageBundle`. The gap remains.
 - **Phase AA note:** Phase AA did not touch `theme-bundle.ts` or `parseLiquidThemePackageBundle`. Gap remains.
 - **Phase AB note:** Phase AB did not touch `parseLiquidThemePackageBundle`. The merge engine (`theme-safe-update.ts`) calls `parseThemeDocument` (not the bundle parser), so RISK-T01 remains open. Retarget: Phase AC.
-- **Target:** Phase AC or earliest phase touching `parseLiquidThemePackageBundle` or the upload route.
+- **Phase AC note:** Phase AC did not touch `parseLiquidThemePackageBundle`. The intent parser (`ai-intent-parser.ts`) calls `parseThemeDocument` on its output (not the bundle parser). Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or earliest phase touching `parseLiquidThemePackageBundle` or the upload route.
 
 ### RISK-T02 — No `assertNoBlockedKeysInRaw` in `parseLiquidThemePackageBundle` — [MEDIUM]
 - **Status:** OPEN · known residual; deferred.
@@ -145,7 +148,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `parseLiquidThemePackageBundle`. The gap remains.
 - **Phase AA note:** Phase AA did not touch `parseLiquidThemePackageBundle`. Gap remains.
 - **Phase AB note:** Phase AB did not touch `parseLiquidThemePackageBundle`. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or earliest phase touching `parseLiquidThemePackageBundle`.
+- **Phase AC note:** Phase AC did not touch `parseLiquidThemePackageBundle`. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or earliest phase touching `parseLiquidThemePackageBundle`.
 
 ### RISK-T03 — Block settings bypass `filterBlockedSettingsKeys` in the renderer — [LOW]
 - **Status:** PARTIALLY CLOSED (Phase Y, 2026-07-11) · app-block path now protected; non-app block path still open.
@@ -157,7 +161,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Disposition:** Fix remaining gap: apply `filterBlockedSettingsKeys` to `block.settings` and `child.settings` at their Liquid scope insertion points (lines 818, 824). This is defence-in-depth; no legitimate merchant theme uses credential-adjacent key names in non-app block settings.
 - **Phase AA note:** Phase AA touched `theme-renderer.ts` for the head-assets path only (import of `validateAndScopeCustomCss` at line 33 + `buildLiquidThemeHeadAssets` body at lines 306–326). Lines 818/824 (block-level settings render path) were not modified. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `theme-renderer.ts` lines 818/824 (block settings render path). The merge engine writes to the per-store ThemeDocument before publish; it does not touch the renderer's block-level Liquid scope path. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or first phase touching `theme-renderer.ts` lines 818/824.
+- **Phase AC note:** Phase AC did not touch `theme-renderer.ts` lines 818/824. The intent parser operates on ThemeDocument structure, not on the renderer block-level scope path. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or first phase touching `theme-renderer.ts` lines 818/824.
 
 ### RISK-T04 — `RENDERER_MAX_BLOCK_DEPTH` is private/unexported — depth parity test cannot directly assert it — [LOW]
 - **Status:** OPEN · test quality gap; deferred past Phase U.
@@ -171,7 +176,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `theme-renderer.ts`. The test quality gap remains.
 - **Phase AA note:** Phase AA touched `theme-renderer.ts` (import line + `buildLiquidThemeHeadAssets` body). `RENDERER_MAX_BLOCK_DEPTH` is a private const unrelated to the touched hunks and was not exported. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not export `RENDERER_MAX_BLOCK_DEPTH` from `theme-renderer.ts`. The merge engine operates on ThemeDocument structure, not on the renderer constant. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or first phase touching `theme-renderer.ts`.
+- **Phase AC note:** Phase AC did not export `RENDERER_MAX_BLOCK_DEPTH` from `theme-renderer.ts`. The intent parser operates on ThemeDocument structure. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or first phase touching `theme-renderer.ts`.
 
 ### RISK-T05 — `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead — [MEDIUM]
 - **Status:** OPEN · functional gap; deferred past Phase U.
@@ -186,7 +192,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `SectionTreePanel.tsx`. The gap remains.
 - **Phase AA note:** Phase AA did not touch `SectionTreePanel.tsx`. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `SectionTreePanel.tsx`. The ThemeUpdatePanel is a standalone component (`ThemeUpdatePanel.tsx`) separate from the section tree. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or first phase touching `SectionTreePanel.tsx`.
+- **Phase AC note:** Phase AC did not touch `SectionTreePanel.tsx`. `AICustomizationPanel.tsx` is a standalone component separate from the section tree. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or first phase touching `SectionTreePanel.tsx`.
 
 ### RISK-T06 — `UnsupportedThemeDocumentFeatureError` exported but never thrown — [LOW]
 - **Status:** OPEN · dead API; deferred past Phase U.
@@ -200,7 +207,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `theme-document.ts`. The class remains dead.
 - **Phase AA note:** Phase AA did not touch `theme-document.ts`. Class remains dead. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `theme-document.ts`. Class remains dead. Retarget: Phase AC.
-- **Target:** Phase AC or next `theme-document.ts` touch.
+- **Phase AC note:** Phase AC did not touch `theme-document.ts`. `ai-intent-parser.ts` calls `parseThemeDocument` (a consumer, not a modification). Class remains dead. Retarget: Phase AD.
+- **Target:** Phase AD or next `theme-document.ts` touch.
 
 ## Phase U risks
 
@@ -216,7 +224,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `schema-field-extensions.ts`. The gap remains.
 - **Phase AA note:** Phase AA did not touch `schema-field-extensions.ts`. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `schema-field-extensions.ts`. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or first `schema-field-extensions.ts` touch.
+- **Phase AC note:** Phase AC did not touch `schema-field-extensions.ts`. `ai-intent-parser.ts` imports `isUnsafeUrl` as a consumer but does not modify the blocklist. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or first `schema-field-extensions.ts` touch.
 
 ### RISK-SEC-U02 — `ColorBackgroundControl` gradient mode accepts arbitrary CSS content including `url()` — [MEDIUM]
 - **Status:** OPEN · editor-side gap; render-time concern.
@@ -230,7 +239,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `schema-field-extensions.ts` or `ColorBackgroundControl.tsx`. The gap remains.
 - **Phase AA note:** Phase AA did not touch `schema-field-extensions.ts` or `ColorBackgroundControl.tsx`. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `schema-field-extensions.ts` or `ColorBackgroundControl.tsx`. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or first `schema-field-extensions.ts` touch.
+- **Phase AC note:** Phase AC did not touch `schema-field-extensions.ts` or `ColorBackgroundControl.tsx`. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or first `schema-field-extensions.ts` touch.
 
 ### RISK-SEC-U03 — `required: true` on `checkbox` / `toggle` is a validation no-op — [MEDIUM]
 - **Status:** OPEN · API design gap.
@@ -244,7 +254,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `schema-field-extensions.ts`. The gap remains.
 - **Phase AA note:** Phase AA did not touch `schema-field-extensions.ts`. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `schema-field-extensions.ts`. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or first `schema-field-extensions.ts` touch.
+- **Phase AC note:** Phase AC did not touch `schema-field-extensions.ts`. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or first `schema-field-extensions.ts` touch.
 
 ## Phase U accessibility risks
 
@@ -260,7 +271,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `SchemaFormRenderer.tsx`. The gap remains.
 - **Phase AA note:** Phase AA did not touch `SchemaFormRenderer.tsx`. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `SchemaFormRenderer.tsx`. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or first `SchemaFormRenderer.tsx` touch.
+- **Phase AC note:** Phase AC did not touch `SchemaFormRenderer.tsx`. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or first `SchemaFormRenderer.tsx` touch.
 
 ### RISK-A11Y-U02 — `CheckboxControl`, `FontPickerControl`, `ColorSchemeControl` use ternary `aria-describedby` — drops `helpText` when error present — [LOW]
 - **Status:** OPEN · a11y inconsistency; deferred past Phase V.
@@ -273,7 +285,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `CheckboxControl.tsx`, `FontPickerControl.tsx`, or `ColorSchemeControl.tsx`. The gap remains.
 - **Phase AA note:** Phase AA did not touch `CheckboxControl.tsx`, `FontPickerControl.tsx`, or `ColorSchemeControl.tsx`. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `CheckboxControl.tsx`, `FontPickerControl.tsx`, or `ColorSchemeControl.tsx`. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or first `CheckboxControl.tsx`/`FontPickerControl.tsx`/`ColorSchemeControl.tsx` touch.
+- **Phase AC note:** Phase AC did not touch `CheckboxControl.tsx`, `FontPickerControl.tsx`, or `ColorSchemeControl.tsx`. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or first `CheckboxControl.tsx`/`FontPickerControl.tsx`/`ColorSchemeControl.tsx` touch.
 
 ## Phase U style risks
 
@@ -288,7 +301,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `LiquidControl.tsx`. The gap remains.
 - **Phase AA note:** Phase AA did not touch `LiquidControl.tsx`. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `LiquidControl.tsx`. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or first `LiquidControl.tsx` touch.
+- **Phase AC note:** Phase AC did not touch `LiquidControl.tsx`. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or first `LiquidControl.tsx` touch.
 
 ### RISK-STYLE-U02 — `controls.module.css` uses raw `px` spacing values — [LOW]
 - **Status:** OPEN · design token inconsistency; deferred.
@@ -301,7 +315,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z introduced a separate `theme-locale.module.css` file (all `--lb-*` tokens). Phase Z did not touch `controls.module.css`. The gap in pre-Phase-X `controls.module.css` classes remains.
 - **Phase AA note:** Phase AA added `theme-editor-aa.test.mjs` to `package.json` (additive) but did not touch `controls.module.css` pre-Phase-X classes. Pre-existing raw `px` spacing in Phase U classes unchanged. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `controls.module.css`. Pre-existing raw `px` spacing in Phase U classes unchanged. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or a dedicated token-cleanup pass over pre-Phase-X `controls.module.css` entries.
+- **Phase AC note:** Phase AC did not touch `controls.module.css`. Pre-existing raw `px` spacing in Phase U classes unchanged. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or a dedicated token-cleanup pass over pre-Phase-X `controls.module.css` entries.
 
 ## Phase N risks
 
@@ -349,7 +364,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `dynamic-source-binding.ts` or `theme-renderer.ts`. The gap remains.
 - **Phase AA note:** Phase AA touched `theme-renderer.ts` (import + `buildLiquidThemeHeadAssets`) but did NOT export `BLOCKED_DROP_KEYS` or touch `dynamic-source-binding.ts`. The BINDING_BLOCKED_KEYS / BLOCKED_DROP_KEYS parity gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not export `BLOCKED_DROP_KEYS` from `theme-renderer.ts` and did not touch `dynamic-source-binding.ts`. The merge engine does not interact with the blocked-keys path. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or earliest phase touching `dynamic-source-binding.ts` or `theme-renderer.ts`.
+- **Phase AC note:** Phase AC did not export `BLOCKED_DROP_KEYS` from `theme-renderer.ts` and did not touch `dynamic-source-binding.ts`. The intent parser does not interact with the blocked-keys path. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or earliest phase touching `dynamic-source-binding.ts` or `theme-renderer.ts`.
 
 ### RISK-W02 — `auth.user.storeId` optional in ES256 tokens — session-bound fast-fail in `verifySiteOwnership` bypassed when absent — [LOW]
 - **Status:** OPEN · known residual; deferred.
@@ -362,7 +378,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `resource-search.ts`, `media-library.ts`, or the token issuance path. The gap remains.
 - **Phase AA note:** Phase AA did not touch `resource-search.ts`, `media-library.ts`, or the token issuance path. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `resource-search.ts`, `media-library.ts`, or the token issuance path. The Phase AB update-preview and update routes follow the same `resolveCustomUser` + `verifySiteOwnership` pattern (mandatory storeId from body, not from token fast-fail), so the optional-storeId fast-fail gap still exists on the pre-existing routes. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or earliest phase touching `resource-search.ts`, `media-library.ts`, or the token issuance path.
+- **Phase AC note:** Phase AC did not touch `resource-search.ts`, `media-library.ts`, or the token issuance path. The `ai-customization/route.ts` proxy uses `resolveOwnedStoreId` (same pattern). Pre-existing route gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or earliest phase touching `resource-search.ts`, `media-library.ts`, or the token issuance path.
 
 ### RISK-W03 — `siteDrops` tenant-scoping trust boundary is comment-only; block-level bindings unresolved — [LOW]
 - **Status:** OPEN · trust boundary documentation gap + functional gap.
@@ -375,7 +392,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not build the storefront `siteDrops` hydration service. The trust boundary comment-only gap remains.
 - **Phase AA note:** Phase AA did not build the storefront `siteDrops` hydration service. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not build the storefront `siteDrops` hydration service. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or the phase that builds the storefront `siteDrops` hydration service.
+- **Phase AC note:** Phase AC did not build the storefront `siteDrops` hydration service. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or the phase that builds the storefront `siteDrops` hydration service.
 
 ### RISK-W04 — `ArrowUp` key handler in `ResourcePickerControl` selects item 0 when no item is selected — [LOW]
 - **Status:** OPEN · WAI-ARIA 1.2 combobox non-conformance; deferred.
@@ -388,7 +406,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `ResourcePickerControl.tsx`. The gap remains.
 - **Phase AA note:** Phase AA did not touch `ResourcePickerControl.tsx`. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `ResourcePickerControl.tsx`. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or first `ResourcePickerControl.tsx` touch.
+- **Phase AC note:** Phase AC did not touch `ResourcePickerControl.tsx`. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or first `ResourcePickerControl.tsx` touch.
 
 ### RISK-W05 — Loading indicator hidden during 300 ms debounce window on first keystroke — [LOW]
 - **Status:** OPEN · UX gap; deferred.
@@ -401,7 +420,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `ResourcePickerControl.tsx`. The gap remains.
 - **Phase AA note:** Phase AA did not touch `ResourcePickerControl.tsx`. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `ResourcePickerControl.tsx`. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or first `ResourcePickerControl.tsx` touch.
+- **Phase AC note:** Phase AC did not touch `ResourcePickerControl.tsx`. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or first `ResourcePickerControl.tsx` touch.
 
 ### RISK-W06 — Block-level settings not resolved through `resolveDynamicSourceDescriptors` — [LOW]
 - **Status:** OPEN · functional gap; CONFIRMED by code review.
@@ -415,7 +435,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `theme-renderer.ts`. The block-level binding resolution gap remains.
 - **Phase AA note:** Phase AA touched `theme-renderer.ts` for the head-assets path only (import + `buildLiquidThemeHeadAssets`). Block-level settings in `renderLiquidSectionBlocks` (the `resolveDynamicSourceDescriptors` call site) was not modified. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `renderLiquidSectionBlocks` or the block-level `resolveDynamicSourceDescriptors` call site. The merge engine operates on ThemeDocument structure before publish; it does not touch the renderer's block iteration loop. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or first `theme-renderer.ts` touch affecting the block-level settings path.
+- **Phase AC note:** Phase AC did not touch `renderLiquidSectionBlocks`. The intent parser operates on ThemeDocument structure, not on the renderer block loop. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or first `theme-renderer.ts` touch affecting the block-level settings path.
 
 ## Phase Y risks
 
@@ -428,7 +449,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase Z note:** Phase Z did not touch `theme-renderer.ts`. The gap remains.
 - **Phase AA note:** Phase AA touched `theme-renderer.ts` for the head-assets path only (import + `buildLiquidThemeHeadAssets`). The `renderLiquidSectionBlocks` app-block count loop was not added. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not add an `appBlockCount` per-section cap to `renderLiquidSectionBlocks`. The merge engine writes the merged ThemeDocument before publish and does not interact with the block iteration loop. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or earliest phase touching `theme-renderer.ts`.
+- **Phase AC note:** Phase AC did not add an `appBlockCount` per-section cap to `renderLiquidSectionBlocks`. The intent parser operates on ThemeDocument structure. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or earliest phase touching `theme-renderer.ts`.
 
 ## Phase Z risks
 
@@ -440,7 +462,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Suggested fix:** In `buildCandidates`, special-case bare `'en'`: when `normalized === 'en'` and `language === 'en'` (no region tag), build the candidate list as `[THEME_DEFAULT_STORE_LOCALE, 'en']` instead of starting with `'en'`. Add test: `tLocale('general.cart', 'en', bundle_with_both)` must return the `en-IN` value.
 - **Phase AA note:** Phase AA did not touch `theme-locale.ts`. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `theme-locale.ts`. The merge engine classifies settings and merges documents without calling `buildCandidates`. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or earliest phase touching `theme-locale.ts`.
+- **Phase AC note:** Phase AC did not touch `theme-locale.ts`. The intent parser does not call `buildCandidates`. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or earliest phase touching `theme-locale.ts`.
 
 ### RISK-Z02 — Pre-existing `lookupTranslation` in `theme-renderer.ts` lacks `BLOCKED_PATH_SEGMENTS` guard — [LOW]
 - **Status:** OPEN · pre-existing security gap (NOT introduced by Phase Z); surfaced by Phase Z security review.
@@ -460,7 +483,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Suggested fix:** Add a Zod parse or literal check at the proxy: return 400 if `body.resource_type !== 'theme'` before forwarding to the gateway.
 - **Phase AA note:** Phase AA did not touch the translations POST proxy route. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch the translations POST proxy route. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or first touch of this proxy route.
+- **Phase AC note:** Phase AC did not touch the translations POST proxy route. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or first touch of this proxy route.
 
 ### RISK-Z04 — Translation DELETE proxy has no server-side guard against deleting default-locale (en-IN) rows — [LOW]
 - **Status:** OPEN · API boundary gap; introduced Phase Z (2026-07-11).
@@ -470,7 +494,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Suggested fix:** In the proxy DELETE handler or the gateway's `deleteTranslation` handler: fetch the translation row, check its locale against the store's default locale, and reject with 400 if `locale === 'en-IN'` (or `is_default = true` in `storefront_locales`). Gateway-layer enforcement provides stronger protection.
 - **Phase AA note:** Phase AA did not touch the translations DELETE proxy route. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch the translations DELETE proxy route. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or earliest security migration.
+- **Phase AC note:** Phase AC did not touch the translations DELETE proxy route. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or earliest security migration.
 
 ### RISK-Z05 — Translation POST proxy does not verify `resource_id` (themeId) belongs to the resolved `storeId` — [LOW]
 - **Status:** OPEN · cross-tenant data injection risk; introduced Phase Z (2026-07-11).
@@ -480,7 +505,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Suggested fix:** After resolving `storeId`, verify `body.resource_id` ownership: call `api.themes.getById(body.resource_id)` and confirm `theme.store_id === resolved.storeId`. Return 403 on mismatch.
 - **Phase AA note:** Phase AA did not touch the translations POST proxy route (`resource_id` ownership check). Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch the translations POST proxy route or add `resource_id` ownership verification. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or first touch of this proxy route.
+- **Phase AC note:** Phase AC did not touch the translations POST proxy route or add `resource_id` ownership verification. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or first touch of this proxy route.
 
 ### RISK-Z06 — Gateway `deleteTranslation` handler has no locale guard — [LOW]
 - **Status:** OPEN · gateway-layer gap; backend counterpart of RISK-Z04.
@@ -490,7 +516,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Suggested fix:** In the gateway DELETE handler: fetch the translation row, join to `storefront_locales` on `(store_id, locale)`, and return 400 if `is_default = true`. Alternatively, add a `p_locale` parameter to the `delete_storefront_translation` DB function and block deletion of the default locale there.
 - **Phase AA note:** Phase AA did not touch `stores-localization.ts`. Gap remains. Retarget: Phase AB.
 - **Phase AB note:** Phase AB did not touch `stores-localization.ts`. Gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or earliest security migration. Aligns with RISK-Z04.
+- **Phase AC note:** Phase AC did not touch `stores-localization.ts`. Gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or earliest security migration. Aligns with RISK-Z04.
 
 ## Phase AA risks
 
@@ -501,7 +528,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Why it matters:** If Step 2 were accidentally removed or its regex broken, AA-SEC-07b would still pass, giving a false-green signal. The coverage gap means that a regression in the unicode decode step would not be caught by the test suite.
 - **Suggested fix:** Add a complementary test `AA-SEC-07c` where the payload uses the unicode escape form ONLY — i.e., the raw payload string contains `\3c` (the escape characters, not the `<` character itself) and nothing that would otherwise be caught by the `<` pattern. The test must also assert that Step 2 is needed to decode it. One approach: verify that `decodeCssUnicodeEscapes` alone transforms the payload to contain `<`, then run the full validator.
 - **Phase AB note:** Phase AB did not touch `custom-css-sanitizer.test.ts`. The test coverage gap for AA-SEC-07b remains. Retarget: Phase AC.
-- **Target:** Phase AC or next `custom-css-sanitizer.test.ts` touch.
+- **Phase AC note:** Phase AC did not touch `custom-css-sanitizer.test.ts`. The test coverage gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or next `custom-css-sanitizer.test.ts` touch.
 
 ### RISK-AA-02 — `expression()` comment-split bypass — test coverage incomplete — [LOW]
 - **Status:** OPEN · test gap; deferred from Phase AA hardening (2026-07-11).
@@ -510,7 +538,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Why it matters:** The correct step-ordering defence for comment-split is fragile — it relies on Step 1 running before pattern checks, which is enforced by the code's sequential execution but not by a test that proves the bypass is blocked in the presence of a `/* */`-split.
 - **Suggested fix:** Add test `AA-SEC-EX01`: input = `` `ex/**/pression(alert(1))` ``, expect `{ ok: false, violations: [{ code: 'UNSAFE_EXPRESSION' }] }`. This locks in the split-comment-then-check behavioural contract.
 - **Phase AB note:** Phase AB did not touch `custom-css-sanitizer.test.ts`. The `expression()` comment-split test gap remains. Retarget: Phase AC.
-- **Target:** Phase AC or next `custom-css-sanitizer.test.ts` touch.
+- **Phase AC note:** Phase AC did not touch `custom-css-sanitizer.test.ts`. The test gap remains. Retarget: Phase AD.
+- **Target:** Phase AD or next `custom-css-sanitizer.test.ts` touch.
 
 ### RISK-AA-03 — CSS nesting browser floor — `.lb-theme { }` wrapper requires Chrome 112+/Firefox 117+/Safari 17.2+ — [LOW]
 - **Status:** OPEN · platform constraint; accepted for Phase AA (2026-07-11).
@@ -529,7 +558,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Evidence:** `services/api-gateway/src/routes/themes/theme-update-route.ts` — the POST apply handler recomputes `SHA-256(JSON.stringify(diff))` and compares it to `confirm_diff_hash`. Two concurrent POST requests with the same valid `diffHash` (from the same prior preview) both pass the comparison independently before either write lands. Both then call `publishVersionUpdateRelease`. The `idempotency_key` pre-check prevents duplicate writes only when both requests share the same key; two requests with different idempotency keys (or no key) both succeed, potentially creating two release records with identical merged document content. No merchant content is lost (both produce identical merged documents), but duplicate release history entries accumulate.
 - **Why it matters:** Duplicate releases inflate release history and may race the `is_current` pointer in edge cases. The dominant real-world pattern (sequential submit) is correctly handled — only simultaneous window-race submissions are affected.
 - **Disposition:** Full closure requires a DB-level advisory lock inside the `publish_theme_release` SECURITY DEFINER RPC — `pg_advisory_xact_lock(hashtext(store_id || ':version_update'))` wrapping the release insert. ARB sign-off required (SECURITY DEFINER modification). Documented at code level in the route.
-- **Target:** ARB-gated follow-up. Phase AC or earliest phase touching the `publish_theme_release` RPC.
+- **Phase AC note:** Phase AC did not touch the `publish_theme_release` SECURITY DEFINER RPC. Gap remains.
+- **Target:** ARB-gated follow-up. Phase AD or earliest phase touching the `publish_theme_release` RPC.
 
 ### RISK-AB-02 — Foreign WIP isolation test scope limited to AB symbol absence — [LOW]
 - **Status:** OPEN · test scope gap; deferred.
@@ -537,7 +567,7 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Evidence:** `apps/merchant-control-plane/package.json` — the Phase AB test file `theme-editor-ab.test.mjs` includes a foreign WIP isolation suite that asserts Phase AB symbols (`planThemeSafeUpdate`, `ThemeUpdatePanel`, `update-preview`, `update`) are not introduced in `themes/[themeId]/editor/page.tsx` and `ThemeEditorLayout.tsx`. This test confirms no AB-scoped imports were added to foreign WIP files; it does NOT detect or validate other potential changes to those files that may be part of foreign WIP. The isolation boundary is symbol-level, not file-level diff.
 - **Why it matters:** A foreign WIP commit to `editor/page.tsx` that does not introduce AB symbols would pass the isolation test while still potentially conflicting with AB's intent. The test is a best-effort checkpoint, not a comprehensive diff guard.
 - **Disposition:** The test is sufficient for Phase AB's actual scope (ThemeUpdatePanel is a standalone page/component, not embedded in the main editor flow). If future phases integrate version-update flows into the main editor frame, the isolation test perimeter should be expanded accordingly.
-- **Target:** Revisit if Phase AC or a future phase integrates version update into `editor/page.tsx`.
+- **Target:** Revisit if Phase AD or a future phase integrates version update into `editor/page.tsx`.
 
 ### RISK-AB-03 — Api-gateway pre-existing failure documented by position (#298) not by test name — [LOW]
 - **Status:** OPEN · test suite observability gap; deferred.
@@ -545,4 +575,46 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Evidence:** The Phase AB test report documents "1 pre-existing failure: test #298 (a DB-dependent rollback-requires-current-release test failing because no live DB is available in the test environment)." The failure is identified by its ordinal position in the test runner output rather than by a stable test name. If the test suite order changes (a new test inserted before #298), the position number shifts and the documentation becomes incorrect.
 - **Why it matters:** Future phase engineers comparing the pre-existing failure set against the documented baseline may count a different test at position #298 after test-suite reordering, making it harder to confirm the failure is pre-existing rather than a new regression.
 - **Suggested fix:** Identify the failing test by its describe + it string ("rollback · requires current release id · rejects when release is not current" or similar) and replace the position reference with the quoted test name in the test report. Update the pre-existing-failure baseline in `package.json` or a dedicated fixture.
-- **Target:** Phase AC or next api-gateway test suite touch. Low urgency — the failure is deterministic (no live DB) and stable across builds.
+- **Target:** Phase AD or next api-gateway test suite touch. Low urgency — the failure is deterministic (no live DB) and stable across builds.
+
+## Phase AC risks
+
+### RISK-AC-01 — Proxy does not filter overlay keys before forwarding — defense-in-depth gap — [MEDIUM]
+- **Status:** OPEN · latent while gateway NOT-CONNECTED; defense-in-depth gap.
+- **Introduced:** Phase AC (2026-07-11).
+- **Evidence:** `apps/merchant-control-plane/src/app/api/themes/[themeId]/editor/ai-customization/route.ts` — the POST handler serialises the browser-supplied `overlay` object verbatim without an allowlist filter on overlay keys before forwarding. A crafted POST with `overlay: { section_definitions: {...} }` would be forwarded. Today the gateway returns 404/503 (NOT-CONNECTED) so no write lands. The RISK-DUAL-N01 constraint is documented in the comment header but not mechanically enforced at the proxy layer.
+- **Why it matters:** Defense-in-depth at the proxy layer requires that structural keys (`section_definitions`, `block_definitions`, `layout`, `locales`, `renderer`) are stripped before the payload reaches the gateway. When the gateway route is deployed, the proxy becomes the first enforcement layer.
+- **Suggested fix:** Before forwarding, parse the overlay through an allowlist of accepted `ExperienceToken` keys. Use `ExperienceSettingsOverlaySchema` from `packages/theme-engine/src/theme-presets.ts` or an equivalent `pick`/`strip`. Return 422 if overlay fails validation. See PHASE_AC_SECURITY_REVIEW.md Finding 1.
+- **Target:** Phase AD or when the gateway AI-customization route is deployed, whichever is first.
+
+### RISK-AC-02 — `handleAccessibilityFixIntent` WCAG AA guarantee holds only against white background — [MEDIUM]
+- **Status:** OPEN · correctness gap; introduced Phase AC (2026-07-11).
+- **Introduced:** Phase AC (2026-07-11).
+- **Evidence:** `packages/theme-engine/src/ai-intent-parser.ts` — `handleAccessibilityFixIntent` derives `newTextColor` via `generateColorSystem(primaryColor, 'light').text` which is validated against `#FFFFFF` internally. No post-fix `meetsWcagAA(newTextColor, backgroundColor)` assertion exists for the document's actual `backgroundColor`. For a `backgroundColor` of `#777777` (luminance ~0.152), a text color that passes against `#FFFFFF` (~4.6:1) may fail against `#777777` (~3.6:1). The diff summary `'to meet WCAG 2.1 AA contrast against {backgroundColor}'` is inaccurate in this scenario. Tests `AC/a11y-fix-fail` only exercise `backgroundColor='#FFFFFF'`.
+- **Why it matters:** The WCAG AA guarantee is a stated invariant of the Phase AC engine. Merchants with non-white backgrounds will receive a WCAG-invalid accessibility fix while the diff summary claims the fix is compliant.
+- **Suggested fix:** After computing `newTextColor`, add: `if (!meetsWcagAA(newTextColor, backgroundColor)) { /* loop or fallback to #000000 */ }`. Update test suite to cover `backgroundColor='#888888'`.
+- **Target:** Phase AD or next `ai-intent-parser.ts` touch.
+
+### RISK-AC-03 — `TYPOGRAPHY_OVERLAY_KEYS` in panel omits `bodyFontFamily` — [LOW]
+- **Status:** OPEN · latent while gateway NOT-CONNECTED.
+- **Introduced:** Phase AC (2026-07-11).
+- **Evidence:** `apps/merchant-control-plane/src/components/theme-editor/AICustomizationPanel.tsx` — `TYPOGRAPHY_OVERLAY_KEYS` contains only `['fontFamily', 'headingFontFamily']`. The engine's `handleTypographyIntent` correctly writes three keys: `fontFamily`, `headingFontFamily`, `bodyFontFamily`. `ExperienceSettingsOverlaySchema` in `theme-presets.ts` is `.strict()` and requires `bodyFontFamily`. When the gateway route is deployed, typography Apply requests from the panel will fail gateway validation. Liquid render paths that resolve `bodyFontFamily` will not receive the updated value.
+- **Why it matters:** Typography proposals from the panel will silently fail or partially apply once the gateway route is live. The engine sets all three keys correctly; the panel overlay is incomplete.
+- **Suggested fix:** Add `'bodyFontFamily'` to `TYPOGRAPHY_OVERLAY_KEYS` and set `overlay.bodyFontFamily = pairing.fontFamily` in the proposal builder, mirroring `buildExperienceSettingsOverlay` in `theme-presets.ts`. Add a panel-level test asserting all three keys appear in the overlay.
+- **Target:** Phase AD or when the gateway AI-customization route is deployed.
+
+### RISK-AC-04 — `'computing'` state dead due to React 18 synchronous batch — [LOW]
+- **Status:** OPEN · cosmetic; no correctness or security impact.
+- **Introduced:** Phase AC (2026-07-11).
+- **Evidence:** `apps/merchant-control-plane/src/components/theme-editor/AICustomizationPanel.tsx` — `handleSelectIntent` is synchronous. React 18 batches `setPanelState('computing')` and `setPanelState('preview')` into a single flush. The `'computing'` skeleton (`aria-busy`) is never rendered between user click and preview display.
+- **Why it matters:** Cosmetic — the UI does not show a loading skeleton between user click and proposal display. Correctness unaffected. The `'computing'` branch is dead UI.
+- **Suggested fix:** Wrap proposal computation in `setTimeout(..., 0)` or `startTransition`. Alternatively, remove the `'computing'` branch and document only `'idle | preview | applying | applied | error'` as reachable states.
+- **Target:** Phase AD — low priority cosmetic fix.
+
+### RISK-AC-05 — `AC/no-model` test uses bare substrings not anchored to import paths — [LOW]
+- **Status:** OPEN · test quality gap; no correctness risk.
+- **Introduced:** Phase AC (2026-07-11).
+- **Evidence:** `packages/theme-engine/test/ai-intent-parser.test.ts` — `FORBIDDEN_PATTERNS` uses bare substrings `'openai'` and `'anthropic'` (not anchored as `"from 'openai'"` or `"from '@anthropic-ai'"`). A future comment like `// not using openai` in `ai-intent-parser.ts` would make the test fail as a false positive. Currently harmless — neither string appears anywhere in `ai-intent-parser.ts`.
+- **Why it matters:** False positive risk on future comments. Currently harmless.
+- **Suggested fix:** Anchor the patterns: e.g., `"from 'openai'"`, `"from '@anthropic-ai'"`.
+- **Target:** Phase AD or next `ai-intent-parser.test.ts` touch.

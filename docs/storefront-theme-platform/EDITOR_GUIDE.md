@@ -1,8 +1,8 @@
 # LetBuyy Theme Editor — Shell Architecture Guide
 
 **Program:** LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor (M→AE)
-**Last updated:** 2026-07-11 (post Phase AB)
-**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), template switcher, resource picker (Phase W live combobox), media library (Phase X modal image/video picker), app-block slot panel (Phase Y), translation editor (Phase Z), custom CSS workspace (Phase AA), theme version update panel (Phase AB), undo/redo, autosave, draft CAS
+**Last updated:** 2026-07-11 (post Phase AC)
+**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), template switcher, resource picker (Phase W live combobox), media library (Phase X modal image/video picker), app-block slot panel (Phase Y), translation editor (Phase Z), custom CSS workspace (Phase AA), theme version update panel (Phase AB), AI customization panel (Phase AC — structured-intent only; NL seams NOT-CONNECTED), undo/redo, autosave, draft CAS
 
 ---
 
@@ -29,6 +29,7 @@ apps/merchant-control-plane/src/components/theme-editor/
   SectionTreePanel.tsx         — ARIA section tree with drag-to-reorder (Phase R, CLEAN)
   TemplateSwitcherPanel.tsx    — Phase V: template type selector + alternate-variant list (CLEAN)
   ThemeUpdatePanel.tsx         — Phase AB: standalone theme version update UI (update availability check, diff table, conflict gate, duplicate-before-apply gate, rollback)
+  AICustomizationPanel.tsx     — Phase AC: structured AI suggestion chips (palette / typography / NOT-CONNECTED section-add / NOT-CONNECTED a11y-fix); deterministic proposal path; free-text input disabled (MODEL_BOUNDARY NOT-CONNECTED)
   controls/                    — Phase U: one file per extended control type
   controls/CustomCssWorkspace.tsx — Phase AA: merchant custom CSS editor with inline validation (SAFE-CSS LAW)
 
@@ -50,6 +51,8 @@ apps/merchant-control-plane/src/app/api/themes/[themeId]/update-preview/
   route.ts                     — Phase AB: proxy GET; calls gateway GET /:slug/update-preview; reshapes response (sections→rows, requiresDuplicateBeforeApply→requiresDuplicate, injects compatible:true, injects diffHash); same-origin only
 apps/merchant-control-plane/src/app/api/themes/[themeId]/update/
   route.ts                     — Phase AB: proxy POST; calls gateway POST /:slug/update with confirm_diff_hash (/^[0-9a-f]{64}$/ validated); forwards idempotency_key; same-origin only
+apps/merchant-control-plane/src/app/api/themes/[themeId]/editor/ai-customization/
+  route.ts                     — Phase AC: GET returns frozen SUGGESTIONS_CATALOG (no gateway call); POST resolves storeId via resolveOwnedStoreId, forwards to gateway, returns structured 503 { not_connected: true, envVar } when gateway AI route absent; same-origin only
     CheckboxControl.tsx        — native input[type=checkbox]; distinct from Toggle
     ColorBackgroundControl.tsx — solid colour picker OR CSS gradient string
     ColorSchemeControl.tsx     — select from named experience colour schemes
@@ -682,6 +685,125 @@ The custom CSS render path (`layout.tsx` line 585 — `buildLiquidThemeHeadAsset
 
 ---
 
+### 6.10 AICustomizationPanel (Phase AC — AI-Assisted Customization)
+
+`AICustomizationPanel` is a **standalone** `'use client'` React component that surfaces structured AI theme suggestions within the merchant editor's right panel AI-hooks card. It replaces the Phase M stub buttons (`applyAiHook`) with a real deterministic proposal pipeline. It is NOT embedded directly in `editor/page.tsx` — it is mounted inside the right panel's AI-hooks card slot.
+
+**Component location:**
+```
+apps/merchant-control-plane/src/components/theme-editor/AICustomizationPanel.tsx
+```
+
+**Proxy route:**
+```
+apps/merchant-control-plane/src/app/api/themes/[themeId]/editor/ai-customization/route.ts
+```
+
+**Engine:**
+```
+packages/theme-engine/src/ai-intent-parser.ts   — proposeThemeCustomization(doc, intent)
+```
+
+#### Panel FSM (6 reachable states)
+
+| State | Trigger | UI |
+|-------|---------|-----|
+| `idle` | Initial mount / after Apply completes | Suggestion chip grid; Apply button `aria-disabled` |
+| `computing` | User clicks a chip (transitions synchronously in React 18 — see RISK-AC-04) | Brief computing skeleton (may not visually render) |
+| `preview` | `proposeThemeCustomization` returns | Diff table + proposalHash; Apply button enabled (`canApply === true`) |
+| `applying` | User clicks Apply | `aria-busy` spinner on Apply; all chips disabled |
+| `applied` | Apply POST returns 200 | Success toast; `panelState` resets to `idle` |
+| `error` | Apply POST fails or proposal returns `status: 'incompatible'` | `role="alert"` error message |
+
+#### NO-AUTO-APPLY LAW
+
+Apply is gated by `canApply`:
+
+```typescript
+const canApply = proposal !== null
+  && proposal.type === 'token-overlay'
+  && panelState === 'preview';
+```
+
+The Apply button is always rendered (never hidden) with `aria-disabled={!canApply}`. The button's `onClick` handler returns early when `!canApply`. The gate is asserted by five static-contract tests in `tests/theme-editor-ac.test.mjs`.
+
+#### Chip catalog
+
+**Palette chips (structured intent → deterministic proposal → WCAG AA guaranteed):**
+
+| Chip label | `PaletteVariant` | Network call |
+|-----------|-----------------|-------------|
+| Warm tones | `warm` | None (client-side `deterministicPalette`) |
+| Cool tones | `cool` | None |
+| Bold | `bold` | None |
+| Muted | `muted` | None |
+
+**Typography chips (structured intent → deterministic proposal → EXPERIENCE_FONT_REGISTRY only):**
+
+| Chip label | `FontPairingIntent` | Network call |
+|-----------|-------------------|-------------|
+| Editorial | `editorial` | None (client-side `suggestTypographyPairing`) |
+| Technical | `technical` | None |
+| Artisanal | `artisanal` | None |
+| Friendly | `friendly` | None |
+
+**NOT-CONNECTED chips (AI gateway route absent):**
+
+| Chip label | Intent kind | Proposal |
+|-----------|------------|---------|
+| Add a section | `add-section` | `{ status: 'not-connected', envVar: 'THEME_AI_PROVIDER_API_KEY' }` |
+| Fix accessibility | `accessibility-fix` | Same |
+
+NOT-CONNECTED chips produce an `AINotConnectedProposal` immediately (no network call). `canApply` is false for these proposals. A NOT-CONNECTED badge is shown alongside the chip.
+
+**Free-text input:** permanently `<input disabled aria-disabled="true">`. `MODEL_BOUNDARY` is imported and referenced in the NOT-CONNECTED disclosure text. No keyword parsing or heuristic NLU is performed.
+
+#### RISK-DUAL-N01 compliance
+
+The panel overlay payload sent in the Apply POST contains only `ExperienceToken` keys (`primaryColor`, `textColor`, `backgroundColor`, `fontFamily`, `headingFontFamily`). The panel never assigns to or reads `section_definitions`, `block_definitions`, `layout`, `locales`, or `renderer`. Static-contract tests assert this in six tests under the `RISK-DUAL-N01` describe block.
+
+#### Tenancy model
+
+| Layer | Check |
+|-------|-------|
+| 1. Session | `GET ai-customization` is session-gated (Next.js middleware) |
+| 2. Store ownership | `resolveOwnedStoreId` in `route.ts` verifies the session user owns the `[store]` path parameter |
+| 3. Gateway | Gateway applies RLS + `verifySiteOwnership`; `resolved.storeId` (not the raw URL param) is used in all gateway calls |
+
+#### Proposal hash and rollback
+
+`djb2Hash(JSON.stringify({ intent, overlay }))` produces `proposalHash`. The Apply POST body is `{ intent, overlay, proposalHash }`. The gateway uses `proposalHash` as a CAS guard. Every Apply goes through the existing `saveDraft` path — there is no secondary AI-specific write path. Reverting an AI-applied change is identical to reverting any settings change: `diff.settingsChanged[n].previousValue` enables revert without AI-specific rollback logic.
+
+#### MODEL_BOUNDARY (NOT-CONNECTED)
+
+```typescript
+// From packages/theme-engine/src/theme-ai-sdk.ts lines 919–933
+export const MODEL_BOUNDARY = {
+  status: 'not-connected',
+  seams: [
+    { name: 'NL brief → ThemeBrief',          envVar: 'THEME_AI_PROVIDER_API_KEY', route: 'POST /v1/theme-ai/parse-brief' },
+    { name: 'NL colour mood → seed hex',       envVar: 'THEME_AI_PROVIDER_API_KEY', route: 'POST /v1/theme-ai/parse-brief' },
+    { name: 'NL section intent → SectionGoal[]', envVar: 'THEME_AI_PROVIDER_API_KEY', route: 'POST /v1/theme-ai/parse-brief' },
+  ],
+} as const;
+```
+
+The gateway route `POST /v1/theme-ai/parse-brief` does not exist. `THEME_AI_PROVIDER_API_KEY` is not set in any environment. The three NL seams are NOT-CONNECTED. The deterministic structured-intent path is fully connected and requires no API key.
+
+#### Phase AC findings summary
+
+| ID | Severity | Summary |
+|----|----------|---------|
+| RISK-AC-01 | MEDIUM | Proxy does not filter overlay keys before forwarding (defense-in-depth gap; latent while gateway NOT-CONNECTED) |
+| RISK-AC-02 | MEDIUM | `handleAccessibilityFixIntent` WCAG AA guarantee holds only against white background |
+| RISK-AC-03 | LOW | `TYPOGRAPHY_OVERLAY_KEYS` omits `bodyFontFamily` |
+| RISK-AC-04 | LOW | `'computing'` state never renders (React 18 batching — cosmetic) |
+| RISK-AC-05 | LOW | `AC/no-model` patterns not anchored to import paths |
+
+All 5 findings are latent while the gateway AI route is NOT-CONNECTED. See PHASE_AC_SECURITY_REVIEW.md for full detail and `docs/storefront-theme-platform/RISK_REGISTER.md` for the full entries.
+
+---
+
 ## 7. Undo / Redo
 
 **State:** `EditorHistory` = `{ past: EditorState[], future: EditorState[] }`. Max depth: 50 (`past.slice(-49)` in `applyChange`).
@@ -932,31 +1054,36 @@ type EditorSelection =
 | RISK-DUAL-N01 | MEDIUM | Editor save must reconstruct `section_definitions`/`block_definitions` from `baseConfig`, not `editorState` | Enforced mechanically by `buildDraftConfig`; Phase T/U controls receive value+onChange only; Phase V TemplateSwitcherPanel emits key string only (RISK preserved) |
 | RISK-SEC-P01 | MEDIUM | `theme_editor_drafts` RLS checks `user_id` only, not `custom_user_id` | No client-side realtime subscription may be added until fixed |
 | RISK-PERF-N01 | LOW | Large document serialization on each draft save | `buildDraftConfig` sends only mutable state; Liquid source comes from `baseConfig` not re-serialized |
-| RISK-SEC-002 | INFO | AI hooks are stubs; must not be presented as connected | Phase AC |
+| RISK-SEC-002 | INFO | **CLOSED (Phase AC)** — AI hooks stub replaced by real `AICustomizationPanel`; NL seams honestly disclosed as NOT-CONNECTED | — |
 | RISK-R01 | LOW | **CLOSED (Phase T)** — `BlockEntry.children` added to canonical type; remaining four shared types still mirrored | Next substantive `page.tsx` touch |
-| RISK-T05 | MEDIUM | `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead | Phase AC or first `SectionTreePanel.tsx` touch (NOT addressed Phase AA or AB) |
-| RISK-T04 | LOW | `RENDERER_MAX_BLOCK_DEPTH` is private — depth parity test cannot directly assert it | Phase AC or first `theme-renderer.ts` touch (Phase AB did not export the const) |
-| RISK-SEC-U01 | MEDIUM | `isUnsafeUrl` narrow blocklist — `data:image/svg+xml`, `data:text/javascript`, `blob:` not blocked | Phase AC or first `schema-field-extensions.ts` touch (NOT addressed Phase AA or AB) |
-| RISK-SEC-U02 | MEDIUM | `ColorBackgroundControl` gradient mode: no `url()` CSS content check | Phase AC or first `ColorBackgroundControl.tsx` touch (NOT addressed Phase AA or AB) |
-| RISK-SEC-U03 | MEDIUM | `required: true` on `checkbox`/`toggle` is a validation no-op | Phase AC or first `SchemaFormRenderer.tsx` touch (NOT addressed Phase AA or AB) |
-| RISK-A11Y-U01 | MEDIUM | `TextInput`/`TextareaInput` missing `aria-describedby` on error element | Phase AC or first `TextInput.tsx`/`TextareaInput.tsx` touch (NOT addressed Phase AA or AB) |
-| RISK-A11Y-U02 | LOW | `CheckboxControl`/`FontPickerControl`/`ColorSchemeControl` ternary `aria-describedby` drops helpText when error present | Phase AC or first affected control touch (NOT addressed Phase AA or AB) |
-| RISK-STYLE-U01 | LOW | `LiquidControl` `fontSize: 12` raw pixel | Phase AC or first `LiquidControl.tsx` touch (NOT addressed Phase AA or AB) |
-| RISK-STYLE-U02 | LOW | `controls.module.css` raw `px` spacing values (pre-Phase-W classes; Phase X new classes use tokens) | Phase AC or first `controls.module.css` token-pass touch (NOT addressed Phase AA or AB) |
-| RISK-W01 | MEDIUM | `BINDING_BLOCKED_KEYS` parity with `BLOCKED_DROP_KEYS` not compile-time enforced | Phase AC or first `dynamic-source-binding.ts` touch (NOT addressed Phase AA or AB) |
-| RISK-W04 | LOW | `ResourcePickerControl` `ArrowUp` from no-selection snaps to item 0 — WAI-ARIA 1.2 non-conformance | Phase AC or first `ResourcePickerControl.tsx` touch (NOT addressed Phase AA or AB) |
-| RISK-W05 | LOW | Loading spinner invisible during 300 ms debounce window on first keystroke | Phase AC or first `ResourcePickerControl.tsx` touch (NOT addressed Phase AA or AB) |
-| RISK-W06 | LOW | Block-level settings not resolved through `resolveDynamicSourceDescriptors` — raw descriptors reach Liquid | Phase AC or first `theme-renderer.ts` touch affecting block-level settings (Phase AB did not touch `renderLiquidSectionBlocks`) |
-| RISK-X01 | LOW | R2 key path is user-scoped (`user.id`) not site-scoped — no cross-user isolation within a site bucket prefix | Phase AC or first storage-architecture review (NOT addressed Phase AA or AB) |
-| RISK-Z01 | MEDIUM | `buildCandidates('en')` puts bare `'en'` before `'en-IN'` — India-first inverted for stores with `sites.locale='en'` | Phase AC or first `theme-locale.ts` touch (NOT addressed Phase AA or AB) |
-| RISK-Z02 | LOW | Pre-existing `lookupTranslation` in `theme-renderer.ts` lacks BLOCKED_PATH_SEGMENTS guard | Phase AC or first `theme-renderer.ts` touch after line-585 wiring (Phase AB did not touch lookupTranslation at lines 1118–1136) |
-| RISK-Z03 | LOW | Translation POST proxy does not validate `resource_type` at proxy layer | Phase AC or first translation proxy touch (NOT addressed Phase AA or AB) |
-| RISK-Z04 | LOW | Translation DELETE proxy has no server-side guard against deleting default-locale (en-IN) rows | Phase AC or earliest security migration (NOT addressed Phase AA or AB) |
-| RISK-Z05 | LOW | Translation POST proxy does not verify `resource_id` (themeId) belongs to resolved `storeId` | Phase AC or first translation proxy touch (NOT addressed Phase AA or AB) |
-| RISK-Z06 | LOW | Gateway `deleteTranslation` handler has no locale guard (backend view of RISK-Z04) | Phase AC or earliest security migration (NOT addressed Phase AA or AB) |
-| RISK-AA-01 | LOW | Test AA-SEC-07b tautological — unicode-decode Step 2 not proven as sole blocking mechanism for `</style>` escape | Phase AC or next `custom-css-sanitizer.test.ts` touch (NOT addressed Phase AB) |
-| RISK-AA-02 | LOW | `expression()` comment-split coverage gap — `ex/**/pression` test not explicitly added (Step 1 ordering is correct but untested) | Phase AC or next `custom-css-sanitizer.test.ts` touch (NOT addressed Phase AB) |
+| RISK-T05 | MEDIUM | `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead | Phase AD or first `SectionTreePanel.tsx` touch (NOT addressed Phase AA, AB, or AC) |
+| RISK-T04 | LOW | `RENDERER_MAX_BLOCK_DEPTH` is private — depth parity test cannot directly assert it | Phase AD or first `theme-renderer.ts` touch (Phase AC did not export the const) |
+| RISK-SEC-U01 | MEDIUM | `isUnsafeUrl` narrow blocklist — `data:image/svg+xml`, `data:text/javascript`, `blob:` not blocked | Phase AD or first `schema-field-extensions.ts` touch (NOT addressed Phase AA, AB, or AC) |
+| RISK-SEC-U02 | MEDIUM | `ColorBackgroundControl` gradient mode: no `url()` CSS content check | Phase AD or first `ColorBackgroundControl.tsx` touch (NOT addressed Phase AA, AB, or AC) |
+| RISK-SEC-U03 | MEDIUM | `required: true` on `checkbox`/`toggle` is a validation no-op | Phase AD or first `SchemaFormRenderer.tsx` touch (NOT addressed Phase AA, AB, or AC) |
+| RISK-A11Y-U01 | MEDIUM | `TextInput`/`TextareaInput` missing `aria-describedby` on error element | Phase AD or first `TextInput.tsx`/`TextareaInput.tsx` touch (NOT addressed Phase AA, AB, or AC) |
+| RISK-A11Y-U02 | LOW | `CheckboxControl`/`FontPickerControl`/`ColorSchemeControl` ternary `aria-describedby` drops helpText when error present | Phase AD or first affected control touch (NOT addressed Phase AA, AB, or AC) |
+| RISK-STYLE-U01 | LOW | `LiquidControl` `fontSize: 12` raw pixel | Phase AD or first `LiquidControl.tsx` touch (NOT addressed Phase AA, AB, or AC) |
+| RISK-STYLE-U02 | LOW | `controls.module.css` raw `px` spacing values (pre-Phase-W classes; Phase X new classes use tokens) | Phase AD or first `controls.module.css` token-pass touch (NOT addressed Phase AA, AB, or AC) |
+| RISK-W01 | MEDIUM | `BINDING_BLOCKED_KEYS` parity with `BLOCKED_DROP_KEYS` not compile-time enforced | Phase AD or first `dynamic-source-binding.ts` touch (NOT addressed Phase AA, AB, or AC) |
+| RISK-W04 | LOW | `ResourcePickerControl` `ArrowUp` from no-selection snaps to item 0 — WAI-ARIA 1.2 non-conformance | Phase AD or first `ResourcePickerControl.tsx` touch (NOT addressed Phase AA, AB, or AC) |
+| RISK-W05 | LOW | Loading spinner invisible during 300 ms debounce window on first keystroke | Phase AD or first `ResourcePickerControl.tsx` touch (NOT addressed Phase AA, AB, or AC) |
+| RISK-W06 | LOW | Block-level settings not resolved through `resolveDynamicSourceDescriptors` — raw descriptors reach Liquid | Phase AD or first `theme-renderer.ts` touch affecting block-level settings (Phase AC did not touch `renderLiquidSectionBlocks`) |
+| RISK-X01 | LOW | R2 key path is user-scoped (`user.id`) not site-scoped — no cross-user isolation within a site bucket prefix | Phase AD or first storage-architecture review (NOT addressed Phase AA, AB, or AC) |
+| RISK-Z01 | MEDIUM | `buildCandidates('en')` puts bare `'en'` before `'en-IN'` — India-first inverted for stores with `sites.locale='en'` | Phase AD or first `theme-locale.ts` touch (NOT addressed Phase AA, AB, or AC) |
+| RISK-Z02 | LOW | Pre-existing `lookupTranslation` in `theme-renderer.ts` lacks BLOCKED_PATH_SEGMENTS guard | Phase AD or first `theme-renderer.ts` touch after line-585 wiring (Phase AC did not touch lookupTranslation) |
+| RISK-Z03 | LOW | Translation POST proxy does not validate `resource_type` at proxy layer | Phase AD or first translation proxy touch (NOT addressed Phase AA, AB, or AC) |
+| RISK-Z04 | LOW | Translation DELETE proxy has no server-side guard against deleting default-locale (en-IN) rows | Phase AD or earliest security migration (NOT addressed Phase AA, AB, or AC) |
+| RISK-Z05 | LOW | Translation POST proxy does not verify `resource_id` (themeId) belongs to resolved `storeId` | Phase AD or first translation proxy touch (NOT addressed Phase AA, AB, or AC) |
+| RISK-Z06 | LOW | Gateway `deleteTranslation` handler has no locale guard (backend view of RISK-Z04) | Phase AD or earliest security migration (NOT addressed Phase AA, AB, or AC) |
+| RISK-AA-01 | LOW | Test AA-SEC-07b tautological — unicode-decode Step 2 not proven as sole blocking mechanism for `</style>` escape | Phase AD or next `custom-css-sanitizer.test.ts` touch (NOT addressed Phase AB or AC) |
+| RISK-AA-02 | LOW | `expression()` comment-split coverage gap — `ex/**/pression` test not explicitly added (Step 1 ordering is correct but untested) | Phase AD or next `custom-css-sanitizer.test.ts` touch (NOT addressed Phase AB or AC) |
 | RISK-AA-03 | LOW | CSS nesting browser floor — `.lb-theme{}` wrapper requires Chrome 112+/Firefox 117+/Safari 17.2+; older browsers receive unscoped CSS | Accepted for India-first market; revisit if browser floor requirements change |
-| RISK-AB-01 | LOW | Concurrent same-hash POST to update apply can create duplicate releases (no DB advisory lock in `publish_theme_release`) | ARB-gated; Phase AC or earliest RPC touch |
-| RISK-AB-02 | LOW | Foreign WIP isolation test scope limited to AB symbol absence — does not detect non-AB changes in `editor/page.tsx` | Phase AC or when version-update integrates into main editor flow |
-| RISK-AB-03 | LOW | Api-gateway pre-existing failure documented by test position (#298) not by test name | Phase AC or next api-gateway test suite touch |
+| RISK-AB-01 | LOW | Concurrent same-hash POST to update apply can create duplicate releases (no DB advisory lock in `publish_theme_release`) | ARB-gated; Phase AD or earliest RPC touch (NOT addressed Phase AC) |
+| RISK-AB-02 | LOW | Foreign WIP isolation test scope limited to AB symbol absence — does not detect non-AB changes in `editor/page.tsx` | Phase AD or when version-update integrates into main editor flow |
+| RISK-AB-03 | LOW | Api-gateway pre-existing failure documented by test position (#298) not by test name | Phase AD or next api-gateway test suite touch (NOT addressed Phase AC) |
+| RISK-AC-01 | MEDIUM | Proxy does not filter overlay keys before forwarding — defense-in-depth gap (latent while gateway NOT-CONNECTED) | Phase AD or when gateway AI route is deployed |
+| RISK-AC-02 | MEDIUM | `handleAccessibilityFixIntent` WCAG AA guarantee holds only against white background | Phase AD or next `ai-intent-parser.ts` touch |
+| RISK-AC-03 | LOW | `AICustomizationPanel` `TYPOGRAPHY_OVERLAY_KEYS` omits `bodyFontFamily` | Phase AD or when gateway AI route is deployed |
+| RISK-AC-04 | LOW | `'computing'` panel state never renders — React 18 batching (cosmetic) | Phase AD — low priority |
+| RISK-AC-05 | LOW | `AC/no-model` test patterns not anchored to import paths | Phase AD or next `ai-intent-parser.test.ts` touch |
