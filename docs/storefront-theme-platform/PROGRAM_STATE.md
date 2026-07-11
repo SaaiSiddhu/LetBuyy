@@ -22,8 +22,14 @@
 | AA | Custom CSS + code workspace | **COMPLETE** | _(see phase-aa/PHASE_AA_REPORT.md)_ |
 | AB | Theme versioning + updates | **COMPLETE** | _(see phase-ab/PHASE_AB_REPORT.md)_ |
 | AC | AI-assisted customization | **COMPLETE** | _(see phase-ac/PHASE_AC_REPORT.md)_ |
-| AD | Certification + canary | **NEXT** | — |
-| AE | Marketplace + partner readiness | PENDING | — |
+| AD | Certification + canary | **COMPLETE** | _(see phase-ad/THEME_PLATFORM_CERTIFICATION.md + CANARY_READINESS_ARB_PACKAGE.md)_ |
+| AE | Marketplace + partner readiness | **NEXT** | — |
+
+## Phase AD certification (docs only; NO flag flip; orchestrator-run gates 2026-07-11)
+- **Full gate matrix (all green):** theme-engine **1695/1695** · storefront-runtime **915/915** · merchant-control-plane **771/771** · api-gateway typecheck **32/32 tasks** (+ tests ~537/540, the 3 pre-existing FOREIGN failures ai#1/executive-analytics#130/payments#298 unchanged — NOT program regressions).
+- **Integrity attestation (evidence-backed):** `THEME_LIQUID_RENDERING_DEFAULT_ENABLED = false` at theme-governance.ts:14 (never flipped — ARB authority); DOMPurify FORBID_ATTR:['style'] + FORBID_TAGS:['base','embed','object','script'] intact (theme-renderer.ts:229-230); publish_theme_release SECURITY DEFINER RPC unmodified; money ledger / checkout / payment RPCs untouched by M→AC. theme-governance-validator PASS (25 schemas, Liquid default OFF), migration-safety-validator PASS. `validate-governance.mjs` EXIT=1 on the 2 PRE-EXISTING non-program issues only (tenant-registry drift + untracked user migrations 186/187).
+- **Honesty:** NOT_CONNECTED_REGISTER.md consolidates every disconnected live seam (metafield render resolution, live FX, AI model boundary, live app-content runtime, custom-CSS composition-layer wiring) with the exact missing piece; fabrication check CLEAN (zero fabricated live values / fake model calls across M→AC theme code). The ARB package states plainly: **structural-ready ≠ flip-ready**; it does NOT flip the flag.
+- **Carried to AE (highest):** RISK-SEC-001 (theme_purchases wide-open RLS, HIGH — marketplace/partner surface) + the accumulated LOW/MEDIUM residual register.
 
 ## Verified baselines (do not re-derive)
 - theme-engine **643/643** entering M; **689/689** after Phase N (+46 tests, 20 suites); **1034/1034** after Phase O (+345 tests); **1695/1695** after Phase AC (+61 tests). storefront-runtime **687/687**, merchant **14 tasks**, gateway typecheck **32 tasks**.
