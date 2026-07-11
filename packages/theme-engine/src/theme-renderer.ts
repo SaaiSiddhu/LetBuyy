@@ -24,6 +24,11 @@ import {
   resolveDynamicSourceDescriptors,
   type SiteDrops,
 } from './dynamic-source-binding';
+// Phase Y — App-Block Model: settings filtering + crash-isolation placeholder classes.
+import {
+  filterAppBlockSettings,
+  APP_BLOCK_ERROR_PLACEHOLDER_CLASS,
+} from './app-block-model';
 import type {
   BlockModel,
   SectionModel,
@@ -771,11 +776,33 @@ async function renderLiquidSectionBlocks(
     if (!block || block.disabled) continue;
 
     if (isLiquidAppBlockType(block.type)) {
+      // Phase Y — App-block crash isolation (RISK: one bad app block must not crash the
+      // section/page). Mirrors the per-block try/catch for regular blocks below (Phase C/F).
+      // On error: push a safe placeholder div and continue with the next block.
+      //
+      // Phase Y — Settings filtering: apply filterAppBlockSettings so that BLOCKED_APP_BLOCK_SETTING_KEYS
+      // (credential-adjacent keys: api_key, webhook_secret, access_token, etc.) are stripped
+      // BEFORE the settings reach the section-level Liquid drop (section.blocks[i].settings).
+      // This closes the gap identified in the design audit (theme-renderer.ts lines 415–421).
+      let appBlockHtml: string;
+      let appBlockSettings: Record<string, unknown>;
+      try {
+        appBlockHtml = await resolveLiquidAppBlockHtml(input.input, input.sectionId, blockId, block);
+        appBlockSettings = filterAppBlockSettings(block.settings);
+      } catch (appBlockErr: unknown) {
+        const msg = appBlockErr instanceof Error ? appBlockErr.message : String(appBlockErr);
+        // Safe static placeholder — block.type and blockId are bundle-schema-validated strings.
+        // escapeHtmlAttribute prevents attribute breakout; APP_BLOCK_ERROR_PLACEHOLDER_CLASS is
+        // a literal constant. No sanitizeRenderedHtml needed (no untrusted HTML content here).
+        appBlockHtml = `<div class="${APP_BLOCK_ERROR_PLACEHOLDER_CLASS}" data-letbuyy-app-block="${escapeHtmlAttribute(blockId)}" data-app-block-type="${escapeHtmlAttribute(block.type)}" aria-hidden="true"></div>`;
+        appBlockSettings = filterAppBlockSettings(block.settings);
+        void msg; // swallow; no access to input.input.warnings here (same pattern as regular block error)
+      }
       blocks.push({
         id: blockId,
         type: block.type,
-        settings: block.settings,
-        html: await resolveLiquidAppBlockHtml(input.input, input.sectionId, blockId, block),
+        settings: appBlockSettings,
+        html: appBlockHtml,
         isAppBlock: true,
       });
       continue;

@@ -67,6 +67,8 @@ export { applyPersonalizationOverlay, applyPersonalizationOverlayToBundle } from
 export type { SegmentTokens, PersonalizationResult } from './ai-personalization';
 // Phase W — Dynamic Source Binding (descriptor type + tenant-safe resolver)
 export * from './dynamic-source-binding';
+// Phase Y — App-Block Model (typed reference, validation, settings filtering, NOT-CONNECTED constants)
+export * from './app-block-model';
 
 export type BuiltInSectionType =
   | 'header'

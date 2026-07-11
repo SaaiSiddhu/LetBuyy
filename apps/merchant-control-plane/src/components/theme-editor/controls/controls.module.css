@@ -560,3 +560,278 @@
   font-weight: 600;
   margin-right: 2px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/* Phase Y — App Block Slot Panel                                             */
+/* All styles use --lb-* design tokens. No raw rounded-[Npx] values.         */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Outer wrapper ─────────────────────────────────────────────────────── */
+.appBlockSlotWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-2, 8px);
+  padding: var(--lb-space-2, 8px) 0;
+}
+
+/* ── Loading state ─────────────────────────────────────────────────────── */
+.appBlockLoading {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-1, 4px);
+  font-size: var(--lb-font-size-caption, 12px);
+  color: var(--text-secondary, rgb(102 102 102));
+  padding: var(--lb-space-2, 8px) 0;
+}
+
+/* ── Error state ───────────────────────────────────────────────────────── */
+.appBlockError {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--lb-space-1, 4px);
+  font-size: var(--lb-font-size-caption, 12px);
+  color: var(--color-error, rgb(220 38 38));
+  background: var(--bg-error-subtle, rgb(254 242 242));
+  border-radius: var(--lb-radius-sm, 4px);
+  padding: var(--lb-space-2, 8px) var(--lb-space-3, 12px);
+}
+
+/* ── NOT-CONNECTED state ───────────────────────────────────────────────── */
+.appBlockNotConnected {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-1, 4px);
+  font-size: var(--lb-font-size-caption, 12px);
+  color: var(--text-secondary, rgb(102 102 102));
+  background: var(--bg-secondary, rgb(244 244 245));
+  border-radius: var(--lb-radius-sm, 4px);
+  padding: var(--lb-space-2, 8px) var(--lb-space-3, 12px);
+}
+
+/* ── Empty state ───────────────────────────────────────────────────────── */
+.appBlockEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--lb-space-1, 4px);
+  text-align: center;
+  padding: var(--lb-space-4, 16px) var(--lb-space-3, 12px);
+  font-size: var(--lb-font-size-caption, 12px);
+  color: var(--text-secondary, rgb(102 102 102));
+  background: var(--bg-secondary, rgb(244 244 245));
+  border-radius: var(--lb-radius-sm, 4px);
+}
+
+/* ── Block list ────────────────────────────────────────────────────────── */
+.appBlockList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-1, 4px);
+}
+
+/* ── Individual block item ─────────────────────────────────────────────── */
+.appBlockItem {
+  border: 1px solid var(--border-default, rgb(228 228 231));
+  border-radius: var(--lb-radius-sm, 4px);
+  background: var(--bg-primary, rgb(255 255 255));
+  overflow: hidden;
+  transition: border-color 120ms ease;
+}
+
+.appBlockItem:focus-within {
+  border-color: var(--color-primary, rgb(0 179 179));
+  outline: none;
+}
+
+/* Selected / expanded state */
+.appBlockItemSelected {
+  border-color: var(--color-primary, rgb(0 179 179));
+}
+
+/* ── Block item header row ─────────────────────────────────────────────── */
+.appBlockItemHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-1, 4px);
+  padding: var(--lb-space-2, 8px) var(--lb-space-2, 8px);
+  min-height: 36px;
+}
+
+.appBlockItemIcon {
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary, rgb(102 102 102));
+  flex-shrink: 0;
+}
+
+.appBlockItemLabel {
+  flex: 1;
+  font-size: var(--lb-font-size-caption, 12px);
+  font-weight: 500;
+  color: var(--text-primary, rgb(24 24 27));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Block item action buttons ─────────────────────────────────────────── */
+.appBlockItemActions {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-05, 2px);
+  flex-shrink: 0;
+}
+
+.appBlockItemActions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--lb-space-1, 4px);
+  border-radius: var(--lb-radius-sm, 4px);
+  color: var(--text-secondary, rgb(102 102 102));
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 100ms ease, color 100ms ease;
+}
+
+.appBlockItemActions button:hover {
+  background: var(--bg-secondary, rgb(244 244 245));
+  color: var(--text-primary, rgb(24 24 27));
+}
+
+.appBlockItemActions button:focus-visible {
+  outline: 2px solid var(--color-primary, rgb(0 179 179));
+  outline-offset: 1px;
+}
+
+.appBlockItemActions button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* ── Settings form (expanded inline) ──────────────────────────────────── */
+.appBlockSettingsForm {
+  border-top: 1px solid var(--border-default, rgb(228 228 231));
+  padding: var(--lb-space-3, 12px);
+  background: var(--bg-subtle, rgb(250 250 250));
+}
+
+.appBlockSettingsActions {
+  display: flex;
+  gap: var(--lb-space-2, 8px);
+}
+
+.appBlockSaveBtn {
+  font-size: var(--lb-font-size-caption, 12px);
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--lb-radius-sm, 4px);
+  background: var(--color-primary, rgb(0 179 179));
+  color: rgb(255 255 255);
+  border: none;
+  cursor: pointer;
+  transition: background 100ms ease;
+}
+
+.appBlockSaveBtn:hover {
+  background: var(--color-primary-dark, rgb(0 149 149));
+}
+
+.appBlockSaveBtn:focus-visible {
+  outline: 2px solid var(--color-primary, rgb(0 179 179));
+  outline-offset: 2px;
+}
+
+.appBlockCancelBtn {
+  font-size: var(--lb-font-size-caption, 12px);
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: var(--lb-radius-sm, 4px);
+  background: transparent;
+  color: var(--text-secondary, rgb(102 102 102));
+  border: 1px solid var(--border-default, rgb(228 228 231));
+  cursor: pointer;
+  transition: background 100ms ease;
+}
+
+.appBlockCancelBtn:hover {
+  background: var(--bg-secondary, rgb(244 244 245));
+}
+
+.appBlockCancelBtn:focus-visible {
+  outline: 2px solid var(--color-primary, rgb(0 179 179));
+  outline-offset: 2px;
+}
+
+/* ── Add section ───────────────────────────────────────────────────────── */
+.appBlockAddSection {
+  border-top: 1px solid var(--border-default, rgb(228 228 231));
+  padding-top: var(--lb-space-2, 8px);
+  margin-top: var(--lb-space-1, 4px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-1, 4px);
+}
+
+.appBlockAddLabel {
+  font-size: var(--lb-font-size-caption, 12px);
+  font-weight: 500;
+  color: var(--text-primary, rgb(24 24 27));
+}
+
+.appBlockAddRow {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-2, 8px);
+}
+
+.appBlockSelect {
+  flex: 1;
+  font-size: var(--lb-font-size-caption, 12px);
+  padding: 4px 6px;
+  border: 1px solid var(--border-default, rgb(228 228 231));
+  border-radius: var(--lb-radius-sm, 4px);
+  background: var(--bg-primary, rgb(255 255 255));
+  color: var(--text-primary, rgb(24 24 27));
+  min-width: 0;
+}
+
+.appBlockSelect:focus-visible {
+  outline: 2px solid var(--color-primary, rgb(0 179 179));
+  outline-offset: 1px;
+}
+
+.appBlockAddBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lb-space-1, 4px);
+  font-size: var(--lb-font-size-caption, 12px);
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--lb-radius-sm, 4px);
+  background: var(--color-primary, rgb(0 179 179));
+  color: rgb(255 255 255);
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: background 100ms ease;
+}
+
+.appBlockAddBtn:hover {
+  background: var(--color-primary-dark, rgb(0 149 149));
+}
+
+.appBlockAddBtn:focus-visible {
+  outline: 2px solid var(--color-primary, rgb(0 179 179));
+  outline-offset: 2px;
+}
+
+.appBlockAddBtn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}

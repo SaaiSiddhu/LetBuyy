@@ -1,8 +1,8 @@
 # LetBuyy Theme Editor — Shell Architecture Guide
 
 **Program:** LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor (M→AE)
-**Last updated:** 2026-07-11 (post Phase X)
-**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), template switcher, resource picker (Phase W live combobox), media library (Phase X modal image/video picker), undo/redo, autosave, draft CAS
+**Last updated:** 2026-07-11 (post Phase Y)
+**Covers:** editor header, section/block tree (incl. nested blocks), live preview inspector, settings panel (full Shopify-parity control set), template switcher, resource picker (Phase W live combobox), media library (Phase X modal image/video picker), app-block slot panel (Phase Y), undo/redo, autosave, draft CAS
 
 ---
 
@@ -19,6 +19,7 @@ It is a **FOREIGN WIP FILE** — it carries prior user modifications. All phase-
 Supporting components live under:
 ```
 apps/merchant-control-plane/src/components/theme-editor/
+  AppBlockSlotPanel.tsx        — Phase Y: app-block slot editor (add/configure/remove/reorder app blocks in a slot section)
   BlockChildRow.tsx            — recursive child-block tree row (Phase T, CLEAN)
   CenterPanel.tsx              — preview iframe, postMessage bridge, and inspector overlay host (CLEAN)
   ConflictDialog.tsx           — draft CAS conflict resolution dialog (Phase R, CLEAN)
@@ -424,6 +425,64 @@ Source: `apps/merchant-control-plane/src/components/theme-editor/controls/MediaL
 **NOT-CONNECTED:** the proxy fetches from `/api/stores/{storeName}/themes/media-library`. If R2 or the `media` table is unavailable the component shows the error state and does not crash. See `docs/storefront-theme-platform/phase-x/MEDIA_LIBRARY_REFERENCE.md` §8 for the full NOT-CONNECTED inventory.
 
 For the complete API contract, storage architecture, MIME policy, and testing reference, see `docs/storefront-theme-platform/phase-x/MEDIA_LIBRARY_REFERENCE.md`.
+
+### 6.6 AppBlockSlotPanel (Phase Y — App-Block Slot Editor)
+
+Source: `apps/merchant-control-plane/src/components/theme-editor/AppBlockSlotPanel.tsx`
+
+`AppBlockSlotPanel` is rendered within an app-block-slot section when the editor selects a section of type `'app-block-slot'`. It lists installed app block extensions and provides full CRUD over app-block slot instances.
+
+**Props:**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `storeName` | `string` | Yes | Store URL path param; used to build same-origin proxy URL |
+| `sectionId` | `string` | Yes | ID of the slot section |
+| `section` | section object | Yes | Current section state (blocks array) |
+| `onAddBlock` | `(sectionId, type, settings) => void` | Yes | Add block; type always `'@app'` |
+| `onUpdateBlockSettings` | `(sectionId, blockId, settings) => void` | Yes | Update block settings |
+| `onRemoveBlock` | `(sectionId, blockId) => void` | Yes | Remove block from slot |
+| `onMoveBlock` | `(sectionId, blockId, direction) => void` | Yes | Reorder block |
+
+**States:**
+
+| State | Trigger | UI |
+|-------|---------|-----|
+| Loading | Fetch in progress | `aria-busy` + spinner message |
+| Error | Fetch failed | `role="alert"` error message |
+| NOT-CONNECTED | Proxy returns `not_connected: true` (gateway 404) | NOT-CONNECTED badge + honest empty state |
+| Empty | Zero installed extensions | "No apps installed" message |
+| Populated | Extensions available | Add-from-picker list + installed block rows |
+
+**Add flow:** The merchant selects an extension from the picker. `onAddBlock(sectionId, '@app', { extension_id, app_id, title, slot })` is called. Block type stays `'@app'` — `extension_id` is stored in `block.settings`, never used as a `block.type` override.
+
+**Configure flow:** Clicking the Settings icon opens an inline `BlockSettingsForm` for `title` and `slot` editing. Escape closes the form. The block's `onUpdateBlockSettings` callback is called on each change.
+
+**Proxy route:** `GET /api/stores/{storeName}/themes/app-blocks`
+
+Returns `{ data: InstalledAppExtension[], not_connected: false }` on success, or `{ data: [], not_connected: true }` when the gateway endpoint `GET /themes/app-blocks` is not yet deployed. That endpoint reads `app_extension_registrations WHERE surface = 'theme.app_block'` and is the missing piece for a connected app runtime.
+
+**SANDBOX LAW:** Zero `dangerouslySetInnerHTML` or `innerHTML` in this component. App HTML is rendered at storefront time through `resolveLiquidAppBlockHtml` → `sanitizeRenderedHtml` (locked DOMPurify). The component manages reference metadata only.
+
+**RISK-DUAL-N01:** all mutations route through `onAddBlock` / `onUpdateBlockSettings` / `onRemoveBlock` / `onMoveBlock`. The component never reads or writes `section_definitions` or `block_definitions`.
+
+**CSS classes (Phase Y additions to `controls.module.css`):**
+
+| Class | Purpose |
+|-------|---------|
+| `.appBlockSlotWrapper` | Top-level slot wrapper; `aria-label` identifies the slot |
+| `.appBlockItem` | Single extension row |
+| `.appBlockItemSelected` | Active/configure-open row highlight |
+| `.appBlockItemActions` | Row action button group (configure, remove, reorder) |
+| `.appBlockNotConnected` | NOT-CONNECTED badge container |
+| `.appBlockEmpty` | Empty state message |
+| `.appBlockSettingsForm` | Inline configure form container |
+| `.appBlockAddSection` | "Add app block" affordance container |
+| `.appBlockAddBtn` | Primary "Add" button |
+
+All classes use `--lb-*` design tokens only. No raw `px` or `rounded-[Npx]` values.
+
+For the full app-block model, validation API, render path, and NOT-CONNECTED inventory, see `docs/storefront-theme-platform/phase-y/APP_BLOCK_REFERENCE.md`.
 
 ---
 

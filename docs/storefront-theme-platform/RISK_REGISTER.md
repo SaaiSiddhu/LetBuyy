@@ -113,7 +113,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Introduced:** Phase X (2026-07-11).
 - **Evidence:** `services/api-gateway/src/routes/upload.ts` — storage key: `${folder}/${auth.user.id}/${Date.now()}-${uuid}.${ext}`. The `folder` is `<storeId>/products` (set by the merchant proxy), but the key component directly after `folder` is `auth.user.id`, not `site_id`. Two stores owned by the same `user.id` would share the user-id segment in their R2 key paths. Cross-store read isolation relies exclusively on `verifySiteOwnership` at the API layer — an actor cannot request another store's CDN URL through the gateway, but if a CDN URL were somehow shared out-of-band, the R2 bucket's key structure would not provide an additional isolation boundary.
 - **Why it matters:** True defence-in-depth key isolation would use `${siteId}/${userId}/...` so that even if the API layer failed, R2 bucket policies could scope by site prefix. The current structure requires the API-level `verifySiteOwnership` as the sole isolation boundary, which is correct and tested (X-T04) but is a single-layer defence.
-- **Disposition:** Fix: update the key format to `${folder}/${siteId}/${auth.user.id}/${timestamp}-${uuid}.${ext}` where `siteId` is the verified store's UUID (already available in the upload handler after `verifyUploadStoreOwnership`). This is a non-breaking change if applied going forward; existing CDN URLs remain valid (the CDN serves whatever key was used at upload time). A future migration would be required to rename existing keys for full parity. **Target:** first security migration or Phase Y if touching `upload.ts`.
+- **Disposition:** Fix: update the key format to `${folder}/${siteId}/${auth.user.id}/${timestamp}-${uuid}.${ext}` where `siteId` is the verified store's UUID (already available in the upload handler after `verifyUploadStoreOwnership`). This is a non-breaking change if applied going forward; existing CDN URLs remain valid (the CDN serves whatever key was used at upload time). A future migration would be required to rename existing keys for full parity. **Target:** first security migration or Phase Z if touching `upload.ts`.
+- **Phase Y note:** Phase Y did not touch `upload.ts`. The gap remains.
 - **Current isolation:** API-level `verifySiteOwnership` is tested (X-T04), enforced consistently, and provides the correct boundary for all current attack scenarios.
 
 ### RISK-T01 — Pre-Zod stack-depth attack via `z.lazy()` recursion — [MEDIUM]
@@ -123,6 +124,7 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Why it matters:** An authenticated merchant (or a crafted bundle file in an upload flow) could trigger a Worker crash via a deep-nesting attack. Cloudflare Worker per-request CPU limits and memory limits provide some containment, but a RangeError is less clean than a 400 ZodError and may interfere with error handling pipelines.
 - **Disposition:** Full closure requires adding a fast iterative pre-Zod structural depth check to `parseLiquidThemePackageBundle` (after `assertNoBlockedKeysInRaw`-style call) and optionally to `parseThemeDocument`. Additionally, adding an explicit `bodyLimit` middleware to the theme package upload route reduces blast radius. Deferred from Phase T to avoid touching production parse paths without dedicated test coverage for the pre-check logic in the bundle context.
 - **Phase X note:** Phase X did not touch `theme-bundle.ts` or `parseLiquidThemePackageBundle`. The gap remains.
+- **Phase Y note:** Phase Y did not touch `theme-bundle.ts` or `parseLiquidThemePackageBundle`. The gap remains.
 - **Target:** Earliest phase touching `parseLiquidThemePackageBundle` or the upload route.
 
 ### RISK-T02 — No `assertNoBlockedKeysInRaw` in `parseLiquidThemePackageBundle` — [MEDIUM]
@@ -132,18 +134,18 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Why it matters:** An attacker-supplied `block.settings.__proto__` value could expose attacker-controlled inherited properties via `{{ block.settings.admin }}` in a Liquid template. Impact is bounded to the merchant's own storefront; no cross-tenant blast radius.
 - **Disposition:** Fix: call `assertNoBlockedKeysInRaw` (already exported from `theme-document.ts`) at the top of `parseLiquidThemePackageBundle`. One-line call site change; no schema-level side effects. Deferred from Phase T to avoid touching the production parse path without dedicated bundle-context test coverage.
 - **Phase X note:** Phase X did not touch `parseLiquidThemePackageBundle`. The gap remains.
+- **Phase Y note:** Phase Y did not touch `parseLiquidThemePackageBundle`. The gap remains.
 - **Target:** Earliest phase touching `parseLiquidThemePackageBundle`.
 
 ### RISK-T03 — Block settings bypass `filterBlockedSettingsKeys` in the renderer — [LOW]
-- **Status:** OPEN · defence-in-depth gap; deferred past Phase U.
+- **Status:** PARTIALLY CLOSED (Phase Y, 2026-07-11) · app-block path now protected; non-app block path still open.
 - **Introduced:** Phase T (2026-07-11). Pre-existing for flat blocks; Phase T's `sub_blocks` threading adds a second unfiltered position.
 - **Evidence:** `packages/theme-engine/src/theme-renderer.ts:818` — `settings: block.settings` and `theme-renderer.ts:824` — `settings: child.settings` (in `sub_blocks[]`) are inserted raw into the Liquid scope without calling `filterBlockedSettingsKeys`. The `BLOCKED_DROP_KEYS` set (which excludes `api_key`, `webhook_secret`, etc.) is applied only to the global `settings` drop (line 883), not to block-level settings.
 - **Why it matters:** Credential-named keys in merchant-authored `block.settings` are accessible via `{{ block.settings.api_key }}` without the blocked-key guard. All rendered HTML passes through DOMPurify but non-HTML-encoded plain strings are not stripped.
-- **Disposition:** Fix: apply `filterBlockedSettingsKeys` to `block.settings` and `child.settings` at their Liquid scope insertion points. This is defence-in-depth; no legitimate theme uses credential-adjacent key names in block settings.
-- **Phase U note:** Phase U added 15 new field types to the editor renderer (SchemaFormRenderer) but did not touch `theme-renderer.ts`. The Phase T field types that amplify the gap (nested block settings) are now fully wired in the editor; the defence-in-depth gap in the storefront renderer remains.
-- **Phase V note:** Phase V did not touch `theme-renderer.ts` (narrowly scoped to template registry and switcher component).
-- **Phase X note:** Phase X did not touch `theme-renderer.ts`. The gap remains.
-- **Target:** Phase Y or first phase touching `theme-renderer.ts`.
+- **Phase Y resolution (partial):** Phase Y introduced `filterAppBlockSettings` (in `app-block-model.ts`) and applies it at the `isLiquidAppBlockType` branch in `renderLiquidSectionBlocks`. App-block settings (blocks of type `'@app'` or `'app:*'`) are now filtered before entering `LiquidRenderedBlock.settings` and the section-level Liquid drop. The `BLOCKED_APP_BLOCK_SETTING_KEYS` set (13 keys) mirrors `BLOCKED_DROP_KEYS`; parity asserted by test Y-13.
+- **Remaining gap (non-app blocks):** `settings: block.settings` at line 818 and `settings: child.settings` at line 824 (non-app blocks and nested blocks) still bypass `filterBlockedSettingsKeys`. These lines are in the normal block render path (not the `isLiquidAppBlockType` branch) and were not modified in Phase Y.
+- **Disposition:** Fix remaining gap: apply `filterBlockedSettingsKeys` to `block.settings` and `child.settings` at their Liquid scope insertion points (lines 818, 824). This is defence-in-depth; no legitimate merchant theme uses credential-adjacent key names in non-app block settings.
+- **Target:** Phase Z or first phase touching `theme-renderer.ts` lines 818/824.
 
 ### RISK-T04 — `RENDERER_MAX_BLOCK_DEPTH` is private/unexported — depth parity test cannot directly assert it — [LOW]
 - **Status:** OPEN · test quality gap; deferred past Phase U.
@@ -153,7 +155,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase U note:** Phase U did not touch `theme-renderer.ts`.
 - **Phase V note:** Phase V did not touch `theme-renderer.ts`.
 - **Phase X note:** Phase X did not touch `theme-renderer.ts`. The gap remains.
-- **Target:** Phase Y or first phase touching `theme-renderer.ts`.
+- **Phase Y note:** Phase Y touched `theme-renderer.ts` (2 hunks: import + `isLiquidAppBlockType` branch). `RENDERER_MAX_BLOCK_DEPTH` (a private const, not near the touched hunks) was not exported. The test quality gap remains.
+- **Target:** Phase Z or first phase touching `theme-renderer.ts`.
 
 ### RISK-T05 — `allowedChildTypes` not passed from `SectionTreePanel` to `BlockChildRow` — add-child button dead — [MEDIUM]
 - **Status:** OPEN · functional gap; deferred past Phase U.
@@ -164,7 +167,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase U note:** Phase U did not touch `SectionTreePanel.tsx`. The gap remains.
 - **Phase V note:** Phase V did not touch `SectionTreePanel.tsx` (TemplateSwitcherPanel is a new standalone file, not a SectionTreePanel modification).
 - **Phase X note:** Phase X did not touch `SectionTreePanel.tsx`. The gap remains.
-- **Target:** Phase Y or first phase touching `SectionTreePanel.tsx`.
+- **Phase Y note:** Phase Y did not touch `SectionTreePanel.tsx`. The gap remains.
+- **Target:** Phase Z or first phase touching `SectionTreePanel.tsx`.
 
 ### RISK-T06 — `UnsupportedThemeDocumentFeatureError` exported but never thrown — [LOW]
 - **Status:** OPEN · dead API; deferred past Phase U.
@@ -174,7 +178,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Phase U note:** Phase U did not touch `theme-document.ts`.
 - **Phase V note:** Phase V touched `theme-document.ts` to add the template-key `superRefine` and variant-cap enforcement, but did not remove or re-purpose `UnsupportedThemeDocumentFeatureError`. The class remains dead.
 - **Phase X note:** Phase X did not touch `theme-document.ts`. The class remains dead.
-- **Target:** Phase Y or next `theme-document.ts` touch.
+- **Phase Y note:** Phase Y did not touch `theme-document.ts`. The class remains dead.
+- **Target:** Phase Z or next `theme-document.ts` touch.
 
 ## Phase U risks
 
@@ -186,7 +191,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Disposition:** Widen the blocklist in `isUnsafeUrl`: add `normalized.startsWith('data:image/svg+xml')`, `normalized.startsWith('data:text/javascript')`, `normalized.startsWith('blob:')`. Consider a broader allowlist approach: default-block all `data:` URIs except `data:image/png`, `data:image/jpeg`, `data:image/gif`, `data:image/webp`. Update the private `isUnsafeThemeUrl` in `index.ts` identically to keep both in sync.
 - **Phase V note:** Phase V did not touch `schema-field-extensions.ts`.
 - **Phase X note:** Phase X did not widen the blocklist. However, Phase X added `isUnsafeUrl(url)` guards to `ImagePickerControl.handleLibrarySelect` and `VideoControl.handleLibrarySelect` (defence-in-depth improvement — library-selected URLs now pass through the same guard as manually-typed URLs). The underlying gap (narrow blocklist) remains.
-- **Target:** Phase Y or first `schema-field-extensions.ts` touch.
+- **Phase Y note:** Phase Y did not touch `schema-field-extensions.ts`. The gap remains.
+- **Target:** Phase Z or first `schema-field-extensions.ts` touch.
 
 ### RISK-SEC-U02 — `ColorBackgroundControl` gradient mode accepts arbitrary CSS content including `url()` — [MEDIUM]
 - **Status:** OPEN · editor-side gap; render-time concern.
@@ -196,7 +202,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Disposition:** Add a gradient-mode validation rule in `validateFieldValue` for `color_background`: reject values containing `url(` or `expression(` (case-insensitive regex: `/url\s*\(/i`). This should live in `schema-field-extensions.ts` and mirror whatever the storefront renderer strips.
 - **Phase V note:** Phase V did not touch `schema-field-extensions.ts` or `ColorBackgroundControl.tsx`.
 - **Phase X note:** Phase X did not touch `schema-field-extensions.ts` or `ColorBackgroundControl.tsx`. The gap remains.
-- **Target:** Phase Y or first `schema-field-extensions.ts` touch.
+- **Phase Y note:** Phase Y did not touch `schema-field-extensions.ts` or `ColorBackgroundControl.tsx`. The gap remains.
+- **Target:** Phase Z or first `schema-field-extensions.ts` touch.
 
 ### RISK-SEC-U03 — `required: true` on `checkbox` / `toggle` is a validation no-op — [MEDIUM]
 - **Status:** OPEN · API design gap.
@@ -206,7 +213,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Disposition:** Options: (1) add a type-specific required guard for `checkbox`/`toggle`: `if (field.required && (type === 'checkbox' || type === 'toggle') && value === false) → error`. (2) Document `required` as inapplicable to boolean controls and omit `required` from `ToggleInput` / `CheckboxControl` rendering. (3) Introduce a separate property `must_be_checked?: boolean` for boolean consent fields.
 - **Phase V note:** Phase V did not touch `schema-field-extensions.ts`.
 - **Phase X note:** Phase X did not touch `schema-field-extensions.ts`. The gap remains.
-- **Target:** Phase Y or first `schema-field-extensions.ts` touch.
+- **Phase Y note:** Phase Y did not touch `schema-field-extensions.ts`. The gap remains.
+- **Target:** Phase Z or first `schema-field-extensions.ts` touch.
 
 ## Phase U accessibility risks
 
@@ -218,7 +226,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Disposition:** Add `aria-describedby={error ? `${id}-error` : helpText ? `${id}-help` : undefined}` to the `<Input>` inside `TextInput` and to the `<textarea>` inside `TextareaInput`, mirroring the pattern used by `NumberInput` and all Phase U controls.
 - **Phase V note:** Phase V did not touch `SchemaFormRenderer.tsx`.
 - **Phase X note:** Phase X touched `SchemaFormRenderer.tsx` (4-line `case 'image':` patch only). `TextInput` and `TextareaInput` were not changed; the gap remains.
-- **Target:** Phase Y or first `SchemaFormRenderer.tsx` touch.
+- **Phase Y note:** Phase Y did not touch `SchemaFormRenderer.tsx`. The gap remains.
+- **Target:** Phase Z or first `SchemaFormRenderer.tsx` touch.
 
 ### RISK-A11Y-U02 — `CheckboxControl`, `FontPickerControl`, `ColorSchemeControl` use ternary `aria-describedby` — drops `helpText` when error present — [LOW]
 - **Status:** OPEN · a11y inconsistency; deferred past Phase V.
@@ -227,7 +236,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Disposition:** Replace the ternary with the array-join pattern in the three affected controls.
 - **Phase V note:** Phase V did not touch any Phase U control files.
 - **Phase X note:** Phase X touched `controls/` (VideoControl.tsx additive patch + controls.module.css new classes). `CheckboxControl.tsx`, `FontPickerControl.tsx`, and `ColorSchemeControl.tsx` were not changed; the gap remains.
-- **Target:** Phase Y or first `CheckboxControl.tsx`/`FontPickerControl.tsx`/`ColorSchemeControl.tsx` touch.
+- **Phase Y note:** Phase Y added `AppBlockSlotPanel.tsx` and modified `controls.module.css` (additive). `CheckboxControl.tsx`, `FontPickerControl.tsx`, and `ColorSchemeControl.tsx` were not changed; the gap remains.
+- **Target:** Phase Z or first `CheckboxControl.tsx`/`FontPickerControl.tsx`/`ColorSchemeControl.tsx` touch.
 
 ## Phase U style risks
 
@@ -238,7 +248,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Disposition:** Change `fontSize: 12` to `fontSize: 'var(--lb-font-size-caption, 12px)'`.
 - **Phase V note:** Phase V did not touch `LiquidControl.tsx`.
 - **Phase X note:** Phase X touched `controls/` but did not touch `LiquidControl.tsx`. The gap remains.
-- **Target:** Phase Y or first `LiquidControl.tsx` touch.
+- **Phase Y note:** Phase Y did not touch `LiquidControl.tsx`. The gap remains.
+- **Target:** Phase Z or first `LiquidControl.tsx` touch.
 
 ### RISK-STYLE-U02 — `controls.module.css` uses raw `px` spacing values — [LOW]
 - **Status:** OPEN · design token inconsistency; deferred.
@@ -247,7 +258,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Disposition:** Replace literal spacing values with `--lb-*` spacing tokens where they exist (e.g., `var(--lb-space-1)` for 4px, `var(--lb-space-2)` for 8px). Where tokens are absent, document the gap and add the tokens to the design system.
 - **Phase V note:** Phase V did not touch `controls.module.css`.
 - **Phase X note:** Phase X added new `mediaLibrary*` and `browseLibraryBtn` classes to `controls.module.css`, all using `--lb-*` tokens. Pre-existing raw `px` spacing values (gap: 4px, padding: 3px 8px, margin-top: 4px) in Phase U classes were not changed. The gap for pre-existing classes remains.
-- **Target:** Phase Y or a dedicated token-cleanup pass over pre-Phase-X `controls.module.css` entries.
+- **Phase Y note:** Phase Y added 9 new `appBlock*` classes to `controls.module.css`, all using `--lb-*` tokens. Pre-existing raw `px` spacing values in Phase U classes were not changed. The gap remains.
+- **Target:** Phase Z or a dedicated token-cleanup pass over pre-Phase-X `controls.module.css` entries.
 
 ## Phase N risks
 
@@ -291,7 +303,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Why it matters:** The two blocklists must stay in sync to prevent a credential-adjacent key from becoming accessible via the resource-binding code path after being blocked on the direct-settings path.
 - **Disposition:** Export `BLOCKED_DROP_KEYS` from `theme-renderer.ts` (it is already `export const`) and import it into `dynamic-source-binding.ts` as the single source of truth, removing the duplicated set. Alternatively, add a unit test that imports both sets and asserts strict set equality — so any future `BLOCKED_DROP_KEYS` addition that is not mirrored fails the test gate immediately.
 - **Phase X note:** Phase X did not touch `dynamic-source-binding.ts` or `theme-renderer.ts`. The gap remains.
-- **Target:** Phase Y or earliest phase touching `dynamic-source-binding.ts` or `theme-renderer.ts`.
+- **Phase Y note:** Phase Y touched `theme-renderer.ts` (2 hunks — `isLiquidAppBlockType` branch only). The BINDING_BLOCKED_KEYS / BLOCKED_DROP_KEYS parity gap is in `dynamic-source-binding.ts`, which was not touched. The gap remains.
+- **Target:** Phase Z or earliest phase touching `dynamic-source-binding.ts` or `theme-renderer.ts`.
 
 ### RISK-W02 — `auth.user.storeId` optional in ES256 tokens — session-bound fast-fail in `verifySiteOwnership` bypassed when absent — [LOW]
 - **Status:** OPEN · known residual; deferred.
@@ -300,7 +313,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Why it matters:** The fast-fail prevents even a DB round-trip for cross-tenant access attempts from merchants with well-formed session tokens. Its absence for legacy/internal tokens degrades defence-in-depth without breaking correctness.
 - **Disposition:** Add a test case in `resource-search-w.test.ts` proving the route still 403s when `auth.user.storeId` is undefined and the actor does not own the store (DB check still enforced). Long-term: require `storeId` in all ES256 merchant tokens at issuance to make the fast-fail unconditional.
 - **Phase X note:** Phase X's media-library route has the same optional-storeId exposure (same `verifySiteOwnership` call pattern). The gap applies to the new route equally. Phase X did not touch the token issuance path.
-- **Target:** Phase Y or earliest phase touching `resource-search.ts`, `media-library.ts`, or the token issuance path.
+- **Phase Y note:** Phase Y did not touch `resource-search.ts`, `media-library.ts`, or the token issuance path. The gap remains.
+- **Target:** Phase Z or earliest phase touching `resource-search.ts`, `media-library.ts`, or the token issuance path.
 
 ### RISK-W03 — `siteDrops` tenant-scoping trust boundary is comment-only; block-level bindings unresolved — [LOW]
 - **Status:** OPEN · trust boundary documentation gap + functional gap.
@@ -309,7 +323,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Why it matters:** A future Phase X implementer building the storefront `siteDrops` hydration could inadvertently pass an unscoped map, allowing a descriptor's `id` from any site to resolve to a drop from another site.
 - **Disposition:** Add a mandatory `siteId` field to `SiteDrops` interface so the resolver can log or assert the scope at development time. Document the per-field scoping requirement in `DYNAMIC_SOURCES_REFERENCE.md`. Create an integration test shell for the composition-to-renderer `siteDrops` pipeline before the storefront hydration service is built.
 - **Phase X note:** Phase X did not build the storefront `siteDrops` hydration service; `siteDrops` defaults to `{}` in all Phase X render paths. The trust boundary comment-only gap remains. The Phase X media-library route supplies URLs (not resource drops), so it does not feed `siteDrops`.
-- **Target:** Phase Y or the phase that builds the storefront `siteDrops` hydration service.
+- **Phase Y note:** Phase Y did not build the storefront `siteDrops` hydration service. The trust boundary comment-only gap remains.
+- **Target:** Phase Z or the phase that builds the storefront `siteDrops` hydration service.
 
 ### RISK-W04 — `ArrowUp` key handler in `ResourcePickerControl` selects item 0 when no item is selected — [LOW]
 - **Status:** OPEN · WAI-ARIA 1.2 combobox non-conformance; deferred.
@@ -318,7 +333,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Why it matters:** Assistive technology users expect `ArrowDown` to be the initial navigation key into a combobox. The `-1→0` snap on `ArrowUp` is unexpected and may confuse screen reader users.
 - **Disposition:** Guard the `ArrowUp` handler: `setActiveIndex((prev) => prev <= 0 ? 0 : prev - 1)` at minimum (clamps without the `-2→0` snap). Alternatively, `ArrowUp` from `-1` → set to `results.length - 1` (focus last item), matching the ARIA pattern for list wrap-around.
 - **Phase X note:** Phase X did not touch `ResourcePickerControl.tsx`. The gap remains.
-- **Target:** Phase Y or first `ResourcePickerControl.tsx` touch.
+- **Phase Y note:** Phase Y did not touch `ResourcePickerControl.tsx`. The gap remains.
+- **Target:** Phase Z or first `ResourcePickerControl.tsx` touch.
 
 ### RISK-W05 — Loading indicator hidden during 300 ms debounce window on first keystroke — [LOW]
 - **Status:** OPEN · UX gap; deferred.
@@ -327,7 +343,8 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Why it matters:** Merchants who type a single character and pause experience dead silence for 300 ms, then results appear abruptly. This is noticeable on slow connections where the fetch takes additional time after the debounce fires.
 - **Disposition:** Set `setIsOpen(true)` immediately when the query becomes non-empty (before the `setTimeout`), so the `{isOpen?…}` conditional is satisfied and the loading `<li>` is visible during the debounce window. The empty-query early-return already calls `setIsOpen(false)`, so the close-on-clear behavior is unaffected.
 - **Phase X note:** Phase X did not touch `ResourcePickerControl.tsx`. The gap remains.
-- **Target:** Phase Y or first `ResourcePickerControl.tsx` touch.
+- **Phase Y note:** Phase Y did not touch `ResourcePickerControl.tsx`. The gap remains.
+- **Target:** Phase Z or first `ResourcePickerControl.tsx` touch.
 
 ### RISK-W06 — Block-level settings not resolved through `resolveDynamicSourceDescriptors` — [LOW]
 - **Status:** OPEN · functional gap; CONFIRMED by code review.
@@ -337,4 +354,15 @@ Phase S introduced no new open risks. All 8 findings (1 HIGH, 2 MEDIUM, 5 LOW) w
 - **Disposition:** Apply `resolveDynamicSourceDescriptors(block.settings, siteDrops)` at the top of the per-block render loop inside `renderLiquidSectionBlocks`, mirroring the section-level resolution pattern. This is a one-function-call addition at the correct call site; no structural changes required.
 - **Related:** See also RISK-T03 (block settings bypass `filterBlockedSettingsKeys`) — fixing RISK-W06 simultaneously provides the defence-in-depth benefit of RISK-T03 for the binding-resolution path.
 - **Phase X note:** Phase X did not touch `theme-renderer.ts`. The block-level resolution gap remains.
-- **Target:** Phase Y or first `theme-renderer.ts` touch.
+- **Phase Y note:** Phase Y touched `theme-renderer.ts` (minimal — 2 hunks in the `isLiquidAppBlockType` branch only). The block-level binding resolution path at lines ~755+ was not part of Phase Y scope.
+- **Target:** Phase Z or first `theme-renderer.ts` touch affecting the block-level settings path.
+
+## Phase Y risks
+
+### RISK-Y01 — `MAX_APP_BLOCKS_PER_SLOT` not enforced in the renderer's block iteration loop — [LOW]
+- **Status:** OPEN · defence-in-depth gap; introduced Phase Y (2026-07-11).
+- **Introduced:** Phase Y (2026-07-11).
+- **Evidence:** `packages/theme-engine/src/app-block-model.ts` — `validateAppBlockReferences` enforces `MAX_APP_BLOCKS_PER_SLOT = 20` at reference-construction / save time. `packages/theme-engine/src/theme-renderer.ts` — `renderLiquidSectionBlocks` iterates `orderedKeys(input.section.blocks, ...)` without tracking the count of `isLiquidAppBlockType` blocks per section. A crafted `input.section.blocks` object with more than 20 `@app` entries would render all of them without hitting a render-time cap.
+- **Why it matters:** Validation-layer enforcement (at save time) is the primary control. The render boundary lacks the corresponding defence-in-depth count cap. In the current architecture all bundle data flows through `LiquidThemePackageBundleSchema.parse` before storage, so exploitation requires bypassing the bundle schema (which enforces `superRefine` structural checks). The missing render-time cap is a defence-in-depth gap, not a directly exploitable path.
+- **Disposition:** Fix: in the `isLiquidAppBlockType` branch of `renderLiquidSectionBlocks`, maintain an `appBlockCount` counter per section. When `appBlockCount > MAX_APP_BLOCKS_PER_SLOT`, emit `APP_BLOCK_ERROR_PLACEHOLDER_CLASS` and `continue` (matching the crash-isolation pattern) instead of resolving the block. Import `MAX_APP_BLOCKS_PER_SLOT` from `./app-block-model` (already imported in Phase Y for `APP_BLOCK_ERROR_PLACEHOLDER_CLASS`). Add a test asserting that block 21 produces an error-placeholder and blocks 1–20 render normally.
+- **Target:** Phase Z or earliest phase touching `theme-renderer.ts`.
