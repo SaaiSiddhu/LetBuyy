@@ -52,3 +52,40 @@ test('LB-12: route-count lockstep applied (127 -> 128, now 129 after LB-11)', ()
   // This mirror tracks the validator's live pinned count in lockstep.
   assert.match(validator, /appApiRoutes\.length === 129/);
 });
+
+// ── LB-12 (UI): the storefront account bottom-sheet now wires the register branch. The backend
+// always existed; the bug was that the UI dead-ended new users and called setPassword (no token).
+const sheet = read('apps/storefront-runtime/src/components/account/account-bottom-sheet.tsx');
+const authContext = read('apps/storefront-runtime/src/context/customer-auth-context.tsx');
+
+test('LB-12 UI: bottom-sheet consumes register() and exposes a register state + handler', () => {
+  assert.match(sheet, /login, setPassword, register, checkEmail, logout/);
+  assert.match(sheet, /'register'/);
+  assert.match(sheet, /const handleRegister = async/);
+});
+
+test('LB-12 UI: new + passwordless emails route to register (the not_found dead-end is gone)', () => {
+  const fn = sheet.slice(sheet.indexOf('const handleEmailSubmit'), sheet.indexOf('const handleLogin'));
+  assert.match(fn, /result\.hasPassword/);
+  assert.match(fn, /setState\('password_login'\)/);
+  assert.match(fn, /setState\('register'\)/);
+  assert.doesNotMatch(fn, /setState\('not_found'\)/);
+});
+
+test('LB-12 UI: handleRegister calls context.register and enforces the 8-char backend minimum', () => {
+  const fn = sheet.slice(sheet.indexOf('const handleRegister'), sheet.indexOf('// ── LOGOUT'));
+  assert.match(fn, /await register\(email, password, storeId/);
+  assert.match(fn, /password\.length < 8/);
+});
+
+test('LB-12 UI: the register form posts via handleRegister and renders a Turnstile widget', () => {
+  const block = sheet.slice(sheet.indexOf('STATE: Register'), sheet.indexOf('STATE: Not Found'));
+  assert.match(block, /onSubmit=\{handleRegister\}/);
+  assert.match(block, /<TurnstileWidget/);
+  assert.match(block, /Create Account/);
+});
+
+test('LB-12 UI: the auth context register() posts to the local /api/customer/register proxy (HS256)', () => {
+  assert.match(authContext, /const register = useCallback/);
+  assert.match(authContext, /'\/api\/customer\/register'/);
+});

@@ -1,8 +1,9 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
-import { Button, Input, Table, Avatar, Badge, Banner, Card, EmptyState, Package, Page, PageHeader, Pencil, RefreshCw, SaveBar, Search, Section, Skeleton, useToast } from '@letbuyy/ui'
+import { Button, Input, Table, Avatar, Badge, Banner, Card, EmptyState, Page, PageHeader, Pencil, RefreshCw, SaveBar, Search, Section, Skeleton, useToast } from '@letbuyy/ui'
 import { formatDisplayDate } from '@letbuyy/ui/formatting'
 import type { InventoryLevel } from '@letbuyy/shared-types'
 
@@ -323,7 +324,15 @@ export default function InventoryPage() {
                         <Skeleton variant="table" lines={6} />
                     ) : products.length === 0 ? (
                         <EmptyState
-                            icon={<Package className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
+                            illustration={
+                                <Image
+                                    src="/Emptystate Illustration/Inventory_Emptystate.png"
+                                    alt=""
+                                    width={200}
+                                    height={200}
+                                    aria-hidden="true"
+                                />
+                            }
                             title={error ? 'Unable to load inventory' : 'No inventory to track'}
                             body={error || 'Add products to your store to start tracking inventory levels.'}
                             primaryAction={error ? (

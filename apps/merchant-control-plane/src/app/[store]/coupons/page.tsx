@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import type { Coupon as SharedCoupon } from '@letbuyy/shared-types'
 import { Button, Input, Table,
@@ -495,7 +496,15 @@ export default function CouponsPage() {
                 >
                     {coupons.length === 0 && !showForm ? (
                         <EmptyState
-                            icon={<Tag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            illustration={
+                                <Image
+                                    src="/Emptystate Illustration/Coupons.png"
+                                    alt=""
+                                    width={200}
+                                    height={200}
+                                    aria-hidden="true"
+                                />
+                            }
                             title="No coupons yet"
                             body="Create discount codes to offer promotions to your customers."
                             primaryAction={<Button onClick={startCreate}><Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />Create coupon</Button>}

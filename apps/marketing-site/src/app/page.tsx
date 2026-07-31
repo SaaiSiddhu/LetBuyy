@@ -4,12 +4,12 @@ import { useEffect } from 'react'
 import Lenis from 'lenis'
 import Header from '@/components/Header'
 import Hero from '@/components/Hero'
-import SiteTypes from '@/components/SiteTypes'
+import CapabilityMap from '@/components/CapabilityMap'
 import Features from '@/components/Features'
-import HowItWorks from '@/components/HowItWorks'
+import MerchantJourney from '@/components/MerchantJourney'
 import Pricing from '@/components/Pricing'
 import FAQ from '@/components/FAQ'
-import PlatformDirectory from '@/components/PlatformDirectory'
+import EcosystemMap from '@/components/EcosystemMap'
 import FinalCTA from '@/components/FinalCTA'
 import Footer from '@/components/Footer'
 
@@ -39,12 +39,12 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        <SiteTypes />
+        <CapabilityMap />
+        <MerchantJourney />
         <Features />
-        <HowItWorks />
         <Pricing />
         <FAQ />
-        <PlatformDirectory />
+        <EcosystemMap />
         <FinalCTA />
       </main>
       <Footer />

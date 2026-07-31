@@ -648,12 +648,12 @@ test('theme-document: settings_data passthrough keys survive bundle→doc→bund
 });
 
 // ──────────────────────────────────────────────────────────────────────────────
-// MEDIUM finding: fromThemeDocumentV2 must be fail-closed on non-empty block children
+// Phase T — fromThemeDocumentV2 now SUPPORTS non-empty block children (guard removed)
 // ──────────────────────────────────────────────────────────────────────────────
 
-test('theme-document: fromThemeDocumentV2 throws UnsupportedThemeDocumentFeatureError for doc with non-empty block children', () => {
-  // parseThemeDocument accepts docs with non-empty children (Phase N models them).
-  // fromThemeDocumentV2 must refuse — silently discarding them would break the lossless claim.
+test('theme-document: Phase T — fromThemeDocumentV2 succeeds with non-empty block children and round-trips losslessly', () => {
+  // Phase N had a fail-closed guard that threw UnsupportedThemeDocumentFeatureError here.
+  // Phase T removes that guard and implements full recursive serialisation.
   const minimal = createMinimalLiquidThemeBundleFixture();
   const docWithChildren = parseThemeDocument({
     document_version: THEME_DOCUMENT_VERSION,
@@ -681,11 +681,10 @@ test('theme-document: fromThemeDocumentV2 throws UnsupportedThemeDocumentFeature
               {
                 id: 'parent-block',
                 type: 'badge',
-                settings: {},
+                settings: { label: 'Parent' },
                 disabled: false,
-                // Non-empty children — this is what Phase T will populate; Phase N just models it.
                 children: [
-                  { id: 'child-block', type: 'badge', settings: {}, disabled: false, children: [] },
+                  { id: 'child-block', type: 'badge', settings: { label: 'Child' }, disabled: false, children: [] },
                 ],
               },
             ],
@@ -695,10 +694,30 @@ test('theme-document: fromThemeDocumentV2 throws UnsupportedThemeDocumentFeature
     ],
   });
 
-  assert.throws(
-    () => fromThemeDocumentV2(docWithChildren),
-    (err) => err instanceof UnsupportedThemeDocumentFeatureError && /Phase T/i.test(err.message),
-    'fromThemeDocumentV2 must throw UnsupportedThemeDocumentFeatureError when block.children is non-empty',
+  // Must NOT throw (Phase N guard removed)
+  let bundle: ReturnType<typeof fromThemeDocumentV2> | undefined;
+  assert.doesNotThrow(() => {
+    bundle = fromThemeDocumentV2(docWithChildren);
+  }, 'fromThemeDocumentV2 must succeed with nested block children in Phase T');
+
+  assert.ok(bundle, 'fromThemeDocumentV2 must return a bundle');
+
+  // Verify nested block serialisation: the bundle should contain the child block
+  const section = bundle.templates['index']?.sections['s1'];
+  assert.ok(section, 'section s1 must exist in the serialised bundle');
+  const parentBlock = section.blocks['parent-block'];
+  assert.ok(parentBlock, 'parent-block must exist');
+  assert.equal(parentBlock.type, 'badge');
+  // Phase T: children are serialised into block.blocks + block.block_order
+  assert.ok('child-block' in parentBlock.blocks, 'child-block must be nested inside parent-block.blocks');
+  assert.deepEqual(parentBlock.block_order, ['child-block']);
+
+  // Full round-trip: doc → bundle → doc must recover identical doc
+  const roundTrippedDoc = toThemeDocumentV2(fromThemeDocumentV2(docWithChildren));
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(roundTrippedDoc)),
+    JSON.parse(JSON.stringify(docWithChildren)),
+    'doc→bundle→doc round-trip must be lossless for nested block children',
   );
 });
 

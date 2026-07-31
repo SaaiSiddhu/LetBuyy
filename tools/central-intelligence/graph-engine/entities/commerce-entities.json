@@ -1,0 +1,144 @@
+{
+  "entityTypes": [
+    {
+      "type": "MERCHANT",
+      "description": "A business owner or operator who has registered a store on the LetBuyy platform. Identified by site_id. Owns one or more stores and manages products, orders, payments, and settings."
+    },
+    {
+      "type": "STORE",
+      "description": "A tenant-scoped commerce store on the LetBuyy platform. Identified by site_id and store slug. Hosts products, collections, customers, orders, and a theme. Accessible at {slug}.letbuyy.com or a custom domain."
+    },
+    {
+      "type": "THEME",
+      "description": "A visual and layout presentation layer for a storefront. Can be a Liquid template or a React component tree. Managed by theme-engine. Each store uses exactly one active theme."
+    },
+    {
+      "type": "APP",
+      "description": "A third-party or first-party application installed on a store via the app marketplace. Extends store functionality through APIs and webhooks."
+    },
+    {
+      "type": "ORDER",
+      "description": "A customer purchase record within a store. Contains order_items, shipping details, GST invoice data, payment status, and fulfilment state. Money stored as *_minor bigint (paise)."
+    },
+    {
+      "type": "PAYMENT",
+      "description": "A financial transaction record associated with an order. Processed via Razorpay or COD. Stored in payment_transactions. Mutations only via SECURITY DEFINER RPCs."
+    },
+    {
+      "type": "CUSTOMER",
+      "description": "A shopper registered with a store. Identified by store_customers row. Holds customer_credentials for authentication. Scoped to a single store's site_id."
+    },
+    {
+      "type": "INCIDENT",
+      "description": "An operational event indicating degradation, failure, or anomaly in a service or domain. Triggers runbook execution, escalation, and blast-radius analysis."
+    },
+    {
+      "type": "DEPLOYMENT",
+      "description": "A code or configuration change released to a production environment. Can cause incidents if it breaks dependent services. Tracked by commit SHA and Vercel/Cloudflare deploy ID."
+    },
+    {
+      "type": "SERVICE",
+      "description": "A runtime process in the LetBuyy topology: api-gateway, storefront-runtime, merchant-control-plane, identity-platform, queue-workers, webhook-service, or mobile-bff."
+    },
+    {
+      "type": "QUEUE",
+      "description": "An async work queue processed by queue-workers. Carries tenant-scoped jobs (emails, webhooks, inventory updates). Jobs are HMAC-signed envelopes."
+    },
+    {
+      "type": "WORKER",
+      "description": "A Cloudflare Worker or Node.js process consuming queue jobs or serving edge requests. Part of the queue-workers or api-gateway runtime."
+    },
+    {
+      "type": "DOMAIN_AREA",
+      "description": "A business capability subdomain in the LetBuyy platform (e.g. payments, orders, themes, identity, marketplace). Groups related tables, RPCs, routes, queues, and workers."
+    },
+    {
+      "type": "DOCUMENT",
+      "description": "An architecture, design, audit, or operational document in docs/. Captures decisions, findings, runbooks, and domain knowledge."
+    },
+    {
+      "type": "MIGRATION",
+      "description": "A database schema migration applied to the Supabase/Postgres instance. Alters tables, policies, triggers, or functions. Immutable once applied to production."
+    }
+  ],
+  "relationships": [
+    {
+      "type": "OWNS",
+      "from": "MERCHANT",
+      "to": "STORE",
+      "description": "A merchant owns and operates one or more stores."
+    },
+    {
+      "type": "USES",
+      "from": "STORE",
+      "to": "THEME",
+      "description": "A store uses exactly one active theme for its storefront presentation."
+    },
+    {
+      "type": "INSTALLS",
+      "from": "STORE",
+      "to": "APP",
+      "description": "A store installs marketplace apps to extend its functionality."
+    },
+    {
+      "type": "PLACES",
+      "from": "CUSTOMER",
+      "to": "ORDER",
+      "description": "A customer places one or more orders within a store."
+    },
+    {
+      "type": "PAYS_VIA",
+      "from": "ORDER",
+      "to": "PAYMENT",
+      "description": "An order is settled through one or more payment transactions."
+    },
+    {
+      "type": "IMPACTS",
+      "from": "INCIDENT",
+      "to": "MERCHANT",
+      "description": "An incident degrades or blocks one or more merchants and their stores."
+    },
+    {
+      "type": "CAUSES",
+      "from": "DEPLOYMENT",
+      "to": "INCIDENT",
+      "description": "A deployment can introduce regressions that cause operational incidents."
+    },
+    {
+      "type": "CHANGES",
+      "from": "DEPLOYMENT",
+      "to": "SERVICE",
+      "description": "A deployment updates the code or configuration of one or more services."
+    },
+    {
+      "type": "PROCESSES",
+      "from": "SERVICE",
+      "to": "QUEUE",
+      "description": "A service (worker) processes jobs from an async queue."
+    },
+    {
+      "type": "BELONGS_TO",
+      "from": "SERVICE",
+      "to": "DOMAIN_AREA",
+      "description": "A service is the primary owner of a business domain area."
+    },
+    {
+      "type": "DOCUMENTS",
+      "from": "DOCUMENT",
+      "to": "DOMAIN_AREA",
+      "description": "A document captures knowledge, decisions, or runbooks for a domain area."
+    },
+    {
+      "type": "MIGRATES",
+      "from": "MIGRATION",
+      "to": "DOMAIN_AREA",
+      "description": "A database migration alters the schema of tables owned by a domain area."
+    },
+    {
+      "type": "DEPENDS_ON",
+      "from": "DOMAIN_AREA",
+      "to": "DOMAIN_AREA",
+      "description": "One domain area has a runtime or data dependency on another domain area."
+    }
+  ]
+}

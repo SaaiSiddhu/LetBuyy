@@ -1,0 +1,44 @@
+{
+  "collections": {
+    "architecture": {
+      "vectorSize": 1536,
+      "distance": "Cosine",
+      "description": "Governance documents, constitution, agent rules, CLAUDE.md, architectural decisions, and system design knowledge for the LetBuyy platform"
+    },
+    "runbooks": {
+      "vectorSize": 1536,
+      "distance": "Cosine",
+      "description": "Operational runbooks, incident response procedures, recovery playbooks, and escalation documentation for platform operations"
+    },
+    "incidents": {
+      "vectorSize": 1536,
+      "distance": "Cosine",
+      "description": "Historical incident records, post-mortems, root cause analyses, and timeline reconstructions for known platform failures"
+    },
+    "security": {
+      "vectorSize": 1536,
+      "distance": "Cosine",
+      "description": "Security policies, access control rules, RLS definitions, OAuth flows, webhook signing, and vulnerability documentation"
+    },
+    "deployments": {
+      "vectorSize": 1536,
+      "distance": "Cosine",
+      "description": "Deployment manifests, CI/CD pipeline documentation, environment configurations, and release procedures"
+    },
+    "knowledge": {
+      "vectorSize": 1536,
+      "distance": "Cosine",
+      "description": "General platform knowledge, API documentation, data models, integration guides, and domain reference material"
+    },
+    "merchants": {
+      "vectorSize": 1536,
+      "distance": "Cosine",
+      "description": "Merchant onboarding flows, control plane documentation, store configuration guides, and merchant-facing feature documentation"
+    },
+    "themes": {
+      "vectorSize": 1536,
+      "distance": "Cosine",
+      "description": "Theme engine documentation, Liquid template specs, preset configurations, Urban Kicks theme data, and storefront rendering guides"
+    }
+  }
+}

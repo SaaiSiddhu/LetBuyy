@@ -18,6 +18,7 @@ import AppBlockSlot from '@/components/sections/app-block-slot';
 import ProductDetailSection from '@/components/sections/product-detail-section';
 import DynamicHeader from '@/components/layout/dynamic-header';
 import DynamicFooter from '@/components/layout/dynamic-footer';
+import AnnouncementBar, { type AnnouncementBarSettings } from '@/components/layout/announcement-bar';
 import {
     BUILT_IN_SECTION_SCHEMAS,
     type SectionSchema,
@@ -75,6 +76,16 @@ const SECTION_RENDERER_DEFINITIONS: RegisteredSectionRenderer[] = [
                 store={store}
                 settings={section.settings as Partial<FooterSettings> as FooterSettings}
                 blocks={section.blocks}
+            />
+        ),
+    },
+    {
+        rendererKey: 'core.announcement-bar',
+        sectionTypes: ['announcementBar', 'announcement-bar', 'announcement_bar'],
+        schema: schemaFor('announcementBar'),
+        render: ({ section }) => (
+            <AnnouncementBar
+                settings={section.settings as Partial<AnnouncementBarSettings> as AnnouncementBarSettings}
             />
         ),
     },

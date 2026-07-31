@@ -24,6 +24,10 @@ export function getAdminDashboardUrl(subdomain: string) {
     return `${getAdminUrl()}/${subdomain}/dashboard`
 }
 
+export function getAdminSelectPlanUrl(subdomain: string) {
+    return `${getAdminUrl()}/${subdomain}/access_account/checkout/select-plan`
+}
+
 export function getAccountsUrl(path = '') {
     const baseUrl = trimTrailingSlash(process.env.NEXT_PUBLIC_ACCOUNTS_URL || PRODUCTION_ACCOUNTS_URL)
     return appendPath(baseUrl, path)

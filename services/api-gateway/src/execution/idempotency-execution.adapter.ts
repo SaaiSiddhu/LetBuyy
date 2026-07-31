@@ -20,7 +20,7 @@ type IdempotencyRecord = {
 };
 
 export type IdempotencyClaim =
-    | { kind: 'claimed'; id: string; requestHash: string }
+    | { kind: 'claimed'; id: string; siteId: string; requestHash: string }
     | { kind: 'replay'; responseBody: JsonValue; statusCode: number };
 
 async function sha256Hex(value: string): Promise<string> {
@@ -44,6 +44,8 @@ export class IdempotencyExecutionAdapter {
         forbiddenResponsibilities: ['workflow-ownership', 'business-sequencing', 'query-aggregation', 'provider-sdk', 'ui-rendering'],
     });
 
+    private currentSiteId: string | undefined;
+
     constructor(private db: SupabaseClient) { }
 
     static normalizeKey(key: string | undefined | null): string {
@@ -63,6 +65,7 @@ export class IdempotencyExecutionAdapter {
         lockSeconds?: number;
         expiresInSeconds?: number;
     }): Promise<IdempotencyClaim> {
+        this.currentSiteId = params.siteId;
         const key = IdempotencyExecutionAdapter.normalizeKey(params.key);
         const requestHash = await sha256Hex(canonicalizeExecutionPayload(params.requestBody));
         const now = Date.now();
@@ -85,7 +88,7 @@ export class IdempotencyExecutionAdapter {
             .single();
 
         if (!error && data) {
-            return { kind: 'claimed', id: (data as IdempotencyRecord).id, requestHash };
+            return { kind: 'claimed', id: (data as IdempotencyRecord).id, siteId: params.siteId, requestHash };
         }
 
         if (!isUniqueViolation(error)) {
@@ -138,7 +141,7 @@ export class IdempotencyExecutionAdapter {
             throw new Error(`Idempotency reclaim failed: ${reclaimError?.message || 'missing record'}`);
         }
 
-        return { kind: 'claimed', id: record.id, requestHash };
+        return { kind: 'claimed', id: record.id, siteId: params.siteId, requestHash };
     }
 
     async complete(params: {
@@ -150,7 +153,7 @@ export class IdempotencyExecutionAdapter {
     }) {
         const persistedResponseBody = redactReplayableSecrets(params.responseBody);
         const responseHash = await sha256Hex(canonicalizeExecutionPayload(persistedResponseBody));
-        const { error } = await this.db
+        const query = this.db
             .from('idempotency_keys')
             .update({
                 status: 'completed',
@@ -162,6 +165,7 @@ export class IdempotencyExecutionAdapter {
                 locked_until: null,
             })
             .eq('id', params.id);
+        const { error } = await (this.currentSiteId ? query.eq('site_id', this.currentSiteId) : query);
 
         if (error) {
             throw new Error(`Idempotency completion failed: ${error.message}`);
@@ -169,12 +173,13 @@ export class IdempotencyExecutionAdapter {
     }
 
     async fail(id: string) {
-        await this.db
+        const query = this.db
             .from('idempotency_keys')
             .update({
                 status: 'failed',
                 locked_until: null,
             })
             .eq('id', id);
+        await (this.currentSiteId ? query.eq('site_id', this.currentSiteId) : query);
     }
 }

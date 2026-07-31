@@ -9,6 +9,7 @@ import type {
     SetupStatus,
     StoreInfo,
 } from './page'
+import { FoundingMerchantCard } from '@/components/founding/FoundingMerchantCard'
 import { Button,
     Badge,
     Banner,
@@ -98,6 +99,8 @@ export default function DashboardClient({ store, storeInfo, setupStatus, homeDat
                 trialStatus={storeInfo.trial_status}
             />
 
+            <FoundingMerchantCard />
+
             <HomeMetrics homeData={homeData} />
 
             <SetupCards
@@ -134,19 +137,21 @@ function SetupCards({ store, siteType, setupStatus, currentDomain, storeStatus }
     const totalSteps = checklist.length
     const completedSteps = checklist.filter((item) => item.complete).length
     const completionPercent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0
-    const nextStep = checklist.find((item) => !item.complete)
+    const nextStepIndex = checklist.findIndex((item) => !item.complete)
+    const nextStep = nextStepIndex >= 0 ? checklist[nextStepIndex] : null
     const blockers = checklist.filter((item) => !item.complete)
+    const allDone = completedSteps === totalSteps
 
-    const navigateTo = (path: string) => {
-        router.push(`/${store}/${path}`)
-    }
-
+    const navigateTo = (path: string) => router.push(`/${store}/${path}`)
     const copyDomain = () => {
         void navigator.clipboard.writeText(currentDomain).then(() => {
             setCopiedDomain(true)
             window.setTimeout(() => setCopiedDomain(false), 1800)
         })
     }
+
+    const circumference = 2 * Math.PI * 29
+    const dashOffset = circumference * (1 - completionPercent / 100)
 
     return (
         <Card>
@@ -158,116 +163,166 @@ function SetupCards({ store, siteType, setupStatus, currentDomain, storeStatus }
                 action={
                     <Badge
                         label={`${completedSteps}/${totalSteps} complete`}
-                        variant={completedSteps === totalSteps ? 'success' : 'info'}
+                        variant={allDone ? 'success' : 'info'}
                     />
                 }
             >
-                <div className="grid gap-[var(--lb-space-5)] rounded-[var(--lb-component-card-radius)] border border-[var(--lb-component-card-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-5)] lg:grid-cols-[1fr_280px] lg:items-center">
-                    <div className="min-w-0 space-y-[var(--lb-space-2)]">
-                        <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-primary)]">
-                            Welcome hero
-                        </p>
-                        <h2 className="m-0 text-[length:var(--lb-font-size-h2)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-h2)] text-[color:var(--lb-color-text)]">
-                            Opening checklist for {store}
-                        </h2>
-                        <p className="m-0 max-w-[var(--lb-size-content-measure)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
-                            {nextStep
-                                ? `${nextStep.title} is the next action. ${blockers.length} ${blockers.length === 1 ? 'blocker remains' : 'blockers remain'} before publication readiness.`
-                                : 'All setup blockers are cleared. Review your storefront and keep monitoring incoming orders.'}
-                        </p>
-                    </div>
-                    <div className="rounded-[var(--lb-component-card-radius)] border border-[var(--lb-component-card-border)] bg-[var(--lb-component-card-bg)] p-[var(--lb-space-4)] shadow-[var(--lb-component-card-shadow)]">
-                        <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                            Setup progress
-                        </p>
-                        <p className="m-0 text-[length:var(--lb-font-size-h2)] font-[var(--lb-font-weight-bold)] leading-[var(--lb-line-height-h2)] text-[color:var(--lb-color-text)]">
-                            {completionPercent}%
-                        </p>
-                        <div className="mt-[var(--lb-space-3)] h-[var(--lb-space-2)] overflow-hidden rounded-[var(--lb-radius-full)] bg-[var(--lb-component-card-border)]">
-                            <div
-                                className="h-full rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] transition-[width] duration-[var(--lb-motion-slow)] ease-[var(--lb-ease-out)]"
-                                style={{ width: `${completionPercent}%` }}
-                            />
+                {/* ── Hero banner ── */}
+                <div className="relative overflow-hidden rounded-[var(--lb-radius-xl)] border border-[var(--lb-component-card-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
+                    {/* Ambient glow blobs */}
+                    <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] opacity-[0.07] blur-3xl" aria-hidden="true" />
+                    <div className="pointer-events-none absolute -bottom-8 left-6 h-28 w-28 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] opacity-[0.04] blur-2xl" aria-hidden="true" />
+
+                    <div className="relative flex flex-col gap-[var(--lb-space-3)] sm:flex-row sm:items-center sm:justify-between">
+                        {/* Left: heading block */}
+                        <div className="space-y-[var(--lb-space-1)]">
+                            <span className="inline-flex items-center gap-[4px] rounded-[var(--lb-radius-full)] border border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] px-[var(--lb-space-2)] py-[2px] text-[10px] font-[var(--lb-font-weight-semibold)] uppercase tracking-[0.08em] text-[color:var(--lb-color-primary)]">
+                                <MaterialIcon name="rocket_launch" size={10} aria-hidden="true" />
+                                Launch checklist
+                            </span>
+                            <h2 className="m-0 text-[length:var(--lb-font-size-h4)] font-[var(--lb-font-weight-bold)] leading-[1.2] tracking-[-0.01em] text-[color:var(--lb-color-text)]">
+                                Opening checklist for{' '}
+                                <span className="text-[color:var(--lb-color-primary)]">{store}</span>
+                            </h2>
+                            <p className="m-0 max-w-[360px] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                {allDone
+                                    ? 'All setup blockers are cleared.'
+                                    : `${blockers.length} step${blockers.length !== 1 ? 's' : ''} remaining before publication readiness.`}
+                            </p>
                         </div>
-                    </div>
-                </div>
 
-                <div
-                    className="grid grid-cols-5 gap-[var(--lb-space-1)]"
-                    role="progressbar"
-                    aria-label="Setup progress"
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-valuenow={completionPercent}
-                >
-                    {checklist.map((item) => (
-                        <span
-                            key={item.title}
-                            className={[
-                                'h-[var(--lb-space-2)] rounded-[var(--lb-radius-full)] transition-colors duration-[var(--lb-motion-normal)]',
-                                item.complete ? 'bg-[var(--lb-color-primary)]' : 'bg-[var(--lb-color-surface-subdued)]',
-                            ].join(' ')}
-                            aria-hidden="true"
-                        />
-                    ))}
-                </div>
-
-                <div className="grid gap-[var(--lb-space-3)]">
-                    {checklist.map((item, index) => (
-                        <div
-                            key={item.title}
-                            className="grid gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] md:grid-cols-[auto_1fr_auto] md:items-center"
-                        >
-                            <div className="flex items-start gap-[var(--lb-space-3)] md:contents">
-                                <div className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]">
-                                    {item.complete ? (
-                                        <MaterialIcon name="check" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
-                                    ) : (
-                                        <span className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)]">
-                                            {index + 1}
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="min-w-0 space-y-[var(--lb-space-1)]">
-                                    <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
-                                        <MaterialIcon name={item.icon} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[color:var(--lb-color-text-subdued)]" />
-                                        <h3 className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
-                                            {item.title}
-                                        </h3>
-                                        <Badge label={item.complete ? 'Done' : 'Next'} variant={item.complete ? 'success' : 'default'} />
-                                    </div>
-                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                        {item.description}
-                                    </p>
-                                    {item.detail && (
-                                        <div className="flex max-w-[var(--lb-size-content-measure)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-2)]">
-                                            <span className="min-w-0 flex-1 truncate text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                                {item.detail}
-                                            </span>
-                                            <Button
-                                                aria-label="Copy domain"
-                                                size="icon"
-                                                variant="ghost"
-                                                onClick={copyDomain}
-                                            >
-                                                <MaterialIcon name={copiedDomain ? 'check' : 'content_copy'} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
-                                            </Button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            <div
-                                className="flex justify-start md:justify-end"
-                            >
-                                <Button
-                                    variant={item.complete ? 'secondary' : 'outline'}
-                                    onClick={() => navigateTo(item.actionLink)}
+                        {/* Right: circular progress card */}
+                        <div className="flex shrink-0 flex-row items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-xl)] border border-[var(--lb-component-card-border)] bg-[var(--lb-component-card-bg)] px-[var(--lb-space-4)] py-[var(--lb-space-3)] shadow-[var(--lb-shadow-md)] sm:flex-col sm:gap-[var(--lb-space-2)]">
+                            <div className="relative flex items-center justify-center">
+                                <svg
+                                    width="64"
+                                    height="64"
+                                    viewBox="0 0 72 72"
+                                    style={{ transform: 'rotate(-90deg)' }}
+                                    aria-hidden="true"
                                 >
-                                    {item.complete ? 'Review' : item.actionText}
-                                </Button>
+                                    <circle cx="36" cy="36" r="29" fill="none" stroke="var(--lb-color-border)" strokeWidth="6" />
+                                    <circle
+                                        cx="36" cy="36" r="29"
+                                        fill="none"
+                                        stroke="var(--lb-color-primary)"
+                                        strokeWidth="6"
+                                        strokeLinecap="round"
+                                        strokeDasharray={circumference}
+                                        strokeDashoffset={dashOffset}
+                                        style={{ transition: 'stroke-dashoffset 0.6s ease' }}
+                                    />
+                                </svg>
+                                <span
+                                    className="absolute text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-bold)] leading-none text-[color:var(--lb-color-text)]"
+                                    aria-live="polite"
+                                >
+                                    {completionPercent}%
+                                </span>
+                            </div>
+                            <div className="text-left sm:text-center">
+                                <p className="m-0 text-[10px] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text-subdued)]">
+                                    Setup progress
+                                </p>
+                                <p className="m-0 text-[10px] text-[color:var(--lb-color-text-subdued)]">
+                                    {completedSteps} of {totalSteps} complete
+                                </p>
                             </div>
                         </div>
-                    ))}
+                    </div>
+                </div>
+
+                {/* ── Step list ── */}
+                <div className="grid gap-[var(--lb-space-2)]">
+                    {checklist.map((item, index) => {
+                        const isNext = index === nextStepIndex
+                        const isDone = item.complete
+
+                        return (
+                            <div
+                                key={item.title}
+                                className={[
+                                    'grid gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border p-[var(--lb-space-3)] transition-all duration-[var(--lb-motion-normal)] md:grid-cols-[auto_1fr_auto] md:items-center',
+                                    isNext
+                                        ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] shadow-[0_0_0_1px_var(--lb-color-primary)]'
+                                        : isDone
+                                            ? 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] opacity-60'
+                                            : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)]',
+                                ].join(' ')}
+                            >
+                                <div className="flex items-start gap-[var(--lb-space-3)] md:contents">
+                                    {/* Step indicator */}
+                                    <div className={[
+                                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] text-[11px] font-[var(--lb-font-weight-bold)] transition-all duration-[var(--lb-motion-normal)]',
+                                        isDone
+                                            ? 'bg-[var(--lb-color-success-soft)] text-[color:var(--lb-color-success)]'
+                                            : isNext
+                                                ? 'bg-[var(--lb-color-primary)] text-white shadow-[0_4px_14px_rgba(139,92,246,0.4)]'
+                                                : 'border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] text-[color:var(--lb-color-text-subdued)]',
+                                    ].join(' ')}>
+                                        {isDone
+                                            ? <MaterialIcon name="check" size={16} aria-hidden="true" />
+                                            : <span>{index + 1}</span>}
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="min-w-0 space-y-[var(--lb-space-1)]">
+                                        <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
+                                            <MaterialIcon
+                                                name={item.icon}
+                                                size={15}
+                                                className={[
+                                                    'h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]',
+                                                    isDone ? 'text-[color:var(--lb-color-text-subdued)]' : 'text-[color:var(--lb-color-primary)]',
+                                                ].join(' ')}
+                                                aria-hidden="true"
+                                            />
+                                            <h3 className={[
+                                                'm-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)]',
+                                                isDone ? 'text-[color:var(--lb-color-text-subdued)]' : 'text-[color:var(--lb-color-text)]',
+                                            ].join(' ')}>
+                                                {item.title}
+                                            </h3>
+                                            {isNext && (
+                                                <span className="rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] px-[var(--lb-space-2)] py-[2px] text-[10px] font-[var(--lb-font-weight-semibold)] uppercase tracking-[0.05em] text-white">
+                                                    Up next
+                                                </span>
+                                            )}
+                                            {isDone && (
+                                                <span className="rounded-[var(--lb-radius-full)] bg-[var(--lb-color-success-soft)] px-[var(--lb-space-2)] py-[2px] text-[10px] font-[var(--lb-font-weight-semibold)] uppercase tracking-[0.05em] text-[color:var(--lb-color-success)]">
+                                                    Done
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                            {item.description}
+                                        </p>
+                                        {item.detail && (
+                                            <div className="mt-[var(--lb-space-2)] flex max-w-xs items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-2)]">
+                                                <MaterialIcon name="link" size={13} className="shrink-0 text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
+                                                <span className="min-w-0 flex-1 truncate font-mono text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                                    {item.detail}
+                                                </span>
+                                                <Button aria-label="Copy domain" size="icon" variant="ghost" onClick={copyDomain}>
+                                                    <MaterialIcon name={copiedDomain ? 'check' : 'content_copy'} size={13} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Action */}
+                                <div className="flex justify-start pl-11 md:justify-end md:pl-0">
+                                    <Button
+                                        variant={isNext ? undefined : 'outline'}
+                                        onClick={() => navigateTo(item.actionLink)}
+                                    >
+                                        {isDone ? 'Review' : item.actionText}
+                                    </Button>
+                                </div>
+                            </div>
+                        )
+                    })}
                 </div>
             </Section>
         </Card>

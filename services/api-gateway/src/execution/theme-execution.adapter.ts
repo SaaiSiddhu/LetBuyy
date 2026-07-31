@@ -11,7 +11,10 @@ import {
     parseThemeDocument,
     REGISTERED_SECTION_SCHEMA_MIGRATIONS,
     resolveRenderableThemeTemplateConfig,
+    toThemeDocumentV2,
+    type LiquidThemePackageBundle,
     type StoreTemplateConfig,
+    type ThemeDocument,
 } from '@letbuyy/theme-engine';
 import { ConflictError, ForbiddenError, NotFoundError, ValidationError } from '../lib/errors';
 import type {
@@ -2273,5 +2276,170 @@ export class ThemeExecutionAdapter {
         });
 
         return { slug, deleted: true };
+    }
+
+    // ── Phase AB — Theme Version Update ────────────────────────────────────────
+
+    /**
+     * Load the current (is_current=true) release's Liquid bundle and convert it to a
+     * ThemeDocument for use by planThemeSafeUpdate / computeThemeUpdateDiff.
+     *
+     * TENANCY: query is scoped by store_id + theme_id — a different site's release can
+     * never match. Callers must verify ownership BEFORE calling this method.
+     */
+    async loadCurrentReleaseBundle(
+        storeId: string,
+        themeSlug: string,
+    ): Promise<{
+        currentDocument: ThemeDocument;
+        currentReleaseConfig: DbRecord;
+        currentReleaseId: string;
+    }> {
+        const { data: release, error } = await this.db
+            .from('theme_releases')
+            .select('id, release_config')
+            .eq('store_id', storeId)
+            .eq('theme_id', themeSlug)
+            .eq('is_current', true)
+            .is('deleted_at', null)
+            .maybeSingle();
+
+        if (error || !release) {
+            throw new NotFoundError('No current theme release found for this store');
+        }
+
+        const releaseRecord = release as ThemeReleaseRecord;
+        const releaseConfig = asRecord(releaseRecord.release_config ?? {});
+        const bundle = resolveLiquidBundleArtifact(releaseConfig);
+
+        if (!bundle) {
+            throw new NotFoundError('Current release does not contain a Liquid bundle');
+        }
+
+        // parseLiquidThemePackageBundle validates schema + G4 gate
+        const parsedBundle = parseLiquidThemePackageBundle(bundle);
+        const currentDocument = toThemeDocumentV2(parsedBundle);
+
+        return {
+            currentDocument,
+            currentReleaseConfig: releaseConfig,
+            currentReleaseId: releaseRecord.id,
+        };
+    }
+
+    /**
+     * Load a specific theme_package_versions row and return its Liquid bundle.
+     * Throws ValidationError if the row is missing or the bundle is invalid / has
+     * an unsupported schema_version (G4 gate inside parseLiquidThemePackageBundle).
+     *
+     * NOT tenant-scoped at this layer (package versions are global catalog rows).
+     * Callers must verify ownership of the store before calling this method.
+     */
+    async loadTargetPackageVersionBundle(packageVersionId: string): Promise<LiquidThemePackageBundle> {
+        const { data: pkgVersion, error } = await this.db
+            .from('theme_package_versions')
+            .select('id, package_manifest')
+            .eq('id', packageVersionId)
+            .maybeSingle();
+
+        if (error || !pkgVersion) {
+            throw new NotFoundError('Theme package version not found');
+        }
+
+        const manifest = asRecord((pkgVersion as DbRecord).package_manifest ?? {});
+        const rawBundle = manifest.liquidBundle;
+
+        if (!rawBundle) {
+            throw new ValidationError('Package version does not contain a Liquid bundle');
+        }
+
+        try {
+            return parseLiquidThemePackageBundle(rawBundle);
+        } catch (err) {
+            // Convert ZodError / UnsupportedLiquidBundleSchemaVersionError → ValidationError
+            // so the route can surface it as a 422 rather than an unhandled 500.
+            throw new ValidationError(
+                `Target package version has an invalid or unsupported Liquid bundle: ${(err as Error).message}`,
+            );
+        }
+    }
+
+    /**
+     * Publish a new theme release with a merged Liquid bundle produced by
+     * planThemeSafeUpdate / fromThemeDocumentV2. Includes idempotency pre-check
+     * (returns existing release if the same idempotency_key was already used for
+     * this store) and post-enrich (persists the key on the new release row).
+     *
+     * TENANCY: store_id is the FIRST filter in every DB query — cross-tenant
+     * collision is structurally impossible.
+     * NO-DATA-LOSS LAW: the merged bundle was validated by parseThemeDocument inside
+     * planThemeSafeUpdate before being passed here; conflicts are surfaced to the caller
+     * via diff.conflicts before this method is invoked.
+     */
+    async publishVersionUpdateRelease(input: {
+        storeId: string;
+        themeSlug: string;
+        mergedBundle: LiquidThemePackageBundle;
+        currentReleaseConfig: DbRecord;
+        userId: string;
+        idempotencyKey: string;
+        publishMessage?: string | null;
+        makeStoreLive: boolean;
+        requestId?: string | null;
+    }): Promise<{ release_id: string; release_version: number; published_at: string; idempotent: boolean }> {
+        // Idempotency pre-check — store_id is always the FIRST filter (cross-tenant proof)
+        const { data: existingRelease } = await this.db
+            .from('theme_releases')
+            .select('id, release_version, published_at')
+            .eq('store_id', input.storeId)
+            .eq('idempotency_key', input.idempotencyKey)
+            .is('deleted_at', null)
+            .maybeSingle();
+
+        if (existingRelease) {
+            const existing = existingRelease as ThemeReleaseRecord;
+            return {
+                release_id: existing.id,
+                release_version: existing.release_version,
+                published_at: existing.published_at || new Date().toISOString(),
+                idempotent: true,
+            };
+        }
+
+        // Build release config: inherit all current release fields, replace liquidBundle
+        // with the merged bundle produced by planThemeSafeUpdate → fromThemeDocumentV2.
+        const releaseConfig: DbRecord = {
+            ...input.currentReleaseConfig,
+            liquidBundle: input.mergedBundle,
+        };
+
+        const release = await this.publishReleaseSnapshot({
+            storeId: input.storeId,
+            themeId: input.themeSlug,
+            releaseConfig,
+            publishedBy: input.userId,
+            publishMessage:
+                input.publishMessage ||
+                `Version update to ${String((input.mergedBundle as unknown as DbRecord).schema_version)}`,
+            makeStoreLive: input.makeStoreLive,
+            requestId: input.requestId,
+        });
+
+        // Idempotency post-enrich: persist the caller-supplied key so subsequent retries
+        // hit the pre-check above. Both store_id and id are required — always tenant-scoped.
+        if (!release.release_id.startsWith('local-fallback:')) {
+            await this.db
+                .from('theme_releases')
+                .update({ idempotency_key: input.idempotencyKey })
+                .eq('store_id', input.storeId)
+                .eq('id', release.release_id);
+        }
+
+        return {
+            release_id: release.release_id,
+            release_version: release.release_version,
+            published_at: release.published_at,
+            idempotent: false,
+        };
     }
 }

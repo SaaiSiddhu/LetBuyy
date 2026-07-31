@@ -1,310 +1,684 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { Button, Input,
+import {
+    Badge,
     Banner,
     Bell,
+    Button,
     Card,
+    EmptyState,
+    Input,
     Mail,
     MessageSquare,
     Package,
+    Pagination,
+    RefreshCw,
     Section,
+    Select,
     ShoppingBag,
     Skeleton,
+    StatusBadge,
+    Switch,
     User,
     AlertTriangle,
-    type LucideIcon,
     useToast,
+    type StatusVariant,
 } from '@letbuyy/ui'
+import { formatIndiaDateWithTime } from '@letbuyy/ui/formatting'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 
-interface NotificationPref {
-    key: string
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+interface NotificationPreference {
+    id: string
+    user_id: string
+    store_id: string | null
+    channel: string
+    category: string
+    enabled: boolean
+    created_at: string
+}
+
+interface DeliveryLog {
+    id: string
+    channel: string
+    category: string
+    template_key: string
+    event_type: string | null
+    status: string
+    provider: string | null
+    attempt_count: number | null
+    error_message: string | null
+    created_at: string
+}
+
+interface DeliveryMeta {
+    total: number
+    page: number
+    per_page: number
+    total_pages: number
+    has_next: boolean
+    has_prev: boolean
+}
+
+// ---------------------------------------------------------------------------
+// Static channel × category matrix
+// The backend allows any channel/category pair; we surface the meaningful ones.
+// ---------------------------------------------------------------------------
+
+type NotificationChannel = 'email' | 'in_app' | 'sms' | 'push'
+
+interface PrefDef {
+    channel: NotificationChannel
+    category: string
     label: string
     description: string
-    Icon: LucideIcon
-    enabled: boolean
+    icon: React.ReactNode
 }
 
-type SaveState = 'saved' | 'unsaved' | 'saving'
-
-type SettingsPayload = {
-    data?: unknown
-    error?: string | { message?: string }
+const CHANNEL_LABELS: Record<NotificationChannel, string> = {
+    email: 'Email',
+    in_app: 'In-app',
+    sms: 'SMS',
+    push: 'Push',
 }
 
-const DEFAULT_PREFS: NotificationPref[] = [
-    { key: 'new_order', label: 'New order', description: 'When a customer places an order', Icon: ShoppingBag, enabled: true },
-    { key: 'order_fulfilled', label: 'Order fulfilled', description: 'When an order is marked as fulfilled', Icon: Package, enabled: false },
-    { key: 'low_inventory', label: 'Low inventory', description: 'When a product has low stock', Icon: AlertTriangle, enabled: true },
-    { key: 'new_customer', label: 'New customer', description: 'When a customer creates an account', Icon: User, enabled: false },
-    { key: 'new_review', label: 'New review', description: 'When a customer leaves a product review', Icon: MessageSquare, enabled: false },
-    { key: 'form_submission', label: 'Form submission', description: 'When someone submits a contact form', Icon: Mail, enabled: true },
+const PREF_MATRIX: PrefDef[] = [
+    {
+        channel: 'email',
+        category: 'orders',
+        label: 'Order emails',
+        description: 'New order, cancellation, and fulfilment confirmation emails',
+        icon: <ShoppingBag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden />,
+    },
+    {
+        channel: 'in_app',
+        category: 'orders',
+        label: 'Order alerts',
+        description: 'New orders and payment events in the notification panel',
+        icon: <Bell className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden />,
+    },
+    {
+        channel: 'email',
+        category: 'inventory',
+        label: 'Low-stock emails',
+        description: 'Email alert when a product variant drops below its reorder threshold',
+        icon: <AlertTriangle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden />,
+    },
+    {
+        channel: 'in_app',
+        category: 'inventory',
+        label: 'Low-stock alerts',
+        description: 'In-app notification panel alert for low-stock variants',
+        icon: <Package className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden />,
+    },
+    {
+        channel: 'email',
+        category: 'customers',
+        label: 'New customer emails',
+        description: 'Email when a new customer account is created in your store',
+        icon: <User className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden />,
+    },
+    {
+        channel: 'in_app',
+        category: 'reviews',
+        label: 'Review alerts',
+        description: 'In-app notification when a customer submits a product review',
+        icon: <MessageSquare className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden />,
+    },
+    {
+        channel: 'email',
+        category: 'marketing',
+        label: 'Marketing campaign emails',
+        description: 'Send and delivery reports for email campaigns you publish',
+        icon: <Mail className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden />,
+    },
 ]
 
-function prefsSignature(prefs: NotificationPref[]) {
-    return prefs.map((pref) => `${pref.key}:${pref.enabled ? '1' : '0'}`).join('|')
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function statusVariant(status: string): StatusVariant {
+    if (status === 'sent' || status === 'delivered') return 'success'
+    if (status === 'suppressed') return 'warning'
+    if (status === 'failed' || status === 'bounced') return 'critical'
+    return 'default'
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+function channelLabel(ch: string): string {
+    return CHANNEL_LABELS[ch as NotificationChannel] ?? ch
 }
 
-function getPayloadError(payload: SettingsPayload | null, fallback: string) {
-    if (!payload?.error) return fallback
-    return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
+function isRecord(v: unknown): v is Record<string, unknown> {
+    return Boolean(v && typeof v === 'object' && !Array.isArray(v))
 }
 
-function mergePrefs(saved: Record<string, unknown>) {
-    return DEFAULT_PREFS.map((pref) => {
-        const savedValue = saved[pref.key]
-        return {
-            ...pref,
-            enabled: typeof savedValue === 'boolean' ? savedValue : pref.enabled,
-        }
-    })
+function normalizePreference(raw: Record<string, unknown>): NotificationPreference {
+    return {
+        id: String(raw.id ?? ''),
+        user_id: String(raw.user_id ?? ''),
+        store_id: typeof raw.store_id === 'string' ? raw.store_id : null,
+        channel: String(raw.channel ?? ''),
+        category: String(raw.category ?? ''),
+        enabled: raw.enabled !== false,
+        created_at: String(raw.created_at ?? ''),
+    }
 }
+
+function normalizeLog(raw: Record<string, unknown>): DeliveryLog {
+    return {
+        id: String(raw.id ?? ''),
+        channel: String(raw.channel ?? ''),
+        category: String(raw.category ?? ''),
+        template_key: String(raw.template_key ?? ''),
+        event_type: typeof raw.event_type === 'string' ? raw.event_type : null,
+        status: String(raw.status ?? ''),
+        provider: typeof raw.provider === 'string' ? raw.provider : null,
+        attempt_count: typeof raw.attempt_count === 'number' ? raw.attempt_count : null,
+        error_message: typeof raw.error_message === 'string' ? raw.error_message : null,
+        created_at: String(raw.created_at ?? ''),
+    }
+}
+
+// Build a key identifying a preference row in the matrix
+function prefKey(channel: string, category: string) {
+    return `${channel}::${category}`
+}
+
+// ---------------------------------------------------------------------------
+// Filter options
+// ---------------------------------------------------------------------------
+
+const CHANNEL_OPTIONS = [
+    { value: '', label: 'All channels' },
+    { value: 'email', label: 'Email' },
+    { value: 'in_app', label: 'In-app' },
+    { value: 'sms', label: 'SMS' },
+    { value: 'push', label: 'Push' },
+]
+
+const STATUS_OPTIONS = [
+    { value: '', label: 'All statuses' },
+    { value: 'sent', label: 'Sent' },
+    { value: 'delivered', label: 'Delivered' },
+    { value: 'suppressed', label: 'Suppressed' },
+    { value: 'failed', label: 'Failed' },
+    { value: 'bounced', label: 'Bounced' },
+]
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 
 export default function NotificationsSettingsPage() {
     const { store } = useParams<{ store: string }>()
     const { notify } = useToast()
-    const [loading, setLoading] = useState(true)
-    const [loadError, setLoadError] = useState<string | null>(null)
-    const [saveState, setSaveState] = useState<SaveState>('saved')
-    const [siteSettings, setSiteSettings] = useState<Record<string, unknown>>({})
-    const [prefs, setPrefs] = useState<NotificationPref[]>(DEFAULT_PREFS)
-    const [initialPrefs, setInitialPrefs] = useState<NotificationPref[]>(DEFAULT_PREFS)
 
-    const hasUnsavedChanges = useMemo(() => prefsSignature(prefs) !== prefsSignature(initialPrefs), [initialPrefs, prefs])
-    const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
-    const enabledCount = useMemo(() => prefs.filter((pref) => pref.enabled).length, [prefs])
+    // ── Preferences state ────────────────────────────────────────────────────
+    const [prefsLoading, setPrefsLoading] = useState(true)
+    const [prefsError, setPrefsError] = useState<string | null>(null)
+    // Map of "channel::category" → enabled boolean (from DB)
+    const [prefMap, setPrefMap] = useState<Map<string, boolean>>(new Map())
+    // Track in-flight toggles to show optimistic state without double-fire
+    const savingRef = useRef<Set<string>>(new Set())
 
-    const loadData = useCallback(async (signal?: AbortSignal) => {
-        setLoading(true)
-        setLoadError(null)
+    // ── Delivery log state ───────────────────────────────────────────────────
+    const [logsLoading, setLogsLoading] = useState(true)
+    const [logsError, setLogsError] = useState<string | null>(null)
+    const [logs, setLogs] = useState<DeliveryLog[]>([])
+    const [logsMeta, setLogsMeta] = useState<DeliveryMeta>({
+        total: 0,
+        page: 1,
+        per_page: 25,
+        total_pages: 1,
+        has_next: false,
+        has_prev: false,
+    })
+    const [channelFilter, setChannelFilter] = useState('')
+    const [statusFilter, setStatusFilter] = useState('')
+    const [logsPage, setLogsPage] = useState(1)
 
+    // ── Load preferences ─────────────────────────────────────────────────────
+
+    const loadPreferences = useCallback(async (signal?: AbortSignal) => {
+        setPrefsLoading(true)
+        setPrefsError(null)
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-                cache: 'no-store',
-                signal,
-            })
-            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
-
-            if (!response.ok) {
-                throw new Error(getPayloadError(payload, 'Unable to load notification settings'))
+            const res = await fetch(
+                `/api/stores/${encodeURIComponent(store)}/notifications/preferences`,
+                { cache: 'no-store', signal },
+            )
+            if (signal?.aborted) return
+            const json = (await res.json()) as { data?: unknown[]; error?: unknown }
+            if (!res.ok) {
+                const msg = isRecord(json.error) && typeof json.error.message === 'string'
+                    ? json.error.message
+                    : typeof json.error === 'string'
+                        ? json.error
+                        : 'Unable to load preferences'
+                throw new Error(msg)
             }
-
-            const data = isRecord(payload?.data) ? payload.data : null
-            const nextSiteSettings = isRecord(data?.site_settings) ? data.site_settings : {}
-            const savedPrefs = isRecord(nextSiteSettings.notifications) ? nextSiteSettings.notifications : {}
-            const nextPrefs = mergePrefs(savedPrefs)
-
-            setSiteSettings(nextSiteSettings)
-            setPrefs(nextPrefs)
-            setInitialPrefs(nextPrefs)
-            setSaveState('saved')
-        } catch (error) {
-            if (signal?.aborted || (error instanceof DOMException && error.name === 'AbortError')) return
-
-            const message = error instanceof Error ? error.message : 'Unable to load notification settings'
-            setLoadError(message)
-            notify({
-                title: 'Notification settings could not load',
-                description: message,
-                variant: 'critical',
-            })
+            const rows = (json.data ?? [])
+                .filter(isRecord)
+                .map(normalizePreference)
+            const nextMap = new Map<string, boolean>()
+            rows.forEach((r) => nextMap.set(prefKey(r.channel, r.category), r.enabled))
+            setPrefMap(nextMap)
+        } catch (err) {
+            if (signal?.aborted || (err instanceof DOMException && err.name === 'AbortError')) return
+            const msg = err instanceof Error ? err.message : 'Unable to load preferences'
+            setPrefsError(msg)
         } finally {
-            if (!signal?.aborted) setLoading(false)
+            if (!signal?.aborted) setPrefsLoading(false)
         }
-    }, [notify, store])
+    }, [store])
+
+    // ── Load delivery logs ───────────────────────────────────────────────────
+
+    const loadLogs = useCallback(async (
+        page: number,
+        channel: string,
+        status: string,
+        signal?: AbortSignal,
+    ) => {
+        setLogsLoading(true)
+        setLogsError(null)
+        try {
+            const url = new URL(
+                `/api/stores/${encodeURIComponent(store)}/notifications/delivery-logs`,
+                window.location.origin,
+            )
+            url.searchParams.set('page', String(page))
+            url.searchParams.set('limit', '25')
+            if (channel) url.searchParams.set('channel', channel)
+            if (status) url.searchParams.set('status', status)
+
+            const res = await fetch(url.toString(), { cache: 'no-store', signal })
+            if (signal?.aborted) return
+            const json = (await res.json()) as {
+                data?: unknown[]
+                meta?: DeliveryMeta
+                error?: unknown
+            }
+            if (!res.ok) {
+                const msg = isRecord(json.error) && typeof json.error.message === 'string'
+                    ? json.error.message
+                    : 'Unable to load delivery logs'
+                throw new Error(msg)
+            }
+            const normalized = (json.data ?? []).filter(isRecord).map(normalizeLog)
+            setLogs(normalized)
+            setLogsMeta(json.meta ?? {
+                total: normalized.length,
+                page,
+                per_page: 25,
+                total_pages: 1,
+                has_next: false,
+                has_prev: false,
+            })
+        } catch (err) {
+            if (signal?.aborted || (err instanceof DOMException && err.name === 'AbortError')) return
+            const msg = err instanceof Error ? err.message : 'Unable to load delivery logs'
+            setLogsError(msg)
+        } finally {
+            if (!signal?.aborted) setLogsLoading(false)
+        }
+    }, [store])
+
+    // ── Initial load ─────────────────────────────────────────────────────────
 
     useEffect(() => {
-        const controller = new AbortController()
-        void loadData(controller.signal)
+        const ac = new AbortController()
+        void loadPreferences(ac.signal)
+        void loadLogs(1, '', '', ac.signal)
+        return () => ac.abort()
+    }, [loadPreferences, loadLogs])
 
-        return () => {
-            controller.abort()
-        }
-    }, [loadData])
+    // ── Toggle a preference ──────────────────────────────────────────────────
 
-    const togglePref = useCallback((key: string) => {
-        setPrefs((current) => current.map((pref) => (
-            pref.key === key ? { ...pref, enabled: !pref.enabled } : pref
-        )))
-    }, [])
+    const handleToggle = useCallback(async (def: PrefDef) => {
+        const key = prefKey(def.channel, def.category)
+        if (savingRef.current.has(key)) return
 
-    const handleSave = useCallback(async () => {
-        if (!hasUnsavedChanges || saveState === 'saving') return
+        const currentEnabled = prefMap.get(key) ?? true
+        const nextEnabled = !currentEnabled
 
-        setSaveState('saving')
+        // Optimistic update
+        setPrefMap((prev) => new Map(prev).set(key, nextEnabled))
+        savingRef.current.add(key)
 
         try {
-            const notifMap: Record<string, boolean> = {}
-            prefs.forEach((pref) => {
-                notifMap[pref.key] = pref.enabled
-            })
-
-            const nextSettings = { ...siteSettings, notifications: notifMap }
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ site_settings: nextSettings }),
-            })
-            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
-
-            if (!response.ok) {
-                throw new Error(getPayloadError(payload, 'Unable to save notification settings'))
+            const res = await fetch(
+                `/api/stores/${encodeURIComponent(store)}/notifications/preferences`,
+                {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        channel: def.channel,
+                        category: def.category,
+                        enabled: nextEnabled,
+                    }),
+                },
+            )
+            if (!res.ok) {
+                // Revert optimistic
+                setPrefMap((prev) => new Map(prev).set(key, currentEnabled))
+                const json = (await res.json().catch(() => null)) as Record<string, unknown> | null
+                const msg = isRecord(json?.error) && typeof json?.error.message === 'string'
+                    ? json.error.message
+                    : 'Could not save preference'
+                throw new Error(msg)
             }
-
-            setSiteSettings(nextSettings)
-            setInitialPrefs(prefs)
-            setSaveState('saved')
             notify({
-                title: 'Notification preferences saved',
-                description: `${enabledCount} staff notification${enabledCount === 1 ? '' : 's'} enabled.`,
+                title: nextEnabled ? 'Notification enabled' : 'Notification disabled',
+                description: `${def.label} turned ${nextEnabled ? 'on' : 'off'}.`,
                 variant: 'success',
             })
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Unable to save notification settings'
-            setSaveState('unsaved')
-            notify({
-                title: 'Could not save notification preferences',
-                description: message,
-                variant: 'critical',
-            })
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Could not save preference'
+            notify({ title: 'Error', description: msg, variant: 'critical' })
+        } finally {
+            savingRef.current.delete(key)
         }
-    }, [enabledCount, hasUnsavedChanges, notify, prefs, saveState, siteSettings, store])
+    }, [prefMap, store, notify])
 
-    const handleDiscard = useCallback(() => {
-        setPrefs(initialPrefs)
-        setSaveState('saved')
-        notify({
-            title: 'Changes discarded',
-            description: 'Notification preferences were reset to the last saved version.',
-            variant: 'info',
-        })
-    }, [initialPrefs, notify])
+    // ── Log filters ──────────────────────────────────────────────────────────
 
-    if (loading) {
-        return (
-            <SettingsPane
-                title="Notifications"
-                description="Choose which store events notify staff and which customer emails are automatic."
-                store={store}
-            >
-                <Card>
-                    <Section title="Staff notifications">
-                        <Skeleton variant="text" lines={6} />
-                    </Section>
-                </Card>
-                <Card>
-                    <Section title="Customer notifications">
-                        <Skeleton variant="text" lines={3} />
-                    </Section>
-                </Card>
-            </SettingsPane>
-        )
+    function applyFilters() {
+        setLogsPage(1)
+        void loadLogs(1, channelFilter, statusFilter)
     }
+
+    function clearFilters() {
+        setChannelFilter('')
+        setStatusFilter('')
+        setLogsPage(1)
+        void loadLogs(1, '', '')
+    }
+
+    function handleLogsPageChange(newPage: number) {
+        setLogsPage(newPage)
+        void loadLogs(newPage, channelFilter, statusFilter)
+    }
+
+    // ── Render ───────────────────────────────────────────────────────────────
 
     return (
         <SettingsPane
             title="Notifications"
-            description="Choose which store events notify staff and which customer emails are automatic."
+            description="Control which channel and category alerts are active for this store, and review past delivery evidence."
             store={store}
-            guidance={{
-                title: 'Operational notifications',
-                body: 'Staff alerts are editable here. Customer transactional emails still follow the existing order and account workflows.',
-            }}
-            saveBar={{
-                state: activeSaveState,
-                onSave: () => void handleSave(),
-                onDiscard: handleDiscard,
-                saveLabel: 'Save notifications',
-            }}
         >
-            {loadError && (
-                <Banner
-                    variant="critical"
-                    title="Notification settings could not load"
-                    action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
-                >
-                    {loadError}
-                </Banner>
-            )}
-
+            {/* ── Preferences section ───────────────────────────────────────── */}
             <Card>
                 <Section
-                    title="Staff notifications"
-                    description="Select which operational events should notify your team."
-                    action={<span className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">{enabledCount} of {prefs.length} enabled</span>}
+                    title="Notification preferences"
+                    description="Toggle individual channel and category pairs. Changes save immediately."
+                    action={
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => void loadPreferences()}
+                            disabled={prefsLoading}
+                            aria-label="Refresh preferences"
+                        >
+                            <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden />
+                            Refresh
+                        </Button>
+                    }
                 >
-                    <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)]">
-                        {prefs.map(({ key, label, description, Icon, enabled }) => {
-                            const inputId = `notification-${key}`
-                            return (
-                                <label
-                                    key={key}
-                                    htmlFor={inputId}
-                                    className="flex cursor-pointer flex-col gap-[var(--lb-space-3)] p-[var(--lb-space-4)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] hover:bg-[var(--lb-color-surface-subdued)] sm:flex-row sm:items-center sm:justify-between"
-                                >
-                                    <span className="flex min-w-0 items-start gap-[var(--lb-space-3)]">
-                                        <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
-                                            <Icon className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                        </span>
-                                        <span className="min-w-0">
-                                            <span className="block text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                                                {label}
+                    {prefsError && (
+                        <Banner
+                            variant="critical"
+                            title="Could not load preferences"
+                            action={
+                                <Button variant="secondary" size="sm" onClick={() => void loadPreferences()}>
+                                    Retry
+                                </Button>
+                            }
+                        >
+                            {prefsError}
+                        </Banner>
+                    )}
+
+                    {prefsLoading ? (
+                        <Skeleton variant="text" lines={7} />
+                    ) : (
+                        <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)]">
+                            {PREF_MATRIX.map((def) => {
+                                const key = prefKey(def.channel, def.category)
+                                const enabled = prefMap.get(key) ?? true
+                                const isSaving = savingRef.current.has(key)
+                                const inputId = `notif-pref-${key}`
+                                return (
+                                    <div
+                                        key={key}
+                                        className="flex flex-col gap-[var(--lb-space-3)] p-[var(--lb-space-4)] sm:flex-row sm:items-center sm:justify-between"
+                                    >
+                                        <label
+                                            htmlFor={inputId}
+                                            className="flex min-w-0 flex-1 cursor-pointer items-start gap-[var(--lb-space-3)]"
+                                        >
+                                            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                                {def.icon}
                                             </span>
-                                            <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                                {description}
+                                            <span className="min-w-0">
+                                                <span className="block text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                    {def.label}
+                                                </span>
+                                                <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                    {def.description}
+                                                </span>
+                                                <Badge
+                                                    label={channelLabel(def.channel)}
+                                                    variant="default"
+                                                    className="mt-[var(--lb-space-1)]"
+                                                />
                                             </span>
-                                        </span>
-                                    </span>
-                                    <span className="flex items-center gap-[var(--lb-space-3)] self-start sm:self-center">
-                                        <span className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                            {enabled ? 'On' : 'Off'}
-                                        </span>
-                                        <Input unstyled
-                                            id={inputId}
-                                            type="checkbox"
-                                            checked={enabled}
-                                            onChange={() => togglePref(key)}
-                                            className="h-[var(--lb-space-4)] w-[var(--lb-space-4)] cursor-pointer accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                        />
-                                    </span>
-                                </label>
-                            )
-                        })}
-                    </div>
+                                        </label>
+                                        <div className="flex shrink-0 items-center gap-[var(--lb-space-3)] self-start sm:self-center">
+                                            <span className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                {enabled ? 'On' : 'Off'}
+                                            </span>
+                                            <Switch
+                                                id={inputId}
+                                                checked={enabled}
+                                                disabled={isSaving}
+                                                onCheckedChange={() => void handleToggle(def)}
+                                                aria-label={`Toggle ${def.label}`}
+                                            />
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    )}
                 </Section>
             </Card>
 
+            {/* ── Delivery logs section ─────────────────────────────────────── */}
             <Card>
                 <Section
-                    title="Customer notifications"
-                    description="These transactional emails are sent automatically from existing order and account workflows."
+                    title="Delivery logs"
+                    description="Evidence of every notification routed through the platform for this store."
                 >
-                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                        {[
-                            ['Order confirmations', ShoppingBag],
-                            ['Shipping updates', Bell],
-                            ['Account creation', User],
-                        ].map(([label, Icon]) => {
-                            const NotificationIcon = Icon as LucideIcon
-                            return (
-                                <div
-                                    key={label as string}
-                                    className="flex items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]"
+                    {/* Filters */}
+                    <div className="mb-[var(--lb-space-4)] flex flex-col gap-[var(--lb-space-3)] sm:flex-row sm:items-end">
+                        <div className="flex-1">
+                            <label
+                                className="mb-[var(--lb-space-1)] block text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]"
+                                htmlFor="log-channel-filter"
+                            >
+                                Channel
+                            </label>
+                            <Select
+                                id="log-channel-filter"
+                                value={channelFilter}
+                                onChange={(e) => setChannelFilter(e.target.value)}
+                                options={CHANNEL_OPTIONS}
+                                aria-label="Filter by channel"
+                            />
+                        </div>
+                        <div className="flex-1">
+                            <label
+                                className="mb-[var(--lb-space-1)] block text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]"
+                                htmlFor="log-status-filter"
+                            >
+                                Status
+                            </label>
+                            <Select
+                                id="log-status-filter"
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                options={STATUS_OPTIONS}
+                                aria-label="Filter by status"
+                            />
+                        </div>
+                        <div className="flex gap-[var(--lb-space-2)] self-end">
+                            <Button
+                                variant="primary"
+                                size="sm"
+                                onClick={applyFilters}
+                                disabled={logsLoading}
+                            >
+                                Apply
+                            </Button>
+                            {(channelFilter || statusFilter) && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={clearFilters}
+                                    disabled={logsLoading}
                                 >
-                                    <NotificationIcon className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-primary)]" aria-hidden="true" />
-                                    <span className="text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                                        {label as string}
-                                    </span>
-                                </div>
-                            )
-                        })}
+                                    Clear
+                                </Button>
+                            )}
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => void loadLogs(logsPage, channelFilter, statusFilter)}
+                                disabled={logsLoading}
+                                aria-label="Refresh delivery logs"
+                            >
+                                <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden />
+                            </Button>
+                        </div>
                     </div>
+
+                    {logsError && (
+                        <Banner
+                            variant="critical"
+                            title="Could not load delivery logs"
+                            action={
+                                <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    onClick={() => void loadLogs(logsPage, channelFilter, statusFilter)}
+                                >
+                                    Retry
+                                </Button>
+                            }
+                            className="mb-[var(--lb-space-4)]"
+                        >
+                            {logsError}
+                        </Banner>
+                    )}
+
+                    {logsLoading ? (
+                        <Skeleton variant="text" lines={6} />
+                    ) : logs.length === 0 ? (
+                        <EmptyState
+                            kind="generic"
+                            title="No delivery logs"
+                            body={
+                                channelFilter || statusFilter
+                                    ? 'No logs match the current filters. Try clearing them.'
+                                    : 'Notifications sent through this store will appear here.'
+                            }
+                            primaryAction={
+                                channelFilter || statusFilter ? (
+                                    <Button variant="secondary" size="sm" onClick={clearFilters}>
+                                        Clear filters
+                                    </Button>
+                                ) : undefined
+                            }
+                        />
+                    ) : (
+                        <>
+                            {/* Log table */}
+                            <div className="overflow-x-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
+                                <table className="w-full min-w-[640px] border-collapse text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
+                                    <thead>
+                                        <tr className="bg-[var(--lb-color-surface-subdued)] text-left text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                            <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">Template</th>
+                                            <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">Channel</th>
+                                            <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">Category</th>
+                                            <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">Status</th>
+                                            <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">Provider</th>
+                                            <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">Sent at</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-[var(--lb-color-border)]">
+                                        {logs.map((log) => (
+                                            <tr
+                                                key={log.id}
+                                                className="bg-[var(--lb-color-surface)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] hover:bg-[var(--lb-color-surface-subdued)]"
+                                            >
+                                                <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">
+                                                    <span className="font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)]">
+                                                        {log.template_key}
+                                                    </span>
+                                                    {log.error_message && (
+                                                        <span className="mt-[var(--lb-space-1)] block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-critical)]">
+                                                            {log.error_message}
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text-subdued)]">
+                                                    {channelLabel(log.channel)}
+                                                </td>
+                                                <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text-subdued)]">
+                                                    {log.category}
+                                                </td>
+                                                <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">
+                                                    <StatusBadge
+                                                        status={log.status}
+                                                        label={log.status}
+                                                        variant={statusVariant(log.status)}
+                                                    />
+                                                </td>
+                                                <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text-subdued)]">
+                                                    {log.provider ?? '—'}
+                                                </td>
+                                                <td className="whitespace-nowrap px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text-subdued)]">
+                                                    {formatIndiaDateWithTime(log.created_at)}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Pagination */}
+                            {logsMeta.total_pages > 1 && (
+                                <div className="mt-[var(--lb-space-4)] flex items-center justify-between gap-[var(--lb-space-4)]">
+                                    <span className="text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                        {logsMeta.total} log{logsMeta.total === 1 ? '' : 's'} · page {logsMeta.page} of {logsMeta.total_pages}
+                                    </span>
+                                    <Pagination
+                                        page={logsMeta.page}
+                                        totalPages={logsMeta.total_pages}
+                                        onPageChange={handleLogsPageChange}
+                                    />
+                                </div>
+                            )}
+                        </>
+                    )}
                 </Section>
             </Card>
         </SettingsPane>

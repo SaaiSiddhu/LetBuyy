@@ -1,0 +1,26 @@
+{
+  "name": "@letbuyy/lcis-decision",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "LDSS — Decision Support System. Read-only, deterministic decision intelligence that composes ALL prior LCIS systems into structured recommendations: for a deploy/migration/rollback/scaling/business/architecture decision it generates strategy alternatives, scores them on risk/cost/readiness/blast-radius tradeoff axes, resolves the affected surface (systems/services/tables/apis/workers/domains) via the dependency twin, and recommends — with evidence, confidence, alternatives, and tradeoffs. It NEVER executes, deploys, or acts; it only recommends.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@letbuyy/lcis-core": "workspace:*",
+    "@letbuyy/lcis-engineering": "workspace:*",
+    "@letbuyy/lcis-operations": "workspace:*",
+    "@letbuyy/lcis-twin": "workspace:*",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "typescript": "^5.9.3"
+  }
+}

@@ -28,11 +28,15 @@ export default async function SelectPlanPage({ params }: PageProps) {
     const siteType = storeData.site_type || 'store'
 
     const apiClient = createMerchantApiClient()
-    const [plans, subscriptionPayload] = await Promise.all([
+    const [plans, subscriptionPayload, foundingRemaining] = await Promise.all([
         apiClient.payments.plans({ site_type: siteType }),
         apiClient.payments.subscription.get({ store_id: storeData.id }),
+        apiClient.foundingProgram.remaining().catch(() => null),
     ])
     const currentSub = subscriptionPayload.subscription || null
+    const foundingAvailable = Boolean(
+        foundingRemaining?.active && !foundingRemaining?.paused && (foundingRemaining?.remaining_slots ?? 0) > 0,
+    )
 
     return (
         <SelectPlanClient
@@ -44,6 +48,8 @@ export default async function SelectPlanPage({ params }: PageProps) {
             siteType={siteType}
             trialStatus={storeData.trial_status || null}
             trialEndsAt={storeData.trial_ends_at || null}
+            foundingAvailable={foundingAvailable}
+            foundingRemaining={foundingRemaining?.remaining_slots ?? null}
         />
     )
 }

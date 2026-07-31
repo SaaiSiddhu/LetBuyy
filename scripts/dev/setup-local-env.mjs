@@ -67,6 +67,7 @@ const NEXT_OVERRIDES = {
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: TURNSTILE_TEST_SITE_KEY,
   NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS: "true",
   NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES: "false",
+  NEXT_PUBLIC_FOUNDING_PUBLIC_LIVE: "true",
   NEXT_PUBLIC_RAZORPAY_KEY_ID: joinLocalValue("rzp_test", "_localdev"),
 
   LETBUYY_API_URL: API_BASE_URL,
@@ -122,6 +123,17 @@ const WORKER_OVERRIDES = {
   NEXT_PUBLIC_STORE_ROOT_DOMAIN: "localhost",
   STOREFRONT_ROOT_DOMAIN: "localhost",
   PLATFORM_ROOT_DOMAIN: "localhost",
+  // Custom-domain CNAME target shown to merchants in the Domain Center connect flow.
+  // Matches the staging/production templates (connect.letbuyy.com); the gateway throws
+  // without it, so the dev worker needs it too.
+  CUSTOM_DOMAIN_CNAME_TARGET: "connect.letbuyy.com",
+  NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET: "connect.letbuyy.com",
+  // Domain registrar — dev/staging only. The sandbox provider returns synthetic
+  // availability/pricing so the "Buy a domain" search/purchase flow is exercisable
+  // locally without live ResellerClub/OpenSRS credentials. Hard-forbidden in
+  // production; set REGISTRAR_PROVIDER=resellerclub|opensrs + creds for real use.
+  REGISTRAR_PROVIDER: "sandbox",
+  REGISTRAR_SANDBOX_ENABLED: "true",
   ENVIRONMENT: "staging",
   APP_ENV: "staging",
   NODE_ENV: "production",

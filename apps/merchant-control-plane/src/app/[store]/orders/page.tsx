@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useMemo, type SyntheticEvent } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import type { LineItem as SharedLineItem, Order as SharedOrder } from '@letbuyy/shared-types'
 import { Button, Input, Table, Badge, Banner, Card, ConfirmDialog, EmptyState, MaterialIcon, Page, PageHeader, Search, Section, Select, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
@@ -171,6 +171,7 @@ function PaymentStatusBadge({ status, method }: { status: string; method: string
 
 export default function OrdersPage() {
     const { store } = useParams<{ store: string }>()
+    const router = useRouter()
     const { notify } = useToast()
     const [orders, setOrders] = useState<OrderRow[]>([])
     const [totalCount, setTotalCount] = useState(0)
@@ -178,8 +179,6 @@ export default function OrdersPage() {
     const [filter, setFilter] = useState<OrderStatus>('all')
     const [paymentFilter, setPaymentFilter] = useState<string>('all')
     const [searchQuery, setSearchQuery] = useState('')
-    const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null)
-    const [loadingDetailId, setLoadingDetailId] = useState<string | null>(null)
     const [updatingId, setUpdatingId] = useState<string | null>(null)
     const [fulfillingId, setFulfillingId] = useState<string | null>(null)
     const [trackingNumber, setTrackingNumber] = useState('')
@@ -251,40 +250,6 @@ export default function OrdersPage() {
         void loadFulfillmentProviderMode()
         return () => { active = false }
     }, [store])
-
-    const loadOrderDetail = async (order: OrderRow) => {
-        if (expandedOrderId === order.id) {
-            setExpandedOrderId(null)
-            return
-        }
-
-        if (order.items?.length) {
-            setExpandedOrderId(order.id)
-            return
-        }
-
-        setExpandedOrderId(order.id)
-        setLoadingDetailId(order.id)
-        setActionError(null)
-
-        try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/orders/${encodeURIComponent(order.id)}`)
-            const payload = await response.json().catch(() => null) as OrdersPayload | null
-
-            if (!response.ok) {
-                setActionError(getErrorMessage(payload, 'Unable to load order details'))
-                return
-            }
-
-            if (payload?.data && !Array.isArray(payload.data)) {
-                setOrders(current => current.map(item => item.id === order.id ? payload.data as OrderRow : item))
-            }
-        } catch {
-            setActionError('Unable to load order details')
-        } finally {
-            setLoadingDetailId(null)
-        }
-    }
 
     const updateOrderStatus = async (
         orderId: string,
@@ -457,8 +422,6 @@ export default function OrdersPage() {
         }
     }, [store, refundingOrderId, refundAmount, refundReason, loadOrders, notify])
 
-    const refundingOrder = orders.find(order => order.id === refundingOrderId) || null
-    const activeOrder = orders.find(order => order.id === expandedOrderId) || null
     const orderToCancel = orders.find(order => order.id === cancellingId) || null
     const activeFilters = [
         filter !== 'all' ? { label: `Status: ${titleize(filter)}`, onRemove: () => setFilter('all') } : null,
@@ -530,7 +493,7 @@ export default function OrdersPage() {
                         className="font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-primary)] hover:text-[var(--lb-color-primary-hover)]"
                         onClick={(event) => {
                             event.stopPropagation()
-                            loadOrderDetail(order)
+                            router.push(`/${store}/orders/${encodeURIComponent(order.id)}`)
                         }}
                     >
                         {order.order_number || order.id.slice(0, 8)}
@@ -694,32 +657,12 @@ export default function OrdersPage() {
                                 sortKey={sortKey}
                                 sortDirection={sortDirection}
                                 onSort={handleSort}
-                                onRowClick={loadOrderDetail}
+                                onRowClick={(order) => router.push(`/${store}/orders/${encodeURIComponent(order.id)}`)}
                             />
                         )}
                     </div>
                 </Section>
             </Card>
-
-            {activeOrder && (
-                <Card>
-                    <Section
-                        title={`Order ${activeOrder.order_number || activeOrder.id.slice(0, 8)}`}
-                        description="Customer, fulfillment, line items, and payment summary."
-                        action={(
-                            <Button variant="ghost" onClick={() => setExpandedOrderId(null)}>
-                                Close
-                            </Button>
-                        )}
-                    >
-                        {loadingDetailId === activeOrder.id ? (
-                            <Skeleton variant="card" lines={4} />
-                        ) : (
-                            <OrderDetail order={activeOrder} />
-                        )}
-                    </Section>
-                </Card>
-            )}
 
             <ConfirmDialog
                 open={Boolean(orderToCancel)}

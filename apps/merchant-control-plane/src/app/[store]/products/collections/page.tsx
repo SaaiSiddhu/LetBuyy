@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import type { Collection as SharedCollection } from '@letbuyy/shared-types'
 import { Button, Input, Table, Avatar, Badge, Banner, Card, Checkbox, EmptyState, Package, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Skeleton, Textarea, useToast } from '@letbuyy/ui'
@@ -432,7 +433,15 @@ export default function CollectionsPage() {
                 >
                     {collections.length === 0 ? (
                         <EmptyState
-                            icon={<Package className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
+                            illustration={
+                                <Image
+                                    src="/Emptystate Illustration/Collections Emptystatae.png"
+                                    alt=""
+                                    width={200}
+                                    height={200}
+                                    aria-hidden="true"
+                                />
+                            }
                             title="No collections yet"
                             body="Organize products into collections so shoppers can browse by theme, season, category, or campaign."
                             primaryAction={!showCreate ? (

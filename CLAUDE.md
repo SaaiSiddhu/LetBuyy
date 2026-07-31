@@ -223,3 +223,42 @@ LCIS is now LetBuyy's operating system, readable by humans AND AIs. Three layers
 | Deep investigation | Atlas (Technical mode → ★ Atlas) — the deepest layer |
 
 Fall back to a full repo scan only when LCIS returns nothing or the data layer is stale (`pnpm graph:update && graph:omega`). Change-control hotspots above always warrant a `graph:intel blast` before merge.
+
+### LCIS V2 — Autonomous Commerce Intelligence Platform (`tools/central-intelligence`, port :3334)
+V1 above (`tools/graph-server`, :3333) is the **structural** brain and is unchanged. **LCIS V2** layers live, self-learning, reasoning intelligence over it. The approved primitives (Qdrant, Crawl4AI, GraphRAG, Playwright, SigNoz) are **hidden implementation details** — always refer to the LCIS subsystem, never the underlying tech. Start it: `cd tools/central-intelligence && bash setup.sh && npm start`. Design + ops live in `docs/lcis-v2/` (21 docs); architecture map in `docs/lcis-v2/LCIS_ARCHITECTURE_V2.md`.
+
+**LCIS-V2-FIRST** (extends LCIS-FIRST): for semantic recall, reasoning, repo-context compression, and cross-event correlation, query :3334 first; it reads V1 (:3333) internally and synthesizes. Repo scan stays the last resort.
+
+| Question | LCIS V2 query (`curl localhost:3334/intelligence/...`) |
+|----------|--------------------------------------------------------|
+| Understand the repo without loading it (compressed context map) | `/context/assemble?q=&budget=` · `/context/map` (300 ranked files) · `/context/compression` (≈1,275× reduction) |
+| Semantic memory / "have we seen this before" | `/memory/search?q=&collection=` (8 collections: architecture·runbooks·incidents·security·deployments·knowledge·merchants·themes) |
+| Relationship reasoning over commerce entities | `/graph/query?q=&method=global\|local` · `/graph/impact?entity=` |
+| Why did X happen / what caused it / what to investigate | `/reason?q=` · `/reason/why?incident=` · `/reason/affected?component=` · `/reason/risk-dependency` |
+| Correlate incident↔deploy↔drift↔deps → root cause + risk | `/correlate/root-cause?domain=` · `/correlate/impact?component=` · `/correlate/risk?target=` |
+| Architecture now / drift / risks / what depends on X | `/architecture` · `/architecture/drift` · `/architecture/risks` · `/architecture/depends?component=` |
+| Autonomous ops: posture, anomalies, ranked fixes, daily report | `/operations/assess` · `/operations/recommendations` · `/operations/daily` |
+| Validate a real storefront/theme/checkout (browser eyes) | `/browser/validate?url=` · `/browser/theme?url=&themeId=` · `/browser/checkout?url=` (never executes payment) |
+| How does LetBuyy/LCIS itself work (self-model) | `/self/model` · `/self/explain?topic=service-interaction\|deployment-propagation\|failure-propagation\|incident-emergence` |
+| One natural-language question, multi-source synthesis | `/intelligence/ask?q=` (flagship) · operator dashboard: `node operator-platform/serve-dashboard.mjs` → :3335 |
+
+**Honesty contract (inherited):** structural intelligence is CONNECTED; every live value (telemetry, GMV, merchant magnitudes) is **NOT CONNECTED + exact source** until credentials are wired (`OPENAI_API_KEY`, `QDRANT_URL`, `OTEL_EXPORTER_OTLP_ENDPOINT`). A `DEGRADED`/`DOWN` posture from `/operations/assess` when Qdrant/OTel are not running is **honest**, not a bug.
+
+### LCIS V3 — Executive Intelligence (same server :3334, `tools/central-intelligence/`)
+V3 turns intelligence into **decisions and safe action**: it can Predict · Recommend · Plan · Investigate · Orchestrate · Execute (safe, read-only) · Verify · Learn. 13 new engines layered over V2 (executive-intelligence, goal-engine, prediction-engine, recommendation-engine, investigation-engine, orchestration-engine, execution-engine, verification-engine, daily-intelligence, operating-loop). Docs in `docs/lcis-v2/LCIS_EXECUTIVE_INTELLIGENCE.md` + 10 siblings.
+
+| Question | LCIS V3 query (`curl localhost:3334/intelligence/...`) |
+|----------|--------------------------------------------------------|
+| What should happen next / highest-priority risk / what leadership should know | `/executive/next` · `/executive/briefing` · `/executive/synthesize?topic=` |
+| What are our goals / which are at risk | `/goals` · `/goals/at-risk` · `/missions` |
+| Predict degradation / incidents / capacity / what fails next | `/predict?target=` · `/predict/all` · `/predict/incidents` |
+| Recommend (engineering/operational/security/architecture/merchant) — evidence+risks+impact | `/recommend` · `/recommend?domain=` |
+| Autonomously investigate (4 timelines + root cause, no human) | `/investigate/domain?domain=` · POST `/investigate` |
+| Run a coordinated workflow (health/risk/architecture review) | `/orchestrate/health` · `/orchestrate/risk` · `/orchestrate/architecture` |
+| Execute a SAFE read-only op (validations/health/diag/scans) — mutating verbs auto-REJECTED | POST `/execute {action}` · `/execute/actions` · `/execute/audit` |
+| Verify a conclusion (evidence/confidence/sources → VERIFIED/PARTIAL/UNVERIFIED/REFUTED) | POST `/verify {conclusion}` · `/verify/report` |
+| Executive / engineering / security / merchant brief | `/brief/daily` · `/brief/executive` · POST `/brief/generate` |
+| The autonomous operating loop (Observe→…→Learn) | `/loop/state` · POST `/loop/run-once` · `/loop/history` |
+| One executive overview of everything | `/command-center` |
+
+**Safety + honesty (enforced in code, not just docs):** the Execution Engine is **read-only only** — `SafetyGuard` default-denies and rejects any mutating verb (deploy/write/insert/update/delete/pay/refund/push/merge); no production mutations, no payment execution, no merchant actions; every run is hash-chain audited (`graphify-out/execution-audit/`). The Verification Engine **refuses to rubber-stamp** — an uncorroborated claim returns REFUTED. The operating loop's Learn stage writes outcomes back into the Memory Engine for continuous improvement.

@@ -1,0 +1,24 @@
+{
+  "name": "@letbuyy/lcis-twin",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "LDTS — Dependency Twin System. Read-only enterprise dependency intelligence: a unified typed twin (feature→page→api→rpc→worker→queue→cron→database→table→trigger→storage→deployment→infrastructure→test→documentation) composed from the structural artifacts, six graph views, and pure deterministic algorithms (shortest path, critical path, cycles, SPOF, fan-in/out, impact radius). Never mutates; runtime edge weights are honestly NOT_CONNECTED.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@letbuyy/lcis-core": "workspace:*",
+    "@letbuyy/lcis-governance": "workspace:*",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "typescript": "^5.9.3"
+  }
+}

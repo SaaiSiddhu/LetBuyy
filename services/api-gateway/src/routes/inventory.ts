@@ -9,6 +9,7 @@ import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { dbFailureBody, failureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
+import { assertStaffPermission } from '../middleware/staff-permission';
 import {
     AdjustInventorySchema,
     BulkAdjustSchema,
@@ -269,6 +270,8 @@ router.post('/locations', validate('json', CreateLocationSchema), async (c) => {
     if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
+    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
 
     const { data, error } = await db
         .from('inventory_locations')
@@ -338,6 +341,8 @@ router.post('/suppliers', validate('json', CreateSupplierSchema), async (c) => {
     if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
+    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
 
     const { data, error } = await db
         .from('suppliers')
@@ -398,6 +403,8 @@ router.post('/purchase-orders', validate('json', CreatePurchaseOrderSchema), asy
     if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
+    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
 
     const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
@@ -444,6 +451,8 @@ router.post('/purchase-orders/:id/receive', validate('json', ReceivePurchaseOrde
     if (!siteId || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Purchase order not found' } }, 404);
     }
+    const staffBlock = await assertStaffPermission(c, siteId, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
 
     const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
@@ -512,6 +521,8 @@ router.post('/transfers', validate('json', CreateTransferSchema), async (c) => {
     if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
+    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
 
     const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
@@ -556,6 +567,8 @@ router.post('/transfers/:id/ship', validate('json', ShipTransferSchema), async (
     if (!siteId || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Transfer not found' } }, 404);
     }
+    const staffBlock = await assertStaffPermission(c, siteId, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
 
     const { data, error } = await db.rpc('ship_inventory_transfer', {
         p_transfer_id: transferId,
@@ -579,6 +592,8 @@ router.post('/transfers/:id/receive', validate('json', ReceiveTransferSchema), a
     if (!siteId || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Transfer not found' } }, 404);
     }
+    const staffBlock = await assertStaffPermission(c, siteId, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
 
     const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
@@ -620,6 +635,8 @@ router.post('/reserve', validate('json', ReserveInventorySchema), async (c) => {
     if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
+    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
 
     const { data, error } = await db.rpc('reserve_inventory', {
         p_store_id: body.store_id,
@@ -668,6 +685,8 @@ router.post('/commit', validate('json', InventoryReservationActionSchema), async
     if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
+    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
 
     const { data, error } = await db.rpc('commit_inventory_reservation', {
         p_store_id: body.store_id,
@@ -704,6 +723,8 @@ router.post('/release', validate('json', InventoryReservationActionSchema), asyn
     if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
+    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
 
     const { data, error } = await db.rpc('release_inventory_reservation', {
         p_store_id: body.store_id,
@@ -835,6 +856,8 @@ router.post('/adjust', validate('json', AdjustInventorySchema), async (c) => {
     ) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
     }
+    const staffBlock = await assertStaffPermission(c, ownedProduct.store_id, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
 
     const { data, error } = await db.rpc('adjust_inventory_level', {
         p_product_id: body.product_id,
@@ -883,6 +906,8 @@ router.post('/bulk-adjust', validate('json', BulkAdjustSchema), async (c) => {
     if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
+    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
 
     const results = [];
 
@@ -920,6 +945,249 @@ router.post('/bulk-adjust', validate('json', BulkAdjustSchema), async (c) => {
     }
 
     return c.json(success({ results, total: results.length }));
+});
+
+// GET /inventory/reservations — List inventory reservations (read-only, ownership-checked)
+router.get('/reservations', async (c) => {
+    const auth = c.get('auth');
+    const storeId = c.req.query('store_id');
+    const statusFilter = c.req.query('status');
+    const productIdFilter = c.req.query('product_id');
+    const page = parseInt(c.req.query('page') || '1');
+    const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
+    const offset = (page - 1) * limit;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const ownedStoreIds = storeId
+        ? [storeId]
+        : await listOwnedStoreIds(db, customUser.id, auth.user.storeId);
+
+    if (storeId && !(await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId))) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    if (ownedStoreIds.length === 0) {
+        return c.json(paginated([], 0, page, limit));
+    }
+
+    let query = db
+        .from('inventory_reservations')
+        .select('*, products!inner(name, store_id)', { count: 'exact' })
+        .in('products.store_id', ownedStoreIds);
+
+    if (statusFilter) query = query.eq('status', statusFilter);
+    if (productIdFilter) query = query.eq('product_id', productIdFilter);
+
+    const { data, error, count } = await query
+        .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1);
+
+    if (isMissingTableError(error, 'inventory_reservations')) {
+        return c.json(paginated([], 0, page, limit));
+    }
+
+    if (error) {
+        return c.json(dbFailureBody(), 500);
+    }
+
+    return c.json(paginated(data || [], count || 0, page, limit));
+});
+
+// GET /inventory/receipts — List PO receipts and transfer receipts (read-only, ownership-checked)
+router.get('/receipts', async (c) => {
+    const auth = c.get('auth');
+    const storeId = c.req.query('store_id');
+    const poIdFilter = c.req.query('po_id');
+    const transferIdFilter = c.req.query('transfer_id');
+    const page = parseInt(c.req.query('page') || '1');
+    const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
+    const offset = (page - 1) * limit;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const ownedStoreIds = storeId
+        ? [storeId]
+        : await listOwnedStoreIds(db, customUser.id, auth.user.storeId);
+
+    if (storeId && !(await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId))) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    if (ownedStoreIds.length === 0) {
+        return c.json(paginated([], 0, page, limit));
+    }
+
+    // Fetch PO receipts (joined to purchase_orders for site_id ownership)
+    let poReceiptsData: unknown[] = [];
+    let poReceiptsCount = 0;
+
+    if (!transferIdFilter) {
+        let poQuery = db
+            .from('purchase_order_receipts')
+            .select(
+                'id, purchase_order_id, quantity_received, notes, received_at, created_at, purchase_orders!inner(id, site_id)',
+                { count: 'exact' }
+            )
+            .in('purchase_orders.site_id', ownedStoreIds);
+
+        if (poIdFilter) poQuery = poQuery.eq('purchase_order_id', poIdFilter);
+
+        const { data: poData, error: poError, count: poCount } = await poQuery
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
+
+        if (poError && !isMissingTableError(poError, 'purchase_order_receipts')) {
+            return c.json(dbFailureBody(), 500);
+        }
+
+        poReceiptsData = (poData || []).map((r: Record<string, unknown>) => ({
+            ...(r as Record<string, unknown>),
+            receipt_type: 'purchase_order',
+        }));
+        poReceiptsCount = poCount || 0;
+    }
+
+    // Fetch transfer receipts (joined to inventory_transfers for site_id ownership)
+    let transferReceiptsData: unknown[] = [];
+    let transferReceiptsCount = 0;
+
+    if (!poIdFilter) {
+        let trQuery = db
+            .from('inventory_transfer_receipts')
+            .select(
+                'id, transfer_id, quantity_received, notes, received_at, created_at, inventory_transfers!inner(id, site_id)',
+                { count: 'exact' }
+            )
+            .in('inventory_transfers.site_id', ownedStoreIds);
+
+        if (transferIdFilter) trQuery = trQuery.eq('transfer_id', transferIdFilter);
+
+        const { data: trData, error: trError, count: trCount } = await trQuery
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
+
+        if (trError && !isMissingTableError(trError, 'inventory_transfer_receipts')) {
+            return c.json(dbFailureBody(), 500);
+        }
+
+        transferReceiptsData = (trData || []).map((r: Record<string, unknown>) => ({
+            ...(r as Record<string, unknown>),
+            receipt_type: 'transfer',
+        }));
+        transferReceiptsCount = trCount || 0;
+    }
+
+    const combined = [...poReceiptsData, ...transferReceiptsData].sort((a, b) => {
+        const aDate = String((a as Record<string, unknown>).created_at ?? '');
+        const bDate = String((b as Record<string, unknown>).created_at ?? '');
+        return bDate.localeCompare(aDate);
+    });
+
+    const totalCount = poReceiptsCount + transferReceiptsCount;
+    return c.json(paginated(combined, totalCount, page, limit));
+});
+
+// GET /inventory/analytics — Real aggregations over existing tables (no fabricated data)
+router.get('/analytics', async (c) => {
+    const auth = c.get('auth');
+    const storeId = c.req.query('store_id');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const ownedStoreIds = storeId
+        ? [storeId]
+        : await listOwnedStoreIds(db, customUser.id, auth.user.storeId);
+
+    if (storeId && !(await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId))) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    if (ownedStoreIds.length === 0) {
+        return c.json(success({ low_stock_count: 0, total_skus: 0, po_by_status: {}, transfer_by_status: {} }));
+    }
+
+    const analytics: {
+        low_stock_count?: number;
+        total_skus?: number;
+        po_by_status?: Record<string, number>;
+        transfer_by_status?: Record<string, number>;
+    } = {};
+
+    // Low-stock count from inventory_levels (available <= 10 as low threshold)
+    const { data: levelData, error: levelError } = await db
+        .from('inventory_levels')
+        .select('id, products!inner(store_id)', { count: 'exact' })
+        .in('products.store_id', ownedStoreIds)
+        .lte('available', 10);
+
+    if (!levelError && !isInventorySchemaMissingError(levelError)) {
+        analytics.low_stock_count = (levelData || []).length;
+    }
+
+    // Total SKU count from products table (non-deleted products)
+    const buildSkuQuery = (includeDeletedAt: boolean) => {
+        let q = db
+            .from('products')
+            .select('id', { count: 'exact', head: true })
+            .in('store_id', ownedStoreIds);
+        if (includeDeletedAt) q = q.is('deleted_at', null);
+        return q;
+    };
+
+    let { count: skuCount, error: skuError } = await buildSkuQuery(true);
+    if (isMissingDeletedAtError(skuError)) {
+        ({ count: skuCount, error: skuError } = await buildSkuQuery(false));
+    }
+    if (!skuError) {
+        analytics.total_skus = skuCount || 0;
+    }
+
+    // PO counts grouped by status
+    const { data: poData, error: poError } = await db
+        .from('purchase_orders')
+        .select('status')
+        .in('site_id', ownedStoreIds)
+        .is('deleted_at', null);
+
+    if (!poError && !isMissingTableError(poError, 'purchase_orders')) {
+        const byStatus: Record<string, number> = {};
+        for (const row of poData || []) {
+            const s = String(row.status ?? 'unknown');
+            byStatus[s] = (byStatus[s] || 0) + 1;
+        }
+        analytics.po_by_status = byStatus;
+    }
+
+    // Transfer counts grouped by status
+    const { data: trData, error: trError } = await db
+        .from('inventory_transfers')
+        .select('status')
+        .in('site_id', ownedStoreIds)
+        .is('deleted_at', null);
+
+    if (!trError && !isMissingTableError(trError, 'inventory_transfers')) {
+        const byStatus: Record<string, number> = {};
+        for (const row of trData || []) {
+            const s = String(row.status ?? 'unknown');
+            byStatus[s] = (byStatus[s] || 0) + 1;
+        }
+        analytics.transfer_by_status = byStatus;
+    }
+
+    return c.json(success(analytics));
 });
 
 // GET /inventory/history — Adjustment history

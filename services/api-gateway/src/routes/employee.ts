@@ -1,4 +1,4 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership, type WorkerAuthUser } from '../lib/auth-user';
 import { enqueueEmployeeInviteEmail } from '../lib/transactional-email';
@@ -16,8 +16,93 @@ import {
     planEmployeeUpdate,
     type EmployeeInviteRecord,
 } from '@letbuyy/auth-core';
+import { applyStorePlanTierDefaults, type BillingPlanCatalogRecord } from '@letbuyy/billing-core';
 
 const router = new Hono<{ Bindings: Env }>();
+
+// ============================================================
+// STAFF SEAT LIMITS — plan-driven, server-authoritative
+// The merchant's plan caps how many staff (employees, excluding the owner) a
+// store may have. The limit comes from the plan catalog (or its tier default);
+// null means unlimited (e.g. Enterprise). Both the create and invite paths
+// enforce this so the UI cap can never be bypassed.
+// ============================================================
+
+interface StoreStaffLimit {
+    limit: number | null;
+    plan_slug: string;
+    plan_name: string;
+}
+
+async function resolveStoreStaffLimit(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    storeId: string,
+): Promise<StoreStaffLimit> {
+    const { data: site } = await db
+        .from('sites')
+        .select('site_type')
+        .eq('id', storeId)
+        .maybeSingle();
+    const siteType = typeof site?.site_type === 'string' && site.site_type ? site.site_type : 'store';
+
+    // Active (or dunning) subscription decides the plan; trial/no-sub falls back to free.
+    const { data: sub } = await db
+        .from('subscriptions')
+        .select('plan')
+        .eq('store_id', storeId)
+        .in('status', ['active', 'past_due', 'failed'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+    const slug = typeof sub?.plan === 'string' && sub.plan ? sub.plan : 'free';
+
+    const { data: planRow } = await db
+        .from('plans')
+        .select('*')
+        .eq('site_type', siteType)
+        .eq('slug', slug)
+        .eq('is_active', true)
+        .maybeSingle();
+
+    const plan = applyStorePlanTierDefaults(
+        (planRow as BillingPlanCatalogRecord) ||
+            ({ slug, site_type: siteType, name: slug } as unknown as BillingPlanCatalogRecord),
+    );
+
+    return {
+        limit: typeof plan.staff_limit === 'number' ? plan.staff_limit : null,
+        plan_slug: plan.slug || slug,
+        plan_name: plan.name || slug,
+    };
+}
+
+async function countStoreStaff(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    storeId: string,
+): Promise<number> {
+    const { count } = await db
+        .from('employees')
+        .select('id', { count: 'exact', head: true })
+        .eq('store_id', storeId)
+        .neq('status', 'removed')
+        .is('deleted_at', null);
+    return count || 0;
+}
+
+/**
+ * Returns a 409 body when adding one more staff member would exceed the plan
+ * seat limit, or null when there is room. null limit = unlimited.
+ */
+async function staffSeatExceeded(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    storeId: string,
+): Promise<{ limit: number; plan_name: string; used: number } | null> {
+    const { limit, plan_name } = await resolveStoreStaffLimit(db, storeId);
+    if (limit === null) return null;
+    const used = await countStoreStaff(db, storeId);
+    if (used < limit) return null;
+    return { limit, plan_name, used };
+}
 
 function isMissingColumnError(
     error: { message?: string } | null | undefined,
@@ -88,6 +173,38 @@ router.post('/auth/login', async (c) => {
 });
 
 // POST /employees/auth/accept-invite — Accept an employee invite
+// Phase-4.5 — traceability for staff lifecycle changes. Best-effort: an audit
+// failure must never fail the underlying employee mutation.
+async function writeEmployeeAudit(
+    c: Context<{ Bindings: Env }>,
+    db: ReturnType<typeof getSupabaseAdmin>,
+    action: string,
+    resourceId: string,
+    metadata: Record<string, unknown> = {},
+): Promise<void> {
+    try {
+        const auth = c.get('auth');
+        await db.from('audit_logs').insert({
+            actor_id: auth?.user?.id || null,
+            actor_type: 'merchant',
+            actor_email: auth?.user?.email || null,
+            action,
+            resource_type: 'employee',
+            resource_id: resourceId || null,
+            metadata,
+            ip_address: c.req.header('CF-Connecting-IP') || null,
+            user_agent: c.req.header('User-Agent') || null,
+        });
+    } catch (err) {
+        console.error(JSON.stringify({
+            level: 'error',
+            event: 'employee_audit_failed',
+            action,
+            message: err instanceof Error ? err.message : String(err),
+        }));
+    }
+}
+
 router.post('/auth/accept-invite', async (c) => {
     const { token, password } = await c.req.json();
     const db = getSupabaseAdmin(c);
@@ -208,6 +325,17 @@ router.post('/', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } }, 403);
     }
 
+    const seatExceeded = await staffSeatExceeded(db, createPlan.value.store_id);
+    if (seatExceeded) {
+        return c.json({
+            error: {
+                code: 'STAFF_LIMIT_REACHED',
+                message: `Your ${seatExceeded.plan_name} plan includes ${seatExceeded.limit} staff ${seatExceeded.limit === 1 ? 'account' : 'accounts'}. Upgrade your plan to add more staff.`,
+                details: { staff_limit: seatExceeded.limit, staff_used: seatExceeded.used },
+            },
+        }, 409);
+    }
+
     const { data, error } = await db
         .from('employees')
         .insert(createPlan.value)
@@ -230,6 +358,10 @@ router.post('/', async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
+    await writeEmployeeAudit(c, db, 'employee.created', String((data as { id?: string }).id || ''), {
+        store_id: createPlan.value.store_id,
+    });
+
     return c.json(success(data), 201);
 });
 
@@ -250,6 +382,31 @@ router.get('/me', async (c) => {
     }
 
     return c.json(success(data));
+});
+
+// GET /employees/limits — Plan staff seat usage for the merchant admin UI
+router.get('/limits', async (c) => {
+    const auth = c.get('auth');
+    const storeId = c.req.query('store_id');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!storeId) {
+        return c.json({ error: { code: 'VALIDATION', message: 'store_id is required' } }, 400);
+    }
+    if (!customUser || !(await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId))) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } }, 403);
+    }
+
+    const { limit, plan_slug, plan_name } = await resolveStoreStaffLimit(db, storeId);
+    const used = await countStoreStaff(db, storeId);
+
+    return c.json(success({
+        staff_limit: limit,
+        staff_used: used,
+        plan_slug,
+        plan_name,
+    }));
 });
 
 // POST /employees/invite — Invite an employee
@@ -274,6 +431,17 @@ router.post('/invite', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } }, 403);
     }
 
+    const inviteSeatExceeded = await staffSeatExceeded(db, invitePlan.value.store_id);
+    if (inviteSeatExceeded) {
+        return c.json({
+            error: {
+                code: 'STAFF_LIMIT_REACHED',
+                message: `Your ${inviteSeatExceeded.plan_name} plan includes ${inviteSeatExceeded.limit} staff ${inviteSeatExceeded.limit === 1 ? 'account' : 'accounts'}. Upgrade your plan to add more staff.`,
+                details: { staff_limit: inviteSeatExceeded.limit, staff_used: inviteSeatExceeded.used },
+            },
+        }, 409);
+    }
+
     // Create invite
     const { data, error } = await db
         .from('employee_invites')
@@ -294,6 +462,12 @@ router.post('/invite', async (c) => {
         expiresAt: typeof data.expires_at === 'string' ? data.expires_at : invitePlan.value.expires_at,
         inviterEmail: auth.user.email || null,
         requestId: c.req.header('X-Request-ID') || null,
+    });
+
+    await writeEmployeeAudit(c, db, 'employee.invited', String((data as { id?: string }).id || ''), {
+        store_id: invitePlan.value.store_id,
+        email: invitePlan.value.email,
+        role: invitePlan.value.role,
     });
 
     return c.json(success(data), 201);
@@ -403,6 +577,8 @@ router.patch('/:id', async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
+    await writeEmployeeAudit(c, db, 'employee.updated', employeeId, { updates });
+
     return c.json(success(data));
 });
 
@@ -425,6 +601,8 @@ router.delete('/:id', async (c) => {
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
+
+    await writeEmployeeAudit(c, db, 'employee.removed', employeeId, {});
 
     return c.json({ data: { deleted: true } });
 });

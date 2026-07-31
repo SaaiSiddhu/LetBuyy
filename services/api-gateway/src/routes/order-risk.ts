@@ -9,6 +9,7 @@ import type { Env } from '../index';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { getSupabaseAdmin, success } from '../lib/supabase';
+import { enqueueOrderLifecycleEmail } from '../lib/order-confirmation-email';
 import { resolveTenantContextForOrder, resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
 import {
@@ -279,6 +280,38 @@ orderRiskRouter.post('/assess', validate('json', OrderRiskAssessmentSchema), asy
     }
 });
 
+// Pre-launch hardening (Stream F1/F2) — when a COD order is cancelled (reject / timeout / auto-expiry),
+// release the reserved inventory and restore any redeemed gift-card balance, mirroring the canonical
+// PATCH /:id cancel path (orders.ts). Both are best-effort, idempotent SECURITY DEFINER RPCs (db.rpc,
+// not money-table writes — canonical-ledger compliant); neither blocks the cancellation.
+async function releaseCancelledCodOrderResources(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    orderId: string,
+    tenant: { siteId: string; userId?: string | null; requestId?: string | null },
+): Promise<void> {
+    try {
+        const { error } = await db.rpc('release_order_inventory_with_ledger', {
+            p_order_id: orderId,
+            p_actor_id: tenant.userId ?? null,
+            p_request_id: tenant.requestId ?? null,
+            p_release_reason: 'cod_cancelled',
+        });
+        if (error) throw new Error(error.message);
+    } catch (releaseError) {
+        console.warn(JSON.stringify({ level: 'warn', event: 'cod_inventory_release_failed', order_id: orderId, error: String(releaseError) }));
+    }
+    try {
+        await db.rpc('restore_gift_card_on_refund', {
+            p_store_id: tenant.siteId,
+            p_order_id: orderId,
+            p_actor_id: tenant.userId ?? null,
+            p_request_id: tenant.requestId ?? null,
+        });
+    } catch (restoreError) {
+        console.warn(JSON.stringify({ level: 'warn', event: 'cod_gift_card_restore_failed', order_id: orderId, error: String(restoreError) }));
+    }
+}
+
 orderCodRouter.post('/:id/cod/confirm', validate('json', CodConfirmationSchema), async (c) => {
     const orderId = c.req.param('id');
     const body = c.get('validatedBody') as { idempotency_key: string; confirmed?: boolean; reply_text?: string };
@@ -343,6 +376,30 @@ orderCodRouter.post('/:id/cod/confirm', validate('json', CodConfirmationSchema),
             actorId: tenant.userId,
             requestId: tenant.requestId,
         });
+
+        // LB-10 — a rejected COD confirmation cancels the order; notify the customer (best-effort).
+        if (!confirmed) {
+            try {
+                await enqueueOrderLifecycleEmail(c.env, db, {
+                    orderId,
+                    storeId: tenant.siteId,
+                    requestId: tenant.requestId,
+                    kind: 'cancelled',
+                });
+            } catch (emailError) {
+                console.warn(JSON.stringify({
+                    level: 'warn',
+                    event: 'order_lifecycle_email_enqueue_failed',
+                    kind: 'cancelled',
+                    order_id: orderId,
+                    error: String(emailError),
+                }));
+            }
+        }
+
+        if (!confirmed) {
+            await releaseCancelledCodOrderResources(db, orderId, tenant);
+        }
 
         const responseBody = success({ order: normalizeOrderRecord(data as unknown as OrderSourceRow), confirmed });
         await idempotency.complete({
@@ -416,6 +473,26 @@ orderCodRouter.post('/:id/cod/timeout', validate('json', CodTimeoutSchema), asyn
             actorId: tenant.userId,
             requestId: tenant.requestId,
         });
+
+        // LB-10 — a COD timeout cancels the order; notify the customer (best-effort).
+        try {
+            await enqueueOrderLifecycleEmail(c.env, db, {
+                orderId,
+                storeId: tenant.siteId,
+                requestId: tenant.requestId,
+                kind: 'cancelled',
+            });
+        } catch (emailError) {
+            console.warn(JSON.stringify({
+                level: 'warn',
+                event: 'order_lifecycle_email_enqueue_failed',
+                kind: 'cancelled',
+                order_id: orderId,
+                error: String(emailError),
+            }));
+        }
+
+        await releaseCancelledCodOrderResources(db, orderId, tenant);
 
         const responseBody = success({ order: normalizeOrderRecord(data as unknown as OrderSourceRow), reason: body.reason });
         await idempotency.complete({

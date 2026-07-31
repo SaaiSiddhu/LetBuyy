@@ -15,6 +15,9 @@ export type StorefrontRouteType =
     | 'customer_account'
     | 'customer_orders'
     | 'customer_wishlist'
+    | 'customer_settings'
+    | 'customer_addresses'
+    | 'customer_order'
     | 'password'
     | 'not_found';
 
@@ -55,11 +58,30 @@ export interface StorefrontRenderPlan {
     cacheTags: string[];
 }
 
+export interface ProductReviewItem {
+    id: string;
+    author: string;
+    rating: number;
+    title: string | null;
+    body: string | null;
+    images: string[];
+    isVerified: boolean;
+    helpfulCount: number;
+    createdAt: string | null;
+}
+
+export interface ProductReviewData {
+    reviews: ProductReviewItem[];
+    rating: number;
+    reviewCount: number;
+}
+
 export interface SectionRenderData {
     products?: ProductModel[];
     product?: ProductModel;
     cart?: Record<string, unknown>;
     collection?: { id: string; title: string; description?: string | null };
+    reviews?: ProductReviewData;
 }
 
 export interface SectionRendererProps {

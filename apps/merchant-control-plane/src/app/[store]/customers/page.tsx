@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import type { Customer as SharedCustomer } from '@letbuyy/shared-types'
 import { formatIndiaDate as formatDate, formatInrCurrency } from '@letbuyy/ui/formatting'
@@ -310,9 +311,19 @@ export default function CustomersPage() {
         },
     ]
 
+    const isMainEmpty = !error && !searchQuery.trim() && activeView === 'all'
     const emptyState = (
         <EmptyState
-            icon={<MaterialIcon name={error ? 'error' : 'group'} />}
+            illustration={isMainEmpty ? (
+                <Image
+                    src="/Emptystate Illustration/Customers.png"
+                    alt=""
+                    width={200}
+                    height={200}
+                    aria-hidden="true"
+                />
+            ) : undefined}
+            icon={!isMainEmpty ? <MaterialIcon name={error ? 'error' : 'group'} /> : undefined}
             title={error ? 'Unable to load customers' : searchQuery.trim() || activeView !== 'all' ? 'No matching customers' : 'No customers yet'}
             body={error || (searchQuery.trim()
                 ? 'Clear the search to return to the full customer list.'
@@ -388,6 +399,7 @@ export default function CustomersPage() {
                                 sortKey={sortKey}
                                 sortDirection={sortDirection}
                                 onSort={handleSort}
+                                onRowClick={(customer) => router.push(`/${store}/customers/${encodeURIComponent(customer.email)}`)}
                             />
                         )}
                     </div>

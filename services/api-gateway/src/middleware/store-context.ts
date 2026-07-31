@@ -38,6 +38,10 @@ export interface StorefrontHostSiteContext {
     access_message: string | null;
     published: boolean | null;
     status: string | null;
+    // Multi-domain (migration 185): set when the host matched a site_domains row
+    // (rather than the legacy sites.custom_domain primary).
+    matched_domain_role?: 'primary' | 'redirect' | null;
+    matched_redirect_to?: string | null;
 }
 
 declare module 'hono' {
@@ -220,7 +224,34 @@ export async function resolveStorefrontSiteByHost(
             .eq('custom_domain_status', 'active')
             .is('deleted_at', null)
             .maybeSingle();
-        return (data as StorefrontHostSiteContext | null) || null;
+        if (data) return data as StorefrontHostSiteContext;
+
+        // Multi-domain (185): match a connected secondary/redirect domain. supabase-js
+        // returns an error (not a throw) when site_domains is absent, so a missing
+        // table simply yields no match and the legacy behaviour is preserved.
+        const { data: sd } = await db
+            .from('site_domains')
+            .select('site_id, role, redirect_to, status')
+            .eq('domain', parsed.domain)
+            .eq('status', 'active')
+            .is('deleted_at', null)
+            .maybeSingle();
+        if (sd?.site_id) {
+            const { data: site } = await db
+                .from('sites')
+                .select(select)
+                .eq('id', sd.site_id)
+                .is('deleted_at', null)
+                .maybeSingle();
+            if (site) {
+                return {
+                    ...(site as StorefrontHostSiteContext),
+                    matched_domain_role: sd.role as 'primary' | 'redirect',
+                    matched_redirect_to: (sd.redirect_to as string | null) ?? null,
+                };
+            }
+        }
+        return null;
     }
 
     return null;

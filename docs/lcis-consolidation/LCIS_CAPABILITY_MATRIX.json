@@ -1,0 +1,578 @@
+{
+  "generatedFrom": "tools/graph-server/*.mjs (81 files) + tools/central-intelligence/**/*.mjs (121 files) + docs/lcis-master/LCIS_DUPLICATION_REPORT.md + docs/lcis-master/_evidence/inventory-graph-server.md + docs/lcis-master/_evidence/inventory-central-intelligence.md",
+  "generatedDate": "2026-06-20",
+  "generatedBy": "LCIS Consolidation Phase 1 — discovery-only, no code modified",
+  "summary": {
+    "totalEngineFiles": {
+      "graphServer": 81,
+      "centralIntelligence": 121,
+      "total": 202
+    },
+    "capabilities": 32,
+    "dispositions": {
+      "keep": 58,
+      "merge": 3,
+      "move": 5,
+      "archive": 54,
+      "remove": 1
+    },
+    "notes": "Disposition counts are per-file (see LCIS_MIGRATION_PLAN.md). Capabilities are logical; files per capability vary. 'move' = migrate novel :3334 capability into :3333. 'archive' encompasses all :3334 files not worth migrating plus deprecated :3333 endpoints."
+  },
+  "capabilities": [
+    {
+      "id": "code-graph",
+      "name": "Code Graph (Graphify)",
+      "category": "foundation",
+      "targetModule": "types",
+      "sourceFiles": ["external: ~/.local/bin/graphify → graphify-out/graph.json"],
+      "dependencies": [],
+      "consumers": ["intelligence", "graph-server/server.mjs"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "External binary, not a .mjs file. Sole code-graph authority. 52,246 nodes / 66,761 edges. Unchanged."
+    },
+    {
+      "id": "db-intelligence",
+      "name": "DB Intelligence (tables/RPCs/policies/triggers/indexes)",
+      "category": "foundation",
+      "targetModule": "graph",
+      "sourceFiles": ["tools/graph-server/db-intel.mjs"],
+      "dependencies": ["migrations/*.sql"],
+      "consumers": ["nearly all downstream engines via db-intel.json artifact"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "CLI script + artifact writer. 417 tables, 164 RPCs, 658 policies, 398 triggers, 834 indexes verified. Foundational. No merge candidate."
+    },
+    {
+      "id": "infra-intelligence",
+      "name": "Infrastructure Intelligence (workers/queues/secrets/deploy targets)",
+      "category": "foundation",
+      "targetModule": "graph",
+      "sourceFiles": ["tools/graph-server/infra-intel.mjs"],
+      "dependencies": ["wrangler.toml (4×)", ".github/workflows/*.yml", "CODEOWNERS"],
+      "consumers": ["nearly all downstream engines via infra-intel.json artifact"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "CLI script + artifact writer. Foundational. No merge candidate."
+    },
+    {
+      "id": "domain-classification",
+      "name": "Domain Classification (22 business domains)",
+      "category": "foundation",
+      "targetModule": "graph",
+      "sourceFiles": ["tools/graph-server/domain-intel.mjs"],
+      "dependencies": ["db-intel.json", "infra-intel.json", "services/api-gateway/src/routes/**/*.ts"],
+      "consumers": ["all intelligence engines", "cli"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "22-domain classifier with cross-domain edges. Endpoints: /api/domains /api/domain /api/cross-domain. Core foundation — never touches a merge."
+    },
+    {
+      "id": "fk-relationship-graph",
+      "name": "FK Relationship Graph",
+      "category": "foundation",
+      "targetModule": "graph",
+      "sourceFiles": ["tools/graph-server/relationship-intel.mjs"],
+      "dependencies": ["migrations/*.sql"],
+      "consumers": ["database-control-intel", "explain-intel"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "705 FK edges; sites is tenant root. Endpoint: /api/relationships."
+    },
+    {
+      "id": "blast-radius",
+      "name": "Blast Radius / Graph Traversal",
+      "category": "foundation",
+      "targetModule": "blast-radius",
+      "sourceFiles": ["tools/graph-server/intelligence.mjs"],
+      "dependencies": ["graph.json", "db-intel.json", "infra-intel.json"],
+      "consumers": ["cli (graph:intel)", "mcp (graphify-mcp)", "pr-intel", "all upstream engines"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "Primary intelligence surface: blastRadius, deps, consumers, search, payment/tenant flow, traceRPC. Endpoints: /api/blast /api/atlas /api/search /api/path /api/payment /api/table /api/rpc /api/policy /api/owner. Highest-blast-radius function in codebase."
+    },
+    {
+      "id": "shared-lib",
+      "name": "Shared Library (omega-lib)",
+      "category": "utils",
+      "targetModule": "utils",
+      "sourceFiles": ["tools/graph-server/omega-lib.mjs"],
+      "dependencies": ["graphify-out/"],
+      "consumers": ["all Omega-generation engines"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "loadIntel(), writeOut(), LIVE sentinel, tablesMatching(), tableExists(). Internal library only — no HTTP surface."
+    },
+    {
+      "id": "custom-domain-feature",
+      "name": "Custom-Domain Feature Intelligence",
+      "category": "feature",
+      "targetModule": "catalog",
+      "sourceFiles": ["tools/graph-server/domain-intelligence.mjs"],
+      "dependencies": ["migrations/185_v1_site_domains.sql", "services/api-gateway/src/routes/custom-domains.ts", "apps/storefront-runtime/src/proxy.ts"],
+      "consumers": [],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "DARK — endpoint /api/domain-intelligence not wired in server.mjs. Rename to custom-domain-feature-intel.mjs and wire. Distinct from domain-intel.mjs (business domains vs. custom-domain feature). Action required: wire endpoint."
+    },
+    {
+      "id": "security-intelligence",
+      "name": "Security Intelligence",
+      "category": "security",
+      "targetModule": "graph",
+      "sourceFiles": [
+        "tools/graph-server/security-intel.mjs",
+        "tools/graph-server/security-intelligence-v5.mjs"
+      ],
+      "dependencies": ["db-intel.json", "infra-intel.json", "domain-intel.json"],
+      "consumers": ["decision-engine-v2", "production-readiness-v2", "mission-control-dashboard"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "Two-layer: v3 (identity/JWT/OAuth/webhook/tenant/RLS/attack-surface) + v5 (trust boundaries, cross-tenant candidates, privilege-escalation hotspots). Both wired; v5 adds genuine value. Endpoints: /api/security /api/security-intelligence."
+    },
+    {
+      "id": "payment-intelligence",
+      "name": "Payment Intelligence",
+      "category": "commerce",
+      "targetModule": "graph",
+      "sourceFiles": ["tools/graph-server/payment-intel.mjs"],
+      "dependencies": ["db-intel.json", "domain-intel.json"],
+      "consumers": ["cli (graph:payment)"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "9 money sub-flows (COD/Razorpay/Refunds/Payouts/GiftCards/GST/Settlement/Commission/Ledger) + integrity checks. Endpoint: /api/payment."
+    },
+    {
+      "id": "merchant-intelligence",
+      "name": "Merchant Intelligence (all 8 models)",
+      "category": "commerce",
+      "targetModule": "graph",
+      "sourceFiles": [
+        "tools/graph-server/merchant-intel.mjs",
+        "tools/graph-server/merchant-intelligence.mjs",
+        "tools/graph-server/merchant-operating-graph.mjs",
+        "tools/graph-server/merchant-health-intel.mjs",
+        "tools/graph-server/merchant-growth-intel.mjs",
+        "tools/graph-server/merchant-adoption-intel.mjs",
+        "tools/graph-server/merchant-risk-intel.mjs",
+        "tools/graph-server/merchant-churn-intel.mjs"
+      ],
+      "dependencies": ["domain-intel.json", "db-intel.json"],
+      "consumers": ["decision-engine-v2", "mission-control-dashboard", "commerce-control-intel"],
+      "maturity": "real",
+      "disposition": "merge",
+      "notes": "merchant-operating-graph.mjs (v4) is a functional subset of merchant-intelligence.mjs (v5); MERGE: fold /api/merchant-operating into merchant-intelligence.mjs and drop the separate module. The other 7 are KEEP (distinct models). See migration plan for per-file detail."
+    },
+    {
+      "id": "revenue-intelligence",
+      "name": "Revenue Intelligence (anomaly + models)",
+      "category": "commerce",
+      "targetModule": "graph",
+      "sourceFiles": [
+        "tools/graph-server/revenue-intelligence.mjs",
+        "tools/graph-server/revenue-intelligence-v2.mjs"
+      ],
+      "dependencies": ["db-intel.json", "domain-intel.json"],
+      "consumers": ["mission-control-dashboard", "commerce-control-intel"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "Two genuinely distinct models: anomaly/leak detection (v5 file but older focus) + 8 Omega revenue models (v2 file despite newer). Recommend rename: revenue-anomaly-intel.mjs + revenue-models-intel.mjs (future refactor, not Phase 1). Both keep. Endpoints: /api/revenue-intelligence /api/revenue-v2."
+    },
+    {
+      "id": "cost-intelligence",
+      "name": "Cost Intelligence",
+      "category": "commerce",
+      "targetModule": "graph",
+      "sourceFiles": ["tools/graph-server/cost-intelligence.mjs"],
+      "dependencies": ["db-intel.json", "infra-intel.json"],
+      "consumers": ["mission-control-dashboard"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "10 services with published-list pricing; totals query-bound. Endpoint: /api/cost-intelligence."
+    },
+    {
+      "id": "customer-intelligence",
+      "name": "Customer Intelligence (funnel + journey)",
+      "category": "commerce",
+      "targetModule": "graph",
+      "sourceFiles": [
+        "tools/graph-server/customer-intelligence-v2.mjs",
+        "tools/graph-server/customer-journey-intelligence.mjs"
+      ],
+      "dependencies": ["db-intel.json", "domain-intel.json"],
+      "consumers": ["commerce-control-intel", "mission-control-dashboard"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "Two distinct views: 8-graph customer intelligence (funnel/conversion/refund/retention/risk/abandonment/loyalty) + 8-stage journey with failure points. Both keep. Endpoints: /api/customer-intelligence-v2 /api/customer-journey."
+    },
+    {
+      "id": "memory",
+      "name": "Memory / Governance Decisions",
+      "category": "memory",
+      "targetModule": "memory",
+      "sourceFiles": [
+        "tools/graph-server/memory-intel.mjs",
+        "tools/graph-server/memory-v2.mjs"
+      ],
+      "dependencies": ["LETBUYY_CONSTITUTION.md", "AGENTS.md", "CLAUDE.md", "docs/architecture/", "migrations/"],
+      "consumers": ["memory-v2 calls memory-intel; decision-engine-v2"],
+      "maturity": "real",
+      "disposition": "merge",
+      "notes": "memory-intel.mjs is the foundational extractor (keep as internal lib); memory-v2.mjs is the primary surface (9 categories + rejected/failed). MERGE: retire /api/memory endpoint; keep module as internal library. Primary surface = /api/memory-v2."
+    },
+    {
+      "id": "incident-intelligence",
+      "name": "Incident Intelligence",
+      "category": "runtime",
+      "targetModule": "runtime",
+      "sourceFiles": [
+        "tools/graph-server/incident-intel.mjs",
+        "tools/graph-server/incident-response.mjs",
+        "tools/graph-server/incident-intelligence-v5.mjs",
+        "tools/graph-server/incident-control-intel.mjs"
+      ],
+      "dependencies": ["domain-intel.json", "db-intel.json", "infra-intel.json", "deployment-state.json"],
+      "consumers": ["cli", "detection-prediction-intel"],
+      "maturity": "real",
+      "disposition": "merge",
+      "notes": "4-layer lineage: v3 → v4 → v5 → Genesis (incident-control). incident-control-intel.mjs is the definitive surface. MERGE: retire /api/incident /api/incident-response /api/incident-intelligence endpoints; keep modules as internal libs consumed by incident-control. Primary surface = /api/incident-control."
+    },
+    {
+      "id": "diagnosis",
+      "name": "Root Cause / Diagnosis",
+      "category": "runtime",
+      "targetModule": "runtime",
+      "sourceFiles": ["tools/graph-server/diagnosis-engine.mjs"],
+      "dependencies": ["domain-intel.json", "fix-engine.json"],
+      "consumers": ["incident-control-intel"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "Root cause from failure signal; confidence 0-100; affected domains/merchants/customers. Endpoints: /api/diagnose /api/root-cause."
+    },
+    {
+      "id": "runbooks",
+      "name": "Runbooks (autonomous, with escalation)",
+      "category": "runtime",
+      "targetModule": "runtime",
+      "sourceFiles": ["tools/graph-server/runbook-engine.mjs"],
+      "dependencies": ["explain-intel chain"],
+      "consumers": ["incident-control-intel", "live-health-intel"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "Detection/Diagnosis/Recovery/Rollback/Verification/Escalation per domain. Endpoint: /api/runbook. Writes runbooks.json."
+    },
+    {
+      "id": "production-readiness",
+      "name": "Production Readiness (detail + executive)",
+      "category": "decision",
+      "targetModule": "decision",
+      "sourceFiles": [
+        "tools/graph-server/production-readiness-intel.mjs",
+        "tools/graph-server/production-readiness-v2.mjs",
+        "tools/graph-server/production-health.mjs"
+      ],
+      "dependencies": ["domain-intel.json", "db-intel.json", "infra-intel.json", "execution-intel.json"],
+      "consumers": ["decision-engine-v2", "launch-command-center", "mission-control-dashboard"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "Three-layer: 18-system detail (v5), 10-dimension executive rollup (v2), GREEN/YELLOW/RED health (health). Not true duplicates — layered abstractions. All three keep. Endpoints: /api/production-readiness /api/production-readiness-v2 /api/production-health."
+    },
+    {
+      "id": "decision-engine",
+      "name": "Decision Engine / Fix Priorities",
+      "category": "decision",
+      "targetModule": "decision",
+      "sourceFiles": [
+        "tools/graph-server/decision-engine-v5.mjs",
+        "tools/graph-server/decision-engine-v2.mjs",
+        "tools/graph-server/fix-engine.mjs",
+        "tools/graph-server/execution-intel.mjs"
+      ],
+      "dependencies": ["execution-intel.json", "production-readiness-v2.json", "revenue-intelligence.json", "security-intelligence-v5.json"],
+      "consumers": ["cli (graph:ai-ops)", "mission-control-dashboard"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "v5 = base ranker; v2 (Omega) = adds 1k/10k scale tiers; v2 imports v5. REFACTOR (not Phase 1): remove standalone /api/decision-engine endpoint from v5; expose only via /api/decision-v2. execution-intel.mjs is foundational CLI artifact writer. Endpoints: /api/decision-engine (v5, retire) /api/decision-v2 /api/fix-engine /api/execution."
+    },
+    {
+      "id": "audit",
+      "name": "Security Audit (route/RLS coverage)",
+      "category": "security",
+      "targetModule": "graph",
+      "sourceFiles": ["tools/graph-server/audit-engine-v2.mjs"],
+      "dependencies": ["services/api-gateway/src/routes/**/*.ts", "db-intel.json", "domain-intel.json"],
+      "consumers": ["launch-command-center"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "Scans actual route files for missing auth/rate-limit/validation; RLS coverage from db-intel. Endpoint: /api/audit."
+    },
+    {
+      "id": "runtime-observability",
+      "name": "Runtime & Observability Topology",
+      "category": "runtime",
+      "targetModule": "runtime",
+      "sourceFiles": [
+        "tools/graph-server/runtime-intel.mjs",
+        "tools/graph-server/runtime-observability-intel.mjs",
+        "tools/graph-server/telemetry-intelligence.mjs"
+      ],
+      "dependencies": ["wrangler.toml (4×)", "domain-intel.json", "db-intel.json", "deployment-state.json", "infra-intel.json"],
+      "consumers": ["operations-center", "infrastructure-control-intel"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "Three-layer: runtime topology (runtime-intel) + full operating chain map (runtime-obs) + 12 telemetry adapter sources (telemetry). Structurally CONNECTED; live values NOT CONNECTED. All three distinct. Endpoints: /api/runtime /api/runtime-intelligence /api/runtime-observability /api/telemetry."
+    },
+    {
+      "id": "deployment-intelligence",
+      "name": "Deployment Intelligence",
+      "category": "runtime",
+      "targetModule": "runtime",
+      "sourceFiles": [
+        "tools/graph-server/deployment-intel.mjs",
+        "tools/graph-server/deployment-state.mjs",
+        "tools/graph-server/deployment-intelligence-v5.mjs"
+      ],
+      "dependencies": ["infra-intel.json", ".github/workflows/*.yml", "migrations/", "git"],
+      "consumers": ["operations-center", "launch-command-center"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "Three layers: Actions→Worker/Vercel map (deployment-intel) + declared state from git (deployment-state) + SPOF/rollback analysis (v5). v5 is DARK (not wired). Action required: wire /api/deployment-intelligence-v5 in server.mjs. Endpoints: /api/deployment /api/deployment-state /api/deployment-intelligence-v5 (dark)."
+    },
+    {
+      "id": "environment-registry",
+      "name": "Environment & Credential Registry",
+      "category": "runtime",
+      "targetModule": "runtime",
+      "sourceFiles": [
+        "tools/graph-server/environment-intel.mjs",
+        "tools/graph-server/environment-registry.mjs"
+      ],
+      "dependencies": ["wrangler.toml", "config/env/", "process.env (presence only)"],
+      "consumers": ["live-adapters", "environment-control-intel", "federation-intel"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "Two-layer: 3-environment map (environment-intel) + per-provider credential presence (environment-registry, never values). Endpoints: /api/environment /api/environment-registry."
+    },
+    {
+      "id": "live-adapters",
+      "name": "Live Adapters (provider probes)",
+      "category": "runtime",
+      "targetModule": "runtime",
+      "sourceFiles": [
+        "tools/graph-server/live-adapters.mjs",
+        "tools/graph-server/connections-intel.mjs",
+        "tools/graph-server/federation-intel.mjs"
+      ],
+      "dependencies": ["process.env", "infra-intel.json", "environment-registry.json"],
+      "consumers": ["explain-intel", "launch-command-center"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "Three layers: real probes when credentials present (live-adapters) + 13-source connection registry (connections-intel) + 7-provider graph merge (federation-intel). All 7 providers NOT CONNECTED in dev. Endpoints: /api/live-adapters /api/live /api/connections /api/federation /api/live-graph."
+    },
+    {
+      "id": "detection-prediction",
+      "name": "Detection & Prediction (INFINITY)",
+      "category": "runtime",
+      "targetModule": "runtime",
+      "sourceFiles": [
+        "tools/graph-server/detection-prediction-intel.mjs",
+        "tools/graph-server/live-health-intel.mjs"
+      ],
+      "dependencies": ["domain-intel.json", "db-intel.json", "infra-intel.json", "launch-command-center.json", "runbooks.json"],
+      "consumers": ["cli"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "8 autonomous detectors + 6 predictors + what-will-fail-next + 11 live metric sources (all NOT CONNECTED structurally). live-health-intel = per-domain health records. Endpoints: /api/detection /api/predict /api/live-metrics /api/detection-prediction /api/incident-timeline /api/live-health."
+    },
+    {
+      "id": "explain-search",
+      "name": "Explain Mode & Semantic Search",
+      "category": "catalog",
+      "targetModule": "catalog",
+      "sourceFiles": [
+        "tools/graph-server/explain-intel.mjs",
+        "tools/graph-server/search-intel.mjs"
+      ],
+      "dependencies": ["domain-intel.json", "db-intel.json", "infra-intel.json", "production-readiness-v2.json", "execution-intel.json", "relationship-intel.json", "ecosystem-intel.json"],
+      "consumers": ["mcp", "cli", "AI agents"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "LCIS v6 Explain mode: per-domain Purpose/Criticality/Owner/Dependencies/Failure/aiContext. search-intel: 40+ NL aliases → domain keys; 7 intent types. Endpoints: /api/explain /api/search-v2 /api/workspace /api/search."
+    },
+    {
+      "id": "control-centers",
+      "name": "Control Centers (launch/incident/commerce/infra/database/environment)",
+      "category": "catalog",
+      "targetModule": "catalog",
+      "sourceFiles": [
+        "tools/graph-server/launch-command-center.mjs",
+        "tools/graph-server/incident-control-intel.mjs",
+        "tools/graph-server/commerce-control-intel.mjs",
+        "tools/graph-server/infrastructure-control-intel.mjs",
+        "tools/graph-server/database-control-intel.mjs",
+        "tools/graph-server/environment-control-intel.mjs"
+      ],
+      "dependencies": ["All major artifact JSONs"],
+      "consumers": ["cli", "SPA UI at :3333"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "Genesis-era control centers. Each is a composed answer over multiple engines. Endpoints: /api/launch-command-center /api/launch-status /api/incident-control /api/commerce-control /api/infrastructure-control /api/lineage /api/trace /api/database-control /api/environment-control."
+    },
+    {
+      "id": "knowledge-ecosystem",
+      "name": "Knowledge Graphs & Ecosystem",
+      "category": "catalog",
+      "targetModule": "catalog",
+      "sourceFiles": [
+        "tools/graph-server/knowledge-graphs.mjs",
+        "tools/graph-server/ecosystem-intel.mjs",
+        "tools/graph-server/business-flow-intel.mjs",
+        "tools/graph-server/mission-control-dashboard.mjs",
+        "tools/graph-server/operations-center.mjs",
+        "tools/graph-server/unified-intelligence-engine.mjs",
+        "tools/graph-server/ai-context-intel.mjs",
+        "tools/graph-server/cross-domain-engine.mjs",
+        "tools/graph-server/change-impact.mjs"
+      ],
+      "dependencies": ["domain-intel.json", "db-intel.json", "infra-intel.json", "all major artifacts"],
+      "consumers": ["SPA UI", "AI agents", "cli"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "7 knowledge sub-graphs, frozen ecosystem (themes/apps/devportal), 10 business journeys, mission-control 8-tile dashboard, 7-area operations center, 13-layer unified brain, AI packs (<20k tokens), blast/coupling algorithms, impact scores. Endpoints: /api/graph /api/theme-intelligence /api/apps-intelligence /api/developer-intelligence /api/ecosystem /api/business-flow /api/mission-control /api/operations /api/unified-intelligence /api/ai-context /api/ai-context-pack /api/ai-pack /api/change-impact /api/change-impact-live /api/impact-score."
+    },
+    {
+      "id": "cli-utilities",
+      "name": "CLI Utilities & Report Generators",
+      "category": "utils",
+      "targetModule": "utils",
+      "sourceFiles": [
+        "tools/graph-server/graph-stats.mjs",
+        "tools/graph-server/validate-graph.mjs",
+        "tools/graph-server/refresh-graph.mjs",
+        "tools/graph-server/gen-reports.mjs",
+        "tools/graph-server/gen-v3-reports.mjs",
+        "tools/graph-server/gen-v4-reports.mjs",
+        "tools/graph-server/gen-v5-reports.mjs",
+        "tools/graph-server/gen-omega-reports.mjs",
+        "tools/graph-server/gen-explain-docs.mjs"
+      ],
+      "dependencies": ["graphify-out/", "docs/central-intelligence/"],
+      "consumers": ["graph:* pnpm scripts"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "9 CLI-only utilities. No HTTP surface. Each report generator writes to a different version layer of docs/central-intelligence/. No internal overlap. All keep."
+    },
+    {
+      "id": "discovery",
+      "name": "Discovery & Drift Detection",
+      "category": "catalog",
+      "targetModule": "catalog",
+      "sourceFiles": [
+        "tools/graph-server/discovery-engine.mjs",
+        "tools/graph-server/autonomous-discovery-v5.mjs",
+        "tools/graph-server/discovery-v2.mjs"
+      ],
+      "dependencies": ["domain-intel.json", "infra-intel.json", "db-intel.json"],
+      "consumers": ["fix-engine", "cli"],
+      "maturity": "real",
+      "disposition": "keep",
+      "notes": "Three-layer: v3 (REMOVE — unwired/superseded), v5 (internal library of discovery-v2), v2/Omega (live endpoint). discovery-engine.mjs is the one confirmed REMOVE. Endpoint: /api/discovery-v2."
+    },
+    {
+      "id": "architecture-intelligence",
+      "name": "Architecture Intelligence (drift/layers/services/dependencies)",
+      "category": "architecture",
+      "targetModule": "architecture",
+      "sourceFiles": [
+        "tools/central-intelligence/architecture-intelligence/ArchitectureIntelligenceEngine.mjs",
+        "tools/central-intelligence/architecture-intelligence/ArchitectureDriftDetector.mjs",
+        "tools/central-intelligence/architecture-intelligence/ArchitectureSnapshotService.mjs",
+        "tools/central-intelligence/architecture-intelligence/DependencyDiscovery.mjs",
+        "tools/central-intelligence/architecture-intelligence/DomainDiscovery.mjs",
+        "tools/central-intelligence/architecture-intelligence/LayerDiscovery.mjs",
+        "tools/central-intelligence/architecture-intelligence/ServiceDiscovery.mjs"
+      ],
+      "dependencies": ["package.json scan", "graphify-out/*.json — filesystem only, zero external services"],
+      "consumers": ["orchestration-engine (architecture-review workflow)", "intelligence-api /intelligence/architecture/*"],
+      "maturity": "real",
+      "disposition": "move",
+      "notes": "Pure filesystem analysis; no external deps; works at cold start. BEST V2 engine. MIGRATE to :3333 as packages/lcis-core/src/architecture.mjs. No :3333 equivalent. Must migrate before archiving :3334."
+    },
+    {
+      "id": "execution-safety",
+      "name": "Execution Safety (SafetyGuard + audit chain)",
+      "category": "contracts",
+      "targetModule": "contracts",
+      "sourceFiles": [
+        "tools/central-intelligence/execution-engine/ExecutionEngine.mjs",
+        "tools/central-intelligence/execution-engine/SafetyGuard.mjs",
+        "tools/central-intelligence/execution-engine/ExecutionAuditor.mjs",
+        "tools/central-intelligence/execution-engine/ActionRegistry.mjs"
+      ],
+      "dependencies": ["read-only sub-engines; filesystem (SHA-256 audit log)"],
+      "consumers": ["operating-loop (2 hardcoded actions)", "intelligence-api /intelligence/execute/*"],
+      "maturity": "real",
+      "disposition": "move",
+      "notes": "28-verb ban whitelist; parameter value scan; no bypass path; SHA-256 hash-chain audit log. Verified genuinely read-only. No :3333 equivalent. MIGRATE to :3333 as packages/lcis-core/src/contracts.mjs."
+    },
+    {
+      "id": "verification",
+      "name": "Verification of Conclusions",
+      "category": "verification",
+      "targetModule": "verification",
+      "sourceFiles": [
+        "tools/central-intelligence/verification-engine/VerificationEngine.mjs",
+        "tools/central-intelligence/verification-engine/EvidenceVerifier.mjs",
+        "tools/central-intelligence/verification-engine/ConfidenceCalculator.mjs",
+        "tools/central-intelligence/verification-engine/VerificationLedger.mjs"
+      ],
+      "dependencies": ["V1 HTTP (optional); Qdrant (optional); filesystem (ledger)"],
+      "consumers": ["intelligence-api /intelligence/verify/*"],
+      "maturity": "real",
+      "disposition": "move",
+      "notes": "Refuses to rubber-stamp: requires ≥2 independent sources with ≥0.60 confidence for VERIFIED. REFUTED path active. No :3333 equivalent. MIGRATE to :3333 as packages/lcis-core/src/verification.mjs."
+    },
+    {
+      "id": "context-compression",
+      "name": "Context Compression / AI Token Budget",
+      "category": "utils",
+      "targetModule": "utils",
+      "sourceFiles": [
+        "tools/central-intelligence/context-intelligence/ContextAssembler.mjs",
+        "tools/central-intelligence/context-intelligence/ContextCompressionPipeline.mjs",
+        "tools/central-intelligence/context-intelligence/ContextDiagnostics.mjs",
+        "tools/central-intelligence/context-intelligence/ContextOptimizer.mjs",
+        "tools/central-intelligence/context-intelligence/ContextHealthMonitor.mjs",
+        "tools/central-intelligence/context-intelligence/ArchitectureGraphBuilder.mjs",
+        "tools/central-intelligence/context-intelligence/DependencyGraphBuilder.mjs",
+        "tools/central-intelligence/context-intelligence/RepositoryGraphBuilder.mjs",
+        "tools/central-intelligence/context-intelligence/TokenOptimizer.mjs"
+      ],
+      "dependencies": ["graphify-out/*.json — filesystem only if graphify-out populated"],
+      "consumers": ["intelligence-api /intelligence/context/*"],
+      "maturity": "real",
+      "disposition": "move",
+      "notes": "Pure filesystem; ~1,275× context compression. Works if graphify-out/ populated. No :3333 equivalent. MIGRATE subset (ContextAssembler + ContextCompressionPipeline + TokenOptimizer) to :3333 as packages/lcis-core/src/utils.mjs."
+    },
+    {
+      "id": "browser-validation",
+      "name": "Browser Validation (Playwright)",
+      "category": "runtime",
+      "targetModule": "runtime",
+      "sourceFiles": [
+        "tools/central-intelligence/browser-intelligence/BrowserIntelligenceEngine.mjs",
+        "tools/central-intelligence/browser-intelligence/agents/CheckoutAgent.mjs",
+        "tools/central-intelligence/browser-intelligence/agents/MonitoringAgent.mjs",
+        "tools/central-intelligence/browser-intelligence/agents/StoreAgent.mjs",
+        "tools/central-intelligence/browser-intelligence/agents/ThemeAgent.mjs",
+        "tools/central-intelligence/browser-intelligence/evidence/EvidenceCollector.mjs",
+        "tools/central-intelligence/browser-intelligence/validators/SEOValidator.mjs"
+      ],
+      "dependencies": ["playwright npm package (optional — graceful degradation)"],
+      "consumers": ["intelligence-api /intelligence/browser/*"],
+      "maturity": "real",
+      "disposition": "move",
+      "notes": "Optional module: returns { status: 'NOT AVAILABLE' } if playwright not installed. Never executes real payments (CheckoutAgent documented). No :3333 equivalent. MIGRATE as optional module to :3333 as packages/lcis-core/src/runtime-browser.mjs. Lowest priority of the 5 migrations."
+    }
+  ]
+}

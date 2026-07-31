@@ -16,7 +16,9 @@
             "label": "Products",
             "href": "/products"
           },
-          "disabled": false
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
         },
         "header-collections": {
           "type": "link",
@@ -24,7 +26,9 @@
             "label": "Collections",
             "href": "/collections/new-arrivals"
           },
-          "disabled": false
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
         }
       },
       "block_order": [

@@ -1,0 +1,24 @@
+{
+  "name": "@letbuyy/lcis-execution",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "LCIS Execution Intelligence (EIS) — read-only planning/change-impact/migration/test/rollback/launch intelligence over @letbuyy/lcis-core + @letbuyy/lcis-live. LCIS plans, analyzes, verifies, recommends; it never executes, mutates, migrates, or deploys.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@letbuyy/lcis-core": "workspace:*",
+    "@letbuyy/lcis-live": "workspace:*",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "typescript": "^5.9.3"
+  }
+}

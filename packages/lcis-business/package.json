@@ -1,0 +1,27 @@
+{
+  "name": "@letbuyy/lcis-business",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "LBIS — Business Intelligence System. Read-only, deterministic business intelligence composed over the operations merchant/commerce/customer/forecast services, the dependency twin, and the money adapters: merchant / revenue / order / customer / subscription / settlement / refund / coupon / growth / marketing / finance intelligence, executive KPIs, forecasting, business + merchant health, and retention analytics. NEVER fabricates a business number — every magnitude stays NOT_CONNECTED with its exact source until a data source is wired.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@letbuyy/lcis-core": "workspace:*",
+    "@letbuyy/lcis-adapters": "workspace:*",
+    "@letbuyy/lcis-operations": "workspace:*",
+    "@letbuyy/lcis-tracking": "workspace:*",
+    "@letbuyy/lcis-twin": "workspace:*",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "typescript": "^5.9.3"
+  }
+}

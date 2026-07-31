@@ -346,6 +346,7 @@ auth.get('/custom/session', async (c) => {
     const sessionVerification = await verifyInternalSessionHeaders(c.env, {
         sessionToken: c.req.header('X-LetBuyy-Internal-Session-Token'),
         timestamp: c.req.header('X-LetBuyy-Internal-Timestamp'),
+        jti: c.req.header('X-LetBuyy-Internal-JTI'),
         signature: c.req.header('X-LetBuyy-Internal-Signature'),
     });
 
@@ -383,7 +384,7 @@ auth.get('/custom/session', async (c) => {
     }
 
     const db = getSupabaseAdmin(c);
-    const session = await validateMerchantSessionToken(db, token, { rotate: true });
+    const session = await validateMerchantSessionToken(db, token, { rotate: false });
     if (session.status === 'error') {
         return c.json(dbErrorBody(), 500);
     }

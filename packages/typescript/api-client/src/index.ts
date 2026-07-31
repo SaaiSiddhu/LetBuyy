@@ -442,6 +442,93 @@ export interface DomainPurchaseInput extends JsonRecord {
   };
 }
 
+// ── Multi-domain (migration 185) contract ────────────────────────────────────
+export type SiteDomainRole = 'primary' | 'redirect';
+export type SiteDomainStatus = 'none' | 'pending' | 'review' | 'verifying' | 'active' | 'error';
+
+export interface SiteDomainRecord {
+  id: string | null;
+  site_id: string;
+  domain: string;
+  role: SiteDomainRole;
+  status: SiteDomainStatus;
+  ssl_status: string;
+  provider: string | null;
+  redirect_to: string | null;
+  last_checked_at: string | null;
+  connected_at: string | null;
+}
+export interface DomainListResult {
+  cname_target: string;
+  source: 'site_domains' | 'legacy';
+  domains: SiteDomainRecord[];
+}
+export interface DomainScopedInput extends JsonRecord {
+  site_id: string;
+}
+export interface DomainScopedQuery extends QueryParams {
+  site_id: string;
+}
+export interface DomainConnectInput extends JsonRecord {
+  site_id: string;
+  domain: string;
+}
+export interface DomainDnsRecordHint {
+  name: string;
+  value: string;
+}
+export interface DomainConnectResult {
+  domain: string;
+  status: string;
+  provider?: string | null;
+  records: {
+    txt?: DomainDnsRecordHint;
+    cname?: DomainDnsRecordHint;
+    apex_alias?: DomainDnsRecordHint;
+  };
+  apex_mx_warning?: boolean;
+  dns_snapshot?: { mx: string[]; ns: string[] };
+}
+export interface DomainVerifyResult {
+  domain: string;
+  status: string;
+  txt_verified?: boolean;
+  cname_verified?: boolean;
+  cname_target?: string;
+  vercel?: JsonRecord;
+  reason?: string;
+}
+export interface DomainVerificationEvent {
+  id: string;
+  domain: string;
+  check_type: string;
+  status: string;
+  txt_verified: boolean;
+  cname_verified: boolean;
+  ssl_active: boolean;
+  created_at: string | null;
+}
+export interface DomainHistoryResult {
+  domain: string;
+  connected: boolean;
+  events: DomainVerificationEvent[];
+}
+export interface DomainRedirectInput extends JsonRecord {
+  site_id: string;
+  role?: 'redirect';
+  redirect_to?: string | null;
+}
+export interface DomainSetPrimaryResult {
+  ok: boolean;
+  domain?: string;
+  role?: string;
+  message?: string;
+}
+export interface DomainDeleteResult {
+  domain: string;
+  released: boolean;
+}
+
 export interface AppInstallationListQuery extends Pick<StoreScopedQuery, 'store_id'> {}
 export interface AppExtensionRegistrationUpdateInput extends JsonRecord {
   status: 'enabled' | 'disabled';
@@ -2050,9 +2137,358 @@ export interface CategoryListQuery extends StoreScopedQuery {
   flat?: boolean;
 }
 
+// ── Smart collections ────────────────────────────────────────────
+export type SmartConditionField =
+  | 'title'
+  | 'product_type'
+  | 'vendor'
+  | 'tag'
+  | 'price'
+  | 'inventory_quantity';
+
+export type SmartConditionOp =
+  | 'equals'
+  | 'not_equals'
+  | 'contains'
+  | 'starts_with'
+  | 'ends_with'
+  | 'gt'
+  | 'lt';
+
+export type SmartMatchType = 'all' | 'any';
+
+export interface SmartCondition {
+  field: SmartConditionField;
+  op: SmartConditionOp;
+  value: string;
+}
+
+export interface SmartCollection {
+  id: string;
+  store_id: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  conditions: SmartCondition[];
+  match_type: SmartMatchType;
+  created_at: string;
+  created_by?: string | null;
+  updated_by?: string | null;
+  version: number;
+}
+
+export interface CreateSmartCollectionInput {
+  store_id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  conditions: SmartCondition[];
+  match_type?: SmartMatchType;
+}
+
+export type UpdateSmartCollectionInput = Partial<{
+  name: string;
+  slug: string;
+  description: string | null;
+  conditions: SmartCondition[];
+  match_type: SmartMatchType;
+}>;
+
+export interface SmartCollectionListQuery extends QueryParams {
+  store_id: string;
+}
+
+export interface SmartCollectionPreviewQuery extends QueryParams {
+  store_id?: string;
+}
+
+export interface SmartCollectionPreviewResult {
+  collection_id: string;
+  match_type: SmartMatchType;
+  condition_count: number;
+  count: number;
+  sample_product_ids: string[];
+  evaluated_of: number;
+  capped_at: number;
+}
+
 export interface InventoryLevelQuery extends StoreScopedQuery {
   product_id?: string;
   low_stock?: boolean;
+}
+
+// ── Purchase orders ──────────────────────────────────────────────
+export interface PurchaseOrderLineInput {
+  product_id: string;
+  variant_id?: string | null;
+  quantity: number;
+  unit_cost: number;
+}
+
+export interface CreatePurchaseOrderInput {
+  store_id: string;
+  supplier_id?: string | null;
+  location_id: string;
+  expected_at?: string;
+  notes?: string;
+  lines: PurchaseOrderLineInput[];
+  idempotency_key: string;
+}
+
+export interface ReceivePurchaseOrderLineInput {
+  purchase_order_line_id: string;
+  quantity: number;
+}
+
+export interface ReceivePurchaseOrderInput {
+  lines?: ReceivePurchaseOrderLineInput[];
+  idempotency_key: string;
+}
+
+export interface PurchaseOrderLine extends JsonRecord {
+  id: string;
+  purchase_order_id: string;
+  product_id: string;
+  variant_id?: string | null;
+  quantity: number;
+  unit_cost: number;
+  received_quantity: number;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface PurchaseOrder extends JsonRecord {
+  id: string;
+  site_id: string;
+  supplier_id?: string | null;
+  location_id: string;
+  status: 'draft' | 'ordered' | 'partial' | 'received' | 'cancelled';
+  po_number?: string | null;
+  expected_at?: string | null;
+  notes?: string | null;
+  total_cost: number;
+  created_at: string;
+  updated_at?: string | null;
+  supplier?: { name: string } | null;
+  lines: PurchaseOrderLine[];
+}
+
+export interface PurchaseOrderListQuery extends StoreScopedQuery {}
+
+// ── Suppliers ────────────────────────────────────────────────────
+export interface CreateSupplierInput {
+  store_id: string;
+  name: string;
+  contact_name?: string;
+  email?: string;
+  phone?: string;
+  address?: Record<string, unknown>;
+}
+
+export interface Supplier extends JsonRecord {
+  id: string;
+  site_id: string;
+  name: string;
+  contact_name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  address?: Record<string, unknown> | null;
+  created_at: string;
+}
+
+// ── Inventory locations ──────────────────────────────────────────
+export interface CreateInventoryLocationInput {
+  store_id: string;
+  name: string;
+  is_default?: boolean;
+  address?: Record<string, unknown>;
+}
+
+export interface InventoryLocation extends JsonRecord {
+  id: string;
+  store_id: string;
+  name: string;
+  is_default: boolean;
+  status: string;
+  created_at: string;
+}
+
+// Phase 5.5 — typed exposure of the existing inventory transfer + reservation + history gateway routes.
+export interface InventoryTransferLineInput {
+  product_id: string;
+  variant_id?: string | null;
+  quantity: number;
+}
+
+export interface CreateInventoryTransferInput {
+  store_id: string;
+  source_location_id: string;
+  destination_location_id: string;
+  lines: InventoryTransferLineInput[];
+  idempotency_key: string;
+  notes?: string | null;
+}
+
+export interface ShipInventoryTransferInput {
+  store_id: string;
+  idempotency_key: string;
+}
+
+export interface ReceiveInventoryTransferLineInput {
+  transfer_line_id: string;
+  quantity_received: number;
+}
+
+export interface ReceiveInventoryTransferInput {
+  store_id: string;
+  lines: ReceiveInventoryTransferLineInput[];
+  idempotency_key: string;
+}
+
+export interface InventoryTransfer extends JsonRecord {
+  id: string;
+  transfer_number: string;
+  source_location_id: string;
+  destination_location_id: string;
+  status: string;
+  created_at: string;
+}
+
+export interface InventoryTransferListQuery extends StoreScopedQuery {
+  status?: string;
+}
+
+export interface ReserveInventoryInput {
+  store_id: string;
+  product_id: string;
+  variant_id?: string | null;
+  location_id: string;
+  quantity: number;
+  idempotency_key: string;
+  ttl_seconds?: number;
+  order_id?: string | null;
+}
+
+export interface InventoryReservationActionInput {
+  store_id: string;
+  reservation_id: string;
+  idempotency_key: string;
+  reason?: string | null;
+}
+
+export interface InventoryHistoryQuery extends StoreScopedQuery {
+  product_id?: string;
+  page?: number;
+  limit?: number;
+}
+
+// ── Inventory reservations (read endpoint) ───────────────────────
+export interface InventoryReservation extends JsonRecord {
+  id: string;
+  product_id: string;
+  variant_id?: string | null;
+  location_id?: string | null;
+  quantity: number;
+  status: string;
+  expires_at?: string | null;
+  order_id?: string | null;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface InventoryReservationListQuery extends StoreScopedQuery {
+  status?: string;
+  product_id?: string;
+  page?: number;
+  limit?: number;
+}
+
+// ── Inventory receipts (read endpoint) ───────────────────────────
+export interface InventoryReceipt extends JsonRecord {
+  id: string;
+  receipt_type: 'purchase_order' | 'transfer';
+  purchase_order_id?: string | null;
+  transfer_id?: string | null;
+  quantity_received: number;
+  notes?: string | null;
+  received_at?: string | null;
+  created_at: string;
+}
+
+export interface InventoryReceiptListQuery extends StoreScopedQuery {
+  po_id?: string;
+  transfer_id?: string;
+  page?: number;
+  limit?: number;
+}
+
+// ── Inventory analytics (read endpoint) ──────────────────────────
+export interface InventoryAnalyticsResult extends JsonRecord {
+  low_stock_count?: number;
+  total_skus?: number;
+  po_by_status?: Record<string, number>;
+  transfer_by_status?: Record<string, number>;
+}
+
+export interface InventoryAnalyticsQuery extends StoreScopedQuery {
+  [key: string]: string | number | boolean | undefined | null;
+}
+
+export interface InventoryEventRecord extends JsonRecord {
+  id: string;
+  event_type: string;
+  created_at: string;
+}
+
+// ── Commerce Analytics types (Phase 5.10) ───────────────────
+
+export interface CommerceAnalyticsQuery {
+  store_id: string;
+  [key: string]: string | number | boolean | undefined | null;
+}
+
+export interface SupplierMetricsRow extends JsonRecord {
+  supplier_id: string | null;
+  supplier_name: string;
+  po_count: number;
+  on_time_rate: number | null;
+  avg_lead_time_days: number | null;
+}
+
+export interface SupplierMetricsResult extends JsonRecord {
+  suppliers: SupplierMetricsRow[];
+  schema_missing?: boolean;
+}
+
+export interface WarehouseMetricsRow extends JsonRecord {
+  location_id: string;
+  location_name: string;
+  is_default: boolean;
+  sku_count: number;
+  total_units: number;
+}
+
+export interface WarehouseMetricsResult extends JsonRecord {
+  warehouses: WarehouseMetricsRow[];
+  schema_missing?: boolean | string;
+}
+
+export interface TransferMetricsResult extends JsonRecord {
+  by_status: Record<string, number>;
+  in_transit_count: number;
+  total_count: number;
+  schema_missing?: boolean;
+}
+
+export interface OperationsSummaryResult extends JsonRecord {
+  order_count?: number;
+  open_order_count?: number;
+  po_count?: number;
+  open_po_count?: number;
+  transfer_count?: number;
+  in_transit_transfer_count?: number;
+  low_stock_sku_count?: number;
+  total_sku_count?: number;
 }
 
 export interface OrderListQuery extends StoreScopedQuery {
@@ -2107,6 +2543,62 @@ export interface DeviceTokenRegistrationResult extends JsonRecord {
 }
 
 export type SendWhatsAppInput = WhatsAppSendInput;
+
+// ---------------------------------------------------------------------------
+// Notification preferences + delivery logs (merchant operations vertical)
+// ---------------------------------------------------------------------------
+
+/** A row from notification_preferences (user_id/store_id/channel/category). */
+export interface NotificationPreference extends JsonRecord {
+  id: string;
+  user_id: string;
+  store_id: string | null;
+  channel: string;
+  category: string;
+  enabled: boolean;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+/** Query for GET /notifications/preferences */
+export interface NotificationPreferenceQuery extends QueryParams {
+  store_id?: string;
+}
+
+/** Body for PUT /notifications/preferences */
+export interface NotificationPreferenceUpdateInput extends JsonRecord {
+  store_id?: string | null;
+  channel: string;
+  category: string;
+  enabled?: boolean;
+}
+
+/** A delivery-log row from GET /notifications/delivery-logs */
+export interface NotificationDeliveryLog extends JsonRecord {
+  id: string;
+  site_id: string;
+  user_id: string | null;
+  channel: string;
+  category: string;
+  template_key: string;
+  event_type: string | null;
+  status: string;
+  provider: string | null;
+  attempt_count: number | null;
+  error_message: string | null;
+  metadata: JsonRecord | null;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+/** Query for GET /notifications/delivery-logs */
+export interface NotificationDeliveryLogsQuery extends QueryParams {
+  site_id?: string;
+  channel?: string;
+  status?: string;
+  page?: number;
+  limit?: number;
+}
 
 export interface WhatsAppTimelineQuery extends StoreScopedQuery {
   customer_email?: string;
@@ -2606,6 +3098,14 @@ export type UpsertStoreMetafieldValueInput = Pick<StoreMetafieldValue, 'store_id
 export type EmployeeListQuery = Pick<StoreScopedQuery, 'store_id'>;
 export type CreateEmployeeInput = Pick<Employee, 'store_id' | 'email'> & Partial<Employee>;
 export type UpdateEmployeeInput = Partial<Pick<Employee, 'role' | 'permissions' | 'status' | 'is_active'>>;
+// Plan-driven staff seat usage (how many staff the store's plan allows vs uses).
+// staff_limit === null means unlimited (e.g. Enterprise).
+export type EmployeeStaffLimit = {
+  staff_limit: number | null;
+  staff_used: number;
+  plan_slug: string;
+  plan_name: string;
+};
 export interface MediaListQuery extends StoreScopedQuery {
   folder?: string;
   type?: MediaType | 'all';
@@ -2893,6 +3393,7 @@ export type StorefrontCreateOrderInput = {
   notes?: string;
   couponCode?: string;
   giftCardCode?: string;
+  shippingRateId?: string | null;
   idempotencyKey: string;
 };
 export type StorefrontOrderSummary = {
@@ -3097,6 +3598,7 @@ export type CreateSubscriptionOrderInput = {
     quantity?: number;
     idempotency_key: string;
   }>;
+  coupon_code?: string;
 };
 export type VerifySubscriptionInput = {
   store_id: string;
@@ -3107,6 +3609,26 @@ export type VerifySubscriptionInput = {
   razorpay_subscription_id?: string;
   razorpay_payment_id: string;
   razorpay_signature: string;
+  coupon_code?: string;
+};
+export type ValidateSubscriptionCouponInput = {
+  store_id: string;
+  plan_slug: string;
+  billing_period?: SubscriptionBillingPeriod;
+  site_type: string;
+  coupon_code: string;
+};
+export type SubscriptionCouponResult = {
+  valid: boolean;
+  code?: string;
+  message?: string;
+  discount_type?: string;
+  percent_off?: number | null;
+  amount_off_minor?: number | null;
+  discount_minor?: number;
+  final_minor?: number;
+  amount_minor?: number;
+  description?: string | null;
 };
 export type CancelSubscriptionInput = {
   store_id: string;
@@ -3116,6 +3638,49 @@ export type RecoverSubscriptionPaymentInput = {
   store_id: string;
   billing_period?: SubscriptionBillingPeriod;
   idempotency_key?: string;
+};
+
+// ── Billing payment methods (how the merchant pays LetBuyy) ──────────────────
+// A billing mandate is a Razorpay UPI AutoPay authorization. LetBuyy is not an
+// RBI-licensed payment aggregator, so card/UPI credentials are never stored here —
+// Razorpay (the licensed PA) holds them and we keep only the mandate reference.
+export type BillingMandate = {
+  id: string;
+  provider: string;
+  provider_mode: 'sandbox' | 'live';
+  status: 'pending_provider' | 'active' | 'revoked' | 'failed';
+  plan_slug: string;
+  billing_period: SubscriptionBillingPeriod;
+  currency: string;
+  amount_minor: number;
+  external_mandate_id: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+export type CreateBillingMandateInput = {
+  store_id: string;
+  plan_slug?: 'free' | 'starter' | 'business' | 'enterprise';
+  billing_period?: SubscriptionBillingPeriod;
+  provider_mode?: 'sandbox' | 'live';
+  upi_vpa?: string;
+  idempotency_key: string;
+  metadata?: Record<string, unknown>;
+};
+// A past bill: a billing_history row joined to its GST invoice (if issued).
+export type BillingInvoiceRecord = {
+  id: string;
+  invoice_number?: string | null;
+  description?: string | null;
+  amount?: number | null;
+  tax_amount?: number | null;
+  total_amount?: number | null;
+  currency?: string | null;
+  payment_status?: string | null;
+  billing_period?: string | null;
+  period_start?: string | null;
+  period_end?: string | null;
+  created_at?: string | null;
+  merchant_billing_invoices?: Array<Record<string, unknown>> | Record<string, unknown> | null;
 };
 
 export class LetbuyyApiError extends Error {
@@ -3166,6 +3731,77 @@ function withAutomaticIdempotency(path: string, options: LetbuyyRequestOptions):
     ...options,
     idempotencyKey: idempotencyKeyFromBody(options.body) ?? automaticIdempotencyKey(method, path),
   };
+}
+
+export interface FoundingProgramPublic {
+  available: boolean;
+  active?: boolean;
+  paused?: boolean;
+  total_slots?: number;
+  used_slots?: number;
+  remaining_slots?: number;
+  public_remaining?: number;
+  invited_remaining?: number;
+  partner_remaining?: number;
+  launch_price?: number;
+  growth_price?: number;
+}
+
+export interface FoundingProgramRemaining {
+  total_slots: number;
+  used_slots: number;
+  remaining_slots: number;
+  active: boolean;
+  paused: boolean;
+}
+
+export interface FoundingPlanPricing {
+  slug: string;
+  name: string;
+  tagline: string | null;
+  is_popular: boolean;
+  display_order: number;
+  status: string;
+  purchasable: boolean;
+  regular_inr: number;
+  founding_inr: number;
+  savings_inr: number;
+  has_founding: boolean;
+  features: string[];
+}
+
+export interface FoundingPricingResponse {
+  plans: FoundingPlanPricing[];
+  founding_program: FoundingProgramPublic;
+}
+
+export interface MerchantFoundingStatus {
+  is_founding_merchant: boolean;
+  founding_number: number | null;
+  allocation_source: string | null;
+  price_lock_enabled: boolean;
+  locked_launch_price: number | null;
+  locked_growth_price: number | null;
+  founding_allocated_at: string | null;
+  allocation: Record<string, unknown> | null;
+}
+
+export interface FoundingAllocationRow {
+  id: string;
+  site_id: string;
+  founding_number: number;
+  allocation_source: string;
+  plan_slug: string;
+  locked_monthly_price: number;
+  allocated_at: string;
+  released_at: string | null;
+  release_reason: string | null;
+  founding_released: boolean;
+}
+
+export interface FoundingAdminOverview {
+  program: Record<string, unknown> | null;
+  reconcile: Record<string, unknown> | null;
 }
 
 export class LetbuyyApiClient {
@@ -3282,6 +3918,17 @@ export class LetbuyyApiClient {
         '/notifications/device-tokens',
         { ...options, method: 'DELETE', body: { token } },
       ),
+    preferences: {
+      /** GET /notifications/preferences — list preferences for the authed user, optionally scoped to a store. */
+      list: (query: NotificationPreferenceQuery = {}, options?: LetbuyyRequestOptions) =>
+        this.requestData<NotificationPreference[]>('/notifications/preferences', { ...options, query }),
+      /** PUT /notifications/preferences — upsert a single channel+category preference. */
+      update: (input: NotificationPreferenceUpdateInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<NotificationPreference>('/notifications/preferences', { ...options, method: 'PUT', body: input }),
+    },
+    /** GET /notifications/delivery-logs — paginated delivery evidence for a store. */
+    deliveryLogs: (query: NotificationDeliveryLogsQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<NotificationDeliveryLog>('/notifications/delivery-logs', { ...options, query }),
   };
 
   readonly metafields = {
@@ -3342,11 +3989,38 @@ export class LetbuyyApiClient {
     },
   };
 
+  // Custom-domain lifecycle (migration 185). Paths target the gateway `/custom` router.
   readonly customDomains = {
+    list: (query: DomainScopedQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<DomainListResult>('/custom/domains', { ...options, query }),
+    connect: (input: DomainConnectInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<DomainConnectResult>('/custom/domains', { ...options, method: 'POST', body: input }),
+    verify: (input: DomainConnectInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<DomainVerifyResult>('/custom/domains/verify', { ...options, method: 'POST', body: input }),
     health: (domain: string, query: CustomDomainHealthQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<CustomDomainHealth>(
         `/custom/domains/${encodePathSegment(domain)}/status`,
         { ...options, query },
+      ),
+    history: (domain: string, query: DomainScopedQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<DomainHistoryResult>(
+        `/custom/domains/${encodePathSegment(domain)}/history`,
+        { ...options, query },
+      ),
+    setPrimary: (domain: string, input: DomainScopedInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<DomainSetPrimaryResult>(
+        `/custom/domains/${encodePathSegment(domain)}/primary`,
+        { ...options, method: 'POST', body: input },
+      ),
+    update: (domain: string, input: DomainRedirectInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ domain: string; role: string; redirect_to: string | null }>(
+        `/custom/domains/${encodePathSegment(domain)}`,
+        { ...options, method: 'PATCH', body: input },
+      ),
+    remove: (domain: string, query: DomainScopedQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<DomainDeleteResult>(
+        `/custom/domains/${encodePathSegment(domain)}`,
+        { ...options, method: 'DELETE', query },
       ),
   };
 
@@ -4023,6 +4697,8 @@ export class LetbuyyApiClient {
   readonly employees = {
     list: (query: EmployeeListQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<Employee[]>('/employees', { ...options, query }),
+    limits: (query: EmployeeListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<EmployeeStaffLimit>('/employees/limits', { ...options, query }),
     create: (input: CreateEmployeeInput, options?: LetbuyyRequestOptions) =>
       this.requestData<Employee>('/employees', { ...options, method: 'POST', body: input }),
     update: (id: string, input: UpdateEmployeeInput, options?: LetbuyyRequestOptions) =>
@@ -4160,11 +4836,82 @@ export class LetbuyyApiClient {
       this.requestData<{ deleted: boolean }>(`/categories/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
   };
 
+  readonly smartCollections = {
+    list: (query: SmartCollectionListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<SmartCollection[]>('/smart-collections', { ...options, query }),
+    create: (input: CreateSmartCollectionInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<SmartCollection>('/smart-collections', { ...options, method: 'POST', body: input }),
+    update: (id: string, input: UpdateSmartCollectionInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<SmartCollection>(`/smart-collections/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+    preview: (id: string, query?: SmartCollectionPreviewQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<SmartCollectionPreviewResult>(`/smart-collections/${encodePathSegment(id)}/preview`, { ...options, query }),
+  };
+
   readonly inventory = {
     levels: (query?: InventoryLevelQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<InventoryLevel>('/inventory/levels', { ...options, query }),
     adjust: (input: InventoryAdjustInput, options?: LetbuyyRequestOptions) =>
       this.requestData<JsonRecord>('/inventory/adjust', { ...options, method: 'POST', body: input }),
+    purchaseOrders: {
+      list: (query: PurchaseOrderListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestData<PurchaseOrder[]>('/inventory/purchase-orders', { ...options, query }),
+      create: (input: CreatePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<JsonRecord>('/inventory/purchase-orders', { ...options, method: 'POST', body: input }),
+      receive: (id: string, input: ReceivePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<JsonRecord>(`/inventory/purchase-orders/${encodePathSegment(id)}/receive`, { ...options, method: 'POST', body: input }),
+    },
+    suppliers: {
+      list: (query: { store_id: string }, options?: LetbuyyRequestOptions) =>
+        this.requestData<Supplier[]>('/inventory/suppliers', { ...options, query }),
+      create: (input: CreateSupplierInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<Supplier>('/inventory/suppliers', { ...options, method: 'POST', body: input }),
+    },
+    locations: {
+      list: (query: { store_id: string }, options?: LetbuyyRequestOptions) =>
+        this.requestData<InventoryLocation[]>('/inventory/locations', { ...options, query }),
+      create: (input: CreateInventoryLocationInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<InventoryLocation>('/inventory/locations', { ...options, method: 'POST', body: input }),
+    },
+    history: (query?: InventoryHistoryQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<InventoryEventRecord>('/inventory/history', { ...options, query }),
+    reserve: (input: ReserveInventoryInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<JsonRecord>('/inventory/reserve', { ...options, method: 'POST', body: input }),
+    commit: (input: InventoryReservationActionInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<JsonRecord>('/inventory/commit', { ...options, method: 'POST', body: input }),
+    release: (input: InventoryReservationActionInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<JsonRecord>('/inventory/release', { ...options, method: 'POST', body: input }),
+    transfers: {
+      list: (query: InventoryTransferListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestData<InventoryTransfer[]>('/inventory/transfers', { ...options, query }),
+      create: (input: CreateInventoryTransferInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<JsonRecord>('/inventory/transfers', { ...options, method: 'POST', body: input }),
+      ship: (id: string, input: ShipInventoryTransferInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<JsonRecord>(`/inventory/transfers/${encodePathSegment(id)}/ship`, { ...options, method: 'POST', body: input }),
+      receive: (id: string, input: ReceiveInventoryTransferInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<JsonRecord>(`/inventory/transfers/${encodePathSegment(id)}/receive`, { ...options, method: 'POST', body: input }),
+    },
+    reservations: {
+      list: (query: InventoryReservationListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestPaginated<InventoryReservation>('/inventory/reservations', { ...options, query }),
+    },
+    receipts: {
+      list: (query: InventoryReceiptListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestPaginated<InventoryReceipt>('/inventory/receipts', { ...options, query }),
+    },
+    analytics: (query: InventoryAnalyticsQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<InventoryAnalyticsResult>('/inventory/analytics', { ...options, query }),
+  };
+
+  // ── Commerce Analytics (Phase 5.10) ─────────────────────────
+  readonly commerceAnalytics = {
+    supplierMetrics: (query: CommerceAnalyticsQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<SupplierMetricsResult>('/commerce-analytics/supplier-metrics', { ...options, query }),
+    warehouseMetrics: (query: CommerceAnalyticsQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<WarehouseMetricsResult>('/commerce-analytics/warehouse-metrics', { ...options, query }),
+    transferMetrics: (query: CommerceAnalyticsQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<TransferMetricsResult>('/commerce-analytics/transfer-metrics', { ...options, query }),
+    operationsSummary: (query: CommerceAnalyticsQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<OperationsSummaryResult>('/commerce-analytics/operations-summary', { ...options, query }),
   };
 
   readonly orders = {
@@ -4587,11 +5334,68 @@ export class LetbuyyApiClient {
         this.requestData<SubscriptionCancelResult>('/payments/subscription/cancel', { ...options, method: 'POST', body: input }),
       createOrder: (input: CreateSubscriptionOrderInput, options?: LetbuyyRequestOptions) =>
         this.requestData<SubscriptionOrderResult>('/payments/subscription/order', { ...options, method: 'POST', body: input }),
+      coupon: (input: ValidateSubscriptionCouponInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<SubscriptionCouponResult>('/payments/subscription/coupon', { ...options, method: 'POST', body: input }),
       recover: (input: RecoverSubscriptionPaymentInput, options?: LetbuyyRequestOptions) =>
         this.requestData<SubscriptionRecoveryResult>('/payments/subscription/recover', { ...options, method: 'POST', body: input }),
       verify: (input: VerifySubscriptionInput, options?: LetbuyyRequestOptions) =>
         this.requestData<SubscriptionVerificationResult>('/payments/subscription/verify', { ...options, method: 'POST', body: input }),
     },
+  };
+
+  // Billing — how the MERCHANT pays LetBuyy (subscription bills). Distinct from the
+  // `payments` group (subscription lifecycle) and from stores.paymentConfig (the
+  // merchant's storefront provider for collecting from THEIR customers).
+  readonly billing = {
+    mandates: {
+      list: (query: { store_id: string }, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ mandates: BillingMandate[] }>('/billing/mandates', { ...options, query }),
+      create: (input: CreateBillingMandateInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ mandate: BillingMandate; replayed?: boolean }>('/billing/mandate', {
+          ...options,
+          method: 'POST',
+          body: input,
+          idempotencyKey: options?.idempotencyKey ?? input.idempotency_key,
+        }),
+    },
+    invoices: {
+      list: (query: { store_id: string; limit?: number }, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ invoices: BillingInvoiceRecord[] }>('/billing/invoices', { ...options, query }),
+    },
+  };
+
+  // Founding Merchant Program — public reads (no auth: stats/remaining/pricing) plus
+  // the merchant-scoped `me`. Mirrors the payments group.
+  readonly foundingProgram = {
+    get: (options?: LetbuyyRequestOptions) =>
+      this.requestData<FoundingProgramPublic>('/founding-program', options),
+    stats: (options?: LetbuyyRequestOptions) =>
+      this.requestData<FoundingProgramPublic>('/founding-program/stats', options),
+    remaining: (options?: LetbuyyRequestOptions) =>
+      this.requestData<FoundingProgramRemaining>('/founding-program/remaining', options),
+    pricing: (options?: LetbuyyRequestOptions) =>
+      this.requestData<FoundingPricingResponse>('/pricing', options),
+    me: (query: { store_id: string }, options?: LetbuyyRequestOptions) =>
+      this.requestData<MerchantFoundingStatus>('/founding/me', { ...options, query }),
+  };
+
+  // Super-admin founding administration + recovery (targets /internal/founding/*).
+  // Server-side callers supply the internal API secret via options.headers.
+  readonly foundingAdmin = {
+    overview: (options?: LetbuyyRequestOptions) =>
+      this.requestData<FoundingAdminOverview>('/internal/founding/overview', options),
+    allocations: (query?: { search?: string; limit?: number }, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ allocations: FoundingAllocationRow[] }>('/internal/founding/allocations', { ...options, query }),
+    setState: (input: { active?: boolean; paused?: boolean; reason?: string }, options?: LetbuyyRequestOptions) =>
+      this.requestData<Record<string, unknown>>('/internal/founding/state', { ...options, method: 'POST', body: input }),
+    allocate: (input: { site_id: string; subscription_id?: string; force?: boolean; allocation_source?: string }, options?: LetbuyyRequestOptions) =>
+      this.requestData<Record<string, unknown>>('/internal/founding/allocate', { ...options, method: 'POST', body: input }),
+    reclaim: (input: { site_id: string; reason?: string; force?: boolean }, options?: LetbuyyRequestOptions) =>
+      this.requestData<Record<string, unknown>>('/internal/founding/reclaim', { ...options, method: 'POST', body: input }),
+    repairLock: (input: { site_id: string; reason?: string }, options?: LetbuyyRequestOptions) =>
+      this.requestData<Record<string, unknown>>('/internal/founding/repair-lock', { ...options, method: 'POST', body: input }),
+    reconcile: (input?: { repair?: boolean }, options?: LetbuyyRequestOptions) =>
+      this.requestData<Record<string, unknown>>('/internal/founding/reconcile', { ...options, method: 'POST', body: input ?? {} }),
   };
 
   readonly storefront = {
@@ -4964,6 +5768,7 @@ export type {
   Cart,
   Collection,
   Coupon,
+  CustomDomainHealth,
   Customer,
   CustomerAddress,
   DomainAvailabilityQuote,
@@ -5040,3 +5845,8 @@ export type {
   WhatsAppSendResult,
   WhatsAppTemplate,
 };
+
+// PurchaseOrder, PurchaseOrderLine, PurchaseOrderLineInput, PurchaseOrderListQuery,
+// CreatePurchaseOrderInput, ReceivePurchaseOrderInput, ReceivePurchaseOrderLineInput,
+// Supplier, CreateSupplierInput, InventoryLocation, CreateInventoryLocationInput
+// are defined and exported inline above.

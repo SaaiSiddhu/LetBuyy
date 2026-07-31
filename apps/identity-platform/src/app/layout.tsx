@@ -99,7 +99,7 @@ export default function RootLayout({
         <style suppressHydrationWarning dangerouslySetInnerHTML={{
           __html: `
           html { background: var(--lb-color-bg, white); }
-          html.dark { background: var(--lb-color-bg, rgb(10 15 26)); }
+          html.dark { background: var(--lb-color-bg, rgb(10 9 18)); }
         `}} />
       </head>
       <body className="antialiased">

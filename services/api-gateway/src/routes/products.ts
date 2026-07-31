@@ -3,6 +3,7 @@ import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
+import { assertStaffPermission } from '../middleware/staff-permission';
 import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../execution/product-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { registerGiftCardRoutes } from './gift-cards';
@@ -1109,6 +1110,9 @@ router.post('/', validate('json', CreateProductSchema), async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
+    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
+
     const service = createProductExecutionAdapter(db, c.env);
     const data = await service.createProduct(body, customUser.id, auth.user.storeId);
     await emitProductEvent(db, {
@@ -1134,6 +1138,9 @@ router.patch('/:id', validate('json', UpdateProductSchema), async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
+    const staffBlock = await assertStaffPermission(c, auth.user.storeId, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
+
     const service = createProductExecutionAdapter(db, c.env);
     const data = await service.updateProduct(productId, customUser.id, body as Record<string, unknown>, auth.user.storeId);
     await emitProductEvent(db, {
@@ -1156,6 +1163,9 @@ router.post('/bulk', validate('json', BulkProductActionSchema), async (c) => {
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
+
+    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
 
     const service = createProductExecutionAdapter(db, c.env);
     const result = await service.bulkAction(body.store_id, body.product_ids, body.action, customUser.id, auth.user.storeId);
@@ -1184,6 +1194,9 @@ router.delete('/:id', async (c) => {
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
+
+    const staffBlock = await assertStaffPermission(c, auth.user.storeId, customUser.id, 'products:write');
+    if (staffBlock) return staffBlock;
 
     const service = createProductExecutionAdapter(db, c.env);
     const result = await service.softDelete(productId, customUser.id, auth.user.storeId);

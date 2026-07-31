@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
             notes: body.notes,
             couponCode: body.couponCode || body.coupon_code,
             giftCardCode: body.giftCardCode || body.gift_card_code,
+            shippingRateId: body.shippingRateId || body.shipping_rate_id || null,
             idempotencyKey,
         });
         const order = payload.order;

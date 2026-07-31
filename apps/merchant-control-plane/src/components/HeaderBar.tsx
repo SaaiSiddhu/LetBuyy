@@ -292,12 +292,20 @@ export default function MerchantHeaderBar({
                     <Link href={`/${store}/dashboard`} className="admin-header-logo" aria-label="LetBuyy dashboard">
                         <span className="admin-header-logo-frame" aria-hidden="true">
                             <Image
-                                src="/Letbuyy%20logo.png"
+                                src="/icons/letbuyy-logo-light.svg"
                                 alt=""
                                 fill
                                 priority
                                 sizes="144px"
-                                className="admin-header-logo-image"
+                                className="admin-header-logo-image admin-logo-light"
+                            />
+                            <Image
+                                src="/icons/letbuyy-logo-dark.svg"
+                                alt=""
+                                fill
+                                priority
+                                sizes="144px"
+                                className="admin-header-logo-image admin-logo-dark"
                             />
                         </span>
                     </Link>

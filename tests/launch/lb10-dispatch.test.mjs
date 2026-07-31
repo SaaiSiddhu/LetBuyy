@@ -43,3 +43,19 @@ test('LB-10: the queue worker treats the cancelled/refunded jobs as transactiona
   assert.match(fn, /jobType === 'email\.order_cancelled'/);
   assert.match(fn, /jobType === 'email\.order_refunded'/);
 });
+
+// Dispatch-gap closure: every terminal cancel/refund path (not just PATCH /:id) must notify the customer.
+test('LB-10: the canonical refund/complete path also dispatches the refunded email', () => {
+  const completeHandler = orders.slice(
+    orders.indexOf("router.post('/:id/refund/complete'"),
+    orders.indexOf("router.post('/:id/refund'"),
+  );
+  assert.match(completeHandler, /enqueueOrderLifecycleEmail\(c\.env, db, \{[\s\S]{0,160}kind: 'refunded'/);
+});
+
+test('LB-10: both COD cancellation paths (reject + timeout) dispatch the cancelled email', () => {
+  const risk = read('services/api-gateway/src/routes/order-risk.ts');
+  assert.match(risk, /import \{ enqueueOrderLifecycleEmail \} from '\.\.\/lib\/order-confirmation-email'/);
+  const matches = risk.match(/enqueueOrderLifecycleEmail\(c\.env, db, \{[\s\S]{0,160}kind: 'cancelled'/g) || [];
+  assert.ok(matches.length >= 2, 'COD reject and COD timeout must each enqueue the cancelled email');
+});

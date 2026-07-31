@@ -2,14 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { Button,
-    Avatar,
-    Menu,
-    Store,
-    X,
-} from '@letbuyy/ui'
-import { SettingsIndex } from './SettingsIndex'
-import { SettingsSearch } from './SettingsSearch'
+import Link from 'next/link'
+import { LayoutDashboard, Menu, Search, X } from '@letbuyy/ui'
 import {
     SETTINGS_NAV_GROUPS,
     getSettingsItemByPath,
@@ -24,6 +18,13 @@ interface SettingsShellProps {
     children: React.ReactNode
 }
 
+function getInitials(name: string) {
+    const parts = name.trim().split(/\s+/).filter(Boolean)
+    if (parts.length === 0) return '?'
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+}
+
 function normalizeSearch(value: string) {
     return value.trim().toLowerCase()
 }
@@ -34,12 +35,10 @@ function itemMatches(query: string, groupTitle: string, itemText: string[]) {
     return haystack.includes(query)
 }
 
-const DRAWER_FOCUSABLE_SELECTOR = [
+const FOCUSABLE_SELECTOR = [
     'a[href]',
     'button:not([disabled])',
     'input:not([disabled])',
-    'select:not([disabled])',
-    'textarea:not([disabled])',
     '[tabindex]:not([tabindex="-1"])',
 ].join(', ')
 
@@ -59,182 +58,181 @@ export function SettingsShell({
 
     useEffect(() => {
         if (!drawerOpen) return
-
-        const previousActiveElement = document.activeElement instanceof HTMLElement ? document.activeElement : null
-        const previousBodyOverflow = document.body.style.overflow
+        const previousEl = document.activeElement instanceof HTMLElement ? document.activeElement : null
+        const prevOverflow = document.body.style.overflow
         document.body.style.overflow = 'hidden'
         document.getElementById('settings-mobile-drawer')?.focus()
 
-        function handleKeyDown(event: KeyboardEvent) {
-            if (event.key === 'Escape') {
-                setDrawerOpen(false)
-                return
-            }
-
-            if (event.key !== 'Tab') {
-                return
-            }
-
+        function onKeyDown(e: KeyboardEvent) {
+            if (e.key === 'Escape') { setDrawerOpen(false); return }
+            if (e.key !== 'Tab') return
             const drawer = document.getElementById('settings-mobile-drawer')
             if (!drawer) return
-
-            const focusableElements = Array.from(drawer.querySelectorAll<HTMLElement>(DRAWER_FOCUSABLE_SELECTOR))
-                .filter((element) => !element.closest('[hidden]'))
-
-            if (focusableElements.length === 0) {
-                event.preventDefault()
-                drawer.focus()
-                return
-            }
-
-            const firstElement = focusableElements[0]
-            const lastElement = focusableElements[focusableElements.length - 1]
-            const activeElement = document.activeElement
-
-            if (activeElement === drawer) {
-                event.preventDefault()
-                if (event.shiftKey) {
-                    lastElement.focus()
-                } else {
-                    firstElement.focus()
-                }
-                return
-            }
-
-            if (!drawer.contains(activeElement)) {
-                event.preventDefault()
-                firstElement.focus()
-                return
-            }
-
-            if (event.shiftKey && activeElement === firstElement) {
-                event.preventDefault()
-                lastElement.focus()
-                return
-            }
-
-            if (!event.shiftKey && activeElement === lastElement) {
-                event.preventDefault()
-                firstElement.focus()
-            }
+            const focusable = Array.from(drawer.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
+                .filter(el => !el.closest('[hidden]'))
+            if (!focusable.length) { e.preventDefault(); drawer.focus(); return }
+            const first = focusable[0]
+            const last = focusable[focusable.length - 1]
+            const active = document.activeElement
+            if (active === drawer) { e.preventDefault(); e.shiftKey ? last.focus() : first.focus(); return }
+            if (!drawer.contains(active)) { e.preventDefault(); first.focus(); return }
+            if (e.shiftKey && active === first) { e.preventDefault(); last.focus(); return }
+            if (!e.shiftKey && active === last) { e.preventDefault(); first.focus() }
         }
 
-        document.addEventListener('keydown', handleKeyDown)
-
+        document.addEventListener('keydown', onKeyDown)
         return () => {
-            document.removeEventListener('keydown', handleKeyDown)
-            document.body.style.overflow = previousBodyOverflow
-
-            if (previousActiveElement?.isConnected) {
-                previousActiveElement.focus()
-            }
+            document.removeEventListener('keydown', onKeyDown)
+            document.body.style.overflow = prevOverflow
+            if (previousEl?.isConnected) previousEl.focus()
         }
     }, [drawerOpen])
 
-    const filteredGroups = useMemo(() => SETTINGS_NAV_GROUPS.map((group) => ({
+    const filteredGroups = useMemo(() => SETTINGS_NAV_GROUPS.map(group => ({
         ...group,
-        items: group.items.filter((item) => itemMatches(normalizedQuery, group.title, [
+        items: group.items.filter(item => itemMatches(normalizedQuery, group.title, [
             item.label,
             item.description,
             ...item.keywords,
         ])),
     })), [normalizedQuery])
 
-    const resultCount = useMemo(
-        () => filteredGroups.reduce((total, group) => total + group.items.length, 0),
-        [filteredGroups],
-    )
+    const storeInitials = getInitials(storeName || subdomain)
+    const userInitials = getInitials(userName || userEmail)
+    const settingsHomeHref = `/${store}/settings`
+    const homeActive = pathname === settingsHomeHref
 
-    const renderSettingsIndex = (instance: 'desktop' | 'mobile') => (
-        <div className="flex h-full flex-col gap-[var(--lb-space-5)]">
-            <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]">
-                <div className="flex items-start gap-[var(--lb-space-3)]">
-                    <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
-                        <Store className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                    </span>
-                    <div className="min-w-0">
-                        <p className="m-0 truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                            {storeName}
-                        </p>
-                        <p className="m-0 truncate text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                            {subdomain}.letbuyy.com
-                        </p>
+    function renderNav(instance: 'desktop' | 'mobile') {
+        const onNavigate = instance === 'mobile' ? () => setDrawerOpen(false) : undefined
+        return (
+            <>
+                <Link
+                    href={settingsHomeHref}
+                    onClick={onNavigate}
+                    aria-current={homeActive ? 'page' : undefined}
+                    className={`settings-nav-item${homeActive ? ' active' : ''}`}
+                >
+                    <LayoutDashboard className="letbuyy-icon" aria-hidden="true" />
+                    <span className="settings-nav-label">Dashboard</span>
+                </Link>
+
+                {filteredGroups.map(group => group.items.length > 0 && (
+                    <div key={group.title}>
+                        <div className="settings-nav-group-label">{group.title}</div>
+                        {group.items.map(item => {
+                            const href = `/${store}/settings/${item.href}`
+                            const active = pathname === href || !!pathname?.startsWith(`${href}/`)
+                            const ItemIcon = item.Icon
+                            return (
+                                <Link
+                                    key={item.href}
+                                    href={href}
+                                    onClick={onNavigate}
+                                    aria-current={active ? 'page' : undefined}
+                                    className={`settings-nav-item${active ? ' active' : ''}`}
+                                >
+                                    <ItemIcon className="letbuyy-icon" aria-hidden="true" />
+                                    <span className="settings-nav-label">{item.label}</span>
+                                    {item.status === 'backend-needed' && (
+                                        <span className="settings-nav-badge">
+                                            <span className="settings-nav-badge-dot" />
+                                            Needs backend
+                                        </span>
+                                    )}
+                                </Link>
+                            )
+                        })}
                     </div>
-                </div>
-            </div>
-
-            <SettingsSearch
-                inputId={`settings-search-${instance}`}
-                value={query}
-                onChange={setQuery}
-                resultCount={resultCount}
-            />
-
-            <div className="min-h-0 flex-1 overflow-auto pr-[var(--lb-space-1)]">
-                <SettingsIndex
-                    store={store}
-                    groups={filteredGroups}
-                    activePathname={pathname}
-                    onNavigate={() => setDrawerOpen(false)}
-                />
-            </div>
-
-            <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)]">
-                <div className="flex min-w-0 items-center gap-[var(--lb-space-3)]">
-                    <Avatar name={userName || userEmail || 'User'} size="sm" />
-                    <div className="min-w-0">
-                        <p className="m-0 truncate text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text)]">
-                            {userName || 'User'}
-                        </p>
-                        <p className="m-0 truncate text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                            {userEmail}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
+                ))}
+            </>
+        )
+    }
 
     return (
-        <div className="min-h-[calc(100vh-var(--lb-space-7))] bg-[var(--lb-color-bg)] text-[var(--lb-color-text)]">
-            <div className="border-b border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-4)] py-[var(--lb-space-3)] lg:hidden">
-                <div className="flex items-center justify-between gap-[var(--lb-space-3)]">
-                    <div className="min-w-0">
-                        <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                            Settings
-                        </p>
-                        <p className="m-0 truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                            {activeItem?.label || 'Settings home'}
-                        </p>
-                    </div>
-                    <Button
+        <>
+            {/* Mobile topbar — hidden on desktop */}
+            <div className="settings-mobile-topbar">
+                <div className="settings-mobile-topbar-content">
+                    <span className="settings-mobile-topbar-info">
+                        <span className="settings-mobile-topbar-label">Settings</span>
+                        <span className="settings-mobile-topbar-page">{activeItem?.label || 'Dashboard'}</span>
+                    </span>
+                    <button
                         type="button"
-                        variant="secondary"
+                        className="settings-mobile-menu-btn"
                         onClick={() => setDrawerOpen(true)}
                         aria-expanded={drawerOpen}
                         aria-controls="settings-mobile-drawer"
                     >
-                        <Menu className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                        <Menu className="letbuyy-icon" aria-hidden="true" />
                         Index
-                    </Button>
+                    </button>
                 </div>
             </div>
 
-            <div className="grid min-h-[calc(100vh-var(--lb-space-7))] lg:grid-cols-[360px_minmax(0,1fr)]">
-                <aside className="sticky top-[var(--lb-space-7)] hidden h-[calc(100vh-var(--lb-space-7))] overflow-hidden border-r border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-5)] lg:block">
-                    {renderSettingsIndex('desktop')}
+            {/* Desktop shell — sidebar + content grid */}
+            <div className="settings-shell">
+                <aside className="settings-sidebar">
+                    {/* Store header */}
+                    <div className="settings-sidebar-store">
+                        <span className="settings-sidebar-store-icon" aria-hidden="true">
+                            {storeInitials}
+                        </span>
+                        <span className="settings-sidebar-store-info">
+                            <span className="settings-sidebar-store-name">{storeName}</span>
+                            <span className="settings-sidebar-store-domain">{subdomain}.letbuyy.com</span>
+                        </span>
+                        <Link
+                            href={`/${store}/dashboard`}
+                            className="settings-sidebar-close"
+                            aria-label="Close settings"
+                        >
+                            <X className="letbuyy-icon" aria-hidden="true" />
+                        </Link>
+                    </div>
+
+                    {/* Search */}
+                    <div className="settings-sidebar-search">
+                        <Search className="letbuyy-icon" aria-hidden="true" />
+                        <input
+                            id="settings-search-desktop"
+                            type="search"
+                            placeholder="Search settings..."
+                            value={query}
+                            onChange={e => setQuery(e.target.value)}
+                            aria-label="Search settings"
+                        />
+                    </div>
+
+                    {/* Nav */}
+                    <nav className="settings-sidebar-nav" aria-label="Settings">
+                        {renderNav('desktop')}
+                    </nav>
+
+                    {/* User footer */}
+                    <div className="settings-sidebar-user">
+                        <span className="settings-sidebar-user-avatar" aria-hidden="true">
+                            {userInitials}
+                        </span>
+                        <span className="settings-sidebar-user-info">
+                            <span className="settings-sidebar-user-name">{userName || 'User'}</span>
+                            <span className="settings-sidebar-user-email">{userEmail}</span>
+                        </span>
+                    </div>
                 </aside>
 
-                <section className="min-w-0" aria-label={activeItem?.label || 'Settings home'}>
+                {/* Content */}
+                <section className="settings-content" aria-label={activeItem?.label || 'Dashboard'}>
                     {children}
                 </section>
             </div>
 
+            {/* Mobile drawer */}
             {drawerOpen && (
-                <div className="fixed inset-0 z-50 lg:hidden" role="presentation">
-                    <Button unstyled
+                <div className="settings-mobile-drawer-overlay" role="presentation">
+                    <button
                         type="button"
-                        className="absolute inset-0 bg-[var(--lb-color-overlay)]"
+                        className="settings-mobile-drawer-backdrop"
                         onClick={() => setDrawerOpen(false)}
                         aria-label="Close settings index"
                     />
@@ -244,31 +242,60 @@ export function SettingsShell({
                         aria-modal="true"
                         aria-labelledby="settings-mobile-drawer-title"
                         tabIndex={-1}
-                        className="relative z-10 flex h-full w-[min(380px,calc(100vw-var(--lb-space-5)))] flex-col overflow-hidden border-r border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] shadow-[var(--lb-shadow-lg)]"
+                        className="settings-mobile-drawer"
                     >
-                        <div className="mb-[var(--lb-space-4)] flex items-center justify-between gap-[var(--lb-space-3)]">
-                            <h2
-                                id="settings-mobile-drawer-title"
-                                className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]"
-                            >
+                        <div className="settings-mobile-drawer-header">
+                            <h2 id="settings-mobile-drawer-title" className="settings-mobile-drawer-title">
                                 Settings
                             </h2>
-                            <Button
+                            <button
                                 type="button"
-                                variant="ghost"
-                                size="icon"
+                                className="settings-mobile-drawer-close"
                                 onClick={() => setDrawerOpen(false)}
                                 aria-label="Close settings index"
                             >
-                                <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                            </Button>
+                                <X className="letbuyy-icon" aria-hidden="true" />
+                            </button>
                         </div>
-                        <div className="min-h-0 flex-1 overflow-hidden">
-                            {renderSettingsIndex('mobile')}
+
+                        <div className="settings-sidebar-store" style={{ borderRadius: 0 }}>
+                            <span className="settings-sidebar-store-icon" aria-hidden="true">
+                                {storeInitials}
+                            </span>
+                            <span className="settings-sidebar-store-info">
+                                <span className="settings-sidebar-store-name">{storeName}</span>
+                                <span className="settings-sidebar-store-domain">{subdomain}.letbuyy.com</span>
+                            </span>
+                        </div>
+
+                        <div className="settings-sidebar-search" style={{ margin: '8px' }}>
+                            <Search className="letbuyy-icon" aria-hidden="true" />
+                            <input
+                                id="settings-search-mobile"
+                                type="search"
+                                placeholder="Search settings..."
+                                value={query}
+                                onChange={e => setQuery(e.target.value)}
+                                aria-label="Search settings"
+                            />
+                        </div>
+
+                        <nav className="settings-sidebar-nav settings-mobile-nav" aria-label="Settings">
+                            {renderNav('mobile')}
+                        </nav>
+
+                        <div className="settings-sidebar-user">
+                            <span className="settings-sidebar-user-avatar" aria-hidden="true">
+                                {userInitials}
+                            </span>
+                            <span className="settings-sidebar-user-info">
+                                <span className="settings-sidebar-user-name">{userName || 'User'}</span>
+                                <span className="settings-sidebar-user-email">{userEmail}</span>
+                            </span>
                         </div>
                     </aside>
                 </div>
             )}
-        </div>
+        </>
     )
 }

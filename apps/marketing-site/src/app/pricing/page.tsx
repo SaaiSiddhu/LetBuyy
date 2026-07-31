@@ -8,14 +8,14 @@ import Footer from '@/components/Footer'
 export const metadata: Metadata = {
     title: 'Pricing',
     description:
-        'Compare LetBuyy Free, Basic, Pro and Enterprise packaging. Transaction and platform fees stay 0%; paid pricing and commercial terms are being finalized.',
+        'LetBuyy Launch plan starts at ₹299/month. 0% commission forever. UPI, COD, and GST-ready payments built in. Start with a 7-day free trial.',
     alternates: {
         canonical: '/pricing',
     },
     openGraph: {
-        title: 'LetBuyy pricing and plan comparison',
+        title: 'LetBuyy pricing — Launch from ₹299/month',
         description:
-            'Review LetBuyy plan packaging for launch-stage merchants, growing stores and governed multi-store teams.',
+            'Launch and Growth plans available now. Scale and Commerce OS coming soon. 0% commission forever. India-first commerce platform.',
         url: '/pricing',
         images: [
             {
@@ -28,9 +28,9 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'LetBuyy pricing and plan comparison',
+        title: 'LetBuyy pricing — Launch from ₹299/month',
         description:
-            'Compare LetBuyy Free, Basic, Pro and Enterprise packaging without fabricated paid prices.',
+            'Launch and Growth plans live now. 0% commission. UPI, COD, GST-ready. 7-day free trial.',
         images: ['/icons/letbuyy-logo-light.svg'],
     },
 }

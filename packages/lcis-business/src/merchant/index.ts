@@ -1,0 +1,1 @@
+export { MerchantIntelService } from './MerchantIntelService';

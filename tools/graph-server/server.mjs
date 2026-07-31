@@ -861,9 +861,10 @@ function communityProfile(cid) {
 
 function buildLayout(pool, edgeList) {
   const N = pool.length;
-  const pos = pool.map((_, i) => ({ x: Math.cos((i / N) * 6.283) * 420 + (Math.random() * 60 - 30), y: Math.sin((i / N) * 6.283) * 420 + (Math.random() * 60 - 30), vx: 0, vy: 0 }));
-  const iters = N > 1200 ? 220 : 300;
-  const cell = 70, R2 = (cell * 3) ** 2;
+  const radius = 420 + Math.sqrt(N) * 4;
+  const pos = pool.map((_, i) => ({ x: Math.cos((i / N) * 6.283) * radius + (Math.random() * 80 - 40), y: Math.sin((i / N) * 6.283) * radius + (Math.random() * 80 - 40), vx: 0, vy: 0 }));
+  const iters = N > 30000 ? 15 : N > 10000 ? 30 : N > 5000 ? 60 : N > 1200 ? 180 : 280;
+  const cell = N > 20000 ? 160 : N > 5000 ? 100 : 70, R2 = (cell * 3) ** 2;
   for (let it = 0; it < iters; it++) {
     const cool = 1 - (it / iters) * 0.6;
     const grid = new Map();
@@ -882,7 +883,7 @@ function buildLayout(pool, edgeList) {
 }
 
 function atlas({ limit = 1400, domain = '', community = '' } = {}) {
-  limit = Math.max(100, Math.min(2600, limit));
+  limit = Math.max(100, Math.min(75000, limit));
   const key = `${limit}|${domain}|${community}`;
   if (atlasCache.has(key)) return atlasCache.get(key);
   let pool = nodes;
@@ -968,6 +969,7 @@ const server = createServer((req, res) => {
     // ---- v5: live operating intelligence ----
     if (p === '/api/runtime-intelligence') return json(res, runtimeObs);
     if (p === '/api/merchant-intelligence') return json(res, merchantIntelV5);
+    if (p === '/api/founding-program') return json(res, (merchantIntelV5 && merchantIntelV5.foundingProgram) || { error: 'merchant-intelligence not built — run pnpm graph:merchant-intel' });
     if (p === '/api/revenue-intelligence') return json(res, revenueIntel);
     if (p === '/api/security-intelligence') return json(res, securityIntelV5);
     if (p === '/api/incident-intelligence') return json(res, incidentIntelligenceV5(u.searchParams.get('domain') || u.searchParams.get('q') || 'payments'));

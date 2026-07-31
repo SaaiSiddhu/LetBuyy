@@ -1,0 +1,416 @@
+[
+  {
+    "capability": "architecture-drift",
+    "rule": "No deprecated app aliases in active topology",
+    "dataSource": "infra-intel.workers[].file + domain-intel.domains[].apps[] + discovery-v2.drift.architecture",
+    "detectable": true,
+    "evidenceField": "discovery-v2.drift.architecture.count (currently 0)",
+    "reusePoint": "VerificationService.verifyServices() — already checks DEPRECATED_ALIASES set",
+    "notes": "9 deprecated aliases checked: apps/admin, apps/auth, apps/checkout, apps/merchant, apps/storefront, apps/analytics, apps/internal, apps/mobile/operator-team-app, apps/storefront-runtime/consumer-storefront. Count=0 means clean."
+  },
+  {
+    "capability": "architecture-drift",
+    "rule": "Single canonical system per domain (no parallel systems)",
+    "dataSource": "domain-intel.domains[].apps[] + audit-engine-v2.findings",
+    "detectable": "partial",
+    "evidenceField": "one-system-per-domain-validator.mjs CI result; domain-intel.domains[].apps[]",
+    "reusePoint": "VerificationService.verifyDomains()",
+    "notes": "Cannot detect semantic duplication within a single app from artifact shape alone. Validator is authoritative gate."
+  },
+  {
+    "capability": "table-drift",
+    "rule": "Tenant tables must have RLS enabled",
+    "dataSource": "db-intel.tables[].rls + db-intel.tables[].tenant + discovery-v2.drift.rls",
+    "detectable": "partial",
+    "evidenceField": "db-intel.tables[].rls=false AND tenant=true (20 candidates); audit-engine-v2.findings[A-RLS].count=20",
+    "reusePoint": "rls-force-coverage-validator.mjs (CI authoritative); VerificationService reads A-RLS finding",
+    "notes": "Policy SQL text (USING clause) NOT in db-intel — only public/usesSiteId/serviceRole flags. 20 candidates are service-role/ledger tables per discovery-v2 detail."
+  },
+  {
+    "capability": "table-drift",
+    "rule": "Tenant tables must have site_id FK column",
+    "dataSource": "db-intel.tables[].hasSiteId + db-intel.tables[].hasStoreId + db-intel.tables[].tenant",
+    "detectable": true,
+    "evidenceField": "db-intel.tables[].tenant=true AND hasSiteId=false AND hasStoreId=false",
+    "reusePoint": "tenant-isolation-validator.mjs",
+    "notes": "hasSiteId=184 tables, hasStoreId=84 tables out of 417 total. 256 tenant tables total."
+  },
+  {
+    "capability": "table-drift",
+    "rule": "Dead/unused tables (not referenced in any domain)",
+    "dataSource": "autonomous-discovery-v5.deadTables + discovery-v2.drift.domain",
+    "detectable": "partial",
+    "evidenceField": "autonomous-discovery-v5.deadTables count=44; discovery-v2.drift.domain.detail (86 unclassified tables)",
+    "reusePoint": "dart-dead-source-validator.mjs, typescript-dead-source-validator.mjs",
+    "notes": "Many dead table candidates are trigger/internal/projection tables called by DB triggers not visible in rpcCallers map. Candidates only."
+  },
+  {
+    "capability": "rpc-drift",
+    "rule": "Money RPCs must be SECURITY DEFINER",
+    "dataSource": "db-intel.functions[].money + db-intel.functions[].securityDefiner",
+    "detectable": true,
+    "evidenceField": "db-intel.functions[].money=true AND securityDefiner=false",
+    "reusePoint": "canonical-ledger-only-validator.mjs (CI authoritative gate)",
+    "notes": "34 money functions, 136 securityDefiner functions. Overlap computed from artifact. Heuristic on 'money' flag — validator is authoritative."
+  },
+  {
+    "capability": "rpc-drift",
+    "rule": "Money RPCs must have idempotency_key + ON CONFLICT + FOR UPDATE",
+    "dataSource": "db-intel.functions[].money + db-intel.functions[].hasIdempotency + db-intel.functions[].forUpdate",
+    "detectable": true,
+    "evidenceField": "db-intel.functions[].money=true AND (hasIdempotency=false OR forUpdate=false)",
+    "reusePoint": "None existing — GDIS R003 formalizes this check for the first time",
+    "notes": "40 functions have hasIdempotency=true; 42 have forUpdate=true; 34 are money. Cross-product must be computed. hasIdempotency detected by pattern matching."
+  },
+  {
+    "capability": "rpc-drift",
+    "rule": "Dead/uncalled SECURITY DEFINER RPCs",
+    "dataSource": "db-intel.functions[].callers[] + autonomous-discovery-v5.deadRpcs + discovery-v2.drift.rpc",
+    "detectable": "partial",
+    "evidenceField": "autonomous-discovery-v5.deadRpcs count=75; db-intel.functions[].callers=[]",
+    "reusePoint": "autonomous-discovery-v5.json pre-computes; db-intel.rpcCallers has 59 entries",
+    "notes": "Cannot distinguish trigger-called from truly dead without reading trigger bodies. Candidates only."
+  },
+  {
+    "capability": "worker-queue-drift",
+    "rule": "Worker bindings must match declared Wrangler manifest",
+    "dataSource": "infra-intel.workers[].bindings[] + runtime-intel.queueGraph[]",
+    "detectable": "partial",
+    "evidenceField": "infra-intel.workers[].bindings[]; cloudflare-binding-validator.mjs result",
+    "reusePoint": "queue-topology-validator.mjs, cloudflare-binding-validator.mjs",
+    "notes": "Live Cloudflare deployment binding drift NOT COMPUTABLE from static artifacts — requires Cloudflare API (NOT CONNECTED)."
+  },
+  {
+    "capability": "worker-queue-drift",
+    "rule": "No unused queues (every declared queue has producer AND consumer)",
+    "dataSource": "runtime-intel.queueGraph[] + autonomous-discovery-v5.unusedQueues + infra-intel.workers[].queueProducers + infra-intel.workers[].queueConsumers",
+    "detectable": true,
+    "evidenceField": "autonomous-discovery-v5.unusedQueues count=1; runtime-intel.queueGraph has 5 edges",
+    "reusePoint": "queue-topology-validator.mjs",
+    "notes": "5 active queues: EVENT_QUEUE, ANALYTICS_QUEUE, SEARCH_QUEUE, NOTIFICATION_QUEUE, RUNTIME_QUEUE. 1 unused candidate."
+  },
+  {
+    "capability": "test-drift",
+    "rule": "Domains with money or tenant classification must have test coverage",
+    "dataSource": "graph.json nodes[].source_file (regex test) + domain-intel.domains[].{rpcs,routes,tables}",
+    "detectable": "partial",
+    "evidenceField": "238 total test files; TestingIntelligenceService.detectMissingCoverage() per domain",
+    "reusePoint": "TestingIntelligenceService (lcis-execution) — extend to iterate all 22 domains at-rest",
+    "notes": "Static domain→test matrix does NOT exist in any artifact. Must invoke TestingIntelligenceService per domain. Detects file existence only — not pass/fail."
+  },
+  {
+    "capability": "test-drift",
+    "rule": "No noop test scripts in package.json",
+    "dataSource": "package.json scripts.test across all apps",
+    "detectable": true,
+    "evidenceField": "no-noop-test-script-validator.mjs CI result; audit-engine-v2.summary.authCoverage=55/87",
+    "reusePoint": "no-noop-test-script-validator.mjs, test-coverage-governance-validator.mjs",
+    "notes": "87 routes audited; 32 missing auth guard (A-AUTH); 16 missing validation (A-VALID). These are route-level heuristic candidates."
+  },
+  {
+    "capability": "runbook-drift",
+    "rule": "Every domain must have a runbook with detection+diagnosis+recovery+rollback+verification",
+    "dataSource": "runbooks.runbooks (object keyed by domain) + domain-intel.domains[].key",
+    "detectable": true,
+    "evidenceField": "runbooks.runbooks keys (22) vs domain-intel.domains[].key (22) — currently 0 missing",
+    "reusePoint": "None existing — GDIS first defines this check",
+    "notes": "Quality check (non-empty fields): runbook has detection.signals[], diagnosis, recovery, rollback, verification fields per domain. Rehearsal history NOT COMPUTABLE."
+  },
+  {
+    "capability": "runbook-drift",
+    "rule": "Money domain runbooks must flag live signal disconnection",
+    "dataSource": "runbooks.runbooks[domain].detection.source + connections-intel.json",
+    "detectable": true,
+    "evidenceField": "All 22 runbooks contain NOT CONNECTED for RUNTIME_TELEMETRY — currently all disconnected",
+    "reusePoint": "connections-intel.json tracks adapter CONNECTED/NOT CONNECTED status",
+    "notes": "Honest contract: structural topology is CONNECTED (routes/queues/workers mapped); live signal values are NOT CONNECTED until RUNTIME_TELEMETRY adapter wired."
+  },
+  {
+    "capability": "doc-drift",
+    "rule": "Each domain must have at least one architecture doc indexed in memory-intel",
+    "dataSource": "memory-intel.sources[] (41 files) + domain-intel.domains[].key",
+    "detectable": "partial",
+    "evidenceField": "memory-intel.sources[] — check if domain key appears in any source filename",
+    "reusePoint": "repository-intelligence-validator.mjs",
+    "notes": "Doc FRESHNESS (last modified vs last code change) NOT COMPUTABLE — no timestamp mapping in any artifact. Presence only."
+  },
+  {
+    "capability": "doc-drift",
+    "rule": "Required governance files must exist and be indexed",
+    "dataSource": "memory-intel.sources[] + filesystem GOVERNANCE_REWRITE_2026_06_10/",
+    "detectable": true,
+    "evidenceField": "LETBUYY_CONSTITUTION.md, LETBUYY_AGENTS_V2.md, LETBUYY_CANONICAL_SYSTEMS.md present in memory-intel.sources",
+    "reusePoint": "generated-artifact-validator.mjs, meta-no-theater-validator.mjs",
+    "notes": "8 governance files confirmed in GOVERNANCE_REWRITE_2026_06_10/. 41 total sources in memory-intel."
+  },
+  {
+    "capability": "migration-drift",
+    "rule": "Migrations must be sequentially numbered with no gaps caused by errors",
+    "dataSource": "memory-intel.migrations[].n",
+    "detectable": "partial",
+    "evidenceField": "103 migrations; sequence 0..174 with gaps (sequential-migration-validator.mjs enforces)",
+    "reusePoint": "sequential-migration-validator.mjs",
+    "notes": "Gaps may be intentional (reserved slots) or accidental. Validator is authoritative; artifact provides sequence for GDIS surface."
+  },
+  {
+    "capability": "migration-drift",
+    "rule": "Payment and security migrations must have rollback scripts",
+    "dataSource": "memory-intel.migrations[].type + filesystem database/supabase/rollbacks/",
+    "detectable": false,
+    "evidenceField": "NOT COMPUTABLE — no artifact exposes per-migration rollback script presence",
+    "reusePoint": "rollback-integrity-validator.mjs (CI gate is authoritative)",
+    "notes": "HONEST GAP: memory-intel only has n, file, name, type fields. GDIS must surface this as: validator gate authoritative, NOT COMPUTABLE from artifact."
+  },
+  {
+    "capability": "migration-drift",
+    "rule": "Destructive DDL in payment/security migrations requires ARB review",
+    "dataSource": "memory-intel.migrations[].name + memory-intel.migrations[].type",
+    "detectable": "partial",
+    "evidenceField": "migration name + type field; migration-safety-validator.mjs enforces",
+    "reusePoint": "migration-safety-validator.mjs",
+    "notes": "Actual SQL content NOT in memory-intel artifact. Name heuristic only (contains 'drop'/'delete'/'truncate'). Validator reads actual files."
+  },
+  {
+    "capability": "validator-drift",
+    "rule": "Validator count must match reference count in governance documents",
+    "dataSource": "filesystem scripts/validators/*.mjs count vs audit-engine-v2.summary reference",
+    "detectable": true,
+    "evidenceField": "Actual count: 112 .mjs files; audit-engine-v2 reference: '107-validator gate' — 5 net additions since reference",
+    "reusePoint": "stale-artifact-validator.mjs, tooling-governance-validator.mjs",
+    "notes": "112 includes governance-common.mjs, phase-b-common.mjs, design-system-baseline.json (non-validators). Actual executable validator count requires reading each file for export pattern."
+  },
+  {
+    "capability": "validator-drift",
+    "rule": "Gate hardViolations must remain 0",
+    "dataSource": "audit-engine-v2.json.summary.hardViolations",
+    "detectable": true,
+    "evidenceField": "audit-engine-v2.summary.hardViolations=0",
+    "reusePoint": "VerificationService.verifyArchitecture()",
+    "notes": "Single most important gate metric. 0 = no confirmed violations. 227 candidates exist but all are heuristic."
+  },
+  {
+    "capability": "ownership-drift",
+    "rule": "All 22 domains must have at least one owner",
+    "dataSource": "domain-intel.domains[].owners[] + audit-engine-v2.findings[A-OWN]",
+    "detectable": true,
+    "evidenceField": "A-OWN finding count=0; all 22 domains have owners: ['@saai-sidd']",
+    "reusePoint": "VerificationService.verifyDomains() (reads A-OWN finding)",
+    "notes": "Bus factor = 1: all 22 domains owned by single individual. No GitHub team-level split. Structural 100% coverage but single-owner risk is a policy concern."
+  },
+  {
+    "capability": "ownership-drift",
+    "rule": "All critical paths must have explicit CODEOWNERS entries",
+    "dataSource": ".github/CODEOWNERS (35 lines, 26 path entries) + infra-intel.ownership[]",
+    "detectable": true,
+    "evidenceField": "infra-intel.ownership: 26 paths, all owned. Wildcard * @saai-sidd covers remainder.",
+    "reusePoint": "package-ownership-validator.mjs, route-ownership-validator.mjs",
+    "notes": "26 specific path entries + wildcard. No GitHub team entries. Semantic 'who reviews what' opacity: all paths converge to @saai-sidd."
+  },
+  {
+    "capability": "security-drift",
+    "rule": "No public USING(true) policies on tenant tables",
+    "dataSource": "db-intel.policies[].public + db-intel.policies[].table + discovery-v2.drift.security",
+    "detectable": "partial",
+    "evidenceField": "db-intel.policies[].public=true count=34; discovery-v2.drift.security.count=34 (all asserted service-role-scoped)",
+    "reusePoint": "no-public-using-true-validator.mjs (CI authoritative)",
+    "notes": "Policy SQL text (actual USING clause) NOT in db-intel. Cannot verify 'service-role-scoped' claim without reading SQL. 34 candidates; validator is gate."
+  },
+  {
+    "capability": "security-drift",
+    "rule": "Routes missing auth guard must be zero for money domains",
+    "dataSource": "audit-engine-v2.findings[A-AUTH] + domain-intel.domains[key in money_domains].routes[]",
+    "detectable": "partial",
+    "evidenceField": "A-AUTH count=32 total; 55/87 routes have detected auth guard (63%)",
+    "reusePoint": "dev-auth-bypass-validator.mjs, identity-sole-issuer-validator.mjs",
+    "notes": "Heuristic: detects auth at route handler level. Middleware-level auth not detected by audit heuristic. Candidates only."
+  },
+  {
+    "capability": "security-drift",
+    "rule": "Tenant isolation: fail-closed for unset tenant context",
+    "dataSource": "db-intel.tables[].force + db-intel.tables[].tenant + db-intel.policies[].usesSiteId",
+    "detectable": "partial",
+    "evidenceField": "db-intel.tables[].force=true count=47 (strict); tenant tables=256; usesSiteId policies=149",
+    "reusePoint": "tenant-isolation-validator.mjs, fail-closed-internal-routes-validator.mjs",
+    "notes": "force=true = FORCE ROW LEVEL SECURITY (strongest). 256 tenant tables - 47 forced = 209 rely on RLS alone. Live cross-tenant query test NOT COMPUTABLE from artifacts."
+  },
+  {
+    "capability": "security-drift",
+    "rule": "Two-issuer separation: customer HS256 vs merchant ES256 must never be crossed",
+    "dataSource": "infra-intel.secrets[] + domain-intel.domains[].secrets[]",
+    "detectable": "partial",
+    "evidenceField": "CUSTOMER_SESSION_SECRET and LETBUYY_IDENTITY_PUBLIC_JWKS both present in infra-intel.secrets[]",
+    "reusePoint": "identity-sole-issuer-validator.mjs, session-security-validator.mjs, token-source-single-validator.mjs",
+    "notes": "Secret presence is detectable. Whether code correctly uses the right key per issuer NOT COMPUTABLE from artifact — requires code analysis or live token validation test."
+  },
+  {
+    "capability": "security-drift",
+    "rule": "Cross-tenant FK leakage: tenant-scoped tables must not join to non-tenant tables without scope",
+    "dataSource": "relationship-intel.edges[] + db-intel.tables[].tenant + db-intel.tables[].hasSiteId",
+    "detectable": "partial",
+    "evidenceField": "705 FK edges; BlastRadiusService traverses for cross-domain impact",
+    "reusePoint": "BlastRadiusService (lcis-core) uses relationship-intel for FK traversal",
+    "notes": "Static shape gives candidates. Runtime cross-tenant join safety requires query analysis (NOT COMPUTABLE from structural artifact alone)."
+  },
+  {
+    "capability": "compliance-R001",
+    "rule": "R001: Canonical Ledger Integrity — money mutations via SECURITY DEFINER RPCs only",
+    "dataSource": "db-intel.functions[].money + db-intel.functions[].securityDefiner + audit-engine-v2.summary.hardViolations",
+    "detectable": "partial",
+    "evidenceField": "34 money functions; 136 securityDefiner functions; hardViolations=0",
+    "reusePoint": "canonical-ledger-only-validator.mjs (CI authoritative gate for TS-level enforcement)",
+    "notes": "R001 does not yet exist in codebase as a named rule — defined by GDIS. DB-level: functions[].money + securityDefiner. TS-level: canonical-ledger-only-validator.mjs checks for .from(money_table).insert/update in TypeScript."
+  },
+  {
+    "capability": "compliance-R002",
+    "rule": "R002: RLS Non-Negotiable — every tenant table has RLS enabled",
+    "dataSource": "db-intel.tables[].rls + db-intel.tables[].tenant + db-intel.policies[].public + discovery-v2.drift.rls",
+    "detectable": "partial",
+    "evidenceField": "rls=false AND tenant=true count=20 candidates; drift.rls.count=20",
+    "reusePoint": "rls-force-coverage-validator.mjs, no-public-using-true-validator.mjs, no-blanket-service-role-validator.mjs",
+    "notes": "R002 does not yet exist as named rule. Policy SQL text not in artifact; 20 candidates asserted as service-role/ledger tables (not pure tenant); validator is authoritative."
+  },
+  {
+    "capability": "compliance-R003",
+    "rule": "R003: Idempotency on Money RPCs — every money function needs idempotency_key + ON CONFLICT + FOR UPDATE",
+    "dataSource": "db-intel.functions[].money + db-intel.functions[].hasIdempotency + db-intel.functions[].forUpdate",
+    "detectable": true,
+    "evidenceField": "money=34; hasIdempotency=40; forUpdate=42 — overlap must be computed per function",
+    "reusePoint": "None existing in LCIS — GDIS R003 is the first named rule for this check",
+    "notes": "hasIdempotency detected by pattern matching on function definition text — false negatives possible with non-standard naming."
+  },
+  {
+    "capability": "compliance-R004",
+    "rule": "R004: Two-Issuer Separation — HS256 customer vs ES256 merchant must never be crossed",
+    "dataSource": "infra-intel.secrets[] + domain-intel.domains[].secrets[]",
+    "detectable": "partial",
+    "evidenceField": "Both CUSTOMER_SESSION_SECRET and LETBUYY_IDENTITY_PUBLIC_JWKS present in secrets[]",
+    "reusePoint": "identity-sole-issuer-validator.mjs, session-security-validator.mjs, cookie-realm-validator.mjs, token-source-single-validator.mjs",
+    "notes": "Presence detectable. Correct usage in code NOT COMPUTABLE from artifact; requires code analysis or integration test."
+  },
+  {
+    "capability": "compliance-R005",
+    "rule": "R005: No-Custody Money Rail — no self-custody disbursement implementation",
+    "dataSource": "infra-intel.secrets[] + domain-intel.domains[key='payouts'].rpcs[]",
+    "detectable": "partial",
+    "evidenceField": "no-self-custody-rail-validator.mjs CI result; absence of self-custody keys in secrets[]",
+    "reusePoint": "no-self-custody-rail-validator.mjs",
+    "notes": "Validator is authoritative gate. GDIS surfaces: validator green = R005 compliant. Secret absence is supporting (not definitive) evidence."
+  },
+  {
+    "capability": "compliance-R006",
+    "rule": "R006: Fail-Closed Tenancy — unset tenant context yields zero rows, not all rows",
+    "dataSource": "db-intel.tables[].force + db-intel.tables[].tenant + db-intel.policies[].usesSiteId",
+    "detectable": "partial",
+    "evidenceField": "force=true count=47; tenant tables=256; usesSiteId policies=149",
+    "reusePoint": "tenant-isolation-validator.mjs, rls-force-coverage-validator.mjs, fail-closed-internal-routes-validator.mjs",
+    "notes": "FORCE RLS (force=true) is the strongest protection. Behavioral fail-closed verification NOT COMPUTABLE from static artifacts — requires live query test with unset context."
+  },
+  {
+    "capability": "compliance-R007",
+    "rule": "R007: Single Source of Truth per Domain — exactly one canonical system per domain",
+    "dataSource": "domain-intel.domains[].apps[] + discovery-v2.drift.architecture + LETBUYY_CANONICAL_SYSTEMS.md",
+    "detectable": "partial",
+    "evidenceField": "drift.architecture.count=0; one-system-per-domain-validator.mjs CI result",
+    "reusePoint": "VerificationService.verifyServices(), one-system-per-domain-validator.mjs",
+    "notes": "Semantic duplication within a single app not detectable from artifact shape. Canonical systems registry is prose (LETBUYY_CANONICAL_SYSTEMS.md) not JSON."
+  },
+  {
+    "capability": "compliance-R008",
+    "rule": "R008: Mock-by-Default Honesty — every external dependency has provider-mode badge; stubs never return success for money",
+    "dataSource": "domain-intel.domains[].secrets[] + connections-intel.json + audit-engine-v2 provider findings",
+    "detectable": "partial",
+    "evidenceField": "PAYMENT_CONFIG_ENCRYPTION_KEY present in secrets[]; provider-mode-badge-validator.mjs CI result",
+    "reusePoint": "provider-mode-badge-validator.mjs, provider-evidence-validator.mjs, provider-isolation-validator.mjs",
+    "notes": "Badge rendering to UI NOT COMPUTABLE from artifact — requires UI component scan or live browser test. Validator is CI gate."
+  },
+  {
+    "capability": "readiness-owner",
+    "rule": "All 22 domains have at least one named owner",
+    "dataSource": "domain-intel.domains[].owners[]",
+    "detectable": true,
+    "evidenceField": "All 22 domains: owners=['@saai-sidd']; A-OWN finding count=0",
+    "reusePoint": "VerificationService.verifyDomains()",
+    "notes": "Bus factor=1. No team-level split. 100% structural coverage via wildcard CODEOWNERS."
+  },
+  {
+    "capability": "readiness-runbook",
+    "rule": "All 22 domains have runbooks with all 5 sections",
+    "dataSource": "runbooks.runbooks[domain].{detection,diagnosis,recovery,rollback,verification}",
+    "detectable": true,
+    "evidenceField": "22/22 runbooks present; all have 5-section structure",
+    "reusePoint": "None existing — GDIS first defines this check",
+    "notes": "Section presence detectable. Section quality (non-empty, actionable) requires content parsing. Rehearsal date NOT COMPUTABLE."
+  },
+  {
+    "capability": "readiness-tests",
+    "rule": "Money and tenant domains have test file coverage",
+    "dataSource": "graph.json nodes[].source_file + domain-intel.domains[].{rpcs,routes,tables} + domain-intel.domains[].money + domain-intel.domains[].tenant",
+    "detectable": "partial",
+    "evidenceField": "238 test files; TestingIntelligenceService.detectMissingCoverage() per domain",
+    "reusePoint": "TestingIntelligenceService (lcis-execution/src/testing/TestingIntelligenceService.ts)",
+    "notes": "Static at-rest matrix does not exist. Must invoke TestingIntelligenceService for each domain. Pass/fail NOT COMPUTABLE — only existence."
+  },
+  {
+    "capability": "readiness-rollback",
+    "rule": "Payment and security migrations have rollback scripts",
+    "dataSource": "memory-intel.migrations[].type + filesystem database/supabase/rollbacks/",
+    "detectable": false,
+    "evidenceField": "NOT COMPUTABLE — no artifact exposes per-migration rollback script presence",
+    "reusePoint": "rollback-integrity-validator.mjs (CI gate is sole authoritative source)",
+    "notes": "HONEST GAP: memory-intel has n/file/name/type only. GDIS must label this NOT COMPUTABLE and reference rollback-integrity-validator.mjs as gate."
+  },
+  {
+    "capability": "readiness-coverage",
+    "rule": "Gate hardViolations=0; route auth coverage tracked",
+    "dataSource": "audit-engine-v2.summary.{hardViolations,routesAudited,authCoverage,validationCoverage}",
+    "detectable": true,
+    "evidenceField": "hardViolations=0; authCoverage=55/87; validationCoverage=71/87",
+    "reusePoint": "VerificationService.verifyArchitecture()",
+    "notes": "hardViolations=0 is the single authoritative green gate. authCoverage and validationCoverage are route-level heuristics (candidates only)."
+  },
+  {
+    "capability": "readiness-docs",
+    "rule": "Each domain has at least one architecture document",
+    "dataSource": "memory-intel.sources[] (41 files) + domain-intel.domains[].key",
+    "detectable": "partial",
+    "evidenceField": "memory-intel.sources[] — 41 indexed sources across GOVERNANCE_REWRITE, docs/architecture, docs/governance",
+    "reusePoint": "repository-intelligence-validator.mjs",
+    "notes": "Presence only. Freshness (last-modified vs code change) NOT COMPUTABLE from any artifact."
+  },
+  {
+    "capability": "readiness-healthcheck",
+    "rule": "All 4 workers have RUNTIME_TELEMETRY binding declared",
+    "dataSource": "infra-intel.workers[].bindings[]",
+    "detectable": "partial",
+    "evidenceField": "All 4 workers have RUNTIME_TELEMETRY in bindings[]",
+    "reusePoint": "connections-intel.json; lcis-live LivePlatform.health()",
+    "notes": "Binding declared = structural health-check capability. Actual endpoint responding NOT COMPUTABLE without live probe (connections-intel status: NOT CONNECTED)."
+  },
+  {
+    "capability": "readiness-monitoring",
+    "rule": "Live metric ingestion connected for all money domains",
+    "dataSource": "runtime-intel.telemetry + connections-intel.json",
+    "detectable": false,
+    "evidenceField": "All telemetry sources: NOT CONNECTED (runtime-intel.telemetry has 4 adapter entries; none wired)",
+    "reusePoint": "lcis-live LivePlatform + AdapterHealthMonitor; connections-intel.json",
+    "notes": "NOT CONNECTED: structural topology is mapped; live metric ingestion requires RUNTIME_TELEMETRY adapter wired with Cloudflare Analytics Engine credentials. Cannot be fabricated."
+  },
+  {
+    "capability": "readiness-alerts",
+    "rule": "Alert rules configured for money domain error conditions",
+    "dataSource": "No artifact — no alert rule files in repo",
+    "detectable": false,
+    "evidenceField": "NOT COMPUTABLE — no alert configuration exists in any graphify-out artifact or repo file",
+    "reusePoint": "None — alert configuration does not exist in this codebase yet",
+    "notes": "HONEST GAP: No alert rule files found in repo. This capability cannot be evaluated from structural data."
+  },
+  {
+    "capability": "readiness-security",
+    "rule": "Money domains have zero confirmed auth/RLS violations",
+    "dataSource": "audit-engine-v2.findings[A-AUTH,A-RLS,A-RATE,A-VALID] + domain-intel.domains[].money + discovery-v2.drift.security",
+    "detectable": "partial",
+    "evidenceField": "A-AUTH=32 candidates total; A-RLS=20 candidates; A-RATE=82 candidates; A-VALID=16 candidates; hardViolations=0",
+    "reusePoint": "VerificationService (reads all findings); security-intelligence-v5.json",
+    "notes": "All findings are CANDIDATES (heuristic). hardViolations=0 means no confirmed violations. Money domain subset requires cross-referencing finding with domain-intel.money classification."
+  }
+]

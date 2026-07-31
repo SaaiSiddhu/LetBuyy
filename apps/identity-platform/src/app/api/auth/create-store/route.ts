@@ -102,13 +102,18 @@ export async function POST(request: NextRequest) {
                 site_type: string
                 status: string
             }
-            error?: { message?: string }
+            error?: { code?: string; message?: string; details?: unknown[] }
         } | null
 
         if (!storeResponse.ok || !storePayload?.data) {
-            console.error('Store creation error:', storePayload?.error?.message || storeResponse.statusText)
+            const errMsg = storePayload?.error?.message || storeResponse.statusText
+            const errDetails = storePayload?.error?.details
+            console.error('[create-store] api-gateway error', storeResponse.status, errMsg, errDetails ? JSON.stringify(errDetails) : '')
             return NextResponse.json(
-                { error: storePayload?.error?.message || 'Failed to create store. Please try again.' },
+                {
+                    error: errMsg || 'Failed to create store. Please try again.',
+                    ...(errDetails ? { details: errDetails } : {}),
+                },
                 { status: storeResponse.status }
             )
         }
@@ -125,7 +130,7 @@ export async function POST(request: NextRequest) {
                     email: session.email,
                     storeName: storeName.trim(),
                     storeType: siteType,
-                    storeUrl: `https://${normalizedSubdomain}.letbuyy.com`,
+                    storeUrl: `https://${normalizedSubdomain}.letbuyy.store`,
                     adminUrl: getAdminDashboardUrl(normalizedSubdomain),
                 }),
             })
@@ -138,9 +143,10 @@ export async function POST(request: NextRequest) {
             store: site,
         })
     } catch (error) {
-        console.error('Create store error:', error)
+        const msg = error instanceof Error ? error.message : String(error)
+        console.error('[create-store] caught exception:', msg)
         return NextResponse.json(
-            { error: 'Internal server error' },
+            { error: `Internal server error: ${msg}` },
             { status: 500 }
         )
     }

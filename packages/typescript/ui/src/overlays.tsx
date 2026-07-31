@@ -7,14 +7,57 @@ import { Button } from './button';
 import { cx } from './utils';
 import { useAnchoredPosition, useDismiss, useFocusTrap, useScrollLock } from './overlay-hooks';
 
+// Theme/surface attributes that decide which design-system palette applies.
+const OVERLAY_THEME_ATTRS = ['data-letbuyy-theme', 'data-letbuyy-surface', 'data-letbuyy-density', 'data-theme'] as const;
+
+/**
+ * Copy the app's theme/surface signals onto a body-level node. Overlays portal to
+ * <body>, escaping the DesignSystemRoot wrapper that carries `data-letbuyy-theme`.
+ * Without this, an overlay falls back to a bare `:root` — and if the OS is in dark
+ * mode, `@media (prefers-color-scheme: dark) :root { … }` paints the overlay dark
+ * even when the app is pinned to light. Mirroring `data-letbuyy-theme` restores the
+ * high-specificity palette rule so overlays always match the app.
+ */
+function mirrorOverlayTheme(target: HTMLElement): void {
+    if (typeof document === 'undefined') return;
+    const source = document.querySelector('[data-letbuyy-surface]') as HTMLElement | null;
+    const root = document.documentElement;
+    for (const attr of OVERLAY_THEME_ATTRS) {
+        const value = source?.getAttribute(attr) ?? root.getAttribute(attr);
+        if (value) target.setAttribute(attr, value);
+        else target.removeAttribute(attr);
+    }
+    // Always carry a concrete theme so overlays never inherit an OS-default :root.
+    if (!target.getAttribute('data-letbuyy-theme')) {
+        target.setAttribute('data-letbuyy-theme', root.getAttribute('data-theme') || 'light');
+    }
+}
+
 function OverlayPortal({ children }: { children: React.ReactNode }) {
-    const [mounted, setMounted] = useState(false);
+    const [container, setContainer] = useState<HTMLElement | null>(null);
     useEffect(() => {
-        setMounted(true);
-        return () => setMounted(false);
+        if (typeof document === 'undefined') return;
+        const el = document.createElement('div');
+        el.setAttribute('data-letbuyy-overlay-portal', 'true');
+        mirrorOverlayTheme(el);
+        document.body.appendChild(el);
+        setContainer(el);
+
+        // Keep the overlay palette in sync if the user toggles theme while it's open.
+        const source = (document.querySelector('[data-letbuyy-surface]') as HTMLElement | null) ?? document.documentElement;
+        const observer = new MutationObserver(() => mirrorOverlayTheme(el));
+        observer.observe(source, { attributes: true, attributeFilter: [...OVERLAY_THEME_ATTRS] });
+        if (source !== document.documentElement) {
+            observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+        }
+
+        return () => {
+            observer.disconnect();
+            el.remove();
+        };
     }, []);
-    if (!mounted || typeof document === 'undefined') return null;
-    return createPortal(children, document.body);
+    if (!container) return null;
+    return createPortal(children, container);
 }
 
 export type OverlayTriggerProps = {

@@ -1,0 +1,1 @@
+export { OwnershipService } from './OwnershipService';

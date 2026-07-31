@@ -22,6 +22,17 @@ import { resolveDoh, resolveMxOrNsSnapshot } from '../lib/dns';
 import { dbErrorBody, getSupabaseAdmin, success } from '../lib/supabase';
 import { hashStoreAccessPassword } from '../lib/store-access-password';
 import { attachVercelProjectDomain, readVercelDomainStatus, VercelDomainConfigError } from '../lib/vercel-domains';
+import { detectDnsProvider } from '../lib/domain-provider';
+import {
+    findSiteDomain,
+    listDomainVerifications,
+    listSiteDomains,
+    patchSiteDomainStatus,
+    recordDomainVerification,
+    softDeleteSiteDomain,
+    upsertSiteDomain,
+    type SiteDomainStatus,
+} from '../lib/site-domains';
 
 const customDomainsRouter = new Hono<{ Bindings: Env }>();
 export const storeAccessRouter = new Hono<{ Bindings: Env }>();
@@ -205,9 +216,32 @@ customDomainsRouter.post('/domains', async (c) => {
     const apex = domain.split('.').slice(-2).join('.');
     const dnsSnapshot = await resolveMxOrNsSnapshot(apex).catch(() => ({ mx: [], ns: [] }));
 
+    // Multi-domain (migration 185) — best-effort; falls back to sites.custom_domain when absent.
+    const provider = detectDnsProvider(dnsSnapshot.ns);
+    const connectStatus: SiteDomainStatus = screening.action === 'review' ? 'review' : 'pending';
+    await upsertSiteDomain(db, {
+        siteId: parsed.data.site_id,
+        domain,
+        status: connectStatus,
+        verificationToken,
+        provider,
+        actorId: customUser?.id || null,
+    });
+    const connectedRow = await findSiteDomain(db, parsed.data.site_id, domain).catch(() => null);
+    await recordDomainVerification(db, {
+        siteId: parsed.data.site_id,
+        siteDomainId: connectedRow?.id ?? null,
+        domain,
+        checkType: 'connect',
+        status: connectStatus,
+        result: { provider, apex_mx_warning: dnsSnapshot.mx.length > 0 },
+        checkedBy: customUser?.id || null,
+    });
+
     return c.json(success({
         domain,
         status: screening.action === 'review' ? 'review' : 'pending',
+        provider,
         records: {
             txt: { name: `_letbuyy-challenge.${domain}`, value: verificationToken },
             cname: { name: domain, value: cnameTarget },
@@ -286,6 +320,25 @@ customDomainsRouter.post('/domains/verify', async (c) => {
     const status = vercel.status === 'pending' ? 'verifying' : vercel.status;
     await db.from('sites').update({ custom_domain_status: status }).eq('id', parsed.data.site_id);
 
+    const verifiedRow = await findSiteDomain(db, parsed.data.site_id, domain).catch(() => null);
+    const verifyProvider = await detectLiveProvider(domain).catch(() => null);
+    await patchSiteDomainStatus(db, parsed.data.site_id, domain, {
+        status: status as SiteDomainStatus,
+        ssl_status: vercel.status === 'active' ? 'active' : vercel.misconfigured ? 'error' : 'pending',
+        provider: verifyProvider,
+    });
+    await recordDomainVerification(db, {
+        siteId: parsed.data.site_id,
+        siteDomainId: verifiedRow?.id ?? null,
+        domain,
+        checkType: 'verify',
+        status,
+        txtVerified: true,
+        cnameVerified: cnameActive,
+        sslActive: vercel.status === 'active',
+        result: { vercel: { status: vercel.status, misconfigured: vercel.misconfigured } },
+    });
+
     return c.json(success({
         domain,
         status,
@@ -321,7 +374,38 @@ customDomainsRouter.get('/domains/:domain/status', async (c) => {
         verificationToken: site.custom_domain_verification_token,
     });
     await db.from('sites').update({ custom_domain_status: health.status }).eq('id', siteId).eq('custom_domain', domain);
-    return c.json(success({ ...health, vercel: health.vercel, health }));
+
+    // Multi-domain mirror (best-effort) — provider re-detected live from the apex
+    // nameservers (NOT the resolved ALIAS target), so a registrar/NS change (e.g.
+    // GoDaddy → Cloudflare) is reflected on every health refresh.
+    const provider = await detectLiveProvider(domain).catch(() => null);
+    const sslStatus = health.ssl_active
+        ? 'active'
+        : health.provider_status === 'unavailable'
+            ? 'unavailable'
+            : health.misconfigured
+                ? 'error'
+                : 'pending';
+    await patchSiteDomainStatus(db, siteId, domain, {
+        status: health.status as SiteDomainStatus,
+        ssl_status: sslStatus,
+        provider,
+        checkedAt: health.checked_at,
+    });
+    const healthRow = await findSiteDomain(db, siteId, domain).catch(() => null);
+    await recordDomainVerification(db, {
+        siteId,
+        siteDomainId: healthRow?.id ?? null,
+        domain,
+        checkType: 'health',
+        status: health.status,
+        txtVerified: health.txt_verified,
+        cnameVerified: health.cname_verified,
+        sslActive: health.ssl_active,
+        result: { provider, ssl_status: sslStatus },
+    });
+
+    return c.json(success({ ...health, provider, vercel: health.vercel, health }));
 });
 
 customDomainsRouter.post('/domain-reviews/:reviewId/decision', async (c) => {
@@ -366,6 +450,8 @@ customDomainsRouter.delete('/domains/:domain', async (c) => {
     const { db, response } = await requireOwnedSite(c, siteId);
     if (response) return response;
 
+    // Only clears the legacy column when this domain was the synced primary; redirect
+    // domains live solely in site_domains and leave sites.custom_domain untouched.
     const { error } = await db
         .from('sites')
         .update({
@@ -377,7 +463,140 @@ customDomainsRouter.delete('/domains/:domain', async (c) => {
         .eq('custom_domain', domain);
 
     if (error) return c.json(dbErrorBody(), 500);
+
+    await softDeleteSiteDomain(db, siteId, domain, null);
+    await recordDomainVerification(db, { siteId, domain, checkType: 'delete', status: 'none' });
     return c.json(success({ domain, released: true }));
+});
+
+// Re-detect the merchant's DNS host from LIVE nameservers, so a registrar/NS switch
+// (e.g. GoDaddy → Cloudflare) is reflected instead of the value cached at connect time.
+async function detectLiveProvider(domain: string): Promise<string | null> {
+    const apex = domain.split('.').slice(-2).join('.');
+    const snapshot = await resolveMxOrNsSnapshot(apex).catch(() => ({ mx: [], ns: [] }));
+    return detectDnsProvider(snapshot.ns);
+}
+
+// GET /custom/domains?site_id= — list all connected domains (multi-domain).
+// Falls back to the legacy single sites.custom_domain when migration 185 is not applied.
+// Provider is re-detected from live NS on every list so the overview is never stale.
+customDomainsRouter.get('/domains', async (c) => {
+    const siteId = c.req.query('site_id');
+    if (!siteId) return c.json({ error: { code: 'VALIDATION', message: 'site_id query parameter is required' } }, 400);
+    const { db, response } = await requireOwnedSite(c, siteId);
+    if (response) return response;
+
+    // Best-effort: listing must not 500 if the CNAME target env is unset — only the
+    // connect/verify flows truly need it (to render DNS records).
+    let cnameTarget = '';
+    try {
+        cnameTarget = getCustomDomainCnameTarget(c.env);
+    } catch {
+        cnameTarget = '';
+    }
+    const rows = await listSiteDomains(db, siteId).catch(() => null);
+
+    let source: 'site_domains' | 'legacy';
+    let domains: Array<Record<string, unknown>>;
+    if (rows && rows.length > 0) {
+        source = 'site_domains';
+        domains = rows as unknown as Array<Record<string, unknown>>;
+    } else {
+        const { data: site } = await db
+            .from('sites')
+            .select('custom_domain, custom_domain_status')
+            .eq('id', siteId)
+            .maybeSingle();
+        source = rows === null ? 'legacy' : 'site_domains';
+        domains = site?.custom_domain
+            ? [{
+                id: null,
+                site_id: siteId,
+                domain: site.custom_domain,
+                role: 'primary',
+                status: site.custom_domain_status || 'pending',
+                ssl_status: site.custom_domain_status === 'active' ? 'active' : 'unknown',
+                provider: null,
+                redirect_to: null,
+                last_checked_at: null,
+                connected_at: null,
+            }]
+            : [];
+    }
+
+    // Live provider re-detection (parallel, best-effort) + persist when it changed.
+    const enriched = await Promise.all(domains.map(async (d) => {
+        const detected = await detectLiveProvider(String(d.domain)).catch(() => null);
+        if (detected && detected !== d.provider && d.id) {
+            await db.from('site_domains').update({ provider: detected }).eq('id', d.id as string).then(() => undefined, () => undefined);
+        }
+        return { ...d, provider: detected ?? d.provider };
+    }));
+
+    return c.json(success({ cname_target: cnameTarget, source, domains: enriched }));
+});
+
+// POST /custom/domains/:domain/primary — promote an active domain to primary (atomic RPC).
+customDomainsRouter.post('/domains/:domain/primary', async (c) => {
+    const domain = normalizeCustomDomain(c.req.param('domain'));
+    if (!domain) return c.json({ error: { code: 'INVALID_DOMAIN', message: 'Domain is invalid' } }, 400);
+    const siteId = c.req.query('site_id') || (await c.req.json().catch(() => null) as { site_id?: string } | null)?.site_id;
+    if (!siteId) return c.json({ error: { code: 'VALIDATION', message: 'site_id is required' } }, 400);
+    const { db, customUser, response } = await requireOwnedSite(c, siteId);
+    if (response) return response;
+
+    const { data, error } = await db.rpc('set_primary_site_domain', { p_site_id: siteId, p_domain: domain });
+    if (error) {
+        const message = error.message || 'Unable to set primary domain';
+        return c.json({ error: { code: 'SET_PRIMARY_FAILED', message } }, 503);
+    }
+    const result = (data as { ok?: boolean; message?: string } | null) || null;
+    if (!result?.ok) {
+        return c.json({ error: { code: 'SET_PRIMARY_REJECTED', message: result?.message || 'Domain cannot be made primary' } }, 409);
+    }
+    await recordDomainVerification(db, { siteId, domain, checkType: 'set_primary', status: 'active', checkedBy: customUser?.id || null });
+    return c.json(success(result));
+});
+
+// PATCH /custom/domains/:domain — update a domain's role to redirect (+ optional target).
+customDomainsRouter.patch('/domains/:domain', async (c) => {
+    const domain = normalizeCustomDomain(c.req.param('domain'));
+    if (!domain) return c.json({ error: { code: 'INVALID_DOMAIN', message: 'Domain is invalid' } }, 400);
+    const body = await c.req.json().catch(() => null) as { site_id?: string; role?: string; redirect_to?: string } | null;
+    const siteId = body?.site_id || c.req.query('site_id');
+    if (!siteId) return c.json({ error: { code: 'VALIDATION', message: 'site_id is required' } }, 400);
+    if (body?.role && body.role !== 'redirect') {
+        return c.json({ error: { code: 'VALIDATION', message: 'Use the /primary route to promote a domain' } }, 400);
+    }
+    const { db, customUser, response } = await requireOwnedSite(c, siteId);
+    if (response) return response;
+
+    const existing = await findSiteDomain(db, siteId, domain).catch(() => null);
+    if (!existing) return c.json({ error: { code: 'DOMAIN_NOT_FOUND', message: 'Domain is not connected to this store' } }, 404);
+    if (existing.role === 'primary') {
+        return c.json({ error: { code: 'PRIMARY_IMMUTABLE', message: 'Promote another domain to primary first' } }, 409);
+    }
+    const redirectTo = typeof body?.redirect_to === 'string' ? normalizeCustomDomain(body.redirect_to) : null;
+    const { error } = await db
+        .from('site_domains')
+        .update({ role: 'redirect', redirect_to: redirectTo, updated_at: new Date().toISOString(), updated_by: customUser?.id || null })
+        .eq('id', existing.id);
+    if (error) return c.json(dbErrorBody(), 500);
+    await recordDomainVerification(db, { siteId, siteDomainId: existing.id, domain, checkType: 'set_redirect', status: existing.status });
+    return c.json(success({ domain, role: 'redirect', redirect_to: redirectTo }));
+});
+
+// GET /custom/domains/:domain/history?site_id= — verification history for a domain.
+customDomainsRouter.get('/domains/:domain/history', async (c) => {
+    const domain = normalizeCustomDomain(c.req.param('domain'));
+    if (!domain) return c.json({ error: { code: 'INVALID_DOMAIN', message: 'Domain is invalid' } }, 400);
+    const siteId = c.req.query('site_id');
+    if (!siteId) return c.json({ error: { code: 'VALIDATION', message: 'site_id query parameter is required' } }, 400);
+    const { db, response } = await requireOwnedSite(c, siteId);
+    if (response) return response;
+
+    const events = await listDomainVerifications(db, siteId, domain).catch(() => null);
+    return c.json(success({ domain, connected: events !== null, events: events || [] }));
 });
 
 storeAccessRouter.put('/', async (c) => {

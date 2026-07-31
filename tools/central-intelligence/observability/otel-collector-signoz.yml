@@ -1,0 +1,117 @@
+# LCIS Observability Engine — OTel Collector config for SigNoz backend
+# Technology primitive: OpenTelemetry Collector + SigNoz (ClickHouse)
+# Complements infrastructure/observability/otel-collector.yaml (Tempo/Loki stack)
+# PII redaction: strips authorization, cookie, set-cookie, x-api-key headers at processor level
+
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+processors:
+  memory_limiter:
+    check_interval: 5s
+    limit_mib: 512
+    spike_limit_mib: 128
+
+  batch:
+    timeout: 5s
+    send_batch_size: 512
+    send_batch_max_size: 1024
+
+  # PII policy: remove all auth/session/key headers before export
+  attributes/redaction:
+    actions:
+      - key: authorization
+        action: delete
+      - key: cookie
+        action: delete
+      - key: set-cookie
+        action: delete
+      - key: x-api-key
+        action: delete
+      # Ensure only site_id is retained as tenant identifier (not email/phone/name)
+      - key: enduser.id
+        action: delete
+      - key: enduser.email
+        action: delete
+      - key: user.email
+        action: delete
+      - key: user.name
+        action: delete
+
+exporters:
+  # SigNoz ClickHouse trace exporter
+  clickhouse:
+    endpoint: tcp://clickhouse:9000
+    database: signoz_traces
+    username: default
+    password: ""
+    timeout: 10s
+    sending_queue:
+      enabled: true
+      num_consumers: 4
+      queue_size: 100
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 300s
+    logs_table_name: signoz_logs
+    traces_table_name: signoz_index_v3
+    metrics_table_name: signoz_metrics
+    ttl: 2160  # 90 days in hours
+
+  # Prometheus metrics scrape endpoint — letbuyy namespace
+  prometheus:
+    endpoint: 0.0.0.0:9464
+    namespace: letbuyy
+    send_timestamps: true
+    metric_expiration: 5m
+    resource_to_telemetry_conversion:
+      enabled: true
+
+  # Debug exporter (disable in production via env/config overlay)
+  debug:
+    verbosity: basic
+    sampling_initial: 5
+    sampling_thereafter: 200
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+    path: /health
+
+  pprof:
+    endpoint: 0.0.0.0:1777
+
+  zpages:
+    endpoint: 0.0.0.0:55679
+
+service:
+  extensions: [health_check, pprof, zpages]
+
+  telemetry:
+    logs:
+      level: info
+    metrics:
+      address: 0.0.0.0:8888
+
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, attributes/redaction, batch]
+      exporters: [clickhouse, debug]
+
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [prometheus, debug]
+
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, attributes/redaction, batch]
+      exporters: [clickhouse, debug]

@@ -3,7 +3,12 @@ import { LetbuyyApiError } from '@letbuyy/api-client'
 import { MerchantApiRequestError, createMerchantApiClient } from '@/lib/api/client'
 
 const QUERY_COST_RATE_LIMITED = 'QUERY_COST_RATE_LIMITED'
-const QUERY_COST_RETRY_DELAYS_MS = [250, 750, 1_500] as const
+// Backoff for transient merchant reads — ~16s total to cover both gateway
+// hot-reload (~16ms downtime after wrangler.toml fix) and cold start (~8-10s
+// for wrangler to bind :9010 on first `pnpm dev`). Covers: query-cost rate
+// limits (429), connection failures ("fetch failed" — null HTTP status), and
+// gateway-not-yet-ready (502/503/504). After all attempts the error surfaces.
+const MERCHANT_READ_RETRY_DELAYS_MS = [250, 500, 1_000, 2_000, 3_500, 5_000, 7_500] as const
 
 /**
  * Extract the HTTP status code carried by a typed API error.
@@ -43,6 +48,19 @@ async function wait(ms: number): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+/**
+ * A merchant read is retryable when the failure is transient: a query-cost rate
+ * limit (429), a connection failure (no HTTP status — "fetch failed" when the
+ * gateway is down or mid hot-reload), or gateway-not-ready (502/503/504 during
+ * boot). These ride out a backend restart instead of crashing the SSR render.
+ */
+function isRetryableReadError(error: unknown): boolean {
+    if (isQueryCostRateLimited(error)) return true
+    const status = apiErrorStatus(error)
+    if (status === null) return true
+    return status === 502 || status === 503 || status === 504
+}
+
 async function retryMerchantRead<T>(operation: () => Promise<T>): Promise<T> {
     let attempt = 0
 
@@ -50,8 +68,8 @@ async function retryMerchantRead<T>(operation: () => Promise<T>): Promise<T> {
         try {
             return await operation()
         } catch (error) {
-            const delay = QUERY_COST_RETRY_DELAYS_MS[attempt]
-            if (!isQueryCostRateLimited(error) || delay === undefined) {
+            const delay = MERCHANT_READ_RETRY_DELAYS_MS[attempt]
+            if (delay === undefined || !isRetryableReadError(error)) {
                 throw error
             }
 

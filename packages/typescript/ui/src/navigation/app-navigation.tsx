@@ -73,7 +73,14 @@ export function AppNavigation({
                     )}
                     <Navigation
                         ariaLabel={typeof section.title === 'string' ? section.title : 'Primary navigation'}
-                        items={section.items.map((item) => ({ ...item, active: isNavItemActive(pathname, item.href) }))}
+                        items={section.items.map((item) => ({
+                            ...item,
+                            active: isNavItemActive(pathname, item.href),
+                            children: item.children?.map((child) => ({
+                                ...child,
+                                active: isNavItemActive(pathname, child.href),
+                            })),
+                        }))}
                     />
                 </div>
             ))}

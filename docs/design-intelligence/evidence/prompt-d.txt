@@ -1,0 +1,82 @@
+You are drafting PARTS 8 and 9 of the LetBuyy Design Intelligence Master document.
+
+READ these source documents in full:
+1. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/theme-architecture/THEME_ARCHITECTURE.md
+2. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/theme-architecture/THEME_GOVERNANCE.md
+3. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/design-debt/DESIGN_DEBT_REPORT.md
+4. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/design-debt/CONSISTENCY_SCORECARD.md
+
+Write complete, publication-ready text. Technical precision. Architecture documents quality.
+
+---
+
+# PART 8: THEME ARCHITECTURE
+
+Section 8.1: The Four-Tier Token System
+Complete technical specification of the token hierarchy:
+- Tier 0: Primitive Tokens (color scales, spacing scales, naming convention, example: --lb-color-ink-950, count)
+- Tier 1: Semantic Tokens (surface/text/border mapping, light/dark behavior, example: --lb-color-bg)
+- Tier 2: Component Tokens (component-specific overrides, naming convention, example: --lb-button-bg)
+- Tier 3: Density Tokens (compact/comfortable/spacious, the 25 density-responsive variables, how ThemeProvider applies them)
+
+Section 8.2: The ThemeProvider System
+Technical specification: what ThemeProvider accepts, the five surface types (admin, marketplace, storefront, identity, operations), what each surface changes, ThemeScript and flash-prevention, DesignSystemRoot, TokenStyleBoundary.
+
+Section 8.3: Tailwind v4 Bridge
+How --lb-* tokens connect to Tailwind. Semantic utility classes: bg-surface, text-default, border-line, etc. What maps to what. Why raw Tailwind colors are forbidden.
+
+Section 8.4: Dark Mode Architecture
+Implementation method (data-letbuyy-theme attribute). ThemeScript and SSR behavior. Flash prevention. Which apps support dark mode. Which force dark (platform-console, platform-operations-portal). OverlayPortal theme mirroring requirement. The four divergent dark backgrounds.
+
+Section 8.5: Tenant Brand Customization
+createLetbuyyBrandVariables API: what it accepts, WCAG contrast validation, which tokens exposed to merchant customization, which are locked, how storefront themes override the brand.
+
+Section 8.6: The Liquid/React Theme Engine (packages/theme-engine)
+Storefront rendering model: Liquid theme rendering (canary flag THEME_LIQUID_RENDERING_DEFAULT_ENABLED=false — currently OFF), React default rendering, how theme JSON maps to React components, Urban Kicks theme as reference implementation, theme registry structure, preset system.
+
+Section 8.7: Mobile Token Synchronization
+generate-mobile-tokens.mjs pipeline: how TypeScript tokens become Dart Color objects, the validation step, current parity gaps (dark mode slate/gray vs ink-lavender), what needs fixing.
+
+Section 8.8: Theme Architecture Scalability Assessment
+Assess whether the current system supports: white-label instances, per-tenant branding beyond color, A/B testing design variants, new product surfaces (mobile shopper), developer portal rebuild.
+
+Section 8.9: Missing Theme Capabilities
+Specific gaps: no marketing surface type, broken --lb-color-border-subtle alias, etc. Full list from investigation.
+
+---
+
+# PART 9: DESIGN DEBT
+
+Section 9.0: Debt Philosophy
+The debt register is permanent. Items are marked [RESOLVED: date] not deleted. This creates accurate historical record.
+
+Section 9.1: P0 — Production Defects (Fix Immediately)
+For each P0 item use this format:
+**P0-XXX: [Title]**
+File: [exact path]
+Problem: [what is wrong]
+Evidence: [code excerpt or measurement from investigation]
+Impact: [operational consequence]
+Fix: [exact change required]
+Effort: [time estimate]
+Owner: [team]
+
+Include ALL P0 items found in the investigation.
+
+Section 9.2: P1 — High Priority (Address This Week)
+Same format. Include: 6 active ratchet violations (NotificationsPanel, SettingsSearch, BackendNeededPane, EmbeddedAppBridgeClient, ProviderModeBadge, AdminShell), 4 dark background divergences, marketing-site wrong surface.
+
+Section 9.3: P2 — Medium Priority (Address This Month)
+Same format. Include: identity-platform parallel CSS variable system, Flutter dark mode palette mismatch, no deployed Storybook, no Figma integration, missing marketing surface type, broken --lb-color-border-subtle alias.
+
+Section 9.4: P3 — Low Priority (Backlog)
+Same format. Include: 127 legacy arbitrary border-radius instances, missing icon size vocabulary, missing fluid font scaling, missing BottomSheet component, missing AccountSwitcher component, CommandPalette async entity search gap.
+
+Section 9.5: Consistency Scorecard
+Full tables from investigation data for merchant-control-plane, identity-platform, and marketing-site. Then overall platform averages.
+
+Section 9.6: Debt Trend Rules
+1. Ratchet count cannot increase. 2. Every PR introducing a violation is blocked at CI. 3. Every sprint includes minimum 2 debt reduction items.
+
+Write your complete output to:
+/Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/evidence/draft-parts-8-9.md

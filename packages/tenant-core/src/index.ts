@@ -225,6 +225,7 @@ export const UpdateStoreSchema = z.object({
   published: z.boolean().optional(),
   currency: z.string().length(3).optional(),
   locale: z.string().min(2).max(16).optional(),
+  timezone: z.string().min(1).max(80).optional(),
   refund_policy: z.string().max(20000).optional(),
   privacy_policy: z.string().max(20000).optional(),
   terms_of_service: z.string().max(20000).optional(),
@@ -241,6 +242,8 @@ export const UpdateStoreSchema = z.object({
   invoice_footer: z.string().max(1000).optional().nullable(),
   invoice_number_next: z.number().int().positive().optional().nullable(),
   version: z.number().int().positive('Version is required for concurrent safety').optional(),
+  cod_enabled: z.boolean().optional(),
+  online_payment_enabled: z.boolean().optional(),
 });
 
 export const PaymentConfigSchema = z.object({

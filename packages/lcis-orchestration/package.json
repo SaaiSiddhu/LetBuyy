@@ -1,0 +1,27 @@
+{
+  "name": "@letbuyy/lcis-orchestration",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "EAOS — Execution & Agent Orchestration System. Read-only execution-TRACKING + orchestration intelligence over the EINS engineering package (Phases 1-7). It tracks/orchestrates/validates execution and reports state; it NEVER executes, deploys, mutates, writes, or runs commands. Humans/agents execute; EAOS observes. Live execution progress is honestly NOT_CONNECTED until an execution-tracking source is wired.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@letbuyy/lcis-core": "workspace:*",
+    "@letbuyy/lcis-execution": "workspace:*",
+    "@letbuyy/lcis-governance": "workspace:*",
+    "@letbuyy/lcis-operations": "workspace:*",
+    "@letbuyy/lcis-engineering": "workspace:*",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "typescript": "^5.9.3"
+  }
+}

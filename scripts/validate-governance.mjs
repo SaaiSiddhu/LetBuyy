@@ -98,6 +98,7 @@ const validators = [
   "test-coverage-governance-validator.mjs",
   "workspace-lifecycle-validator.mjs",
   "commission-bps-zero-validator.mjs",
+  "pricing-catalog-validator.mjs",
   "canonical-ledger-only-validator.mjs",
   "no-self-custody-rail-validator.mjs",
   "stepup-crypto-validator.mjs",

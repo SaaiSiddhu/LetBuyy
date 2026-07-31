@@ -51,6 +51,8 @@ router.get('/resolve', async (c) => {
         access_message: resolved.access_message || null,
         published: Boolean(resolved.published),
         status: resolved.status || 'draft',
+        matched_domain_role: resolved.matched_domain_role || 'primary',
+        redirect_to: resolved.matched_redirect_to || null,
     }));
 });
 

@@ -1,6 +1,7 @@
 import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
+import { assertStaffPermission } from '../middleware/staff-permission';
 import { emailProviderConfigured, escapeHtml } from '../lib/customer-email';
 import { customerCursorPage, orderCustomerSummaries } from '../lib/customer-pagination';
 import { cursorPaginated, getSupabaseAdmin, paginated, success } from '../lib/supabase';
@@ -464,6 +465,10 @@ router.post('/', validate('json', CreateCustomerSchema), async (c) => {
 
     const customUser = await resolveCustomUser(db, auth.user);
     const actorId = customUser?.id || null;
+
+    const staffBlock = await assertStaffPermission(c, body.store_id, actorId, 'customers:write');
+    if (staffBlock) return staffBlock;
+
     const tags = normalizeTags(body.tags);
     const fullName = [body.first_name, body.last_name].map((part) => String(part || '').trim()).filter(Boolean).join(' ');
     const selectColumns = 'id,store_id,email,full_name,phone,status,total_orders,total_spent,accepts_marketing,tags,notes,last_order_at,last_login_at,created_at,updated_at,deleted_at';
@@ -756,6 +761,10 @@ router.patch('/:email', validate('json', UpdateCustomerSchema), async (c) => {
     }
 
     const customUser = await resolveCustomUser(db, auth.user);
+
+    const staffBlock = await assertStaffPermission(c, storeId, customUser?.id, 'customers:write');
+    if (staffBlock) return staffBlock;
+
     const existingResult = await loadCustomerProfileRow(db, storeId, email);
     if (existingResult.error) {
         return c.json({ error: { code: 'DB_ERROR', message: 'Unable to load customer' } }, 500);

@@ -29,7 +29,6 @@ import {
     Sparkles,
     Store,
     Tag,
-    ThemeToggleButton,
     Truck,
     Users,
     X,
@@ -530,7 +529,6 @@ export default function Header() {
                     </nav>
 
                     <div className="header-actions">
-                        <ThemeToggleButton label="Toggle marketing theme" className="hidden lg:inline-flex" />
                         <Link href={loginUrl} className="btn btn-ghost" onClick={closeAllMenus}>
                             Log in
                         </Link>
@@ -544,8 +542,6 @@ export default function Header() {
                     <Link href={signupUrl} className="mobile-start-link" onClick={closeAllMenus}>
                         Start for free
                     </Link>
-
-                    <ThemeToggleButton label="Toggle marketing theme" className="inline-flex lg:hidden" />
 
                     <Button unstyled
                         className="mobile-menu-btn"

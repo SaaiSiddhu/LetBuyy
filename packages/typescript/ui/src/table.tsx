@@ -11,12 +11,15 @@ export interface TableColumn<T> {
     key: string;
     header: React.ReactNode;
     sortable?: boolean;
+    truncate?: boolean;
+    shrink?: boolean;
     width?: string;
     className?: string;
     headerClassName?: string;
     cellClassName?: string;
     render?: (row: T, index: number) => React.ReactNode;
     cardLabel?: React.ReactNode;
+    cardRender?: (row: T, index: number) => React.ReactNode;
 }
 
 export interface TableBulkAction<T> {
@@ -61,6 +64,7 @@ export interface TableDataProps<T extends object> {
     selectedRowIds?: string[];
     onSelectionChange?: (ids: string[], rows: T[]) => void;
     selectable?: boolean;
+    hideHeaderWhenEmpty?: boolean;
     className?: string;
 }
 
@@ -95,7 +99,7 @@ export function Table<T extends object>(props: TableProps<T>) {
         } = props;
 
         return (
-            <div className={cx('overflow-hidden rounded-[var(--lb-component-card-radius)] border border-[var(--lb-component-table-border)] bg-[var(--lb-component-table-bg)] shadow-[var(--lb-component-card-shadow)]', className)} {...staticProps}>
+            <div className={cx('overflow-hidden border border-[var(--lb-component-table-border)] bg-[var(--lb-component-table-bg)] shadow-[var(--lb-component-card-shadow)]', className)} {...staticProps}>
                 <div className={cx('overflow-auto', containerClassName)}>
                     <table className={cx('w-full border-collapse text-[length:var(--lb-font-size-table)] leading-[var(--lb-line-height-table)]', tableClassName)}>
                         {children}
@@ -124,6 +128,7 @@ export function Table<T extends object>(props: TableProps<T>) {
         selectedRowIds,
         onSelectionChange,
         selectable,
+        hideHeaderWhenEmpty = true,
         className = '',
     } = props;
     const [internalSelectedIds, setInternalSelectedIds] = useState<string[]>([]);
@@ -156,9 +161,15 @@ export function Table<T extends object>(props: TableProps<T>) {
         column.render ? column.render(row, index) : cellValue(row, column.key)
     );
 
+    const showHeader = !(hideHeaderWhenEmpty && !loading && rows.length === 0);
+    const showToolbar = !(hideHeaderWhenEmpty && !loading && rows.length === 0);
+    const showSortBar = !(hideHeaderWhenEmpty && !loading && rows.length === 0);
+    const renderCardCell = (column: TableColumn<T>, row: T, index: number) =>
+        column.cardRender ? column.cardRender(row, index) : renderCell(column, row, index);
+
     return (
-        <div className={cx('overflow-hidden rounded-[var(--lb-component-card-radius)] border border-[var(--lb-component-table-border)] bg-[var(--lb-component-table-bg)] shadow-[var(--lb-component-card-shadow)]', className)}>
-            {(savedViews.length > 0 || filterChips.length > 0) && (
+        <div className={cx('overflow-hidden border border-[var(--lb-component-table-border)] bg-[var(--lb-component-table-bg)] shadow-[var(--lb-component-card-shadow)]', className)}>
+            {showToolbar && (savedViews.length > 0 || filterChips.length > 0) && (
                 <div className="flex min-h-[var(--lb-density-action-bar-height)] flex-col gap-[var(--lb-space-2)] border-b border-[var(--lb-color-border)] px-[var(--lb-space-3)] py-[var(--lb-space-2)]">
                     {savedViews.length > 0 && (
                         <div className="flex flex-wrap gap-[var(--lb-space-2)]">
@@ -205,7 +216,7 @@ export function Table<T extends object>(props: TableProps<T>) {
                     </div>
                 </div>
             )}
-            {sortableColumns.length > 0 && onSort && (
+            {showSortBar && sortableColumns.length > 0 && onSort && (
                 <div className="flex gap-[var(--lb-space-2)] overflow-x-auto border-b border-[var(--lb-color-border)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] md:hidden">
                     {sortableColumns.map((column) => {
                         const active = sortKey === column.key;
@@ -217,7 +228,7 @@ export function Table<T extends object>(props: TableProps<T>) {
                                 aria-pressed={active}
                                 onClick={() => onSort(column.key)}
                             >
-                                Sort {column.header}
+                                {column.header}
                                 <SortIcon active={active} direction={sortDirection} />
                             </Button>
                         );
@@ -236,46 +247,52 @@ export function Table<T extends object>(props: TableProps<T>) {
                 ) : (
                     <div className="divide-y divide-[var(--lb-color-border)]">
                         {hasSelection && (
-                            <div className="bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-3)]">
-                                <Checkbox label="Select all visible rows" checked={allSelected} onChange={toggleAll} />
+                            <div className="bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-4)] py-[var(--lb-space-3)]">
+                                <Checkbox label="Select all visible rows" labelTextClassName="sr-only" checked={allSelected} onChange={toggleAll} />
                             </div>
                         )}
                         {rows.map((row, rowIndex) => {
                             const rowId = rowIds[rowIndex] ?? getRowId(row, rowIndex);
                             const selected = selectedSet.has(rowId);
                             return (
-                                <article key={rowId} data-selected={hasSelection ? selected : undefined} className="grid gap-[var(--lb-space-3)] p-[var(--lb-space-3)]">
+                                <article
+                                    key={rowId}
+                                    data-selected={hasSelection ? selected : undefined}
+                                    className={cx(
+                                        'grid gap-[var(--lb-space-3)] px-[var(--lb-space-4)] py-[var(--lb-space-4)]',
+                                        onRowClick && 'cursor-pointer transition-colors hover:bg-[var(--lb-component-table-row-hover-bg)] active:bg-[var(--lb-component-table-row-hover-bg)]',
+                                    )}
+                                    onClick={() => onRowClick?.(row)}
+                                >
                                     <div className="flex items-start gap-[var(--lb-space-3)]">
                                         {hasSelection && (
-                                            <Checkbox
-                                                className="mt-[var(--lb-space-1)]"
-                                                label={`Select row ${rowIndex + 1}`}
-                                                checked={selected}
-                                                onChange={() => toggleRow(rowId)}
-                                            />
+                                            <div onClick={(e) => e.stopPropagation()}>
+                                                <Checkbox
+                                                    className="mt-[var(--lb-space-1)]"
+                                                    label={`Select row ${rowIndex + 1}`}
+                                                    labelTextClassName="sr-only"
+                                                    checked={selected}
+                                                    onChange={() => toggleRow(rowId)}
+                                                />
+                                            </div>
                                         )}
                                         <div className="min-w-0 flex-1">
-                                            {columns[0] ? renderCell(columns[0], row, rowIndex) : null}
+                                            {columns[0] ? renderCardCell(columns[0], row, rowIndex) : null}
                                         </div>
                                     </div>
-                                    <dl className="m-0 grid gap-[var(--lb-space-3)]">
-                                        {columns.slice(1).map((column) => (
-                                            <div key={column.key} className="grid gap-[var(--lb-space-1)]">
-                                                <dt className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                                    {column.cardLabel ?? column.header}
-                                                </dt>
-                                                <dd className="m-0 min-w-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
-                                                    {renderCell(column, row, rowIndex)}
-                                                </dd>
-                                            </div>
-                                        ))}
-                                    </dl>
-                                    {onRowClick && (
-                                        <div className="flex justify-end">
-                                            <Button size="sm" variant="secondary" onClick={() => onRowClick(row)}>
-                                                Open
-                                            </Button>
-                                        </div>
+                                    {columns.length > 1 && (
+                                        <dl className="m-0 grid grid-cols-2 gap-x-[var(--lb-space-4)] gap-y-[var(--lb-space-3)]">
+                                            {columns.slice(1).map((column) => (
+                                                <div key={column.key} className="grid gap-[var(--lb-space-1)]">
+                                                    <dt className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                                        {column.cardLabel ?? column.header}
+                                                    </dt>
+                                                    <dd className="m-0 min-w-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                                                        {renderCardCell(column, row, rowIndex)}
+                                                    </dd>
+                                                </div>
+                                            ))}
+                                        </dl>
                                     )}
                                 </article>
                             );
@@ -285,39 +302,42 @@ export function Table<T extends object>(props: TableProps<T>) {
             </div>
             <div className="hidden overflow-auto md:block">
                 <table className="w-full border-collapse text-[length:var(--lb-font-size-table)] leading-[var(--lb-line-height-table)]">
-                    <thead className="bg-[var(--lb-component-table-header-bg)] text-[color:var(--lb-component-table-text-secondary)]">
-                        <tr>
-                            {hasSelection && (
-                                <th className="h-[var(--lb-density-table-header-height)] w-[var(--lb-density-button-height-large)] px-[var(--lb-space-3)] py-0 text-left">
-                                    <Checkbox label="Select all rows" checked={allSelected} onChange={toggleAll} />
-                                </th>
-                            )}
-                            {columns.map((column) => (
-                                <th
-                                    key={column.key}
-                                    className={cx(
-                                        'h-[var(--lb-density-table-header-height)] px-[var(--lb-space-3)] py-0 text-left font-[var(--lb-font-weight-medium)]',
-                                        column.className,
-                                        column.headerClassName,
-                                    )}
-                                    style={column.width ? { width: column.width } : undefined}
-                                >
-                                    {column.sortable ? (
-                                        <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => onSort?.(column.key)}
+                    {showHeader && (
+                        <thead className="bg-[var(--lb-component-table-header-bg)] text-[color:var(--lb-component-table-text-secondary)]">
+                            <tr>
+                                {hasSelection && (
+                                    <th className="h-[var(--lb-density-table-header-height)] w-[var(--lb-density-button-height-large)] px-[var(--lb-space-3)] py-0 text-left">
+                                        <Checkbox label="Select all rows" labelTextClassName="sr-only" checked={allSelected} onChange={toggleAll} />
+                                    </th>
+                                )}
+                                {columns.map((column) => (
+                                    <th
+                                        key={column.key}
+                                        className={cx(
+                                            'h-[var(--lb-density-table-header-height)] whitespace-nowrap px-[var(--lb-space-3)] py-0 text-left font-[var(--lb-font-weight-medium)]',
+                                            column.shrink && 'w-px',
+                                            column.className,
+                                            column.headerClassName,
+                                        )}
+                                        style={column.width ? { width: column.width } : undefined}
                                     >
-                                            {column.header}
-                                            <SortIcon active={sortKey === column.key} direction={sortDirection} />
-                                        </Button>
-                                    ) : (
-                                        column.header
-                                    )}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
+                                        {column.sortable ? (
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => onSort?.(column.key)}
+                                            >
+                                                {column.header}
+                                                <SortIcon active={sortKey === column.key} direction={sortDirection} />
+                                            </Button>
+                                        ) : (
+                                            column.header
+                                        )}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                    )}
                     <tbody className="divide-y divide-[var(--lb-component-table-border)]">
                         {loading ? (
                             <tr>
@@ -341,6 +361,7 @@ export function Table<T extends object>(props: TableProps<T>) {
                                             <td className="h-[var(--lb-density-table-row-height)] px-[var(--lb-space-3)] py-0">
                                                 <Checkbox
                                                     label={`Select row ${index + 1}`}
+                                                    labelTextClassName="sr-only"
                                                     checked={selected}
                                                     onChange={() => toggleRow(rowId)}
                                                 />
@@ -351,13 +372,17 @@ export function Table<T extends object>(props: TableProps<T>) {
                                                 key={column.key}
                                                 className={cx(
                                                     'h-[var(--lb-density-table-row-height)] px-[var(--lb-space-3)] py-0 text-[color:var(--lb-component-table-text)]',
+                                                    column.truncate && 'max-w-0 overflow-hidden',
+                                                    column.shrink && 'w-px whitespace-nowrap',
                                                     column.className,
                                                     column.cellClassName,
                                                     onRowClick && 'cursor-pointer',
                                                 )}
                                                 onClick={() => onRowClick?.(row)}
                                             >
-                                                {renderCell(column, row, index)}
+                                                {column.truncate ? (
+                                                    <div className="truncate">{renderCell(column, row, index)}</div>
+                                                ) : renderCell(column, row, index)}
                                             </td>
                                         ))}
                                     </tr>

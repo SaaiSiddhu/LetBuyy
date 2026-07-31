@@ -31,7 +31,7 @@ function buildDynamicTodos(storeData: StoreData, store: string, productCount: nu
         id: 'theme',
         text: 'Customize your site theme',
         done: !!(storeData.theme_id && storeData.theme_settings),
-        link: `/${store}/settings/appearance`,
+        link: `/${store}/appearance`,
     })
 
     todos.push({

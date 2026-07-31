@@ -1,17 +1,21 @@
 import { Hono } from 'hono';
 import {
     BillingInvoiceQuerySchema,
+    BillingMandateQuerySchema,
     BillingMandateSchema,
     BillingSubscribeSchema,
     applyStorePlanTierDefaults,
+    applyFoundingLockToPlan,
     planBillingAmountMinor,
     planBillingDunning,
     planSandboxUpiAutopayMandate,
     type BillingInvoiceQueryInput,
     type BillingMandateInput,
+    type BillingMandateQueryInput,
     type BillingPlanCatalogRecord,
     type BillingSubscribeInput,
 } from '@letbuyy/billing-core';
+import { resolveFoundingCheckoutLock, isPlanPurchasable } from '../lib/founding-pricing';
 import type { Env } from '../index';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { SubscriptionExecutionAdapter, subscriptionPeriodEnd } from '../execution/subscription-execution.adapter';
@@ -180,8 +184,12 @@ router.post('/mandate', validate('json', BillingMandateSchema), async (c) => {
 
     const siteType = await loadStoreSiteType(db, tenant.siteId);
     const plan = await loadPlan(db, siteType, body.plan_slug);
+    if (!isPlanPurchasable(plan)) {
+        return c.json({ error: { code: 'PLAN_NOT_PURCHASABLE', message: 'This plan is not available for purchase' } }, 400);
+    }
+    const mandateFoundingLock = await resolveFoundingCheckoutLock(db, tenant.siteId, plan);
     const mandate = planSandboxUpiAutopayMandate({
-        plan,
+        plan: applyFoundingLockToPlan(plan, mandateFoundingLock),
         billingPeriod: body.billing_period,
         providerMode: body.provider_mode,
         idempotencyKey: body.idempotency_key,
@@ -226,7 +234,12 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
 
     const siteType = await loadStoreSiteType(db, tenant.siteId);
     const plan = await loadPlan(db, siteType, body.plan_slug);
-    const amount = planBillingAmountMinor(plan, body.billing_period);
+    if (!isPlanPurchasable(plan)) {
+        return c.json({ error: { code: 'PLAN_NOT_PURCHASABLE', message: 'This plan is not available for purchase' } }, 400);
+    }
+    // Founding price lock applies on every recurring charge (renewal-safe).
+    const foundingLock = await resolveFoundingCheckoutLock(db, tenant.siteId, plan);
+    const amount = planBillingAmountMinor(applyFoundingLockToPlan(plan, foundingLock), body.billing_period);
     const now = new Date();
     const periodEnd = subscriptionPeriodEnd(now, body.billing_period);
     const dunning = planBillingDunning({ paymentStatus: body.sandbox_payment_status });
@@ -388,6 +401,25 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
     });
 
     return c.json(success({ subscription, dunning, invoice: history || null }), 201);
+});
+
+// GET /billing/mandates — list the store's billing payment methods (Razorpay UPI
+// AutoPay mandates: how the merchant pays LetBuyy). Read-only, ownership-checked.
+// Distinct from the storefront payment config (how the merchant collects from THEIR
+// customers), which lives under /stores/:id/payment-config.
+router.get('/mandates', validate('query', BillingMandateQuerySchema), async (c) => {
+    const query = c.get('validatedQuery') as BillingMandateQueryInput;
+    const db = getSupabaseAdmin(c);
+    const tenant = await resolveTenantContextForOwnedSite(c, query.store_id);
+    const { data, error } = await db
+        .from('billing_mandates')
+        .select('id, provider, provider_mode, status, plan_slug, billing_period, currency, amount_minor, external_mandate_id, created_at, updated_at')
+        .eq('site_id', tenant.siteId)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false });
+
+    if (error) throw new Error(`Billing mandate lookup failed: ${error.message}`);
+    return c.json(success({ mandates: data || [] }));
 });
 
 router.get('/invoices', validate('query', BillingInvoiceQuerySchema), async (c) => {

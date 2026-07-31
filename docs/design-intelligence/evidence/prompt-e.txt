@@ -1,0 +1,116 @@
+You are drafting PARTS 10, 11, and 12 of the LetBuyy Design Intelligence Master document.
+
+READ these source documents in full:
+1. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/governance/LETBUYY_DESIGN_CONSTITUTION.md
+2. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/governance/DESIGN_GOVERNANCE_MODEL.md
+3. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/migration-strategy/DESIGN_MIGRATION_STRATEGY.md
+4. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/migration-strategy/IMPLEMENTATION_ROADMAP.md
+5. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/ecosystem-analysis/DESIGN_SYSTEM_INVENTORY.md
+6. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/ecosystem-analysis/TOKEN_INVENTORY.md
+
+Write complete, publication-ready text. Legal-grade clarity for governance. Engineering-grade precision for migration. Every rule unambiguous. Every task executable.
+
+---
+
+# PART 10: DESIGN GOVERNANCE
+
+Section 10.1: The LetBuyy Design Constitution (Condensed)
+Write the authoritative condensed constitution — not a summary, the actual governing principles.
+
+The Governing Principle: one paragraph. What the design system governs. What it does not govern.
+
+The Four-Layer Architecture (Binding): for each layer: name, scope (what belongs here), owner (who has write access), change process (who approves), enforcement mechanism, permitted exceptions.
+
+The Surface System (Binding): for each of the five surfaces (admin, marketplace, storefront, identity, operations): what it represents, which apps use it, what token overrides it permits, what is locked.
+
+The Ratchet Contract: the 7 validator categories, their current baseline counts, the rule: "If a PR increases any ratchet count, CI blocks the merge."
+
+Section 10.2: Token Governance
+Token Ownership Matrix: Category | Owner | Change Process | Breaking Change?
+Adding New Tokens: step-by-step process.
+Deprecating Tokens: step-by-step with required deprecation period and codemod provision.
+The Forbidden: exact list of what cannot happen with enforcement mechanism for each.
+
+Section 10.3: Component Governance
+Component Ownership Registry: Component | Package | Owner | Stable?
+Adding a New Component: decision tree (existing? 2+ apps? domain-specific?). Step-by-step proposal process.
+Component Graduation (App to Shared Library): process, who reviews, required tests, migration management.
+
+Section 10.4: Design Review Process
+When review IS required. When review is NOT required. The review checklist. Who reviews. What can be auto-approved.
+
+Section 10.5: AI Agent Governance (Claude Code / Codex)
+Specific rules for AI coding agents in this repository:
+1. Always check COMPONENT_CATALOG before proposing a new component
+2. Always use --lb-* tokens for color, spacing, radius, shadow
+3. Never import lucide-react directly — always from @letbuyy/ui
+4. Never use arbitrary Tailwind values
+5. Never use raw Tailwind color utilities
+6. Always use formatInrCurrency for Indian Rupee formatting
+7. Run node scripts/validate-governance.mjs after design system changes
+8. Consult /api/search-v2?q=... (LCIS) before repo scanning
+
+Design pattern reference for AI agents: which file is the gold standard compliant implementation.
+
+---
+
+# PART 11: MIGRATION STRATEGY
+
+Section 11.1: Migration Philosophy
+Three rules: ship working code, never break user flows, always have rollback. Migration is ongoing, not a project with an end date.
+
+Section 11.2: Quick Wins (< 1 week, near-zero risk)
+For each quick win use this format:
+**QW-XXX: [Title]**
+File: [exact path]
+Change: [what to change]
+Risk: [Zero / Very Low / Low]
+Test: [how to verify]
+Time: [estimate]
+
+Include ALL quick wins from the investigation. At minimum: Rs. currency fix, lucide-react fix, dark background standardization, 6 ratchet violations, identity-platform CSS bridging, marketing-site surface fix.
+
+Section 11.3: 30-Day Plan: Foundation Repair
+Week-by-week plan. Specific tasks each week. Success criteria at 30 days.
+
+Section 11.4: 60-Day Plan: Token Adoption Acceleration
+Month 2 focus. Specific actions. Target: merchant-control-plane token adoption from 7.5/10 to 9.0/10.
+
+Section 11.5: 90-Day Plan: Governance Infrastructure
+Month 3 focus. New surface type, component promotions, Figma token sync, zero new violations target.
+
+Section 11.6: 6-Month Plan: Product Design System Maturity
+Months 4-6. Each product surface gets explicit design system documentation. Ink-lavender formalization.
+
+Section 11.7: What NEVER to Rewrite
+Explicit list of things that should NOT be migrated in big-bang approach with reasoning.
+
+Section 11.8: Risk Register
+Top 5 migration risks: Risk | Probability | Impact | Mitigation
+
+---
+
+# PART 12: AUTHORITATIVE DECISIONS
+
+This section contains binding platform-level design decisions. These are decisions, not recommendations.
+
+Section 12.1: ACCEPTED
+Full list of patterns that are correct and should be continued. State each clearly.
+
+Section 12.2: PROHIBITED
+Full list of prohibited patterns with enforcement mechanism for each.
+
+Section 12.3: ENCOURAGED
+Patterns that should spread platform-wide.
+
+Section 12.4: MUST MIGRATE
+Patterns that will be migrated (not rewritten) with priority and effort.
+
+Section 12.5: APP-SPECIFIC
+Patterns that differ by app and that is correct (do not standardize these).
+
+Section 12.6: GLOBALLY STANDARDIZED
+Patterns that must be identical across every app, no exceptions.
+
+Write your complete output to:
+/Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/evidence/draft-parts-10-11-12.md

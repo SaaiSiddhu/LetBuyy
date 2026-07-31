@@ -1,4 +1,4 @@
-import { getDefaultStorefrontThemeTemplate } from '@letbuyy/theme-engine';
+import { getDefaultStorefrontThemeTemplate, createUrbanKicksLiquidThemeBundleFixture } from '@letbuyy/theme-engine';
 import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
 import type { SectionModel, StoreTemplateConfig, ThemeSettings } from '@letbuyy/theme-engine';
 import type { ProductModel } from '@letbuyy/commerce-core';
@@ -310,6 +310,8 @@ export function getUrbanKicksDemoStore(): StoreModel {
                 sections: templateSections,
             },
         },
+        liquidRenderingCanary: true,
+        liquidBundle: createUrbanKicksLiquidThemeBundleFixture(),
     };
 
     return {

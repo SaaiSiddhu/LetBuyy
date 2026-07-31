@@ -2,14 +2,14 @@ import { z } from 'zod';
 import type { RuntimeEventEnvelope } from '@letbuyy/event-core';
 import { MarketplaceAppPricingModelSchema } from '@letbuyy/shared-types';
 
-export type SubscriptionTier = 'free' | 'starter' | 'business' | 'enterprise';
+export type SubscriptionTier = 'free' | 'starter' | 'business' | 'enterprise' | 'launch' | 'growth' | 'scale' | 'commerce_os';
 export type BillingCycle = 'monthly' | 'annual';
 export type SubscriptionBillingPeriod = 'monthly' | 'yearly';
 export type InvoiceStatus = 'draft' | 'open' | 'paid' | 'void' | 'uncollectible';
 
 export const BillingPlanSchema = z.object({
   plan_id: z.string().min(1).max(120),
-  tier: z.enum(['free', 'starter', 'business', 'enterprise']),
+  tier: z.enum(['free', 'starter', 'business', 'enterprise', 'launch', 'growth', 'scale', 'commerce_os']),
   billing_cycle: z.enum(['monthly', 'annual']).default('monthly'),
   currency: z.enum(['INR']).default('INR'),
   amount: z.number().min(0),
@@ -61,6 +61,15 @@ export const CreateSubscriptionOrderSchema = z.object({
   billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
   site_type: z.string().min(1),
   approved_usage_charges: z.array(MerchantApprovedUsageChargeSchema).max(20).default([]),
+  coupon_code: z.string().trim().min(1).max(64).optional(),
+});
+
+export const ValidateSubscriptionCouponSchema = z.object({
+  store_id: z.string().uuid(),
+  plan_slug: z.string().min(1),
+  billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
+  site_type: z.string().min(1),
+  coupon_code: z.string().trim().min(1).max(64),
 });
 
 export const RecoverSubscriptionPaymentSchema = z.object({
@@ -78,6 +87,7 @@ export const VerifySubscriptionSchema = z.object({
   razorpay_subscription_id: z.string().min(1).optional(),
   razorpay_payment_id: z.string().min(1),
   razorpay_signature: z.string().min(1),
+  coupon_code: z.string().trim().min(1).max(64).optional(),
 }).refine((value) => Boolean(value.razorpay_order_id || value.razorpay_subscription_id), {
   message: 'Razorpay order id or subscription id is required',
   path: ['razorpay_order_id'],
@@ -119,6 +129,11 @@ export const BillingSubscribeSchema = z.object({
 export const BillingInvoiceQuerySchema = z.object({
   store_id: z.string().uuid(),
   limit: z.coerce.number().int().min(1).max(100).default(50),
+});
+// List a store's billing payment methods (Razorpay UPI AutoPay mandates — how the
+// merchant pays LetBuyy). Read-only; the same store_id is re-checked for ownership.
+export const BillingMandateQuerySchema = z.object({
+  store_id: z.string().uuid(),
 });
 export const SettlementIngestSchema = z.object({
   store_id: z.string().uuid(),
@@ -253,6 +268,10 @@ export interface BillingPlanCatalogRecord {
   compare_features?: unknown;
   limits?: Record<string, unknown> | null;
   entitlements?: Record<string, unknown> | null;
+  // V1 founding/commercial columns (INR minor / paise for prices).
+  founding_price_inr?: number | null;
+  status?: string | null;
+  purchasable?: boolean | null;
 }
 
 export interface BillingTierEntitlementSnapshot {
@@ -290,6 +309,7 @@ export type BillingProviderMode = z.infer<typeof BillingProviderModeSchema>;
 export type BillingMandateInput = z.infer<typeof BillingMandateSchema>;
 export type BillingSubscribeInput = z.infer<typeof BillingSubscribeSchema>;
 export type BillingInvoiceQueryInput = z.infer<typeof BillingInvoiceQuerySchema>;
+export type BillingMandateQueryInput = z.infer<typeof BillingMandateQuerySchema>;
 export type SettlementIngestInput = z.infer<typeof SettlementIngestSchema>;
 
 export type SettlementLedgerAccountCode =
@@ -685,6 +705,7 @@ export const STORE_BILLING_TIER_DEFINITIONS: readonly StoreBillingTierDefinition
       ai_credits_monthly: 5,
       api_requests_monthly: 1000,
       webhook_subscriptions: 0,
+      themes: 1,
     },
     entitlements: {
       custom_domain: false,
@@ -722,6 +743,7 @@ export const STORE_BILLING_TIER_DEFINITIONS: readonly StoreBillingTierDefinition
       ai_credits_monthly: 30,
       api_requests_monthly: 10000,
       webhook_subscriptions: 3,
+      themes: 3,
     },
     entitlements: {
       custom_domain: true,
@@ -759,6 +781,7 @@ export const STORE_BILLING_TIER_DEFINITIONS: readonly StoreBillingTierDefinition
       ai_credits_monthly: 100,
       api_requests_monthly: 100000,
       webhook_subscriptions: 25,
+      themes: 10,
     },
     entitlements: {
       custom_domain: true,
@@ -796,6 +819,7 @@ export const STORE_BILLING_TIER_DEFINITIONS: readonly StoreBillingTierDefinition
       ai_credits_monthly: 500,
       api_requests_monthly: null,
       webhook_subscriptions: null,
+      themes: null,
     },
     entitlements: {
       custom_domain: true,
@@ -810,6 +834,82 @@ export const STORE_BILLING_TIER_DEFINITIONS: readonly StoreBillingTierDefinition
       { label: 'Unlimited orders', icon: 'shopping_bag' },
       { label: '50 GB storage', icon: 'cloud' },
       { label: 'Dedicated support', icon: 'support_agent' },
+    ],
+  },
+  {
+    site_type: 'store',
+    slug: 'launch',
+    plan: 'launch',
+    name: 'Launch',
+    tagline: 'Everything you need to start selling',
+    display_order: 1,
+    is_popular: false,
+    requires_contact: false,
+    price_monthly_inr: 29900,
+    price_yearly_inr: 29900,
+    gmv_percentage: 0,
+    trial_days: 7,
+    features: ['storefront', 'products', 'orders', 'themes', 'cod', 'upi', 'qr_payments', 'basic_analytics', 'blogs', 'pages', 'free_hosting', 'subdomain'],
+    limits: {
+      products: null,
+      orders_monthly: null,
+      storage_mb: 5120,
+      staff: 1,
+      ai_credits_monthly: 30,
+      api_requests_monthly: 10000,
+      webhook_subscriptions: 0,
+      themes: 3,
+    },
+    entitlements: {
+      custom_domain: false,
+      remove_branding: false,
+      multi_location_inventory: false,
+      advanced_promotions: false,
+      api_access: false,
+    },
+    features_view: [
+      { label: 'Unlimited products', icon: 'inventory_2' },
+      { label: 'Unlimited orders', icon: 'shopping_bag' },
+      { label: 'COD, UPI & QR', icon: 'payments' },
+      { label: 'Basic analytics', icon: 'insights' },
+    ],
+  },
+  {
+    site_type: 'store',
+    slug: 'growth',
+    plan: 'growth',
+    name: 'Growth',
+    tagline: 'Scale your store with advanced tools',
+    display_order: 2,
+    is_popular: true,
+    requires_contact: false,
+    price_monthly_inr: 99900,
+    price_yearly_inr: 99900,
+    gmv_percentage: 0,
+    trial_days: 7,
+    features: ['storefront', 'products', 'orders', 'themes', 'cod', 'upi', 'qr_payments', 'advanced_analytics', 'blogs', 'pages', 'free_hosting', 'custom_domain', 'inventory_management', 'bulk_import', 'discount_engine', 'customer_segments', 'whatsapp_notifications', 'marketing_tools', 'basic_automations'],
+    limits: {
+      products: null,
+      orders_monthly: null,
+      storage_mb: 20480,
+      staff: 3,
+      ai_credits_monthly: 100,
+      api_requests_monthly: 50000,
+      webhook_subscriptions: 10,
+      themes: 5,
+    },
+    entitlements: {
+      custom_domain: true,
+      remove_branding: true,
+      multi_location_inventory: true,
+      advanced_promotions: true,
+      api_access: false,
+    },
+    features_view: [
+      { label: 'Everything in Launch', icon: 'check_circle' },
+      { label: 'Custom domain', icon: 'language' },
+      { label: '3 staff accounts', icon: 'group' },
+      { label: 'Advanced analytics', icon: 'insights' },
     ],
   },
 ];
@@ -936,6 +1036,109 @@ export function planBillingAmountMinor(
   return {
     amountMinor: promoActive ? billingNumber(plan.promo_price_inr) : billingNumber(plan.price_monthly_inr),
     isPromo: promoActive,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Founding Merchant lifetime price lock (see docs/v1/PRICE_LOCK_VERIFICATION.md).
+// The single override point: every charge site feeds a lock-applied plan to the
+// amount functions above, so a founder is never charged catalog pricing and a
+// future catalog change can never affect an existing founder.
+// All *_price values are INR MINOR (paise), matching plans.price_monthly_inr.
+// ---------------------------------------------------------------------------
+export interface FoundingLock {
+  price_lock_enabled?: boolean | null;
+  is_founding_merchant?: boolean | null;
+  locked_launch_price?: number | null;
+  locked_growth_price?: number | null;
+}
+
+export interface MerchantPricing {
+  monthlyInr: number;        // rupees (display)
+  amountMinor: number;       // paise (charge for the requested billing period)
+  isFounding: boolean;
+  savingsInr: number;        // rupees saved per month vs catalog
+  catalogMonthlyInr: number; // rupees (catalog reference)
+}
+
+export interface PlanPublicPricing {
+  slug: string;
+  regularInr: number;        // rupees
+  foundingInr: number;       // rupees (== regular when no founding price)
+  savingsInr: number;        // rupees
+  hasFounding: boolean;
+  purchasable: boolean;
+  status: string;
+}
+
+// Returns a clone of the catalog plan with prices overridden to the founder's
+// locked snapshot. No-op for non-founders / non-eligible plans.
+export function applyFoundingLockToPlan(
+  plan: BillingPlanCatalogRecord,
+  lock: FoundingLock | null | undefined,
+): BillingPlanCatalogRecord {
+  if (!lock || !lock.price_lock_enabled) return plan;
+  const locked = plan.slug === 'growth'
+    ? lock.locked_growth_price
+    : plan.slug === 'launch'
+      ? lock.locked_launch_price
+      : null;
+  if (locked === null || locked === undefined || !(Number(locked) >= 0)) return plan;
+  const lockedMinor = billingInteger(locked);
+  return {
+    ...plan,
+    price_monthly_inr: lockedMinor,
+    price_yearly_inr: lockedMinor,
+    promo_price_inr: 0,
+    promo_months: 0,
+    founding_price_inr: lockedMinor,
+    // Force server-authoritative order/mandate mode for founders: a native Razorpay
+    // subscription is bound to a catalog-priced razorpay_plan_id and cannot carry a
+    // per-merchant locked price (PRICE_LOCK_ARCHITECTURE.md). Null them so the locked
+    // amount above is always what is charged.
+    razorpay_plan_id_monthly: null,
+    razorpay_plan_id_yearly: null,
+  };
+}
+
+// Effective charge for a specific merchant (lock-aware). Use this everywhere a
+// subscription amount is computed for an actual merchant.
+export function resolveMerchantPricing(input: {
+  plan: BillingPlanCatalogRecord;
+  foundingLock?: FoundingLock | null;
+  billingPeriod?: SubscriptionBillingPeriod;
+}): MerchantPricing {
+  const period = input.billingPeriod || 'monthly';
+  const isFounding = Boolean(input.foundingLock?.price_lock_enabled);
+  const effectivePlan = applyFoundingLockToPlan(input.plan, input.foundingLock);
+  const amountMinor = planBillingAmountMinor(effectivePlan, period).amountMinor;
+  const catalogMinor = planBillingAmountMinor(input.plan, period).amountMinor;
+  const monthlyInr = Math.round((period === 'yearly' ? amountMinor / 12 : amountMinor) / 100);
+  const catalogMonthlyInr = Math.round((period === 'yearly' ? catalogMinor / 12 : catalogMinor) / 100);
+  return {
+    monthlyInr,
+    amountMinor,
+    isFounding,
+    savingsInr: Math.max(catalogMonthlyInr - monthlyInr, 0),
+    catalogMonthlyInr,
+  };
+}
+
+// Public pricing-page view: regular + founding price from the catalog record
+// (not merchant-specific). Drives the marketing pricing page + savings copy.
+export function resolvePlanPublicPricing(plan: BillingPlanCatalogRecord): PlanPublicPricing {
+  const regularInr = Math.round(billingNumber(plan.price_monthly_inr) / 100);
+  const foundingMinor = billingNumber(plan.founding_price_inr);
+  const foundingInr = Math.round(foundingMinor / 100);
+  const hasFounding = foundingMinor > 0 && foundingInr < regularInr;
+  return {
+    slug: plan.slug,
+    regularInr,
+    foundingInr: hasFounding ? foundingInr : regularInr,
+    savingsInr: hasFounding ? regularInr - foundingInr : 0,
+    hasFounding,
+    purchasable: plan.purchasable !== false && plan.status !== 'coming_soon',
+    status: typeof plan.status === 'string' ? plan.status : 'available',
   };
 }
 
@@ -1235,6 +1438,7 @@ export type PlanListQueryInput = z.infer<typeof PlanListQuerySchema>;
 export type CancelSubscriptionInput = z.infer<typeof CancelSubscriptionSchema>;
 export type MerchantApprovedUsageChargeInput = z.infer<typeof MerchantApprovedUsageChargeSchema>;
 export type CreateSubscriptionOrderInput = z.infer<typeof CreateSubscriptionOrderSchema>;
+export type ValidateSubscriptionCouponInput = z.infer<typeof ValidateSubscriptionCouponSchema>;
 export type RecoverSubscriptionPaymentInput = z.infer<typeof RecoverSubscriptionPaymentSchema>;
 export type VerifySubscriptionInput = z.infer<typeof VerifySubscriptionSchema>;
 export type CreateAppBillingChargeInput = z.infer<typeof CreateAppBillingChargeSchema>;

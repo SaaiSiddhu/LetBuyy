@@ -1,0 +1,66 @@
+You are drafting PARTS 1, 2, and 3 of the LetBuyy Design Intelligence Master document.
+
+READ these source documents in full before writing:
+1. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/executive-summary/EXECUTIVE_SUMMARY.md
+2. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/application-intelligence/APPLICATION_TOPOLOGY.md
+3. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/application-intelligence/ECOSYSTEM_MAP.md
+
+WRITING STANDARD: Shopify Polaris Architecture Handbook + Stripe Design System Governance + Linear Design Constitution quality. Specific to LetBuyy. No generic statements. Every claim backed by evidence from the source docs. Dense expert prose.
+
+Write the following three parts in FULL. No placeholders. No "[continued]". Complete publication-ready text.
+
+---
+
+# PART 1: EXECUTIVE OVERVIEW
+
+Opening (3 paragraphs): Tell the complete story. What exists (the foundation — name specific components, token counts, violation numbers). What the gaps are. Why it matters. Be concrete.
+
+Then write all TEN critical findings from the EXECUTIVE_SUMMARY.md in full detail. For each finding use this format:
+
+**Finding N: [Title]**
+Severity: P0/P1/P2 | Effort: [time] | Owner: [team]
+[Exact finding, evidence with file paths and numbers, operational impact, precise recommended action]
+
+Then write the complete Design Health Dashboard table with all 10 dimensions including Root Cause and Priority Action columns.
+
+Then write the Application Health at a Glance table (all 9 apps, score, active status, biggest issue, next action).
+
+---
+
+# PART 2: LETBUYY DESIGN PHILOSOPHY
+
+Section 2.1: What LetBuyy Is (as a Design Problem) — 5 user populations across 9 surfaces. Why each needs a different design language. Be specific about WHO uses what and WHY they need different treatment.
+
+Section 2.2: The Platform Ecosystem Principle — consistency WITHIN products, governance ACROSS. A merchant dashboard that looks like a marketing site is a design FAILURE. Use the ink-lavender finding as a case study of implicit cross-app coherence.
+
+Section 2.3: The Four-Layer Design Architecture — define Layer 0 (Global Foundation), Layer 1 (Shared Interaction Library), Layer 2 (Product Design Systems), Layer 3 (Tenant Customization) with precision: what belongs in each layer, who owns it, what changes require ARB approval.
+
+Section 2.4: Intentional vs Accidental Identity — draw the line based on investigation findings. identity/merchant/marketing = intentional ink-lavender. storefront = intentional blank slate. platform-console = accidental copy. frozen apps = diverged without governance. Be direct.
+
+---
+
+# PART 3: ECOSYSTEM MAP
+
+For EACH of these 10 apps/surfaces write a complete intelligence brief:
+1. merchant-control-plane
+2. identity-platform  
+3. marketing-site
+4. storefront-runtime
+5. platform-console
+6. platform-operations-portal
+7. app-marketplace (frozen)
+8. developer-portal (frozen)
+9. theme-marketplace (frozen)
+10. mobile/merchant-app
+
+For each app write:
+Status | Runtime path | Primary users | Business domain | Visual personality | Design maturity score/10 | Information density
+
+Routes and Workflows: All key routes found. The 3-5 primary workflows.
+Layout Model: Layout architecture, shell, nav model, page types.
+Design System Integration: Token adoption score, @letbuyy/ui usage, known violations.
+Risk Assessment: What design risks exist. What breaks if not addressed.
+Intelligence Notes: Unique or surprising findings.
+
+Write your complete output to:
+/Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/evidence/draft-parts-1-2-3.md

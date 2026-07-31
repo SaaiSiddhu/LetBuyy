@@ -4,6 +4,7 @@ import { resolveCustomUser } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { CreateStoreSchema, PaymentConfigSchema, UpdateStoreSchema } from '../schemas/store.schema';
+import { resolveExperienceForIndustry, applyExperienceToTemplateConfig } from '@letbuyy/theme-engine';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { readCustomDomainHealth } from '../lib/custom-domain-health';
 import { getRequestId } from '../lib/tenant-context';
@@ -654,6 +655,24 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
         return c.json({ error: { code: 'CONFLICT', message: 'Subdomain already taken' } }, 409);
     }
 
+    // Phase-2.5 Stream C — server-authoritative Experience auto-apply. When onboarding captured an
+    // industry (template_config.survey.industry) or an explicit experienceId, resolve the recommended
+    // Experience and merge its tokens into template_config so the new store opens already styled. The
+    // merchant can re-pick later in the editor's Experiences tab. Additive: no industry => unchanged
+    // template_config (no behaviour change for other callers). Unknown industry => Summit fallback.
+    let templateConfig = (body.template_config ?? {}) as Record<string, unknown>;
+    const surveyRecord = templateConfig.survey && typeof templateConfig.survey === 'object'
+        ? (templateConfig.survey as Record<string, unknown>)
+        : undefined;
+    const industryHint = (typeof templateConfig.industry === 'string' && templateConfig.industry)
+        || (surveyRecord && typeof surveyRecord.industry === 'string' ? surveyRecord.industry : '')
+        || '';
+    const experienceOverride = typeof templateConfig.experienceId === 'string' ? templateConfig.experienceId : undefined;
+    if (industryHint || experienceOverride) {
+        const { experience } = resolveExperienceForIndustry(industryHint || null, experienceOverride);
+        templateConfig = applyExperienceToTemplateConfig(templateConfig, experience);
+    }
+
     const { data, error } = await db
         .from('sites')
         .insert({
@@ -666,7 +685,7 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
             tagline: body.tagline || null,
             locale: body.locale || 'en-IN',
             theme_id: body.theme_id,
-            template_config: body.template_config,
+            template_config: templateConfig,
         })
         .select()
         .single();
@@ -700,12 +719,13 @@ router.patch('/:id', validate('json', UpdateStoreSchema), async (c) => {
     const updates: Record<string, unknown> = {};
     const allowed = [
         'name', 'description', 'tagline', 'status', 'theme_id', 'template_config',
-        'site_settings', 'logo_url', 'custom_domain', 'currency', 'locale',
+        'site_settings', 'logo_url', 'custom_domain', 'currency', 'locale', 'timezone',
         'refund_policy', 'privacy_policy', 'terms_of_service', 'shipping_policy',
         'seo_title', 'seo_description',
         'tax_inclusive',
         'legal_name', 'gstin', 'gst_state_code', 'invoice_prefix',
         'business_profile', 'invoice_address', 'invoice_footer', 'invoice_number_next',
+        'cod_enabled', 'online_payment_enabled',
     ];
     for (const key of allowed) {
         if (body[key] !== undefined) updates[key] = body[key];

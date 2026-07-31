@@ -2,7 +2,14 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type { SubscriptionPlanView } from '@/lib/billing/plan-ui'
+import {
+    COMMERCE_OS_HIGHLIGHTS,
+    COMPETITOR_BENCHMARKS,
+    REVENUE_STAGE,
+    TRUST_INDICATORS,
+    planAnnualSavingMinor,
+    type SubscriptionPlanView,
+} from '@/lib/billing/plan-ui'
 import { Button, MaterialIcon } from '@letbuyy/ui'
 
 interface SelectPlanClientProps {
@@ -14,6 +21,8 @@ interface SelectPlanClientProps {
     siteType: string
     trialStatus: string | null
     trialEndsAt: string | null
+    foundingAvailable?: boolean
+    foundingRemaining?: number | null
 }
 
 function cx(...classes: Array<string | false | null | undefined>) {
@@ -28,6 +37,10 @@ function formatINR(paise: number): string {
     return `₹${rupees.toLocaleString('en-IN')}`
 }
 
+function formatINRFull(paise: number): string {
+    return `₹${Math.round(paise / 100).toLocaleString('en-IN')}`
+}
+
 export default function SelectPlanClient({
     plans,
     currentPlan,
@@ -36,10 +49,13 @@ export default function SelectPlanClient({
     siteType,
     trialStatus,
     trialEndsAt,
+    foundingAvailable = false,
+    foundingRemaining = null,
 }: SelectPlanClientProps) {
     const router = useRouter()
     const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly')
     const [showCompare, setShowCompare] = useState(false)
+    const [onlyDiff, setOnlyDiff] = useState(false)
     const [renderTime] = useState(() => Date.now())
     const [renderDate] = useState(() => new Date())
 
@@ -50,15 +66,19 @@ export default function SelectPlanClient({
 
     const handleSelectPlan = (planSlug: string) => {
         const plan = plans.find(p => p.slug === planSlug)
-        if (plan?.requires_contact) {
+        if (!plan || plan.status === 'coming_soon' || plan.purchasable === false) {
+            return
+        }
+        if (plan.requires_contact) {
             window.open('mailto:sales@letbuyy.com?subject=Enterprise Plan Inquiry', '_blank')
             return
         }
-        router.push(`/${storeSlug}/settings/subscribe/checkout?plan=${planSlug}&bp=${billingPeriod.toUpperCase()}&site_type=${siteType}`)
+        router.push(`/${storeSlug}/access_account/checkout/checkout?plan=${planSlug}&bp=${billingPeriod.toUpperCase()}&site_type=${siteType}`)
     }
 
     const compareFeatures = plans.find(p => p.compare_features?.length > 0)?.compare_features || []
     const planSlugs = plans.map(p => p.slug)
+    const shopify = COMPETITOR_BENCHMARKS.shopify
     const compareColumnCount = Math.min(Math.max(plans.length, 1), 6)
     const compareRowClassName = `select-plan-compare-row select-plan-compare-row--${compareColumnCount}`
 
@@ -118,6 +138,13 @@ export default function SelectPlanClient({
                         const isCurrent = currentPlan === plan.slug
                         const isPopular = plan.is_popular
                         const isFree = plan.price_monthly_inr === 0 && plan.price_yearly_inr === 0 && !plan.requires_contact
+                        const isComingSoon = plan.status === 'coming_soon' || plan.purchasable === false
+                        const showFounding = foundingAvailable
+                            && billingPeriod === 'monthly'
+                            && plan.founding_price_inr > 0
+                            && plan.founding_price_inr < plan.price_monthly_inr
+                            && !isComingSoon
+                            && !plan.requires_contact
 
                         return (
                             <article
@@ -129,17 +156,31 @@ export default function SelectPlanClient({
                                 <div className="select-plan-card-heading">
                                     <h2>{plan.name}</h2>
                                     <p>{plan.tagline}</p>
+                                    {REVENUE_STAGE[plan.slug] && !isComingSoon && (
+                                        <p className="select-plan-card-stage">For {REVENUE_STAGE[plan.slug].range}</p>
+                                    )}
                                 </div>
 
                                 <div className="select-plan-price-block">
-                                    {hasPromo && (
+                                    {showFounding ? (
+                                        <span className="select-plan-promo-badge">
+                                            🏆 Founding price{typeof foundingRemaining === 'number' ? ` · ${foundingRemaining} left` : ''}
+                                        </span>
+                                    ) : hasPromo ? (
                                         <span className="select-plan-promo-badge">
                                             First {plan.promo_months} months
                                         </span>
-                                    )}
+                                    ) : null}
 
                                     <div className="select-plan-price-row">
-                                        {hasPromo ? (
+                                        {isComingSoon ? (
+                                            <span className="select-plan-price select-plan-price--custom">Coming soon</span>
+                                        ) : showFounding ? (
+                                            <>
+                                                <span className="select-plan-price">{formatINR(plan.founding_price_inr)}</span>
+                                                <span className="select-plan-price-strike">{formatINR(price)}</span>
+                                            </>
+                                        ) : hasPromo ? (
                                             <>
                                                 <span className="select-plan-price">{formatINR(plan.promo_price_inr)}</span>
                                                 <span className="select-plan-price-strike">{formatINR(price)}</span>
@@ -149,24 +190,31 @@ export default function SelectPlanClient({
                                         ) : (
                                             <span className="select-plan-price">{formatINR(price)}</span>
                                         )}
-                                        {!plan.requires_contact && !isFree && (
+                                        {!plan.requires_contact && !isFree && !isComingSoon && (
                                             <span className="select-plan-price-period">/month</span>
                                         )}
                                     </div>
+                                    {billingPeriod === 'yearly' && !isComingSoon && !plan.requires_contact
+                                        && planAnnualSavingMinor(plan.price_monthly_inr, plan.price_yearly_inr) > 0 && (
+                                        <span className="select-plan-saving">
+                                            <MaterialIcon name="local_offer" size={14} />
+                                            Save {formatINRFull(planAnnualSavingMinor(plan.price_monthly_inr, plan.price_yearly_inr))}/year
+                                        </span>
+                                    )}
                                 </div>
 
                                 <Button unstyled
                                     type="button"
                                     onClick={() => handleSelectPlan(plan.slug)}
-                                    disabled={isCurrent}
+                                    disabled={isCurrent || isComingSoon}
                                     className={cx(
                                         'select-plan-cta',
-                                        isPopular && 'select-plan-cta--primary',
+                                        isPopular && !isComingSoon && 'select-plan-cta--primary',
                                         plan.requires_contact && 'select-plan-cta--outline',
-                                        isCurrent && 'select-plan-cta--disabled',
+                                        (isCurrent || isComingSoon) && 'select-plan-cta--disabled',
                                     )}
                                 >
-                                    {isCurrent ? 'Current plan' : plan.requires_contact ? 'Contact sales' : isFree ? 'Start free' : 'Start free trial'}
+                                    {isComingSoon ? 'Coming soon' : isCurrent ? 'Current plan' : plan.requires_contact ? 'Contact sales' : isFree ? 'Start free' : 'Start free trial'}
                                 </Button>
 
                                 <div className="select-plan-feature-list">
@@ -194,73 +242,167 @@ export default function SelectPlanClient({
 
             {compareFeatures.length > 0 && (
                 <section className="select-plan-compare-section">
-                    <div className="select-plan-compare-toggle">
-                        <Button unstyled
-                            type="button"
-                            onClick={() => setShowCompare(!showCompare)}
-                            className="select-plan-secondary-button"
-                            aria-expanded={showCompare}
-                        >
-                            <MaterialIcon name={showCompare ? 'expand_less' : 'compare'} size={18} />
-                            {showCompare ? 'Hide comparison' : 'Compare all features'}
-                        </Button>
-                    </div>
+                    <h2 className="select-plan-compare-title">Compare plans</h2>
 
-                    {showCompare && (
-                        <div className="select-plan-compare" role="table" aria-label="Plan feature comparison">
-                            <div className={cx(compareRowClassName, 'select-plan-compare-main-header')} role="row">
-                                <div className="select-plan-compare-feature-head" role="columnheader">Feature</div>
-                                {plans.map(plan => (
-                                    <div
-                                        key={plan.slug}
-                                        className={cx('select-plan-compare-plan-head', plan.is_popular && 'is-popular')}
-                                        role="columnheader"
-                                    >
-                                        {plan.name}
+                    <div className={cx('select-plan-compare-shell', showCompare ? 'is-expanded' : 'is-collapsed')}>
+                        <div className="select-plan-compare-clip">
+                            <div className="select-plan-compare" role="table" aria-label="Plan feature comparison">
+                                <div className={cx(compareRowClassName, 'select-plan-compare-main-header')} role="row">
+                                    <div className="select-plan-compare-feature-head" role="columnheader">
+                                        <label className="select-plan-switch-label">
+                                            <input
+                                                type="checkbox"
+                                                className="select-plan-switch-input"
+                                                checked={onlyDiff}
+                                                onChange={(e) => setOnlyDiff(e.target.checked)}
+                                            />
+                                            <span className="select-plan-switch" aria-hidden="true">
+                                                <span className="select-plan-switch-thumb" />
+                                            </span>
+                                            <span className="select-plan-switch-text">Only show differences</span>
+                                        </label>
                                     </div>
-                                ))}
-                            </div>
-
-                            {compareFeatures.map((category, categoryIndex) => (
-                                <div key={categoryIndex} role="rowgroup">
-                                    <div className="select-plan-compare-category">
-                                        {category.category}
-                                    </div>
-
-                                    {category.items.map((item, itemIndex) => (
-                                        <div key={itemIndex} className={compareRowClassName} role="row">
-                                            <div className="select-plan-compare-feature" role="cell">
-                                                {item.label}
-                                                {item.description && (
-                                                    <div className="select-plan-compare-description">
-                                                        {item.description}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            {planSlugs.map(slug => {
-                                                const value = (item as unknown as Record<string, unknown>)[slug] ?? false
-                                                return (
-                                                    <div
-                                                        key={slug}
-                                                        className={cx('select-plan-compare-value', value === false && 'is-muted')}
-                                                        role="cell"
-                                                    >
-                                                        {value === true ? (
-                                                            <MaterialIcon name="check_circle" size={18} className="select-plan-success-icon" />
-                                                        ) : value === false ? (
-                                                            <MaterialIcon name="remove" size={18} className="select-plan-muted-icon" />
-                                                        ) : (
-                                                            <span>{String(value)}</span>
-                                                        )}
-                                                    </div>
-                                                )
-                                            })}
+                                    {plans.map(plan => (
+                                        <div
+                                            key={plan.slug}
+                                            className={cx('select-plan-compare-plan-head', plan.is_popular && 'is-popular')}
+                                            role="columnheader"
+                                        >
+                                            <span className="select-plan-compare-plan-name">{plan.name}</span>
+                                            {plan.is_popular && (
+                                                <span className="select-plan-compare-plan-badge">Most popular</span>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
+
+                                {compareFeatures.map((category, categoryIndex) => {
+                                    const items = category.items.filter((item) => {
+                                        if (!onlyDiff) return true
+                                        const values = planSlugs.map((slug) => JSON.stringify((item as unknown as Record<string, unknown>)[slug] ?? false))
+                                        return new Set(values).size > 1
+                                    })
+                                    if (items.length === 0) return null
+                                    return (
+                                    <div key={categoryIndex} role="rowgroup">
+                                        <div className="select-plan-compare-category">
+                                            {category.category}
+                                        </div>
+
+                                        {items.map((item, itemIndex) => (
+                                            <div key={itemIndex} className={compareRowClassName} role="row">
+                                                <div className="select-plan-compare-feature" role="cell">
+                                                    {item.description ? (
+                                                        <details className="select-plan-compare-disclosure">
+                                                            <summary className="select-plan-compare-summary">
+                                                                <MaterialIcon name="expand_more" size={16} className="select-plan-compare-chevron" />
+                                                                <span>{item.label}</span>
+                                                            </summary>
+                                                            <p className="select-plan-compare-description">{item.description}</p>
+                                                        </details>
+                                                    ) : (
+                                                        <span className="select-plan-compare-feature-label">{item.label}</span>
+                                                    )}
+                                                </div>
+                                                {planSlugs.map(slug => {
+                                                    const value = (item as unknown as Record<string, unknown>)[slug] ?? false
+                                                    return (
+                                                        <div
+                                                            key={slug}
+                                                            className={cx('select-plan-compare-value', (value === false || value === '—') && 'is-muted')}
+                                                            role="cell"
+                                                        >
+                                                            {value === true ? (
+                                                                <MaterialIcon name="check" size={18} className="select-plan-compare-check" />
+                                                            ) : value === false ? (
+                                                                <span className="select-plan-compare-dash">—</span>
+                                                            ) : (
+                                                                <span>{String(value)}</span>
+                                                            )}
+                                                        </div>
+                                                    )
+                                                })}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+
+                        {!showCompare && <div className="select-plan-compare-fade" aria-hidden="true" />}
+
+                        <div className="select-plan-compare-reveal">
+                            <Button unstyled
+                                type="button"
+                                onClick={() => setShowCompare(!showCompare)}
+                                className="select-plan-secondary-button"
+                                aria-expanded={showCompare}
+                            >
+                                <MaterialIcon name={showCompare ? 'expand_less' : 'add'} size={18} />
+                                {showCompare ? 'See fewer features' : 'See all features'}
+                            </Button>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {shopify && (
+                <section className="lb-switch" aria-label="Why switch to LetBuyy">
+                    <div className="lb-switch-glow" aria-hidden="true" />
+
+                    <div className="lb-switch-head">
+                        <div className="lb-switch-head-copy">
+                            <span className="lb-switch-eyebrow">Why switch from {shopify.name}</span>
+                            <h2 className="lb-switch-title">Everything {shopify.name} charges extra for, included.</h2>
+                            <p className="lb-switch-subtitle">The same store, for a fraction of the cost — with zero commission, forever.</p>
+                        </div>
+                        <div className="lb-switch-savings" role="figure" aria-label={`Save ${shopify.annualSavings} per year versus ${shopify.name} ${shopify.entryPlan}`}>
+                            <span className="lb-switch-savings-num">{shopify.annualSavings}</span>
+                            <span className="lb-switch-savings-label">saved every year vs {shopify.name} {shopify.entryPlan}</span>
+                        </div>
+                    </div>
+
+                    <div className="lb-switch-bento">
+                        {shopify.rows.map((row, index) => (
+                            <div key={index} className="lb-switch-cell">
+                                <span className="lb-switch-cell-feature">{row.feature}</span>
+                                <span className="lb-switch-cell-transform">
+                                    <span className="lb-switch-from">{row.competitor}</span>
+                                    <MaterialIcon name="arrow_forward" size={14} className="lb-switch-arrow" />
+                                    <span className="lb-switch-to">
+                                        <MaterialIcon name="check_circle" size={15} className="lb-switch-check" />
+                                        {row.letbuyy}
+                                    </span>
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="lb-switch-os">
+                        <span className="lb-switch-os-eyebrow">Commerce OS</span>
+                        <h3 className="lb-switch-os-title">More than a store. Your Commerce Operating System.</h3>
+                        <p className="lb-switch-os-sub">Unify storefronts, operations, intelligence, AI, B2B, analytics, and execution inside one platform.</p>
+                        <div className="lb-switch-os-grid">
+                            {COMMERCE_OS_HIGHLIGHTS.map((item, index) => (
+                                <div key={index} className="lb-switch-os-item">
+                                    <span className="lb-switch-os-chip">
+                                        <MaterialIcon name={item.icon} size={16} className="lb-switch-os-icon" />
+                                    </span>
+                                    <span>{item.label}</span>
+                                </div>
                             ))}
                         </div>
-                    )}
+                    </div>
+
+                    <div className="lb-switch-trust">
+                        {TRUST_INDICATORS.map((indicator, index) => (
+                            <span key={index} className="lb-switch-trust-item">
+                                <MaterialIcon name={indicator.icon} size={15} className="lb-switch-trust-icon" />
+                                {indicator.label}
+                            </span>
+                        ))}
+                    </div>
                 </section>
             )}
 

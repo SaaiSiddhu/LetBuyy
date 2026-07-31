@@ -43,7 +43,9 @@
             "slug": "sneakers",
             "tagline": "Fresh pairs"
           },
-          "disabled": false
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
         },
         "category-apparel": {
           "type": "category",
@@ -52,7 +54,9 @@
             "slug": "apparel",
             "tagline": "Daily fits"
           },
-          "disabled": false
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
         },
         "category-accessories": {
           "type": "category",
@@ -61,7 +65,9 @@
             "slug": "accessories",
             "tagline": "Finish the look"
           },
-          "disabled": false
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
         }
       },
       "block_order": [
@@ -87,7 +93,9 @@
             "price": "Rs 4,999",
             "url": "/products/velocity-runner"
           },
-          "disabled": false
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
         },
         "product-hoodie": {
           "type": "product-card",
@@ -96,7 +104,9 @@
             "price": "Rs 2,499",
             "url": "/products/everyday-hoodie"
           },
-          "disabled": false
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
         },
         "product-cap": {
           "type": "product-card",
@@ -105,7 +115,9 @@
             "price": "Rs 899",
             "url": "/products/street-cap"
           },
-          "disabled": false
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
         }
       },
       "block_order": [
@@ -130,7 +142,9 @@
             "price": "Rs 3,499",
             "url": "/products/court-sneaker"
           },
-          "disabled": false
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
         },
         "grid-backpack": {
           "type": "product-card",
@@ -139,7 +153,9 @@
             "price": "Rs 1,999",
             "url": "/products/transit-backpack"
           },
-          "disabled": false
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
         }
       },
       "block_order": [
@@ -160,7 +176,9 @@
           "settings": {
             "label": "Zero storefront code change"
           },
-          "disabled": false
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
         },
         "spotlight-app": {
           "type": "@app",
@@ -168,7 +186,9 @@
             "extension_handle": "urban-offer",
             "slot": "home.spotlight.offer"
           },
-          "disabled": false
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
         }
       },
       "block_order": [

@@ -1,0 +1,66 @@
+You are drafting PARTS 6 and 7 of the LetBuyy Design Intelligence Master document.
+
+READ these source documents in full:
+1. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/component-intelligence/COMPONENT_CATALOG.md
+2. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/component-intelligence/COMPONENT_DUPLICATION_REPORT.md
+3. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/interaction-design/INTERACTION_ARCHITECTURE.md
+4. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/interaction-design/UX_PATTERN_LIBRARY.md
+
+Write complete, publication-ready text. Engineering handbook quality. Specific component names, file paths, usage counts.
+
+---
+
+# PART 6: COMPONENT INTELLIGENCE
+
+Section 6.1: The @letbuyy/ui Component Ecosystem
+Complete overview: component count, the 12 functional groups, export architecture.
+
+Section 6.2: Component Catalog by Group
+For each of the 12 functional groups (Actions, Layout, Data Display, Controls, Feedback, Overlays, Navigation/Shell, Internal Workspace, Marketplace, Theme, Tokens/Formatting, Icons):
+Write a table: Component | Export Name | Key Props/Variants | Token Compliance | Notes
+Include every component. Mark deprecated ones.
+
+Section 6.3: Duplication Analysis
+Confirmed Duplications: for each, @letbuyy/ui version, app-level version (file path), divergence reason, resolution path.
+Components That Should Be Promoted: the 4+ app-level components reusable enough for @letbuyy/ui. Current location, why promote, effort, impact.
+Active Ratchet Violations: the 6 confirmed violations with specific file paths, what the violation is, exact fix.
+
+Section 6.4: Component Governance Rules (Binding)
+1. Which component MUST be used for which pattern (never raw HTML equivalents)
+2. Component graduation process (app-level to @letbuyy/ui)
+3. Deprecation process
+4. How to extend without forking
+5. The lucide-react rule: PROHIBITED — always import via @letbuyy/ui
+
+Section 6.5: Flutter/Dart Component System
+packages/dart/ui_kit: what exists, how it mirrors the web system, where it diverges, the token generation pipeline.
+
+---
+
+# PART 7: INTERACTION INTELLIGENCE
+
+Section 7.1: Navigation Architecture
+Primary navigation in each app. Components used. Active states. Nested navigation. Breadcrumbs: when required, how implemented. Deep linking behavior.
+
+Section 7.2: Action Architecture
+Primary action placement standards by page type (evidence from codebase). Destructive action protocol. Bulk operations. Action feedback (loading, success, error recovery).
+
+Section 7.3: Form Architecture
+Standard form layout: single column vs two column decision. Validation patterns: timing, error message format, placement. Required field indicators. Form actions: save/cancel placement, auto-save vs explicit save.
+
+Section 7.4: Data Table Architecture
+The standard list page pattern across merchant-control-plane: page header, search/filter row, table, empty state, pagination. Sorting: how triggered. Filtering: side panel vs inline. Search: input placement, debounce, empty state.
+
+Section 7.5: Overlay Architecture
+When to use each overlay type with evidence from codebase: Dialog (blocking, irreversible), Sheet (supplementary, mobile-primary), Drawer (secondary workspace), Popover (ephemeral contextual), Tooltip (label/hint only).
+
+Section 7.6: State Architecture
+Loading States: Skeleton vs Spinner vs Placeholder — when each is used, evidence.
+Empty States: required elements, CTA requirements, evidence.
+Error States: page-level, component-level, network, permission errors — how each is handled.
+
+Section 7.7: Interaction Anti-Patterns
+Specific patterns found that violate the interaction architecture. File paths. Why wrong. Fix.
+
+Write your complete output to:
+/Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/evidence/draft-parts-6-7.md

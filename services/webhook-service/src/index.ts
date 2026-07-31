@@ -199,6 +199,32 @@ async function callSupabaseRpc<T>(
     return response.json() as Promise<T>;
 }
 
+// Founding Merchant slot reclaim on a subscription-payment refund. Subscription
+// payments are NOT orders, so this complements the order-refund path. The RPC itself
+// enforces the ≤14-day window and no-ops when the payment is not a founder's
+// subscription payment — so this is safe to call for every refund. Best-effort.
+async function reclaimFoundingOnRefund(env: Env, paymentId: string | undefined): Promise<void> {
+    if (!paymentId) return;
+    try {
+        const subs = await selectRows<{ store_id?: string; site_id?: string }>(env, "subscriptions", {
+            razorpay_payment_id: `eq.${paymentId}`,
+            select: "store_id,site_id",
+            limit: "1",
+        });
+        const siteId = subs[0]?.site_id || subs[0]?.store_id;
+        if (!siteId) return;
+        await callSupabaseRpc(env, "reclaim_founding_merchant", {
+            p_site_id: siteId,
+            p_reason: "subscription_refund",
+            p_actor_type: "system",
+            p_force: false,
+        });
+        console.info("[Founding] subscription refund reclaim attempted", { siteId, paymentId });
+    } catch (error) {
+        console.warn("[Founding] reclaim on refund failed", { paymentId, error: String(error) });
+    }
+}
+
 function webhookRetryDelaySeconds(attempts: number, baseSeconds = 120): number {
     const boundedAttempts = Math.max(0, Math.min(attempts, 8));
     return Math.min(baseSeconds * Math.pow(2, boundedAttempts), 60 * 60);
@@ -408,6 +434,21 @@ async function markOrderRefunded(
     provider: PaymentProvider = "razorpay",
     eventType = "refund.created"
 ): Promise<void> {
+    // G7 — only apply a refund to an order that was actually captured. A refund webhook arriving before
+    // the capture webhook (out-of-order delivery) must NOT flip an unpaid order to "refunded" — that
+    // would corrupt order + inventory state. Mirrors the markOrderFailed paid-guard. The skipped event
+    // is logged so reconciliation can catch it; once the capture lands, the refund can be reconciled.
+    if (order.payment_status !== "paid") {
+        console.warn(JSON.stringify({
+            level: "warn",
+            event: "refund_webhook_skipped_order_not_captured",
+            order_id: order.id,
+            payment_status: order.payment_status ?? null,
+            provider_event_id: providerEventId,
+        }));
+        return;
+    }
+
     await recordGatewayOrderPaymentFailure(env, {
         orderId: order.id,
         provider,
@@ -837,6 +878,9 @@ app.post("/razorpay", async (c) => {
                         });
                     }
                 }
+                // Founding Merchant reclaim: subscription refunds are not orders, so
+                // attempt a founder slot reclaim by the refunded payment id (≤14d → release).
+                await reclaimFoundingOnRefund(c.env, textValue(refundRecord.payment_id));
                 break;
             }
 

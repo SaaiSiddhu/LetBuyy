@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LCIS — Command Center</title>
+  <style>
+    :root {
+      --bg:          #0d0f14;
+      --surface:     #13161f;
+      --surface2:    #1a1e2a;
+      --border:      #252936;
+      --accent:      #5b8dee;
+      --accent2:     #3ecf8e;
+      --warn:        #f5a623;
+      --danger:      #e74c3c;
+      --text:        #e2e8f0;
+      --text-muted:  #64748b;
+      --text-dim:    #94a3b8;
+      --green:       #22c55e;
+      --yellow:      #eab308;
+      --red:         #ef4444;
+      --radius:      8px;
+      --gap:         16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Layout ─────────────────────────────────────────────────────────── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      height: 56px;
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--accent);
+      letter-spacing: .5px;
+      white-space: nowrap;
+    }
+
+    .logo span {
+      color: var(--text-muted);
+      font-weight: 400;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+
+    .search-bar {
+      flex: 1;
+      display: flex;
+      gap: 8px;
+      max-width: 560px;
+    }
+
+    .search-bar input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 13px;
+      padding: 7px 12px;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .search-bar input:focus {
+      border-color: var(--accent);
+    }
+
+    .search-bar input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .btn {
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      color: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 16px;
+      transition: opacity .15s;
+      white-space: nowrap;
+    }
+
+    .btn:hover { opacity: .85; }
+    .btn:active { opacity: .7; }
+    .btn.secondary {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .dot.green  { background: var(--green); }
+    .dot.yellow { background: var(--yellow); }
+    .dot.red    { background: var(--red); }
+
+    /* ── Command Bar ────────────────────────────────────────────────────── */
+    #command-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+    }
+
+    .command-bar-inner {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .command-bar-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 10px;
+    }
+
+    .command-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .command-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+    }
+
+    .command-card .label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 4px;
+    }
+
+    .command-card .value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .command-card .value.ok     { color: var(--green); }
+    .command-card .value.warn   { color: var(--yellow); }
+    .command-card .value.error  { color: var(--red); }
+    .command-card .sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── Main content ────────────────────────────────────────────────────── */
+    main {
+      flex: 1;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 24px;
+      width: 100%;
+    }
+
+    /* ── Search Answer ───────────────────────────────────────────────────── */
+    #search-result {
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .answer-header {
+      background: rgba(91, 141, 238, .1);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+    }
+
+    .answer-header h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .answer-body {
+      padding: 16px;
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* ── Sections grid ────────────────────────────────────────────────────── */
+    .sections-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: var(--gap);
+    }
+
+    /* Full-width section */
+    .section-full {
+      grid-column: 1 / -1;
+    }
+
+    /* ── Section card ─────────────────────────────────────────────────────── */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .section-header {
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      padding: 12px 16px;
+    }
+
+    .section-header h2 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .section-header .badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .5px;
+      padding: 2px 6px;
+      text-transform: uppercase;
+    }
+
+    .section-header .refresh-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color .15s, background .15s;
+    }
+
+    .section-header .refresh-btn:hover {
+      color: var(--text);
+      background: var(--surface2);
+    }
+
+    .section-body {
+      padding: 14px 16px;
+      min-height: 80px;
+      position: relative;
+    }
+
+    /* ── Data display primitives ──────────────────────────────────────────── */
+    .kv-list {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 6px 16px;
+    }
+
+    .kv-list .k {
+      color: var(--text-muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .kv-list .v {
+      color: var(--text-dim);
+      font-size: 12px;
+      word-break: break-word;
+    }
+
+    .kv-list .v.ok    { color: var(--green); font-weight: 600; }
+    .kv-list .v.warn  { color: var(--yellow); font-weight: 600; }
+    .kv-list .v.err   { color: var(--red); font-weight: 600; }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .tag {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 2px 8px;
+    }
+
+    .tag.ok   { border-color: var(--green); color: var(--green); }
+    .tag.warn { border-color: var(--yellow); color: var(--yellow); }
+    .tag.err  { border-color: var(--red); color: var(--red); }
+
+    .item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+    }
+
+    .item .item-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .item .item-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .item.ok-border   { border-left: 3px solid var(--green); }
+    .item.warn-border { border-left: 3px solid var(--yellow); }
+    .item.err-border  { border-left: 3px solid var(--red); }
+
+    table.data-table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 12px;
+    }
+
+    table.data-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 4px 8px 8px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    table.data-table td {
+      padding: 6px 8px;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    table.data-table tr:last-child td { border-bottom: none; }
+
+    /* ── Loading / Error states ───────────────────────────────────────────── */
+    .loading {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    .error-msg {
+      color: var(--red);
+      font-size: 12px;
+    }
+
+    .not-connected {
+      color: var(--yellow);
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 12px 24px;
+      text-align: center;
+    }
+
+    /* ── Scrollbar ────────────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ── Executive Command Center hero ──────────────────────────────────── */
+    #exec-hero {
+      background: linear-gradient(135deg, #0f1523 0%, #13161f 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+    }
+
+    .exec-hero-inner {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .exec-hero-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .exec-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .exec-card {
+      background: rgba(91, 141, 238, .07);
+      border: 1px solid rgba(91, 141, 238, .2);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+    }
+
+    .exec-card .label {
+      font-size: 10px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .exec-card .value {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .exec-card .sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* ── Loop button ─────────────────────────────────────────────────────── */
+    .btn-run {
+      background: var(--accent2);
+      border: none;
+      border-radius: var(--radius);
+      color: #000;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 14px;
+      transition: opacity .15s;
+    }
+    .btn-run:hover { opacity: .85; }
+
+    /* ── Responsive ───────────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .command-cards { grid-template-columns: repeat(2, 1fr); }
+      .exec-cards    { grid-template-columns: repeat(2, 1fr); }
+      .sections-grid { grid-template-columns: 1fr; }
+      .search-bar { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ─────────────────────────────────────────────────── HEADER -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">LCIS <span>Command Center</span></div>
+      <div class="search-bar">
+        <input id="search-input" type="text" placeholder="Ask anything — e.g. What breaks if payments fail?" />
+        <button class="btn" onclick="runSearch()">Ask</button>
+      </div>
+      <div class="header-status">
+        <span class="dot" id="api-dot"></span>
+        <span id="api-status">Connecting…</span>
+      </div>
+      <button class="btn secondary" onclick="refreshAll()">Refresh All</button>
+    </div>
+  </header>
+
+  <!-- ──────────────────────────────────── EXECUTIVE COMMAND CENTER -->
+  <div id="exec-hero">
+    <div class="exec-hero-inner">
+      <div class="exec-hero-title">Executive Command Center — V3</div>
+      <div class="exec-cards" id="exec-cards">
+        <div class="exec-card"><div class="label">Next Action</div><div class="value" id="ec-next">—</div><div class="sub" id="ec-next-sub"></div></div>
+        <div class="exec-card"><div class="label">Goals At Risk</div><div class="value" id="ec-goals-at-risk">—</div><div class="sub" id="ec-goals-sub"></div></div>
+        <div class="exec-card"><div class="label">Top Prediction</div><div class="value" id="ec-top-pred">—</div><div class="sub" id="ec-top-pred-sub"></div></div>
+        <div class="exec-card"><div class="label">Top Recommendation</div><div class="value" id="ec-top-rec">—</div><div class="sub" id="ec-top-rec-sub"></div></div>
+        <div class="exec-card"><div class="label">Loop State</div><div class="value" id="ec-loop">—</div><div class="sub" id="ec-loop-sub"></div></div>
+        <div class="exec-card"><div class="label">Verification</div><div class="value" id="ec-verify">—</div><div class="sub" id="ec-verify-sub"></div></div>
+        <div class="exec-card"><div class="label">Predictions</div><div class="value" id="ec-pred-count">—</div><div class="sub">total ranked</div></div>
+        <div class="exec-card"><div class="label">Recommendations</div><div class="value" id="ec-rec-count">—</div><div class="sub">cross-domain</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────── COMMAND BAR -->
+  <div id="command-bar">
+    <div class="command-bar-inner">
+      <div class="command-bar-title">System Overview</div>
+      <div class="command-cards" id="command-cards">
+        <div class="command-card"><div class="label">Health</div><div class="value" id="cc-health">—</div><div class="sub" id="cc-health-sub"></div></div>
+        <div class="command-card"><div class="label">Context</div><div class="value" id="cc-context">—</div><div class="sub" id="cc-context-sub"></div></div>
+        <div class="command-card"><div class="label">Architecture</div><div class="value" id="cc-arch">—</div><div class="sub" id="cc-arch-sub"></div></div>
+        <div class="command-card"><div class="label">Operations</div><div class="value" id="cc-ops">—</div><div class="sub" id="cc-ops-sub"></div></div>
+        <div class="command-card"><div class="label">Self Model</div><div class="value" id="cc-self">—</div><div class="sub">Subsystems</div></div>
+        <div class="command-card"><div class="label">Recent Incidents</div><div class="value" id="cc-incidents">—</div><div class="sub" id="cc-incidents-sub"></div></div>
+        <div class="command-card"><div class="label">Last Refresh</div><div class="value" id="cc-ts" style="font-size:12px;font-weight:400">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────── SEARCH RESULT -->
+  <div id="search-result">
+    <div class="answer-header">
+      <h3 id="answer-question">Answer</h3>
+      <button class="btn secondary" style="font-size:11px;padding:4px 10px" onclick="closeSearch()">Close</button>
+    </div>
+    <div class="answer-body" id="answer-body"></div>
+  </div>
+
+  <!-- ───────────────────────────────────────────── MAIN GRID -->
+  <main>
+    <div class="sections-grid">
+
+      <!-- ① System Health -->
+      <div class="section" id="sec-health">
+        <div class="section-header">
+          <h2>System Health</h2>
+          <span class="badge">Observability</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('health')">↻</button>
+        </div>
+        <div class="section-body" id="body-health"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ② Context Intelligence -->
+      <div class="section" id="sec-context">
+        <div class="section-header">
+          <h2>Context Intelligence</h2>
+          <span class="badge">Context</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('context')">↻</button>
+        </div>
+        <div class="section-body" id="body-context"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ③ Architecture Intelligence -->
+      <div class="section" id="sec-architecture">
+        <div class="section-header">
+          <h2>Architecture Intelligence</h2>
+          <span class="badge">Architecture</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('architecture')">↻</button>
+        </div>
+        <div class="section-body" id="body-architecture"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ④ Architecture Evolution / Drift -->
+      <div class="section" id="sec-arch-drift">
+        <div class="section-header">
+          <h2>Architecture Evolution</h2>
+          <span class="badge">Drift</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('arch-drift')">↻</button>
+        </div>
+        <div class="section-body" id="body-arch-drift"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑤ Reasoning Engine -->
+      <div class="section" id="sec-reasoning">
+        <div class="section-header">
+          <h2>Reasoning Engine</h2>
+          <span class="badge">Reasoning</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('reasoning')">↻</button>
+        </div>
+        <div class="section-body" id="body-reasoning"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑥ Risk Intelligence -->
+      <div class="section" id="sec-risk">
+        <div class="section-header">
+          <h2>Risk Intelligence</h2>
+          <span class="badge">Risk</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('risk')">↻</button>
+        </div>
+        <div class="section-body" id="body-risk"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑦ Dependency Intelligence -->
+      <div class="section" id="sec-dependency">
+        <div class="section-header">
+          <h2>Dependency Intelligence</h2>
+          <span class="badge">Deps</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('dependency')">↻</button>
+        </div>
+        <div class="section-body" id="body-dependency"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑧ Engineering Intelligence / Recommendations -->
+      <div class="section" id="sec-engineering">
+        <div class="section-header">
+          <h2>Engineering Intelligence</h2>
+          <span class="badge">Recommendations</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('engineering')">↻</button>
+        </div>
+        <div class="section-body" id="body-engineering"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑨ Operational Recommendations -->
+      <div class="section" id="sec-operations">
+        <div class="section-header">
+          <h2>Operational Recommendations</h2>
+          <span class="badge">Ops</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('operations')">↻</button>
+        </div>
+        <div class="section-body" id="body-operations"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑩ System Understanding / Self Model -->
+      <div class="section" id="sec-self">
+        <div class="section-header">
+          <h2>System Understanding</h2>
+          <span class="badge">Self Model</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('self')">↻</button>
+        </div>
+        <div class="section-body" id="body-self"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑪ Repository Understanding -->
+      <div class="section" id="sec-repo">
+        <div class="section-header">
+          <h2>Repository Understanding</h2>
+          <span class="badge">Context</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('repo')">↻</button>
+        </div>
+        <div class="section-body" id="body-repo"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑫ Knowledge -->
+      <div class="section" id="sec-knowledge">
+        <div class="section-header">
+          <h2>Knowledge</h2>
+          <span class="badge">Knowledge Engine</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('knowledge')">↻</button>
+        </div>
+        <div class="section-body" id="body-knowledge"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑬ Memory -->
+      <div class="section" id="sec-memory">
+        <div class="section-header">
+          <h2>Memory</h2>
+          <span class="badge">Memory Engine</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('memory')">↻</button>
+        </div>
+        <div class="section-body" id="body-memory"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑭ Graph -->
+      <div class="section" id="sec-graph">
+        <div class="section-header">
+          <h2>Graph</h2>
+          <span class="badge">Graph Engine</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('graph')">↻</button>
+        </div>
+        <div class="section-body" id="body-graph"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑮ Observability -->
+      <div class="section" id="sec-observability">
+        <div class="section-header">
+          <h2>Observability</h2>
+          <span class="badge">Signals</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('observability')">↻</button>
+        </div>
+        <div class="section-body" id="body-observability"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑯ Browser Intelligence -->
+      <div class="section" id="sec-browser">
+        <div class="section-header">
+          <h2>Browser Intelligence</h2>
+          <span class="badge">Browser</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('browser')">↻</button>
+        </div>
+        <div class="section-body" id="body-browser"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑰ Agents -->
+      <div class="section" id="sec-agents">
+        <div class="section-header">
+          <h2>Agents</h2>
+          <span class="badge">Agents</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('agents')">↻</button>
+        </div>
+        <div class="section-body" id="body-agents"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑱ Incidents — full width -->
+      <div class="section section-full" id="sec-incidents">
+        <div class="section-header">
+          <h2>Incidents</h2>
+          <span class="badge">Observability</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('incidents')">↻</button>
+        </div>
+        <div class="section-body" id="body-incidents"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑲ Executive Intelligence — full width -->
+      <div class="section section-full" id="sec-executive">
+        <div class="section-header">
+          <h2>Executive Intelligence</h2>
+          <span class="badge">V3</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('executive')">↻</button>
+        </div>
+        <div class="section-body" id="body-executive"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ⑳ Predictions -->
+      <div class="section" id="sec-predictions">
+        <div class="section-header">
+          <h2>Predictions</h2>
+          <span class="badge">V3</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('predictions')">↻</button>
+        </div>
+        <div class="section-body" id="body-predictions"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ㉑ Recommendations -->
+      <div class="section" id="sec-recommendations">
+        <div class="section-header">
+          <h2>Recommendations</h2>
+          <span class="badge">V3</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('recommendations')">↻</button>
+        </div>
+        <div class="section-body" id="body-recommendations"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ㉒ Goals & Missions -->
+      <div class="section" id="sec-goals">
+        <div class="section-header">
+          <h2>Goals &amp; Missions</h2>
+          <span class="badge">V3</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('goals')">↻</button>
+        </div>
+        <div class="section-body" id="body-goals"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ㉓ Risk Intelligence -->
+      <div class="section" id="sec-risk-intel">
+        <div class="section-header">
+          <h2>Risk Intelligence</h2>
+          <span class="badge">V3</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('risk-intel')">↻</button>
+        </div>
+        <div class="section-body" id="body-risk-intel"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ㉔ Platform Health -->
+      <div class="section" id="sec-platform-health">
+        <div class="section-header">
+          <h2>Platform Health</h2>
+          <span class="badge">V3</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('platform-health')">↻</button>
+        </div>
+        <div class="section-body" id="body-platform-health"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ㉕ Architecture Health -->
+      <div class="section" id="sec-arch-health">
+        <div class="section-header">
+          <h2>Architecture Health</h2>
+          <span class="badge">V3</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('arch-health')">↻</button>
+        </div>
+        <div class="section-body" id="body-arch-health"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ㉖ Operational Health -->
+      <div class="section" id="sec-op-health">
+        <div class="section-header">
+          <h2>Operational Health</h2>
+          <span class="badge">V3</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('op-health')">↻</button>
+        </div>
+        <div class="section-body" id="body-op-health"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ㉗ Merchant Health -->
+      <div class="section" id="sec-merchant-health">
+        <div class="section-header">
+          <h2>Merchant Health</h2>
+          <span class="badge">V3</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('merchant-health')">↻</button>
+        </div>
+        <div class="section-body" id="body-merchant-health"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ㉘ Investigations -->
+      <div class="section" id="sec-investigations">
+        <div class="section-header">
+          <h2>Investigations</h2>
+          <span class="badge">V3</span>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('investigations')">↻</button>
+        </div>
+        <div class="section-body" id="body-investigations"><span class="loading">Loading…</span></div>
+      </div>
+
+      <!-- ㉙ Operating Loop — full width -->
+      <div class="section section-full" id="sec-loop">
+        <div class="section-header">
+          <h2>Operating Loop</h2>
+          <span class="badge">V3</span>
+          <button class="btn-run" onclick="runLoopOnce()" id="btn-run-loop">Run Cycle</button>
+          <button class="refresh-btn" title="Refresh" onclick="loadSection('loop')">↻</button>
+        </div>
+        <div class="section-body" id="body-loop"><span class="loading">Loading…</span></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ─────────────────────────────────────────────────── FOOTER -->
+  <footer>
+    LCIS — Autonomous Intelligence Layer &nbsp;·&nbsp;
+    Live data is labelled NOT CONNECTED where the source adapter is not yet wired &nbsp;·&nbsp;
+    Structural topology is always CONNECTED
+  </footer>
+
+</div>
+
+<script>
+  // ──────────────────────────────────────────────────────────────────────
+  // Config
+  // ──────────────────────────────────────────────────────────────────────
+  const API = '/intelligence';   // proxied by serve-dashboard.mjs
+
+  // ──────────────────────────────────────────────────────────────────────
+  // Utility
+  // ──────────────────────────────────────────────────────────────────────
+  async function apiFetch(path) {
+    try {
+      const r = await fetch(API + path, { signal: AbortSignal.timeout(12000) });
+      if (!r.ok) {
+        const err = await r.json().catch(() => ({ error: `HTTP ${r.status}` }));
+        return { __error: err.error || `HTTP ${r.status}` };
+      }
+      return await r.json();
+    } catch (e) {
+      return { __error: e.message || 'Request failed' };
+    }
+  }
+
+  function el(id) { return document.getElementById(id); }
+
+  function setBody(id, html) {
+    const e = el(id);
+    if (e) e.innerHTML = html;
+  }
+
+  function statusColor(s) {
+    if (!s) return '';
+    const l = String(s).toLowerCase();
+    if (l === 'healthy' || l === 'ok' || l === 'good' || l === 'green') return 'ok';
+    if (l === 'degraded' || l === 'warn' || l === 'warning' || l === 'yellow') return 'warn';
+    if (l === 'unhealthy' || l === 'error' || l === 'red' || l === 'critical') return 'err';
+    return '';
+  }
+
+  function itemBorder(severity) {
+    const l = String(severity || '').toLowerCase();
+    if (l === 'critical' || l === 'high' || l === 'error') return 'err-border';
+    if (l === 'medium' || l === 'warn' || l === 'warning') return 'warn-border';
+    return 'ok-border';
+  }
+
+  function notConnected() {
+    return '<span class="not-connected">NOT CONNECTED — live source adapter not wired</span>';
+  }
+
+  function esc(v) {
+    if (v == null) return '—';
+    return String(v)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function kv(pairs) {
+    const rows = Object.entries(pairs)
+      .map(([k, v]) => `<div class="k">${esc(k)}</div><div class="v">${esc(v)}</div>`)
+      .join('');
+    return `<div class="kv-list">${rows}</div>`;
+  }
+
+  function kvWithColors(pairs) {
+    const rows = Object.entries(pairs).map(([k, v]) => {
+      const cls = statusColor(v);
+      return `<div class="k">${esc(k)}</div><div class="v ${cls}">${esc(v)}</div>`;
+    }).join('');
+    return `<div class="kv-list">${rows}</div>`;
+  }
+
+  function errorHtml(msg) {
+    return `<span class="error-msg">Error: ${esc(msg)}</span>`;
+  }
+
+  function renderList(items, titleKey, subKey, severityKey) {
+    if (!items || !items.length) return '<span class="loading">No data</span>';
+    return `<div class="item-list">${items.map(item => {
+      const border = severityKey ? itemBorder(item[severityKey]) : '';
+      return `<div class="item ${border}">
+        <div class="item-title">${esc(item[titleKey] || item.name || item.title || JSON.stringify(item))}</div>
+        ${subKey && item[subKey] ? `<div class="item-sub">${esc(item[subKey])}</div>` : ''}
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  // ──────────────────────────────────────────────────────────────────────
+  // Command Center
+  // ──────────────────────────────────────────────────────────────────────
+  async function loadCommandCenter() {
+    const dot  = el('api-dot');
+    const stat = el('api-status');
+
+    const data = await apiFetch('/command-center');
+    if (data.__error) {
+      dot.className  = 'dot red';
+      stat.textContent = 'API offline';
+      el('cc-health').textContent = 'OFFLINE';
+      el('cc-health').className = 'value error';
+      return;
+    }
+
+    dot.className    = 'dot green';
+    stat.textContent = 'API connected';
+
+    // Health
+    const hs = data.health?.status || data.health?.overall || '—';
+    el('cc-health').textContent = hs.toUpperCase();
+    el('cc-health').className = `value ${statusColor(hs)}`;
+    el('cc-health-sub').textContent = data.health?.uptime ? `Uptime: ${data.health.uptime}` : '';
+
+    // Context
+    const compFiles = data.context?.topFilesCount ?? data.context?.fileCount ?? '—';
+    el('cc-context').textContent = compFiles;
+    el('cc-context').className = 'value';
+    el('cc-context-sub').textContent = data.context?.status === 'NOT CONNECTED' ? 'NOT CONNECTED' : 'files indexed';
+
+    // Architecture
+    const archStatus = data.architecture?.status || data.architecture?.overallRisk || '—';
+    el('cc-arch').textContent = String(archStatus).toUpperCase();
+    el('cc-arch').className = `value ${statusColor(archStatus)}`;
+    const riskCount = data.architecture?.risks?.length ?? data.architecture?.riskCount ?? '';
+    el('cc-arch-sub').textContent = riskCount ? `${riskCount} risks` : '';
+
+    // Operations
+    const opsPosture = data.operations?.posture || data.operations?.status || '—';
+    el('cc-ops').textContent = String(opsPosture).toUpperCase();
+    el('cc-ops').className = `value ${statusColor(opsPosture)}`;
+    el('cc-ops-sub').textContent = data.operations?.recommendation ?? '';
+
+    // Self model
+    el('cc-self').textContent = data.selfModel?.subsystemCount ?? '—';
+    el('cc-self').className = 'value';
+
+    // Incidents
+    const incCount = data.incidents?.recent?.length ?? 0;
+    el('cc-incidents').textContent = incCount;
+    el('cc-incidents').className = incCount > 0 ? 'value warn' : 'value ok';
+    el('cc-incidents-sub').textContent = data.incidents?.note ?? 'recent';
+
+    // Timestamp
+    if (data.timestamp) {
+      el('cc-ts').textContent = new Date(data.timestamp).toLocaleTimeString();
+    }
+  }
+
+  // ──────────────────────────────────────────────────────────────────────
+  // Section loaders
+  // ──────────────────────────────────────────────────────────────────────
+  async function loadHealth() {
+    const data = await apiFetch('/observability/health');
+    if (data.__error) return setBody('body-health', errorHtml(data.__error));
+    const pairs = {
+      Status:     data.status || '—',
+      Memory:     data.memory || '—',
+      Graph:      data.graph  || '—',
+      Uptime:     data.uptime || 'NOT CONNECTED',
+      'Error Rate': data.errorRate != null ? `${data.errorRate}%` : 'NOT CONNECTED',
+    };
+    setBody('body-health', kvWithColors(pairs));
+  }
+
+  async function loadContext() {
+    const data = await apiFetch('/context/health');
+    if (data.__error) return setBody('body-context', errorHtml(data.__error));
+    const comp = await apiFetch('/context/compression');
+
+    let html = '';
+
+    // Health kv
+    if (!data.__error) {
+      const pairs = {};
+      if (data.status)        pairs['Status']       = data.status;
+      if (data.graphBuilt != null) pairs['Graph Built'] = data.graphBuilt ? 'Yes' : 'No';
+      if (data.fileCount != null)  pairs['File Count']  = data.fileCount;
+      if (data.indexedAt)          pairs['Indexed At']  = new Date(data.indexedAt).toLocaleString();
+      if (Object.keys(pairs).length) html += kvWithColors(pairs);
+    }
+
+    // Compression stats
+    if (!comp.__error) {
+      const cp = {};
+      if (comp.topFilesCount != null) cp['Top Files Indexed'] = comp.topFilesCount;
+      if (comp.compressionRatio != null) cp['Compression Ratio'] = `${comp.compressionRatio}x`;
+      if (comp.coverageScore != null)    cp['Coverage Score']    = `${comp.coverageScore}%`;
+      if (comp.lastBuilt)                cp['Last Built']        = new Date(comp.lastBuilt).toLocaleString();
+      if (Object.keys(cp).length) {
+        html += `<div style="margin-top:12px"><div class="kv-list">${Object.entries(cp).map(([k,v]) => `<div class="k">${esc(k)}</div><div class="v">${esc(v)}</div>`).join('')}</div></div>`;
+      }
+    } else {
+      html += `<div style="margin-top:8px">${notConnected()}</div>`;
+    }
+
+    setBody('body-context', html || notConnected());
+  }
+
+  async function loadArchitecture() {
+    const data = await apiFetch('/architecture');
+    if (data.__error) return setBody('body-architecture', errorHtml(data.__error));
+
+    const pairs = {};
+    if (data.services?.length != null)  pairs['Services']    = data.services.length;
+    if (data.layers?.length != null)    pairs['Layers']      = data.layers.length;
+    if (data.domains?.length != null)   pairs['Domains']     = data.domains.length;
+    if (data.healthScore != null)       pairs['Health Score']= `${data.healthScore}%`;
+    if (data.snapshot)                  pairs['Snapshot']    = data.snapshot;
+
+    let html = Object.keys(pairs).length ? kvWithColors(pairs) : '';
+
+    // Top services
+    const svcs = data.services ?? data.runtimes ?? [];
+    if (svcs.length) {
+      const tags = svcs.slice(0, 10).map(s => `<span class="tag">${esc(typeof s === 'string' ? s : s.name)}</span>`).join('');
+      html += `<div class="tag-list" style="margin-top:10px">${tags}</div>`;
+    }
+
+    setBody('body-architecture', html || notConnected());
+  }
+
+  async function loadArchDrift() {
+    const data = await apiFetch('/architecture/drift');
+    if (data.__error) return setBody('body-arch-drift', errorHtml(data.__error));
+
+    const changes = data.changes ?? data.drift ?? data.events ?? [];
+    if (!changes.length) {
+      setBody('body-arch-drift', '<span class="loading">No recent drift detected</span>');
+      return;
+    }
+
+    const rows = changes.slice(0, 8).map(c => `<div class="item">
+      <div class="item-title">${esc(c.type || c.name || c.event || JSON.stringify(c))}</div>
+      ${c.description ? `<div class="item-sub">${esc(c.description)}</div>` : ''}
+    </div>`).join('');
+    setBody('body-arch-drift', `<div class="item-list">${rows}</div>`);
+  }
+
+  async function loadReasoning() {
+    const data = await apiFetch('/reason/risk-dependency');
+    if (data.__error) return setBody('body-reasoning', errorHtml(data.__error));
+
+    const pairs = {};
+    if (data.dependency)    pairs['Highest Risk Dep'] = data.dependency;
+    if (data.riskScore != null) pairs['Risk Score']   = data.riskScore;
+    if (data.reason)            pairs['Reason']       = data.reason;
+    if (data.dependents != null) pairs['Dependents']  = data.dependents;
+
+    setBody('body-reasoning', Object.keys(pairs).length ? kv(pairs) : notConnected());
+  }
+
+  async function loadRisk() {
+    const data = await apiFetch('/architecture/risks');
+    if (data.__error) return setBody('body-risk', errorHtml(data.__error));
+
+    const risks = data.risks ?? (Array.isArray(data) ? data : []);
+    if (!risks.length) {
+      const pairs = {};
+      if (data.overallRisk)          pairs['Overall Risk']  = data.overallRisk;
+      if (data.criticalCount != null) pairs['Critical']     = data.criticalCount;
+      if (data.highCount != null)     pairs['High']         = data.highCount;
+      setBody('body-risk', Object.keys(pairs).length ? kvWithColors(pairs) : '<span class="loading">No risks recorded</span>');
+      return;
+    }
+
+    const rows = risks.slice(0, 6).map(r => `<div class="item ${itemBorder(r.severity)}">
+      <div class="item-title">${esc(r.name || r.title || r.type || JSON.stringify(r))}</div>
+      <div class="item-sub">${esc(r.description || r.detail || '')} ${r.severity ? `[${esc(r.severity)}]` : ''}</div>
+    </div>`).join('');
+    setBody('body-risk', `<div class="item-list">${rows}</div>`);
+  }
+
+  async function loadDependency() {
+    const data = await apiFetch('/architecture/depends?component=@letbuyy/shared-types');
+    if (data.__error) return setBody('body-dependency', errorHtml(data.__error));
+
+    const deps = data.dependents ?? data.consumers ?? data.dependencies ?? [];
+    const pairs = {};
+    if (data.component)            pairs['Component']       = data.component;
+    if (deps.length != null)       pairs['Dependent Count'] = deps.length;
+
+    let html = Object.keys(pairs).length ? kv(pairs) : '';
+    if (deps.length) {
+      const tags = deps.slice(0, 10).map(d => `<span class="tag">${esc(typeof d === 'string' ? d : d.name || JSON.stringify(d))}</span>`).join('');
+      html += `<div class="tag-list" style="margin-top:10px">${tags}</div>`;
+    }
+    setBody('body-dependency', html || notConnected());
+  }
+
+  async function loadEngineering() {
+    const data = await apiFetch('/operations/recommendations');
+    if (data.__error) return setBody('body-engineering', errorHtml(data.__error));
+
+    const recs = data.recommendations ?? (Array.isArray(data) ? data : []);
+    if (!recs.length) return setBody('body-engineering', '<span class="loading">No recommendations</span>');
+
+    const rows = recs.slice(0, 5).map(r => `<div class="item ${itemBorder(r.priority)}">
+      <div class="item-title">${esc(r.title || r.action || r.recommendation || JSON.stringify(r))}</div>
+      <div class="item-sub">${esc(r.rationale || r.reason || r.description || '')} ${r.priority ? `[${esc(r.priority)}]` : ''}</div>
+    </div>`).join('');
+    setBody('body-engineering', `<div class="item-list">${rows}</div>`);
+  }
+
+  async function loadOperations() {
+    const data = await apiFetch('/operations/assess');
+    if (data.__error) return setBody('body-operations', errorHtml(data.__error));
+
+    const pairs = {};
+    if (data.posture)                    pairs['Posture']       = data.posture;
+    if (data.recommendation)             pairs['Recommendation']= data.recommendation;
+    if (data.openIssues != null)         pairs['Open Issues']   = data.openIssues;
+    if (data.launchBlockers != null)     pairs['Launch Blockers']= data.launchBlockers;
+    if (data.productionReadiness != null)pairs['Readiness']     = `${data.productionReadiness}%`;
+
+    const actionItems = data.actionItems ?? data.actions ?? [];
+    let html = Object.keys(pairs).length ? kvWithColors(pairs) : '';
+    if (actionItems.length) {
+      const rows = actionItems.slice(0, 4).map(a => `<div class="item ${itemBorder(a.priority)}">
+        <div class="item-title">${esc(a.action || a.title || JSON.stringify(a))}</div>
+        ${a.detail ? `<div class="item-sub">${esc(a.detail)}</div>` : ''}
+      </div>`).join('');
+      html += `<div class="item-list" style="margin-top:12px">${rows}</div>`;
+    }
+    setBody('body-operations', html || notConnected());
+  }
+
+  async function loadSelf() {
+    const data = await apiFetch('/self/model');
+    if (data.__error) {
+      // Not built yet — show graceful message
+      if (data.__error.includes('not found')) {
+        setBody('body-self', `<span class="not-connected">Self model not yet built — run POST /intelligence/self/build</span>`);
+      } else {
+        setBody('body-self', errorHtml(data.__error));
+      }
+      return;
+    }
+
+    const pairs = {};
+    if (data.subsystems?.length != null) pairs['Subsystems']  = data.subsystems.length;
+    if (data.layers?.length != null)     pairs['Layers']      = data.layers.length;
+    if (data.version)                    pairs['Version']     = data.version;
+    if (data.builtAt)                    pairs['Built At']    = new Date(data.builtAt).toLocaleString();
+    if (data.health?.status)             pairs['Health']      = data.health.status;
+
+    const subsystems = data.subsystems ?? data.layers ?? [];
+    let html = Object.keys(pairs).length ? kvWithColors(pairs) : '';
+    if (subsystems.length) {
+      const tags = subsystems.slice(0, 12).map(s => `<span class="tag">${esc(typeof s === 'string' ? s : s.name)}</span>`).join('');
+      html += `<div class="tag-list" style="margin-top:10px">${tags}</div>`;
+    }
+    setBody('body-self', html || notConnected());
+  }
+
+  async function loadRepo() {
+    const data = await apiFetch('/context/map');
+    if (data.__error) {
+      if (data.__error.includes('not found')) {
+        setBody('body-repo', `<span class="not-connected">Context map not built — run POST /intelligence/context/build</span>`);
+      } else {
+        setBody('body-repo', errorHtml(data.__error));
+      }
+      return;
+    }
+
+    const pairs = {};
+    if (data.summary?.totalFiles != null)   pairs['Total Files']  = data.summary.totalFiles;
+    if (data.summary?.totalSymbols != null) pairs['Total Symbols']= data.summary.totalSymbols;
+    if (data.summary?.domains != null)      pairs['Domains']      = data.summary.domains;
+    if (data.summary?.builtAt)              pairs['Built At']     = new Date(data.summary.builtAt).toLocaleString();
+    if (data.topFiles?.length != null)      pairs['Top Files']    = data.topFiles.length;
+
+    const topFiles = (data.topFiles ?? []).slice(0, 5);
+    let html = Object.keys(pairs).length ? kv(pairs) : '';
+    if (topFiles.length) {
+      const rows = topFiles.map(f => `<div class="item">
+        <div class="item-title" style="font-size:11px;word-break:break-all">${esc(f.path || f.file)}</div>
+        <div class="item-sub">${esc(f.role || '')} ${f.domain ? `[${esc(f.domain)}]` : ''}</div>
+      </div>`).join('');
+      html += `<div class="item-list" style="margin-top:12px">${rows}</div>`;
+    }
+    setBody('body-repo', html || notConnected());
+  }
+
+  async function loadKnowledge() {
+    const data = await apiFetch('/knowledge/freshness');
+    if (data.__error) return setBody('body-knowledge', errorHtml(data.__error));
+
+    const sources = await apiFetch('/knowledge/sources');
+    const pairs = {};
+    if (data.lastRefreshed) pairs['Last Refreshed'] = new Date(data.lastRefreshed).toLocaleString();
+    if (data.staleSources != null) pairs['Stale Sources'] = data.staleSources;
+    if (data.freshScore != null)   pairs['Fresh Score']   = `${data.freshScore}%`;
+
+    let html = Object.keys(pairs).length ? kv(pairs) : '';
+    const srcs = sources.sources ?? [];
+    if (srcs.length) {
+      const tags = srcs.slice(0, 8).map(s => `<span class="tag">${esc(typeof s === 'string' ? s : s.key || s.name)}</span>`).join('');
+      html += `<div class="tag-list" style="margin-top:10px">${tags}</div>`;
+    }
+    setBody('body-knowledge', html || notConnected());
+  }
+
+  async function loadMemory() {
+    const data = await apiFetch('/memory/health');
+    if (data.__error) return setBody('body-memory', errorHtml(data.__error));
+
+    const pairs = {};
+    if (data.status)               pairs['Status']          = data.status;
+    if (data.collections != null)  pairs['Collections']     = data.collections;
+    if (data.vectorCount != null)  pairs['Vector Count']    = data.vectorCount;
+    if (data.storageUsedMB != null)pairs['Storage (MB)']    = data.storageUsedMB;
+    const backend = data.backend ?? data.provider ?? null;
+    if (backend) pairs['Backend'] = backend;
+
+    setBody('body-memory', Object.keys(pairs).length ? kvWithColors(pairs) : notConnected());
+  }
+
+  async function loadGraph() {
+    const data = await apiFetch('/graph/health');
+    if (data.__error) return setBody('body-graph', errorHtml(data.__error));
+
+    const pairs = {};
+    if (data.status)               pairs['Status']      = data.status;
+    if (data.nodeCount != null)    pairs['Nodes']       = data.nodeCount;
+    if (data.edgeCount != null)    pairs['Edges']       = data.edgeCount;
+    if (data.graphType)            pairs['Type']        = data.graphType;
+    if (data.lastUpdated)          pairs['Last Updated']= new Date(data.lastUpdated).toLocaleString();
+
+    setBody('body-graph', Object.keys(pairs).length ? kvWithColors(pairs) : notConnected());
+  }
+
+  async function loadObservability() {
+    const [health, anomalies] = await Promise.all([
+      apiFetch('/observability/health'),
+      apiFetch('/observability/anomalies'),
+    ]);
+
+    const pairs = {};
+    if (!health.__error) {
+      if (health.status)           pairs['Status']     = health.status;
+      if (health.queueDepth != null)pairs['Queue Depth']= health.queueDepth;
+      if (health.workerHealth)     pairs['Workers']    = health.workerHealth;
+    }
+
+    let html = Object.keys(pairs).length ? kvWithColors(pairs) : '';
+
+    const anoms = anomalies.anomalies ?? [];
+    if (anoms.length) {
+      const rows = anoms.slice(0, 4).map(a => `<div class="item ${itemBorder(a.severity)}">
+        <div class="item-title">${esc(a.type || a.name || JSON.stringify(a))}</div>
+        <div class="item-sub">${esc(a.description || a.message || '')}</div>
+      </div>`).join('');
+      html += `<div class="item-list" style="margin-top:12px">${rows}</div>`;
+    } else if (!anoms.length && !anomalies.__error) {
+      html += `<div style="margin-top:8px"><span class="loading">No anomalies detected</span></div>`;
+    }
+
+    setBody('body-observability', html || notConnected());
+  }
+
+  async function loadBrowser() {
+    const data = await apiFetch('/browser/status');
+    if (data.__error) return setBody('body-browser', errorHtml(data.__error));
+
+    const pairs = {};
+    if (data.status)               pairs['Status']          = data.status;
+    if (data.playwrightAvailable != null) pairs['Playwright'] = data.playwrightAvailable ? 'Available' : 'NOT CONNECTED';
+    if (data.lastCapture)          pairs['Last Capture']    = new Date(data.lastCapture).toLocaleString();
+    if (data.captureCount != null) pairs['Captures']        = data.captureCount;
+
+    setBody('body-browser', Object.keys(pairs).length ? kvWithColors(pairs) : notConnected());
+  }
+
+  async function loadAgents() {
+    const data = await apiFetch('/agents/status');
+    if (data.__error) return setBody('body-agents', errorHtml(data.__error));
+
+    const agents = data.agents ?? [];
+    if (!agents.length) return setBody('body-agents', '<span class="loading">No agents registered</span>');
+
+    const rows = agents.map(a => {
+      const cls = a.available ? 'ok-border' : 'err-border';
+      const caps = (a.capabilities ?? []).slice(0, 3).join(', ');
+      return `<div class="item ${cls}">
+        <div class="item-title">${esc(a.name)}</div>
+        <div class="item-sub">${a.available ? 'Available' : 'NOT AVAILABLE'}${caps ? ' · ' + esc(caps) : ''}</div>
+      </div>`;
+    }).join('');
+    setBody('body-agents', `<div class="item-list">${rows}</div>`);
+  }
+
+  async function loadIncidents() {
+    const data = await apiFetch('/observability/incidents');
+    if (data.__error) return setBody('body-incidents', errorHtml(data.__error));
+
+    const incidents = data.incidents ?? [];
+    if (!incidents.length) {
+      setBody('body-incidents', '<span class="loading">No incidents recorded</span>');
+      return;
+    }
+
+    const headers = `<tr>
+      <th>Time</th><th>Domain</th><th>Type</th><th>Severity</th><th>Summary</th>
+    </tr>`;
+    const rows = incidents.slice(0, 20).map(inc => {
+      const ts = inc.timestamp || inc.ts || inc.time || '';
+      const formatted = ts ? new Date(ts).toLocaleString() : '—';
+      const sev = inc.severity || inc.level || '—';
+      const cls = statusColor(sev);
+      return `<tr>
+        <td>${esc(formatted)}</td>
+        <td>${esc(inc.domain || inc.service || '—')}</td>
+        <td>${esc(inc.type || inc.category || '—')}</td>
+        <td class="${cls}">${esc(sev)}</td>
+        <td>${esc(inc.summary || inc.message || inc.title || '—')}</td>
+      </tr>`;
+    }).join('');
+
+    setBody('body-incidents', `<table class="data-table"><thead>${headers}</thead><tbody>${rows}</tbody></table>`);
+  }
+
+  // ──────────────────────────────────────────────────────────────────────
+  // Section dispatch
+  // ──────────────────────────────────────────────────────────────────────
+  // ──────────────────────────────────────────────────────────────────────
+  // V3 Executive Command Center hero loader
+  // ──────────────────────────────────────────────────────────────────────
+  async function loadExecHero() {
+    const data = await apiFetch('/command-center');
+    if (data.__error) return;
+
+    // Next action
+    const next = data.executive?.briefing?.whatShouldHappenNext;
+    const nextConclusion = next?.conclusion ?? next?.recommendation ?? next?.action ?? '—';
+    el('ec-next').textContent = String(nextConclusion).slice(0, 60) + (String(nextConclusion).length > 60 ? '…' : '');
+    el('ec-next-sub').textContent = next?.priority ? `Priority: ${next.priority}` : (next ? '' : 'NOT CONNECTED');
+
+    // Goals at risk
+    const atRiskCount = data.goals?.atRiskCount;
+    el('ec-goals-at-risk').textContent = atRiskCount ?? '—';
+    el('ec-goals-at-risk').className = 'value' + (atRiskCount > 0 ? ' warn' : ' ok');
+    const atRiskGoals = data.goals?.atRisk ?? [];
+    el('ec-goals-sub').textContent = atRiskGoals.length ? atRiskGoals.slice(0, 2).map(g => g.title || g.id || JSON.stringify(g)).join(', ') : '';
+
+    // Top prediction
+    const preds = data.predictions?.top ?? [];
+    const topPred = preds[0];
+    el('ec-top-pred').textContent = topPred ? String(topPred.prediction ?? topPred.title ?? '—').slice(0, 55) + '…' : '—';
+    el('ec-top-pred-sub').textContent = topPred ? `Confidence: ${Math.round((topPred.confidence ?? 0) * 100)}% · ${topPred.horizon ?? ''}` : (data.predictions?.count === 'NOT CONNECTED' ? 'NOT CONNECTED' : '');
+
+    // Top recommendation
+    const recs = data.recommendations?.top ?? [];
+    const topRec = recs[0];
+    el('ec-top-rec').textContent = topRec ? String(topRec.title ?? topRec.action ?? topRec.recommendation ?? '—').slice(0, 55) + '…' : '—';
+    el('ec-top-rec-sub').textContent = topRec ? `[${topRec.domain ?? ''}] ${topRec.priority ?? ''}` : (data.recommendations?.count === 'NOT CONNECTED' ? 'NOT CONNECTED' : '');
+
+    // Loop state
+    const loop = data.loop ?? {};
+    el('ec-loop').textContent = String(loop.status ?? '—').toUpperCase();
+    el('ec-loop').className = 'value ' + statusColor(loop.status);
+    el('ec-loop-sub').textContent = loop.cycle != null ? `Cycle #${loop.cycle}` : (loop.liveMetrics ?? '');
+
+    // Verification
+    const ver = data.verification ?? {};
+    const verStatus = ver.status ?? ver.overall ?? '—';
+    el('ec-verify').textContent = String(verStatus).toUpperCase();
+    el('ec-verify').className = 'value ' + statusColor(verStatus);
+    el('ec-verify-sub').textContent = ver.totalVerified != null ? `${ver.totalVerified} verified` : (ver.status === 'NOT CONNECTED' ? 'NOT CONNECTED' : '');
+
+    // Counts
+    el('ec-pred-count').textContent = data.predictions?.count ?? '—';
+    el('ec-rec-count').textContent  = data.recommendations?.count ?? '—';
+  }
+
+  // ──────────────────────────────────────────────────────────────────────
+  // V3 Section loaders
+  // ──────────────────────────────────────────────────────────────────────
+
+  async function loadExecutive() {
+    const [briefing, next] = await Promise.all([
+      apiFetch('/executive/briefing'),
+      apiFetch('/executive/next'),
+    ]);
+
+    let html = '';
+
+    if (!briefing.__error) {
+      const pairs = {};
+      const state = briefing.platformState?.synthesis ?? briefing.synthesis ?? briefing.summary ?? null;
+      if (state) pairs['Platform State'] = String(state).slice(0, 180);
+      const risk = briefing.highestPriorityRisk;
+      if (risk?.conclusion) pairs['Highest Risk'] = String(risk.conclusion).slice(0, 120);
+      const leadership = briefing.leadershipShouldKnow;
+      if (leadership?.synthesis) pairs['Leadership Should Know'] = String(leadership.synthesis).slice(0, 180);
+      if (Object.keys(pairs).length) {
+        html += `<div style="margin-bottom:12px"><div class="kv-list">${Object.entries(pairs).map(([k,v]) => `<div class="k">${esc(k)}</div><div class="v">${esc(v)}</div>`).join('')}</div></div>`;
+      }
+    } else {
+      html += errorHtml(briefing.__error);
+    }
+
+    if (!next.__error) {
+      const conclusion = next.conclusion ?? next.recommendation ?? next.action ?? null;
+      const priority   = next.priority ?? null;
+      const confidence = next.confidence ?? null;
+      const owner      = next.recommendedOwner ?? null;
+      if (conclusion) {
+        html += `<div class="item ok-border" style="margin-top:8px">
+          <div class="item-title">What Should Happen Next</div>
+          <div class="item-sub">${esc(conclusion)}</div>
+          ${priority   ? `<div class="item-sub" style="margin-top:4px">Priority: ${esc(priority)}${confidence ? ' · Confidence: ' + esc(confidence) : ''}${owner ? ' · Owner: ' + esc(owner) : ''}</div>` : ''}
+        </div>`;
+      }
+    }
+
+    setBody('body-executive', html || notConnected());
+  }
+
+  async function loadPredictions() {
+    const data = await apiFetch('/predict/all');
+    if (data.__error) return setBody('body-predictions', errorHtml(data.__error));
+
+    const preds = data.predictions ?? (Array.isArray(data) ? data : []);
+    if (!preds.length) return setBody('body-predictions', '<span class="loading">No predictions available</span>');
+
+    const rows = preds.slice(0, 8).map(p => {
+      const conf  = p.confidence != null ? Math.round(p.confidence * 100) + '%' : '—';
+      const basis = p.basis ?? 'structural';
+      const nc    = p.connected === false || basis === 'structural';
+      return `<div class="item ${itemBorder(p.type === 'incident' ? 'high' : 'medium')}">
+        <div class="item-title">${esc(p.target ?? p.title ?? '—')}</div>
+        <div class="item-sub">${esc(String(p.prediction ?? '').slice(0, 120))}</div>
+        <div class="item-sub" style="margin-top:4px">Confidence: ${conf} · Horizon: ${esc(p.horizon ?? '—')}${nc ? ' · <span class="not-connected" style="font-style:normal">NOT CONNECTED</span>' : ''}</div>
+      </div>`;
+    }).join('');
+
+    setBody('body-predictions', `<div class="item-list">${rows}</div>`);
+  }
+
+  async function loadRecommendations() {
+    const data = await apiFetch('/recommend');
+    if (data.__error) return setBody('body-recommendations', errorHtml(data.__error));
+
+    const recs = data.recommendations ?? (Array.isArray(data) ? data : []);
+    if (!recs.length) return setBody('body-recommendations', '<span class="loading">No recommendations available</span>');
+
+    const rows = recs.slice(0, 8).map(r => {
+      const domain = r.domain ?? '';
+      return `<div class="item ${itemBorder(r.priority)}">
+        <div class="item-title">${esc(r.title ?? r.action ?? r.recommendation ?? '—')}</div>
+        <div class="item-sub">${esc(String(r.rationale ?? r.reason ?? r.description ?? '').slice(0, 120))}</div>
+        <div class="item-sub" style="margin-top:4px">${domain ? `[${esc(domain)}]` : ''} ${r.priority ? esc(r.priority) : ''} ${r.effort ? '· Effort: ' + esc(r.effort) : ''}</div>
+      </div>`;
+    }).join('');
+
+    setBody('body-recommendations', `<div class="item-list">${rows}</div>`);
+  }
+
+  async function loadGoals() {
+    const [goals, missions] = await Promise.all([
+      apiFetch('/goals'),
+      apiFetch('/missions'),
+    ]);
+
+    let html = '';
+
+    if (!goals.__error) {
+      const goalList = goals.goals ?? [];
+      if (goalList.length) {
+        const rows = goalList.slice(0, 6).map(g => {
+          const cls = g.status === 'on-track' ? 'ok-border' : g.status === 'at-risk' ? 'warn-border' : g.status === 'blocked' ? 'err-border' : '';
+          const pct = g.progress != null ? `${Math.round(g.progress * 100)}%` : '—';
+          return `<div class="item ${cls}">
+            <div class="item-title">${esc(g.title ?? g.id ?? '—')}</div>
+            <div class="item-sub">Status: ${esc(g.status ?? '—')} · Progress: ${pct} · Category: ${esc(g.category ?? '—')}</div>
+          </div>`;
+        }).join('');
+        html += `<div class="item-list">${rows}</div>`;
+      } else {
+        html += '<span class="loading">No goals defined</span>';
+      }
+    } else {
+      html += errorHtml(goals.__error);
+    }
+
+    if (!missions.__error) {
+      const missionList = missions.missions ?? [];
+      if (missionList.length) {
+        html += `<div style="margin-top:14px"><div class="command-bar-title" style="margin-bottom:8px">Missions</div><div class="item-list">`;
+        html += missionList.slice(0, 3).map(m => `<div class="item">
+          <div class="item-title">${esc(m.title ?? m.name ?? m.id ?? '—')}</div>
+          <div class="item-sub">${esc(String(m.description ?? m.objective ?? '').slice(0, 100))} · Status: ${esc(m.status ?? '—')}</div>
+        </div>`).join('');
+        html += `</div></div>`;
+      }
+    }
+
+    setBody('body-goals', html || notConnected());
+  }
+
+  async function loadRiskIntel() {
+    const data = await apiFetch('/orchestrate/risk');
+    if (data.__error) return setBody('body-risk-intel', errorHtml(data.__error));
+
+    const pairs = {};
+    if (data.overallRisk ?? data.riskLevel)  pairs['Overall Risk']    = data.overallRisk ?? data.riskLevel;
+    if (data.criticalCount != null)           pairs['Critical Issues'] = data.criticalCount;
+    if (data.highCount != null)               pairs['High Issues']     = data.highCount;
+    if (data.status)                          pairs['Status']          = data.status;
+    if (data.recommendation)                  pairs['Recommendation']  = String(data.recommendation).slice(0, 100);
+
+    let html = Object.keys(pairs).length ? kvWithColors(pairs) : '';
+
+    const risks = data.risks ?? data.topRisks ?? data.findings ?? [];
+    if (risks.length) {
+      const rows = risks.slice(0, 5).map(r => `<div class="item ${itemBorder(r.severity ?? r.level)}">
+        <div class="item-title">${esc(r.title ?? r.name ?? r.risk ?? JSON.stringify(r).slice(0, 60))}</div>
+        <div class="item-sub">${esc(String(r.description ?? r.detail ?? '').slice(0, 100))} ${r.severity ? `[${esc(r.severity)}]` : ''}</div>
+      </div>`).join('');
+      html += `<div class="item-list" style="margin-top:12px">${rows}</div>`;
+    }
+
+    setBody('body-risk-intel', html || notConnected());
+  }
+
+  async function loadPlatformHealth() {
+    const data = await apiFetch('/orchestrate/health');
+    if (data.__error) return setBody('body-platform-health', errorHtml(data.__error));
+
+    const pairs = {};
+    if (data.status)                        pairs['Status']         = data.status;
+    if (data.healthScore != null)           pairs['Health Score']   = `${data.healthScore}%`;
+    if (data.uptime)                        pairs['Uptime']         = data.uptime;
+    if (data.productionReadiness != null)   pairs['Readiness']      = `${data.productionReadiness}%`;
+    if (data.recommendation)                pairs['Recommendation'] = String(data.recommendation).slice(0, 100);
+
+    const checks = data.checks ?? data.subsystems ?? data.components ?? [];
+    let html = Object.keys(pairs).length ? kvWithColors(pairs) : '';
+    if (checks.length) {
+      const rows = checks.slice(0, 6).map(c => {
+        const cls = statusColor(c.status ?? c.health);
+        return `<div class="item">
+          <div class="item-title">${esc(c.name ?? c.subsystem ?? c.component ?? '—')}</div>
+          <div class="item-sub"><span class="v ${cls}">${esc(c.status ?? c.health ?? '—')}</span>${c.detail ? ' · ' + esc(String(c.detail).slice(0,80)) : ''}</div>
+        </div>`;
+      }).join('');
+      html += `<div class="item-list" style="margin-top:12px">${rows}</div>`;
+    }
+
+    setBody('body-platform-health', html || notConnected());
+  }
+
+  async function loadArchHealth() {
+    const data = await apiFetch('/orchestrate/architecture');
+    if (data.__error) return setBody('body-arch-health', errorHtml(data.__error));
+
+    const pairs = {};
+    if (data.status)                    pairs['Status']         = data.status;
+    if (data.healthScore != null)       pairs['Health Score']   = `${data.healthScore}%`;
+    if (data.driftCount != null)        pairs['Drift Items']    = data.driftCount;
+    if (data.violationCount != null)    pairs['Violations']     = data.violationCount;
+
+    const findings = data.findings ?? data.issues ?? data.violations ?? [];
+    let html = Object.keys(pairs).length ? kvWithColors(pairs) : '';
+    if (findings.length) {
+      const rows = findings.slice(0, 5).map(f => `<div class="item ${itemBorder(f.severity)}">
+        <div class="item-title">${esc(f.title ?? f.name ?? f.rule ?? JSON.stringify(f).slice(0,60))}</div>
+        <div class="item-sub">${esc(String(f.description ?? f.detail ?? '').slice(0,100))}</div>
+      </div>`).join('');
+      html += `<div class="item-list" style="margin-top:12px">${rows}</div>`;
+    }
+
+    setBody('body-arch-health', html || notConnected());
+  }
+
+  async function loadOpHealth() {
+    const data = await apiFetch('/operations/assess');
+    if (data.__error) return setBody('body-op-health', errorHtml(data.__error));
+
+    const pairs = {};
+    if (data.posture)                     pairs['Posture']          = data.posture;
+    if (data.productionReadiness != null) pairs['Readiness']        = `${data.productionReadiness}%`;
+    if (data.openIssues != null)          pairs['Open Issues']      = data.openIssues;
+    if (data.launchBlockers != null)      pairs['Launch Blockers']  = data.launchBlockers;
+    if (data.recommendation)              pairs['Recommendation']   = String(data.recommendation).slice(0,100);
+
+    const actions = data.actionItems ?? data.actions ?? [];
+    let html = Object.keys(pairs).length ? kvWithColors(pairs) : '';
+    if (actions.length) {
+      const rows = actions.slice(0, 4).map(a => `<div class="item ${itemBorder(a.priority)}">
+        <div class="item-title">${esc(a.action ?? a.title ?? JSON.stringify(a).slice(0,60))}</div>
+        ${a.detail ? `<div class="item-sub">${esc(String(a.detail).slice(0,100))}</div>` : ''}
+      </div>`).join('');
+      html += `<div class="item-list" style="margin-top:12px">${rows}</div>`;
+    }
+
+    setBody('body-op-health', html || notConnected());
+  }
+
+  async function loadMerchantHealth() {
+    const data = await apiFetch('/recommend/domain?domain=merchant');
+    if (data.__error) return setBody('body-merchant-health', errorHtml(data.__error));
+
+    const recs = data.recommendations ?? [];
+    if (!recs.length) {
+      setBody('body-merchant-health', '<span class="loading">No merchant recommendations</span>');
+      return;
+    }
+
+    const rows = recs.slice(0, 6).map(r => `<div class="item ${itemBorder(r.priority)}">
+      <div class="item-title">${esc(r.title ?? r.action ?? '—')}</div>
+      <div class="item-sub">${esc(String(r.rationale ?? r.reason ?? '').slice(0,100))} ${r.priority ? `[${esc(r.priority)}]` : ''}</div>
+    </div>`).join('');
+
+    setBody('body-merchant-health', `<div class="item-list">${rows}</div>`);
+  }
+
+  async function loadInvestigations() {
+    // Show workflows as a proxy for investigation capabilities + last investigate hint
+    const [workflows, verification] = await Promise.all([
+      apiFetch('/orchestrate/workflows'),
+      apiFetch('/verify/report'),
+    ]);
+
+    let html = '';
+
+    if (!workflows.__error) {
+      const wfs = workflows.workflows ?? [];
+      if (wfs.length) {
+        const rows = wfs.slice(0, 5).map(w => `<div class="item">
+          <div class="item-title">${esc(w.name ?? w.id ?? JSON.stringify(w).slice(0,60))}</div>
+          <div class="item-sub">${esc(w.description ?? w.trigger ?? '')} · Status: ${esc(w.status ?? 'registered')}</div>
+        </div>`).join('');
+        html += `<div style="margin-bottom:8px"><div class="command-bar-title" style="margin-bottom:6px">Registered Workflows</div><div class="item-list">${rows}</div></div>`;
+      }
+    }
+
+    if (!verification.__error) {
+      const pairs = {};
+      if (verification.totalVerified != null)  pairs['Total Verified']   = verification.totalVerified;
+      if (verification.passRate != null)       pairs['Pass Rate']        = `${Math.round(verification.passRate * 100)}%`;
+      if (verification.lastVerifiedAt)         pairs['Last Verified']    = new Date(verification.lastVerifiedAt).toLocaleString();
+      if (verification.status)                 pairs['Status']           = verification.status;
+      if (Object.keys(pairs).length) {
+        html += `<div style="margin-top:12px"><div class="command-bar-title" style="margin-bottom:6px">Verification Stats</div>${kvWithColors(pairs)}</div>`;
+      }
+    }
+
+    if (!html) html = notConnected();
+    setBody('body-investigations', html);
+  }
+
+  async function loadLoop() {
+    const data = await apiFetch('/loop/state');
+    if (data.__error) return setBody('body-loop', errorHtml(data.__error));
+
+    const pairs = {};
+    if (data.status)                  pairs['Status']           = data.status;
+    if (data.cycle != null)           pairs['Cycle #']          = data.cycle;
+    if (data.lastRunAt)               pairs['Last Run']         = new Date(data.lastRunAt).toLocaleString();
+    if (data.nextRunAt)               pairs['Next Run']         = new Date(data.nextRunAt).toLocaleString();
+    if (data.loopIntervalMs != null)  pairs['Interval']         = `${Math.round(data.loopIntervalMs / 1000)}s`;
+    if (data.uptime)                  pairs['Uptime']           = data.uptime;
+    if (data.liveMetrics)             pairs['Live Metrics']     = data.liveMetrics;
+
+    let html = Object.keys(pairs).length ? kvWithColors(pairs) : '';
+
+    // Last result steps
+    const steps = data.lastResult?.steps ?? [];
+    if (steps.length) {
+      const rows = steps.map(s => `<div class="item ${s.status === 'ok' ? 'ok-border' : 'err-border'}">
+        <div class="item-title">${esc(s.step)}</div>
+        <div class="item-sub">${s.status === 'error' ? esc(s.error ?? 'error') : 'ok'}${s.count != null ? ' · ' + s.count + ' items' : ''}</div>
+      </div>`).join('');
+      html += `<div style="margin-top:12px"><div class="command-bar-title" style="margin-bottom:6px">Last Cycle Steps</div><div class="item-list">${rows}</div></div>`;
+    }
+
+    // History
+    const hist = await apiFetch('/loop/history');
+    if (!hist.__error) {
+      const history = hist.history ?? [];
+      if (history.length) {
+        const hrows = history.slice(0, 5).map(h => `<div class="item ${h.status === 'success' ? 'ok-border' : h.status === 'partial' ? 'warn-border' : 'err-border'}">
+          <div class="item-title">Cycle #${esc(h.cycleId)} — ${esc(h.status)}</div>
+          <div class="item-sub">${h.startedAt ? new Date(h.startedAt).toLocaleString() : '—'} · ${h.durationMs != null ? h.durationMs + 'ms' : ''} · ${h.errorCount ?? 0} errors</div>
+        </div>`).join('');
+        html += `<div style="margin-top:12px"><div class="command-bar-title" style="margin-bottom:6px">Cycle History</div><div class="item-list">${hrows}</div></div>`;
+      }
+    }
+
+    setBody('body-loop', html || notConnected());
+  }
+
+  async function runLoopOnce() {
+    const btn = el('btn-run-loop');
+    if (btn) { btn.disabled = true; btn.textContent = 'Running…'; }
+    setBody('body-loop', '<span class="loading">Running cycle…</span>');
+    try {
+      const result = await fetch('/intelligence/loop/run-once', { method: 'POST', signal: AbortSignal.timeout(60000) });
+      const data = await result.json();
+      if (data.__error) {
+        setBody('body-loop', errorHtml(data.__error));
+      } else {
+        await loadSection('loop');
+      }
+    } catch (e) {
+      setBody('body-loop', errorHtml(e.message));
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Run Cycle'; }
+    }
+  }
+
+  const SECTION_LOADERS = {
+    'health':           loadHealth,
+    'context':          loadContext,
+    'architecture':     loadArchitecture,
+    'arch-drift':       loadArchDrift,
+    'reasoning':        loadReasoning,
+    'risk':             loadRisk,
+    'dependency':       loadDependency,
+    'engineering':      loadEngineering,
+    'operations':       loadOperations,
+    'self':             loadSelf,
+    'repo':             loadRepo,
+    'knowledge':        loadKnowledge,
+    'memory':           loadMemory,
+    'graph':            loadGraph,
+    'observability':    loadObservability,
+    'browser':          loadBrowser,
+    'agents':           loadAgents,
+    'incidents':        loadIncidents,
+    // V3
+    'executive':        loadExecutive,
+    'predictions':      loadPredictions,
+    'recommendations':  loadRecommendations,
+    'goals':            loadGoals,
+    'risk-intel':       loadRiskIntel,
+    'platform-health':  loadPlatformHealth,
+    'arch-health':      loadArchHealth,
+    'op-health':        loadOpHealth,
+    'merchant-health':  loadMerchantHealth,
+    'investigations':   loadInvestigations,
+    'loop':             loadLoop,
+  };
+
+  async function loadSection(key) {
+    const bodyId = `body-${key}`;
+    setBody(bodyId, '<span class="loading">Loading…</span>');
+    const loader = SECTION_LOADERS[key];
+    if (loader) {
+      try { await loader(); } catch (e) { setBody(bodyId, errorHtml(e.message)); }
+    }
+  }
+
+  async function refreshAll() {
+    await loadCommandCenter();
+    await Promise.all(Object.keys(SECTION_LOADERS).map(k => loadSection(k)));
+  }
+
+  // ──────────────────────────────────────────────────────────────────────
+  // Search / Ask
+  // ──────────────────────────────────────────────────────────────────────
+  async function runSearch() {
+    const q = el('search-input').value.trim();
+    if (!q) return;
+
+    const resultEl = el('search-result');
+    const bodyEl   = el('answer-body');
+    const questionEl = el('answer-question');
+
+    resultEl.style.display = 'block';
+    questionEl.textContent = `Q: ${q}`;
+    bodyEl.innerHTML = '<span class="loading">Reasoning…</span>';
+
+    const data = await apiFetch(`/ask?q=${encodeURIComponent(q)}`);
+    if (data.__error) {
+      bodyEl.innerHTML = errorHtml(data.__error);
+      return;
+    }
+
+    // Render the synthesized answer
+    const answer = data.answer ?? data.synthesized ?? data.response ?? data.result ?? JSON.stringify(data, null, 2);
+    const routing = data.routing;
+
+    let html = `<div style="margin-bottom:12px">${esc(typeof answer === 'object' ? JSON.stringify(answer) : answer)}</div>`;
+
+    if (routing) {
+      html += `<div class="kv-list">
+        <div class="k">Agent</div><div class="v">${esc(routing.agent)}</div>
+        <div class="k">Confidence</div><div class="v">${esc(routing.confidence ?? '—')}</div>
+      </div>`;
+    }
+
+    bodyEl.innerHTML = html;
+  }
+
+  function closeSearch() {
+    el('search-result').style.display = 'none';
+    el('search-input').value = '';
+  }
+
+  el('search-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') runSearch();
+    if (e.key === 'Escape') closeSearch();
+  });
+
+  // ──────────────────────────────────────────────────────────────────────
+  // Boot
+  // ──────────────────────────────────────────────────────────────────────
+  (async () => {
+    await loadCommandCenter();
+    // Load all sections in parallel
+    await Promise.all(Object.keys(SECTION_LOADERS).map(k => loadSection(k)));
+  })();
+</script>
+</body>
+</html>

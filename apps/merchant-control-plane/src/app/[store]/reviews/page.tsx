@@ -1,11 +1,14 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
-import { Button,
+import {
+    Avatar,
     Badge,
     BadgeCheck,
     Banner,
+    Button,
     Card,
     CheckCircle2,
     ConfirmDialog,
@@ -18,10 +21,11 @@ import { Button,
     ShieldCheck,
     Skeleton,
     Star,
-    Tabs,
+    Table,
     Trash2,
     XCircle,
     useToast,
+    type TableColumn,
 } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 
@@ -40,6 +44,13 @@ interface Review {
 }
 
 type ReviewFilter = 'all' | 'pending' | 'approved' | 'rejected'
+
+const reviewViews = [
+    { label: 'All', value: 'all' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Approved', value: 'approved' },
+    { label: 'Rejected', value: 'rejected' },
+]
 
 function getErrorMessage(payload: unknown, fallback: string) {
     if (payload && typeof payload === 'object') {
@@ -69,20 +80,17 @@ function reviewStatusLabel(status: Review['status']) {
 function ReviewStars({ rating }: { rating: number }) {
     return (
         <div className="flex items-center gap-[var(--lb-space-1)]" aria-label={`${rating} out of 5 stars`}>
-            {Array.from({ length: 5 }, (_, index) => {
-                const filled = index < rating
-                return (
-                    <Star
-                        key={index}
-                        className={
-                            filled
-                                ? 'h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] fill-[var(--lb-color-warning)] text-[var(--lb-color-warning)]'
-                                : 'h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-border-strong)]'
-                        }
-                        aria-hidden="true"
-                    />
-                )
-            })}
+            {Array.from({ length: 5 }, (_, index) => (
+                <Star
+                    key={index}
+                    className={
+                        index < rating
+                            ? 'h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] fill-[var(--lb-color-warning)] text-[var(--lb-color-warning)]'
+                            : 'h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-border-strong)]'
+                    }
+                    aria-hidden="true"
+                />
+            ))}
         </div>
     )
 }
@@ -119,11 +127,7 @@ export default function ReviewsPage() {
             const message = error instanceof Error ? error.message : 'Unable to load reviews'
             setReviews([])
             setLoadError(message)
-            notify({
-                title: 'Reviews could not load',
-                description: message,
-                variant: 'critical',
-            })
+            notify({ title: 'Reviews could not load', description: message, variant: 'critical' })
         } finally {
             setLoading(false)
         }
@@ -150,7 +154,7 @@ export default function ReviewsPage() {
             }
 
             const updatedReview = payload?.data as Partial<Review> | undefined
-            setReviews((current) => current.map((review) => (review.id === id ? { ...review, ...updatedReview, status } : review)))
+            setReviews((current) => current.map((r) => (r.id === id ? { ...r, ...updatedReview, status } : r)))
             notify({
                 title: status === 'approved' ? 'Review approved' : 'Review rejected',
                 description: 'The storefront review status was updated.',
@@ -159,11 +163,7 @@ export default function ReviewsPage() {
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to update review'
             setActionError(message)
-            notify({
-                title: 'Could not update review',
-                description: message,
-                variant: 'critical',
-            })
+            notify({ title: 'Could not update review', description: message, variant: 'critical' })
         } finally {
             setUpdating(null)
         }
@@ -189,71 +189,206 @@ export default function ReviewsPage() {
                 description: `The review from ${reviewToDelete.customer_name} was removed.`,
                 variant: 'success',
             })
-            setReviews((current) => current.filter((review) => review.id !== reviewToDelete.id))
+            setReviews((current) => current.filter((r) => r.id !== reviewToDelete.id))
             setReviewToDelete(null)
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to delete review'
             setActionError(message)
-            notify({
-                title: 'Could not delete review',
-                description: message,
-                variant: 'critical',
-            })
+            notify({ title: 'Could not delete review', description: message, variant: 'critical' })
         } finally {
             setUpdating(null)
         }
     }, [notify, reviewToDelete, store, updating])
 
     const visibleCounts = useMemo(() => ({
-        approved: reviews.filter((review) => review.status === 'approved').length,
-        pending: reviews.filter((review) => review.status === 'pending').length,
-        rejected: reviews.filter((review) => review.status === 'rejected').length,
-        verified: reviews.filter((review) => review.is_verified).length,
+        approved: reviews.filter((r) => r.status === 'approved').length,
+        pending: reviews.filter((r) => r.status === 'pending').length,
+        rejected: reviews.filter((r) => r.status === 'rejected').length,
+        verified: reviews.filter((r) => r.is_verified).length,
     }), [reviews])
 
     const averageRating = useMemo(() => {
         if (reviews.length === 0) return '0.0'
-        const total = reviews.reduce((sum, review) => sum + review.rating, 0)
+        const total = reviews.reduce((sum, r) => sum + r.rating, 0)
         return (total / reviews.length).toFixed(1)
     }, [reviews])
 
-    const tabItems = useMemo(() => ([
-        { value: 'all', label: 'All', badge: filter === 'all' ? String(reviews.length) : undefined, content: null },
-        { value: 'pending', label: 'Pending', badge: filter === 'pending' ? String(reviews.length) : undefined, content: null },
-        { value: 'approved', label: 'Approved', badge: filter === 'approved' ? String(reviews.length) : undefined, content: null },
-        { value: 'rejected', label: 'Rejected', badge: filter === 'rejected' ? String(reviews.length) : undefined, content: null },
-    ]), [filter, reviews.length])
+    const stopPropagation = useCallback((e: React.MouseEvent) => e.stopPropagation(), [])
 
-    if (loading) {
-        return (
-            <Page>
-                <PageHeader
-                    title="Product reviews"
-                    description="Moderate customer feedback before it appears on product pages."
-                    breadcrumbs={[{ label: 'Store' }, { label: 'Reviews' }]}
+    const columns = useMemo<Array<TableColumn<Review>>>(() => [
+        {
+            key: 'customer',
+            header: 'Customer',
+            render: (review) => (
+                <div className="flex min-w-0 items-center gap-[var(--lb-space-3)]">
+                    <Avatar name={review.customer_name} size="sm" />
+                    <span className="min-w-0">
+                        <span className="block truncate font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)]">
+                            {review.customer_name}
+                        </span>
+                        <span className="block truncate text-[var(--lb-font-size-caption)] text-[var(--lb-color-text-subdued)]">
+                            {review.customer_email}
+                        </span>
+                    </span>
+                </div>
+            ),
+            cardRender: (review) => (
+                <div className="flex min-w-0 items-center gap-[var(--lb-space-3)]">
+                    <Avatar name={review.customer_name} size="sm" />
+                    <span className="min-w-0">
+                        <span className="block truncate font-[var(--lb-font-weight-medium)]">{review.customer_name}</span>
+                        <span className="block truncate text-[var(--lb-font-size-caption)] text-[var(--lb-color-text-subdued)]">
+                            {review.product_name || review.customer_email}
+                        </span>
+                    </span>
+                </div>
+            ),
+        },
+        {
+            key: 'review',
+            header: 'Review',
+            render: (review) => (
+                <div className="max-w-[260px] space-y-[var(--lb-space-1)]">
+                    <ReviewStars rating={review.rating} />
+                    {review.title && (
+                        <p className="m-0 truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)]">
+                            {review.title}
+                        </p>
+                    )}
+                    <p className="m-0 line-clamp-2 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                        {review.body}
+                    </p>
+                </div>
+            ),
+            cardLabel: 'Review',
+            cardRender: (review) => (
+                <div className="space-y-[var(--lb-space-1)]">
+                    <ReviewStars rating={review.rating} />
+                    {review.title && (
+                        <p className="m-0 truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)]">
+                            {review.title}
+                        </p>
+                    )}
+                    <p className="m-0 line-clamp-2 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                        {review.body}
+                    </p>
+                </div>
+            ),
+        },
+        {
+            key: 'product',
+            header: 'Product',
+            shrink: true,
+            render: (review) => (
+                <span className="text-[var(--lb-color-text)]">{review.product_name || '-'}</span>
+            ),
+        },
+        {
+            key: 'date',
+            header: 'Date',
+            shrink: true,
+            render: (review) => (
+                <span className="whitespace-nowrap text-[var(--lb-color-text-subdued)]">{formatDate(review.created_at)}</span>
+            ),
+        },
+        {
+            key: 'status',
+            header: 'Status',
+            shrink: true,
+            render: (review) => (
+                <div className="flex items-center gap-[var(--lb-space-2)]">
+                    <Badge label={reviewStatusLabel(review.status)} variant={reviewStatusVariant(review.status)} />
+                    {review.is_verified && (
+                        <BadgeCheck
+                            className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-success)]"
+                            aria-label="Verified purchase"
+                        />
+                    )}
+                </div>
+            ),
+        },
+        {
+            key: 'actions',
+            header: 'Actions',
+            shrink: true,
+            render: (review) => (
+                <div className="flex items-center gap-[var(--lb-space-2)]" onClick={stopPropagation}>
+                    {review.status !== 'approved' && (
+                        <Button
+                            size="sm"
+                            loading={updating === review.id}
+                            onClick={() => void updateStatus(review.id, 'approved')}
+                        >
+                            <CheckCircle2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            Approve
+                        </Button>
+                    )}
+                    {review.status !== 'rejected' && (
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            disabled={updating === review.id}
+                            onClick={() => void updateStatus(review.id, 'rejected')}
+                        >
+                            <XCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            Reject
+                        </Button>
+                    )}
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={updating === review.id}
+                        onClick={() => setReviewToDelete(review)}
+                    >
+                        <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                        Delete
+                    </Button>
+                </div>
+            ),
+        },
+    ], [updating, updateStatus, stopPropagation])
+
+    const isMainEmpty = !loadError && filter === 'all'
+    const emptyState = (
+        <EmptyState
+            illustration={isMainEmpty ? (
+                <Image
+                    src="/Emptystate Illustration/Product-Review.png"
+                    alt=""
+                    width={200}
+                    height={200}
+                    aria-hidden="true"
                 />
-                <Card>
-                    <Section title="Review moderation queue">
-                        <Skeleton variant="table" lines={5} />
-                    </Section>
-                </Card>
-            </Page>
-        )
-    }
+            ) : undefined}
+            icon={!isMainEmpty ? (
+                <MessageSquare className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+            ) : undefined}
+            title={loadError ? 'Unable to load reviews' : filter === 'all' ? 'No reviews yet' : `No ${filter} reviews`}
+            body={loadError || (filter === 'all'
+                ? 'Customer product reviews will appear here when shoppers submit feedback.'
+                : 'Switch to a different filter or wait for more customer feedback to moderate.')}
+            primaryAction={loadError ? (
+                <Button variant="secondary" onClick={() => void loadData()}>
+                    <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                    Retry
+                </Button>
+            ) : undefined}
+        />
+    )
 
     return (
         <Page>
             <PageHeader
                 title="Product reviews"
-                description={visibleCounts.pending > 0 ? `${visibleCounts.pending} review${visibleCounts.pending > 1 ? 's' : ''} awaiting moderation.` : 'All visible reviews are moderated.'}
+                description={visibleCounts.pending > 0
+                    ? `${visibleCounts.pending} review${visibleCounts.pending > 1 ? 's' : ''} awaiting moderation.`
+                    : 'All visible reviews are moderated.'}
                 breadcrumbs={[{ label: 'Store' }, { label: 'Reviews' }]}
-                secondaryActions={[
-                    {
-                        label: 'Refresh',
-                        onClick: () => void loadData(),
-                        icon: <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
-                    },
-                ]}
+                secondaryActions={[{
+                    label: 'Refresh',
+                    onClick: () => void loadData(),
+                    icon: <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                }]}
             />
 
             {loadError && (
@@ -332,103 +467,17 @@ export default function ReviewsPage() {
                     title="Review moderation queue"
                     description="Approve helpful customer reviews, reject content that should not appear publicly, or remove records when required."
                 >
-                    <Tabs
-                        items={tabItems}
-                        value={filter}
-                        onValueChange={(value) => setFilter(value as ReviewFilter)}
-                    />
-
-                    {reviews.length === 0 ? (
-                        <EmptyState
-                            icon={<MessageSquare className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            title={filter === 'all' ? 'No reviews yet' : `No ${filter} reviews`}
-                            body={filter === 'all'
-                                ? 'Customer product reviews will appear here when shoppers submit feedback.'
-                                : 'Switch filters or wait for more customer feedback to moderate.'}
-                            primaryAction={<Button variant="secondary" onClick={() => void loadData()}><RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />Refresh</Button>}
-                        />
+                    {loading ? (
+                        <Skeleton variant="table" lines={5} />
                     ) : (
-                        <div className="flex flex-col gap-[var(--lb-space-3)]">
-                            {reviews.map((review) => (
-                                <article
-                                    key={review.id}
-                                    className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]"
-                                >
-                                    <div className="flex flex-col gap-[var(--lb-space-4)] lg:flex-row lg:items-start lg:justify-between">
-                                        <div className="min-w-0 flex-1 space-y-[var(--lb-space-3)]">
-                                            <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
-                                                <ReviewStars rating={review.rating} />
-                                                <span className="text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                                    {formatDate(review.created_at)}
-                                                </span>
-                                                <Badge label={reviewStatusLabel(review.status)} variant={reviewStatusVariant(review.status)} />
-                                            </div>
-
-                                            {review.title && (
-                                                <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
-                                                    {review.title}
-                                                </h3>
-                                            )}
-
-                                            <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                                                {review.body}
-                                            </p>
-
-                                            <div className="flex flex-wrap items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                                <span className="font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)]">{review.customer_name}</span>
-                                                <span aria-hidden="true">/</span>
-                                                <span>{review.customer_email}</span>
-                                                {review.product_name && (
-                                                    <>
-                                                        <span aria-hidden="true">/</span>
-                                                        <span>{review.product_name}</span>
-                                                    </>
-                                                )}
-                                                {review.is_verified && (
-                                                    <span className="inline-flex items-center gap-[var(--lb-space-1)] text-[var(--lb-color-success)]">
-                                                        <BadgeCheck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                                        Verified purchase
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="flex shrink-0 flex-wrap items-center gap-[var(--lb-space-2)]">
-                                            {review.status !== 'approved' && (
-                                                <Button
-                                                    size="sm"
-                                                    onClick={() => void updateStatus(review.id, 'approved')}
-                                                    loading={updating === review.id}
-                                                >
-                                                    <CheckCircle2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                                    Approve
-                                                </Button>
-                                            )}
-                                            {review.status !== 'rejected' && (
-                                                <Button
-                                                    variant="secondary"
-                                                    size="sm"
-                                                    onClick={() => void updateStatus(review.id, 'rejected')}
-                                                    disabled={updating === review.id}
-                                                >
-                                                    <XCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                                    Reject
-                                                </Button>
-                                            )}
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => setReviewToDelete(review)}
-                                                disabled={updating === review.id}
-                                            >
-                                                <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                                Delete
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </article>
-                            ))}
-                        </div>
+                        <Table
+                            rows={reviews}
+                            columns={columns}
+                            emptyState={emptyState}
+                            savedViews={reviewViews}
+                            activeView={filter}
+                            onViewChange={(value) => setFilter(value as ReviewFilter)}
+                        />
                     )}
                 </Section>
             </Card>
@@ -436,12 +485,12 @@ export default function ReviewsPage() {
             <ConfirmDialog
                 open={Boolean(reviewToDelete)}
                 title="Delete review?"
-                description={reviewToDelete ? `This permanently removes the review from ${reviewToDelete.customer_name}.` : 'This permanently removes the selected review.'}
+                description={reviewToDelete
+                    ? `This permanently removes the review from ${reviewToDelete.customer_name}.`
+                    : 'This permanently removes the selected review.'}
                 confirmLabel={updating === reviewToDelete?.id ? 'Deleting...' : 'Delete review'}
                 destructive
-                onClose={() => {
-                    if (updating !== reviewToDelete?.id) setReviewToDelete(null)
-                }}
+                onClose={() => { if (updating !== reviewToDelete?.id) setReviewToDelete(null) }}
                 onConfirm={() => void deleteReview()}
             />
         </Page>

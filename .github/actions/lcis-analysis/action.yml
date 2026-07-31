@@ -1,0 +1,60 @@
+name: 'LCIS PR Analysis'
+description: 'Read-only LCIS blast-radius / risk analysis of a pull request. Posts a PR comment, writes a step summary, and uploads a JSON report. Consumes @letbuyy/lcis-pr-check (which consumes @letbuyy/lcis-core). No mutations beyond the PR comment.'
+author: 'LetBuyy'
+
+inputs:
+  github-token:
+    description: 'Token used to post the PR comment (needs pull-requests: write).'
+    required: true
+  base-ref:
+    description: 'Base ref/sha to diff the PR against.'
+    required: false
+    default: ${{ github.event.pull_request.base.sha }}
+  comment:
+    description: 'Whether to post/update the PR comment.'
+    required: false
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - name: Compute changed files
+      id: changes
+      shell: bash
+      run: |
+        set -euo pipefail
+        BASE='${{ inputs.base-ref }}'
+        if git rev-parse --verify --quiet "$BASE" >/dev/null; then
+          git diff --name-only "$BASE"...HEAD > lcis-changed-files.txt
+        else
+          git diff --name-only HEAD~1...HEAD > lcis-changed-files.txt
+        fi
+        echo "count=$(wc -l < lcis-changed-files.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
+
+    - name: Run LCIS PR analysis (read-only)
+      shell: bash
+      run: |
+        set -euo pipefail
+        pnpm lcis:pr-check --files-from lcis-changed-files.txt --format json     --out lcis-report.json
+        pnpm lcis:pr-check --files-from lcis-changed-files.txt --format markdown --out lcis-comment.md
+        pnpm lcis:pr-check --files-from lcis-changed-files.txt --format summary >> "$GITHUB_STEP_SUMMARY" || true
+
+    - name: Post / update PR comment
+      if: ${{ inputs.comment == 'true' && github.event_name == 'pull_request' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+      run: |
+        set -euo pipefail
+        gh pr comment "${{ github.event.pull_request.number }}" --body-file lcis-comment.md --edit-last || \
+          gh pr comment "${{ github.event.pull_request.number }}" --body-file lcis-comment.md
+
+    - name: Upload LCIS report artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: lcis-pr-report
+        path: |
+          lcis-report.json
+          lcis-comment.md
+          lcis-changed-files.txt
+        if-no-files-found: warn

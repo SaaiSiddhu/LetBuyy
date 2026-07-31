@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo, type SyntheticEvent } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import type { Product as SharedProduct } from '@letbuyy/shared-types'
-import { Button, Input, Table, Badge, Banner, Card, EmptyState, MaterialIcon, Page, PageHeader, Search, Section, Select, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
+import { Badge, Button, Input, Table, Banner, Card, EmptyState, MaterialIcon, Page, PageHeader, Search, Section, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
 
 type ProductRow = Pick<
     SharedProduct,
@@ -33,12 +34,11 @@ const productStatusOptions = [
     { label: 'Archived', value: 'archived' },
 ]
 
-function statusBadge(product: ProductRow) {
-    const status = normalizeProductStatus(product)
-    const label = status.charAt(0).toUpperCase() + status.slice(1)
-    const variant = status === 'active' ? 'success' : status === 'archived' ? 'critical' : 'warning'
-    return <Badge label={label} variant={variant} />
-}
+const productStatusBadge = {
+    active:   'success'  as const,
+    draft:    'warning'  as const,
+    archived: 'critical' as const,
+} as const
 
 function normalizeProductStatus(product: ProductRow): ProductStatus {
     const status = (product.status || (product.is_active ? 'active' : 'draft')).toLowerCase()
@@ -242,6 +242,7 @@ export default function ProductsPage() {
             key: 'name',
             header: 'Product',
             sortable: true,
+            truncate: true,
             render: (product) => (
                 <Link
                     href={`/${store}/products/${product.id}`}
@@ -262,44 +263,79 @@ export default function ProductsPage() {
                     </span>
                 </Link>
             ),
+            cardRender: (product) => (
+                <div className="flex min-w-0 items-center gap-[var(--lb-space-3)]">
+                    <span className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] shrink-0 items-center justify-center overflow-hidden rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] text-[var(--lb-color-text-subdued)]">
+                        {product.images?.[0] ? (
+                            <img src={product.images[0]} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                            <MaterialIcon name="image" />
+                        )}
+                    </span>
+                    <span className="min-w-0">
+                        <span className="block truncate font-[var(--lb-font-weight-medium)]">{product.name}</span>
+                        <span className="block truncate text-[var(--lb-font-size-caption)] text-[var(--lb-color-text-subdued)]">
+                            {productDescriptor(product)}
+                        </span>
+                    </span>
+                </div>
+            ),
         },
         {
             key: 'status',
             header: 'Status',
             sortable: true,
-            render: (product) => (
-                <div className="flex flex-col gap-[var(--lb-space-2)]" onClick={stopTableAction}>
-                    {statusBadge(product)}
-                    <Select
-                        aria-label={`Change status for ${product.name}`}
-                        className="min-w-[8rem]"
-                        disabled={updatingStatusId === product.id}
-                        options={productStatusOptions}
-                        value={normalizeProductStatus(product)}
-                        onChange={(event) => {
-                            event.stopPropagation()
-                            void updateProductStatus(product, event.target.value as ProductStatus)
-                        }}
-                    />
-                </div>
-            ),
+            shrink: true,
+            render: (product) => {
+                const status = normalizeProductStatus(product)
+                return (
+                    <div className="relative inline-flex items-center" onClick={stopTableAction}>
+                        <Badge
+                            label={status.charAt(0).toUpperCase() + status.slice(1)}
+                            variant={productStatusBadge[status]}
+                            className="pointer-events-none"
+                        />
+                        <select
+                            aria-label={`Change status for ${product.name}`}
+                            disabled={updatingStatusId === product.id}
+                            value={status}
+                            onChange={(e) => {
+                                e.stopPropagation()
+                                void updateProductStatus(product, e.target.value as ProductStatus)
+                            }}
+                            className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
+                        >
+                            {productStatusOptions.map((opt) => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                )
+            },
+            cardRender: (product) => {
+                const status = normalizeProductStatus(product)
+                return <Badge label={status.charAt(0).toUpperCase() + status.slice(1)} variant={productStatusBadge[status]} />
+            },
         },
         {
             key: 'stock',
             header: 'Inventory',
             sortable: true,
+            shrink: true,
             render: (product) => `${product.stock ?? 0} in stock`,
         },
         {
             key: 'product_type',
             header: 'Type',
             sortable: true,
+            shrink: true,
             render: productDescriptor,
         },
         {
             key: 'vendor',
             header: 'Vendor',
             sortable: true,
+            shrink: true,
             render: (product) => product.vendor || 'No vendor',
         },
     ], [store, updateProductStatus, updatingStatusId])
@@ -356,6 +392,7 @@ export default function ProductsPage() {
                             <Table
                                 rows={sortedProducts}
                                 columns={columns}
+                                hideHeaderWhenEmpty
                                 savedViews={productViews}
                                 activeView={activeTab}
                                 onViewChange={(value) => setActiveTab(value as TabFilter)}
@@ -366,7 +403,16 @@ export default function ProductsPage() {
                                 onSort={handleSort}
                                 emptyState={(
                                     <EmptyState
-                                        icon={<MaterialIcon name="products" />}
+                                        illustration={!searchQuery.trim() ? (
+                                            <Image
+                                                src="/Emptystate Illustration/Products.png"
+                                                alt=""
+                                                width={200}
+                                                height={200}
+                                                aria-hidden="true"
+                                            />
+                                        ) : undefined}
+                                        icon={searchQuery.trim() ? <MaterialIcon name="products" /> : undefined}
                                         title={emptyTitle}
                                         body={emptyBody}
                                         primaryAction={(

@@ -12,6 +12,7 @@ import { Button, Input,
     Section,
     ShieldCheck,
     Skeleton,
+    Switch,
     Truck,
     useToast,
 } from '@letbuyy/ui'
@@ -121,11 +122,60 @@ export default function PaymentsSettingsPage() {
     const [loadError, setLoadError] = useState<string | null>(null)
     const [formError, setFormError] = useState<string | null>(null)
 
+    const [toggleSaving, setToggleSaving] = useState<'cod' | 'online' | null>(null)
+
     const hasUnsavedChanges = useMemo(
         () => Boolean(keyId.trim() || keySecret.trim() || testMode !== initialTestMode),
         [initialTestMode, keyId, keySecret, testMode],
     )
     const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
+
+    const handleToggle = useCallback(async (
+        field: 'cod_enabled' | 'online_payment_enabled',
+        value: boolean,
+    ) => {
+        const toggleKey = field === 'cod_enabled' ? 'cod' : 'online'
+        setToggleSaving(toggleKey)
+
+        // Optimistic UI — update local state immediately
+        setConfig(prev => prev ? { ...prev, [field]: value } : prev)
+
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/payment-config`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ [field]: value }),
+            })
+            const payload = (await response.json().catch(() => null)) as PaymentConfigPayload | null
+
+            if (!response.ok || !payload?.data) {
+                throw new Error(getPayloadError(payload, `Unable to update ${field === 'cod_enabled' ? 'COD' : 'online payment'} setting`))
+            }
+
+            const nextConfig = normalizePaymentConfig(payload.data)
+            setConfig(nextConfig)
+            notify({
+                title: field === 'cod_enabled'
+                    ? (value ? 'COD enabled' : 'COD disabled')
+                    : (value ? 'Online payments enabled' : 'Online payments disabled'),
+                description: field === 'cod_enabled'
+                    ? (value ? 'Cash on delivery is now available at checkout.' : 'Cash on delivery has been turned off.')
+                    : (value ? 'Online card and UPI payments are now active.' : 'Online payments have been turned off.'),
+                variant: 'success',
+            })
+        } catch (error) {
+            // Revert optimistic update on failure
+            setConfig(prev => prev ? { ...prev, [field]: !value } : prev)
+            const message = error instanceof Error ? error.message : 'Unable to update payment setting'
+            notify({
+                title: 'Could not update payment setting',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setToggleSaving(null)
+        }
+    }, [notify, store])
 
     const loadData = useCallback(async () => {
         setLoading(true)
@@ -323,16 +373,30 @@ export default function PaymentsSettingsPage() {
                             label="Key ID"
                             value={razorpay?.key_id || 'No key configured'}
                         />
-                        <PaymentSummary
-                            icon={<CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Online checkout"
-                            value={config?.online_payment_enabled ? 'Online payments enabled' : 'Online payments disabled'}
-                        />
-                        <PaymentSummary
-                            icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Cash on delivery"
-                            value={config?.cod_enabled ? 'COD available' : 'COD disabled'}
-                        />
+                        <div className="flex min-w-0 items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]">
+                            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                <CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            </span>
+                            <Switch
+                                label="Online checkout"
+                                description={config?.online_payment_enabled ? 'Card and UPI payments active' : 'Online payments are off'}
+                                checked={config?.online_payment_enabled ?? false}
+                                disabled={toggleSaving === 'online'}
+                                onCheckedChange={(value) => void handleToggle('online_payment_enabled', value)}
+                            />
+                        </div>
+                        <div className="flex min-w-0 items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]">
+                            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                <Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            </span>
+                            <Switch
+                                label="Cash on delivery"
+                                description={config?.cod_enabled ? 'COD available at checkout' : 'COD is disabled'}
+                                checked={config?.cod_enabled ?? false}
+                                disabled={toggleSaving === 'cod'}
+                                onCheckedChange={(value) => void handleToggle('cod_enabled', value)}
+                            />
+                        </div>
                     </div>
 
                     <form onSubmit={handleSubmit} className="grid gap-[var(--lb-space-4)]">

@@ -1,0 +1,24 @@
+{
+  "name": "@letbuyy/lcis-live",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "LCIS live platform — unified read-only operational state + investigate, over @letbuyy/lcis-adapters and @letbuyy/lcis-core. No new intelligence; no mutations.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@letbuyy/lcis-core": "workspace:*",
+    "@letbuyy/lcis-adapters": "workspace:*",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "typescript": "^5.9.3"
+  }
+}

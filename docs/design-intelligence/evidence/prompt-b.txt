@@ -1,0 +1,66 @@
+You are drafting PARTS 4 and 5 of the LetBuyy Design Intelligence Master document.
+
+READ these source documents in full:
+1. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/visual-identity/VISUAL_IDENTITY_REPORT.md
+2. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/visual-identity/APP_BRAND_GUIDES.md
+3. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/layout-architecture/LAYOUT_TOPOLOGY.md
+4. /Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/layout-architecture/PAGE_ARCHITECTURE.md
+
+Write complete, publication-ready text. No placeholders.
+
+---
+
+# PART 4: VISUAL IDENTITY INTELLIGENCE
+
+Section 4.1: The Ink Lavender Identity (The Platform's Implicit Brand)
+Full story: three apps independently adopted the same palette (light: rgb(250 249 255), dark: rgb(10 9 18)). How it was found (comments in globals.css). What it means. What needs to happen to formalize it.
+
+Section 4.2: Per-Application Visual Intelligence
+For each of the 9 apps write a complete visual intelligence brief:
+- Visual Mood and Brand Personality
+- Identity Type: Intentional / Accidental / Inherited / Diverged
+- Color System: actual values (rgb/hex), whether from tokens or hardcoded, specific violations with file paths
+- Typography: font family, size scale, weights, token compliance, consistency
+- Border Radius Treatment: token-driven or arbitrary, violation count
+- Shadow and Depth: shadow usage, token compliance
+- Spacing Rhythm: systematic or random, evidence
+- Icon System: library, version, compliance with @letbuyy/ui re-exports
+- Motion: any animations, from design system or ad-hoc
+- Visual Debt: specific violations, hardcoded values, file paths
+
+Section 4.3: Cross-App Visual Coherence Analysis
+Which apps form visual families. Dangerous divergences. What a user experiences moving between surfaces.
+
+Section 4.4: Dark Mode Intelligence
+All four dark background values found, which apps use which, which is canonical (var(--lb-color-bg) = rgb(10 9 18) = ink.950), migration path.
+
+Section 4.5: Visual Identity Decisions (Binding)
+Explicit binding statements: "The canonical ink-lavender dark background is rgb(10 9 18). All active apps MUST use var(--lb-color-bg)." etc. for each visual decision.
+
+---
+
+# PART 5: LAYOUT TOPOLOGY
+
+Section 5.1: Global Layout Primitives
+Every layout primitive in @letbuyy/ui: AppFrame/AppShell, Sidebar, PageHeader, Content area, token-controlled layout variables. What each provides, which apps use it.
+
+Section 5.2: The Five Layout Archetypes
+Define each recurring layout pattern found:
+1. The Merchant Dashboard Layout: sidebar + header + page header + data content. Token variables that control it.
+2. The Auth/Onboarding Flow: centered card, progress, minimal chrome.
+3. The Marketing Surface: full-width sections, hero, features, pricing. Gradient usage. Responsive behavior.
+4. The Internal Operations Console: forced dark, information dense, no decorative elements.
+5. The Storefront Presentation Layer: intentionally identity-less, theme-driven, blank-slate.
+
+Section 5.3: Per-Application Layout Analysis
+For each active app: layout archetype, ASCII layout tree, sidebar details, header details, page header pattern, navigation pattern, responsive behavior, layout consistency score/10, known violations.
+
+Section 5.4: Page Pattern Library
+Define canonical page patterns: List Page, Detail/Entity Page, Settings Page, Creation Wizard, Dashboard Overview, Empty State.
+For each: when to use, layout structure, required elements, current implementations in codebase.
+
+Section 5.5: Layout Debt and Inconsistencies
+Specific layout violations found: file paths, what the violation is, severity, fix.
+
+Write your complete output to:
+/Users/saai_sidd/Git/Letbuyy_Store/docs/design-intelligence/evidence/draft-parts-4-5.md

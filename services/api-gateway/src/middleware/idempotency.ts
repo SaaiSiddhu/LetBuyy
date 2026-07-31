@@ -54,8 +54,13 @@ function normalizePath(path: string): string {
     return path.replace(/^\/v1(?=\/|$)/, '') || '/';
 }
 
-function isProtectedMutationPath(path: string): boolean {
+const BOOTSTRAP_CREATION_PATHS = new Set(['/stores']);
+
+function isProtectedMutationPath(path: string, method?: string): boolean {
     const normalized = normalizePath(path);
+    // Store creation (POST /stores) has no site_id yet — guarded by subdomain uniqueness.
+    // All sub-resource mutations (/stores/{id}/...) still require idempotency.
+    if (method === 'POST' && BOOTSTRAP_CREATION_PATHS.has(normalized)) return false;
     return IDEMPOTENT_PROTECTED_PREFIXES.some((prefix) => normalized === prefix || normalized.startsWith(`${prefix}/`));
 }
 
@@ -151,7 +156,7 @@ async function responseBodyForReplay(response: Response): Promise<JsonValue | nu
 
 export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(async (c, next) => {
     const method = c.req.method.toUpperCase();
-    if (!MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path)) {
+    if (!MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
         await next();
         return;
     }

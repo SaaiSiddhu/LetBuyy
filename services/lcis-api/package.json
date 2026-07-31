@@ -1,0 +1,32 @@
+{
+  "name": "@letbuyy/lcis-api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "LCIS API — internal read-only HTTP service over the LCIS engine (Hono). Consumes @letbuyy/lcis-core.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts",
+    "start": "tsx src/server.ts"
+  },
+  "dependencies": {
+    "@letbuyy/lcis-core": "workspace:*",
+    "@letbuyy/lcis-live": "workspace:*",
+    "@letbuyy/lcis-execution": "workspace:*",
+    "@letbuyy/lcis-governance": "workspace:*",
+    "@letbuyy/lcis-operations": "workspace:*",
+    "@letbuyy/lcis-engineering": "workspace:*",
+    "@letbuyy/lcis-orchestration": "workspace:*",
+    "@hono/node-server": "^1.13.0",
+    "hono": "^4.7.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "typescript": "^5.9.3"
+  }
+}

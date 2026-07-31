@@ -5,6 +5,9 @@
 
 BEGIN;
 
+ALTER TABLE public.customer_credentials
+  ADD COLUMN IF NOT EXISTS customer_id uuid REFERENCES public.store_customers(id) ON DELETE SET NULL;
+
 INSERT INTO public.customer_credentials (
   store_id,
   email_or_phone,

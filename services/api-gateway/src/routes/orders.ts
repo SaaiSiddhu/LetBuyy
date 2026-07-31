@@ -3,6 +3,7 @@ import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { cursorPaginated, dbErrorBody, decodeListCursor, encodeListCursor, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
+import { assertStaffPermission } from '../middleware/staff-permission';
 import { OrderExecutionAdapter } from '../execution/order-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
@@ -1143,6 +1144,10 @@ router.patch('/:id', validate('json', UpdateOrderStatusSchema), async (c) => {
     const body = c.get('validatedBody') as UpdateOrderStatusInput;
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOrder(c, orderId);
+
+    const staffBlock = await assertStaffPermission(c, tenant.siteId, tenant.userId, 'orders:write');
+    if (staffBlock) return staffBlock;
+
     const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: tenant.siteId,
@@ -1289,6 +1294,10 @@ router.post('/:id/fulfill', validate('json', FulfillOrderSchema), async (c) => {
     const body = c.get('validatedBody') as FulfillOrderInput;
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOrder(c, orderId);
+
+    const staffBlock = await assertStaffPermission(c, tenant.siteId, tenant.userId, 'orders:write');
+    if (staffBlock) return staffBlock;
+
     const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: tenant.siteId,
@@ -1335,6 +1344,10 @@ router.post('/:id/refund/complete', validate('json', CompleteRefundSchema), asyn
     const body = c.get('validatedBody') as CompleteRefundInput;
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOrder(c, orderId);
+
+    const staffBlock = await assertStaffPermission(c, tenant.siteId, tenant.userId, 'orders:write');
+    if (staffBlock) return staffBlock;
+
     const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: tenant.siteId,
@@ -1359,6 +1372,42 @@ router.post('/:id/refund/complete', validate('json', CompleteRefundSchema), asyn
             actorId: tenant.userId,
             requestId: tenant.requestId,
         });
+        // LB-10 — the canonical "refund succeeded" path must notify the customer too (the PATCH
+        // /:id transition already does). Best-effort; never blocks the refund completion.
+        try {
+            await enqueueOrderLifecycleEmail(c.env, db, {
+                orderId,
+                storeId: tenant.siteId,
+                requestId: tenant.requestId,
+                kind: 'refunded',
+            });
+        } catch (emailError) {
+            console.warn(JSON.stringify({
+                level: 'warn',
+                event: 'order_lifecycle_email_enqueue_failed',
+                kind: 'refunded',
+                order_id: orderId,
+                error: String(emailError),
+            }));
+        }
+        // E1 — restore any gift-card balance redeemed on this order via the canonical refund path
+        // (the PATCH /:id cancel/refund path already does this). Idempotent + best-effort; never blocks.
+        try {
+            await db.rpc('restore_gift_card_on_refund', {
+                p_store_id: tenant.siteId,
+                p_order_id: orderId,
+                p_actor_id: tenant.userId,
+                p_request_id: tenant.requestId,
+            });
+        } catch (restoreError) {
+            console.warn(JSON.stringify({
+                level: 'warn',
+                event: 'gift_card_refund_restore_failed',
+                kind: 'refunded',
+                order_id: orderId,
+                error: String(restoreError),
+            }));
+        }
         const responseBody = success(data);
         await idempotency.complete({
             id: claim.id,
@@ -1380,6 +1429,10 @@ router.post('/:id/refund', validate('json', RefundOrderSchema), async (c) => {
     const body = c.get('validatedBody') as RefundOrderInput;
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOrder(c, orderId);
+
+    const staffBlock = await assertStaffPermission(c, tenant.siteId, tenant.userId, 'orders:write');
+    if (staffBlock) return staffBlock;
+
     const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: tenant.siteId,

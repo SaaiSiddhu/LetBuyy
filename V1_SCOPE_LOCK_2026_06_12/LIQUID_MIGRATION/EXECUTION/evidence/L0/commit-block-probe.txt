@@ -1,0 +1,17 @@
+FULL LIQUID V1 EXECUTION — L0 ENTRY PROBE (2026-06-13)
+HEAD: 0b8a56e7
+Stop Condition #1 (human credential / commit capability required) — VERIFIED.
+
+$ ls -la .git/index.lock
+-rw------- 1 eager-confident-goodall eager-confident-goodall 0 Jun 13 03:17 .git/index.lock
+$ rm -f .git/index.lock
+rm: cannot remove '.git/index.lock': Operation not permitted
+$ git add -A
+(fails — index.lock present, EPERM to remove)
+$ git commit --allow-empty -m probe
+fatal: Unable to create '.../.git/index.lock': File exists.
+
+CONSEQUENCE: every phase's per-phase loop requires a Commit step; the commit
+policy forbids uncommitted accumulation; the governance gate is additionally
+red on the pre-existing uncommitted migration 170 (untracked-migration guard)
+with no way to `git add` it. No phase (L0+) can complete. No source modified.

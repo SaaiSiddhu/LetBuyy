@@ -10,6 +10,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
+import { assertStaffPermission } from '../middleware/staff-permission';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import {
@@ -247,6 +248,9 @@ router.post('/shipping', validate('json', CreateShippingRateSchema), async (c) =
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
+    const staffBlock = await assertStaffPermission(c, ownedZone.store_id, customUser.id, 'shipping:write');
+    if (staffBlock) return staffBlock;
+
     const plan = planShippingRateCreate(body);
 
     const { data, error } = await db
@@ -289,6 +293,9 @@ router.patch('/shipping/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
+    const staffBlock = await assertStaffPermission(c, ownedZone.store_id, customUser.id, 'shipping:write');
+    if (staffBlock) return staffBlock;
+
     const plan = planShippingRateUpdate(body);
 
     const { data, error } = await db
@@ -329,6 +336,9 @@ router.delete('/shipping/:id', async (c) => {
     if (!customUser || !ownedZone?.store_id || !(await verifySiteOwnership(db, ownedZone.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
+
+    const staffBlock = await assertStaffPermission(c, ownedZone.store_id, customUser.id, 'shipping:write');
+    if (staffBlock) return staffBlock;
 
     const { error } = await db.from('shipping_rates').delete().eq('id', id);
     if (error) return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);

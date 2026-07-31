@@ -46,7 +46,9 @@ test('Task 014 removes the 2.5% GMV rake from data defaults, checkout payloads, 
     const billingCore = repositorySource('packages/billing-core/src/index.ts');
     const planUi = repositorySource('apps/merchant-control-plane/src/lib/billing/plan-ui.ts');
     const selectPlan = repositorySource('apps/merchant-control-plane/src/app/[store]/access_account/checkout/select-plan/SelectPlanClient.tsx');
-    const subscribeCheckout = repositorySource('apps/merchant-control-plane/src/app/[store]/settings/subscribe/checkout/SubscribeCheckoutClient.tsx');
+    // Checkout moved from settings/subscribe/checkout/SubscribeCheckoutClient.tsx to the
+    // full-screen access_account/checkout/checkout/CheckoutClient.tsx (the old file is now a redirect).
+    const subscribeCheckout = repositorySource('apps/merchant-control-plane/src/app/[store]/access_account/checkout/checkout/CheckoutClient.tsx');
     const migration = repositorySource('database/supabase/migrations/152_executable_billing_autopay.sql');
 
     assert.doesNotMatch(billingCore, /gmv_percentage:\s*2\.5/);

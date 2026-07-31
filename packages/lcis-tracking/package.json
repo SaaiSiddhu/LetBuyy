@@ -1,0 +1,26 @@
+{
+  "name": "@letbuyy/lcis-tracking",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "LCTS — Change Tracking System. Read-only semantic change intelligence over the LCIS platform: change timeline, semantic snapshot diff, impact, owners, risk, rollback guidance, and per-subject history with reasons. Tracks what DID change; never mutates, never executes. Live change events (commits/deployments) are honestly NOT_CONNECTED until adapter facts are injected.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@letbuyy/lcis-core": "workspace:*",
+    "@letbuyy/lcis-adapters": "workspace:*",
+    "@letbuyy/lcis-governance": "workspace:*",
+    "@letbuyy/lcis-engineering": "workspace:*",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "typescript": "^5.9.3"
+  }
+}

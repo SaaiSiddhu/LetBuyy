@@ -1,0 +1,9 @@
+node_modules/
+.env
+*.pyc
+__pycache__/
+graph-engine/graphrag/input/
+graph-engine/graphrag/output/
+graph-engine/graphrag/cache/
+graph-engine/graphrag/logs/
+*.log

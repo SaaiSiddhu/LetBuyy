@@ -1,6 +1,6 @@
 // ============================================================
-// ACCOUNT BOTTOM SHEET — 5-state auth & account sheet
-// States: email_entry → password_login | set_password | not_found | logged_in
+// ACCOUNT BOTTOM SHEET — auth & account sheet
+// States: email_entry → password_login | register | set_password | not_found | logged_in
 // Theme-agnostic: uses CSS variables from the store theme
 // ============================================================
 
@@ -24,10 +24,10 @@ interface Props {
     subdomain: string;
 }
 
-type SheetState = 'email_entry' | 'password_login' | 'set_password' | 'not_found' | 'logged_in';
+type SheetState = 'email_entry' | 'password_login' | 'set_password' | 'register' | 'not_found' | 'logged_in';
 
 export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain }: Props) {
-    const { customer, isAuthenticated, login, setPassword, checkEmail, logout } = useCustomerAuth();
+    const { customer, isAuthenticated, login, setPassword, register, checkEmail, logout } = useCustomerAuth();
     const basePath = `/store/${subdomain}`;
 
     const [state, setState] = useState<SheetState>('email_entry');
@@ -63,7 +63,7 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
         if (!isOpen) return;
         const timer = setTimeout(() => {
             if (state === 'email_entry') emailRef.current?.focus();
-            if (state === 'password_login' || state === 'set_password') passwordRef.current?.focus();
+            if (state === 'password_login' || state === 'set_password' || state === 'register') passwordRef.current?.focus();
         }, 200);
         return () => clearTimeout(timer);
     }, [state, isOpen]);
@@ -78,12 +78,13 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
         try {
             const result = await checkEmail(email, storeId);
 
-            if (!result.exists) {
-                setState('not_found');
-            } else if (result.hasPassword) {
+            if (result.hasPassword) {
                 setState('password_login');
             } else {
-                setState('set_password');
+                // LB-12: a new email OR an existing passwordless (guest) account both flow into the
+                // explicit register branch (reuses the gateway POST /customer/register route). This
+                // replaces the old not_found dead-end and the broken set_password (no-resetToken) call.
+                setState('register');
             }
         } catch {
             setError('Something went wrong. Please try again.');
@@ -131,6 +132,33 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
             setState('logged_in');
         } else {
             setError(result.error || 'Failed to set password');
+        }
+        setLoading(false);
+    };
+
+    // ── REGISTER (LB-12: first-time account creation) ───────
+    const handleRegister = async (e: React.FormEvent) => {
+        e.preventDefault();
+        // Backend enforces 8–128 chars (customer-registration.ts); match it client-side.
+        if (password.length < 8) {
+            setError('Password must be at least 8 characters');
+            return;
+        }
+        if (password !== confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
+        setLoading(true);
+        setError('');
+
+        const result = await register(email, password, storeId, null, turnstileToken);
+
+        if (result.success) {
+            setState('logged_in');
+        } else {
+            setError(result.error || 'Registration failed');
+            setTurnstileToken(null);
+            turnstileRef.current?.reset();
         }
         setLoading(false);
     };
@@ -183,7 +211,7 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                         {/* Header */}
                         <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
                             <div className="flex items-center gap-2">
-                                {(state === 'password_login' || state === 'set_password' || state === 'not_found') && (
+                                {(state === 'password_login' || state === 'set_password' || state === 'register' || state === 'not_found') && (
                                     <Button unstyled
                                         onClick={goBack}
                                         className="p-1 rounded-lg hover:bg-[var(--lb-color-surface-subdued)] transition-colors"
@@ -324,6 +352,74 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                                 placeholder="Create password"
                                                 required
                                                 minLength={6}
+                                                className="w-full pl-10 pr-12 py-3 rounded-xl border text-sm outline-none transition-colors"
+                                                style={{
+                                                    borderColor: 'var(--border, rgb(209 213 219))',
+                                                    backgroundColor: 'var(--surface, rgb(249 250 251))',
+                                                    color: 'var(--text, rgb(26 26 46))',
+                                                }}
+                                            />
+                                            <Button unstyled
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2"
+                                                style={{ color: 'var(--text-secondary, rgb(156 163 175))' }}
+                                            >
+                                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </Button>
+                                        </div>
+                                        <div className="relative">
+                                            <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, rgb(156 163 175))' }} />
+                                            <Input unstyled
+                                                type={showPassword ? 'text' : 'password'}
+                                                value={confirmPassword}
+                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                placeholder="Confirm password"
+                                                required
+                                                className="w-full pl-10 pr-4 py-3 rounded-xl border text-sm outline-none transition-colors"
+                                                style={{
+                                                    borderColor: 'var(--border, rgb(209 213 219))',
+                                                    backgroundColor: 'var(--surface, rgb(249 250 251))',
+                                                    color: 'var(--text, rgb(26 26 46))',
+                                                }}
+                                            />
+                                        </div>
+                                        {error && <p className="text-red-500 text-sm">{error}</p>}
+                                        <Button unstyled
+                                            type="submit"
+                                            disabled={loading}
+                                            className="w-full py-3 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-opacity disabled:opacity-50"
+                                            style={{ backgroundColor: 'var(--primary, rgb(0 179 179))' }}
+                                        >
+                                            {loading ? <Loader2 size={18} className="animate-spin" /> : 'Create Account'}
+                                        </Button>
+                                    </motion.form>
+                                )}
+
+                                {/* ─── STATE: Register (LB-12 first-time account) ─── */}
+                                {state === 'register' && (
+                                    <motion.form
+                                        key="register"
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -20 }}
+                                        onSubmit={handleRegister}
+                                        className="space-y-4"
+                                    >
+                                        <p className="text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
+                                            Create your account for <strong>{email}</strong>.
+                                        </p>
+                                        <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} onExpire={() => setTurnstileToken(null)} />
+                                        <div className="relative">
+                                            <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, rgb(156 163 175))' }} />
+                                            <Input unstyled
+                                                ref={passwordRef}
+                                                type={showPassword ? 'text' : 'password'}
+                                                value={password}
+                                                onChange={(e) => setPasswordValue(e.target.value)}
+                                                placeholder="Create password"
+                                                required
+                                                minLength={8}
                                                 className="w-full pl-10 pr-12 py-3 rounded-xl border text-sm outline-none transition-colors"
                                                 style={{
                                                     borderColor: 'var(--border, rgb(209 213 219))',

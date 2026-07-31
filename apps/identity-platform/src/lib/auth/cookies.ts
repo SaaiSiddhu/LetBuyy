@@ -56,9 +56,11 @@ export const COOKIE_NAMES = {
 const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN?.trim() || undefined
 
 // Cookie options shared across all auth cookies
+// In local dev (HTTP) Secure must be false — browsers silently drop Secure
+// cookies on non-HTTPS origins, breaking cross-port redirects.
 const BASE_OPTIONS = {
     httpOnly: true,
-    secure: true,
+    secure: isProductionIdentityRuntime(process.env),
     path: '/',
     ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
 } as const

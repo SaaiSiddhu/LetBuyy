@@ -21,9 +21,10 @@ export async function POST(
         const uploadFile = file as File
 
         formData.set('folder', `${resolved.storeId}/products`)
+        formData.set('store_id', resolved.storeId)
 
         const apiClient = createMerchantApiClient()
-        const uploaded = await apiClient.upload.file(formData)
+        const uploaded = await apiClient.upload.file(formData, { query: { store_id: resolved.storeId } })
 
         if (uploaded?.url) {
             await apiClient.media.create({

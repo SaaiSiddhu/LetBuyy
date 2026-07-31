@@ -5,6 +5,11 @@ export const THEME_BUNDLE_RENDERER_VERSION = '1.0.0';
 export const THEME_LIQUID_BUNDLE_SCHEMA_VERSION = '2026-06-liquid-sections';
 export const THEME_LIQUID_RENDERER_VERSION = '0.1.0';
 
+// Phase AB — second known version for safe-update (forward-migration) support.
+// When a merchant theme on V1 is updated to V2, compareSchemaVersions(V2, V1) = 1 and the
+// safe-update merge engine runs. V2 bundles remain fully backward-compatible with V1 rendering.
+export const THEME_LIQUID_BUNDLE_SCHEMA_VERSION_V2 = '2026-07-liquid-sections-v2';
+
 // Phase G / G4 — Liquid bundle schema_version compatibility window.
 // The Zod schema already stamps a MISSING schema_version to the current version via `.default(...)`.
 // This set is the explicit allowlist of versions the current renderer understands. A bundle carrying an
@@ -12,7 +17,8 @@ export const THEME_LIQUID_RENDERER_VERSION = '0.1.0';
 // misrendered against a shape the engine does not understand. When a new bundle format ships, add its
 // version string here alongside the migration/compat that makes older bundles renderable.
 export const KNOWN_LIQUID_BUNDLE_SCHEMA_VERSIONS: readonly string[] = Object.freeze([
-  THEME_LIQUID_BUNDLE_SCHEMA_VERSION,
+  THEME_LIQUID_BUNDLE_SCHEMA_VERSION,       // index 0 — all existing stores and tests
+  THEME_LIQUID_BUNDLE_SCHEMA_VERSION_V2,    // index 1 — Phase AB forward-update target
 ]);
 
 export class UnsupportedLiquidBundleSchemaVersionError extends Error {

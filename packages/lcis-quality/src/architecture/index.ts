@@ -1,0 +1,1 @@
+export { ArchitectureQualityService } from './ArchitectureQualityService';

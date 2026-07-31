@@ -214,6 +214,11 @@ export function legacyGatewayAuthVerifierNames(): AuthVerifierName[] {
  */
 export const authMiddleware = createMiddleware<{ Bindings: Env }>(
     async (c, next) => {
+        if (c.get('auth')) {
+            await next();
+            return;
+        }
+
         const authHeader = c.req.header('Authorization');
 
         for (const verifier of legacyGatewayAuthVerifiers) {

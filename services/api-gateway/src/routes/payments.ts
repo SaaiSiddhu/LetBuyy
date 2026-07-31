@@ -22,8 +22,10 @@ import {
     PlanListQuerySchema,
     RecoverSubscriptionPaymentSchema,
     StoreSubscriptionQuerySchema,
+    ValidateSubscriptionCouponSchema,
     VerifySubscriptionSchema,
     type CancelSubscriptionInput,
+    type ValidateSubscriptionCouponInput,
     type BillingPlanCatalogRecord,
     type CreateSubscriptionOrderInput,
     type PlanListQueryInput,
@@ -32,9 +34,12 @@ import {
     type VerifySubscriptionInput,
     applyStorePlanTierDefaults,
     planBillingAmountMinor,
+    resolveMerchantPricing,
     razorpayBillingSignaturePayload,
 } from '@letbuyy/billing-core';
-import { createMerchantSubscriptionCheckout } from '../lib/subscription-checkout';
+import { createMerchantSubscriptionCheckout, previewSubscriptionCoupon, recordSubscriptionCouponRedemption } from '../lib/subscription-checkout';
+import { resolveFoundingCheckoutLock, isPlanPurchasable } from '../lib/founding-pricing';
+import { sendFoundingMerchantWelcomeEmail } from '../lib/founding-merchant-email';
 import {
     CreatePaymentSessionSchema,
     PaymentCaptureSchema,
@@ -786,9 +791,33 @@ router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchem
         planSlug: body.plan_slug,
         billingPeriod: body.billing_period,
         approvedUsageCharges: body.approved_usage_charges,
+        couponCode: body.coupon_code,
     });
 
     return c.json(checkout.body, checkout.status);
+});
+
+// POST /payments/subscription/coupon — Validate a subscription coupon (read-only preview)
+router.post('/subscription/coupon', validate('json', ValidateSubscriptionCouponSchema), async (c) => {
+    const auth = c.get('auth');
+    const body = c.get('validatedBody') as ValidateSubscriptionCouponInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser || !(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
+        throw new ForbiddenError('Not authorized for this store');
+    }
+
+    const preview = await previewSubscriptionCoupon({
+        db,
+        storeId: body.store_id,
+        siteType: body.site_type,
+        planSlug: body.plan_slug,
+        billingPeriod: body.billing_period,
+        couponCode: body.coupon_code,
+    });
+
+    return c.json(preview.body, preview.status);
 });
 
 // POST /payments/subscription/recover — Create a checkout to recover a failed subscription payment
@@ -899,7 +928,36 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
 
     const plan = applyStorePlanTierDefaults(rawPlan as BillingPlanCatalogRecord) as BillingPlanCatalogRecord & Record<string, unknown>;
 
-    const amountPaid = planBillingAmountMinor(plan, body.billing_period).amountMinor;
+    if (!isPlanPurchasable(plan)) {
+        return c.json({ error: { code: 'PLAN_NOT_PURCHASABLE', message: 'This plan is not available for purchase' } }, 400);
+    }
+
+    // Founding price lock: founders (and eligible founding-offer merchants while slots
+    // remain) are charged the locked/founding price. The capture check below compares
+    // the captured amount against THIS value, so a founder paying the founding price is
+    // accepted (and never the catalog price). See docs/v1/PRICE_LOCK_VERIFICATION.md.
+    const foundingLock = await resolveFoundingCheckoutLock(db, body.store_id, plan);
+    const baseAmount = resolveMerchantPricing({ plan, foundingLock, billingPeriod: body.billing_period }).amountMinor;
+    let amountPaid = baseAmount;
+
+    // If a coupon was applied at order time, the captured amount is the discounted
+    // amount — recompute the expected minimum (server-authoritative) so the capture
+    // check below matches the legitimate lower payment. An invalid code keeps the
+    // full price (it can never lower the bar on its own).
+    if (body.coupon_code && Number.isFinite(baseAmount) && baseAmount > 0) {
+        const { data: couponVerdict } = await db.rpc('validate_subscription_coupon', {
+            p_code: body.coupon_code,
+            p_plan_slug: body.plan_slug,
+            p_billing_period: body.billing_period,
+            p_amount_minor: baseAmount,
+            p_site_id: body.store_id,
+        });
+        const verdict = (couponVerdict ?? {}) as Record<string, unknown>;
+        const finalMinor = Number(verdict.final_minor);
+        if (verdict.valid === true && Number.isFinite(finalMinor) && finalMinor > 0) {
+            amountPaid = finalMinor;
+        }
+    }
 
     // SECURITY: a valid HMAC only proves Razorpay signed (order|subscription)+payment ids
     // — NOT that money was captured, nor how much. Without a server-side capture check a
@@ -943,6 +1001,38 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
         });
     } catch {
         return c.json(dbErrorBody('Failed to create subscription'), 500);
+    }
+
+    // Record the coupon redemption now that payment is verified and the plan is active
+    // (best-effort + idempotent on the payment id — never blocks activation).
+    if (body.coupon_code) {
+        await recordSubscriptionCouponRedemption({
+            db,
+            storeId: body.store_id,
+            userId: customUser.id,
+            siteType: body.site_type,
+            planSlug: body.plan_slug,
+            billingPeriod: body.billing_period,
+            couponCode: body.coupon_code,
+            razorpayOrderId: body.razorpay_order_id || null,
+            razorpayPaymentId: body.razorpay_payment_id,
+        });
+    }
+
+    // Founding welcome + price-lock confirmation email (best-effort; the allocation
+    // itself already happened atomically inside activateMerchantSubscription).
+    const foundingResult = (subscription as { founding?: { allocated?: boolean; founding_number?: number; allocation_source?: string; locked_monthly_price?: number } } | null)?.founding;
+    if (foundingResult?.allocated) {
+        const email = (customUser as { email?: string }).email;
+        if (email) {
+            await sendFoundingMerchantWelcomeEmail(c.env, {
+                to: email,
+                foundingNumber: Number(foundingResult.founding_number || 0),
+                allocationSource: String(foundingResult.allocation_source || 'PUBLIC'),
+                planName: plan.name,
+                lockedMonthlyInr: Math.round(Number(foundingResult.locked_monthly_price || 0) / 100),
+            }).catch(() => undefined);
+        }
     }
 
     return c.json({

@@ -15,7 +15,9 @@
             "label": "Contact",
             "href": "/contact"
           },
-          "disabled": false
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
         },
         "footer-policy": {
           "type": "link",
@@ -23,7 +25,9 @@
             "label": "Policies",
             "href": "/policies/shipping-policy"
           },
-          "disabled": false
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
         }
       },
       "block_order": [

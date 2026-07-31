@@ -34,18 +34,23 @@ import {
 } from 'lucide-react'
 import { Button, Badge, ConfirmDialog, SaveBar, Select, letbuyyPrimitiveTokens, useToast } from '@letbuyy/ui'
 import {
+    buildExperienceSettingsOverlay,
     getDefaultStorefrontThemeTemplate,
+    getExperience,
     getSectionSchemas,
     getThemeSettingsSchema,
     hasRenderableThemeTemplate,
 } from '@letbuyy/theme-engine'
 import SchemaFormRenderer from '@/components/theme-editor/SchemaFormRenderer'
 import CenterPanel from '@/components/theme-editor/CenterPanel'
+import ExperiencePicker from '@/components/theme-editor/ExperiencePicker'
+import ConflictDialog from '@/components/theme-editor/ConflictDialog'
+import SectionTreePanel, { TreeGroup } from '@/components/theme-editor/SectionTreePanel'
 import type { BlockSchema, SchemaField, SectionSchema, ThemeSettingsGroup, ThemeSettingsSchema } from '@/lib/theme-schemas'
 
 type JsonRecord = Record<string, unknown>
 type PreviewDevice = 'desktop' | 'tablet' | 'mobile'
-type PanelMode = 'sections' | 'settings' | 'versions'
+type PanelMode = 'sections' | 'settings' | 'experiences' | 'versions'
 
 type BlockEntry = {
     id: string
@@ -706,7 +711,7 @@ function ThemeEditorInner() {
     const [isDirty, setIsDirty] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false)
-    const [themeName, setThemeName] = useState('Urban Kicks')
+    const [themeName, setThemeName] = useState('LetBuyy Core')
     const [schemaSource, setSchemaSource] = useState('registry')
     const [draftVersion, setDraftVersion] = useState<number | null>(null)
     const [savedAt, setSavedAt] = useState<string | null>(null)
@@ -715,6 +720,9 @@ function ThemeEditorInner() {
     const [previewToken, setPreviewToken] = useState<string | null>(null)
     const [previewError, setPreviewError] = useState<string | null>(null)
     const [isPreviewRefreshing, setIsPreviewRefreshing] = useState(false)
+    // Phase R — conflict state: set when a draft PUT returns HTTP 409 (code 'CONFLICT').
+    const [hasConflict, setHasConflict] = useState(false)
+    const [conflictSource, setConflictSource] = useState<'autosave' | 'manual-save'>('autosave')
     const previewRequestCounter = useRef(0)
 
     const canUndo = history.past.length > 0
@@ -769,6 +777,20 @@ function ThemeEditorInner() {
             return next
         })
     }, [])
+
+    // Phase-2.5 Stream A/B — apply a merchant-facing Experience to the draft. Merges the experience
+    // token overlay into themeSettings (buildDraftConfig propagates it to BOTH themeSettings and
+    // settings_data.current), records the active experience id, flips isDirty so the existing 900ms
+    // debounce auto-saves the draft and refreshes the live preview. No page refresh, no new API.
+    const applyExperience = useCallback((experienceId: string) => {
+        const experience = getExperience(experienceId)
+        if (!experience) return
+        const overlay = buildExperienceSettingsOverlay(experience)
+        applyChange((current) => ({
+            ...current,
+            themeSettings: { ...current.themeSettings, ...overlay, experienceId },
+        }))
+    }, [applyChange])
 
     const loadReleases = useCallback(async () => {
         if (!store || !themeId) return
@@ -899,13 +921,20 @@ function ThemeEditorInner() {
             if (current.past.length === 0) return current
             const previous = current.past[current.past.length - 1]
             setEditorState(previous)
-            setIsDirty(true)
+            // Phase R hardening: only set dirty when the restored state differs from
+            // savedState. After a save (which clears history) the merchant may edit
+            // once then Ctrl+Z back to the saved snapshot — isDirty must become false
+            // so the SaveBar and Publish button reflect the correct clean state.
+            // Reference equality is reliable: setSavedState stores the exact object
+            // reference from editorState at save time, and applyChange always creates
+            // new objects.
+            setIsDirty(previous !== savedState)
             return {
                 past: current.past.slice(0, -1),
                 future: [editorState, ...current.future],
             }
         })
-    }, [editorState])
+    }, [editorState, savedState])
 
     const redo = useCallback(() => {
         setHistory((current) => {
@@ -920,14 +949,24 @@ function ThemeEditorInner() {
         })
     }, [editorState])
 
-    const saveDraft = useCallback(async () => {
+    // Phase R: accept optional force flag so ConflictDialog "Keep my changes" can bypass
+    // the base_version check (overwrite the server draft) without waiting for a state flush.
+    const saveDraft = useCallback(async (force = false) => {
         const draftConfig = buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)
         const res = await fetch(`/api/themes/${themeId}/editor/draft?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ draftConfig, templateKey: selectedTemplateKey, baseVersion: draftVersion ?? undefined }),
+            body: JSON.stringify({ draftConfig, templateKey: selectedTemplateKey, baseVersion: force ? undefined : (draftVersion ?? undefined) }),
         })
         const payload = await res.json().catch(() => ({}))
+        // Phase R: 409 = CONFLICT — surface the ConflictDialog instead of a generic toast.
+        if (res.status === 409) {
+            setHasConflict(true)
+            setConflictSource('manual-save')
+            const conflictErr = new Error('CONFLICT: A newer draft version exists on the server.')
+            conflictErr.name = 'ConflictError'
+            throw conflictErr
+        }
         if (!res.ok) {
             const errorRecord = asRecord(asRecord(payload).error)
             throw new Error(stringValue(errorRecord.message, stringValue(asRecord(payload).error, res.statusText)))
@@ -956,6 +995,12 @@ function ThemeEditorInner() {
                 body: JSON.stringify({ draftConfig, templateKey: selectedTemplateKey, baseVersion: draftVersion ?? undefined }),
             })
             const draftPayload = await draftRes.json().catch(() => ({}))
+            // Phase R: 409 = CONFLICT — pause autosave and surface the ConflictDialog.
+            if (draftRes.status === 409) {
+                setHasConflict(true)
+                setConflictSource('autosave')
+                return
+            }
             if (!draftRes.ok) {
                 const errorRecord = asRecord(asRecord(draftPayload).error)
                 throw new Error(stringValue(errorRecord.message, stringValue(asRecord(draftPayload).error, draftRes.statusText)))
@@ -1019,6 +1064,8 @@ function ThemeEditorInner() {
                 variant: 'success',
             })
         } catch (err) {
+            // Phase R: ConflictError is already surfaced via ConflictDialog; suppress the toast.
+            if (err instanceof Error && err.name === 'ConflictError') return
             notify({
                 title: 'Draft save failed',
                 description: err instanceof Error ? err.message : 'Unable to save the draft.',
@@ -1316,6 +1363,14 @@ function ThemeEditorInner() {
                         <Settings size={17} aria-hidden="true" />
                     </Button>
                     <Button unstyled
+                        className={`theme-os-icon-btn ${panelMode === 'experiences' ? 'theme-os-icon-btn--active' : ''}`}
+                        type="button"
+                        aria-label="Experiences"
+                        onClick={() => setPanelMode('experiences')}
+                    >
+                        <Sparkles size={17} aria-hidden="true" />
+                    </Button>
+                    <Button unstyled
                         className={`theme-os-icon-btn ${panelMode === 'versions' ? 'theme-os-icon-btn--active' : ''}`}
                         type="button"
                         aria-label="Versions"
@@ -1375,7 +1430,7 @@ function ThemeEditorInner() {
                     </div>
 
                     {panelMode === 'sections' ? (
-                        <SectionTree
+                        <SectionTreePanel
                             state={editorState}
                             sectionSchemas={sectionSchemas}
                             selection={selection}
@@ -1395,6 +1450,13 @@ function ThemeEditorInner() {
                             groups={themeGroups}
                             selection={selection}
                             onSelect={(groupKey) => setSelection({ kind: 'theme', groupKey })}
+                        />
+                    ) : null}
+
+                    {panelMode === 'experiences' ? (
+                        <ExperiencePicker
+                            activeExperienceId={typeof editorState.themeSettings.experienceId === 'string' ? editorState.themeSettings.experienceId : undefined}
+                            onApply={applyExperience}
                         />
                     ) : null}
 
@@ -1493,187 +1555,38 @@ function ThemeEditorInner() {
                 onClose={() => setBlockPendingRemoval(null)}
                 onConfirm={removeBlock}
             />
+
+            {/* Phase R — ConflictDialog: shown when draft CAS returns HTTP 409 (CONFLICT). */}
+            <ConflictDialog
+                open={hasConflict}
+                source={conflictSource}
+                onReload={() => {
+                    setHasConflict(false)
+                    void loadEditor()
+                }}
+                onForce={() => {
+                    setHasConflict(false)
+                    // Phase R hardening: catch force-save failures so a network error or
+                    // unexpected 5xx doesn't silently drop — surface a toast and leave
+                    // the editor in a usable state. ConflictError re-raises are swallowed
+                    // (conflict dialog handles its own re-open flow).
+                    saveDraft(true).catch((err) => {
+                        if (err instanceof Error && err.name !== 'ConflictError') {
+                            notify({
+                                title: 'Force-save failed',
+                                description: err.message || 'Could not save your changes. Please try again.',
+                                variant: 'critical',
+                            })
+                        }
+                    })
+                }}
+            />
         </main>
     )
 }
 
-function SectionTree({
-    state,
-    sectionSchemas,
-    selection,
-    addableSections,
-    addSectionType,
-    onSelect,
-    onAddSectionTypeChange,
-    onAddSection,
-    onMoveSection,
-    onToggleSection,
-    onRemoveSection,
-}: {
-    state: EditorState
-    sectionSchemas: Record<string, SectionSchema>
-    selection: EditorSelection
-    addableSections: AvailableSection[]
-    addSectionType: string
-    onSelect: (selection: EditorSelection) => void
-    onAddSectionTypeChange: (type: string) => void
-    onAddSection: () => void
-    onMoveSection: (sectionId: string, direction: -1 | 1) => void
-    onToggleSection: (sectionId: string) => void
-    onRemoveSection: (section: SectionEntry) => void
-}) {
-    return (
-        <div className="theme-os-tree">
-            <TreeGroup label="Header">
-                {state.sections.header ? (
-                    <TreeSection
-                        section={state.sections.header}
-                        schema={sectionSchemas[state.sections.header.type]}
-                        pinned
-                        selected={selection.kind === 'section' && selection.sectionId === state.sections.header.id}
-                        blockSelection={selection.kind === 'block' && selection.sectionId === state.sections.header.id ? selection.blockId : null}
-                        onSelect={() => onSelect({ kind: 'section', sectionId: state.sections.header?.id || '' })}
-                        onSelectBlock={(blockId) => onSelect({ kind: 'block', sectionId: state.sections.header?.id || '', blockId })}
-                        onToggle={() => onToggleSection(state.sections.header?.id || '')}
-                    />
-                ) : null}
-            </TreeGroup>
-
-            <TreeGroup label="Template">
-                {state.sections.template.map((section, index) => (
-                    <TreeSection
-                        key={section.id}
-                        section={section}
-                        schema={sectionSchemas[section.type]}
-                        selected={selection.kind === 'section' && selection.sectionId === section.id}
-                        blockSelection={selection.kind === 'block' && selection.sectionId === section.id ? selection.blockId : null}
-                        canMoveUp={index > 0}
-                        canMoveDown={index < state.sections.template.length - 1}
-                        onSelect={() => onSelect({ kind: 'section', sectionId: section.id })}
-                        onSelectBlock={(blockId) => onSelect({ kind: 'block', sectionId: section.id, blockId })}
-                        onMoveUp={() => onMoveSection(section.id, -1)}
-                        onMoveDown={() => onMoveSection(section.id, 1)}
-                        onToggle={() => onToggleSection(section.id)}
-                        onRemove={() => onRemoveSection(section)}
-                    />
-                ))}
-                <div className="theme-os-tree__add">
-                    <Select
-                        unstyled
-                        value={addSectionType}
-                        onChange={(event) => onAddSectionTypeChange(event.target.value)}
-                        options={addableSections.map((section) => ({ label: section.name, value: section.type }))}
-                    />
-                    <Button unstyled type="button" onClick={onAddSection} disabled={!addSectionType}>
-                        <Plus size={14} aria-hidden="true" />
-                        Add
-                    </Button>
-                </div>
-            </TreeGroup>
-
-            <TreeGroup label="Footer">
-                {state.sections.footer ? (
-                    <TreeSection
-                        section={state.sections.footer}
-                        schema={sectionSchemas[state.sections.footer.type]}
-                        pinned
-                        selected={selection.kind === 'section' && selection.sectionId === state.sections.footer.id}
-                        blockSelection={selection.kind === 'block' && selection.sectionId === state.sections.footer.id ? selection.blockId : null}
-                        onSelect={() => onSelect({ kind: 'section', sectionId: state.sections.footer?.id || '' })}
-                        onSelectBlock={(blockId) => onSelect({ kind: 'block', sectionId: state.sections.footer?.id || '', blockId })}
-                        onToggle={() => onToggleSection(state.sections.footer?.id || '')}
-                    />
-                ) : null}
-            </TreeGroup>
-        </div>
-    )
-}
-
-function TreeGroup({ label, children }: { label: string; children: ReactNode }) {
-    return (
-        <section className="theme-os-tree__group">
-            <p className="theme-os-tree__label">{label}</p>
-            {children}
-        </section>
-    )
-}
-
-function TreeSection({
-    section,
-    schema,
-    selected,
-    blockSelection,
-    pinned = false,
-    canMoveUp = false,
-    canMoveDown = false,
-    onSelect,
-    onSelectBlock,
-    onMoveUp,
-    onMoveDown,
-    onToggle,
-    onRemove,
-}: {
-    section: SectionEntry
-    schema?: SectionSchema
-    selected: boolean
-    blockSelection: string | null
-    pinned?: boolean
-    canMoveUp?: boolean
-    canMoveDown?: boolean
-    onSelect: () => void
-    onSelectBlock: (blockId: string) => void
-    onMoveUp?: () => void
-    onMoveDown?: () => void
-    onToggle: () => void
-    onRemove?: () => void
-}) {
-    const hasBlocks = section.blocks.length > 0
-
-    return (
-        <div className={`theme-os-tree-section ${selected ? 'theme-os-tree-section--selected' : ''} ${!section.visible ? 'theme-os-tree-section--hidden' : ''}`}>
-            <Button unstyled className="theme-os-tree-section__row" type="button" onClick={onSelect}>
-                <span className="theme-os-tree-section__handle" aria-hidden="true">
-                    {pinned ? <PanelLeft size={14} /> : <GripVertical size={14} />}
-                </span>
-                <span>{schema?.name || labelFromKey(section.type)}</span>
-                {hasBlocks ? <ChevronDown size={13} aria-hidden="true" /> : null}
-            </Button>
-            <div className="theme-os-tree-section__actions">
-                <Button unstyled type="button" aria-label="Toggle visibility" onClick={onToggle}>
-                    <Eye size={13} aria-hidden="true" />
-                </Button>
-                {!pinned ? (
-                    <>
-                        <Button unstyled type="button" aria-label="Move up" onClick={onMoveUp} disabled={!canMoveUp}>
-                            <ChevronRight className="theme-os-rotate-up" size={13} aria-hidden="true" />
-                        </Button>
-                        <Button unstyled type="button" aria-label="Move down" onClick={onMoveDown} disabled={!canMoveDown}>
-                            <ChevronRight className="theme-os-rotate-down" size={13} aria-hidden="true" />
-                        </Button>
-                        <Button unstyled type="button" aria-label="Remove" onClick={onRemove}>
-                            <Trash2 size={13} aria-hidden="true" />
-                        </Button>
-                    </>
-                ) : null}
-            </div>
-            {hasBlocks ? (
-                <div className="theme-os-tree-blocks">
-                    {section.blocks.map((block) => (
-                        <Button unstyled
-                            key={block.id}
-                            className={`theme-os-tree-block ${blockSelection === block.id ? 'theme-os-tree-block--selected' : ''} ${!block.visible ? 'theme-os-tree-block--hidden' : ''}`}
-                            type="button"
-                            onClick={() => onSelectBlock(block.id)}
-                        >
-                            <span className="theme-os-tree-block__line" aria-hidden="true" />
-                            <span>{schema?.blocks_schema?.[block.type]?.name || labelFromKey(block.type)}</span>
-                        </Button>
-                    ))}
-                </div>
-            ) : null}
-        </div>
-    )
-}
+// Phase R: SectionTree / TreeGroup / TreeSection moved to SectionTreePanel.tsx.
+// TreeGroup is re-imported via { TreeGroup } from that file so the panels below still work.
 
 function ThemeSettingsTree({
     groups,

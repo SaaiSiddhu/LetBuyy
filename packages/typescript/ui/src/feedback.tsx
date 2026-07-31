@@ -511,7 +511,7 @@ export function EmptyState({ icon, illustration, illustrationMotifs, kind = 'gen
     return (
         <div
             className={cx(
-                'flex min-h-[var(--lb-density-empty-state-min-height)] flex-col items-center justify-center gap-[var(--lb-density-section-gap)] rounded-[var(--lb-component-card-radius)] border border-dashed border-[var(--lb-component-empty-state-border)] bg-[var(--lb-component-empty-state-bg)] p-[var(--lb-density-card-padding)] text-center',
+                'flex min-h-[var(--lb-density-empty-state-min-height)] flex-col items-center justify-center gap-[var(--lb-density-section-gap)] rounded-[var(--lb-component-card-radius)] bg-[var(--lb-component-empty-state-bg)] p-[var(--lb-density-card-padding)] text-center',
                 className,
             )}
             {...props}

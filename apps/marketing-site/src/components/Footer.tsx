@@ -44,10 +44,10 @@ const footerColumns = [
     {
         title: 'Resources',
         links: [
-            { label: 'Theme catalog', href: platformHref('Themes') },
-            { label: 'App categories', href: platformHref('Apps') },
-            { label: 'API reference', href: platformHref('Developers').replace(/\/docs$/, '/api-reference') },
-            { label: 'SDK docs', href: platformHref('Developers').replace(/\/docs$/, '/sdks') },
+            { label: 'All resources', href: '/resources' },
+            { label: 'Ecommerce guides', href: '/resources/ecommerce' },
+            { label: 'Developer docs', href: '/resources/developers' },
+            { label: 'Changelog', href: '/resources/changelog' },
         ],
     },
     {

@@ -120,6 +120,25 @@ export class SubscriptionExecutionAdapter {
             periodEnd: periodEnd.toISOString(),
         });
 
+        // Founding Merchant allocation — the SINGLE chokepoint (every paid activation
+        // path funnels through this adapter). Non-fatal + idempotent: the SECURITY
+        // DEFINER RPC re-checks eligibility (status='active' AND amount_paid>0 AND
+        // sites.trial_status='paid') and a failure / {allocated:false} NEVER affects
+        // the already-committed paid subscription. See docs/v1/FOUNDING_ALLOCATION_DEFINITION.md.
+        let founding: Record<string, unknown> | null = null;
+        if (input.amountPaid > 0) {
+            try {
+                const { data: allocation } = await this.db.rpc('allocate_founding_merchant', {
+                    p_site_id: input.storeId,
+                    p_subscription_id: subscription.id,
+                    p_idempotency_key: `founding:${subscription.id}`,
+                });
+                founding = (allocation as Record<string, unknown>) ?? null;
+            } catch {
+                founding = null;
+            }
+        }
+
         return {
             id: subscription.id,
             plan: input.plan.slug,
@@ -129,6 +148,7 @@ export class SubscriptionExecutionAdapter {
             current_period_end: periodEnd.toISOString(),
             promo_ends_at: promoEndsAt,
             external_subscription_id: input.externalSubscriptionId || null,
+            founding,
         };
     }
 

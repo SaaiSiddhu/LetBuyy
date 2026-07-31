@@ -1,4 +1,5 @@
 import { ProductService } from '@/lib/product-service';
+import { ReviewService } from '@/lib/review-service';
 import { StoreService } from '@/lib/store-service';
 import { notFound } from 'next/navigation';
 import StorefrontCompositionEngine from '@/lib/theme-engine/composition-engine';
@@ -40,6 +41,8 @@ export default async function ProductPage({ params }: { params: Promise<{ subdom
 
     if (!product || !store) return notFound();
 
+    const reviews = await ReviewService.getProductReviews(store.id, product.id, subdomain);
+
     const plan = resolveStorefrontTemplate(store, {
         type: 'product',
         path: `/store/${subdomain}/product/${productId}`,
@@ -50,7 +53,7 @@ export default async function ProductPage({ params }: { params: Promise<{ subdom
 
     const sectionData = new Map<string, SectionRenderData>();
     for (const section of plan.template.sections) {
-        sectionData.set(section.id, { product });
+        sectionData.set(section.id, { product, reviews });
     }
 
     const jsonLdNodes = [

@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS public.payment_credentials (
 CREATE TABLE IF NOT EXISTS public.payment_tokens (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   site_id uuid NOT NULL REFERENCES public.sites(id) ON DELETE CASCADE,
-  customer_id uuid REFERENCES public.customers(id) ON DELETE SET NULL,
+  customer_id uuid REFERENCES public.store_customers(id) ON DELETE SET NULL,
   provider text NOT NULL CHECK (provider IN ('razorpay', 'cashfree', 'upi', 'cod')),
   token_ref text NOT NULL,
   token_type text NOT NULL DEFAULT 'provider_token' CHECK (token_type IN ('provider_token', 'upi_mandate', 'card_network_token')),

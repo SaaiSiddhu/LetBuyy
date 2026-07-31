@@ -1097,7 +1097,7 @@ async function renderAtlas(domain){
     highlight:cid=>{commHi=(commHi===String(cid)?null:String(cid));sel=null;draw();return commHi;}};
   // toolbar
   atlasbar.style.display='flex';
-  atlasbar.innerHTML=`<div class="seg" id="dens">${[['1k',1000],['1.5k',1500],['2.5k',2500]].map(([l,v])=>`<button data-v="${v}" class="${atlasState.limit===v?'on':''}">${l}</button>`).join('')}</div>
+  atlasbar.innerHTML=`<div class="seg" id="dens">${[['1k',1000],['1.5k',1500],['2.5k',2500],['5k',5000],['10k',10000],['25k',25000],['50k',50000],['75k',75000]].map(([l,v])=>`<button data-v="${v}" class="${atlasState.limit===v?'on':''}">${l}</button>`).join('')}</div>
     <button class="iconbtn" id="zin" title="Zoom in">+</button><button class="iconbtn" id="zout" title="Zoom out">−</button><button class="iconbtn" id="zfit" title="Fit">⊡</button>`;
   atlasbar.querySelectorAll('#dens button').forEach(b=>b.onclick=()=>{atlasState.limit=+b.dataset.v;renderAtlas(domain);});
   $('#zin').onclick=()=>atlasCtl.zoom(1.25);$('#zout').onclick=()=>atlasCtl.zoom(.8);$('#zfit').onclick=()=>{sel=null;fit();atlasLegend(a,domain);};

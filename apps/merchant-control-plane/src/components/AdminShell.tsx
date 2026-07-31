@@ -7,7 +7,7 @@ import TrialBanner from './TrialBanner'
 import CommandPalette from './CommandPalette'
 import AISidebar from './AISidebar'
 import type { SessionUser } from '@/lib/auth/session'
-import { AppNavigation, Button, MaterialIcon, ToastProvider, type AppNavigationSection } from '@letbuyy/ui'
+import { AppNavigation, Button, MaterialIcon, Navigation, ToastProvider, isNavItemActive, type AppNavigationSection, type NavigationItem } from '@letbuyy/ui'
 import { getMerchantNavigation, type MerchantNavItem } from './merchantNavigation'
 
 export interface StoreData {
@@ -56,6 +56,45 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
         return <ToastProvider>{children}</ToastProvider>
     }
 
+    // Settings pages use their own floating sidebar — skip the main nav
+    if (isSettingsPage) {
+        return (
+            <ToastProvider>
+                <div className="admin-shell">
+                    <HeaderBar
+                        store={store}
+                        storeData={storeData}
+                        user={user}
+                        userStores={userStores}
+                        onMenuToggle={() => {}}
+                        onSearchOpen={() => setCmdPaletteOpen(true)}
+                        onAISidebarToggle={() => {}}
+                        isSettingsPage={true}
+                    />
+                    <div className="admin-settings-wrapper" style={{ paddingTop: 'var(--admin-header-height)', minHeight: '100vh', background: 'var(--lb-color-bg)' }}>
+                        {isDraft && (
+                            <div className="admin-draft-banner">
+                                <MaterialIcon name="warning" size={16} />
+                                <span className="admin-draft-banner-message">
+                                    Your site is in <strong>draft</strong> mode. It is not visible to visitors yet.
+                                </span>
+                            </div>
+                        )}
+                        {children}
+                    </div>
+                    {cmdPaletteOpen && (
+                        <CommandPalette
+                            store={store}
+                            storeName={storeData.name || storeData.store_name || store}
+                            siteType={storeData.site_type}
+                            onClose={() => setCmdPaletteOpen(false)}
+                        />
+                    )}
+                </div>
+            </ToastProvider>
+        )
+    }
+
     const navigationSections = buildNavigationSections(store, storeData.site_type)
 
     return (
@@ -84,24 +123,16 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
 
                 <AppNavigation
                     sections={navigationSections}
+                    width="sm"
                     className="pt-[var(--admin-header-height)]"
                     sidebarClassName={sidebarOpen
-                        ? 'fixed left-0 top-[var(--admin-header-height)] z-50 flex h-[calc(100vh_-_var(--admin-header-height))] lg:static lg:flex lg:h-auto'
-                        : 'hidden lg:flex'}
-                    brand={
-                        <div className="flex min-w-0 items-center gap-[var(--lb-space-2)]">
-                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--lb-color-primary-soft)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-bold)] text-[color:var(--lb-color-primary)]">
-                                {(storeData.name || storeData.store_name || store).slice(0, 2).toUpperCase()}
-                            </span>
-                            <div className="min-w-0">
-                                <div className="truncate text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]">
-                                    {storeData.name || storeData.store_name || store}
-                                </div>
-                                <div className="truncate text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                    {storeData.site_type}
-                                </div>
-                            </div>
-                        </div>
+                        ? 'fixed left-0 top-[var(--admin-header-height)] z-50 flex h-[calc(100vh_-_var(--admin-header-height))] rounded-tl-[var(--sidebar-panel-radius)] overflow-hidden lg:sticky lg:top-[var(--admin-header-height)] lg:h-[calc(100vh_-_var(--admin-header-height))] lg:self-start'
+                        : 'hidden rounded-tl-[var(--sidebar-panel-radius)] overflow-hidden lg:flex lg:sticky lg:top-[var(--admin-header-height)] lg:h-[calc(100vh_-_var(--admin-header-height))] lg:self-start'}
+                    footer={
+                        <Navigation
+                            ariaLabel="Settings navigation"
+                            items={buildFooterItems(store, storeData.site_type, pathname ?? '/')}
+                        />
                     }
                 >
                     <div className={`flex min-h-full min-w-0 ${aiPanelOpen ? 'ai-open' : ''}`}>
@@ -167,26 +198,43 @@ function buildNavigationSections(store: string, siteType: string | null | undefi
         { items: sectionItems.primary.flatMap((item) => toNavigationItems(store, item)) },
         { title: 'Sales channels', items: sectionItems.sales.flatMap((item) => toNavigationItems(store, item)) },
         { title: 'Apps', items: sectionItems.apps.flatMap((item) => toNavigationItems(store, item)) },
-        { title: 'Settings', items: sectionItems.bottom.flatMap((item) => toNavigationItems(store, item)) },
     ].filter((section) => section.items.length > 0)
 }
 
-function toNavigationItems(store: string, item: MerchantNavItem): AppNavigationSection['items'] {
-    const parent = {
-        id: item.path,
-        label: item.label,
-        href: `/${store}/${item.path}`,
-        icon: <MaterialIcon name={item.icon} size={16} aria-hidden="true" />,
-        badge: item.shortcut,
-    }
+function buildFooterItems(store: string, siteType: string | null | undefined, pathname: string): NavigationItem[] {
+    const groups = getMerchantNavigation(siteType)
+    return groups
+        .filter((item) => item.section === 'bottom')
+        .map((item) => {
+            const children = (item.children ?? []).map((child) => ({
+                id: `${item.path}:${child.path}`,
+                label: child.label,
+                href: `/${store}/${child.path}`,
+                active: isNavItemActive(pathname, `/${store}/${child.path}`),
+            }))
+            return {
+                id: item.path,
+                label: item.label,
+                href: children.length === 0 ? `/${store}/${item.path}` : undefined,
+                icon: <MaterialIcon name={item.icon} size={16} aria-hidden="true" />,
+                active: isNavItemActive(pathname, `/${store}/${item.path}`),
+                children: children.length > 0 ? children : undefined,
+            }
+        })
+}
 
+function toNavigationItems(store: string, item: MerchantNavItem): AppNavigationSection['items'] {
     const children = (item.children ?? []).map((child) => ({
         id: `${item.path}:${child.path}`,
         label: child.label,
         href: `/${store}/${child.path}`,
-        icon: <MaterialIcon name={child.icon ?? 'arrow_forward'} size={16} aria-hidden="true" />,
-        badge: child.shortcut,
     }))
 
-    return [parent, ...children]
+    return [{
+        id: item.path,
+        label: item.label,
+        href: children.length === 0 ? `/${store}/${item.path}` : undefined,
+        icon: <MaterialIcon name={item.icon} size={16} aria-hidden="true" />,
+        children: children.length > 0 ? children : undefined,
+    }]
 }

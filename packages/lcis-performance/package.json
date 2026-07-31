@@ -1,0 +1,26 @@
+{
+  "name": "@letbuyy/lcis-performance",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "LPAS — Performance Analytics System. Read-only performance intelligence: a per-entity metric catalog bound to exact live sources (values honestly NOT_CONNECTED until series are provided), pure statistics, structural latency models (models, never measurements), capacity/growth/cost forecasts delegated to the lcis-operations forecast methods, and ADVISORY-ONLY recommendations. Never mutates infrastructure; never fabricates a measurement.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@letbuyy/lcis-core": "workspace:*",
+    "@letbuyy/lcis-adapters": "workspace:*",
+    "@letbuyy/lcis-operations": "workspace:*",
+    "@letbuyy/lcis-twin": "workspace:*",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "typescript": "^5.9.3"
+  }
+}

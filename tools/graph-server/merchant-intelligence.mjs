@@ -18,6 +18,59 @@ const g = (f) => existsSync(join(OUT, f)) ? JSON.parse(readFileSync(join(OUT, f)
 
 const STAGES = ['merchant', 'products', 'orders', 'payments', 'refunds', 'payouts', 'gift-cards', 'analytics', 'storefront', 'themes'];
 
+// Founding Merchant Program intelligence. STRUCTURAL model + flows are repository
+// truth (CONNECTED). Live counts/revenue/conversion are NOT CONNECTED — each names its
+// exact live source. Never fabricates a slot count or revenue figure.
+function buildFoundingProgram(db) {
+  const has = (n) => Boolean((db.tables || []).find((t) => t.name === n));
+  const expected = ['founding_merchant_program', 'founding_merchant_allocations', 'pricing_snapshots'];
+  const present = expected.filter(has);
+  return {
+    purpose: 'The first 100 paying merchants get a lifetime price lock. Scarcity drives V1 conversion; the lock rewards early-adopter risk.',
+    capacity: { total: 100, public: 70, invited: 20, partner: 10 },
+    owner: 'DB + payments route: @saai-sidd (CODEOWNERS). Pricing logic: @letbuyy/billing-core (resolveMerchantPricing) + resolve_merchant_locked_price RPC.',
+    allocationFlow: {
+      chokepoint: 'SubscriptionExecutionAdapter.activateMerchantSubscription() → allocate_founding_merchant() RPC (single chokepoint, all paid paths)',
+      eligibility: "subscriptions.status='active' AND amount_paid>0 AND sites.trial_status='paid'",
+      raceSafety: 'SELECT … FOR UPDATE on the founding_merchant_program singleton; idempotent via partial unique index (site_id WHERE released_at IS NULL); cap enforced by CHECK (used_slots <= total_slots).',
+      nonFatal: 'allocation failure / program-full never rolls back the paid subscription.',
+      source: 'docs/v1/FOUNDING_ALLOCATION_DEFINITION.md',
+    },
+    reclaimFlow: {
+      trigger: 'Razorpay subscription-refund webhook → reclaim_founding_merchant()',
+      policy: 'refund ≤14 days → release slot + clear price lock + decrement counters + emit founding_slot_reclaimed; >14 days → retained as a historical founder, slot stays consumed.',
+      source: 'docs/v1/PRICE_LOCK_VERIFICATION.md',
+    },
+    priceLockFlow: {
+      guarantee: 'I1: founders are never charged catalog price. I2: future catalog price changes never affect existing founders.',
+      mechanism: 'applyFoundingLockToPlan + resolveMerchantPricing at every charge site; founders forced to server-authoritative order/mandate mode (razorpay_plan_id nulled).',
+      source: 'docs/v1/PRICE_LOCK_ARCHITECTURE.md',
+    },
+    pools: { PUBLIC: 70, INVITED: 20, PARTNER: 10, note: 'source resolved from sites.intended_allocation_source (else PUBLIC); per-pool caps enforced in allocate_founding_merchant.' },
+    tables: { expected, present, structuralConnected: present.length === expected.length, hint: present.length === expected.length ? null : 'run pnpm graph:db after migrations 176-178 to index founding tables' },
+    rpcs: ['allocate_founding_merchant', 'reclaim_founding_merchant', 'get_founding_program_public', 'set_founding_program_state', 'resolve_merchant_locked_price', 'reconcile_founding_program', 'admin_repair_price_lock'],
+    events: ['founding_slot_allocated', 'founding_slot_reclaimed', 'founding_program_full', 'founding_program_paused', 'merchant_price_locked', 'merchant_upgraded'],
+    counterIntegrity: 'remaining_slots is a GENERATED column (total_slots - used_slots); reconcile_founding_program() compares counters vs COUNT(active allocations) and reports healthy|mismatch|repaired.',
+    liveMetrics: {
+      remainingSlots: { connected: false, source: 'GET /v1/founding-program/remaining (get_founding_program_public)' },
+      allocated: { connected: false, source: 'COUNT(founding_merchant_allocations WHERE released_at IS NULL)' },
+      conversionRate: { connected: false, source: 'paid activations → allocations (live ledger + founding_merchant_allocations)' },
+      revenueDistribution: { connected: false, source: 'subscriptions.amount_paid grouped by founder vs non-founder (live, site-scoped)' },
+      planDistribution: { connected: false, source: 'founding_merchant_allocations.plan_slug GROUP BY (live)' },
+      lifetimeDiscountLiability: { connected: false, source: 'sum(regular - locked) per active founder per month (live)' },
+    },
+    answers: {
+      'how many founding slots remain': 'structural cap 100 CONNECTED; live remaining is NOT CONNECTED here — GET /v1/founding-program/remaining.',
+      'how are founding slots allocated': 'allocate_founding_merchant() at the activation chokepoint, race-safe + idempotent (see allocationFlow).',
+      'who owns founding pricing logic': '@letbuyy/billing-core + resolve_merchant_locked_price; DB owned by @saai-sidd.',
+      'how does renewal pricing work': 'resolveMerchantPricing/applyFoundingLockToPlan at every charge site; founders billed via order/mandate mode at the locked price.',
+      'how does refund reclaim work': '≤14-day refund → reclaim_founding_merchant() from the subscription-refund webhook (see reclaimFlow).',
+      'what breaks if allocation fails': 'nothing customer-facing — allocation is non-fatal + idempotent; the paid subscription is unaffected; reconcile_founding_program() backstops drift.',
+      'what systems depend on plan pricing': 'checkout + renewal + marketing pricing page + entitlement resolution; FOUNDERS ARE EXCLUDED (locked snapshot on sites/allocations).',
+    },
+  };
+}
+
 export function buildMerchantIntelligence() {
   const di = g('domain-intel.json'), db = g('db-intel.json');
   if (!di || !db) return { error: 'domain-intel.json / db-intel.json missing — run pnpm graph:domain && graph:db' };
@@ -67,6 +120,7 @@ export function buildMerchantIntelligence() {
     },
     note: 'Per-merchant CURRENT state + funnel counts require live site rows; the 8-state machine + each transition signal/source are repository truth.',
   };
+  const foundingProgram = buildFoundingProgram(db);
   const summary = {
     operatingStages: operating.length,
     tenantTables,
@@ -74,10 +128,11 @@ export function buildMerchantIntelligence() {
     detectors: Object.keys(detectors).length,
     lifecycleStates: lifecycle.states.length,
     singlePointOfDependency: true,
+    foundingProgram: { capacity: foundingProgram.capacity.total, structuralConnected: foundingProgram.tables.structuralConnected, liveMetrics: 'NOT CONNECTED (see foundingProgram.liveMetrics for exact sources)' },
     liveDataNote: 'Top/inactive/broken/high-risk merchants, lifecycle state and revenue concentration require live site-scoped rows — query the sources named per detector/transition. The repo holds the MODEL + the queries, not the merchant data.',
     generatedAt: db.summary.generatedAt,
   };
-  return { summary, operating, detectors, findings, lifecycle };
+  return { summary, operating, detectors, findings, lifecycle, foundingProgram };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

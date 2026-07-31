@@ -1,0 +1,27 @@
+{
+  "name": "@letbuyy/lcis-engineering",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "EINS — Engineering Intelligence System. Read-only, deterministic synthesis over lcis-core/live/execution/governance/operations that answers 'what exactly must be changed to safely implement a feature?' — producing an engineering blueprint, ordered tasks, and an agent task graph. EINS plans; it never executes, generates code, modifies files, migrates, or deploys.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@letbuyy/lcis-core": "workspace:*",
+    "@letbuyy/lcis-live": "workspace:*",
+    "@letbuyy/lcis-execution": "workspace:*",
+    "@letbuyy/lcis-governance": "workspace:*",
+    "@letbuyy/lcis-operations": "workspace:*",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "typescript": "^5.9.3"
+  }
+}

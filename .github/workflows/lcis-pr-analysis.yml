@@ -1,0 +1,62 @@
+name: LCIS PR Analysis
+
+# Read-only LCIS analysis on every pull request: blast radius, risk, affected
+# domains/services, recommended reviewers, sensitivity + validator warnings.
+# LCIS never mutates the repo; the only side effect is the PR comment.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: lcis-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  lcis-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile=false
+
+      # LCIS reads pre-computed graphify-out/*.json artifacts (gitignored).
+      # Restore from cache when possible, else regenerate the structural artifacts.
+      - name: Cache LCIS artifacts
+        id: lcis-cache
+        uses: actions/cache@v4
+        with:
+          path: graphify-out
+          key: graphify-out-${{ github.sha }}
+          restore-keys: |
+            graphify-out-
+
+      - name: Generate LCIS artifacts
+        if: steps.lcis-cache.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          # Code graph (graph.json) requires the graphify binary; DB/infra/domain intel via graph:* scripts.
+          curl -LsSf https://astral.sh/uv/install.sh | sh || true
+          export PATH="$HOME/.local/bin:$PATH"
+          uv tool install graphifyy || true
+          graphify update . || echo "graphify unavailable — blast-radius will degrade until graph.json exists"
+          pnpm graph:db && pnpm graph:infra && pnpm graph:domain && pnpm graph:relationships || true
+
+      - name: LCIS analysis
+        uses: ./.github/actions/lcis-analysis
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

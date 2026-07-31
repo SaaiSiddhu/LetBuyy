@@ -19,14 +19,14 @@
     "@letbuyy/cms-core": "workspace:*",
     "@letbuyy/commerce-core": "workspace:*",
     "@letbuyy/event-core": "workspace:*",
-    "@letbuyy/infrastructure": "workspace:*",
     "@letbuyy/identity-core": "workspace:*",
+    "@letbuyy/infrastructure": "workspace:*",
     "@letbuyy/notification-core": "workspace:*",
     "@letbuyy/organization-core": "workspace:*",
     "@letbuyy/payments": "workspace:*",
     "@letbuyy/permission-core": "workspace:*",
-    "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/session-core": "workspace:*",
+    "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/tenant-core": "workspace:*",
     "@letbuyy/theme-engine": "workspace:*",
     "@letbuyy/token-core": "workspace:*",
@@ -40,6 +40,6 @@
     "@cloudflare/workers-types": "^4.20260524.1",
     "tsx": "4.20.6",
     "typescript": "^5.7.0",
-    "wrangler": "^4.94.0"
+    "wrangler": "^4.100.0"
   }
 }

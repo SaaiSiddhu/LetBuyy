@@ -5,6 +5,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
+import { assertStaffPermission } from '../middleware/staff-permission';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import {
@@ -104,6 +105,9 @@ router.post('/', validate('json', CreateCouponSchema), async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
+    const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'marketing:write');
+    if (staffBlock) return staffBlock;
+
     // Check code uniqueness within store
     const { data: existing } = await db
         .from('coupons')
@@ -184,6 +188,9 @@ router.patch('/:id', async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
+    const staffBlock = await assertStaffPermission(c, ownedCoupon.store_id, customUser.id, 'marketing:write');
+    if (staffBlock) return staffBlock;
+
     const updates = planCouponUpdate(patch).updates;
 
     if (Object.keys(updates).length === 0) {
@@ -221,6 +228,9 @@ router.delete('/:id', async (c) => {
     if (!customUser || !ownedCoupon?.store_id || !(await verifySiteOwnership(db, ownedCoupon.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
+
+    const staffBlock = await assertStaffPermission(c, ownedCoupon.store_id, customUser.id, 'marketing:write');
+    if (staffBlock) return staffBlock;
 
     const { error } = await db
         .from('coupons')
