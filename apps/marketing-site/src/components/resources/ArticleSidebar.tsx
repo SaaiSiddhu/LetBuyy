@@ -46,16 +46,12 @@ export default function ArticleSidebar({ author, related, authorArticleCount, au
 
         <p className="arc-author-bio">{author.bio}</p>
 
-        <div className="arc-author-stats-row">
-          <div className="arc-author-stat-cell">
-            <span className="arc-author-stat-n">{authorArticleCount}</span>
-            <span className="arc-author-stat-l">Articles</span>
-          </div>
-          <div className="arc-author-stat-cell">
-            <span className="arc-author-stat-n">{authorTopics.length}</span>
-            <span className="arc-author-stat-l">Topics</span>
-          </div>
-        </div>
+        {/* Inline facts rather than boxed tiles — two numbers do not need panels */}
+        <p className="arc-author-facts">
+          <strong>{authorArticleCount}</strong> articles
+          <span className="arc-author-facts-sep" aria-hidden="true" />
+          <strong>{authorTopics.length}</strong> topics
+        </p>
 
         {authorTopics.length > 0 && (
           <div className="arc-author-topics-row">
@@ -66,12 +62,12 @@ export default function ArticleSidebar({ author, related, authorArticleCount, au
         )}
 
         <div className="arc-author-links">
+          {/* The mark is the wordmark — a text label beside it just reads twice */}
           {author.twitter && (
-            <a href={author.twitter} target="_blank" rel="noopener noreferrer" className="arc-author-soc">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <a href={author.twitter} target="_blank" rel="noopener noreferrer" className="arc-author-soc" aria-label={`${author.name} on X`}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
-              X
             </a>
           )}
           {author.linkedin && (

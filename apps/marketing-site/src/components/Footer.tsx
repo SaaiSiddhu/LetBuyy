@@ -18,6 +18,7 @@ import {
 import BrandLogo from './BrandLogo'
 import { getAssetPublicUrl } from '@/lib/public-urls'
 import { getPlatformNavigationLinks } from '@/lib/platform-links'
+import { getAppDownloadTargets } from '@/lib/app-downloads'
 
 const platformLinks = getPlatformNavigationLinks()
 const platformHref = (label: string) => platformLinks.find((link) => link.label === label)?.href ?? '/'
@@ -78,6 +79,7 @@ const socialLinks = [
 const privacyChoicesIconUrl = getAssetPublicUrl('/assets/legal/privacy-choices.svg')
 
 export default function Footer() {
+    const downloads = getAppDownloadTargets()
     const [privacyPanelOpen, setPrivacyPanelOpen] = useState(false)
     const [analyticsEnabled, setAnalyticsEnabled] = useState(false)
     const [personalizationEnabled, setPersonalizationEnabled] = useState(false)
@@ -102,9 +104,82 @@ export default function Footer() {
                 </h2>
 
                 <div className="footer-nav">
-                    <Link href="/" className="footer-mark" aria-label="LetBuyy home">
-                        <BrandLogo className="footer-logo-image" width={178} height={58} />
-                    </Link>
+                    <div className="footer-brand">
+                        <Link href="/" className="footer-mark" aria-label="LetBuyy home">
+                            <BrandLogo className="footer-logo-image" width={178} height={58} />
+                        </Link>
+
+                        <div className="footer-get-app">
+                            <p className="footer-get-app-label">Merchant app for Android</p>
+
+                            <div className="footer-get-app-row">
+                                {downloads.playStoreUrl ? (
+                                    <a
+                                        href={downloads.playStoreUrl}
+                                        className="app-badge app-badge-primary"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <span className="app-badge-icon" aria-hidden="true">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M3.6 2.3a1 1 0 0 0-.5.9v17.6a1 1 0 0 0 .5.9l9.3-9.7L3.6 2.3Zm10.7 8.1 2.9-3-9.8-5.6 6.9 8.6Zm0 3.2-6.9 8.6 9.8-5.6-2.9-3Zm1.4-1.6 3.4-1.9c.6-.4.6-1.4 0-1.8l-3.4-1.9-3.1 3.2 3.1 3.2Z" />
+                                            </svg>
+                                        </span>
+                                        <span className="app-badge-text">
+                                            <span className="app-badge-kicker">Get it on</span>
+                                            <span className="app-badge-name">Google Play</span>
+                                        </span>
+                                    </a>
+                                ) : (
+                                    <span className="app-badge app-badge-primary is-pending" aria-disabled="true">
+                                        <span className="app-badge-icon" aria-hidden="true">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M3.6 2.3a1 1 0 0 0-.5.9v17.6a1 1 0 0 0 .5.9l9.3-9.7L3.6 2.3Zm10.7 8.1 2.9-3-9.8-5.6 6.9 8.6Zm0 3.2-6.9 8.6 9.8-5.6-2.9-3Zm1.4-1.6 3.4-1.9c.6-.4.6-1.4 0-1.8l-3.4-1.9-3.1 3.2 3.1 3.2Z" />
+                                            </svg>
+                                        </span>
+                                        <span className="app-badge-text">
+                                            <span className="app-badge-kicker">Coming soon to</span>
+                                            <span className="app-badge-name">Google Play</span>
+                                        </span>
+                                    </span>
+                                )}
+
+                                {downloads.apkUrl ? (
+                                    <a href={downloads.apkUrl} className="app-badge" download>
+                                        <span className="app-badge-icon" aria-hidden="true">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M12 3v12m0 0 4-4m-4 4-4-4" />
+                                                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                                            </svg>
+                                        </span>
+                                        <span className="app-badge-text">
+                                            <span className="app-badge-kicker">Download</span>
+                                            <span className="app-badge-name">Android APK</span>
+                                        </span>
+                                    </a>
+                                ) : (
+                                    <span className="app-badge is-pending" aria-disabled="true">
+                                        <span className="app-badge-icon" aria-hidden="true">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M12 3v12m0 0 4-4m-4 4-4-4" />
+                                                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                                            </svg>
+                                        </span>
+                                        <span className="app-badge-text">
+                                            <span className="app-badge-kicker">Coming soon</span>
+                                            <span className="app-badge-name">Android APK</span>
+                                        </span>
+                                    </span>
+                                )}
+                            </div>
+
+                            {!downloads.available && (
+                                <p className="footer-get-app-note">
+                                    Launching with the private beta.
+                                </p>
+                            )}
+                        </div>
+                    </div>
 
                     <div className="footer-columns">
                         {footerColumns.map((column) => (

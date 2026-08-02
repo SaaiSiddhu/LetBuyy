@@ -123,6 +123,7 @@ function EcosRailItem({
     const Icon = card.Icon
     return (
         <motion.div
+            className="ecos-rail-item-wrap"
             initial={{ opacity: 0, x: 14 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}

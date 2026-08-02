@@ -78,24 +78,27 @@ const navLinks: NavLink[] = [
     { href: '#pricing', label: 'Pricing' },
 ]
 
+const whyIntro =
+    'LetBuyy is a simple way for Indian businesses to sell online — your shop, payments, orders and customers, all in one place.'
+
 const whyCards: MenuItem[] = [
     {
         href: '#how-it-works',
         icon: Rocket,
-        label: 'Launch fast',
-        description: 'Start with guided onboarding, store setup, domains, pages and publication readiness in one flow.',
+        label: 'Start selling today',
+        description: 'Pick a design, add your products, go live. No coding and no agency needed.',
     },
     {
         href: '#features',
         icon: IndianRupee,
-        label: 'India-first commerce',
-        description: 'Prepare COD, UPI, GST posture, payment readiness and fulfilment defaults for real merchants.',
+        label: 'Made for India',
+        description: 'Take UPI, cards and cash on delivery. GST bills are created for you on every order.',
     },
     {
         href: '#capabilities',
         icon: Store,
-        label: 'More than stores',
-        description: 'Build stores, blogs and landing pages from the same workspace.',
+        label: 'Everything in one place',
+        description: 'Products, orders, stock and customers together — no more juggling apps and sheets.',
     },
 ]
 
@@ -103,75 +106,93 @@ const whyBuiltIn: MenuItem[] = [
     {
         href: '#features',
         icon: CreditCard,
-        label: 'Checkout readiness',
-        description: 'Payment, order and policy setup stays connected to the storefront.',
+        label: 'Get paid on time',
+        description: 'Money reaches your bank account, and every payment and refund is tracked for you.',
+    },
+    {
+        href: '#features',
+        icon: Truck,
+        label: 'Deliver anywhere',
+        description: 'Ship across India with rates, pickup and tracking already set up.',
     },
     {
         href: '#features',
         icon: ShieldCheck,
-        label: 'Tenant-safe runtime',
-        description: 'Wildcard storefronts map back to governed site records and ownership checks.',
+        label: 'Safe and always open',
+        description: 'Your shop stays online round the clock, and customer details stay private.',
+    },
+    {
+        href: '#features',
+        icon: BarChart3,
+        label: 'Know what sells',
+        description: 'See daily sales, best products and repeat buyers in plain numbers.',
+    },
+    {
+        href: '#features',
+        icon: MessageCircle,
+        label: 'Sell on WhatsApp',
+        description: 'Share your shop and send order updates where your customers already are.',
     },
     {
         href: '#features',
         icon: Puzzle,
-        label: 'App and theme ecosystem',
-        description: 'Extend each store through marketplace surfaces instead of one-off code.',
+        label: 'Grow when ready',
+        description: 'Add new designs and features any time — nothing needs rebuilding.',
     },
 ]
 
 const productSections: MenuSection[] = [
     {
-        eyebrow: 'Build your website',
+        eyebrow: 'Build your shop',
         items: [
-            { href: '#capabilities', icon: LayoutDashboard, label: 'Store Builder' },
-            { href: themeMarketplaceUrl, icon: Palette, label: 'Themes' },
-            { href: '#features', icon: Globe, label: 'Domains' },
+            { href: '#capabilities', icon: LayoutDashboard, label: 'Shop Builder' },
+            { href: themeMarketplaceUrl, icon: Palette, label: 'Designs' },
+            { href: '#features', icon: Globe, label: 'Domain Name' },
             { href: '#capabilities', icon: FileText, label: 'Pages & Blogs' },
-            { href: '#features', icon: Users, label: 'Customer Accounts' },
+            { href: '#features', icon: Users, label: 'Customer Logins' },
         ],
     },
     {
         eyebrow: 'Sell anywhere',
         items: [
-            { href: '#features', icon: Store, label: 'Online Store' },
-            { href: '#features', icon: Smartphone, label: 'Mobile Commerce' },
-            { href: appMarketplaceUrl, icon: ShoppingBag, label: 'App Marketplace' },
-            { href: '#features', icon: Megaphone, label: 'Social & Marketplaces' },
-            { href: '#features', icon: Globe, label: 'Global + India-first' },
+            { href: '#features', icon: Store, label: 'Online Shop' },
+            { href: '#features', icon: Smartphone, label: 'Sell on Mobile' },
+            { href: '#features', icon: MessageCircle, label: 'WhatsApp Orders' },
+            { href: '#features', icon: Megaphone, label: 'Social Selling' },
+            { href: '#features', icon: Globe, label: 'India & Overseas' },
         ],
     },
     {
-        eyebrow: 'Marketing & analytics',
+        eyebrow: 'Bring in customers',
         items: [
             { href: '#features', icon: Megaphone, label: 'Campaigns' },
-            { href: '#features', icon: MessageCircle, label: 'Forms & Customer Chat' },
-            { href: '#pricing', icon: Tag, label: 'Discounts' },
-            { href: '#features', icon: BarChart3, label: 'Analytics' },
+            { href: '#features', icon: MessageCircle, label: 'Customer Chat' },
+            { href: '#pricing', icon: Tag, label: 'Discount Codes' },
+            { href: '#features', icon: BarChart3, label: 'Sales Reports' },
         ],
     },
     {
         eyebrow: 'Run your business',
         items: [
-            { href: '#features', icon: Package, label: 'Orders & Inventory' },
-            { href: '#features', icon: Truck, label: 'Shipping & Tax' },
+            { href: '#features', icon: Package, label: 'Orders & Stock' },
+            { href: '#features', icon: Truck, label: 'Shipping & GST' },
             { href: '#features', icon: Users, label: 'Customers' },
-            { href: '#features', icon: Bot, label: 'Workflow Automation' },
+            { href: '#features', icon: Bot, label: 'Auto Reminders' },
         ],
     },
     {
         eyebrow: 'Get paid',
         items: [
             { href: '#features', icon: CreditCard, label: 'Checkout' },
-            { href: '#features', icon: IndianRupee, label: 'Payments' },
+            { href: '#features', icon: IndianRupee, label: 'UPI, Cards & COD' },
         ],
     },
     {
-        eyebrow: 'Customize & extend LetBuyy',
+        eyebrow: 'Make it your own',
         items: [
-            { href: themeMarketplaceUrl, icon: Palette, label: 'Theme Marketplace', description: 'Reusable storefront looks.' },
-            { href: appMarketplaceUrl, icon: Puzzle, label: 'App Marketplace', description: 'Install extension workflows.' },
-            { href: developerPortalUrl, icon: Code2, label: 'Developer Platform', description: 'APIs, webhooks and worker runtime.' },
+            { href: themeMarketplaceUrl, icon: Palette, label: 'Browse Designs', description: 'Ready-made looks for your shop.' },
+            { href: appMarketplaceUrl, icon: Puzzle, label: 'Browse Add-ons', description: 'Add new features in a click.' },
+            { href: developerPortalUrl, icon: Code2, label: 'For Developers', description: 'Build custom features with our tools.' },
         ],
     },
 ]
@@ -180,20 +201,20 @@ const productHighlights: MenuItem[] = [
     {
         href: '#features',
         icon: Sparkles,
-        label: 'LetBuyy Studio',
-        description: 'One workspace for site building, content, commerce and operations.',
+        label: 'One place for everything',
+        description: 'Build your shop, add products and handle daily work without switching apps.',
     },
     {
         href: '#features',
         icon: Bot,
-        label: 'AI operations',
-        description: 'Assistant-ready workflows for setup, catalog work and automation.',
+        label: 'AI that helps you',
+        description: 'Set up your shop and write product details in seconds, not hours.',
     },
     {
         href: '#features',
         icon: ShieldCheck,
-        label: 'Governed runtime',
-        description: 'Cloudflare API, tenant isolation and storefront routing stay aligned.',
+        label: 'Safe and reliable',
+        description: 'Your shop stays fast and online, and your business data stays private.',
     },
 ]
 
@@ -217,7 +238,7 @@ function DesktopWhyMenu({ closeMenu }: { closeMenu: () => void }) {
             </div>
 
             <aside className="desktop-mega-side">
-                <p className="desktop-mega-eyebrow">Built into every workspace</p>
+                <p className="desktop-mega-eyebrow">Included with every store</p>
                 <div className="desktop-mega-side-stack">
                     {whyBuiltIn.map((item) => (
                         <Link key={item.label} href={item.href} className="desktop-mega-side-item" onClick={closeMenu}>
@@ -349,6 +370,8 @@ function MobileWhyPanel({ closeMenu, goBack }: { closeMenu: () => void; goBack: 
                 <span>Back</span>
             </Button>
 
+            <p className="mobile-panel-intro">{whyIntro}</p>
+
             <div className="mobile-card-stack">
                 {whyCards.map((item) => (
                     <Link key={item.label} href={item.href} className="mobile-feature-card" onClick={closeMenu}>
@@ -361,7 +384,7 @@ function MobileWhyPanel({ closeMenu, goBack }: { closeMenu: () => void; goBack: 
                 ))}
             </div>
 
-            <p className="mobile-panel-eyebrow">Built into every workspace</p>
+            <p className="mobile-panel-eyebrow">Included with every store</p>
             <div className="mobile-mini-grid">
                 {whyBuiltIn.map((item) => (
                     <Link key={item.label} href={item.href} className="mobile-mini-card" onClick={closeMenu}>
@@ -394,7 +417,13 @@ function MobileProductsPanel({ closeMenu, goBack }: { closeMenu: () => void; goB
                 {productSections.map((section) => (
                     <section key={section.eyebrow} className="mobile-menu-section">
                         <p className="mobile-panel-eyebrow">{section.eyebrow}</p>
-                        <div className="mobile-panel-link-list">
+                        <div
+                            className={
+                                section.items.some((item) => item.description)
+                                    ? 'mobile-panel-link-list is-detailed'
+                                    : 'mobile-panel-link-list'
+                            }
+                        >
                             {section.items.map((item) => (
                                 <Link key={item.label} href={item.href} className="mobile-panel-link" onClick={closeMenu}>
                                     <MenuIcon icon={item.icon} />

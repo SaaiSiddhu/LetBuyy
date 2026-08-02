@@ -185,12 +185,13 @@ const softwareNode = {
   },
 };
 
-const structuredData = [
-  {
-    "@context": "https://schema.org",
-    "@graph": [organizationNode, websiteNode, softwareNode, ...navigationNodes],
-  },
-];
+// Emitted as a top-level JSON-LD object (not wrapped in an array): multiple
+// entities belong under "@graph". Consumers commonly read `parsed["@context"]`
+// directly, which is undefined on a top-level array.
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [organizationNode, websiteNode, softwareNode, ...navigationNodes],
+};
 
 export default function RootLayout({
   children,

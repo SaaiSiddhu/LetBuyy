@@ -14,6 +14,7 @@ import {
     Users,
     type LucideIcon,
 } from '@letbuyy/ui'
+import { revealAccordionItem } from '@/lib/reveal-accordion-item'
 
 type CapabilityId = 'storefronts' | 'orders' | 'inventory' | 'payments' | 'customers' | 'analytics' | 'ai' | 'b2b'
 
@@ -654,13 +655,20 @@ function AccordionItem({
 }) {
     const itemRef = useRef<HTMLDivElement>(null)
     const Icon = cap.icon
+    // 'storefronts' is open on first render, so without this guard the effect
+    // scrolls the page down to this section on every load/refresh. Only scroll
+    // when the user actually opens an item.
+    const hasMounted = useRef(false)
 
     useEffect(() => {
+        if (!hasMounted.current) {
+            hasMounted.current = true
+            return
+        }
         if (!isOpen) return
-        const t = setTimeout(() => {
-            itemRef.current?.scrollIntoView({ behavior: isReduced ? 'instant' : 'smooth', block: 'nearest' })
-        }, 60)
-        return () => clearTimeout(t)
+        const item = itemRef.current
+        if (!item) return
+        return revealAccordionItem(item, isReduced)
     }, [isOpen, isReduced])
 
     return (

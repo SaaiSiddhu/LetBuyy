@@ -1,6 +1,16 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import ArticleCard from '@/components/resources/ArticleCard'
+import {
+  BarChart3,
+  Code2,
+  IndianRupee,
+  Package,
+  Rocket,
+  ShoppingBag,
+  Sparkles,
+  type LucideIcon,
+} from '@letbuyy/ui'
+import NewsletterInline from '@/components/resources/NewsletterInline'
 import { getCategory } from '@/lib/resources/categories'
 import {
   CATEGORIES,
@@ -22,12 +32,19 @@ export const metadata: Metadata = {
 const LEVEL_LABELS = { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' }
 const LEVEL_CLASS = { beginner: 'res-path-level-beginner', intermediate: 'res-path-level-intermediate', advanced: 'res-path-level-advanced' }
 
-const STATS = [
-  { value: `${ARTICLES.length}+`, label: 'Guides' },
-  { value: `${LEARNING_PATHS.length}`, label: 'Learning paths' },
-  { value: `${AUTHORS.length}`, label: 'Expert authors' },
-  { value: '35,000+', label: 'Merchants learning' },
-]
+/* Each category already declares its own icon — map the name to the component
+   so the hubs stop rendering one identical glyph for everything. */
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  ShoppingBag,
+  // @letbuyy/ui does not re-export TrendingUp; BarChart3 is the nearest
+  // exported equivalent for the Growth category.
+  TrendingUp: BarChart3,
+  IndianRupee,
+  Package,
+  Sparkles,
+  Code2,
+  Rocket,
+}
 
 // Category hub order — show these 4 prominently, rest as compact
 const HUB_CATEGORIES = ['ecommerce', 'payments', 'growth', 'operations']
@@ -42,85 +59,94 @@ export default function ResourcesPage() {
     <>
       {/* ── HERO V3 ────────────────────────────────────────────────────── */}
       <section className="res-v3-hero">
-        <div className="container">
-          <div className="res-v3-hero-inner">
+        <div className="res-hero-aurora" aria-hidden="true" />
+        <div className="container res-hero-inner">
 
-            {/* Left: editorial heading + stats + search */}
-            <div className="res-v3-hero-left">
-              <div className="res-v3-hero-eyebrow">
-                <span className="res-v3-hero-dot" aria-hidden="true" />
-                Merchant Education Platform
-              </div>
-              <h1 className="res-v3-hero-heading">
-                Everything you need to<br />
-                <span className="res-v3-hero-accent">build and scale</span><br />
-                your Indian store.
-              </h1>
-              <p className="res-v3-hero-sub">
-                Guides, playbooks, and tutorials built for Indian merchants — covering GST, UPI, COD, D2C growth, and commerce automation.
-              </p>
-
-              {/* Inline search */}
-              <Link href="/resources/search" className="res-v3-hero-search" aria-label="Search resources">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-                </svg>
-                <span className="res-v3-hero-search-placeholder">Search guides, topics, categories…</span>
-                <kbd className="res-v3-hero-kbd">⌘K</kbd>
-              </Link>
-
-              {/* Stats row */}
-              <div className="res-v3-stats">
-                {STATS.map(s => (
-                  <div key={s.label} className="res-v3-stat">
-                    <span className="res-v3-stat-value">{s.value}</span>
-                    <span className="res-v3-stat-label">{s.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right: featured article spotlight */}
-            {featured && featuredCat && (
-              <div className="res-v3-hero-right">
-                <p className="res-v3-spotlight-label">Featured guide</p>
-                <Link href={`/resources/${featured.category}/${featured.slug}`} className="res-v3-spotlight-card">
-                  <div className="res-v3-spotlight-accent" style={{ background: featuredCat.color }} />
-                  <div className="res-v3-spotlight-body">
-                    <span className="rc-card-chip" style={{ background: featuredCat.accent, color: featuredCat.color }}>
-                      {featuredCat.label}
-                    </span>
-                    <h2 className="res-v3-spotlight-title">{featured.title}</h2>
-                    <p className="res-v3-spotlight-sub">{featured.subtitle}</p>
-                    <div className="res-v3-spotlight-footer">
-                      <div className="rc-card-author-row">
-                        <div className="rc-author-avatar rc-author-avatar-xs">
-                          {AUTHORS.find(a => a.slug === featured.author)?.name.charAt(0) ?? 'L'}
-                        </div>
-                        <span className="rc-card-author-name">
-                          {AUTHORS.find(a => a.slug === featured.author)?.name}
-                        </span>
-                      </div>
-                      <span className="res-v3-spotlight-time">{featured.readingTime} min read</span>
-                    </div>
-                  </div>
-                </Link>
-
-                {/* Trending tags */}
-                <div className="res-v3-trending-tags">
-                  <span className="res-v3-trending-label">Trending:</span>
-                  {['upi', 'gst', 'cod', 'd2c', 'inventory', 'shopify'].map(tag => (
-                    <Link key={tag} href={`/resources/tag/${tag}`} className="rc-tag">#{tag}</Link>
-                  ))}
-                </div>
-              </div>
-            )}
+          <div className="res-v3-hero-eyebrow">
+            <span className="res-v3-hero-dot" aria-hidden="true" />
+            Merchant Education Platform
           </div>
+
+          <h1 className="res-v3-hero-heading">
+            Everything you need to{' '}
+            <span className="res-v3-hero-accent">build and scale</span>{' '}
+            your Indian store.
+          </h1>
+
+          <p className="res-v3-hero-sub">
+            Guides, playbooks, and tutorials built for Indian merchants — covering GST, UPI, COD,
+            D2C growth, and commerce automation.
+          </p>
+
+          {/* Full-width search — the primary entry point to the library */}
+          <Link href="/resources/search" className="res-hero-search" aria-label="Search resources">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+            </svg>
+            <span className="res-hero-search-placeholder">Search guides, topics, categories…</span>
+            <kbd className="res-v3-hero-kbd">⌘K</kbd>
+          </Link>
+
+          <div className="res-hero-tags">
+            <span className="res-v3-trending-label">Popular</span>
+            {['upi', 'gst', 'cod', 'd2c', 'inventory', 'shopify'].map(tag => (
+              <Link key={tag} href={`/resources/tag/${tag}`} className="rc-tag">#{tag}</Link>
+            ))}
+          </div>
+
         </div>
       </section>
 
+      {/* ── FEATURED GUIDE ─────────────────────────────────────────────── */}
+      {featured && featuredCat && (
+        <section className="res-featured-band">
+          <div className="container">
+            <div className="res-section-header">
+              <div>
+                <h2 className="res-section-title">Featured guide</h2>
+                <p className="res-section-sub">Start here if you are new to selling online</p>
+              </div>
+            </div>
+            <Link
+              href={`/resources/${featured.category}/${featured.slug}`}
+              className="res-featured-card"
+              style={{ '--feat-accent': featuredCat.color } as React.CSSProperties}
+            >
+              <span className="res-featured-glow" aria-hidden="true" />
+
+              <div className="res-featured-main">
+                <div className="res-featured-kicker">
+                  <span className="res-featured-tag">{featuredCat.label}</span>
+                  <span className="res-featured-sep" aria-hidden="true" />
+                  <span className="res-featured-time">{featured.readingTime} min read</span>
+                </div>
+
+                <h3 className="res-featured-title">{featured.title}</h3>
+                <p className="res-featured-sub">{featured.subtitle}</p>
+
+                <div className="res-featured-byline">
+                  <span className="res-featured-avatar" aria-hidden="true">
+                    {AUTHORS.find(a => a.slug === featured.author)?.name.charAt(0) ?? 'L'}
+                  </span>
+                  <span className="res-featured-author">
+                    {AUTHORS.find(a => a.slug === featured.author)?.name}
+                  </span>
+                </div>
+              </div>
+
+              <span className="res-featured-cta">
+                Read guide
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </span>
+            </Link>
+          </div>
+        </section>
+      )}
+
       {/* ── LEARNING PATHS CAROUSEL ────────────────────────────────────── */}
-      <section className="res-v3-section">
+      <section className="res-v3-section" id="learning-paths">
         <div className="container">
           <div className="res-section-header">
             <div>
@@ -131,53 +157,67 @@ export default function ResourcesPage() {
         </div>
         <div className="res-v3-paths-scroll-wrap">
           <div className="container">
-            <div className="res-v3-paths-scroll">
+            <div className="res-v3-paths-grid">
               {LEARNING_PATHS.map(path => {
                 const articlesInPath = ARTICLES.filter(a => path.articleSlugs.includes(a.slug))
                 const totalMinutes = articlesInPath.reduce((sum, a) => sum + a.readingTime, 0)
                 return (
-                  <div key={path.slug} className="res-v3-path-card" style={{ borderColor: `${path.color}40` }}>
-                    <div className="res-v3-path-card-header" style={{ background: path.accent }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span className={`res-path-level ${LEVEL_CLASS[path.level]}`}>
-                          {LEVEL_LABELS[path.level]}
-                        </span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={path.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ opacity: 0.8 }}>
-                          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                        </svg>
-                      </div>
-                      {/* Progress track placeholder */}
-                      <div className="res-v3-path-progress">
-                        <div className="res-v3-path-progress-fill" style={{ width: '0%', background: path.color }} />
-                      </div>
+                  <article
+                    key={path.slug}
+                    className="res-path-card"
+                    style={{ '--path-accent': path.color } as React.CSSProperties}
+                  >
+                    <span className="res-path-glow" aria-hidden="true" />
+
+                    <div className="res-path-top">
+                      <span className={`res-path-level ${LEVEL_CLASS[path.level]}`}>
+                        {LEVEL_LABELS[path.level]}
+                      </span>
+                      <span className="res-path-count">{articlesInPath.length} steps</span>
                     </div>
-                    <div className="res-v3-path-card-body">
-                      <h3 className="res-v3-path-title" style={{ color: path.color }}>{path.title}</h3>
-                      <p className="res-v3-path-desc">{path.description}</p>
-                      <div className="res-v3-path-meta">
-                        <span>
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }}>
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                          </svg>
-                          {articlesInPath.length} articles
-                        </span>
-                        <span className="rc-card-meta-dot" aria-hidden="true" />
-                        <span>~{totalMinutes} min total</span>
-                      </div>
-                      <div className="res-v3-path-articles">
-                        {articlesInPath.slice(0, 4).map((a, i) => (
-                          <Link key={a.slug} href={`/resources/${a.category}/${a.slug}`} className="res-v3-path-article">
-                            <span className="res-v3-path-article-num" style={{ color: path.color }}>{i + 1}</span>
-                            <span className="res-v3-path-article-title">{a.title}</span>
-                            <span className="res-v3-path-article-time">{a.readingTime}m</span>
+
+                    <h3 className="res-path-title">{path.title}</h3>
+                    <p className="res-path-desc">{path.description}</p>
+
+                    {/* The steps are drawn as a connected route — the card shows
+                        the journey rather than just listing its articles. */}
+                    <ol className="res-path-track">
+                      {articlesInPath.slice(0, 4).map((a, i) => (
+                        <li key={a.slug} className="res-path-step">
+                          <span className="res-path-node" aria-hidden="true">{i + 1}</span>
+                          <Link href={`/resources/${a.category}/${a.slug}`} className="res-path-step-link">
+                            <span className="res-path-step-title">{a.title}</span>
+                            <span className="res-path-step-time">{a.readingTime}m</span>
                           </Link>
-                        ))}
-                        {articlesInPath.length > 4 && (
-                          <span className="res-v3-path-more">+{articlesInPath.length - 4} more articles</span>
-                        )}
-                      </div>
+                        </li>
+                      ))}
+                      {articlesInPath.length > 4 && (
+                        <li className="res-path-step is-rest">
+                          <span className="res-path-node is-rest" aria-hidden="true">
+                            +{articlesInPath.length - 4}
+                          </span>
+                          <span className="res-path-rest-text">
+                            {articlesInPath.length - 4} more in this path
+                          </span>
+                        </li>
+                      )}
+                    </ol>
+
+                    <div className="res-path-foot">
+                      <span className="res-path-total">~{totalMinutes} min total</span>
+                      {articlesInPath[0] && (
+                        <Link
+                          href={`/resources/${articlesInPath[0].category}/${articlesInPath[0].slug}`}
+                          className="res-path-cta"
+                        >
+                          Start path
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                          </svg>
+                        </Link>
+                      )}
                     </div>
-                  </div>
+                  </article>
                 )
               })}
             </div>
@@ -234,34 +274,47 @@ export default function ResourcesPage() {
               const cat = CATEGORIES.find(c => c.slug === catSlug)!
               const articles = getArticlesByCategory(catSlug).slice(0, 3)
               return (
-                <div key={catSlug} className="res-v3-hub">
-                  <div className="res-v3-hub-header">
-                    <div className="res-v3-hub-icon" style={{ background: cat.accent, color: cat.color }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" />
+                <article
+                  key={catSlug}
+                  className="res-hub"
+                  style={{ '--hub-accent': cat.color } as React.CSSProperties}
+                >
+                  {/* Left rail carries the identity, right column is the index —
+                      a directory entry, not a sequence. */}
+                  <div className="res-hub-rail">
+                    <span className="res-hub-icon" aria-hidden="true">
+                      {(() => {
+                        const Icon = CATEGORY_ICONS[cat.icon] ?? ShoppingBag
+                        return <Icon width={20} height={20} strokeWidth={1.75} />
+                      })()}
+                    </span>
+                    <h3 className="res-hub-title">{cat.label}</h3>
+                    <p className="res-hub-count">
+                      {getArticlesByCategory(catSlug).length} guides
+                    </p>
+                    <p className="res-hub-desc">{cat.description}</p>
+                    <Link href={`/resources/${catSlug}`} className="res-hub-cta">
+                      See all
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
                       </svg>
-                    </div>
-                    <div>
-                      <h3 className="res-v3-hub-title" style={{ color: cat.color }}>{cat.label}</h3>
-                      <p className="res-v3-hub-count">{getArticlesByCategory(catSlug).length} articles</p>
-                    </div>
+                    </Link>
                   </div>
-                  <p className="res-v3-hub-desc">{cat.description}</p>
-                  <div className="res-v3-hub-articles">
-                    {articles.map(a => (
-                      <Link key={a.slug} href={`/resources/${a.category}/${a.slug}`} className="res-v3-hub-article">
-                        <span className="res-v3-hub-article-title">{a.title}</span>
-                        <span className="res-v3-hub-article-time">{a.readingTime}m</span>
-                      </Link>
+
+                  <ol className="res-hub-index">
+                    {articles.map((a, i) => (
+                      <li key={a.slug}>
+                        <Link href={`/resources/${a.category}/${a.slug}`} className="res-hub-entry">
+                          <span className="res-hub-entry-num" aria-hidden="true">
+                            {String(i + 1).padStart(2, '0')}
+                          </span>
+                          <span className="res-hub-entry-title">{a.title}</span>
+                          <span className="res-hub-entry-time">{a.readingTime}m</span>
+                        </Link>
+                      </li>
                     ))}
-                  </div>
-                  <Link href={`/resources/${catSlug}`} className="res-v3-hub-cta" style={{ color: cat.color }}>
-                    See all {cat.label} guides
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M5 12h14M12 5l7 7-7 7" />
-                    </svg>
-                  </Link>
-                </div>
+                  </ol>
+                </article>
               )
             })}
           </div>
@@ -289,17 +342,69 @@ export default function ResourcesPage() {
             <Link href="/resources/search" className="res-section-link">Browse all →</Link>
           </div>
 
-          <div className="res-v3-latest-grid">
-            {/* First 2: featured large */}
-            {latest.slice(0, 2).map(article => {
+          {/* Front-page rhythm: one lead story, the rest as a ruled column —
+              deliberately not a grid of uniform cards. */}
+          <div className="res-wire">
+            {latest.slice(0, 1).map(article => {
               const cat = getCategory(article.category)!
-              return <ArticleCard key={article.slug} article={article} category={cat} featured />
+              const author = AUTHORS.find(a => a.slug === article.author)
+              return (
+                <Link
+                  key={article.slug}
+                  href={`/resources/${article.category}/${article.slug}`}
+                  className="res-wire-lead"
+                  style={{ '--wire-accent': cat.color } as React.CSSProperties}
+                >
+                  <span className="res-wire-dateline">
+                    <span className="res-wire-cat">{cat.label}</span>
+                    <span className="res-wire-rule" aria-hidden="true" />
+                    <time dateTime={article.publishedAt}>
+                      {new Date(article.publishedAt).toLocaleDateString('en-IN', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })}
+                    </time>
+                  </span>
+
+                  <h3 className="res-wire-lead-title">{article.title}</h3>
+                  <p className="res-wire-lead-sub">{article.subtitle}</p>
+
+                  <span className="res-wire-byline">
+                    <span className="res-wire-avatar" aria-hidden="true">
+                      {author?.name.charAt(0) ?? 'L'}
+                    </span>
+                    <span className="res-wire-author">{author?.name}</span>
+                    <span className="res-wire-dot" aria-hidden="true" />
+                    <span className="res-wire-time">{article.readingTime} min read</span>
+                  </span>
+                </Link>
+              )
             })}
-            {/* Next 4: standard */}
-            {latest.slice(2, 6).map(article => {
-              const cat = getCategory(article.category)!
-              return <ArticleCard key={article.slug} article={article} category={cat} />
-            })}
+
+            <ol className="res-wire-list">
+              {latest.slice(1, 6).map(article => {
+                const cat = getCategory(article.category)!
+                const author = AUTHORS.find(a => a.slug === article.author)
+                return (
+                  <li key={article.slug}>
+                    <Link
+                      href={`/resources/${article.category}/${article.slug}`}
+                      className="res-wire-item"
+                      style={{ '--wire-accent': cat.color } as React.CSSProperties}
+                    >
+                      <span className="res-wire-item-cat">{cat.label}</span>
+                      <span className="res-wire-item-title">{article.title}</span>
+                      <span className="res-wire-item-meta">
+                        {author?.name}
+                        <span className="res-wire-dot" aria-hidden="true" />
+                        {article.readingTime} min
+                      </span>
+                    </Link>
+                  </li>
+                )
+              })}
+            </ol>
           </div>
         </div>
       </section>
@@ -320,13 +425,7 @@ export default function ResourcesPage() {
               </div>
             </div>
             <div className="res-v3-newsletter-right">
-              <Link href="/resources/newsletter" className="res-v3-newsletter-btn">
-                Subscribe to newsletter
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </Link>
-              <p className="res-v3-newsletter-hint">Choose topics: Growth · Payments · Operations · AI</p>
+              <NewsletterInline />
             </div>
           </div>
         </div>

@@ -17,23 +17,8 @@ interface Props {
 
 export default function TableOfContents({ headings, readingTime, updatedAt }: Props) {
   const [active, setActive] = useState<string>('')
-  const [progress, setProgress] = useState(0)
-  const progFillRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<Record<string, HTMLAnchorElement | null>>({})
   const tocRef = useRef<HTMLElement>(null)
-
-  useEffect(() => {
-    function onScroll() {
-      const el = document.documentElement
-      const scrollTop = el.scrollTop || document.body.scrollTop
-      const scrollHeight = el.scrollHeight - el.clientHeight
-      const pct = scrollHeight > 0 ? Math.round((scrollTop / scrollHeight) * 100) : 0
-      setProgress(pct)
-      if (progFillRef.current) progFillRef.current.style.width = `${pct}%`
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   useEffect(() => {
     if (headings.length === 0) return
@@ -100,23 +85,15 @@ export default function TableOfContents({ headings, readingTime, updatedAt }: Pr
 
       <div className="arc-toc-divider" />
 
-      {/* Progress + meta */}
+      {/* Reading progress lives in the floating dock now — the rail only
+          carries the standing facts. */}
       <div className="arc-toc-meta">
-        <div className="arc-toc-prog-wrap">
-          <div className="arc-toc-prog-row">
-            <span className="arc-toc-meta-row" style={{ fontSize: 11, gap: 4 }}>
-              <svg className="arc-toc-meta-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-              </svg>
-              {readingTime} min
-            </span>
-            <span className="arc-toc-prog-label">{progress}%</span>
-          </div>
-          <div className="arc-toc-prog-track">
-            <div ref={progFillRef} className="arc-toc-prog-fill" />
-          </div>
+        <div className="arc-toc-meta-row">
+          <svg className="arc-toc-meta-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+          </svg>
+          {readingTime} min read
         </div>
-
         <div className="arc-toc-meta-row">
           <svg className="arc-toc-meta-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />

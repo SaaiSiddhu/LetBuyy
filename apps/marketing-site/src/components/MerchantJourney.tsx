@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { getAccountsUrl, getMarketingSiteUrl } from '@/lib/public-urls'
+import { revealAccordionItem } from '@/lib/reveal-accordion-item'
 
 interface JourneyStep {
     id: string
@@ -701,6 +702,18 @@ export default function MerchantJourney() {
         window.addEventListener('resize', check, { passive: true })
         return () => window.removeEventListener('resize', check)
     }, [])
+
+    // Same reveal as the Commerce OS Capability Map accordion: bring the opened
+    // step up with the previous and next rows still in view. Mobile only — at
+    // >=960px the trigger is just a heading and the preview is pinned beside
+    // the rail, so there is nothing to scroll to.
+    useEffect(() => {
+        if (mobileOpen === null || isDesktopRef.current) return
+        const el = stepRefs.current[mobileOpen]
+        if (!el) return
+        const immediate = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        return revealAccordionItem(el, immediate)
+    }, [mobileOpen])
 
     useEffect(() => {
         // rAF loop — reads scrollY directly each frame so it works with Lenis

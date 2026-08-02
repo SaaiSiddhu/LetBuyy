@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ReadingProgress from '@/components/resources/ReadingProgress'
 import TableOfContents from '@/components/resources/TableOfContents'
-import MobileTOC from '@/components/resources/MobileTOC'
+import ArticleDock from '@/components/resources/ArticleDock'
 import ArticleBody from '@/components/resources/ArticleBody'
 import ArticleSidebar from '@/components/resources/ArticleSidebar'
 import CopyLinkButton from '@/components/resources/CopyLinkButton'
@@ -135,10 +135,19 @@ export default async function ArticlePage({
 
   return (
     <>
+      {/* One script per entity, each a top-level JSON-LD object. Consumers
+          commonly read `parsed["@context"]` directly, which is undefined when
+          several entities share one array-wrapped block. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([structuredData, breadcrumbData]).replace(/</g, '\\u003c'),
+          __html: JSON.stringify(structuredData).replace(/</g, '\\u003c'),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbData).replace(/</g, '\\u003c'),
         }}
       />
 
@@ -161,9 +170,6 @@ export default async function ArticlePage({
           {/* ── Center: article ── */}
           <main className="arc-center">
 
-            {/* Mobile collapsible TOC */}
-            <MobileTOC headings={headings} />
-
             {/* Article header */}
             <header className="arc-header">
               {/* Eyebrow: breadcrumb + category chip */}
@@ -173,56 +179,46 @@ export default async function ArticlePage({
                   <span className="arc-breadcrumb-sep" aria-hidden="true">›</span>
                   <Link href={`/resources/${category}`} style={{ color: cat.color }}>{cat.label}</Link>
                 </nav>
-                <span
-                  className="rc-card-chip"
-                  style={{ background: cat.accent, color: cat.color }}
-                >
-                  {cat.label}
-                </span>
-                {article.featured && (
-                  <span className="rc-card-chip" style={{ background: 'rgba(139,92,246,0.12)', color: 'var(--primary)' }}>
-                    Featured
-                  </span>
-                )}
+                {/* No category chip here — the breadcrumb above already names it */}
+                {article.featured && <span className="arc-flag">Featured</span>}
               </div>
 
               <h1 className="arc-title">{article.title}</h1>
               <p className="arc-lead">{article.subtitle}</p>
 
-              {/* Byline row */}
+              {/* Byline: one compact block, plain text rather than pills */}
               <div className="arc-byline">
                 <div className="arc-author-row">
                   <div className="arc-author-avatar-lg" aria-hidden="true">
                     {author.name.charAt(0)}
                   </div>
-                  <div>
-                    <p className="arc-author-info-name">{author.name}</p>
-                    <p className="arc-author-info-role">{author.role}</p>
+                  <div className="arc-byline-text">
+                    <p className="arc-byline-primary">
+                      {author.name}
+                      <span className="arc-byline-sep" aria-hidden="true" />
+                      <span className="arc-byline-role">{author.role}</span>
+                    </p>
+                    <p className="arc-byline-secondary">
+                      <time dateTime={article.publishedAt}>{formatDate(article.publishedAt)}</time>
+                      <span className="arc-byline-sep" aria-hidden="true" />
+                      {article.readingTime} min read
+                      {article.updatedAt !== article.publishedAt && (
+                        <>
+                          <span className="arc-byline-sep" aria-hidden="true" />
+                          Updated {formatDate(article.updatedAt)}
+                        </>
+                      )}
+                    </p>
                   </div>
                 </div>
 
-                <div className="arc-meta-pills">
-                  <span className="arc-meta-pill">
-                    <svg className="arc-meta-pill-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
-                    </svg>
-                    {formatDate(article.publishedAt)}
-                  </span>
-                  <span className="arc-meta-pill">
-                    <svg className="arc-meta-pill-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-                    </svg>
-                    {article.readingTime} min read
-                  </span>
-                  {article.updatedAt !== article.publishedAt && (
-                    <span className="arc-meta-pill">
-                      Updated {formatDate(article.updatedAt)}
-                    </span>
-                  )}
+                <div className="arc-actions-row">
+                  <CopyLinkButton />
+                  <BookmarkButton slug={slug} title={article.title} category={category} />
                 </div>
               </div>
 
-              {/* Tags */}
+              {/* Tags — quiet text links, no chrome */}
               {article.tags.length > 0 && (
                 <div className="arc-tags-row">
                   {article.tags.map(tag => (
@@ -232,12 +228,6 @@ export default async function ArticlePage({
                   ))}
                 </div>
               )}
-
-              {/* Actions */}
-              <div className="arc-actions-row">
-                <CopyLinkButton />
-                <BookmarkButton slug={slug} title={article.title} category={category} />
-              </div>
             </header>
 
             {/* Series navigation */}
@@ -282,6 +272,12 @@ export default async function ArticlePage({
 
         </div>
       </div>
+
+      {/* Floating reading dock — progress, contents, actions, next */}
+      <ArticleDock
+        headings={headings}
+        next={next ? { slug: next.slug, title: next.title, category: next.category } : null}
+      />
     </>
   )
 }

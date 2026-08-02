@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import Lenis from 'lenis'
+import { registerSmoothScroll } from '@/lib/smooth-scroll'
 import Header from '@/components/Header'
 import Hero from '@/components/Hero'
 import CapabilityMap from '@/components/CapabilityMap'
@@ -22,6 +23,9 @@ export default function Home() {
       smoothWheel: true,
     })
 
+    // Expose the instance so components can scroll without Lenis undoing it.
+    registerSmoothScroll(lenis)
+
     function raf(time: number) {
       lenis.raf(time)
       requestAnimationFrame(raf)
@@ -30,6 +34,7 @@ export default function Home() {
     requestAnimationFrame(raf)
 
     return () => {
+      registerSmoothScroll(null)
       lenis.destroy()
     }
   }, [])
