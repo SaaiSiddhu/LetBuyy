@@ -14265,7 +14265,6 @@ html.lenis body {
 .res-v3-cat-hero-desc { font-size: 16px; line-height: 1.65; color: var(--text-secondary); max-width: 480px; }
 .res-v3-cat-hero-stat { font-size: 14px; color: var(--text-muted); }
 .res-v3-cat-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-.res-v3-cat-hero-right { }
 
 /* Other categories strip */
 .res-v3-other-cats { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -15272,3 +15271,959 @@ html.lenis body {
   .arc-post-nl-sub { font-size: 15px; margin-bottom: 24px; }
   .arc-post-nl-title { font-size: clamp(24px, 7vw, 32px); }
 }
+
+/* ======================================
+   LEGAL LIBRARY  (.lgl-*)
+
+   Its own rhythm, deliberately unlike the rest of the site: the marketing
+   pages are card-and-gradient, the resources pages are magazine. A contract
+   reads like a ledger — hairline rules instead of card borders, tabular
+   numerals in the margin, monospace for anything that is a label rather than
+   a sentence. Density is high on purpose; a legal page that looks airy is a
+   legal page nobody finishes.
+   ====================================== */
+
+.lgl-hub,
+.lgl-doc {
+  --lgl-rule: color-mix(in srgb, var(--border-subtle) 100%, transparent);
+  --lgl-gutter: 44px;
+}
+
+/* ---------- hub masthead ---------- */
+
+.lgl-masthead {
+  padding-top: calc(var(--lb-header-h) + clamp(34px, 4vw, 58px));
+  padding-bottom: clamp(22px, 2.6vw, 32px);
+}
+
+.lgl-masthead-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(22px, 3vw, 34px);
+  align-items: end;
+}
+
+@media (min-width: 900px) {
+  .lgl-masthead-grid {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 48px;
+  }
+}
+
+.lgl-masthead-lead { min-width: 0; }
+
+.lgl-masthead-title {
+  font-size: clamp(38px, 6.4vw, 68px);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  color: var(--text-primary);
+  margin: 0 0 14px;
+}
+
+.lgl-masthead-intro {
+  font-size: 15.5px;
+  line-height: 1.62;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 60ch;
+}
+
+/* Spec sheet, not stat cards: a single hairline frame divided internally, so
+   it reads as one printed block rather than three floating tiles. */
+.lgl-masthead-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  border: 1px solid var(--lgl-rule);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.lgl-meta-cell {
+  padding: 12px 14px;
+  border-right: 1px solid var(--lgl-rule);
+  min-width: 0;
+}
+
+.lgl-meta-cell:last-child { border-right: 0; }
+
+/* Below ~440px three tracks leave "3 August 2026" wrapping onto two lines.
+   Stack to label-left / value-right rows instead — same frame, no wrap. */
+@media (max-width: 439px) {
+  .lgl-masthead-meta { grid-template-columns: 1fr; }
+
+  .lgl-meta-cell {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 14px;
+    border-right: 0;
+    border-bottom: 1px solid var(--lgl-rule);
+  }
+
+  .lgl-meta-cell:last-child { border-bottom: 0; }
+  .lgl-meta-cell dt { margin: 0; }
+  .lgl-meta-cell dd { text-align: right; }
+}
+
+.lgl-meta-cell dt {
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  margin: 0 0 5px;
+}
+
+.lgl-meta-cell dd {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--text-primary);
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- status strip ---------- */
+
+.lgl-status {
+  border-top: 1px solid var(--lgl-rule);
+  border-bottom: 1px solid var(--lgl-rule);
+  background: color-mix(in srgb, var(--primary) 5%, transparent);
+}
+
+.lgl-status-inner {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  padding-top: 13px;
+  padding-bottom: 13px;
+}
+
+.lgl-status-dot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+.lgl-status-text {
+  margin: 0;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.58;
+  color: var(--text-secondary);
+}
+
+.lgl-status-text strong { color: var(--text-primary); font-weight: 650; }
+
+/* ---------- shelves ---------- */
+
+.lgl-shelves { padding: clamp(28px, 3.4vw, 44px) 0 clamp(30px, 3.4vw, 46px); }
+
+.lgl-shelf + .lgl-shelf { margin-top: clamp(34px, 4vw, 52px); }
+
+.lgl-shelf-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0 14px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--text-primary);
+}
+
+/* The index digit is the shelf's only ornament — oversized, low contrast,
+   sitting in the gutter the clause numbers will later occupy. */
+.lgl-shelf-index {
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700;
+  line-height: 1;
+  color: color-mix(in srgb, var(--primary) 42%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+.lgl-shelf-titles { min-width: 0; }
+
+.lgl-shelf-title {
+  font-size: clamp(19px, 2.4vw, 25px);
+  font-weight: 750;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.15;
+}
+
+.lgl-shelf-blurb {
+  margin: 5px 0 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  max-width: 66ch;
+}
+
+.lgl-shelf-count {
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.lgl-rows { list-style: none; margin: 0; padding: 0; }
+
+.lgl-rows > li + li { border-top: 1px solid var(--lgl-rule); }
+
+/* Mobile: stacked. Desktop: a four-track row so titles, purposes and metadata
+   line up down the whole shelf like a printed index. */
+.lgl-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'title arrow'
+    'purpose purpose'
+    'meta meta';
+  gap: 4px 12px;
+  align-items: center;
+  padding: 15px 12px 15px 0;
+  text-decoration: none;
+  transition: background 0.16s ease, padding-left 0.16s ease;
+}
+
+.lgl-row:hover {
+  background: var(--bg-card-hover);
+  padding-left: 12px;
+}
+
+.lgl-row-title {
+  grid-area: title;
+  font-size: 15.5px;
+  font-weight: 650;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+  min-width: 0;
+}
+
+.lgl-row:hover .lgl-row-title { color: var(--primary); }
+
+.lgl-row-purpose {
+  grid-area: purpose;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  min-width: 0;
+}
+
+.lgl-row-meta {
+  grid-area: meta;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.lgl-chip {
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 11%, transparent);
+  padding: 3px 7px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+.lgl-row-stat {
+  font-size: 11.5px;
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.lgl-row-arrow {
+  grid-area: arrow;
+  display: flex;
+  color: var(--text-subtle);
+  transition: transform 0.16s ease, color 0.16s ease;
+}
+
+.lgl-row:hover .lgl-row-arrow {
+  color: var(--primary);
+  transform: translateX(3px);
+}
+
+@media (min-width: 860px) {
+  .lgl-row {
+    grid-template-columns: minmax(180px, 0.9fr) minmax(0, 1.5fr) auto auto;
+    grid-template-areas: 'title purpose meta arrow';
+    gap: 0 26px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+  }
+
+  .lgl-row-meta { margin-top: 0; justify-content: flex-end; }
+}
+
+/* ---------- hub footer prompt ---------- */
+
+.lgl-ask {
+  border-top: 1px solid var(--lgl-rule);
+  padding: clamp(26px, 3vw, 38px) 0 clamp(34px, 4vw, 52px);
+}
+
+.lgl-ask-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  align-items: center;
+}
+
+@media (min-width: 800px) {
+  .lgl-ask-inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 40px;
+  }
+}
+
+.lgl-ask-copy { min-width: 0; }
+
+.lgl-ask-title {
+  margin: 0 0 6px;
+  font-size: clamp(18px, 2.2vw, 22px);
+  font-weight: 720;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.lgl-ask-note {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.58;
+  color: var(--text-secondary);
+  max-width: 62ch;
+}
+
+.lgl-ask-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.lgl-ask-primary,
+.lgl-ask-secondary {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-weight: 620;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.16s ease, background 0.16s ease;
+}
+
+.lgl-ask-primary {
+  background: var(--primary);
+  color: var(--lb-color-text-inverse);
+}
+
+.lgl-ask-primary:hover { opacity: 0.9; }
+
+.lgl-ask-secondary {
+  border: 1px solid var(--lgl-rule);
+  color: var(--text-primary);
+}
+
+.lgl-ask-secondary:hover { background: var(--bg-card-hover); }
+
+/* ---------- document: crumbs + head ---------- */
+
+.lgl-crumbs {
+  padding-top: calc(var(--lb-header-h) + 18px);
+}
+
+.lgl-crumbs-inner {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+}
+
+.lgl-crumbs-inner a { color: var(--text-subtle); text-decoration: none; }
+.lgl-crumbs-inner a:hover { color: var(--primary); }
+.lgl-crumbs-current { color: var(--text-primary); font-weight: 650; }
+
+.lgl-doc-head {
+  padding-top: 16px;
+  padding-bottom: clamp(20px, 2.4vw, 28px);
+}
+
+.lgl-doc-title {
+  font-size: clamp(30px, 4.8vw, 50px);
+  font-weight: 800;
+  line-height: 1.03;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+  margin: 0 0 11px;
+  max-width: 20ch;
+}
+
+.lgl-doc-purpose {
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0 0 20px;
+  max-width: 62ch;
+}
+
+/* Same spec-sheet frame as the hub, at four tracks. Wraps to 2x2 rather than
+   scrolling — a metadata strip that scrolls sideways hides half of itself. */
+.lgl-doc-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  border: 1px solid var(--lgl-rule);
+  border-radius: 12px;
+  overflow: hidden;
+  max-width: 620px;
+}
+
+.lgl-doc-meta > div {
+  padding: 11px 13px;
+  border-right: 1px solid var(--lgl-rule);
+  border-bottom: 1px solid var(--lgl-rule);
+  min-width: 0;
+}
+
+.lgl-doc-meta > div:nth-child(2n) { border-right: 0; }
+.lgl-doc-meta > div:nth-last-child(-n + 2) { border-bottom: 0; }
+
+@media (min-width: 720px) {
+  .lgl-doc-meta { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .lgl-doc-meta > div { border-bottom: 0; border-right: 1px solid var(--lgl-rule); }
+  .lgl-doc-meta > div:last-child { border-right: 0; }
+}
+
+.lgl-doc-meta dt {
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  margin: 0 0 4px;
+}
+
+.lgl-doc-meta dd {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 650;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+}
+
+/* ---------- document body layout ---------- */
+
+.lgl-doc-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  padding-top: clamp(22px, 2.6vw, 34px);
+  padding-bottom: clamp(38px, 4.5vw, 64px);
+}
+
+@media (min-width: 1000px) {
+  .lgl-doc-body {
+    grid-template-columns: 236px minmax(0, 1fr);
+    gap: 56px;
+    align-items: start;
+  }
+}
+
+.lgl-doc-main { min-width: 0; }
+
+/* ---------- clause index ---------- */
+
+.lgl-toc { min-width: 0; }
+
+@media (min-width: 1000px) {
+  .lgl-toc-inner {
+    position: sticky;
+    top: calc(var(--lb-header-h) + 20px);
+    max-height: calc(100dvh - var(--lb-header-h) - 48px);
+    overflow-y: auto;
+    padding-right: 6px;
+  }
+}
+
+/* Mobile shows a disclosure button; desktop shows a static label instead. */
+.lgl-toc-trigger {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 11px 13px;
+  margin-bottom: 12px;
+  border: 1px solid var(--lgl-rule);
+  border-radius: 10px;
+  background: var(--bg-card);
+  cursor: pointer;
+  text-align: left;
+}
+
+.lgl-toc-trigger-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.lgl-toc-trigger-count {
+  font-size: 11px;
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.lgl-toc-trigger-chev {
+  display: flex;
+  color: var(--text-subtle);
+  transition: transform 0.2s ease;
+}
+
+.lgl-toc-trigger[aria-expanded='true'] .lgl-toc-trigger-chev { transform: rotate(180deg); }
+
+.lgl-toc-label { display: none; }
+
+.lgl-toc-list {
+  display: none;
+  list-style: none;
+  margin: 0 0 26px;
+  padding: 0;
+  counter-reset: none;
+}
+
+.lgl-toc-list.is-open { display: block; }
+
+.lgl-toc-link {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: baseline;
+  padding: 7px 0 7px 11px;
+  border-left: 2px solid transparent;
+  text-decoration: none;
+  transition: border-color 0.16s ease, color 0.16s ease;
+}
+
+.lgl-toc-num {
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 650;
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.lgl-toc-text {
+  font-size: 12.5px;
+  line-height: 1.42;
+  color: var(--text-secondary);
+  min-width: 0;
+}
+
+.lgl-toc-link:hover .lgl-toc-text { color: var(--text-primary); }
+
+.lgl-toc-link.is-active { border-left-color: var(--primary); }
+.lgl-toc-link.is-active .lgl-toc-text { color: var(--text-primary); font-weight: 620; }
+.lgl-toc-link.is-active .lgl-toc-num { color: var(--primary); }
+
+@media (min-width: 1000px) {
+  .lgl-toc-trigger { display: none; }
+
+  .lgl-toc-label {
+    display: block;
+    margin: 0 0 10px 13px;
+    font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+
+  .lgl-toc-list { display: block; margin-bottom: 0; }
+}
+
+/* ---------- "in short" brief ---------- */
+
+.lgl-brief {
+  padding: 18px 20px;
+  margin-bottom: clamp(30px, 3.4vw, 44px);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--primary) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+}
+
+.lgl-brief-title {
+  margin: 0 0 11px;
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.lgl-brief-list { margin: 0; padding: 0; list-style: none; }
+
+.lgl-brief-list > li {
+  position: relative;
+  padding-left: 17px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.lgl-brief-list > li + li { margin-top: 8px; }
+
+.lgl-brief-list > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.lgl-brief-caveat {
+  margin: 13px 0 0;
+  padding-top: 11px;
+  border-top: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-subtle);
+}
+
+/* ---------- clauses ---------- */
+
+.lgl-clauses { list-style: none; margin: 0; padding: 0; counter-reset: none; }
+
+.lgl-clause {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  padding: clamp(22px, 2.6vw, 30px) 0;
+  border-top: 1px solid var(--lgl-rule);
+}
+
+.lgl-clause:first-child { border-top: 0; padding-top: 0; }
+
+/* The number moves into a true gutter once there is room for one. Below that
+   it sits above the heading, where it still reads as a clause marker without
+   stealing a third of a 360px line. */
+.lgl-clause-num {
+  display: block;
+  margin-bottom: 7px;
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--primary) 70%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+.lgl-clause-body { min-width: 0; }
+
+@media (min-width: 680px) {
+  .lgl-clause {
+    grid-template-columns: var(--lgl-gutter) minmax(0, 1fr);
+    gap: 0 18px;
+  }
+
+  .lgl-clause-num {
+    margin-bottom: 0;
+    padding-top: 3px;
+    font-size: 13px;
+  }
+}
+
+.lgl-clause-heading {
+  margin: 0 0 10px;
+  font-size: clamp(17px, 2vw, 20px);
+  font-weight: 700;
+  letter-spacing: -0.022em;
+  line-height: 1.28;
+  color: var(--text-primary);
+  scroll-margin-top: calc(var(--lb-header-h) + 24px);
+}
+
+.lgl-clause-p {
+  margin: 0 0 11px;
+  font-size: 14.5px;
+  line-height: 1.68;
+  color: var(--text-secondary);
+  max-width: 72ch;
+}
+
+.lgl-clause-p:last-child { margin-bottom: 0; }
+
+.lgl-clause-list {
+  margin: 13px 0 0;
+  padding: 0;
+  list-style: none;
+  border-left: 2px solid var(--lgl-rule);
+}
+
+.lgl-clause-list > li {
+  position: relative;
+  padding: 5px 0 5px 16px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  max-width: 70ch;
+}
+
+.lgl-clause-list > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  width: 8px;
+  height: 1px;
+  background: var(--lgl-rule);
+}
+
+.lgl-clause-note {
+  display: block;
+  margin: 15px 0 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--bg-card-hover);
+  border: 1px solid var(--lgl-rule);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  max-width: 70ch;
+}
+
+.lgl-clause-note-label {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+}
+
+/* ---------- grievance officer ---------- */
+
+.lgl-officer {
+  margin-bottom: clamp(30px, 3.4vw, 44px);
+  border: 1px solid var(--lgl-rule);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.lgl-officer-head {
+  padding: 16px 18px 14px;
+  border-bottom: 1px solid var(--lgl-rule);
+}
+
+.lgl-officer-title {
+  margin: 0 0 5px;
+  font-size: 17px;
+  font-weight: 720;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.lgl-officer-req {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-subtle);
+}
+
+.lgl-officer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.lgl-officer-cell {
+  padding: 12px 18px;
+  border-right: 1px solid var(--lgl-rule);
+  border-bottom: 1px solid var(--lgl-rule);
+  min-width: 0;
+}
+
+.lgl-officer-cell:nth-child(2n) { border-right: 0; }
+.lgl-officer-cell-wide { grid-column: 1 / -1; border-right: 0; }
+
+.lgl-officer-cell dt {
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  margin: 0 0 4px;
+}
+
+.lgl-officer-cell dd {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 620;
+  color: var(--text-primary);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.lgl-officer-cell dd a { color: var(--primary); text-decoration: none; }
+.lgl-officer-cell dd a:hover { text-decoration: underline; }
+
+.lgl-officer-cell dd.is-pending {
+  color: var(--text-subtle);
+  font-weight: 500;
+  font-style: italic;
+}
+
+.lgl-officer-addr { display: block; }
+
+.lgl-officer-gap {
+  margin: 0;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--lgl-rule);
+  font-size: 12.5px;
+  line-height: 1.58;
+  color: var(--text-secondary);
+}
+
+.lgl-officer-slas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lgl-officer-slas > li {
+  padding: 13px 18px;
+  border-right: 1px solid var(--lgl-rule);
+  min-width: 0;
+}
+
+.lgl-officer-slas > li:last-child { border-right: 0; }
+
+.lgl-officer-slas strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.lgl-officer-slas span {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+/* ---------- document footer ---------- */
+
+.lgl-doc-contact {
+  margin-top: clamp(28px, 3.2vw, 40px);
+  padding-top: 20px;
+  border-top: 1px solid var(--lgl-rule);
+}
+
+.lgl-doc-contact-title {
+  margin: 0 0 7px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.018em;
+  color: var(--text-primary);
+}
+
+.lgl-doc-contact p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.62;
+  color: var(--text-secondary);
+  max-width: 66ch;
+}
+
+.lgl-doc-contact a { color: var(--primary); text-decoration: none; }
+.lgl-doc-contact a:hover { text-decoration: underline; }
+
+.lgl-pager {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: clamp(24px, 3vw, 36px);
+}
+
+@media (min-width: 640px) {
+  .lgl-pager { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.lgl-pager-link {
+  display: block;
+  padding: 14px 16px;
+  border: 1px solid var(--lgl-rule);
+  border-radius: 12px;
+  text-decoration: none;
+  min-width: 0;
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.lgl-pager-link:hover {
+  background: var(--bg-card-hover);
+  border-color: color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+.lgl-pager-link.is-next { text-align: right; }
+
+.lgl-pager-dir {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+}
+
+.lgl-pager-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  line-height: 1.35;
+}
+
+.lgl-pager-link:hover .lgl-pager-title { color: var(--primary); }

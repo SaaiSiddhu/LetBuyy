@@ -5,6 +5,7 @@ import Header from '@/components/Header'
 import { CATEGORIES } from '@/lib/resources/categories'
 import { getArticlesByCategory } from '@/lib/resources/utils'
 import { getPlatformNavigationLinks, getPlatformSitemapUrls } from '@/lib/platform-links'
+import { LEGAL_DOCUMENTS } from '@/lib/legal/documents'
 
 export const metadata: Metadata = {
     title: 'LetBuyy Sitemap',
@@ -45,7 +46,17 @@ export default function SitemapPage() {
         { href: '/resources/search', label: 'Search', note: 'Find a guide' },
     ]
 
-    const totalPages = startHere.length + guides.length + crossProperty.length
+    /* Generated from the library so a new policy is indexed without a second edit. */
+    const legal = [
+        { href: '/legal', label: 'Legal library', note: `${LEGAL_DOCUMENTS.length} documents` },
+        ...LEGAL_DOCUMENTS.map(doc => ({
+            href: `/legal/${doc.slug}`,
+            label: doc.shortTitle,
+            note: doc.purpose,
+        })),
+    ]
+
+    const totalPages = startHere.length + guides.length + crossProperty.length + legal.length
 
     return (
         <>
@@ -116,6 +127,23 @@ export default function SitemapPage() {
                                                 <span className="smap-ext" aria-label="opens another LetBuyy property">↗</span>
                                             </span>
                                             <span className="smap-link-note">{link.description}</span>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+
+                        <section className="smap-group smap-group-wide">
+                            <h2 className="smap-group-title">
+                                Legal
+                                <span className="smap-group-count">{legal.length}</span>
+                            </h2>
+                            <ul className="smap-list">
+                                {legal.map(item => (
+                                    <li key={item.href}>
+                                        <Link href={item.href} className="smap-link">
+                                            <span className="smap-link-label">{item.label}</span>
+                                            <span className="smap-link-note">{item.note}</span>
                                         </Link>
                                     </li>
                                 ))}

@@ -51,6 +51,20 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: '/:path*', headers: createSecurityHeaders() }];
   },
+  async redirects() {
+    /* The flat policy URLs are the ones people type and the ones other sites
+       link to, but every policy now lives under the /legal library. Permanent
+       so the signal consolidates on the new location. */
+    return [
+      { source: '/terms', destination: '/legal/terms', permanent: true },
+      { source: '/privacy', destination: '/legal/privacy', permanent: true },
+      { source: '/privacy-policy', destination: '/legal/privacy', permanent: true },
+      { source: '/cookies', destination: '/legal/cookies', permanent: true },
+      { source: '/refund-policy', destination: '/legal/refunds', permanent: true },
+      { source: '/shipping-policy', destination: '/legal/shipping', permanent: true },
+      { source: '/security', destination: '/legal/security', permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

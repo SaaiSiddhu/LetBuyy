@@ -55,17 +55,21 @@ const footerColumns = [
         title: 'Support',
         links: [
             { label: 'Contact us', href: '/contact' },
-            { label: 'Developer webhooks', href: platformHref('Developers').replace(/\/docs$/, '/webhooks') },
+            { label: 'Grievance redressal', href: '/legal/grievance' },
+            { label: 'Security', href: '/legal/security' },
             { label: 'Account access', href: platformHref('Log in') },
             { label: 'Public sitemap', href: '/sitemap' },
         ],
     },
 ]
 
+/* Every policy lives under /legal/<slug>; /legal is the index. The four here
+   are the ones people look for in a footer — the rest are one click deeper. */
 const legalLinks = [
-    { label: 'Terms of Service', href: '/terms' },
     { label: 'Legal', href: '/legal' },
-    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Terms', href: '/legal/terms' },
+    { label: 'Privacy', href: '/legal/privacy' },
+    { label: 'Refunds', href: '/legal/refunds' },
     { label: 'Sitemap', href: '/sitemap' },
 ]
 

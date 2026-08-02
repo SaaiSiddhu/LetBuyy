@@ -160,6 +160,11 @@ const siteEntryLinks = [
     description: "Reach LetBuyy support, sales, and developer help.",
   },
   {
+    label: "Legal",
+    href: `${siteUrl}/legal`,
+    description: "Terms, privacy, refunds, shipping, payouts, and grievance redressal.",
+  },
+  {
     label: "Sign up",
     href: getAccountsUrl("/signup"),
     description: "Create a LetBuyy merchant account and open a store.",

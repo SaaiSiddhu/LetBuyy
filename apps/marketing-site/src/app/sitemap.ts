@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { getMarketingSiteUrl } from '@/lib/public-urls'
 import { CATEGORIES } from '@/lib/resources/categories'
+import { LEGAL_DOCUMENTS } from '@/lib/legal/documents'
 
 const baseUrl = getMarketingSiteUrl()
 const lastModified = new Date('2026-06-04T00:00:00.000Z')
@@ -63,6 +64,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
             lastModified,
             changeFrequency: 'weekly' as const,
             priority: 0.7,
+        })),
+        {
+            url: `${baseUrl}/legal`,
+            lastModified,
+            changeFrequency: 'monthly',
+            priority: 0.6,
+        },
+        // Every policy is separately indexable — "letbuyy refund policy" should
+        // land on the refund policy, not on the library index.
+        ...LEGAL_DOCUMENTS.map(doc => ({
+            url: `${baseUrl}/legal/${doc.slug}`,
+            lastModified,
+            changeFrequency: 'monthly' as const,
+            priority: 0.5,
         })),
         {
             url: `${baseUrl}/sitemap`,
