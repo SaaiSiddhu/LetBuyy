@@ -54,6 +54,7 @@ const footerColumns = [
     {
         title: 'Support',
         links: [
+            { label: 'Contact us', href: '/contact' },
             { label: 'Developer webhooks', href: platformHref('Developers').replace(/\/docs$/, '/webhooks') },
             { label: 'Account access', href: platformHref('Log in') },
             { label: 'Public sitemap', href: '/sitemap' },

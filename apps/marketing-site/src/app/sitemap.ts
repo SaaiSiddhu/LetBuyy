@@ -1,9 +1,17 @@
 import type { MetadataRoute } from 'next'
 import { getMarketingSiteUrl } from '@/lib/public-urls'
+import { CATEGORIES } from '@/lib/resources/categories'
 
 const baseUrl = getMarketingSiteUrl()
 const lastModified = new Date('2026-06-04T00:00:00.000Z')
 
+/**
+ * Only pages that render their own content belong here.
+ *
+ * `/signup` is deliberately absent — it is a redirect to the accounts app, and
+ * listing a redirect in a sitemap tells crawlers to index a URL that never
+ * serves a page.
+ */
 export default function sitemap(): MetadataRoute.Sitemap {
     return [
         {
@@ -19,11 +27,43 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.9,
         },
         {
+            url: `${baseUrl}/resources`,
+            lastModified,
+            changeFrequency: 'daily',
+            priority: 0.9,
+        },
+        {
+            url: `${baseUrl}/contact`,
+            lastModified,
+            changeFrequency: 'monthly',
+            priority: 0.8,
+        },
+        {
+            url: `${baseUrl}/resources/changelog`,
+            lastModified,
+            changeFrequency: 'weekly',
+            priority: 0.8,
+        },
+        {
             url: `${baseUrl}/create`,
             lastModified,
             changeFrequency: 'monthly',
             priority: 0.7,
         },
+        {
+            url: `${baseUrl}/resources/releases`,
+            lastModified,
+            changeFrequency: 'weekly',
+            priority: 0.7,
+        },
+        // One entry per guide category, generated so a new topic is indexed
+        // without a second edit here.
+        ...CATEGORIES.map(category => ({
+            url: `${baseUrl}/resources/${category.slug}`,
+            lastModified,
+            changeFrequency: 'weekly' as const,
+            priority: 0.7,
+        })),
         {
             url: `${baseUrl}/sitemap`,
             lastModified,
@@ -31,16 +71,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.6,
         },
         {
-            url: `${baseUrl}/resources`,
+            url: `${baseUrl}/resources/search`,
             lastModified,
-            changeFrequency: 'daily',
-            priority: 0.9,
-        },
-        {
-            url: `${baseUrl}/resources/changelog`,
-            lastModified,
-            changeFrequency: 'weekly',
-            priority: 0.8,
+            changeFrequency: 'monthly',
+            priority: 0.4,
         },
     ]
 }

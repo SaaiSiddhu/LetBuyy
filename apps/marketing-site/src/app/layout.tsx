@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { getMarketingSiteUrl, getSupportEmail } from "@/lib/public-urls";
+import { getAccountsUrl, getMarketingSiteUrl, getSupportEmail } from "@/lib/public-urls";
 import { getPlatformNavigationLinks } from "@/lib/platform-links";
 import { BRAND, buildBrandSameAs } from "@letbuyy/shared-types";
 import { LetbuyyThemeProvider, ThemeScript } from "@letbuyy/ui";
@@ -144,6 +144,36 @@ const organizationNode = {
   ...(brandSameAs.length ? { sameAs: brandSameAs } : {}),
 };
 
+/* Marketing-site destinations that are not part of the cross-property nav but
+   are primary entry points for someone searching the brand. Account links point
+   straight at the accounts app rather than at our own /signup, which only
+   redirects there. */
+const siteEntryLinks = [
+  {
+    label: "Resources",
+    href: `${siteUrl}/resources`,
+    description: "Guides on selling online in India — payments, GST, shipping, and growth.",
+  },
+  {
+    label: "Contact",
+    href: `${siteUrl}/contact`,
+    description: "Reach LetBuyy support, sales, and developer help.",
+  },
+  {
+    label: "Sign up",
+    href: getAccountsUrl("/signup"),
+    description: "Create a LetBuyy merchant account and open a store.",
+  },
+];
+
+/* Every destination worth surfacing under the brand result, in the order we
+   would rank them ourselves. Google chooses sitelinks algorithmically — this
+   only describes the site's own hierarchy, it does not select them. */
+const siteNavigationLinks = [
+  ...platformNavigationLinks.filter((link) => link.label !== "LetBuyy"),
+  ...siteEntryLinks,
+];
+
 const websiteNode = {
   "@type": "WebSite",
   "@id": websiteId,
@@ -151,17 +181,15 @@ const websiteNode = {
   url: siteUrl,
   inLanguage: "en-IN",
   publisher: { "@id": orgId },
-  hasPart: platformNavigationLinks
-    .filter((link) => link.label !== "Log in")
-    .map((link) => ({
-      "@type": "WebPage",
-      name: link.label,
-      url: link.href,
-      description: link.description,
-    })),
+  hasPart: siteNavigationLinks.map((link) => ({
+    "@type": "WebPage",
+    name: link.label,
+    url: link.href,
+    description: link.description,
+  })),
 };
 
-const navigationNodes = platformNavigationLinks.map((link) => ({
+const navigationNodes = siteNavigationLinks.map((link) => ({
   "@type": "SiteNavigationElement",
   name: link.label,
   url: link.href,

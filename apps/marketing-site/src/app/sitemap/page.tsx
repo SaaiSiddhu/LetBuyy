@@ -29,6 +29,7 @@ export default function SitemapPage() {
         { href: '/pricing', label: 'Pricing', note: 'Plans and commission' },
         { href: '/create', label: 'Start a store', note: 'Claim your subdomain' },
         { href: '/signup', label: 'Create account', note: 'Merchant sign-up' },
+        { href: '/contact', label: 'Contact', note: 'Support and sales' },
     ]
 
     /* Built from the category data so a new topic appears here automatically. */

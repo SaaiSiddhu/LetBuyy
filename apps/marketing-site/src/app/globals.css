@@ -11980,6 +11980,50 @@ html.lenis body {
 }
 .arc-author-soc:hover { color: var(--text-primary); border-color: var(--border-light); }
 
+/* ── Contact ─────────────────────────────────────────────────────────────
+   A short routing page: one card per channel, no form to abandon. */
+.ctc-hero {
+  padding-top: calc(var(--lb-header-h) + clamp(36px, 4vw, 60px));
+  padding-bottom: clamp(20px, 3vw, 30px);
+}
+.ctc-title {
+  font-size: clamp(30px, 4vw, 46px); font-weight: 800; line-height: 1.06;
+  letter-spacing: -0.035em; color: var(--text-primary); margin: 0 0 12px;
+}
+.ctc-intro {
+  font-size: 15.5px; line-height: 1.6; color: var(--text-secondary);
+  max-width: 560px; margin: 0;
+}
+
+.ctc-body { padding: clamp(20px, 3vw, 32px) 0 clamp(28px, 3vw, 40px); }
+.ctc-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 720px) { .ctc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; } }
+
+.ctc-card {
+  display: grid; gap: 8px; align-content: start;
+  padding: 22px; border-radius: 16px;
+  border: 1px solid var(--border-subtle); background: var(--bg-card);
+  transition: border-color 200ms var(--ease-smooth);
+}
+.ctc-card:hover { border-color: color-mix(in srgb, var(--primary) 40%, transparent); }
+.ctc-card-title {
+  font-size: 16px; font-weight: 720; letter-spacing: -0.015em;
+  color: var(--text-primary); margin: 0;
+}
+.ctc-card-note { font-size: 13.5px; line-height: 1.55; color: var(--text-muted); margin: 0; }
+.ctc-card-action {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 4px;
+  font-size: 13.5px; font-weight: 650; color: var(--primary); text-decoration: none;
+  word-break: break-word;
+}
+.ctc-card-action svg { flex-shrink: 0; transition: transform 200ms var(--ease-smooth); }
+.ctc-card:hover .ctc-card-action svg { transform: translateX(4px); }
+
+.ctc-foot { padding: 0 0 clamp(52px, 6vw, 80px); }
+.ctc-foot-note { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-muted); }
+.ctc-foot-note a { color: var(--primary); text-decoration: none; }
+.ctc-foot-note a:hover { text-decoration: underline; }
+
 /* ── Footer app download badges ──────────────────────────────────────────
    Store-badge anatomy (small kicker over a larger name) but drawn in our own
    type and tokens rather than a pasted vendor image. */
