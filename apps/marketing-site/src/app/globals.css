@@ -15275,132 +15275,121 @@ html.lenis body {
 /* ======================================
    LEGAL LIBRARY  (.lgl-*)
 
-   Its own rhythm, deliberately unlike the rest of the site: the marketing
-   pages are card-and-gradient, the resources pages are magazine. A contract
-   reads like a ledger — hairline rules instead of card borders, tabular
-   numerals in the margin, monospace for anything that is a label rather than
-   a sentence. Density is high on purpose; a legal page that looks airy is a
-   legal page nobody finishes.
+   Rebuilt with no strokes anywhere. The first version separated everything
+   with hairlines — row rules, a boxed metadata frame, bordered notes, a lined
+   officer grid — which is how a spreadsheet organises itself, not how a
+   published document does. Three devices replace all ~20 of them:
+
+     SURFACE   grouping by a tinted plane that appears on hover or holds a
+               callout, never by a line drawn between two things
+     NUMERAL   oversized ghost figures as landmarks — they mark a group or a
+               clause the way a printed statute's marginalia does
+     SPACE     a single rhythm scale doing the separating, so density stays
+               high without anything being fenced
+
+   Audience is metadata in a text line, not a badge: a coloured chip reads as
+   a status ("live", "beta"), and "Merchants" is not a status.
    ====================================== */
 
 .lgl-hub,
 .lgl-doc {
-  --lgl-rule: color-mix(in srgb, var(--border-subtle) 100%, transparent);
-  --lgl-gutter: 44px;
+  /* One surface ramp for the whole library. Every panel below picks a step
+     from it rather than inventing a background, so light and dark stay in
+     step automatically. */
+  --lgl-wash: color-mix(in srgb, var(--text-primary) 3.5%, transparent);
+  --lgl-wash-strong: color-mix(in srgb, var(--text-primary) 6%, transparent);
+  --lgl-tint: color-mix(in srgb, var(--primary) 7%, transparent);
+  --lgl-tint-strong: color-mix(in srgb, var(--primary) 12%, transparent);
+  --lgl-ghost: color-mix(in srgb, var(--primary) 26%, transparent);
+  --lgl-gutter: 58px;
+  --lgl-r: 16px;
+  --lgl-r-lg: 22px;
+}
+
+/* Metadata line shared by the hub and the document head: label above value,
+   held apart by space instead of a cell border. */
+.lgl-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 34px;
+  margin: 0;
+  padding: 0;
+}
+
+.lgl-facts > div { min-width: 0; }
+
+.lgl-facts dt {
+  margin: 0 0 4px;
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+}
+
+.lgl-facts dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 /* ---------- hub masthead ---------- */
 
 .lgl-masthead {
-  padding-top: calc(var(--lb-header-h) + clamp(34px, 4vw, 58px));
-  padding-bottom: clamp(22px, 2.6vw, 32px);
+  padding-top: calc(var(--lb-header-h) + clamp(40px, 5vw, 76px));
+  padding-bottom: clamp(24px, 3vw, 38px);
 }
 
 .lgl-masthead-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(22px, 3vw, 34px);
+  gap: clamp(26px, 3.4vw, 40px);
   align-items: end;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 960px) {
   .lgl-masthead-grid {
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 48px;
+    gap: 64px;
   }
 }
 
 .lgl-masthead-lead { min-width: 0; }
 
 .lgl-masthead-title {
-  font-size: clamp(38px, 6.4vw, 68px);
+  font-size: clamp(42px, 7.4vw, 82px);
   font-weight: 800;
-  line-height: 0.98;
-  letter-spacing: -0.045em;
+  line-height: 0.94;
+  letter-spacing: -0.05em;
   color: var(--text-primary);
-  margin: 0 0 14px;
+  margin: 0 0 16px;
 }
 
 .lgl-masthead-intro {
-  font-size: 15.5px;
+  font-size: clamp(15px, 1.5vw, 16.5px);
   line-height: 1.62;
   color: var(--text-secondary);
   margin: 0;
-  max-width: 60ch;
+  max-width: 58ch;
 }
 
-/* Spec sheet, not stat cards: a single hairline frame divided internally, so
-   it reads as one printed block rather than three floating tiles. */
-.lgl-masthead-meta {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 0;
-  border: 1px solid var(--lgl-rule);
-  border-radius: 12px;
-  overflow: hidden;
-}
+/* ---------- status panel ---------- */
 
-.lgl-meta-cell {
-  padding: 12px 14px;
-  border-right: 1px solid var(--lgl-rule);
-  min-width: 0;
-}
+.lgl-status { padding-bottom: clamp(20px, 2.4vw, 28px); }
 
-.lgl-meta-cell:last-child { border-right: 0; }
-
-/* Below ~440px three tracks leave "3 August 2026" wrapping onto two lines.
-   Stack to label-left / value-right rows instead — same frame, no wrap. */
-@media (max-width: 439px) {
-  .lgl-masthead-meta { grid-template-columns: 1fr; }
-
-  .lgl-meta-cell {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 10px 14px;
-    border-right: 0;
-    border-bottom: 1px solid var(--lgl-rule);
-  }
-
-  .lgl-meta-cell:last-child { border-bottom: 0; }
-  .lgl-meta-cell dt { margin: 0; }
-  .lgl-meta-cell dd { text-align: right; }
-}
-
-.lgl-meta-cell dt {
-  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-subtle);
-  margin: 0 0 5px;
-}
-
-.lgl-meta-cell dd {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 650;
-  color: var(--text-primary);
-  line-height: 1.25;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ---------- status strip ---------- */
-
-.lgl-status {
-  border-top: 1px solid var(--lgl-rule);
-  border-bottom: 1px solid var(--lgl-rule);
-  background: color-mix(in srgb, var(--primary) 5%, transparent);
-}
-
-.lgl-status-inner {
+.lgl-status-panel {
   display: flex;
-  gap: 11px;
+  gap: 13px;
   align-items: flex-start;
-  padding-top: 13px;
-  padding-bottom: 13px;
+  padding: 15px 18px;
+  border-radius: var(--lgl-r);
+  background: var(--lgl-tint);
 }
 
 .lgl-status-dot {
@@ -15410,14 +15399,14 @@ html.lenis body {
   margin-top: 6px;
   border-radius: 50%;
   background: var(--primary);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 18%, transparent);
 }
 
 .lgl-status-text {
   margin: 0;
   min-width: 0;
   font-size: 13px;
-  line-height: 1.58;
+  line-height: 1.6;
   color: var(--text-secondary);
 }
 
@@ -15425,63 +15414,92 @@ html.lenis body {
 
 /* ---------- shelves ---------- */
 
-.lgl-shelves { padding: clamp(28px, 3.4vw, 44px) 0 clamp(30px, 3.4vw, 46px); }
+.lgl-shelves { padding-bottom: clamp(34px, 4vw, 56px); }
 
-.lgl-shelf + .lgl-shelf { margin-top: clamp(34px, 4vw, 52px); }
+.lgl-shelf + .lgl-shelf { margin-top: clamp(46px, 5.4vw, 78px); }
 
-.lgl-shelf-head {
+/* Asymmetric: the group identity parks in a left column and stays there while
+   its documents scroll past. That column is the structure a rule used to
+   imply, and it costs no ink. */
+.lgl-shelf {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: 0 14px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--text-primary);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
 }
 
-/* The index digit is the shelf's only ornament — oversized, low contrast,
-   sitting in the gutter the clause numbers will later occupy. */
+@media (min-width: 1024px) {
+  .lgl-shelf {
+    grid-template-columns: 264px minmax(0, 1fr);
+    gap: 56px;
+    align-items: start;
+  }
+
+  .lgl-shelf-head {
+    position: sticky;
+    top: calc(var(--lb-header-h) + 34px);
+  }
+}
+
+.lgl-shelf-head { min-width: 0; }
+
+/* The landmark. Large, low-contrast, optically hung left of the title so the
+   title itself stays on the text edge. */
 .lgl-shelf-index {
+  display: block;
   font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
-  font-size: clamp(22px, 3vw, 30px);
+  font-size: clamp(40px, 5.6vw, 62px);
   font-weight: 700;
-  line-height: 1;
-  color: color-mix(in srgb, var(--primary) 42%, transparent);
+  line-height: 0.86;
+  letter-spacing: -0.05em;
+  color: var(--lgl-ghost);
   font-variant-numeric: tabular-nums;
+  margin: 0 0 10px -0.06em;
 }
 
 .lgl-shelf-titles { min-width: 0; }
 
 .lgl-shelf-title {
-  font-size: clamp(19px, 2.4vw, 25px);
-  font-weight: 750;
-  letter-spacing: -0.025em;
+  font-size: clamp(21px, 2.6vw, 28px);
+  font-weight: 760;
+  letter-spacing: -0.032em;
   color: var(--text-primary);
   margin: 0;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
 .lgl-shelf-blurb {
-  margin: 5px 0 0;
+  margin: 8px 0 0;
   font-size: 13.5px;
   line-height: 1.55;
   color: var(--text-secondary);
-  max-width: 66ch;
+  max-width: 46ch;
 }
 
 .lgl-shelf-count {
+  display: block;
+  margin-top: 10px;
   font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
-  font-size: 11px;
-  font-weight: 650;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--text-subtle);
   font-variant-numeric: tabular-nums;
 }
 
-.lgl-rows { list-style: none; margin: 0; padding: 0; }
+.lgl-shelf-count::after { content: ' documents'; }
 
-.lgl-rows > li + li { border-top: 1px solid var(--lgl-rule); }
+.lgl-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
 
-/* Mobile: stacked. Desktop: a four-track row so titles, purposes and metadata
-   line up down the whole shelf like a printed index. */
+/* At rest a row is unadorned text on the page. The surface only exists under
+   the pointer — which is the moment separation is actually needed. The
+   negative inset lets that surface bleed past the text edge so it reads as
+   the row being lifted, not as a box being drawn around it. */
 .lgl-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -15489,24 +15507,27 @@ html.lenis body {
     'title arrow'
     'purpose purpose'
     'meta meta';
-  gap: 4px 12px;
+  gap: 4px 14px;
   align-items: center;
-  padding: 15px 12px 15px 0;
+  padding: 12px 14px;
+  margin-inline: -14px;
+  border-radius: 14px;
   text-decoration: none;
-  transition: background 0.16s ease, padding-left 0.16s ease;
+  transition: background 0.18s ease, transform 0.18s ease;
 }
 
 .lgl-row:hover {
-  background: var(--bg-card-hover);
-  padding-left: 12px;
+  background: var(--lgl-wash);
+  transform: translateX(3px);
 }
 
 .lgl-row-title {
   grid-area: title;
-  font-size: 15.5px;
+  font-size: 16px;
   font-weight: 650;
   color: var(--text-primary);
-  letter-spacing: -0.015em;
+  letter-spacing: -0.022em;
+  line-height: 1.3;
   min-width: 0;
 }
 
@@ -15514,8 +15535,8 @@ html.lenis body {
 
 .lgl-row-purpose {
   grid-area: purpose;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 13.5px;
+  line-height: 1.52;
   color: var(--text-secondary);
   min-width: 0;
 }
@@ -15523,84 +15544,92 @@ html.lenis body {
 .lgl-row-meta {
   grid-area: meta;
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: baseline;
   flex-wrap: wrap;
-  margin-top: 4px;
-}
-
-.lgl-chip {
-  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
-  font-size: 9.5px;
-  font-weight: 650;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--primary);
-  background: color-mix(in srgb, var(--primary) 11%, transparent);
-  padding: 3px 7px;
-  border-radius: 5px;
-  white-space: nowrap;
-}
-
-.lgl-row-stat {
+  margin-top: 3px;
   font-size: 11.5px;
+  line-height: 1.5;
   color: var(--text-subtle);
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
 }
 
+/* Middot separators rather than chips: the facts stay a sentence. */
+.lgl-row-stat + .lgl-row-stat::before {
+  content: '·';
+  margin: 0 7px;
+  color: color-mix(in srgb, var(--text-subtle) 60%, transparent);
+}
+
+.lgl-row-stat.is-audience {
+  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--primary) 82%, var(--text-subtle));
+}
+
+/* Always present, just quiet. Hiding it entirely and revealing on hover left
+   touch devices — and hybrids, which report hover capability — with a row
+   carrying no affordance at all. */
 .lgl-row-arrow {
   grid-area: arrow;
   display: flex;
   color: var(--text-subtle);
-  transition: transform 0.16s ease, color 0.16s ease;
+  opacity: 0.4;
+  transition: transform 0.18s ease, color 0.18s ease, opacity 0.18s ease;
 }
 
 .lgl-row:hover .lgl-row-arrow {
   color: var(--primary);
+  opacity: 1;
   transform: translateX(3px);
 }
 
-@media (min-width: 860px) {
+@media (min-width: 700px) {
   .lgl-row {
-    grid-template-columns: minmax(180px, 0.9fr) minmax(0, 1.5fr) auto auto;
-    grid-template-areas: 'title purpose meta arrow';
-    gap: 0 26px;
-    padding-top: 13px;
-    padding-bottom: 13px;
+    /* Title track capped rather than proportional: at 1440 an 0.85fr track
+       left ~250px of dead space between the title and its own description. */
+    grid-template-columns: minmax(0, 0.68fr) minmax(0, 1.5fr) auto;
+    grid-template-areas: 'title purpose arrow' 'title meta arrow';
+    gap: 1px 26px;
+    align-items: start;
+    padding: 11px 14px;
   }
 
-  .lgl-row-meta { margin-top: 0; justify-content: flex-end; }
+  .lgl-row-title { align-self: center; }
+  .lgl-row-arrow { align-self: center; }
+  .lgl-row-meta { margin-top: 3px; }
 }
 
-/* ---------- hub footer prompt ---------- */
+/* ---------- hub contact prompt ---------- */
 
-.lgl-ask {
-  border-top: 1px solid var(--lgl-rule);
-  padding: clamp(26px, 3vw, 38px) 0 clamp(34px, 4vw, 52px);
-}
+.lgl-ask { padding-bottom: clamp(44px, 5vw, 72px); }
 
 .lgl-ask-inner {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 18px;
+  gap: 20px;
   align-items: center;
+  padding: clamp(22px, 2.8vw, 32px);
+  border-radius: var(--lgl-r-lg);
+  background: var(--lgl-wash);
 }
 
-@media (min-width: 800px) {
+@media (min-width: 840px) {
   .lgl-ask-inner {
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 40px;
+    gap: 48px;
   }
 }
 
 .lgl-ask-copy { min-width: 0; }
 
 .lgl-ask-title {
-  margin: 0 0 6px;
-  font-size: clamp(18px, 2.2vw, 22px);
-  font-weight: 720;
-  letter-spacing: -0.02em;
+  margin: 0 0 7px;
+  font-size: clamp(19px, 2.3vw, 24px);
+  font-weight: 740;
+  letter-spacing: -0.028em;
   color: var(--text-primary);
 }
 
@@ -15609,7 +15638,7 @@ html.lenis body {
   font-size: 13.5px;
   line-height: 1.58;
   color: var(--text-secondary);
-  max-width: 62ch;
+  max-width: 56ch;
 }
 
 .lgl-ask-actions { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -15618,9 +15647,9 @@ html.lenis body {
 .lgl-ask-secondary {
   display: inline-flex;
   align-items: center;
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 9px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 11px;
   font-size: 13.5px;
   font-weight: 620;
   text-decoration: none;
@@ -15635,27 +15664,26 @@ html.lenis body {
 
 .lgl-ask-primary:hover { opacity: 0.9; }
 
+/* Was a bordered ghost button; now a filled step on the same ramp. */
 .lgl-ask-secondary {
-  border: 1px solid var(--lgl-rule);
+  background: var(--lgl-wash-strong);
   color: var(--text-primary);
 }
 
-.lgl-ask-secondary:hover { background: var(--bg-card-hover); }
+.lgl-ask-secondary:hover { background: var(--lgl-tint-strong); }
 
 /* ---------- document: crumbs + head ---------- */
 
-.lgl-crumbs {
-  padding-top: calc(var(--lb-header-h) + 18px);
-}
+.lgl-crumbs { padding-top: calc(var(--lb-header-h) + 22px); }
 
 .lgl-crumbs-inner {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   flex-wrap: wrap;
   font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
-  font-size: 10.5px;
-  letter-spacing: 0.06em;
+  font-size: 10px;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--text-subtle);
 }
@@ -15665,73 +15693,26 @@ html.lenis body {
 .lgl-crumbs-current { color: var(--text-primary); font-weight: 650; }
 
 .lgl-doc-head {
-  padding-top: 16px;
-  padding-bottom: clamp(20px, 2.4vw, 28px);
+  padding-top: 18px;
+  padding-bottom: clamp(22px, 2.6vw, 32px);
 }
 
 .lgl-doc-title {
-  font-size: clamp(30px, 4.8vw, 50px);
+  font-size: clamp(33px, 5.4vw, 58px);
   font-weight: 800;
-  line-height: 1.03;
-  letter-spacing: -0.04em;
+  line-height: 1.0;
+  letter-spacing: -0.045em;
   color: var(--text-primary);
-  margin: 0 0 11px;
-  max-width: 20ch;
+  margin: 0 0 13px;
+  max-width: 19ch;
 }
 
 .lgl-doc-purpose {
-  font-size: 15.5px;
+  font-size: clamp(15px, 1.5vw, 16.5px);
   line-height: 1.6;
   color: var(--text-secondary);
-  margin: 0 0 20px;
-  max-width: 62ch;
-}
-
-/* Same spec-sheet frame as the hub, at four tracks. Wraps to 2x2 rather than
-   scrolling — a metadata strip that scrolls sideways hides half of itself. */
-.lgl-doc-meta {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin: 0;
-  border: 1px solid var(--lgl-rule);
-  border-radius: 12px;
-  overflow: hidden;
-  max-width: 620px;
-}
-
-.lgl-doc-meta > div {
-  padding: 11px 13px;
-  border-right: 1px solid var(--lgl-rule);
-  border-bottom: 1px solid var(--lgl-rule);
-  min-width: 0;
-}
-
-.lgl-doc-meta > div:nth-child(2n) { border-right: 0; }
-.lgl-doc-meta > div:nth-last-child(-n + 2) { border-bottom: 0; }
-
-@media (min-width: 720px) {
-  .lgl-doc-meta { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .lgl-doc-meta > div { border-bottom: 0; border-right: 1px solid var(--lgl-rule); }
-  .lgl-doc-meta > div:last-child { border-right: 0; }
-}
-
-.lgl-doc-meta dt {
-  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-subtle);
-  margin: 0 0 4px;
-}
-
-.lgl-doc-meta dd {
-  margin: 0;
-  font-size: 13.5px;
-  font-weight: 650;
-  color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-  line-height: 1.3;
+  margin: 0 0 26px;
+  max-width: 58ch;
 }
 
 /* ---------- document body layout ---------- */
@@ -15740,14 +15721,13 @@ html.lenis body {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0;
-  padding-top: clamp(22px, 2.6vw, 34px);
-  padding-bottom: clamp(38px, 4.5vw, 64px);
+  padding-bottom: clamp(46px, 5vw, 76px);
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1024px) {
   .lgl-doc-body {
-    grid-template-columns: 236px minmax(0, 1fr);
-    gap: 56px;
+    grid-template-columns: 248px minmax(0, 1fr);
+    gap: 64px;
     align-items: start;
   }
 }
@@ -15758,30 +15738,34 @@ html.lenis body {
 
 .lgl-toc { min-width: 0; }
 
-@media (min-width: 1000px) {
+@media (min-width: 1024px) {
   .lgl-toc-inner {
     position: sticky;
-    top: calc(var(--lb-header-h) + 20px);
-    max-height: calc(100dvh - var(--lb-header-h) - 48px);
+    top: calc(var(--lb-header-h) + 26px);
+    max-height: calc(100dvh - var(--lb-header-h) - 56px);
     overflow-y: auto;
-    padding-right: 6px;
+    /* Room for the active item's surface to sit inside without clipping. */
+    padding: 2px 6px 2px 0;
+    margin-left: -12px;
+    padding-left: 12px;
   }
 }
 
-/* Mobile shows a disclosure button; desktop shows a static label instead. */
 .lgl-toc-trigger {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   width: 100%;
-  padding: 11px 13px;
-  margin-bottom: 12px;
-  border: 1px solid var(--lgl-rule);
-  border-radius: 10px;
-  background: var(--bg-card);
+  padding: 13px 15px;
+  margin-bottom: 14px;
+  border-radius: 13px;
+  background: var(--lgl-wash);
   cursor: pointer;
   text-align: left;
+  transition: background 0.16s ease;
 }
+
+.lgl-toc-trigger:hover { background: var(--lgl-wash-strong); }
 
 .lgl-toc-trigger-label {
   flex: 1 1 auto;
@@ -15789,7 +15773,7 @@ html.lenis body {
   font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
   font-size: 10.5px;
   font-weight: 650;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--text-primary);
 }
@@ -15813,23 +15797,26 @@ html.lenis body {
 .lgl-toc-list {
   display: none;
   list-style: none;
-  margin: 0 0 26px;
+  margin: 0 0 30px;
   padding: 0;
-  counter-reset: none;
 }
 
 .lgl-toc-list.is-open { display: block; }
 
+/* The active clause was marked with a border-left. It is now a filled pill of
+   surface — the marker is the plane the item sits on, not a rule beside it. */
 .lgl-toc-link {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 10px;
+  gap: 11px;
   align-items: baseline;
-  padding: 7px 0 7px 11px;
-  border-left: 2px solid transparent;
+  padding: 8px 11px;
+  border-radius: 9px;
   text-decoration: none;
-  transition: border-color 0.16s ease, color 0.16s ease;
+  transition: background 0.16s ease, color 0.16s ease;
 }
+
+.lgl-toc-link:hover { background: var(--lgl-wash); }
 
 .lgl-toc-num {
   font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
@@ -15848,20 +15835,20 @@ html.lenis body {
 
 .lgl-toc-link:hover .lgl-toc-text { color: var(--text-primary); }
 
-.lgl-toc-link.is-active { border-left-color: var(--primary); }
-.lgl-toc-link.is-active .lgl-toc-text { color: var(--text-primary); font-weight: 620; }
+.lgl-toc-link.is-active { background: var(--lgl-tint); }
+.lgl-toc-link.is-active .lgl-toc-text { color: var(--text-primary); font-weight: 640; }
 .lgl-toc-link.is-active .lgl-toc-num { color: var(--primary); }
 
-@media (min-width: 1000px) {
+@media (min-width: 1024px) {
   .lgl-toc-trigger { display: none; }
 
   .lgl-toc-label {
     display: block;
-    margin: 0 0 10px 13px;
+    margin: 0 0 12px 11px;
     font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
     font-size: 9.5px;
     font-weight: 600;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--text-subtle);
   }
@@ -15872,19 +15859,18 @@ html.lenis body {
 /* ---------- "in short" brief ---------- */
 
 .lgl-brief {
-  padding: 18px 20px;
-  margin-bottom: clamp(30px, 3.4vw, 44px);
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--primary) 5%, transparent);
-  border: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+  padding: clamp(20px, 2.4vw, 26px);
+  margin-bottom: clamp(38px, 4.4vw, 58px);
+  border-radius: var(--lgl-r-lg);
+  background: var(--lgl-tint);
 }
 
 .lgl-brief-title {
-  margin: 0 0 11px;
+  margin: 0 0 13px;
   font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
   font-size: 10px;
   font-weight: 650;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--primary);
 }
@@ -15893,13 +15879,13 @@ html.lenis body {
 
 .lgl-brief-list > li {
   position: relative;
-  padding-left: 17px;
-  font-size: 14.5px;
+  padding-left: 19px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--text-primary);
 }
 
-.lgl-brief-list > li + li { margin-top: 8px; }
+.lgl-brief-list > li + li { margin-top: 10px; }
 
 .lgl-brief-list > li::before {
   content: '';
@@ -15912,10 +15898,9 @@ html.lenis body {
   background: var(--primary);
 }
 
+/* Had a rule above it; now it steps down in size and colour instead. */
 .lgl-brief-caveat {
-  margin: 13px 0 0;
-  padding-top: 11px;
-  border-top: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+  margin: 16px 0 0;
   font-size: 12px;
   line-height: 1.55;
   color: var(--text-subtle);
@@ -15923,136 +15908,136 @@ html.lenis body {
 
 /* ---------- clauses ---------- */
 
-.lgl-clauses { list-style: none; margin: 0; padding: 0; counter-reset: none; }
+.lgl-clauses { list-style: none; margin: 0; padding: 0; }
 
+/* Clauses were separated by a rule. Now the ghost numeral is the landmark and
+   the gap does the parting — same device as the shelves, one scale up. */
 .lgl-clause {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 0;
-  padding: clamp(22px, 2.6vw, 30px) 0;
-  border-top: 1px solid var(--lgl-rule);
+  padding: 0 0 clamp(34px, 4vw, 50px);
 }
 
-.lgl-clause:first-child { border-top: 0; padding-top: 0; }
+.lgl-clause:last-child { padding-bottom: 0; }
 
-/* The number moves into a true gutter once there is room for one. Below that
-   it sits above the heading, where it still reads as a clause marker without
-   stealing a third of a 360px line. */
 .lgl-clause-num {
   display: block;
-  margin-bottom: 7px;
+  margin-bottom: 6px;
   font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  color: color-mix(in srgb, var(--primary) 70%, transparent);
+  letter-spacing: -0.02em;
+  color: var(--lgl-ghost);
   font-variant-numeric: tabular-nums;
 }
 
 .lgl-clause-body { min-width: 0; }
 
-@media (min-width: 680px) {
+@media (min-width: 760px) {
   .lgl-clause {
     grid-template-columns: var(--lgl-gutter) minmax(0, 1fr);
-    gap: 0 18px;
+    gap: 0 20px;
   }
 
   .lgl-clause-num {
     margin-bottom: 0;
-    padding-top: 3px;
-    font-size: 13px;
+    padding-top: 2px;
+    font-size: 26px;
+    line-height: 1.05;
   }
 }
 
 .lgl-clause-heading {
-  margin: 0 0 10px;
-  font-size: clamp(17px, 2vw, 20px);
-  font-weight: 700;
-  letter-spacing: -0.022em;
-  line-height: 1.28;
+  margin: 0 0 12px;
+  font-size: clamp(18px, 2.1vw, 22px);
+  font-weight: 720;
+  letter-spacing: -0.028em;
+  line-height: 1.25;
   color: var(--text-primary);
-  scroll-margin-top: calc(var(--lb-header-h) + 24px);
+  scroll-margin-top: calc(var(--lb-header-h) + 28px);
 }
 
 .lgl-clause-p {
-  margin: 0 0 11px;
-  font-size: 14.5px;
-  line-height: 1.68;
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.72;
   color: var(--text-secondary);
-  max-width: 72ch;
+  max-width: 70ch;
 }
 
 .lgl-clause-p:last-child { margin-bottom: 0; }
 
+/* Was a border-left with hairline tick marks per item. Now the whole list is
+   one recessed plane, and each item carries a small dot. */
 .lgl-clause-list {
-  margin: 13px 0 0;
-  padding: 0;
+  margin: 16px 0 0;
+  padding: 14px 18px;
   list-style: none;
-  border-left: 2px solid var(--lgl-rule);
+  border-radius: var(--lgl-r);
+  background: var(--lgl-wash);
+  max-width: 70ch;
 }
 
 .lgl-clause-list > li {
   position: relative;
-  padding: 5px 0 5px 16px;
-  font-size: 13.5px;
-  line-height: 1.55;
+  padding: 5px 0 5px 17px;
+  font-size: 14px;
+  line-height: 1.58;
   color: var(--text-secondary);
-  max-width: 70ch;
 }
 
 .lgl-clause-list > li::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 14px;
-  width: 8px;
-  height: 1px;
-  background: var(--lgl-rule);
+  top: 13px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--primary) 55%, transparent);
 }
 
 .lgl-clause-note {
   display: block;
-  margin: 15px 0 0;
-  padding: 12px 14px;
-  border-radius: 10px;
-  background: var(--bg-card-hover);
-  border: 1px solid var(--lgl-rule);
-  font-size: 13px;
-  line-height: 1.6;
+  margin: 18px 0 0;
+  padding: 15px 18px;
+  border-radius: var(--lgl-r);
+  background: var(--lgl-tint);
+  font-size: 13.5px;
+  line-height: 1.62;
   color: var(--text-primary);
   max-width: 70ch;
 }
 
 .lgl-clause-note-label {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
   font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
   font-size: 9.5px;
   font-weight: 650;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--text-subtle);
+  color: var(--primary);
 }
 
 /* ---------- grievance officer ---------- */
 
+/* Was a framed table with a border on every cell. Now one plane, with the
+   grid gap doing what the cell rules did. */
 .lgl-officer {
-  margin-bottom: clamp(30px, 3.4vw, 44px);
-  border: 1px solid var(--lgl-rule);
-  border-radius: 14px;
-  overflow: hidden;
+  margin-bottom: clamp(38px, 4.4vw, 58px);
+  padding: clamp(20px, 2.4vw, 26px);
+  border-radius: var(--lgl-r-lg);
+  background: var(--lgl-wash);
 }
 
-.lgl-officer-head {
-  padding: 16px 18px 14px;
-  border-bottom: 1px solid var(--lgl-rule);
-}
+.lgl-officer-head { margin-bottom: 20px; }
 
 .lgl-officer-title {
-  margin: 0 0 5px;
-  font-size: 17px;
-  font-weight: 720;
-  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+  font-size: 19px;
+  font-weight: 740;
+  letter-spacing: -0.028em;
   color: var(--text-primary);
 }
 
@@ -16061,37 +16046,32 @@ html.lenis body {
   font-size: 11.5px;
   line-height: 1.5;
   color: var(--text-subtle);
+  max-width: 56ch;
 }
 
 .lgl-officer-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
   margin: 0;
 }
 
-.lgl-officer-cell {
-  padding: 12px 18px;
-  border-right: 1px solid var(--lgl-rule);
-  border-bottom: 1px solid var(--lgl-rule);
-  min-width: 0;
-}
-
-.lgl-officer-cell:nth-child(2n) { border-right: 0; }
-.lgl-officer-cell-wide { grid-column: 1 / -1; border-right: 0; }
+.lgl-officer-cell { min-width: 0; }
+.lgl-officer-cell-wide { grid-column: 1 / -1; }
 
 .lgl-officer-cell dt {
   font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
   font-size: 9.5px;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-subtle);
-  margin: 0 0 4px;
+  margin: 0 0 5px;
 }
 
 .lgl-officer-cell dd {
   margin: 0;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 620;
   color: var(--text-primary);
   line-height: 1.4;
@@ -16110,42 +16090,41 @@ html.lenis body {
 .lgl-officer-addr { display: block; }
 
 .lgl-officer-gap {
-  margin: 0;
-  padding: 12px 18px;
-  border-bottom: 1px solid var(--lgl-rule);
+  margin: 20px 0 0;
   font-size: 12.5px;
   line-height: 1.58;
   color: var(--text-secondary);
+  max-width: 62ch;
 }
 
+/* The two response windows are the point of the card, so they get scale
+   rather than a fenced row of their own. */
 .lgl-officer-slas {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 24px;
   list-style: none;
-  margin: 0;
-  padding: 0;
+  margin: 22px 0 0;
+  padding: 16px 18px;
+  border-radius: var(--lgl-r);
+  background: var(--lgl-tint);
 }
 
-.lgl-officer-slas > li {
-  padding: 13px 18px;
-  border-right: 1px solid var(--lgl-rule);
-  min-width: 0;
-}
-
-.lgl-officer-slas > li:last-child { border-right: 0; }
+.lgl-officer-slas > li { min-width: 0; }
 
 .lgl-officer-slas strong {
   display: block;
-  font-size: 18px;
-  font-weight: 750;
-  letter-spacing: -0.02em;
+  font-size: clamp(20px, 2.4vw, 25px);
+  font-weight: 780;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
   color: var(--primary);
   font-variant-numeric: tabular-nums;
 }
 
 .lgl-officer-slas span {
   display: block;
-  margin-top: 2px;
+  margin-top: 5px;
   font-size: 12px;
   line-height: 1.45;
   color: var(--text-secondary);
@@ -16154,16 +16133,17 @@ html.lenis body {
 /* ---------- document footer ---------- */
 
 .lgl-doc-contact {
-  margin-top: clamp(28px, 3.2vw, 40px);
-  padding-top: 20px;
-  border-top: 1px solid var(--lgl-rule);
+  margin-top: clamp(38px, 4.4vw, 56px);
+  padding: clamp(20px, 2.4vw, 26px);
+  border-radius: var(--lgl-r-lg);
+  background: var(--lgl-wash);
 }
 
 .lgl-doc-contact-title {
-  margin: 0 0 7px;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.018em;
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 720;
+  letter-spacing: -0.024em;
   color: var(--text-primary);
 }
 
@@ -16172,7 +16152,7 @@ html.lenis body {
   font-size: 13.5px;
   line-height: 1.62;
   color: var(--text-secondary);
-  max-width: 66ch;
+  max-width: 62ch;
 }
 
 .lgl-doc-contact a { color: var(--primary); text-decoration: none; }
@@ -16181,47 +16161,47 @@ html.lenis body {
 .lgl-pager {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 10px;
-  margin-top: clamp(24px, 3vw, 36px);
+  gap: 12px;
+  margin-top: 14px;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 680px) {
   .lgl-pager { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 .lgl-pager-link {
   display: block;
-  padding: 14px 16px;
-  border: 1px solid var(--lgl-rule);
-  border-radius: 12px;
+  padding: 16px 18px;
+  border-radius: var(--lgl-r);
+  background: var(--lgl-wash);
   text-decoration: none;
   min-width: 0;
-  transition: background 0.16s ease, border-color 0.16s ease;
+  transition: background 0.18s ease, transform 0.18s ease;
 }
 
 .lgl-pager-link:hover {
-  background: var(--bg-card-hover);
-  border-color: color-mix(in srgb, var(--primary) 35%, transparent);
+  background: var(--lgl-tint);
+  transform: translateY(-2px);
 }
 
 .lgl-pager-link.is-next { text-align: right; }
 
 .lgl-pager-dir {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
   font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
   font-size: 9.5px;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--text-subtle);
 }
 
 .lgl-pager-title {
   display: block;
-  font-size: 14px;
-  font-weight: 650;
-  letter-spacing: -0.015em;
+  font-size: 14.5px;
+  font-weight: 660;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
   line-height: 1.35;
 }

@@ -35,16 +35,18 @@ export default function LegalHubPage() {
                                 </p>
                             </div>
 
-                            <dl className="lgl-masthead-meta">
-                                <div className="lgl-meta-cell">
+                            {/* Same borderless fact list the document head uses —
+                                label over value, held apart by space. */}
+                            <dl className="lgl-facts">
+                                <div>
                                     <dt>Documents</dt>
                                     <dd>{LEGAL_DOCUMENTS.length}</dd>
                                 </div>
-                                <div className="lgl-meta-cell">
+                                <div>
                                     <dt>Revised</dt>
                                     <dd>{formatLegalDate(LEGAL_REVISION_DATE)}</dd>
                                 </div>
-                                <div className="lgl-meta-cell">
+                                <div>
                                     <dt>Jurisdiction</dt>
                                     <dd>India</dd>
                                 </div>
@@ -82,8 +84,13 @@ export default function LegalHubPage() {
                                                 <Link href={`/legal/${doc.slug}`} className="lgl-row">
                                                     <span className="lgl-row-title">{doc.title}</span>
                                                     <span className="lgl-row-purpose">{doc.purpose}</span>
+                                                    {/* Audience reads as the first fact in the metadata
+                                                        line, not as a coloured badge — it is information,
+                                                        and a badge made it look like a status. */}
                                                     <span className="lgl-row-meta">
-                                                        <span className="lgl-chip">{AUDIENCE_LABEL[doc.audience]}</span>
+                                                        <span className="lgl-row-stat is-audience">
+                                                            {AUDIENCE_LABEL[doc.audience]}
+                                                        </span>
                                                         <span className="lgl-row-stat">
                                                             {doc.clauses.length} clauses
                                                         </span>
@@ -107,21 +114,25 @@ export default function LegalHubPage() {
                 </section>
 
                 <section className="lgl-ask">
-                    <div className="container lgl-ask-inner">
-                        <div className="lgl-ask-copy">
-                            <h2 className="lgl-ask-title">Can&rsquo;t find what you need?</h2>
-                            <p className="lgl-ask-note">
-                                If a policy does not answer your question, ask us rather than guessing. We would
-                                rather write a clearer clause than argue about an unclear one.
-                            </p>
-                        </div>
-                        <div className="lgl-ask-actions">
-                            <a href={`mailto:${supportEmail}`} className="lgl-ask-primary">
-                                {supportEmail}
-                            </a>
-                            <Link href="/legal/grievance" className="lgl-ask-secondary">
-                                File a grievance
-                            </Link>
+                    <div className="container">
+                        {/* Panel inside the container, not a band across it — the
+                            band relied on a rule to separate itself from the list. */}
+                        <div className="lgl-ask-inner">
+                            <div className="lgl-ask-copy">
+                                <h2 className="lgl-ask-title">Can&rsquo;t find what you need?</h2>
+                                <p className="lgl-ask-note">
+                                    If a policy does not answer your question, ask us rather than guessing. We
+                                    would rather write a clearer clause than argue about an unclear one.
+                                </p>
+                            </div>
+                            <div className="lgl-ask-actions">
+                                <a href={`mailto:${supportEmail}`} className="lgl-ask-primary">
+                                    {supportEmail}
+                                </a>
+                                <Link href="/legal/grievance" className="lgl-ask-secondary">
+                                    File a grievance
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </section>

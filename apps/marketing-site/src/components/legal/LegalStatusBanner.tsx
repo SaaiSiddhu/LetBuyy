@@ -14,14 +14,18 @@ export default function LegalStatusBanner() {
 
     return (
         <div className="lgl-status" role="note">
-            <div className="container lgl-status-inner">
-                <span className="lgl-status-dot" aria-hidden="true" />
-                <p className="lgl-status-text">
-                    <strong>These policies are published for review and are not yet in force.</strong>{' '}
-                    LetBuyy has not opened to merchants, so no agreement has been formed with anyone.
-                    They take effect on the day the platform launches, and the effective date will be
-                    stated here. Last revised {formatLegalDate(LEGAL_REVISION_DATE)}.
-                </p>
+            <div className="container">
+                {/* Inner panel rather than a full-bleed band: the band needed a
+                    rule top and bottom to read as one, and the rules are gone. */}
+                <div className="lgl-status-panel">
+                    <span className="lgl-status-dot" aria-hidden="true" />
+                    <p className="lgl-status-text">
+                        <strong>These policies are published for review and are not yet in force.</strong>{' '}
+                        LetBuyy has not opened to merchants, so no agreement has been formed with anyone.
+                        They take effect on the day the platform launches, and the effective date will be
+                        stated here. Last revised {formatLegalDate(LEGAL_REVISION_DATE)}.
+                    </p>
+                </div>
             </div>
         </div>
     )

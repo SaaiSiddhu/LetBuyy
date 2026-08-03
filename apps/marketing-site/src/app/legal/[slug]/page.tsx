@@ -68,7 +68,7 @@ export default async function LegalDocumentPage({
                         <h1 className="lgl-doc-title">{doc.title}</h1>
                         <p className="lgl-doc-purpose">{doc.purpose}</p>
 
-                        <dl className="lgl-doc-meta">
+                        <dl className="lgl-facts">
                             <div>
                                 <dt>Applies to</dt>
                                 <dd>{AUDIENCE_LABEL[doc.audience]}</dd>
