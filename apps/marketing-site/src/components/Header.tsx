@@ -1,11 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { LucideIcon } from '@letbuyy/ui'
 import {
     ArrowLeft,
+    Award,
     BarChart3,
     Bot,
     Button,
@@ -23,8 +24,8 @@ import {
     Palette,
     Puzzle,
     Rocket,
+    RotateCcw,
     ShieldCheck,
-    ShoppingBag,
     Smartphone,
     Sparkles,
     Store,
@@ -168,6 +169,7 @@ const productSections: MenuSection[] = [
             { href: '#features', icon: Megaphone, label: 'Campaigns' },
             { href: '#features', icon: MessageCircle, label: 'Customer Chat' },
             { href: '#pricing', icon: Tag, label: 'Discount Codes' },
+            { href: '#features', icon: Award, label: 'Gift Cards' },
             { href: '#features', icon: BarChart3, label: 'Sales Reports' },
         ],
     },
@@ -185,6 +187,8 @@ const productSections: MenuSection[] = [
         items: [
             { href: '#features', icon: CreditCard, label: 'Checkout' },
             { href: '#features', icon: IndianRupee, label: 'UPI, Cards & COD' },
+            { href: '#features', icon: FileText, label: 'GST Invoices' },
+            { href: '#features', icon: RotateCcw, label: 'Refunds & Returns' },
         ],
     },
     {
@@ -218,79 +222,130 @@ const productHighlights: MenuItem[] = [
     },
 ]
 
+/* Proof points for the Why panel footer. Each is verifiable against the
+   product, not a marketing round-number: 0% is the actual pricing commitment,
+   GST invoices are generated per order, and all three payment routes ship. */
+const whyProof = [
+    { value: '0%', label: 'commission on your sales' },
+    { value: 'GST', label: 'invoice on every order' },
+    { value: 'UPI · Cards · COD', label: 'ready from day one' },
+]
+
+/* Four rendered columns from six authored sections: "Get paid" rides under
+   "Run your business" so the panel is four columns wide rather than three
+   columns deep, which is what made the old one fill the viewport. */
+const productColumns: MenuSection[][] = [
+    [productSections[0]],
+    [productSections[1]],
+    [productSections[2]],
+    [productSections[3], productSections[4]],
+]
+
 function MenuIcon({ icon: Icon }: { icon: LucideIcon }) {
-    return <Icon width={24} height={24} aria-hidden="true" />
+    return <Icon width={17} height={17} aria-hidden="true" />
 }
 
 function DesktopWhyMenu({ closeMenu }: { closeMenu: () => void }) {
     return (
-        <div className="desktop-mega-layout desktop-mega-layout-why">
-            <div className="desktop-mega-feature-grid">
-                {whyCards.map((item) => (
-                    <Link key={item.label} href={item.href} className="desktop-mega-feature-card" onClick={closeMenu}>
-                        <div className="desktop-mega-feature-icon">
-                            <MenuIcon icon={item.icon} />
-                        </div>
-                        <span>{item.label}</span>
-                        <p>{item.description}</p>
-                    </Link>
-                ))}
+        <>
+            <div className="mega-lead">
+                <p className="mega-eyebrow">Why LetBuyy</p>
+                <p className="mega-lead-text">{whyIntro}</p>
             </div>
 
-            <aside className="desktop-mega-side">
-                <p className="desktop-mega-eyebrow">Included with every store</p>
-                <div className="desktop-mega-side-stack">
-                    {whyBuiltIn.map((item) => (
-                        <Link key={item.label} href={item.href} className="desktop-mega-side-item" onClick={closeMenu}>
-                            <MenuIcon icon={item.icon} />
-                            <span>
-                                <strong>{item.label}</strong>
-                                <small>{item.description}</small>
-                            </span>
-                        </Link>
+            <div className="mega-body mega-body-why">
+                <section className="mega-col">
+                    <p className="mega-eyebrow">Where it starts</p>
+                    <div className="mega-stack">
+                        {whyCards.map((item) => (
+                            <Link key={item.label} href={item.href} className="mega-item" onClick={closeMenu}>
+                                <span className="mega-item-icon">
+                                    <MenuIcon icon={item.icon} />
+                                </span>
+                                <span className="mega-item-text">
+                                    <strong>{item.label}</strong>
+                                    <small>{item.description}</small>
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="mega-col">
+                    <p className="mega-eyebrow">Included with every store</p>
+                    {/* Titles only. Six descriptions here made the panel taller
+                        than the three pillars beside it and left a void. */}
+                    <div className="mega-pair-grid">
+                        {whyBuiltIn.map((item) => (
+                            <Link key={item.label} href={item.href} className="mega-compact" onClick={closeMenu}>
+                                <span className="mega-item-icon">
+                                    <MenuIcon icon={item.icon} />
+                                </span>
+                                <span>{item.label}</span>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+            </div>
+
+            <div className="mega-foot">
+                <div className="mega-facts">
+                    {whyProof.map((fact) => (
+                        <span key={fact.value} className="mega-fact">
+                            <strong>{fact.value}</strong>
+                            <small>{fact.label}</small>
+                        </span>
                     ))}
                 </div>
-            </aside>
-        </div>
+                <Link href="#pricing" className="mega-foot-cta" onClick={closeMenu}>
+                    See pricing
+                    <ChevronRight width={14} height={14} aria-hidden="true" />
+                </Link>
+            </div>
+        </>
     )
 }
 
 function DesktopProductsMenu({ closeMenu }: { closeMenu: () => void }) {
     return (
         <>
-            <div className="desktop-mega-layout desktop-mega-layout-products">
-                <div className="desktop-mega-section-grid">
-                    {productSections.slice(0, 5).map((section) => (
-                        <div key={section.eyebrow} className="desktop-mega-section">
-                            <p className="desktop-mega-eyebrow">{section.eyebrow}</p>
-                            <div className="desktop-mega-link-list">
-                                {section.items.map((item) => (
-                                    <Link key={item.label} href={item.href} className="desktop-mega-link" onClick={closeMenu}>
-                                        <MenuIcon icon={item.icon} />
-                                        <span>{item.label}</span>
-                                    </Link>
-                                ))}
-                            </div>
+            <div className="mega-body mega-body-products">
+                <div className="mega-cols">
+                    {productColumns.map((column, index) => (
+                        <div key={index} className="mega-col">
+                            {column.map((section) => (
+                                <section key={section.eyebrow} className="mega-col-section">
+                                    <p className="mega-eyebrow">{section.eyebrow}</p>
+                                    <div className="mega-stack-tight">
+                                        {section.items.map((item) => (
+                                            <Link
+                                                key={item.label}
+                                                href={item.href}
+                                                className="mega-compact"
+                                                onClick={closeMenu}
+                                            >
+                                                <span className="mega-item-icon">
+                                                    <MenuIcon icon={item.icon} />
+                                                </span>
+                                                <span>{item.label}</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </section>
+                            ))}
                         </div>
                     ))}
                 </div>
 
-                <aside className="desktop-mega-side desktop-mega-products-side">
-                    <p className="desktop-mega-eyebrow">Non-stop platform work</p>
-                    <div className="desktop-mega-preview">
-                        <div className="desktop-mega-preview-orbit">
-                            <span />
-                            <span />
-                            <span />
-                        </div>
-                        <strong>LetBuyy releases</strong>
-                        <p>Theme engine, storefront runtime, API gateway and marketplace surfaces evolve together.</p>
-                    </div>
-                    <div className="desktop-mega-side-stack">
+                <aside className="mega-rail">
+                    <p className="mega-eyebrow">Built to keep up</p>
+                    <div className="mega-stack">
                         {productHighlights.map((item) => (
-                            <Link key={item.label} href={item.href} className="desktop-mega-side-item" onClick={closeMenu}>
-                                <MenuIcon icon={item.icon} />
-                                <span>
+                            <Link key={item.label} href={item.href} className="mega-item" onClick={closeMenu}>
+                                <span className="mega-item-icon">
+                                    <MenuIcon icon={item.icon} />
+                                </span>
+                                <span className="mega-item-text">
                                     <strong>{item.label}</strong>
                                     <small>{item.description}</small>
                                 </span>
@@ -300,13 +355,16 @@ function DesktopProductsMenu({ closeMenu }: { closeMenu: () => void }) {
                 </aside>
             </div>
 
-            <div className="desktop-mega-footer">
-                {productSections[5].items.map((item) => (
-                    <Link key={item.label} href={item.href} className="desktop-mega-footer-link" onClick={closeMenu}>
-                        <strong>{item.label}</strong>
-                        <span>{item.description}</span>
-                    </Link>
-                ))}
+            <div className="mega-foot">
+                <p className="mega-eyebrow mega-foot-eyebrow">Make it your own</p>
+                <div className="mega-foot-links">
+                    {productSections[5].items.map((item) => (
+                        <Link key={item.label} href={item.href} className="mega-foot-link" onClick={closeMenu}>
+                            <strong>{item.label}</strong>
+                            <small>{item.description}</small>
+                        </Link>
+                    ))}
+                </div>
             </div>
         </>
     )
@@ -375,7 +433,9 @@ function MobileWhyPanel({ closeMenu, goBack }: { closeMenu: () => void; goBack: 
             <div className="mobile-card-stack">
                 {whyCards.map((item) => (
                     <Link key={item.label} href={item.href} className="mobile-feature-card" onClick={closeMenu}>
-                        <MenuIcon icon={item.icon} />
+                        <span className="mobile-link-icon">
+                            <MenuIcon icon={item.icon} />
+                        </span>
                         <span>
                             <strong>{item.label}</strong>
                             <small>{item.description}</small>
@@ -388,7 +448,9 @@ function MobileWhyPanel({ closeMenu, goBack }: { closeMenu: () => void; goBack: 
             <div className="mobile-mini-grid">
                 {whyBuiltIn.map((item) => (
                     <Link key={item.label} href={item.href} className="mobile-mini-card" onClick={closeMenu}>
-                        <MenuIcon icon={item.icon} />
+                        <span className="mobile-link-icon">
+                            <MenuIcon icon={item.icon} />
+                        </span>
                         <strong>{item.label}</strong>
                         <span>{item.description}</span>
                     </Link>
@@ -426,7 +488,9 @@ function MobileProductsPanel({ closeMenu, goBack }: { closeMenu: () => void; goB
                         >
                             {section.items.map((item) => (
                                 <Link key={item.label} href={item.href} className="mobile-panel-link" onClick={closeMenu}>
-                                    <MenuIcon icon={item.icon} />
+                                    <span className="mobile-link-icon">
+                                        <MenuIcon icon={item.icon} />
+                                    </span>
                                     <span>
                                         <strong>{item.label}</strong>
                                         {item.description ? <small>{item.description}</small> : null}
@@ -441,11 +505,148 @@ function MobileProductsPanel({ closeMenu, goBack }: { closeMenu: () => void; goB
     )
 }
 
+/* Hover timings. 90ms of intent stops the panel flashing open as the cursor
+   crosses a trigger on its way somewhere else; 180ms of grace covers the
+   diagonal from trigger to panel without the panel vanishing mid-move. */
+const OPEN_DELAY_MS = 90
+const CLOSE_DELAY_MS = 180
+
+/* Panel widths, in JS because the anchor maths needs the number before the
+   element exists. Clamped to the viewport at measure time. */
+const MENU_WIDTH: Record<DropdownKey, number> = { why: 780, products: 1080 }
+const MENU_MARGIN = 20
+/* Panel padding (20) minus the trigger's own inline padding (~8), so the
+   panel's first column of text sits under the trigger's label. */
+const MENU_TEXT_INSET = 12
+
 export default function Header() {
     const [scrolled, setScrolled] = useState(false)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [activeDesktopMenu, setActiveDesktopMenu] = useState<DropdownKey | null>(null)
     const [mobilePanel, setMobilePanel] = useState<DropdownKey | null>(null)
+    const [megaBox, setMegaBox] = useState<{ left: number; width: number } | null>(null)
+
+    const hoverTimer = useRef<number | null>(null)
+    /* Measured off the nav by data attribute rather than per-trigger refs:
+       @letbuyy/ui Button does not forward a ref, and adding one there would
+       change a shared component for a layout detail local to this header. */
+    const navRef = useRef<HTMLElement | null>(null)
+    /* Hover only drives the menu where a real pointer exists. On touch the
+       trigger stays a plain toggle, or the panel would open on first tap and
+       the link underneath would never be reachable. */
+    const pointerIsFine = useRef(false)
+
+    useEffect(() => {
+        const query = window.matchMedia('(hover: hover) and (pointer: fine)')
+        const sync = () => {
+            pointerIsFine.current = query.matches
+        }
+        sync()
+        query.addEventListener('change', sync)
+        return () => query.removeEventListener('change', sync)
+    }, [])
+
+    const clearHoverTimer = useCallback(() => {
+        if (hoverTimer.current !== null) {
+            window.clearTimeout(hoverTimer.current)
+            hoverTimer.current = null
+        }
+    }, [])
+
+    useEffect(() => clearHoverTimer, [clearHoverTimer])
+
+    /* Hang the panel's left edge under the trigger's left edge, offset by the
+       difference in horizontal padding so the first column's text lines up
+       with the trigger's label rather than with the panel's outer edge.
+
+       Centring on the trigger was tried first and is wrong here: the nav is
+       left-aligned and these panels are 780-1080px wide, so every centred
+       position clamped to the viewport margin and the anchor did nothing. */
+    const measureMenu = useCallback((menu: DropdownKey) => {
+        const trigger = navRef.current?.querySelector<HTMLElement>(`[data-menu="${menu}"]`)
+        if (!trigger) return
+
+        const rect = trigger.getBoundingClientRect()
+        const width = Math.min(MENU_WIDTH[menu], window.innerWidth - MENU_MARGIN * 2)
+        const preferred = rect.left - MENU_TEXT_INSET
+        const left = Math.max(
+            MENU_MARGIN,
+            Math.min(preferred, window.innerWidth - width - MENU_MARGIN),
+        )
+
+        setMegaBox({ left, width })
+    }, [])
+
+    const openDesktopMenu = useCallback(
+        (menu: DropdownKey) => {
+            clearHoverTimer()
+            measureMenu(menu)
+            setMobileMenuOpen(false)
+            setMobilePanel(null)
+            setActiveDesktopMenu(menu)
+        },
+        [clearHoverTimer, measureMenu],
+    )
+
+    const scheduleClose = useCallback(() => {
+        clearHoverTimer()
+        hoverTimer.current = window.setTimeout(() => {
+            setActiveDesktopMenu(null)
+        }, CLOSE_DELAY_MS)
+    }, [clearHoverTimer])
+
+    const handleTriggerEnter = useCallback(
+        (menu: DropdownKey) => {
+            if (!pointerIsFine.current) return
+            clearHoverTimer()
+
+            /* Moving between triggers switches with no delay — the intent was
+               already established by the panel being open. */
+            if (activeDesktopMenu) {
+                openDesktopMenu(menu)
+                return
+            }
+
+            hoverTimer.current = window.setTimeout(() => openDesktopMenu(menu), OPEN_DELAY_MS)
+        },
+        [activeDesktopMenu, clearHoverTimer, openDesktopMenu],
+    )
+
+    const handlePointerLeave = useCallback(() => {
+        if (!pointerIsFine.current) return
+        scheduleClose()
+    }, [scheduleClose])
+
+    /* The anchor is viewport-relative, so a resize invalidates it. */
+    useEffect(() => {
+        if (!activeDesktopMenu) return
+        const remeasure = () => measureMenu(activeDesktopMenu)
+        window.addEventListener('resize', remeasure)
+        return () => window.removeEventListener('resize', remeasure)
+    }, [activeDesktopMenu, measureMenu])
+
+    /* Authoritative close: while a panel is open, anything the pointer moves
+       onto that is neither the panel nor a trigger schedules the dismiss.
+       The element-level onPointerLeave stays because it responds a frame
+       sooner, but it cannot be the only mechanism — React derives leave from
+       pointerout's relatedTarget, and Next renders <body> as a React element,
+       so moving onto empty page background does not reliably produce one. */
+    useEffect(() => {
+        if (!activeDesktopMenu) return
+
+        const handlePointerOver = (event: PointerEvent) => {
+            if (!pointerIsFine.current) return
+            const target = event.target as Element | null
+            if (target?.closest('.desktop-mega') || target?.closest('[data-menu]')) {
+                clearHoverTimer()
+                return
+            }
+            scheduleClose()
+        }
+
+        document.addEventListener('pointerover', handlePointerOver)
+        return () => document.removeEventListener('pointerover', handlePointerOver)
+    }, [activeDesktopMenu, clearHoverTimer, scheduleClose])
 
     useEffect(() => {
         const handleScroll = () => {
@@ -495,6 +696,7 @@ export default function Header() {
     }, [])
 
     const closeAllMenus = () => {
+        clearHoverTimer()
         setActiveDesktopMenu(null)
         setMobileMenuOpen(false)
         setMobilePanel(null)
@@ -509,9 +711,15 @@ export default function Header() {
         setMobileMenuOpen(true)
     }
 
+    /* Still a real toggle: this is the path for touch, for keyboard Enter and
+       Space, and for anyone who clicks out of habit. */
     const toggleDesktopMenu = (menu: DropdownKey) => {
-        setMobileMenuOpen(false)
-        setActiveDesktopMenu((current) => (current === menu ? null : menu))
+        clearHoverTimer()
+        if (activeDesktopMenu === menu) {
+            setActiveDesktopMenu(null)
+            return
+        }
+        openDesktopMenu(menu)
     }
 
     const menuOpen = Boolean(activeDesktopMenu) || mobileMenuOpen
@@ -529,7 +737,7 @@ export default function Header() {
                         <BrandLogo className="header-logo-image" width={152} height={49} priority />
                     </Link>
 
-                    <nav className="header-nav" aria-label="Main navigation">
+                    <nav className="header-nav" aria-label="Main navigation" ref={navRef}>
                         {navLinks.map((link) => {
                             if ('menu' in link) {
                                 const expanded = activeDesktopMenu === link.menu
@@ -537,11 +745,14 @@ export default function Header() {
                                 return (
                                     <Button unstyled
                                         key={link.label}
+                                        data-menu={link.menu}
                                         type="button"
                                         className={`header-nav-link ${expanded ? 'active' : ''}`}
                                         aria-expanded={expanded}
                                         aria-controls={`desktop-mega-${link.menu}`}
                                         onClick={() => toggleDesktopMenu(link.menu)}
+                                        onPointerEnter={() => handleTriggerEnter(link.menu)}
+                                        onPointerLeave={handlePointerLeave}
                                     >
                                         <span>{link.label}</span>
                                         <ChevronDown className="header-nav-chevron" width={15} height={15} aria-hidden="true" />
@@ -550,7 +761,15 @@ export default function Header() {
                             }
 
                             return (
-                                <Link key={link.label} href={link.href} className="header-nav-link" onClick={closeAllMenus}>
+                                <Link
+                                    key={link.label}
+                                    href={link.href}
+                                    className="header-nav-link"
+                                    onClick={closeAllMenus}
+                                    /* Pointing at a sibling link dismisses an open
+                                       panel, same as leaving the nav entirely. */
+                                    onPointerEnter={handlePointerLeave}
+                                >
                                     <span>{link.label}</span>
                                 </Link>
                             )
@@ -589,12 +808,23 @@ export default function Header() {
                         key={activeDesktopMenu}
                         id={`desktop-mega-${activeDesktopMenu}`}
                         className="desktop-mega"
-                        initial={{ opacity: 0, y: -12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        transition={{ duration: 0.22 }}
+                        data-menu={activeDesktopMenu}
+                        style={
+                            megaBox
+                                ? { left: `${megaBox.left}px`, width: `${megaBox.width}px` }
+                                : undefined
+                        }
+                        initial={{ opacity: 0, y: -10, scale: 0.985 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -6, scale: 0.99 }}
+                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                        onPointerEnter={clearHoverTimer}
+                        onPointerLeave={handlePointerLeave}
+                        /* Keyboard users tab into the panel; that must not be
+                           treated as the pointer having left it. */
+                        onFocusCapture={clearHoverTimer}
                     >
-                        <div className="container desktop-mega-inner">
+                        <div className="desktop-mega-card">
                             {activeDesktopMenu === 'why' ? (
                                 <DesktopWhyMenu closeMenu={closeAllMenus} />
                             ) : (

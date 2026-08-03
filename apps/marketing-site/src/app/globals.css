@@ -658,246 +658,305 @@ html.lenis body {
 
 /* ======================================
    DESKTOP MEGA MENU
+
+   A floating anchored card, not a full-bleed band. The band version spanned
+   the viewport, so its content had to stretch to fill it — which is where the
+   dead space under the Why cards and the viewport-height Products panel both
+   came from. Sizing the panel to its content instead lets it stay compact.
+
+   Opens on hover with intent timing (see Header.tsx), closes when the pointer
+   leaves either the trigger or the panel. Left / width are set inline from the
+   trigger's measured position so the panel sits under the item you pointed at.
    ====================================== */
 
 .desktop-mega {
   position: fixed;
-  top: 72px;
-  left: 0;
-  right: 0;
+  top: 78px;
   z-index: 90;
   display: none;
+  /* Fallback until the first measurement lands; the inline style wins. */
+  left: 50%;
+  width: min(1080px, calc(100vw - 40px));
   color: rgb(236 234 245);
-  background: rgb(10 9 18);
-  border-bottom: 1px solid rgba(139, 92, 246, 0.12);
-  box-shadow: 0 34px 80px rgba(0, 0, 0, 0.32);
-  max-height: calc(100dvh - 72px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  max-height: calc(100dvh - 96px);
+}
+
+/* Bridges the gap between the header and the card so the pointer can cross it
+   without a pointerleave firing. Without this the panel closes mid-approach. */
+.desktop-mega::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: 0;
+  right: 0;
+  height: 16px;
 }
 
 .header.scrolled + .desktop-mega {
-  top: 64px;
-  max-height: calc(100dvh - 64px);
+  top: 70px;
+  max-height: calc(100dvh - 88px);
 }
 
 @media (min-width: 1024px) {
-  .desktop-mega {
-    display: block;
-  }
+  .desktop-mega { display: block; }
 }
 
-.desktop-mega-inner {
-  padding-top: 26px;
-  padding-bottom: 0;
+.desktop-mega-card {
+  max-height: inherit;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px;
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 90% at 18% -10%, rgba(139, 92, 246, 0.16), transparent 60%),
+    linear-gradient(180deg, rgb(19 17 34), rgb(11 10 21));
+  /* Layered shadow plus a lit top edge. The highlight is what stops a dark
+     panel on a dark page reading as a flat hole — it is lighting, not a rule. */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 2px 6px rgba(0, 0, 0, 0.28),
+    0 18px 40px -10px rgba(0, 0, 0, 0.55),
+    0 36px 90px -20px rgba(0, 0, 0, 0.7);
 }
 
-.desktop-mega-layout {
+/* ---------- shared parts ---------- */
+
+.mega-eyebrow {
+  margin: 0 0 12px;
+  color: rgb(178 156 253);
+  font-size: 10px;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.mega-stack { display: grid; gap: 4px; }
+.mega-stack-tight { display: grid; gap: 1px; }
+
+/* Row with a description. Hover is a soft fill that bleeds past the text edge
+   so the row lifts rather than gaining a box. */
+.mega-item {
   display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 11px;
+  align-items: start;
+  padding: 9px 10px;
+  margin-inline: -10px;
+  border-radius: 11px;
+  color: rgb(255 255 255);
+  text-decoration: none;
+  transition: background 0.16s ease;
+}
+
+.mega-item:hover { background: rgba(255, 255, 255, 0.05); }
+
+.mega-item-text { display: grid; gap: 3px; min-width: 0; }
+
+.mega-item-text strong {
+  font-size: 13.5px;
+  font-weight: 680;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.mega-item-text small {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.mega-item:hover .mega-item-text strong { color: rgb(203 186 255); }
+
+/* Title-only row, used everywhere density matters. */
+.mega-compact {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 7px 10px;
+  margin-inline: -10px;
+  border-radius: 10px;
+  color: rgb(255 255 255);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 620;
+  letter-spacing: -0.008em;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.mega-compact:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgb(203 186 255);
+}
+
+.mega-compact > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mega-item-icon {
+  display: flex;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  color: rgb(196 181 253);
+  background: rgba(255, 255, 255, 0.055);
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.mega-item:hover .mega-item-icon,
+.mega-compact:hover .mega-item-icon {
+  background: rgba(139, 92, 246, 0.22);
+  color: rgb(226 218 255);
+}
+
+.mega-item-icon svg { stroke-width: 1.9; }
+
+/* ---------- why panel ---------- */
+
+.mega-lead {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0 22px;
+  align-items: baseline;
+  padding-bottom: 16px;
+}
+
+.mega-lead .mega-eyebrow { margin: 0; white-space: nowrap; }
+
+.mega-lead-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.66);
+  max-width: 62ch;
+}
+
+.mega-body { display: grid; }
+
+.mega-body-why {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 30px;
+}
+
+.mega-col { min-width: 0; }
+.mega-col-section + .mega-col-section { margin-top: 18px; }
+
+/* Six built-ins as two columns of three: one column made the right side twice
+   the height of the three pillars beside it. */
+.mega-pair-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px 12px;
+}
+
+/* ---------- products panel ---------- */
+
+.mega-body-products {
+  grid-template-columns: minmax(0, 1fr) 262px;
   gap: 28px;
 }
 
-.desktop-mega-layout-why {
-  grid-template-columns: minmax(0, 1fr) 320px;
-  min-height: 300px;
-}
-
-.desktop-mega-layout-products {
-  grid-template-columns: minmax(0, 1fr) 310px;
-}
-
-.desktop-mega-feature-grid {
+.mega-cols {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
-  align-content: start;
-}
-
-.desktop-mega-feature-card {
-  display: flex;
-  min-height: 176px;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 20px;
-  color: rgb(255 255 255);
-  text-decoration: none;
-  background:
-    radial-gradient(circle at 24% 18%, rgba(139, 92, 246, 0.22), transparent 34%),
-    linear-gradient(145deg, rgba(24, 22, 48, 0.96), rgba(10, 9, 18, 0.98));
-  border: 1px solid rgba(139, 92, 246, 0.18);
-  border-radius: 12px;
-  overflow: hidden;
-  transition:
-    border-color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.desktop-mega-feature-card:hover {
-  border-color: rgba(167, 139, 250, 0.5);
-  transform: translateY(-2px);
-}
-
-.desktop-mega-feature-icon {
-  display: flex;
-  width: 42px;
-  height: 42px;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: auto;
-  color: rgb(196 181 253);
-  border: 1px solid rgba(167, 139, 250, 0.28);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.desktop-mega-feature-card span {
-  margin-top: 24px;
-  font-size: 18px;
-  font-weight: 750;
-  letter-spacing: 0;
-}
-
-.desktop-mega-feature-card p,
-.desktop-mega-side-item small,
-.desktop-mega-footer-link span,
-.desktop-mega-preview p {
-  margin: 6px 0 0;
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 13px;
-  line-height: 1.34;
-}
-
-.desktop-mega-side {
-  padding: 24px;
-  background: rgba(21, 17, 42, 0.82);
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.desktop-mega-products-side {
-  padding-top: 24px;
-}
-
-.desktop-mega-eyebrow {
-  margin: 0 0 18px;
-  color: rgb(167 139 250);
-  font-size: 11px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-
-.desktop-mega-side-stack,
-.desktop-mega-link-list {
-  display: grid;
-  gap: 13px;
-}
-
-.desktop-mega-side-item,
-.desktop-mega-link {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  color: rgb(255 255 255);
-  text-decoration: none;
-}
-
-.desktop-mega-side-item svg,
-.desktop-mega-link svg {
-  flex: 0 0 auto;
-  color: rgba(255, 255, 255, 0.9);
-  stroke-width: 1.85;
-}
-
-.desktop-mega-side-item span {
-  display: grid;
-  gap: 2px;
-}
-
-.desktop-mega-side-item strong,
-.desktop-mega-link span,
-.desktop-mega-footer-link strong {
-  font-size: 14px;
-  font-weight: 750;
-  line-height: 1.2;
-}
-
-.desktop-mega-side-item:hover strong,
-.desktop-mega-link:hover span,
-.desktop-mega-footer-link:hover strong {
-  color: rgb(196 181 253);
-}
-
-.desktop-mega-section-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(180px, 1fr));
-  gap: 24px 44px;
-  padding-bottom: 24px;
-}
-
-.desktop-mega-section {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0 18px;
   min-width: 0;
 }
 
-.desktop-mega-preview {
-  padding: 18px;
-  margin-bottom: 22px;
-  background: linear-gradient(145deg, rgba(33, 27, 60, 0.96), rgba(10, 9, 18, 0.98));
-  border: 1px solid rgba(139, 92, 246, 0.18);
-  border-radius: 12px;
+.mega-rail {
+  min-width: 0;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
 }
 
-.desktop-mega-preview-orbit {
+/* ---------- footer strip ---------- */
+
+.mega-foot {
   display: flex;
-  gap: 7px;
-  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
 }
 
-.desktop-mega-preview-orbit span {
-  display: block;
-  width: 38px;
-  height: 38px;
-  border-radius: 11px;
-  background: linear-gradient(135deg, rgba(123, 92, 255, 0.95), rgba(0, 209, 255, 0.52));
-  box-shadow: 0 16px 40px rgba(59, 130, 246, 0.18);
+.mega-facts { display: flex; flex-wrap: wrap; gap: 10px 28px; }
+
+.mega-fact { display: grid; gap: 2px; min-width: 0; }
+
+.mega-fact strong {
+  font-size: 14.5px;
+  font-weight: 760;
+  letter-spacing: -0.02em;
+  color: rgb(203 186 255);
 }
 
-.desktop-mega-preview-orbit span:nth-child(2) {
-  background: linear-gradient(135deg, rgba(167, 139, 250, 0.95), rgba(37, 99, 235, 0.56));
+.mega-fact small {
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.52);
 }
 
-.desktop-mega-preview-orbit span:nth-child(3) {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(123, 92, 255, 0.52));
+.mega-foot-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  background: rgba(139, 92, 246, 0.2);
+  color: rgb(226 218 255);
+  font-size: 12.5px;
+  font-weight: 660;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.16s ease;
 }
 
-.desktop-mega-preview strong {
-  font-size: 15px;
-  font-weight: 800;
-}
+.mega-foot-cta:hover { background: rgba(139, 92, 246, 0.34); }
 
-.desktop-mega-footer {
+.mega-foot-eyebrow { margin: 0; white-space: nowrap; }
+
+.mega-foot-links {
   display: grid;
-  grid-template-columns: 230px repeat(3, minmax(0, 1fr));
-  gap: 34px;
-  padding: 18px 0 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  flex: 1 1 480px;
+  min-width: 0;
 }
 
-.desktop-mega-footer::before {
-  content: 'Customize & extend LetBuyy';
-  color: rgb(167 139 250);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-
-.desktop-mega-footer-link {
+.mega-foot-link {
   display: grid;
-  gap: 4px;
+  gap: 3px;
+  min-width: 0;
   color: rgb(255 255 255);
   text-decoration: none;
 }
+
+.mega-foot-link strong {
+  font-size: 13px;
+  font-weight: 680;
+  letter-spacing: -0.01em;
+  transition: color 0.16s ease;
+}
+
+.mega-foot-link small {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.mega-foot-link:hover strong { color: rgb(203 186 255); }
 
 /* ======================================
    PREMIUM BUTTONS
@@ -4929,18 +4988,37 @@ html.lenis body {
   color: rgb(255 255 255);
   text-decoration: none;
   background:
-    radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.12), transparent 42%),
-    rgba(24, 22, 48, 0.78);
-  border: 1px solid rgba(139, 92, 246, 0.18);
+    radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.1), transparent 42%),
+    rgba(255, 255, 255, 0.045);
   border-radius: 14px;
 }
 
-.mobile-feature-card svg,
-.mobile-mini-card svg,
-.mobile-panel-link svg {
+/* Icon chip, matching .mega-item-icon on desktop: a purple glyph on a tinted
+   card rather than a bare white stroke floating next to the label. */
+.mobile-link-icon {
+  display: flex;
   flex: 0 0 auto;
-  color: rgb(255 255 255);
-  stroke-width: 1.85;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  color: rgb(196 181 253);
+  background: rgba(139, 92, 246, 0.14);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.mobile-link-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.9;
+}
+
+.mobile-panel-link:active .mobile-link-icon,
+.mobile-feature-card:active .mobile-link-icon,
+.mobile-mini-card:active .mobile-link-icon {
+  background: rgba(139, 92, 246, 0.3);
+  color: rgb(226 218 255);
 }
 
 .mobile-feature-card span,
@@ -4997,29 +5075,26 @@ html.lenis body {
   padding: 12px 13px;
   color: rgb(255 255 255);
   text-decoration: none;
-  background: rgba(13, 20, 28, 0.92);
-  border: 1px solid rgba(139, 92, 246, 0.18);
+  background: rgba(255, 255, 255, 0.045);
   border-radius: 14px;
 }
 
-.mobile-mini-card svg {
+.mobile-mini-card .mobile-link-icon {
   grid-row: 1 / span 2;
   align-self: center;
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
 }
 
+.mobile-mini-card .mobile-link-icon svg { width: 16px; height: 16px; }
+
 .mobile-section-stack {
-  gap: 18px;
+  gap: 22px;
 }
 
 .mobile-menu-section {
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(139, 92, 246, 0.16);
-}
-
-.mobile-menu-section:last-child {
-  border-bottom: none;
+  padding-bottom: 6px;
 }
 
 .mobile-menu-section .mobile-panel-eyebrow {
@@ -5056,10 +5131,9 @@ html.lenis body {
   background: rgba(139, 92, 246, 0.14);
 }
 
-.mobile-panel-link svg {
-  width: 20px;
-  height: 20px;
-}
+/* Icon sizing now lives on .mobile-link-icon; this rule predates the chip and
+   was still winning on source order, so the glyph rendered 20px inside a chip
+   scaled for 18px. */
 
 .mobile-drawer-actions {
   display: grid;
