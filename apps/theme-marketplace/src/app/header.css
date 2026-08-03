@@ -23,6 +23,8 @@
   --bg-elevated: var(--color-bg-elevated);
   --border-subtle: var(--color-border);
   --border: var(--color-border);
+  --text-muted: var(--color-text-muted);
+  --bg-deep: var(--color-bg);
   --border-light: var(--color-border-light);
   --border-glow: color-mix(in srgb, var(--color-primary) 34%, transparent);
   --primary-glow: color-mix(in srgb, var(--color-primary) 26%, transparent);
