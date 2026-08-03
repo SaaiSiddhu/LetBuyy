@@ -1,0 +1,1688 @@
+/* ══════════════════════════════════════════════════════════════════
+   PLATFORM HEADER — ported from apps/marketing-site
+
+   The same header across every LetBuyy property: identical logo,
+   nav mechanics, hover mega menus and mobile drawer. Themes only
+   differs in what the panels contain and in the marketplace-specific
+   controls (search, theme toggle, workspace menu).
+
+   The two apps name their design tokens differently, so rather than
+   rewriting every declaration, the alias block below maps this app's
+   `--color-*` tokens onto the names the ported rules already use.
+   That keeps this file a near-verbatim copy, which is what makes it
+   cheap to re-sync when the marketing header changes.
+   ══════════════════════════════════════════════════════════════════ */
+
+:root {
+  --primary: var(--color-primary);
+  --text-primary: var(--color-text-heading);
+  --text-secondary: var(--color-text-body);
+  --text-subtle: var(--color-text-muted);
+  --bg-card: var(--color-bg-card);
+  --bg-card-hover: var(--color-surface-hover);
+  --bg-elevated: var(--color-bg-elevated);
+  --border-subtle: var(--color-border);
+  --border: var(--color-border);
+  --border-light: var(--color-border-light);
+  --border-glow: color-mix(in srgb, var(--color-primary) 34%, transparent);
+  --primary-glow: color-mix(in srgb, var(--color-primary) 26%, transparent);
+  --gradient-primary: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-dark) 55%,
+    var(--color-secondary) 100%
+  );
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+:root {
+  --lb-section-y: clamp(48px, 5.5vw, 72px);
+
+  /* Height of the fixed site header, kept in step with the .header rules
+     below. Anything that sticks underneath it offsets by this instead of
+     guessing a number and overlapping. */
+  --lb-header-h: 60px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --lb-header-h: 66px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --lb-header-h: 72px;
+  }
+}
+
+/* ======================================
+   CONTAINER - UNIFIED GRID PADDING
+   ====================================== */
+
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@media (min-width: 480px) {
+  .container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    padding-left: 64px;
+    padding-right: 64px;
+  }
+}
+
+/* ======================================
+
+   COMPACT PREMIUM HEADER
+   ====================================== */
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: 62px;
+  padding-top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.72);
+  box-shadow: none;
+  backdrop-filter: blur(16px) saturate(1.04);
+  -webkit-backdrop-filter: blur(16px) saturate(1.04);
+  transition:
+    height 0.28s var(--ease-smooth),
+    background 0.28s var(--ease-smooth),
+    border-color 0.28s var(--ease-smooth);
+}
+
+[data-theme="dark"] .header {
+  background: rgba(10, 9, 18, 0.96);
+  border-bottom-color: rgba(39, 34, 52, 0.72);
+}
+
+.header.scrolled {
+  height: 58px;
+  background: rgba(255, 255, 255, 0.98);
+  border-bottom-color: rgba(210, 204, 245, 0.8);
+}
+
+[data-theme="dark"] .header.scrolled {
+  background: rgba(10, 9, 18, 0.98);
+  border-bottom-color: rgba(55, 49, 72, 0.78);
+}
+
+.header.menu-open {
+  background: rgb(10 9 18);
+  border-bottom-color: rgba(139, 92, 246, 0.12);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.header.menu-open .brand-logo-image-light {
+  opacity: 0;
+}
+
+.header.menu-open .brand-logo-image-dark {
+  opacity: 1;
+}
+
+.header.menu-open .header-nav-link,
+.header.menu-open .header-actions .btn-ghost,
+.header.menu-open .mobile-start-link,
+.header.menu-open .hamburger,
+.header.menu-open .hamburger::before,
+.header.menu-open .hamburger::after {
+  color: rgb(255 255 255);
+  background-color: rgb(255 255 255);
+}
+
+.header.menu-open .header-nav-link,
+.header.menu-open .header-actions .btn-ghost,
+.header.menu-open .mobile-start-link {
+  background-color: transparent;
+}
+
+.header.menu-open .header-nav-link:not(.active) {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.header.menu-open .header-nav-link:hover,
+.header.menu-open .header-nav-link.active {
+  color: rgb(255 255 255);
+}
+
+.header.menu-open .header-actions .btn-primary {
+  background: rgb(255 255 255);
+  color: rgb(10 9 18);
+}
+
+/* Mobile Header */
+@media (max-width: 767px) {
+  .header {
+    height: 60px;
+  }
+
+  .header.scrolled {
+    height: 56px;
+  }
+}
+
+/* Tablet Header */
+@media (min-width: 768px) {
+  .header {
+    height: 66px;
+  }
+
+  .header.scrolled {
+    height: 60px;
+  }
+}
+
+/* Desktop Header */
+@media (min-width: 1024px) {
+  .header {
+    height: 72px;
+  }
+
+  .header.scrolled {
+    height: 64px;
+  }
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 24px;
+  height: 100%;
+}
+
+@media (max-width: 1023px) {
+  .header-content {
+    gap: 14px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .mobile-start-link {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 520px) {
+  .header-content {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* Shared brand logo asset pair */
+.brand-logo {
+  position: relative;
+  display: inline-block;
+  width: var(--brand-logo-width);
+  height: var(--brand-logo-height);
+  flex: 0 0 auto;
+  line-height: 0;
+}
+
+.brand-logo-image {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: left center;
+  transition:
+    opacity 0.25s var(--ease-smooth),
+    filter 0.3s var(--ease-smooth),
+    transform 0.3s var(--ease-smooth);
+  backface-visibility: hidden;
+}
+
+.brand-logo-image-dark {
+  opacity: 0;
+}
+
+[data-theme="dark"] .brand-logo-image-light {
+  opacity: 0;
+}
+
+[data-theme="dark"] .brand-logo-image-dark {
+  opacity: 1;
+}
+
+/* ======================================
+   LOGO CONTAINER - FLUSH LEFT ALIGNMENT
+   ====================================== */
+
+.header-logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 0 0 132px;
+  width: 132px;
+  min-width: 0;
+  text-decoration: none;
+  margin: 0;
+  padding: 0;
+  height: 42px;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.header-logo::before {
+  content: none;
+}
+
+.header-logo-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.header-logo .brand-logo-image {
+  filter: none;
+}
+
+[data-theme="dark"] .header-logo .brand-logo-image {
+  filter: none;
+}
+
+@media (min-width: 768px) {
+  .header-logo {
+    flex-basis: 144px;
+    width: 144px;
+    height: 46px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .header-logo {
+    flex-basis: 152px;
+    width: 152px;
+    height: 49px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .header-logo {
+    flex-basis: 118px;
+    width: 118px;
+    height: 38px;
+  }
+}
+
+@media (max-width: 520px) {
+  .header-logo {
+    flex-basis: 112px;
+    width: 112px;
+    height: 36px;
+  }
+}
+
+/* Hover: Subtle lift - no layout shift */
+.header-logo:hover .header-logo-image {
+  transform: translateY(-1px);
+}
+
+/* ======================================
+
+   MOBILE DRAWER LOGO
+   ====================================== */
+
+.mobile-drawer-logo-image {
+  display: block;
+  width: 176px;
+  height: 57px;
+}
+
+.mobile-drawer-logo .brand-logo-image {
+  filter:
+    drop-shadow(0 6px 16px rgba(59, 130, 246, 0.14))
+    drop-shadow(0 1px 1px rgba(10, 9, 18, 0.16));
+}
+
+[data-theme="dark"] .mobile-drawer-logo .brand-logo-image {
+  filter:
+    drop-shadow(0 7px 18px rgba(37, 99, 235, 0.3))
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.1));
+}
+
+.mobile-drawer-logo:hover .mobile-drawer-logo-image {
+  transform: translateY(-1px);
+}
+
+.header-nav {
+  display: none;
+  align-items: center;
+  gap: 26px;
+  margin-left: 2px;
+}
+
+@media (min-width: 1024px) {
+  .header-nav {
+    display: flex;
+  }
+}
+
+.header-nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1;
+  color: var(--text-primary);
+  letter-spacing: 0;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.header-nav-link::after {
+  content: none;
+}
+
+.header-nav-link:hover {
+  color: var(--primary);
+}
+
+.header-nav-chevron {
+  flex: 0 0 auto;
+  stroke-width: 2.4;
+  transition: transform 0.2s ease;
+}
+
+.header-nav-link:hover .header-nav-chevron {
+  transform: translateY(1px);
+}
+
+.header-actions {
+  display: none;
+  align-items: center;
+  gap: 22px;
+  margin-left: auto;
+}
+
+@media (min-width: 1024px) {
+  .header-actions {
+    display: flex;
+  }
+}
+
+.header-actions .btn {
+  min-height: 42px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.header-actions .btn-ghost {
+  min-height: auto;
+  padding: 0;
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.header-actions .btn-ghost:hover {
+  background: transparent;
+  color: var(--primary);
+}
+
+.header-actions .btn-primary {
+  background: var(--gradient-primary);
+  color: rgb(255 255 255);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.28);
+}
+
+[data-theme="dark"] .header-actions .btn-primary {
+  background: var(--gradient-primary);
+  color: rgb(255 255 255);
+}
+
+.header-actions .btn-primary::before {
+  content: none;
+}
+
+.header-actions .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 28px rgba(139, 92, 246, 0.42);
+}
+
+.mobile-start-link {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+  white-space: nowrap;
+}
+
+.mobile-start-link:hover {
+  color: var(--primary);
+}
+
+@media (min-width: 1024px) {
+  .mobile-start-link {
+    display: none;
+  }
+}
+
+/* ======================================
+
+   DESKTOP MEGA MENU
+
+   A floating anchored card, not a full-bleed band. The band version spanned
+   the viewport, so its content had to stretch to fill it — which is where the
+   dead space under the Why cards and the viewport-height Products panel both
+   came from. Sizing the panel to its content instead lets it stay compact.
+
+   Opens on hover with intent timing (see Header.tsx), closes when the pointer
+   leaves either the trigger or the panel. Left / width are set inline from the
+   trigger's measured position so the panel sits under the item you pointed at.
+   ====================================== */
+
+.desktop-mega {
+  position: fixed;
+  top: 78px;
+  z-index: 90;
+  display: none;
+  /* Fallback until the first measurement lands; the inline style wins. */
+  left: 50%;
+  width: min(1080px, calc(100vw - 40px));
+  color: rgb(236 234 245);
+  max-height: calc(100dvh - 96px);
+}
+
+/* Bridges the gap between the header and the card so the pointer can cross it
+   without a pointerleave firing. Without this the panel closes mid-approach. */
+.desktop-mega::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: 0;
+  right: 0;
+  height: 16px;
+}
+
+.header.scrolled + .desktop-mega {
+  top: 70px;
+  max-height: calc(100dvh - 88px);
+}
+
+@media (min-width: 1024px) {
+  .desktop-mega { display: block; }
+}
+
+.desktop-mega-card {
+  max-height: inherit;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px;
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 90% at 18% -10%, rgba(139, 92, 246, 0.16), transparent 60%),
+    linear-gradient(180deg, rgb(19 17 34), rgb(11 10 21));
+  /* Layered shadow plus a lit top edge. The highlight is what stops a dark
+     panel on a dark page reading as a flat hole — it is lighting, not a rule. */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 2px 6px rgba(0, 0, 0, 0.28),
+    0 18px 40px -10px rgba(0, 0, 0, 0.55),
+    0 36px 90px -20px rgba(0, 0, 0, 0.7);
+}
+
+/* ---------- shared parts ---------- */
+
+.mega-eyebrow {
+  margin: 0 0 12px;
+  color: rgb(178 156 253);
+  font-size: 10px;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.mega-stack { display: grid; gap: 4px; }
+.mega-stack-tight { display: grid; gap: 1px; }
+
+/* Row with a description. Hover is a soft fill that bleeds past the text edge
+   so the row lifts rather than gaining a box. */
+.mega-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 11px;
+  align-items: start;
+  padding: 9px 10px;
+  margin-inline: -10px;
+  border-radius: 11px;
+  color: rgb(255 255 255);
+  text-decoration: none;
+  transition: background 0.16s ease;
+}
+
+.mega-item:hover { background: rgba(255, 255, 255, 0.05); }
+
+.mega-item-text { display: grid; gap: 3px; min-width: 0; }
+
+.mega-item-text strong {
+  font-size: 13.5px;
+  font-weight: 680;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.mega-item-text small {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.mega-item:hover .mega-item-text strong { color: rgb(203 186 255); }
+
+/* Title-only row, used everywhere density matters. */
+.mega-compact {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 7px 10px;
+  margin-inline: -10px;
+  border-radius: 10px;
+  color: rgb(255 255 255);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 620;
+  letter-spacing: -0.008em;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.mega-compact:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgb(203 186 255);
+}
+
+.mega-compact > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mega-item-icon {
+  display: flex;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  color: rgb(196 181 253);
+  background: rgba(255, 255, 255, 0.055);
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.mega-item:hover .mega-item-icon,
+.mega-compact:hover .mega-item-icon {
+  background: rgba(139, 92, 246, 0.22);
+  color: rgb(226 218 255);
+}
+
+.mega-item-icon svg { stroke-width: 1.9; }
+
+/* ---------- why panel ---------- */
+
+.mega-lead {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0 22px;
+  align-items: baseline;
+  padding-bottom: 16px;
+}
+
+.mega-lead .mega-eyebrow { margin: 0; white-space: nowrap; }
+
+.mega-lead-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.66);
+  max-width: 62ch;
+}
+
+.mega-body { display: grid; }
+
+.mega-body-why {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 30px;
+}
+
+.mega-col { min-width: 0; }
+.mega-col-section + .mega-col-section { margin-top: 18px; }
+
+/* Six built-ins as two columns of three: one column made the right side twice
+   the height of the three pillars beside it. */
+.mega-pair-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px 12px;
+}
+
+/* ---------- products panel ---------- */
+
+.mega-body-products {
+  grid-template-columns: minmax(0, 1fr) 262px;
+  gap: 28px;
+}
+
+.mega-cols {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0 18px;
+  min-width: 0;
+}
+
+.mega-rail {
+  min-width: 0;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+/* ---------- footer strip ---------- */
+
+.mega-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.mega-facts { display: flex; flex-wrap: wrap; gap: 10px 28px; }
+
+.mega-fact { display: grid; gap: 2px; min-width: 0; }
+
+.mega-fact strong {
+  font-size: 14.5px;
+  font-weight: 760;
+  letter-spacing: -0.02em;
+  color: rgb(203 186 255);
+}
+
+.mega-fact small {
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.mega-foot-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  background: rgba(139, 92, 246, 0.2);
+  color: rgb(226 218 255);
+  font-size: 12.5px;
+  font-weight: 660;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.16s ease;
+}
+
+.mega-foot-cta:hover { background: rgba(139, 92, 246, 0.34); }
+
+.mega-foot-eyebrow { margin: 0; white-space: nowrap; }
+
+.mega-foot-links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  flex: 1 1 480px;
+  min-width: 0;
+}
+
+.mega-foot-link {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  color: rgb(255 255 255);
+  text-decoration: none;
+}
+
+.mega-foot-link strong {
+  font-size: 13px;
+  font-weight: 680;
+  letter-spacing: -0.01em;
+  transition: color 0.16s ease;
+}
+
+.mega-foot-link small {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.mega-foot-link:hover strong { color: rgb(203 186 255); }
+
+/* ======================================
+
+   PREMIUM BUTTONS
+   ====================================== */
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s var(--ease-smooth);
+  border: none;
+  white-space: nowrap;
+}
+
+.btn svg {
+  flex-shrink: 0;
+}
+
+@media (min-width: 480px) {
+  .btn {
+    padding: 12px 24px;
+    font-size: 15px;
+    border-radius: 12px;
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.btn-ghost:hover {
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: 0 4px 24px var(--primary-glow);
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px var(--primary-glow);
+}
+
+.btn-primary:hover::before {
+  opacity: 1;
+}
+
+
+
+
+
+.mobile-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 0;
+  transition: background 0.2s ease;
+}
+
+.mobile-menu-btn:hover {
+  background: transparent;
+}
+
+@media (min-width: 1024px) {
+  .mobile-menu-btn {
+    display: none;
+  }
+}
+
+.hamburger {
+  position: relative;
+  width: 22px;
+  height: 2px;
+  background: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 22px;
+  height: 2px;
+  background: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.hamburger::before {
+  top: -6px;
+}
+
+.hamburger::after {
+  bottom: -6px;
+}
+
+.hamburger.open {
+  background: transparent;
+}
+
+.hamburger.open::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.hamburger.open::after {
+  bottom: 0;
+  transform: rotate(-45deg);
+}
+
+/* ======================================
+   MOBILE DRAWER
+   ====================================== */
+
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100dvh;
+  color: rgb(236 234 245);
+  background: rgb(10 9 18);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mobile-drawer-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 60px;
+  padding: 0 46px;
+  background: rgb(10 9 18);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.12);
+  flex-shrink: 0;
+}
+
+.mobile-drawer-logo {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.mobile-drawer-logo-image {
+  width: 118px;
+  height: 38px;
+}
+
+.mobile-drawer .brand-logo-image-light {
+  opacity: 0;
+}
+
+.mobile-drawer .brand-logo-image-dark {
+  opacity: 1;
+}
+
+.mobile-drawer-start {
+  margin-left: auto;
+  color: rgb(255 255 255);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+  white-space: nowrap;
+}
+
+.mobile-drawer-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  color: rgb(255 255 255);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.mobile-drawer-close:hover {
+  opacity: 0.72;
+}
+
+.mobile-drawer-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.14), transparent 36%),
+    rgb(10 9 18);
+}
+
+.mobile-drawer-body,
+.mobile-drawer-panel {
+  min-height: 100%;
+  padding: 30px 36px 104px;
+}
+
+.mobile-drawer-nav,
+.mobile-section-stack,
+.mobile-card-stack {
+  display: grid;
+}
+
+.mobile-drawer-nav {
+  gap: 0;
+}
+
+.mobile-drawer-link,
+.mobile-panel-back {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 18px 0;
+  border: 0;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.18);
+  background: transparent;
+  color: rgb(255 255 255);
+  font-family: var(--font-inter);
+  font-size: clamp(19px, 4.8vw, 27px);
+  font-weight: 550;
+  line-height: 1.04;
+  letter-spacing: 0;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.mobile-drawer-link span {
+  display: block;
+  font: inherit;
+  line-height: inherit;
+}
+
+.mobile-drawer-link:hover,
+.mobile-panel-back:hover {
+  color: rgb(196 181 253);
+}
+
+.mobile-drawer-link svg,
+.mobile-panel-back svg {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  color: currentColor;
+  transition: transform 0.2s ease;
+}
+
+.mobile-drawer-link:hover svg {
+  transform: translateX(4px);
+}
+
+.mobile-panel-back {
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 2px 0 14px;
+  border-bottom: none;
+  font-size: clamp(16px, 3.4vw, 19px);
+  font-weight: 700;
+}
+
+/* Short plain-language summary above the cards */
+.mobile-panel-intro {
+  margin: 0 0 14px;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: clamp(13px, 3.2vw, 15px);
+  line-height: 1.5;
+}
+
+.mobile-card-stack {
+  gap: 8px;
+  margin-top: 0;
+}
+
+.mobile-feature-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+  color: rgb(255 255 255);
+  text-decoration: none;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.1), transparent 42%),
+    rgba(255, 255, 255, 0.045);
+  border-radius: 14px;
+}
+
+/* Icon chip, matching .mega-item-icon on desktop: a purple glyph on a tinted
+   card rather than a bare white stroke floating next to the label. */
+.mobile-link-icon {
+  display: flex;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  color: rgb(196 181 253);
+  background: rgba(139, 92, 246, 0.14);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.mobile-link-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.9;
+}
+
+.mobile-panel-link:active .mobile-link-icon,
+.mobile-feature-card:active .mobile-link-icon,
+.mobile-mini-card:active .mobile-link-icon {
+  background: rgba(139, 92, 246, 0.3);
+  color: rgb(226 218 255);
+}
+
+.mobile-feature-card span,
+.mobile-panel-link span {
+  display: grid;
+  gap: 6px;
+}
+
+.mobile-feature-card strong,
+.mobile-mini-card strong,
+.mobile-panel-link strong {
+  color: rgb(255 255 255);
+  font-size: clamp(15px, 3.7vw, 17px);
+  line-height: 1.2;
+}
+
+.mobile-feature-card small,
+.mobile-mini-card span,
+.mobile-panel-link small {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: clamp(12.5px, 3.1vw, 14px);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.mobile-feature-card span,
+.mobile-panel-link span {
+  gap: 3px;
+}
+
+.mobile-panel-eyebrow {
+  margin: 20px 0 10px;
+  color: rgb(167 139 250);
+  font-size: clamp(10.5px, 2.6vw, 12px);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mobile-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+/* Icon beside the text rather than stacked above it — the stacked form costs
+   an extra line per card, and this list is six items long. */
+.mobile-mini-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-content: start;
+  column-gap: 11px;
+  row-gap: 2px;
+  padding: 12px 13px;
+  color: rgb(255 255 255);
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.045);
+  border-radius: 14px;
+}
+
+.mobile-mini-card .mobile-link-icon {
+  grid-row: 1 / span 2;
+  align-self: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+}
+
+.mobile-mini-card .mobile-link-icon svg { width: 16px; height: 16px; }
+
+.mobile-section-stack {
+  gap: 22px;
+}
+
+.mobile-menu-section {
+  padding-bottom: 6px;
+}
+
+.mobile-menu-section .mobile-panel-eyebrow {
+  margin: 0 0 8px;
+}
+
+/* Short labels pair up two-per-row, which roughly halves this menu's length.
+   Sections whose items carry a description stay full width. */
+.mobile-panel-link-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 4px;
+  row-gap: 2px;
+}
+
+.mobile-panel-link-list.is-detailed {
+  grid-template-columns: 1fr;
+}
+
+/* Row padding keeps a comfortable tap target while the list stays dense. */
+.mobile-panel-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 8px;
+  margin-inline: -8px;
+  border-radius: 10px;
+  color: rgb(255 255 255);
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.mobile-panel-link:active {
+  background: rgba(139, 92, 246, 0.14);
+}
+
+/* Icon sizing now lives on .mobile-link-icon; this rule predates the chip and
+   was still winning on source order, so the glyph rendered 20px inside a chip
+   scaled for 18px. */
+
+.mobile-drawer-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px 36px calc(10px + env(safe-area-inset-bottom, 0px));
+  flex-shrink: 0;
+  background:
+    linear-gradient(180deg, rgba(14, 12, 24, 0.96), rgba(10, 8, 18, 0.98)),
+    rgb(16 16 17);
+  border-top: 1px solid rgba(139, 92, 246, 0.22);
+  box-shadow: 0 -18px 42px rgba(10, 9, 18, 0.46);
+}
+
+.btn-block {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  text-align: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: clamp(12px, 3vw, 14px);
+  font-weight: 760;
+  letter-spacing: 0;
+}
+
+.mobile-drawer-actions .btn-ghost {
+  color: rgb(221 214 254);
+  background:
+    linear-gradient(180deg, rgba(139, 92, 246, 0.12), rgba(88, 28, 135, 0.08));
+  border: 1px solid rgba(167, 139, 250, 0.46);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.mobile-drawer-actions .btn-primary {
+  color: rgb(255 255 255);
+  background:
+    linear-gradient(135deg, rgb(167 139 250) 0%, rgb(124 58 237) 48%, rgb(91 33 182) 100%);
+  border: 1px solid rgba(196, 181, 253, 0.28);
+  box-shadow:
+    0 12px 28px rgba(109, 40, 217, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.mobile-drawer-actions .btn-primary::before {
+  content: none;
+}
+
+@media (max-width: 520px) {
+  .mobile-drawer-header {
+    min-height: 60px;
+    padding: 0 36px;
+    gap: 12px;
+  }
+
+  .mobile-drawer-logo-image {
+    width: 112px;
+    height: 36px;
+  }
+
+  .mobile-drawer-start {
+    font-size: 14px;
+  }
+
+  .mobile-drawer-close {
+    width: 36px;
+    height: 36px;
+  }
+
+  .mobile-drawer-body,
+  .mobile-drawer-panel {
+    padding: 24px 22px 96px;
+  }
+
+  .mobile-drawer-link {
+    padding: 17px 0;
+    font-size: clamp(18px, 5vw, 25px);
+  }
+
+  .mobile-mini-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-drawer-actions {
+    gap: 7px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .btn-block {
+    min-height: 36px;
+    font-size: clamp(11px, 3.5vw, 13px);
+  }
+}
+
+/* ======================================
+
+
+/* ══════════════════════════════════════════════════════════════════
+   MARKETPLACE-ONLY HEADER PARTS  (.tm-*, .header-property)
+
+   Everything above is shared with the marketing site. These are the
+   pieces only this property has: the property lockup, search, the
+   theme toggle, and the signed-in workspace menu.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* The platform header sizes .header-logo to the wordmark exactly, because the
+   wordmark is all it contains. Here the link also carries the property lockup,
+   so the fixed width moves onto the wordmark and the link sizes to content —
+   otherwise "Themes" overflows the 132px box and lands on top of the nav.
+
+   The breakpoint sequence below mirrors the platform scale in the same order,
+   so the resolved width is identical at every width. */
+.header-logo {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+.header-logo .brand-logo {
+  flex: 0 0 auto;
+  width: 132px;
+}
+
+@media (min-width: 768px) {
+  .header-logo .brand-logo { width: 144px; }
+}
+
+@media (min-width: 1024px) {
+  .header-logo .brand-logo { width: 152px; }
+}
+
+@media (max-width: 1023px) {
+  .header-logo .brand-logo { width: 118px; }
+}
+
+@media (max-width: 520px) {
+  .header-logo .brand-logo { width: 112px; }
+}
+
+/* "Themes" set against the platform wordmark. A typographic lockup rather
+   than a second logo, so the LetBuyy mark itself is byte-identical here. */
+.header-property {
+  margin-left: 10px;
+  padding-left: 11px;
+  font-size: 15px;
+  font-weight: 620;
+  letter-spacing: -0.018em;
+  line-height: 1;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  position: relative;
+}
+
+.header-property::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1px;
+  height: 15px;
+  transform: translateY(-50%);
+  background: color-mix(in srgb, var(--text-subtle) 45%, transparent);
+}
+
+.header.menu-open .header-property { color: rgba(255, 255, 255, 0.72); }
+.header.menu-open .header-property::before { background: rgba(255, 255, 255, 0.24); }
+
+@media (max-width: 400px) {
+  .header-property { display: none; }
+}
+
+/* ---------- search ---------- */
+
+.tm-search-trigger {
+  display: none;
+  align-items: center;
+  gap: 9px;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--text-primary) 5%, transparent);
+  color: var(--text-subtle);
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.tm-search-trigger:hover {
+  background: color-mix(in srgb, var(--text-primary) 9%, transparent);
+  color: var(--text-primary);
+}
+
+@media (min-width: 1120px) {
+  .tm-search-trigger { display: inline-flex; }
+}
+
+.tm-search-label { font-size: 13px; font-weight: 550; }
+
+.tm-kbd {
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--text-primary) 8%, transparent);
+  font-family: var(--font-mono-premium), ui-monospace, monospace;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-subtle);
+}
+
+.tm-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-subtle);
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.tm-icon-button:hover {
+  background: color-mix(in srgb, var(--text-primary) 7%, transparent);
+  color: var(--text-primary);
+}
+
+.header.menu-open .tm-icon-button,
+.header.menu-open .tm-search-trigger { color: rgba(255, 255, 255, 0.72); }
+
+/* Shown only where the full trigger is hidden, so search is never unreachable.
+   It also inherits the auto margin that .mobile-start-link carries upstream —
+   that margin is what pushes the mobile controls to the right edge, and this
+   header replaced that element, so without it they bunched against the logo. */
+.tm-mobile-search {
+  display: inline-flex;
+  margin-left: auto;
+}
+
+@media (min-width: 1120px) {
+  .tm-mobile-search { display: none; }
+}
+
+.tm-search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 14vh 20px 20px;
+}
+
+.tm-search-scrim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
+.tm-search-panel {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 24px 70px -14px rgba(0, 0, 0, 0.6);
+}
+
+.tm-search-form {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 15px 18px;
+  color: var(--primary);
+}
+
+.tm-search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: none;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.tm-search-input::placeholder { color: var(--text-subtle); }
+
+.tm-search-actions { padding: 6px 12px 14px; }
+.tm-search-actions .mega-eyebrow { margin: 0 0 6px 10px; }
+
+/* ---------- workspace menu ---------- */
+
+.tm-user { position: relative; }
+
+.tm-user-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 8px 4px 4px;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--text-subtle);
+  cursor: pointer;
+  transition: background 0.16s ease;
+}
+
+.tm-user-trigger:hover,
+.tm-user-trigger.is-open { background: color-mix(in srgb, var(--text-primary) 7%, transparent); }
+
+.tm-user-avatar { width: 30px; height: 30px; border-radius: 9px; object-fit: cover; }
+
+.tm-user-initials {
+  display: flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--gradient-primary);
+  color: var(--lb-color-text-inverse, rgb(255 255 255));
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tm-user-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 100;
+  width: 244px;
+  padding: 12px;
+  border-radius: 16px;
+  background: var(--bg-elevated);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 20px 50px -12px rgba(0, 0, 0, 0.55);
+}
+
+.tm-user-identity { padding: 4px 10px 10px; min-width: 0; }
+
+.tm-user-identity strong {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 660;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tm-user-identity small {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--text-subtle);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tm-user-links { display: grid; gap: 1px; }
+
+.tm-user-signout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 6px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-error);
+  font-size: 13px;
+  font-weight: 620;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.16s ease;
+}
+
+.tm-user-signout:hover { background: color-mix(in srgb, var(--color-error) 12%, transparent); }
+
+/* ---------- panel layout variants ---------- */
+
+/* Browse uses two link columns plus the rail; the marketing Products panel
+   uses four. Same grid, different track count. */
+.mega-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 26px; }

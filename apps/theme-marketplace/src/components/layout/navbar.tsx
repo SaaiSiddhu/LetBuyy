@@ -2,125 +2,443 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect, useRef, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import type { LucideIcon } from '@letbuyy/ui';
 import {
-    Button, Palette, Search, Sun, Moon, ChevronRight,
-    LayoutDashboard, LayoutGrid, Tag, Sparkles, ArrowRight, Settings,
-    Download, Star, LogOut, Package,
-    BookOpen, Input, ChevronDown, Command, useTheme,
+    ArrowLeft,
+    BookOpen,
+    Button,
+    ChevronDown,
+    ChevronRight,
+    Code2,
+    CreditCard,
+    Download,
+    Eye,
+    FileText,
+    Gauge,
+    Input,
+    LayoutDashboard,
+    LayoutGrid,
+    LogOut,
+    MessageCircle,
+    Monitor,
+    Moon,
+    Package,
+    Palette,
+    RefreshCw,
+    Rocket,
+    Search,
+    Settings,
+    ShieldCheck,
+    Sparkles,
+    Store,
+    Sun,
+    Upload,
+    X,
+    useTheme,
 } from '@letbuyy/ui';
+import BrandLogo from '@/components/brand-logo';
 import { useAuth } from '@/hooks/useAuth';
 import { cn, isCommandSearchShortcut } from '@/lib/utils';
 import { getAccountsUrl } from '@/lib/public-urls';
 
-/* ─── Constants ─── */
-const ACCOUNTS_URL = getAccountsUrl();
+/* ═══════════════════════════════════════════════════════════════
+   The platform header, sharing its structure with the marketing site: same
+   wordmark, same hover-driven mega menus, same mobile drawer, same styles
+   (ported into src/app/header.css).
 
-const NAV_LINKS = [
-    { label: 'Browse Themes', href: '/themes', icon: Sparkles },
-    { label: 'Pricing', href: '/pricing', icon: Tag },
+   What differs is the domain. Panels are built from the marketplace's real
+   categories and routes, and three controls exist only here — search, the
+   theme toggle, and the signed-in workspace menu.
+   ═══════════════════════════════════════════════════════════════ */
+
+type DropdownKey = 'browse' | 'build';
+
+type NavLink =
+    | { label: string; menu: DropdownKey }
+    | { href: string; label: string };
+
+type MenuItem = {
+    description?: string;
+    href: string;
+    icon: LucideIcon;
+    label: string;
+};
+
+type MenuSection = {
+    eyebrow: string;
+    items: MenuItem[];
+};
+
+const ACCOUNTS_URL = getAccountsUrl();
+const PLATFORM_URL = process.env.NEXT_PUBLIC_MARKETING_URL?.trim() || 'https://letbuyy.com';
+
+/* Hover timings, matching the marketing header: 90ms of intent stops the panel
+   flashing open as the cursor crosses a trigger on its way elsewhere; 180ms of
+   grace covers the diagonal from trigger to panel. */
+const OPEN_DELAY_MS = 90;
+const CLOSE_DELAY_MS = 180;
+const MENU_WIDTH: Record<DropdownKey, number> = { browse: 880, build: 720 };
+const MENU_MARGIN = 20;
+const MENU_TEXT_INSET = 12;
+
+const navLinks: NavLink[] = [
+    { label: 'Browse', menu: 'browse' },
+    { label: 'Build', menu: 'build' },
+    { href: '/pricing', label: 'Pricing' },
+    { href: '/support', label: 'Support' },
 ];
 
+const browseIntro =
+    'Every theme is reviewed, previewable with your own products before you install, and switchable later without rebuilding your store.';
+
+/* The five categories the catalogue actually ships — see ThemeCategory in
+   @letbuyy/theme-engine. Adding one here without adding it there yields a
+   dead route. */
+const categorySection: MenuSection = {
+    eyebrow: 'By what you are building',
+    items: [
+        { href: '/themes/category/store', icon: Store, label: 'Online store', description: 'Sell products with cart and checkout.' },
+        { href: '/themes/category/portfolio', icon: Palette, label: 'Portfolio', description: 'Show work, projects and case studies.' },
+        { href: '/themes/category/resume', icon: FileText, label: 'Resume', description: 'A single professional profile page.' },
+        { href: '/themes/category/landing', icon: Rocket, label: 'Landing page', description: 'One page built to convert.' },
+        { href: '/themes/category/saas', icon: LayoutDashboard, label: 'SaaS console', description: 'App-style dashboards and panels.' },
+    ],
+};
+
+const priceSection: MenuSection = {
+    eyebrow: 'By price',
+    items: [
+        { href: '/themes?pricing=free', icon: Sparkles, label: 'Free themes' },
+        { href: '/themes?pricing=one_time', icon: CreditCard, label: 'One-time purchase' },
+        { href: '/themes?pricing=subscription', icon: RefreshCw, label: 'Subscription' },
+        { href: '/themes/compare', icon: LayoutGrid, label: 'Compare themes' },
+    ],
+};
+
+const platformSection: MenuSection = {
+    eyebrow: 'Elsewhere on LetBuyy',
+    items: [
+        { href: PLATFORM_URL, icon: Sparkles, label: 'LetBuyy platform' },
+        { href: `${PLATFORM_URL}/pricing`, icon: CreditCard, label: 'Platform pricing' },
+        { href: '/about', icon: Palette, label: 'About Themes' },
+    ],
+};
+
+const browseHighlights: MenuItem[] = [
+    {
+        href: '/themes',
+        icon: Eye,
+        label: 'Preview in your own store',
+        description: 'See a theme with your real products before you install it.',
+    },
+    {
+        href: '/themes',
+        icon: Monitor,
+        label: 'Built for Indian screens',
+        description: 'Mobile-first layouts that hold up on a 360px phone.',
+    },
+    {
+        href: '/docs',
+        icon: RefreshCw,
+        label: 'Switch without rebuilding',
+        description: 'Products and orders stay put when the design changes.',
+    },
+];
+
+const browseProof = [
+    { value: '5', label: 'categories' },
+    { value: 'Free + paid', label: 'on every plan' },
+    { value: 'Live', label: 'store preview' },
+];
+
+const buildIntro =
+    'Themes are Liquid and JSON, rendered through a locked-down sanitiser. Build one, preview it, then submit it for review.';
+
+const buildSections: MenuSection[] = [
+    {
+        eyebrow: 'Documentation',
+        items: [
+            { href: '/docs', icon: BookOpen, label: 'Theme docs' },
+            { href: '/docs/api', icon: Code2, label: 'API reference' },
+            { href: '/legal/license', icon: FileText, label: 'Theme licence' },
+        ],
+    },
+    {
+        eyebrow: 'Publish',
+        items: [
+            { href: '/developer', icon: LayoutGrid, label: 'Developer console' },
+            { href: '/developer/listings/new', icon: Upload, label: 'Submit a theme' },
+            { href: '/support', icon: MessageCircle, label: 'Get help' },
+        ],
+    },
+];
+
+const buildHighlights: MenuItem[] = [
+    {
+        href: '/docs',
+        icon: ShieldCheck,
+        label: 'Safe by default',
+        description: 'Output is escaped and dangerous constructs are blocked at render.',
+    },
+    {
+        href: '/docs',
+        icon: Gauge,
+        label: 'Fast to ship',
+        description: 'JSON sections and presets, so a layout change is not a rewrite.',
+    },
+];
+
+function MenuIcon({ icon: Icon }: { icon: LucideIcon }) {
+    return <Icon width={17} height={17} aria-hidden="true" />;
+}
+
 /* ═══════════════════════════════════════════════
-   ANIMATED LOGO
+   DESKTOP MEGA PANELS
    ═══════════════════════════════════════════════ */
-function AnimatedLogo() {
+
+function DesktopBrowseMenu({ closeMenu }: { closeMenu: () => void }) {
     return (
-        <Link href="/" className="flex items-center gap-3 group relative">
-            <div className="relative">
-                {/* Hover glow */}
-                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary via-purple-500 to-secondary opacity-0 group-hover:opacity-50 blur-lg transition-all duration-500" />
-                {/* Icon container */}
-                <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-primary via-violet-600 to-secondary flex items-center justify-center shadow-lg shadow-primary/25 transition-all duration-300 group-hover:shadow-xl group-hover:shadow-primary/40 group-hover:scale-105">
-                    <Palette className="w-5 h-5 text-white drop-shadow-sm" />
+        <>
+            <div className="mega-lead">
+                <p className="mega-eyebrow">Browse themes</p>
+                <p className="mega-lead-text">{browseIntro}</p>
+            </div>
+
+            <div className="mega-body mega-body-products">
+                <div className="mega-cols mega-cols-2">
+                    <div className="mega-col">
+                        <p className="mega-eyebrow">{categorySection.eyebrow}</p>
+                        <div className="mega-stack">
+                            {categorySection.items.map(item => (
+                                <Link key={item.href} href={item.href} className="mega-item" onClick={closeMenu}>
+                                    <span className="mega-item-icon">
+                                        <MenuIcon icon={item.icon} />
+                                    </span>
+                                    <span className="mega-item-text">
+                                        <strong>{item.label}</strong>
+                                        <small>{item.description}</small>
+                                    </span>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mega-col">
+                        {[priceSection, platformSection].map(section => (
+                            <section key={section.eyebrow} className="mega-col-section">
+                                <p className="mega-eyebrow">{section.eyebrow}</p>
+                                <div className="mega-stack-tight">
+                                    {section.items.map(item => (
+                                        <Link key={item.label} href={item.href} className="mega-compact" onClick={closeMenu}>
+                                            <span className="mega-item-icon">
+                                                <MenuIcon icon={item.icon} />
+                                            </span>
+                                            <span>{item.label}</span>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </section>
+                        ))}
+                    </div>
+                </div>
+
+                <aside className="mega-rail">
+                    <p className="mega-eyebrow">Why switching is safe</p>
+                    <div className="mega-stack">
+                        {browseHighlights.map(item => (
+                            <Link key={item.label} href={item.href} className="mega-item" onClick={closeMenu}>
+                                <span className="mega-item-icon">
+                                    <MenuIcon icon={item.icon} />
+                                </span>
+                                <span className="mega-item-text">
+                                    <strong>{item.label}</strong>
+                                    <small>{item.description}</small>
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </aside>
+            </div>
+
+            <div className="mega-foot">
+                <div className="mega-facts">
+                    {browseProof.map(fact => (
+                        <span key={fact.value} className="mega-fact">
+                            <strong>{fact.value}</strong>
+                            <small>{fact.label}</small>
+                        </span>
+                    ))}
+                </div>
+                <Link href="/themes" className="mega-foot-cta" onClick={closeMenu}>
+                    Browse all themes
+                    <ChevronRight width={14} height={14} aria-hidden="true" />
+                </Link>
+            </div>
+        </>
+    );
+}
+
+function DesktopBuildMenu({ closeMenu }: { closeMenu: () => void }) {
+    return (
+        <>
+            <div className="mega-lead">
+                <p className="mega-eyebrow">Build themes</p>
+                <p className="mega-lead-text">{buildIntro}</p>
+            </div>
+
+            <div className="mega-body mega-body-why">
+                <div className="mega-col">
+                    {buildSections.map(section => (
+                        <section key={section.eyebrow} className="mega-col-section">
+                            <p className="mega-eyebrow">{section.eyebrow}</p>
+                            <div className="mega-stack-tight">
+                                {section.items.map(item => (
+                                    <Link key={item.href} href={item.href} className="mega-compact" onClick={closeMenu}>
+                                        <span className="mega-item-icon">
+                                            <MenuIcon icon={item.icon} />
+                                        </span>
+                                        <span>{item.label}</span>
+                                    </Link>
+                                ))}
+                            </div>
+                        </section>
+                    ))}
+                </div>
+
+                <div className="mega-col">
+                    <p className="mega-eyebrow">How the engine works</p>
+                    <div className="mega-stack">
+                        {buildHighlights.map(item => (
+                            <Link key={item.label} href={item.href} className="mega-item" onClick={closeMenu}>
+                                <span className="mega-item-icon">
+                                    <MenuIcon icon={item.icon} />
+                                </span>
+                                <span className="mega-item-text">
+                                    <strong>{item.label}</strong>
+                                    <small>{item.description}</small>
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
                 </div>
             </div>
-            <span className="text-xl font-bold text-text-heading tracking-tight">
-                LetBuyy{' '}
-                <span className="bg-gradient-to-r from-primary via-purple-400 to-secondary bg-clip-text text-transparent">
-                    Themes
-                </span>
-            </span>
-        </Link>
+
+            <div className="mega-foot">
+                <p className="mega-eyebrow mega-foot-eyebrow">Before you submit</p>
+                <div className="mega-foot-links">
+                    <Link href="/legal/terms" className="mega-foot-link" onClick={closeMenu}>
+                        <strong>Marketplace terms</strong>
+                        <small>What publishing commits you to.</small>
+                    </Link>
+                    <Link href="/legal/license" className="mega-foot-link" onClick={closeMenu}>
+                        <strong>Theme licence</strong>
+                        <small>How merchants may use your work.</small>
+                    </Link>
+                    <Link href="/legal/refund" className="mega-foot-link" onClick={closeMenu}>
+                        <strong>Refund policy</strong>
+                        <small>When a purchase can be reversed.</small>
+                    </Link>
+                </div>
+            </div>
+        </>
     );
 }
 
 /* ═══════════════════════════════════════════════
-   NAV LINK — with animated underline & glow
+   MOBILE DRAWER PANELS
    ═══════════════════════════════════════════════ */
-function NavLink({ href, label }: { href: string; label: string }) {
+
+function MobilePanel({
+    intro,
+    cards,
+    sections,
+    closeMenu,
+    goBack,
+}: {
+    intro: string;
+    cards: MenuItem[];
+    sections: MenuSection[];
+    closeMenu: () => void;
+    goBack: () => void;
+}) {
     return (
-        <Link
-            href={href}
-            className="relative px-4 py-2 text-sm font-medium text-text-body hover:text-text-heading rounded-xl transition-all duration-300 group"
-        >
-            <span className="relative z-10">{label}</span>
-            {/* Hover background glow */}
-            <div className="absolute inset-0 rounded-xl bg-[var(--lb-color-surface)]/[0.04] opacity-0 group-hover:opacity-100 transition-all duration-300" />
-            {/* Animated underline */}
-            <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 h-[2px] w-0 group-hover:w-3/4 bg-gradient-to-r from-transparent via-primary to-transparent transition-all duration-300 rounded-full" />
-        </Link>
+        <div className="mobile-drawer-panel">
+            <Button unstyled type="button" className="mobile-panel-back" onClick={goBack}>
+                <ArrowLeft width={24} height={24} aria-hidden="true" />
+                <span>Back</span>
+            </Button>
+
+            <p className="mobile-panel-intro">{intro}</p>
+
+            <div className="mobile-card-stack">
+                {cards.map(item => (
+                    <Link key={item.label} href={item.href} className="mobile-feature-card" onClick={closeMenu}>
+                        <span className="mobile-link-icon">
+                            <MenuIcon icon={item.icon} />
+                        </span>
+                        <span>
+                            <strong>{item.label}</strong>
+                            <small>{item.description}</small>
+                        </span>
+                    </Link>
+                ))}
+            </div>
+
+            <div className="mobile-section-stack">
+                {sections.map(section => (
+                    <section key={section.eyebrow} className="mobile-menu-section">
+                        <p className="mobile-panel-eyebrow">{section.eyebrow}</p>
+                        <div className="mobile-panel-link-list">
+                            {section.items.map(item => (
+                                <Link key={item.label} href={item.href} className="mobile-panel-link" onClick={closeMenu}>
+                                    <span className="mobile-link-icon">
+                                        <MenuIcon icon={item.icon} />
+                                    </span>
+                                    <span>
+                                        <strong>{item.label}</strong>
+                                    </span>
+                                </Link>
+                            ))}
+                        </div>
+                    </section>
+                ))}
+            </div>
+        </div>
     );
 }
 
 /* ═══════════════════════════════════════════════
-   SEARCH TRIGGER — Glass pill with glow
+   MARKETPLACE-ONLY CONTROLS
    ═══════════════════════════════════════════════ */
+
 function SearchTrigger({ onClick }: { onClick: () => void }) {
     return (
-        <Button unstyled
-            onClick={onClick}
-            className={cn(
-                'flex min-h-11 items-center gap-2.5 px-3.5 py-2 text-sm rounded-xl',
-                'text-text-muted hover:text-text-heading',
-                'bg-[var(--lb-color-surface)]/[0.04] hover:bg-[var(--lb-color-surface)]/[0.08]',
-                'border border-white/[0.06] hover:border-white/[0.12]',
-                'transition-all duration-300 group'
-            )}
-        >
-            <Search className="w-4 h-4 group-hover:text-primary transition-colors duration-300" />
-            <span className="hidden lg:inline text-text-subtle group-hover:text-text-muted transition-colors">Search</span>
-            <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] bg-[var(--lb-color-surface)]/[0.06] text-text-subtle rounded-md border border-white/[0.08] font-mono">
-                <Command className="w-2.5 h-2.5" />K
-            </kbd>
+        <Button unstyled type="button" className="tm-search-trigger" onClick={onClick} aria-label="Search themes">
+            <Search width={16} height={16} aria-hidden="true" />
+            <span className="tm-search-label">Search themes</span>
+            <kbd className="tm-kbd" aria-hidden="true">⌘K</kbd>
         </Button>
     );
 }
 
-/* ═══════════════════════════════════════════════
-   THEME TOGGLE — Animated with morphing icon
-   ═══════════════════════════════════════════════ */
 function ThemeToggle() {
     const { resolvedTheme, setTheme } = useTheme();
     const isDark = resolvedTheme === 'dark';
 
     return (
-        <Button unstyled
+        <Button
+            unstyled
+            type="button"
+            className="tm-icon-button"
             onClick={() => setTheme(isDark ? 'light' : 'dark')}
-            className={cn(
-                'relative min-h-11 min-w-11 p-2.5 rounded-xl transition-all duration-300',
-                'text-text-muted hover:text-amber-400',
-                'hover:bg-[var(--lb-color-surface)]/[0.06] active:scale-90',
-                'group'
-            )}
-            aria-label="Toggle theme"
+            aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
         >
-            {/* Glow behind icon on hover */}
-            <div className="absolute inset-0 rounded-xl bg-amber-400/0 group-hover:bg-amber-400/[0.08] transition-all duration-300" />
-            <div className="relative">
-                {isDark ? (
-                    <Sun className="w-[18px] h-[18px] transition-transform duration-500 group-hover:rotate-45" />
-                ) : (
-                    <Moon className="w-[18px] h-[18px] transition-transform duration-500 group-hover:-rotate-12" />
-                )}
-            </div>
+            {isDark ? <Sun width={18} height={18} aria-hidden="true" /> : <Moon width={18} height={18} aria-hidden="true" />}
         </Button>
     );
 }
 
-/* ═══════════════════════════════════════════════
-   SEARCH MODAL (⌘K) — Refined with animations
-   ═══════════════════════════════════════════════ */
 function SearchModal({ onClose }: { onClose: () => void }) {
     const [query, setQuery] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
@@ -134,10 +452,10 @@ function SearchModal({ onClose }: { onClose: () => void }) {
         return () => document.removeEventListener('keydown', handler);
     }, [onClose]);
 
-    const quickActions = [
-        { label: 'Browse All Themes', href: '/themes', icon: Sparkles },
-        { label: 'View Pricing', href: '/pricing', icon: Tag },
-        { label: 'Go to Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    const quickActions: MenuItem[] = [
+        { label: 'Browse all themes', href: '/themes', icon: Sparkles },
+        { label: 'View pricing', href: '/pricing', icon: CreditCard },
+        { label: 'Go to dashboard', href: '/dashboard', icon: LayoutDashboard },
         { label: 'Documentation', href: '/docs', icon: BookOpen },
     ];
 
@@ -149,70 +467,40 @@ function SearchModal({ onClose }: { onClose: () => void }) {
     };
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[15vh]">
-            {/* Backdrop */}
-            <div
-                className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
-                onClick={onClose}
-            />
+        <div className="tm-search-overlay" role="dialog" aria-modal="true" aria-label="Search themes">
+            <Button unstyled type="button" className="tm-search-scrim" onClick={onClose} aria-label="Close search" />
 
-            {/* Modal */}
-            <div
-                className="relative w-full max-w-xl mx-4 rounded-2xl border border-white/10 bg-[var(--color-bg-secondary)] shadow-2xl shadow-primary/10 overflow-hidden animate-in slide-in-from-top-4 fade-in duration-300"
-            >
-                {/* Top glow accent */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
-
-                {/* Search Input */}
-                <form onSubmit={submitSearch} className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
-                    <Search className="w-5 h-5 text-primary flex-shrink-0" />
-                    <Input unstyled
+            <div className="tm-search-panel">
+                <form onSubmit={submitSearch} className="tm-search-form">
+                    <Search width={18} height={18} aria-hidden="true" />
+                    <Input
+                        unstyled
                         ref={inputRef}
                         type="search"
                         value={query}
                         onChange={e => setQuery(e.target.value)}
                         placeholder="Search themes and categories"
-                        className="flex-1 bg-transparent text-base text-text-heading placeholder:text-text-subtle outline-none"
+                        className="tm-search-input"
                     />
-                    <Button unstyled type="submit" className="rounded-lg bg-[var(--lb-color-surface)]/[0.06] px-3 py-2 text-xs font-semibold text-text-heading hover:bg-[var(--lb-color-surface)]/[0.1]">
-                        Search
-                    </Button>
-                    <kbd className="px-2 py-1 text-xs bg-[var(--lb-color-surface)]/[0.06] text-text-muted rounded-lg border border-white/[0.08] font-mono">
-                        ESC
-                    </kbd>
+                    <kbd className="tm-kbd" aria-hidden="true">ESC</kbd>
                 </form>
 
-                {/* Quick Actions */}
-                <div className="p-3">
-                    <p className="text-[11px] font-semibold text-text-subtle uppercase tracking-wider mb-2 px-2">
-                        Quick Actions
-                    </p>
-                    {quickActions.map(action => {
-                        const Icon = action.icon;
-                        return (
-                            <Link
-                                key={action.href}
-                                href={action.href}
-                                onClick={onClose}
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-text-body hover:text-text-heading hover:bg-[var(--lb-color-surface)]/[0.04] transition-all group"
-                            >
-                                <div className="w-8 h-8 rounded-lg bg-[var(--lb-color-surface)]/[0.04] group-hover:bg-primary/10 flex items-center justify-center group-hover:text-primary transition-all duration-300">
-                                    <Icon className="w-4 h-4" />
-                                </div>
-                                <span>{action.label}</span>
-                                <ChevronRight className="w-3.5 h-3.5 ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-text-subtle" />
-                            </Link>
-                        );
-                    })}
+                <div className="tm-search-actions">
+                    <p className="mega-eyebrow">Quick actions</p>
+                    {quickActions.map(action => (
+                        <Link key={action.href} href={action.href} onClick={onClose} className="mega-compact">
+                            <span className="mega-item-icon">
+                                <MenuIcon icon={action.icon} />
+                            </span>
+                            <span>{action.label}</span>
+                        </Link>
+                    ))}
                 </div>
             </div>
         </div>
     );
 }
 
-/* ═══════════════════════════════════════════════
-   USER MENU — Profile Dropdown (Desktop)
-   ═══════════════════════════════════════════════ */
 function UserMenu() {
     const { user, signOut } = useAuth();
     const [open, setOpen] = useState(false);
@@ -231,448 +519,451 @@ function UserMenu() {
     const avatarUrl = user?.avatarUrl;
     const initials = displayName.charAt(0).toUpperCase();
 
-    const menuItems = [
+    const menuItems: MenuItem[] = [
         { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-        { label: 'My Themes', href: '/dashboard/purchases', icon: Package },
+        { label: 'My themes', href: '/dashboard/purchases', icon: Package },
         { label: 'Downloads', href: '/dashboard/downloads', icon: Download },
         { label: 'Settings', href: '/dashboard/settings', icon: Settings },
     ];
 
     return (
-        <div ref={ref} className="relative">
-            <Button unstyled
+        <div ref={ref} className="tm-user">
+            <Button
+                unstyled
+                type="button"
+                className={cn('tm-user-trigger', open && 'is-open')}
                 onClick={() => setOpen(!open)}
-                className={cn(
-                    'flex min-h-11 items-center gap-2 p-1.5 pr-3 rounded-xl transition-all duration-200',
-                    'hover:bg-[var(--lb-color-surface)]/[0.06] active:scale-[0.97]',
-                    open && 'bg-[var(--lb-color-surface)]/[0.06]'
-                )}
+                aria-expanded={open}
+                aria-label="Account menu"
             >
                 {avatarUrl ? (
-                    <Image
-                        src={avatarUrl}
-                        alt={displayName}
-                        width={32}
-                        height={32}
-                        unoptimized
-                        className="w-8 h-8 rounded-lg object-cover ring-2 ring-white/10"
-                    />
+                    <Image src={avatarUrl} alt="" width={30} height={30} unoptimized className="tm-user-avatar" />
                 ) : (
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-sm font-bold">
-                        {initials}
-                    </div>
+                    <span className="tm-user-initials" aria-hidden="true">{initials}</span>
                 )}
-                <ChevronDown className={cn(
-                    'w-3.5 h-3.5 text-text-muted transition-transform duration-200',
-                    open && 'rotate-180'
-                )} />
+                <ChevronDown width={14} height={14} aria-hidden="true" />
             </Button>
 
-            {/* Dropdown */}
-            <div
-                className={cn(
-                    'absolute right-0 top-full mt-2 z-[100] w-64',
-                    'rounded-2xl overflow-hidden',
-                    'border border-white/10',
-                    'bg-[var(--color-bg-secondary)]',
-                    'shadow-xl shadow-black/20',
-                    'transition-all duration-200 origin-top-right',
-                    open
-                        ? 'opacity-100 scale-100 translate-y-0'
-                        : 'opacity-0 scale-95 -translate-y-1 pointer-events-none'
-                )}
-            >
-                {/* Top glow */}
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-
-                {/* User Info */}
-                <div className="px-4 py-3 border-b border-white/[0.06]">
-                    <p className="text-sm font-semibold text-text-heading truncate">{displayName}</p>
-                    <p className="text-xs text-text-muted truncate mt-0.5">{displayEmail}</p>
-                </div>
-
-                {/* Menu Items */}
-                <div className="p-1.5">
-                    {menuItems.map(item => {
-                        const Icon = item.icon;
-                        return (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                onClick={() => setOpen(false)}
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-text-body hover:text-text-heading hover:bg-[var(--lb-color-surface)]/[0.04] transition-all"
-                            >
-                                <Icon className="w-4 h-4 text-text-muted" />
+            {open && (
+                <div className="tm-user-panel">
+                    <div className="tm-user-identity">
+                        <strong>{displayName}</strong>
+                        <small>{displayEmail}</small>
+                    </div>
+                    <div className="tm-user-links">
+                        {menuItems.map(item => (
+                            <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className="mega-compact">
+                                <span className="mega-item-icon">
+                                    <MenuIcon icon={item.icon} />
+                                </span>
                                 <span>{item.label}</span>
                             </Link>
-                        );
-                    })}
-                </div>
-
-                {/* Sign Out */}
-                <div className="p-1.5 border-t border-white/[0.06]">
-                    <Button unstyled
-                        onClick={() => { signOut(); setOpen(false); }}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-700 hover:bg-red-50 transition-all"
+                        ))}
+                    </div>
+                    <Button
+                        unstyled
+                        type="button"
+                        className="tm-user-signout"
+                        onClick={() => {
+                            signOut();
+                            setOpen(false);
+                        }}
                     >
-                        <LogOut className="w-4 h-4" />
-                        <span>Sign Out</span>
+                        <LogOut width={16} height={16} aria-hidden="true" />
+                        <span>Sign out</span>
                     </Button>
                 </div>
-            </div>
+            )}
         </div>
     );
 }
 
 /* ═══════════════════════════════════════════════
-   DRAWER SECTION HEADER
+   HEADER
    ═══════════════════════════════════════════════ */
-function DrawerSectionLabel({ children }: { children: React.ReactNode }) {
-    return (
-        <p className="text-[11px] font-semibold text-text-subtle uppercase tracking-wider mb-2 px-5">
-            {children}
-        </p>
-    );
-}
 
-/* ═══════════════════════════════════════════════
-   DRAWER LINK ITEM
-   ═══════════════════════════════════════════════ */
-function DrawerItem({
-    href, icon: Icon, label, badge, onClick,
-}: {
-    href: string;
-    icon: React.ComponentType<{ className?: string }>;
-    label: string;
-    badge?: string;
-    onClick?: () => void;
-}) {
-    return (
-        <Link
-            href={href}
-            className="flex min-h-11 items-center gap-3 px-5 py-3 text-[15px] font-medium text-text-body hover:text-text-heading hover:bg-[var(--lb-color-surface)]/5 transition-all duration-200 group"
-            onClick={onClick}
-        >
-            <Icon className="w-[18px] h-[18px] text-text-muted group-hover:text-primary transition-colors" />
-            <span className="flex-1">{label}</span>
-            {badge && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-white">
-                    {badge}
-                </span>
-            )}
-            <ChevronRight className="w-4 h-4 text-text-subtle opacity-40 group-hover:opacity-100 group-hover:text-text-muted transition-all" />
-        </Link>
-    );
-}
-
-/* ═══════════════════════════════════════════════
-   NAVBAR — Main Export
-   ═══════════════════════════════════════════════ */
 export default function Navbar() {
-    const { user, isAuthenticated, isLoading, signOut } = useAuth();
-    const [mobileOpen, setMobileOpen] = useState(false);
+    const { isAuthenticated } = useAuth();
     const [scrolled, setScrolled] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [activeDesktopMenu, setActiveDesktopMenu] = useState<DropdownKey | null>(null);
+    const [mobilePanel, setMobilePanel] = useState<DropdownKey | null>(null);
+    const [megaBox, setMegaBox] = useState<{ left: number; width: number } | null>(null);
     const [searchOpen, setSearchOpen] = useState(false);
 
-    // Track scroll for header effects
+    const hoverTimer = useRef<number | null>(null);
+    const navRef = useRef<HTMLElement | null>(null);
+    /* Hover only drives the menu where a real pointer exists. On touch the
+       trigger stays a plain toggle, or the first tap would be swallowed. */
+    const pointerIsFine = useRef(false);
+
     useEffect(() => {
-        const handler = () => setScrolled(window.scrollY > 8);
-        window.addEventListener('scroll', handler, { passive: true });
-        return () => window.removeEventListener('scroll', handler);
+        const query = window.matchMedia('(hover: hover) and (pointer: fine)');
+        const sync = () => {
+            pointerIsFine.current = query.matches;
+        };
+        sync();
+        query.addEventListener('change', sync);
+        return () => query.removeEventListener('change', sync);
     }, []);
 
-    // Lock body scroll when mobile menu is open
     useEffect(() => {
-        document.body.style.overflow = mobileOpen ? 'hidden' : '';
-        return () => { document.body.style.overflow = ''; };
-    }, [mobileOpen]);
+        const handleScroll = () => setScrolled(window.scrollY > 50);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
-    // ⌘K shortcut for search
+    useEffect(() => {
+        document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [mobileMenuOpen]);
+
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
             if (isCommandSearchShortcut(e)) {
                 e.preventDefault();
                 setSearchOpen(prev => !prev);
+                return;
+            }
+            if (e.key === 'Escape') {
+                setActiveDesktopMenu(null);
+                setMobileMenuOpen(false);
+                setMobilePanel(null);
             }
         };
         window.addEventListener('keydown', handler);
         return () => window.removeEventListener('keydown', handler);
     }, []);
 
-    const [currentUrl, setCurrentUrl] = useState('');
-
-    // Set redirect URL only on client (avoids hydration mismatch)
-    useEffect(() => {
-        setCurrentUrl(window.location.href);
+    const clearHoverTimer = useCallback(() => {
+        if (hoverTimer.current !== null) {
+            window.clearTimeout(hoverTimer.current);
+            hoverTimer.current = null;
+        }
     }, []);
 
-    const closeMobile = () => setMobileOpen(false);
+    useEffect(() => clearHoverTimer, [clearHoverTimer]);
 
-    // Auth link helpers
-    const returnToParam = currentUrl ? `?return_to=${encodeURIComponent(currentUrl)}` : '';
-    const loginUrl = `${ACCOUNTS_URL}/lookup${returnToParam}`;
-    const signupUrl = `${ACCOUNTS_URL}/signup${returnToParam}`;
+    /* Hang the panel under its trigger's left edge, inset so the first column
+       of text lines up with the trigger label, then clamp to the viewport. */
+    const measureMenu = useCallback((menu: DropdownKey) => {
+        const trigger = navRef.current?.querySelector<HTMLElement>(`[data-menu="${menu}"]`);
+        if (!trigger) return;
 
-    // User info for mobile drawer
-    const displayName = user?.fullName || user?.email?.split('@')[0] || 'User';
-    const displayEmail = user?.email || '';
-    const avatarUrl = user?.avatarUrl;
-    const initials = displayName.charAt(0).toUpperCase();
+        const rect = trigger.getBoundingClientRect();
+        const width = Math.min(MENU_WIDTH[menu], window.innerWidth - MENU_MARGIN * 2);
+        const preferred = rect.left - MENU_TEXT_INSET;
+        const left = Math.max(MENU_MARGIN, Math.min(preferred, window.innerWidth - width - MENU_MARGIN));
+
+        setMegaBox({ left, width });
+    }, []);
+
+    const openDesktopMenu = useCallback(
+        (menu: DropdownKey) => {
+            clearHoverTimer();
+            measureMenu(menu);
+            setMobileMenuOpen(false);
+            setMobilePanel(null);
+            setActiveDesktopMenu(menu);
+        },
+        [clearHoverTimer, measureMenu],
+    );
+
+    const scheduleClose = useCallback(() => {
+        clearHoverTimer();
+        hoverTimer.current = window.setTimeout(() => setActiveDesktopMenu(null), CLOSE_DELAY_MS);
+    }, [clearHoverTimer]);
+
+    const handleTriggerEnter = useCallback(
+        (menu: DropdownKey) => {
+            if (!pointerIsFine.current) return;
+            clearHoverTimer();
+
+            /* Switching between triggers is instant — intent is established. */
+            if (activeDesktopMenu) {
+                openDesktopMenu(menu);
+                return;
+            }
+            hoverTimer.current = window.setTimeout(() => openDesktopMenu(menu), OPEN_DELAY_MS);
+        },
+        [activeDesktopMenu, clearHoverTimer, openDesktopMenu],
+    );
+
+    const handlePointerLeave = useCallback(() => {
+        if (!pointerIsFine.current) return;
+        scheduleClose();
+    }, [scheduleClose]);
+
+    useEffect(() => {
+        if (!activeDesktopMenu) return;
+        const remeasure = () => measureMenu(activeDesktopMenu);
+        window.addEventListener('resize', remeasure);
+        return () => window.removeEventListener('resize', remeasure);
+    }, [activeDesktopMenu, measureMenu]);
+
+    /* Authoritative close. React derives pointer-leave from pointerout's
+       relatedTarget, and Next renders <body> as a React element, so moving onto
+       empty page background does not reliably produce one. */
+    useEffect(() => {
+        if (!activeDesktopMenu) return;
+
+        const handlePointerOver = (event: PointerEvent) => {
+            if (!pointerIsFine.current) return;
+            const target = event.target as Element | null;
+            if (target?.closest('.desktop-mega') || target?.closest('[data-menu]')) {
+                clearHoverTimer();
+                return;
+            }
+            scheduleClose();
+        };
+
+        document.addEventListener('pointerover', handlePointerOver);
+        return () => document.removeEventListener('pointerover', handlePointerOver);
+    }, [activeDesktopMenu, clearHoverTimer, scheduleClose]);
+
+    useEffect(() => {
+        const desktopQuery = window.matchMedia('(min-width: 1024px)');
+        const handleModeChange = (event: MediaQueryListEvent) => {
+            if (event.matches) {
+                setMobileMenuOpen(false);
+                setMobilePanel(null);
+                return;
+            }
+            setActiveDesktopMenu(null);
+        };
+        desktopQuery.addEventListener('change', handleModeChange);
+        return () => desktopQuery.removeEventListener('change', handleModeChange);
+    }, []);
+
+    const closeAllMenus = () => {
+        clearHoverTimer();
+        setActiveDesktopMenu(null);
+        setMobileMenuOpen(false);
+        setMobilePanel(null);
+    };
+
+    /* Still a real toggle: the path for touch, Enter and Space. */
+    const toggleDesktopMenu = (menu: DropdownKey) => {
+        clearHoverTimer();
+        if (activeDesktopMenu === menu) {
+            setActiveDesktopMenu(null);
+            return;
+        }
+        openDesktopMenu(menu);
+    };
+
+    /* The href is the plain accounts URL so it is identical on server and
+       client, and so middle-click / open-in-new-tab still work. `return_to` is
+       appended at click time from the live location — previously this was held
+       in state and populated from an effect, which is a cascading render for a
+       value only ever needed at the moment of navigation. */
+    const loginUrl = `${ACCOUNTS_URL}/lookup`;
+    const signupUrl = `${ACCOUNTS_URL}/signup`;
+
+    const goToAccounts = (destination: string) => (event: React.MouseEvent<HTMLAnchorElement>) => {
+        // Let the browser handle modified clicks so new-tab behaviour survives.
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+        event.preventDefault();
+        closeAllMenus();
+        window.location.href = `${destination}?return_to=${encodeURIComponent(window.location.href)}`;
+    };
+
+    const menuOpen = Boolean(activeDesktopMenu) || mobileMenuOpen;
 
     return (
         <>
-            <header
-                className={cn(
-                    'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
-                )}
-            >
-                {/* ─── Glassmorphism background ─── */}
-                <div
-                    className={cn(
-                        'absolute inset-0 transition-all duration-500',
-                        scrolled
-                            ? 'bg-[var(--color-bg-secondary)]/80 backdrop-blur-xl'
-                            : 'bg-[var(--color-bg-secondary)]/60 backdrop-blur-md'
-                    )}
-                />
+            <header className={`header ${scrolled ? 'scrolled' : ''} ${menuOpen ? 'menu-open' : ''}`}>
+                <div className="container header-content">
+                    <Link href="/" className="header-logo" aria-label="LetBuyy Themes home" onClick={closeAllMenus}>
+                        <BrandLogo className="header-logo-image" width={152} height={49} priority />
+                        {/* The one mark saying which property this is. A typographic
+                            lockup rather than a second logo, so the platform wordmark
+                            stays identical across every app. */}
+                        <span className="header-property">Themes</span>
+                    </Link>
 
-                {/* ─── Bottom border with gradient glow ─── */}
-                <div
-                    className={cn(
-                        'absolute bottom-0 left-0 right-0 h-px transition-opacity duration-500',
-                        scrolled ? 'opacity-100' : 'opacity-0'
-                    )}
-                >
-                    <div className="w-full h-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-                </div>
+                    <nav className="header-nav" aria-label="Main navigation" ref={navRef}>
+                        {navLinks.map(link => {
+                            if ('menu' in link) {
+                                const expanded = activeDesktopMenu === link.menu;
+                                return (
+                                    <Button
+                                        unstyled
+                                        key={link.label}
+                                        data-menu={link.menu}
+                                        type="button"
+                                        className={`header-nav-link ${expanded ? 'active' : ''}`}
+                                        aria-expanded={expanded}
+                                        aria-controls={`desktop-mega-${link.menu}`}
+                                        onClick={() => toggleDesktopMenu(link.menu)}
+                                        onPointerEnter={() => handleTriggerEnter(link.menu)}
+                                        onPointerLeave={handlePointerLeave}
+                                    >
+                                        <span>{link.label}</span>
+                                        <ChevronDown className="header-nav-chevron" width={15} height={15} aria-hidden="true" />
+                                    </Button>
+                                );
+                            }
 
-                {/* ─── Subtle top shine line ─── */}
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-
-                {/* ─── Navigation content ─── */}
-                <nav className="container-main relative flex items-center justify-between h-[72px]">
-                    {/* ─── Logo ─── */}
-                    <AnimatedLogo />
-
-                    {/* ─── Desktop Nav Links ─── */}
-                    <div className="hidden md:flex items-center gap-1">
-                        {NAV_LINKS.map(link => (
-                            <NavLink key={link.href} href={link.href} label={link.label} />
-                        ))}
-                    </div>
-
-                    {/* ─── Desktop Actions ─── */}
-                    <div className="hidden md:flex items-center gap-2">
-                        <SearchTrigger onClick={() => setSearchOpen(true)} />
-
-                        <ThemeToggle />
-
-                        {/* Divider with gradient */}
-                        <div className="w-px h-6 bg-gradient-to-b from-transparent via-white/[0.12] to-transparent mx-1" />
-
-                        {/* ── Auth-dependent actions ── */}
-                        {isLoading ? (
-                            <div className="w-24 h-9 rounded-xl bg-[var(--lb-color-surface)]/[0.04] animate-pulse" />
-                        ) : isAuthenticated && user ? (
-                            <UserMenu />
-                        ) : isAuthenticated ? (
-                            <div className="flex items-center gap-2.5">
+                            return (
                                 <Link
-                                    href="/dashboard"
-                                    className="px-4 py-2 text-sm font-medium rounded-xl text-text-body hover:text-text-heading border border-white/[0.08] hover:border-white/[0.16] hover:bg-[var(--lb-color-surface)]/[0.04] transition-all duration-300"
+                                    key={link.label}
+                                    href={link.href}
+                                    className="header-nav-link"
+                                    onClick={closeAllMenus}
+                                    onPointerEnter={handlePointerLeave}
                                 >
-                                    Dashboard
+                                    <span>{link.label}</span>
                                 </Link>
-                                <Button unstyled
-                                    onClick={() => { void signOut(); }}
-                                    className="px-4 py-2 text-sm font-medium rounded-xl text-red-700 hover:bg-red-50 transition-all duration-300"
-                                >
-                                    Sign Out
-                                </Button>
-                            </div>
-                        ) : (
-                            <div className="flex items-center gap-2.5">
-                                {/* Login button — ghost style */}
-                                <a
-                                    href={loginUrl}
-                                    className={cn(
-                                        'px-4 py-2 text-sm font-medium rounded-xl',
-                                        'text-text-body hover:text-text-heading',
-                                        'border border-white/[0.08] hover:border-white/[0.16]',
-                                        'hover:bg-[var(--lb-color-surface)]/[0.04]',
-                                        'transition-all duration-300'
-                                    )}
-                                >
-                                    Login
-                                </a>
-                                {/* Sign Up button */}
-                                <a
-                                    href={signupUrl}
-                                    className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white rounded-xl bg-gradient-to-r from-primary to-primary-dark shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/35 hover:-translate-y-px transition-all duration-300 active:scale-[0.97]"
-                                >
-                                    Sign Up
-                                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-300" />
-                                </a>
-                            </div>
-                        )}
-                    </div>
+                            );
+                        })}
+                    </nav>
 
-                    {/* ─── Mobile: Actions + Hamburger ─── */}
-                    <div className="md:hidden flex items-center gap-1.5">
+                    <div className="header-actions">
+                        <SearchTrigger onClick={() => setSearchOpen(true)} />
                         <ThemeToggle />
-                        <Button unstyled
-                            className={cn(
-                                'relative min-h-11 min-w-11 p-2.5 rounded-xl transition-all duration-300',
-                                'text-text-body hover:text-text-heading',
-                                'hover:bg-[var(--lb-color-surface)]/[0.06] active:scale-90',
-                            )}
-                            onClick={() => setMobileOpen(!mobileOpen)}
-                            aria-label="Menu"
-                        >
-                            <div className="relative w-5 h-5">
-                                {/* Animated hamburger → X */}
-                                <span className={cn(
-                                    'absolute left-0 block w-5 h-[2px] rounded-full bg-current transition-all duration-300',
-                                    mobileOpen ? 'top-[9px] rotate-45' : 'top-[3px] rotate-0'
-                                )} />
-                                <span className={cn(
-                                    'absolute left-0 top-[9px] block w-5 h-[2px] rounded-full bg-current transition-all duration-300',
-                                    mobileOpen ? 'opacity-0 scale-x-0' : 'opacity-100 scale-x-100'
-                                )} />
-                                <span className={cn(
-                                    'absolute left-0 block w-5 h-[2px] rounded-full bg-current transition-all duration-300',
-                                    mobileOpen ? 'top-[9px] -rotate-45' : 'top-[15px] rotate-0'
-                                )} />
-                            </div>
-                        </Button>
-                    </div>
-                </nav>
-            </header>
-
-            {/* ═══════════════════════════════════════════════
-               MOBILE DRAWER — Slides down from top
-               ═══════════════════════════════════════════════ */}
-            <div
-                className={cn(
-                    'fixed inset-0 z-[40] md:hidden transition-all duration-300',
-                    mobileOpen ? 'visible' : 'invisible'
-                )}
-            >
-                {/* Backdrop */}
-                <div
-                    className={cn(
-                        'absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300',
-                        mobileOpen ? 'opacity-100' : 'opacity-0'
-                    )}
-                    onClick={closeMobile}
-                />
-
-                {/* Drawer Panel */}
-                <div
-                    className={cn(
-                        'absolute top-[72px] left-0 right-0',
-                        'max-h-[calc(100dvh-72px)]',
-                        'rounded-b-3xl',
-                        'bg-[var(--color-bg-secondary)]',
-                        'shadow-2xl shadow-primary/10',
-                        'flex flex-col',
-                        'transition-all duration-300 ease-out origin-top',
-                        'border-b border-white/[0.06]',
-                        mobileOpen
-                            ? 'opacity-100 translate-y-0 scale-y-100'
-                            : 'opacity-0 -translate-y-4 scale-y-95 pointer-events-none'
-                    )}
-                >
-                    {/* Top gradient accent */}
-                    <div className="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-
-                    {/* Drawer Body */}
-                    <div className="flex-1 overflow-y-auto py-4 space-y-4">
-                        {/* ── Authenticated: User Profile ── */}
-                        {isAuthenticated && user && (
-                            <div className="flex items-center gap-3 px-5 pb-3 border-b border-white/5">
-                                {avatarUrl ? (
-                                    <Image
-                                        src={avatarUrl}
-                                        alt={displayName}
-                                        width={36}
-                                        height={36}
-                                        unoptimized
-                                        className="w-9 h-9 rounded-full object-cover ring-2 ring-primary/30"
-                                    />
-                                ) : (
-                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-sm font-bold">
-                                        {initials}
-                                    </div>
-                                )}
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-semibold text-text-heading truncate">{displayName}</p>
-                                    <p className="text-xs text-text-muted truncate">{displayEmail}</p>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* ── Authenticated: Workspace Section ── */}
-                        {isAuthenticated && (
-                            <div className="space-y-0.5">
-                                <DrawerSectionLabel>Workspace</DrawerSectionLabel>
-                                <DrawerItem href="/dashboard" icon={LayoutDashboard} label="Dashboard" onClick={closeMobile} />
-                                <DrawerItem href="/dashboard/purchases" icon={Package} label="My Themes" onClick={closeMobile} />
-                                <DrawerItem href="/dashboard/downloads" icon={Download} label="Downloads" onClick={closeMobile} />
-                                <DrawerItem href="/dashboard/installations" icon={Star} label="Installations" onClick={closeMobile} />
-                            </div>
-                        )}
-
-                        {/* ── Explore Section ── */}
-                        <div className="space-y-0.5">
-                            <DrawerSectionLabel>Explore</DrawerSectionLabel>
-                            <DrawerItem href="/themes" icon={LayoutGrid} label="Browse All" onClick={closeMobile} />
-                            <DrawerItem href="/pricing" icon={Tag} label="Pricing" onClick={closeMobile} />
-                            <DrawerItem href="/themes?sort=popular" icon={Star} label="Popular" onClick={closeMobile} />
-                        </div>
-
-                        {/* ── Authenticated: Manage ── */}
-                        {isAuthenticated && (
-                            <div className="space-y-0.5 border-t border-white/5 pt-3">
-                                <DrawerItem href="/dashboard/settings" icon={Settings} label="Settings" onClick={closeMobile} />
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Drawer Footer */}
-                    <div className="px-5 pb-5 pt-3 border-t border-white/5 flex-shrink-0 space-y-2.5">
                         {isAuthenticated ? (
-                            <Button unstyled
-                                onClick={() => { signOut(); closeMobile(); }}
-                                className="flex items-center justify-center gap-2 w-full py-3 text-sm font-semibold text-red-700 rounded-2xl border border-red-700/30 hover:bg-red-50 active:scale-[0.98] transition-all duration-200"
-                            >
-                                <LogOut className="w-4 h-4" />
-                                Sign Out
-                            </Button>
+                            <UserMenu />
                         ) : (
                             <>
-                                <a
-                                    href={loginUrl}
-                                    className="flex items-center justify-center gap-2 w-full py-3 text-sm font-semibold text-text-heading rounded-2xl border border-white/[0.08] hover:bg-[var(--lb-color-surface)]/[0.04] active:scale-[0.98] transition-all duration-200"
-                                    onClick={closeMobile}
-                                >
-                                    Login
-                                </a>
-                                <a
-                                    href={signupUrl}
-                                    className="relative flex items-center justify-center gap-2 w-full py-3 text-sm font-semibold text-white rounded-2xl overflow-hidden active:scale-[0.98] transition-all duration-200"
-                                    onClick={closeMobile}
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-primary via-violet-600 to-secondary" />
-                                    <span className="relative">Sign Up Free</span>
-                                </a>
+                                <Link href={loginUrl} className="btn btn-ghost" onClick={goToAccounts(loginUrl)}>
+                                    Log in
+                                </Link>
+                                <Link href={signupUrl} className="btn btn-primary" onClick={goToAccounts(signupUrl)}>
+                                    Start for free
+                                </Link>
+                            </>
+                        )}
+                    </div>
+
+                    <Button
+                        unstyled
+                        type="button"
+                        className="tm-icon-button tm-mobile-search"
+                        onClick={() => setSearchOpen(true)}
+                        aria-label="Search themes"
+                    >
+                        <Search width={18} height={18} aria-hidden="true" />
+                    </Button>
+
+                    <Button
+                        unstyled
+                        className="mobile-menu-btn"
+                        onClick={mobileMenuOpen ? closeAllMenus : () => setMobileMenuOpen(true)}
+                        aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+                        aria-expanded={mobileMenuOpen}
+                    >
+                        <span className={`hamburger ${mobileMenuOpen ? 'open' : ''}`} />
+                    </Button>
+                </div>
+            </header>
+
+            {activeDesktopMenu && (
+                <div
+                    id={`desktop-mega-${activeDesktopMenu}`}
+                    className="desktop-mega"
+                    data-menu={activeDesktopMenu}
+                    style={megaBox ? { left: `${megaBox.left}px`, width: `${megaBox.width}px` } : undefined}
+                    onPointerEnter={clearHoverTimer}
+                    onPointerLeave={handlePointerLeave}
+                    onFocusCapture={clearHoverTimer}
+                >
+                    <div className="desktop-mega-card">
+                        {activeDesktopMenu === 'browse' ? (
+                            <DesktopBrowseMenu closeMenu={closeAllMenus} />
+                        ) : (
+                            <DesktopBuildMenu closeMenu={closeAllMenus} />
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {mobileMenuOpen && (
+                <div className="mobile-drawer" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+                    <div className="mobile-drawer-header">
+                        <Link href="/" className="mobile-drawer-logo" onClick={closeAllMenus}>
+                            <BrandLogo className="mobile-drawer-logo-image" width={152} height={49} />
+                        </Link>
+                        <Link href={signupUrl} className="mobile-drawer-start" onClick={goToAccounts(signupUrl)}>
+                            Start for free
+                        </Link>
+                        <Button unstyled className="mobile-drawer-close" onClick={closeAllMenus} aria-label="Close menu">
+                            <X width={24} height={24} aria-hidden="true" />
+                        </Button>
+                    </div>
+
+                    <div className="mobile-drawer-content">
+                        {mobilePanel === 'browse' ? (
+                            <MobilePanel
+                                intro={browseIntro}
+                                cards={categorySection.items}
+                                sections={[priceSection, platformSection]}
+                                closeMenu={closeAllMenus}
+                                goBack={() => setMobilePanel(null)}
+                            />
+                        ) : mobilePanel === 'build' ? (
+                            <MobilePanel
+                                intro={buildIntro}
+                                cards={buildHighlights}
+                                sections={buildSections}
+                                closeMenu={closeAllMenus}
+                                goBack={() => setMobilePanel(null)}
+                            />
+                        ) : (
+                            <div className="mobile-drawer-body">
+                                <nav className="mobile-drawer-nav" aria-label="Mobile navigation">
+                                    {navLinks.map(link => {
+                                        if ('menu' in link) {
+                                            return (
+                                                <Button
+                                                    unstyled
+                                                    key={link.label}
+                                                    type="button"
+                                                    className="mobile-drawer-link"
+                                                    onClick={() => setMobilePanel(link.menu)}
+                                                >
+                                                    <span>{link.label}</span>
+                                                    <ChevronRight width={34} height={34} aria-hidden="true" />
+                                                </Button>
+                                            );
+                                        }
+                                        return (
+                                            <Link
+                                                key={link.label}
+                                                href={link.href}
+                                                className="mobile-drawer-link"
+                                                onClick={closeAllMenus}
+                                            >
+                                                <span>{link.label}</span>
+                                            </Link>
+                                        );
+                                    })}
+                                </nav>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="mobile-drawer-actions">
+                        {isAuthenticated ? (
+                            <Link href="/dashboard" className="btn btn-primary btn-block" onClick={closeAllMenus}>
+                                Go to dashboard
+                            </Link>
+                        ) : (
+                            <>
+                                <Link href={loginUrl} className="btn btn-ghost btn-block" onClick={goToAccounts(loginUrl)}>
+                                    Log in
+                                </Link>
+                                <Link href={signupUrl} className="btn btn-primary btn-block" onClick={goToAccounts(signupUrl)}>
+                                    Start for free
+                                </Link>
                             </>
                         )}
                     </div>
                 </div>
-            </div>
+            )}
 
-            {/* SEARCH MODAL */}
             {searchOpen && <SearchModal onClose={() => setSearchOpen(false)} />}
         </>
     );

@@ -2,6 +2,7 @@
 @import "../../../../config/tailwind/letbuyy-tokens.css";
 @source "./**/*.{ts,tsx}";
 @source "../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
+@import "./header.css";
 
 /* ═══════════════════════════════════════════════════
    THEME MARKETPLACE — Design Tokens (Shared)
