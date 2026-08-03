@@ -71,6 +71,16 @@ export const metadata: Metadata = {
         follow: true,
         googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
     },
+    /* Declared explicitly, matching the marketing site. app/favicon.ico alone
+       is served correctly but browsers cache a favicon per-origin and will keep
+       showing whatever they saw first; an explicit link to a distinct URL is
+       what actually replaces a stale one. The SVG also renders sharply on
+       high-DPI tabs, which a 16px .ico does not. */
+    icons: {
+        icon: '/icons/letbuyy-mark.svg',
+        shortcut: '/icons/letbuyy-mark.svg',
+        apple: '/icons/letbuyy-mark.svg',
+    },
 };
 
 const structuredData = [
