@@ -35,7 +35,7 @@ export default function FinalCTA() {
                             </Link>
                         </motion.div>
                         <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-                            <Link href="#demo" className="btn btn-outline btn-large">
+                            <Link href="/demo" className="btn btn-outline btn-large">
                                 Request Demo
                             </Link>
                         </motion.div>

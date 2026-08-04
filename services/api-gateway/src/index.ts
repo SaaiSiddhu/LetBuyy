@@ -24,7 +24,9 @@ import walletRouter from './routes/wallet';
 import commissionRouter from './routes/commission';
 import settlementsRouter from './routes/settlements';
 import billingRouter from './routes/billing';
+import demoRequestsPublicRouter from './routes/demo-requests-public';
 import foundingPublicRouter from './routes/founding-public';
+import contactPublicRouter from './routes/contact-public';
 import foundingRouter from './routes/founding';
 import internalFoundingRouter from './routes/internal-founding';
 import securityRouter from './routes/security';
@@ -212,6 +214,29 @@ export interface Env {
     RUNTIME_TELEMETRY?: AnalyticsEngineDataset;
     RESEND_API_KEY: string;
     RESEND_FROM_EMAIL?: string;
+    /* Absolute origin of the marketing site — transactional email templates
+       resolve their logo and links against it. */
+    MARKETING_SITE_URL?: string;
+    SUPPORT_EMAIL?: string;
+    /* Inbox that receives demo-request lead alerts. Falls back to SUPPORT_EMAIL. */
+    DEMO_REQUEST_NOTIFY_EMAIL?: string;
+    /* Resend credentials scoped to the demo-request form alone. Separate from
+       RESEND_API_KEY on purpose: a leak or a quota problem on the marketing
+       form must not be able to stop order confirmations or gift-card email. */
+    DEMO_RESEND_API_KEY?: string;
+    DEMO_RESEND_FROM_EMAIL?: string;
+    /* Default inbox for contact-form lead alerts. Falls back to SUPPORT_EMAIL. */
+    CONTACT_NOTIFY_EMAIL?: string;
+    /* Optional JSON map of contact team → inbox, e.g.
+       {"sales":"sales@letbuyy.com","trust_safety":"abuse@letbuyy.com"}. Lets
+       routing change without a deploy; a malformed value degrades to the
+       default inbox rather than losing the lead. */
+    CONTACT_TEAM_INBOXES?: string;
+    /* Resend credentials scoped to the contact form alone, for the same reason
+       the demo form has its own: a marketing-form quota problem must not be
+       able to stop order confirmations. */
+    CONTACT_RESEND_API_KEY?: string;
+    CONTACT_RESEND_FROM_EMAIL?: string;
     LETBUYY_EMAIL_MODE?: 'sandbox' | 'live';
     SES_ACCESS_KEY_ID?: string;
     SES_SECRET_ACCESS_KEY?: string;
@@ -699,6 +724,13 @@ api.route('/wa/webhook', whatsappInboundRouter);
 // PUBLIC founding-program + pricing (mounted BEFORE auth middleware): exposes only
 // non-PII program counts + the plan catalog for the marketing pricing page / live counter.
 api.route('/', foundingPublicRouter);
+// PUBLIC demo-request intake (also BEFORE auth): the submitter is a prospect with
+// no account. Turnstile-gated, validated and length-capped in the route itself.
+api.route('/', demoRequestsPublicRouter);
+// PUBLIC contact-form intake + two-factor ticket lookup (also BEFORE auth): the
+// sender is usually a prospect with no account. Turnstile, an IP rate limit and
+// a per-email throttle stand in for the session that does not exist.
+api.route('/', contactPublicRouter);
 api.use('/internal/*', internalPerimeter);
 api.route('/internal/console', internalConsoleRouter);
 api.route('/internal/billing', internalBillingRouter);
