@@ -318,7 +318,10 @@ router.get('/demo-requests/:id/calendar.ics', async (c) => {
         fullName: data.full_name,
         preferredAt: data.preferred_at,
         supportEmail: c.env.SUPPORT_EMAIL || 'support@letbuyy.com',
-        siteUrl: (c.env.MARKETING_SITE_URL || 'https://letbuyy.com').replace(/\/+$/, ''),
+        /* Public origin, not MARKETING_SITE_URL. An .ics is a file the
+           recipient keeps — a localhost URL inside it is dead the moment it
+           leaves this machine, exactly like the logo src was. */
+        siteUrl: (c.env.EMAIL_ASSET_BASE_URL || 'https://letbuyy.com').replace(/\/+$/, ''),
     });
 
     if (!ics) return c.json(failureBody('NOT_FOUND', 'No scheduled demo for that reference'), 404);

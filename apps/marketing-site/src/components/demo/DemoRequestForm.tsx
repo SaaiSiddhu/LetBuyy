@@ -6,6 +6,7 @@ import {
     resolveLetbuyyApiBaseUrl,
     LETBUYY_PRODUCTION_API_BASE_URL,
 } from '@letbuyy/api-client'
+import TurnstileWidget, { type TurnstileHandle } from '@/components/security/TurnstileWidget'
 import {
     BUSINESS_TYPES,
     CONTACT_LANGUAGES,
@@ -101,6 +102,11 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
     const [submitted, setSubmitted] = useState<{ id: string } | null>(null)
     const [submitError, setSubmitError] = useState<string | null>(null)
     const headingRef = useRef<HTMLHeadingElement>(null)
+    /* Held in state, not read from the DOM at submit time: the invisible widget
+       delivers its token by callback, so there is no input to read until it
+       fires. */
+    const [turnstileToken, setTurnstileToken] = useState('')
+    const turnstileRef = useRef<TurnstileHandle>(null)
 
     /* Days are computed once on mount, not per render: nextBookableDays() reads
        the clock, and recomputing on every keystroke would let the list shift
@@ -190,7 +196,7 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
                     preferred_language: form.preferredLanguage,
                     locale,
                     source_path: window.location.pathname,
-                    turnstile_token: readTurnstileToken(),
+                    turnstile_token: turnstileToken,
                 }),
             })
 
@@ -208,6 +214,10 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
             setSubmitError('Could not reach us just now. Please try again in a moment.')
         } finally {
             setSubmitting(false)
+            /* Tokens are single-use. Without re-arming, a retry after any
+               failure would send a spent token and be rejected for the wrong
+               reason. */
+            turnstileRef.current?.reset()
         }
     }
 
@@ -456,6 +466,8 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
                     </div>
                 )}
 
+                <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} />
+
                 {submitError && (
                     <p className="drf-error" role="alert">
                         {submitError}
@@ -506,31 +518,11 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
     )
 }
 
-/**
- * Turnstile token, if the widget is on the page.
- *
- * The gateway treats a missing token as a failure in production but passes it
- * in local runtimes, so the form works in development without the key. Reading
- * the DOM rather than holding React state keeps this decoupled from whichever
- * widget implementation renders it.
- */
 /** Gateway origin, from the public env the browser can see. */
 function gatewayBaseUrl(): string {
     return resolveLetbuyyApiBaseUrl([process.env.NEXT_PUBLIC_API_URL], {
         fallback: LETBUYY_PRODUCTION_API_BASE_URL,
     })
-}
-
-function readTurnstileToken(): string {
-    const field = document.querySelector<HTMLInputElement>('input[name="cf-turnstile-response"]')
-    if (field?.value) return field.value
-
-    /* No widget on the page. The gateway only honours this sentinel when its
-       own runtime is local or development, so sending it unconditionally is
-       safe: production rejects it and the form fails closed until the
-       Turnstile widget is actually mounted. That is the intended behaviour —
-       an unauthenticated public write should not ship without bot protection. */
-    return 'dev-bypass-token'
 }
 
 function Field({
