@@ -1,14 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import Link from '@/components/i18n/LocaleLink'
 import {
     Button,
     Check,
     Checkbox,
-    ChevronDown,
     Facebook,
-    Globe,
     Instagram,
     Linkedin,
     Twitter,
@@ -16,6 +14,10 @@ import {
     Youtube,
 } from '@letbuyy/ui'
 import BrandLogo from './BrandLogo'
+import LanguageSwitcher from './i18n/LanguageSwitcher'
+import { getDictionaryForSegment } from '@/lib/i18n'
+import { localeFromPathname } from '@/lib/i18n/routing'
+import { usePathname } from 'next/navigation'
 import { getAssetPublicUrl } from '@/lib/public-urls'
 import { getPlatformNavigationLinks } from '@/lib/platform-links'
 import { getAppDownloadTargets } from '@/lib/app-downloads'
@@ -85,6 +87,10 @@ const privacyChoicesIconUrl = getAssetPublicUrl('/assets/legal/privacy-choices.s
 
 export default function Footer() {
     const downloads = getAppDownloadTargets()
+    /* The footer is already a client component, so it reads the locale from
+       the pathname rather than threading a prop through every page. */
+    const pathname = usePathname()
+    const dict = getDictionaryForSegment(localeFromPathname(pathname).segment)
     const [privacyPanelOpen, setPrivacyPanelOpen] = useState(false)
     const [analyticsEnabled, setAnalyticsEnabled] = useState(false)
     const [personalizationEnabled, setPersonalizationEnabled] = useState(false)
@@ -207,14 +213,8 @@ export default function Footer() {
                 <div className="footer-rule" aria-hidden="true" />
 
                 <div className="footer-meta">
-                    <div className="footer-region-row" aria-label="Region and language">
-                        <Button unstyled className="footer-region-button" type="button" aria-label="Change region and language">
-                            <Globe width={19} height={19} aria-hidden="true" />
-                            <span>India</span>
-                            <span className="footer-region-divider" aria-hidden="true" />
-                            <span>English</span>
-                            <ChevronDown width={18} height={18} aria-hidden="true" />
-                        </Button>
+                    <div className="footer-region-row" aria-label={dict.footer.regionAndLanguage}>
+                        <LanguageSwitcher dict={dict} />
                     </div>
 
                     <nav className="footer-legal-row" aria-label="Legal links">

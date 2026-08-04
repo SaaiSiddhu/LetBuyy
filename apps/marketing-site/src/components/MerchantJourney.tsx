@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import Link from '@/components/i18n/LocaleLink'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { getAccountsUrl, getMarketingSiteUrl } from '@/lib/public-urls'
 import { revealAccordionItem } from '@/lib/reveal-accordion-item'

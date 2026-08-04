@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import Link from '@/components/i18n/LocaleLink'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, CreditCard, MaterialIcon, Package, Palette, Store, Zap, type LucideIcon } from '@letbuyy/ui'
 import {

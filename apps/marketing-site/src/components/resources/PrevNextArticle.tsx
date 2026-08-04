@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/i18n/LocaleLink'
 import type { Article } from '@/lib/resources/types'
 import { getCategory } from '@/lib/resources/categories'
 

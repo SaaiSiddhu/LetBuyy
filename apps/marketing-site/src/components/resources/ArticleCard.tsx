@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/i18n/LocaleLink'
 import type { Article, Category } from '@/lib/resources/types'
 import { getAuthor } from '@/lib/resources/authors'
 import { getArticleDifficulty, formatDate } from '@/lib/resources/utils'

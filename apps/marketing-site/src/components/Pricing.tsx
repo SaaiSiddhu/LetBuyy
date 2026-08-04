@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import Link from '@/components/i18n/LocaleLink'
 import { useEffect, useState } from 'react'
 import { AlertCircle, Check, ChevronUp } from '@letbuyy/ui'
 import { getAccountsUrl } from '@/lib/public-urls'

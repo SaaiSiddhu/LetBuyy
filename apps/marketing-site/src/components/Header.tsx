@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import Link from '@/components/i18n/LocaleLink'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { LucideIcon } from '@letbuyy/ui'
@@ -35,6 +35,10 @@ import {
     X,
 } from '@letbuyy/ui'
 import BrandLogo from './BrandLogo'
+import { getDictionaryForSegment } from '@/lib/i18n'
+import type { Dictionary } from '@/lib/i18n/dictionaries/en'
+import { localeFromPathname } from '@/lib/i18n/routing'
+import { usePathname } from 'next/navigation'
 import {
     getAccountsUrl,
     getAppMarketplaceUrl,
@@ -44,14 +48,16 @@ import {
 
 type DropdownKey = 'why' | 'products'
 
+type NavKey = 'whyLetbuyy' | 'products' | 'themes' | 'apps' | 'developers' | 'pricing'
+
 type NavLink =
     | {
-        label: string
+        labelKey: NavKey
         menu: DropdownKey
     }
     | {
         href: string
-        label: string
+        labelKey: NavKey
     }
 
 type MenuItem = {
@@ -70,13 +76,16 @@ const themeMarketplaceUrl = getThemeMarketplaceUrl('/themes')
 const appMarketplaceUrl = getAppMarketplaceUrl('/')
 const developerPortalUrl = getDeveloperPortalUrl('/docs')
 
+/* Labels are dictionary keys, not strings: this array is module-scope so it
+   cannot read the locale, and duplicating it per language would mean three
+   copies of the nav to keep in step. */
 const navLinks: NavLink[] = [
-    { label: 'Why LetBuyy', menu: 'why' },
-    { label: 'Products', menu: 'products' },
-    { href: themeMarketplaceUrl, label: 'Themes' },
-    { href: appMarketplaceUrl, label: 'Apps' },
-    { href: developerPortalUrl, label: 'Developers' },
-    { href: '#pricing', label: 'Pricing' },
+    { labelKey: 'whyLetbuyy', menu: 'why' },
+    { labelKey: 'products', menu: 'products' },
+    { href: themeMarketplaceUrl, labelKey: 'themes' },
+    { href: appMarketplaceUrl, labelKey: 'apps' },
+    { href: developerPortalUrl, labelKey: 'developers' },
+    { href: '#pricing', labelKey: 'pricing' },
 ]
 
 const whyIntro =
@@ -373,9 +382,11 @@ function DesktopProductsMenu({ closeMenu }: { closeMenu: () => void }) {
 function MobileMainMenu({
     closeMenu,
     openPanel,
+    dict,
 }: {
     closeMenu: () => void
     openPanel: (panel: DropdownKey) => void
+    dict: Dictionary
 }) {
     return (
         <motion.div
@@ -386,25 +397,25 @@ function MobileMainMenu({
             exit={{ opacity: 0, x: -18 }}
             transition={{ duration: 0.22 }}
         >
-            <nav className="mobile-drawer-nav" aria-label="Mobile navigation">
+            <nav className="mobile-drawer-nav" aria-label={dict.nav.mobileNavigation}>
                 {navLinks.map((link) => {
                     if ('menu' in link) {
                         return (
                             <Button unstyled
-                                key={link.label}
+                                key={link.labelKey}
                                 type="button"
                                 className="mobile-drawer-link"
                                 onClick={() => openPanel(link.menu)}
                             >
-                                <span>{link.label}</span>
+                                <span>{dict.nav[link.labelKey]}</span>
                                 <ChevronRight width={34} height={34} aria-hidden="true" />
                             </Button>
                         )
                     }
 
                     return (
-                        <Link key={link.label} href={link.href} className="mobile-drawer-link" onClick={closeMenu}>
-                            <span>{link.label}</span>
+                        <Link key={link.labelKey} href={link.href} className="mobile-drawer-link" onClick={closeMenu}>
+                            <span>{dict.nav[link.labelKey]}</span>
                         </Link>
                     )
                 })}
@@ -413,7 +424,7 @@ function MobileMainMenu({
     )
 }
 
-function MobileWhyPanel({ closeMenu, goBack }: { closeMenu: () => void; goBack: () => void }) {
+function MobileWhyPanel({ closeMenu, goBack, dict }: { closeMenu: () => void; goBack: () => void; dict: Dictionary }) {
     return (
         <motion.div
             key="mobile-why"
@@ -425,7 +436,7 @@ function MobileWhyPanel({ closeMenu, goBack }: { closeMenu: () => void; goBack: 
         >
             <Button unstyled type="button" className="mobile-panel-back" onClick={goBack}>
                 <ArrowLeft width={24} height={24} aria-hidden="true" />
-                <span>Back</span>
+                <span>{dict.nav.back}</span>
             </Button>
 
             <p className="mobile-panel-intro">{whyIntro}</p>
@@ -460,7 +471,7 @@ function MobileWhyPanel({ closeMenu, goBack }: { closeMenu: () => void; goBack: 
     )
 }
 
-function MobileProductsPanel({ closeMenu, goBack }: { closeMenu: () => void; goBack: () => void }) {
+function MobileProductsPanel({ closeMenu, goBack, dict }: { closeMenu: () => void; goBack: () => void; dict: Dictionary }) {
     return (
         <motion.div
             key="mobile-products"
@@ -472,7 +483,7 @@ function MobileProductsPanel({ closeMenu, goBack }: { closeMenu: () => void; goB
         >
             <Button unstyled type="button" className="mobile-panel-back" onClick={goBack}>
                 <ArrowLeft width={24} height={24} aria-hidden="true" />
-                <span>Back</span>
+                <span>{dict.nav.back}</span>
             </Button>
 
             <div className="mobile-section-stack">
@@ -520,6 +531,8 @@ const MENU_MARGIN = 20
 const MENU_TEXT_INSET = 12
 
 export default function Header() {
+    const pathname = usePathname()
+    const dict = getDictionaryForSegment(localeFromPathname(pathname).segment)
     const [scrolled, setScrolled] = useState(false)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [activeDesktopMenu, setActiveDesktopMenu] = useState<DropdownKey | null>(null)
@@ -737,14 +750,14 @@ export default function Header() {
                         <BrandLogo className="header-logo-image" width={152} height={49} priority />
                     </Link>
 
-                    <nav className="header-nav" aria-label="Main navigation" ref={navRef}>
+                    <nav className="header-nav" aria-label={dict.nav.mainNavigation} ref={navRef}>
                         {navLinks.map((link) => {
                             if ('menu' in link) {
                                 const expanded = activeDesktopMenu === link.menu
 
                                 return (
                                     <Button unstyled
-                                        key={link.label}
+                                        key={link.labelKey}
                                         data-menu={link.menu}
                                         type="button"
                                         className={`header-nav-link ${expanded ? 'active' : ''}`}
@@ -754,7 +767,7 @@ export default function Header() {
                                         onPointerEnter={() => handleTriggerEnter(link.menu)}
                                         onPointerLeave={handlePointerLeave}
                                     >
-                                        <span>{link.label}</span>
+                                        <span>{dict.nav[link.labelKey]}</span>
                                         <ChevronDown className="header-nav-chevron" width={15} height={15} aria-hidden="true" />
                                     </Button>
                                 )
@@ -762,7 +775,7 @@ export default function Header() {
 
                             return (
                                 <Link
-                                    key={link.label}
+                                    key={link.labelKey}
                                     href={link.href}
                                     className="header-nav-link"
                                     onClick={closeAllMenus}
@@ -770,7 +783,7 @@ export default function Header() {
                                        panel, same as leaving the nav entirely. */
                                     onPointerEnter={handlePointerLeave}
                                 >
-                                    <span>{link.label}</span>
+                                    <span>{dict.nav[link.labelKey]}</span>
                                 </Link>
                             )
                         })}
@@ -778,23 +791,23 @@ export default function Header() {
 
                     <div className="header-actions">
                         <Link href={loginUrl} className="btn btn-ghost" onClick={closeAllMenus}>
-                            Log in
+                            {dict.nav.logIn}
                         </Link>
                         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                             <Link href={signupUrl} className="btn btn-primary" onClick={closeAllMenus}>
-                                Start for free
+                                {dict.nav.startForFree}
                             </Link>
                         </motion.div>
                     </div>
 
                     <Link href={signupUrl} className="mobile-start-link" onClick={closeAllMenus}>
-                        Start for free
+                        {dict.nav.startForFree}
                     </Link>
 
                     <Button unstyled
                         className="mobile-menu-btn"
                         onClick={mobileMenuOpen ? closeAllMenus : openMobileMenu}
-                        aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+                        aria-label={mobileMenuOpen ? dict.nav.closeMenu : dict.nav.openMenu}
                         aria-expanded={mobileMenuOpen}
                     >
                         <span className={`hamburger ${mobileMenuOpen ? 'open' : ''}`} />
@@ -845,16 +858,16 @@ export default function Header() {
                         transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] }}
                         role="dialog"
                         aria-modal="true"
-                        aria-label="Mobile navigation"
+                        aria-label={dict.nav.mobileNavigation}
                     >
                         <div className="mobile-drawer-header">
                             <Link href="/" className="mobile-drawer-logo" onClick={closeAllMenus}>
                                 <BrandLogo className="mobile-drawer-logo-image" width={152} height={49} />
                             </Link>
                             <Link href={signupUrl} className="mobile-drawer-start" onClick={closeAllMenus}>
-                                Start for free
+                                {dict.nav.startForFree}
                             </Link>
-                            <Button unstyled className="mobile-drawer-close" onClick={closeAllMenus} aria-label="Close menu">
+                            <Button unstyled className="mobile-drawer-close" onClick={closeAllMenus} aria-label={dict.nav.closeMenu}>
                                 <X width={24} height={24} aria-hidden="true" />
                             </Button>
                         </div>
@@ -862,11 +875,11 @@ export default function Header() {
                         <div className="mobile-drawer-content">
                             <AnimatePresence mode="wait">
                                 {mobilePanel === 'why' ? (
-                                    <MobileWhyPanel closeMenu={closeAllMenus} goBack={() => setMobilePanel(null)} />
+                                    <MobileWhyPanel closeMenu={closeAllMenus} goBack={() => setMobilePanel(null)} dict={dict} />
                                 ) : mobilePanel === 'products' ? (
-                                    <MobileProductsPanel closeMenu={closeAllMenus} goBack={() => setMobilePanel(null)} />
+                                    <MobileProductsPanel closeMenu={closeAllMenus} goBack={() => setMobilePanel(null)} dict={dict} />
                                 ) : (
-                                    <MobileMainMenu closeMenu={closeAllMenus} openPanel={setMobilePanel} />
+                                    <MobileMainMenu closeMenu={closeAllMenus} openPanel={setMobilePanel} dict={dict} />
                                 )}
                             </AnimatePresence>
                         </div>
@@ -877,14 +890,14 @@ export default function Header() {
                                 className="btn btn-ghost btn-block"
                                 onClick={closeAllMenus}
                             >
-                                Log in
+                                {dict.nav.logIn}
                             </Link>
                             <Link
                                 href={signupUrl}
                                 className="btn btn-primary btn-block"
                                 onClick={closeAllMenus}
                             >
-                                Start for free
+                                {dict.nav.startForFree}
                             </Link>
                         </div>
                     </motion.div>

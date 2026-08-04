@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import Link from '@/components/i18n/LocaleLink'
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@letbuyy/ui'
 

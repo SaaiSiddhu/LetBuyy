@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import Link from '@/components/i18n/LocaleLink'
 import { motion } from 'framer-motion'
 import { ArrowRight, Zap } from '@letbuyy/ui'
 import { getAccountsUrl } from '@/lib/public-urls'
