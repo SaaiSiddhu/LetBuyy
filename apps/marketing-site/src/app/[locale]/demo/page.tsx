@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from '@/components/i18n/LocaleLink'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import DemoRequestForm from '@/components/demo/DemoRequestForm'
@@ -23,17 +24,11 @@ export async function generateMetadata({
             canonical: alternates.canonicalOf(locale),
             languages: alternates.languages,
         },
-        /* A lead form has no business in search results competing with the
-           pages that explain the product. */
+        /* A lead form has no business competing in search with the pages that
+           explain the product. */
         robots: { index: false, follow: true },
     }
 }
-
-const ASSURANCES = [
-    { value: '30 min', label: 'on a call or screen share' },
-    { value: 'No card', label: 'nothing to pay, ever, for a demo' },
-    { value: 'Your data', label: 'we set it up against your own catalogue' },
-]
 
 export default async function DemoPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale: segment } = await params
@@ -42,35 +37,35 @@ export default async function DemoPage({ params }: { params: Promise<{ locale: s
     return (
         <>
             <Header />
-            <main className="demo">
-                <section className="demo-hero">
-                    <div className="container demo-hero-inner">
-                        <div className="demo-hero-copy">
-                            <p className="demo-eyebrow">Request a demo</p>
-                            <h1 className="demo-title">
-                                See it running on your own products.
-                            </h1>
-                            <p className="demo-lead">
-                                Thirty minutes with someone who builds LetBuyy. We set up a storefront
-                                against your catalogue, take a live UPI and COD order through checkout,
-                                and show the GST invoice it produces — then answer whatever you ask.
-                            </p>
-
-                            <dl className="demo-assurances">
-                                {ASSURANCES.map(item => (
-                                    <div key={item.value}>
-                                        <dt>{item.value}</dt>
-                                        <dd>{item.label}</dd>
-                                    </div>
-                                ))}
-                            </dl>
-                        </div>
+            {/* Reuses the contact page's shell — same hero rhythm, same card
+                language — so the two "talk to us" routes read as one thing
+                rather than two designs that happen to share a header. */}
+            <main className="ctc">
+                <section className="ctc-hero">
+                    <div className="container">
+                        <h1 className="ctc-title">See it on your own products</h1>
+                        <p className="ctc-intro">
+                            Thirty minutes with someone who builds LetBuyy. We set up a storefront
+                            against your catalogue, take a live UPI and COD order through checkout,
+                            and show the GST invoice it produces — then answer whatever you ask.
+                        </p>
                     </div>
                 </section>
 
-                <section className="demo-body">
+                <section className="ctc-body">
                     <div className="container">
                         <DemoRequestForm locale={locale.segment} />
+                    </div>
+                </section>
+
+                <section className="ctc-foot">
+                    <div className="container">
+                        <p className="ctc-foot-note">
+                            Not ready for a call? Read the{' '}
+                            <Link href="/resources">guide library</Link>, check{' '}
+                            <Link href="/pricing">pricing</Link>, or just{' '}
+                            <Link href="/contact">email us</Link>.
+                        </p>
                     </div>
                 </section>
             </main>

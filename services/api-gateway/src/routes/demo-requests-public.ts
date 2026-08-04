@@ -8,6 +8,7 @@ import {
     buildDemoLeadAlertEmail,
     type DemoRequestSummary,
 } from '../lib/demo-request-email';
+import { buildDemoCalendar } from '../lib/demo-request-calendar';
 
 /**
  * PUBLIC demo-request intake. Mounted BEFORE the auth middleware — the
@@ -269,6 +270,9 @@ async function dispatchEmails(
            exactly what happened. EMAIL_ASSET_BASE_URL therefore defaults to the
            public origin and is only overridden for a CDN. */
         assetUrl: stripSlash(env.EMAIL_ASSET_BASE_URL || 'https://letbuyy.com'),
+        /* Where the calendar invite is served from. Same reasoning as assetUrl:
+           the link is followed from a mail client, so it cannot be localhost. */
+        apiUrl: stripSlash(env.PUBLIC_API_BASE_URL || 'https://api.letbuyy.com/v1'),
         supportEmail: env.SUPPORT_EMAIL || 'support@letbuyy.com',
     };
     const from = env.DEMO_RESEND_FROM_EMAIL || env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>';
@@ -283,5 +287,49 @@ async function dispatchEmails(
             .map(message => sendResendEmail({ apiKey, from, ...message })),
     );
 }
+
+/**
+ * Calendar invite for a booked demo.
+ *
+ * Public but unguessable: the id is a v4 UUID, which is the same protection an
+ * unsubscribe or magic link relies on. It returns only the time and the agenda
+ * — no phone number, no email, none of the business answers — so a leaked link
+ * exposes nothing beyond "a demo is booked at this time".
+ */
+router.get('/demo-requests/:id/calendar.ics', async (c) => {
+    const id = c.req.param('id');
+    if (!/^[0-9a-f-]{36}$/i.test(id)) {
+        return c.json(failureBody('INVALID_ID', 'Not a valid request id'), 400);
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data } = await db
+        .from('demo_requests')
+        .select('id, full_name, preferred_at')
+        .eq('id', id)
+        .maybeSingle();
+
+    if (!data?.preferred_at) {
+        return c.json(failureBody('NOT_FOUND', 'No scheduled demo for that reference'), 404);
+    }
+
+    const ics = buildDemoCalendar({
+        id: data.id,
+        fullName: data.full_name,
+        preferredAt: data.preferred_at,
+        supportEmail: c.env.SUPPORT_EMAIL || 'support@letbuyy.com',
+        siteUrl: (c.env.MARKETING_SITE_URL || 'https://letbuyy.com').replace(/\/+$/, ''),
+    });
+
+    if (!ics) return c.json(failureBody('NOT_FOUND', 'No scheduled demo for that reference'), 404);
+
+    return new Response(ics, {
+        headers: {
+            'content-type': 'text/calendar; charset=utf-8',
+            'content-disposition': 'attachment; filename="letbuyy-demo.ics"',
+            'cache-control': 'private, max-age=300',
+        },
+    });
+});
 
 export default router;

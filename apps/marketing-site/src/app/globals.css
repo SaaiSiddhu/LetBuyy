@@ -16895,68 +16895,12 @@ html.lenis body {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   DEMO REQUEST  (.demo-*, .drf-*)
+   DEMO REQUEST FORM  (.drf-*)
 
-   Same surface-and-space language as the legal library and the mega
-   panels — no strokes, grouping by tinted plane. The form is long, so
-   the visual job here is to make each step feel short.
+   The page shell is the contact page's (.ctc-*) — same hero rhythm and
+   card language, so the two "talk to us" routes read as one thing. Only
+   the form itself is styled here.
    ══════════════════════════════════════════════════════════════════ */
-
-.demo-hero {
-  padding-top: calc(var(--lb-header-h) + clamp(38px, 4.6vw, 70px));
-  padding-bottom: clamp(22px, 2.6vw, 34px);
-}
-
-.demo-hero-copy { max-width: 62ch; }
-
-.demo-eyebrow {
-  margin: 0 0 12px;
-  font-family: var(--font-letbuyy-mono), ui-monospace, monospace;
-  font-size: 10px;
-  font-weight: 650;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--primary);
-}
-
-.demo-title {
-  margin: 0 0 14px;
-  font-size: clamp(32px, 5.2vw, 56px);
-  font-weight: 800;
-  line-height: 1.02;
-  letter-spacing: -0.045em;
-  color: var(--text-primary);
-}
-
-.demo-lead {
-  margin: 0 0 26px;
-  font-size: clamp(15px, 1.5vw, 16.5px);
-  line-height: 1.62;
-  color: var(--text-secondary);
-}
-
-.demo-assurances {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px 34px;
-  margin: 0;
-}
-
-.demo-assurances dt {
-  font-size: 15px;
-  font-weight: 720;
-  letter-spacing: -0.02em;
-  color: var(--primary);
-}
-
-.demo-assurances dd {
-  margin: 3px 0 0;
-  font-size: 12.5px;
-  line-height: 1.45;
-  color: var(--text-subtle);
-}
-
-.demo-body { padding-bottom: clamp(46px, 5vw, 78px); }
 
 /* ---------- step rail ---------- */
 

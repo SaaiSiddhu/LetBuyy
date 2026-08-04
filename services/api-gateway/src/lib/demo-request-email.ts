@@ -47,6 +47,8 @@ export interface DemoEmailBrand {
      */
     assetUrl: string;
     supportEmail: string;
+    /** Public gateway origin — the calendar link is served from there. */
+    apiUrl: string;
 }
 
 function escapeHtml(value: string): string {
@@ -241,72 +243,132 @@ export function buildDemoConfirmationEmail(req: DemoRequestSummary, brand: DemoE
 
     const firstNameRaw = req.fullName.trim().split(/\s+/)[0] || 'there';
     const firstName = escapeHtml(firstNameRaw);
-    const slot = escapeHtml(formatSlot(req));
-    const subject = 'Your LetBuyy demo request — received';
+    const booked = Boolean(req.preferredAt);
+    const subject = booked
+        ? 'Your LetBuyy demo — slot requested'
+        : 'Your LetBuyy demo request — received';
+
+    /* Split date and time so the ticket can set them at different weights, the
+       way a boarding pass does. Falls back to one line if the zone is unknown. */
+    const zone = req.preferredTimezone || 'Asia/Kolkata';
+    let ticketDate = 'To be confirmed';
+    let ticketTime = 'We will suggest times';
+    if (req.preferredAt) {
+        try {
+            const at = new Date(req.preferredAt);
+            ticketDate = new Intl.DateTimeFormat('en-IN', {
+                weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: zone,
+            }).format(at);
+            ticketTime = `${new Intl.DateTimeFormat('en-IN', {
+                hour: 'numeric', minute: '2-digit', timeZone: zone,
+            }).format(at)} · ${zone.split('/').pop()}`;
+        } catch {
+            ticketDate = req.preferredAt;
+            ticketTime = zone;
+        }
+    }
+
+    const calendarUrl = `${brand.apiUrl}/demo-requests/${req.id}/calendar.ics`;
+
+    const agenda: Array<[string, string]> = [
+        ['Your catalogue, live', 'A storefront generated from your own products — not a sample store.'],
+        ['A real order, end to end', 'We put a UPI and a COD order through checkout while you watch.'],
+        ['The GST invoice it produces', 'Generated automatically, immutable, and correct for your place of supply.'],
+    ];
 
     const text = [
         `Hi ${firstNameRaw},`,
         '',
-        'We have your demo request. A member of the team will confirm your slot within one working day.',
+        booked
+            ? `We have your demo request for ${ticketDate}, ${ticketTime}.`
+            : 'We have your demo request.',
+        'A member of the team will confirm within one working day.',
         '',
-        `Requested time: ${formatSlot(req)}`,
+        ...(booked ? [`Add it to your calendar: ${calendarUrl}`, ''] : []),
+        'What we will cover:',
+        ...agenda.map(([title, detail], i) => `  ${i + 1}. ${title} — ${detail}`),
+        '',
         `Reference: ${req.id}`,
         '',
-        'What the call covers:',
-        '  1. A storefront set up against your own catalogue',
-        '  2. A live UPI and COD order taken through checkout',
-        '  3. The GST invoice it produces, end to end',
-        '',
-        `Browse pricing meanwhile: ${brand.siteUrl}/in/pricing`,
-        '',
-        `Questions? Reply to this email or write to ${brand.supportEmail}.`,
+        `Need to move it? Reply to this email or write to ${brand.supportEmail}.`,
         '',
         '— The LetBuyy team',
     ].join('\n');
 
+    /* Timeline is a nested table, not absolutely-positioned divs. Email clients
+       strip position, so a "connector line" drawn that way vanishes in Outlook
+       and overlaps in Gmail. A bordered spacer cell gives the same rule and
+       renders everywhere. */
+    const timeline = agenda
+        .map(
+            ([title, detail], index) => `<tr>
+<td width="34" valign="top" style="padding:0 14px 0 0;">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+  <td width="26" height="26" align="center" valign="middle" style="width:26px;height:26px;background:#f1ecff;border-radius:13px;font-family:${MONO};font-size:11px;font-weight:700;color:${PRIMARY};">${index + 1}</td>
+  </tr></table>
+</td>
+<td class="lb-bento" style="padding:15px 18px;background:${CANVAS};border-radius:14px;">
+  <p class="lb-strong" style="margin:0 0 4px;font-family:${FONT};font-size:14px;font-weight:700;letter-spacing:-0.015em;color:${HEADING};">${title}</p>
+  <p class="lb-body" style="margin:0;font-family:${FONT};font-size:13px;line-height:1.55;color:${BODY};">${detail}</p>
+</td>
+</tr>
+${index < agenda.length - 1 ? `<tr><td width="34" style="padding:0;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center"><tr><td width="1" height="14" class="lb-connector" style="width:1px;height:14px;background:#e6e1f5;font-size:0;line-height:0;">&nbsp;</td></tr></table></td><td style="height:14px;font-size:0;line-height:0;">&nbsp;</td></tr>` : ''}`,
+        )
+        .join('');
+
     const body = `
-<p class="lb-muted" style="margin:0 0 10px;font-size:11.5px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${PRIMARY};">
-  Request received
-</p>
-<h1 class="lb-h1" style="margin:0 0 14px;font-size:26px;line-height:1.2;font-weight:750;color:${HEADING};letter-spacing:-0.03em;">
-  Your demo request is in, ${firstName}.
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 18px;">
+<tr><td style="background:#f1ecff;border-radius:20px;padding:6px 14px;">
+  <span style="font-family:${FONT};font-size:11px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:${PRIMARY};">
+    ${booked ? 'Slot requested' : 'Request received'}
+  </span>
+</td></tr></table>
+
+<h1 class="lb-h1" style="margin:0 0 14px;font-family:${FONT};font-size:34px;line-height:1.05;font-weight:800;color:${HEADING};letter-spacing:-0.04em;">
+  Demo requested, ${firstName}.
 </h1>
-<p class="lb-body" style="margin:0 0 24px;font-size:15px;line-height:1.65;color:${BODY};">
-  A member of the team will confirm your slot within one working day. If the time
-  below stops working, just reply to this email and we will move it.
+<p class="lb-body" style="margin:0 0 28px;font-family:${FONT};font-size:15px;line-height:1.65;color:${BODY};">
+  A member of the team will confirm within one working day. If the time below
+  stops working, reply to this email and we will move it.
 </p>
 
+<!-- Ticket -->
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-       class="lb-panel" style="background:${CANVAS};border-radius:14px;">
-  <tr><td style="padding:6px 20px;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-      ${row('Requested time', slot)}
-      ${row('Reference', `<span style="font-family:${MONO};font-size:12.5px;color:${SUBTLE};">${escapeHtml(req.id)}</span>`, true)}
+       class="lb-ticket" style="background:${INK};border-radius:20px;">
+  <tr><td style="padding:26px 28px;">
+    <p style="margin:0 0 6px;font-family:${FONT};font-size:10.5px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#9b83ff;">Requested slot</p>
+    <p style="margin:0 0 2px;font-family:${FONT};font-size:22px;font-weight:750;letter-spacing:-0.025em;line-height:1.2;color:${ON_DARK};">${escapeHtml(ticketDate)}</p>
+    <p style="margin:0;font-family:${FONT};font-size:18px;font-weight:650;letter-spacing:-0.02em;color:#4fd6b8;">${escapeHtml(ticketTime)}</p>
+
+    ${
+        booked
+            ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0 0;">
+<tr><td class="lb-cta" align="center" style="background:${ON_DARK};border-radius:11px;">
+<a href="${calendarUrl}" class="lb-cta" style="display:inline-block;padding:12px 22px;font-family:${FONT};font-size:13.5px;font-weight:700;color:${INK};letter-spacing:-0.01em;">Add to calendar</a>
+</td></tr></table>`
+            : ''
+    }
+
+    <!-- Perforation. A dashed border on a spacer row, because a real dashed
+         rule between table cells is the one border style Outlook renders. -->
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:22px 0 0;">
+      <tr><td style="border-top:1px dashed rgba(255,255,255,0.18);font-size:0;line-height:0;padding-top:14px;">
+        <p style="margin:0;font-family:${MONO};font-size:10.5px;letter-spacing:0.08em;color:rgba(255,255,255,0.42);">REF · ${escapeHtml(req.id.slice(0, 13).toUpperCase())}</p>
+      </td></tr>
     </table>
   </td></tr>
 </table>
 
-<p class="lb-strong" style="margin:28px 0 12px;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${SUBTLE};">
-  What we will show you
+<p class="lb-strong" style="margin:32px 0 14px;font-family:${FONT};font-size:11.5px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:${SUBTLE};">
+  What we will cover
 </p>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-  ${[
-      'A storefront set up against your own catalogue',
-      'A live UPI and COD order taken through checkout',
-      'The GST invoice it produces, end to end',
-  ]
-      .map(
-          (item, index) => `<tr>
-<td width="26" valign="top" style="padding:5px 0;font-family:${MONO};font-size:12px;font-weight:700;color:${PRIMARY};">${index + 1}</td>
-<td class="lb-body" style="padding:5px 0;font-family:${FONT};font-size:14px;line-height:1.6;color:${BODY};">${item}</td>
-</tr>`,
-      )
-      .join('')}
+  ${timeline}
 </table>
 
 ${button(`${brand.siteUrl}/in/pricing`, 'See pricing while you wait')}
 
-<p class="lb-muted" style="margin:16px 0 0;font-size:12.5px;line-height:1.6;color:${SUBTLE};">
+<p class="lb-muted" style="margin:16px 0 0;font-family:${FONT};font-size:12.5px;line-height:1.6;color:${SUBTLE};">
   Nothing is charged for a demo, and no card is required to start a store.
 </p>`;
 
@@ -317,7 +379,9 @@ ${button(`${brand.siteUrl}/in/pricing`, 'See pricing while you wait')}
         html: shell(
             brand,
             body,
-            'We have your demo request — a slot confirmation follows within one working day.',
+            booked
+                ? `${ticketDate} at ${ticketTime} — add it to your calendar.`
+                : 'We have your demo request — a slot confirmation follows within one working day.',
         ),
     };
 }

@@ -221,6 +221,9 @@ export interface Env {
        separate from MARKETING_SITE_URL, which is localhost in development —
        a mail client cannot reach that, and the image renders broken. */
     EMAIL_ASSET_BASE_URL?: string;
+    /* Publicly reachable base for this gateway, including the /v1 prefix. Used
+       in email links (calendar invite) that are followed from a mail client. */
+    PUBLIC_API_BASE_URL?: string;
     SUPPORT_EMAIL?: string;
     /* Inbox that receives demo-request lead alerts. Falls back to SUPPORT_EMAIL. */
     DEMO_REQUEST_NOTIFY_EMAIL?: string;
