@@ -217,6 +217,10 @@ export interface Env {
     /* Absolute origin of the marketing site — transactional email templates
        resolve their logo and links against it. */
     MARKETING_SITE_URL?: string;
+    /* Public origin that transactional email images are fetched from. Kept
+       separate from MARKETING_SITE_URL, which is localhost in development —
+       a mail client cannot reach that, and the image renders broken. */
+    EMAIL_ASSET_BASE_URL?: string;
     SUPPORT_EMAIL?: string;
     /* Inbox that receives demo-request lead alerts. Falls back to SUPPORT_EMAIL. */
     DEMO_REQUEST_NOTIFY_EMAIL?: string;

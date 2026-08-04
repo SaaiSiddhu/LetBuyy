@@ -260,8 +260,15 @@ async function dispatchEmails(
         locale: (row.locale as string) ?? null,
     };
 
+    const stripSlash = (value: string) => value.replace(/\/+$/, '');
     const brand = {
-        siteUrl: (env.MARKETING_SITE_URL || 'https://letbuyy.com').replace(/\/+$/, ''),
+        siteUrl: stripSlash(env.MARKETING_SITE_URL || 'https://letbuyy.com'),
+        /* Images must resolve from a mail client, which is not on this network.
+           MARKETING_SITE_URL is localhost on a dev machine, and an <img>
+           pointing there renders as a broken-image box in the inbox — which is
+           exactly what happened. EMAIL_ASSET_BASE_URL therefore defaults to the
+           public origin and is only overridden for a CDN. */
+        assetUrl: stripSlash(env.EMAIL_ASSET_BASE_URL || 'https://letbuyy.com'),
         supportEmail: env.SUPPORT_EMAIL || 'support@letbuyy.com',
     };
     const from = env.DEMO_RESEND_FROM_EMAIL || env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.com>';

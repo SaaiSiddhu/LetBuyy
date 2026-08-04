@@ -4,37 +4,57 @@ import { BRAND_PROFILES } from '@letbuyy/shared-types';
  * Demo-request transactional emails.
  *
  * Two messages per submission: a confirmation to the prospect and a lead alert
- * to the team. Both are built here so the branded shell is defined once.
+ * to the team. The branded shell is defined once, here.
  *
- * EMAIL IS NOT THE WEB. Three constraints shape everything below:
- *   • Tables, not flex or grid — Outlook's Word rendering engine supports
+ * EMAIL IS NOT THE WEB. Four constraints shape everything below:
+ *   • Tables, not flex or grid — Outlook renders with Word, which supports
  *     neither, and it is still a large share of B2B inboxes.
- *   • Inline styles — Gmail strips <style> blocks in some clients.
- *   • No external CSS, no webfonts.
- *
- * DARK MODE: the logo is served as a light-on-dark PNG inside a dark panel, so
- * it reads on both. `prefers-color-scheme` inside email is unreliable (Gmail
- * ignores it), so the design does not depend on it — the header is dark in
- * every client rather than attempting to invert.
+ *   • Inline styles — Gmail strips <style> blocks in several contexts, so the
+ *     <style> here carries only progressive enhancement (responsive + dark
+ *     mode) and never anything the layout depends on.
+ *   • Images are blocked by default in many clients, so nothing essential may
+ *     live in one. The wordmark has styled alt text that reads as the brand
+ *     when the image does not load.
+ *   • Absolute URLs on a public host. A dev origin in an <img> produces the
+ *     broken-image box that shipped in the first version of this file.
  */
 
-const BRAND_INK = '#0a0912';
-const BRAND_PANEL = '#12101f';
-const BRAND_PRIMARY = '#7c5cff';
-const TEXT_ON_DARK = '#ffffff';
-const TEXT_MUTED_ON_DARK = 'rgba(255,255,255,0.62)';
-const TEXT_BODY = '#3f3a52';
-const TEXT_SUBTLE = '#8b849c';
-const SURFACE = '#f7f6fb';
-const HAIRLINE = '#e8e3fa';
+const INK = '#0a0912';
+const INK_SOFT = '#141122';
+const PRIMARY = '#7c5cff';
+const PRIMARY_DEEP = '#6944f5';
+const ON_DARK = '#ffffff';
+const ON_DARK_MUTED = 'rgba(255,255,255,0.60)';
+const BODY = '#403a54';
+const HEADING = '#14111f';
+const SUBTLE = '#8b849c';
+const CANVAS = '#f4f2fa';
+const CARD = '#ffffff';
+const HAIRLINE = '#ece8f8';
 
-const FONT_STACK =
+const FONT =
     "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif";
+const MONO = "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace";
 
 export interface DemoEmailBrand {
-    /** Absolute origin of the marketing site — logo and links resolve against it. */
+    /** Public origin for links. */
     siteUrl: string;
+    /**
+     * Public origin for IMAGES. Separate from siteUrl on purpose: siteUrl is
+     * whatever the runtime is configured with — on a dev machine that is
+     * localhost, which a mail client can never fetch. Assets must always point
+     * somewhere publicly reachable.
+     */
+    assetUrl: string;
     supportEmail: string;
+}
+
+function escapeHtml(value: string): string {
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
 }
 
 function socialRow(): string {
@@ -45,54 +65,109 @@ function socialRow(): string {
         ['Facebook', BRAND_PROFILES.facebook],
         ['LinkedIn', BRAND_PROFILES.linkedin],
     ];
-    const links = entries
+    return entries
         .filter(([, href]) => Boolean(href))
         .map(
             ([label, href]) =>
-                `<a href="${href}" style="color:${TEXT_MUTED_ON_DARK};text-decoration:none;font-size:12px;padding:0 8px;">${label}</a>`,
-        );
-    // Word marks rather than icon images: image-blocking is on by default in
-    // many clients, and a row of broken-image boxes is worse than plain text.
-    return links.join(`<span style="color:rgba(255,255,255,0.24);">&middot;</span>`);
+                `<a href="${href}" style="color:${ON_DARK_MUTED};text-decoration:none;font-size:12px;font-weight:500;">${label}</a>`,
+        )
+        .join(`<span style="color:rgba(255,255,255,0.20);padding:0 9px;">&#183;</span>`);
 }
 
+/**
+ * The shell.
+ *
+ * `mso-hide` / conditional comments are avoided by keeping the structure
+ * simple enough that Word renders it unaided — one 600px table, nested tables
+ * for rows, no negative margins and no positioning.
+ */
 function shell(brand: DemoEmailBrand, bodyHtml: string, preheader: string): string {
-    const logo = `${brand.siteUrl}/icons/letbuyy-logo-512.png`;
+    const logo = `${brand.assetUrl}/icons/letbuyy-logo-512.png`;
 
-    return `<!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light dark">
+    return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="x-apple-disable-message-reformatting" />
+<meta name="color-scheme" content="light dark" />
+<meta name="supported-color-schemes" content="light dark" />
 <title>LetBuyy</title>
+<style>
+  /* Progressive enhancement only. Everything the layout needs is inline, so a
+     client that drops this block still renders correctly. */
+  body { margin:0 !important; padding:0 !important; width:100% !important; }
+  table { border-collapse:collapse !important; }
+  img { border:0; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic; }
+  a { text-decoration:none; }
+
+  /* Phones. 600px is the historical safe width; below that the shell and its
+     gutters have to shrink or the message scrolls sideways in the app. */
+  @media only screen and (max-width:620px) {
+    .lb-shell { width:100% !important; border-radius:0 !important; }
+    .lb-pad { padding-left:22px !important; padding-right:22px !important; }
+    .lb-pad-y { padding-top:26px !important; padding-bottom:26px !important; }
+    .lb-h1 { font-size:21px !important; line-height:1.25 !important; }
+    /* Label/value pairs stack rather than squeezing a 170px label column
+       against a value that then wraps every second word. */
+    .lb-row-label, .lb-row-value {
+      display:block !important;
+      width:100% !important;
+      padding-left:0 !important;
+      padding-right:0 !important;
+    }
+    .lb-row-label { padding-bottom:2px !important; }
+    .lb-row-value { padding-bottom:12px !important; }
+    .lb-cta { display:block !important; width:100% !important; text-align:center !important; }
+    .lb-social a { display:inline-block !important; padding:4px 0 !important; }
+  }
+
+  /* Dark mode where the client honours it — Apple Mail, iOS, Outlook.com.
+     Gmail ignores this, which is why the design already works on light. */
+  @media (prefers-color-scheme: dark) {
+    .lb-canvas { background:#08070d !important; }
+    .lb-card { background:${INK_SOFT} !important; }
+    .lb-h1, .lb-strong { color:${ON_DARK} !important; }
+    .lb-body { color:rgba(255,255,255,0.72) !important; }
+    .lb-muted { color:rgba(255,255,255,0.48) !important; }
+    .lb-panel { background:rgba(255,255,255,0.05) !important; }
+    .lb-hairline { border-color:rgba(255,255,255,0.10) !important; }
+  }
+</style>
 </head>
-<body style="margin:0;padding:0;background:${SURFACE};">
-<!-- Preheader: the grey line inboxes show after the subject. Hidden in the
-     body itself, otherwise it prints twice. -->
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;">${preheader}</div>
+<body style="margin:0;padding:0;background:${CANVAS};">
+<!-- Preheader: the grey line inboxes show beside the subject. Padded so a
+     client does not pull body copy in after it. -->
+<div style="display:none;font-size:1px;color:${CANVAS};line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
+  ${escapeHtml(preheader)}&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;
+</div>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${SURFACE};">
-<tr><td align="center" style="padding:28px 16px;">
+<table role="presentation" class="lb-canvas" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${CANVAS};">
+<tr><td align="center" style="padding:32px 12px;">
 
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:100%;border-radius:18px;overflow:hidden;background:#ffffff;">
+<table role="presentation" class="lb-shell lb-card" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:${CARD};border-radius:20px;overflow:hidden;">
 
-  <!-- Header: dark panel so the light wordmark reads regardless of client theme -->
-  <tr><td style="background:${BRAND_INK};padding:26px 32px;">
-    <img src="${logo}" width="132" height="43" alt="LetBuyy"
-         style="display:block;border:0;outline:none;height:43px;width:132px;">
+  <!-- Header. Dark band so the light wordmark reads in every client, and a
+       thin accent rule beneath it so the panel has an edge without a border. -->
+  <tr><td class="lb-pad" style="background:${INK};padding:26px 34px;">
+    <a href="${brand.siteUrl}" style="text-decoration:none;">
+      <img src="${logo}" width="128" height="42" alt="LetBuyy"
+           style="display:block;height:42px;width:128px;color:${ON_DARK};font-family:${FONT};font-size:19px;font-weight:700;letter-spacing:-0.02em;" />
+    </a>
   </td></tr>
+  <tr><td style="height:3px;background:linear-gradient(90deg,${PRIMARY} 0%,${PRIMARY_DEEP} 55%,#3ecfb2 100%);font-size:0;line-height:0;">&nbsp;</td></tr>
 
-  <tr><td style="padding:32px;font-family:${FONT_STACK};">${bodyHtml}</td></tr>
+  <tr><td class="lb-pad lb-pad-y" style="padding:34px;font-family:${FONT};">${bodyHtml}</td></tr>
 
   <!-- Footer -->
-  <tr><td style="background:${BRAND_PANEL};padding:24px 32px;font-family:${FONT_STACK};">
-    <p style="margin:0 0 12px;color:${TEXT_MUTED_ON_DARK};font-size:12px;line-height:1.6;">
-      LetBuyy — an India-first commerce operating system.<br>
-      Questions? Reply to this email or write to
-      <a href="mailto:${brand.supportEmail}" style="color:#c4b5fd;text-decoration:none;">${brand.supportEmail}</a>.
+  <tr><td class="lb-pad" style="background:${INK};padding:26px 34px;font-family:${FONT};">
+    <p class="lb-muted" style="margin:0 0 14px;color:${ON_DARK_MUTED};font-size:12.5px;line-height:1.65;">
+      LetBuyy — an India-first commerce operating system.<br />
+      Questions? Reply to this email, or write to
+      <a href="mailto:${brand.supportEmail}" style="color:#c9b8ff;text-decoration:underline;">${brand.supportEmail}</a>.
     </p>
-    <p style="margin:0 0 10px;">${socialRow()}</p>
-    <p style="margin:0;color:rgba(255,255,255,0.34);font-size:11px;">
+    <p class="lb-social" style="margin:0 0 12px;">${socialRow()}</p>
+    <p style="margin:0;color:rgba(255,255,255,0.30);font-size:11px;line-height:1.5;">
       You are receiving this because you requested a LetBuyy demo.
     </p>
   </td></tr>
@@ -102,18 +177,20 @@ function shell(brand: DemoEmailBrand, bodyHtml: string, preheader: string): stri
 </body></html>`;
 }
 
+/** Bulletproof-ish button: table-wrapped so Word fills the background. */
 function button(href: string, label: string): string {
-    // Table-wrapped so Outlook renders the fill; a styled <a> alone collapses.
-    return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0 4px;">
-<tr><td style="background:${BRAND_PRIMARY};border-radius:10px;">
-<a href="${href}" style="display:inline-block;padding:13px 26px;font-family:${FONT_STACK};font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;">${label}</a>
+    return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 6px;">
+<tr><td class="lb-cta" align="center" style="background:${PRIMARY};border-radius:11px;">
+<a href="${href}" class="lb-cta" style="display:inline-block;padding:14px 28px;font-family:${FONT};font-size:14.5px;font-weight:650;color:#ffffff;letter-spacing:-0.01em;">${label}</a>
 </td></tr></table>`;
 }
 
-function detailRow(label: string, value: string): string {
+/** One label/value pair. Stacks on narrow screens via .lb-row-* classes. */
+function row(label: string, value: string, last = false): string {
+    const border = last ? '' : `border-bottom:1px solid ${HAIRLINE};`;
     return `<tr>
-<td style="padding:9px 0;border-bottom:1px solid ${HAIRLINE};font-family:${FONT_STACK};font-size:12px;color:${TEXT_SUBTLE};width:170px;vertical-align:top;">${label}</td>
-<td style="padding:9px 0;border-bottom:1px solid ${HAIRLINE};font-family:${FONT_STACK};font-size:13px;color:${TEXT_BODY};">${value}</td>
+<td class="lb-row-label lb-hairline lb-muted" style="${border}padding:11px 16px 11px 0;font-family:${FONT};font-size:11.5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:${SUBTLE};width:168px;vertical-align:top;">${label}</td>
+<td class="lb-row-value lb-hairline lb-body" style="${border}padding:11px 0;font-family:${FONT};font-size:14px;line-height:1.55;color:${BODY};">${value}</td>
 </tr>`;
 }
 
@@ -140,85 +217,109 @@ export interface DemoRequestSummary {
     locale?: string | null;
 }
 
-function escapeHtml(value: string): string {
-    return value
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-}
-
 /** Human-readable slot, or an honest line when none was chosen. */
 function formatSlot(req: DemoRequestSummary): string {
-    if (!req.preferredAt) return 'No preference given — we will suggest times'
-    const zone = req.preferredTimezone || 'Asia/Kolkata'
+    if (!req.preferredAt) return 'No preference given — we will suggest times';
+    const zone = req.preferredTimezone || 'Asia/Kolkata';
     try {
         const formatted = new Intl.DateTimeFormat('en-IN', {
             dateStyle: 'full',
             timeStyle: 'short',
             timeZone: zone,
-        }).format(new Date(req.preferredAt))
-        return `${formatted} (${zone})`
+        }).format(new Date(req.preferredAt));
+        return `${formatted} · ${zone}`;
     } catch {
-        // An unknown IANA zone must not take the email down with it.
-        return `${req.preferredAt} (${zone})`
+        // An unknown IANA zone must not take the whole email down.
+        return `${req.preferredAt} · ${zone}`;
     }
 }
 
 /** Confirmation to the prospect. */
 export function buildDemoConfirmationEmail(req: DemoRequestSummary, brand: DemoEmailBrand) {
-    const to = req.email.trim()
-    if (!to) return null
+    const to = req.email.trim();
+    if (!to) return null;
 
-    const firstName = escapeHtml(req.fullName.trim().split(/\s+/)[0] || 'there')
-    const slot = escapeHtml(formatSlot(req))
-    const subject = 'Your LetBuyy demo request — received'
+    const firstNameRaw = req.fullName.trim().split(/\s+/)[0] || 'there';
+    const firstName = escapeHtml(firstNameRaw);
+    const slot = escapeHtml(formatSlot(req));
+    const subject = 'Your LetBuyy demo request — received';
 
     const text = [
-        `Hi ${req.fullName.trim().split(/\s+/)[0] || 'there'},`,
+        `Hi ${firstNameRaw},`,
         '',
         'We have your demo request. A member of the team will confirm your slot within one working day.',
         '',
         `Requested time: ${formatSlot(req)}`,
         `Reference: ${req.id}`,
         '',
-        'In the meantime you can browse guides and pricing at ' + brand.siteUrl,
+        'What the call covers:',
+        '  1. A storefront set up against your own catalogue',
+        '  2. A live UPI and COD order taken through checkout',
+        '  3. The GST invoice it produces, end to end',
+        '',
+        `Browse pricing meanwhile: ${brand.siteUrl}/in/pricing`,
         '',
         `Questions? Reply to this email or write to ${brand.supportEmail}.`,
         '',
         '— The LetBuyy team',
-    ].join('\n')
+    ].join('\n');
 
     const body = `
-<h1 style="margin:0 0 12px;font-size:23px;line-height:1.25;font-weight:700;color:${BRAND_INK};letter-spacing:-0.02em;">
+<p class="lb-muted" style="margin:0 0 10px;font-size:11.5px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${PRIMARY};">
+  Request received
+</p>
+<h1 class="lb-h1" style="margin:0 0 14px;font-size:26px;line-height:1.2;font-weight:750;color:${HEADING};letter-spacing:-0.03em;">
   Your demo request is in, ${firstName}.
 </h1>
-<p style="margin:0 0 18px;font-size:14.5px;line-height:1.65;color:${TEXT_BODY};">
+<p class="lb-body" style="margin:0 0 24px;font-size:15px;line-height:1.65;color:${BODY};">
   A member of the team will confirm your slot within one working day. If the time
-  below does not suit any more, just reply to this email and we will move it.
+  below stops working, just reply to this email and we will move it.
 </p>
 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-       style="background:${SURFACE};border-radius:12px;padding:4px 16px;">
-  ${detailRow('Requested time', slot)}
-  <tr>
-    <td style="padding:9px 0;font-family:${FONT_STACK};font-size:12px;color:${TEXT_SUBTLE};">Reference</td>
-    <td style="padding:9px 0;font-family:${FONT_STACK};font-size:12px;color:${TEXT_SUBTLE};font-family:monospace;">${escapeHtml(req.id)}</td>
-  </tr>
+       class="lb-panel" style="background:${CANVAS};border-radius:14px;">
+  <tr><td style="padding:6px 20px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+      ${row('Requested time', slot)}
+      ${row('Reference', `<span style="font-family:${MONO};font-size:12.5px;color:${SUBTLE};">${escapeHtml(req.id)}</span>`, true)}
+    </table>
+  </td></tr>
 </table>
 
-${button(brand.siteUrl + '/in/pricing', 'See pricing while you wait')}
+<p class="lb-strong" style="margin:28px 0 12px;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${SUBTLE};">
+  What we will show you
+</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  ${[
+      'A storefront set up against your own catalogue',
+      'A live UPI and COD order taken through checkout',
+      'The GST invoice it produces, end to end',
+  ]
+      .map(
+          (item, index) => `<tr>
+<td width="26" valign="top" style="padding:5px 0;font-family:${MONO};font-size:12px;font-weight:700;color:${PRIMARY};">${index + 1}</td>
+<td class="lb-body" style="padding:5px 0;font-family:${FONT};font-size:14px;line-height:1.6;color:${BODY};">${item}</td>
+</tr>`,
+      )
+      .join('')}
+</table>
 
-<p style="margin:18px 0 0;font-size:13px;line-height:1.6;color:${TEXT_SUBTLE};">
+${button(`${brand.siteUrl}/in/pricing`, 'See pricing while you wait')}
+
+<p class="lb-muted" style="margin:16px 0 0;font-size:12.5px;line-height:1.6;color:${SUBTLE};">
   Nothing is charged for a demo, and no card is required to start a store.
-</p>`
+</p>`;
 
     return {
         to,
         subject,
         text,
-        html: shell(brand, body, 'We have your demo request — a slot confirmation follows within one working day.'),
-    }
+        html: shell(
+            brand,
+            body,
+            'We have your demo request — a slot confirmation follows within one working day.',
+        ),
+    };
 }
 
 /** Internal lead alert. Every answer, so nobody has to open the dashboard. */
@@ -227,14 +328,14 @@ export function buildDemoLeadAlertEmail(
     brand: DemoEmailBrand,
     to: string,
 ) {
-    const recipient = (to || '').trim()
-    if (!recipient) return null
+    const recipient = (to || '').trim();
+    if (!recipient) return null;
 
-    const company = req.companyName?.trim() || '—'
-    const subject = `Demo request — ${req.fullName.trim()}${req.companyName ? ` (${req.companyName.trim()})` : ''}`
+    const company = req.companyName?.trim() || '—';
+    const subject = `Demo request — ${req.fullName.trim()}${req.companyName ? ` (${req.companyName.trim()})` : ''}`;
 
-    const list = (values: string[]) => (values.length ? escapeHtml(values.join(', ')) : '—')
-    const or = (value?: string | null) => (value?.trim() ? escapeHtml(value.trim()) : '—')
+    const list = (values: string[]) => (values.length ? escapeHtml(values.join(', ')) : '—');
+    const or = (value?: string | null) => (value?.trim() ? escapeHtml(value.trim()) : '—');
 
     const text = [
         `New demo request: ${req.fullName} (${company})`,
@@ -242,48 +343,64 @@ export function buildDemoLeadAlertEmail(
         `Phone: ${req.phone}`,
         `Slot:  ${formatSlot(req)}`,
         `Plan:  ${req.interestedPlan ?? '—'}`,
-        `Channel today: ${req.currentChannel ?? '—'}`,
+        `Selling today: ${req.currentChannel ?? '—'}`,
         `Heard via: ${req.heardAboutUs ?? '—'}`,
         `Why LetBuyy: ${req.whyLetbuyy ?? '—'}`,
         `Reference: ${req.id}`,
-    ].join('\n')
+    ].join('\n');
 
     const body = `
-<p style="margin:0 0 6px;font-family:${FONT_STACK};font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${BRAND_PRIMARY};">
+<p style="margin:0 0 10px;font-size:11.5px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${PRIMARY};">
   New demo request
 </p>
-<h1 style="margin:0 0 18px;font-size:22px;line-height:1.25;font-weight:700;color:${BRAND_INK};letter-spacing:-0.02em;">
-  ${escapeHtml(req.fullName.trim())}${req.companyName ? ` &middot; ${escapeHtml(req.companyName.trim())}` : ''}
+<h1 class="lb-h1" style="margin:0 0 6px;font-size:24px;line-height:1.2;font-weight:750;color:${HEADING};letter-spacing:-0.03em;">
+  ${escapeHtml(req.fullName.trim())}
 </h1>
+<p class="lb-muted" style="margin:0 0 22px;font-size:14px;color:${SUBTLE};">${escapeHtml(company)}</p>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-  ${detailRow('Email', `<a href="mailto:${escapeHtml(req.email)}" style="color:${BRAND_PRIMARY};text-decoration:none;">${escapeHtml(req.email)}</a>`)}
-  ${detailRow('Phone', `<a href="tel:${escapeHtml(req.phone)}" style="color:${BRAND_PRIMARY};text-decoration:none;">${escapeHtml(req.phone)}</a>`)}
-  ${detailRow('Website', or(req.websiteUrl))}
-  ${detailRow('Requested slot', escapeHtml(formatSlot(req)))}
-  ${detailRow('Reply language', or(req.preferredLanguage))}
-  ${detailRow('Business type', or(req.businessType))}
-  ${detailRow('Selling today via', or(req.currentChannel))}
-  ${detailRow('Monthly orders', or(req.monthlyOrders))}
-  ${detailRow('Monthly GMV', or(req.monthlyGmvBand))}
-  ${detailRow('Categories', list(req.productCategories))}
-  ${detailRow('Interested plan', or(req.interestedPlan))}
-  ${detailRow('Goals', list(req.goals))}
-  ${detailRow('Heard about us', `${or(req.heardAboutUs)}${req.heardAboutDetail ? ` — ${escapeHtml(req.heardAboutDetail)}` : ''}`)}
-  ${detailRow('Locale', or(req.locale))}
+<!-- Contact first: this is what someone acts on. -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       class="lb-panel" style="background:${CANVAS};border-radius:14px;margin-bottom:22px;">
+  <tr><td style="padding:6px 20px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+      ${row('Email', `<a href="mailto:${escapeHtml(req.email)}" style="color:${PRIMARY};font-weight:600;">${escapeHtml(req.email)}</a>`)}
+      ${row('Phone', `<a href="tel:${escapeHtml(req.phone)}" style="color:${PRIMARY};font-weight:600;">${escapeHtml(req.phone)}</a>`)}
+      ${row('Requested slot', escapeHtml(formatSlot(req)))}
+      ${row('Reply language', or(req.preferredLanguage), true)}
+    </table>
+  </td></tr>
 </table>
 
-<p style="margin:18px 0 6px;font-family:${FONT_STACK};font-size:12px;font-weight:700;color:${TEXT_SUBTLE};text-transform:uppercase;letter-spacing:0.1em;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  ${row('Website', or(req.websiteUrl))}
+  ${row('Business type', or(req.businessType))}
+  ${row('Selling today via', or(req.currentChannel))}
+  ${row('Monthly orders', or(req.monthlyOrders))}
+  ${row('Monthly sales', or(req.monthlyGmvBand))}
+  ${row('Categories', list(req.productCategories))}
+  ${row('Interested plan', or(req.interestedPlan))}
+  ${row('Goals', list(req.goals))}
+  ${row(
+      'Heard about us',
+      `${or(req.heardAboutUs)}${req.heardAboutDetail ? ` — ${escapeHtml(req.heardAboutDetail)}` : ''}`,
+  )}
+  ${row('Locale', or(req.locale), true)}
+</table>
+
+<p style="margin:24px 0 8px;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${SUBTLE};">
   Why LetBuyy
 </p>
-<p style="margin:0;font-family:${FONT_STACK};font-size:14px;line-height:1.65;color:${TEXT_BODY};white-space:pre-wrap;">${or(req.whyLetbuyy)}</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       class="lb-panel" style="background:${CANVAS};border-radius:14px;">
+  <tr><td class="lb-body" style="padding:16px 20px;font-family:${FONT};font-size:14.5px;line-height:1.7;color:${BODY};">${or(req.whyLetbuyy)}</td></tr>
+</table>
 
-<p style="margin:22px 0 0;font-family:${FONT_STACK};font-size:11px;color:${TEXT_SUBTLE};font-family:monospace;">${escapeHtml(req.id)}</p>`
+<p style="margin:22px 0 0;font-family:${MONO};font-size:11.5px;color:${SUBTLE};">${escapeHtml(req.id)}</p>`;
 
     return {
         to: recipient,
         subject,
         text,
-        html: shell(brand, body, `${req.fullName.trim()} — ${formatSlot(req)}`),
-    }
+        html: shell(brand, body, `${req.fullName.trim()} · ${formatSlot(req)}`),
+    };
 }
