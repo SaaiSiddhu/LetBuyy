@@ -9,11 +9,11 @@ import {
     Facebook,
     Instagram,
     Linkedin,
-    Twitter,
     X,
     Youtube,
 } from '@letbuyy/ui'
 import BrandLogo from './BrandLogo'
+import { XMark } from './BrandGlyphs'
 import LanguageSwitcher from './i18n/LanguageSwitcher'
 import { getDictionaryForSegment } from '@/lib/i18n'
 import { localeFromPathname } from '@/lib/i18n/routing'
@@ -75,11 +75,13 @@ const legalLinks = [
     { label: 'Sitemap', href: '/sitemap' },
 ]
 
+/* Order matches the platform brand sheet. X replaces the old Twitter bird —
+   the mark changed, and the bird now reads as a different company. */
 const socialLinks = [
     { label: 'Facebook', href: 'https://facebook.com/letbuyy', icon: Facebook },
-    { label: 'Twitter', href: 'https://x.com/letbuyy', icon: Twitter },
-    { label: 'Instagram', href: 'https://instagram.com/letbuyy', icon: Instagram },
+    { label: 'X', href: 'https://x.com/letbuyy', icon: XMark },
     { label: 'YouTube', href: 'https://youtube.com/@letbuyy', icon: Youtube },
+    { label: 'Instagram', href: 'https://instagram.com/letbuyy', icon: Instagram },
     { label: 'LinkedIn', href: 'https://linkedin.com/company/letbuyy', icon: Linkedin },
 ]
 

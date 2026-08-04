@@ -11,11 +11,11 @@ import {
     Globe,
     Instagram,
     Linkedin,
-    Twitter,
     X,
     Youtube,
 } from '@letbuyy/ui';
 import BrandLogo from '@/components/brand-logo';
+import { XMark } from '@/components/brand-glyphs';
 
 /* The platform footer, matching the marketing site: same wordmark, same
    four-column nav, same region / legal / social meta row, same privacy sheet.
@@ -73,11 +73,12 @@ const legalLinks = [
     { label: 'Licence', href: '/legal/license' },
 ];
 
+/* Same set and order as the marketing footer — the two are one design. */
 const socialLinks = [
     { label: 'Facebook', href: 'https://facebook.com/letbuyy', icon: Facebook },
-    { label: 'Twitter', href: 'https://x.com/letbuyy', icon: Twitter },
-    { label: 'Instagram', href: 'https://instagram.com/letbuyy', icon: Instagram },
+    { label: 'X', href: 'https://x.com/letbuyy', icon: XMark },
     { label: 'YouTube', href: 'https://youtube.com/@letbuyy', icon: Youtube },
+    { label: 'Instagram', href: 'https://instagram.com/letbuyy', icon: Instagram },
     { label: 'LinkedIn', href: 'https://linkedin.com/company/letbuyy', icon: Linkedin },
 ];
 
