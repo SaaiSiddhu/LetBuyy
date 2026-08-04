@@ -668,6 +668,16 @@ function AccordionItem({
         if (!isOpen) return
         const item = itemRef.current
         if (!item) return
+
+        /* Both layouts stay mounted at every width — CSS hides one. Above
+           960px the accordion is display:none while the side-by-side panel is
+           shown, so selecting a capability there was still firing this effect
+           and scrolling the page to an invisible element.
+
+           getClientRects() is empty for anything in a display:none subtree, so
+           this tracks the CSS without duplicating its breakpoint. */
+        if (item.getClientRects().length === 0) return
+
         return revealAccordionItem(item, isReduced)
     }, [isOpen, isReduced])
 
