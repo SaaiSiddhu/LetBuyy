@@ -16,6 +16,7 @@ import {
 } from '@letbuyy/ui';
 import BrandLogo from '@/components/brand-logo';
 import { XMark } from '@/components/brand-glyphs';
+import { BRAND_PROFILES } from '@letbuyy/shared-types';
 
 /* The platform footer, matching the marketing site: same wordmark, same
    four-column nav, same region / legal / social meta row, same privacy sheet.
@@ -74,13 +75,16 @@ const legalLinks = [
 ];
 
 /* Same set and order as the marketing footer — the two are one design. */
+/* Same registry the marketing footer reads, so the two never disagree and the
+   handles have exactly one home. Accounts with no URL yet are filtered out
+   rather than linked to a guessed handle. */
 const socialLinks = [
-    { label: 'Facebook', href: 'https://facebook.com/letbuyy', icon: Facebook },
-    { label: 'X', href: 'https://x.com/letbuyy', icon: XMark },
-    { label: 'YouTube', href: 'https://youtube.com/@letbuyy', icon: Youtube },
-    { label: 'Instagram', href: 'https://instagram.com/letbuyy', icon: Instagram },
-    { label: 'LinkedIn', href: 'https://linkedin.com/company/letbuyy', icon: Linkedin },
-];
+    { label: 'Facebook', href: BRAND_PROFILES.facebook, icon: Facebook },
+    { label: 'X', href: BRAND_PROFILES.x, icon: XMark },
+    { label: 'YouTube', href: BRAND_PROFILES.youtube, icon: Youtube },
+    { label: 'Instagram', href: BRAND_PROFILES.instagram, icon: Instagram },
+    { label: 'LinkedIn', href: BRAND_PROFILES.linkedin, icon: Linkedin },
+].filter(link => link.href);
 
 export default function Footer() {
     const [privacyPanelOpen, setPrivacyPanelOpen] = useState(false);

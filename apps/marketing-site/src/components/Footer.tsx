@@ -19,6 +19,7 @@ import { getDictionaryForSegment } from '@/lib/i18n'
 import { localeFromPathname } from '@/lib/i18n/routing'
 import { usePathname } from 'next/navigation'
 import { getAssetPublicUrl } from '@/lib/public-urls'
+import { BRAND_PROFILES } from '@letbuyy/shared-types'
 import { getPlatformNavigationLinks } from '@/lib/platform-links'
 import { getAppDownloadTargets } from '@/lib/app-downloads'
 
@@ -75,15 +76,18 @@ const legalLinks = [
     { label: 'Sitemap', href: '/sitemap' },
 ]
 
-/* Order matches the platform brand sheet. X replaces the old Twitter bird —
-   the mark changed, and the bird now reads as a different company. */
+/* Built from BRAND_PROFILES so the handles live in one place — that registry
+   also feeds Organization.sameAs in the structured data, and a footer link
+   disagreeing with sameAs is exactly the kind of mismatch that weakens entity
+   recognition. Accounts with no URL yet are filtered out rather than linked to
+   a guessed handle. */
 const socialLinks = [
-    { label: 'Facebook', href: 'https://facebook.com/letbuyy', icon: Facebook },
-    { label: 'X', href: 'https://x.com/letbuyy', icon: XMark },
-    { label: 'YouTube', href: 'https://youtube.com/@letbuyy', icon: Youtube },
-    { label: 'Instagram', href: 'https://instagram.com/letbuyy', icon: Instagram },
-    { label: 'LinkedIn', href: 'https://linkedin.com/company/letbuyy', icon: Linkedin },
-]
+    { label: 'Facebook', href: BRAND_PROFILES.facebook, icon: Facebook },
+    { label: 'X', href: BRAND_PROFILES.x, icon: XMark },
+    { label: 'YouTube', href: BRAND_PROFILES.youtube, icon: Youtube },
+    { label: 'Instagram', href: BRAND_PROFILES.instagram, icon: Instagram },
+    { label: 'LinkedIn', href: BRAND_PROFILES.linkedin, icon: Linkedin },
+].filter(link => link.href)
 
 const privacyChoicesIconUrl = getAssetPublicUrl('/assets/legal/privacy-choices.svg')
 
