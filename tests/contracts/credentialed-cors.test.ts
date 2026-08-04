@@ -56,6 +56,30 @@ test('credentialed CORS reflects only exact platform or configured tenant origin
         DEFAULT_CREDENTIAL_ORIGIN,
         'configured origins must be HTTPS browser origins',
     );
+
+    /* Loopback is the one exception, and only when explicitly configured: a
+       developer's own machine is unreachable from anywhere else. Without this
+       every http://localhost entry in CORS_CREDENTIAL_ORIGINS was dropped by
+       the parser, so no local app could obtain a credentialed origin. */
+    assert.equal(
+        resolveCredentialedCorsOrigin('http://localhost:9006', {
+            CORS_CREDENTIAL_ORIGINS: 'http://localhost:9006',
+        }),
+        'http://localhost:9006',
+        'configured loopback origins are allowed over http for local development',
+    );
+    assert.equal(
+        resolveCredentialedCorsOrigin('http://localhost:9006', {}),
+        DEFAULT_CREDENTIAL_ORIGIN,
+        'loopback is still only allowed when explicitly configured',
+    );
+    assert.equal(
+        resolveCredentialedCorsOrigin('http://evil.localhost.example.com', {
+            CORS_CREDENTIAL_ORIGINS: 'http://evil.localhost.example.com',
+        }),
+        DEFAULT_CREDENTIAL_ORIGIN,
+        'a hostname merely containing "localhost" is not loopback',
+    );
     assert.deepEqual(parseCredentialOrigins(' https://tenant.letbuyy.com/ , javascript:alert(1), https://store.example.com/path '), [
         'https://tenant.letbuyy.com',
     ]);

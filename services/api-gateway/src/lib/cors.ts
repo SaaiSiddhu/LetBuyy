@@ -60,13 +60,35 @@ export function resolveDefaultCredentialOrigin(env: CredentialCorsEnv = {}): str
 /** Backwards-compatible static allowlist for the default (`letbuyy.com`) apex. */
 export const PLATFORM_CREDENTIAL_ORIGINS = buildPlatformCredentialOrigins(DEFAULT_PLATFORM_CREDENTIAL_DOMAIN);
 
+/**
+ * Loopback hosts are the one place plain http is legitimate: a developer's own
+ * machine, unreachable from anywhere else. Everything remote stays https-only.
+ */
+const LOOPBACK_HOSTNAMES = new Set(['localhost', '127.0.0.1', '[::1]', '::1']);
+
+function isLoopbackHost(hostname: string): boolean {
+    return LOOPBACK_HOSTNAMES.has(hostname.toLowerCase());
+}
+
 export function normalizeCredentialOrigin(value: string): string | null {
     const trimmed = value.trim();
     if (!trimmed) return null;
 
     try {
         const url = new URL(trimmed);
-        if (url.protocol !== 'https:') return null;
+
+        /* https everywhere except loopback. Without the carve-out every
+           http://localhost:PORT entry in CORS_CREDENTIAL_ORIGINS was silently
+           dropped, so no local app could ever obtain a credentialed origin and
+           every browser call from localhost failed preflight.
+
+           This does not widen production: an origin still has to appear in the
+           configured allowlist to be returned, and a production
+           CORS_CREDENTIAL_ORIGINS does not list localhost. A remote http origin
+           such as http://merchant.example.com remains rejected. */
+        const loopback = isLoopbackHost(url.hostname);
+        if (url.protocol !== 'https:' && !(loopback && url.protocol === 'http:')) return null;
+
         if (url.username || url.password || url.search || url.hash) return null;
         if (url.pathname !== '' && url.pathname !== '/') return null;
         return url.origin;
