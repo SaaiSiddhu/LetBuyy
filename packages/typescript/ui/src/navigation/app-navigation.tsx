@@ -42,9 +42,18 @@ export interface AppNavigationProps {
     className?: string;
 }
 
-export function isNavItemActive(pathname: string, href?: string): boolean {
+/**
+ * Active-route test. Prefix-matching by default so a section stays lit on its
+ * own sub-routes.
+ *
+ * Pass `exact` for an item whose href is a prefix of *sibling* routes that live
+ * under a different section — e.g. `/s/products` alongside `/s/products/inventory`
+ * filed under Inventory. Without it both sections match and both force open.
+ */
+export function isNavItemActive(pathname: string, href?: string, exact?: boolean): boolean {
     if (!href) return false;
     if (href === '/') return pathname === '/';
+    if (exact) return pathname === href;
     return pathname === href || pathname.startsWith(href.endsWith('/') ? href : `${href}/`);
 }
 
@@ -65,9 +74,12 @@ export function AppNavigation({
     const sidebar = (
         <Sidebar header={brand} footer={footer} width={width} className={sidebarClassName}>
             {sections.map((section, index) => (
-                <div key={index} className={cx(index > 0 && 'mt-[var(--lb-space-4)]')}>
+                <div key={index} className={cx(index > 0 && 'mt-[var(--lb-space-5)]')}>
                     {section.title && (
-                        <div className="px-[var(--lb-space-3)] pb-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] tracking-wide text-[color:var(--lb-color-text-subdued)]">
+                        // Sentence case at normal tracking. Shouty all-caps
+                        // micro-labels are the fastest way to date an admin UI;
+                        // the group is already separated by whitespace.
+                        <div className="px-[var(--lb-space-3)] pb-[var(--lb-space-2)] pt-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-component-sidebar-section-text)]">
                             {section.title}
                         </div>
                     )}
@@ -75,10 +87,10 @@ export function AppNavigation({
                         ariaLabel={typeof section.title === 'string' ? section.title : 'Primary navigation'}
                         items={section.items.map((item) => ({
                             ...item,
-                            active: isNavItemActive(pathname, item.href),
+                            active: isNavItemActive(pathname, item.href, item.exact),
                             children: item.children?.map((child) => ({
                                 ...child,
-                                active: isNavItemActive(pathname, child.href),
+                                active: isNavItemActive(pathname, child.href, child.exact),
                             })),
                         }))}
                     />
