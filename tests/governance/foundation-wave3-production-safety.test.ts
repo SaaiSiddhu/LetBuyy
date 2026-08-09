@@ -108,11 +108,11 @@ test('domain defaults stay on letbuyy.com until DNS cutover is approved', () => 
     'apps/developer-portal/src/lib/site-url.ts',
   ]) {
     const source = readFileSync(file, 'utf8');
-    // DEPLOY-R3: `letbuyy.com` is the one canonical domain; `letbuyy.store` literals are
-    // banned (the `.store` -> `.com` 301s were the migration). This assertion previously
-    // required the forbidden `.store` literal, contradicting both DEPLOY-R3 and this
-    // test's own name — a governance-theater defect (ANTI-R3). The sources migrated to
-    // `letbuyy.com`; the assertion is corrected to match the Constitution.
+    // DEPLOY-R3: `letbuyy.com` is the one canonical domain; the legacy-TLD literal is
+    // banned (the legacy -> `.com` 301s were the migration). This assertion previously
+    // REQUIRED that forbidden literal, contradicting both DEPLOY-R3 and this test's own
+    // name — a governance-theater defect (ANTI-R3). The sources migrated to `letbuyy.com`;
+    // the assertion is corrected to match the Constitution.
     assert.match(source, /const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy\.com'/, file);
   }
 });
