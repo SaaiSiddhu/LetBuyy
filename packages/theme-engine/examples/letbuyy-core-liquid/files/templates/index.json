@@ -183,7 +183,7 @@
         "spotlight-app": {
           "type": "@app",
           "settings": {
-            "extension_handle": "urban-offer",
+            "extension_handle": "letbuyy-core-offer",
             "slot": "home.spotlight.offer"
           },
           "disabled": false,

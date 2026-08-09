@@ -1,16 +1,17 @@
 // L3 — Theme Compiler (Full Liquid V1): portable JSON template_config -> Liquid bundle.
 //
 // Translator ONLY (no plugin/extension/remote runtime, no second renderer). It maps a store's portable
-// section instances onto the canonical first-party Liquid section/block/layout files and emits a
-// LiquidThemePackageBundle that the existing LiquidRenderer renders. Merchant-authored strings stay as
-// `{% schema %}` setting values (escaped at render via outputEscape:'escape') and are never raw-injected.
-// Output is always re-validated by parseLiquidThemePackageBundle, so the compiler can never persist an
-// invalid bundle.
+// section instances onto the canonical first-party (LetBuyy Core) Liquid section/block/layout files and
+// emits a LiquidThemePackageBundle that the existing LiquidRenderer renders. Merchant-authored strings
+// stay as `{% schema %}` setting values (escaped at render via outputEscape:'escape') and are never
+// raw-injected. Output is always re-validated by parseLiquidThemePackageBundle, so the compiler can
+// never persist an invalid bundle.
 import {
   createUrbanKicksLiquidThemeBundleFixture,
   parseLiquidThemePackageBundle,
   type LiquidThemePackageBundle,
 } from './theme-bundle';
+import { createLetbuyyCoreLiquidThemeBundleFixture } from './theme-bundle-core';
 import { BLOCKED_DROP_KEYS } from './theme-renderer';
 
 export interface PortableSectionInstance {
@@ -33,6 +34,14 @@ export interface PortableThemeTemplateConfig {
 export interface CompilePortableToLiquidOptions {
   slug?: string;
   name?: string;
+  /**
+   * First-party fixture supplying the section/block/layout files the portable config is mapped onto.
+   * Whatever the merchant's config does NOT override ships verbatim into the compiled bundle — the
+   * layout `<title>`/`<body>` class, and the retained base index template when nothing is mappable —
+   * so the default must be the neutral Core fixture, never the Urban Kicks demo branding.
+   * 'urban-kicks' is an explicit opt-in for demo/seed callers that want that fixture verbatim.
+   */
+  baseTheme?: 'letbuyy-core' | 'urban-kicks';
 }
 
 export interface CompilePortableToLiquidResult {
@@ -100,7 +109,11 @@ export function compilePortableToLiquidBundle(
   templateConfig: PortableThemeTemplateConfig,
   options: CompilePortableToLiquidOptions = {},
 ): CompilePortableToLiquidResult {
-  const base = createUrbanKicksLiquidThemeBundleFixture(); // canonical first-party section/block/layout files
+  // Canonical first-party section/block/layout files. Core is the default so every compiled storefront
+  // inherits neutral LetBuyy branding rather than the Urban Kicks demo strings (see baseTheme above).
+  const base = options.baseTheme === 'urban-kicks'
+    ? createUrbanKicksLiquidThemeBundleFixture()
+    : createLetbuyyCoreLiquidThemeBundleFixture();
   const available = new Set(Object.keys(base.sections));
   const warnings: string[] = [];
 

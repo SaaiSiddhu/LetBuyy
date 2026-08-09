@@ -701,9 +701,24 @@ export function getDefaultThemeRenderer(): ThemeRenderer {
   return defaultThemeRenderer;
 }
 
+// LiquidJS `renderLimit` is a WALL-CLOCK budget in milliseconds measured from the start of
+// parseAndRender — not a CPU budget and not an iteration count. Sections are rendered concurrently
+// (Promise.all, see renderLiquidSections), and sanitizeRenderedHtml runs jsdom + DOMPurify
+// synchronously, so a section that is itself trivial can be aborted purely because a sibling blocked
+// the event loop while its clock ran. Measured: sections/product-detail.liquid renders in ~3ms in
+// isolation under a 250ms limit, yet aborted with "template render limit exceeded" inside the
+// concurrent pipeline — which is why the product, collection and search templates emitted an empty
+// shell. Because the trip point depends on machine speed and load it also read as flaky.
+//
+// 5s keeps a hard abort on a genuinely runaway template while leaving headroom for that contention.
+// It is NOT the sandbox's data-safety boundary: `ownPropertyOnly`, the drop scrub, `outputEscape`,
+// upload-time `{% render %}` forbidding, `parseLimit` (template size) and `memoryLimit` (output size)
+// are the structural guards and are unchanged. Reducing sibling contention — sanitizing off the
+// render path, or rendering sections sequentially, which the F9 benchmark shows is ~5x faster than
+// the current parallel path (42ms vs 227ms for N=25) — is the real fix and is tracked as follow-up.
 const liquidRenderOptions = {
   templateLimit: 20_000,
-  renderLimit: 250,
+  renderLimit: 5_000,
   memoryLimit: 2_000_000,
 } as const;
 

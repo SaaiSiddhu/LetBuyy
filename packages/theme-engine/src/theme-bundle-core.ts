@@ -14,11 +14,12 @@
 //     `urban-kicks` and `letbuyy-core` resolve to the same Core theme.
 //
 // SAFETY: this does NOT touch the frozen theme-registry.ts, does NOT modify the
-// Urban Kicks fixture, and does NOT rename any persisted DB slug. Switching the
-// live compile/store-creation paths to the Core fixture and adding a `letbuyy-core`
-// DB alias row are the documented, deferred follow-ups (see
-// docs/v1-execution/phase-2/01-letbuyy-core-report.md) — kept out of this change
-// to guarantee zero store breakage.
+// Urban Kicks fixture, and does NOT rename any persisted DB slug. The Liquid compile
+// path (portable-to-liquid.ts) now builds every store from the Core fixture by default,
+// so newly compiled storefronts carry neutral branding. Adding a `letbuyy-core` DB
+// catalog row is still the documented, deferred follow-up (see
+// docs/v1-execution/phase-2/01-letbuyy-core-report.md) — until that row exists, DB
+// lookups MUST keep accepting the legacy `urban-kicks` slug.
 // ============================================================================
 
 import {
@@ -60,8 +61,8 @@ export function isLetbuyyCoreThemeSlug(slug: string): boolean {
 /**
  * The Core theme bundle with merchant-visible "Urban Kicks" branding neutralized.
  * Built by transforming the canonical Urban Kicks fixture (so the two never structurally
- * drift) and re-validating against the bundle schema. New stores should be compiled from
- * this fixture so they carry LetBuyy Core branding — not Urban Kicks.
+ * drift) and re-validating against the bundle schema. This is the base fixture
+ * compilePortableToLiquidBundle() uses, so every new store carries LetBuyy Core branding.
  */
 export function createLetbuyyCoreLiquidThemeBundleFixture(): LiquidThemePackageBundle {
   const base = createUrbanKicksLiquidThemeBundleFixture();
@@ -73,6 +74,9 @@ export function createLetbuyyCoreLiquidThemeBundleFixture(): LiquidThemePackageB
     JSON.stringify(base)
       .split('urban-kicks-liquid').join(LETBUYY_CORE_BUNDLE_SLUG)
       .split('urban-kicks').join(LETBUYY_CORE_THEME_SLUG)
+      // The spotlight app-block's extension_handle is 'urban-offer', not 'urban-kicks', so it survived
+      // the slug replacements above and shipped demo branding into the neutral Core bundle.
+      .split('urban-offer').join('letbuyy-core-offer')
       .split('Urban Kicks').join('LetBuyy Core'),
   ) as LiquidThemePackageBundle;
   cloned.package.slug = LETBUYY_CORE_BUNDLE_SLUG;

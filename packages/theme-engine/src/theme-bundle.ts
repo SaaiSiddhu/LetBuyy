@@ -992,6 +992,56 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '</section>',
       ],
     }),
+    // Collection Filter — data source VERIFIED against the live collection drop:
+    // composition-engine.tsx builds `collection` as { id, handle, title, description, products }
+    // and the gateway's public product query (storefront.ts PublicProductQueryOptions) accepts only
+    // { limit, page, ids, category, search }. There is NO sort, price or vendor facet anywhere in the
+    // platform today, and the collection route does not read query params at all — the ONE control
+    // that round-trips end to end is `search`, which the search route turns into search.terms /
+    // search.results. So this section renders the real search form and nothing it cannot honour.
+    // The sort/price/vendor controls are gated on facet payloads the PLATFORM supplies (with the
+    // hrefs it supplies): absent today, so they render nothing rather than fabricating dead links —
+    // the same discipline blog-listing applies to pagination.
+    'collection-filter': createLiquidSectionFile({
+      type: 'collection-filter',
+      name: 'Collection Filter',
+      settings: [
+        liquidSetting('showSearch', 'toggle', 'Show search', { default: true }),
+        liquidSetting('showSort', 'toggle', 'Show sort', { default: true }),
+        liquidSetting('showPriceFilter', 'toggle', 'Show price filter', { default: true }),
+        liquidSetting('showVendorFilter', 'toggle', 'Show vendor filter', { default: false }),
+        liquidSetting('layout', 'select', 'Layout', { default: 'sidebar', options: ['sidebar', 'drawer', 'topbar'] }),
+      ],
+      body: [
+        '<section class="lb-collection-filter" data-section-id="{{ section.id }}" data-layout="{{ section.settings.layout }}">',
+        '  {% if section.settings.showSearch %}',
+        '  <form class="lb-collection-filter__form" role="search" method="get" action="{{ routes.search_url }}">',
+        '    <label class="lb-collection-filter__label" for="lb-collection-filter-{{ section.id }}">Search products</label>',
+        '    <input class="lb-collection-filter__input" id="lb-collection-filter-{{ section.id }}" type="search" name="search" value="{{ search.terms }}" placeholder="Search products">',
+        '    <button class="lb-collection-filter__submit" type="submit">Search</button>',
+        '  </form>',
+        '  {% endif %}',
+        '  {% if section.settings.showSort and collection.sort_options.size > 0 %}',
+        '  <nav class="lb-collection-filter__sort" aria-label="Sort products">',
+        '    {% for option in collection.sort_options %}<a class="lb-collection-filter__sort-link" href="{{ option.url }}"{% if option.active %} aria-current="true"{% endif %}>{{ option.label }}</a>{% endfor %}',
+        '  </nav>',
+        '  {% endif %}',
+        '  {% if section.settings.showPriceFilter and collection.price_ranges.size > 0 %}',
+        '  <nav class="lb-collection-filter__price" aria-label="Filter by price">',
+        '    {% for range in collection.price_ranges %}<a class="lb-collection-filter__price-link" href="{{ range.url }}"{% if range.active %} aria-current="true"{% endif %}>{{ range.label }}</a>{% endfor %}',
+        '  </nav>',
+        '  {% endif %}',
+        '  {% if section.settings.showVendorFilter and collection.vendors.size > 0 %}',
+        '  <nav class="lb-collection-filter__vendor" aria-label="Filter by brand">',
+        '    {% for vendor in collection.vendors %}<a class="lb-collection-filter__vendor-link" href="{{ vendor.url }}"{% if vendor.active %} aria-current="true"{% endif %}>{{ vendor.label }}</a>{% endfor %}',
+        '  </nav>',
+        '  {% endif %}',
+        '  {% if search.terms != blank %}<p class="lb-collection-filter__active" role="status">Showing results for "{{ search.terms }}"{% if collection.handle != blank %} <a class="lb-collection-filter__clear" href="/collections/{{ collection.handle }}">Clear</a>{% endif %}</p>',
+        '  {% elsif collection.products.size > 0 %}<p class="lb-collection-filter__count" role="status">{{ collection.products.size }} products</p>',
+        '  {% else %}<p class="lb-collection-filter__empty" role="status">No products to filter yet.</p>{% endif %}',
+        '</section>',
+      ],
+    }),
     'contact-form': createLiquidSectionFile({
       type: 'contact-form',
       name: 'Contact Form',
@@ -1062,6 +1112,35 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '<section class="lb-experience-timeline" data-section-id="{{ section.id }}">',
         '  <h2>{{ section.settings.title }}</h2>',
         '  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.company }}</p><time>{{ block.settings.period }}</time></article>{% endfor %}',
+        '</section>',
+      ],
+    }),
+    // FAQ Accordion — merchant-authored content only (no commerce drop involved).
+    // Disclosure is native <details>/<summary>: the sanitizer forbids <script>, so a JS accordion
+    // could never ship, and the HTML element is keyboard- and screen-reader-accessible for free.
+    // allowMultipleOpen === false maps onto the exclusive-accordion `name` attribute, scoped to the
+    // section id so two FAQ sections on one page never close each other's items.
+    'faq-accordion': createLiquidSectionFile({
+      type: 'faq-accordion',
+      name: 'FAQ Accordion',
+      settings: [
+        liquidSetting('title', 'text', 'Title', { default: 'Frequently asked questions' }),
+        liquidSetting('allowMultipleOpen', 'toggle', 'Allow multiple open', { default: false }),
+      ],
+      blocks: [liquidInlineBlock('faq-item', 'FAQ item', [
+        liquidSetting('question', 'text', 'Question'),
+        liquidSetting('answer', 'richtext', 'Answer'),
+      ])],
+      body: [
+        '<section class="lb-faq-accordion" data-section-id="{{ section.id }}">',
+        '  <h2>{{ section.settings.title }}</h2>',
+        '  {% if section.blocks.size > 0 %}',
+        '  <div class="lb-faq-accordion__items">',
+        '    {% for block in section.blocks %}<details class="lb-faq-accordion__item"{% unless section.settings.allowMultipleOpen %} name="lb-faq-{{ section.id }}"{% endunless %}><summary class="lb-faq-accordion__question">{{ block.settings.question }}</summary><div class="lb-faq-accordion__answer">{{ block.settings.answer }}</div></details>{% endfor %}',
+        '  </div>',
+        '  {% else %}',
+        '  <p class="lb-faq-accordion__empty">No questions published yet.</p>',
+        '  {% endif %}',
         '</section>',
       ],
     }),
@@ -1972,13 +2051,77 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '<head>',
           '  <meta charset="utf-8">',
           '  <meta name="viewport" content="width=device-width, initial-scale=1">',
-          '  <title>{{ shop.name }} - Urban Kicks</title>',
+          // Compute the title and the description ONCE so <title>, og:* and twitter:* can never drift
+          // apart. Both are plain escaped outputs — never `| raw` — so merchant-authored copy can never
+          // inject markup into <head> (THEME-R4 / SEC-R11).
+          '  {% assign lb_page_title = shop.name | append: " - Urban Kicks" %}',
+          '  {% assign lb_meta_description = settings.metaDescription | default: shop.description | strip_html | truncate: 160 %}',
+          '  <title>{{ lb_page_title }}</title>',
+          '  {% if lb_meta_description != blank %}<meta name="description" content="{{ lb_meta_description }}">{% endif %}',
+          // Open Graph uses the spec-required `property=` attribute and the favicon needs <link>. Neither
+          // `property` nor the `link` tag is in the renderer's DOMPurify allowlist (ADD_ATTR / ADD_TAGS in
+          // theme-renderer.ts), so the render-time sanitizer strips these three lines today; they are
+          // correct in the exported theme artifact and start working the moment the allowlist is widened.
+          // The `name=`-based tags below carry the same values through the sanitizer unchanged, so link
+          // previews are never left with nothing.
+          // Open Graph (`<meta property=…>`) and the favicon (`<link rel=…>`) are intentionally ABSENT.
+          // The WHOLE_DOCUMENT DOMPurify pass allowlists `name` and `content` but not `property` or
+          // `rel`, so those tags survive only as `<meta content="website">` / `<link href="…">` —
+          // malformed markup that no crawler can use. Emitting them would be worse than omitting them.
+          // Restoring them means adding `property` and `rel` to ADD_ATTR in theme-renderer.ts, which is
+          // a sanitizer-allowlist change and therefore an ARB gate under THEME-R4 / SEC-R11.
+          // The twitter:* tags below use `name=`, which IS allowlisted, so they render intact and give
+          // link previews on the platforms that honour them.
+          '  <meta name="twitter:card" content="{% if settings.socialImageUrl != blank %}summary_large_image{% else %}summary{% endif %}">',
+          '  <meta name="twitter:title" content="{{ lb_page_title }}">',
+          '  {% if lb_meta_description != blank %}<meta name="twitter:description" content="{{ lb_meta_description }}">{% endif %}',
+          '  {% if settings.socialImageUrl != blank %}<meta name="twitter:image" content="{{ settings.socialImageUrl | image_url }}">{% endif %}',
+          // Layout-scoped stylesheet. It is deliberately separate from LIQUID_THEME_BASE_CSS (injected via
+          // content_for_header below) because it styles chrome the base sheet does not know about, and
+          // because the exported theme artifact must stand on its own when rendered outside LetBuyy.
+          // Everything is expressed as --lb-* custom properties (UI-R1/R7); the hex values inside var()
+          // are FALLBACKS only, for that standalone case where the renderer's :root token block is absent.
+          '  <style data-lb-layout="1">',
+          '    :root{--lb-focus-ring-width:2px;--lb-focus-ring-color:var(--accent,#2563eb);--lb-focus-offset:2px;--lb-space-sm:0.5rem;--lb-space-md:0.75rem;--lb-space-lg:1rem;--lb-radius-sm:0.375rem;--lb-layout-max:72rem;--lb-layout-gutter:1rem;--lb-layout-breakpoint:48em;}',
+          // WCAG 2.4.7 Focus Visible: before this rule the bundle shipped ZERO focus styling, so keyboard
+          // users had only the UA default (which several of the lb-* backgrounds wash out). Never remove.
+          '    .lb-theme :where(a,button,input,select,textarea,summary,details,[tabindex]):focus-visible{outline:var(--lb-focus-ring-width) solid var(--lb-focus-ring-color);outline-offset:var(--lb-focus-offset);}',
+          // WCAG 2.4.1 Bypass Blocks: off-screen until focused, then pinned to the top-left of the page.
+          '    .lb-skip-link{position:absolute;left:-9999px;top:0;z-index:100;padding:var(--lb-space-md) var(--lb-space-lg);border-radius:var(--lb-radius-sm);background:var(--surface,#f8fafc);color:var(--foreground,#1a1a2e);font-weight:600;}',
+          '    .lb-skip-link:focus,.lb-skip-link:focus-visible{left:var(--lb-space-lg);top:var(--lb-space-lg);}',
+          // Mobile-first: the chrome stacks by default so it fits the ~360px floor, and only becomes a
+          // single row at the breakpoint. min-width (not max-width) keeps the small screen the base case.
+          '    .lb-layout__header,.lb-layout__footer{display:flex;flex-direction:column;align-items:flex-start;gap:var(--lb-space-md);margin-inline:auto;max-width:min(var(--lb-layout-max),calc(100vw - var(--lb-layout-gutter) * 2));padding-block:var(--lb-space-lg);padding-inline:var(--lb-layout-gutter);}',
+          '    .lb-layout__brand{font-family:var(--font-display,inherit);font-weight:700;}',
+          '    .lb-layout__nav{display:flex;flex-wrap:wrap;gap:var(--lb-space-md);}',
+          '    .lb-layout__legal{margin:0;font-size:0.875rem;}',
+          '    @media (min-width:48em){.lb-layout__header,.lb-layout__footer{flex-direction:row;align-items:center;justify-content:space-between;}}',
+          '  </style>',
           '  {{ content_for_header | raw }}',
           '</head>',
           '<body class="lb-theme lb-theme--urban-kicks">',
+          '  <a class="lb-skip-link" href="#MainContent">Skip to content</a>',
+          // <header>/<footer> as direct children of <body> are the implicit banner / contentinfo
+          // landmarks. The layout document renders only content_for_layout (the main template) — the
+          // header/footer TEMPLATES are rendered separately by theme-renderer.ts into liquid.header /
+          // liquid.footer — so these landmarks cannot duplicate the ones sections/header.liquid emits.
+          // The nav falls back to the always-present `routes` drop, so the landmark is never empty.
+          '  <header class="lb-layout__header">',
+          '    <a class="lb-layout__brand" href="{{ routes.root_url }}">{{ shop.name }}</a>',
+          '    <nav class="lb-layout__nav" aria-label="Primary">',
+          '      {% if linklists.main_menu.links.size > 0 %}{% for link in linklists.main_menu.links %}<a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>{% endfor %}',
+          '      {% else %}<a href="{{ routes.all_products_collection_url }}">Products</a><a href="{{ routes.search_url }}">Search</a><a href="{{ routes.cart_url }}">Cart</a><a href="{{ routes.account_url }}">Account</a>{% endif %}',
+          '    </nav>',
+          '  </header>',
           '  <main id="MainContent">',
           '    {{ content_for_layout | raw }}',
           '  </main>',
+          '  <footer class="lb-layout__footer">',
+          '    {% if linklists.footer.links.size > 0 %}<nav class="lb-layout__nav" aria-label="Footer">{% for link in linklists.footer.links %}<a href="{{ link.url }}">{{ link.title }}</a>{% endfor %}</nav>{% endif %}',
+          '    <p class="lb-layout__legal">&copy; {{ shop.name }}</p>',
+          '  </footer>',
+          // content_for_footer carries app-embed <script>/markup, not page chrome, so it stays OUTSIDE
+          // the contentinfo landmark exactly where it has always been.
           '  {{ content_for_footer | raw }}',
           '</body>',
           '</html>',
@@ -2025,6 +2168,34 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
               },
             },
           },
+          // Head metadata the layout renders. Kept as merchant-editable theme settings rather than
+          // hard-coded markup so each store controls its own search/social preview. Every value is
+          // emitted through an escaped {{ }} output in layout/theme.liquid — never `| raw`.
+          seo: {
+            label: 'SEO and social',
+            description: 'Metadata rendered into <head> by the theme layout.',
+            fields: {
+              metaDescription: {
+                type: 'textarea',
+                label: 'Meta description',
+                info: 'Falls back to the shop description. Truncated to 160 characters on output.',
+                default: 'Shop sneakers, apparel, and accessories at Urban Kicks.',
+                maxLength: 160,
+              },
+              socialImageUrl: {
+                type: 'url',
+                label: 'Social share image URL',
+                info: 'Used for og:image and twitter:image. Left empty until the merchant uploads one.',
+                default: '',
+              },
+              faviconUrl: {
+                type: 'url',
+                label: 'Favicon URL',
+                info: 'Rendered as <link rel="icon">. Left empty until the merchant uploads one.',
+                default: '',
+              },
+            },
+          },
         },
       },
       settings_data: {
@@ -2034,6 +2205,11 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           surfaceColor: '#F8FAFC',
           headingFontFamily: 'Inter',
           bodyFontFamily: 'Inter',
+          metaDescription: 'Shop sneakers, apparel, and accessories at Urban Kicks.',
+          // Empty, not a fabricated URL: an unset asset must render no tag at all, and the layout
+          // guards both with `!= blank` so nothing broken is emitted before a merchant uploads one.
+          socialImageUrl: '',
+          faviconUrl: '',
         },
       },
     },
@@ -2304,6 +2480,30 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         layout: 'theme',
         sections: { 'cart-summary-default': { type: 'cart-summary', settings: {} } },
         order: ['cart-summary-default'],
+      },
+      // The collection-list page. Shopify's OS-2.0 template key is `list-collections`; without it a
+      // storefront asking for that key falls through to `index`, which silently renders the homepage.
+      // category-grid is the existing section that lists collections, so no new section is needed.
+      'list-collections': {
+        name: 'All collections',
+        layout: 'theme',
+        sections: {
+          'list-collections-grid': {
+            type: 'category-grid',
+            settings: { title: 'All collections', subtitle: 'Browse every collection in the store.' },
+          },
+        },
+        order: ['list-collections-grid'],
+      },
+      // Contact page. contact-form has shipped as a section since the first Liquid bundle but no
+      // template routed to it, so the section was unreachable.
+      contact: {
+        name: 'Contact',
+        layout: 'theme',
+        sections: {
+          'contact-form-default': { type: 'contact-form', settings: { title: 'Contact us', showPhone: true } },
+        },
+        order: ['contact-form-default'],
       },
       'customers/login': {
         name: 'Login',

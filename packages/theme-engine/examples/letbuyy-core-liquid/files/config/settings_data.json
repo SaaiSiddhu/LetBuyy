@@ -4,7 +4,10 @@
     "accentColor": "#F59E0B",
     "surfaceColor": "#F8FAFC",
     "headingFontFamily": "Inter",
-    "bodyFontFamily": "Inter"
+    "bodyFontFamily": "Inter",
+    "metaDescription": "Shop sneakers, apparel, and accessories at LetBuyy Core.",
+    "socialImageUrl": "",
+    "faviconUrl": ""
   },
   "presets": {}
 }

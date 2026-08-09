@@ -48,16 +48,25 @@ describe('experience-apply: section-type-map integrity', () => {
     assert.strictEqual(resolved, 'hero-banner');
   });
 
-  test('resolveLiquidSectionType returns null for faqAccordion (not in UK bundle)', () => {
+  // faqAccordion and collectionFilter USED to assert null here: both types had a kebab mapping but no
+  // Liquid section file, which is why every experience's collection template — and all of craft —
+  // degraded. The bundle now ships both, so the expectation inverts.
+  test('resolveLiquidSectionType resolves faqAccordion → faq-accordion in UK bundle', () => {
     const doc = getUrbanKicksDoc();
-    const resolved = resolveLiquidSectionType('faqAccordion', doc.section_definitions);
-    assert.strictEqual(resolved, null);
+    assert.strictEqual(resolveLiquidSectionType('faqAccordion', doc.section_definitions), 'faq-accordion');
   });
 
-  test('resolveLiquidSectionType returns null for collectionFilter (not in UK bundle)', () => {
+  test('resolveLiquidSectionType resolves collectionFilter → collection-filter in UK bundle', () => {
     const doc = getUrbanKicksDoc();
-    const resolved = resolveLiquidSectionType('collectionFilter', doc.section_definitions);
-    assert.strictEqual(resolved, null);
+    assert.strictEqual(resolveLiquidSectionType('collectionFilter', doc.section_definitions), 'collection-filter');
+  });
+
+  // The mapped-but-absent branch still needs coverage; instagramFeed and videoHero remain the two
+  // BUILT_IN types with a kebab mapping and no Liquid section file.
+  test('resolveLiquidSectionType returns null for a mapped type absent from the bundle', () => {
+    const doc = getUrbanKicksDoc();
+    assert.strictEqual(resolveLiquidSectionType('instagramFeed', doc.section_definitions), null);
+    assert.strictEqual(resolveLiquidSectionType('videoHero', doc.section_definitions), null);
   });
 
   test('resolveLiquidSectionType returns null for unknown type', () => {
@@ -198,47 +207,57 @@ describe('experience-apply: COMPLETE_DESIGN mode — index template', () => {
   });
 });
 
-describe('experience-apply: COMPLETE_DESIGN — incompatible sections', () => {
-  test('craft index composition includes faqAccordion, which is incompatible with UK bundle', () => {
+describe('experience-apply: COMPLETE_DESIGN — composition compatibility', () => {
+  // These three used to assert that faq-accordion and collection-filter came back 'incompatible'.
+  // That was the defect, encoded as an expectation: craft could apply none of its three templates and
+  // every experience's collection template degraded. The bundle now ships both sections, so the
+  // expectation inverts — they must resolve and be applied.
+  test('craft index composition applies faqAccordion now that the bundle ships it', () => {
     const doc = getUrbanKicksDoc();
     const diff = computeExperienceApplyDiff(doc, 'craft', COMPLETE_PRESERVE);
     const indexDiff = diff.templates['index'];
     assert.ok(indexDiff, 'diff must have index template entry');
     const incompatible = indexDiff.sections.filter((e) => e.action === 'incompatible');
     assert.ok(
-      incompatible.some((e) => e.type === 'faq-accordion'),
-      `Expected faq-accordion to be incompatible. Got: ${incompatible.map((e) => e.type).join(', ')}`,
+      !incompatible.some((e) => e.type === 'faq-accordion'),
+      `faq-accordion must no longer be incompatible. Got: ${incompatible.map((e) => e.type).join(', ')}`,
     );
   });
 
-  test('incompatible sections are NOT added to the result document', () => {
+  test('a resolvable composition section reaches the result document', () => {
     const doc = getUrbanKicksDoc();
     const { document: result } = applyExperienceToDocument(doc, 'craft', COMPLETE_PRESERVE);
     const indexTemplate = result.templates.find((t) => t.key === 'index');
     assert.ok(indexTemplate);
-    const hasFaqAccordion = indexTemplate.sections.some((s) => s.type === 'faq-accordion');
-    assert.ok(!hasFaqAccordion, 'faq-accordion must not be in the result (incompatible)');
+    assert.ok(
+      indexTemplate.sections.some((s) => s.type === 'faq-accordion'),
+      'faq-accordion resolves against the bundle and must be applied',
+    );
   });
 
-  test('collectionFilter is reported as incompatible in collection template diffs', () => {
+  test('collectionFilter resolves in collection template diffs', () => {
     const doc = getUrbanKicksDoc();
-    // Every experience with collectionFilter in its collection composition
-    // should report it as incompatible.
     const diff = computeExperienceApplyDiff(doc, 'forge', COMPLETE_PRESERVE);
     const colDiff = diff.templates['collection'];
     assert.ok(colDiff, 'diff must have collection template entry');
     const incompatible = colDiff.sections.filter((e) => e.action === 'incompatible');
     assert.ok(
-      incompatible.some((e) => e.type === 'collection-filter'),
-      `Expected collection-filter to be incompatible. Got: ${incompatible.map((e) => e.type).join(', ')}`,
+      !incompatible.some((e) => e.type === 'collection-filter'),
+      `collection-filter must no longer be incompatible. Got: ${incompatible.map((e) => e.type).join(', ')}`,
     );
   });
 
+  // The reason string is what a merchant sees when their bundle predates a section a composition wants.
+  // The stock bundle now ships every section craft references, so this drops faq-accordion from the
+  // document's section_definitions to reproduce that older-bundle case deterministically.
   test('incompatible entries include an informative reason string', () => {
     const doc = getUrbanKicksDoc();
-    const diff = computeExperienceApplyDiff(doc, 'craft', COMPLETE_PRESERVE);
+    const { 'faq-accordion': _omitted, ...withoutFaqAccordion } = doc.section_definitions;
+    const olderBundle = { ...doc, section_definitions: withoutFaqAccordion };
+    const diff = computeExperienceApplyDiff(olderBundle, 'craft', COMPLETE_PRESERVE);
     const incomp = diff.templates['index']?.sections.find((e) => e.action === 'incompatible');
-    assert.ok(incomp, 'Expected at least one incompatible entry for craft');
+    assert.ok(incomp, 'Expected faq-accordion to be incompatible once removed from the bundle');
+    assert.strictEqual(incomp.type, 'faq-accordion');
     assert.ok(incomp.incompatibleReason, 'incompatibleReason must be non-empty');
     assert.ok(incomp.incompatibleReason.length > 0);
   });
