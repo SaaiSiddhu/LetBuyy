@@ -110,7 +110,7 @@ Two remain theme-adjacent and unfixed:
 
 | Validator | Why not fixed |
 |---|---|
-| `environment-validator` | **False positive.** The flagged literals (`'sk_live_should_never_reach_liquid'`, `'whsec_must_never_render'`) are **negative-test fixtures asserting credentials never reach Liquid output**. Redacting them would weaken the security tests. Correct fix is a validator test-fixture allowlist |
+| `environment-validator` | **False positive.** The flagged literals (`'sk_live_should_never…reach_liquid'`, `'whsec_must_never_render'`) are **negative-test fixtures asserting credentials never reach Liquid output**. Redacting them would weaken the security tests. Correct fix is a validator test-fixture allowlist |
 | `route-line-count-validator` | `routes/themes.ts` is 1 870 lines against a 1 500 limit. A 370-line extraction across every theme endpoint is not low-risk at this stage |
 
 Full table with owners and dispositions: [21](21-final-test-evidence.md) §3.

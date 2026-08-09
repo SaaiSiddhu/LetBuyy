@@ -145,7 +145,7 @@
 | # | Item | Owner | ARB | Why | Scope |
 |---|---|---|---|---|---|
 | P2-1 | Split `routes/themes.ts` (1 870 lines vs 1 500) | theme | no | `route-line-count-validator` red; safe but a 370-line extraction across every theme endpoint | medium |
-| P2-2 | Test-fixture allowlist in `environment-validator` | platform | no | It flags negative-test fixtures (`'sk_live_should_never_reach_liquid'`) whose purpose is asserting non-leakage. **Do not redact the fixtures** | small |
+| P2-2 | Test-fixture allowlist in `environment-validator` | platform | no | It flags negative-test fixtures (`'sk_live_should_never…reach_liquid'`) whose purpose is asserting non-leakage. **Do not redact the fixtures** | small |
 | P2-3 | Isolate the render benchmark | theme/CI | no | Wall-clock assertion in a concurrent pool; 711 ms vs a 30 000 ms budget. **Do not raise the budget** | small |
 | P2-4 | Open Graph + favicon via sanitizer `ADD_ATTR` (`property`, `rel`) | theme + ARB | ✅ | Currently emitted as malformed `<meta content="…">`, so they were removed | small |
 | P2-5 | Fix `apps/storefront-runtime/.../liquid-theme.css` | storefront | no | 0 `--lb-*`, 34 raw hex, 28 raw px, desktop-first — UI-R1/R7 | small |

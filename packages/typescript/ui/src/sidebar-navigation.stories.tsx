@@ -1,4 +1,3 @@
-import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import { MaterialIcon } from './icons';
 import { Navigation, Sidebar } from './app-shell';
@@ -6,14 +5,17 @@ import { Navigation, Sidebar } from './app-shell';
 /**
  * The merchant sidebar shape: groups whose parent row is itself a destination.
  * Clicking the row navigates; the chevron toggles without navigating.
+ *
+ * Deliberately NO `@storybook/*` import. Every other *.stories.tsx in this package
+ * uses the same bare `export default { title }` + exported render function, because
+ * `@storybook/react-vite` is a devDependency and dependency-manifest-validator only
+ * counts devDependencies for files under /test/, /tests/ or *.config.* — a
+ * `src/*.stories.tsx` importing it is an undeclared dependency (ARCH-R15,
+ * AGENTS.md:103).
  */
-const meta: Meta<typeof Navigation> = {
+export default {
     title: 'LetBuyy UI/Sidebar Navigation',
-    component: Navigation,
 };
-
-export default meta;
-type Story = StoryObj<typeof Navigation>;
 
 const icon = (name: string) => <MaterialIcon name={name} size={16} aria-hidden="true" />;
 
@@ -77,12 +79,12 @@ const items = [
     { id: 'analytics', label: 'Analytics', href: '/saai/analytics', icon: icon('bar_chart') },
 ];
 
-export const MerchantSidebar: Story = {
-    render: () => (
+export function MerchantSidebar() {
+    return (
         <div className="flex h-[720px]">
             <Sidebar header={<strong>LetBuyy</strong>} width="sm">
                 <Navigation items={items} />
             </Sidebar>
         </div>
-    ),
-};
+    );
+}

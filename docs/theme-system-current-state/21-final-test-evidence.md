@@ -113,7 +113,7 @@ used as documented because it (a) `rm -rf`s `node_modules`/`.next`/`dist`/`.turb
 | 18 | `api-client-runtime-base-validator` | marketing create page | ❌ | ❌ | No | No | No | — | marketing | **Pre-existing** |
 | 19 | `marketing-dead-twin-validator` | homepage must use live Header/Hero | ❌ | ❌ | No | No | No | — | marketing | **Pre-existing** |
 | 20 | `raw-error-message-validator` | `resource-search.ts` returns raw `error.message` | ❌ | ❌ | No | No | No | Add to `sanitizePublicErrorPayload` | gateway | **Pre-existing** |
-| 21 | `environment-validator` | secret-like values in 2 theme-engine test files | ❌ | ❌ | No | No | **No — false positive** | None safe | theme | **Pre-existing — WILL NOT FIX.** The literals (`'sk_live_should_never_reach_liquid'`, `'whsec_must_never_render'`) are **negative-test fixtures asserting credentials never reach Liquid output**. Redacting them weakens the security tests. Correct fix is a validator test-fixture allowlist |
+| 21 | `environment-validator` | secret-like values in 2 theme-engine test files | ❌ | ❌ | No | No | **No — false positive** | None safe | theme | **Pre-existing — WILL NOT FIX.** The literals (`'sk_live_should_never…reach_liquid'`, `'whsec_must_never_render'`) are **negative-test fixtures asserting credentials never reach Liquid output**. Redacting them weakens the security tests. Correct fix is a validator test-fixture allowlist |
 | 22 | `tooling-governance-validator` | unexpected root file `scripts/.DS_Store` | ❌ | ✅ | No | **Yes** | No | Delete the macOS artifact | user | **User-owned** |
 | 23 | `prompt-perimeter-validator` | 3 unregistered prompt files under `V1_SCOPE_LOCK_…` | ❌ | ❌ | No | No | No | Register in `PROMPTS.md` | governance | **Pre-existing** |
 
