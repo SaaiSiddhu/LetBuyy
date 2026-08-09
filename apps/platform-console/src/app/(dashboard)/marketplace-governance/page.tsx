@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import type { MarketplaceReviewListResult, MarketplaceReviewRecord } from '@letbuyy/api-client';
 import {
     ConsoleWorkspace,
@@ -8,6 +9,7 @@ import {
     StatusPill,
 } from '@/components/_local-ui/console-workspace';
 import { fetchConsoleApi, formatDateTime } from '@/lib/console-api';
+import { isAppPlatformEnabled } from '@/lib/app-platform-flag';
 
 function jsonRecord(value: unknown): Record<string, unknown> {
     return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
@@ -32,6 +34,10 @@ function toneForStatus(value: string): 'success' | 'warning' | 'critical' | 'inf
 }
 
 export default async function MarketplaceGovernancePage() {
+    // ART-22 / ART-16 fail-closed gate. Must be the FIRST statement: the gateway now 404s
+    // /v1/operations/marketplace-reviews, so this page must neither render nor fetch.
+    if (!isAppPlatformEnabled()) notFound();
+
     const response = await fetchConsoleApi<MarketplaceReviewListResult>('/operations/marketplace-reviews', { limit: 50 });
     const reviews = response.data?.review_records || [];
     const appReviews = reviews.filter((review) => review.submission_type === 'app').length;

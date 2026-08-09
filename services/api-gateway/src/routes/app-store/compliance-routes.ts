@@ -5,6 +5,7 @@ import { findFirstOwnedSiteId, resolveCustomUser, verifySiteOwnership } from '..
 import { upsertDataSubjectRequestFromComplianceWebhook } from '../../lib/internal-compliance';
 import { getSupabaseAdmin, success } from '../../lib/supabase';
 import { authMiddleware } from '../../middleware/auth';
+import { isAppPlatformEnabled } from '../../middleware/appPlatformKillSwitch';
 import {
     MANDATORY_COMPLIANCE_WEBHOOK_TOPICS,
     appStoreStringOrNull as stringOrNull,
@@ -117,6 +118,18 @@ export async function dispatchStoreAppComplianceWebhook(
     }
 
     const appSubscriptions = Array.isArray(subscriptions) ? subscriptions : [];
+
+    // ART-22 / ART-16 hard gate on app-platform EGRESS. This helper is also called from
+    // routes that sit outside the /v1/app-store perimeter (routes/admin.ts DELETE
+    // /v1/admin/stores/:id and routes/customers.ts customer redaction), so the prefix
+    // middleware in index.ts cannot reach it. With the platform frozen, no shop/redact or
+    // customers/redact payload may be delivered to a third-party app endpoint. The GDPR
+    // data-subject record above is deliberately still written — only the outbound
+    // third-party delivery is suppressed.
+    if (!isAppPlatformEnabled(c.env)) {
+        return { ok: true, subscriptionCount: appSubscriptions.length, dispatchedCount: 0, dataSubjectRequestId };
+    }
+
     const deliveryConfigured = Boolean(c.env.WEBHOOK_SERVICE && c.env.INTERNAL_API_SECRET);
     if (appSubscriptions.length > 0 && !deliveryConfigured) {
         const unavailable = {
