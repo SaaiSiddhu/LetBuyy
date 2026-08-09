@@ -177,6 +177,7 @@ const validators = [
   "no-scan-generated-agents-validator.mjs",
   "prompt-perimeter-validator.mjs",
   "whole-repo-end-state-validator.mjs",
+  "web-v1-scope-perimeter-validator.mjs",
 ];
 
 const reportValidators = [

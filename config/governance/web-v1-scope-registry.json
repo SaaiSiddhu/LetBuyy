@@ -1,0 +1,463 @@
+{
+  "schemaVersion": 1,
+  "artifactClass": "GOVERNANCE_CONFIG_NOT_AUTHORITY",
+  "authorityNote": "This file is machine-readable governance CONFIG. It is NOT a governance authority and it outranks nothing. Authority order remains: GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md (supreme) > AGENTS.md > nested AGENTS.md > LETBUYY_CANONICAL_SYSTEMS.md. Where this file and any of those disagree, those win and the disagreement is a defect in this file. Classifications recorded here that the governance chain has not ratified are marked HUMAN_DECISION_REQUIRED and must not be read as a decision.",
+  "baselineSha": "ee3711829d857e986014c5811bb94d86ebc3d343",
+  "baselineBranch": "codex/w0-v1-perimeter",
+  "recordedOn": "2026-08-09",
+  "recordedBy": "Wave 0 Web V1 scope-freeze agent (evidence run, not an ARB act)",
+  "enforcedBy": "scripts/validators/web-v1-scope-perimeter-validator.mjs",
+  "purpose": "Freeze the Web V1 capability perimeter as data so that a NEW activation of an excluded or forbidden capability fails the governance gate. This file does not remove, disable, or gate any capability that exists today.",
+  "honestyContract": [
+    "knownActivationsBaseline is NOT a green field. It is an explicit, itemised list of excluded/forbidden capabilities that are ALREADY ACTIVE in the repository at baselineSha.",
+    "The validator is a RATCHET: the baseline may shrink, it may never grow without a human edit to this file.",
+    "No entry in this file asserts that an already-active capability is permitted. It asserts only that its activation predates the freeze and was recorded honestly.",
+    "Nothing in this file authorises a deferral that the governance chain has not made. See invariants.mustBeHumanDecisionRequired."
+  ],
+  "classifications": {
+    "WEB_V1_REQUIRED": "In scope for Web V1. Not perimeter-enforced by this validator (this validator guards the exclusion side only).",
+    "WEB_V1_DEFERRED": "Excluded from Web V1 scope. Perimeter-enforced: no NEW activation signal may appear.",
+    "FORBIDDEN_FROZEN": "Forbidden or frozen by the governance chain. Perimeter-enforced: no NEW activation signal may appear.",
+    "HUMAN_DECISION_REQUIRED": "The governance chain has NOT ratified a classification, or the runtime is undocumented. Existence is recorded; NEW wiring into Web V1 deploy configuration is perimeter-enforced. MUST NOT be read as deferred, and MUST NOT be read as in scope."
+  },
+  "enforcementModes": {
+    "ratchet": "Probes evaluated on every run; active-and-unbaselined = hard failure.",
+    "delegated": "Already enforced by a named gate-lane validator. This registry asserts that the delegate exists and stays wired, and does not duplicate its logic (avoids the one-line alias-validator antipattern recorded in docs/launch/web-v1-wave-0-2026-08-09/10_VALIDATOR_EXECUTION_MATRIX.md).",
+    "none": "Recorded for perimeter completeness only. No probe."
+  },
+  "invariants": {
+    "mustBeHumanDecisionRequired": [
+      "mobile_merchant_app",
+      "lcis_api_service"
+    ],
+    "mustBeHumanDecisionRequiredRationale": {
+      "mobile_merchant_app": "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md ART-04, AGENTS.md ARCH-R1 and LETBUYY_CANONICAL_SYSTEMS.md row 28 currently classify apps/mobile/merchant-app as CANONICAL with no V1 / V1.1 split. No ARB amendment authorising a V1.1 deferral was found. Wave 0 therefore MUST NOT record a deferral. Mobile work is preserved and must not be merged into the Web V1 integration branch.",
+      "lcis_api_service": "services/lcis-api is a real built Hono service (package @letbuyy/lcis-api, src + test + build/typecheck/test/start scripts) that appears in no governance topology document — not in the CLAUDE.md canonical runtime map, not in canonicalServiceRoots or reservedServiceRoots in scripts/validators/governance-common.mjs. Undocumented runtime; human classification required."
+    },
+    "forbiddenClassificationsFor": {
+      "mobile_merchant_app": ["WEB_V1_DEFERRED", "MOBILE_V1_1", "WEB_V1_REQUIRED"],
+      "lcis_api_service": ["WEB_V1_DEFERRED", "WEB_V1_REQUIRED"]
+    }
+  },
+  "openEscalations": [
+    {
+      "id": "ESC-APPBRIDGE",
+      "summary": "App Bridge / app-store / checkout-extension surface is live inside Web V1 deploy targets, contradicting Constitution ART-16/ART-22 and AGENTS.md NEVER-R3 / AGENT-R13.",
+      "owner": "separate urgent security task on branch codex/emergency-appbridge-killswitch",
+      "thisRegistryDoes": "Records the surface as FORBIDDEN_FROZEN with its current activation baselined and marked expectedRemoval. It changes no App Bridge code.",
+      "evidence": "docs/launch/web-v1-wave-0-2026-08-09/08_WEB_V1_PERIMETER_AND_EXCLUSIONS.md Finding P-1"
+    },
+    {
+      "id": "ESC-DEFERRED-LIVE",
+      "summary": "Nine capabilities the Web V1 brief lists as deferred are already built, unflagged and navigation-reachable. There is no feature-flag pattern in apps/merchant-control-plane/src or apps/storefront-runtime/src.",
+      "owner": "human / ARB",
+      "thisRegistryDoes": "Records each as WEB_V1_DEFERRED with its current activation baselined, so the set cannot grow. It disables nothing.",
+      "evidence": "docs/launch/web-v1-wave-0-2026-08-09/08_WEB_V1_PERIMETER_AND_EXCLUSIONS.md Finding P-2"
+    },
+    {
+      "id": "ESC-GATE-FAILFAST",
+      "summary": "scripts/validate-governance.mjs runs validators sequentially and exits on the first non-zero status. The gate currently dies at validator index 6 (validate-design-system.mjs), so validators after it — including this one — do not execute inside `pnpm validate:governance` today.",
+      "owner": "Wave 0 validator-lane agent",
+      "thisRegistryDoes": "Ships a dedicated root script `validate:web-v1-perimeter` so the perimeter check is executable and CI-wireable independently of the fail-fast gate.",
+      "evidence": "docs/launch/web-v1-wave-0-2026-08-09/11_FALSE_GREEN_AND_FAIL_FAST_FINDINGS.md"
+    },
+    {
+      "id": "ESC-STRIPE-LIVE",
+      "summary": "Stripe is wired into the canonical gateway, contradicting the Phase 1 conclusion that alternative PSPs are cleanly deferred. services/api-gateway/src/routes/payments.ts:13,1265-1284 and services/api-gateway/src/routes/storefront/checkout-payment-routes.ts:23,961-993 import createStripeCheckoutSessionWithFetch / createStripePaymentProvider from @letbuyy/infrastructure/stripe-adapter and execute against c.env.STRIPE_SECRET_KEY, which is declared on the gateway Env at services/api-gateway/src/index.ts:142. Deferral is achieved only by a runtime 503 when the secret is unset — an environment condition, not a code perimeter.",
+      "owner": "human / ARB",
+      "thisRegistryDoes": "Baselines the activation under alternative_psps::runtime_client_wiring so it cannot spread, and leaves the dedicated-PSP-router probes INACTIVE so a new PSP route mount still fails. It changes no payment code.",
+      "evidence": "Discovered by this validator; NOT reported in docs/launch/web-v1-wave-0-2026-08-09/07_WEB_V1_SCOPE_REGISTER.md, which recorded alternative PSPs as 'No — genuinely deferred, cleanly stubbed'."
+    },
+    {
+      "id": "ESC-WASM-APPFUNCTIONS",
+      "summary": "A third-party Wasm app-functions runtime exists inside the always-deployed gateway: services/api-gateway/src/extensions/app-functions-runtime.ts calls WebAssembly.instantiate at line 437 and builds checkout decisions from third-party module output. AGENTS.md NEVER-R3 names 'checkout extensions / app-functions / Wasm runtime in the live path' as MUST NOT BUILD. No importer of this module was found inside services/api-gateway/src, so it is present and compiled but not currently mounted.",
+      "owner": "unresolved — adjacent to the codex/emergency-appbridge-killswitch scope; this workflow must not touch extension code",
+      "thisRegistryDoes": "Baselines the activation as expectedRemoval and records the conflict. It changes no extension code.",
+      "evidence": "Discovered by this validator; NOT reported in docs/launch/web-v1-wave-0-2026-08-09/08_WEB_V1_PERIMETER_AND_EXCLUSIONS.md."
+    }
+  ],
+  "newEvidenceBeyondPhase1": [
+    "alternative_psps is NOT cleanly deferred. Stripe executes in the canonical gateway behind an env-var presence check only (ESC-STRIPE-LIVE). Phase 1 doc 07 §5 recorded the opposite and cited it as the model the other deferrals should follow; that conclusion is falsified at the gateway layer.",
+    "A Wasm app-functions runtime is present in the canonical gateway source tree (ESC-WASM-APPFUNCTIONS). Phase 1 did not surface it.",
+    "apps/storefront-runtime/src/app/store/[subdomain]/collections/[slug] is a live customer-facing collection page; Phase 1 recorded collections as a merchant-side capability only."
+  ],
+  "knownActivationsBaseline": {
+    "heading": "KNOWN VIOLATIONS BASELINE — NOT A CLEAN STATE",
+    "statement": "Each signal below is an excluded, forbidden or unratified capability that is ALREADY ACTIVE at baselineSha ee3711829d857e986014c5811bb94d86ebc3d343. This list exists so the perimeter check can fail on growth. It is not permission, not an approval, and not evidence of compliance.",
+    "recordedCount": 32,
+    "signals": [
+      { "signal": "multi_variant_products::merchant_variant_editor", "evidence": "apps/merchant-control-plane/src/app/[store]/products/new/page.tsx — variant matrix builder present, no gate", "expectedRemoval": false },
+      { "signal": "multi_variant_products::storefront_variant_selector", "evidence": "apps/storefront-runtime/src/app/store/[subdomain]/product/[productId]/product-details-client.tsx — variant selection wired", "expectedRemoval": false },
+      { "signal": "collections::merchant_ui", "evidence": "apps/merchant-control-plane/src/app/[store]/products/collections/page.tsx — nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "collections::merchant_api", "evidence": "apps/merchant-control-plane/src/app/api/stores/[store]/collections/route.ts", "expectedRemoval": false },
+      { "signal": "collections::storefront_collection_page", "evidence": "apps/storefront-runtime/src/app/store/[subdomain]/collections/[slug] — live customer-facing collection page", "expectedRemoval": false },
+      { "signal": "smart_collections::merchant_ui", "evidence": "apps/merchant-control-plane/src/app/[store]/products/smart-collections/page.tsx — nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "smart_collections::gateway_mount", "evidence": "services/api-gateway/src/index.ts — api.route('/smart-collections', smartCollectionsRouter)", "expectedRemoval": false },
+      { "signal": "gift_cards::merchant_ui", "evidence": "apps/merchant-control-plane/src/app/[store]/products/gift-cards/page.tsx — nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "gift_cards::gateway_router_file", "evidence": "services/api-gateway/src/routes/gift-cards.ts", "expectedRemoval": false },
+      { "signal": "gift_cards::gateway_registration", "evidence": "services/api-gateway/src/routes/products.ts — registerGiftCardRoutes(...) under /products/gift-cards*", "expectedRemoval": false },
+      { "signal": "staff_roles::merchant_ui", "evidence": "apps/merchant-control-plane/src/app/[store]/settings/users/page.tsx — settings-nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "multi_location_inventory::merchant_ui", "evidence": "apps/merchant-control-plane/src/app/[store]/products/locations/page.tsx — nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "multi_location_inventory::merchant_api", "evidence": "apps/merchant-control-plane/src/app/api/stores/[store]/inventory-locations", "expectedRemoval": false },
+      { "signal": "purchase_orders::merchant_ui", "evidence": "apps/merchant-control-plane/src/app/[store]/products/purchase-orders/page.tsx — nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "purchase_orders::merchant_api", "evidence": "apps/merchant-control-plane/src/app/api/stores/[store]/purchase-orders", "expectedRemoval": false },
+      { "signal": "purchase_orders::suppliers_ui", "evidence": "apps/merchant-control-plane/src/app/[store]/products/suppliers/page.tsx — nav-linked as Vendors", "expectedRemoval": false },
+      { "signal": "transfers::merchant_ui", "evidence": "apps/merchant-control-plane/src/app/[store]/products/transfers/page.tsx — nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "transfers::merchant_api", "evidence": "apps/merchant-control-plane/src/app/api/stores/[store]/transfers", "expectedRemoval": false },
+      { "signal": "whatsapp_sms_push::gateway_router_file", "evidence": "services/api-gateway/src/routes/whatsapp.ts", "expectedRemoval": false },
+      { "signal": "whatsapp_sms_push::gateway_mount", "evidence": "services/api-gateway/src/index.ts — api.route('/whatsapp', ...) / api.route('/wa', ...) with no feature gate", "expectedRemoval": false },
+      { "signal": "ai_features::merchant_ui", "evidence": "apps/merchant-control-plane/src/app/[store]/ai/page.tsx — nav-linked as AI Studio", "expectedRemoval": false },
+      { "signal": "ai_features::gateway_mount", "evidence": "services/api-gateway/src/index.ts — api.route('/ai', aiRouter)", "expectedRemoval": false },
+      { "signal": "headless_storefront_api::gateway_graphql_gate", "evidence": "services/api-gateway/src/index.ts — graphQLFeatureGate on /storefront/graphql and /graphql/storefront; middleware default is enabled outside production", "expectedRemoval": false },
+      { "signal": "custom_domains::merchant_ui", "evidence": "apps/merchant-control-plane/src/app/[store]/settings/domains/page.tsx — settings-nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "custom_domains::gateway_mount", "evidence": "services/api-gateway/src/index.ts — api.route('/domains', ...) and api.route('/custom', ...)", "expectedRemoval": false },
+      { "signal": "app_marketplace_backend::gateway_app_store_routes", "evidence": "services/api-gateway/src/routes/app-store/ — third-party app OAuth, billing and revenue share on the always-deployed gateway", "expectedRemoval": true },
+      { "signal": "app_bridge_host::merchant_bridge_client", "evidence": "apps/merchant-control-plane/src/components/apps/EmbeddedAppBridgeClient.tsx — working postMessage extension host in a deploy target", "expectedRemoval": true },
+      { "signal": "checkout_extensions::gateway_extension_gate", "evidence": "services/api-gateway/src/index.ts — extensionsFeatureGate mounted on /storefront/:subdomain/checkout/extensions and app-store extension routes", "expectedRemoval": true },
+      { "signal": "alternative_psps::runtime_client_wiring", "evidence": "services/api-gateway/src/routes/payments.ts:13,1276 and services/api-gateway/src/routes/storefront/checkout-payment-routes.ts:23,993 — Stripe executes against c.env.STRIPE_SECRET_KEY (declared at index.ts:142). See escalation ESC-STRIPE-LIVE. Falsifies the Phase 1 'cleanly deferred' conclusion.", "expectedRemoval": false },
+      { "signal": "third_party_runtime_execution::runtime_wiring", "evidence": "services/api-gateway/src/extensions/app-functions-runtime.ts:437 — WebAssembly.instantiate for third-party app functions; no importer found inside services/api-gateway/src, so present and compiled but not mounted. See escalation ESC-WASM-APPFUNCTIONS.", "expectedRemoval": true },
+      { "signal": "mobile_merchant_app::source_root", "evidence": "apps/mobile/merchant-app — Flutter runtime exists and is preserved. Recorded as EXISTENCE ONLY. This is not a deferral and not an in-scope decision; the governance chain still calls it CANONICAL.", "expectedRemoval": false },
+      { "signal": "lcis_api_service::source_root", "evidence": "services/lcis-api — built Hono service (@letbuyy/lcis-api) absent from every governance topology document. Recorded as EXISTENCE ONLY, pending human classification.", "expectedRemoval": false }
+    ]
+  },
+  "capabilities": [
+    { "id": "merchant_web_auth", "title": "Merchant web authentication (two-issuer)", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/identity-platform, services/api-gateway auth routes" },
+    { "id": "store_creation_and_publication", "title": "Store creation and publication", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/identity-platform create-store, apps/merchant-control-plane" },
+    { "id": "storefront_host_routing", "title": "Storefront host routing", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/storefront-runtime/src/proxy.ts" },
+    { "id": "single_variant_products", "title": "Single-variant products", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/merchant-control-plane products, services/api-gateway /products" },
+    { "id": "inventory_and_reservations", "title": "Inventory and reservations (single location)", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/merchant-control-plane products/reservations, services/api-gateway /inventory" },
+    { "id": "cart", "title": "Cart", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/storefront-runtime cart" },
+    { "id": "checkout", "title": "Checkout", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/storefront-runtime checkout, services/api-gateway /checkout" },
+    { "id": "payments_razorpay_and_cod", "title": "Razorpay and COD payments", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "services/api-gateway /payments, /cod" },
+    { "id": "canonical_money_ledger", "title": "Canonical money ledger", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "SECURITY DEFINER RPCs; enforced by scripts/validators/canonical-ledger-only-validator.mjs" },
+    { "id": "orders", "title": "Orders", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/merchant-control-plane orders, services/api-gateway /orders" },
+    { "id": "fulfilment_and_tracking", "title": "Fulfilment and tracking", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "services/api-gateway /shipping, /shipping/labels, /returns" },
+    { "id": "refunds", "title": "Refunds", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "services/api-gateway refund path; step-up gated" },
+    { "id": "coupons", "title": "Coupons", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "services/api-gateway /coupons, /discounts" },
+    { "id": "gst_and_invoicing", "title": "GST and immutable invoicing", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "services/api-gateway /tax, /shipping-tax; merchant settings/taxes" },
+    { "id": "shipping", "title": "Shipping rates and zones", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/merchant-control-plane settings/shipping, services/api-gateway /shipping" },
+    { "id": "single_theme_and_editor_path", "title": "One theme and one editor path", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "packages/theme-engine, merchant online-store/themes; ART-17 enforced by no-new-react-sections-validator.mjs" },
+    { "id": "transactional_email", "title": "Transactional email", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "services/api-gateway /email, /notifications" },
+    { "id": "account_privacy_and_legal_controls", "title": "Account, privacy and legal controls", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "storefront account/privacy/terms, merchant settings/policies" },
+    { "id": "deployment_monitoring_and_rollback", "title": "Deployment, monitoring and rollback", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": ".github/workflows/production-deploy.yml, config/runtime/*; enforced by deployment-safety and rollback-integrity validators" },
+
+    {
+      "id": "multi_variant_products",
+      "title": "Multi-variant products",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "note": "Already live and unflagged at baseline. Baselined, not permitted.",
+      "probes": [
+        { "id": "merchant_variant_editor", "kind": "content", "files": ["apps/merchant-control-plane/src/app/[store]/products/new/page.tsx"], "pattern": "buildVariantMatrix|VariantOption|normalizeApiVariants" },
+        { "id": "storefront_variant_selector", "kind": "content", "files": ["apps/storefront-runtime/src/app/store/[subdomain]/product/[productId]/product-details-client.tsx"], "pattern": "selectedVariant|variantId" }
+      ]
+    },
+    {
+      "id": "collections",
+      "title": "Manual product collections",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant-control-plane/src/app/[store]/products/collections/page.tsx"] },
+        { "id": "merchant_api", "kind": "path", "paths": ["apps/merchant-control-plane/src/app/api/stores/[store]/collections/route.ts"] },
+        { "id": "gateway_mount", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "api\\.route\\('/collections'" },
+        { "id": "storefront_collection_page", "kind": "path", "paths": ["apps/storefront-runtime/src/app/store/[subdomain]/collections"] }
+      ]
+    },
+    {
+      "id": "smart_collections",
+      "title": "Rule-based smart collections",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant-control-plane/src/app/[store]/products/smart-collections/page.tsx"] },
+        { "id": "gateway_mount", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "api\\.route\\('/smart-collections'" }
+      ]
+    },
+    {
+      "id": "gift_cards",
+      "title": "Gift cards",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "note": "Merchant issuance is live at baseline. Storefront redemption at checkout is NOT live at baseline and is the primary new-activation probe.",
+      "probes": [
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant-control-plane/src/app/[store]/products/gift-cards/page.tsx"] },
+        { "id": "gateway_router_file", "kind": "path", "paths": ["services/api-gateway/src/routes/gift-cards.ts"] },
+        { "id": "gateway_registration", "kind": "content", "files": ["services/api-gateway/src/routes/products.ts"], "pattern": "registerGiftCardRoutes" },
+        { "id": "storefront_checkout_redemption", "kind": "content", "files": ["apps/storefront-runtime/src/app/store/[subdomain]/checkout/checkout-client.tsx"], "pattern": "gift.?card", "patternFlags": "i" }
+      ]
+    },
+    {
+      "id": "staff_roles",
+      "title": "Staff roles and permissions",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant-control-plane/src/app/[store]/settings/users/page.tsx"] }
+      ]
+    },
+    {
+      "id": "multi_location_inventory",
+      "title": "Multi-location inventory",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant-control-plane/src/app/[store]/products/locations/page.tsx"] },
+        { "id": "merchant_api", "kind": "path", "paths": ["apps/merchant-control-plane/src/app/api/stores/[store]/inventory-locations"] }
+      ]
+    },
+    {
+      "id": "purchase_orders",
+      "title": "Purchase orders and suppliers",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant-control-plane/src/app/[store]/products/purchase-orders/page.tsx"] },
+        { "id": "merchant_api", "kind": "path", "paths": ["apps/merchant-control-plane/src/app/api/stores/[store]/purchase-orders"] },
+        { "id": "suppliers_ui", "kind": "path", "paths": ["apps/merchant-control-plane/src/app/[store]/products/suppliers/page.tsx"] }
+      ]
+    },
+    {
+      "id": "transfers",
+      "title": "Inventory transfers",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant-control-plane/src/app/[store]/products/transfers/page.tsx"] },
+        { "id": "merchant_api", "kind": "path", "paths": ["apps/merchant-control-plane/src/app/api/stores/[store]/transfers"] }
+      ]
+    },
+    {
+      "id": "whatsapp_sms_push",
+      "title": "WhatsApp, SMS and push messaging",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "note": "WhatsApp is live at the gateway API layer with no feature gate. SMS has no route file and WhatsApp has no merchant navigation entry at baseline; both are new-activation probes.",
+      "probes": [
+        { "id": "gateway_router_file", "kind": "path", "paths": ["services/api-gateway/src/routes/whatsapp.ts"] },
+        { "id": "gateway_mount", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "api\\.route\\('/(whatsapp|wa)'" },
+        { "id": "merchant_navigation_entry", "kind": "content", "files": ["apps/merchant-control-plane/src/components/merchantNavigation.ts", "apps/merchant-control-plane/src/components/settings/settings-navigation.ts"], "pattern": "whatsapp", "patternFlags": "i" },
+        { "id": "sms_gateway_router_file", "kind": "path", "paths": ["services/api-gateway/src/routes/sms.ts"] }
+      ]
+    },
+    {
+      "id": "ai_features",
+      "title": "AI content generation",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant-control-plane/src/app/[store]/ai/page.tsx"] },
+        { "id": "gateway_mount", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "api\\.route\\('/ai'" }
+      ]
+    },
+    {
+      "id": "alternative_psps",
+      "title": "Alternative payment service providers (Stripe, PayPal, Cashfree and similar)",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "note": "Genuinely deferred at baseline (LB-2 code comments, dead-link PayPal return stub). All probes INACTIVE — any hit is a new activation.",
+      "probes": [
+        { "id": "gateway_route_files", "kind": "path", "paths": ["services/api-gateway/src/routes/stripe.ts", "services/api-gateway/src/routes/paypal.ts", "services/api-gateway/src/routes/cashfree.ts", "services/api-gateway/src/routes/payu.ts", "services/api-gateway/src/routes/phonepe.ts"] },
+        { "id": "gateway_mount", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "api\\.route\\('/(stripe|paypal|cashfree|payu|phonepe)'" },
+        { "id": "runtime_client_wiring", "kind": "scan", "roots": ["apps/merchant-control-plane/src", "apps/storefront-runtime/src", "services/api-gateway/src"], "pattern": "stripeClient|paypalClient|cashfreeClient|createStripe|createPaypal|loadStripe" }
+      ]
+    },
+    {
+      "id": "subscription_commerce",
+      "title": "Customer subscription commerce (recurring orders)",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "note": "Distinct from LetBuyy's own SaaS plan billing, which is WEB_V1_REQUIRED. All probes INACTIVE at baseline.",
+      "probes": [
+        { "id": "gateway_route_file", "kind": "path", "paths": ["services/api-gateway/src/routes/subscriptions.ts"] },
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/storefront-runtime/src", "services/api-gateway/src"], "pattern": "subscriptionPlanId|recurringOrder|subscription_commerce|recurringInterval" }
+      ]
+    },
+    {
+      "id": "multi_currency",
+      "title": "Multi-currency presentment and settlement",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant-control-plane/src", "apps/storefront-runtime/src", "services/api-gateway/src"], "pattern": "presentmentCurrency|multiCurrency|currencySwitcher|currency_conversion_rate" }
+      ]
+    },
+    {
+      "id": "headless_storefront_api",
+      "title": "Headless storefront API (public GraphQL)",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "note": "Mounted behind graphQLFeatureGate at baseline; the gate default is enabled outside production (services/api-gateway/src/middleware/featureFlags.ts). Ungating it is a new activation.",
+      "probes": [
+        { "id": "gateway_graphql_gate", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "graphQLFeatureGate" },
+        { "id": "public_storefront_api_key_surface", "kind": "path", "paths": ["services/api-gateway/src/routes/storefront-api-tokens.ts"] }
+      ]
+    },
+    {
+      "id": "reseller_program",
+      "title": "Reseller / white-label program",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant-control-plane/src", "apps/storefront-runtime/src", "apps/platform-console/src", "services/api-gateway/src"], "pattern": "resellerProgram|reseller_program|resellerTier|whiteLabelPartner" }
+      ]
+    },
+    {
+      "id": "custom_domains",
+      "title": "Custom domains",
+      "classification": "WEB_V1_DEFERRED",
+      "enforcement": "ratchet",
+      "note": "Task perimeter defers custom domains unless separately proven. Live at baseline; baselined, not permitted. A separate proof of readiness may reclassify this to WEB_V1_REQUIRED by human edit.",
+      "probes": [
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant-control-plane/src/app/[store]/settings/domains/page.tsx"] },
+        { "id": "gateway_mount", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "api\\.route\\('/(domains|custom)'" }
+      ]
+    },
+
+    {
+      "id": "app_marketplace_backend",
+      "title": "Third-party app marketplace backend",
+      "classification": "FORBIDDEN_FROZEN",
+      "enforcement": "ratchet",
+      "governanceRefs": ["LETBUYY_CONSTITUTION.md ART-16", "LETBUYY_CONSTITUTION.md ART-22", "AGENTS.md NEVER-R3", "AGENTS.md AGENT-R13"],
+      "note": "DO NOT EDIT under this workflow. Owned by the separate urgent task on codex/emergency-appbridge-killswitch. Recorded here only.",
+      "probes": [
+        { "id": "gateway_app_store_routes", "kind": "path", "paths": ["services/api-gateway/src/routes/app-store"] },
+        { "id": "frozen_app_deploy_target", "kind": "content", "files": [".github/workflows/production-deploy.yml"], "pattern": "app:\\s*(app-marketplace|developer-portal|theme-marketplace|platform-operations-portal)" }
+      ]
+    },
+    {
+      "id": "app_bridge_host",
+      "title": "Admin App Bridge extension host",
+      "classification": "FORBIDDEN_FROZEN",
+      "enforcement": "ratchet",
+      "governanceRefs": ["AGENTS.md NEVER-R3", "AGENTS.md AGENT-R13"],
+      "note": "DO NOT EDIT under this workflow. Owned by codex/emergency-appbridge-killswitch.",
+      "probes": [
+        { "id": "merchant_bridge_client", "kind": "path", "paths": ["apps/merchant-control-plane/src/components/apps/EmbeddedAppBridgeClient.tsx"] },
+        { "id": "storefront_bridge_host", "kind": "scan", "roots": ["apps/storefront-runtime/src"], "pattern": "AppBridge|createAdminUiExtensionBridgeContext" }
+      ]
+    },
+    {
+      "id": "checkout_extensions",
+      "title": "Checkout extensions",
+      "classification": "FORBIDDEN_FROZEN",
+      "enforcement": "ratchet",
+      "governanceRefs": ["LETBUYY_CONSTITUTION.md ART-16", "AGENTS.md NEVER-R3"],
+      "probes": [
+        { "id": "gateway_extension_gate", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "extensionsFeatureGate" },
+        { "id": "storefront_extension_render", "kind": "scan", "roots": ["apps/storefront-runtime/src"], "pattern": "checkoutExtension|CheckoutExtension|renderExtensionSlot" }
+      ]
+    },
+    {
+      "id": "third_party_runtime_execution",
+      "title": "Third-party code execution in the live path (Wasm / isolate sandboxes)",
+      "classification": "FORBIDDEN_FROZEN",
+      "enforcement": "ratchet",
+      "governanceRefs": ["AGENTS.md NEVER-R3"],
+      "probes": [
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant-control-plane/src", "apps/storefront-runtime/src", "apps/identity-platform/src", "apps/platform-console/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "WebAssembly\\.(instantiate|compile)|isolated-vm|\\bvm2\\b|quickjs|new Function\\(" }
+      ]
+    },
+    {
+      "id": "cqrs",
+      "title": "CQRS command/query separation infrastructure",
+      "classification": "FORBIDDEN_FROZEN",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant-control-plane/src", "apps/storefront-runtime/src", "apps/identity-platform/src", "apps/platform-console/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "\\bCQRS\\b|CommandBus|QueryBus|commandHandlerRegistry" }
+      ]
+    },
+    {
+      "id": "event_sourcing",
+      "title": "Event-sourced aggregates",
+      "classification": "FORBIDDEN_FROZEN",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant-control-plane/src", "apps/storefront-runtime/src", "apps/identity-platform/src", "apps/platform-console/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "\\bEventStore\\b|eventSourcing|aggregateVersion|rehydrateAggregate" }
+      ]
+    },
+    {
+      "id": "saga_engine",
+      "title": "Distributed transaction orchestration engine",
+      "classification": "FORBIDDEN_FROZEN",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant-control-plane/src", "apps/storefront-runtime/src", "apps/identity-platform/src", "apps/platform-console/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "SagaOrchestrator|sagaOrchestrator|sagaStep|compensatingTransactionEngine" }
+      ]
+    },
+    {
+      "id": "multi_region_topology",
+      "title": "Multi-region / region-failover topology",
+      "classification": "FORBIDDEN_FROZEN",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant-control-plane/src", "apps/storefront-runtime/src", "apps/identity-platform/src", "apps/platform-console/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "multiRegion|regionFailover|MULTI_REGION|secondaryRegionEndpoint" }
+      ]
+    },
+    {
+      "id": "database_sharding",
+      "title": "Database sharding",
+      "classification": "FORBIDDEN_FROZEN",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant-control-plane/src", "apps/storefront-runtime/src", "apps/identity-platform/src", "apps/platform-console/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "shardKey|databaseShard|shardId|shardRouter" }
+      ]
+    },
+    {
+      "id": "service_mesh",
+      "title": "Service mesh / sidecar proxy topology",
+      "classification": "FORBIDDEN_FROZEN",
+      "enforcement": "ratchet",
+      "probes": [
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant-control-plane/src", "apps/storefront-runtime/src", "apps/identity-platform/src", "apps/platform-console/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "istio|linkerd|serviceMesh|envoyProxy|sidecarProxy", "patternFlags": "i" }
+      ]
+    },
+    {
+      "id": "self_custody_payout_rail",
+      "title": "Self-custody payout rail",
+      "classification": "FORBIDDEN_FROZEN",
+      "enforcement": "delegated",
+      "delegatedValidators": ["no-self-custody-rail-validator.mjs"]
+    },
+    {
+      "id": "gmv_take_rate_fee",
+      "title": "GMV take-rate / commission fee",
+      "classification": "FORBIDDEN_FROZEN",
+      "enforcement": "delegated",
+      "delegatedValidators": ["commission-bps-zero-validator.mjs", "pricing-catalog-validator.mjs"],
+      "note": "pricing-catalog-validator.mjs reports through reporter.warn() and cannot block. Recorded as a known weakness of this delegation; see docs/launch/web-v1-wave-0-2026-08-09/10_VALIDATOR_EXECUTION_MATRIX.md."
+    },
+    {
+      "id": "reserved_service_activation",
+      "title": "Filling a reserved service or reserved mobile root",
+      "classification": "FORBIDDEN_FROZEN",
+      "enforcement": "delegated",
+      "delegatedValidators": ["no-reserved-service-activation-validator.mjs"]
+    },
+
+    {
+      "id": "mobile_merchant_app",
+      "title": "apps/mobile/merchant-app (Flutter merchant application)",
+      "classification": "HUMAN_DECISION_REQUIRED",
+      "enforcement": "ratchet",
+      "humanDecisionNote": "The governance chain currently classifies this runtime as CANONICAL (Constitution ART-04, AGENTS.md ARCH-R1, LETBUYY_CANONICAL_SYSTEMS.md row 28) with no V1 / V1.1 split, and no ARB amendment authorising a V1.1 deferral exists. Wave 0 asserts NO deferral. The work is preserved and must not be merged into the Web V1 integration branch. This registry records existence only.",
+      "probes": [
+        { "id": "source_root", "kind": "path", "paths": ["apps/mobile/merchant-app"] },
+        { "id": "web_deploy_matrix_entry", "kind": "content", "files": [".github/workflows/production-deploy.yml"], "pattern": "app:\\s*merchant-app" }
+      ]
+    },
+    {
+      "id": "lcis_api_service",
+      "title": "services/lcis-api (undocumented Hono runtime)",
+      "classification": "HUMAN_DECISION_REQUIRED",
+      "enforcement": "ratchet",
+      "humanDecisionNote": "A real, built Hono service that appears in no governance topology document and in neither canonicalServiceRoots nor reservedServiceRoots. Human classification required before it may be treated as in scope, deferred, reserved or deletable.",
+      "probes": [
+        { "id": "source_root", "kind": "path", "paths": ["services/lcis-api"] },
+        { "id": "web_deploy_matrix_entry", "kind": "content", "files": [".github/workflows/production-deploy.yml"], "pattern": "app:\\s*lcis-api|lcis-api" },
+        { "id": "gateway_runtime_dependency", "kind": "content", "files": ["services/api-gateway/package.json"], "pattern": "lcis" }
+      ]
+    }
+  ]
+}
