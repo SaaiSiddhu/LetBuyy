@@ -7,14 +7,46 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
-test("branch-lag guard validator passes configuration mode", () => {
+test("branch-lag guard validator passes when the working branch is not ahead of the production branch", () => {
+  // LETBUYY_PRODUCTION_BRANCH=HEAD makes `HEAD..HEAD` a zero-lag comparison, so
+  // the pass path is exercised without depending on live branch topology.
   const result = spawnSync(process.execPath, ["scripts/validators/branch-lag-guard-validator.mjs"], {
     cwd: repoRoot,
     encoding: "utf8",
+    env: { ...process.env, LETBUYY_PRODUCTION_BRANCH: "HEAD", LETBUYY_ENFORCE_BRANCH_LAG: "" },
   });
 
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
   assert.match(result.stdout, /Branch lag guard validator passed/);
+});
+
+test("branch-lag guard validator BLOCKS a real branch lag instead of warning", () => {
+  // Wave 0 truthfulness repair: local-mode branch lag used reporter.warn() and
+  // could never fail. It must now exit non-zero on a genuine lag. HEAD~1 is
+  // always exactly one commit behind HEAD.
+  const result = spawnSync(process.execPath, ["scripts/validators/branch-lag-guard-validator.mjs"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: { ...process.env, LETBUYY_PRODUCTION_BRANCH: "HEAD~1", LETBUYY_ENFORCE_BRANCH_LAG: "" },
+  });
+
+  assert.notEqual(result.status, 0, "a real branch lag must fail the validator, not warn");
+  assert.match(result.stderr, /commit\(s\) ahead of/);
+});
+
+test("branch-lag guard exposes no non-blocking downgrade for local lag", () => {
+  const source = fs
+    .readFileSync(path.join(repoRoot, "scripts/validators/branch-lag-guard-validator.mjs"), "utf8")
+    .split(/\r?\n/)
+    .filter((line) => !/^\s*(\/\/|\*|\/\*)/.test(line))
+    .join("\n");
+
+  assert.doesNotMatch(source, /reporter\.warn\(/, "branch-lag guard must not use the non-blocking reporter.warn path");
+  assert.doesNotMatch(
+    source,
+    /reporter\.advisory\(/,
+    "branch-lag guard must not downgrade a real lag to a declared advisory",
+  );
 });
 
 test("production deploy enforces branch lag before credential preflight", () => {
