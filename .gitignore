@@ -124,6 +124,13 @@ services/**/.wrangler/
 **/supabase/.temp/
 packages/typescript/*/dist/
 
+# Isolated local stack scratch root (scripts/utilities/local-stack-up.mjs and any
+# Wave-0-style isolated Supabase workdir). Holds a generated supabase/config.toml,
+# a copy of the migration chain, a redirected CLI HOME and local-only .dev.vars.
+# Untracked-but-unignored before this rule, so a stray `git add -A` could commit
+# a whole local stack (including generated local credentials) into the repo.
+.tmp/
+
 # Gemini Agent artifacts (local only)
 .gemini/
 key.jks
