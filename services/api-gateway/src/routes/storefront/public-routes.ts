@@ -218,15 +218,26 @@ export function registerStorefrontPublicRoutes(
 
         const db = getSupabaseAdmin(c);
         const selectFields = 'store_name,name,status,site_type,subdomain';
-        const { data: exactMatch } = await db
-            .from('sites')
-            .select(selectFields)
-            .or(`store_name.eq.${query},subdomain.eq.${query}`)
-            .not('status', 'eq', 'suspended')
-            .is('deleted_at', null)
-            .limit(1);
+        // Store finder, not tenant resolution: it returns no site id, and the storefront read that
+        // follows resolves its own tenant from sites.subdomain. Matching either handle column stays
+        // intentional, but subdomain and store_name are unique only within their own column, so one
+        // combined predicate can match two tenants and — with limit(1) and no ordering — return an
+        // arbitrary one, letting a store_name capture another tenant's subdomain. Probe the canonical
+        // column first, then store_name; each equality is single-valued, so more than one row (or a
+        // query error) resolves to "store not found".
+        const lookupExactSite = async (column: 'subdomain' | 'store_name') => {
+            const { data } = await db
+                .from('sites')
+                .select(selectFields)
+                .eq(column, query)
+                .not('status', 'eq', 'suspended')
+                .is('deleted_at', null)
+                .maybeSingle();
 
-        const exactSite = exactMatch?.[0];
+            return data;
+        };
+
+        const exactSite = (await lookupExactSite('subdomain')) || (await lookupExactSite('store_name'));
         if (exactSite) {
             return c.json(success({
                 status: 'found',

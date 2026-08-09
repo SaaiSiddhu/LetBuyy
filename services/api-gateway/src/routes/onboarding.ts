@@ -396,14 +396,41 @@ router.post('/:attemptId/complete', async (c) => {
         return c.json(legacySiteTypeCreationResponse(attemptSiteType), 403);
     }
 
+    const storeName = attempt.store_name || 'My Store';
+    const subdomain = attempt.subdomain || `store-${Date.now()}`;
+
+    // sites.subdomain and sites.store_name are unique within their own column but never against each
+    // other, so a store_name equal to another tenant's subdomain (or the reverse) satisfies both
+    // indexes while making the public storefront handle ambiguous. /stores rejects that collision on
+    // create; onboarding is the other write path into sites and must reject it too.
+    const handleCandidates = [subdomain, storeName];
+    const [subdomainMatches, storeNameMatches] = await Promise.all([
+        db.from('sites').select('id').in('subdomain', handleCandidates).limit(1),
+        db.from('sites').select('id').in('store_name', handleCandidates).limit(1),
+    ]);
+
+    if (subdomainMatches.error || storeNameMatches.error) {
+        return c.json({
+            success: false,
+            error: { code: 'DB_ERROR', message: 'Could not verify store name availability' },
+        }, 500);
+    }
+
+    if (subdomainMatches.data.length > 0 || storeNameMatches.data.length > 0) {
+        return c.json({
+            success: false,
+            error: { code: 'CONFLICT', message: 'Store name or subdomain already taken' },
+        }, 409);
+    }
+
     // Create the store
     const { data: store, error: storeError } = await db
         .from('sites')
         .insert({
             user_id: customUser.id,
             custom_user_id: customUser.id,
-            store_name: attempt.store_name || 'My Store',
-            subdomain: attempt.subdomain || `store-${Date.now()}`,
+            store_name: storeName,
+            subdomain,
             site_type: attemptSiteType,
             status: 'draft',
             trial_status: 'active',
@@ -457,15 +484,23 @@ router.post('/check-subdomain', validate('json', CheckSubdomainSchema), async (c
     const body = c.get('validatedBody') as { subdomain: string };
     const db = getSupabaseAdmin(c);
 
-    const { data: existing } = await db
-        .from('sites')
-        .select('id')
-        .eq('subdomain', body.subdomain)
-        .limit(1);
+    // Same cross-column rule as /:attemptId/complete — a subdomain already used as another tenant's
+    // store_name is not available, otherwise the wizard would offer a handle that fails on create.
+    const [subdomainMatches, storeNameMatches] = await Promise.all([
+        db.from('sites').select('id').eq('subdomain', body.subdomain).limit(1),
+        db.from('sites').select('id').eq('store_name', body.subdomain).limit(1),
+    ]);
+
+    if (subdomainMatches.error || storeNameMatches.error) {
+        return c.json({
+            success: false,
+            error: { code: 'DB_ERROR', message: 'Could not verify subdomain availability' },
+        }, 500);
+    }
 
     return c.json(success({
         subdomain: body.subdomain,
-        available: !existing || existing.length === 0,
+        available: subdomainMatches.data.length === 0 && storeNameMatches.data.length === 0,
     }));
 });
 

@@ -637,11 +637,16 @@ async function querySearchDocumentProductIds(
     };
 }
 
+// A public storefront handle resolves against sites.subdomain and nothing else. subdomain and
+// store_name are each unique within their own column but never against each other, so matching
+// either column can select two different tenants for one handle and return an arbitrary row —
+// a cross-tenant read. subdomain is NOT NULL and unique, so equality is single-valued; every
+// other outcome (no row, more than one row, query error) resolves to "store not found".
 async function loadPublishedStoreFromPooledSql(c: AppContext, handle: string): Promise<PublishedStoreRecord | null> {
     const sql = getPooledSql(c.env);
     if (!sql) return null;
     const rows = await sql.unsafe<PublishedStoreRecord[]>(
-        'select id from sites where (subdomain = $1 or store_name = $1) and status = $2 and deleted_at is null limit 1',
+        'select id from sites where subdomain = $1 and status = $2 and deleted_at is null limit 1',
         [handle, 'published'],
     ).catch(() => []);
     return normalizeSqlRecords(rows)[0] || null;
@@ -653,7 +658,7 @@ async function loadSiteByHandleFromPooledSql(c: AppContext, handle: string): Pro
     const rows = await sql.unsafe<StorefrontSiteRecord[]>(
         `select ${STOREFRONT_SITE_RELEASE_SELECT}
          from sites
-         where (subdomain = $1 or store_name = $1)
+         where subdomain = $1
            and status = $2
            and deleted_at is null
          limit 1`,
@@ -745,16 +750,16 @@ async function loadPublishedStore(c: AppContext, subdomain: string): Promise<Pub
         const query = db
             .from('sites')
             .select('id')
-            .or(`subdomain.eq.${handle},store_name.eq.${handle}`)
+            .eq('subdomain', handle)
             .eq('status', 'published');
 
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
 
-    let { data: store, error } = await selectStore(true).single();
+    let { data: store, error } = await selectStore(true).maybeSingle();
 
-    if (error || !store) {
-        ({ data: store } = await selectStore(false).single());
+    if (isSchemaMismatchError(error)) {
+        ({ data: store } = await selectStore(false).maybeSingle());
     }
 
     return store as PublishedStoreRecord | null;
@@ -772,10 +777,10 @@ async function loadPublishedStoreById(c: AppContext, storeId: string): Promise<P
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
 
-    let { data: store, error } = await selectStore(true).single();
+    let { data: store, error } = await selectStore(true).maybeSingle();
 
-    if (error || !store) {
-        ({ data: store } = await selectStore(false).single());
+    if (isSchemaMismatchError(error)) {
+        ({ data: store } = await selectStore(false).maybeSingle());
     }
 
     return store as PublishedStoreRecord | null;
@@ -799,8 +804,7 @@ async function loadSiteByHandle(
         let query = db
             .from('sites')
             .select(selectFields)
-            .or(`subdomain.eq.${normalized},store_name.eq.${normalized}`)
-            .limit(1);
+            .eq('subdomain', normalized);
 
         if (options.publishedOnly) query = query.eq('status', 'published');
         if (includeDeletedAtFilter) query = query.is('deleted_at', null);
@@ -808,22 +812,22 @@ async function loadSiteByHandle(
         return query;
     };
 
-    let { data, error } = await selectSite(STOREFRONT_SITE_RELEASE_SELECT, true).single();
+    let { data, error } = await selectSite(STOREFRONT_SITE_RELEASE_SELECT, true).maybeSingle();
 
     if (error || !data) {
-        ({ data, error } = await selectSite(STOREFRONT_SITE_RELEASE_COMPAT_SELECT, true).single());
+        ({ data, error } = await selectSite(STOREFRONT_SITE_RELEASE_COMPAT_SELECT, true).maybeSingle());
     }
 
     if (error || !data) {
-        ({ data, error } = await selectSite(STOREFRONT_SITE_SELECT, true).single());
+        ({ data, error } = await selectSite(STOREFRONT_SITE_SELECT, true).maybeSingle());
     }
 
     if (error || !data) {
-        ({ data, error } = await selectSite(STOREFRONT_SITE_COMPAT_SELECT, true).single());
+        ({ data, error } = await selectSite(STOREFRONT_SITE_COMPAT_SELECT, true).maybeSingle());
     }
 
-    if (error || !data) {
-        ({ data } = await selectSite(STOREFRONT_SITE_COMPAT_SELECT, false).single());
+    if (isSchemaMismatchError(error)) {
+        ({ data } = await selectSite(STOREFRONT_SITE_COMPAT_SELECT, false).maybeSingle());
     }
 
     return (data as StorefrontSiteRecord | null) || null;
