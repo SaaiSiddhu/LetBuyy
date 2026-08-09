@@ -93,14 +93,23 @@ if (enforceLag) {
     );
   }
 } else {
+  // Wave 0 truthfulness repair: this branch previously used reporter.warn(), so
+  // a real branch-lag condition could never block the governance gate. A branch
+  // lag is a genuine release-integrity defect (production would deploy code that
+  // does not contain the integration branch), so it now blocks via assert().
+  // There is deliberately NO environment escape hatch: an opt-out would simply
+  // reintroduce the silent non-blocking behaviour this repair removed.
   try {
     const localLagCount = Number(git(["rev-list", "--count", `${productionBranch}..HEAD`]));
-    reporter.warn(
+    reporter.assert(
       Number.isFinite(localLagCount) && localLagCount === 0,
-      `Local working branch is ${localLagCount} commit(s) ahead of ${productionBranch}; CI enforces the live release-branch comparison`,
+      `Local working branch is ${localLagCount} commit(s) ahead of ${productionBranch}; ${productionBranch} must be fast-forwarded (execute MERGE_RUNBOOK.md) before this branch can be treated as release-integrated`,
     );
-  } catch {
-    reporter.warn(false, "Local branch lag could not be inspected; CI enforces the live release-branch comparison");
+  } catch (error) {
+    reporter.assert(
+      false,
+      `Local branch lag could not be inspected: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 }
 

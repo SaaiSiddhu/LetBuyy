@@ -412,23 +412,52 @@ export function pathHasIgnoredSegment(relPath) {
   return relPath.split("/").some((segment) => ignoredDirectoryNames.has(segment));
 }
 
+/**
+ * Machine-readable marker the governance runner parses so that a non-blocking
+ * finding can never be silent. Every advisory is surfaced in the gate matrix
+ * under "DECLARED ADVISORIES".
+ */
+export const ADVISORY_MARKER = "##governance-advisory##";
+
 export function createReporter(name) {
   const errors = [];
   const warnings = [];
+  const advisories = [];
 
   return {
     errors,
     warnings,
+    advisories,
     assert(condition, message) {
       if (!condition) errors.push(message);
     },
+    /**
+     * Record a finding that is non-blocking BY DECLARATION. Use this only when a
+     * check is deliberately informational; a genuine invariant must use
+     * assert() so it can block. Every advisory is emitted with
+     * ADVISORY_MARKER and reported by scripts/validate-governance.mjs, so an
+     * advisory is never a silent pass.
+     */
+    advisory(condition, message) {
+      if (!condition) advisories.push(message);
+    },
+    /**
+     * Deprecated alias for advisory(). Retained so any future caller is still
+     * surfaced in the gate matrix instead of vanishing into stderr.
+     */
     warn(condition, message) {
-      if (!condition) warnings.push(message);
+      if (!condition) {
+        warnings.push(message);
+        advisories.push(message);
+      }
     },
     finish(summary) {
-      if (warnings.length) {
-        console.warn(`${name} warnings:`);
-        for (const warning of warnings) console.warn(`- ${warning}`);
+      if (advisories.length) {
+        console.log(`${name} declared advisories (non-blocking by declaration):`);
+        for (const advisory of advisories) {
+          console.log(`- ${advisory}`);
+          console.log(`${ADVISORY_MARKER} ${name}: ${advisory}`);
+        }
       }
 
       if (errors.length) {
