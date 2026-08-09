@@ -53,6 +53,7 @@
     "validate:observability": "node scripts/validators/production-readiness-validator.mjs",
     "validate:end-state": "node scripts/validators/whole-repo-end-state-validator.mjs",
     "validate:ci": "node scripts/validators/ci-simulation-validator.mjs",
+    "validate:workflow-triggers": "node scripts/validators/workflow-trigger-coverage-validator.mjs",
     "certify:production": "node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=production --mode=auto",
     "certify:production:plan-report": "node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan",
     "graph:ui": "node tools/graph-server/server.mjs",

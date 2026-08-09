@@ -86,6 +86,7 @@ const validators = [
   "stale-artifact-validator.mjs",
   "tooling-governance-validator.mjs",
   "ci-simulation-validator.mjs",
+  "workflow-trigger-coverage-validator.mjs",
   "committed-secret-placeholder-validator.mjs",
   "d1-governance-validator.mjs",
   "deployment-lineage-validator.mjs",
