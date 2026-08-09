@@ -52,6 +52,8 @@
     "validate:security": "node scripts/validators/provider-isolation-validator.mjs && node scripts/validators/environment-validator.mjs && node scripts/validators/supply-chain-validator.mjs",
     "validate:observability": "node scripts/validators/production-readiness-validator.mjs",
     "validate:end-state": "node scripts/validators/whole-repo-end-state-validator.mjs",
+    "validate:web-v1-perimeter": "node scripts/validators/web-v1-scope-perimeter-validator.mjs",
+    "validate:web-v1-perimeter:report": "node scripts/validators/web-v1-scope-perimeter-validator.mjs --report",
     "validate:ci": "node scripts/validators/ci-simulation-validator.mjs",
     "certify:production": "node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=production --mode=auto",
     "certify:production:plan-report": "node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan",

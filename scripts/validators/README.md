@@ -18,3 +18,5 @@ Enterprise dependency and execution hardening is enforced by:
 - `queue-lifecycle-validator.mjs` for queue retry, dead-letter, poison-message, and recovery time governance.
 - `rollback-integrity-validator.mjs`, `deployment-lineage-validator.mjs`, and `topology-drift-validator.mjs` for rollback-safe deployment lineage.
 - `cloudflare-binding-validator.mjs` for explicit Wrangler environment binding ownership.
+
+`web-v1-scope-perimeter-validator.mjs` enforces `config/governance/web-v1-scope-registry.json` as a ratchet: an excluded, forbidden or unratified capability may not gain a NEW activation signal. Its `knownActivationsBaseline` is an explicit list of activations that already existed at the recorded baseline SHA — it is not a clean-state assertion. Behaviour and limitations are documented in `docs/governance/web-v1-scope-perimeter-governance.md`.
