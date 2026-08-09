@@ -28,6 +28,9 @@ on:
       - ".github/workflows/environment-lifecycle.yml"
       - ".github/workflows/live-production-certification.yml"
       - ".github/workflows/production-rollout.yml"
+  # "codex/**" covers the Web V1 integration branch (codex/web-v1-integration).
+  # The pull_request trigger above is path-scoped and base-branch agnostic, so PRs
+  # into any branch are covered; unscoped coverage comes from ci.yml.
   push:
     branches:
       - main
@@ -35,6 +38,12 @@ on:
       - "codex/**"
 
 jobs:
+  # Every gate step below runs with continue-on-error so that a failure in an early
+  # step (historically "Validate governance") can no longer hide the results of
+  # typecheck and the test suite. The job's pass/fail is re-imposed, unweakened, by
+  # the final `gate-aggregate` step: if ANY step above did not succeed, the job fails.
+  # Setup steps (checkout/node/install) intentionally keep hard fail-fast, because
+  # nothing downstream can produce a meaningful result without them.
   validate-architecture:
     runs-on: ubuntu-latest
     steps:
@@ -52,52 +61,129 @@ jobs:
           pnpm install --frozen-lockfile
 
       - name: Validate governance
+        id: validate-governance
+        continue-on-error: true
         run: pnpm run validate:governance
 
+      - name: Validate workflow trigger coverage
+        id: validate-workflow-triggers
+        continue-on-error: true
+        run: pnpm run validate:workflow-triggers
+
       - name: Validate design system
+        id: validate-design-system
+        continue-on-error: true
         run: pnpm run validate:design-system
 
       - name: Lint CSS
+        id: lint-css
+        continue-on-error: true
         run: pnpm run lint:css
 
       - name: Validate design-token interchange (tokens.json ↔ tokens.ts)
+        id: validate-design-tokens
+        continue-on-error: true
         run: pnpm run validate:design-tokens
 
       - name: Validate mobile token parity
+        id: validate-mobile-tokens
+        continue-on-error: true
         run: pnpm run validate:mobile-tokens
 
       - name: Validate runtime safety
+        id: validate-runtime
+        continue-on-error: true
         run: pnpm run validate:runtime
 
       - name: Validate operational execution gates
+        id: validate-operational-gates
+        continue-on-error: true
         run: |
           pnpm run validate:reconciliation
           pnpm run validate:rollback
           pnpm run validate:queues
 
       - name: Validate deployment safety
+        id: validate-deployment
+        continue-on-error: true
         run: pnpm run validate:deployment
 
       - name: Validate runtime topology
+        id: validate-topology
+        continue-on-error: true
         run: pnpm run validate:topology
 
       - name: Validate production readiness
+        id: validate-production-readiness
+        continue-on-error: true
         run: node scripts/validators/production-readiness-validator.mjs
 
       - name: Validate dependency governance
+        id: validate-dependencies
+        continue-on-error: true
         run: pnpm run validate:dependencies
 
       - name: Validate TypeScript governance
+        id: validate-typescript
+        continue-on-error: true
         run: pnpm run validate:typescript
 
       - name: Run governance tests
+        id: governance-tests
+        continue-on-error: true
         run: pnpm run test
 
       - name: Typecheck workspace
+        id: typecheck
+        continue-on-error: true
         run: pnpm run typecheck
 
       - name: Generate SBOM
+        id: sbom
+        continue-on-error: true
         run: pnpm dlx @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
 
       - name: Dependency audit
+        id: dependency-audit
+        continue-on-error: true
         run: pnpm audit --audit-level high --prod
+
+      - name: Architecture governance gate result
+        id: gate-aggregate
+        if: always()
+        env:
+          OUTCOME_VALIDATE_GOVERNANCE: ${{ steps.validate-governance.outcome }}
+          OUTCOME_VALIDATE_WORKFLOW_TRIGGERS: ${{ steps.validate-workflow-triggers.outcome }}
+          OUTCOME_VALIDATE_DESIGN_SYSTEM: ${{ steps.validate-design-system.outcome }}
+          OUTCOME_LINT_CSS: ${{ steps.lint-css.outcome }}
+          OUTCOME_VALIDATE_DESIGN_TOKENS: ${{ steps.validate-design-tokens.outcome }}
+          OUTCOME_VALIDATE_MOBILE_TOKENS: ${{ steps.validate-mobile-tokens.outcome }}
+          OUTCOME_VALIDATE_RUNTIME: ${{ steps.validate-runtime.outcome }}
+          OUTCOME_VALIDATE_OPERATIONAL_GATES: ${{ steps.validate-operational-gates.outcome }}
+          OUTCOME_VALIDATE_DEPLOYMENT: ${{ steps.validate-deployment.outcome }}
+          OUTCOME_VALIDATE_TOPOLOGY: ${{ steps.validate-topology.outcome }}
+          OUTCOME_VALIDATE_PRODUCTION_READINESS: ${{ steps.validate-production-readiness.outcome }}
+          OUTCOME_VALIDATE_DEPENDENCIES: ${{ steps.validate-dependencies.outcome }}
+          OUTCOME_VALIDATE_TYPESCRIPT: ${{ steps.validate-typescript.outcome }}
+          OUTCOME_GOVERNANCE_TESTS: ${{ steps.governance-tests.outcome }}
+          OUTCOME_TYPECHECK: ${{ steps.typecheck.outcome }}
+          OUTCOME_SBOM: ${{ steps.sbom.outcome }}
+          OUTCOME_DEPENDENCY_AUDIT: ${{ steps.dependency-audit.outcome }}
+        run: |
+          set -u
+          failed=0
+          echo "Architecture governance step results"
+          echo "===================================="
+          for pair in $(env | { grep -E '^OUTCOME_[A-Z_]+=' || true; } | sort); do
+            name="${pair%%=*}"
+            value="${pair#*=}"
+            printf '%-40s %s\n' "${name#OUTCOME_}" "${value:-missing}"
+            if [ "${value:-missing}" != "success" ]; then
+              failed=1
+            fi
+          done
+          if [ "$failed" -ne 0 ]; then
+            echo "::error::Architecture governance gate FAILED. Every non-success step above must be fixed; no step result is masked by fail-fast ordering."
+            exit 1
+          fi
+          echo "All architecture governance steps succeeded."
