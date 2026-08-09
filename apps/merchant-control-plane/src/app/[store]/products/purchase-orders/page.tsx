@@ -567,7 +567,7 @@ export default function PurchaseOrdersPage() {
             <PageHeader
                 title="Purchase orders"
                 description="Plan inbound stock from suppliers and receive it into inventory."
-                breadcrumbs={[{ label: 'Products' }, { label: 'Purchase orders' }]}
+                breadcrumbs={[{ label: 'Purchasing' }, { label: 'Purchase orders' }]}
                 primaryAction={{
                     label: 'Create purchase order',
                     icon: <MaterialIcon name="add" />,

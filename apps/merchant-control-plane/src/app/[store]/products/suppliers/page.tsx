@@ -249,7 +249,7 @@ export default function SuppliersPage() {
             <PageHeader
                 title="Suppliers"
                 description="Manage your vendors and suppliers. Suppliers are linked to purchase orders for inbound inventory."
-                breadcrumbs={[{ label: 'Products' }, { label: 'Suppliers' }]}
+                breadcrumbs={[{ label: 'Purchasing' }, { label: 'Suppliers' }]}
                 primaryAction={{
                     label: 'Add supplier',
                     icon: <MaterialIcon name="add" />,

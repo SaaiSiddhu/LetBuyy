@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { formatInrCurrency } from '@letbuyy/ui/formatting'
 import type {
@@ -67,54 +68,303 @@ interface SetupChecklistItem {
     detail?: string
 }
 
+/**
+ * One landscape illustration per step, keyed by actionLink so a step cannot
+ * silently lose its art when copy changes. Files live in public/activation/;
+ * a missing file is hidden on error, so a half-finished asset set degrades to
+ * an empty well rather than broken-image glyphs.
+ */
+const ACTIVATION_ART: Record<string, string> = {
+    'products/new': '/activation/add-product.png',
+    'online-store/themes': '/activation/choose-theme.png',
+    'settings/payments': '/activation/set-up-payments.png',
+    'settings/domains': '/activation/connect-domain.png',
+    'settings/shipping': '/activation/shipping-rates.png',
+    'online-store': '/activation/launch-store.png',
+}
+
+/**
+ * What the store actually is right now, derived only from real fields.
+ *
+ *   ACTIVATING  no sellable catalog yet — the checklist IS the page
+ *   SELLING     products exist, no orders yet — metrics start to mean something
+ *   OPERATING   real orders — metrics lead, checklist collapses away
+ *
+ * hasOrders ORs in recentActivity because totalOrders is a 30-day window: a store
+ * that sold in month one and paused would otherwise be demoted back to SELLING
+ * and shown a launch checklist it already finished.
+ */
+type DashboardStage = 'activating' | 'selling' | 'operating'
+
+function resolveStage(
+    siteType: SiteType,
+    setupStatus: SetupStatus,
+    homeData: DashboardHomeData,
+): DashboardStage {
+    // Non-store site types get emptyDashboardHomeData(), so never show them
+    // commerce metrics they can't populate.
+    if (siteType !== 'store') return 'activating'
+
+    const hasOrders =
+        homeData.totalOrders > 0 || homeData.recentActivity.some((activity) => activity.kind === 'order')
+    if (hasOrders) return 'operating'
+
+    const hasProducts = setupStatus.primaryComplete || homeData.totalProducts > 0
+    return hasProducts ? 'selling' : 'activating'
+}
+
 export default function DashboardClient({ store, storeInfo, setupStatus, homeData }: DashboardClientProps) {
     const config = SETUP_CONFIGS[storeInfo.site_type] || SETUP_CONFIGS.store
     const currentDomain = storeInfo.custom_domain || `${storeInfo.subdomain}.letbuyy.com`
+    const stage = resolveStage(storeInfo.site_type, setupStatus, homeData)
 
     return (
         <Page>
-            <PageHeader
-                breadcrumbs={[{ label: 'Home' }]}
-                eyebrow={formatSiteType(storeInfo.site_type)}
-                title={storeInfo.name || store}
-                description={`${config.dashboardDescription} Your current domain is ${currentDomain}.`}
-                showIcon={false}
-                primaryAction={{
-                    label: config.primary.actionText,
-                    href: `/${store}/${config.primary.actionLink}`,
-                    icon: <MaterialIcon name={config.primary.icon} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />,
-                }}
-                secondaryActions={[
-                    {
-                        label: 'Store settings',
-                        href: `/${store}/settings`,
-                        icon: <MaterialIcon name="settings" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />,
-                    },
-                ]}
-            />
+            {/* No PageHeader while activating: the store name and a duplicate
+                "Add product" CTA compete with the board, which already names the
+                store and carries every action as its own card. */}
+            {stage !== 'activating' && (
+                <PageHeader
+                    breadcrumbs={[{ label: 'Home' }]}
+                    eyebrow={formatSiteType(storeInfo.site_type)}
+                    title={storeInfo.name || store}
+                    description={`${config.dashboardDescription} Your current domain is ${currentDomain}.`}
+                    showIcon={false}
+                    primaryAction={{
+                        label: config.primary.actionText,
+                        href: `/${store}/${config.primary.actionLink}`,
+                        icon: <MaterialIcon name={config.primary.icon} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />,
+                    }}
+                    secondaryActions={[
+                        {
+                            label: 'Store settings',
+                            href: `/${store}/settings`,
+                            icon: <MaterialIcon name="settings" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />,
+                        },
+                    ]}
+                />
+            )}
 
-            <PlanBanner
-                store={store}
-                trialEndsAt={storeInfo.trial_ends_at}
-                trialStatus={storeInfo.trial_status}
-            />
+            {/* No PlanBanner / PlanUpsell here: AdminShell already renders the
+                app-wide TrialBanner, so those made three plan pitches on one
+                screen and cost the strip directly under the page title. */}
+
+            {/* ACTIVATING leads with the checklist — a store with no catalog does
+                not need to be told its revenue is zero. From SELLING onward the
+                numbers carry real information, so they move above it. */}
+            {stage === 'activating' ? (
+                <>
+                    <ActivationBoard
+                        store={store}
+                        storeName={storeInfo.name || store}
+                        checklist={buildSetupChecklist({
+                            config,
+                            currentDomain,
+                            setupStatus,
+                            siteType: storeInfo.site_type,
+                            storeStatus: storeInfo.status,
+                        })}
+                    />
+                    {homeData.recentActivity.length > 0 && (
+                        <RecentActivity store={store} activities={homeData.recentActivity} />
+                    )}
+                </>
+            ) : (
+                <>
+                    <HomeMetrics homeData={homeData} />
+                    <SetupCards
+                        store={store}
+                        siteType={storeInfo.site_type}
+                        setupStatus={setupStatus}
+                        currentDomain={currentDomain}
+                        storeStatus={storeInfo.status}
+                    />
+                    <RecentActivity store={store} activities={homeData.recentActivity} />
+                </>
+            )}
 
             <FoundingMerchantCard />
-
-            <HomeMetrics homeData={homeData} />
-
-            <SetupCards
-                store={store}
-                siteType={storeInfo.site_type}
-                setupStatus={setupStatus}
-                currentDomain={currentDomain}
-                storeStatus={storeInfo.status}
-            />
-
-            <RecentActivity store={store} activities={homeData.recentActivity} />
-
-            <PlanUpsell store={store} />
         </Page>
+    )
+}
+
+/**
+ * The ACTIVATING surface: one card per launch step, each carrying its own
+ * illustration. Replaces the dense checklist for a store that has not opened
+ * yet — at this stage the page's whole job is to make the next action obvious.
+ * Steps come from the same buildSetupChecklist() the guide uses, so completion
+ * state can never disagree between the two views.
+ */
+function ActivationBoard({
+    store,
+    storeName,
+    checklist,
+}: {
+    store: string
+    storeName: string
+    checklist: SetupChecklistItem[]
+}) {
+    // Every step renders, always. Completed ones stay on the board wearing a
+    // finished state — a merchant should be able to see what they have already
+    // done, not watch cards disappear.
+    const done = checklist.filter((item) => item.complete).length
+    const total = checklist.length
+    const nextLink = checklist.find((item) => !item.complete)?.actionLink ?? null
+    const [lead, second, ...rest] = checklist
+
+    return (
+        <div className="grid gap-[var(--lb-space-6)]">
+            <div className="grid justify-items-center gap-[var(--lb-space-3)] text-center">
+                <div className="grid gap-[var(--lb-space-2)]">
+                    <h2 className="text-[length:var(--lb-font-size-page-title)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] tracking-[-0.02em] text-[color:var(--lb-color-text)]">
+                        Where do you want to start?
+                    </h2>
+                    <p className="text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
+                        {done === total
+                            ? `${storeName} is ready to sell.`
+                            : `Finish setting up ${storeName} — ${total - done} ${total - done === 1 ? 'step' : 'steps'} to go.`}
+                    </p>
+                </div>
+                <ActivationProgress done={done} total={total} />
+            </div>
+
+            {/* Two lead cards, then the remainder three-up — a flat row of five
+                equals gives the eye nowhere to land. */}
+            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                {[lead, second].filter(Boolean).map((item) => (
+                    <ActivationCard
+                        key={item.actionLink}
+                        store={store}
+                        item={item}
+                        featured
+                        isNext={item.actionLink === nextLink}
+                    />
+                ))}
+            </div>
+
+            {rest.length > 0 && (
+                <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2 xl:grid-cols-3">
+                    {rest.map((item) => (
+                        <ActivationCard
+                            key={item.actionLink}
+                            store={store}
+                            item={item}
+                            isNext={item.actionLink === nextLink}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    )
+}
+
+/**
+ * Three-layer activation art. The side cut-outs drift outward and lift on
+ * hover, opening a gap around the coded centre — the same read as the Shopify
+ * onboarding cards, where the illustration reacts rather than just sitting there.
+ */
+function ActivationArt({ art, featured }: { art?: string; featured: boolean }) {
+    if (!art) return null
+    return (
+        <Image
+            src={art}
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes={featured ? "(max-width: 768px) 92vw, 46vw" : "(max-width: 768px) 92vw, 30vw"}
+            className="activation-art__image object-contain"
+            onError={(event) => { event.currentTarget.hidden = true }}
+        />
+    )
+}
+
+/** Segmented progress — reads as a launch track rather than a loading bar. */
+function ActivationProgress({ done, total }: { done: number; total: number }) {
+    return (
+        <div className="flex items-center gap-[var(--lb-space-3)]">
+            <div className="flex items-center gap-[var(--lb-space-1)]" aria-hidden="true">
+                {Array.from({ length: total }, (_, index) => (
+                    <span
+                        key={index}
+                        className={[
+                            'h-1 w-[var(--lb-space-6)] rounded-[var(--lb-radius-full)] transition-colors duration-[var(--lb-motion-normal)] motion-reduce:transition-none',
+                            index < done
+                                ? 'bg-[var(--lb-color-primary)]'
+                                : 'bg-[var(--lb-color-border)]',
+                        ].join(' ')}
+                    />
+                ))}
+            </div>
+            <span className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
+                {done} of {total} complete
+            </span>
+        </div>
+    )
+}
+
+function ActivationCard({
+    store,
+    item,
+    featured = false,
+    isNext = false,
+}: {
+    store: string
+    item: SetupChecklistItem
+    featured?: boolean
+    isNext?: boolean
+}) {
+    const art = ACTIVATION_ART[item.actionLink]
+
+    return (
+        <article
+            className={[
+                'activation-card',
+                // Done is a state, not an absence: full opacity, marked with a
+                // success edge + tick so finished work still reads as work.
+                item.complete ? 'activation-card--done' : isNext ? 'activation-card--next' : '',
+            ].filter(Boolean).join(' ')}
+        >
+            <div className="flex flex-col gap-[var(--lb-space-2)] p-[var(--lb-space-5)] pb-[var(--lb-space-3)]">
+                <div className="flex items-center gap-[var(--lb-space-2)]">
+                    {item.complete && (
+                        <span
+                            className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-success-soft)] text-[color:var(--lb-color-success)]"
+                            aria-hidden="true"
+                        >
+                            <MaterialIcon name="check" size={12} />
+                        </span>
+                    )}
+                    <h3 className="text-[length:var(--lb-font-size-card-title)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[color:var(--lb-color-text)]">
+                        {item.title}
+                    </h3>
+                    {isNext && !item.complete && <Badge variant="info" label="Up next" />}
+                </div>
+                <p className="text-[length:var(--lb-font-size-secondary)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
+                    {item.complete ? (item.detail ?? item.description) : item.description}
+                </p>
+            </div>
+
+            {/* Illustration well. The tinted panel is the fallback, so a missing
+                or not-yet-added PNG degrades to a calm empty surface instead of
+                a broken-image glyph. */}
+            <div
+                className={[
+                    'activation-art mx-[var(--lb-space-5)]',
+                    featured ? 'activation-art--featured' : '',
+                ].filter(Boolean).join(' ')}
+            >
+                <ActivationArt art={art} featured={featured} />
+            </div>
+
+            <div className="p-[var(--lb-space-5)] pt-[var(--lb-space-4)]">
+                <Button
+                    variant={item.complete ? 'secondary' : 'primary'}
+                    href={`/${store}/${item.actionLink}`}
+                >
+                    {item.complete ? 'Review' : item.actionText}
+                </Button>
+            </div>
+        </article>
     )
 }
 
@@ -257,7 +507,7 @@ function SetupCards({ store, siteType, setupStatus, currentDomain, storeStatus }
                                         isDone
                                             ? 'bg-[var(--lb-color-success-soft)] text-[color:var(--lb-color-success)]'
                                             : isNext
-                                                ? 'bg-[var(--lb-color-primary)] text-white shadow-[0_4px_14px_rgba(139,92,246,0.4)]'
+                                                ? 'bg-[var(--lb-color-primary)] text-[color:var(--lb-color-text-inverse)] shadow-[var(--lb-shadow-accent-sm)]'
                                                 : 'border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] text-[color:var(--lb-color-text-subdued)]',
                                     ].join(' ')}>
                                         {isDone
@@ -284,7 +534,7 @@ function SetupCards({ store, siteType, setupStatus, currentDomain, storeStatus }
                                                 {item.title}
                                             </h3>
                                             {isNext && (
-                                                <span className="rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] px-[var(--lb-space-2)] py-[2px] text-[10px] font-[var(--lb-font-weight-semibold)] uppercase tracking-[0.05em] text-white">
+                                                <span className="rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] px-[var(--lb-space-2)] py-[2px] text-[10px] font-[var(--lb-font-weight-semibold)] uppercase tracking-[0.05em] text-[color:var(--lb-color-text-inverse)]">
                                                     Up next
                                                 </span>
                                             )}
@@ -351,16 +601,24 @@ function HomeMetrics({ homeData }: { homeData: DashboardHomeData }) {
                     delta={formatPercentChange(homeData.ordersChangePct, 'last 30 days')}
                     deltaTone={toneFromChange(homeData.ordersChangePct)}
                 />
+                {/* Products and average order value replace the former Visitors and
+                    Conversion tiles. Both were permanently "Not tracked" — nothing
+                    fetches session analytics — while these two are already in the
+                    payload and were being discarded. */}
                 <MetricCard
-                    label="Visitors"
-                    value="Not tracked"
-                    delta="Needs storefront session analytics"
+                    label="Products"
+                    value={formatNumber(homeData.totalProducts)}
+                    delta={homeData.totalProducts === 0 ? 'Add your first product' : 'In your catalog'}
                     deltaTone="neutral"
                 />
                 <MetricCard
-                    label="Conversion"
-                    value="Not tracked"
-                    delta="Needs visitor and checkout funnel data"
+                    label="Average order"
+                    value={
+                        homeData.totalOrders === 0
+                            ? '—'
+                            : formatInrCurrency(homeData.avgOrderValue, { maximumFractionDigits: 0 }) || '₹0'
+                    }
+                    delta={homeData.totalOrders === 0 ? 'After your first order' : 'Across last 30 days'}
                     deltaTone="neutral"
                 />
             </div>
@@ -596,75 +854,6 @@ const SETUP_CONFIGS: Record<SiteType, SetupConfig> = {
     },
 }
 
-function PlanBanner({
-    store,
-    trialEndsAt,
-    trialStatus,
-}: {
-    store: string
-    trialEndsAt: string | null
-    trialStatus: string | null
-}) {
-    const router = useRouter()
-    const [dismissed, setDismissed] = useState(false)
-    const isOnTrial = Boolean(trialStatus === 'active' && trialEndsAt)
-
-    if (dismissed) return null
-
-    let bannerText = 'Get 3 months for ₹79/month.'
-    if (isOnTrial && trialEndsAt) {
-        const endDate = new Date(trialEndsAt)
-        const now = new Date()
-        const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
-        bannerText = `Get 3 months for ₹79/month. ${daysLeft} day${daysLeft !== 1 ? 's' : ''} left in trial.`
-    }
-
-    return (
-        <Banner
-            title="Intro plan available"
-            variant="warning"
-            action={
-                <div className="flex flex-wrap items-center justify-end gap-[var(--lb-space-2)]">
-                    <Button variant="secondary" onClick={() => router.push(`/${store}/access_account/checkout/select-plan`)}>
-                        Select a plan
-                    </Button>
-                    <Button aria-label="Dismiss plan banner" size="icon" variant="ghost" onClick={() => setDismissed(true)}>
-                        <MaterialIcon name="close" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
-                    </Button>
-                </div>
-            }
-        >
-            <p className="m-0">{bannerText}</p>
-        </Banner>
-    )
-}
-
-function PlanUpsell({ store }: { store: string }) {
-    const router = useRouter()
-
-    return (
-        <Card>
-            <Section>
-                <div className="grid items-center gap-[var(--lb-space-5)] md:grid-cols-[1fr_auto]">
-                    <div className="space-y-[var(--lb-space-2)]">
-                        <h2 className="m-0 text-[length:var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[color:var(--lb-color-text)]">
-                            Your plan can pay for itself
-                        </h2>
-                        <p className="m-0 max-w-[var(--lb-size-content-measure)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
-                            Subscribe for ₹79/month for 3 months. Plus, earn 0.5% back in credits on every sale, up to ₹30,000.
-                        </p>
-                        <Button variant="outline" onClick={() => router.push(`/${store}/access_account/checkout/select-plan`)}>
-                            Compare plans
-                        </Button>
-                    </div>
-                    <div className="flex h-[calc(var(--lb-size-control-lg)*2)] w-[calc(var(--lb-size-control-lg)*2)] items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-warning-soft)] text-[color:var(--lb-color-warning)]">
-                        <MaterialIcon name="monetization_on" className="h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)]" />
-                    </div>
-                </div>
-            </Section>
-        </Card>
-    )
-}
 
 function formatSiteType(siteType: SiteType) {
     return siteType

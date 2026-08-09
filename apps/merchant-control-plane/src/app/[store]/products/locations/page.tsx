@@ -251,7 +251,7 @@ export default function LocationsPage() {
             <PageHeader
                 title="Locations"
                 description="Manage warehouses, stores, and fulfilment centres where inventory is held."
-                breadcrumbs={[{ label: 'Products' }, { label: 'Locations' }]}
+                breadcrumbs={[{ label: 'Inventory' }, { label: 'Locations' }]}
                 primaryAction={{
                     label: 'Add location',
                     icon: <MaterialIcon name="add" />,

@@ -228,12 +228,20 @@ function toNavigationItems(store: string, item: MerchantNavItem): AppNavigationS
         id: `${item.path}:${child.path}`,
         label: child.label,
         href: `/${store}/${child.path}`,
+        exact: child.exact,
     }))
+
+    // A parent links only when it is a destination its children do not already
+    // own. Groups whose own path is literally one of their children (Money ->
+    // Billing, Content -> Pages) would otherwise render the same href twice in
+    // one nav, giving two rows the same accessible name.
+    const duplicatesAChild = (item.children ?? []).some((child) => child.path === item.path)
 
     return [{
         id: item.path,
         label: item.label,
-        href: children.length === 0 ? `/${store}/${item.path}` : undefined,
+        href: duplicatesAChild ? undefined : `/${store}/${item.path}`,
+        exact: item.exact,
         icon: <MaterialIcon name={item.icon} size={16} aria-hidden="true" />,
         children: children.length > 0 ? children : undefined,
     }]

@@ -8,6 +8,7 @@ import type {
     AnalyticsOrdersBreakdown,
     Order,
     Product,
+    StorePaymentConfig,
 } from '@letbuyy/api-client'
 
 /* ——————————————————————————————————————
@@ -126,9 +127,10 @@ async function loadSetupStatus(
 ): Promise<SetupStatus> {
     try {
         if (siteType === 'store') {
-            const [productsPayload, shippingZonesPayload] = await Promise.all([
+            const [productsPayload, shippingZonesPayload, paymentConfigPayload] = await Promise.all([
                 apiClient.products.list({ store_id: storeId, limit: 1 }).catch(() => null),
                 apiClient.shipping.zones.list({ store_id: storeId, limit: 1 }).catch(() => []),
+                apiClient.stores.paymentConfig.get(storeId).catch(() => null),
             ])
             const productsCount = productsPayload?.total || 0
             const shippingZones = Array.isArray(shippingZonesPayload) ? shippingZonesPayload : []
@@ -139,7 +141,7 @@ async function loadSetupStatus(
                 secondaryComplete: shippingCount > 0,
                 themeCustomized,
                 domainConfigured,
-                paymentConfigured: false,
+                paymentConfigured: isPaymentConfigured(paymentConfigPayload),
                 hasShipping: shippingCount > 0,
             }
         }
@@ -156,6 +158,28 @@ async function loadSetupStatus(
     } catch {
         return defaultSetupStatus(siteType, themeCustomized, domainConfigured)
     }
+}
+
+/**
+ * A store can take money if ANY of these hold:
+ *  - COD is on (India-first: needs no gateway credentials at all)
+ *  - online payments are on via the shared platform account (works out of the box)
+ *  - online payments are on via the merchant's own Razorpay, with the secret
+ *    stored AND verified — key_id alone is not enough to charge a card.
+ *
+ * Anything else (including an unreachable payment-config endpoint) is treated as
+ * not configured, so the checklist under-claims rather than over-claims.
+ */
+function isPaymentConfigured(config: StorePaymentConfig | null): boolean {
+    if (!config) return false
+    if (config.cod_enabled) return true
+    if (!config.online_payment_enabled) return false
+
+    const settings = config.payment_settings
+    if (settings?.mode === 'shared') return true
+
+    const razorpay = settings?.razorpay
+    return Boolean(razorpay?.secret_configured && razorpay?.verified)
 }
 
 function defaultSetupStatus(siteType: string, themeCustomized: boolean, domainConfigured: boolean): SetupStatus {
