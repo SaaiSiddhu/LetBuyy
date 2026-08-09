@@ -21,6 +21,7 @@ const requiredTestFiles = [
   "tests/operations/queue-bulk-cost.test.mjs",
   "tests/operations/queue-storm-controls.test.mjs",
   "tests/ci/ci-simulation.test.mjs",
+  "tests/ci/workflow-trigger-coverage.test.mjs",
   "tests/contracts/runtime-lifecycle-contract.test.mjs",
   "tests/contracts/manifest-lineage-governance.test.mjs",
   "tests/contracts/event-contracts.test.mjs",

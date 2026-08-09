@@ -1,14 +1,22 @@
 name: CI
 
+# Branch coverage is asserted by scripts/validators/workflow-trigger-coverage-validator.mjs.
+# `develop` is retired (see .github/BRANCH_STRATEGY.md) but is deliberately KEPT here as a
+# fail-safe: if the branch is ever recreated it stays gated by default. Removing it would
+# weaken an existing gate, which ART-02/R-18 forbid.
 on:
   pull_request:
     branches:
       - develop
       - main
+      - stepup/main
+      - codex/web-v1-integration
   push:
     branches:
       - develop
       - main
+      - stepup/main
+      - codex/web-v1-integration
 
 permissions:
   contents: read

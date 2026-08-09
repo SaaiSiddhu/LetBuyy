@@ -13,6 +13,7 @@ Enterprise dependency and execution hardening is enforced by:
 - `package-export-validator.mjs` for explicit package public APIs.
 - `supply-chain-validator.mjs` for npm/npx leakage prevention in governed execution paths.
 - `ci-simulation-validator.mjs` for required workflow and release-promotion gates.
+- `workflow-trigger-coverage-validator.mjs` for workflow trigger coverage: every governed branch is reached by the non-deploying CI lanes, no deploy-to-production workflow is reachable from an integration branch, and `architecture-governance.yml` aggregates every gate step instead of fail-fasting on the first one. It parses workflow YAML with a self-contained reader (no undeclared dependency). GitHub-side branch protection is outside the repository and stays UNVERIFIED here; see `.github/BRANCH_STRATEGY.md`.
 - `event-versioning-validator.mjs` for additive event evolution and deterministic outbox compatibility.
 - queue and deployment validators for rollback, checkpoint, and integrity hash contracts.
 - `queue-lifecycle-validator.mjs` for queue retry, dead-letter, poison-message, and recovery time governance.
