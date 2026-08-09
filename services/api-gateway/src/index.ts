@@ -6,6 +6,7 @@ import { apiVersioning } from './middleware/apiVersion';
 import { securityHeaders, inputValidation, requestId, errorResponseSanitizer, csrfProtection } from './middleware/security';
 import { protectedMutationIdempotency } from './middleware/idempotency';
 import { featureGate } from './middleware/featureFlags';
+import { appPlatformKillSwitch } from './middleware/appPlatformKillSwitch';
 import { observability } from './middleware/observability';
 import { internalPerimeter } from './middleware/internal-perimeter';
 import { AppError, formatAppError } from './lib/errors';
@@ -257,6 +258,8 @@ export interface Env {
     FEATURE_GRAPHQL?: string;
     FEATURE_EXTENSIONS?: string;
     FEATURE_LIQUID?: string;
+    /** ART-22 kill switch. ABSENT = app platform disabled. Do not set. */
+    FEATURE_APP_PLATFORM?: string;
     FEATURE_IDENTITY_PROVIDER?: string;
     FEATURE_OIDC_CLIENT?: string;
     FEATURE_NEW_SESSION_ENGINE?: string;
@@ -712,6 +715,15 @@ api.route('/contacts', contactsRouter);
 api.use('/storefront/graphql', graphQLFeatureGate);
 api.use('/graphql/storefront', graphQLFeatureGate);
 api.use('/storefront/:subdomain/checkout/extensions', extensionsFeatureGate);
+// ART-22 / ART-16 / NEVER-R3 hard gate — the third-party app platform is a frozen
+// seam, not a live capability. Fail-closed: unreachable unless FEATURE_APP_PLATFORM
+// is explicitly positive. Registered BEFORE the mounts below (Hono composes in
+// registration order) so it cannot be bypassed and cannot drift as routes are added.
+// Permanent removal of the implementation is Wave 1 and requires ARB approval.
+api.use('/app-store', appPlatformKillSwitch);
+api.use('/app-store/*', appPlatformKillSwitch);
+api.use('/app', appPlatformKillSwitch);
+api.use('/app/*', appPlatformKillSwitch);
 api.use('/app-store/installations/:id/extensions', extensionsFeatureGate);
 api.use('/app-store/installations/:id/extensions/:registrationId', extensionsFeatureGate);
 api.use('/app-store/apps/:id/oauth/authorize', appOAuthRateLimit);
