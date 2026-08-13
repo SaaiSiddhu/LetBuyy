@@ -1,23 +1,27 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import Link from '@/components/i18n/LocaleLink'
 import {
     Button,
     Check,
     Checkbox,
-    ChevronDown,
     Facebook,
-    Globe,
     Instagram,
     Linkedin,
-    Twitter,
     X,
     Youtube,
 } from '@letbuyy/ui'
 import BrandLogo from './BrandLogo'
+import { XMark } from './BrandGlyphs'
+import LanguageSwitcher from './i18n/LanguageSwitcher'
+import { getDictionaryForSegment } from '@/lib/i18n'
+import { localeFromPathname } from '@/lib/i18n/routing'
+import { usePathname } from 'next/navigation'
 import { getAssetPublicUrl } from '@/lib/public-urls'
+import { BRAND_PROFILES } from '@letbuyy/shared-types'
 import { getPlatformNavigationLinks } from '@/lib/platform-links'
+import { getAppDownloadTargets } from '@/lib/app-downloads'
 
 const platformLinks = getPlatformNavigationLinks()
 const platformHref = (label: string) => platformLinks.find((link) => link.label === label)?.href ?? '/'
@@ -44,40 +48,55 @@ const footerColumns = [
     {
         title: 'Resources',
         links: [
-            { label: 'Theme catalog', href: platformHref('Themes') },
-            { label: 'App categories', href: platformHref('Apps') },
-            { label: 'API reference', href: platformHref('Developers').replace(/\/docs$/, '/api-reference') },
-            { label: 'SDK docs', href: platformHref('Developers').replace(/\/docs$/, '/sdks') },
+            { label: 'All resources', href: '/resources' },
+            { label: 'Ecommerce guides', href: '/resources/ecommerce' },
+            { label: 'Developer docs', href: '/resources/developers' },
+            { label: 'Changelog', href: '/resources/changelog' },
         ],
     },
     {
         title: 'Support',
         links: [
-            { label: 'Developer webhooks', href: platformHref('Developers').replace(/\/docs$/, '/webhooks') },
+            { label: 'Contact us', href: '/contact' },
+            { label: 'Grievance redressal', href: '/legal/grievance' },
+            { label: 'Security', href: '/legal/security' },
             { label: 'Account access', href: platformHref('Log in') },
             { label: 'Public sitemap', href: '/sitemap' },
         ],
     },
 ]
 
+/* Every policy lives under /legal/<slug>; /legal is the index. The four here
+   are the ones people look for in a footer — the rest are one click deeper. */
 const legalLinks = [
-    { label: 'Terms of Service', href: '/terms' },
     { label: 'Legal', href: '/legal' },
-    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Terms', href: '/legal/terms' },
+    { label: 'Privacy', href: '/legal/privacy' },
+    { label: 'Refunds', href: '/legal/refunds' },
     { label: 'Sitemap', href: '/sitemap' },
 ]
 
+/* Built from BRAND_PROFILES so the handles live in one place — that registry
+   also feeds Organization.sameAs in the structured data, and a footer link
+   disagreeing with sameAs is exactly the kind of mismatch that weakens entity
+   recognition. Accounts with no URL yet are filtered out rather than linked to
+   a guessed handle. */
 const socialLinks = [
-    { label: 'Facebook', href: 'https://facebook.com/letbuyy', icon: Facebook },
-    { label: 'Twitter', href: 'https://x.com/letbuyy', icon: Twitter },
-    { label: 'Instagram', href: 'https://instagram.com/letbuyy', icon: Instagram },
-    { label: 'YouTube', href: 'https://youtube.com/@letbuyy', icon: Youtube },
-    { label: 'LinkedIn', href: 'https://linkedin.com/company/letbuyy', icon: Linkedin },
-]
+    { label: 'Facebook', href: BRAND_PROFILES.facebook, icon: Facebook },
+    { label: 'X', href: BRAND_PROFILES.x, icon: XMark },
+    { label: 'YouTube', href: BRAND_PROFILES.youtube, icon: Youtube },
+    { label: 'Instagram', href: BRAND_PROFILES.instagram, icon: Instagram },
+    { label: 'LinkedIn', href: BRAND_PROFILES.linkedin, icon: Linkedin },
+].filter(link => link.href)
 
 const privacyChoicesIconUrl = getAssetPublicUrl('/assets/legal/privacy-choices.svg')
 
 export default function Footer() {
+    const downloads = getAppDownloadTargets()
+    /* The footer is already a client component, so it reads the locale from
+       the pathname rather than threading a prop through every page. */
+    const pathname = usePathname()
+    const dict = getDictionaryForSegment(localeFromPathname(pathname).segment)
     const [privacyPanelOpen, setPrivacyPanelOpen] = useState(false)
     const [analyticsEnabled, setAnalyticsEnabled] = useState(false)
     const [personalizationEnabled, setPersonalizationEnabled] = useState(false)
@@ -102,9 +121,82 @@ export default function Footer() {
                 </h2>
 
                 <div className="footer-nav">
-                    <Link href="/" className="footer-mark" aria-label="LetBuyy home">
-                        <BrandLogo className="footer-logo-image" width={178} height={58} />
-                    </Link>
+                    <div className="footer-brand">
+                        <Link href="/" className="footer-mark" aria-label="LetBuyy home">
+                            <BrandLogo className="footer-logo-image" width={178} height={58} />
+                        </Link>
+
+                        <div className="footer-get-app">
+                            <p className="footer-get-app-label">Merchant app for Android</p>
+
+                            <div className="footer-get-app-row">
+                                {downloads.playStoreUrl ? (
+                                    <a
+                                        href={downloads.playStoreUrl}
+                                        className="app-badge app-badge-primary"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <span className="app-badge-icon" aria-hidden="true">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M3.6 2.3a1 1 0 0 0-.5.9v17.6a1 1 0 0 0 .5.9l9.3-9.7L3.6 2.3Zm10.7 8.1 2.9-3-9.8-5.6 6.9 8.6Zm0 3.2-6.9 8.6 9.8-5.6-2.9-3Zm1.4-1.6 3.4-1.9c.6-.4.6-1.4 0-1.8l-3.4-1.9-3.1 3.2 3.1 3.2Z" />
+                                            </svg>
+                                        </span>
+                                        <span className="app-badge-text">
+                                            <span className="app-badge-kicker">Get it on</span>
+                                            <span className="app-badge-name">Google Play</span>
+                                        </span>
+                                    </a>
+                                ) : (
+                                    <span className="app-badge app-badge-primary is-pending" aria-disabled="true">
+                                        <span className="app-badge-icon" aria-hidden="true">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M3.6 2.3a1 1 0 0 0-.5.9v17.6a1 1 0 0 0 .5.9l9.3-9.7L3.6 2.3Zm10.7 8.1 2.9-3-9.8-5.6 6.9 8.6Zm0 3.2-6.9 8.6 9.8-5.6-2.9-3Zm1.4-1.6 3.4-1.9c.6-.4.6-1.4 0-1.8l-3.4-1.9-3.1 3.2 3.1 3.2Z" />
+                                            </svg>
+                                        </span>
+                                        <span className="app-badge-text">
+                                            <span className="app-badge-kicker">Coming soon to</span>
+                                            <span className="app-badge-name">Google Play</span>
+                                        </span>
+                                    </span>
+                                )}
+
+                                {downloads.apkUrl ? (
+                                    <a href={downloads.apkUrl} className="app-badge" download>
+                                        <span className="app-badge-icon" aria-hidden="true">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M12 3v12m0 0 4-4m-4 4-4-4" />
+                                                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                                            </svg>
+                                        </span>
+                                        <span className="app-badge-text">
+                                            <span className="app-badge-kicker">Download</span>
+                                            <span className="app-badge-name">Android APK</span>
+                                        </span>
+                                    </a>
+                                ) : (
+                                    <span className="app-badge is-pending" aria-disabled="true">
+                                        <span className="app-badge-icon" aria-hidden="true">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M12 3v12m0 0 4-4m-4 4-4-4" />
+                                                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                                            </svg>
+                                        </span>
+                                        <span className="app-badge-text">
+                                            <span className="app-badge-kicker">Coming soon</span>
+                                            <span className="app-badge-name">Android APK</span>
+                                        </span>
+                                    </span>
+                                )}
+                            </div>
+
+                            {!downloads.available && (
+                                <p className="footer-get-app-note">
+                                    Launching with the private beta.
+                                </p>
+                            )}
+                        </div>
+                    </div>
 
                     <div className="footer-columns">
                         {footerColumns.map((column) => (
@@ -127,14 +219,8 @@ export default function Footer() {
                 <div className="footer-rule" aria-hidden="true" />
 
                 <div className="footer-meta">
-                    <div className="footer-region-row" aria-label="Region and language">
-                        <Button unstyled className="footer-region-button" type="button" aria-label="Change region and language">
-                            <Globe width={19} height={19} aria-hidden="true" />
-                            <span>India</span>
-                            <span className="footer-region-divider" aria-hidden="true" />
-                            <span>English</span>
-                            <ChevronDown width={18} height={18} aria-hidden="true" />
-                        </Button>
+                    <div className="footer-region-row" aria-label={dict.footer.regionAndLanguage}>
+                        <LanguageSwitcher dict={dict} />
                     </div>
 
                     <nav className="footer-legal-row" aria-label="Legal links">

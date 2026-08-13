@@ -1,11 +1,12 @@
 'use client'
 
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import Link from '@/components/i18n/LocaleLink'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { LucideIcon } from '@letbuyy/ui'
 import {
     ArrowLeft,
+    Award,
     BarChart3,
     Bot,
     Button,
@@ -23,18 +24,21 @@ import {
     Palette,
     Puzzle,
     Rocket,
+    RotateCcw,
     ShieldCheck,
-    ShoppingBag,
     Smartphone,
     Sparkles,
     Store,
     Tag,
-    ThemeToggleButton,
     Truck,
     Users,
     X,
 } from '@letbuyy/ui'
 import BrandLogo from './BrandLogo'
+import { getDictionaryForSegment } from '@/lib/i18n'
+import type { Dictionary } from '@/lib/i18n/dictionaries/en'
+import { localeFromPathname } from '@/lib/i18n/routing'
+import { usePathname } from 'next/navigation'
 import {
     getAccountsUrl,
     getAppMarketplaceUrl,
@@ -44,14 +48,16 @@ import {
 
 type DropdownKey = 'why' | 'products'
 
+type NavKey = 'whyLetbuyy' | 'products' | 'themes' | 'apps' | 'developers' | 'pricing'
+
 type NavLink =
     | {
-        label: string
+        labelKey: NavKey
         menu: DropdownKey
     }
     | {
         href: string
-        label: string
+        labelKey: NavKey
     }
 
 type MenuItem = {
@@ -70,33 +76,39 @@ const themeMarketplaceUrl = getThemeMarketplaceUrl('/themes')
 const appMarketplaceUrl = getAppMarketplaceUrl('/')
 const developerPortalUrl = getDeveloperPortalUrl('/docs')
 
+/* Labels are dictionary keys, not strings: this array is module-scope so it
+   cannot read the locale, and duplicating it per language would mean three
+   copies of the nav to keep in step. */
 const navLinks: NavLink[] = [
-    { label: 'Why LetBuyy', menu: 'why' },
-    { label: 'Products', menu: 'products' },
-    { href: themeMarketplaceUrl, label: 'Themes' },
-    { href: appMarketplaceUrl, label: 'Apps' },
-    { href: developerPortalUrl, label: 'Developers' },
-    { href: '#pricing', label: 'Pricing' },
+    { labelKey: 'whyLetbuyy', menu: 'why' },
+    { labelKey: 'products', menu: 'products' },
+    { href: themeMarketplaceUrl, labelKey: 'themes' },
+    { href: appMarketplaceUrl, labelKey: 'apps' },
+    { href: developerPortalUrl, labelKey: 'developers' },
+    { href: '#pricing', labelKey: 'pricing' },
 ]
+
+const whyIntro =
+    'LetBuyy is a simple way for Indian businesses to sell online — your shop, payments, orders and customers, all in one place.'
 
 const whyCards: MenuItem[] = [
     {
         href: '#how-it-works',
         icon: Rocket,
-        label: 'Launch fast',
-        description: 'Start with guided onboarding, store setup, domains, pages and publication readiness in one flow.',
+        label: 'Start selling today',
+        description: 'Pick a design, add your products, go live. No coding and no agency needed.',
     },
     {
         href: '#features',
         icon: IndianRupee,
-        label: 'India-first commerce',
-        description: 'Prepare COD, UPI, GST posture, payment readiness and fulfilment defaults for real merchants.',
+        label: 'Made for India',
+        description: 'Take UPI, cards and cash on delivery. GST bills are created for you on every order.',
     },
     {
         href: '#capabilities',
         icon: Store,
-        label: 'More than stores',
-        description: 'Build stores, blogs and landing pages from the same workspace.',
+        label: 'Everything in one place',
+        description: 'Products, orders, stock and customers together — no more juggling apps and sheets.',
     },
 ]
 
@@ -104,75 +116,96 @@ const whyBuiltIn: MenuItem[] = [
     {
         href: '#features',
         icon: CreditCard,
-        label: 'Checkout readiness',
-        description: 'Payment, order and policy setup stays connected to the storefront.',
+        label: 'Get paid on time',
+        description: 'Money reaches your bank account, and every payment and refund is tracked for you.',
+    },
+    {
+        href: '#features',
+        icon: Truck,
+        label: 'Deliver anywhere',
+        description: 'Ship across India with rates, pickup and tracking already set up.',
     },
     {
         href: '#features',
         icon: ShieldCheck,
-        label: 'Tenant-safe runtime',
-        description: 'Wildcard storefronts map back to governed site records and ownership checks.',
+        label: 'Safe and always open',
+        description: 'Your shop stays online round the clock, and customer details stay private.',
+    },
+    {
+        href: '#features',
+        icon: BarChart3,
+        label: 'Know what sells',
+        description: 'See daily sales, best products and repeat buyers in plain numbers.',
+    },
+    {
+        href: '#features',
+        icon: MessageCircle,
+        label: 'Sell on WhatsApp',
+        description: 'Share your shop and send order updates where your customers already are.',
     },
     {
         href: '#features',
         icon: Puzzle,
-        label: 'App and theme ecosystem',
-        description: 'Extend each store through marketplace surfaces instead of one-off code.',
+        label: 'Grow when ready',
+        description: 'Add new designs and features any time — nothing needs rebuilding.',
     },
 ]
 
 const productSections: MenuSection[] = [
     {
-        eyebrow: 'Build your website',
+        eyebrow: 'Build your shop',
         items: [
-            { href: '#capabilities', icon: LayoutDashboard, label: 'Store Builder' },
-            { href: themeMarketplaceUrl, icon: Palette, label: 'Themes' },
-            { href: '#features', icon: Globe, label: 'Domains' },
+            { href: '#capabilities', icon: LayoutDashboard, label: 'Shop Builder' },
+            { href: themeMarketplaceUrl, icon: Palette, label: 'Designs' },
+            { href: '#features', icon: Globe, label: 'Domain Name' },
             { href: '#capabilities', icon: FileText, label: 'Pages & Blogs' },
-            { href: '#features', icon: Users, label: 'Customer Accounts' },
+            { href: '#features', icon: Users, label: 'Customer Logins' },
         ],
     },
     {
         eyebrow: 'Sell anywhere',
         items: [
-            { href: '#features', icon: Store, label: 'Online Store' },
-            { href: '#features', icon: Smartphone, label: 'Mobile Commerce' },
-            { href: appMarketplaceUrl, icon: ShoppingBag, label: 'App Marketplace' },
-            { href: '#features', icon: Megaphone, label: 'Social & Marketplaces' },
-            { href: '#features', icon: Globe, label: 'Global + India-first' },
+            { href: '#features', icon: Store, label: 'Online Shop' },
+            { href: '#features', icon: Smartphone, label: 'Sell on Mobile' },
+            { href: '#features', icon: MessageCircle, label: 'WhatsApp Orders' },
+            { href: '#features', icon: Megaphone, label: 'Social Selling' },
+            { href: '#features', icon: Globe, label: 'India & Overseas' },
         ],
     },
     {
-        eyebrow: 'Marketing & analytics',
+        eyebrow: 'Bring in customers',
         items: [
             { href: '#features', icon: Megaphone, label: 'Campaigns' },
-            { href: '#features', icon: MessageCircle, label: 'Forms & Customer Chat' },
-            { href: '#pricing', icon: Tag, label: 'Discounts' },
-            { href: '#features', icon: BarChart3, label: 'Analytics' },
+            { href: '#features', icon: MessageCircle, label: 'Customer Chat' },
+            { href: '#pricing', icon: Tag, label: 'Discount Codes' },
+            { href: '#features', icon: Award, label: 'Gift Cards' },
+            { href: '#features', icon: BarChart3, label: 'Sales Reports' },
         ],
     },
     {
         eyebrow: 'Run your business',
         items: [
-            { href: '#features', icon: Package, label: 'Orders & Inventory' },
-            { href: '#features', icon: Truck, label: 'Shipping & Tax' },
+            { href: '#features', icon: Package, label: 'Orders & Stock' },
+            { href: '#features', icon: Truck, label: 'Shipping & GST' },
             { href: '#features', icon: Users, label: 'Customers' },
-            { href: '#features', icon: Bot, label: 'Workflow Automation' },
+            { href: '#features', icon: Bot, label: 'Auto Reminders' },
         ],
     },
     {
         eyebrow: 'Get paid',
         items: [
             { href: '#features', icon: CreditCard, label: 'Checkout' },
-            { href: '#features', icon: IndianRupee, label: 'Payments' },
+            { href: '#features', icon: IndianRupee, label: 'UPI, Cards & COD' },
+            { href: '#features', icon: FileText, label: 'GST Invoices' },
+            { href: '#features', icon: RotateCcw, label: 'Refunds & Returns' },
         ],
     },
     {
-        eyebrow: 'Customize & extend LetBuyy',
+        eyebrow: 'Make it your own',
         items: [
-            { href: themeMarketplaceUrl, icon: Palette, label: 'Theme Marketplace', description: 'Reusable storefront looks.' },
-            { href: appMarketplaceUrl, icon: Puzzle, label: 'App Marketplace', description: 'Install extension workflows.' },
-            { href: developerPortalUrl, icon: Code2, label: 'Developer Platform', description: 'APIs, webhooks and worker runtime.' },
+            { href: themeMarketplaceUrl, icon: Palette, label: 'Browse Designs', description: 'Ready-made looks for your shop.' },
+            { href: appMarketplaceUrl, icon: Puzzle, label: 'Browse Add-ons', description: 'Add new features in a click.' },
+            { href: developerPortalUrl, icon: Code2, label: 'For Developers', description: 'Build custom features with our tools.' },
         ],
     },
 ]
@@ -181,96 +214,147 @@ const productHighlights: MenuItem[] = [
     {
         href: '#features',
         icon: Sparkles,
-        label: 'LetBuyy Studio',
-        description: 'One workspace for site building, content, commerce and operations.',
+        label: 'One place for everything',
+        description: 'Build your shop, add products and handle daily work without switching apps.',
     },
     {
         href: '#features',
         icon: Bot,
-        label: 'AI operations',
-        description: 'Assistant-ready workflows for setup, catalog work and automation.',
+        label: 'AI that helps you',
+        description: 'Set up your shop and write product details in seconds, not hours.',
     },
     {
         href: '#features',
         icon: ShieldCheck,
-        label: 'Governed runtime',
-        description: 'Cloudflare API, tenant isolation and storefront routing stay aligned.',
+        label: 'Safe and reliable',
+        description: 'Your shop stays fast and online, and your business data stays private.',
     },
 ]
 
+/* Proof points for the Why panel footer. Each is verifiable against the
+   product, not a marketing round-number: 0% is the actual pricing commitment,
+   GST invoices are generated per order, and all three payment routes ship. */
+const whyProof = [
+    { value: '0%', label: 'commission on your sales' },
+    { value: 'GST', label: 'invoice on every order' },
+    { value: 'UPI · Cards · COD', label: 'ready from day one' },
+]
+
+/* Four rendered columns from six authored sections: "Get paid" rides under
+   "Run your business" so the panel is four columns wide rather than three
+   columns deep, which is what made the old one fill the viewport. */
+const productColumns: MenuSection[][] = [
+    [productSections[0]],
+    [productSections[1]],
+    [productSections[2]],
+    [productSections[3], productSections[4]],
+]
+
 function MenuIcon({ icon: Icon }: { icon: LucideIcon }) {
-    return <Icon width={24} height={24} aria-hidden="true" />
+    return <Icon width={17} height={17} aria-hidden="true" />
 }
 
 function DesktopWhyMenu({ closeMenu }: { closeMenu: () => void }) {
     return (
-        <div className="desktop-mega-layout desktop-mega-layout-why">
-            <div className="desktop-mega-feature-grid">
-                {whyCards.map((item) => (
-                    <Link key={item.label} href={item.href} className="desktop-mega-feature-card" onClick={closeMenu}>
-                        <div className="desktop-mega-feature-icon">
-                            <MenuIcon icon={item.icon} />
-                        </div>
-                        <span>{item.label}</span>
-                        <p>{item.description}</p>
-                    </Link>
-                ))}
+        <>
+            <div className="mega-lead">
+                <p className="mega-eyebrow">Why LetBuyy</p>
+                <p className="mega-lead-text">{whyIntro}</p>
             </div>
 
-            <aside className="desktop-mega-side">
-                <p className="desktop-mega-eyebrow">Built into every workspace</p>
-                <div className="desktop-mega-side-stack">
-                    {whyBuiltIn.map((item) => (
-                        <Link key={item.label} href={item.href} className="desktop-mega-side-item" onClick={closeMenu}>
-                            <MenuIcon icon={item.icon} />
-                            <span>
-                                <strong>{item.label}</strong>
-                                <small>{item.description}</small>
-                            </span>
-                        </Link>
+            <div className="mega-body mega-body-why">
+                <section className="mega-col">
+                    <p className="mega-eyebrow">Where it starts</p>
+                    <div className="mega-stack">
+                        {whyCards.map((item) => (
+                            <Link key={item.label} href={item.href} className="mega-item" onClick={closeMenu}>
+                                <span className="mega-item-icon">
+                                    <MenuIcon icon={item.icon} />
+                                </span>
+                                <span className="mega-item-text">
+                                    <strong>{item.label}</strong>
+                                    <small>{item.description}</small>
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="mega-col">
+                    <p className="mega-eyebrow">Included with every store</p>
+                    {/* Titles only. Six descriptions here made the panel taller
+                        than the three pillars beside it and left a void. */}
+                    <div className="mega-pair-grid">
+                        {whyBuiltIn.map((item) => (
+                            <Link key={item.label} href={item.href} className="mega-compact" onClick={closeMenu}>
+                                <span className="mega-item-icon">
+                                    <MenuIcon icon={item.icon} />
+                                </span>
+                                <span>{item.label}</span>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+            </div>
+
+            <div className="mega-foot">
+                <div className="mega-facts">
+                    {whyProof.map((fact) => (
+                        <span key={fact.value} className="mega-fact">
+                            <strong>{fact.value}</strong>
+                            <small>{fact.label}</small>
+                        </span>
                     ))}
                 </div>
-            </aside>
-        </div>
+                <Link href="#pricing" className="mega-foot-cta" onClick={closeMenu}>
+                    See pricing
+                    <ChevronRight width={14} height={14} aria-hidden="true" />
+                </Link>
+            </div>
+        </>
     )
 }
 
 function DesktopProductsMenu({ closeMenu }: { closeMenu: () => void }) {
     return (
         <>
-            <div className="desktop-mega-layout desktop-mega-layout-products">
-                <div className="desktop-mega-section-grid">
-                    {productSections.slice(0, 5).map((section) => (
-                        <div key={section.eyebrow} className="desktop-mega-section">
-                            <p className="desktop-mega-eyebrow">{section.eyebrow}</p>
-                            <div className="desktop-mega-link-list">
-                                {section.items.map((item) => (
-                                    <Link key={item.label} href={item.href} className="desktop-mega-link" onClick={closeMenu}>
-                                        <MenuIcon icon={item.icon} />
-                                        <span>{item.label}</span>
-                                    </Link>
-                                ))}
-                            </div>
+            <div className="mega-body mega-body-products">
+                <div className="mega-cols">
+                    {productColumns.map((column, index) => (
+                        <div key={index} className="mega-col">
+                            {column.map((section) => (
+                                <section key={section.eyebrow} className="mega-col-section">
+                                    <p className="mega-eyebrow">{section.eyebrow}</p>
+                                    <div className="mega-stack-tight">
+                                        {section.items.map((item) => (
+                                            <Link
+                                                key={item.label}
+                                                href={item.href}
+                                                className="mega-compact"
+                                                onClick={closeMenu}
+                                            >
+                                                <span className="mega-item-icon">
+                                                    <MenuIcon icon={item.icon} />
+                                                </span>
+                                                <span>{item.label}</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </section>
+                            ))}
                         </div>
                     ))}
                 </div>
 
-                <aside className="desktop-mega-side desktop-mega-products-side">
-                    <p className="desktop-mega-eyebrow">Non-stop platform work</p>
-                    <div className="desktop-mega-preview">
-                        <div className="desktop-mega-preview-orbit">
-                            <span />
-                            <span />
-                            <span />
-                        </div>
-                        <strong>LetBuyy releases</strong>
-                        <p>Theme engine, storefront runtime, API gateway and marketplace surfaces evolve together.</p>
-                    </div>
-                    <div className="desktop-mega-side-stack">
+                <aside className="mega-rail">
+                    <p className="mega-eyebrow">Built to keep up</p>
+                    <div className="mega-stack">
                         {productHighlights.map((item) => (
-                            <Link key={item.label} href={item.href} className="desktop-mega-side-item" onClick={closeMenu}>
-                                <MenuIcon icon={item.icon} />
-                                <span>
+                            <Link key={item.label} href={item.href} className="mega-item" onClick={closeMenu}>
+                                <span className="mega-item-icon">
+                                    <MenuIcon icon={item.icon} />
+                                </span>
+                                <span className="mega-item-text">
                                     <strong>{item.label}</strong>
                                     <small>{item.description}</small>
                                 </span>
@@ -280,13 +364,16 @@ function DesktopProductsMenu({ closeMenu }: { closeMenu: () => void }) {
                 </aside>
             </div>
 
-            <div className="desktop-mega-footer">
-                {productSections[5].items.map((item) => (
-                    <Link key={item.label} href={item.href} className="desktop-mega-footer-link" onClick={closeMenu}>
-                        <strong>{item.label}</strong>
-                        <span>{item.description}</span>
-                    </Link>
-                ))}
+            <div className="mega-foot">
+                <p className="mega-eyebrow mega-foot-eyebrow">Make it your own</p>
+                <div className="mega-foot-links">
+                    {productSections[5].items.map((item) => (
+                        <Link key={item.label} href={item.href} className="mega-foot-link" onClick={closeMenu}>
+                            <strong>{item.label}</strong>
+                            <small>{item.description}</small>
+                        </Link>
+                    ))}
+                </div>
             </div>
         </>
     )
@@ -295,9 +382,11 @@ function DesktopProductsMenu({ closeMenu }: { closeMenu: () => void }) {
 function MobileMainMenu({
     closeMenu,
     openPanel,
+    dict,
 }: {
     closeMenu: () => void
     openPanel: (panel: DropdownKey) => void
+    dict: Dictionary
 }) {
     return (
         <motion.div
@@ -308,25 +397,25 @@ function MobileMainMenu({
             exit={{ opacity: 0, x: -18 }}
             transition={{ duration: 0.22 }}
         >
-            <nav className="mobile-drawer-nav" aria-label="Mobile navigation">
+            <nav className="mobile-drawer-nav" aria-label={dict.nav.mobileNavigation}>
                 {navLinks.map((link) => {
                     if ('menu' in link) {
                         return (
                             <Button unstyled
-                                key={link.label}
+                                key={link.labelKey}
                                 type="button"
                                 className="mobile-drawer-link"
                                 onClick={() => openPanel(link.menu)}
                             >
-                                <span>{link.label}</span>
+                                <span>{dict.nav[link.labelKey]}</span>
                                 <ChevronRight width={34} height={34} aria-hidden="true" />
                             </Button>
                         )
                     }
 
                     return (
-                        <Link key={link.label} href={link.href} className="mobile-drawer-link" onClick={closeMenu}>
-                            <span>{link.label}</span>
+                        <Link key={link.labelKey} href={link.href} className="mobile-drawer-link" onClick={closeMenu}>
+                            <span>{dict.nav[link.labelKey]}</span>
                         </Link>
                     )
                 })}
@@ -335,7 +424,7 @@ function MobileMainMenu({
     )
 }
 
-function MobileWhyPanel({ closeMenu, goBack }: { closeMenu: () => void; goBack: () => void }) {
+function MobileWhyPanel({ closeMenu, goBack, dict }: { closeMenu: () => void; goBack: () => void; dict: Dictionary }) {
     return (
         <motion.div
             key="mobile-why"
@@ -347,13 +436,17 @@ function MobileWhyPanel({ closeMenu, goBack }: { closeMenu: () => void; goBack: 
         >
             <Button unstyled type="button" className="mobile-panel-back" onClick={goBack}>
                 <ArrowLeft width={24} height={24} aria-hidden="true" />
-                <span>Back</span>
+                <span>{dict.nav.back}</span>
             </Button>
+
+            <p className="mobile-panel-intro">{whyIntro}</p>
 
             <div className="mobile-card-stack">
                 {whyCards.map((item) => (
                     <Link key={item.label} href={item.href} className="mobile-feature-card" onClick={closeMenu}>
-                        <MenuIcon icon={item.icon} />
+                        <span className="mobile-link-icon">
+                            <MenuIcon icon={item.icon} />
+                        </span>
                         <span>
                             <strong>{item.label}</strong>
                             <small>{item.description}</small>
@@ -362,11 +455,13 @@ function MobileWhyPanel({ closeMenu, goBack }: { closeMenu: () => void; goBack: 
                 ))}
             </div>
 
-            <p className="mobile-panel-eyebrow">Built into every workspace</p>
+            <p className="mobile-panel-eyebrow">Included with every store</p>
             <div className="mobile-mini-grid">
                 {whyBuiltIn.map((item) => (
                     <Link key={item.label} href={item.href} className="mobile-mini-card" onClick={closeMenu}>
-                        <MenuIcon icon={item.icon} />
+                        <span className="mobile-link-icon">
+                            <MenuIcon icon={item.icon} />
+                        </span>
                         <strong>{item.label}</strong>
                         <span>{item.description}</span>
                     </Link>
@@ -376,7 +471,7 @@ function MobileWhyPanel({ closeMenu, goBack }: { closeMenu: () => void; goBack: 
     )
 }
 
-function MobileProductsPanel({ closeMenu, goBack }: { closeMenu: () => void; goBack: () => void }) {
+function MobileProductsPanel({ closeMenu, goBack, dict }: { closeMenu: () => void; goBack: () => void; dict: Dictionary }) {
     return (
         <motion.div
             key="mobile-products"
@@ -388,17 +483,25 @@ function MobileProductsPanel({ closeMenu, goBack }: { closeMenu: () => void; goB
         >
             <Button unstyled type="button" className="mobile-panel-back" onClick={goBack}>
                 <ArrowLeft width={24} height={24} aria-hidden="true" />
-                <span>Back</span>
+                <span>{dict.nav.back}</span>
             </Button>
 
             <div className="mobile-section-stack">
                 {productSections.map((section) => (
                     <section key={section.eyebrow} className="mobile-menu-section">
                         <p className="mobile-panel-eyebrow">{section.eyebrow}</p>
-                        <div className="mobile-panel-link-list">
+                        <div
+                            className={
+                                section.items.some((item) => item.description)
+                                    ? 'mobile-panel-link-list is-detailed'
+                                    : 'mobile-panel-link-list'
+                            }
+                        >
                             {section.items.map((item) => (
                                 <Link key={item.label} href={item.href} className="mobile-panel-link" onClick={closeMenu}>
-                                    <MenuIcon icon={item.icon} />
+                                    <span className="mobile-link-icon">
+                                        <MenuIcon icon={item.icon} />
+                                    </span>
                                     <span>
                                         <strong>{item.label}</strong>
                                         {item.description ? <small>{item.description}</small> : null}
@@ -413,11 +516,150 @@ function MobileProductsPanel({ closeMenu, goBack }: { closeMenu: () => void; goB
     )
 }
 
+/* Hover timings. 90ms of intent stops the panel flashing open as the cursor
+   crosses a trigger on its way somewhere else; 180ms of grace covers the
+   diagonal from trigger to panel without the panel vanishing mid-move. */
+const OPEN_DELAY_MS = 90
+const CLOSE_DELAY_MS = 180
+
+/* Panel widths, in JS because the anchor maths needs the number before the
+   element exists. Clamped to the viewport at measure time. */
+const MENU_WIDTH: Record<DropdownKey, number> = { why: 780, products: 1080 }
+const MENU_MARGIN = 20
+/* Panel padding (20) minus the trigger's own inline padding (~8), so the
+   panel's first column of text sits under the trigger's label. */
+const MENU_TEXT_INSET = 12
+
 export default function Header() {
+    const pathname = usePathname()
+    const dict = getDictionaryForSegment(localeFromPathname(pathname).segment)
     const [scrolled, setScrolled] = useState(false)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [activeDesktopMenu, setActiveDesktopMenu] = useState<DropdownKey | null>(null)
     const [mobilePanel, setMobilePanel] = useState<DropdownKey | null>(null)
+    const [megaBox, setMegaBox] = useState<{ left: number; width: number } | null>(null)
+
+    const hoverTimer = useRef<number | null>(null)
+    /* Measured off the nav by data attribute rather than per-trigger refs:
+       @letbuyy/ui Button does not forward a ref, and adding one there would
+       change a shared component for a layout detail local to this header. */
+    const navRef = useRef<HTMLElement | null>(null)
+    /* Hover only drives the menu where a real pointer exists. On touch the
+       trigger stays a plain toggle, or the panel would open on first tap and
+       the link underneath would never be reachable. */
+    const pointerIsFine = useRef(false)
+
+    useEffect(() => {
+        const query = window.matchMedia('(hover: hover) and (pointer: fine)')
+        const sync = () => {
+            pointerIsFine.current = query.matches
+        }
+        sync()
+        query.addEventListener('change', sync)
+        return () => query.removeEventListener('change', sync)
+    }, [])
+
+    const clearHoverTimer = useCallback(() => {
+        if (hoverTimer.current !== null) {
+            window.clearTimeout(hoverTimer.current)
+            hoverTimer.current = null
+        }
+    }, [])
+
+    useEffect(() => clearHoverTimer, [clearHoverTimer])
+
+    /* Hang the panel's left edge under the trigger's left edge, offset by the
+       difference in horizontal padding so the first column's text lines up
+       with the trigger's label rather than with the panel's outer edge.
+
+       Centring on the trigger was tried first and is wrong here: the nav is
+       left-aligned and these panels are 780-1080px wide, so every centred
+       position clamped to the viewport margin and the anchor did nothing. */
+    const measureMenu = useCallback((menu: DropdownKey) => {
+        const trigger = navRef.current?.querySelector<HTMLElement>(`[data-menu="${menu}"]`)
+        if (!trigger) return
+
+        const rect = trigger.getBoundingClientRect()
+        const width = Math.min(MENU_WIDTH[menu], window.innerWidth - MENU_MARGIN * 2)
+        const preferred = rect.left - MENU_TEXT_INSET
+        const left = Math.max(
+            MENU_MARGIN,
+            Math.min(preferred, window.innerWidth - width - MENU_MARGIN),
+        )
+
+        setMegaBox({ left, width })
+    }, [])
+
+    const openDesktopMenu = useCallback(
+        (menu: DropdownKey) => {
+            clearHoverTimer()
+            measureMenu(menu)
+            setMobileMenuOpen(false)
+            setMobilePanel(null)
+            setActiveDesktopMenu(menu)
+        },
+        [clearHoverTimer, measureMenu],
+    )
+
+    const scheduleClose = useCallback(() => {
+        clearHoverTimer()
+        hoverTimer.current = window.setTimeout(() => {
+            setActiveDesktopMenu(null)
+        }, CLOSE_DELAY_MS)
+    }, [clearHoverTimer])
+
+    const handleTriggerEnter = useCallback(
+        (menu: DropdownKey) => {
+            if (!pointerIsFine.current) return
+            clearHoverTimer()
+
+            /* Moving between triggers switches with no delay — the intent was
+               already established by the panel being open. */
+            if (activeDesktopMenu) {
+                openDesktopMenu(menu)
+                return
+            }
+
+            hoverTimer.current = window.setTimeout(() => openDesktopMenu(menu), OPEN_DELAY_MS)
+        },
+        [activeDesktopMenu, clearHoverTimer, openDesktopMenu],
+    )
+
+    const handlePointerLeave = useCallback(() => {
+        if (!pointerIsFine.current) return
+        scheduleClose()
+    }, [scheduleClose])
+
+    /* The anchor is viewport-relative, so a resize invalidates it. */
+    useEffect(() => {
+        if (!activeDesktopMenu) return
+        const remeasure = () => measureMenu(activeDesktopMenu)
+        window.addEventListener('resize', remeasure)
+        return () => window.removeEventListener('resize', remeasure)
+    }, [activeDesktopMenu, measureMenu])
+
+    /* Authoritative close: while a panel is open, anything the pointer moves
+       onto that is neither the panel nor a trigger schedules the dismiss.
+       The element-level onPointerLeave stays because it responds a frame
+       sooner, but it cannot be the only mechanism — React derives leave from
+       pointerout's relatedTarget, and Next renders <body> as a React element,
+       so moving onto empty page background does not reliably produce one. */
+    useEffect(() => {
+        if (!activeDesktopMenu) return
+
+        const handlePointerOver = (event: PointerEvent) => {
+            if (!pointerIsFine.current) return
+            const target = event.target as Element | null
+            if (target?.closest('.desktop-mega') || target?.closest('[data-menu]')) {
+                clearHoverTimer()
+                return
+            }
+            scheduleClose()
+        }
+
+        document.addEventListener('pointerover', handlePointerOver)
+        return () => document.removeEventListener('pointerover', handlePointerOver)
+    }, [activeDesktopMenu, clearHoverTimer, scheduleClose])
 
     useEffect(() => {
         const handleScroll = () => {
@@ -467,6 +709,7 @@ export default function Header() {
     }, [])
 
     const closeAllMenus = () => {
+        clearHoverTimer()
         setActiveDesktopMenu(null)
         setMobileMenuOpen(false)
         setMobilePanel(null)
@@ -481,9 +724,15 @@ export default function Header() {
         setMobileMenuOpen(true)
     }
 
+    /* Still a real toggle: this is the path for touch, for keyboard Enter and
+       Space, and for anyone who clicks out of habit. */
     const toggleDesktopMenu = (menu: DropdownKey) => {
-        setMobileMenuOpen(false)
-        setActiveDesktopMenu((current) => (current === menu ? null : menu))
+        clearHoverTimer()
+        if (activeDesktopMenu === menu) {
+            setActiveDesktopMenu(null)
+            return
+        }
+        openDesktopMenu(menu)
     }
 
     const menuOpen = Boolean(activeDesktopMenu) || mobileMenuOpen
@@ -501,56 +750,64 @@ export default function Header() {
                         <BrandLogo className="header-logo-image" width={152} height={49} priority />
                     </Link>
 
-                    <nav className="header-nav" aria-label="Main navigation">
+                    <nav className="header-nav" aria-label={dict.nav.mainNavigation} ref={navRef}>
                         {navLinks.map((link) => {
                             if ('menu' in link) {
                                 const expanded = activeDesktopMenu === link.menu
 
                                 return (
                                     <Button unstyled
-                                        key={link.label}
+                                        key={link.labelKey}
+                                        data-menu={link.menu}
                                         type="button"
                                         className={`header-nav-link ${expanded ? 'active' : ''}`}
                                         aria-expanded={expanded}
                                         aria-controls={`desktop-mega-${link.menu}`}
                                         onClick={() => toggleDesktopMenu(link.menu)}
+                                        onPointerEnter={() => handleTriggerEnter(link.menu)}
+                                        onPointerLeave={handlePointerLeave}
                                     >
-                                        <span>{link.label}</span>
+                                        <span>{dict.nav[link.labelKey]}</span>
                                         <ChevronDown className="header-nav-chevron" width={15} height={15} aria-hidden="true" />
                                     </Button>
                                 )
                             }
 
                             return (
-                                <Link key={link.label} href={link.href} className="header-nav-link" onClick={closeAllMenus}>
-                                    <span>{link.label}</span>
+                                <Link
+                                    key={link.labelKey}
+                                    href={link.href}
+                                    className="header-nav-link"
+                                    onClick={closeAllMenus}
+                                    /* Pointing at a sibling link dismisses an open
+                                       panel, same as leaving the nav entirely. */
+                                    onPointerEnter={handlePointerLeave}
+                                >
+                                    <span>{dict.nav[link.labelKey]}</span>
                                 </Link>
                             )
                         })}
                     </nav>
 
                     <div className="header-actions">
-                        <ThemeToggleButton label="Toggle marketing theme" className="hidden lg:inline-flex" />
                         <Link href={loginUrl} className="btn btn-ghost" onClick={closeAllMenus}>
-                            Log in
+                            {dict.nav.logIn}
                         </Link>
                         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                             <Link href={signupUrl} className="btn btn-primary" onClick={closeAllMenus}>
-                                Start for free
+                                {dict.nav.startForFree}
                             </Link>
                         </motion.div>
                     </div>
 
                     <Link href={signupUrl} className="mobile-start-link" onClick={closeAllMenus}>
-                        Start for free
+                        {dict.nav.startForFree}
                     </Link>
-
-                    <ThemeToggleButton label="Toggle marketing theme" className="inline-flex lg:hidden" />
 
                     <Button unstyled
                         className="mobile-menu-btn"
                         onClick={mobileMenuOpen ? closeAllMenus : openMobileMenu}
-                        aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+                        aria-label={mobileMenuOpen ? dict.nav.closeMenu : dict.nav.openMenu}
                         aria-expanded={mobileMenuOpen}
                     >
                         <span className={`hamburger ${mobileMenuOpen ? 'open' : ''}`} />
@@ -564,12 +821,23 @@ export default function Header() {
                         key={activeDesktopMenu}
                         id={`desktop-mega-${activeDesktopMenu}`}
                         className="desktop-mega"
-                        initial={{ opacity: 0, y: -12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        transition={{ duration: 0.22 }}
+                        data-menu={activeDesktopMenu}
+                        style={
+                            megaBox
+                                ? { left: `${megaBox.left}px`, width: `${megaBox.width}px` }
+                                : undefined
+                        }
+                        initial={{ opacity: 0, y: -10, scale: 0.985 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -6, scale: 0.99 }}
+                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                        onPointerEnter={clearHoverTimer}
+                        onPointerLeave={handlePointerLeave}
+                        /* Keyboard users tab into the panel; that must not be
+                           treated as the pointer having left it. */
+                        onFocusCapture={clearHoverTimer}
                     >
-                        <div className="container desktop-mega-inner">
+                        <div className="desktop-mega-card">
                             {activeDesktopMenu === 'why' ? (
                                 <DesktopWhyMenu closeMenu={closeAllMenus} />
                             ) : (
@@ -590,16 +858,16 @@ export default function Header() {
                         transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] }}
                         role="dialog"
                         aria-modal="true"
-                        aria-label="Mobile navigation"
+                        aria-label={dict.nav.mobileNavigation}
                     >
                         <div className="mobile-drawer-header">
                             <Link href="/" className="mobile-drawer-logo" onClick={closeAllMenus}>
                                 <BrandLogo className="mobile-drawer-logo-image" width={152} height={49} />
                             </Link>
                             <Link href={signupUrl} className="mobile-drawer-start" onClick={closeAllMenus}>
-                                Start for free
+                                {dict.nav.startForFree}
                             </Link>
-                            <Button unstyled className="mobile-drawer-close" onClick={closeAllMenus} aria-label="Close menu">
+                            <Button unstyled className="mobile-drawer-close" onClick={closeAllMenus} aria-label={dict.nav.closeMenu}>
                                 <X width={24} height={24} aria-hidden="true" />
                             </Button>
                         </div>
@@ -607,11 +875,11 @@ export default function Header() {
                         <div className="mobile-drawer-content">
                             <AnimatePresence mode="wait">
                                 {mobilePanel === 'why' ? (
-                                    <MobileWhyPanel closeMenu={closeAllMenus} goBack={() => setMobilePanel(null)} />
+                                    <MobileWhyPanel closeMenu={closeAllMenus} goBack={() => setMobilePanel(null)} dict={dict} />
                                 ) : mobilePanel === 'products' ? (
-                                    <MobileProductsPanel closeMenu={closeAllMenus} goBack={() => setMobilePanel(null)} />
+                                    <MobileProductsPanel closeMenu={closeAllMenus} goBack={() => setMobilePanel(null)} dict={dict} />
                                 ) : (
-                                    <MobileMainMenu closeMenu={closeAllMenus} openPanel={setMobilePanel} />
+                                    <MobileMainMenu closeMenu={closeAllMenus} openPanel={setMobilePanel} dict={dict} />
                                 )}
                             </AnimatePresence>
                         </div>
@@ -622,14 +890,14 @@ export default function Header() {
                                 className="btn btn-ghost btn-block"
                                 onClick={closeAllMenus}
                             >
-                                Log in
+                                {dict.nav.logIn}
                             </Link>
                             <Link
                                 href={signupUrl}
                                 className="btn btn-primary btn-block"
                                 onClick={closeAllMenus}
                             >
-                                Start for free
+                                {dict.nav.startForFree}
                             </Link>
                         </div>
                     </motion.div>

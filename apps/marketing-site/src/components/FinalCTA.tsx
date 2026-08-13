@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import Link from '@/components/i18n/LocaleLink'
 import { motion } from 'framer-motion'
 import { getAccountsUrl } from '@/lib/public-urls'
 
@@ -35,7 +35,7 @@ export default function FinalCTA() {
                             </Link>
                         </motion.div>
                         <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-                            <Link href="#demo" className="btn btn-outline btn-large">
+                            <Link href="/demo" className="btn btn-outline btn-large">
                                 Request Demo
                             </Link>
                         </motion.div>

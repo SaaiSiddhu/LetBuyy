@@ -113,10 +113,18 @@ export const BRAND_PROFILES = {
   /** Step 1 — Crunchbase organization URL (https://www.crunchbase.com/organization/letbuyy). */
   crunchbase: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS
   linkedin: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS e.g. https://www.linkedin.com/company/letbuyy
-  instagram: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS e.g. https://www.instagram.com/letbuyy
-  x: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS e.g. https://x.com/letbuyy
-  youtube: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS
-  facebook: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS
+  /* Confirmed accounts. Share-tracking parameters (?igsh=, ?si=) are stripped
+     deliberately: those tokens belong to whoever copied the link, and leaving
+     them in would attribute every visitor from the site to that one share. The
+     bare profile URL resolves identically and is what `sameAs` should carry. */
+  instagram: 'https://www.instagram.com/letbuyyhq',
+  x: 'https://x.com/letbuyyhq',
+  youtube: 'https://youtube.com/@letbuyyhq',
+  /* A /share/ permalink rather than a vanity URL — that is what the page
+     currently issues. Replace with https://www.facebook.com/<name> once a
+     username is claimed; a canonical profile URL is a stronger `sameAs`
+     signal than a redirect. */
+  facebook: 'https://www.facebook.com/share/14tEGNoJSXR/',
   github: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS e.g. https://github.com/letbuyy
   producthunt: '', // HUMAN-REQUIRED: SKIP-BRAND-LEGAL-FACTS Step 4 launch URL
 } as const;

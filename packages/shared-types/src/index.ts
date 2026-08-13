@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export * from './brand';
+export * from './contact';
 export * from './app-platform';
 export * from './foundation-execution-contracts';
 export {
@@ -1031,6 +1032,9 @@ export const CustomDomainHealthSchema = z.object({
   txt_verified: z.boolean(),
   cname_verified: z.boolean(),
   ssl_active: z.boolean(),
+  // DNS host detected live from the apex nameservers (e.g. "Cloudflare", "GoDaddy").
+  // Re-detected on every health check so a registrar/NS change is reflected, not stale.
+  provider: z.string().max(120).nullable().optional(),
   provider_status: z.enum(['configured', 'unavailable']).default('configured'),
   configured_by: z.string().max(255).optional().nullable(),
   misconfigured: z.boolean().default(false),
