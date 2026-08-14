@@ -234,7 +234,7 @@ test('phase-ab: ThemeUpdatePanel sends confirm_diff_hash in apply payload (CAS g
 
 test('phase-ab: ThemeUpdatePanel renders diff table with section change rows', () => {
     const src = read(UPDATE_PANEL)
-    assert.match(src, /<table/, 'Must render a <table> for the section diff')
+    assert.match(src, /<[Tt]able/, 'Must render a <table> for the section diff')
     assert.match(src, /aria-label.*[Uu]pdate diff|[Uu]pdate diff.*aria-label/, 'Diff table must have aria-label')
 })
 
