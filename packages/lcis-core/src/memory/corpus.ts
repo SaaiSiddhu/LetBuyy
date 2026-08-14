@@ -246,7 +246,11 @@ export function loadCorpus(repoRoot: string, memoryIntelJson: string): CorpusRes
   }
 
   // ── 7. DECISIONS + MIGRATIONS from memory-intel.json ────────────────────
-  const intel: RawMemoryIntel = JSON.parse(memoryIntelJson) as RawMemoryIntel;
+  let intel: RawMemoryIntel = JSON.parse(memoryIntelJson) as RawMemoryIntel;
+  if ((!intel.decisions || intel.decisions.length === 0) && (!intel.migrations || intel.migrations.length === 0)) {
+    intel = extractFallbackMemoryIntel(repoRoot);
+    memoryIntelJson = JSON.stringify(intel);
+  }
   docs.push(...buildDecisionDocs(intel.decisions));
   docs.push(...buildMigrationDocs(intel.migrations));
 
@@ -255,4 +259,129 @@ export function loadCorpus(repoRoot: string, memoryIntelJson: string): CorpusRes
   const memoryIntelHash = sha256Prefix(memoryIntelJson, 12);
 
   return { documents: docs, latestMigrationN, memoryIntelHash };
+}
+
+const DECISION_SOURCES: Array<[string, string]> = [
+  ['governance', 'GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md'],
+  ['governance', 'GOVERNANCE_REWRITE_2026_06_10/LETBUYY_AGENTS_V2.md'],
+  ['architecture', 'GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md'],
+  ['architecture', 'GOVERNANCE_REWRITE_2026_06_10/LETBUYY_FINAL_ARCHITECTURE_SCORECARD.md'],
+  ['governance', 'AGENTS.md'],
+  ['architecture', 'CLAUDE.md'],
+  ['governance', 'docs/governance/skipped-human-decisions.md'],
+];
+
+const DECISION_DIRS: Array<[string, string]> = [
+  ['architecture', 'docs/architecture'],
+  ['governance', 'docs/governance'],
+  ['security', 'docs/security'],
+];
+
+const SUBTYPE_PATTERNS: Array<[RegExp, string]> = [
+  [/refund|return/i, 'refund'],
+  [/payout|settlement|commission/i, 'payout'],
+  [/payment|razorpay|cod|ledger|money|gift.?card/i, 'payment'],
+  [/migration|db push|sql/i, 'migration'],
+  [/rls|tenant|site_id|isolation/i, 'security'],
+  [/auth|session|jwt|oauth|identity|step.?up/i, 'security'],
+  [/theme|liquid|sanitiz/i, 'theme'],
+  [/storefront|checkout|cart/i, 'storefront'],
+];
+
+function resolveSubtype(text: string, fallback: string): string {
+  for (const [re, t] of SUBTYPE_PATTERNS) {
+    if (re.test(text)) return t;
+  }
+  return fallback;
+}
+
+const RULE_REGEX = /\b(MUST|MUST NOT|NEVER|ALWAYS|SHALL|REQUIRED|FORBIDDEN|forbid|enforced|do not|cannot|may only|only via|supreme law)\b/;
+
+function parseDocDecisions(type: string, rel: string, repoRoot: string): RawDecision[] {
+  const filePath = join(repoRoot, rel);
+  if (!existsSync(filePath)) return [];
+  let lines: string[];
+  try {
+    lines = readFileSync(filePath, 'utf8').split('\n');
+  } catch {
+    return [];
+  }
+  const out: RawDecision[] = [];
+  let section = '';
+  for (const rawLine of lines) {
+    const l = rawLine.trim();
+    if (/^#{1,4}\s+/.test(l)) {
+      section = l.replace(/^#+\s+/, '').slice(0, 90);
+      continue;
+    }
+    if (l.length < 16 || l.length > 320) continue;
+    if (RULE_REGEX.test(l)) {
+      const rule = l.replace(/^[-*>\s]+/, '').replace(/\*\*/g, '').slice(0, 240);
+      out.push({
+        id: '',
+        type: resolveSubtype(section + ' ' + l, type),
+        source: rel,
+        section,
+        rule,
+      });
+    }
+  }
+  return out;
+}
+
+export function extractFallbackMemoryIntel(repoRoot: string): RawMemoryIntel {
+  const decisions: RawDecision[] = [];
+  const seen = new Set<string>();
+  const push = (type: string, rel: string) => {
+    for (const d of parseDocDecisions(type, rel, repoRoot)) {
+      const k = d.rule.toLowerCase().slice(0, 80);
+      if (seen.has(k)) continue;
+      seen.add(k);
+      decisions.push(d);
+    }
+  };
+
+  const sources: string[] = [];
+  for (const [type, rel] of DECISION_SOURCES) {
+    if (existsSync(join(repoRoot, rel))) {
+      sources.push(rel);
+      push(type, rel);
+    }
+  }
+  for (const [type, dir] of DECISION_DIRS) {
+    const full = join(repoRoot, dir);
+    if (existsSync(full)) {
+      for (const e of readdirSync(full, { withFileTypes: true })) {
+        if (e.isFile() && /\.md$/.test(e.name)) {
+          const rel = join(dir, e.name);
+          sources.push(rel);
+          push(type, rel);
+        }
+      }
+    }
+  }
+
+  const migDir = join(repoRoot, 'database', 'supabase', 'migrations');
+  const migrations: RawMigration[] = existsSync(migDir)
+    ? readdirSync(migDir)
+        .filter((f) => /^\d+.*\.sql$/.test(f))
+        .sort((a, b) => (parseInt(a, 10) || 0) - (parseInt(b, 10) || 0))
+        .map((f) => {
+          const n = parseInt(f, 10) || 0;
+          const name = f.replace(/^\d+_/, '').replace(/\.sql$/, '').replace(/_/g, ' ');
+          return {
+            n,
+            file: f,
+            name,
+            type: resolveSubtype(name, 'migration'),
+            decision: `migration ${n}: ${name}`,
+          };
+        })
+    : [];
+
+  decisions.forEach((d, i) => {
+    d.id = `D-${String(i + 1).padStart(3, '0')}`;
+  });
+
+  return { decisions, migrations };
 }

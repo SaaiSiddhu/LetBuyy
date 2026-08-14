@@ -11,7 +11,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { findRepoRoot } from '../runtime/paths';
 import { buildBM25Index, scoreQuery, tokenize, type BM25Index } from './bm25';
-import { loadCorpus } from './corpus';
+import { extractFallbackMemoryIntel, loadCorpus } from './corpus';
 import type {
   Citation,
   ContextPack,
@@ -81,9 +81,15 @@ export class MemoryService {
     if (this.index !== null) return;
 
     const memoryIntelPath = join(this.repoRoot, 'graphify-out', 'memory-intel.json');
-    const memoryIntelJson = existsSync(memoryIntelPath)
-      ? readFileSync(memoryIntelPath, 'utf8')
-      : JSON.stringify({ decisions: [], migrations: [] });
+    let memoryIntelJson: string;
+    let intel: RawMemoryIntel;
+    if (existsSync(memoryIntelPath)) {
+      memoryIntelJson = readFileSync(memoryIntelPath, 'utf8');
+      intel = JSON.parse(memoryIntelJson) as RawMemoryIntel;
+    } else {
+      intel = extractFallbackMemoryIntel(this.repoRoot);
+      memoryIntelJson = JSON.stringify(intel);
+    }
 
     const { documents, latestMigrationN, memoryIntelHash } = loadCorpus(
       this.repoRoot,
@@ -102,7 +108,6 @@ export class MemoryService {
     this.docMap = docMap;
 
     // Build decisions map
-    const intel = JSON.parse(memoryIntelJson) as RawMemoryIntel;
     const decisionsMap = new Map<string, Decision>();
     for (const d of intel.decisions) {
       const dec: Decision = {

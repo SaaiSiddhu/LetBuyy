@@ -165,7 +165,7 @@ class SubscriptionService {
           'Subscription payment verification requires Razorpay signature payload.',
         );
       }
-      return createSubscriptionOrder(storeId: storeId, plan: newPlan);
+      return await createSubscriptionOrder(storeId: storeId, plan: newPlan);
     } catch (e) {
       debugPrint('Error upgrading subscription: $e');
       rethrow;
