@@ -13,7 +13,7 @@ import {
 
 const reporter = createReporter("Provider isolation validator");
 const files = [...new Set([...getTrackedFiles(), ...listWorkspaceFiles()])].sort();
-const allowedProviderRoots = new Set(["packages/infrastructure"]);
+const allowedProviderRoots = new Set(["packages/infrastructure", "packages/lcis-adapters"]);
 
 const providerPackagePrefixes = [
   "@supabase/supabase-js",
