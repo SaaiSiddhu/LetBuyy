@@ -234,16 +234,19 @@ async function loadPageData(searchParams: SearchParams): Promise<DevelopersPageD
 // Page
 // ---------------------------------------------------------------------------
 
+type PageProps = {
+    searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
 export default async function DeveloperOperationsPage({
     searchParams,
-}: {
-    searchParams: SearchParams;
-}) {
+}: PageProps) {
     // ART-22 / ART-16 fail-closed gate. Must be the FIRST statement: the gateway now 404s
     // /v1/operations/developers, so this page must neither render nor fetch.
     if (!isAppPlatformEnabled()) notFound();
 
-    const data = await loadPageData(searchParams);
+    const resolvedParams = (await searchParams) || {};
+    const data = await loadPageData(resolvedParams);
 
     const { developers, total, overview, selectedId, errors } = data;
 
@@ -251,8 +254,8 @@ export default async function DeveloperOperationsPage({
     const pending = developers.filter((d) => d.status === 'pending').length;
     const suspended = developers.filter((d) => d.status === 'suspended').length;
 
-    const currentQ = readParam(searchParams, 'q');
-    const currentStatus = readParam(searchParams, 'status') || 'all';
+    const currentQ = readParam(resolvedParams, 'q');
+    const currentStatus = readParam(resolvedParams, 'status') || 'all';
 
     return (
         <ConsoleWorkspace
