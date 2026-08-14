@@ -67,7 +67,6 @@ import {
     RefreshCw,
     RotateCcw,
     Skeleton,
-    Table,
     useToast,
 } from '@letbuyy/ui'
 
@@ -561,7 +560,7 @@ export default function ThemeUpdatePanel({
                             id={diffTableId}
                             className="overflow-x-auto rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)]"
                         >
-                            <Table
+                            <table
                                 className="w-full border-collapse text-[length:var(--lb-font-size-caption)]"
                                 aria-label="Update diff: section changes per template"
                             >
@@ -649,7 +648,7 @@ export default function ThemeUpdatePanel({
                                         ))
                                     )}
                                 </tbody>
-                            </Table>
+                            </table>
                         </div>
                     )}
                 </div>

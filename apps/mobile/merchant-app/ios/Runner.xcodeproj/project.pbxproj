@@ -290,7 +290,6 @@
 			);
 			dependencies = (
 				A10000000000000000000011 /* PBXTargetDependency */,
-				B20000000000000000000011 /* PBXTargetDependency */,
 			);
 			name = Runner;
 			productName = Runner;
