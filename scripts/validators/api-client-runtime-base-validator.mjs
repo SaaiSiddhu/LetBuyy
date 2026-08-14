@@ -32,7 +32,7 @@ const baseWrapperFiles = [
   "apps/theme-marketplace/src/lib/api/client.ts",
   "apps/platform-console/src/lib/console-api.ts",
   "apps/platform-operations-portal/src/lib/api/client.ts",
-  "apps/marketing-site/src/app/create/page.tsx",
+  "apps/marketing-site/src/app/[locale]/create/page.tsx",
 ];
 
 for (const file of baseWrapperFiles) {

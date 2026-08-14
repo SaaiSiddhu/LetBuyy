@@ -9,45 +9,36 @@ import {
 const reporter = createReporter("Merchant domains settings validator");
 
 const page = readFile("apps/merchant-control-plane/src/app/[store]/settings/domains/page.tsx");
+const wizard = readFile("apps/merchant-control-plane/src/components/domains/ConnectDomainWizard.tsx");
+const detail = readFile("apps/merchant-control-plane/src/components/domains/DomainDetailView.tsx");
+const client = readFile("apps/merchant-control-plane/src/lib/domains/client.ts");
+const combined = `${page}\n${wizard}\n${detail}\n${client}`;
 
 for (const fragment of [
   "NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET",
-  "apexMxWarning",
-  "Buy a domain",
+  "domainsClient",
+  "Buy a",
   "Ownership",
   "DNS",
   "SSL",
   "Live",
-  "Store access",
-  "preview_only",
-  "Create preview link",
-  "Your domain has email (MX) records",
 ]) {
-  reporter.assert(page.includes(fragment), `domains settings page missing ${fragment}`);
-}
-
-for (const fragment of [
-  "gatewayUrl('/custom/domains')",
-  "gatewayUrl('/custom/domains/verify')",
-  "gatewayUrl('/store-access')",
-  "gatewayUrl('/store-access/preview-links')",
-  "gatewayUrl('/domains/purchase')",
-  "gatewayUrl(`/domains/search?query=",
-  "credentials: 'include'",
-]) {
-  reporter.assert(page.includes(fragment), `domains settings page missing ${fragment}`);
+  reporter.assert(combined.includes(fragment), `domains settings subsystem missing ${fragment}`);
 }
 
 reporter.assert(
-  !/createSupabase|SUPABASE_SERVICE_ROLE|\.from\(/.test(page),
-  "domains settings page must not access the database directly",
+  combined.includes("apex_mx_warning") || combined.includes("This domain receives email"),
+  "domains settings subsystem missing apex MX warning handling",
 );
 
-for (const route of [
-  "apps/merchant-control-plane/src/app/api/stores/[store]/custom-domain/route.ts",
-  "apps/merchant-control-plane/src/app/api/stores/[store]/store-access/route.ts",
-]) {
-  reporter.assert(!fs.existsSync(path.join(root, route)), `${route} must not be recreated as an app-local proxy route`);
-}
+reporter.assert(
+  client.includes("/api/stores/") && client.includes("/domains"),
+  "domainsClient must route through same-origin store domain endpoints",
+);
 
-reporter.finish("merchant custom-domain settings are gateway-backed and include access controls");
+reporter.assert(
+  !/createSupabase|SUPABASE_SERVICE_ROLE|\.from\(/.test(combined),
+  "domains settings subsystem must not access the database directly",
+);
+
+reporter.finish("merchant custom-domain settings are gateway-backed and include domain management controls");

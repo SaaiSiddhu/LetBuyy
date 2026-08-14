@@ -25,6 +25,8 @@ import { DomainStatusBadge, HealthMeter, SslBadge } from '@/components/domains/p
 import { ConnectDomainWizard } from '@/components/domains/ConnectDomainWizard'
 import { DomainDetailView } from '@/components/domains/DomainDetailView'
 
+const defaultCnameTarget = process.env.NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET || 'connect.letbuyy.com'
+
 type View = { kind: 'overview' } | { kind: 'connect' } | { kind: 'detail'; domain: string; role: 'primary' | 'redirect'; redirectTo: string | null; provider: string | null }
 
 interface StoreInfo {

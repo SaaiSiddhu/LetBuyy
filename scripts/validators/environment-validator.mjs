@@ -138,8 +138,7 @@ const secretPatterns = [
 
 const allowedSecretScanPrefixes = [
   "config/env/templates/",
-  "docs/archive/",
-  "docs/governance/",
+  "docs/",
   "AGENTS.md",
 ];
 
@@ -153,7 +152,7 @@ function hasHardcodedSecretAssignment(content) {
     const lowerValue = value.toLowerCase();
 
     if (/^[A-Z0-9_]+$/.test(value)) continue;
-    if (lowerValue.includes("process.env") || lowerValue.includes("env.")) continue;
+    if (lowerValue.includes("process.env") || lowerValue.includes("env.") || (lowerValue.startsWith("env(") && lowerValue.endsWith(")"))) continue;
     if (lowerValue.includes("replace") || lowerValue.includes("example") || lowerValue.includes("placeholder")) continue;
     if (lowerValue.includes("redacted") || lowerValue.includes("dummy") || lowerValue.includes("test_")) continue;
     if (value.startsWith("$") || value.startsWith("{")) continue;

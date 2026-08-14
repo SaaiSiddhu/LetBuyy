@@ -118,7 +118,7 @@ for (const file of [
   );
 }
 
-const marketingCreate = readFile("apps/marketing-site/src/app/create/page.tsx");
+const marketingCreate = readFile("apps/marketing-site/src/app/[locale]/create/page.tsx");
 reporter.assert(
   marketingCreate.indexOf("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES") !== -1 &&
     marketingCreate.indexOf("portfolio") > marketingCreate.indexOf("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES") &&
@@ -138,7 +138,7 @@ const publicMarketingCopyOffenders = trackedFiles.filter((file) => {
   if (!file.startsWith("apps/marketing-site/src/")) return false;
   if (!/\.(?:ts|tsx)$/.test(file)) return false;
   if (
-    file === "apps/marketing-site/src/app/create/page.tsx" ||
+    file === "apps/marketing-site/src/app/[locale]/create/page.tsx" ||
     file === "apps/marketing-site/src/components/SiteTypes.tsx"
   ) {
     return false;

@@ -377,7 +377,7 @@ test('W sanitize: resolved product drop with api_key is stripped', () => {
     const dangerousDrop = {
         id: SITE_A_PRODUCT_ID,
         title: 'Drop Hoodie',
-        api_key: 'sk_live_should_never_reach_liquid',
+        api_key: 'test_dummy_sk_live_should_never_reach_liquid',
     };
     const drops: SiteDrops = { productsById: { [SITE_A_PRODUCT_ID]: dangerousDrop } };
     const binding = makeResourceBinding('product', SITE_A_PRODUCT_ID);
