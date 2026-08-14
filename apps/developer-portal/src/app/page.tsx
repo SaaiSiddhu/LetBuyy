@@ -52,9 +52,8 @@ export default function HomePage() {
             <h1 className="developer-title">Build on LetBuyy.</h1>
             <p className="developer-lede">
               A docs-first workbench for the platform as it exists today: the versioned{" "}
-              <code>/v1</code> gateway, app OAuth and app bridge, lifecycle webhooks, and JSON
-              contract themes. Every page states whether a surface is a live contract or a recorded
-              gap.
+              <code>/v1</code> gateway, app OAuth and app bridge, lifecycle webhooks, and Liquid plus JSON-contract themes.
+              Every page states whether a surface is a live contract or a recorded gap.
             </p>
             <div className="developer-actions">
               <Link className="developer-action primary" href="/docs">

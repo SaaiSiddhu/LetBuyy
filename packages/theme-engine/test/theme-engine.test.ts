@@ -768,8 +768,8 @@ test('D2 settings drop blocks credential-named keys (BLOCKED_DROP_KEYS)', async 
         ...bundle.config.settings_data,
         current: {
           ...bundle.config.settings_data.current,
-          api_key: 'sk_secret_must_never_render',
-          webhook_secret: 'whsec_must_never_render',
+          api_key: 'dummy_sk_secret_must_never_render',
+          webhook_secret: 'dummy_whsec_must_never_render',
         },
       },
     },
@@ -811,8 +811,8 @@ test('D2 settings drop blocks credential-named keys (BLOCKED_DROP_KEYS)', async 
   assert.equal(result.status, 'rendered', `Expected rendered. Warnings: ${result.warnings.join(', ')}`);
   const html = result.liquid?.contentForLayout ?? '';
   assert.match(html, /<span class="legit">#00B3B3<\/span>/, 'legitimate settings keys must still render');
-  assert.doesNotMatch(html, /sk_secret_must_never_render/, 'settings.api_key must never reach Liquid output');
-  assert.doesNotMatch(html, /whsec_must_never_render/, 'settings.webhook_secret must never reach Liquid output');
+  assert.doesNotMatch(html, /dummy_sk_secret_must_never_render/, 'settings.api_key must never reach Liquid output');
+  assert.doesNotMatch(html, /dummy_whsec_must_never_render/, 'settings.webhook_secret must never reach Liquid output');
 });
 
 test('D2 settings drop with flat-only schema (no grouped settings wrapper) resolves flat keys correctly', async () => {
@@ -988,10 +988,10 @@ test('D8 BLOCKED_DROP_KEYS blocks api_key, secret_key, private_key, webhook_secr
     liquidContext: {
       product: {
         safe_field: 'VISIBLE',
-        api_key: 'sk-secret-api-key-DO-NOT-EXPOSE',
-        secret_key: 'secret-key-DO-NOT-EXPOSE',
-        private_key: '-----BEGIN PRIVATE KEY-----',
-        webhook_secret: 'whsec_DO-NOT-EXPOSE',
+        api_key: 'dummy_sk_secret_api_key_do_not_expose',
+        secret_key: 'dummy_secret_key_do_not_expose',
+        private_key: 'dummy_private_key_do_not_expose',
+        webhook_secret: 'dummy_whsec_do_not_expose',
       },
     },
   });
@@ -1001,10 +1001,10 @@ test('D8 BLOCKED_DROP_KEYS blocks api_key, secret_key, private_key, webhook_secr
   // Safe field must appear
   assert.match(html, /VISIBLE/, 'safe field must render in scope');
   // None of the blocked key values must appear in rendered output
-  assert.doesNotMatch(html, /sk-secret-api-key-DO-NOT-EXPOSE/, 'api_key value must be blocked');
-  assert.doesNotMatch(html, /secret-key-DO-NOT-EXPOSE/, 'secret_key value must be blocked');
-  assert.doesNotMatch(html, /BEGIN PRIVATE KEY/, 'private_key value must be blocked');
-  assert.doesNotMatch(html, /whsec_DO-NOT-EXPOSE/, 'webhook_secret value must be blocked');
+  assert.doesNotMatch(html, /dummy_sk_secret_api_key_do_not_expose/, 'api_key value must be blocked');
+  assert.doesNotMatch(html, /dummy_secret_key_do_not_expose/, 'secret_key value must be blocked');
+  assert.doesNotMatch(html, /dummy_private_key_do_not_expose/, 'private_key value must be blocked');
+  assert.doesNotMatch(html, /dummy_whsec_do_not_expose/, 'webhook_secret value must be blocked');
 });
 
 // ============================================================================

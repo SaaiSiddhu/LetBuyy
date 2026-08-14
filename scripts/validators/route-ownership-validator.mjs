@@ -53,6 +53,7 @@ const tenantTables = [
 ];
 
 const guardTokens = [
+  'requireOwnedSite',
   'verifySiteOwnership',
   'verifyStoreOwnership',
   'assertStoreOwnership',

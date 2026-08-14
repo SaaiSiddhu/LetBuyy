@@ -100,7 +100,7 @@ const darkModeReachabilityTargets = [
     },
     {
         surface: 'developer-portal',
-        files: ['apps/developer-portal/src/components/PortalChrome.tsx'],
+        files: ['apps/developer-portal/src/components/PortalShell.tsx', 'apps/developer-portal/src/components/PortalChrome.tsx'],
         patterns: [/<ThemeToggleButton\b/],
     },
     {

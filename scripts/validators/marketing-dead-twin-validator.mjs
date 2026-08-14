@@ -29,15 +29,16 @@ for (const file of twins) {
   );
 }
 
-const pageSource = readFile("apps/marketing-site/src/app/page.tsx");
+const pageSource = readFile("apps/marketing-site/src/app/[locale]/page.tsx");
 for (const liveComponent of [
   "Header",
   "Hero",
-  "SiteTypes",
+  "CapabilityMap",
   "Features",
-  "HowItWorks",
+  "MerchantJourney",
   "Pricing",
   "FAQ",
+  "EcosystemMap",
   "FinalCTA",
   "Footer",
 ]) {

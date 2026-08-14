@@ -387,17 +387,41 @@ export function trackedTargetForResolvedImport(allTrackedFiles, resolved) {
   return candidates.find((candidate) => allTrackedFiles.includes(candidate)) ?? resolved;
 }
 
-export function extractSpecifiers(text) {
-  const specifiers = [];
-  const patterns = [
-    /^\s*import\s+(?:type\s+)?(?:[^'"]+\s+from\s+)?['"]([^'"]+)['"]/gm,
-    /^\s*export\s+(?:type\s+)?[^'"]+\s+from\s+['"]([^'"]+)['"]/gm,
-    /\bimport\(\s*['"]([^'"]+)['"]\s*\)/gm,
-    /\brequire\(\s*['"]([^'"]+)['"]\s*\)/gm,
-  ];
+function stripSourceComments(source) {
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/.*/g, "");
+}
 
-  for (const pattern of patterns) {
-    for (const match of text.matchAll(pattern)) specifiers.push(match[1]);
+export function extractSpecifiers(text) {
+  const clean = stripSourceComments(text);
+  const specifiers = [];
+
+  // 1. Static imports and exports (must start line, allowing multiline clauses)
+  const staticPattern = /^\s*(?:import|export)\s+(?:type\s+)?(?:(?:\{[\s\S]*?\}|\*(\s+as\s+[\w$]+)?|[\w*\s,$]+)\s+from\s+)?['"]([^'"]+)['"]/gm;
+  for (const match of clean.matchAll(staticPattern)) {
+    const spec = match[2]?.trim();
+    if (spec && !spec.includes("\n") && !spec.includes("${") && !spec.includes("\\")) {
+      specifiers.push(spec);
+    }
+  }
+
+  // 2. Type-only inline import('...')
+  const inlineTypePattern = /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/gm;
+  for (const match of clean.matchAll(inlineTypePattern)) {
+    const spec = match[1]?.trim();
+    if (spec && !spec.includes("\n") && !spec.includes("${") && !spec.includes("\\")) {
+      specifiers.push(spec);
+    }
+  }
+
+  // 3. CommonJS require('...')
+  const requirePattern = /\brequire\s*\(\s*['"]([^'"]+)['"]\s*\)/gm;
+  for (const match of clean.matchAll(requirePattern)) {
+    const spec = match[1]?.trim();
+    if (spec && !spec.includes("\n") && !spec.includes("${") && !spec.includes("\\")) {
+      specifiers.push(spec);
+    }
   }
 
   return [...new Set(specifiers)];

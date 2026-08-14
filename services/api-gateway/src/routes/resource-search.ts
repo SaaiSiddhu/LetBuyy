@@ -310,9 +310,9 @@ router.get('/', async (c) => {
             // type === 'menu' (exhaustive: zod already validated the enum)
             results = await searchMenus(db, store_id, q, limit);
         }
-    } catch (err) {
+    } catch {
         return c.json(
-            { error: { code: 'SEARCH_ERROR', message: err instanceof Error ? err.message : 'Search failed' } },
+            { error: { code: 'SEARCH_ERROR', message: 'Search operation failed' } },
             500,
         );
     }

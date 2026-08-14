@@ -10,10 +10,19 @@ const themeRoutePath = join(testDir, '../../apps/theme-marketplace/src/app/api/t
 const themeServicePath = join(testDir, '../../apps/theme-marketplace/src/lib/theme-service.ts');
 const apiClientPath = join(testDir, '../../packages/typescript/api-client/src/index.ts');
 const gatewayThemesRoutePath = join(testDir, '../../services/api-gateway/src/routes/themes.ts');
+const gatewayThemePurchaseRoutePath = join(testDir, '../../services/api-gateway/src/routes/themes/theme-purchase-routes.ts');
 
 function read(path: string): string {
     assert.equal(existsSync(path), true, `${path} must exist`);
     return readFileSync(path, 'utf8');
+}
+
+function readGatewayThemes(): string {
+    let content = read(gatewayThemesRoutePath);
+    if (existsSync(gatewayThemePurchaseRoutePath)) {
+        content += '\n' + readFileSync(gatewayThemePurchaseRoutePath, 'utf8');
+    }
+    return content;
 }
 
 test('theme marketplace checkout no longer links directly to fake success', () => {
@@ -70,7 +79,7 @@ test('theme marketplace API routes proxy purchase and verification to the gatewa
 });
 
 test('gateway theme purchase remains server-priced and provider-proof based', () => {
-    const source = read(gatewayThemesRoutePath);
+    const source = readGatewayThemes();
 
     assert.match(source, /amountPaise = Math\.round\(priceInr \* 100\)/);
     assert.match(source, /const hasRazorpayKeys = Boolean\(c\.env\.RAZORPAY_KEY_ID && c\.env\.RAZORPAY_KEY_SECRET\)/);

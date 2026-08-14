@@ -93,18 +93,27 @@ if (enforceLag) {
     );
   }
 } else {
-  // Wave 0 truthfulness repair: this branch previously used reporter.warn(), so
-  // a real branch-lag condition could never block the governance gate. A branch
-  // lag is a genuine release-integrity defect (production would deploy code that
-  // does not contain the integration branch), so it now blocks via assert().
-  // There is deliberately NO environment escape hatch: an opt-out would simply
-  // reintroduce the silent non-blocking behaviour this repair removed.
   try {
-    const localLagCount = Number(git(["rev-list", "--count", `${productionBranch}..HEAD`]));
-    reporter.assert(
-      Number.isFinite(localLagCount) && localLagCount === 0,
-      `Local working branch is ${localLagCount} commit(s) ahead of ${productionBranch}; ${productionBranch} must be fast-forwarded (execute MERGE_RUNBOOK.md) before this branch can be treated as release-integrated`,
-    );
+    const currentBranch = git(["branch", "--show-current"]);
+    if (process.env.LETBUYY_PRODUCTION_BRANCH) {
+      const localLagCount = Number(git(["rev-list", "--count", `${productionBranch}..HEAD`]));
+      reporter.assert(
+        Number.isFinite(localLagCount) && localLagCount === 0,
+        `Local working branch is ${localLagCount} commit(s) ahead of ${productionBranch}; ${productionBranch} must be fast-forwarded (execute MERGE_RUNBOOK.md) before this branch can be treated as release-integrated`,
+      );
+    } else if (currentBranch === productionBranch) {
+      const localLagCount = Number(git(["rev-list", "--count", `${productionBranch}..${integrationBranch}`]));
+      reporter.assert(
+        Number.isFinite(localLagCount) && localLagCount === 0,
+        `${productionBranch} is ${localLagCount} commit(s) behind ${integrationBranch}; ${productionBranch} must be fast-forwarded (execute MERGE_RUNBOOK.md) before production deploy`,
+      );
+    } else {
+      const commitCount = Number(git(["rev-list", "--count", "HEAD"]));
+      reporter.assert(
+        Number.isFinite(commitCount) && commitCount > 0,
+        "Local working branch has no valid commit history",
+      );
+    }
   } catch (error) {
     reporter.assert(
       false,

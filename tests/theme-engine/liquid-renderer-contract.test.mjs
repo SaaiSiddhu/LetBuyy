@@ -25,7 +25,7 @@ test('LiquidRenderer renders blocks before sections and strips schema tags', () 
   assert.match(source, /stripLiquidSchemaBlocks\(sectionFile\.source\)/);
   assert.match(source, /content: block\.html/);
   assert.match(source, /content_for_layout: contentForLayout/);
-  assert.match(source, /layoutHtml: await sanitizeRenderedHtml\(String\(layoutHtml\), \{ wholeDocument: true \}\)/);
+  assert.match(source, /layoutHtml\s*[:=]\s*await sanitizeRenderedHtml\(String\((?:rawL|l)ayoutHtml\), \{ wholeDocument: true \}\)/);
 });
 
 test('LiquidRenderer keeps snippets first-party-scoped and provides the t filter', () => {

@@ -74,6 +74,13 @@ function resetDatabase() {
       updated_at timestamptz NOT NULL DEFAULT now(),
       deleted_at timestamptz
     );
+    CREATE TABLE public.store_customers (
+      id uuid PRIMARY KEY,
+      site_id uuid NOT NULL REFERENCES public.sites(id) ON DELETE CASCADE,
+      created_at timestamptz NOT NULL DEFAULT now(),
+      updated_at timestamptz NOT NULL DEFAULT now(),
+      deleted_at timestamptz
+    );
     CREATE TABLE public.orders (
       id uuid PRIMARY KEY,
       store_id uuid NOT NULL REFERENCES public.sites(id) ON DELETE CASCADE,

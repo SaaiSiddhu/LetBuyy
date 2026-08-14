@@ -1,13 +1,11 @@
+import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import { ARTICLES } from './articles'
 import { CATEGORIES } from './categories'
 import { AUTHORS } from './authors'
 import { LEARNING_PATHS } from './learning-paths'
 import type { Article, Author, Category } from './types'
 
-export function formatDate(dateStr: string): string {
-  const date = new Date(dateStr)
-  return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
-}
+export { formatDate }
 
 export function getArticlesByCategory(cat: string): Article[] {
   return ARTICLES.filter(a => a.category === cat)

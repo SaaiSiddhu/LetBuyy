@@ -30,6 +30,7 @@ import {
     Sparkles,
     Store,
     Tag,
+    ThemeToggleButton,
     Truck,
     Users,
     X,
@@ -790,6 +791,7 @@ export default function Header() {
                     </nav>
 
                     <div className="header-actions">
+                        <ThemeToggleButton />
                         <Link href={loginUrl} className="btn btn-ghost" onClick={closeAllMenus}>
                             {dict.nav.logIn}
                         </Link>

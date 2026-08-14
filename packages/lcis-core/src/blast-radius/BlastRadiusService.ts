@@ -259,8 +259,8 @@ export class BlastRadiusService {
     if ('error' in b) return b;
     const db = this.store.tryRead<RawDbIntel>('db-intel');
     const di = this.store.tryRead<RawDomainIntel>('domain-intel');
-    const moneyTouched = db !== null && b.tables.some((t) => db.tables.find((x) => x.name === t)?.money === true);
-    const tenantTouched = db !== null && b.tables.some((t) => db.tables.find((x) => x.name === t)?.tenant === true);
+    const moneyTouched = db !== null && b.tables.some((t: string) => db.tables.find((x) => x.name === t)?.money === true);
+    const tenantTouched = db !== null && b.tables.some((t: string) => db.tables.find((x) => x.name === t)?.tenant === true);
     const queueDomains = [key, ...b.blastRadius.affected]
       .map((k) => di?.domains.find((x) => x.key === k))
       .filter((x): x is RawDomain => x !== undefined && x !== null);

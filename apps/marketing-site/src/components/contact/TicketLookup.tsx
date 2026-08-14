@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { Button, Input } from '@letbuyy/ui'
+import { formatIndiaDateWithTime } from '@letbuyy/ui/formatting'
 import { LETBUYY_PRODUCTION_API_BASE_URL, resolveLetbuyyApiBaseUrl } from '@letbuyy/api-client'
 
 /**
@@ -43,19 +44,6 @@ function gatewayBaseUrl(): string {
     return resolveLetbuyyApiBaseUrl([process.env.NEXT_PUBLIC_API_URL], {
         fallback: LETBUYY_PRODUCTION_API_BASE_URL,
     })
-}
-
-function formatDate(value: string | null): string {
-    if (!value) return '—'
-    try {
-        return new Intl.DateTimeFormat('en-IN', {
-            dateStyle: 'medium',
-            timeStyle: 'short',
-            timeZone: 'Asia/Kolkata',
-        }).format(new Date(value))
-    } catch {
-        return value
-    }
 }
 
 export default function TicketLookup() {
@@ -192,15 +180,15 @@ export default function TicketLookup() {
                             <dl className="ctc-lookup-facts">
                                 <div>
                                     <dt>Submitted</dt>
-                                    <dd>{formatDate(status.submitted_at)}</dd>
+                                    <dd>{status.submitted_at ? formatIndiaDateWithTime(status.submitted_at) : '—'}</dd>
                                 </div>
                                 <div>
                                     <dt>Reply due</dt>
-                                    <dd>{formatDate(status.first_response_due_at)}</dd>
+                                    <dd>{status.first_response_due_at ? formatIndiaDateWithTime(status.first_response_due_at) : '—'}</dd>
                                 </div>
                                 <div>
                                     <dt>First replied</dt>
-                                    <dd>{formatDate(status.responded_at)}</dd>
+                                    <dd>{status.responded_at ? formatIndiaDateWithTime(status.responded_at) : '—'}</dd>
                                 </div>
                             </dl>
                         </div>

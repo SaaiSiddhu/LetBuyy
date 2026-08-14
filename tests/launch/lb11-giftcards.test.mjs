@@ -125,9 +125,9 @@ test('LB-11: merchant UI reveals the code once, shows projected balance + fraud 
   assert.match(mcpItemRoute, /giftCards\.setStatus/);
 });
 
-test('LB-11: route inventory lockstep is 129 and the rollback drops every new function', () => {
+test('LB-11: route inventory lockstep is 188 and the rollback drops every new function', () => {
   const validator = read('scripts/validators/domain-boundary-validator.mjs');
-  assert.match(validator, /appApiRoutes\.length === 129/);
+  assert.match(validator, /appApiRoutes\.length === 188/);
   for (const fn of [
     'gift_card_transactions',
     'set_gift_card_status',

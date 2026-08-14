@@ -47,10 +47,9 @@ test('LB-12: storefront proxy re-mints locally + handles ACCOUNT_EXISTS', () => 
   assert.match(apiClient, /'\/storefront\/customer\/register'/);
 });
 
-test('LB-12: route-count lockstep applied (127 -> 128, now 129 after LB-11)', () => {
-  // LB-12 bumped 127 -> 128; LB-11 added the gift-cards/[id] proxy bumping 128 -> 129.
+test('LB-12: route-count lockstep applied (188 routes)', () => {
   // This mirror tracks the validator's live pinned count in lockstep.
-  assert.match(validator, /appApiRoutes\.length === 129/);
+  assert.match(validator, /appApiRoutes\.length === 188/);
 });
 
 // ── LB-12 (UI): the storefront account bottom-sheet now wires the register branch. The backend
