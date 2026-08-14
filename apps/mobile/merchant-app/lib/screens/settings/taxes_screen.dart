@@ -430,22 +430,27 @@ class _TaxesScreenState extends State<TaxesScreen> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colors.cardBorder),
       ),
-      child: SwitchListTile(
-        contentPadding: EdgeInsets.zero,
-        value: _taxInclusive,
-        onChanged: _store == null || _isBusy ? null : _setTaxInclusive,
-        title: Text(
-          'All prices include tax',
-          style: TextStyle(
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w700,
+      // The tile needs its own Material ancestor: it paints ink splashes on the
+      // nearest Material, and the decorated Container above would hide them.
+      child: Material(
+        type: MaterialType.transparency,
+        child: SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          value: _taxInclusive,
+          onChanged: _store == null || _isBusy ? null : _setTaxInclusive,
+          title: Text(
+            'All prices include tax',
+            style: TextStyle(
+              color: colors.textPrimary,
+              fontWeight: FontWeight.w700,
+            ),
           ),
-        ),
-        subtitle: Text(
-          _taxInclusive
-              ? 'Checkout treats displayed product prices as tax inclusive.'
-              : 'Checkout adds configured taxes on top of product prices.',
-          style: TextStyle(color: colors.textSecondary, fontSize: 12),
+          subtitle: Text(
+            _taxInclusive
+                ? 'Checkout treats displayed product prices as tax inclusive.'
+                : 'Checkout adds configured taxes on top of product prices.',
+            style: TextStyle(color: colors.textSecondary, fontSize: 12),
+          ),
         ),
       ),
     );

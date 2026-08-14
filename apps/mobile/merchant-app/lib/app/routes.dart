@@ -56,6 +56,8 @@ import '../screens/products/collections_screen.dart';
 import '../screens/store_health/store_health_screen.dart';
 import '../screens/subscription/pricing_screen.dart';
 import '../screens/subscription/connect_razorpay_screen.dart';
+import '../config/v1_capability_policy.dart';
+import '../widgets/shared/capability_gate.dart';
 import 'auth_wrapper.dart';
 
 enum AppRouteId {
@@ -818,10 +820,40 @@ class AppRoutes {
     AppRouteSpec spec,
     RouteSettings settings,
   ) {
-    final page = spec.builder(settings);
+    // Every route resolves through here, including the /features/* aliases, so
+    // this is the only place a scope decision holds for all of a screen's entry
+    // points. Gating navigation instead would leave a deep link working: 31
+    // screens are registered under two or three paths, the app marketplace
+    // under three.
+    final availability = V1CapabilityPolicy.availabilityFor(spec.id);
+    final page = availability == FeatureAvailability.available
+        ? spec.builder(settings)
+        : _gatedPage(spec.id, availability);
+
     return spec.fast
         ? _buildFastRoute(page, settings)
         : _buildRoute(page, settings);
+  }
+
+  /// Renders an out-of-scope capability honestly instead of building it.
+  ///
+  /// The screen is never constructed, so a gated capability cannot issue
+  /// requests, mint sessions, or load remote content as a side effect of being
+  /// routed to.
+  static Widget _gatedPage(AppRouteId id, FeatureAvailability availability) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(V1CapabilityPolicy.titleFor(id) ?? 'Not available'),
+      ),
+      body: CapabilityGate(
+        availability: availability,
+        title: V1CapabilityPolicy.titleFor(id),
+        description: V1CapabilityPolicy.descriptionFor(id),
+        icon: V1CapabilityPolicy.isForbidden(id)
+            ? Icons.block_rounded
+            : Icons.lock_clock_rounded,
+      ),
+    );
   }
 
   /// Fast route for root auth wrapper - no animation delay

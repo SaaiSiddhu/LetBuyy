@@ -164,8 +164,10 @@ void main() {
             // API gateway client (shared singleton)
             Provider<ApiClient>.value(value: apiClient),
             Provider<CacheService>.value(value: cacheService),
-            Provider<TelemetryService>.value(value: telemetryService),
-            Provider<CrashReportingService>.value(
+            ChangeNotifierProvider<TelemetryService>.value(
+              value: telemetryService,
+            ),
+            ChangeNotifierProvider<CrashReportingService>.value(
               value: crashReportingService!,
             ),
 

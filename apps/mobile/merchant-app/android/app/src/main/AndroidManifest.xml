@@ -1,4 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Declared explicitly. src/debug and src/profile declare INTERNET, but src/main
+         did not; release builds merge `main` plus library manifests, and INTERNET was
+         reaching release only transitively from a plugin's library manifest (verified
+         by a release manifest-merge diff). That works today but is silent and fragile:
+         removing or replacing that plugin would drop the app's core network permission
+         from release builds only. An app whose every screen is a network call declares
+         it itself. -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application

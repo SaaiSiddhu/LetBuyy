@@ -14,55 +14,78 @@ class TurnstileChallengeScreen extends StatefulWidget {
 }
 
 class _TurnstileChallengeScreenState extends State<TurnstileChallengeScreen> {
-  late final WebViewController _controller;
+  WebViewController? _controller;
   bool _isReady = false;
   String? _error;
 
   bool get _hasConfiguredSiteKey => AppConfig.hasTurnstileSiteKey;
 
+  /// True when retrying cannot help — the sitekey itself is absent.
+  bool get _isUnrecoverable => !_hasConfiguredSiteKey;
+
+  String _formatTurnstileError(String raw) {
+    if (raw.contains('300030') || raw.contains('100000') || raw.contains('domain')) {
+      return 'Verification challenge is unavailable for this domain. Please check network or site configuration.';
+    }
+    return raw.replaceAll('Exception: ', '');
+  }
+
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // The embedded document is themed, so it is built once the inherited
+    // theme is available rather than in initState.
+    if (_controller == null && _error == null) _loadChallenge();
+  }
+
+  void _loadChallenge() {
     if (!_hasConfiguredSiteKey) {
-      _error =
-          'Verification is temporarily unavailable. Please try again later.';
+      setState(() {
+        _error =
+            'Verification is temporarily unavailable. Please try again later.';
+      });
       return;
     }
 
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageFinished: (_) {
-            if (mounted) setState(() => _isReady = true);
+    final isDark = AppThemeColors.of(context).isDark;
+
+    setState(() {
+      _error = null;
+      _isReady = false;
+      _controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setBackgroundColor(Colors.transparent)
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onPageFinished: (_) {
+              if (mounted) setState(() => _isReady = true);
+            },
+            onWebResourceError: (error) {
+              if (!mounted) return;
+              setState(() => _error = _formatTurnstileError(error.description));
+            },
+          ),
+        )
+        ..addJavaScriptChannel(
+          'TurnstileToken',
+          onMessageReceived: (message) {
+            final token = message.message.trim();
+            if (token.isEmpty || !mounted) return;
+            Navigator.pop(context, token);
           },
-          onWebResourceError: (error) {
+        )
+        ..addJavaScriptChannel(
+          'TurnstileError',
+          onMessageReceived: (message) {
             if (!mounted) return;
-            setState(() {
-              _error = error.description;
-            });
+            setState(() => _error = _formatTurnstileError(message.message));
           },
-        ),
-      )
-      ..addJavaScriptChannel(
-        'TurnstileToken',
-        onMessageReceived: (message) {
-          final token = message.message.trim();
-          if (token.isEmpty || !mounted) return;
-          Navigator.pop(context, token);
-        },
-      )
-      ..addJavaScriptChannel(
-        'TurnstileError',
-        onMessageReceived: (message) {
-          if (!mounted) return;
-          setState(() => _error = message.message);
-        },
-      )
-      ..loadHtmlString(
-        _turnstileHtml(AppConfig.turnstileSiteKey),
-        baseUrl: AppConfig.identityBaseUrl,
-      );
+        )
+        ..loadHtmlString(
+          _turnstileHtml(AppConfig.turnstileSiteKey, isDark: isDark),
+          baseUrl: AppConfig.identityBaseUrl,
+        );
+    });
   }
 
   @override
@@ -80,35 +103,18 @@ class _TurnstileChallengeScreenState extends State<TurnstileChallengeScreen> {
         decoration: colors.backgroundGradient,
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(LetbuyySpacingTokens.space24),
+            padding: const EdgeInsets.all(LetbuyySpacingTokens.x2l),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildHeader(colors),
-                const SizedBox(height: LetbuyySpacingTokens.space24),
+                const SizedBox(height: LetbuyySpacingTokens.x2l),
                 Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: colors.card,
-                        border: Border.all(color: colors.cardBorder),
-                      ),
-                      child: _error != null
-                          ? _buildError(colors, _error!)
-                          : Stack(
-                              children: [
-                                WebViewWidget(controller: _controller),
-                                if (!_isReady)
-                                  Center(
-                                    child: CircularProgressIndicator(
-                                      color: colors.accent,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                    ),
-                  ),
+                  // The error state is sized to its content and centred, so a
+                  // short message no longer sits inside a near-full-height box.
+                  child: _error != null
+                      ? Center(child: _buildErrorCard(colors, _error!))
+                      : _buildChallengeCard(colors),
                 ),
               ],
             ),
@@ -122,52 +128,113 @@ class _TurnstileChallengeScreenState extends State<TurnstileChallengeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(Icons.verified_user_outlined, color: colors.accent, size: 32),
-        const SizedBox(height: LetbuyySpacingTokens.space12),
+        Icon(
+          Icons.verified_user_outlined,
+          color: colors.accent,
+          size: LetbuyySpacingTokens.x3l,
+        ),
+        const SizedBox(height: LetbuyySpacingTokens.md),
         Text(
           'Security check',
           style: TextStyle(
             color: colors.textPrimary,
-            fontSize: 24,
-            fontWeight: FontWeight.w800,
+            fontSize: LetbuyyTypographyTokens.h2.toDouble(),
+            fontWeight: LetbuyyTypographyTokens.bold,
           ),
         ),
-        const SizedBox(height: LetbuyySpacingTokens.space8),
+        const SizedBox(height: LetbuyySpacingTokens.sm),
         Text(
           'Complete the Cloudflare challenge to continue.',
-          style: TextStyle(color: colors.textSecondary, height: 1.4),
+          style: TextStyle(
+            color: colors.textSecondary,
+            fontSize: LetbuyyTypographyTokens.body.toDouble(),
+            height: 1.4,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildError(AppThemeColors colors, String message) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(LetbuyySpacingTokens.space24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+  Widget _buildChallengeCard(AppThemeColors colors) {
+    final controller = _controller;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(LetbuyyRadiusTokens.xl.toDouble()),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.card,
+          border: Border.all(color: colors.cardBorder),
+        ),
+        child: Stack(
           children: [
-            Icon(Icons.warning_amber_rounded, color: colors.warning, size: 34),
-            const SizedBox(height: LetbuyySpacingTokens.space16),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colors.textPrimary, height: 1.4),
-            ),
-            const SizedBox(height: LetbuyySpacingTokens.space20),
-            OutlinedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Back'),
-            ),
+            if (controller != null) WebViewWidget(controller: controller),
+            if (!_isReady)
+              Center(child: CircularProgressIndicator(color: colors.accent)),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorCard(AppThemeColors colors, String message) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(LetbuyyRadiusTokens.xl.toDouble()),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.card,
+          border: Border.all(color: colors.cardBorder),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(LetbuyySpacingTokens.x2l),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: colors.warning,
+                size: LetbuyySpacingTokens.x3l,
+              ),
+              const SizedBox(height: LetbuyySpacingTokens.lg),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: colors.textPrimary,
+                  fontSize: LetbuyyTypographyTokens.body.toDouble(),
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: LetbuyySpacingTokens.xl),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Back'),
+                  ),
+                  if (!_isUnrecoverable) ...[
+                    const SizedBox(width: LetbuyySpacingTokens.md),
+                    FilledButton(
+                      onPressed: _loadChallenge,
+                      child: const Text('Try again'),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-String _turnstileHtml(String siteKey) {
+String _turnstileHtml(String siteKey, {required bool isDark}) {
+  // The document is injected into a themed card, so its own palette has to
+  // follow the app theme — light-on-dark was previously unreadable.
+  final textColor = isDark ? '#e2e8f0' : '#0f172a';
+  final hintColor = isDark ? '#94a3b8' : '#64748b';
+  final widgetTheme = isDark ? 'dark' : 'light';
+
   return '''
 <!doctype html>
 <html>
@@ -180,7 +247,7 @@ String _turnstileHtml(String siteKey) {
       height: 100%;
       background: transparent;
       font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
-      color: #0f172a;
+      color: $textColor;
     }
     .wrap {
       min-height: 100%;
@@ -201,7 +268,7 @@ String _turnstileHtml(String siteKey) {
     }
     .hint {
       margin-top: 16px;
-      color: #64748b;
+      color: $hintColor;
       font-size: 14px;
       line-height: 1.4;
     }
@@ -222,6 +289,7 @@ String _turnstileHtml(String siteKey) {
       }
       window.turnstile.render('#turnstile', {
         sitekey: '$siteKey',
+        theme: '$widgetTheme',
         callback: function(token) {
           TurnstileToken.postMessage(token);
         },

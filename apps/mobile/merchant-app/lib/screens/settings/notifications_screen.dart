@@ -576,25 +576,30 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     required bool value,
     required ValueChanged<bool> onChanged,
   }) {
-    return SwitchListTile.adaptive(
-      value: value,
-      onChanged: _isSaving ? null : onChanged,
-      contentPadding: EdgeInsets.zero,
-      secondary: Icon(
-        icon,
-        color: value
-            ? mobile_tokens.LetbuyyColorTokens.brandPrimary
-            : colors.textTertiary,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: colors.textPrimary,
-          fontWeight: FontWeight.w700,
+    // The tile needs its own Material ancestor: it paints ink splashes on the
+    // nearest Material, and the decorated card above would hide them.
+    return Material(
+      type: MaterialType.transparency,
+      child: SwitchListTile.adaptive(
+        value: value,
+        onChanged: _isSaving ? null : onChanged,
+        contentPadding: EdgeInsets.zero,
+        secondary: Icon(
+          icon,
+          color: value
+              ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+              : colors.textTertiary,
         ),
+        title: Text(
+          title,
+          style: TextStyle(
+            color: colors.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        subtitle: Text(subtitle, style: TextStyle(color: colors.textSecondary)),
+        activeThumbColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
       ),
-      subtitle: Text(subtitle, style: TextStyle(color: colors.textSecondary)),
-      activeThumbColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
     );
   }
 

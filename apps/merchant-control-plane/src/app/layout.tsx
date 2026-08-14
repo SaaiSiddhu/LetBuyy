@@ -38,12 +38,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={fontVariables} suppressHydrationWarning>
+    <html lang="en" className={fontVariables} data-theme="light" suppressHydrationWarning>
       <head>
-        <ThemeScript />
+        <ThemeScript forcedTheme="light" />
       </head>
       <body className="antialiased">
-        <LetbuyyThemeProvider surface="admin">
+        <LetbuyyThemeProvider surface="admin" forcedTheme="light">
           {children}
         </LetbuyyThemeProvider>
       </body>

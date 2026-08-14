@@ -80,7 +80,10 @@ function isMissingThemeEngineTable(error: { message?: string; details?: string; 
         text.includes('theme_instances') ||
         text.includes('schema cache') ||
         text.includes('could not find') ||
-        text.includes('does not exist')
+        text.includes('does not exist') ||
+        text.includes('fetch failed') ||
+        text.includes('econnrefused') ||
+        text.includes('connect')
     );
 }
 

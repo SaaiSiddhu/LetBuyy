@@ -7,7 +7,7 @@ import Image from 'next/image'
 import type { SessionUser } from '@/lib/auth/session'
 import type { StoreData, UserStore } from './AdminShell'
 import NotificationsPanel from './NotificationsPanel'
-import { Button, MaterialIcon, useTheme } from '@letbuyy/ui'
+import { Button, MaterialIcon } from '@letbuyy/ui'
 import { resolveKeyboardShortcut } from './merchantNavigation'
 import { getAccountsUrl } from '@/lib/public-urls'
 
@@ -56,8 +56,6 @@ export default function MerchantHeaderBar({
     const router = useRouter()
     const [switcherOpen, setSwitcherOpen] = useState(false)
     const [notificationsOpen, setNotificationsOpen] = useState(false)
-    const { resolvedTheme, setTheme } = useTheme()
-    const isDark = resolvedTheme === 'dark'
     const [isMobile, setIsMobile] = useState(false)
     const switcherRef = useRef<HTMLDivElement>(null)
     const notificationsRef = useRef<HTMLDivElement>(null)
@@ -157,10 +155,6 @@ export default function MerchantHeaderBar({
         }
     }, [clearShortcutPrefix, onSearchOpen, router, store, storeData.site_type])
 
-    const toggleTheme = () => {
-        setTheme(isDark ? 'light' : 'dark')
-    }
-
     const handleSignOut = async () => {
         try {
             const res = await fetch('/api/auth/logout', {
@@ -231,27 +225,9 @@ export default function MerchantHeaderBar({
                 </Button>
             </div>
 
-            {/* Section 3: Theme toggle */}
-            <div className="store-switcher-section">
-                <div className="store-switcher-theme">
-                    <div className="store-switcher-theme-label">
-                        <MaterialIcon name={isDark ? 'dark_mode' : 'light_mode'} />
-                        {isDark ? 'Dark mode' : 'Light mode'}
-                    </div>
-                    <Button unstyled
-                        className={`admin-theme-switch ${isDark ? 'active' : ''}`}
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            toggleTheme()
-                        }}
-                        aria-label="Toggle theme"
-                    />
-                </div>
-            </div>
-
             <div className="store-switcher-divider" />
 
-            {/* Section 4: User info */}
+            {/* Section 3: User info */}
             <div className="store-switcher-section">
                 <div className="store-switcher-user">
                     <div className="store-switcher-user-avatar">{userInitial}</div>
@@ -262,7 +238,7 @@ export default function MerchantHeaderBar({
                 </div>
             </div>
 
-            {/* Section 5: Log out */}
+            {/* Section 4: Log out */}
             <div className="store-switcher-section">
                 <Button unstyled
                     className="store-switcher-link logout"
@@ -292,20 +268,12 @@ export default function MerchantHeaderBar({
                     <Link href={`/${store}/dashboard`} className="admin-header-logo" aria-label="LetBuyy dashboard">
                         <span className="admin-header-logo-frame" aria-hidden="true">
                             <Image
-                                src="/icons/letbuyy-logo-light.svg"
-                                alt=""
-                                fill
-                                priority
-                                sizes="144px"
-                                className="admin-header-logo-image admin-logo-light"
-                            />
-                            <Image
                                 src="/icons/letbuyy-logo-dark.svg"
-                                alt=""
+                                alt="LetBuyy"
                                 fill
                                 priority
                                 sizes="144px"
-                                className="admin-header-logo-image admin-logo-dark"
+                                className="admin-header-logo-image"
                             />
                         </span>
                     </Link>

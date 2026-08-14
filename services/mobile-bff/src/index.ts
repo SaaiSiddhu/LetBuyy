@@ -262,7 +262,6 @@ function gatewayPathFromRequest(request: Request): string {
 
 function buildProxyHeaders(request: Request): Headers {
   const headers = new Headers(request.headers);
-  headers.delete('Authorization');
   headers.delete('Cookie');
   headers.delete('X-LetBuyy-Session-Token');
   headers.delete('Host');
@@ -458,16 +457,22 @@ async function proxyToGateway(request: Request, env: Env): Promise<Response> {
 
     const signedHeaders = await signHeadersForSession(token, env);
     if (signedHeaders instanceof Response) return signedHeaders;
+    headers.delete('Authorization');
     Object.entries(signedHeaders).forEach(([key, value]) => headers.set(key, value));
   }
 
-  const gatewayRequest = new Request(`https://api-gateway.internal${gatewayPathFromRequest(request)}`, {
+  const gatewayOrigin = env.API_GATEWAY_SERVICE ? 'https://api-gateway.internal' : 'http://localhost:9010';
+  const gatewayRequest = new Request(`${gatewayOrigin}${gatewayPathFromRequest(request)}`, {
     method: request.method,
     headers,
     body: ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
   });
 
-  return env.API_GATEWAY_SERVICE.fetch(gatewayRequest);
+  if (env.API_GATEWAY_SERVICE) {
+    return env.API_GATEWAY_SERVICE.fetch(gatewayRequest);
+  }
+
+  return fetch(gatewayRequest);
 }
 
 app.get('/health', (c) => jsonResponse(healthResponse(c.env), healthResponse(c.env).status === 'healthy' ? 200 : 503));

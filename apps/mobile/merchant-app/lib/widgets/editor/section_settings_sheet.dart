@@ -3,7 +3,6 @@ import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import '../../theme/app_theme_colors.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../models/store_model.dart';
 import '../shared/cached_merchant_image.dart';
 import '../shared/image_picker_widget.dart';
@@ -876,37 +875,37 @@ class _SectionSettingsSheetState extends State<SectionSettingsSheet> {
       {
         'key': 'instagramUrl',
         'label': 'Instagram',
-        'icon': FontAwesomeIcons.instagram,
+        'icon': Icons.camera_alt_outlined,
         'hint': 'instagram.com/yourstore',
       },
       {
         'key': 'facebookUrl',
         'label': 'Facebook',
-        'icon': FontAwesomeIcons.facebookF,
+        'icon': Icons.facebook,
         'hint': 'facebook.com/yourstore',
       },
       {
         'key': 'twitterUrl',
         'label': 'X (Twitter)',
-        'icon': FontAwesomeIcons.xTwitter,
+        'icon': Icons.alternate_email,
         'hint': 'twitter.com/yourstore',
       },
       {
         'key': 'whatsappUrl',
         'label': 'WhatsApp',
-        'icon': FontAwesomeIcons.whatsapp,
+        'icon': Icons.chat_bubble_outline_rounded,
         'hint': 'wa.me/919876543210',
       },
       {
         'key': 'telegramUrl',
         'label': 'Telegram',
-        'icon': FontAwesomeIcons.telegram,
+        'icon': Icons.send_rounded,
         'hint': 't.me/yourstore',
       },
       {
         'key': 'youtubeUrl',
         'label': 'YouTube',
-        'icon': FontAwesomeIcons.youtube,
+        'icon': Icons.play_circle_outline_rounded,
         'hint': 'youtube.com/@yourstore',
       },
     ];
@@ -916,7 +915,7 @@ class _SectionSettingsSheetState extends State<SectionSettingsSheet> {
       _buildIconTextField(
         label: 'Contact Email',
         key: 'contactEmail',
-        icon: FontAwesomeIcons.envelope,
+        icon: Icons.email_outlined,
         hint: 'help@yourstore.com',
       ),
 
@@ -1007,7 +1006,7 @@ class _SectionSettingsSheetState extends State<SectionSettingsSheet> {
             fillColor: colors.surfaceVariant,
             prefixIcon: Padding(
               padding: const EdgeInsets.only(left: 14, right: 10),
-              child: FaIcon(icon, size: 16, color: const Color(0xFF818CF8)),
+              child: Icon(icon, size: 16, color: const Color(0xFF818CF8)),
             ),
             prefixIconConstraints: const BoxConstraints(
               minWidth: 0,

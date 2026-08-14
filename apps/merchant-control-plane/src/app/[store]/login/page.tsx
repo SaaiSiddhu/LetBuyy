@@ -20,10 +20,10 @@ export default function LoginPage() {
     }, [store])
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+        <div className="flex min-h-screen items-center justify-center bg-zinc-50">
             <div className="text-center">
                 <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-zinc-300 border-t-[var(--lb-color-primary,var(--primary,var(--lb-color-brand-purple)))] mx-auto" />
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">Redirecting to login...</p>
+                <p className="text-sm text-zinc-600">Redirecting to login...</p>
             </div>
         </div>
     )

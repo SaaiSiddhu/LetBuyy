@@ -18,6 +18,12 @@ This directory is the complete launch-readiness program. It is **documentation o
 | 8 | `LAUNCH_CERTIFICATION.md` | Launch requirements + GO / NO-GO checklist |
 | 9 | `LAUNCH_READINESS_CLAUDE_EXECUTION_PROMPT.md` | The single gated Claude execution constitution for this program |
 
+## Subordinate evidence packages
+
+| Package | Date | Purpose |
+|---|---|---|
+| `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09/` | 2026-08-09 | Merchant App V1 forensics, scope freeze, implementation and launch certification at `ee371182`. 18 documents. Verdict **NO-GO**. Evidence/implementation class — subordinate to DOC 01, root `AGENTS.md`, DOC 03; it redefines no constitutional decision. Re-tests the prior `V1_SCOPE_LOCK_2026_06_12` mobile-as-V2 classification and **upholds it**, restated as V1.1 gated on four named items (Class B, ARB review). No `PROMPTS.md` row required — no basename matches the prompt-class regex. |
+
 ## Standing constraints (apply to every document)
 
 1. The authority chain is unchanged and non-negotiable: `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` → root `AGENTS.md` → local `AGENTS.md` → rewrite docs.

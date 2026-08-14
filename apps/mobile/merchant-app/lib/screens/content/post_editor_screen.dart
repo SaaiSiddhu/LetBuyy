@@ -404,11 +404,16 @@ class _PostEditorScreenState extends State<PostEditorScreen> {
     required bool value,
     required ValueChanged<bool> onChanged,
   }) {
-    return SwitchListTile(
-      value: value,
-      onChanged: onChanged,
-      contentPadding: EdgeInsets.zero,
-      title: Text(title, style: TextStyle(color: colors.textPrimary)),
+    // The tile needs its own Material ancestor: it paints ink splashes on the
+    // nearest Material, and the decorated card above would hide them.
+    return Material(
+      type: MaterialType.transparency,
+      child: SwitchListTile(
+        value: value,
+        onChanged: onChanged,
+        contentPadding: EdgeInsets.zero,
+        title: Text(title, style: TextStyle(color: colors.textPrimary)),
+      ),
     );
   }
 

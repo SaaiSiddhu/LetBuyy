@@ -1,68 +1,49 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ArrowRight, BookOpen, Code2, LayoutDashboard, Puzzle, ShieldCheck, ThemeToggleButton } from "@letbuyy/ui";
+import { ArrowRight, BookOpen, Code2, LayoutDashboard, Puzzle, ShieldCheck } from "@letbuyy/ui";
+import { DocsShell, LandingShell } from "@/components/PortalShell";
 
-const navItems = [
-  { href: "/docs", label: "Docs" },
-  { href: "/api", label: "API" },
-  { href: "/sdk", label: "SDKs" },
-  { href: "/dashboard", label: "Dashboard" },
-];
+/**
+ * Chrome now lives in `PortalShell` (masthead + section tabs + left rail +
+ * footer). These re-exports keep every existing page import working while the
+ * shell owns navigation, so nav is defined once in `lib/navigation.ts`.
+ */
+export { PortalFooter } from "@/components/PortalShell";
 
-export function PortalHeader() {
-  return (
-    <header className="developer-topbar">
-      <div className="developer-container developer-topbar-inner">
-        <Link href="/" className="developer-brand" aria-label="LetBuyy Developers home">
-          <span className="developer-brand-mark">LB</span>
-          <span>LetBuyy Developers</span>
-        </Link>
-        <nav className="developer-nav" aria-label="Developer portal navigation">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <ThemeToggleButton label="Toggle developer theme" />
-      </div>
-    </header>
-  );
-}
-
-export function PortalFooter() {
-  return (
-    <footer className="developer-footer">
-      <div className="developer-container">
-        Accurate to the tracked LetBuyy gateway, app-platform shared contract, theme-engine, auth-core, and webhook-service contracts. Planned or absent surfaces are marked as skips.
-      </div>
-    </footer>
-  );
-}
-
+/** Docs pages: rail on desktop, drawer on mobile. */
 export function PortalLayout({ children }: { children: ReactNode }) {
   return (
-    <>
-      <PortalHeader />
-      <main className="developer-container developer-main">{children}</main>
-      <PortalFooter />
-    </>
+    <DocsShell>
+      <div className="developer-main">{children}</div>
+    </DocsShell>
   );
 }
 
+/** The home page: full-bleed hero and grids, no rail. */
+export function PortalLandingLayout({ children }: { children: ReactNode }) {
+  return <LandingShell>{children}</LandingShell>;
+}
+
+/**
+ * Defaults to <h2>. This used to hard-code <h1>, which put three or four h1s on
+ * every page that had more than one section — a page has exactly one document
+ * title. Pages that use this as their own page title pass `as="h1"`.
+ */
 export function SectionHeading({
   kicker,
   title,
   description,
+  as: Heading = "h2",
 }: {
   kicker?: string;
   title: string;
   description: string;
+  as?: "h1" | "h2";
 }) {
   return (
     <div className="developer-section-heading">
       {kicker ? <span className="developer-kicker">{kicker}</span> : null}
-      <h1>{title}</h1>
+      <Heading>{title}</Heading>
       <p>{description}</p>
     </div>
   );

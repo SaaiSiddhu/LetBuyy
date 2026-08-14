@@ -4,7 +4,7 @@ import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
 import { hmacSha256Hex, timingSafeEqualHex } from '../lib/crypto';
 import { bumpStorefrontCacheVersion, purgeStorefrontCache, storefrontCacheKey } from '../lib/storefront-cache';
-import { dbErrorBody, errorBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { dbErrorBody, errorBody, getSupabaseAdmin, paginated, shouldReturnEmptyForMissingLocalSchema, success } from '../lib/supabase';
 import { authMiddleware, optionalAuth } from '../middleware/auth';
 import { validate } from '../middleware/validation';
 import {
@@ -490,6 +490,29 @@ router.get('/', async (c) => {
     const { data, error, count } = await query;
 
     if (error) {
+        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
+            const devThemes = [
+                { id: 'modern', slug: 'modern', name: 'Minimal Modern', category: 'General', is_active: true, letbuyy_pricing_type: 'free', letbuyy_price_inr: 0 },
+                { id: 'vibrant', slug: 'vibrant', name: 'Vibrant Bold', category: 'General', is_active: true, letbuyy_pricing_type: 'free', letbuyy_price_inr: 0 },
+                { id: 'tech-elite', slug: 'tech-elite', name: 'Tech Elite', category: 'Tech', is_active: true, letbuyy_pricing_type: 'free', letbuyy_price_inr: 0 },
+                { id: 'midnight', slug: 'midnight', name: 'Midnight Purple', category: 'Fashion', is_active: true, letbuyy_pricing_type: 'free', letbuyy_price_inr: 0 },
+                { id: 'luxury', slug: 'luxury', name: 'Luxury Premium', category: 'Luxury', is_active: true, letbuyy_pricing_type: 'free', letbuyy_price_inr: 0 },
+                { id: 'fresh-mint', slug: 'fresh-mint', name: 'Fresh Mint', category: 'Beauty', is_active: true, letbuyy_pricing_type: 'free', letbuyy_price_inr: 0 },
+            ];
+            if (storeId && auth) {
+                const enriched = devThemes.map((theme) => ({
+                    ...theme,
+                    installed: true,
+                    active: theme.slug === 'modern',
+                }));
+                return c.json({
+                    ...paginated(enriched, devThemes.length, page, limit),
+                    current_theme: 'modern',
+                    store_status: 'published',
+                });
+            }
+            return c.json(paginated(devThemes, devThemes.length, page, limit));
+        }
         return c.json(dbErrorBody(), 500);
     }
 

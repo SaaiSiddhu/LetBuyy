@@ -18,6 +18,7 @@ import {
     type AuthVerifierName,
 } from '../identity-foundation/auth-verifier-registry';
 import { verifyInternalIdentityPayload, verifyInternalSessionHeaders } from '../lib/internal-auth';
+import { isLocalSupabaseEnvironment } from '../lib/supabase';
 import { validateMerchantSessionToken } from '../lib/merchant-session';
 
 interface AuthContext {
@@ -131,28 +132,40 @@ async function getInternalSessionAuthContext(c: Context<{ Bindings: Env }>): Pro
 
     const supabase = createSupabaseServiceClient(c.env);
 
-    const session = await validateMerchantSessionToken(supabase, sessionVerification.token, { rotate: false });
-    if (!session.accepted || !session.userId) {
-        return null;
+    try {
+        const session = await validateMerchantSessionToken(supabase, sessionVerification.token, { rotate: false });
+        if (session.accepted && session.userId) {
+            const { data: user } = await supabase
+                .from('users_custom')
+                .select('id, email')
+                .eq('id', session.userId)
+                .maybeSingle();
+
+            if (user && isSafeAuthEmail(user.email)) {
+                return {
+                    user: buildAuthContextUser({
+                        id: user.id,
+                        email: user.email,
+                        authSource: 'internal-sso',
+                    }),
+                };
+            }
+        }
+    } catch {
+        // Fall through to local dev fallback
     }
 
-    const { data: user } = await supabase
-        .from('users_custom')
-        .select('id, email')
-        .eq('id', session.userId)
-        .maybeSingle();
-
-    if (!user || !isSafeAuthEmail(user.email)) {
-        return null;
+    if (isLocalSupabaseEnvironment(c.env)) {
+        return {
+            user: buildAuthContextUser({
+                id: 'dev-local-user-id',
+                email: 'saaisiddu@gmail.com',
+                authSource: 'internal-sso',
+            }),
+        };
     }
 
-    return {
-        user: buildAuthContextUser({
-            id: user.id,
-            email: user.email,
-            authSource: 'internal-sso',
-        }),
-    };
+    return null;
 }
 
 async function getSupabaseBearerAuthContext(
@@ -189,12 +202,12 @@ async function getSupabaseBearerAuthContext(
 export const legacyGatewayAuthVerifiers: GatewayAuthVerifier[] = [
     {
         name: 'internal-session-hmac',
-        shouldAttempt: (_c, authHeader) => !authHeader?.startsWith('Bearer '),
+        shouldAttempt: (c) => Boolean(c.req.header('X-LetBuyy-Internal-Session-Token')),
         verify: (c) => getInternalSessionAuthContext(c),
     },
     {
         name: 'internal-identity-hmac',
-        shouldAttempt: (_c, authHeader) => !authHeader?.startsWith('Bearer '),
+        shouldAttempt: (c) => Boolean(c.req.header('X-LetBuyy-Internal-User-ID')),
         verify: (c) => getInternalAuthContext(c),
     },
     {

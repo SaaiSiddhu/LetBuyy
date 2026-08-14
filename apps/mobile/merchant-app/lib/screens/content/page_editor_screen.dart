@@ -260,17 +260,22 @@ class _PageEditorScreenState extends State<PageEditorScreen> {
           keyboardType: TextInputType.number,
         ),
         const SizedBox(height: 8),
-        SwitchListTile(
-          value: _showInNav,
-          onChanged: (value) => setState(() => _showInNav = value),
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            'Show in navigation',
-            style: TextStyle(color: colors.textPrimary),
-          ),
-          subtitle: Text(
-            'Add this page to the storefront menu when published.',
-            style: TextStyle(color: colors.textSecondary, fontSize: 12),
+        // The tile needs its own Material ancestor: it paints ink splashes on the
+        // nearest Material, and the decorated section card above would hide them.
+        Material(
+          type: MaterialType.transparency,
+          child: SwitchListTile(
+            value: _showInNav,
+            onChanged: (value) => setState(() => _showInNav = value),
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              'Show in navigation',
+              style: TextStyle(color: colors.textPrimary),
+            ),
+            subtitle: Text(
+              'Add this page to the storefront menu when published.',
+              style: TextStyle(color: colors.textSecondary, fontSize: 12),
+            ),
           ),
         ),
       ],

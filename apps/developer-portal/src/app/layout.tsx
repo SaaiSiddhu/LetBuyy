@@ -55,6 +55,16 @@ export const metadata: Metadata = {
     images: [{ url: sharedOgImage, width: 1200, height: 630, alt: "LetBuyy Developers" }],
   },
   twitter: { card: "summary_large_image", title: siteTitle, description: siteDescription, images: [sharedOgImage] },
+  /* Declared explicitly, matching the marketing site and theme marketplace.
+     app/favicon.ico alone is served correctly but browsers cache a favicon
+     per-origin and keep showing whatever they saw first; an explicit link to a
+     distinct URL is what actually replaces a stale one. The SVG also renders
+     sharply on high-DPI tabs, which a 16px .ico does not. */
+  icons: {
+    icon: "/icons/letbuyy-mark.svg",
+    shortcut: "/icons/letbuyy-mark.svg",
+    apple: "/icons/letbuyy-mark.svg",
+  },
 };
 
 const structuredData = [
@@ -85,7 +95,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={fontVariables}>
+    <html lang="en" className={fontVariables} suppressHydrationWarning>
       <head>
         <ThemeScript />
         <script
@@ -95,6 +105,9 @@ export default function RootLayout({
       </head>
       <body>
         <LetbuyyThemeProvider surface="marketplace" density="compact" className="developer-shell">
+          <a href="#main-content" className="dp-skip-link">
+            Skip to main content
+          </a>
           {children}
         </LetbuyyThemeProvider>
       </body>

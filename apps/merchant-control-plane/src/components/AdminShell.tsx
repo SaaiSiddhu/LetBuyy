@@ -124,10 +124,10 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                 <AppNavigation
                     sections={navigationSections}
                     width="sm"
-                    className="pt-[var(--admin-header-height)]"
+                    className="admin-panel-frame pt-[var(--admin-header-height)]"
                     sidebarClassName={sidebarOpen
-                        ? 'fixed left-0 top-[var(--admin-header-height)] z-50 flex h-[calc(100vh_-_var(--admin-header-height))] rounded-tl-[var(--sidebar-panel-radius)] overflow-hidden lg:sticky lg:top-[var(--admin-header-height)] lg:h-[calc(100vh_-_var(--admin-header-height))] lg:self-start'
-                        : 'hidden rounded-tl-[var(--sidebar-panel-radius)] overflow-hidden lg:flex lg:sticky lg:top-[var(--admin-header-height)] lg:h-[calc(100vh_-_var(--admin-header-height))] lg:self-start'}
+                        ? 'admin-panel-sidebar fixed left-0 top-[var(--admin-header-height)] z-50 flex h-[calc(100vh_-_var(--admin-header-height))] lg:sticky lg:top-[var(--admin-header-height)] lg:h-[calc(100vh_-_var(--admin-header-height))] lg:self-start'
+                        : 'admin-panel-sidebar hidden lg:flex lg:sticky lg:top-[var(--admin-header-height)] lg:h-[calc(100vh_-_var(--admin-header-height))] lg:self-start'}
                     footer={
                         <Navigation
                             ariaLabel="Settings navigation"
@@ -136,7 +136,7 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                     }
                 >
                     <div className={`flex min-h-full min-w-0 ${aiPanelOpen ? 'ai-open' : ''}`}>
-                        <div className={`min-w-0 flex-1 bg-[var(--lb-color-bg)] ${isSettingsPage ? 'settings-active' : ''}`}>
+                        <div className={`admin-panel-content min-w-0 flex-1 bg-[var(--lb-color-bg)] ${isSettingsPage ? 'settings-active' : ''}`}>
                             {isDraft && (
                                 <div className="admin-draft-banner">
                                     <MaterialIcon name="warning" size={16} />

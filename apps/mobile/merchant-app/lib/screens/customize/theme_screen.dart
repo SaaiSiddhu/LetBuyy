@@ -9,7 +9,7 @@ import '../../models/theme_editor_models.dart';
 import '../../services/theme_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../widgets/shared/cached_merchant_image.dart';
-import '../main/store_main_screen.dart';
+import '../editor/section_editor_screen.dart';
 import '../preview/live_preview_screen.dart';
 import 'theme_versions_screen.dart';
 
@@ -214,7 +214,11 @@ class _ThemeScreenState extends State<ThemeScreen> {
   }
 
   void _openEditor() {
-    StoreMainScreen.navigateToEditor();
+    if (_store == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SectionEditorScreen()),
+    ).then((_) => _loadThemes()); // Reload after editor closes in case draft changed
   }
 
   @override

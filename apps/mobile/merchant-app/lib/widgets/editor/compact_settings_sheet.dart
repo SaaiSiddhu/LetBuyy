@@ -3,7 +3,6 @@ import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import '../../theme/app_theme_colors.dart';
 import 'package:flutter/services.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../models/store_model.dart';
 import '../shared/cached_merchant_image.dart';
 
@@ -295,17 +294,17 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
     // Collect active social links
     final activeSocials = <IconData>[];
     if ((_settings['instagramUrl']?.toString() ?? '').isNotEmpty)
-      activeSocials.add(FontAwesomeIcons.instagram);
+      activeSocials.add(Icons.camera_alt_outlined);
     if ((_settings['facebookUrl']?.toString() ?? '').isNotEmpty)
-      activeSocials.add(FontAwesomeIcons.facebookF);
+      activeSocials.add(Icons.facebook);
     if ((_settings['twitterUrl']?.toString() ?? '').isNotEmpty)
-      activeSocials.add(FontAwesomeIcons.xTwitter);
+      activeSocials.add(Icons.alternate_email);
     if ((_settings['whatsappUrl']?.toString() ?? '').isNotEmpty)
-      activeSocials.add(FontAwesomeIcons.whatsapp);
+      activeSocials.add(Icons.chat_bubble_outline_rounded);
     if ((_settings['telegramUrl']?.toString() ?? '').isNotEmpty)
-      activeSocials.add(FontAwesomeIcons.telegram);
+      activeSocials.add(Icons.send_rounded);
     if ((_settings['youtubeUrl']?.toString() ?? '').isNotEmpty)
-      activeSocials.add(FontAwesomeIcons.youtube);
+      activeSocials.add(Icons.play_circle_outline_rounded);
 
     final hasSocials = showSocial && activeSocials.isNotEmpty;
 
@@ -366,7 +365,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Center(
-                                  child: FaIcon(
+                                  child: Icon(
                                     icon,
                                     size: 8,
                                     color: Colors.white,
@@ -466,8 +465,8 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        FaIcon(
-                          FontAwesomeIcons.envelope,
+                        Icon(
+                          Icons.email_outlined,
                           size: 10,
                           color: primaryColor,
                         ),
@@ -543,37 +542,37 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
       {
         'key': 'instagramUrl',
         'label': 'Instagram',
-        'icon': FontAwesomeIcons.instagram,
+        'icon': Icons.camera_alt_outlined,
         'hint': 'instagram.com/yourstore',
       },
       {
         'key': 'facebookUrl',
         'label': 'Facebook',
-        'icon': FontAwesomeIcons.facebookF,
+        'icon': Icons.facebook,
         'hint': 'facebook.com/yourstore',
       },
       {
         'key': 'twitterUrl',
         'label': 'X (Twitter)',
-        'icon': FontAwesomeIcons.xTwitter,
+        'icon': Icons.alternate_email,
         'hint': 'twitter.com/yourstore',
       },
       {
         'key': 'whatsappUrl',
         'label': 'WhatsApp',
-        'icon': FontAwesomeIcons.whatsapp,
+        'icon': Icons.chat_bubble_outline_rounded,
         'hint': 'wa.me/919876543210',
       },
       {
         'key': 'telegramUrl',
         'label': 'Telegram',
-        'icon': FontAwesomeIcons.telegram,
+        'icon': Icons.send_rounded,
         'hint': 't.me/yourstore',
       },
       {
         'key': 'youtubeUrl',
         'label': 'YouTube',
-        'icon': FontAwesomeIcons.youtube,
+        'icon': Icons.play_circle_outline_rounded,
         'hint': 'youtube.com/@yourstore',
       },
     ];
@@ -585,7 +584,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
         _buildFooterTextField(
           label: 'Contact Email',
           key: 'contactEmail',
-          icon: FontAwesomeIcons.envelope,
+          icon: Icons.email_outlined,
           hint: 'help@yourstore.com',
         ),
 
@@ -704,7 +703,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
             fillColor: colors.surfaceVariant,
             prefixIcon: Padding(
               padding: const EdgeInsets.only(left: 14, right: 10),
-              child: FaIcon(icon, size: 16, color: const Color(0xFF818CF8)),
+              child: Icon(icon, size: 16, color: const Color(0xFF818CF8)),
             ),
             prefixIconConstraints: const BoxConstraints(
               minWidth: 0,
