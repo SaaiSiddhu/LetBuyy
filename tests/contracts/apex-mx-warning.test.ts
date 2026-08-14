@@ -15,13 +15,14 @@ function read(relativePath: string): string {
 
 test('gateway returns apex MX warning and UI/mobile surfaces it', () => {
   const route = read('services/api-gateway/src/routes/custom-domains.ts');
-  const merchant = read('apps/merchant-control-plane/src/app/[store]/settings/domains/page.tsx');
+  const wizardPath = join(repoRoot, 'apps/merchant-control-plane/src/components/domains/ConnectDomainWizard.tsx');
+  const merchant = existsSync(wizardPath) ? readFileSync(wizardPath, 'utf8') : read('apps/merchant-control-plane/src/app/[store]/settings/domains/page.tsx');
   const mobileScreen = read('apps/mobile/merchant-app/lib/screens/settings/domain_settings_screen.dart');
   const mobileService = read('apps/mobile/merchant-app/lib/services/custom_domains.dart');
 
   assert.match(route, /apex_mx_warning: dnsSnapshot\.mx\.length > 0/);
-  assert.match(merchant, /apexMxWarning/);
-  assert.match(merchant, /Your domain has email \(MX\) records/);
+  assert.match(merchant, /apex_mx_warning|apexMxWarning/);
+  assert.match(merchant, /receives email|Your domain has email \(MX\) records/);
   assert.match(mobileService, /apexMxWarning/);
   assert.match(mobileScreen, /Your domain has email \(MX\) records/);
 });

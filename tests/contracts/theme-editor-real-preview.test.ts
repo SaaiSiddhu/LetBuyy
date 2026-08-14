@@ -43,9 +43,9 @@ test('center preview panel targets storefront preview route and bridges section 
     assert.match(centerPanelSource, /new URL\('\/preview', storefrontBaseUrl\)/);
     assert.match(centerPanelSource, /url\.searchParams\.set\('subdomain', storeName\)/);
     assert.match(centerPanelSource, /theme_preview_token/);
-    assert.match(centerPanelSource, /letbuyy:theme-editor:section-select/);
-    assert.match(centerPanelSource, /onSelectSection\?\.\(message\.sectionId\)/);
-    assert.match(centerPanelSource, /LETBUYY_THEME_EDITOR_SELECTION/);
+    assert.match(centerPanelSource, /EDITOR_SECTION_SELECT_MESSAGE|letbuyy:theme-editor:section-select/);
+    assert.match(centerPanelSource, /onSelectSection\?\.\(sectionId\)|onSelectSection\?\.\(message\.sectionId\)/);
+    assert.match(centerPanelSource, /EDITOR_LEGACY_SELECTION_MESSAGE|LETBUYY_THEME_EDITOR_SELECTION/);
 });
 
 test('storefront preview route renders tenant data with the editor bridge', () => {

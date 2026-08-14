@@ -77,7 +77,7 @@ test('custom-domain health exposes DNS, SSL, and renewal state to mobile', () =>
 
   assert.match(sharedTypes, /CustomDomainHealthSchema/);
   assert.match(route, /readCustomDomainHealth\(c\.env/);
-  assert.match(route, /success\(\{ \.\.\.health, vercel: health\.vercel, health \}\)/);
+  assert.match(route, /success\(\{ \.\.\.health, (?:provider, )?vercel: health\.vercel, health \}\)/);
   assert.match(stores, /readCustomDomainHealth\(c\.env/);
   assert.match(stores, /dns_verified/);
   assert.match(stores, /renewal_status/);

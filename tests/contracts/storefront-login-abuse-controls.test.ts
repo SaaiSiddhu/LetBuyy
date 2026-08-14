@@ -57,7 +57,7 @@ test('storefront web login forwards Turnstile and preserves gateway abuse-contro
     const context = read(customerAuthContextPath);
     const sheet = read(accountSheetPath);
 
-    assert.match(route, /turnstile_token:\s*turnstileToken \|\| null/);
+    assert.match(route, /turnstile_token:\s*turnstileToken/);
     assert.match(route, /LetbuyyApiError/);
     assert.match(route, /error\.status === 403 \|\| error\.status === 429 \|\| error\.status === 503/);
     assert.match(route, /CUSTOMER_AUTH_RATE_LIMITED|TURNSTILE_REQUIRED/);

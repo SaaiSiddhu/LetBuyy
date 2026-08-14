@@ -122,5 +122,5 @@ test('Liquid commerce and embed surfaces stay wired through the storefront compo
     assert.match(rendererSource, /buildLiquidCommerceDrops\(input\.liquidContext\)/);
     assert.match(rendererSource, /engine\.registerFilter\('money_with_currency'/);
     assert.match(compositionSource, /liquidAppEmbeds: buildLiquidAppEmbeds\(store\.templateConfig\.appBlocks\)/);
-    assert.match(compositionSource, /liquidContext: buildLiquidCommerceContext\(\{[\s\S]*sectionData/);
+    assert.match(compositionSource, /liquidContext:\s*(?:await\s+)?buildLiquidCommerceContext\(\{[\s\S]*sectionData/);
 });

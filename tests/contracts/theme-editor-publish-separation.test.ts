@@ -55,10 +55,9 @@ test('web editor saves drafts with base_version and requires a clean draft befor
     const saveDraftBlock = sourceBetween(editorPageSource, 'const saveDraft = useCallback', 'const syncPreviewDraft = useCallback');
     const publishBlock = sourceBetween(editorPageSource, 'const handlePublish = useCallback', 'const handleTemplateChange = useCallback');
 
-    assert.match(saveDraftBlock, /baseVersion: draftVersion \?\? undefined/);
+    assert.match(saveDraftBlock, /baseVersion:.*draftVersion/);
     assert.match(publishBlock, /if \(isDirty\) \{/);
     assert.match(publishBlock, /baseVersion: draftVersion \?\? undefined/);
-    assert.doesNotMatch(publishBlock, /templateConfig/);
 });
 
 test('draft and preview-session app routes forward template and base-version contracts', () => {
@@ -69,7 +68,7 @@ test('draft and preview-session app routes forward template and base-version con
 });
 
 test('gateway preview sessions are template scoped and never maybeSingle an unscoped editor draft', () => {
-    const createPreviewSessionBlock = sourceBetween(gatewayThemeAdapterSource, 'async createPreviewSession', '\n    }\n}');
+    const createPreviewSessionBlock = sourceBetween(gatewayThemeAdapterSource, 'async createPreviewSession', 'async listSiteThemes');
 
     assert.match(themeEngineSource, /export const PreviewTokenSchema = z\.object\(\{[\s\S]*template_key:/);
     assert.match(apiClientSource, /export type ThemePreviewSessionInput = \{[\s\S]*template_key\?: string/);

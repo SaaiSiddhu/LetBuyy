@@ -41,16 +41,20 @@ test('marketing dead twin components are archived outside active source', () => 
 });
 
 test('marketing homepage keeps importing only the live component family', () => {
-    const source = read('apps/marketing-site/src/app/page.tsx');
+    const pagePath = existsSync(join(repoRoot, 'apps/marketing-site/src/app/[locale]/page.tsx'))
+        ? 'apps/marketing-site/src/app/[locale]/page.tsx'
+        : 'apps/marketing-site/src/app/page.tsx';
+    const source = read(pagePath);
 
     for (const liveComponent of [
         'Header',
         'Hero',
-        'SiteTypes',
+        'CapabilityMap',
+        'MerchantJourney',
         'Features',
-        'HowItWorks',
         'Pricing',
         'FAQ',
+        'EcosystemMap',
         'FinalCTA',
         'Footer',
     ]) {

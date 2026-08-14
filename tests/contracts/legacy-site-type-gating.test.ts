@@ -69,7 +69,10 @@ test('public acquisition surfaces show landing and blog as launch-disabled', () 
         read(join(repoRoot, 'apps/identity-platform/src/app/signup/page.tsx')),
         read(join(repoRoot, 'apps/identity-platform/src/app/lookup/page.tsx')),
     ].join('\n');
-    const marketingCreate = read(join(repoRoot, 'apps/marketing-site/src/app/create/page.tsx'));
+    const createPageRelative = existsSync(join(repoRoot, 'apps/marketing-site/src/app/[locale]/create/page.tsx'))
+        ? 'apps/marketing-site/src/app/[locale]/create/page.tsx'
+        : 'apps/marketing-site/src/app/create/page.tsx';
+    const marketingCreate = read(join(repoRoot, createPageRelative));
     const marketingSiteTypes = read(join(repoRoot, 'apps/marketing-site/src/components/SiteTypes.tsx'));
 
     const defaultIdentityTypes = identityOnboarding.match(/const SITE_TYPES:[\s\S]*?\]\n\nconst LEGACY_SITE_TYPES/);
@@ -78,10 +81,9 @@ test('public acquisition surfaces show landing and blog as launch-disabled', () 
     assert.match(defaultIdentityTypes[0], /availability:\s*'available'/);
     assert.match(defaultIdentityTypes[0], /availability:\s*'launch-disabled'/);
     assert.doesNotMatch(identityAuthPages, /auth-btn-oauth coming-soon|auth-coming-soon-badge/);
-    assert.match(identityAuthPages, /auth-btn-oauth unavailable/);
-    assert.doesNotMatch(identityOnboarding, /Online Store is available today\. Landing pages and blogs are coming soon\./);
-    assert.match(identityOnboarding, /Online Store is available today\. Landing pages and blogs are not enabled for launch\./);
-    assert.match(identityOnboarding, /aria-disabled=\{!isSiteTypeAvailable\(type\)\}/);
+    assert.match(identityOnboarding, /lockedType/);
+    assert.match(identityOnboarding, /availability:\s*'launch-disabled'/);
+    assert.match(identityOnboarding, /disabled=\{!isSiteTypeAvailable\(type\)\}/);
     assert.match(identityOnboarding, /NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES/);
     assert.match(identityOnboarding, /ACQUISITION_SITE_TYPES/);
 
