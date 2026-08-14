@@ -1,0 +1,54 @@
+<section class="lb-faq-accordion" data-section-id="{{ section.id }}">
+  <h2>{{ section.settings.title }}</h2>
+  {% if section.blocks.size > 0 %}
+  <div class="lb-faq-accordion__items">
+    {% for block in section.blocks %}<details class="lb-faq-accordion__item"{% unless section.settings.allowMultipleOpen %} name="lb-faq-{{ section.id }}"{% endunless %}><summary class="lb-faq-accordion__question">{{ block.settings.question }}</summary><div class="lb-faq-accordion__answer">{{ block.settings.answer }}</div></details>{% endfor %}
+  </div>
+  {% else %}
+  <p class="lb-faq-accordion__empty">No questions published yet.</p>
+  {% endif %}
+</section>
+{% schema %}
+{
+  "name": "FAQ Accordion",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title",
+      "default": "Frequently asked questions"
+    },
+    {
+      "id": "allowMultipleOpen",
+      "type": "toggle",
+      "label": "Allow multiple open",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq-item",
+      "name": "FAQ item",
+      "settings": [
+        {
+          "id": "question",
+          "type": "text",
+          "label": "Question"
+        },
+        {
+          "id": "answer",
+          "type": "richtext",
+          "label": "Answer"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ Accordion",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

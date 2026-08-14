@@ -18,7 +18,28 @@ export function ThemeToggleButton({
 }: ThemeToggleButtonProps) {
     const { resolvedTheme, setTheme, theme } = useTheme();
     const nextTheme = resolvedTheme === 'dark' ? 'light' : 'dark';
-    const Icon = theme === 'system' ? Monitor : resolvedTheme === 'dark' ? Moon : Sun;
+
+    /*
+     * The icon cannot be derived from the theme until after hydration.
+     *
+     * On the server `readStoredChoice` has no `window`, so the provider falls
+     * back to `defaultTheme` ("system") and this renders <Monitor>. The client's
+     * useState initializer then re-runs, reads localStorage, and gets "dark" —
+     * so the first client render wants <Moon>. Those are different SVG children,
+     * not just different attributes, so React cannot patch them and throws away
+     * the whole tree with a hydration mismatch.
+     *
+     * Gating on a mount flag makes the server render and the first client render
+     * agree (both <Monitor>); the real icon is swapped in one frame later. The
+     * click handler is unaffected, because `resolvedTheme` is already correct on
+     * the client even before this flips.
+     */
+    const [hydrated, setHydrated] = React.useState(false);
+    React.useEffect(() => {
+        setHydrated(true);
+    }, []);
+
+    const Icon = !hydrated ? Monitor : theme === 'system' ? Monitor : resolvedTheme === 'dark' ? Moon : Sun;
 
     return (
         <Button

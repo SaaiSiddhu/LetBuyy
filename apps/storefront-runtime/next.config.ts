@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
+import { dirname, resolve as resolvePath } from "node:path";
+import { fileURLToPath } from "node:url";
 import { resolvePlatformDomain } from "@letbuyy/shared-types";
 import { createSecurityHeaders } from "../../config/security/next-security-headers";
+
+const appRoot = dirname(fileURLToPath(import.meta.url));
 
 function parseFrameAncestors(value: string | undefined): string[] {
   if (!value) return [];
@@ -37,10 +41,31 @@ const nextConfig: NextConfig = {
   // client graph. Keep jsdom server-external, and drop it from the client bundle
   // (it is never executed client-side) so its node:* deps don't break the build.
   serverExternalPackages: ['jsdom'],
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, webpack }) => {
     if (!isServer) {
       config.resolve = config.resolve || {};
       config.resolve.fallback = { ...(config.resolve.fallback || {}), jsdom: false };
+
+      // The same barrel problem, one layer deeper: theme-engine's index re-exports
+      // theme-packager (and theme-publish, which imports it), and theme-packager
+      // imports `node:crypto` for build-time bundle checksums. Client section
+      // components value-import DEFAULT_THEME_SETTINGS from that barrel, so webpack
+      // must build every `export *` target and hits the node: request.
+      //
+      // resolve.fallback / resolve.alias CANNOT fix this: NormalModuleFactory
+      // detects the `node:` URI scheme and takes the resolveForScheme branch,
+      // never calling resolveResource(), so enhanced-resolve options are a no-op.
+      // Rewriting the request in beforeResolve (NormalModuleReplacementPlugin) is
+      // the only mechanism that intercepts it. Pointing at a local stub rather
+      // than stripping the prefix also avoids Next's unconditional client rule
+      // that maps bare `crypto` to crypto-browserify.
+      config.plugins = config.plugins || [];
+      config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(
+          /^node:crypto$/,
+          resolvePath(appRoot, 'src/lib/webpack/node-crypto-client-stub.ts'),
+        ),
+      );
     }
     return config;
   },

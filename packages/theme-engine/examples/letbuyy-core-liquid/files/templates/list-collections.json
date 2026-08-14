@@ -1,0 +1,19 @@
+{
+  "name": "All collections",
+  "layout": "theme",
+  "sections": {
+    "list-collections-grid": {
+      "type": "category-grid",
+      "settings": {
+        "title": "All collections",
+        "subtitle": "Browse every collection in the store."
+      },
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "list-collections-grid"
+  ]
+}

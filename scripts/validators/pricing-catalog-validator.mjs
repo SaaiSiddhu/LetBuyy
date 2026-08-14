@@ -101,10 +101,13 @@ const pricingComponents = getTrackedFiles().filter(
 for (const file of pricingComponents) {
   const src = readFile(file);
   // Heuristic: a hardcoded matrix has many objects each carrying commerce_os tier keys.
+  // Wave 0 truthfulness repair: this used reporter.warn(), so a hardcoded
+  // compare matrix could never block the governance gate — the single-source
+  // rule above was documented but unenforced. It now blocks via assert().
   const inlineTierRows = (src.match(/commerce_os\s*:/g) || []).length;
-  reporter.warn(
+  reporter.assert(
     inlineTierRows < 8,
-    `${file}: looks like it may hardcode the compare matrix (${inlineTierRows} inline commerce_os rows) — render it from /api/plans via plan-ui.ts instead`,
+    `${file}: hardcodes the compare matrix (${inlineTierRows} inline commerce_os rows) — render it from /api/plans via plan-ui.ts instead (single source: plans.compare_features)`,
   );
 }
 

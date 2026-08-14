@@ -357,7 +357,10 @@ const NOVA = defineExperience({
     headingFontFamily: 'Inter',
     borderRadius: 10,
   },
-  defaultSections: [...COMMERCE_BASE_SECTIONS],
+  // Commerce base + the brand-forward ctaSection that makes Nova structurally distinct from
+  // Summit. This list is what `preview.sectionCount` reports to the merchant, so it MUST mirror
+  // EXPERIENCE_COMPOSITIONS.nova.index — collectExperienceCompositionIssues() enforces that.
+  defaultSections: ['announcementBar', 'heroBanner', 'categoryGrid', 'featuredProducts', 'productGrid', 'ctaSection', 'newsletter'],
 });
 
 const SUMMIT = defineExperience({
@@ -404,7 +407,11 @@ export const FALLBACK_EXPERIENCE_ID = 'summit';
 
 // ── Engine (Stream B: resolver · validation · metadata · export · import) ─────
 
+/** Own-property lookup: an inherited key ('constructor', 'toString', …) must resolve to
+ *  undefined, so callers that pass merchant-supplied ids get the documented
+ *  "unknown experience" path instead of a truthy non-experience object. */
 export function getExperience(id: string): ThemeExperience | undefined {
+  if (!Object.prototype.hasOwnProperty.call(EXPERIENCE_REGISTRY, id)) return undefined;
   return EXPERIENCE_REGISTRY[id];
 }
 

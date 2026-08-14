@@ -1,0 +1,77 @@
+<section class="lb-collection-filter" data-section-id="{{ section.id }}" data-layout="{{ section.settings.layout }}">
+  {% if section.settings.showSearch %}
+  <form class="lb-collection-filter__form" role="search" method="get" action="{{ routes.search_url }}">
+    <label class="lb-collection-filter__label" for="lb-collection-filter-{{ section.id }}">Search products</label>
+    <input class="lb-collection-filter__input" id="lb-collection-filter-{{ section.id }}" type="search" name="search" value="{{ search.terms }}" placeholder="Search products">
+    <button class="lb-collection-filter__submit" type="submit">Search</button>
+  </form>
+  {% endif %}
+  {% if section.settings.showSort and collection.sort_options.size > 0 %}
+  <nav class="lb-collection-filter__sort" aria-label="Sort products">
+    {% for option in collection.sort_options %}<a class="lb-collection-filter__sort-link" href="{{ option.url }}"{% if option.active %} aria-current="true"{% endif %}>{{ option.label }}</a>{% endfor %}
+  </nav>
+  {% endif %}
+  {% if section.settings.showPriceFilter and collection.price_ranges.size > 0 %}
+  <nav class="lb-collection-filter__price" aria-label="Filter by price">
+    {% for range in collection.price_ranges %}<a class="lb-collection-filter__price-link" href="{{ range.url }}"{% if range.active %} aria-current="true"{% endif %}>{{ range.label }}</a>{% endfor %}
+  </nav>
+  {% endif %}
+  {% if section.settings.showVendorFilter and collection.vendors.size > 0 %}
+  <nav class="lb-collection-filter__vendor" aria-label="Filter by brand">
+    {% for vendor in collection.vendors %}<a class="lb-collection-filter__vendor-link" href="{{ vendor.url }}"{% if vendor.active %} aria-current="true"{% endif %}>{{ vendor.label }}</a>{% endfor %}
+  </nav>
+  {% endif %}
+  {% if search.terms != blank %}<p class="lb-collection-filter__active" role="status">Showing results for "{{ search.terms }}"{% if collection.handle != blank %} <a class="lb-collection-filter__clear" href="/collections/{{ collection.handle }}">Clear</a>{% endif %}</p>
+  {% elsif collection.products.size > 0 %}<p class="lb-collection-filter__count" role="status">{{ collection.products.size }} products</p>
+  {% else %}<p class="lb-collection-filter__empty" role="status">No products to filter yet.</p>{% endif %}
+</section>
+{% schema %}
+{
+  "name": "Collection Filter",
+  "settings": [
+    {
+      "id": "showSearch",
+      "type": "toggle",
+      "label": "Show search",
+      "default": true
+    },
+    {
+      "id": "showSort",
+      "type": "toggle",
+      "label": "Show sort",
+      "default": true
+    },
+    {
+      "id": "showPriceFilter",
+      "type": "toggle",
+      "label": "Show price filter",
+      "default": true
+    },
+    {
+      "id": "showVendorFilter",
+      "type": "toggle",
+      "label": "Show vendor filter",
+      "default": false
+    },
+    {
+      "id": "layout",
+      "type": "select",
+      "label": "Layout",
+      "default": "sidebar",
+      "options": [
+        "sidebar",
+        "drawer",
+        "topbar"
+      ]
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Collection Filter",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

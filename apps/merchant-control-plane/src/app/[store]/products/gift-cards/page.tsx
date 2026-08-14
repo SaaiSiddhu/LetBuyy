@@ -386,7 +386,7 @@ export default function GiftCardsPage() {
                 <PageHeader
                     title="Gift cards"
                     description="Issue gift card balances that customers can redeem at checkout."
-                    breadcrumbs={[{ label: 'Products' }, { label: 'Gift cards' }]}
+                    breadcrumbs={[{ label: 'Money' }, { label: 'Gift cards' }]}
                 />
                 <Card>
                     <Section title="Gift card list">
@@ -402,7 +402,7 @@ export default function GiftCardsPage() {
             <PageHeader
                 title="Gift cards"
                 description="Issue gift card balances that customers can redeem at checkout."
-                breadcrumbs={[{ label: 'Products' }, { label: 'Gift cards' }]}
+                breadcrumbs={[{ label: 'Money' }, { label: 'Gift cards' }]}
                 primaryAction={{
                     label: showCreate ? 'Issue gift card' : 'New gift card',
                     onClick: showCreate ? () => void handleCreate() : () => setShowCreate(true),

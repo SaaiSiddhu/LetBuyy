@@ -6,6 +6,12 @@ export interface MerchantNavChild {
     icon?: string
     shortcut?: string
     keywords?: string[]
+    /**
+     * Match this path exactly rather than by prefix. Needed where one group's
+     * path is a prefix of routes that now live in a different group — e.g.
+     * `products` vs `products/inventory`, which belongs to Inventory.
+     */
+    exact?: boolean
 }
 
 export type MerchantNavSection = 'primary' | 'sales' | 'apps' | 'bottom'
@@ -25,11 +31,6 @@ export interface MerchantCommandItem {
     shortcut?: string
     keywords: string[]
 }
-
-const ordersChildren: MerchantNavChild[] = [
-    { path: 'orders?view=drafts', label: 'Drafts', icon: 'arrow_forward' },
-    { path: 'orders?view=abandoned-checkouts', label: 'Abandoned checkouts', icon: 'arrow_forward' },
-]
 
 const analyticsItem: MerchantNavItem = {
     path: 'analytics',
@@ -62,14 +63,60 @@ const baseEndItems: MerchantNavItem[] = [
 
 const storeNavigation: MerchantNavItem[] = [
     { path: 'dashboard', label: 'Home', icon: 'home', shortcut: 'g h' },
+    // Orders is a leaf: the former `orders?view=drafts` / `?view=abandoned-checkouts`
+    // children were dead links. The Orders page filters from local state and never
+    // reads useSearchParams, and neither value exists in its OrderStatus union.
+    { path: 'orders', label: 'Orders', icon: 'shopping_bag', shortcut: 'g o' },
     {
-        path: 'orders',
-        label: 'Orders',
-        icon: 'shopping_bag',
-        shortcut: 'g o',
+        // `exact` because `products` prefixes `products/inventory`,
+        // `products/purchase-orders` etc., which now live in their own groups.
+        // Without it, every warehousing route would also force this group open.
+        path: 'products',
+        label: 'Products',
+        icon: 'inventory_2',
+        shortcut: 'g p',
+        exact: true,
         children: [
-            { path: 'orders?view=drafts', label: 'Drafts' },
-            { path: 'orders?view=abandoned-checkouts', label: 'Abandoned checkouts' },
+            { path: 'products/new', label: 'Add product', shortcut: 'n p' },
+            { path: 'products/collections', label: 'Collections' },
+            { path: 'products/smart-collections', label: 'Smart collections', keywords: ['automated', 'rules', 'dynamic collection', 'conditions'] },
+            { path: 'categories', label: 'Categories' },
+            { path: 'export', label: 'Export and import', keywords: ['csv', 'import', 'export', 'bulk', 'migrate'] },
+        ],
+    },
+    {
+        // Stock control. The parent is the inventory page itself.
+        path: 'products/inventory',
+        label: 'Inventory',
+        icon: 'inventory',
+        shortcut: 'g i',
+        children: [
+            { path: 'products/inventory-history', label: 'Inventory history', keywords: ['movements', 'ledger', 'adjustments', 'audit'] },
+            { path: 'products/reservations', label: 'Reservations', keywords: ['reserved', 'hold', 'allocation'] },
+            { path: 'products/locations', label: 'Locations', keywords: ['warehouse', 'location', 'stock location'] },
+            { path: 'products/operations-dashboard', label: 'Operations dashboard', keywords: ['kpi', 'metrics', 'operations'] },
+        ],
+    },
+    {
+        // Procurement — a different persona and cadence from merchandising.
+        path: 'products/purchase-orders',
+        label: 'Purchasing',
+        icon: 'local_shipping',
+        children: [
+            { path: 'products/transfers', label: 'Transfers' },
+            { path: 'products/receipts', label: 'Receipts', keywords: ['receiving', 'received', 'receipt history'] },
+            { path: 'products/suppliers', label: 'Vendors', keywords: ['supplier', 'vendor', 'purchasing'] },
+        ],
+    },
+    {
+        // Promoted out of Marketing: a customer is a first-class commerce noun
+        // with its own detail route, not a marketing asset.
+        path: 'customers',
+        label: 'Customers',
+        icon: 'group',
+        shortcut: 'g c',
+        children: [
+            { path: 'customers/segments', label: 'Segments', keywords: ['segment', 'audience', 'filter', 'cohort'] },
         ],
     },
     {
@@ -77,31 +124,12 @@ const storeNavigation: MerchantNavItem[] = [
         label: 'Money',
         icon: 'payments',
         shortcut: 'g y',
+        // No 'Billing' child: the group's own path IS billing, so listing it
+        // again would render the same href twice and stop the parent linking.
         children: [
-            { path: 'settings/billing', label: 'Billing', keywords: ['invoice', 'billing history'] },
             { path: 'payouts', label: 'Payouts', keywords: ['payout', 'settlement'] },
-        ],
-    },
-    {
-        path: 'products',
-        label: 'Products',
-        icon: 'inventory_2',
-        shortcut: 'g p',
-        children: [
-            { path: 'products/new', label: 'Add product', shortcut: 'n p' },
-            { path: 'products/collections', label: 'Collections' },
-            { path: 'products/smart-collections', label: 'Smart collections', keywords: ['automated', 'rules', 'dynamic collection', 'conditions'] },
-            { path: 'products/inventory', label: 'Inventory', shortcut: 'g i' },
-            { path: 'products/inventory-history', label: 'Inventory history', keywords: ['movements', 'ledger', 'adjustments', 'audit'] },
-            { path: 'products/reservations', label: 'Reservations', keywords: ['reserved', 'hold', 'allocation'] },
-            { path: 'categories', label: 'Categories' },
-            { path: 'products/purchase-orders', label: 'Purchase orders' },
-            { path: 'products/transfers', label: 'Transfers' },
-            { path: 'products/receipts', label: 'Receipts', keywords: ['receiving', 'received', 'receipt history'] },
-            { path: 'products/suppliers', label: 'Vendors', keywords: ['supplier', 'vendor', 'purchasing'] },
-            { path: 'products/locations', label: 'Locations', keywords: ['warehouse', 'location', 'stock location'] },
-            { path: 'products/operations-dashboard', label: 'Operations dashboard', keywords: ['kpi', 'metrics', 'analytics', 'operations'] },
-            { path: 'products/gift-cards', label: 'Gift cards' },
+            // Stored-value liability on the canonical ledger, not a catalog object.
+            { path: 'products/gift-cards', label: 'Gift cards', keywords: ['gift card', 'store credit', 'voucher'] },
         ],
     },
     {
@@ -109,24 +137,25 @@ const storeNavigation: MerchantNavItem[] = [
         label: 'Marketing',
         icon: 'marketing',
         shortcut: 'g m',
+        // Parent lands on Discounts, so it is not repeated as a child.
         children: [
-            { path: 'customers', label: 'Customers', shortcut: 'g c', keywords: ['customer', 'buyers'] },
-            { path: 'customers/segments', label: 'Segments', keywords: ['segment', 'audience', 'filter', 'cohort'] },
-            { path: 'coupons', label: 'Discounts', shortcut: 'g d', keywords: ['coupon', 'promo', 'discount'] },
             { path: 'reviews', label: 'Reviews', shortcut: 'g r' },
             { path: 'marketing', label: 'Campaigns', keywords: ['email', 'campaign', 'newsletter', 'broadcast'] },
+            { path: 'ai', label: 'AI Studio', keywords: ['ai', 'credits', 'copy', 'seo', 'generate'] },
         ],
     },
     {
+        // Parent lands on Pages, so it is not repeated as a child.
         path: 'pages',
         label: 'Content',
         icon: 'pages',
+        exact: true,
         children: [
-            { path: 'pages', label: 'Pages' },
             { path: 'posts', label: 'Blog posts' },
             { path: 'comments', label: 'Comments' },
         ],
     },
+    { path: 'analytics', label: 'Analytics', icon: 'bar_chart', shortcut: 'g a' },
     {
         path: 'online-store',
         label: 'Online Store',

@@ -52,7 +52,10 @@
     "validate:security": "node scripts/validators/provider-isolation-validator.mjs && node scripts/validators/environment-validator.mjs && node scripts/validators/supply-chain-validator.mjs",
     "validate:observability": "node scripts/validators/production-readiness-validator.mjs",
     "validate:end-state": "node scripts/validators/whole-repo-end-state-validator.mjs",
+    "validate:web-v1-perimeter": "node scripts/validators/web-v1-scope-perimeter-validator.mjs",
+    "validate:web-v1-perimeter:report": "node scripts/validators/web-v1-scope-perimeter-validator.mjs --report",
     "validate:ci": "node scripts/validators/ci-simulation-validator.mjs",
+    "validate:workflow-triggers": "node scripts/validators/workflow-trigger-coverage-validator.mjs",
     "certify:production": "node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=production --mode=auto",
     "certify:production:plan-report": "node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan",
     "graph:ui": "node tools/graph-server/server.mjs",
@@ -163,5 +166,8 @@
       "undici@<6.24.0": "6.24.0"
     }
   },
-  "packageManager": "pnpm@10.6.2"
+  "packageManager": "pnpm@10.6.2",
+  "engines": {
+    "node": ">=20.9.0"
+  }
 }

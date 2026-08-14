@@ -21,12 +21,19 @@
 //     No Date.now()/Math.random() — all values are static.
 //   - Section ids follow '{experienceId}-{camelType}-{templateKey}' pattern
 //     for stable, unique-per-experience ids.
-//   - collectionFilter and faqAccordion are included in compositions that
-//     match their industry intent; they will produce 'incompatible' diff
-//     entries on any standard Urban Kicks/LetBuyy Core bundle (those types
-//     are absent from section_definitions). The remaining compatible sections
-//     still apply.
+//   - collectionFilter and faqAccordion are included in compositions that match
+//     their industry intent. Every referenced type has a canonical kebab mapping
+//     (collectExperienceCompositionIssues), but whether it RENDERS depends on the
+//     bundle: a bundle missing the Liquid section file makes that one section
+//     'incompatible' at apply time and the rest still apply. Point
+//     collectExperienceCompositionBundleIssues() at a bundle's
+//     section_definitions to prove — deterministically — that all 30
+//     compositions resolve end to end.
 // ============================================================================
+
+import { BUILT_IN_SECTION_TYPES } from './built-in-section-schemas';
+import { BUILT_IN_TO_LIQUID_SECTION_TYPE, resolveLiquidSectionType } from './section-type-map';
+import { EXPERIENCE_REGISTRY, getExperience } from './theme-presets';
 
 /** A single section in a composition template. */
 export interface SectionSpec {
@@ -47,6 +54,14 @@ export interface ExperienceComposition {
   /** Collection / category page (template key: 'collection') */
   collection: SectionSpec[];
 }
+
+/**
+ * The only templates an Experience composes. Every other template (cart, search,
+ * customers/*, blog, …) is out of scope for the apply engine and is never touched.
+ */
+export const EXPERIENCE_TEMPLATE_KEYS = ['index', 'product', 'collection'] as const;
+
+export type ExperienceTemplateKey = typeof EXPERIENCE_TEMPLATE_KEYS[number];
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -365,8 +380,155 @@ export const EXPERIENCE_COMPOSITIONS: Readonly<Record<string, ExperienceComposit
 
 /**
  * Retrieve the composition for a specific experience id.
- * Returns undefined when the id is not in the registry.
+ * Returns undefined when the id is not in the registry (own-property lookup, so an
+ * inherited key such as 'constructor' never resolves to a non-composition object).
  */
 export function getExperienceComposition(id: string): ExperienceComposition | undefined {
+  if (!Object.prototype.hasOwnProperty.call(EXPERIENCE_COMPOSITIONS, id)) return undefined;
   return EXPERIENCE_COMPOSITIONS[id];
+}
+
+// ── Integrity checks ─────────────────────────────────────────────────────────
+// Same contract as collectExperienceRegistryIssues / collectIndustryMapIssues /
+// collectSectionTypeMapIssues: return [] when clean, one human-readable string per
+// problem otherwise. These are the deterministic guards for the class of defect
+// where a composition references a section the platform cannot actually render.
+
+/** ThemeDocumentIdSchema charset — a spec id that violates it fails parseThemeDocument at apply time. */
+const SECTION_ID_PATTERN = /^[a-zA-Z0-9_-]+$/;
+const SECTION_ID_MAX_LENGTH = 64;
+
+function isStaticSettingValue(value: unknown): boolean {
+  return (
+    value === null
+    || value === undefined
+    || typeof value === 'string'
+    || typeof value === 'number'
+    || typeof value === 'boolean'
+  );
+}
+
+/**
+ * BUNDLE-INDEPENDENT integrity check of all 30 compositions (10 experiences × 3 templates).
+ *
+ * Verifies, for every SectionSpec of every composition, that:
+ *   - the composition registry and EXPERIENCE_REGISTRY cover each other exactly;
+ *   - the referenced type is a real BUILT_IN_SECTION_TYPE and has a canonical kebab
+ *     mapping in BUILT_IN_TO_LIQUID_SECTION_TYPE (without one, the apply engine can
+ *     only ever report the section as incompatible — a permanently dead composition entry);
+ *   - ids are unique per template, follow the '{experienceId}-…' pattern and satisfy
+ *     ThemeDocumentIdSchema (charset + 64-char limit), so a composed section can never
+ *     fail document validation;
+ *   - a template never lists the same type twice (the apply engine matches old sections
+ *     by type — a duplicate type would make the match ambiguous);
+ *   - settings values are static scalars (determinism: same input → same document);
+ *   - `experience.defaultSections` mirrors the index composition, because
+ *     `preview.sectionCount` is derived from defaultSections and is shown to the merchant
+ *     as the size of the design they are about to apply.
+ *
+ * Returns [] when clean.
+ */
+export function collectExperienceCompositionIssues(): string[] {
+  const issues: string[] = [];
+  const builtIns = new Set<string>(BUILT_IN_SECTION_TYPES);
+
+  for (const id of Object.keys(EXPERIENCE_REGISTRY)) {
+    if (!Object.prototype.hasOwnProperty.call(EXPERIENCE_COMPOSITIONS, id)) {
+      issues.push(`experience '${id}' has no entry in EXPERIENCE_COMPOSITIONS`);
+    }
+  }
+
+  for (const [experienceId, composition] of Object.entries(EXPERIENCE_COMPOSITIONS)) {
+    const experience = getExperience(experienceId);
+    if (!experience) {
+      issues.push(`composition key '${experienceId}' is not a registered experience`);
+      continue;
+    }
+
+    for (const templateKey of EXPERIENCE_TEMPLATE_KEYS) {
+      const specs = composition[templateKey];
+      const where = `${experienceId}/${templateKey}`;
+
+      if (specs.length === 0) {
+        issues.push(`${where}: composition has zero sections`);
+      }
+
+      const seenIds = new Set<string>();
+      const seenTypes = new Set<string>();
+
+      for (const spec of specs) {
+        if (!builtIns.has(spec.type)) {
+          issues.push(`${where}: section '${spec.id}' references unknown built-in section type '${spec.type}'`);
+        }
+        if (!Object.prototype.hasOwnProperty.call(BUILT_IN_TO_LIQUID_SECTION_TYPE, spec.type)) {
+          issues.push(`${where}: section type '${spec.type}' has no mapping in BUILT_IN_TO_LIQUID_SECTION_TYPE`);
+        }
+        if (seenTypes.has(spec.type)) {
+          issues.push(`${where}: section type '${spec.type}' appears more than once`);
+        }
+        seenTypes.add(spec.type);
+
+        if (seenIds.has(spec.id)) {
+          issues.push(`${where}: duplicate section id '${spec.id}'`);
+        }
+        seenIds.add(spec.id);
+
+        if (!spec.id.startsWith(`${experienceId}-`)) {
+          issues.push(`${where}: section id '${spec.id}' does not start with '${experienceId}-'`);
+        }
+        if (!SECTION_ID_PATTERN.test(spec.id)) {
+          issues.push(`${where}: section id '${spec.id}' contains characters ThemeDocumentIdSchema rejects`);
+        }
+        if (spec.id.length > SECTION_ID_MAX_LENGTH) {
+          issues.push(`${where}: section id '${spec.id}' exceeds ${SECTION_ID_MAX_LENGTH} characters`);
+        }
+
+        for (const [key, value] of Object.entries(spec.settings)) {
+          if (!isStaticSettingValue(value)) {
+            issues.push(`${where}: section '${spec.id}' setting '${key}' is not a static scalar`);
+          }
+        }
+      }
+    }
+
+    const indexTypes = composition.index.map((s) => s.type);
+    if (indexTypes.join('|') !== experience.defaultSections.join('|')) {
+      issues.push(
+        `${experienceId}: defaultSections [${experience.defaultSections.join(', ')}] does not mirror the index `
+        + `composition [${indexTypes.join(', ')}] — preview.sectionCount would over- or under-promise`,
+      );
+    }
+  }
+
+  return issues;
+}
+
+/**
+ * BUNDLE-DEPENDENT integrity check: every section referenced by every composition must
+ * resolve against the supplied `section_definitions` (a ThemeDocument's, or a bundle's
+ * `sections` map). This is the guard that catches "the composition references a section
+ * the theme does not ship" — the failure mode that silently degrades a template.
+ *
+ * Returns [] when every one of the 30 compositions resolves end to end.
+ *
+ * @param sectionDefinitions section_definitions of the target document/bundle.
+ */
+export function collectExperienceCompositionBundleIssues(
+  sectionDefinitions: Record<string, unknown>,
+): string[] {
+  const issues: string[] = [];
+  for (const [experienceId, composition] of Object.entries(EXPERIENCE_COMPOSITIONS)) {
+    for (const templateKey of EXPERIENCE_TEMPLATE_KEYS) {
+      for (const spec of composition[templateKey]) {
+        if (resolveLiquidSectionType(spec.type, sectionDefinitions) !== null) continue;
+        const kebab = BUILT_IN_TO_LIQUID_SECTION_TYPE[spec.type];
+        issues.push(
+          kebab
+            ? `${experienceId}/${templateKey}: '${spec.type}' → '${kebab}' is absent from section_definitions`
+            : `${experienceId}/${templateKey}: '${spec.type}' has no mapping in BUILT_IN_TO_LIQUID_SECTION_TYPE`,
+        );
+      }
+    }
+  }
+  return issues;
 }

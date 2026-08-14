@@ -48,51 +48,20 @@ export {
   type ValidateThemeDocumentInput,
 } from '@letbuyy/theme-engine';
 
-// ─── Phase Q — Theme Library Management Schemas ───────────────────────────────
-// These schemas are gateway-layer validations for site-scoped theme library
-// operations (create/duplicate/rename/archive/delete). All require store_id as
-// UUID so the gateway can verify site ownership before any DB mutation.
-import { z } from 'zod';
-
-const UuidField = z.string().uuid('Must be a valid UUID');
-const ThemeNameField = z.string().min(1, 'Name is required').max(120, 'Name must be 120 characters or fewer').trim();
-
-/** GET /themes/library?store_id= */
-export const ListSiteThemesQuerySchema = z.object({
-  store_id: UuidField,
-});
-export type ListSiteThemesQueryInput = z.infer<typeof ListSiteThemesQuerySchema>;
-
-/** POST /themes/library/create */
-export const CreateSiteThemeSchema = z.object({
-  store_id: UuidField,
-  name: ThemeNameField,
-  template_slug: z.string().trim().min(1).max(120).optional(),
-});
-export type CreateSiteThemeInput = z.infer<typeof CreateSiteThemeSchema>;
-
-/** POST /themes/:slug/duplicate */
-export const DuplicateSiteThemeSchema = z.object({
-  store_id: UuidField,
-  name: ThemeNameField.optional(),
-});
-export type DuplicateSiteThemeInput = z.infer<typeof DuplicateSiteThemeSchema>;
-
-/** PATCH /themes/:slug/rename */
-export const RenameSiteThemeSchema = z.object({
-  store_id: UuidField,
-  name: ThemeNameField,
-});
-export type RenameSiteThemeInput = z.infer<typeof RenameSiteThemeSchema>;
-
-/** POST /themes/:slug/archive */
-export const ArchiveSiteThemeSchema = z.object({
-  store_id: UuidField,
-});
-export type ArchiveSiteThemeInput = z.infer<typeof ArchiveSiteThemeSchema>;
-
-/** DELETE /themes/:slug/unpublished?store_id= */
-export const DeleteUnpublishedThemeQuerySchema = z.object({
-  store_id: UuidField,
-});
-export type DeleteUnpublishedThemeQueryInput = z.infer<typeof DeleteUnpublishedThemeQuerySchema>;
+// Phase Q — site-scoped theme library request contracts. Declared in
+// @letbuyy/theme-engine (theme-library-schemas.ts) so the theme domain keeps a single
+// contract source; this facade only re-exports them.
+export {
+  ListSiteThemesQuerySchema,
+  CreateSiteThemeSchema,
+  DuplicateSiteThemeSchema,
+  RenameSiteThemeSchema,
+  ArchiveSiteThemeSchema,
+  DeleteUnpublishedThemeQuerySchema,
+  type ListSiteThemesQueryInput,
+  type CreateSiteThemeInput,
+  type DuplicateSiteThemeInput,
+  type RenameSiteThemeInput,
+  type ArchiveSiteThemeInput,
+  type DeleteUnpublishedThemeQueryInput,
+} from '@letbuyy/theme-engine';

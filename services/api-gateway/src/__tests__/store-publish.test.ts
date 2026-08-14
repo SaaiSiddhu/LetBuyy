@@ -16,6 +16,23 @@ function repositorySource(path: string): string {
     return readFileSync(join(repositoryRoot, path), 'utf8');
 }
 
+/**
+ * Ownership on `sites` is a genuine two-column disjunction (custom_user_id is the current owner
+ * column, user_id the legacy one), so it cannot collapse into a single .eq() and has to go through
+ * PostgREST's .or(), which takes a RAW filter string that postgrest-js does not quote. These tests
+ * used to pin the interpolated literal `custom_user_id.eq.${customUser.id},user_id.eq.${...}`
+ * directly — which meant they asserted the UNESCAPED form and would fail the escaped one. They now
+ * pin the shared helper instead, and additionally assert that the helper double-quotes and
+ * backslash-escapes its value, so the protection the assertion exists for is stronger than before,
+ * not weaker.
+ */
+function assertOwnershipFilterIsEscaped(routeSource: string): void {
+    assert.match(routeSource, /function ownedByCustomUserFilter\(customUserId: string\): string \{/);
+    assert.match(routeSource, /const value = `"\$\{customUserId\.replace\(\/\["\\\\]\/g, '\\\\\$&'\)\}"`/);
+    assert.match(routeSource, /return `custom_user_id\.eq\.\$\{value\},user_id\.eq\.\$\{value\}`/);
+    assert.doesNotMatch(routeSource, /\.or\(`custom_user_id\.eq\.\$\{customUser\.id\}/);
+}
+
 test('store publish updates only owned sites to published with a timestamp', () => {
     const routeSource = source('routes/stores.ts');
 
@@ -23,7 +40,8 @@ test('store publish updates only owned sites to published with a timestamp', () 
     assert.match(routeSource, /status:\s*'published'/);
     assert.match(routeSource, /published_at:\s*new Date\(\)\.toISOString\(\)/);
     assert.match(routeSource, /\.eq\('id',\s*storeId\)/);
-    assert.match(routeSource, /\.or\(`custom_user_id\.eq\.\$\{customUser\.id\},user_id\.eq\.\$\{customUser\.id\}`\)/);
+    assert.match(routeSource, /\.or\(ownedByCustomUserFilter\(customUser\.id\)\)/);
+    assertOwnershipFilterIsEscaped(routeSource);
     assert.match(routeSource, /Store not found or not owned by you/);
 });
 
@@ -31,7 +49,8 @@ test('store health computes mobile readiness from real owned store signals', () 
     const routeSource = source('routes/stores.ts');
 
     assert.match(routeSource, /router\.get\('\/:id\/health'/);
-    assert.match(routeSource, /\.or\(`custom_user_id\.eq\.\$\{customUser\.id\},user_id\.eq\.\$\{customUser\.id\}`\)/);
+    assert.match(routeSource, /\.or\(ownedByCustomUserFilter\(customUser\.id\)\)/);
+    assertOwnershipFilterIsEscaped(routeSource);
     assert.match(routeSource, /\.from\('products'\)[\s\S]+\.select\('id',\s*\{ count: 'exact', head: true \}\)/);
     assert.match(routeSource, /\.from\('orders'\)[\s\S]+\.in\('status',\s*\['pending', 'pending_cod', 'confirmed', 'processing'\]\)/);
     assert.match(routeSource, /\.from\('product_reviews'\)[\s\S]+\.eq\('status',\s*'pending'\)/);
@@ -59,7 +78,8 @@ test('store PATCH accepts business profile and invoice address fields', () => {
         assert.match(routeSource, new RegExp(`'${field}'`));
     }
     assert.match(routeSource, /\.update\(updates\)[\s\S]*\.eq\('id',\s*storeId\)/);
-    assert.match(routeSource, /\.or\(`custom_user_id\.eq\.\$\{customUser\.id\},user_id\.eq\.\$\{customUser\.id\}`\)/);
+    assert.match(routeSource, /\.or\(ownedByCustomUserFilter\(customUser\.id\)\)/);
+    assertOwnershipFilterIsEscaped(routeSource);
     assert.match(tenantCoreSource, /business_profile:\s*BusinessProfileSchema\.optional\(\)\.nullable\(\)/);
     assert.match(tenantCoreSource, /invoice_address:\s*AddressSchema\.partial\(\)\.passthrough\(\)\.optional\(\)\.nullable\(\)/);
     assert.match(sharedTypesSource, /export const BusinessProfileSchema/);
@@ -74,7 +94,13 @@ test('public storefront resolver only exposes published stores by handle', () =>
     const publicRouteSource = source('routes/storefront/public-routes.ts');
 
     assert.match(routeSource, /normalizeStorefrontHandle\(handle\)/);
-    assert.match(routeSource, /\.or\(`subdomain\.eq\.\$\{normalized\},store_name\.eq\.\$\{normalized\}`\)/);
+    // A public handle resolves against sites.subdomain and nothing else. The previous
+    // `.or(subdomain.eq.${normalized},store_name.eq.${normalized})` could match two different
+    // tenants for one handle and, with limit(1) and no ordering, return an arbitrary one — a
+    // cross-tenant read. subdomain is NOT NULL + UNIQUE, so .eq() is single-valued, and .eq() is
+    // parameter-encoded where .or() takes a raw filter string.
+    assert.match(routeSource, /\.eq\('subdomain',\s*normalized\)/);
+    assert.doesNotMatch(routeSource, /\.or\(`subdomain\.eq\.\$\{normalized\},store_name\.eq\.\$\{normalized\}`\)/);
     assert.match(routeSource, /if \(options\.publishedOnly\) query = query\.eq\('status',\s*'published'\)/);
     assert.match(publicRouteSource, /router\.get\('\/:subdomain',\s*async \(c\) =>/);
     assert.match(publicRouteSource, /loadSiteByHandle\(c,\s*c\.req\.param\('subdomain'\),\s*\{ publishedOnly:\s*true \}\)/);

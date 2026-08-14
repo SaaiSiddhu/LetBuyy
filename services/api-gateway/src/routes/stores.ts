@@ -83,6 +83,19 @@ function safeCount(result: { count?: number | null; error?: { message?: string }
     return result.count ?? 0;
 }
 
+// Ownership is a genuine two-column disjunction — custom_user_id is the current owner column and
+// user_id the legacy one — so it cannot collapse into a single .eq() the way a canonical handle
+// lookup can. PostgREST .or() takes a RAW filter string and postgrest-js does not quote reserved
+// characters inside it, so an interpolated value carrying a comma or parenthesis rewrites the
+// predicate instead of being compared against it. A users_custom.id is a uuid and cannot carry one
+// today, but a filter that is safe only because of where its value happens to come from is one
+// refactor away from being unsafe. Double-quoting keeps the value a single literal term whatever it
+// contains (PostgREST escapes an embedded quote with a backslash).
+function ownedByCustomUserFilter(customUserId: string): string {
+    const value = `"${customUserId.replace(/["\\]/g, '\\$&')}"`;
+    return `custom_user_id.eq.${value},user_id.eq.${value}`;
+}
+
 // GET /stores/:id/payment-config — Return masked tenant payment config
 router.get('/:id/payment-config', async (c) => {
     const auth = c.get('auth');
@@ -99,7 +112,7 @@ router.get('/:id/payment-config', async (c) => {
             .from('sites')
             .select('id, payment_settings, online_payment_enabled, cod_enabled')
             .eq('id', storeId)
-            .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`);
+            .or(ownedByCustomUserFilter(customUser.id));
 
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
@@ -116,7 +129,7 @@ router.get('/:id/payment-config', async (c) => {
                 .from('sites')
                 .select('id')
                 .eq('id', storeId)
-                .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`);
+                .or(ownedByCustomUserFilter(customUser.id));
 
             return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
         };
@@ -165,7 +178,7 @@ router.get('/:id/health', async (c) => {
             .from('sites')
             .select('id,name,store_name,status,published_at,subdomain,custom_domain,custom_domain_status,custom_domain_verification_token,logo_url')
             .eq('id', storeId)
-            .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`);
+            .or(ownedByCustomUserFilter(customUser.id));
 
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
@@ -382,7 +395,7 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
             .from('sites')
             .select('id, payment_settings, cod_enabled')
             .eq('id', storeId)
-            .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`);
+            .or(ownedByCustomUserFilter(customUser.id));
 
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
@@ -447,7 +460,7 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
                 updated_at: now,
             })
             .eq('id', storeId)
-            .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`);
+            .or(ownedByCustomUserFilter(customUser.id));
 
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
@@ -508,7 +521,7 @@ router.get('/', async (c) => {
         const query = db
             .from('sites')
             .select('*', { count: 'exact' })
-            .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`)
+            .or(ownedByCustomUserFilter(customUser.id))
             .order('created_at', { ascending: false });
 
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
@@ -560,12 +573,20 @@ router.get('/handle/:handle', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
+    // The admin URL handle is canonically sites.subdomain: every producer of the merchant `[store]`
+    // segment emits store.subdomain (store picker, header switcher, post-login redirect), and the
+    // theme-editor `store_name` query param carries that same segment. subdomain is NOT NULL and
+    // UNIQUE, so this equality is single-valued. Matching store_name as well was not: the two
+    // columns are unique only within themselves, so a single handle can select two owned rows and
+    // maybeSingle() then fails the request rather than resolving it. It was also unsafe — .or()
+    // takes a raw PostgREST filter string, so a handle carrying a comma or parenthesis rewrote the
+    // predicate; .eq() is parameter-encoded, so the handle can only ever be a value.
     const buildHandleQuery = (includeDeletedAtFilter: boolean) => {
         const query = db
             .from('sites')
             .select('id, name, store_name, subdomain, site_type, status, custom_user_id, trial_ends_at, trial_status, theme_id, theme_settings, custom_domain')
-            .or(`store_name.eq.${handle},subdomain.eq.${handle}`)
-            .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`);
+            .eq('subdomain', handle)
+            .or(ownedByCustomUserFilter(customUser.id));
 
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
@@ -603,7 +624,7 @@ router.get('/:id', async (c) => {
             .from('sites')
             .select('*')
             .eq('id', storeId)
-            .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`);
+            .or(ownedByCustomUserFilter(customUser.id));
 
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
@@ -644,14 +665,35 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
         return c.json(legacySiteTypeCreationResponse(body.site_type), 403);
     }
 
-    // Check subdomain uniqueness
-    const { data: existing } = await db
-        .from('sites')
-        .select('id')
-        .or(`subdomain.eq.${body.subdomain},store_name.eq.${body.subdomain}`)
-        .limit(1);
+    // Check subdomain uniqueness. Both handle columns carry their own UNIQUE constraint
+    // (sites_subdomain_key, sites_store_name_key) and the insert below writes this value to both, so
+    // each column is probed on its own: a single .or() across the two would hand a caller-supplied
+    // value to a raw PostgREST filter string, and each equality here is single-valued anyway. Soft
+    // deletes are deliberately not excluded — the UNIQUE indexes are unconditional, so a deleted
+    // site still holds its handle.
+    const probeHandleTaken = (column: 'subdomain' | 'store_name') =>
+        db.from('sites').select('id').eq(column, body.subdomain).maybeSingle();
 
-    if (existing && existing.length > 0) {
+    const [subdomainProbe, storeNameProbe] = await Promise.all([
+        probeHandleTaken('subdomain'),
+        probeHandleTaken('store_name'),
+    ]);
+
+    // SEC-R1 fail-closed: a uniqueness check that could not run has not proved the handle is free.
+    // Falling through would let the insert race the UNIQUE index and surface as an opaque 500.
+    if (subdomainProbe.error || storeNameProbe.error) {
+        return c.json(
+            {
+                error: {
+                    code: 'SUBDOMAIN_CHECK_UNAVAILABLE',
+                    message: 'Subdomain availability could not be verified. Please retry.',
+                },
+            },
+            503
+        );
+    }
+
+    if (subdomainProbe.data || storeNameProbe.data) {
         return c.json({ error: { code: 'CONFLICT', message: 'Subdomain already taken' } }, 409);
     }
 
@@ -740,12 +782,22 @@ router.patch('/:id', validate('json', UpdateStoreSchema), async (c) => {
         updates.published_at = new Date().toISOString();
     }
 
+    // `sites.published` (migration 090, NOT NULL DEFAULT false) is the flag the storefront
+    // access resolver actually gates on — `proxy.ts` denies unless `published` AND
+    // `status === 'published'`, and robots/sitemap/seo treat `published === false` as
+    // unlisted. Only `status` was ever written, so the boolean stayed false forever while
+    // the merchant admin (which reads `published === true || status === 'published'`)
+    // reported the store as live. Keep the two in lockstep whenever status changes.
+    if (updates.status !== undefined) {
+        updates.published = updates.status === 'published';
+    }
+
     const updateStore = (includeDeletedAtFilter: boolean) => {
         const query = db
             .from('sites')
             .update(updates)
             .eq('id', storeId)
-            .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`);
+            .or(ownedByCustomUserFilter(customUser.id));
 
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
@@ -781,13 +833,15 @@ router.post('/:id/publish', async (c) => {
     const publishUpdates = {
         status: 'published',
         published_at: new Date().toISOString(),
+        // See the PATCH handler above: the storefront gates on `published`, not `status`.
+        published: true,
     };
     const publishStore = (includeDeletedAtFilter: boolean) => {
         const query = db
             .from('sites')
             .update(publishUpdates)
             .eq('id', storeId)
-            .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`);
+            .or(ownedByCustomUserFilter(customUser.id));
 
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
@@ -830,7 +884,7 @@ router.delete('/:id', async (c) => {
             deleted_at: new Date().toISOString(),
         })
         .eq('id', storeId)
-        .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`);
+        .or(ownedByCustomUserFilter(customUser.id));
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);

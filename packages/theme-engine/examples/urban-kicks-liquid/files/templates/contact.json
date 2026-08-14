@@ -1,0 +1,19 @@
+{
+  "name": "Contact",
+  "layout": "theme",
+  "sections": {
+    "contact-form-default": {
+      "type": "contact-form",
+      "settings": {
+        "title": "Contact us",
+        "showPhone": true
+      },
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    }
+  },
+  "order": [
+    "contact-form-default"
+  ]
+}

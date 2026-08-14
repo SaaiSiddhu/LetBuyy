@@ -147,7 +147,7 @@ export default function OperationsDashboardPage() {
             <PageHeader
                 title="Operations dashboard"
                 description="Real-time view of inventory, suppliers, warehouses, and transfers."
-                breadcrumbs={[{ label: 'Products' }, { label: 'Operations dashboard' }]}
+                breadcrumbs={[{ label: 'Inventory' }, { label: 'Operations dashboard' }]}
                 primaryAction={{
                     label: 'Refresh',
                     onClick: refresh,
