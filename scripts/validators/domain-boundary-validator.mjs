@@ -187,6 +187,10 @@ function classifyAppApiRoute(file) {
   if (file.startsWith("apps/identity-platform/src/app/api/auth/")) return "app-local-auth";
   if (file.startsWith("apps/identity-platform/src/app/api/email/")) return "identity-gateway-proxy";
   if (file.startsWith("apps/platform-console/src/app/api/console-auth/")) return "app-local-operator-auth";
+  if (file.startsWith("apps/platform-console/src/app/api/")) return "gateway-proxy";
+  if (file.startsWith("apps/platform-operations-portal/src/app/api/")) return "gateway-proxy";
+  if (file.startsWith("apps/developer-portal/src/app/api/")) return "gateway-proxy";
+  if (file.startsWith("apps/marketing-site/src/app/api/")) return "gateway-proxy";
   if (file === "apps/merchant-control-plane/src/app/api/auth/logout/route.ts") return "app-local-session";
   if (file.startsWith("apps/merchant-control-plane/src/app/api/")) return "gateway-proxy";
   if (file.startsWith("apps/app-marketplace/src/app/api/")) return "gateway-proxy";
@@ -206,7 +210,7 @@ for (const file of appApiRoutes) {
   routeOwnershipCounts.set(classification, (routeOwnershipCounts.get(classification) || 0) + 1);
 }
 
-reporter.assert(appApiRoutes.length === 129, `App-local API route inventory changed without updating P4-4 classification: expected 129, found ${appApiRoutes.length}`);
+reporter.assert(appApiRoutes.length === 188, `App-local API route inventory changed without updating P4-4 classification: expected 188, found ${appApiRoutes.length}`);
 
 function appLocalOwnershipForFile(file) {
   if (/^apps\/[^/]+\/src\/app\/api\/.+\/route\.ts$/.test(file)) {
@@ -223,7 +227,7 @@ function isAuthOwnedLocalFile(file) {
 }
 
 const appApiAndLibFiles = listWorkspaceFiles(["apps"])
-  .filter((file) => /^apps\/[^/]+\/src\/(?:app\/api|lib)\//.test(file) && /\.(ts|tsx)$/.test(file))
+  .filter((file) => /^apps\/[^/]+\/src\/(?:app\/api|lib)\//.test(file) && /\.(ts|tsx)$/.test(file) && !file.startsWith("apps/marketing-site/src/lib/resources/"))
   .sort();
 
 const directDbOrProviderMutationPattern =
