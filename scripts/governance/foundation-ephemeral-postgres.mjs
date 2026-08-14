@@ -38,10 +38,17 @@ function waitReady() {
   throw new Error(`Postgres fixture did not become ready in ${container}`);
 }
 
+function databaseExists() {
+  const result = run("docker", ["exec", container, "psql", "-U", "postgres", "-d", database, "-c", "SELECT 1;"], { allowFailure: true });
+  return result.status === 0;
+}
+
 function ensureDatabase() {
+  if (databaseExists()) return;
   const sql = `SELECT 'CREATE DATABASE ${database}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${database}')\\gexec\n`;
-  run("docker", ["exec", "-i", container, "psql", "-U", "postgres", "-d", "postgres", "-v", "ON_ERROR_STOP=1"], {
+  run("docker", ["exec", "-i", container, "psql", "-U", "postgres", "-d", "postgres", "-v", "ON_ERROR_STOP=0"], {
     input: sql,
+    allowFailure: true,
   });
 }
 

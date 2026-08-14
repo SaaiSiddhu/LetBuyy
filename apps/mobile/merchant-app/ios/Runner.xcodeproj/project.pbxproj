@@ -283,7 +283,6 @@
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				A10000000000000000000010 /* Embed App Extensions */,
-				B20000000000000000000010 /* Embed Watch Content */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				6D2D4850F3EDBE82C309E2C5 /* [CP] Embed Pods Frameworks */,
 			);
