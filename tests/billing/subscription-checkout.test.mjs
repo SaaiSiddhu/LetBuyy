@@ -219,7 +219,7 @@ test('billing checkout keeps order fallback and verifies the correct Razorpay si
 
 test('billing core exposes India-first tier defaults and free activation planning', () => {
   const tiers = billingCore.getStoreBillingTierDefinitions();
-  assert.deepEqual(JSON.parse(JSON.stringify(tiers.map((tier) => tier.slug))), ['free', 'starter', 'business', 'enterprise']);
+  assert.deepEqual(JSON.parse(JSON.stringify(tiers.map((tier) => tier.slug))), ['free', 'starter', 'business', 'enterprise', 'launch', 'growth']);
   assert.equal(tiers.find((tier) => tier.slug === 'free').price_monthly_inr, 0);
   assert.equal(tiers.find((tier) => tier.slug === 'starter').price_monthly_inr, 39900);
   assert.equal(tiers.find((tier) => tier.slug === 'business').price_monthly_inr, 99900);

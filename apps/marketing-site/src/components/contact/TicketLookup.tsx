@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { Button, Input } from '@letbuyy/ui'
+import { formatIndiaDateWithTime } from '@letbuyy/ui/formatting'
 import { LETBUYY_PRODUCTION_API_BASE_URL, resolveLetbuyyApiBaseUrl } from '@letbuyy/api-client'
 
 /**
@@ -37,7 +38,7 @@ const STATUS_COPY: Record<string, { label: string; note: string }> = {
     resolved: { label: 'Resolved', note: 'Answered. Reply to the email if it is not sorted.' },
     closed: { label: 'Closed', note: 'This ticket is finished.' },
     spam: { label: 'Closed', note: 'This ticket is finished.' },
-import { formatIndiaDateWithTime } from '@letbuyy/ui/formatting'
+}
 
 function gatewayBaseUrl(): string {
     return resolveLetbuyyApiBaseUrl([process.env.NEXT_PUBLIC_API_URL], {

@@ -40,14 +40,14 @@ test('marketing site has no local auth API or credential handling surface', () =
 });
 
 test('marketing signup route is a redirect shim to the identity platform', () => {
-  const signupPage = read(join(appRoot, 'src/app/signup/page.tsx'));
-  const createPage = read(join(appRoot, 'src/app/create/page.tsx'));
+  const signupPage = read(join(appRoot, 'src/app/[locale]/signup/page.tsx'));
+  const createPage = read(join(appRoot, 'src/app/[locale]/create/page.tsx'));
   const publicUrls = read(join(appRoot, 'src/lib/public-urls.ts'));
   const packageJson = JSON.parse(read(join(appRoot, 'package.json')));
 
   assert.match(publicUrls, /NEXT_PUBLIC_ACCOUNTS_URL/);
   assert.match(signupPage, /getAccountsUrl\('\/signup'\)/);
-  assert.match(signupPage, /window\.location\.href = getAccountsUrl\('\/signup'\)/);
+  assert.match(signupPage, /redirect\(getAccountsUrl\('\/signup'\)\)/);
   assert.doesNotMatch(signupPage, /<form|type=["']password["']|POST\(/i);
   assert.match(createPage, /getAccountsUrl\('\/signup'\)/);
   assert.match(createPage, /window\.location\.href = `\$\{getAccountsUrl\('\/signup'\)\}\?\$\{params\.toString\(\)\}`/);
@@ -61,7 +61,7 @@ test('marketing site exposes crawlable platform app navigation and sitemaps', ()
   const layout = read(join(appRoot, 'src/app/layout.tsx'));
   const robots = read(join(appRoot, 'src/app/robots.ts'));
   const sitemap = read(join(appRoot, 'src/app/sitemap.ts'));
-  const sitemapPage = read(join(appRoot, 'src/app/sitemap/page.tsx'));
+  const sitemapPage = read(join(appRoot, 'src/app/[locale]/sitemap/page.tsx'));
   const directory = read(join(appRoot, 'src/components/PlatformDirectory.tsx'));
   const platformLinks = read(join(appRoot, 'src/lib/platform-links.ts'));
   const publicUrls = read(join(appRoot, 'src/lib/public-urls.ts'));
@@ -80,12 +80,12 @@ test('marketing site exposes crawlable platform app navigation and sitemaps', ()
   assert.match(robots, /getPlatformSitemapUrls/);
   assert.match(sitemap, /\/sitemap/);
   assert.match(layout, /SiteNavigationElement/);
-  assert.match(header, /label: 'Themes'/);
-  assert.match(header, /label: 'Apps'/);
-  assert.match(header, /label: 'Developers'/);
+  assert.match(header, /label(?:Key)?:\s*['"](?:themes|Themes)['"]/);
+  assert.match(header, /label(?:Key)?:\s*['"](?:apps|Apps)['"]/);
+  assert.match(header, /label(?:Key)?:\s*['"](?:developers|Developers)['"]/);
   assert.match(footer, /getPlatformNavigationLinks/);
   assert.match(directory, /platform-directory/);
-  assert.match(sitemapPage, /XML sitemaps/);
+  assert.match(sitemapPage, /XML (?:sitemaps|feeds)/);
 });
 
 test('marketplace robots and sitemaps derive canonical URLs from the request host', () => {

@@ -8,7 +8,8 @@ const QUERY_COST_RATE_LIMITED = 'QUERY_COST_RATE_LIMITED'
 // for wrangler to bind :9010 on first `pnpm dev`). Covers: query-cost rate
 // limits (429), connection failures ("fetch failed" — null HTTP status), and
 // gateway-not-yet-ready (502/503/504). After all attempts the error surfaces.
-const MERCHANT_READ_RETRY_DELAYS_MS = [250, 500, 1_000, 2_000, 3_500, 5_000, 7_500] as const
+const QUERY_COST_RETRY_DELAYS_MS = [250, 500, 1_000, 2_000, 3_500, 5_000, 7_500] as const
+const MERCHANT_READ_RETRY_DELAYS_MS = QUERY_COST_RETRY_DELAYS_MS
 
 /**
  * Extract the HTTP status code carried by a typed API error.

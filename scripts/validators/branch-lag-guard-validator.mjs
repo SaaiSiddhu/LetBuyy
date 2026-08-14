@@ -95,7 +95,13 @@ if (enforceLag) {
 } else {
   try {
     const currentBranch = git(["branch", "--show-current"]);
-    if (currentBranch === productionBranch) {
+    if (process.env.LETBUYY_PRODUCTION_BRANCH) {
+      const localLagCount = Number(git(["rev-list", "--count", `${productionBranch}..HEAD`]));
+      reporter.assert(
+        Number.isFinite(localLagCount) && localLagCount === 0,
+        `Local working branch is ${localLagCount} commit(s) ahead of ${productionBranch}; ${productionBranch} must be fast-forwarded (execute MERGE_RUNBOOK.md) before this branch can be treated as release-integrated`,
+      );
+    } else if (currentBranch === productionBranch) {
       const localLagCount = Number(git(["rev-list", "--count", `${productionBranch}..${integrationBranch}`]));
       reporter.assert(
         Number.isFinite(localLagCount) && localLagCount === 0,

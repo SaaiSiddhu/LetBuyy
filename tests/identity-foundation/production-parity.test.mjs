@@ -66,8 +66,8 @@ test('gateway auth middleware keeps the legacy branch order snapshot', () => {
   assert.ok(internalSession > -1);
   assert.ok(internalIdentity > internalSession);
   assert.ok(supabase > internalIdentity);
-  assert.match(source, /shouldAttempt: \(_c, authHeader\) => !authHeader\?\.startsWith\('Bearer '\)/);
-  assert.match(source, /shouldAttempt: \(_c, authHeader\) => Boolean\(authHeader\?\.startsWith\('Bearer '\)\)/);
+  assert.match(source, /shouldAttempt:\s*\(c\)\s*=>\s*Boolean\(c\.req\.header\('X-LetBuyy-Internal-Session-Token'\)\)/);
+  assert.match(source, /shouldAttempt:\s*\(_c, authHeader\)\s*=>\s*Boolean\(authHeader\?\.startsWith\('Bearer '\)\)/);
   assert.match(source, /function readSupabaseBearerToken/);
   assert.match(source, /Missing or invalid authorization header/);
   assert.match(source, /Invalid or expired token/);
