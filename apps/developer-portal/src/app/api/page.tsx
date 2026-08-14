@@ -6,6 +6,7 @@ export default function ApiReferencePage() {
   return (
     <PortalLayout>
       <SectionHeading
+        as="h1"
         kicker="API reference"
         title="Curated `/v1` gateway surface"
         description="The reference is derived from the Hono route mounts and route modules in `services/api-gateway/src`. It lists the real route families, auth model, pagination conventions, errors, and query-cost rate limits currently implemented."

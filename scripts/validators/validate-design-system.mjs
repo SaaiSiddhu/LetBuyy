@@ -79,11 +79,6 @@ const localWorkspaceFiles = [
 ].filter(existsSync);
 const darkModeReachabilityTargets = [
     {
-        surface: 'merchant-control-plane',
-        files: ['apps/merchant-control-plane/src/components/HeaderBar.tsx'],
-        patterns: [/setTheme\(/, /aria-label=["']Toggle theme["']/],
-    },
-    {
         surface: 'identity-platform',
         files: ['apps/identity-platform/src/lib/useAuthTheme.ts'],
         patterns: [/setTheme\(/, /useAuthTheme/],

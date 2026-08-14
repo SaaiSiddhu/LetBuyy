@@ -43,6 +43,8 @@ export * from './theme-packager';
 export * from './theme-version';
 export * from './theme-upgrade';
 export * from './theme-install';
+// Phase Q — site-scoped theme library request contracts
+export * from './theme-library-schemas';
 export * from './theme-publish';
 export * from './theme-analytics';
 // Phase L — AI Theme Platform SDK (deterministic generative primitives + merchant facade)

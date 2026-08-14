@@ -6,6 +6,7 @@ export default function DashboardPage() {
   return (
     <PortalLayout>
       <SectionHeading
+        as="h1"
         kicker="Developer dashboard shell"
         title="A partner workspace without fabricated data"
         description="The shell shows the expected information architecture for apps, themes, API keys, analytics, and earnings. Each panel is tied to an existing endpoint or marked as a backend skip."

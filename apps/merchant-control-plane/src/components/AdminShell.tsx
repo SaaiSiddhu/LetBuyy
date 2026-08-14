@@ -124,10 +124,10 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                 <AppNavigation
                     sections={navigationSections}
                     width="sm"
-                    className="pt-[var(--admin-header-height)]"
+                    className="admin-panel-frame pt-[var(--admin-header-height)]"
                     sidebarClassName={sidebarOpen
-                        ? 'fixed left-0 top-[var(--admin-header-height)] z-50 flex h-[calc(100vh_-_var(--admin-header-height))] rounded-tl-[var(--sidebar-panel-radius)] overflow-hidden lg:sticky lg:top-[var(--admin-header-height)] lg:h-[calc(100vh_-_var(--admin-header-height))] lg:self-start'
-                        : 'hidden rounded-tl-[var(--sidebar-panel-radius)] overflow-hidden lg:flex lg:sticky lg:top-[var(--admin-header-height)] lg:h-[calc(100vh_-_var(--admin-header-height))] lg:self-start'}
+                        ? 'admin-panel-sidebar fixed left-0 top-[var(--admin-header-height)] z-50 flex h-[calc(100vh_-_var(--admin-header-height))] lg:sticky lg:top-[var(--admin-header-height)] lg:h-[calc(100vh_-_var(--admin-header-height))] lg:self-start'
+                        : 'admin-panel-sidebar hidden lg:flex lg:sticky lg:top-[var(--admin-header-height)] lg:h-[calc(100vh_-_var(--admin-header-height))] lg:self-start'}
                     footer={
                         <Navigation
                             ariaLabel="Settings navigation"
@@ -136,7 +136,7 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                     }
                 >
                     <div className={`flex min-h-full min-w-0 ${aiPanelOpen ? 'ai-open' : ''}`}>
-                        <div className={`min-w-0 flex-1 bg-[var(--lb-color-bg)] ${isSettingsPage ? 'settings-active' : ''}`}>
+                        <div className={`admin-panel-content min-w-0 flex-1 bg-[var(--lb-color-bg)] ${isSettingsPage ? 'settings-active' : ''}`}>
                             {isDraft && (
                                 <div className="admin-draft-banner">
                                     <MaterialIcon name="warning" size={16} />
@@ -228,12 +228,20 @@ function toNavigationItems(store: string, item: MerchantNavItem): AppNavigationS
         id: `${item.path}:${child.path}`,
         label: child.label,
         href: `/${store}/${child.path}`,
+        exact: child.exact,
     }))
+
+    // A parent links only when it is a destination its children do not already
+    // own. Groups whose own path is literally one of their children (Money ->
+    // Billing, Content -> Pages) would otherwise render the same href twice in
+    // one nav, giving two rows the same accessible name.
+    const duplicatesAChild = (item.children ?? []).some((child) => child.path === item.path)
 
     return [{
         id: item.path,
         label: item.label,
-        href: children.length === 0 ? `/${store}/${item.path}` : undefined,
+        href: duplicatesAChild ? undefined : `/${store}/${item.path}`,
+        exact: item.exact,
         icon: <MaterialIcon name={item.icon} size={16} aria-hidden="true" />,
         children: children.length > 0 ? children : undefined,
     }]

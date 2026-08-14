@@ -367,6 +367,11 @@ export const letbuyyComponentTokens = {
             nestedItemSize: '14px',
             nestedSpacing: 'var(--lb-density-sidebar-nested-spacing, 8px)',
             sectionSpacing: 'var(--lb-density-sidebar-section-spacing, 16px)',
+            // Active affordance: a rail plus a hairline inset ring reads as
+            // deliberate at a glance, where a flat fill alone reads as a hover.
+            railColor: 'color-mix(in srgb, var(--lb-color-primary) 92%, transparent)',
+            activeRing: 'inset 0 0 0 1px color-mix(in srgb, var(--lb-color-primary) 12%, transparent)',
+            childRail: 'color-mix(in srgb, var(--lb-color-border) 70%, transparent)',
         },
         emptyState: {
             bg: letbuyySemanticTokens.light.background.card,
@@ -452,6 +457,10 @@ export const letbuyyComponentTokens = {
             nestedItemSize: '14px',
             nestedSpacing: 'var(--lb-density-sidebar-nested-spacing, 8px)',
             sectionSpacing: 'var(--lb-density-sidebar-section-spacing, 16px)',
+            // Carried heavier on dark, where low-alpha edges disappear.
+            railColor: 'color-mix(in srgb, var(--lb-color-primary) 96%, transparent)',
+            activeRing: 'inset 0 0 0 1px color-mix(in srgb, var(--lb-color-primary) 28%, transparent)',
+            childRail: 'color-mix(in srgb, var(--lb-color-border) 88%, transparent)',
         },
         emptyState: {
             bg: letbuyySemanticTokens.dark.background.card,

@@ -195,3 +195,4 @@ graphify-out/environment-control-intel.json
 graphify-out/infrastructure-control-intel.json
 graphify-out/commerce-control-intel.json
 graphify-out/launch-command-center.json
+.tmp/

@@ -6,7 +6,6 @@ import {
 } from "@letbuyy/ui";
 import {
   AppBridgeFetchRuleMatrix,
-  DeveloperHeader,
   ExampleCards,
   FactList,
   OAuthTokenLifecycleMatrix,
@@ -21,6 +20,7 @@ import {
   oauthTokenLifecycle,
   realScopes
 } from "@/lib/developer-surface";
+import { DocsShell } from "@/components/PortalShell";
 
 const oauthContracts = contractCards.filter((contract) =>
   contract.title === "OAuth and app token lifetimes"
@@ -29,8 +29,7 @@ const oauthContracts = contractCards.filter((contract) =>
 
 export default function OAuthPage() {
   return (
-    <>
-      <DeveloperHeader subtitle="OAuth and app bridge" />
+    <DocsShell>
       <Page className="developer-main">
         <section className="docs-page-hero">
           <div>
@@ -136,6 +135,6 @@ Authorization: Bearer <app_token>
           </Section>
         </Card>
       </Page>
-    </>
+    </DocsShell>
   );
 }

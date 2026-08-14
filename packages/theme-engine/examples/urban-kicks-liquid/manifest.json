@@ -19,18 +19,18 @@
     },
     {
       "path": "config/settings_data.json",
-      "checksum": "a3122ceea41973df5be257b59b4bf2e99e02bf60f852b6919df056f95f6d647e",
-      "sizeBytes": 195
+      "checksum": "e6b01878218d51537ae5759f4aa3fff76947a86a6992b0237f678492a803c5a0",
+      "sizeBytes": 325
     },
     {
       "path": "config/settings_schema.json",
-      "checksum": "cbd1bf33e6c9e6585d050a68c4219222d088320796442d947c7b12890de738af",
-      "sizeBytes": 1032
+      "checksum": "122e3c2fae0a48e580f206c66e7aa1cdceaafa1c413ba6786d472e95f6806f01",
+      "sizeBytes": 1946
     },
     {
       "path": "layout/theme.liquid",
-      "checksum": "60a451d86f9828724d3deba60688a6b83c339527379b9d271d25701af992bb61",
-      "sizeBytes": 423
+      "checksum": "0a932e7a9888584abc7eb58f6e89c19285c88a54d8e5c3291403e0f34c38b8d1",
+      "sizeBytes": 3626
     },
     {
       "path": "letbuyy-theme.json",
@@ -98,6 +98,11 @@
       "sizeBytes": 906
     },
     {
+      "path": "sections/collection-filter.liquid",
+      "checksum": "1c64da6051c63e6886d4a4096858caf1951fdc607faca27d9f0865bd9d6b83eb",
+      "sizeBytes": 3180
+    },
+    {
       "path": "sections/collection-product-list.liquid",
       "checksum": "8e42e69333c1a2028f16c8de0aae643abab5946b7034cd06e6dd724980143857",
       "sizeBytes": 1314
@@ -156,6 +161,11 @@
       "path": "sections/experience-timeline.liquid",
       "checksum": "a99dd81e0ef878af79b1946f47333611c4d7a7c61e5c72d43be71ac9cf76a498",
       "sizeBytes": 1025
+    },
+    {
+      "path": "sections/faq-accordion.liquid",
+      "checksum": "937fad2e49cbeb864a4e55fb55c50e4b92edc9993eeed74a41918499fefae5d3",
+      "sizeBytes": 1407
     },
     {
       "path": "sections/featured-products.liquid",
@@ -273,6 +283,11 @@
       "sizeBytes": 566
     },
     {
+      "path": "templates/contact.json",
+      "checksum": "05f8049bb95c0aff29320c6624c2b93579433b027645d80fd06ee965bd19d462",
+      "sizeBytes": 331
+    },
+    {
       "path": "templates/customers/account.json",
       "checksum": "8678c3f6b309c68d1b390af93247064d4c15c4b7f573422b416b7bc42d5090cb",
       "sizeBytes": 279
@@ -328,6 +343,11 @@
       "sizeBytes": 5877
     },
     {
+      "path": "templates/list-collections.json",
+      "checksum": "cf8ac110f92d87ce7ccce638f7fe870c348bb2cad65df5ed6f8bb937c09e90e6",
+      "sizeBytes": 381
+    },
+    {
       "path": "templates/not_found.json",
       "checksum": "60d5e65dcf7a7e4f39575e775a5b4c63b18df80c5f8c6b87c96e39038de45924",
       "sizeBytes": 261
@@ -362,9 +382,9 @@
     "blocks/badge.liquid": "b6df6b7c33c20125bf7146488bf554c22e03ab06e338933fc66add551033e805",
     "blocks/category.liquid": "1978324169429743b29a6866e03389790fb785f6ad6897569f08d1ea2fef1304",
     "blocks/product-card.liquid": "f99fb1d1af15ea2972aa931625c9c25506cf17f386a871a91247b41c7de1b936",
-    "config/settings_data.json": "a3122ceea41973df5be257b59b4bf2e99e02bf60f852b6919df056f95f6d647e",
-    "config/settings_schema.json": "cbd1bf33e6c9e6585d050a68c4219222d088320796442d947c7b12890de738af",
-    "layout/theme.liquid": "60a451d86f9828724d3deba60688a6b83c339527379b9d271d25701af992bb61",
+    "config/settings_data.json": "e6b01878218d51537ae5759f4aa3fff76947a86a6992b0237f678492a803c5a0",
+    "config/settings_schema.json": "122e3c2fae0a48e580f206c66e7aa1cdceaafa1c413ba6786d472e95f6806f01",
+    "layout/theme.liquid": "0a932e7a9888584abc7eb58f6e89c19285c88a54d8e5c3291403e0f34c38b8d1",
     "letbuyy-theme.json": "c8ff5bc4ceb9a12e4d24ac0d788367b39e275434cb05b7211e05577d20a1bafd",
     "locales/en.json": "30f3b36c69a3f24b34d8b8983ba99c55063fee2c3d355a89c0e5c9487643adde",
     "sections/404-page.liquid": "df22e42ee70bc8b9dfb958f6cc8cf8afb848a2a6315fc9f5c3d8c86e225975f3",
@@ -378,6 +398,7 @@
     "sections/cart-summary.liquid": "537a368f9cbaffbb4b4395a5bd0272ae0cf00cf88bd86316f898bcf488aa5827",
     "sections/category-grid.liquid": "29b2643196f300647707c99ee9f1032c39c840c1668c7969e1d5ca0731103616",
     "sections/collection-banner.liquid": "5373bde2d45fad3a3d8a93d535e50477b45a43c314088a2d5ac6e316eca5f02e",
+    "sections/collection-filter.liquid": "1c64da6051c63e6886d4a4096858caf1951fdc607faca27d9f0865bd9d6b83eb",
     "sections/collection-product-list.liquid": "8e42e69333c1a2028f16c8de0aae643abab5946b7034cd06e6dd724980143857",
     "sections/contact-form.liquid": "73fc42eae7975b542e3199ee829014a40768cb3b8cfe333217348c774b950aca",
     "sections/cta-section.liquid": "d984d9175e6d186e483bc729a073ffba216f1a427c5e87c26bdc3172fbd3ec21",
@@ -390,6 +411,7 @@
     "sections/customer-settings.liquid": "63fdd49611f20bbb2c8abf634fa31a544d4c89aa99cfdab6339342f9c8f1f63f",
     "sections/customer-wishlist.liquid": "04f03498072ab728d119d31f5479a009d9030b7d9ce5ab83d8526163dc377d61",
     "sections/experience-timeline.liquid": "a99dd81e0ef878af79b1946f47333611c4d7a7c61e5c72d43be71ac9cf76a498",
+    "sections/faq-accordion.liquid": "937fad2e49cbeb864a4e55fb55c50e4b92edc9993eeed74a41918499fefae5d3",
     "sections/featured-products.liquid": "1464f2964753b1112abf0f3fd62b0edcd23032b00014db3cd9c41864405b038f",
     "sections/footer.liquid": "9d3dfaaf167acaa76f57a86f59f373eda1984d6e600ff3ef523fc08d62a434cc",
     "sections/header.liquid": "cf9a15575740c58ddfa4daf3923fdb857170c422ff324696c151a9f82636d0fe",
@@ -413,6 +435,7 @@
     "templates/blog.json": "a114519f2a7de164568f3501891481ba3879cee137801e2fc791852256265d60",
     "templates/cart.json": "04735d96af2b8011fda8ab331471bf345bd270e6124654a95d20c97297986941",
     "templates/collection.json": "5d1dce8a1a15370e9d7768e45e3931e16f9c2cbcfbe73d98b30cbbc7988fd0ee",
+    "templates/contact.json": "05f8049bb95c0aff29320c6624c2b93579433b027645d80fd06ee965bd19d462",
     "templates/customers/account.json": "8678c3f6b309c68d1b390af93247064d4c15c4b7f573422b416b7bc42d5090cb",
     "templates/customers/addresses.json": "7e4a6189103b309bf0e180c3beaccfe92ba5f0f4fb4d50d915b279e9a65d8cc7",
     "templates/customers/login.json": "3f26c2c862f590a21aa249b5e57642dd5ab4518e0279bc928fbca3378d3ab0bb",
@@ -424,6 +447,7 @@
     "templates/footer.json": "0361c6d4181771f4e0b03e151c798508e7e636d7c574612e5ec085b2b72cb338",
     "templates/header.json": "9728644881ee2c49958f4e08254cf335b9dbd121d2b530f032491f7376c9ae5e",
     "templates/index.json": "3274935f8a2ec0c183cdf43152592d267cb41e62474bf3a60784a185bcf40946",
+    "templates/list-collections.json": "cf8ac110f92d87ce7ccce638f7fe870c348bb2cad65df5ed6f8bb937c09e90e6",
     "templates/not_found.json": "60d5e65dcf7a7e4f39575e775a5b4c63b18df80c5f8c6b87c96e39038de45924",
     "templates/page.json": "3cc5b7a61db8a611335b3b14e33d221a60f9dfae12bb5652b6b08f0ea5986988",
     "templates/password.json": "486fe9c62bf9ba4f36666dd315e0d5b7195e5c3ebb3fd48596ec21928ca95652",
@@ -431,5 +455,5 @@
     "templates/product.json": "0782536d9e51e4bebdf6d8acda7947d12dd2bfe15c0c108253143aaf55098552",
     "templates/search.json": "1c2f3c312a09bdcebae0450874494f0dc07614a1f33f1c0264ec569a8c3d9385"
   },
-  "contentHash": "9bfa778cbf91bde3def004c88984cd300ffebd9fd823a2f5d44eb598724f128b"
+  "contentHash": "42cb1dce340f775db30ae35ab138a16f0cb738c26fd91e6f46a2faa42a674202"
 }

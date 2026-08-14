@@ -81,6 +81,8 @@ export interface LetbuyyThemeProviderProps {
     children: React.ReactNode;
     /** Default preference when nothing is persisted. Defaults to "system". */
     defaultTheme?: LetbuyyThemeChoice;
+    /** Forced theme override. When set, locks the theme to "light" or "dark" unconditionally, ignoring storage and OS preference. */
+    forcedTheme?: LetbuyyResolvedTheme;
     /** Persistence key. Defaults to the canonical "letbuyy-theme". Do not override without reason. */
     storageKey?: string;
     /** Design-system surface forwarded to DesignSystemRoot. */
@@ -103,6 +105,7 @@ export interface LetbuyyThemeProviderProps {
 export function LetbuyyThemeProvider({
     children,
     defaultTheme = 'system',
+    forcedTheme,
     storageKey = LETBUYY_THEME_STORAGE_KEY,
     surface = 'admin',
     density = 'compact',
@@ -111,9 +114,10 @@ export function LetbuyyThemeProvider({
     className,
 }: LetbuyyThemeProviderProps) {
     const [theme, setThemeState] = React.useState<LetbuyyThemeChoice>(() =>
-        readStoredChoice(storageKey, defaultTheme),
+        forcedTheme ?? readStoredChoice(storageKey, defaultTheme),
     );
     const [resolvedTheme, setResolvedTheme] = React.useState<LetbuyyResolvedTheme>(() => {
+        if (forcedTheme) return forcedTheme;
         if (typeof window !== 'undefined') {
             const cached = (window as unknown as GlobalWithResolvedTheme).__letbuyyResolvedTheme;
             if (cached === 'light' || cached === 'dark') return cached;
@@ -125,14 +129,14 @@ export function LetbuyyThemeProvider({
 
     // Apply the resolved theme to the DOM whenever the preference changes.
     React.useEffect(() => {
-        const resolved = resolveChoice(theme);
+        const resolved = forcedTheme ?? resolveChoice(theme);
         setResolvedTheme(resolved);
         applyDomSignals(resolved);
-    }, [theme]);
+    }, [theme, forcedTheme]);
 
-    // Track OS changes while on "system".
+    // Track OS changes while on "system" (only when forcedTheme is not set).
     React.useEffect(() => {
-        if (theme !== 'system' || typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+        if (forcedTheme || theme !== 'system' || typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
             return;
         }
         const media = window.matchMedia('(prefers-color-scheme: dark)');
@@ -143,10 +147,11 @@ export function LetbuyyThemeProvider({
         };
         media.addEventListener('change', onChange);
         return () => media.removeEventListener('change', onChange);
-    }, [theme]);
+    }, [theme, forcedTheme]);
 
     const setTheme = React.useCallback(
         (next: LetbuyyThemeChoice) => {
+            if (forcedTheme) return;
             try {
                 window.localStorage.setItem(storageKey, next);
             } catch {
@@ -154,19 +159,24 @@ export function LetbuyyThemeProvider({
             }
             setThemeState(next);
         },
-        [storageKey],
+        [storageKey, forcedTheme],
+    );
+
+    const effectiveThemes = React.useMemo<readonly LetbuyyThemeChoice[]>(
+        () => (forcedTheme ? [forcedTheme] : LETBUYY_THEME_CHOICES),
+        [forcedTheme],
     );
 
     const value = React.useMemo<ThemeContextValue>(
-        () => ({ theme, resolvedTheme, setTheme, themes: LETBUYY_THEME_CHOICES }),
-        [theme, resolvedTheme, setTheme],
+        () => ({ theme: forcedTheme ?? theme, resolvedTheme: forcedTheme ?? resolvedTheme, setTheme, themes: effectiveThemes }),
+        [theme, resolvedTheme, setTheme, forcedTheme, effectiveThemes],
     );
 
     return (
         <ThemeContext.Provider value={value}>
             <DesignSystemRoot
                 surface={surface}
-                theme={resolvedTheme}
+                theme={forcedTheme ?? resolvedTheme}
                 density={density}
                 brand={brand}
                 dir={dir}
@@ -195,6 +205,8 @@ export interface ThemeScriptProps {
     storageKey?: string;
     /** Default preference when nothing is persisted. Defaults to "system". */
     defaultTheme?: LetbuyyThemeChoice;
+    /** Forced theme override. When set, unconditionally sets the DOM to "light" or "dark" during pre-paint. */
+    forcedTheme?: LetbuyyResolvedTheme;
 }
 
 /**
@@ -205,19 +217,27 @@ export interface ThemeScriptProps {
  * This is the SINGLE flash-prevention implementation for the whole platform —
  * apps must not hand-roll their own (LIGHT_DARK_MODE_AUDIT.md THEME-4).
  */
-export function ThemeScript({ storageKey = LETBUYY_THEME_STORAGE_KEY, defaultTheme = 'system' }: ThemeScriptProps) {
-    const js =
-        '(function(){try{' +
-        'var k=' + JSON.stringify(storageKey) + ';' +
-        'var d=' + JSON.stringify(defaultTheme) + ';' +
-        'var c=localStorage.getItem(k);' +
-        "if(c!=='light'&&c!=='dark'&&c!=='system'){c=d;}" +
-        "var r=c==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):c;" +
-        'var e=document.documentElement;' +
-        "e.setAttribute('data-theme',r);" +
-        "e.classList.remove('light','dark');e.classList.add(r);" +
-        'e.style.colorScheme=r;' +
-        'window.__letbuyyResolvedTheme=r;' +
-        '}catch(_){}})();';
+export function ThemeScript({ storageKey = LETBUYY_THEME_STORAGE_KEY, defaultTheme = 'system', forcedTheme }: ThemeScriptProps) {
+    const js = forcedTheme
+        ? '(function(){try{' +
+          'var r=' + JSON.stringify(forcedTheme) + ';' +
+          'var e=document.documentElement;' +
+          "e.setAttribute('data-theme',r);" +
+          "e.classList.remove('light','dark');e.classList.add(r);" +
+          'e.style.colorScheme=r;' +
+          'window.__letbuyyResolvedTheme=r;' +
+          '}catch(_){}})();'
+        : '(function(){try{' +
+          'var k=' + JSON.stringify(storageKey) + ';' +
+          'var d=' + JSON.stringify(defaultTheme) + ';' +
+          'var c=localStorage.getItem(k);' +
+          "if(c!=='light'&&c!=='dark'&&c!=='system'){c=d;}" +
+          "var r=c==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):c;" +
+          'var e=document.documentElement;' +
+          "e.setAttribute('data-theme',r);" +
+          "e.classList.remove('light','dark');e.classList.add(r);" +
+          'e.style.colorScheme=r;' +
+          'window.__letbuyyResolvedTheme=r;' +
+          '}catch(_){}})();';
     return <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: js }} />;
 }

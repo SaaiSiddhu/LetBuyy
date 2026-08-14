@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export * from './brand';
+export * from './contact';
 export * from './app-platform';
 export * from './foundation-execution-contracts';
 export {

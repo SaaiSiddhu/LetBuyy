@@ -22,7 +22,6 @@ export const sourceFiles = [
   "services/webhook-service/src/app-lifecycle-dispatch.ts",
   "packages/auth-core/src/index.ts",
   "packages/shared-types/src/app-platform.ts",
-  "packages/shared-types/src/app-platform.ts",
   "packages/theme-engine/src/theme-bundle.ts",
 ];
 

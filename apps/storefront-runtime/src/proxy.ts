@@ -16,7 +16,10 @@ import {
 import { getThemePreviewCookieName, normalizeThemePreviewToken } from './lib/theme-preview-cookie';
 import { readStorefrontApiBaseUrl } from './lib/api/base-url';
 
-type StorefrontAccessMode = 'public' | 'password' | 'preview_only' | 'offline';
+// Mirrors the sites_access_mode_check CHECK constraint, which is the upstream source of truth.
+const STOREFRONT_ACCESS_MODES = ['public', 'password', 'preview_only', 'offline'] as const;
+
+type StorefrontAccessMode = typeof STOREFRONT_ACCESS_MODES[number];
 
 interface StorefrontAccessContext {
   site_id: string;
@@ -51,6 +54,10 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'unknown error';
 }
 
+function isStorefrontAccessMode(value: unknown): value is StorefrontAccessMode {
+  return typeof value === 'string' && (STOREFRONT_ACCESS_MODES as readonly string[]).includes(value);
+}
+
 export const config = {
   matcher: ['/((?!api/|_next/|_static/|[\\w-]+\\.\\w+).*)'],
 };
@@ -58,7 +65,7 @@ export const config = {
 function gatewayBaseUrl(): string | null {
   const value = readStorefrontApiBaseUrl();
   if (!value) {
-    warnOnce('gateway-base-url', 'LETBUYY_API_BASE_URL/NEXT_PUBLIC_API_URL is not set; storefront access resolution is disabled');
+    warnOnce('gateway-base-url', 'LETBUYY_API_BASE_URL/NEXT_PUBLIC_API_URL is not set; storefront access cannot be resolved and every storefront request will be denied');
     return null;
   }
   return value.replace(/\/+$/, '').replace(/\/v1$/, '');
@@ -67,15 +74,16 @@ function gatewayBaseUrl(): string | null {
 function internalHeaders(): Record<string, string> | null {
   const secret = process.env.INTERNAL_API_SECRET;
   if (!secret) {
-    warnOnce('internal-api-secret', 'INTERNAL_API_SECRET is not set; storefront access resolution is disabled');
+    warnOnce('internal-api-secret', 'INTERNAL_API_SECRET is not set; storefront access cannot be resolved and every storefront request will be denied');
     return null;
   }
   return { 'x-internal-api-secret': secret };
 }
 
 // Backend config needed to call the store-access API. Returns null (instead of
-// throwing) when an env var is missing so the request path can degrade
-// gracefully rather than 500ing every storefront request.
+// throwing) when an env var is missing so each caller can take its own
+// fail-closed path; every caller treats null as "cannot verify" and denies
+// rather than admitting the request (SEC-R1).
 function backendConfig(): { baseUrl: string; headers: Record<string, string> } | null {
   const baseUrl = gatewayBaseUrl();
   const headers = internalHeaders();
@@ -95,6 +103,12 @@ function signingKey(name: 'PREVIEW_SIGNING_KEY' | 'STORE_ACCESS_SIGNING_KEY'): s
   return value;
 }
 
+// This middleware runs in front of every storefront request, and an unresolved access check denies
+// rather than falls through, so a gateway that accepts the connection and then hangs would stall the
+// whole storefront instead of degrading to the holding page. Both store-access calls are bounded; the
+// abort surfaces as a rejected fetch, which takes the existing fail-closed path (SEC-R1).
+const STORE_ACCESS_TIMEOUT_MS = 3000;
+
 async function resolveAccess(host: string): Promise<StorefrontAccessResolution> {
   const config = backendConfig();
   if (!config) return { status: 'unavailable' };
@@ -104,6 +118,7 @@ async function resolveAccess(host: string): Promise<StorefrontAccessResolution> 
     response = await fetch(`${config.baseUrl}/v1/internal/store-access/resolve?host=${encodeURIComponent(host)}`, {
       headers: config.headers,
       cache: 'no-store',
+      signal: AbortSignal.timeout(STORE_ACCESS_TIMEOUT_MS),
     });
   } catch (error) {
     warnOnce('store-access-fetch', `storefront access resolution request failed: ${errorMessage(error)}`);
@@ -116,7 +131,14 @@ async function resolveAccess(host: string): Promise<StorefrontAccessResolution> 
     return { status: 'unavailable' };
   }
   const body = await response.json().catch(() => null) as { data?: StorefrontAccessContext } | null;
-  return body?.data ? { status: 'ok', site: body.data } : { status: 'not_found' };
+  if (!body?.data) return { status: 'not_found' };
+  // access_mode arrives as unvalidated JSON. A mode this build has no gate branch for must not fall
+  // through to a public render, so an unsupported value counts as unresolved, not as allowed.
+  if (!isStorefrontAccessMode(body.data.access_mode)) {
+    warnOnce('store-access-mode', `storefront access resolution returned an unsupported access_mode: ${String(body.data.access_mode)}`);
+    return { status: 'unavailable' };
+  }
+  return { status: 'ok', site: body.data };
 }
 
 async function verifyStorePassword(input: { siteId: string; host: string; password: string; ip: string | null }): Promise<boolean> {
@@ -136,6 +158,7 @@ async function verifyStorePassword(input: { siteId: string; host: string; passwo
         ip: input.ip,
       }),
       cache: 'no-store',
+      signal: AbortSignal.timeout(STORE_ACCESS_TIMEOUT_MS),
     });
     return response.ok;
   } catch (error) {
@@ -147,6 +170,23 @@ async function verifyStorePassword(input: { siteId: string; host: string; passwo
 function noIndex(response: NextResponse): NextResponse {
   response.headers.set('X-Robots-Tag', 'noindex');
   return response;
+}
+
+function storeNotFound(): NextResponse {
+  return noIndex(new NextResponse('Store not found', { status: 404 }));
+}
+
+// Vercel deployment hostnames (`<project>-<hash>.vercel.app`, plus branch/preview URLs). Matched by
+// exact suffix rather than `includes('vercel.app')`, which would also match a merchant custom domain
+// that merely contains the string (e.g. `my-vercel.applications.in`) and hand it the bypass below.
+function isVercelDeploymentHost(host: string): boolean {
+  return host === 'vercel.app' || host.endsWith('.vercel.app');
+}
+
+// `/store/<subdomain>` is the internal rewrite target of rewriteToStore. Reached as a URL instead of
+// as a rewrite it skips the whole access gate, so it is only ever legitimate host-routed.
+function isInternalStorePath(pathname: string): boolean {
+  return pathname === '/store' || pathname.startsWith('/store/');
 }
 
 // Theme-editor preview cookie (host-only, no domain attribute) for a subdomain.
@@ -162,19 +202,26 @@ function applyThemePreviewCookie(response: NextResponse, subdomain: string, toke
   return response;
 }
 
+// Canary render-engine attribution deliberately does NOT live here. The engine is decided per
+// theme/store downstream (resolveThemeLiquidRenderingEnabled, read by the template resolver), which
+// is strictly after this rewrite, so any header set here can only be a guess. The removed
+// X-Lb-Render-Engine header was derived from `process.env.THEME_LIQUID_RENDERING_DEFAULT_ENABLED` —
+// a name declared in no env file, vercel.json, wrangler.toml or workflow, and never read by the
+// renderer — so it reported 'react' on every response including genuine Liquid renders. A fabricated
+// telemetry value is worse than none (ANTI-R9); the composition engine's `lb:canary:render` event
+// already carries the real per-render engine.
 function rewriteToStore(req: NextRequest, subdomain: string, previewMode: boolean): NextResponse {
   const requestHeaders = new Headers(req.headers);
   if (previewMode) requestHeaders.set('x-letbuyy-preview-checkout-mode', 'test');
   const destination = req.nextUrl.clone();
-  if (!destination.pathname.startsWith(`/store/${subdomain}`)) {
+  // Prefix unless the path already is this store's own tree. The match has to land on a path segment
+  // boundary: a bare startsWith also accepts `/store/<subdomain>x`, a *different* tenant's tree, and
+  // would pass it through unprefixed — rendering that tenant behind this store's access gate (ART-08).
+  const storeRoot = `/store/${subdomain}`;
+  if (destination.pathname !== storeRoot && !destination.pathname.startsWith(`${storeRoot}/`)) {
     destination.pathname = `/store/${subdomain}${destination.pathname}`;
   }
-  const response = NextResponse.rewrite(destination, { request: { headers: requestHeaders } });
-  // Canary observability (Document 6 §4): reflects the global render-engine flag so CDN/monitoring
-  // can bucket requests by active engine without parsing response bodies.
-  const renderEngine = process.env.THEME_LIQUID_RENDERING_DEFAULT_ENABLED === 'true' ? 'liquid' : 'react';
-  response.headers.set('X-Lb-Render-Engine', renderEngine);
-  return response;
+  return NextResponse.rewrite(destination, { request: { headers: requestHeaders } });
 }
 
 function holdingPage(req: NextRequest, status: number, reason: string, site?: StorefrontAccessContext): NextResponse {
@@ -256,24 +303,58 @@ export async function proxy(req: NextRequest) {
   if (req.nextUrl.pathname.startsWith('/preview/coming-soon')) return NextResponse.next();
 
   const host = normalizeRequestHost(req.headers.get('x-forwarded-host') || req.headers.get('host'));
-  if (!host || host.includes('vercel.app')) return NextResponse.next();
+  // No usable Host means no tenant to resolve, which is the same position as an invalid host below.
+  if (!host) return storeNotFound();
 
-  const parsed = resolveStorefrontHost(host, process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
-  if (parsed.kind === 'root') return NextResponse.next();
-  if (parsed.kind === 'reserved' || parsed.kind === 'invalid') {
-    return noIndex(new NextResponse('Store not found', { status: 404 }));
+  // A deployment hostname carries no tenant mapping — it can never resolve to a store — so the
+  // platform's own pages stay reachable for deploy smoke checks. The internal `/store/<subdomain>`
+  // tree is denied here: it is directly addressable and ungated, so serving it on a preview
+  // deployment would expose every password / preview_only / offline storefront (SEC-R1).
+  // `/preview` only looks like a tenant-free platform page: it names its store in `?subdomain=`, so
+  // no host-derived gate can cover it on a hostname that maps to no tenant. It is gated at its own
+  // call site (`src/app/preview/page.tsx`), which loads a store solely against a theme preview
+  // session token minted for that store.
+  if (isVercelDeploymentHost(host)) {
+    return isInternalStorePath(req.nextUrl.pathname) ? storeNotFound() : NextResponse.next();
   }
 
-  const resolution = await resolveAccess(host);
+  const parsed = resolveStorefrontHost(host, process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
+  if (parsed.kind === 'reserved' || parsed.kind === 'invalid') {
+    return storeNotFound();
+  }
+
+  // Which host the tenant is resolved against, and which host the preview/gate tokens are bound to.
+  // For a storefront host that is the request host; the platform root is the one case where the two
+  // differ, because the root host maps to no tenant at all.
+  let accessHost = host;
+  if (parsed.kind === 'root') {
+    // The platform's own root pages (landing, the holding page) carry no tenant, so they stay
+    // ungated as before; `/preview` is host-agnostic but not tenant-free, and is gated at its own
+    // call site (`src/app/preview/page.tsx`) against a theme preview session token for the store it
+    // names in `?subdomain=`. `/store/<subdomain>` is the exception here: it is the internal rewrite
+    // target, it names its tenant in the path, and the store layout below only gates on status —
+    // never on access_mode — so letting it through serves a gated storefront in full. Resolve
+    // the named store's own host instead and let the same gate decide (SEC-R1). Unlocking a password
+    // store still has to happen on that store's host: the submit route carries no subdomain, so there
+    // is nothing to gate a root-domain submission against.
+    if (!isInternalStorePath(req.nextUrl.pathname)) return NextResponse.next();
+    const requestedSubdomain = req.nextUrl.pathname.split('/')[2];
+    if (!requestedSubdomain) return storeNotFound();
+    accessHost = `${requestedSubdomain}.${host}`;
+  }
+
+  const resolution = await resolveAccess(accessHost);
   if (resolution.status === 'unavailable') {
-    // Store-access backend/config is unavailable. Continue the request instead
-    // of 500ing every storefront page; downstream pages surface their own data
-    // failures through their error boundaries.
-    return NextResponse.next();
+    // SEC-R1 / ART-08: resolution IS the access gate. "Unavailable" (missing INTERNAL_API_SECRET or
+    // API base URL, gateway error, timeout) means we do not know whether this store is public,
+    // password-gated, preview_only, or offline — it is not evidence that the store is public.
+    // Continuing would disable the gate for every store for the whole outage, so deny instead; only
+    // a resolved `ok` site below can open a storefront.
+    return holdingPage(req, 503, 'access-unavailable');
   }
   const site = resolution.status === 'ok' ? resolution.site : null;
   if (!site?.subdomain) {
-    return noIndex(new NextResponse('Store not found', { status: 404 }));
+    return storeNotFound();
   }
 
   // Multi-domain (185): a connected *redirect* domain 301s to the store's primary host.
@@ -290,7 +371,7 @@ export async function proxy(req: NextRequest) {
   }
 
   if (req.nextUrl.pathname === '/store-access/password' && req.method === 'POST') {
-    return handlePasswordSubmit(req, site, host);
+    return handlePasswordSubmit(req, site, accessHost);
   }
 
   if (
@@ -307,7 +388,7 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(redirectUrl, 301);
   }
 
-  const preview = await validPreview(req, site, host);
+  const preview = await validPreview(req, site, accessHost);
   if ((site.access_mode === 'preview_only' || !site.published || site.status !== 'published') && !preview.valid) {
     return holdingPage(req, 401, 'preview-required', site);
   }
@@ -316,7 +397,7 @@ export async function proxy(req: NextRequest) {
     return holdingPage(req, 503, 'offline', site);
   }
 
-  if (site.access_mode === 'password' && !preview.valid && !(await validGateCookie(req, site, host))) {
+  if (site.access_mode === 'password' && !preview.valid && !(await validGateCookie(req, site, accessHost))) {
     return holdingPage(req, 401, 'password-required', site);
   }
 

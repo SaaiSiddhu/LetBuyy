@@ -37,6 +37,31 @@
           "default": "Inter"
         }
       }
+    },
+    "seo": {
+      "label": "SEO and social",
+      "description": "Metadata rendered into <head> by the theme layout.",
+      "fields": {
+        "metaDescription": {
+          "type": "textarea",
+          "label": "Meta description",
+          "default": "Shop sneakers, apparel, and accessories at LetBuyy Core.",
+          "info": "Falls back to the shop description. Truncated to 160 characters on output.",
+          "maxLength": 160
+        },
+        "socialImageUrl": {
+          "type": "url",
+          "label": "Social share image URL",
+          "default": "",
+          "info": "Used for og:image and twitter:image. Left empty until the merchant uploads one."
+        },
+        "faviconUrl": {
+          "type": "url",
+          "label": "Favicon URL",
+          "default": "",
+          "info": "Rendered as <link rel=\"icon\">. Left empty until the merchant uploads one."
+        }
+      }
     }
   }
 }

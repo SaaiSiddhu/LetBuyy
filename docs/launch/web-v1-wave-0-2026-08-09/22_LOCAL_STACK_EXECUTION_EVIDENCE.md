@@ -1,0 +1,308 @@
+# 22 — Local Stack Execution Evidence
+
+**Evidence artifact, not governance authority.** Subordinate to `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`, then root `AGENTS.md`, then the relevant local `AGENTS.md`, then `LETBUYY_CANONICAL_SYSTEMS.md`. Where this document appears to conflict with those, the governance chain wins and the conflict is logged in §9.
+
+| Field | Value |
+|---|---|
+| Date | **2026-08-09** |
+| Baseline SHA | `ee3711829d857e986014c5811bb94d86ebc3d343` (human-approved Wave 0 baseline) |
+| Worktree | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-local-environment` |
+| Branch | `codex/w0-local-environment` (local commits only — **not pushed**) |
+| Commits added | `623718a1` (Node pin), `4f3ded6f` (gitignore `.tmp/`) |
+| Isolated project id | `letbuyy-w0-local-env` |
+| Raw evidence | `artifacts/local-operational-proof/web-v1-wave-0-2026-08-09/raw-evidence/W0-LOCAL-ENV/` (`01`–`06`) |
+
+**Mode: EXECUTED.** Unlike doc 12 (read-only design), this document reports commands that were actually run with observed exit codes. Every claim below is labelled **EXECUTED**, **INFERRED**, or **UNVERIFIED**. No readiness percentage is carried over from any prior document.
+
+**Headline result:** the isolated local stack **booted successfully** and is provably not the production project. In doing so it surfaced a **hard, reproducible blocker: the Wave 0 baseline commit cannot build `services/api-gateway`** (§5). That blocker is not a local-environment problem — it is a defect in the baseline itself.
+
+---
+
+## 1. Isolation proved BEFORE anything was started
+
+Per the mandate, no command was run until isolation was demonstrated. Full transcript: `raw-evidence/W0-LOCAL-ENV/01_isolation_proof.txt`.
+
+### 1.1 The worktree carries no link state (EXECUTED)
+
+| Check | Command | Result |
+|---|---|---|
+| Worktree `supabase/` contents | `ls -a supabase/` | only `.branches/` — **no `.temp/`, no `config.toml`** |
+| CLI link cache | `ls supabase/.temp` | `No such file or directory` |
+| Link markers anywhere | `find . -name project-ref -o -name linked-project.json` | **no matches** (excluding `node_modules`, `.git`) |
+| Production ref string | `grep -rIl qtrzgnnqnvboifoqntfi .` | 5 hits, **all under `docs/archive/root-residue/…`** — prose in archived status reports, never config |
+
+The worktree has no `supabase/config.toml` at its root at all. There is therefore no repo-root Supabase project for a stray command to accidentally resolve.
+
+### 1.2 The original repo IS linked — and is untouched (EXECUTED)
+
+`ls -la` only (no file contents read, no values printed) on `/Users/…/Letbuyy_Store/supabase/.temp/` confirms `linked-project.json`, `project-ref`, `pooler-url`, and a `start-secrets/` directory, mtimes 2026-08-01/03. This corroborates doc 12 §1. **Nothing in that repository was created, edited, or deleted by this agent** other than the two permitted output paths (this document and the raw-evidence directory).
+
+### 1.3 Five independent reasons no command here could reach production
+
+1. **No project reference to resolve.** The isolated workdir (`.tmp/w0-local-env/`) contains a freshly generated `config.toml` with `project_id = "letbuyy-w0-local-env"` and no `.temp/`. Re-verified after boot: still no `project-ref` / `linked-project.json` (`03_*.txt` §8).
+2. **CLI state redirected.** Every `supabase` invocation ran with `HOME=<runroot>/home` and `XDG_CONFIG_HOME=<runroot>/home/.config`. Post-boot, that isolated home contains only `telemetry.json` and `traces/` — **no `access-token`, no link record** (`03_*.txt` §8).
+3. **No credential exists to authenticate with.** `ls ~/.supabase/access-token` → `No such file or directory` in **both** the real and the isolated home. The CLI is not logged in anywhere on this machine, so a remote API call would fail on auth even if attempted.
+4. **`--workdir` on every call.** No command was ever run from the repo root's `supabase/` directory.
+5. **Only local subcommands were used.** `supabase start`, `supabase status`, `supabase stop --project-id`. **Never** `db push`, `db pull`, `db reset`, `db dump`, `seed`, `link`, `unlink`, `migration up`, or any provider/deploy command — from anywhere. (`db reset` is discussed in §7.)
+
+### 1.4 Namespace collision check (EXECUTED)
+
+`docker ps -a` revealed **12 pre-existing `supabase_*_Letbuyy_Store` containers** — the production-linked repo's local stack, all in state `exited` (2–3 days old). These were a real collision hazard the Phase 1 design did not anticipate.
+
+They are fully disjoint from this stack: container names (`supabase_db_letbuyy-w0-local-env` vs `supabase_db_Letbuyy_Store`), Docker volumes (`06_*.txt` shows both sets side by side), and host ports (15420-series vs the 54321-series in the original `supabase/config.toml`). **They were never started, stopped, or removed** — confirmed still `exited` after teardown (`06_*.txt`).
+
+---
+
+## 2. Isolated configuration as actually built
+
+Generated by `scratchpad/prepare-isolated.sh`, adopting the isolation primitives of `scripts/utilities/local-stack-up.mjs` (project id, port block, redirected CLI home, real migration copy).
+
+| Property | Value | Verified |
+|---|---|---|
+| Project id | `letbuyy-w0-local-env` | EXECUTED |
+| Run root | `<worktree>/.tmp/w0-local-env/` | EXECUTED |
+| Container names | `supabase_<svc>_letbuyy-w0-local-env` | EXECUTED (`03_*.txt` §2) |
+| Volumes | `supabase_db_letbuyy-w0-local-env`, `…_storage_…`, `…_edge_runtime_…` | EXECUTED (`03_*.txt` §3) |
+| CLI `HOME` / `XDG_CONFIG_HOME` | redirected into the run root | EXECUTED |
+| Postgres major | 17 (observed **PostgreSQL 17.6**) | EXECUTED |
+| Migration source | `database/supabase/migrations/` → copied, **124 files** | EXECUTED |
+| Credentials | Supabase local defaults + `local-*-placeholder` set | EXECUTED |
+| Provider mode | `rzp_test_*`, Turnstile always-pass test key, no real provider keys | EXECUTED |
+| Studio / analytics / pooler | disabled (not needed; smaller surface) | EXECUTED |
+
+### 2.1 Port map (all verified FREE before boot, all released after)
+
+| Service | Port | Post-boot binding (EXECUTED) |
+|---|---|---|
+| Supabase API (Kong) | 15421 | `0.0.0.0:15421->8000/tcp` |
+| Postgres | 15422 | `0.0.0.0:15422->5432/tcp` |
+| DB shadow | 15420 | reserved, unused |
+| Mailpit/Inbucket UI | 15424 | `0.0.0.0:15424->8025/tcp` |
+| SMTP / POP3 | 15425 / 15426 | bound |
+| api-gateway (`wrangler dev`) | 8787 (inspector 8797) | bound |
+| storefront-runtime (`next dev`) | 3003 | bound |
+
+This block is deliberately disjoint from both the everyday `pnpm dev` map (`scripts/dev/ports.mjs`, 9000–9013) and the original repo's default Supabase ports (54321-series), so all three can coexist.
+
+### 2.2 Secret handling
+
+No `.env*` contents were read or reproduced anywhere. `services/api-gateway/.dev.vars` was generated with 15 keys (**names only** recorded in `04_*.txt`); it is matched by `.gitignore:93` (`**/.dev.vars`) and never appeared in `git status`. In `03_*.txt`, every key value returned by `supabase status` (`ANON_KEY`, `SERVICE_ROLE_KEY`, `JWT_SECRET`, `SECRET_KEY`, `PUBLISHABLE_KEY`, both S3 keys) and the DB password were **programmatically redacted before the file was written**; a grep confirms zero unredacted JWTs remain. This satisfies `SEC-R2` (`AGENTS.md:225`).
+
+---
+
+## 3. Node reproducibility gap — closed (commit `623718a1`)
+
+Doc 12 §2.6 and doc 13 §3 recorded local Node `v26.5.1` against CI pins of 20/22 with **no repo-level pin of any kind**. Confirmed at baseline (EXECUTED): `git show ee371182:.nvmrc` and `:.node-version` both fail; root `package.json` has zero `engines` occurrences.
+
+**Pin chosen: Node 20**, justified by what CI actually uses for the **V1 web runtimes**:
+
+| Workflow | Pin | Role |
+|---|---|---|
+| `ci.yml:21` | `NODE_VERSION: "20"` | typecheck · lint · **build** · unit-tests · governance |
+| `staging-deploy.yml:18` | `NODE_VERSION: "20"` | staging deploy |
+| `production-deploy.yml:17` | `NODE_VERSION: "20"` | **production deploy** |
+| `architecture-governance.yml:47`, `environment-lifecycle.yml`, `live-production-certification.yml`, `production-rollout.yml`, `staging-runtime-deployment.yml` | `node-version: 22` | governance / ops / rollout lanes |
+
+Every workflow that **builds or deploys a web runtime** is on 20; the 22s are governance and rollout lanes. Node 20 is therefore the correct baseline.
+
+**Floor verified empirically, not assumed** (EXECUTED): `next@16.1.6` declares `engines.node: ">=20.9.0"` (read from the installed `node_modules/.pnpm/next@16.1.6_*/…/package.json`). The `20` line satisfies it.
+
+Changes:
+- `.nvmrc` = `20`, `.node-version` = `20` — covers nvm, fnm, nodenv, asdf. Inert unless a version manager is used, so nothing existing breaks.
+- root `engines.node` = `">=20.9.0"` — deliberately a **floor, not an upper bound**, so Node 20, 22 and the locally installed 26.5.1 all satisfy it and no contributor's install starts failing.
+
+pnpm untouched: `packageManager: "pnpm@10.6.2"` already matches the installed CLI exactly.
+
+**Verified (EXECUTED):** `pnpm install --frozen-lockfile` → **exit 0** both before and after the pin, and `pnpm-lock.yaml` md5 is byte-identical (`0503fe8d64ef1ba33ad0fab4a01f74b7`) across both runs. No lockfile update, no dependency change.
+
+### 3.1 Conflict recorded, not resolved
+
+`scripts/utilities/local-stack-up.mjs:124-146` (`detectModernNodeBin`) hunts for a Node **≥ 22** for the app tier, contradicting the CI web-runtime line of 20. It degrades gracefully (falls back to `PATH` Node when none is found) so it is not a blocker, but the intent conflict is real. Escalated in §9 rather than resolved unilaterally.
+
+---
+
+## 4. The isolated stack booted (EXECUTED)
+
+Command:
+
+```
+HOME=<runroot>/home XDG_CONFIG_HOME=<runroot>/home/.config \
+  supabase start --workdir <runroot>
+```
+
+Tool versions: node `v26.5.1` · pnpm `10.6.2` · docker `29.6.2` · supabase CLI `2.111.0`.
+
+**All 8 enabled services reached healthy:** `db`, `kong`, `auth`, `rest`, `realtime`, `storage`, `inbucket` (all `(healthy)`), `edge_runtime` up. `supabase status` exit **0**.
+
+### 4.1 Database identity — proof it is NOT the remote project
+
+| Probe | Result |
+|---|---|
+| `DB_URL` from `supabase status` | `postgresql://postgres:<REDACTED>@`**`127.0.0.1:15422`**`/postgres` |
+| `API_URL` | `http://127.0.0.1:15421` |
+| `inet_server_addr()` over TCP inside the container | **`127.0.0.1/32`** (loopback) |
+| `current_database()` | `postgres` |
+| `version()` | **PostgreSQL 17.6** |
+| Production target (original repo `supabase/.temp/pooler-url`) | `aws-1-ap-south-1.pooler.supabase.com:5432` |
+
+Different host, different port, different container namespace. The stack is reachable only through the published mapping `0.0.0.0:15422->5432/tcp`.
+
+### 4.2 The migration chain applied to the isolated database
+
+| Measure | Value |
+|---|---|
+| Migration files on disk | **124** |
+| Rows in `supabase_migrations.schema_migrations` | **124** — full chain applied, none skipped |
+| Version range | `000` … `195` |
+| `public` base tables | **438** |
+| `public` functions | **204** |
+| RLS policies on `public` | **997** |
+| Canonical money RPCs present | all 6: `create_checkout_order`, `confirm_order_payment_with_ledger`, `complete_order_refund`, `issue_gift_card`, `set_gift_card_status`, `restore_gift_card_on_refund` |
+
+Migrations were applied by `supabase start` against a fresh volume — **`supabase db reset` was never run** (§7).
+
+### 4.3 Freshness — proof it is not a production copy
+
+`sites`, `orders`, `order_items`, `payment_transactions`, `products`, `store_customers`, `gift_card_accounts` → **all 0 rows**. Full schema, zero business data.
+
+---
+
+## 5. BLOCKER: the baseline commit cannot build `services/api-gateway`
+
+This is the most consequential finding of this workstream. Full transcript: `04_gateway_boot_and_baseline_build_blocker.txt`.
+
+### 5.1 Symptom (EXECUTED)
+
+`wrangler dev` (4.100.0) against the isolated stack: **esbuild bundling failed with 17 errors**. `workerd` still bound `127.0.0.1:8787`, but **every HTTP request hung** (`curl` exit 28, 0 bytes) because no worker script was ever loaded. A port-open check would have reported this as "up" — it is not.
+
+### 5.2 Root cause (EXECUTED)
+
+Nine symbols are imported by `services/api-gateway/src/routes/contact-public.ts` and `src/lib/contact-request-email.ts` from `@letbuyy/shared-types` and do not exist there:
+
+`ContactRequestSubmissionSchema`, `addWorkingHours`, `describeResponseHours`, `getContactSubject`, `getContactTopic`, `resolveContactResponseHours`, `resolveContactSubjectLine`, `scoreContactLead`, `validateContactSubmission`
+
+- `packages/shared-types/src/contact.ts` **is tracked at `ee371182`** and **does export all nine**.
+- `packages/shared-types/src/index.ts` at `ee371182` **never re-exports it** — `grep -c "from './contact'"` → **0**.
+
+**The defect is one missing barrel line.** The recent demo/contact commits (`c0250685`, `4ac324e7`, `ee371182`) added `contact.ts` and the gateway routes that consume it, but the `index.ts` export line was never committed.
+
+### 5.3 The fix exists only as an uncommitted working-tree change
+
+In the original production-linked repo (read-only inspection): `git status --porcelain packages/shared-types/src/index.ts` → `M`, and `git diff HEAD` shows exactly **one insertion**:
+
+```
+ export * from './brand';
++export * from './contact';
+ export * from './app-platform';
+```
+
+### 5.4 Fix verified, then reverted (EXECUTED)
+
+Applied temporarily in the worktree: bundle errors **17 → 0**; `GET /health` → **HTTP 200** with `{"status":"healthy","environment":"development","version":"2.0.0"}`.
+
+**End-to-end through the isolated stack:** with `SUPABASE_URL="http://127.0.0.1:15421"`, `GET /v1/storefront/urban-kicks-demo/products?limit=1` returned **HTTP 404** `{"success":false,"error":{"code":"NOT_FOUND","message":"Store not found"}}`. A *structured* NOT_FOUND rather than a connection error proves the query executed against the isolated database and correctly found no rows — consistent with `sites = 0` in §4.3.
+
+The change was then **reverted**; `git diff HEAD -- packages/shared-types/src/index.ts` is empty. It was deliberately **not committed**: `@letbuyy/shared-types` is a named change-control hotspot (root `CLAUDE.md`) requiring a blast-radius review, and this is a code fix outside the local-environment remit. Wave 1 integration should own it.
+
+### 5.5 Why CI never caught this
+
+Doc 09 established that `ci.yml` — which owns the `build` job — **does not trigger on `stepup/main`** for push or pull_request. A commit that cannot bundle the canonical API gateway therefore reached the Wave 0 baseline unchallenged. §5 is the concrete damage that coverage gap allowed.
+
+---
+
+## 6. Second baseline defect: the governance gate dies at validator #2, not #6
+
+Running `node scripts/validate-governance.mjs` in the **clean** worktree at the baseline (EXECUTED, **exit 1**):
+
+```
+Foundation anti-fabrication gate passed (1905 active source files scanned; 0 temporary entries tracked).
+Tenant isolation validator failed:
+- services/api-gateway/src/tenant/tenant-tables.registry.ts must match schema-derived tenant table registry;
+  run scripts/generators/generate-tenant-table-registry.mjs
+```
+
+Phase 1 (doc 10/11) measured the gate dying at **#6** `validate-design-system.mjs`. In `scripts/validate-governance.mjs:15-21`, `tenant-isolation-validator.mjs` is **#2**. So the clean baseline fails **earlier** than Phase 1 reported, and **106 of 108** validators never execute.
+
+**Why the two measurements differ (EXECUTED):** Phase 1 measured inside the dirty original tree, where `services/api-gateway/src/tenant/tenant-tables.registry.ts` is modified with **59 insertions, uncommitted**. That uncommitted regeneration is what lets the tenant validator pass there, allowing the gate to reach #6.
+
+**Consequence — the load-bearing point:** the dirty working tree is **not** noise on top of a good baseline. It contains at least two uncommitted changes the baseline actively depends on — the tenant registry regeneration (§6) and the `shared-types` barrel export (§5). The committed baseline is in a **worse** state than the working tree for both build and governance. Any Wave 1 plan that treats `ee371182` as a clean, buildable starting point is proceeding on a false premise.
+
+This agent's own commits are not implicated: `623718a1` touched `.nvmrc`, `.node-version`, `package.json`; `4f3ded6f` touched `.gitignore`. Neither goes near the tenant registry.
+
+---
+
+## 7. `supabase db reset` was avoided — and why that matters
+
+`scripts/utilities/local-stack-up.mjs:838` runs `supabase db reset --workdir … --local`. The Wave 0 mandate forbids `db reset` outright, so **the prior-art script was not executed as-is**. The isolated boot instead relied on `supabase start` applying migrations to a fresh volume — which achieved the identical result (§4.2: 124/124 applied) with no reset.
+
+Two further reasons that script was not run wholesale:
+
+1. **App Bridge / marketplace scope.** Its `seedSql()` (lines 646–721) inserts into `app_developers`, `marketplace_apps`, and `app_extensions` — App Bridge surface owned by the separate `codex/emergency-appbridge-killswitch` task, which this workflow must not touch.
+2. **Frozen apps.** Its `webApps` list (lines 46–47) boots `app-marketplace` and `theme-marketplace`, frozen under Constitution **ART-22**.
+
+---
+
+## 8. Non-destructive teardown (EXECUTED)
+
+Full transcript: `06_nondestructive_teardown.txt`.
+
+Run: `pkill -f "next dev"`; `pkill -9 -f wrangler|workerd`; then
+
+```
+HOME=<runroot>/home XDG_CONFIG_HOME=<runroot>/home/.config \
+  supabase stop --project-id letbuyy-w0-local-env
+```
+
+→ `{"project_id_filter":"letbuyy-w0-local-env","backup":true,…}`, exit **0**. `backup:true` confirms the local DB was dumped, not discarded.
+
+Post-state: isolated containers stopped; **volumes preserved**; ports 15421/15422/8787/3003 all FREE; the `Letbuyy_Store` containers still `exited` and untouched; `.tmp/` (8.1 MB) retained for inspection and now gitignored.
+
+**Deliberately not run:** `--no-backup`, `docker volume rm`, `docker system prune` (would have deleted the dormant production-repo volumes), `rm -rf .tmp/`, and every prohibited git operation.
+
+**Defect found in the existing teardown script.** `scripts/utilities/local-stack-down.mjs` is materially weaker than its `-up` counterpart:
+- **line 48** stops the project with `--no-backup` (discards the dump);
+- **line 62** `rmSync(runRoot, {recursive:true, force:true})` — deletes the generated config, the migration copy **and the logs**, destroying exactly the evidence an incident review would need;
+- **line 18** passes `env: process.env`, i.e. the **real `HOME`** — unlike `local-stack-up.mjs:17-21`, the down script does **not** redirect CLI state. It is still scoped by `--project-id`, so it only stops the isolated project, but it is the one place in the pair where the CLI reads the machine's global state.
+
+Recommendation for Wave 1: mirror `supabaseCliEnv` into the down script, drop `--no-backup`, and put the `rm -rf` behind an explicit opt-in `--purge` flag.
+
+---
+
+## 9. Conflicts and escalations
+
+1. **Node 20 (CI web runtimes) vs ≥ 22 (`local-stack-up.mjs:124-146`).** Not a conflict between two authoritative documents; a conflict between CI configuration and a utility script. Pinned to 20 per §3 and recorded here rather than changing the script.
+2. **The baseline does not build (§5).** Requires a human/ARB decision on how the one-line `shared-types` fix reaches the integration branch. Not applied by this agent.
+3. **The baseline fails governance at validator #2 (§6).** The gate's `fail-fast` (`validate-governance.mjs:201-203`) means 106 of 108 validators are unmeasured at the baseline. Both §5 and §6 depend on uncommitted working-tree content — escalate as a **baseline integrity** question, not a local-environment one.
+4. **Production Supabase link on this machine** (doc 12 §1) remains unresolved. This agent structurally bypassed it (§1.3) but did **not** run `supabase unlink` — a mutating command requiring human approval.
+5. **`.tmp/` was untracked but not gitignored** — fixed in `4f3ded6f` (§10), recorded because doc 12 §4.2 described it as merely "not part of git history", which understated the exposure.
+6. **Mobile and App Bridge:** untouched, per the two standing human decisions. `apps/mobile/merchant-app` remains **HUMAN_DECISION_REQUIRED**; nothing here asserts any deferral. No App Bridge / app-marketplace / marketplace code was read, run, or seeded.
+
+---
+
+## 10. Commits on `codex/w0-local-environment` (local only, not pushed)
+
+| SHA | Scope |
+|---|---|
+| `623718a1` | `.nvmrc`, `.node-version`, root `engines.node` — Node pin to the CI web-runtime line (§3) |
+| `4f3ded6f` | `.gitignore` — ignore `.tmp/`, the isolated-stack scratch root (§9.5) |
+
+`.tmp/` was untracked **and unignored** before `4f3ded6f`: a stray `git add -A` would have committed a generated `config.toml`, a full copy of the 124-file migration chain, the redirected CLI home, and generated `.dev.vars` holding local Supabase JWTs — violating `SEC-R2` (`AGENTS.md:225`) and `CODE-R10` (`AGENTS.md:126`). Verified after the change: `git check-ignore -v .tmp/` matches `.gitignore:132`, and `git ls-files | grep '^\.tmp/'` returns 0, so no tracked file was retroactively ignored.
+
+One uncommitted change remains in the worktree and was left deliberately: `packages/theme-engine/src/theme-cli.ts` mode `100644 → 100755`, caused by `pnpm install` chmod-ing the package's declared `bin` target (`packages/theme-engine/package.json:16`). In a clean tree `pnpm install` produces **exactly one** such mode change — so this mechanism accounts for **1** of the 6,018 mode-only paths in the original dirty tree and does **not** explain the bulk of them.
+
+---
+
+## 11. What remains UNVERIFIED
+
+- Whether `merchant-control-plane`, `identity-platform`, `marketing-site`, or `platform-console` boot. **Not attempted.** Only `storefront-runtime` was booted (`next dev`, HTTP **200** in 5.7 s; its landing data fetch failed with `ECONNREFUSED 127.0.0.1:8787` because the gateway had been deliberately stopped — the app degraded gracefully, it did not crash).
+- Whether `webhook-service`, `queue-workers`, or `mobile-bff` start. Not attempted.
+- Whether the api-gateway works end-to-end **with seeded data**. The isolated DB was intentionally left empty; the `local-stack-up.mjs` seed was not run (§7). The proven round trip (§5.4) is a correct-empty-result path, not a populated-commerce path.
+- Whether any money RPC executes correctly. Their **existence** was verified (§4.2); none was invoked.
+- Whether validators #3–#108 pass. Unmeasured — the gate dies at #2 (§6).
+- Whether `apps/mobile/merchant-app` builds. Out of scope by standing human decision.
+- Whether the `local-stack-up.mjs` seed still matches the current schema (doc 12 §9 left this open). Still open — the seed was not run.
+- Whether a *fully cold* machine reproduces this. `node_modules` was populated by this agent from the existing pnpm store (`Progress: resolved 860, reused 860, downloaded 0`), so network-cold dependency resolution is untested. Docker images **were** pulled cold (~12 GB), which is the dominant first-boot cost.
+
+### 11.1 One outbound network call did occur — disclosed
+
+`wrangler dev` attempted to fetch Cloudflare's `Request.cf` metadata object and **timed out**, falling back to a placeholder (`TimeoutError: The operation was aborted due to timeout`, then `[wrangler:warn] Unable to fetch the 'Request.cf' object! Falling back to a default placeholder...`). This is an **unauthenticated** request to Cloudflare's public edge made by the dev tooling; no credential was presented and no LetBuyy resource was touched. Recorded for completeness against the "no production provider call" requirement — **no call to Supabase Cloud, Razorpay, Resend, or any LetBuyy production provider occurred**, and no such credential exists on this machine to make one.

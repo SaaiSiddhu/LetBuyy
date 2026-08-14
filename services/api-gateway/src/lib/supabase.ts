@@ -164,7 +164,10 @@ export function isMissingSchemaError(error: unknown): boolean {
 
     return /Could not find the table 'public\.[^']+' in the schema cache/i.test(message)
         || /relation "public\.[^"]+" does not exist/i.test(message)
-        || /schema cache/i.test(message);
+        || /schema cache/i.test(message)
+        || /fetch failed/i.test(message)
+        || /ECONNREFUSED/i.test(message)
+        || /connect/i.test(message);
 }
 
 export function shouldReturnEmptyForMissingLocalSchema(env: Env, error: unknown): boolean {

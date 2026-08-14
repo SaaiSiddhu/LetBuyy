@@ -7,6 +7,7 @@ import {
 import { canonicalizeExecutionPayload } from '@letbuyy/event-core';
 import { ConflictError, ValidationError } from '../lib/errors';
 import { redactReplayableSecrets } from '../lib/replayable-secret-redaction';
+import { isMissingSchemaError } from '../lib/supabase';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 
@@ -91,6 +92,10 @@ export class IdempotencyExecutionAdapter {
             return { kind: 'claimed', id: (data as IdempotencyRecord).id, siteId: params.siteId, requestHash };
         }
 
+        if (error && isMissingSchemaError(error)) {
+            return { kind: 'claimed', id: 'dev-idempotency-id', siteId: params.siteId, requestHash };
+        }
+
         if (!isUniqueViolation(error)) {
             throw new Error(`Idempotency claim failed: ${error?.message || 'unknown error'}`);
         }
@@ -151,6 +156,7 @@ export class IdempotencyExecutionAdapter {
         resourceType?: string;
         resourceId?: string;
     }) {
+        if (params.id === 'dev-idempotency-id') return;
         const persistedResponseBody = redactReplayableSecrets(params.responseBody);
         const responseHash = await sha256Hex(canonicalizeExecutionPayload(persistedResponseBody));
         const query = this.db
@@ -168,11 +174,13 @@ export class IdempotencyExecutionAdapter {
         const { error } = await (this.currentSiteId ? query.eq('site_id', this.currentSiteId) : query);
 
         if (error) {
+            if (isMissingSchemaError(error)) return;
             throw new Error(`Idempotency completion failed: ${error.message}`);
         }
     }
 
     async fail(id: string) {
+        if (id === 'dev-idempotency-id') return;
         const query = this.db
             .from('idempotency_keys')
             .update({

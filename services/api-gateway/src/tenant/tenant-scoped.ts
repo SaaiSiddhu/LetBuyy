@@ -40,7 +40,7 @@ function payloadHasScope(value: unknown, scopeColumns: readonly string[]): boole
 }
 
 function scopedColumnsForTable(table: string, scopeColumns: readonly string[]): readonly string[] {
-    if (table === 'sites') return [...new Set([...scopeColumns, 'id', 'subdomain', 'custom_domain'])];
+    if (table === 'sites') return [...new Set([...scopeColumns, 'id', 'subdomain', 'store_name', 'custom_domain'])];
     return scopeColumns;
 }
 

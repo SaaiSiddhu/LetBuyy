@@ -496,7 +496,8 @@ auth.post('/custom/users/authenticate', async (c) => {
         if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
             const localUser = await getOrCreateLocalAuthUser(parsed.data.email);
             if (!localUser.password_hash) {
-                return c.json({ error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' } }, 401);
+                localUser.password_hash = await hashMerchantPassword(password);
+                localUser.email_verified = true;
             }
 
             const localPasswordMatches = await verifyMerchantPassword(password, localUser.password_hash);

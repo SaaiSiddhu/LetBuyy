@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
@@ -21,7 +22,7 @@ import '../../widgets/dashboard/skeleton_loader.dart';
 import '../../widgets/dashboard/quick_actions_grid.dart';
 import '../../widgets/dashboard/animated_revenue_chart.dart';
 import '../../widgets/dashboard/activity_timeline.dart';
-import '../../widgets/store/store_switcher_button.dart';
+import '../../widgets/dashboard/premium_header.dart';
 import '../../widgets/shared/provider_mode_badge.dart';
 
 /// Premium Enhanced Dashboard - Bento Grid Layout
@@ -144,53 +145,48 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headerBg = isDark ? const Color(0xFF0A0912) : const Color(0xFFFAF9FF);
     final colors = AppThemeColors.of(context);
+    final cardBg  = isDark ? const Color(0xFF100E1C) : Colors.white;
 
     return Scaffold(
-      backgroundColor: colors.bgStart,
-      body: Container(
-        decoration: colors.backgroundGradient,
-        child: Stack(
-          children: [
-            // Mesh gradient overlay for premium effect
-            Positioned(
-              top: -100,
-              right: -100,
+      backgroundColor: headerBg, // status bar inherits this color
+      body: Column(
+        children: [
+          // ── Status bar + header — flat, solid, same primary bg ────────────
+          SafeArea(
+            bottom: false,
+            child: ColoredBox(
+              color: headerBg,
+              child: _isLoading || _store == null
+                  ? const SizedBox(height: 62)
+                  : PremiumHeader(isDark: isDark, onStoreChanged: _loadStore),
+            ),
+          ),
+          // ── Content card — rounded top, contrasting surface ─────────────
+          Expanded(
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft:  Radius.circular(28),
+                topRight: Radius.circular(28),
+              ),
               child: Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    colors: [
-                      colors.accent.withValues(alpha: 0.15),
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
+                color: cardBg,
+                child: _isLoading
+                    ? const SkeletonLoader()
+                    : _store == null
+                    ? _buildNoStore(colors)
+                    : _buildDashboard(colors),
               ),
             ),
-
-            // Main content
-            SafeArea(
-              child: _isLoading
-                  ? const SkeletonLoader()
-                  : _store == null
-                  ? _buildNoStore(colors)
-                  : _buildDashboard(colors),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildDashboard(AppThemeColors colors) {
-    final authService = context.read<StoreAuthService>();
-    final userName =
-        authService.currentUser?.userMetadata?['full_name'] as String? ??
-        authService.currentUser?.email?.split('@').first ??
-        'there';
-    final firstName = userName.split(' ').first;
 
     final analytics = _analytics;
     final totalOrders = analytics?.totalOrders ?? _store!.totalOrders;
@@ -228,9 +224,6 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Premium Header
-            _buildHeader(firstName, colors),
-
             const SizedBox(height: 20),
 
             // Hero Store Card
@@ -474,92 +467,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHeader(String firstName, AppThemeColors colors) {
-    final greetingTime = _getGreetingTime();
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-      child: Row(
-        children: [
-          // Avatar with gradient border
-          Container(
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              gradient: colors.heroGradient,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: colors.elevation1,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Center(
-                child: Text(
-                  firstName[0].toUpperCase(),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  greetingTime,
-                  style: TextStyle(fontSize: 13, color: colors.textSecondary),
-                ),
-                Text(
-                  firstName,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: colors.textPrimary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          StoreSwitcherButton(onChanged: _loadStore),
-          const SizedBox(width: 8),
-          // Notifications button
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: colors.glassMedium,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colors.glassMediumBorder),
-            ),
-            child: IconButton(
-              padding: EdgeInsets.zero,
-              icon: Icon(
-                Icons.notifications_outlined,
-                size: 20,
-                color: colors.textSecondary,
-              ),
-              onPressed: () =>
-                  Navigator.pushNamed(context, AppRoutes.notifications),
-            ),
-          ),
-        ],
-      ),
-    ).animate().fadeIn(duration: 300.ms).slideX(begin: -0.1, end: 0);
-  }
-
-  String _getGreetingTime() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good Morning,';
-    if (hour < 17) return 'Good Afternoon,';
-    return 'Good Evening,';
-  }
 
   void _showPeriodPicker(AppThemeColors colors) {
     final periods = ['7 Days', '30 Days', '90 Days', '12 Months'];

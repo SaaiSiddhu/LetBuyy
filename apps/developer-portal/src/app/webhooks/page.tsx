@@ -5,7 +5,6 @@ import {
   Section
 } from "@letbuyy/ui";
 import {
-  DeveloperHeader,
   EndpointTable,
   ExampleCards,
   FactList,
@@ -19,11 +18,11 @@ import {
   webhookFacts,
   webhookTopics
 } from "@/lib/developer-surface";
+import { DocsShell } from "@/components/PortalShell";
 
 export default function WebhooksPage() {
   return (
-    <>
-      <DeveloperHeader subtitle="Webhook contract" />
+    <DocsShell>
       <Page className="developer-main">
         <section className="docs-page-hero">
           <div>
@@ -80,6 +79,6 @@ const valid = timingSafeEqualHex(expected, received);`}</code></pre>
           endpoints={webhookEndpoints}
         />
       </Page>
-    </>
+    </DocsShell>
   );
 }

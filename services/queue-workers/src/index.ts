@@ -558,6 +558,16 @@ async function triggerCustomDomainReconciler(env: Env, cron: string): Promise<vo
 }
 
 export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    if (url.pathname === '/health' || url.pathname === '/') {
+      return new Response(JSON.stringify({ status: 'ok', runtime: env.RUNTIME_NAME || 'queue-workers' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    return new Response('Not found', { status: 404 });
+  },
   async queue(batch, env) {
     const deliveries = await normalizeDeliveries(env, batch);
 

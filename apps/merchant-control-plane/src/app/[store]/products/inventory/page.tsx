@@ -295,7 +295,7 @@ export default function InventoryPage() {
             <PageHeader
                 title="Inventory"
                 description="Review stock availability and adjust tracked inventory quantities."
-                breadcrumbs={[{ label: 'Products' }, { label: 'Inventory' }]}
+                breadcrumbs={[{ label: 'Inventory' }]}
                 primaryAction={{
                     label: 'Refresh',
                     onClick: () => void loadInventory(),

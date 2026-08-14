@@ -44,7 +44,7 @@ console.log("Installing dev scripts:");
 // Next apps
 for (const [app, port] of Object.entries(APP_PORTS)) {
   patch(`apps/${app}/package.json`, (pkg) => {
-    pkg.scripts = withFirst(pkg.scripts, "dev", `next dev -p ${port}`);
+    pkg.scripts = withFirst(pkg.scripts, "dev", `next dev --webpack -p ${port}`);
   });
 }
 

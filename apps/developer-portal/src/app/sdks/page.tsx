@@ -7,7 +7,6 @@ import {
   Section
 } from "@letbuyy/ui";
 import {
-  DeveloperHeader,
   ExampleCards,
   FactList,
   SdkContractMatrix,
@@ -26,11 +25,11 @@ import {
   themeUploadGatewayContracts,
   themeValidationRules
 } from "@/lib/developer-surface";
+import { DocsShell } from "@/components/PortalShell";
 
 export default function SdksPage() {
   return (
-    <>
-      <DeveloperHeader subtitle="SDK quick-starts" />
+    <DocsShell>
       <Page className="developer-main">
         <section className="docs-page-hero">
           <div>
@@ -121,6 +120,6 @@ Authorization: Bearer <app_token>
           </Section>
         </Card>
       </Page>
-    </>
+    </DocsShell>
   );
 }

@@ -5,6 +5,7 @@ export default function SdkPage() {
   return (
     <PortalLayout>
       <SectionHeading
+        as="h1"
         kicker="Theme SDK and App SDK"
         title="Quick-starts for the contracts that exist now"
         description="Theme packages use the theme-engine JSON-contract bundle with LiquidJS rendering support. Apps use gateway app-store registration, app-platform manifest contracts, OAuth scope, webhook contracts, and the minimal createLetbuyyAppSdk wrapper in @letbuyy/api-client. CLI, browser bridge SDKs, and extension execution remain planned."

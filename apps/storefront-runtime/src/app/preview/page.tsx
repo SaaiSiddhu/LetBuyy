@@ -262,19 +262,29 @@ function buildThemeCss(themeSettings: ThemeSettings): string {
     `;
 }
 
+// This route renders a complete storefront and deliberately ignores publish status, so it needs a
+// preview credential minted for THAT store before anything is loaded. The theme preview session
+// token is that credential and it is verified upstream, not here: the gateway hashes it and matches
+// it against theme_preview_sessions filtered by the requested store and an unexpired expires_at, so
+// a missing token, an expired token, or a token minted for another store resolves to no store at all
+// — and a gateway that errors or is unreachable also resolves to no store (SEC-R1).
+//
+// The check has to live at this call site because the request never has a tenant host: the theme
+// editor loads /preview on the platform origin (and deployment hostnames resolve to no tenant at
+// all), so the proxy's host-driven storefront access gate cannot run for it and the store is named
+// in ?subdomain= instead. The previous fallback to StoreService.getStoreBySubdomainAnyStatus — a
+// loader whose whole purpose is to ignore status — therefore handed any anonymous caller a full
+// render of any store it named, password-gated, preview_only, offline and unpublished ones included
+// (ART-08). It is removed rather than made conditional: no store may be fetched at all until the
+// credential has proven the caller may see it.
 async function loadPreviewStore(subdomain: string | undefined, previewToken: string, useDemoStore: boolean): Promise<StoreModel | null> {
     if (useDemoStore) {
         return StoreService.getUrbanKicksDemoStore();
     }
 
-    if (!subdomain) return null;
+    if (!subdomain || !previewToken) return null;
 
-    if (previewToken) {
-        const previewStore = await StoreService.getPreviewStoreBySubdomain(subdomain, previewToken);
-        if (previewStore) return previewStore;
-    }
-
-    return StoreService.getStoreBySubdomainAnyStatus(subdomain);
+    return StoreService.getPreviewStoreBySubdomain(subdomain, previewToken);
 }
 
 async function loadProductsForStore(store: StoreModel, subdomain: string | undefined, useDemoStore: boolean): Promise<ProductModel[]> {

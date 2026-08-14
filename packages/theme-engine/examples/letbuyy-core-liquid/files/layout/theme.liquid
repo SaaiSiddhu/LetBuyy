@@ -3,13 +3,43 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ shop.name }} - LetBuyy Core</title>
+  {% assign lb_page_title = shop.name | append: " - LetBuyy Core" %}
+  {% assign lb_meta_description = settings.metaDescription | default: shop.description | strip_html | truncate: 160 %}
+  <title>{{ lb_page_title }}</title>
+  {% if lb_meta_description != blank %}<meta name="description" content="{{ lb_meta_description }}">{% endif %}
+  <meta name="twitter:card" content="{% if settings.socialImageUrl != blank %}summary_large_image{% else %}summary{% endif %}">
+  <meta name="twitter:title" content="{{ lb_page_title }}">
+  {% if lb_meta_description != blank %}<meta name="twitter:description" content="{{ lb_meta_description }}">{% endif %}
+  {% if settings.socialImageUrl != blank %}<meta name="twitter:image" content="{{ settings.socialImageUrl | image_url }}">{% endif %}
+  <style data-lb-layout="1">
+    :root{--lb-focus-ring-width:2px;--lb-focus-ring-color:var(--accent,#2563eb);--lb-focus-offset:2px;--lb-space-sm:0.5rem;--lb-space-md:0.75rem;--lb-space-lg:1rem;--lb-radius-sm:0.375rem;--lb-layout-max:72rem;--lb-layout-gutter:1rem;--lb-layout-breakpoint:48em;}
+    .lb-theme :where(a,button,input,select,textarea,summary,details,[tabindex]):focus-visible{outline:var(--lb-focus-ring-width) solid var(--lb-focus-ring-color);outline-offset:var(--lb-focus-offset);}
+    .lb-skip-link{position:absolute;left:-9999px;top:0;z-index:100;padding:var(--lb-space-md) var(--lb-space-lg);border-radius:var(--lb-radius-sm);background:var(--surface,#f8fafc);color:var(--foreground,#1a1a2e);font-weight:600;}
+    .lb-skip-link:focus,.lb-skip-link:focus-visible{left:var(--lb-space-lg);top:var(--lb-space-lg);}
+    .lb-layout__header,.lb-layout__footer{display:flex;flex-direction:column;align-items:flex-start;gap:var(--lb-space-md);margin-inline:auto;max-width:min(var(--lb-layout-max),calc(100vw - var(--lb-layout-gutter) * 2));padding-block:var(--lb-space-lg);padding-inline:var(--lb-layout-gutter);}
+    .lb-layout__brand{font-family:var(--font-display,inherit);font-weight:700;}
+    .lb-layout__nav{display:flex;flex-wrap:wrap;gap:var(--lb-space-md);}
+    .lb-layout__legal{margin:0;font-size:0.875rem;}
+    @media (min-width:48em){.lb-layout__header,.lb-layout__footer{flex-direction:row;align-items:center;justify-content:space-between;}}
+  </style>
   {{ content_for_header | raw }}
 </head>
 <body class="lb-theme lb-theme--letbuyy-core">
+  <a class="lb-skip-link" href="#MainContent">Skip to content</a>
+  <header class="lb-layout__header">
+    <a class="lb-layout__brand" href="{{ routes.root_url }}">{{ shop.name }}</a>
+    <nav class="lb-layout__nav" aria-label="Primary">
+      {% if linklists.main_menu.links.size > 0 %}{% for link in linklists.main_menu.links %}<a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>{% endfor %}
+      {% else %}<a href="{{ routes.all_products_collection_url }}">Products</a><a href="{{ routes.search_url }}">Search</a><a href="{{ routes.cart_url }}">Cart</a><a href="{{ routes.account_url }}">Account</a>{% endif %}
+    </nav>
+  </header>
   <main id="MainContent">
     {{ content_for_layout | raw }}
   </main>
+  <footer class="lb-layout__footer">
+    {% if linklists.footer.links.size > 0 %}<nav class="lb-layout__nav" aria-label="Footer">{% for link in linklists.footer.links %}<a href="{{ link.url }}">{{ link.title }}</a>{% endfor %}</nav>{% endif %}
+    <p class="lb-layout__legal">&copy; {{ shop.name }}</p>
+  </footer>
   {{ content_for_footer | raw }}
 </body>
 </html>

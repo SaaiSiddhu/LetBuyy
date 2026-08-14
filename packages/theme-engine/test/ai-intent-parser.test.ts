@@ -283,24 +283,25 @@ describe('AC/add-section-ok', () => {
 });
 
 describe('AC/add-section-incompat', () => {
-  test('faqAccordion returns incompatible (no parity file in UK bundle)', () => {
+  // faqAccordion and collectionFilter used to be asserted here as 'incompatible' because the bundle
+  // shipped no Liquid file for either. The bundle now ships both, so adding them must succeed;
+  // instagramFeed and videoHero below keep the incompatible branch covered.
+  test('faqAccordion can be added now that the bundle ships a parity file', () => {
     const doc = makeUrbanKicksDoc();
     const result = proposeThemeCustomization(doc, {
       kind: 'add-section',
       sectionType: 'faqAccordion',
     });
-    assert.strictEqual(result.status, 'incompatible');
-    if (result.status !== 'incompatible') return;
-    assert.strictEqual(result.sectionType, 'faqAccordion');
+    assert.notStrictEqual(result.status, 'incompatible');
   });
 
-  test('collectionFilter returns incompatible (not in UK bundle)', () => {
+  test('collectionFilter can be added now that the bundle ships a parity file', () => {
     const doc = makeUrbanKicksDoc();
     const result = proposeThemeCustomization(doc, {
       kind: 'add-section',
       sectionType: 'collectionFilter',
     });
-    assert.strictEqual(result.status, 'incompatible');
+    assert.notStrictEqual(result.status, 'incompatible');
   });
 
   test('instagramFeed returns incompatible (not in UK bundle)', () => {

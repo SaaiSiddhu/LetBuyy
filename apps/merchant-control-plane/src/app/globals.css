@@ -16,7 +16,7 @@
 
   /* — Core palette (synced with accounts) — */
   --primary: var(--lb-color-primary);
-  --primary-light: rgb(167 139 250);
+  --primary-light: color-mix(in srgb, var(--sidebar-bg) 72%, white);
   --primary-dark: var(--lb-color-primary-active);
   --primary-hover: var(--lb-color-primary-hover);
   --primary-active: var(--lb-color-primary-active);
@@ -48,20 +48,26 @@
   /* — Header — dark on light theme — */
   --admin-header-height: 64px;
   --header-bg: rgb(10 9 18);
-  --header-border: rgba(139, 92, 246, 0.14);
+  --header-border: color-mix(in srgb, var(--lb-color-primary) 14%, transparent);
   --header-fg: rgb(255 255 255);
   --header-muted: rgba(255, 255, 255, 0.55);
   --header-control-bg: rgba(255, 255, 255, 0.07);
-  --header-control-border: rgba(139, 92, 246, 0.20);
+  --header-control-border: color-mix(in srgb, var(--lb-color-primary) 20%, transparent);
   --header-control-hover: rgba(255, 255, 255, 0.11);
-  --header-control-active: rgba(139, 92, 246, 0.22);
-  --header-logo-glow: rgba(139, 92, 246, 0.32);
-  --header-search-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 6px 20px rgba(139, 92, 246, 0.10);
+  --header-control-active: color-mix(in srgb, var(--lb-color-primary) 22%, transparent);
+  --header-logo-glow: color-mix(in srgb, var(--lb-color-primary) 32%, transparent);
+  --header-search-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 6px 20px color-mix(in srgb, var(--lb-color-primary) 10%, transparent);
 
-  /* — Sidebar — Ink Lavender — */
-  --sidebar-bg: rgb(244 242 254);
-  --sidebar-border: rgb(224 216 248);
-  --sidebar-active-bg: rgba(139, 92, 246, 0.10);
+  /* — Sidebar — dark ink, matched to the header — */
+  /* The nav rail reads as one dark mass with the header (10 9 18), lifted a
+     couple of steps so the two surfaces are still distinguishable, with the
+     light content sheet floating against it. Text inside the rail is inverted
+     in the .admin-panel-sidebar scope below. */
+  --sidebar-bg: rgb(44 38 66);
+  --sidebar-border: rgb(39 34 52);
+  /* Top highlight on the content sheet, so it lifts off the dark header. */
+  --panel-sheet-highlight: rgba(255, 255, 255, 0.75);
+  --sidebar-active-bg: color-mix(in srgb, var(--lb-color-primary) 10%, transparent);
   --sidebar-active-text: rgb(10 8 22);
   --sidebar-hover-bg: rgba(55, 46, 88, 0.05);
 
@@ -75,7 +81,7 @@
   --sidebar-child-indent: 26px;
   --sidebar-child-height: 30px;
   --sidebar-section-gap: 14px;
-  --sidebar-panel-radius: 14px;
+  --sidebar-panel-radius: 16px;
 
   /* — @letbuyy/ui AppNavigation tokens (app-shell.tsx uses these) — */
   --lb-component-sidebar-bg: var(--sidebar-bg);
@@ -111,7 +117,7 @@
 /* — Dark Mode — synced with LCIS/Graphify design system — */
 .dark {
   --primary: var(--lb-color-primary);
-  --primary-light: rgb(167 139 250);
+  --primary-light: color-mix(in srgb, var(--lb-color-primary) 72%, white);
   --primary-dark: var(--lb-color-primary-active);
   --primary-hover: var(--lb-color-primary-hover);
   --primary-active: var(--lb-color-primary-active);
@@ -141,15 +147,17 @@
   --header-control-border: rgb(232 227 250);
   --header-control-hover: rgba(55, 46, 88, 0.09);
   --header-control-active: rgba(55, 46, 88, 0.13);
-  --header-logo-glow: rgba(139, 92, 246, 0.22);
+  --header-logo-glow: color-mix(in srgb, var(--lb-color-primary) 22%, transparent);
   --header-search-shadow: 0 1px 0 rgba(55, 46, 88, 0.05) inset, 0 2px 6px rgba(10, 8, 22, 0.05);
 
   /* — Sidebar — LCIS: #0d0b15 sidebar, solid dark border — */
   --sidebar-bg: rgb(13 11 21);
   --sidebar-border: rgb(39 34 52);
-  --sidebar-active-bg: rgba(139, 92, 246, 0.16);
+  --sidebar-active-bg: color-mix(in srgb, var(--lb-color-primary) 16%, transparent);
   --sidebar-active-text: rgb(236 234 245);
   --sidebar-hover-bg: rgba(255, 255, 255, 0.04);
+  /* Far weaker on dark — a white hairline at 0.75 would read as a seam. */
+  --panel-sheet-highlight: rgba(255, 255, 255, 0.05);
 
   /* — @letbuyy/ui AppNavigation tokens (dark overrides) — */
   --lb-component-sidebar-bg: var(--sidebar-bg);
@@ -195,6 +203,26 @@
 /* Light mode — ink lavender */
 html [data-letbuyy-theme="light"],
 html [data-letbuyy-theme="auto"]:not(.dark *) {
+  /* ——— Accent ———
+     Deepened from the stock purple-500 (#8B5CF6), which read as "lite" next to
+     the dark ink rail. purple-700 keeps a clear CTA at 6.5:1 on white while
+     sitting in the same family as the nav. Every accent surface in this app
+     (buttons, badges, icon tints, focus rings, glows) resolves from these four
+     — the ~56 previously hardcoded violet literals now route through them. */
+  /* The accent IS the rail colour — referenced, not copied, so the two can
+     never drift apart. Reads as a near-black ink CTA (13:1 with white text),
+     the same move Shopify makes with its black primary buttons. */
+  --lb-color-primary: var(--sidebar-bg);
+  --lb-color-primary-hover: color-mix(in srgb, var(--sidebar-bg) 88%, white);
+  --lb-color-primary-active: color-mix(in srgb, var(--sidebar-bg) 82%, black);
+  --lb-color-primary-subtle: color-mix(in srgb, var(--sidebar-bg) 10%, white);
+  /* Accent-tinted elevation, derived so it follows the accent automatically. */
+  --lb-shadow-accent-sm: 0 4px 14px color-mix(in srgb, var(--lb-color-primary) 34%, transparent);
+  --primary: var(--lb-color-primary);
+  --primary-hover: var(--lb-color-primary-hover);
+  --primary-active: var(--lb-color-primary-active);
+  --primary-subtle: var(--lb-color-primary-subtle);
+
   --lb-color-bg: rgb(250 249 255);
   --lb-content-bg: rgb(250 249 255);
   --lb-color-background: rgb(250 249 255);
@@ -202,25 +230,38 @@ html [data-letbuyy-theme="auto"]:not(.dark *) {
   --lb-color-surface-subdued: rgb(244 242 254);
   --lb-color-card: rgb(255 255 255);
   --lb-card-bg: rgb(255 255 255);
-  --lb-sidebar-bg: rgb(244 242 254);
-  --lb-color-sidebar: rgb(244 242 254);
+  --lb-sidebar-bg: rgb(44 38 66);
+  --lb-color-sidebar: rgb(44 38 66);
   --lb-color-border: rgb(232 227 250);
   --lb-color-text: rgb(10 8 22);
   --lb-color-text-subdued: rgb(55 46 88);
   --lb-color-text-muted: rgb(103 91 135);
   --lb-color-text-inverse: rgb(255 255 255);
   /* sidebar component tokens — beat letbuyyTokenCss injection */
-  --lb-component-sidebar-bg: rgb(244 242 254);
-  --lb-component-sidebar-border: rgb(224 216 248);
-  --lb-component-sidebar-active-bg: rgba(139, 92, 246, 0.12);
-  --lb-component-sidebar-active-text: rgb(10 8 22);
-  --lb-component-sidebar-hover-bg: rgba(109, 40, 217, 0.06);
+  /* Dark rail: active/hover wash and text all flip to the inverted set. */
+  --lb-component-sidebar-bg: rgb(44 38 66);
+  --lb-component-sidebar-border: rgb(39 34 52);
+  --lb-component-sidebar-active-bg: color-mix(in srgb, var(--lb-color-primary) 20%, transparent);
+  --lb-component-sidebar-active-text: rgb(255 255 255);
+  --lb-component-sidebar-hover-bg: rgba(255, 255, 255, 0.06);
   --lb-component-sidebar-item-radius: 8px;
 }
 
 /* Dark mode — LCIS/Graphify design system (#0a0912 base) */
 html [data-letbuyy-theme="dark"],
 html.dark [data-letbuyy-theme] {
+  /* One step brighter than light mode — purple-700 goes muddy on a near-black
+     page, so dark takes 600 as the base and steps UP on hover, not down. */
+  --lb-color-primary: #7C3AED;
+  --lb-color-primary-hover: #8B5CF6;
+  --lb-color-primary-active: #6D28D9;
+  --lb-color-primary-subtle: rgba(124, 58, 237, 0.16);
+  --lb-shadow-accent-sm: 0 4px 14px color-mix(in srgb, var(--lb-color-primary) 40%, transparent);
+  --primary: var(--lb-color-primary);
+  --primary-hover: var(--lb-color-primary-hover);
+  --primary-active: var(--lb-color-primary-active);
+  --primary-subtle: var(--lb-color-primary-subtle);
+
   /* Backgrounds — LCIS: #0a0912 bg / #15131f surface / #1b1827 raised */
   --lb-color-bg: rgb(10 9 18);
   --lb-content-bg: rgb(10 9 18);
@@ -243,7 +284,7 @@ html.dark [data-letbuyy-theme] {
   /* sidebar component tokens */
   --lb-component-sidebar-bg: rgb(13 11 21);
   --lb-component-sidebar-border: rgb(39 34 52);
-  --lb-component-sidebar-active-bg: rgba(139, 92, 246, 0.16);
+  --lb-component-sidebar-active-bg: color-mix(in srgb, var(--lb-color-primary) 16%, transparent);
   --lb-component-sidebar-active-text: rgb(236 234 245);
   --lb-component-sidebar-hover-bg: rgba(255, 255, 255, 0.04);
   --lb-component-sidebar-item-radius: 8px;
@@ -260,11 +301,12 @@ html.dark [data-letbuyy-theme] {
   --lb-component-card-border: rgb(39 34 52);
   --lb-component-card-shadow: 0 2px 10px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.03) inset;
   /* button tokens — gradient applied via admin CSS override below */
-  --lb-component-button-primary-bg: #7C3AED;
-  --lb-component-button-primary-hover: #8B5CF6;
-  --lb-component-button-primary-active: #4C1D95;
+  --lb-component-button-primary-bg: var(--lb-color-primary);
+  /* hover must differ from bg or the button has no hover state */
+  --lb-component-button-primary-hover: var(--lb-color-primary-hover);
+  --lb-component-button-primary-active: var(--lb-color-primary-active);
   --lb-component-button-primary-text: #FFFFFF;
-  --lb-component-button-primary-border: #7C3AED;
+  --lb-component-button-primary-border: var(--lb-color-primary);
   --lb-component-button-secondary-bg: rgb(21 19 31);
   --lb-component-button-secondary-hover: rgb(27 24 39);
   --lb-component-button-secondary-text: rgb(236 234 245);
@@ -273,17 +315,17 @@ html.dark [data-letbuyy-theme] {
   --lb-component-input-bg: rgb(10 9 18);
   --lb-component-input-text: rgb(236 234 245);
   --lb-component-input-border: rgb(39 34 52);
-  --lb-component-input-focus-border: #8B5CF6;
-  --lb-component-input-focus-ring: rgba(139, 92, 246, 0.15);
+  --lb-component-input-focus-border: var(--lb-color-primary);
+  --lb-component-input-focus-ring: color-mix(in srgb, var(--lb-color-primary) 15%, transparent);
   /* empty state tokens */
   --lb-component-empty-state-bg: rgb(21 19 31);
   --lb-component-empty-state-border: rgb(39 34 52);
   --lb-component-empty-state-title: rgb(236 234 245);
   --lb-component-empty-state-body: rgb(155 148 174);
   /* badge accent tokens */
-  --lb-component-badge-accent-bg: rgba(139, 92, 246, 0.13);
+  --lb-component-badge-accent-bg: color-mix(in srgb, var(--lb-color-primary) 13%, transparent);
   --lb-component-badge-accent-text: #C4B5FD;
-  --lb-component-badge-accent-border: rgba(139, 92, 246, 0.3);
+  --lb-component-badge-accent-border: color-mix(in srgb, var(--lb-color-primary) 30%, transparent);
   /* banner tokens */
   --lb-component-banner-success-bg: #052E16;
   --lb-component-banner-success-text: #22C55E;
@@ -428,22 +470,158 @@ body {
   min-height: 100vh;
 }
 
+/* ——————————————————————————————————————————————————————————
+   Inset panel shell
+   The dark header spans full width; the sidebar and content tuck under it as
+   a single rounded sheet. Rounding only the two OUTER top corners (sidebar
+   top-left, content top-right) is what sells the "sheet under a bar" read —
+   rounding all four would make them look like two detached cards.
+   Radii live here rather than as Tailwind arbitrary values in TSX so the
+   design-system arbitrary-radius ratchet does not climb.
+   —————————————————————————————————————————————————————————— */
+/* The layer BEHIND the sheet. Without this the rounded corners reveal
+   --lb-color-bg, which is ~12/255 from the sidebar — a notch with nothing to
+   show. Painting the frame in the header colour is what makes the corners
+   read: the sheet covers everything below the header except those two curves,
+   so the dark only ever shows in the curves themselves. */
+/* ——————————————————————————————————————————————————————————
+   Activation board
+   Card chrome + hover choreography live here rather than as Tailwind
+   arbitrary values, because (a) staggered easing, parallax and layered
+   shadows do not express well as utilities, and (b) apps/*.tsx is what the
+   design-system ratchet walks — CSS keeps the counters flat.
+   —————————————————————————————————————————————————————————— */
+.activation-card {
+  --act-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--lb-radius-lg, 16px);
+  background: var(--lb-color-card);
+  border: 1px solid var(--lb-color-border);
+  transition:
+    transform 420ms var(--act-ease),
+    box-shadow 420ms var(--act-ease),
+    border-color 420ms var(--act-ease);
+}
+
+.activation-card:hover,
+.activation-card:focus-within {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--lb-color-primary) 34%, var(--lb-color-border));
+  /* Two shadows: a tight contact shadow keeps the card grounded, a wide
+     accent-tinted one does the lifting. One shadow alone reads as a sticker. */
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--lb-color-text) 6%, transparent),
+    0 22px 44px -20px color-mix(in srgb, var(--lb-color-primary) 34%, transparent);
+}
+
+.activation-card--next {
+  border-color: color-mix(in srgb, var(--lb-color-primary) 55%, var(--lb-color-border));
+}
+
+.activation-card--done {
+  border-color: color-mix(in srgb, var(--lb-color-success) 28%, var(--lb-color-border));
+}
+
+/* Art well — a soft floor-glow under the objects so they sit in light rather
+   than float on a flat swatch.
+   Laid out as a real 3-column grid (object · centre · object) instead of
+   absolute positioning: absolute + object-bottom made every object settle at a
+   different visual height depending on its aspect ratio, and let the centre
+   overlap them. A grid centres all three on one optical axis for free, and
+   stays aligned at any card width. */
+.activation-art {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--lb-radius-md, 12px);
+  height: 168px;
+  /* No tinted panel — the illustration sits on the card surface, which keeps
+     it reading as product photography rather than a thumbnail slot. */
+  background: transparent;
+}
+
+.activation-art--featured { height: 216px; }
+
+/* The whole illustration lifts and scales slightly on hover. With one flat
+   image there is nothing to parallax, so the motion has to come from the
+   image as a single object — subtle, or it reads as a zoom. */
+.activation-art__image {
+  transition: transform 520ms var(--act-ease);
+}
+
+.activation-card:hover .activation-art__image,
+.activation-card:focus-within .activation-art__image {
+  transform: scale(1.045) translateY(-4px);
+}
+
+@media (max-width: 640px) {
+  .activation-art { height: 150px; }
+  .activation-art--featured { height: 176px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .activation-art__image { transition: none; }
+  .activation-card:hover .activation-art__image,
+  .activation-card:focus-within .activation-art__image { transform: none; }
+}
+
+.admin-panel-frame {
+  background: var(--header-bg);
+}
+
+.admin-panel-sidebar {
+  border-top-left-radius: var(--sidebar-panel-radius);
+  overflow: hidden;
+
+  /* The rail is dark in BOTH themes, but the light theme's text tokens are near
+     black. Re-point them inside this subtree only, so @letbuyy/ui's sidebar
+     (which composes from --lb-color-text / -subdued) inverts without the shared
+     component needing to know it is sitting on dark. */
+  /* Softened off pure white — near-white on a dark rail glares, and the rest
+     labels render at 82% of this. Still comfortably AA on rgb(44 38 66):
+     ~8.5:1 for labels, ~4.8:1 for subdued at sidebar text size. */
+  --lb-color-text: rgb(212 208 228);
+  --lb-color-text-subdued: rgb(160 153 182);
+  --lb-color-text-muted: rgb(140 133 162);
+  --lb-component-sidebar-section-text: rgb(146 139 168);
+  /* The rail is dark, so it keeps the brighter accent: the deepened page
+     accent (#6D28D9) is only ~1.4:1 against rgb(44 38 66) and the active row
+     and rail indicator would disappear. */
+  --lb-color-primary: #8B5CF6;
+  color: var(--lb-color-text);
+}
+
+.admin-panel-content {
+  border-top-right-radius: var(--sidebar-panel-radius);
+  /* Hairline along the top edge lifts the sheet off the header. */
+  box-shadow: inset 0 1px 0 var(--panel-sheet-highlight);
+}
+
+@media (max-width: 1023px) {
+  /* Sidebar is an overlay below lg, so the content sheet owns both corners. */
+  .admin-panel-content {
+    border-top-left-radius: var(--sidebar-panel-radius);
+  }
+}
+
 /* Dark mode — LCIS radial gradient ambient background */
 .dark .admin-shell {
   background:
-    radial-gradient(1200px 700px at 78% -8%, rgba(139,92,246,.09), transparent 60%),
+    radial-gradient(1200px 700px at 78% -8%, color-mix(in srgb, var(--lb-color-primary) 9%, transparent), transparent 60%),
     radial-gradient(900px 600px at 0% 110%, rgba(59,130,246,.06), transparent 55%),
     var(--bg);
 }
 
 /* Dark mode — LCIS-style gradient CTA buttons */
 .dark .bg-\[var\(--lb-component-button-primary-bg\)\] {
-  background: linear-gradient(180deg, #8B5CF6, #6D28D9);
-  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.42);
+  background: linear-gradient(180deg, var(--lb-color-primary), #6D28D9);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--lb-color-primary) 42%, transparent);
 }
 .dark .bg-\[var\(--lb-component-button-primary-bg\)\]:hover {
-  background: linear-gradient(180deg, #9D6EF8, #7C3AED);
-  box-shadow: 0 4px 18px rgba(109, 40, 217, 0.52);
+  background: linear-gradient(180deg, #9D6EF8, var(--lb-color-primary));
+  box-shadow: 0 4px 18px color-mix(in srgb, var(--lb-color-primary) 52%, transparent);
 }
 .dark .bg-\[var\(--lb-component-button-primary-bg\)\]:active {
   background: #4C1D95;
@@ -1170,31 +1348,6 @@ body {
   height: 14px;
 }
 
-/* ——— Theme toggle in switcher ——— */
-.store-switcher-theme {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 36px;
-  padding: 7px 8px;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.store-switcher-theme-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.store-switcher-theme-label .letbuyy-icon {
-  width: 16px;
-  height: 16px;
-  color: var(--text-tertiary);
-  stroke-width: 2.25;
-}
-
 /* ——— User info ——— */
 .store-switcher-user {
   display: flex;
@@ -1240,41 +1393,6 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-/* ——— Theme toggle switch (shared) ——— */
-.admin-theme-switch {
-  width: 36px;
-  height: 20px;
-  border-radius: 10px;
-  background: var(--border);
-  border: none;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.25s ease;
-  padding: 0;
-  flex-shrink: 0;
-}
-
-.admin-theme-switch.active {
-  background: var(--primary);
-}
-
-.admin-theme-switch::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.admin-theme-switch.active::after {
-  transform: translateX(16px);
 }
 
 /* ======================================
@@ -1370,11 +1488,6 @@ body {
 
 .store-switcher-bottom-sheet .store-switcher-section {
   padding: 3px 6px;
-}
-
-.store-switcher-bottom-sheet .store-switcher-theme {
-  min-height: 40px;
-  padding: 8px 10px;
 }
 
 .store-switcher-bottom-sheet .store-switcher-user {
@@ -1567,7 +1680,7 @@ body {
 
 .all-stores-card:hover {
   border-color: var(--primary-light);
-  box-shadow: 0 2px 12px rgba(139, 92, 246, 0.08);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--lb-color-primary) 8%, transparent);
 }
 
 .all-stores-card-icon {
@@ -1722,18 +1835,18 @@ body {
 }
 
 .admin-notification-item.unread {
-  background: rgba(139, 92, 246, 0.04);
+  background: color-mix(in srgb, var(--lb-color-primary) 4%, transparent);
 }
 
 .dark .admin-notification-item.unread {
-  background: rgba(139, 92, 246, 0.08);
+  background: color-mix(in srgb, var(--lb-color-primary) 8%, transparent);
 }
 
 .admin-notification-icon {
   width: 32px;
   height: 32px;
   border-radius: var(--lb-radius-md);
-  background: rgba(139, 92, 246, 0.1);
+  background: color-mix(in srgb, var(--lb-color-primary) 10%, transparent);
   color: var(--primary);
   display: flex;
   align-items: center;
@@ -1811,7 +1924,9 @@ body {
 
 /* Trial Toast — bottom-right floating card */
 .admin-trial-toast {
-  position: absolute;
+  /* fixed, not absolute: pinned to the viewport so it stays put while the
+     dashboard scrolls, instead of drifting up the page with the content. */
+  position: fixed;
   bottom: 20px;
   right: 20px;
   width: 360px;
@@ -2118,9 +2233,27 @@ body {
   min-width: var(--settings-sidebar-w);
   position: relative;
   height: 100%;
-  background: var(--lb-color-surface-subdued);
+  /* Same dark ink rail as the main nav — reads as one navigation surface
+     rather than two competing panels. Reuses the rail token so the two stay
+     in sync if it is retuned. */
+  background: var(--lb-component-sidebar-bg);
   border-radius: 0;
   box-shadow: none;
+
+  /* Every child in this panel derives from --text-primary / --bg /
+     --bg-secondary / --border (14 declarations, mostly color-mix ramps off
+     --text-primary). Re-pointing those four here inverts the whole panel —
+     store name, search, group labels, nav items, user footer — without
+     touching a single child rule. */
+  --text-primary: rgb(212 208 228);
+  --bg: rgb(44 38 66);
+  --bg-secondary: rgb(56 49 84);
+  --border: rgb(66 58 96);
+  --lb-color-border: rgb(66 58 96);
+  /* Brighter accent on the dark rail — same reason as .admin-panel-sidebar. */
+  --lb-color-primary: #8B5CF6;
+  --primary: var(--lb-color-primary);
+  color: var(--text-primary);
   border-right: 1px solid var(--lb-color-border);
   display: flex;
   flex-direction: column;
@@ -5586,7 +5719,7 @@ body {
   font-size: var(--lb-font-size-caption);
   font-weight: 600;
   color: var(--primary);
-  background: rgba(139, 92, 246, 0.1);
+  background: color-mix(in srgb, var(--lb-color-primary) 10%, transparent);
   padding: 1px 8px;
   border-radius: 10px;
 }
@@ -6111,8 +6244,7 @@ body {
     border-radius: var(--lb-radius-md);
   }
 
-  .store-switcher-bottom-sheet .store-switcher-link,
-  .store-switcher-bottom-sheet .store-switcher-theme {
+  .store-switcher-bottom-sheet .store-switcher-link {
     min-height: 36px;
     padding: 6px 9px;
     border-radius: var(--lb-radius-md);
@@ -6139,8 +6271,7 @@ body {
 
   .store-switcher-bottom-sheet .store-switcher-item-name,
   .store-switcher-bottom-sheet .store-switcher-user-name,
-  .store-switcher-bottom-sheet .store-switcher-link,
-  .store-switcher-bottom-sheet .store-switcher-theme {
+  .store-switcher-bottom-sheet .store-switcher-link {
     font-size: 11.75px;
   }
 
@@ -8468,7 +8599,7 @@ body {
 
 .te-header-theme-icon {
   font-size: 20px;
-  color: var(--primary, rgb(139 92 246));
+  color: var(--primary, var(--lb-color-primary));
 }
 
 .te-header-theme-text {
@@ -8509,7 +8640,7 @@ body {
 }
 
 .te-header-page-selector:hover {
-  border-color: var(--primary, rgb(139 92 246));
+  border-color: var(--primary, var(--lb-color-primary));
 }
 
 .te-header-right {
@@ -8560,13 +8691,13 @@ body {
 }
 
 .te-header-save--dirty {
-  background: var(--primary, rgb(139 92 246));
+  background: var(--primary, var(--lb-color-primary));
   color: white;
   cursor: pointer;
 }
 
 .te-header-save--dirty:hover {
-  background: var(--primary-hover, rgb(124 58 237));
+  background: var(--lb-color-primary-hover);
 }
 
 .te-header-save:disabled {
@@ -8591,7 +8722,7 @@ body {
 }
 
 .te-header-publish:hover:not(:disabled) {
-  background: var(--primary, rgb(139 92 246));
+  background: var(--primary, var(--lb-color-primary));
 }
 
 .te-header-publish:disabled {
@@ -8651,8 +8782,8 @@ body {
 }
 
 .te-icon-rail-btn--active {
-  background: rgba(139, 92, 246, 0.08);
-  color: var(--primary, rgb(139 92 246));
+  background: color-mix(in srgb, var(--lb-color-primary) 8%, transparent);
+  color: var(--primary, var(--lb-color-primary));
 }
 
 .te-icon-rail-label {
@@ -8753,7 +8884,7 @@ body {
 }
 
 .te-section-item--selected {
-  background: rgba(139, 92, 246, 0.08);
+  background: color-mix(in srgb, var(--lb-color-primary) 8%, transparent);
 }
 
 .te-section-item--hidden {
@@ -8782,7 +8913,7 @@ body {
 }
 
 .te-section-item-indicator {
-  color: var(--primary, rgb(139 92 246));
+  color: var(--primary, var(--lb-color-primary));
 }
 
 .te-section-item-actions {
@@ -8840,9 +8971,9 @@ body {
 }
 
 .te-add-section-btn:hover {
-  border-color: var(--primary, rgb(139 92 246));
-  color: var(--primary, rgb(139 92 246));
-  background: rgba(139, 92, 246, 0.04);
+  border-color: var(--primary, var(--lb-color-primary));
+  color: var(--primary, var(--lb-color-primary));
+  background: color-mix(in srgb, var(--lb-color-primary) 4%, transparent);
 }
 
 /* --- Right Sidebar --- */
@@ -8951,7 +9082,7 @@ body {
 .te-field-input:focus,
 .te-field-textarea:focus,
 .te-field-select:focus {
-  border-color: var(--primary, rgb(139 92 246));
+  border-color: var(--primary, var(--lb-color-primary));
 }
 
 .te-field-textarea {
@@ -9036,8 +9167,8 @@ body {
 }
 
 .te-field-upload-btn:hover {
-  border-color: var(--primary, rgb(139 92 246));
-  color: var(--primary, rgb(139 92 246));
+  border-color: var(--primary, var(--lb-color-primary));
+  color: var(--primary, var(--lb-color-primary));
 }
 
 .te-field-upload-btn--busy {
@@ -9079,14 +9210,14 @@ body {
 }
 
 .te-field-radio:hover {
-  border-color: var(--primary, rgb(139 92 246));
-  color: var(--primary, rgb(139 92 246));
+  border-color: var(--primary, var(--lb-color-primary));
+  color: var(--primary, var(--lb-color-primary));
 }
 
 .te-field-radio--selected {
-  border-color: var(--primary, rgb(139 92 246));
-  background: rgba(139, 92, 246, 0.08);
-  color: var(--primary, rgb(139 92 246));
+  border-color: var(--primary, var(--lb-color-primary));
+  background: color-mix(in srgb, var(--lb-color-primary) 8%, transparent);
+  color: var(--primary, var(--lb-color-primary));
 }
 
 /* Toggle */
@@ -9103,7 +9234,7 @@ body {
 }
 
 .te-toggle--on {
-  background: var(--primary, rgb(139 92 246));
+  background: var(--primary, var(--lb-color-primary));
 }
 
 .te-toggle-thumb {
@@ -9131,7 +9262,7 @@ body {
 
 .te-field-range {
   flex: 1;
-  accent-color: var(--primary, rgb(139 92 246));
+  accent-color: var(--primary, var(--lb-color-primary));
 }
 
 .te-field-range-value {
@@ -9224,7 +9355,7 @@ body {
 
 .generic-theme-editor__icon-button:hover {
   color: var(--text-primary, rgb(26 26 46));
-  border-color: var(--primary, rgb(139 92 246));
+  border-color: var(--primary, var(--lb-color-primary));
 }
 
 .generic-theme-editor__body {
@@ -9873,9 +10004,9 @@ body {
 }
 
 .te-block-editor-add:hover {
-  border-color: var(--primary, rgb(139 92 246));
-  color: var(--primary, rgb(139 92 246));
-  background: rgba(139, 92, 246, 0.04);
+  border-color: var(--primary, var(--lb-color-primary));
+  color: var(--primary, var(--lb-color-primary));
+  background: color-mix(in srgb, var(--lb-color-primary) 4%, transparent);
 }
 
 /* --- Center Panel --- */
@@ -10242,8 +10373,8 @@ body {
 }
 
 .te-modal-section-card:hover {
-  border-color: var(--primary, rgb(139 92 246));
-  background: rgba(139, 92, 246, 0.03);
+  border-color: var(--primary, var(--lb-color-primary));
+  background: color-mix(in srgb, var(--lb-color-primary) 3%, transparent);
 }
 
 .te-modal-section-icon {
@@ -10254,7 +10385,7 @@ body {
   justify-content: center;
   border-radius: 10px;
   background: var(--bg-secondary, rgb(244 244 245));
-  color: var(--primary, rgb(139 92 246));
+  color: var(--primary, var(--lb-color-primary));
   flex-shrink: 0;
 }
 
@@ -12395,7 +12526,7 @@ body {
   --theme-os-panel-muted: color-mix(in srgb, var(--lb-color-surface-subdued, rgb(243 244 246)) 74%, var(--lb-color-surface, rgb(255 255 255)));
   --theme-os-text: var(--lb-color-text, rgb(17 24 39));
   --theme-os-muted: var(--lb-color-text-subdued, rgb(102 112 133));
-  --theme-os-primary: var(--lb-color-primary, rgb(139 92 246));
+  --theme-os-primary: var(--lb-color-primary, var(--lb-color-primary));
   --theme-os-dark: var(--lb-color-sidebar-bg, var(--lb-color-navy-900, rgb(15 23 42)));
   --theme-os-shadow: 0 18px 52px rgba(15, 23, 42, 0.12);
   position: fixed;

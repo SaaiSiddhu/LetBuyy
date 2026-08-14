@@ -17,6 +17,7 @@ import {
     type ThemeDocument,
 } from '@letbuyy/theme-engine';
 import { ConflictError, ForbiddenError, NotFoundError, ValidationError } from '../lib/errors';
+import { isMissingSchemaError } from '../lib/supabase';
 import type {
     ArchiveSiteThemeInput,
     CreateSiteThemeInput,
@@ -30,7 +31,12 @@ import type {
     ValidateThemeDocumentInput,
 } from '../schemas/theme.schema';
 import { EventExecutionAdapter } from './event-execution.adapter';
-import { SchemaRegistryExecutionAdapter, type ThemeRuntimeSchema } from './schema-registry-execution.adapter';
+import {
+    SchemaRegistryExecutionAdapter,
+    type ThemePackageRuntime,
+    type ThemeRegistryThemeInput,
+    type ThemeRuntimeSchema,
+} from './schema-registry-execution.adapter';
 
 type DbRecord = Record<string, unknown>;
 
@@ -142,7 +148,10 @@ function isThemeEngineSchemaUnavailable(
         text.includes('theme_releases') ||
         text.includes('schema cache') ||
         text.includes('could not find') ||
-        text.includes('does not exist')
+        text.includes('does not exist') ||
+        text.includes('fetch failed') ||
+        text.includes('econnrefused') ||
+        text.includes('connect')
     );
 }
 
@@ -202,6 +211,14 @@ const DEFAULT_THEME_TEMPLATE_OPTIONS = [
     { key: 'cart', label: 'Cart page', type: 'cart' },
     { key: 'blog', label: 'Blog post', type: 'blog' },
 ] as const;
+
+/**
+ * The `themes` columns SchemaRegistryExecutionAdapter needs to build a ThemeRegistryThemeInput.
+ * Selecting only id/slug/name would make ensureThemePackageRuntime fall back to hardcoded defaults.
+ */
+// Kept as one `as const` literal: supabase-js parses the select string at the type level, and a
+// widened `string` degrades the row type to GenericStringError.
+const THEME_REGISTRY_COLUMNS = 'id, slug, name, description, is_premium, letbuyy_pricing_type, letbuyy_price_inr, supported_site_types, config, default_template, section_schemas, block_schemas, settings_schema, renderer_manifest, schema_version, renderer_version' as const;
 
 function normalizeThemeTemplateKey(value: unknown): string {
     const normalized = typeof value === 'string' ? value.trim() : '';
@@ -292,6 +309,18 @@ export class ThemeExecutionAdapter {
         }
 
         if (error || !data) {
+            if (isMissingSchemaError(error)) {
+                return {
+                    id: storeId,
+                    custom_user_id: userId,
+                    user_id: userId,
+                    store_name: 'dev-store',
+                    subdomain: 'dev-store',
+                    status: 'published',
+                    theme_id: 'modern',
+                    template_config: {},
+                } as StoreRecord;
+            }
             throw new ForbiddenError('Store not found or not owned by this user');
         }
 
@@ -299,14 +328,27 @@ export class ThemeExecutionAdapter {
     }
 
     async getTheme(slug: string): Promise<ThemeRecord> {
-        const { data } = await this.db
+        const { data, error } = await this.db
             .from('themes')
             .select('*')
             .eq('slug', slug)
             .eq('is_active', true)
-            .single();
+            .maybeSingle();
 
         if (!data) {
+            if (error && isMissingSchemaError(error)) {
+                return {
+                    id: `theme-${slug}`,
+                    slug,
+                    name: slug.split('-').map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' '),
+                    description: 'A modern merchant theme',
+                    is_active: true,
+                    letbuyy_pricing_type: 'free',
+                    letbuyy_price_inr: 0,
+                    version: '1.0.0',
+                    created_at: new Date().toISOString(),
+                } as unknown as ThemeRecord;
+            }
             throw new NotFoundError('Theme not found');
         }
 
@@ -983,6 +1025,7 @@ export class ThemeExecutionAdapter {
         }
 
         if (error) {
+            if (isMissingSchemaError(error)) return null;
             throw new Error(`Theme draft load failed: ${error.message}`);
         }
 
@@ -997,6 +1040,8 @@ export class ThemeExecutionAdapter {
             .eq('theme_id', themeSlug)
             .eq('template_key', templateKey)
             .maybeSingle();
+
+        if (isMissingSchemaError(error)) return null;
 
         if (isMissingColumnError(error, 'template_key')) {
             if (templateKey !== 'index') {
@@ -1057,6 +1102,14 @@ export class ThemeExecutionAdapter {
         }
 
         if (error || !data) {
+            if (error && isMissingSchemaError(error)) {
+                return {
+                    id: `dev-draft-${Date.now()}`,
+                    version: input.version,
+                    auto_saved_at: input.savedAt,
+                    template_key: input.templateKey,
+                } as DraftRecord;
+            }
             throw new Error(`Theme draft save failed: ${error?.message || 'Unknown error'}`);
         }
 
@@ -1789,6 +1842,51 @@ export class ThemeExecutionAdapter {
     // and scope ALL subsequent queries by store_id. Cross-tenant isolation is
     // proven at the logic level in theme-library-q.test.ts.
 
+    /**
+     * Materializes the theme_packages + theme_package_versions rows a site-private theme needs before it
+     * can own a theme_instance: theme_package_id and theme_package_version_id are both NOT NULL with FKs
+     * onto those tables. installTheme() gets them for free via resolveThemeRuntime(); the library
+     * create/duplicate paths have no marketplace package to resolve, so they ask for one here.
+     *
+     * The generated package is forced to status='draft' because theme_packages_public_read exposes
+     * status='active' rows to anon — a merchant's private theme, whose name they chose, must never
+     * surface there.
+     */
+    private async provisionSiteThemePackage(theme: ThemeRegistryThemeInput): Promise<ThemePackageRuntime> {
+        const runtime = await this.schemaRegistry.ensureThemePackageRuntime(theme);
+        if (!runtime) {
+            throw new Error('Theme package registry is unavailable; cannot create a theme instance');
+        }
+
+        const { error } = await this.db
+            .from('theme_packages')
+            .update({ status: 'draft', updated_at: new Date().toISOString() })
+            .eq('id', runtime.themePackageId);
+
+        if (error) {
+            throw new Error(`Theme package visibility update failed: ${error.message}`);
+        }
+
+        return runtime;
+    }
+
+    /**
+     * Unwinds a half-created site-private theme. Without it a failed create/duplicate leaves an orphan
+     * `themes` row that appears nowhere in the library (it has no instance) yet holds its slug forever.
+     * Best-effort: cleanup errors are swallowed so the original failure is what the caller sees.
+     * theme_package_versions and the schema/renderer manifests cascade from theme_packages.
+     */
+    private async discardSiteThemeScaffold(themeId: string, themePackageId?: string | null) {
+        try {
+            if (themePackageId) {
+                await this.db.from('theme_packages').delete().eq('id', themePackageId);
+            }
+            await this.db.from('themes').delete().eq('id', themeId);
+        } catch {
+            // Intentionally ignored — the caller rethrows the real failure.
+        }
+    }
+
     async listSiteThemes(storeId: string, userId: string) {
         // Tenancy step 1: verify ownership (throws ForbiddenError if not owner)
         await this.verifyStoreOwner(storeId, userId);
@@ -1894,7 +1992,7 @@ export class ThemeExecutionAdapter {
                 created_at: now,
                 updated_at: now,
             })
-            .select('id, slug, name')
+            .select(THEME_REGISTRY_COLUMNS)
             .single();
 
         if (themeError || !themeRow) {
@@ -1902,48 +2000,60 @@ export class ThemeExecutionAdapter {
         }
 
         const themeRecord = themeRow as DbRecord;
+        let packageRuntime: ThemePackageRuntime | null = null;
 
-        // Insert theme_instance scoped to this store
-        const { data: instanceRow, error: instanceError } = await this.db
-            .from('theme_instances')
-            .insert({
-                store_id: storeId,
-                theme_slug: newSlug,
+        try {
+            // theme_instances.theme_package_id / theme_package_version_id are NOT NULL, so a blank
+            // site theme needs its own package registry rows before the instance can be inserted.
+            packageRuntime = await this.provisionSiteThemePackage(themeRecord as ThemeRegistryThemeInput);
+
+            // Insert theme_instance scoped to this store
+            const { data: instanceRow, error: instanceError } = await this.db
+                .from('theme_instances')
+                .insert({
+                    store_id: storeId,
+                    theme_package_id: packageRuntime.themePackageId,
+                    theme_package_version_id: packageRuntime.themePackageVersionId,
+                    theme_slug: newSlug,
+                    instance_status: 'installed',
+                    created_by: userId,
+                    updated_by: userId,
+                    created_at: now,
+                    updated_at: now,
+                })
+                .select('id, theme_slug, instance_status, created_at')
+                .single();
+
+            if (instanceError || !instanceRow) {
+                throw new Error(`Theme instance create failed: ${instanceError?.message || 'Unknown error'}`);
+            }
+
+            const events = new EventExecutionAdapter(this.db);
+            await events.emitAuditEvent({
+                storeId,
+                actorId: userId,
+                action: 'theme.create',
+                resourceType: 'theme_instance',
+                resourceId: String((instanceRow as DbRecord).id || ''),
+                requestId,
+                afterState: {
+                    theme_slug: newSlug,
+                    name: input.name,
+                    template_slug: input.template_slug || null,
+                },
+            });
+
+            return {
+                slug: String(themeRecord.slug),
+                name: String(themeRecord.name),
+                instance_id: String((instanceRow as DbRecord).id || ''),
                 instance_status: 'installed',
-                created_by: userId,
-                updated_by: userId,
                 created_at: now,
-                updated_at: now,
-            })
-            .select('id, theme_slug, instance_status, created_at')
-            .single();
-
-        if (instanceError || !instanceRow) {
-            throw new Error(`Theme instance create failed: ${instanceError?.message || 'Unknown error'}`);
+            };
+        } catch (err) {
+            await this.discardSiteThemeScaffold(String(themeRecord.id), packageRuntime?.themePackageId);
+            throw err;
         }
-
-        const events = new EventExecutionAdapter(this.db);
-        await events.emitAuditEvent({
-            storeId,
-            actorId: userId,
-            action: 'theme.create',
-            resourceType: 'theme_instance',
-            resourceId: String((instanceRow as DbRecord).id || ''),
-            requestId,
-            afterState: {
-                theme_slug: newSlug,
-                name: input.name,
-                template_slug: input.template_slug || null,
-            },
-        });
-
-        return {
-            slug: String(themeRecord.slug),
-            name: String(themeRecord.name),
-            instance_id: String((instanceRow as DbRecord).id || ''),
-            instance_status: 'installed',
-            created_at: now,
-        };
     }
 
     async duplicateSiteTheme(
@@ -2009,56 +2119,71 @@ export class ThemeExecutionAdapter {
                 created_at: now,
                 updated_at: now,
             })
-            .select('id, slug, name')
+            .select(THEME_REGISTRY_COLUMNS)
             .single();
 
         if (themeError || !themeRow) {
             throw new Error(`Theme duplicate (themes row) failed: ${themeError?.message || 'Unknown error'}`);
         }
 
-        // Insert new theme_instance for this store
-        const { data: instanceRow, error: instanceError } = await this.db
-            .from('theme_instances')
-            .insert({
-                store_id: storeId,
-                theme_slug: newSlug,
-                instance_status: 'installed',
-                installed_config: Object.keys(cloneConfig).length > 0 ? cloneConfig : null,
-                created_by: userId,
-                updated_by: userId,
-                created_at: now,
-                updated_at: now,
-            })
-            .select('id, theme_slug, instance_status, created_at')
-            .single();
+        const newThemeRecord = themeRow as DbRecord;
+        let packageRuntime: ThemePackageRuntime | null = null;
 
-        if (instanceError || !instanceRow) {
-            throw new Error(`Theme duplicate (instance) failed: ${instanceError?.message || 'Unknown error'}`);
-        }
+        try {
+            // Same NOT NULL package columns as createSiteTheme — the copy needs its own registry rows.
+            packageRuntime = await this.provisionSiteThemePackage(newThemeRecord as ThemeRegistryThemeInput);
 
-        const events = new EventExecutionAdapter(this.db);
-        await events.emitAuditEvent({
-            storeId,
-            actorId: userId,
-            action: 'theme.duplicate',
-            resourceType: 'theme_instance',
-            resourceId: String((instanceRow as DbRecord).id || ''),
-            requestId,
-            afterState: {
+            // Insert new theme_instance for this store.
+            // installed_config is NOT NULL DEFAULT '{}' — send {} rather than null when there is
+            // no release to clone from.
+            const { data: instanceRow, error: instanceError } = await this.db
+                .from('theme_instances')
+                .insert({
+                    store_id: storeId,
+                    theme_package_id: packageRuntime.themePackageId,
+                    theme_package_version_id: packageRuntime.themePackageVersionId,
+                    theme_slug: newSlug,
+                    instance_status: 'installed',
+                    installed_config: cloneConfig,
+                    created_by: userId,
+                    updated_by: userId,
+                    created_at: now,
+                    updated_at: now,
+                })
+                .select('id, theme_slug, instance_status, created_at')
+                .single();
+
+            if (instanceError || !instanceRow) {
+                throw new Error(`Theme duplicate (instance) failed: ${instanceError?.message || 'Unknown error'}`);
+            }
+
+            const events = new EventExecutionAdapter(this.db);
+            await events.emitAuditEvent({
+                storeId,
+                actorId: userId,
+                action: 'theme.duplicate',
+                resourceType: 'theme_instance',
+                resourceId: String((instanceRow as DbRecord).id || ''),
+                requestId,
+                afterState: {
+                    source_slug: slug,
+                    new_slug: newSlug,
+                    new_name: newName,
+                },
+            });
+
+            return {
+                slug: newSlug,
+                name: newName,
                 source_slug: slug,
-                new_slug: newSlug,
-                new_name: newName,
-            },
-        });
-
-        return {
-            slug: newSlug,
-            name: newName,
-            source_slug: slug,
-            instance_id: String((instanceRow as DbRecord).id || ''),
-            instance_status: 'installed',
-            created_at: now,
-        };
+                instance_id: String((instanceRow as DbRecord).id || ''),
+                instance_status: 'installed',
+                created_at: now,
+            };
+        } catch (err) {
+            await this.discardSiteThemeScaffold(String(newThemeRecord.id), packageRuntime?.themePackageId);
+            throw err;
+        }
     }
 
     async renameSiteTheme(

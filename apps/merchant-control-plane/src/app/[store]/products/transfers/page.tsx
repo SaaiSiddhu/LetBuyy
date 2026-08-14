@@ -675,7 +675,7 @@ export default function TransfersPage() {
             <PageHeader
                 title="Transfers"
                 description="Move stock between inventory locations — reserve, ship, and receive."
-                breadcrumbs={[{ label: 'Products' }, { label: 'Transfers' }]}
+                breadcrumbs={[{ label: 'Purchasing' }, { label: 'Transfers' }]}
                 primaryAction={{
                     label: 'Create transfer',
                     icon: <MaterialIcon name="add" />,

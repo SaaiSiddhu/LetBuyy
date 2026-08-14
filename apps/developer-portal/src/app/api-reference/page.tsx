@@ -9,7 +9,6 @@ import {
 import {
   AppQualityGateMatrix,
   ContractCards,
-  DeveloperHeader,
   EndpointTable,
   FactList,
   PaymentSafetyMatrix,
@@ -31,11 +30,11 @@ import {
   themeEndpoints,
   webhookEndpoints
 } from "@/lib/developer-surface";
+import { DocsShell } from "@/components/PortalShell";
 
 export default function ApiReferencePage() {
   return (
-    <>
-      <DeveloperHeader subtitle="API reference" />
+    <DocsShell>
       <Page className="developer-main">
         <section className="docs-page-hero">
           <div>
@@ -130,6 +129,6 @@ export default function ApiReferencePage() {
           </a>
         </footer>
       </Page>
-    </>
+    </DocsShell>
   );
 }
