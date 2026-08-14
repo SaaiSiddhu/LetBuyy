@@ -27,6 +27,7 @@ import {
     requireCustomerSession,
 } from '../middleware/customer-session';
 import { csrfProtection, extractTurnstileToken, verifyTurnstileToken } from '../middleware/security';
+import { isAppPlatformEnabled } from '../middleware/appPlatformKillSwitch';
 import { getPooledSql } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import {
     planCouponValidation,
@@ -923,6 +924,17 @@ function appBlockFromRegistryRegistration(registration: Record<string, unknown>)
 }
 
 async function loadPublicStorefrontAppBlocks(c: AppContext, storeId: string): Promise<AppBlockInstance[]> {
+    // ART-22 / ART-16 hard gate at the DATA seam, not the URL prefix.
+    // This helper is the app platform's third public reader (GET /v1/storefront/:subdomain,
+    // GET /v1/storefront/store/:storeId, GET /v1/storefront/:subdomain/theme-preview) and it
+    // sits OUTSIDE the /v1/app-store + /v1/app mount perimeter, so the prefix middleware in
+    // index.ts cannot reach it. Without this branch a fully unauthenticated production caller
+    // still receives third-party marketplace app blocks — including render_mode 'iframe' plus
+    // iframe_url, which the storefront runtime then renders in an escapable sandbox.
+    // Fail-closed: no app-platform table is queried at all unless FEATURE_APP_PLATFORM is
+    // explicitly positive.
+    if (!isAppPlatformEnabled(c.env)) return [];
+
     const [registeredBlocks, legacyBlocks] = await Promise.all([
         loadRegisteredThemeAppBlocks(c, storeId),
         loadLegacyStorefrontAppBlocks(c, storeId),

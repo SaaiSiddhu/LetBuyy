@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createMerchantApiClient } from '@/lib/api/client'
+import { isAppPlatformEnabled } from '@/lib/app-platform-flag'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
 import { AppsSettingsClient } from './AppsSettingsClient'
 
@@ -8,6 +9,9 @@ interface AppsSettingsPageProps {
 }
 
 export default async function AppsSettingsPage({ params }: AppsSettingsPageProps) {
+    // ART-22 frozen seam — fail-closed. Absent FEATURE_APP_PLATFORM => not found.
+    if (!isAppPlatformEnabled()) return notFound()
+
     const { store } = await params
     const user = await getSessionUser()
     if (!user) return notFound()

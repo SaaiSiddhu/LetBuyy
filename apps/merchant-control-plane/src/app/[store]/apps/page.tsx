@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { InstalledApp } from '@letbuyy/shared-types'
 import { createMerchantApiClient } from '@/lib/api/client'
+import { isAppPlatformEnabled } from '@/lib/app-platform-flag'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
 import { Badge, Card, EmptyState, MaterialIcon, Page, PageHeader, Section } from '@letbuyy/ui'
 
@@ -18,6 +19,9 @@ function appTagline(installation: InstalledApp) {
 }
 
 export default async function AppsPage({ params }: AppsPageProps) {
+    // ART-22 frozen seam — fail-closed. Absent FEATURE_APP_PLATFORM => not found.
+    if (!isAppPlatformEnabled()) notFound()
+
     const { store } = await params
     const user = await getSessionUser()
     if (!user) notFound()

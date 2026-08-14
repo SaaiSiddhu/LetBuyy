@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import EmbeddedAppBridgeClient from '@/components/apps/EmbeddedAppBridgeClient'
 import { createMerchantApiClient } from '@/lib/api/client'
+import { isAppPlatformEnabled } from '@/lib/app-platform-flag'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
 
 interface EmbeddedAppPageProps {
@@ -11,6 +12,9 @@ interface EmbeddedAppPageProps {
 }
 
 export default async function EmbeddedAppPage({ params }: EmbeddedAppPageProps) {
+    // ART-22 frozen seam — fail-closed. Absent FEATURE_APP_PLATFORM => not found.
+    if (!isAppPlatformEnabled()) notFound()
+
     const { store, installationId } = await params
     const user = await getSessionUser()
     if (!user) notFound()

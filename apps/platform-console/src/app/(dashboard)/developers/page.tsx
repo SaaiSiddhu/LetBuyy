@@ -1,4 +1,5 @@
 import { revalidatePath } from 'next/cache';
+import { notFound } from 'next/navigation';
 import { Button, Input, Textarea } from '@letbuyy/ui';
 import {
     ConsoleWorkspace,
@@ -21,6 +22,7 @@ import {
     type ConsoleDataResponse,
 } from '@/lib/console-api';
 import { requireConsoleSession } from '@/lib/console-auth-server';
+import { isAppPlatformEnabled } from '@/lib/app-platform-flag';
 
 // ---------------------------------------------------------------------------
 // Types from gateway /operations/developers responses
@@ -237,6 +239,10 @@ export default async function DeveloperOperationsPage({
 }: {
     searchParams: SearchParams;
 }) {
+    // ART-22 / ART-16 fail-closed gate. Must be the FIRST statement: the gateway now 404s
+    // /v1/operations/developers, so this page must neither render nor fetch.
+    if (!isAppPlatformEnabled()) notFound();
+
     const data = await loadPageData(searchParams);
 
     const { developers, total, overview, selectedId, errors } = data;

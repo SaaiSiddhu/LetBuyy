@@ -6,6 +6,7 @@ import { apiVersioning } from './middleware/apiVersion';
 import { securityHeaders, inputValidation, requestId, errorResponseSanitizer, csrfProtection } from './middleware/security';
 import { protectedMutationIdempotency } from './middleware/idempotency';
 import { featureGate } from './middleware/featureFlags';
+import { appPlatformKillSwitch } from './middleware/appPlatformKillSwitch';
 import { observability } from './middleware/observability';
 import { internalPerimeter } from './middleware/internal-perimeter';
 import { AppError, formatAppError } from './lib/errors';
@@ -257,6 +258,8 @@ export interface Env {
     FEATURE_GRAPHQL?: string;
     FEATURE_EXTENSIONS?: string;
     FEATURE_LIQUID?: string;
+    /** ART-22 kill switch. ABSENT = app platform disabled. Do not set. */
+    FEATURE_APP_PLATFORM?: string;
     FEATURE_IDENTITY_PROVIDER?: string;
     FEATURE_OIDC_CLIENT?: string;
     FEATURE_NEW_SESSION_ENGINE?: string;
@@ -711,7 +714,33 @@ api.route('/auth', authRouter);
 api.route('/contacts', contactsRouter);
 api.use('/storefront/graphql', graphQLFeatureGate);
 api.use('/graphql/storefront', graphQLFeatureGate);
+// ART-22 / ART-16 hard gate — the public checkout-UI extension registry is an
+// app-platform surface. It was previously gated ONLY by extensionsFeatureGate, whose
+// unset-flag branch (middleware/featureFlags.ts) is fail-OPEN and which is "true" in
+// [vars] and [env.staging.vars]. The kill switch is registered FIRST so the app
+// platform, not FEATURE_EXTENSIONS, decides reachability.
+api.use('/storefront/:subdomain/checkout/extensions', appPlatformKillSwitch);
 api.use('/storefront/:subdomain/checkout/extensions', extensionsFeatureGate);
+// ART-22 / ART-16 / NEVER-R3 hard gate — the third-party app platform is a frozen
+// seam, not a live capability. Fail-closed: unreachable unless FEATURE_APP_PLATFORM
+// is explicitly positive. Registered BEFORE the mounts below (Hono composes in
+// registration order) so it cannot be bypassed and cannot drift as routes are added.
+// Permanent removal of the implementation is Wave 1 and requires ARB approval.
+api.use('/app-store', appPlatformKillSwitch);
+api.use('/app-store/*', appPlatformKillSwitch);
+api.use('/app', appPlatformKillSwitch);
+api.use('/app/*', appPlatformKillSwitch);
+// Same gate, OPERATOR plane of the same frozen seam: marketplace listing review/approval
+// (writes marketplace_apps.status = published) and the developer back office
+// (app_developers moderation, partner_payout_ledger_entries release, payout_disputes,
+// app_billing_charges). No other router owns these two prefixes, so the perimeter is exact.
+// Registered HERE — ahead of the global auth middleware below — so the surface returns a
+// uniform hard 404 to every caller instead of leaking its existence via a 401, and so a
+// blocked request performs no auth work.
+api.use('/operations/marketplace-reviews', appPlatformKillSwitch);
+api.use('/operations/marketplace-reviews/*', appPlatformKillSwitch);
+api.use('/operations/developers', appPlatformKillSwitch);
+api.use('/operations/developers/*', appPlatformKillSwitch);
 api.use('/app-store/installations/:id/extensions', extensionsFeatureGate);
 api.use('/app-store/installations/:id/extensions/:registrationId', extensionsFeatureGate);
 api.use('/app-store/apps/:id/oauth/authorize', appOAuthRateLimit);
