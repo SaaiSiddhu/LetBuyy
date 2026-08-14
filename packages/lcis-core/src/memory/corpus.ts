@@ -379,9 +379,10 @@ export function extractFallbackMemoryIntel(repoRoot: string): RawMemoryIntel {
         })
     : [];
 
-  decisions.forEach((d, i) => {
-    d.id = `D-${String(i + 1).padStart(3, '0')}`;
-  });
+  const mappedDecisions: RawDecision[] = decisions.map((d, i) => ({
+    ...d,
+    id: `D-${String(i + 1).padStart(3, '0')}`,
+  }));
 
-  return { decisions, migrations };
+  return { decisions: mappedDecisions, migrations };
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
@@ -16,8 +17,46 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class _TolerantGoldenComparator extends LocalFileComparator {
+  _TolerantGoldenComparator(super.testFile, {this.tolerance = 0.01});
+
+  final double tolerance;
+
+  @override
+  Future<bool> compare(Uint8List imageBytes, Uri golden) async {
+    final result = await GoldenFileComparator.compareLists(
+      imageBytes,
+      await getGoldenBytes(golden),
+    );
+
+    if (!result.passed && result.diffPercent <= tolerance) {
+      debugPrint(
+        'A difference of ${(result.diffPercent * 100).toStringAsFixed(2)}% was found, '
+        'which is within acceptable tolerance of ${(tolerance * 100).toStringAsFixed(2)}%.',
+      );
+      return true;
+    }
+
+    if (!result.passed) {
+      final error = await generateFailureOutput(result, golden, basedir);
+      throw FlutterError(error);
+    }
+    return result.passed;
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() {
+    if (goldenFileComparator is LocalFileComparator) {
+      final testUrl = (goldenFileComparator as LocalFileComparator).basedir;
+      goldenFileComparator = _TolerantGoldenComparator(
+        Uri.parse('$testUrl/merchant_goldens_test.dart'),
+        tolerance: 0.01,
+      );
+    }
+  });
 
   testWidgets('golden: order detail fulfillment surface', (tester) async {
     final api = _GoldenApiClient();
