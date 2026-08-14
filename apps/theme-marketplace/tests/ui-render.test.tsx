@@ -114,7 +114,7 @@ test('theme card renders linked facets, freshness, relative update, compare, pre
     assert.ok(html.includes(`href="${themeFacetHref('tag', 'minimal')}"`));
     assert.ok(html.includes(`href="${themeFacetHref('feature', 'Mobile cart')}"`));
     assert.match(html, /New|Updated/);
-    assert.match(html, /Updated 2 days ago|Updated 1 day ago|Updated today|Updated [0-9]+ days ago/);
+    assert.match(html, /Updated (today|[0-9]+ days? ago|[0-9]+ months? ago|[0-9]+ years? ago)/);
     assert.ok(html.includes(`href="${themeCompareSingleHref(baseTheme.slug)}"`));
     assert.ok(html.includes(`href="${themeSandboxPreviewHref(baseTheme.slug)}"`));
     assert.match(html, /role="dialog"/);

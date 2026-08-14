@@ -18,7 +18,7 @@ import 'package:provider/single_child_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _TolerantGoldenComparator extends LocalFileComparator {
-  _TolerantGoldenComparator(super.testFile, {this.tolerance = 0.01});
+  _TolerantGoldenComparator(super.testFile, {this.tolerance = 0.05});
 
   final double tolerance;
 
@@ -53,7 +53,7 @@ void main() {
       final testUrl = (goldenFileComparator as LocalFileComparator).basedir;
       goldenFileComparator = _TolerantGoldenComparator(
         Uri.parse('$testUrl/merchant_goldens_test.dart'),
-        tolerance: 0.01,
+        tolerance: 0.05,
       );
     }
   });

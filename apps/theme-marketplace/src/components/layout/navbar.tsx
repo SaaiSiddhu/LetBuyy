@@ -127,7 +127,7 @@ const platformSection: MenuSection = {
 
 const browseHighlights: MenuItem[] = [
     {
-        href: '/themes',
+        href: '/themes?sort=popular',
         icon: Eye,
         label: 'Preview in your own store',
         description: 'See a theme with your real products before you install it.',
