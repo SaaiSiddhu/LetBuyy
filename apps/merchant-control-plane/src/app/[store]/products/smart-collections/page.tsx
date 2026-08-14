@@ -20,6 +20,7 @@ import {
     useToast,
     type SelectOption,
 } from '@letbuyy/ui'
+import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 import type {
     SmartCollection,
     SmartCondition,
@@ -71,10 +72,6 @@ interface CollectionForm {
 
 function emptyForm(): CollectionForm {
     return { name: '', slug: '', description: '', match_type: 'all', conditions: [emptyCondition()] }
-}
-
-function slugify(name: string): string {
-    return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
 // ── Rule builder ──────────────────────────────────────────────────────────────
