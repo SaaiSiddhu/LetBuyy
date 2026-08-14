@@ -11,10 +11,11 @@ import 'package:provider/provider.dart';
 
 import '../../services/theme_provider.dart';
 import '../../theme/app_theme_colors.dart';
+import '../../widgets/shared/ai_operator_sheet.dart';
 import '../dashboard/home_screen.dart';
 import '../orders/orders_screen.dart';
 import '../products/products_screen.dart';
-import '../customize/theme_screen.dart';
+import '../customers/customers_screen.dart';
 import '../settings/settings_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -77,7 +78,7 @@ class StoreMainScreenState extends State<StoreMainScreen>
   }
 
   void goToHome()   => switchToTab(0);
-  void goToEditor() => switchToTab(3); // Theme editor is tab 3
+  void goToEditor() => switchToTab(2); // Products is tab 2
 
   void _openSearch() {
     HapticFeedback.lightImpact();
@@ -111,9 +112,15 @@ class StoreMainScreenState extends State<StoreMainScreen>
           HomeScreen(),
           OrdersScreen(),
           ProductsScreen(),
-          ThemeScreen(),
+          CustomersScreen(),
           SettingsScreen(),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'AI store operator',
+        onPressed: () => showAiOperatorSheet(context),
+        backgroundColor: _kPrimary,
+        child: const Icon(Icons.auto_awesome, color: Colors.white),
       ),
       // The bottomNavigationBar slot reserves space so content isn't hidden
       bottomNavigationBar: SlideTransition(
@@ -158,8 +165,8 @@ class _FloatingNav extends StatelessWidget {
     _NavDef(icon: Icons.home_outlined,         activeIcon: Icons.home_rounded,          label: 'Home'),
     _NavDef(icon: Icons.shopping_bag_outlined, activeIcon: Icons.shopping_bag_rounded,  label: 'Orders'),
     _NavDef(icon: Icons.sell_outlined,         activeIcon: Icons.sell_rounded,          label: 'Products'),
-    _NavDef(icon: Icons.brush_outlined,        activeIcon: Icons.brush_rounded,         label: 'Theme'),
-    _NavDef(icon: Icons.menu_rounded,          activeIcon: Icons.menu_rounded,          label: 'Settings'),
+    _NavDef(icon: Icons.people_outline,        activeIcon: Icons.people_rounded,        label: 'Customers'),
+    _NavDef(icon: Icons.menu_rounded,          activeIcon: Icons.menu_rounded,          label: 'More'),
   ];
 
   @override

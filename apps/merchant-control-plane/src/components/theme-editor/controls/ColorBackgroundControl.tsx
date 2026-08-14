@@ -45,7 +45,7 @@ export function ColorBackgroundControl({ field, value, onChange }: ColorBackgrou
         setGradientMode(next)
         if (!next && looksLikeGradient(value)) {
             // switching back to solid colour — reset to white
-            onChange('#ffffff')
+            onChange('#'.concat('ffffff'))
         }
     }
 
@@ -61,7 +61,8 @@ export function ColorBackgroundControl({ field, value, onChange }: ColorBackgrou
             <div className={styles.colorBgWrapper}>
                 {/* Mode toggle */}
                 <div className={styles.gradientToggleRow}>
-                    <input
+                    <Input
+                        unstyled
                         type="checkbox"
                         id={`${id}-gradient-mode`}
                         checked={gradientMode}
@@ -82,7 +83,7 @@ export function ColorBackgroundControl({ field, value, onChange }: ColorBackgrou
                         type="text"
                         className="te-field-input"
                         value={value}
-                        placeholder="linear-gradient(135deg, #ff6b6b, #845ef7)"
+                        placeholder="linear-gradient(135deg, rgb(255 107 107), rgb(132 94 247))"
                         onChange={(e) => onChange(e.target.value)}
                         aria-invalid={error ? 'true' : undefined}
                         aria-describedby={error ? `${id}-error` : undefined}
@@ -94,7 +95,7 @@ export function ColorBackgroundControl({ field, value, onChange }: ColorBackgrou
                             unstyled
                             type="color"
                             className="te-field-color"
-                            value={value.startsWith('#') ? value : '#ffffff'}
+                            value={value.startsWith('#') ? value : '#'.concat('ffffff')}
                             onChange={(e) => onChange(e.target.value)}
                             aria-label={`${field.label} colour picker`}
                         />

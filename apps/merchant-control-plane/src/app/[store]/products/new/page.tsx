@@ -19,6 +19,7 @@ import { Button, Input,
     Section,
     Select,
     Skeleton,
+    Table,
     Textarea,
     Trash2,
     Upload,
@@ -1102,7 +1103,7 @@ export default function AddProductPage() {
                         {variantMatrix.length > 0 && (
                             <Section title="Variant combinations" description="Edit price, SKU, and stock for each combination.">
                                 <div className="overflow-x-auto">
-                                    <table className="w-full text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)]">
+                                    <Table className="w-full text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)]">
                                         <thead>
                                             <tr className="border-b border-[var(--lb-color-border)]">
                                                 <th className="pb-[var(--lb-space-2)] pr-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text-subdued)]">Variant</th>
@@ -1181,7 +1182,7 @@ export default function AddProductPage() {
                                                 </tr>
                                             ))}
                                         </tbody>
-                                    </table>
+                                    </Table>
                                 </div>
                             </Section>
                         )}

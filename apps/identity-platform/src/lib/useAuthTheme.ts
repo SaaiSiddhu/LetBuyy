@@ -1,7 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import { useTheme } from '@letbuyy/ui';
+
+function subscribe() {
+    return () => {};
+}
+
+function getSnapshot() {
+    return true;
+}
+
+function getServerSnapshot() {
+    return false;
+}
 
 /**
  * Auth-surface theme toggle, backed by the canonical LetbuyyThemeProvider.
@@ -18,16 +30,12 @@ import { useTheme } from '@letbuyy/ui';
  * SSR assumption ("system" → "light", i.e. not dark). Markup that branches on the
  * theme — e.g. swapping the Sun/Moon toggle icon, which changes the SVG element
  * tree — therefore mismatched during hydration. We gate `isDark` behind a mount
- * flag so the first client render matches the server (isDark=false), then flip to
- * the real value in an effect. Colours are unaffected: they come from the <html>
- * data-theme/class the ThemeScript sets pre-paint, not from this value.
+ * flag via useSyncExternalStore so the first client render matches the server
+ * (isDark=false), then flips cleanly without cascading render lint errors.
  */
 export function useAuthTheme(): { isDark: boolean; toggleTheme: () => void } {
     const { resolvedTheme, setTheme } = useTheme();
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
     const isDark = mounted && resolvedTheme === 'dark';
     return {
         isDark,

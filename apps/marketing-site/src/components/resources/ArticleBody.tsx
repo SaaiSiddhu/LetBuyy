@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react'
 import type { ContentBlock } from '@/lib/resources/types'
+import { Table } from '@letbuyy/ui'
 import { HeadingAnchor } from './HeadingAnchor'
 
 function slugify(text: string): string {
@@ -41,10 +42,8 @@ const CHECK_ICON = (
   </svg>
 )
 
-let isFirstParagraph = true
-
 export default function ArticleBody({ body }: { body: ContentBlock[] }) {
-  isFirstParagraph = true
+  const firstPIndex = body.findIndex((b) => b.type === 'p')
 
   return (
     <div className="arc-body" id="article-body">
@@ -52,13 +51,11 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
         switch (block.type) {
 
           case 'p': {
-            const isLead = isFirstParagraph
-            isFirstParagraph = false
+            const isLead = i === firstPIndex
             return <p key={i} className={isLead ? 'arc-body-p-lead' : 'arc-body-p'}>{block.text}</p>
           }
 
           case 'h2': {
-            isFirstParagraph = false
             const id = slugify(block.text)
             return (
               <h2 key={i} id={id} className="arc-body-h2">
@@ -69,7 +66,6 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
           }
 
           case 'h3': {
-            isFirstParagraph = false
             const id = slugify(block.text)
             return (
               <h3 key={i} id={id} className="arc-body-h3">
@@ -80,7 +76,6 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
           }
 
           case 'ul':
-            isFirstParagraph = false
             return (
               <ul key={i} className="arc-body-ul">
                 {block.items.map((item, j) => <li key={j}>{item}</li>)}
@@ -88,7 +83,6 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
             )
 
           case 'ol':
-            isFirstParagraph = false
             return (
               <ol key={i} className="arc-body-ol">
                 {block.items.map((item, j) => <li key={j}>{item}</li>)}
@@ -96,7 +90,6 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
             )
 
           case 'callout':
-            isFirstParagraph = false
             return (
               <div key={i} className={`arc-callout arc-callout-${block.variant}`} role="note">
                 <span className={`arc-callout-icon-wrap arc-callout-icon-${block.variant}`}>
@@ -110,7 +103,6 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
             )
 
           case 'code':
-            isFirstParagraph = false
             return (
               <pre key={i} className="arc-code-block">
                 <code className={`language-${block.lang}`}>{block.text}</code>
@@ -118,7 +110,6 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
             )
 
           case 'blockquote':
-            isFirstParagraph = false
             return (
               <blockquote key={i} className="arc-blockquote">
                 <span className="arc-blockquote-mark" aria-hidden="true">&ldquo;</span>
@@ -128,10 +119,9 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
             )
 
           case 'table':
-            isFirstParagraph = false
             return (
               <div key={i} className="arc-table-wrap">
-                <table className="arc-table">
+                <Table className="arc-table">
                   <thead>
                     <tr>
                       {block.headers.map((h, j) => <th key={j}>{h}</th>)}
@@ -144,14 +134,13 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </Table>
               </div>
             )
 
           // ── V4 Rich Blocks ──
 
           case 'insight':
-            isFirstParagraph = false
             return (
               <div key={i} className="arc-insight-block" role="note">
                 <div className="arc-insight-eyebrow">
@@ -164,7 +153,6 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
             )
 
           case 'checklist':
-            isFirstParagraph = false
             return (
               <div key={i} className="arc-checklist-block">
                 {block.title && <p className="arc-checklist-title">{block.title}</p>}
@@ -182,7 +170,6 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
             )
 
           case 'metric':
-            isFirstParagraph = false
             return (
               <div key={i} className="arc-metric-block" role="group" aria-label="Key metrics">
                 {block.metrics.map((m, j) => (
@@ -200,7 +187,6 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
             )
 
           case 'timeline':
-            isFirstParagraph = false
             return (
               <div key={i} className="arc-timeline-block" role="list">
                 {block.items.map((item, j) => (
@@ -217,7 +203,6 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
             )
 
           case 'commerce-example':
-            isFirstParagraph = false
             return (
               <div key={i} className="arc-commerce-block" role="note">
                 <p className="arc-commerce-eyebrow">Commerce Example</p>
@@ -230,7 +215,6 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
             )
 
           case 'ai-recommendation':
-            isFirstParagraph = false
             return (
               <div key={i} className="arc-ai-block" role="note">
                 <div className="arc-ai-eyebrow">

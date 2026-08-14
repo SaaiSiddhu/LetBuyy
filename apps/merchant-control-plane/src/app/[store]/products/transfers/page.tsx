@@ -20,6 +20,7 @@ import {
     Select,
     Skeleton,
     Spinner,
+    Table,
     Truck,
     useToast,
     type SelectOption,
@@ -52,7 +53,7 @@ type TransferWithLines = InventoryTransfer & {
     destination_location?: { name: string } | null
 }
 
-type Product = {
+type TransferProductItem = {
     id: string
     name: string
     sku?: string | null
@@ -103,7 +104,7 @@ interface CreateTransferModalProps {
     open: boolean
     store: string
     locations: InventoryLocation[]
-    products: Product[]
+    products: TransferProductItem[]
     onClose: () => void
     onCreated: () => void
 }
@@ -589,7 +590,7 @@ export default function TransfersPage() {
 
     const [transfers, setTransfers] = useState<TransferWithLines[]>([])
     const [locations, setLocations] = useState<InventoryLocation[]>([])
-    const [products, setProducts] = useState<Product[]>([])
+    const [products, setProducts] = useState<TransferProductItem[]>([])
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
 
@@ -611,7 +612,7 @@ export default function TransfersPage() {
             const [transferBody, locationBody, productBody] = await Promise.all([
                 transferRes.json() as Promise<{ data?: TransferWithLines[]; error?: unknown }>,
                 locationRes.json() as Promise<{ data?: InventoryLocation[]; error?: unknown }>,
-                productRes.json() as Promise<{ data?: Product[]; error?: unknown }>,
+                productRes.json() as Promise<{ data?: TransferProductItem[]; error?: unknown }>,
             ])
 
             if (!transferRes.ok) {
@@ -737,7 +738,7 @@ export default function TransfersPage() {
                         />
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full border-collapse text-[length:var(--lb-font-size-sm)]">
+                            <Table className="w-full border-collapse text-[length:var(--lb-font-size-sm)]">
                                 <thead>
                                     <tr className="border-b border-[var(--lb-color-border-subtle)] text-left">
                                         <th className="pb-[var(--lb-space-2)] pr-[var(--lb-space-4)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">
@@ -823,7 +824,7 @@ export default function TransfersPage() {
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
+                            </Table>
                         </div>
                     )}
                 </Section>

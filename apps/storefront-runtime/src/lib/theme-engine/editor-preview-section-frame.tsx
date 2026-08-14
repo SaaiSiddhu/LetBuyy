@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
+import { Button } from '@letbuyy/ui';
 import {
     EDITOR_SECTION_SELECT_MESSAGE,
     EDITOR_SELECTION_MESSAGE,
@@ -197,7 +198,8 @@ export default function EditorPreviewSectionFrame({
         >
             {/* Insert-before affordance — pointer-enhancement only, not in tab order.
                 Keyboard users add sections via the section tree in the editor panel. */}
-            <button
+            <Button
+                unstyled
                 type="button"
                 className="storefront-editor-section-insert storefront-editor-section-insert--before"
                 aria-label={`Add section before ${sectionType}`}
@@ -210,7 +212,7 @@ export default function EditorPreviewSectionFrame({
                 }}
             >
                 <span aria-hidden="true">+</span>
-            </button>
+            </Button>
 
             <span className="storefront-editor-section-frame__label" aria-hidden="true">
                 {sectionType}
@@ -219,7 +221,8 @@ export default function EditorPreviewSectionFrame({
             {children}
 
             {/* Insert-after affordance */}
-            <button
+            <Button
+                unstyled
                 type="button"
                 className="storefront-editor-section-insert storefront-editor-section-insert--after"
                 aria-label={`Add section after ${sectionType}`}
@@ -230,7 +233,7 @@ export default function EditorPreviewSectionFrame({
                 }}
             >
                 <span aria-hidden="true">+</span>
-            </button>
+            </Button>
         </div>
     );
 }

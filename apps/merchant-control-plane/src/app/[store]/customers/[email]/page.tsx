@@ -305,7 +305,8 @@ function OrderHistoryCard({
             >
                 <div className="flex flex-col gap-[var(--lb-space-2)]">
                     {orders.map(order => (
-                        <button
+                        <Button
+                            unstyled
                             key={order.id}
                             type="button"
                             className="w-full text-left lb-rounded-lg border border-[var(--lb-color-border)] p-[var(--lb-space-3)] cursor-pointer transition-colors hover:bg-[var(--lb-component-table-row-hover-bg)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lb-color-focus-ring)]"
@@ -328,7 +329,7 @@ function OrderHistoryCard({
                                     </span>
                                 </div>
                             </div>
-                        </button>
+                        </Button>
                     ))}
                 </div>
             </Section>

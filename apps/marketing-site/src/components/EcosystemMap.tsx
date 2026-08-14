@@ -82,7 +82,7 @@ function MerchantOSMock() {
                     <div className="ecos-os-feed">
                         <div className="ecos-os-feed-row">
                             <span className="ecos-os-feed-dot ecos-os-feed-dot--success" />
-                            <span>Order #4821 shipped · Air Classic</span>
+                            <span>Order ORD-4821 shipped · Air Classic</span>
                         </div>
                         <div className="ecos-os-feed-row">
                             <span className="ecos-os-feed-dot ecos-os-feed-dot--ai" />

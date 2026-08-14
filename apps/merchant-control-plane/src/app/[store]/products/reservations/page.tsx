@@ -14,6 +14,7 @@ import {
     Section,
     Select,
     Skeleton,
+    Table,
     useToast,
     type SelectOption,
     type StatusVariant,
@@ -303,7 +304,7 @@ export default function InventoryReservationsPage() {
                         <>
                             {/* Desktop table */}
                             <div className="hidden sm:block overflow-x-auto">
-                                <table className="w-full text-[length:var(--lb-font-size-sm)]">
+                                <Table className="w-full text-[length:var(--lb-font-size-sm)]">
                                     <thead>
                                         <tr className="border-b border-[var(--lb-color-border-subtle)] bg-[var(--lb-color-surface-subdued)]">
                                             <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">Status</th>
@@ -353,7 +354,7 @@ export default function InventoryReservationsPage() {
                                             </tr>
                                         ))}
                                     </tbody>
-                                </table>
+                                </Table>
                             </div>
 
                             {/* Mobile cards */}

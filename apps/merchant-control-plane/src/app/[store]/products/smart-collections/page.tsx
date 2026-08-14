@@ -160,7 +160,8 @@ function RuleBuilder({ conditions, matchType, onChange, onMatchTypeChange, disab
                         onChange={(e) => updateCondition(i, { value: e.currentTarget.value })}
                         disabled={disabled}
                     />
-                    <button
+                    <Button
+                        unstyled
                         type="button"
                         onClick={() => removeCondition(i)}
                         disabled={disabled}
@@ -180,7 +181,7 @@ function RuleBuilder({ conditions, matchType, onChange, onMatchTypeChange, disab
                         }}
                     >
                         <MaterialIcon name="delete_outline" size={18} />
-                    </button>
+                    </Button>
                 </div>
             ))}
 

@@ -11,8 +11,6 @@ import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../app/store_context.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
-
 import '../../services/store_auth_service.dart';
 import '../../services/language_service.dart';
 import '../../services/theme_provider.dart';

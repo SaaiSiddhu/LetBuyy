@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Button, Input } from '@letbuyy/ui'
 
 export default function NewsletterCTA() {
   const [email, setEmail] = useState('')
@@ -22,7 +23,8 @@ export default function NewsletterCTA() {
         </p>
       ) : (
         <form className="rc-newsletter-form" onSubmit={handleSubmit}>
-          <input
+          <Input
+            unstyled
             type="email"
             className="rc-newsletter-input"
             placeholder="your@email.com"
@@ -31,9 +33,9 @@ export default function NewsletterCTA() {
             required
             aria-label="Email address"
           />
-          <button type="submit" className="rc-newsletter-btn">
+          <Button unstyled type="submit" className="rc-newsletter-btn">
             Subscribe
-          </button>
+          </Button>
         </form>
       )}
     </div>

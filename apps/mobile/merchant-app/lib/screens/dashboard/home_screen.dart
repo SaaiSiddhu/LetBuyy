@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
@@ -12,7 +11,6 @@ import '../../services/analytics_service.dart';
 import '../../services/app_badge_service.dart';
 import '../../services/home_widget_service.dart';
 import '../../services/store_service.dart';
-import '../../services/store_auth_service.dart';
 import '../../models/store_model.dart';
 import '../../app/routes.dart';
 import '../../theme/app_theme_colors.dart';
@@ -161,7 +159,12 @@ class _HomeScreenState extends State<HomeScreen> {
               color: headerBg,
               child: _isLoading || _store == null
                   ? const SizedBox(height: 62)
-                  : PremiumHeader(isDark: isDark, onStoreChanged: _loadStore),
+                  : PremiumHeader(
+                      isDark: isDark,
+                      onStoreChanged: _loadStore,
+                      onNotificationTap: () =>
+                          Navigator.pushNamed(context, AppRoutes.notifications),
+                    ),
             ),
           ),
           // ── Content card — rounded top, contrasting surface ─────────────

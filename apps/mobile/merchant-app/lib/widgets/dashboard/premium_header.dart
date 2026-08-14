@@ -28,10 +28,12 @@ class PremiumHeader extends StatelessWidget {
     super.key,
     required this.isDark,
     this.onStoreChanged,
+    this.onNotificationTap,
   });
 
   final bool isDark;
   final VoidCallback? onStoreChanged;
+  final VoidCallback? onNotificationTap;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +62,11 @@ class PremiumHeader extends StatelessWidget {
           ),
 
           // RIGHT — notification bell
-          _NotificationBell(isDark: isDark, colors: colors),
+          _NotificationBell(
+            isDark: isDark,
+            colors: colors,
+            onTap: onNotificationTap,
+          ),
         ],
       ),
     );
@@ -304,9 +310,14 @@ class _StorePillState extends State<_StorePill> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _NotificationBell extends StatefulWidget {
-  const _NotificationBell({required this.isDark, required this.colors});
+  const _NotificationBell({
+    required this.isDark,
+    required this.colors,
+    this.onTap,
+  });
   final bool isDark;
   final AppThemeColors colors;
+  final VoidCallback? onTap;
 
   @override
   State<_NotificationBell> createState() => _NotificationBellState();
@@ -321,7 +332,11 @@ class _NotificationBellState extends State<_NotificationBell> {
       onTapDown: (_) => setState(() => _pressed = true),
       onTapUp: (_) {
         setState(() => _pressed = false);
-        Navigator.pushNamed(context, AppRoutes.notifications);
+        if (widget.onTap != null) {
+          widget.onTap!();
+        } else {
+          Navigator.pushNamed(context, AppRoutes.notifications);
+        }
       },
       onTapCancel: () => setState(() => _pressed = false),
       child: AnimatedScale(

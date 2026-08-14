@@ -618,13 +618,14 @@ export default function MarketingCampaignsPage() {
                         ? `${sendResult.sentCount} email${sendResult.sentCount === 1 ? '' : 's'} logged in sandbox — no real emails delivered. Configure RESEND_API_KEY to send live.`
                         : `${sendResult.sentCount} email${sendResult.sentCount === 1 ? '' : 's'} sent.${sendResult.failedCount > 0 ? ` ${sendResult.failedCount} failed.` : ''}`}
                     {' '}
-                    <button
+                    <Button
+                        unstyled
                         type="button"
                         className="text-[var(--lb-color-text)] underline"
                         onClick={() => setSendResult(null)}
                     >
                         Dismiss
-                    </button>
+                    </Button>
                 </Banner>
             )}
 

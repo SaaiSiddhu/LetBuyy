@@ -125,7 +125,7 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
     if (loading) {
         return (
             <div className="settings-general-stack">
-                <button type="button" className="domains-back" onClick={onBack}><ArrowLeft className="letbuyy-icon" aria-hidden="true" /> Domains</button>
+                <Button unstyled type="button" className="domains-back" onClick={onBack}><ArrowLeft className="letbuyy-icon" aria-hidden="true" /> Domains</Button>
                 {[1, 2, 3].map((i) => (
                     <div key={i} className="settings-home-card">
                         <div className="settings-home-section-label"><Skeleton variant="text" lines={1} /></div>
@@ -139,9 +139,9 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
     if (!health) {
         return (
             <div className="settings-general-stack">
-                <button type="button" className="domains-back" onClick={onBack}><ArrowLeft className="letbuyy-icon" aria-hidden="true" /> Domains</button>
+                <Button unstyled type="button" className="domains-back" onClick={onBack}><ArrowLeft className="letbuyy-icon" aria-hidden="true" /> Domains</Button>
                 <div className="settings-home-card"><div className="settings-form-body">
-                    <div className="domains-note domains-note--warn"><AlertTriangle className="letbuyy-icon" aria-hidden="true" /><span>Could not load this domain. <button type="button" className="settings-business-link" onClick={() => void load()}>Retry</button>.</span></div>
+                    <div className="domains-note domains-note--warn"><AlertTriangle className="letbuyy-icon" aria-hidden="true" /><span>Could not load this domain. <Button unstyled type="button" className="settings-business-link" onClick={() => void load()}>Retry</Button>.</span></div>
                 </div></div>
             </div>
         )
@@ -163,7 +163,7 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
         <div className="settings-general-stack">
             {/* Header */}
             <div className="domains-detail-head">
-                <button type="button" className="domains-back" onClick={onBack}><ArrowLeft className="letbuyy-icon" aria-hidden="true" /> Domains</button>
+                <Button unstyled type="button" className="domains-back" onClick={onBack}><ArrowLeft className="letbuyy-icon" aria-hidden="true" /> Domains</Button>
                 <div className="domains-detail-title-row">
                     <span className="domains-detail-icon">{isPrimary ? <Crown className="letbuyy-icon" aria-hidden="true" /> : <Globe className="letbuyy-icon" aria-hidden="true" />}</span>
                     <h2 className="domains-detail-title">{domain}</h2>

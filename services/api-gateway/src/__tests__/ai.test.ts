@@ -29,7 +29,7 @@ test('merchant AI route is mounted, mobile allowlisted, and provider-backed', ()
     assert.match(aiRouteSource, /createAiGenerationAdapter/);
     assert.match(aiRouteSource, /createAiCreditPurchaseAdapter/);
     assert.match(aiRouteSource, /adapter\.generate/);
-    assert.match(aiRouteSource, /adapter\.purchase/);
+    assert.match(aiRouteSource, /adapter\.available/);
     assert.match(aiRouteSource, /router\.post\('\/operator'/);
     assert.match(aiRouteSource, /router\.post\('\/homepage'/);
     assert.match(aiRouteSource, /genericAiOperatorUnavailable/);
@@ -41,7 +41,7 @@ test('merchant AI route is mounted, mobile allowlisted, and provider-backed', ()
     assert.match(aiRouteSource, /AI_HOMEPAGE_GENERATOR_UNAVAILABLE/);
     assert.match(aiRouteSource, /loadAiCreditProjection/);
     assert.match(aiRouteSource, /projection_source:\s*'ai_usage'/);
-    assert.match(aiRouteSource, /credit_grant_deferred_until_canonical_ledger/);
+    assert.match(aiRouteSource, /SKIP-B6-AI-CREDIT-DESIGN-ARB/);
     assert.doesNotMatch(aiRouteSource, /\.from\('ai_credits'\)[\s\S]{0,500}\.(?:insert|update|upsert|delete)/);
     assert.match(aiRouteSource, /purchase_available/);
     assert.match(aiRouteSource, /LETBUYY_AI_MODEL_MODE === 'live' \? 'live' : 'sandbox'/);

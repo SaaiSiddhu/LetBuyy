@@ -221,10 +221,10 @@ export default function DomainCenterPage() {
 
             {/* Buy a domain */}
             <div className="settings-home-card">
-                <button type="button" className="domains-buy-toggle" onClick={() => setShowBuy((v) => !v)} aria-expanded={showBuy}>
+                <Button unstyled type="button" className="domains-buy-toggle" onClick={() => setShowBuy((v) => !v)} aria-expanded={showBuy}>
                     <span className="settings-home-section-label domains-buy-label">Buy a new domain</span>
                     <ChevronRight className={`letbuyy-icon domains-buy-chevron${showBuy ? ' is-open' : ''}`} aria-hidden="true" />
-                </button>
+                </Button>
                 {showBuy && (
                     <div className="settings-form-body">
                         <div className="settings-general-hint">Search for a new domain, pay securely, and LetBuyy registers and auto-connects it.</div>
@@ -259,7 +259,7 @@ function DomainRow({ record, onManage, primary = false }: { record: SiteDomainRe
     const ssl = normalizeSsl(record.ssl_status)
     const score = scoreFromRecord(record)
     return (
-        <button type="button" className="domains-row domains-row--clickable" onClick={() => onManage(record)}>
+        <Button unstyled type="button" className="domains-row domains-row--clickable" onClick={() => onManage(record)}>
             <span className="domains-row-icon">{primary ? <Crown className="letbuyy-icon" aria-hidden="true" /> : <Globe className="letbuyy-icon" aria-hidden="true" />}</span>
             <div className="domains-row-meta">
                 <div className="domains-row-domain-line">
@@ -277,6 +277,6 @@ function DomainRow({ record, onManage, primary = false }: { record: SiteDomainRe
             </div>
             <div className="domains-row-health"><HealthMeter score={score} showLabel={false} /></div>
             <ChevronRight className="letbuyy-icon domains-row-chevron" aria-hidden="true" />
-        </button>
+        </Button>
     )
 }

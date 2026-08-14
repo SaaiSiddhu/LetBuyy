@@ -304,7 +304,8 @@ function CustomerCard({
                         label="Email"
                         value={
                             hasEmail ? (
-                                <button
+                                <Button
+                                    unstyled
                                     type="button"
                                     className="text-[var(--lb-color-primary)] hover:underline text-left"
                                     onClick={() =>
@@ -314,7 +315,7 @@ function CustomerCard({
                                     }
                                 >
                                     {order.customer_email}
-                                </button>
+                                </Button>
                             ) : '—'
                         }
                     />

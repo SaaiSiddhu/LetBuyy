@@ -15,7 +15,7 @@
 import { useId } from 'react'
 import type { ExtendedSchemaField } from '@/lib/theme-schemas'
 import { validateFieldValue } from '@/lib/theme-schemas'
-import { MaterialIcon } from '@letbuyy/ui'
+import { Input, MaterialIcon } from '@letbuyy/ui'
 import styles from './controls.module.css'
 
 interface CheckboxControlProps {
@@ -38,7 +38,8 @@ export function CheckboxControl({ field, value, onChange }: CheckboxControlProps
                 ) : null}
             </label>
             <div className={styles.checkboxWrapper}>
-                <input
+                <Input
+                    unstyled
                     id={id}
                     type="checkbox"
                     className={styles.checkboxInput}

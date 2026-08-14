@@ -406,7 +406,8 @@ export default function CheckoutClient({
                             </div>
                             <div className="checkout-options checkout-options--2">
                                 <label className={cx('checkout-option', billingPeriod === 'monthly' && 'is-active')}>
-                                    <input
+                                    <Input
+                                        unstyled
                                         type="radio"
                                         name="billing-period"
                                         value="monthly"
@@ -425,7 +426,8 @@ export default function CheckoutClient({
                                     </span>
                                 </label>
                                 <label className={cx('checkout-option', billingPeriod === 'yearly' && 'is-active')}>
-                                    <input
+                                    <Input
+                                        unstyled
                                         type="radio"
                                         name="billing-period"
                                         value="yearly"

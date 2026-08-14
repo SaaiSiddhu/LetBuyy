@@ -214,7 +214,5 @@ test('storefront runtime no longer owns payment route handlers', () => {
     assert.match(browserClient, /resolveLetbuyyApiBaseUrl/);
     assert.match(browserClient, /`\/api\/storefront\/\$\{encodeURIComponent\(subdomain\)\}\$\{apiPath\}`/);
     assert.match(checkoutClient, /storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/razorpay\/order'/);
-    assert.match(checkoutClient, /storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/stripe\/checkout'/);
-    assert.match(checkoutClient, /storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/paypal\/order'/);
-    assert.match(paypalReturn, /storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/paypal\/capture'/);
+    assert.match(checkoutClient, /storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/razorpay\/verify'/);
 });

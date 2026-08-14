@@ -36,7 +36,7 @@
  */
 
 import { useState, useEffect, useId, useCallback } from 'react'
-import { Button, MaterialIcon } from '@letbuyy/ui'
+import { Button, Input, MaterialIcon } from '@letbuyy/ui'
 import { ChevronUp, ChevronDown, Plus, Trash2, Settings, X } from 'lucide-react'
 import type { BlockEntry } from './SectionTreePanel'
 import styles from './controls/controls.module.css'
@@ -195,7 +195,8 @@ function BlockSettingsForm({ block, sectionId, onUpdateBlockSettings, onClose }:
         >
             <div className="te-field">
                 <label className="te-field__label" htmlFor={titleId}>Display title</label>
-                <input
+                <Input
+                    unstyled
                     id={titleId}
                     type="text"
                     className="te-field__input"
@@ -208,7 +209,8 @@ function BlockSettingsForm({ block, sectionId, onUpdateBlockSettings, onClose }:
             </div>
             <div className="te-field" style={{ marginTop: 'var(--lb-space-2, 8px)' }}>
                 <label className="te-field__label" htmlFor={slotId}>Slot identifier</label>
-                <input
+                <Input
+                    unstyled
                     id={slotId}
                     type="text"
                     className="te-field__input"

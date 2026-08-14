@@ -18,7 +18,7 @@ function repositorySource(path: string): string {
 }
 
 test('executive analytics migration creates rollup tables with service-role and super-admin RLS', () => {
-    const migrationSource = repositorySource('database/supabase/migrations/129_internal_os_executive_analytics_rollups.sql');
+    const migrationSource = repositorySource('database/supabase/migrations/169_internal_os_executive_analytics_rollups.sql');
 
     for (const table of ['metric_rollups', 'mrr_arr_rollups', 'cohort_snapshots', 'funnel_steps']) {
         assert.match(migrationSource, new RegExp(`CREATE TABLE IF NOT EXISTS public\\.${table}`));

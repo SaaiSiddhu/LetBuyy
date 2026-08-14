@@ -1,12 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-
-const TRUST_ITEMS = [
-  { icon: 'users', text: '35,000+ merchants' },
-  { icon: 'star', text: 'Weekly insights' },
-  { icon: 'shield', text: 'No spam, ever' },
-]
+import { Button, Input } from '@letbuyy/ui'
 
 export default function PostArticleNewsletter() {
   const [email, setEmail] = useState('')
@@ -67,7 +62,8 @@ export default function PostArticleNewsletter() {
         ) : (
           <>
             <form className="arc-post-nl-form" onSubmit={handleSubmit}>
-              <input
+              <Input
+                unstyled
                 type="email"
                 className="arc-post-nl-input"
                 placeholder="your@email.com"
@@ -76,7 +72,7 @@ export default function PostArticleNewsletter() {
                 required
                 aria-label="Email address"
               />
-              <button type="submit" className="arc-post-nl-btn">Subscribe</button>
+              <Button unstyled type="submit" className="arc-post-nl-btn">Subscribe</Button>
             </form>
             <p className="arc-post-nl-hint">Unsubscribe anytime. Your data stays private.</p>
           </>

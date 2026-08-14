@@ -54,14 +54,11 @@ export default function SelectPage() {
     const [initialLoading, setInitialLoading] = useState(true)
     const [sessionExpired, setSessionExpired] = useState(false)
     const { isDark, toggleTheme } = useAuthTheme()
-    const [lang, setLang] = useState<Lang>('en')
+    const [lang, setLang] = useState<Lang>(() => (typeof window !== 'undefined' ? (localStorage.getItem('letbuyy_lang') as Lang) || 'en' : 'en'))
 
     const t = translations[lang]
 
     useEffect(() => {
-        const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
-        setLang(savedLang)
-
         let redirecting = false
 
         fetch('/api/auth/stores')
@@ -105,7 +102,7 @@ export default function SelectPage() {
 
     const handleSelectStore = (store: UserStore) => {
         setLoading(store.id)
-        window.location.href = getAdminDashboardUrl(store.subdomain)
+        window.location.assign(getAdminDashboardUrl(store.subdomain))
     }
 
     const formatLabel = (value: string) => (
@@ -217,14 +214,15 @@ export default function SelectPage() {
                             ))}
                         </div>
 
-                        <button
+                        <Button
+                            unstyled
                             type="button"
                             className="select-create-btn"
-                            onClick={() => { window.location.href = '/onboarding' }}
+                            onClick={() => { window.location.assign('/onboarding') }}
                         >
                             <AuthIcon name="add" size={16} />
                             {t.createNew}
-                        </button>
+                        </Button>
                     </>
                 )}
             </div>

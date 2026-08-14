@@ -1,5 +1,7 @@
 'use client'
 
+import { Button } from '@letbuyy/ui'
+
 export function HeadingAnchor({ id }: { id: string }) {
   function handleCopy() {
     const url = `${window.location.origin}${window.location.pathname}#${id}`
@@ -7,7 +9,8 @@ export function HeadingAnchor({ id }: { id: string }) {
   }
 
   return (
-    <button
+    <Button
+      unstyled
       type="button"
       onClick={handleCopy}
       className="arc-heading-anchor"
@@ -18,6 +21,6 @@ export function HeadingAnchor({ id }: { id: string }) {
         <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
         <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
       </svg>
-    </button>
+    </Button>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion'
-import { ChevronDown } from '@letbuyy/ui'
+import { Button, ChevronDown } from '@letbuyy/ui'
 
 const TRUST_ITEMS = [
   'No transaction commissions',
@@ -170,7 +170,8 @@ export default function FAQ() {
                   key={i}
                   className={`faq-item${isOpen ? ' faq-item-open' : ''}`}
                 >
-                  <button
+                  <Button
+                    unstyled
                     className="faq-question"
                     aria-expanded={isOpen}
                     aria-controls={`faq-answer-${i}`}
@@ -184,7 +185,7 @@ export default function FAQ() {
                       height={18}
                       aria-hidden="true"
                     />
-                  </button>
+                  </Button>
 
                   <AnimatePresence initial={false}>
                     {isOpen && (

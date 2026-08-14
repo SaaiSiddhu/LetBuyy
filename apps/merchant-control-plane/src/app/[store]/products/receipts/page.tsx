@@ -13,6 +13,7 @@ import {
     PageHeader,
     Section,
     Skeleton,
+    Table,
     useToast,
     type StatusVariant,
 } from '@letbuyy/ui'
@@ -268,7 +269,7 @@ export default function InventoryReceiptsPage() {
                         <>
                             {/* Desktop table */}
                             <div className="hidden sm:block overflow-x-auto">
-                                <table className="w-full text-[length:var(--lb-font-size-sm)]">
+                                <Table className="w-full text-[length:var(--lb-font-size-sm)]">
                                     <thead>
                                         <tr className="border-b border-[var(--lb-color-border-subtle)] bg-[var(--lb-color-surface-subdued)]">
                                             <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">Type</th>
@@ -316,7 +317,7 @@ export default function InventoryReceiptsPage() {
                                             )
                                         })}
                                     </tbody>
-                                </table>
+                                </Table>
                             </div>
 
                             {/* Mobile cards */}

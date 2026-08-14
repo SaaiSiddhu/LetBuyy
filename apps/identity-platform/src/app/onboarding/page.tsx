@@ -2,12 +2,12 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { getAdminSelectPlanUrl, getPlatformRootDomain, getStorefrontHost } from '@/lib/config/urls'
-import { Button, Input } from '@letbuyy/ui'
+import { Button, Input, Select } from '@letbuyy/ui'
 import { useAuthTheme } from '@/lib/useAuthTheme'
 
 interface SessionUser {
@@ -196,8 +196,6 @@ const ACQUISITION_SITE_TYPES =
         ? [...SITE_TYPES, ...LEGACY_SITE_TYPES]
         : SITE_TYPES
 
-const TOTAL_STEPS = 3
-
 // Phase-2.5 Stream C — industry picker options (UI labels + recommended Experience name for display).
 // The CANONICAL industry→experience mapping + token application lives server-side in
 // @letbuyy/theme-engine (resolveExperienceForIndustry, applied in the gateway POST /stores handler);
@@ -273,22 +271,23 @@ export default function OnboardingPage() {
         window.location.href = '/lookup'
     }
 
-    const validateSubdomain = useCallback(
-        debounce(async (value: string) => {
-            if (value.length < 4) {
-                setValidation({ valid: false, reason: 'too_short', message: 'At least 4 characters' })
-                setValidating(false)
-                return
-            }
-            try {
-                const res = await fetch(`/api/auth/validate-subdomain?subdomain=${value}`)
-                setValidation(await res.json())
-            } catch {
-                setValidation({ valid: false, reason: 'error', message: 'Unable to check' })
-            } finally {
-                setValidating(false)
-            }
-        }, 400),
+    const validateSubdomain = useMemo(
+        () =>
+            debounce(async (value: string) => {
+                if (value.length < 4) {
+                    setValidation({ valid: false, reason: 'too_short', message: 'At least 4 characters' })
+                    setValidating(false)
+                    return
+                }
+                try {
+                    const res = await fetch(`/api/auth/validate-subdomain?subdomain=${value}`)
+                    setValidation(await res.json())
+                } catch {
+                    setValidation({ valid: false, reason: 'error', message: 'Unable to check' })
+                } finally {
+                    setValidating(false)
+                }
+            }, 300),
         []
     )
 
@@ -364,7 +363,7 @@ export default function OnboardingPage() {
                     <div className="auth-logo"><BrandLogo /></div>
                     <div className="onboard-success">
                         <div className="onboard-success-icon">
-                            <AuthIcon name="check_circle" size={28} style={{ color: 'rgb(34 197 94)' }} />
+                            <AuthIcon name="check_circle" size={28} style={{ color: 'var(--lb-color-success)' }} />
                         </div>
                         <h1 className="auth-title">{t.successTitle}</h1>
                         <p className="auth-subtitle">{t.successDesc}</p>
@@ -532,16 +531,14 @@ export default function OnboardingPage() {
                             </div>
                             <div className="onboard-review-row">
                                 <span>Industry</span>
-                                <select
+                                <Select
+                                    unstyled
                                     className="onboard-industry-select"
                                     value={industry}
                                     onChange={(e) => setIndustry(e.target.value)}
                                     aria-label="Industry"
-                                >
-                                    {ONBOARDING_INDUSTRIES.map((opt) => (
-                                        <option key={opt.id} value={opt.id}>{opt.label}</option>
-                                    ))}
-                                </select>
+                                    options={ONBOARDING_INDUSTRIES.map((opt) => ({ value: opt.id, label: opt.label }))}
+                                />
                             </div>
                             <div className="onboard-review-row">
                                 <span>Recommended experience</span>

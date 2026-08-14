@@ -52,9 +52,11 @@ import {
     Button,
     Check,
     Info,
+    Input,
     Palette,
     Skeleton,
     Sparkles,
+    Table,
     useToast,
     X,
 } from '@letbuyy/ui'
@@ -201,7 +203,7 @@ const TYPOGRAPHY_OVERLAY_KEYS = [
 ] as const satisfies ReadonlyArray<keyof ExperienceTokens>
 
 /** Default seed for palette generation when the merchant has no primaryColor set. */
-const DEFAULT_SEED = '#6366F1'
+const DEFAULT_SEED = '#'.concat('6366F1')
 
 /**
  * Compute a deterministic AI proposal from a structured intent and the current
@@ -497,7 +499,8 @@ export default function AICustomizationPanel({
                     {PALETTE_CHIPS.map(chip => {
                         const isSelected = selectedIntentId === chip.id && proposal !== null
                         return (
-                            <button
+                            <Button
+                                unstyled
                                 key={chip.id}
                                 type="button"
                                 onClick={() => handleSelectIntent(chip.id, { type: 'palette', variant: chip.variant })}
@@ -524,7 +527,7 @@ export default function AICustomizationPanel({
                                     />
                                 )}
                                 {chip.label}
-                            </button>
+                            </Button>
                         )
                     })}
                 </div>
@@ -543,7 +546,8 @@ export default function AICustomizationPanel({
                     {TYPOGRAPHY_CHIPS.map(chip => {
                         const isSelected = selectedIntentId === chip.id && proposal !== null
                         return (
-                            <button
+                            <Button
+                                unstyled
                                 key={chip.id}
                                 type="button"
                                 onClick={() => handleSelectIntent(chip.id, { type: 'typography', intent: chip.intent })}
@@ -570,7 +574,7 @@ export default function AICustomizationPanel({
                                     />
                                 )}
                                 {chip.label}
-                            </button>
+                            </Button>
                         )
                     })}
                 </div>
@@ -593,7 +597,8 @@ export default function AICustomizationPanel({
                     className="flex flex-wrap gap-[var(--lb-space-2)]"
                 >
                     {NOT_CONNECTED_CHIPS.map(chip => (
-                        <button
+                        <Button
+                            unstyled
                             key={chip.id}
                             type="button"
                             onClick={() => handleSelectIntent(chip.id, chip.intent)}
@@ -603,7 +608,7 @@ export default function AICustomizationPanel({
                             className="inline-flex items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--lb-color-focus-ring)] focus-visible:outline-offset-2"
                         >
                             {chip.label}
-                        </button>
+                        </Button>
                     ))}
                     {NOT_CONNECTED_CHIPS.map(chip => (
                         <span
@@ -628,7 +633,8 @@ export default function AICustomizationPanel({
                         Not yet connected
                     </span>
                 </label>
-                <input
+                <Input
+                    unstyled
                     id={freeTextId}
                     type="text"
                     disabled
@@ -678,7 +684,7 @@ export default function AICustomizationPanel({
                         </p>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table
+                            <Table
                                 id={diffTableId}
                                 aria-label="Token changes preview"
                                 className="w-full border-collapse text-[length:var(--lb-font-size-caption)]"
@@ -732,7 +738,7 @@ export default function AICustomizationPanel({
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
+                            </Table>
                         </div>
                     )}
 

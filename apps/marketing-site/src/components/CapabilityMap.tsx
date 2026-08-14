@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import {
     BarChart3,
+    Button,
     ChevronDown,
     CreditCard,
     MaterialIcon,
@@ -104,77 +105,83 @@ const CAPABILITIES: Capability[] = [
     },
     {
         id: 'ai',
-        label: 'AI Copilot',
-        tagline: 'Commerce intelligence, automated',
-        description: 'Get AI-powered insights across every module. Restock signals, pricing nudges, product copy — the copilot connects to your live data, not generic templates.',
-        features: ['Cross-module insights', 'Product copy generation', 'Demand prediction'],
-        connections: ['storefronts', 'inventory', 'customers', 'analytics'],
-        badge: 'Beta',
-        materialName: 'assistant',
+        label: 'AI Operator & Automation',
+        tagline: 'Autonomous commerce operations',
+        description: 'AI-driven operations: auto-generate product descriptions, forecast demand, detect fraudulent orders, and optimize dynamic pricing.',
+        features: [
+            'Generative AI for SEO-optimized product copy and imagery',
+            'Demand forecasting engine based on historical sales and seasonality',
+            'Fraud and RTO (Return to Origin) prediction score on every order',
+            'AI customer support agent for order tracking and FAQs',
+            'Dynamic discount recommendation based on inventory velocity',
+        ],
+        connections: ['inventory', 'orders', 'customers', 'storefronts'],
         accentColor: 'rgb(167 139 250)',
+        badge: 'Intelligence',
+        materialName: 'auto_awesome',
     },
     {
         id: 'b2b',
-        label: 'B2B Commerce',
-        tagline: 'Wholesale, bulk, enterprise',
-        description: 'Run wholesale workflows with tiered pricing, bulk orders, custom invoices, and dedicated B2B account management — on the same platform as your D2C.',
-        features: ['Tiered pricing & bulk orders', 'Custom B2B invoices', 'Account management'],
-        connections: ['inventory', 'payments', 'customers'],
-        badge: 'Enterprise',
+        label: 'B2B & Wholesale',
+        tagline: 'Bulk ordering, tiered pricing, and credit terms',
+        description: 'Wholesale commerce built into your store: tiered price lists, minimum order quantities, net payment terms, and custom buyer catalogs.',
+        features: [
+            'Custom price lists per customer group or corporate account',
+            'Net-30 / Net-60 credit terms with automated invoicing',
+            'Tiered volume discounts and minimum order value gates',
+            'Quick-order forms and CSV bulk reorder capability',
+            'Dedicated B2B buyer portal with approval workflows',
+        ],
+        connections: ['inventory', 'payments', 'customers', 'orders'],
+        accentColor: 'rgb(24 24 27)',
+        badge: 'B2B',
         icon: Truck,
-        accentColor: 'rgb(6 182 212)',
     },
 ]
 
-// ── Visual mocks ───────────────────────────────────────────────────────────────
-
-function StorefrontsMock() {
+function StorefrontMock() {
     const products = [
-        { name: 'Air Classic',    price: '₹2,999' },
-        { name: 'Street Hoodie',  price: '₹1,799' },
-        { name: 'Sport Tee',      price: '₹699'   },
-        { name: 'Running Cap',    price: '₹449'   },
-        { name: 'Crew Socks',     price: '₹249'   },
-        { name: 'Slim Jogger',    price: '₹1,299' },
+        { name: 'Air Classic 90', price: '₹2,840' },
+        { name: 'Street Runner',  price: '₹3,598' },
+        { name: 'Court Legacy',   price: '₹1,999' },
+        { name: 'Retro High',     price: '₹4,180' },
     ]
     return (
-        <div className="cmap-mock cmap-mock-storefronts" aria-hidden="true">
-            <div className="cmap-sf-browser">
-                {/* Browser chrome */}
-                <div className="cmap-sf-bar">
-                    <div className="cmap-mock-dot" style={{ background: 'rgb(255 95 87)' }} />
-                    <div className="cmap-mock-dot" style={{ background: 'rgb(255 189 46)' }} />
-                    <div className="cmap-mock-dot" style={{ background: 'rgb(40 201 64)' }} />
-                    <span className="cmap-sf-url">urban-kicks.letbuyy.com</span>
-                    <span className="cmap-sf-live">Live</span>
+        <div className="cmap-mock cmap-mock-storefront" aria-hidden="true">
+            {/* Browser chrome */}
+            <div className="cmap-sf-browser-bar">
+                <div className="cmap-sf-dots">
+                    <span className="cmap-sf-dot" />
+                    <span className="cmap-sf-dot" />
+                    <span className="cmap-sf-dot" />
                 </div>
+                <div className="cmap-sf-url-bar">
+                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <span>urbankicks.store</span>
+                </div>
+                <span className="cmap-sf-badge">LIVE</span>
+            </div>
 
-                {/* Storefront content */}
-                <div className="cmap-sf-content">
-                    {/* Navbar */}
-                    <nav className="cmap-sf-nav">
-                        <div className="cmap-sf-nav-brand">
-                            <span className="cmap-sf-nav-logo" />
-                            <span className="cmap-sf-nav-name">Urban Kicks</span>
-                        </div>
+            {/* Storefront content */}
+            <div className="cmap-sf-viewport">
+                <div className="cmap-sf-page">
+                    {/* Header */}
+                    <header className="cmap-sf-header">
+                        <span className="cmap-sf-logo">Urban Kicks</span>
                         <div className="cmap-sf-nav-links">
+                            <span className="cmap-sf-link-active">Home</span>
                             <span>Shop</span>
-                            <span>Collections</span>
-                            <span>Sale</span>
+                            <span>Drops</span>
                         </div>
-                        <div className="cmap-sf-nav-actions">
-                            <svg className="cmap-sf-nav-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                                <line x1="3" y1="6" x2="21" y2="6"/>
-                                <path d="M16 10a4 4 0 0 1-8 0"/>
+                        <div className="cmap-sf-cart-icon">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
                             </svg>
-                            <svg className="cmap-sf-nav-icon cmap-sf-nav-hamburger" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                                <line x1="3" y1="6" x2="21" y2="6"/>
-                                <line x1="3" y1="12" x2="21" y2="12"/>
-                                <line x1="3" y1="18" x2="21" y2="18"/>
-                            </svg>
+                            <span className="cmap-sf-cart-badge">2</span>
                         </div>
-                    </nav>
+                    </header>
 
                     {/* Hero */}
                     <div className="cmap-sf-hero">
@@ -182,12 +189,12 @@ function StorefrontsMock() {
                             <span className="cmap-sf-hero-tag">New Drop</span>
                             <h3 className="cmap-sf-hero-title">Step Into<br />Your Style</h3>
                             <p className="cmap-sf-hero-sub">Latest sneakers &amp; streetwear, all sizes</p>
-                            <button className="cmap-sf-hero-cta" type="button">
+                            <Button unstyled className="cmap-sf-hero-cta" type="button">
                                 Shop Now
                                 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M5 12h14M12 5l7 7-7 7"/>
                                 </svg>
-                            </button>
+                            </Button>
                         </div>
                     </div>
 
@@ -244,11 +251,11 @@ function StorefrontsMock() {
 
 function OrdersMock() {
     const orders = [
-        { id: '#4821', product: 'Air Classic',   qty: 1, amount: '₹2,840', status: 'Delivered',  badge: 'success', img: 0 },
-        { id: '#4820', product: 'Street Hoodie', qty: 2, amount: '₹3,598', status: 'Shipped',    badge: 'info',    img: 1 },
-        { id: '#4819', product: 'Sport Tee',     qty: 3, amount: '₹5,499', status: 'Confirmed',  badge: 'primary', img: 2 },
-        { id: '#4818', product: 'Running Cap',   qty: 1, amount: '₹890',   status: 'Placed',     badge: 'muted',   img: 3 },
-        { id: '#4817', product: 'Slim Jogger',   qty: 1, amount: '₹1,299', status: 'Processing', badge: 'warning', img: 4 },
+        { id: 'ORD-4821', product: 'Air Classic',   qty: 1, amount: '₹2,840', status: 'Delivered',  badge: 'success', img: 0 },
+        { id: 'ORD-4820', product: 'Street Hoodie', qty: 2, amount: '₹3,598', status: 'Shipped',    badge: 'info',    img: 1 },
+        { id: 'ORD-4819', product: 'Sport Tee',     qty: 3, amount: '₹5,499', status: 'Confirmed',  badge: 'primary', img: 2 },
+        { id: 'ORD-4818', product: 'Running Cap',   qty: 1, amount: '₹890',   status: 'Placed',     badge: 'muted',   img: 3 },
+        { id: 'ORD-4817', product: 'Slim Jogger',   qty: 1, amount: '₹1,299', status: 'Processing', badge: 'warning', img: 4 },
     ]
     return (
         <div className="cmap-mock cmap-mock-orders" aria-hidden="true">
@@ -318,8 +325,8 @@ function InventoryMock() {
                     <span className={`cmap-inv-qty${item.warn ? ' cmap-inv-qty-warn' : ''}`}>{item.stock}</span>
                     <span className={`cmap-inv-badge cmap-inv-badge-${item.badge}`}>{item.status}</span>
                     <div className="cmap-inv-actions">
-                        <button type="button" className="cmap-inv-btn" aria-label="Decrease stock">−</button>
-                        <button type="button" className="cmap-inv-btn" aria-label="Increase stock">+</button>
+                        <Button unstyled type="button" className="cmap-inv-btn" aria-label="Decrease stock">−</Button>
+                        <Button unstyled type="button" className="cmap-inv-btn" aria-label="Increase stock">+</Button>
                     </div>
                 </div>
             ))}
@@ -462,7 +469,7 @@ function B2BMock() {
         <div className="cmap-mock cmap-mock-b2b" aria-hidden="true">
             <div className="cmap-b2b-header">
                 <div className="cmap-b2b-header-left">
-                    <span className="cmap-b2b-order-id">#B-0024</span>
+                    <span className="cmap-b2b-order-id">ORD-B0024</span>
                     <span className="cmap-b2b-account">Kiran Enterprises</span>
                 </div>
                 <div className="cmap-b2b-header-right">
@@ -507,7 +514,7 @@ function B2BMock() {
 
 function CapabilityMock({ id }: { id: CapabilityId }) {
     switch (id) {
-        case 'storefronts': return <StorefrontsMock />
+        case 'storefronts': return <StorefrontMock />
         case 'orders':      return <OrdersMock />
         case 'inventory':   return <InventoryMock />
         case 'payments':    return <PaymentsMock />
@@ -535,7 +542,8 @@ function ConnectedModules({
                     const cap = CAPABILITIES.find(c => c.id === id)!
                     const Icon = cap.icon
                     return (
-                        <button
+                        <Button
+                            unstyled
                             key={id}
                             type="button"
                             className="cmap-connected-chip"
@@ -550,7 +558,7 @@ function ConnectedModules({
                                 }
                             </span>
                             {cap.label}
-                        </button>
+                        </Button>
                     )
                 })}
             </div>
@@ -616,7 +624,8 @@ function NavItem({
 }) {
     const Icon = cap.icon
     return (
-        <button
+        <Button
+            unstyled
             type="button"
             className={`cmap-nav-item${isActive ? ' is-active' : ''}`}
             style={isActive ? { '--cmap-accent': cap.accentColor } as CmapVars : undefined}
@@ -636,7 +645,7 @@ function NavItem({
             <span className={`cmap-nav-badge cmap-nav-badge-${cap.badge.toLowerCase()}`} aria-hidden="true">
                 {cap.badge}
             </span>
-        </button>
+        </Button>
     )
 }
 
@@ -686,7 +695,8 @@ function AccordionItem({
             ref={itemRef}
             className={`cmap-accordion-item${isOpen ? ' is-open' : ''}`}
         >
-            <button
+            <Button
+                unstyled
                 type="button"
                 className="cmap-accordion-trigger"
                 onClick={onToggle}
@@ -714,7 +724,7 @@ function AccordionItem({
                 >
                     <ChevronDown width={16} height={16} />
                 </motion.span>
-            </button>
+            </Button>
             <AnimatePresence initial={false}>
                 {isOpen && (
                     <motion.div

@@ -84,10 +84,10 @@ export function ConnectDomainWizard({ store, onClose, onConnected }: ConnectDoma
     return (
         <div className="domains-wizard">
             <div className="domains-wizard-head">
-                <button type="button" className="domains-back" onClick={onClose}>
+                <Button unstyled type="button" className="domains-back" onClick={onClose}>
                     <ArrowLeft className="letbuyy-icon" aria-hidden="true" />
                     Domains
-                </button>
+                </Button>
                 <StepDots steps={WIZARD_STEPS} current={Math.max(0, currentIndex)} />
             </div>
 

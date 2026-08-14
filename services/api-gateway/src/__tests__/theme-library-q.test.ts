@@ -91,6 +91,10 @@ const ROUTES_SRC = readFileSync(
     path.resolve(__dirname, '../routes/themes.ts'),
     'utf8',
 );
+const LIBRARY_ROUTES_SRC = readFileSync(
+    path.resolve(__dirname, '../routes/themes/theme-library-routes.ts'),
+    'utf8',
+);
 const MIGRATION_SRC = readFileSync(
     path.resolve(__dirname, '../../../../database/supabase/migrations/190_theme_library_q.sql'),
     'utf8',
@@ -402,25 +406,29 @@ test('/:slug/archive authMiddleware registered (source assertion)', () => {
 // ─── Source-pattern: GET /library route registered before GET /:slug ──────────
 
 test('GET /library route is registered BEFORE GET /:slug catch-all in themes.ts', () => {
-    const libraryRouteIdx = ROUTES_SRC.indexOf("router.get('/library'");
+    const libraryMountIdx = ROUTES_SRC.indexOf('mountThemeLibraryRoutes(router)');
     const getSlugIdx = ROUTES_SRC.indexOf("router.get('/:slug'");
+    const hasLibraryGet = LIBRARY_ROUTES_SRC.includes("router.get('/library'");
 
-    assert.ok(libraryRouteIdx !== -1, "GET /library route must be registered in themes.ts");
-    assert.ok(getSlugIdx !== -1, "GET /:slug route must be present in themes.ts");
+    assert.ok(hasLibraryGet, 'GET /library route must be declared in theme-library-routes.ts');
+    assert.ok(libraryMountIdx !== -1, 'mountThemeLibraryRoutes must be registered in themes.ts');
+    assert.ok(getSlugIdx !== -1, 'GET /:slug route must be present in themes.ts');
     assert.ok(
-        libraryRouteIdx < getSlugIdx,
-        `GET /library (char ${libraryRouteIdx}) must appear BEFORE GET /:slug (char ${getSlugIdx})`,
+        libraryMountIdx < getSlugIdx,
+        `mountThemeLibraryRoutes (char ${libraryMountIdx}) must appear BEFORE GET /:slug (char ${getSlugIdx})`,
     );
 });
 
 test('POST /library/create route is registered BEFORE GET /:slug in themes.ts', () => {
-    const createRouteIdx = ROUTES_SRC.indexOf("router.post('/library/create'");
+    const libraryMountIdx = ROUTES_SRC.indexOf('mountThemeLibraryRoutes(router)');
     const getSlugIdx = ROUTES_SRC.indexOf("router.get('/:slug'");
+    const hasCreatePost = LIBRARY_ROUTES_SRC.includes("router.post('/library/create'");
 
-    assert.ok(createRouteIdx !== -1, "POST /library/create route must be registered in themes.ts");
+    assert.ok(hasCreatePost, 'POST /library/create route must be declared in theme-library-routes.ts');
+    assert.ok(libraryMountIdx !== -1, 'mountThemeLibraryRoutes must be registered in themes.ts');
     assert.ok(
-        createRouteIdx < getSlugIdx,
-        `POST /library/create (char ${createRouteIdx}) must appear BEFORE GET /:slug (char ${getSlugIdx})`,
+        libraryMountIdx < getSlugIdx,
+        `mountThemeLibraryRoutes (char ${libraryMountIdx}) must appear BEFORE GET /:slug (char ${getSlugIdx})`,
     );
 });
 
@@ -718,12 +726,12 @@ test('renameSiteTheme adapter: UPDATE themes is scoped by owned_by_site_id (mark
 // ─── Hardening Q: ownership-before-limit ordering in route handlers ───────────
 
 test('POST /library/create: verifyStoreOwner called before resolveStoreThemeLimit (IDOR + info-leak prevention)', () => {
-    const createRouteStart = ROUTES_SRC.indexOf("router.post('/library/create'");
+    const createRouteStart = LIBRARY_ROUTES_SRC.indexOf("router.post('/library/create'");
     // The duplicate route starts after create
-    const duplicateRouteStart = ROUTES_SRC.indexOf("router.post('/:slug/duplicate'");
-    assert.ok(createRouteStart !== -1, "POST /library/create route must be present in themes.ts");
+    const duplicateRouteStart = LIBRARY_ROUTES_SRC.indexOf("router.post('/:slug/duplicate'");
+    assert.ok(createRouteStart !== -1, 'POST /library/create route must be present in theme-library-routes.ts');
 
-    const createBlock = ROUTES_SRC.slice(createRouteStart, duplicateRouteStart);
+    const createBlock = LIBRARY_ROUTES_SRC.slice(createRouteStart, duplicateRouteStart);
 
     const ownershipIdx = createBlock.indexOf('verifyStoreOwner');
     const limitIdx = createBlock.indexOf('resolveStoreThemeLimit');
@@ -737,11 +745,11 @@ test('POST /library/create: verifyStoreOwner called before resolveStoreThemeLimi
 });
 
 test('POST /:slug/duplicate: verifyStoreOwner called before resolveStoreThemeLimit (IDOR + info-leak prevention)', () => {
-    const duplicateRouteStart = ROUTES_SRC.indexOf("router.post('/:slug/duplicate'");
-    const renameRouteStart = ROUTES_SRC.indexOf("router.patch('/:slug/rename'");
-    assert.ok(duplicateRouteStart !== -1, "POST /:slug/duplicate route must be present in themes.ts");
+    const duplicateRouteStart = LIBRARY_ROUTES_SRC.indexOf("router.post('/:slug/duplicate'");
+    const renameRouteStart = LIBRARY_ROUTES_SRC.indexOf("router.patch('/:slug/rename'");
+    assert.ok(duplicateRouteStart !== -1, 'POST /:slug/duplicate route must be present in theme-library-routes.ts');
 
-    const duplicateBlock = ROUTES_SRC.slice(duplicateRouteStart, renameRouteStart);
+    const duplicateBlock = LIBRARY_ROUTES_SRC.slice(duplicateRouteStart, renameRouteStart);
 
     const ownershipIdx = duplicateBlock.indexOf('verifyStoreOwner');
     const limitIdx = duplicateBlock.indexOf('resolveStoreThemeLimit');

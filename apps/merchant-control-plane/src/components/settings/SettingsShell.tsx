@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LayoutDashboard, Menu, Search, X } from '@letbuyy/ui'
+import { Button, Input, LayoutDashboard, Menu, Search, X } from '@letbuyy/ui'
 import {
     SETTINGS_NAV_GROUPS,
     getSettingsItemByPath,
@@ -157,7 +157,8 @@ export function SettingsShell({
                         <span className="settings-mobile-topbar-label">Settings</span>
                         <span className="settings-mobile-topbar-page">{activeItem?.label || 'Dashboard'}</span>
                     </span>
-                    <button
+                    <Button
+                        unstyled
                         type="button"
                         className="settings-mobile-menu-btn"
                         onClick={() => setDrawerOpen(true)}
@@ -166,7 +167,7 @@ export function SettingsShell({
                     >
                         <Menu className="letbuyy-icon" aria-hidden="true" />
                         Index
-                    </button>
+                    </Button>
                 </div>
             </div>
 
@@ -194,7 +195,8 @@ export function SettingsShell({
                     {/* Search */}
                     <div className="settings-sidebar-search">
                         <Search className="letbuyy-icon" aria-hidden="true" />
-                        <input
+                        <Input
+                            unstyled
                             id="settings-search-desktop"
                             type="search"
                             placeholder="Search settings..."
@@ -230,7 +232,8 @@ export function SettingsShell({
             {/* Mobile drawer */}
             {drawerOpen && (
                 <div className="settings-mobile-drawer-overlay" role="presentation">
-                    <button
+                    <Button
+                        unstyled
                         type="button"
                         className="settings-mobile-drawer-backdrop"
                         onClick={() => setDrawerOpen(false)}
@@ -248,14 +251,15 @@ export function SettingsShell({
                             <h2 id="settings-mobile-drawer-title" className="settings-mobile-drawer-title">
                                 Settings
                             </h2>
-                            <button
+                            <Button
+                                unstyled
                                 type="button"
                                 className="settings-mobile-drawer-close"
                                 onClick={() => setDrawerOpen(false)}
                                 aria-label="Close settings index"
                             >
                                 <X className="letbuyy-icon" aria-hidden="true" />
-                            </button>
+                            </Button>
                         </div>
 
                         <div className="settings-sidebar-store" style={{ borderRadius: 0 }}>
@@ -270,7 +274,8 @@ export function SettingsShell({
 
                         <div className="settings-sidebar-search" style={{ margin: '8px' }}>
                             <Search className="letbuyy-icon" aria-hidden="true" />
-                            <input
+                            <Input
+                                unstyled
                                 id="settings-search-mobile"
                                 type="search"
                                 placeholder="Search settings..."

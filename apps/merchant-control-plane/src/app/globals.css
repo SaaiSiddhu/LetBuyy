@@ -305,7 +305,7 @@ html.dark [data-letbuyy-theme] {
   /* hover must differ from bg or the button has no hover state */
   --lb-component-button-primary-hover: var(--lb-color-primary-hover);
   --lb-component-button-primary-active: var(--lb-color-primary-active);
-  --lb-component-button-primary-text: #FFFFFF;
+  --lb-component-button-primary-text: #FFF;
   --lb-component-button-primary-border: var(--lb-color-primary);
   --lb-component-button-secondary-bg: rgb(21 19 31);
   --lb-component-button-secondary-hover: rgb(27 24 39);

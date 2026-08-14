@@ -2,7 +2,7 @@
 
 import Link from '@/components/i18n/LocaleLink'
 import { useEffect, useState } from 'react'
-import { AlertCircle, Check, ChevronUp } from '@letbuyy/ui'
+import { AlertCircle, Button, Check, ChevronUp, Input } from '@letbuyy/ui'
 import { getAccountsUrl } from '@/lib/public-urls'
 
 // Plans are sourced from the DB via the API gateway (GET /pricing).
@@ -84,7 +84,8 @@ function CompareSection({ plans }: { plans: FoundingPlanView[] }) {
                         <div className={`${rowCls} select-plan-compare-main-header`} role="row">
                             <div className="select-plan-compare-feature-head" role="columnheader">
                                 <label className="select-plan-switch-label">
-                                    <input
+                                    <Input
+                                        unstyled
                                         type="checkbox"
                                         className="select-plan-switch-input"
                                         checked={onlyDiff}
@@ -160,7 +161,8 @@ function CompareSection({ plans }: { plans: FoundingPlanView[] }) {
                 {!showAll && <div className="select-plan-compare-fade" aria-hidden="true" />}
 
                 <div className="select-plan-compare-reveal">
-                    <button
+                    <Button
+                        unstyled
                         type="button"
                         onClick={() => setShowAll(v => !v)}
                         className="select-plan-secondary-button"
@@ -170,7 +172,7 @@ function CompareSection({ plans }: { plans: FoundingPlanView[] }) {
                             ? <><ChevronUp size={16} /> See fewer features</>
                             : <>+ See all features</>
                         }
-                    </button>
+                    </Button>
                 </div>
             </div>
         </section>

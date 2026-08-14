@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Button } from '@letbuyy/ui'
 
 interface Heading {
   id: string
@@ -15,7 +16,8 @@ export default function MobileTOC({ headings }: { headings: Heading[] }) {
 
   return (
     <nav className="arc-mobile-toc" aria-label="Table of contents">
-      <button
+      <Button
+        unstyled
         type="button"
         className="arc-mob-toc-btn"
         onClick={() => setOpen(o => !o)}
@@ -37,7 +39,7 @@ export default function MobileTOC({ headings }: { headings: Heading[] }) {
         >
           <polyline points="6 9 12 15 18 9" />
         </svg>
-      </button>
+      </Button>
       <div id="mob-toc-list" className={`arc-mob-toc-list${open ? ' open' : ''}`}>
         {headings.map(h => (
           <a

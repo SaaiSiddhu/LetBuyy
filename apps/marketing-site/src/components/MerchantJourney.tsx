@@ -2,6 +2,7 @@
 
 import Link from '@/components/i18n/LocaleLink'
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { Button } from '@letbuyy/ui'
 import { getAccountsUrl, getMarketingSiteUrl } from '@/lib/public-urls'
 import { revealAccordionItem } from '@/lib/reveal-accordion-item'
 
@@ -28,7 +29,7 @@ const STEPS: JourneyStep[] = [
         number: '02',
         title: 'First Order',
         description: 'Receive your first order and start selling.',
-        metric: 'Order #0001 completed',
+        metric: 'Order ORD-0001 completed',
         modules: 'Orders + Payments',
     },
     {
@@ -179,7 +180,7 @@ function FirstOrderPreview() {
             {/* ── Order identity header ── */}
             <div className="fo-header">
                 <div className="fo-id-row">
-                    <span className="fo-order-num">#0001</span>
+                    <span className="fo-order-num">ORD-0001</span>
                     <span className="fo-paid-badge">
                         <svg viewBox="0 0 10 10" fill="none" className="fo-check-icon">
                             <circle cx="5" cy="5" r="4.5" fill="rgba(16,185,129,0.18)" />
@@ -789,7 +790,8 @@ export default function MerchantJourney() {
                                     </div>
 
                                     <div className="mgj-step-body">
-                                        <button
+                                        <Button
+                                            unstyled
                                             className="mgj-trigger"
                                             aria-expanded={isMobileOpen}
                                             aria-controls={`mgj-mpanel-${step.id}`}
@@ -804,7 +806,7 @@ export default function MerchantJourney() {
                                                 <span className="mgj-step-metric">{step.metric}</span>
                                             </span>
                                             <span className="mgj-chevron" aria-hidden="true" />
-                                        </button>
+                                        </Button>
 
                                         <div className="mgj-step-detail">
                                             <p className="mgj-step-desc">{step.description}</p>

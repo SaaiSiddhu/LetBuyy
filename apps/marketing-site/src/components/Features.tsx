@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, useInView, useReducedMotion } from 'framer-motion'
 import {
-  AppWindow, BarChart3, CreditCard, MaterialIcon, Package, ShoppingBag, Store, Users,
+  AppWindow, BarChart3, Button, CreditCard, MaterialIcon, Package, ShoppingBag, Store, Users,
   type LucideIcon,
 } from '@letbuyy/ui'
 
@@ -306,12 +306,12 @@ function CommerceGraph({ sel, onSel }: { sel: NID; onSel: (id: NID) => void }) {
       {/* Node legend pills */}
       <div className="cop-graph-legend" aria-label="Module selector">
         {GNODES.map(n => (
-          <button key={n.id} className={`cop-gleg-pill${sel===n.id?' cop-gleg-pill-act':''}`}
+          <Button unstyled key={n.id} className={`cop-gleg-pill${sel===n.id?' cop-gleg-pill-act':''}`}
             style={sel===n.id?{borderColor:`color-mix(in srgb,${n.color} 55%,transparent)`,background:`color-mix(in srgb,${n.color} 12%,transparent)`,color:n.color}:{}}
             onClick={()=>onSel(n.id)} aria-pressed={sel===n.id}>
             <span className="cop-gleg-dot" style={{background:n.color}}/>
             {n.label}
-          </button>
+          </Button>
         ))}
       </div>
     </div>
@@ -320,32 +320,32 @@ function CommerceGraph({ sel, onSel }: { sel: NID; onSel: (id: NID) => void }) {
 
 // ── Event feed (32 unique items for seamless infinite scroll) ─────────────────
 const EVTS = [
-  { t:'09:14', txt:'Order #4831 placed — Priya Rajan',          c:'rgb(59 130 246)' },
+  { t:'09:14', txt:'Order ORD-4831 placed — Priya Rajan',          c:'rgb(59 130 246)' },
   { t:'09:14', txt:'Inventory reserved — Sneakers ×1',          c:'rgb(245 158 11)' },
   { t:'09:15', txt:'Payment ₹2,840 captured via UPI',           c:'rgb(16 185 129)' },
   { t:'09:15', txt:'GST invoice INV-2024-0832 issued',           c:'rgb(20 184 166)' },
   { t:'09:16', txt:'Storefront analytics refreshed',            c:'rgb(139 92 246)' },
   { t:'09:16', txt:'Priya Rajan tagged as VIP',                 c:'rgb(236 72 153)' },
   { t:'09:17', txt:'AI: low stock — Hoodie (7 left)',           c:'rgb(167 139 250)' },
-  { t:'09:17', txt:'Order #4832 placed — COD ₹1,240',          c:'rgb(59 130 246)' },
+  { t:'09:17', txt:'Order ORD-4832 placed — COD ₹1,240',          c:'rgb(59 130 246)' },
   { t:'09:18', txt:'Razorpay webhook received',                 c:'rgb(16 185 129)' },
   { t:'09:19', txt:'Hoodie −3 after fulfilment',                c:'rgb(245 158 11)' },
   { t:'09:19', txt:'Shiprocket shipment SHP-4831 created',      c:'rgb(6 182 212)' },
   { t:'09:20', txt:'Conversion rate up to 3.8% (+0.4%)',        c:'rgb(139 92 246)' },
   { t:'09:21', txt:'Loyalty points granted — Arjun Mehta',     c:'rgb(236 72 153)' },
-  { t:'09:21', txt:'Order #4833 confirmed — Meera Kumar',       c:'rgb(59 130 246)' },
+  { t:'09:21', txt:'Order ORD-4833 confirmed — Meera Kumar',       c:'rgb(59 130 246)' },
   { t:'09:22', txt:'Purchase order PO-2024-008 raised',         c:'rgb(245 158 11)' },
   { t:'09:22', txt:'Payment ₹4,180 confirmed via Card',         c:'rgb(16 185 129)' },
   { t:'09:23', txt:'AI: price sensitivity on Sport Tee',        c:'rgb(167 139 250)' },
   { t:'09:23', txt:'Customer moved to High Value segment',      c:'rgb(236 72 153)' },
   { t:'09:24', txt:'Storefront edge cache invalidated',         c:'rgb(20 184 166)' },
-  { t:'09:24', txt:'Order #4834 shipped via Delhivery',         c:'rgb(6 182 212)' },
+  { t:'09:24', txt:'Order ORD-4834 shipped via Delhivery',         c:'rgb(6 182 212)' },
   { t:'09:25', txt:'Daily revenue milestone ₹1L crossed',       c:'rgb(139 92 246)' },
   { t:'09:25', txt:'Coupon URBAN20 redeemed — ₹480 off',        c:'rgb(99 102 241)' },
   { t:'09:26', txt:'Inventory sync — 3 SKUs updated',           c:'rgb(245 158 11)' },
-  { t:'09:26', txt:'Refund ₹840 initiated — Order #4821',       c:'rgb(239 68 68)' },
+  { t:'09:26', txt:'Refund ₹840 initiated — Order ORD-4821',       c:'rgb(239 68 68)' },
   { t:'09:27', txt:'AI: churn risk — Rohan Kapoor',             c:'rgb(167 139 250)' },
-  { t:'09:27', txt:'Order #4835 placed — Vikram Singh',         c:'rgb(59 130 246)' },
+  { t:'09:27', txt:'Order ORD-4835 placed — Vikram Singh',         c:'rgb(59 130 246)' },
   { t:'09:28', txt:'GST Q3 reconciliation data synced',         c:'rgb(20 184 166)' },
   { t:'09:28', txt:'Shiprocket rate fetch completed',           c:'rgb(6 182 212)' },
   { t:'09:29', txt:'Running Cap — top seller today',            c:'rgb(139 92 246)' },
@@ -418,7 +418,7 @@ function WS_Orders() {
           </div>
         ))}
       </div>
-      {([['#4831','Priya Rajan','₹2,840','Shipped','rgb(6 182 212)'],['#4830','Arjun Mehta','₹1,240','Processing','rgb(99 102 241)'],['#4829','Meera Kumar','₹4,180','Delivered','rgb(52 211 153)']] as const).map(([id,nm,amt,st,c])=>(
+      {([['ORD-4831','Priya Rajan','₹2,840','Shipped','rgb(6 182 212)'],['ORD-4830','Arjun Mehta','₹1,240','Processing','rgb(99 102 241)'],['ORD-4829','Meera Kumar','₹4,180','Delivered','rgb(52 211 153)']] as const).map(([id,nm,amt,st,c])=>(
         <div key={id} className="ws-row ws-row-4">
           <span className="ws-id">{id}</span>
           <span className="ws-name">{nm}</span>
@@ -685,7 +685,7 @@ function AutomationShowcase() {
       {/* Flow selector tabs */}
       <div className="cop-auto-tabs" role="tablist">
         {AUTO_FLOWS.map((f, i) => (
-          <button key={f.key}
+          <Button unstyled key={f.key}
             role="tab" aria-selected={active===i}
             className={`cop-auto-tab${active===i?' cop-auto-tab-act':''}`}
             style={active===i ? {
@@ -696,7 +696,7 @@ function AutomationShowcase() {
             onClick={()=>setActive(i)}>
             <span className="cop-auto-tab-dot" style={{background:f.color}} aria-hidden="true"/>
             {f.event}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -708,21 +708,22 @@ function AutomationShowcase() {
           animate={inView?{opacity:1,scale:1}:{}}
           transition={{duration:0.35}}
           style={{
-            borderColor:`color-mix(in srgb,${flow.color} 35%,transparent)`,
-            background:`color-mix(in srgb,${flow.color} 9%,var(--bg-elevated))`,
+            borderColor:`color-mix(in srgb,${flow.color} 45%,transparent)`,
+            background:`color-mix(in srgb,${flow.color} 8%,transparent)`,
           }}>
-          <span className="cop-auto-evtlbl">EVENT</span>
-          <span className="cop-auto-evtname" style={{color:flow.color}}>{flow.event}</span>
+          <span className="cop-auto-evt-pill" style={{background:flow.color}}>{flow.event}</span>
+          <p className="cop-auto-evt-sub">Triggered in your store</p>
         </motion.div>
-        <div className="cop-auto-arrow" aria-hidden="true"/>
+
         <div className="cop-auto-steps">
           {flow.steps.map((s, i) => (
-            <motion.div key={`${flow.key}-${i}`} className="cop-auto-step"
-              initial={{opacity:0,x:-10}}
+            <motion.div key={s.txt} className="cop-auto-step"
+              initial={{opacity:0,x:-8}}
               animate={inView?{opacity:1,x:0}:{}}
-              transition={{duration:0.28,delay:0.1+i*0.07}}>
-              <span className="cop-auto-check" style={{color:s.c}} aria-hidden="true">✓</span>
-              <span className="cop-auto-txt">{s.txt}</span>
+              transition={{duration:0.28,delay:i*0.06}}>
+              <span className="cop-auto-step-num" style={{color:s.c}}>{i+1}</span>
+              <span className="cop-auto-step-dot" style={{background:s.c}}/>
+              <span className="cop-auto-step-txt">{s.txt}</span>
             </motion.div>
           ))}
         </div>
@@ -731,51 +732,58 @@ function AutomationShowcase() {
   )
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
-export default function Features() {
+// ── Master Section ────────────────────────────────────────────────────────────
+export function Features() {
   const [sel, setSel] = useState<NID>('orders')
+  const selNode = GNODES.find(n => n.id === sel) || GNODES[0]
+  const [activeTab, setActiveTab] = useState<'platform' | 'automation'>('platform')
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-40px' })
   const mRef = useRef<HTMLDivElement>(null)
   const metricsRef = useRef<HTMLDivElement>(null)
-  const mInView = useInView(mRef, { once: true, margin: '-60px' })
-
+  const mInView = useInView(mRef, { once: true, margin: '-20px' })
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
 
-  const checkScroll = useCallback(() => {
+  const updateScrollState = useCallback(() => {
     const el = metricsRef.current
     if (!el) return
-    setCanScrollLeft(el.scrollLeft > 2)
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 2)
+    setCanScrollLeft(el.scrollLeft > 4)
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4)
   }, [])
 
   useEffect(() => {
     const el = metricsRef.current
     if (!el) return
-    checkScroll()
-    el.addEventListener('scroll', checkScroll, { passive: true })
-    const ro = new ResizeObserver(checkScroll)
+    updateScrollState()
+    el.addEventListener('scroll', updateScrollState, { passive: true })
+    const ro = new ResizeObserver(updateScrollState)
     ro.observe(el)
     return () => {
-      el.removeEventListener('scroll', checkScroll)
+      el.removeEventListener('scroll', updateScrollState)
       ro.disconnect()
     }
-  }, [checkScroll])
+  }, [updateScrollState])
 
   const scrollMetrics = (dir: 'left' | 'right') => {
-    metricsRef.current?.scrollBy({ left: dir === 'right' ? 180 : -180, behavior: 'smooth' })
+    const el = metricsRef.current
+    if (!el) return
+    const amount = 220
+    el.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' })
   }
 
-  const selNode = GNODES.find(n => n.id === sel)!
-
   return (
-    <section id="features" className="cop-section" aria-labelledby="cop-heading">
-      <div className="container">
-        <motion.div className="cop-hd"
-          initial={{opacity:0,y:24}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:0.6}}>
-          <p className="section-label">Merchant Control Plane</p>
-          <h2 id="cop-heading" className="section-title">One system. Every commerce workflow.</h2>
-          <p className="section-subtitle" style={{maxWidth:680,margin:'16px auto 0'}}>
-            Products, storefronts, inventory, orders, payments, customers, analytics and AI operate together inside a single Commerce Operating System.
+    <section className="copilot-section" id="platform" aria-label="Platform Architecture & Features">
+      <div className="cop-wrap">
+
+        {/* ── Section header ── */}
+        <motion.div ref={ref} className="cop-header"
+          initial={{opacity:0,y:20}} animate={inView?{opacity:1,y:0}:{}} transition={{duration:0.6}}>
+          <p className="section-label">Architecture</p>
+          <h2 className="section-title">Built as one connected system.</h2>
+          <p className="section-sub">
+            Every module communicates instantly through a shared event bus. No plugins to configure,
+            no data silos, no sync delays.
           </p>
         </motion.div>
 
@@ -783,12 +791,12 @@ export default function Features() {
           data-scroll-left={canScrollLeft || undefined}
           data-scroll-right={canScrollRight || undefined}>
           {canScrollLeft && (
-            <button className="cop-metrics-arrow cop-metrics-arrow-l"
+            <Button unstyled className="cop-metrics-arrow cop-metrics-arrow-l"
               onClick={() => scrollMetrics('left')} aria-label="Scroll metrics left">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                 <path d="M9 11L5 7l4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </button>
+            </Button>
           )}
 
           <motion.div ref={metricsRef} className="cop-metrics"
@@ -797,12 +805,12 @@ export default function Features() {
           </motion.div>
 
           {canScrollRight && (
-            <button className="cop-metrics-arrow cop-metrics-arrow-r"
+            <Button unstyled className="cop-metrics-arrow cop-metrics-arrow-r"
               onClick={() => scrollMetrics('right')} aria-label="Scroll metrics right">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                 <path d="M5 11l4-4-4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </button>
+            </Button>
           )}
         </div>
 
@@ -854,3 +862,5 @@ export default function Features() {
     </section>
   )
 }
+
+export default Features

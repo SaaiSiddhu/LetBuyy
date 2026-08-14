@@ -21,6 +21,7 @@ import {
     Skeleton,
     StatusBadge,
     Switch,
+    Table,
     User,
     AlertTriangle,
     useToast,
@@ -612,7 +613,7 @@ export default function NotificationsSettingsPage() {
                         <>
                             {/* Log table */}
                             <div className="overflow-x-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
-                                <table className="w-full min-w-[640px] border-collapse text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
+                                <Table className="w-full min-w-[640px] border-collapse text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
                                     <thead>
                                         <tr className="bg-[var(--lb-color-surface-subdued)] text-left text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
                                             <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">Template</th>
@@ -661,7 +662,7 @@ export default function NotificationsSettingsPage() {
                                             </tr>
                                         ))}
                                     </tbody>
-                                </table>
+                                </Table>
                             </div>
 
                             {/* Pagination */}

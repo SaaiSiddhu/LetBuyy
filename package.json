@@ -117,7 +117,7 @@
     "test:foundation:wave6": "pnpm --filter @letbuyy/theme-engine run test && pnpm run validate:theme-governance",
     "test:foundation:wave7": "pnpm --filter @letbuyy/mobile-bff run test && tsx --test services/api-gateway/src/__tests__/checkout.test.ts services/api-gateway/src/__tests__/orders-v1.test.ts services/api-gateway/src/__tests__/whatsapp.test.ts && cd apps/mobile/merchant-app && flutter test test/mobile_services_test.dart --plain-name \"verifies Turnstile with the mobile BFF before password login\" && cd ../../.. && pnpm run validate:beta-readiness",
     "test:governance": "pnpm run test:behavioral && pnpm run test:contracts",
-    "test:behavioral": "node --test --test-concurrency=1 tests/*/*.test.mjs",
+    "test:behavioral": "node scripts/governance/foundation-ephemeral-postgres.mjs start && node --test --test-concurrency=1 tests/*/*.test.mjs",
     "test:contracts": "tsx --test tests/contracts/*.test.ts",
     "test:unit:gateway": "pnpm --filter @letbuyy/api-gateway run test:unit",
     "test:workspaces": "turbo test",

@@ -329,7 +329,8 @@ function SegmentForm({ form, onChange, preview, previewLoading, onPreview }: Seg
                     <label className="text-[var(--lb-color-text)] text-[var(--lb-font-size-sm)] font-[var(--lb-font-weight-medium)]">
                         Last ordered after
                     </label>
-                    <input
+                    <Input
+                        unstyled
                         type="date"
                         value={form.lastOrderAfter}
                         onChange={(e) => set('lastOrderAfter', e.target.value)}
@@ -341,7 +342,8 @@ function SegmentForm({ form, onChange, preview, previewLoading, onPreview }: Seg
                     <label className="text-[var(--lb-color-text)] text-[var(--lb-font-size-sm)] font-[var(--lb-font-weight-medium)]">
                         Last ordered before
                     </label>
-                    <input
+                    <Input
+                        unstyled
                         type="date"
                         value={form.lastOrderBefore}
                         onChange={(e) => set('lastOrderBefore', e.target.value)}

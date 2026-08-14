@@ -24,7 +24,7 @@
  * Design: @letbuyy/ui + --lb-* tokens; mobile-first; no raw rounded-[Npx].
  */
 
-import { Badge, Spinner } from '@letbuyy/ui'
+import { Badge, Button, Spinner } from '@letbuyy/ui'
 import type { StorefrontTranslation } from '@letbuyy/shared-types'
 import { DEFAULT_ADMIN_LOCALE, type AdminLocaleCode } from '@/lib/i18n/admin-locales'
 import styles from './theme-locale.module.css'
@@ -214,14 +214,15 @@ function TranslationKeyRow({
                     {isMissing ? <em>Not translated</em> : (selectedRow?.translated_text ?? displayRow.translated_text)}
                 </p>
             </div>
-            <button
+            <Button
+                unstyled
                 type="button"
                 onClick={handleEdit}
                 aria-label={isMissing ? `Add missing translation for ${fieldKey}` : `Edit translation for ${fieldKey}`}
                 className={styles.translationKeyEditBtn}
             >
                 {isMissing ? 'Add' : 'Edit'}
-            </button>
+            </Button>
         </li>
     )
 }

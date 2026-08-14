@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { Button, Input } from '@letbuyy/ui'
 import Link from '@/components/i18n/LocaleLink'
 import ArticleCard from '@/components/resources/ArticleCard'
 import { CATEGORIES, getCategory } from '@/lib/resources/categories'
@@ -89,7 +90,8 @@ export default function SearchPage() {
             <svg className="res-v3-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
             </svg>
-            <input
+            <Input
+              unstyled
               ref={inputRef}
               className="res-v3-search-input"
               type="search"
@@ -105,7 +107,8 @@ export default function SearchPage() {
               aria-expanded={showResults}
             />
             {query && (
-              <button
+              <Button
+                unstyled
                 type="button"
                 className="res-v3-search-clear"
                 onClick={() => { setQuery(''); inputRef.current?.focus() }}
@@ -114,7 +117,7 @@ export default function SearchPage() {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
-              </button>
+              </Button>
             )}
             <kbd className="res-v3-kbd" aria-label="Keyboard shortcut: Command K">⌘K</kbd>
           </div>
@@ -123,13 +126,15 @@ export default function SearchPage() {
           <div className="res-v3-search-filters" role="group" aria-label="Filters">
             <div className="res-v3-filter-group">
               <span className="res-v3-filter-label">Category:</span>
-              <button
+              <Button
+                unstyled
                 type="button"
                 className={`res-v3-filter-chip${!categoryFilter ? ' active' : ''}`}
                 onClick={() => setCategoryFilter('')}
-              >All</button>
+              >All</Button>
               {CATEGORIES.map(cat => (
-                <button
+                <Button
+                  unstyled
                   key={cat.slug}
                   type="button"
                   className={`res-v3-filter-chip${categoryFilter === cat.slug ? ' active' : ''}`}
@@ -137,65 +142,59 @@ export default function SearchPage() {
                   style={categoryFilter === cat.slug ? { borderColor: cat.color, color: cat.color, background: cat.accent } : {}}
                 >
                   {cat.label}
-                </button>
+                </Button>
               ))}
             </div>
             <div className="res-v3-filter-group">
               <span className="res-v3-filter-label">Length:</span>
-              <button
+              <Button
+                unstyled
                 type="button"
                 className={`res-v3-filter-chip${!timeFilter ? ' active' : ''}`}
                 onClick={() => setTimeFilter(null)}
-              >Any</button>
+              >Any</Button>
               {READING_TIME_FILTERS.map(f => (
-                <button
+                <Button
+                  unstyled
                   key={f.label}
                   type="button"
                   className={`res-v3-filter-chip${timeFilter?.label === f.label ? ' active' : ''}`}
                   onClick={() => setTimeFilter(timeFilter?.label === f.label ? null : f as typeof timeFilter)}
                 >
                   {f.label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Results count */}
-        {query.length >= 1 && (
-          <p className="res-v3-search-count" aria-live="polite">
-            {showResults
-              ? `${results.length} result${results.length !== 1 ? 's' : ''} for "${query}"`
-              : `No results for "${query}"`
-            }
-            {(categoryFilter || timeFilter) && ' (filtered)'}
-          </p>
-        )}
-
-        {/* Results list */}
+        {/* Results */}
         {showResults && (
           <div id="search-results" className="res-v3-search-results" role="listbox" aria-label="Search results">
-            {results.slice(0, 12).map((article, i) => {
-              const cat = getCategory(article.category)!
+            <div className="res-v3-results-meta">
+              <span>{results.length} result{results.length !== 1 ? 's' : ''} for &ldquo;{query}&rdquo;</span>
+              {results.length > 0 && <span style={{ color: 'var(--text-subtle)', fontSize: 12 }}>Use ↑↓ to navigate, Enter to open</span>}
+            </div>
+            {results.map((article, idx) => {
+              const cat = getCategory(article.category)
               return (
                 <Link
                   key={article.slug}
-                  href={`/resources/${article.category}/${article.slug}`}
-                  className={`res-v3-search-result${activeIdx === i ? ' highlighted' : ''}`}
+                  href={`/resources/${article.slug}`}
+                  className={`res-v3-result-item${idx === activeIdx ? ' active' : ''}`}
                   role="option"
-                  aria-selected={activeIdx === i}
+                  aria-selected={idx === activeIdx}
+                  onMouseEnter={() => setActiveIdx(idx)}
                 >
-                  <div className="res-v3-result-accent" style={{ background: cat.color }} aria-hidden="true" />
-                  <div className="res-v3-result-body">
-                    <div className="res-v3-result-meta">
-                      <span className="rc-card-chip" style={{ background: cat.accent, color: cat.color }}>{cat.label}</span>
-                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{article.readingTime} min read</span>
+                  <div className="res-v3-result-content">
+                    <div className="res-v3-result-cat" style={{ color: cat?.color }}>
+                      {cat?.label} · {article.readingTime} min read
                     </div>
-                    <p className="res-v3-result-title">{article.title}</p>
-                    <p className="res-v3-result-sub">{article.subtitle}</p>
+                    <div className="res-v3-result-title">{article.title}</div>
+                    <div className="res-v3-result-excerpt">{article.description}</div>
                   </div>
                   <svg className="res-v3-result-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
+                    <polyline points="9 18 15 12 9 6" />
                   </svg>
                 </Link>
               )
@@ -212,7 +211,7 @@ export default function SearchPage() {
             <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>No results found</p>
             <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
               Try different keywords or{' '}
-              {categoryFilter && <button type="button" onClick={() => setCategoryFilter('')} style={{ color: 'var(--primary)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, padding: 0 }}>clear category filter</button>}
+              {categoryFilter && <Button unstyled type="button" onClick={() => setCategoryFilter('')} style={{ color: 'var(--primary)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, padding: 0 }}>clear category filter</Button>}
             </p>
           </div>
         )}
@@ -229,14 +228,15 @@ export default function SearchPage() {
               </p>
               <div className="res-v3-discover-chips">
                 {TRENDING_SEARCHES.map(s => (
-                  <button
+                  <Button
+                    unstyled
                     key={s}
                     type="button"
                     className="res-v3-trending-chip"
                     onClick={() => { setQuery(s); inputRef.current?.focus() }}
                   >
                     {s}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -257,7 +257,8 @@ export default function SearchPage() {
               <p className="res-v3-discover-label">Browse categories</p>
               <div className="res-v3-discover-cats">
                 {CATEGORIES.map(cat => (
-                  <button
+                  <Button
+                    unstyled
                     key={cat.slug}
                     type="button"
                     className="res-v3-filter-chip"
@@ -265,7 +266,7 @@ export default function SearchPage() {
                     style={{ borderColor: `${cat.color}30`, color: cat.color }}
                   >
                     {cat.label}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>

@@ -293,14 +293,15 @@ export default function PlanSettingsPage() {
                     <div className="settings-plan-subs-desc">
                         Additional items you&apos;re billed for on a recurring basis.
                     </div>
-                    <button
+                    <Button
+                        unstyled
                         type="button"
                         className="settings-home-row"
                         onClick={() => router.push(`/${store}/settings/billing`)}
                     >
                         <span>View billing history</span>
                         <ChevronRight className="settings-plan-subs-chevron" aria-hidden="true" />
-                    </button>
+                    </Button>
                 </div>
             </SettingsPane>
 

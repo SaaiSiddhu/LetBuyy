@@ -512,7 +512,8 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                             aria-hidden
                         />
                         {isUploading ? 'Uploading…' : 'Upload new'}
-                        <input
+                        <Input
+                            unstyled
                             ref={fileInputRef}
                             type="file"
                             accept={acceptAttr}

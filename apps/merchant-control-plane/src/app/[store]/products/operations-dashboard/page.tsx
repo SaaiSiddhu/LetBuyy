@@ -11,6 +11,7 @@ import {
     PageHeader,
     Section,
     Skeleton,
+    Table,
     type StatusVariant,
 } from '@letbuyy/ui'
 import type {
@@ -264,7 +265,7 @@ export default function OperationsDashboardPage() {
                         />
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full border-collapse text-[length:var(--lb-font-size-sm)]">
+                            <Table className="w-full border-collapse text-[length:var(--lb-font-size-sm)]">
                                 <thead>
                                     <tr className="border-b border-[var(--lb-color-border-subtle)] text-left">
                                         <th className="pb-[var(--lb-space-2)] pr-[var(--lb-space-4)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">
@@ -284,7 +285,7 @@ export default function OperationsDashboardPage() {
                                 <tbody>
                                     {supplierResult.suppliers.map((s, i) => (
                                         <tr
-                                            key={s.supplier_id ?? `no-supplier-${i}`}
+                                            key={s.supplier_id ?? `sup-${i}`}
                                             className="border-b border-[var(--lb-color-border-subtle)] last:border-0"
                                         >
                                             <td className="py-[var(--lb-space-3)] pr-[var(--lb-space-4)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-primary)]">
@@ -311,7 +312,7 @@ export default function OperationsDashboardPage() {
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
+                            </Table>
                         </div>
                     )}
                 </Section>
@@ -340,7 +341,7 @@ export default function OperationsDashboardPage() {
                         />
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full border-collapse text-[length:var(--lb-font-size-sm)]">
+                            <Table className="w-full border-collapse text-[length:var(--lb-font-size-sm)]">
                                 <thead>
                                     <tr className="border-b border-[var(--lb-color-border-subtle)] text-left">
                                         <th className="pb-[var(--lb-space-2)] pr-[var(--lb-space-4)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">
@@ -380,7 +381,7 @@ export default function OperationsDashboardPage() {
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
+                            </Table>
                         </div>
                     )}
                 </Section>
@@ -423,7 +424,7 @@ export default function OperationsDashboardPage() {
                             {/* By-status breakdown */}
                             {Object.keys(transferResult.by_status).length > 0 && (
                                 <div className="overflow-x-auto">
-                                    <table className="w-full border-collapse text-[length:var(--lb-font-size-sm)]">
+                                    <Table className="w-full border-collapse text-[length:var(--lb-font-size-sm)]">
                                         <thead>
                                             <tr className="border-b border-[var(--lb-color-border-subtle)] text-left">
                                                 <th className="pb-[var(--lb-space-2)] pr-[var(--lb-space-4)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">
@@ -454,7 +455,7 @@ export default function OperationsDashboardPage() {
                                                     </tr>
                                                 ))}
                                         </tbody>
-                                    </table>
+                                    </Table>
                                 </div>
                             )}
                         </div>

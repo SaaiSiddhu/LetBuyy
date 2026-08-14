@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Button } from '@letbuyy/ui'
 
 export default function CopyLinkButton() {
   const [copied, setCopied] = useState(false)
@@ -16,7 +17,8 @@ export default function CopyLinkButton() {
   }
 
   return (
-    <button
+    <Button
+      unstyled
       type="button"
       onClick={copy}
       className="rc-copy-link-btn"
@@ -38,6 +40,6 @@ export default function CopyLinkButton() {
           Copy link
         </>
       )}
-    </button>
+    </Button>
   )
 }

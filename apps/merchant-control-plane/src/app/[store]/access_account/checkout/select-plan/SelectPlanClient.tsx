@@ -10,7 +10,7 @@ import {
     planAnnualSavingMinor,
     type SubscriptionPlanView,
 } from '@/lib/billing/plan-ui'
-import { Button, MaterialIcon } from '@letbuyy/ui'
+import { Button, Input, MaterialIcon } from '@letbuyy/ui'
 
 interface SelectPlanClientProps {
     plans: SubscriptionPlanView[]
@@ -250,7 +250,8 @@ export default function SelectPlanClient({
                                 <div className={cx(compareRowClassName, 'select-plan-compare-main-header')} role="row">
                                     <div className="select-plan-compare-feature-head" role="columnheader">
                                         <label className="select-plan-switch-label">
-                                            <input
+                                            <Input
+                                                unstyled
                                                 type="checkbox"
                                                 className="select-plan-switch-input"
                                                 checked={onlyDiff}

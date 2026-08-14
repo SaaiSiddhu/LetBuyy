@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
+import Image from 'next/image'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { useSearchParams } from 'next/navigation'
 import TurnstileWidget, { type TurnstileHandle } from '@/components/TurnstileWidget'
@@ -453,7 +454,7 @@ function LookupContent() {
                                 >
                                     <div className="auth-account-avatar">
                                         {account.avatar ? (
-                                            <img src={account.avatar} alt="" width={40} height={40} />
+                                            <Image src={account.avatar} alt="" width={40} height={40} unoptimized />
                                         ) : (
                                             <span>{(account.name || account.email)[0].toUpperCase()}</span>
                                         )}

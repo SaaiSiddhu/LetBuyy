@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@letbuyy/ui';
+import { Button, Input } from '@letbuyy/ui';
 
 type Props = {
     active: boolean;
@@ -61,7 +61,8 @@ export function FoundingAdminControls({ active, paused, reconcileStatus, reconci
             <div className="flex flex-wrap items-end gap-[var(--lb-space-2)]">
                 <label className="flex flex-col gap-[var(--lb-space-1)]">
                     <span className="text-[var(--lb-font-size-caption)] text-[var(--lb-color-text-subdued)]">Site ID (recovery operations)</span>
-                    <input
+                    <Input
+                        unstyled
                         value={siteId}
                         onChange={(e) => setSiteId(e.target.value)}
                         placeholder="site uuid"

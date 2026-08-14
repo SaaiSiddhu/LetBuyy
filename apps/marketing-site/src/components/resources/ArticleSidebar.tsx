@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Button, Input } from '@letbuyy/ui'
 import Link from '@/components/i18n/LocaleLink'
 import type { Article, Author, Category } from '@/lib/resources/types'
 
@@ -119,7 +120,8 @@ export default function ArticleSidebar({ author, related, authorArticleCount, au
         ) : (
           <>
             <form onSubmit={handleSubscribe}>
-              <input
+              <Input
+                unstyled
                 type="email"
                 className="arc-nl-input"
                 placeholder="your@email.com"
@@ -128,7 +130,7 @@ export default function ArticleSidebar({ author, related, authorArticleCount, au
                 required
                 aria-label="Email address for newsletter"
               />
-              <button type="submit" className="arc-nl-btn">Subscribe free</button>
+              <Button unstyled type="submit" className="arc-nl-btn">Subscribe free</Button>
             </form>
             <p className="arc-nl-hint">No spam. Unsubscribe anytime.</p>
           </>

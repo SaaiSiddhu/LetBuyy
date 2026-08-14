@@ -19,6 +19,7 @@ import {
     Select,
     Skeleton,
     Spinner,
+    Table,
     Truck,
     useToast,
     type SelectOption,
@@ -35,7 +36,7 @@ import type {
 
 // ── local row types ──────────────────────────────────────────────────────────
 
-type Product = {
+type PurchaseOrderProductItem = {
     id: string
     name: string
     sku?: string | null
@@ -88,7 +89,7 @@ interface CreatePOModalProps {
     store: string
     suppliers: Supplier[]
     locations: InventoryLocation[]
-    products: Product[]
+    products: PurchaseOrderProductItem[]
     onClose: () => void
     onCreated: () => void
 }
@@ -507,7 +508,7 @@ export default function PurchaseOrdersPage() {
     const [pos, setPos] = useState<PurchaseOrder[]>([])
     const [suppliers, setSuppliers] = useState<Supplier[]>([])
     const [locations, setLocations] = useState<InventoryLocation[]>([])
-    const [products, setProducts] = useState<Product[]>([])
+    const [products, setProducts] = useState<PurchaseOrderProductItem[]>([])
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
 
@@ -530,7 +531,7 @@ export default function PurchaseOrdersPage() {
                 poRes.json() as Promise<{ data?: PurchaseOrder[]; error?: unknown }>,
                 supplierRes.json() as Promise<{ data?: Supplier[]; error?: unknown }>,
                 locationRes.json() as Promise<{ data?: InventoryLocation[]; error?: unknown }>,
-                productRes.json() as Promise<{ data?: Product[]; error?: unknown }>,
+                productRes.json() as Promise<{ data?: PurchaseOrderProductItem[]; error?: unknown }>,
             ])
 
             if (!poRes.ok) {
@@ -619,7 +620,7 @@ export default function PurchaseOrdersPage() {
                         />
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full border-collapse text-[length:var(--lb-font-size-sm)]">
+                            <Table className="w-full border-collapse text-[length:var(--lb-font-size-sm)]">
                                 <thead>
                                     <tr className="border-b border-[var(--lb-color-border-subtle)] text-left">
                                         <th className="pb-[var(--lb-space-2)] pr-[var(--lb-space-4)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-secondary)]">
@@ -695,7 +696,7 @@ export default function PurchaseOrdersPage() {
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
+                            </Table>
                         </div>
                     )}
                 </Section>
