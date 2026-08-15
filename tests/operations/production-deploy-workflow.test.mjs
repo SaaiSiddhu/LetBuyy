@@ -17,6 +17,12 @@ function regexEscape(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+function jobBlock(name, nextName) {
+  const block = workflow.split(`  ${name}:`)[1]?.split(`\n  ${nextName}:`)[0] || '';
+  assert.notEqual(block, '', `${name} job block exists`);
+  return block;
+}
+
 function productionVercelApps() {
   const activeProductionAppRoots = new Set(
     productionTopology.runtimes
@@ -50,6 +56,37 @@ test('production deploy workflow fails closed on missing release credentials', (
   assert.doesNotMatch(workflow, /Skip worker deployment/);
   assert.doesNotMatch(workflow, /Skip app deployment/);
   assert.doesNotMatch(workflow, /SKIP - production/);
+});
+
+test('governance gate job has full history, integration branch context, and installed dependencies before running the gate', () => {
+  // Regression guard for run 31874926206 (commit 5af69e0c): the embedded
+  // branch-lag-guard-validator.mjs and the typescript-resolving validators
+  // failed inside this job specifically, even though an identical-looking
+  // assertion elsewhere in the file (the dedicated branch-lag-guard job)
+  // was already satisfied. Assertions here MUST be scoped to this job's own
+  // text — matching anywhere in the workflow file would have passed before
+  // the fix and given no protection against reverting it.
+  const block = jobBlock('governance-gate', 'release-preflight');
+
+  assert.match(block, /fetch-depth: 0/, 'governance-gate checkout must fetch full history');
+  assert.match(block, /pnpm\/action-setup@v4/, 'governance-gate must install pnpm before running the gate');
+  assert.match(block, /cache: pnpm/, 'governance-gate node setup must cache pnpm');
+  assert.match(block, /pnpm install --frozen-lockfile/, 'governance-gate must install dependencies before running the gate');
+  assert.match(block, /LETBUYY_ENFORCE_BRANCH_LAG: "1"/, 'governance-gate must enforce branch lag for the embedded validator');
+  assert.match(block, /LETBUYY_PRODUCTION_BRANCH: main/, 'governance-gate must scope branch-lag enforcement to main');
+  assert.match(block, /LETBUYY_RELEASE_INTEGRATION_BRANCH: stepup\/main/, 'governance-gate must scope branch-lag enforcement to stepup/main');
+
+  const installIndex = block.indexOf('pnpm install --frozen-lockfile');
+  const gateRunIndex = block.indexOf('node scripts/validate-governance.mjs --lane=gate');
+  assert.ok(
+    installIndex !== -1 && gateRunIndex !== -1 && installIndex < gateRunIndex,
+    'dependencies must be installed before the governance gate runs',
+  );
+  assert.match(
+    block,
+    /node scripts\/validate-governance\.mjs --lane=gate\s+env:\s+LETBUYY_ENFORCE_BRANCH_LAG: "1"/,
+    'branch-lag enforcement env must be attached to the governance gate run step itself, not merely present in the job',
+  );
 });
 
 test('production migration gate precedes staging smoke and production migration', () => {
