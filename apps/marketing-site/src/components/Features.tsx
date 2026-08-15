@@ -773,7 +773,7 @@ export function Features() {
   }
 
   return (
-    <section className="copilot-section" id="platform" aria-label="Platform Architecture & Features">
+    <section className="copilot-section" id="features" aria-label="Platform Architecture & Features">
       <div className="cop-wrap">
 
         {/* ── Section header ── */}
