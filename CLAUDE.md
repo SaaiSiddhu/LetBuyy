@@ -2,28 +2,98 @@
 
 `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` is supreme law for this repository. Claude, Codex, humans, and other automation must follow the Constitution first, then root `AGENTS.md` (the promoted `LETBUYY_AGENTS_V2` operating rulebook), then the relevant local `AGENTS.md`, then the canonical governance rewrite documents.
 
+## LetBuyy Durable Architecture Memory
+
+> Summarizes the Constitution for fast recall. It does **not** amend or override it. On any conflict: Constitution → root `AGENTS.md` → local `AGENTS.md` → `LETBUYY_CANONICAL_SYSTEMS.md` → this section.
+
+**Product.** India-first multi-tenant commerce OS: storefronts, products, collections, inventory, cart, checkout, orders, prepaid + COD, refunds, shipping, GST invoices, customers, themes, notifications, analytics, merchant operations. The database tenant root is `sites`; **`site_id` is the canonical tenant boundary**. "Store" is a product and URL term only — never create a competing `stores` table. LetBuyy is merchant infrastructure, **not a money custodian**: never hold merchant funds; never introduce a GMV or transaction fee. The fee is **0%, permanent**.
+
+**Canonical topology — exactly 8 active runtimes.**
+
+| Runtime | Owns |
+|---|---|
+| `services/api-gateway` | Hono/Cloudflare Worker modular monolith — synchronous commerce: products, inventory, cart, checkout, orders, payments, discounts, GST, shipping, settlement, customers, billing, analytics reads |
+| `services/queue-workers` | Asynchronous execution — transactional-outbox relay, notifications, reconciliation, settlements, abandoned carts, rollups, sweepers |
+| `services/mobile-bff` | Composite/fan-in BFF for the Flutter merchant application |
+| `apps/identity-platform` | **Sole canonical asymmetric token issuer** for the customer, merchant and operator realms; realm privileges strictly separated |
+| `services/webhook-service` | Provider callback ingress + signed, deduplicated outbound webhooks |
+| `apps/storefront-runtime` | Buyer storefront, Liquid-first renderer, hosted `checkout.letbuyy.com` origin |
+| `apps/merchant-control-plane` | Merchant web operating system |
+| `apps/marketing-site` | Public marketing and pricing surface |
+
+Supporting, **non-extractable** surfaces: `apps/mobile/merchant-app`, `apps/platform-console` — they authorize no further backend extraction. Reserved services and mobile roots stay **empty** until a named trigger and human approval. Frozen/deprecated marketplace, portal and duplicate roots are **never** production topology. Apps must not import apps; services must not import apps; packages must not import apps or services — cross-runtime behavior moves through contracts, APIs, queues or public package exports.
+
+**Design law.** Modular monolith with explicit internal domain boundaries. Never create a microservice merely to make a domain look scalable — a domain is extracted only after measured pressure proves independent scaling or isolation is necessary **and** the ARB approves. The synchronous path performs only work required for a correct result; email, WhatsApp, webhooks, analytics and rollups run asynchronously. Runtime instances are **stateless**: process memory, Cloudflare isolate globals, KV, caches, D1 and Durable Objects must never become an accidental second authority for orders, money, inventory or tenant data. **Postgres is the canonical transactional commerce authority**; caches and projections are disposable and rebuildable.
+
+**Commerce, money and tenancy invariants.**
+
+- Recompute all prices, discounts, taxes, shipping, totals and entitlements **server-side**. Never trust client totals, tenant IDs, payment status, provider names or inventory decisions.
+- Every externally retryable mutation requires **idempotency**.
+- Money uses **one canonical double-entry ledger**; every transaction must balance. Payment and refund state changes must verify provider evidence, reject replay and remain reconcilable. **A client-supplied payment identifier is never sufficient proof of payment.**
+- Business mutation **and** outbox-event creation must be **atomic in one database transaction**. Queue and webhook consumers must be idempotent, retry-safe and DLQ-aware.
+- Tenant isolation must be enforced by **RLS + FORCE RLS + a transaction-local tenant GUC/role**. Application guards (for example `verifySiteOwnership`) are an **additional layer, never the sole isolation boundary**. Missing tenant context must produce **zero rows and no mutation**.
+
+**Production-readiness law.** Architecture diagrams, green builds and file-presence validators do not prove production readiness. A production claim requires **measured evidence** for: payment integrity and reconciliation; cross-tenant isolation; authentication forgery, replay and escalation resistance; checkout correctness; queue lag and retry behavior; alert delivery to a real human; backup, PITR and a successful restore drill; RTO and RPO; load, spike, soak and failure testing; defined SLOs and error budgets; safe rollback. Transient readiness status and blocker counts belong in **dated evidence documents**, never as permanent claims in this memory.
+
+**Ten-million-concurrent-user north-star.** An **evolvability requirement, not a statement of present capacity**. The active implementation and certification envelope remains **100 → 1,000 → 10,000 India merchants, approximately 30,000 orders/month**. "10M concurrent" means simultaneously *active* users, and any capacity plan must first define: geographic distribution; browsing versus authenticated traffic; origin requests per user; checkout and payment percentage; read/write ratio; duration and traffic shape; availability and latency SLOs; acceptable degraded behavior. **Never translate "10M concurrent" directly into infrastructure without those workload definitions.**
+
+Long-range design principles: cache public storefront reads at the edge; keep origin compute stateless and horizontally scalable; protect checkout, payment and inventory writes from browsing traffic; use backpressure, admission control and graceful degradation; shed analytics, recommendations and other non-critical work before rejecting money-critical operations; keep queues partitionable and consumers independently scalable; keep contracts versioned and domain boundaries extractable; keep observability **off** the transactional commerce database; preserve tenant and money correctness under retries, concurrency and partial failure. **No data loss, cross-tenant leakage, duplicate charging or ledger imbalance is acceptable during overload.**
+
+Measured scaling stages — do not skip ahead:
+
+1. Make the governed 10,000-merchant envelope correct and **load-certified**.
+2. Remove configuration bottlenecks; maximize caching, batching, pooling and asynchronous execution.
+3. Scale stateless compute and queue consumers horizontally.
+4. Introduce read scaling **only** after measured primary-read pressure and ARB approval.
+5. Introduce partitioning/sharding **only** after measured write, storage or maintenance limits and an approved migration plan.
+6. Introduce regional data or multi-region operation **only** after measured latency, availability, compliance or disaster-recovery demand.
+7. Add a new runtime **only** when a named domain requires independent scaling or failure isolation, amending the Constitution where necessary.
+
+Infrastructure may evolve; the canonical commerce rules, ledger, tenant model and public contracts must not.
+
+**Decision rule for every session.** (1) Identify the governing rule. (2) Identify the canonical owner. (3) Query current evidence. (4) Determine whether current *measured* demand requires the change. (5) Prefer completing, wiring or deleting over creating a parallel system. (6) State assumptions and unknowns. (7) **Never claim capacity without a reproducible load test.** (8) Escalate architecture expansion to the ARB.
+
+**Never decide alone.** Activating a reserved service or adding a runtime; read replicas, partitioning, sharding or multi-region; a second canonical system for any domain; changing money custody, transaction fees, the identity issuer model, the tenant-isolation model or the canonical renderer; anything on the Never-Build List (Constitution §10) or beyond the scale envelope (§6).
+
 ## Canonical Runtime Map
 
+Roots are **not** one undifferentiated list. Four classes, with different rules:
+
+**ACTIVE (the 8 canonical runtimes — the entire deployable topology):**
+
+- `services/api-gateway`
+- `services/queue-workers`
+- `services/mobile-bff`
+- `apps/identity-platform`
+- `services/webhook-service`
 - `apps/storefront-runtime`
 - `apps/merchant-control-plane`
-- `apps/identity-platform`
 - `apps/marketing-site`
-- `apps/platform-console`
-- `apps/mobile/merchant-app`
-- `services/api-gateway`
-- `services/mobile-bff`
-- `services/webhook-service`
-- `services/queue-workers`
-- `apps/mobile/shopper-app` (reserved, not implemented)
-- `apps/mobile/operator-app` (reserved, not implemented)
-- `services/checkout-runtime` (reserved, not implemented)
-- `services/search-service` (reserved, not implemented)
-- `services/media-service` (reserved, not implemented)
-- `services/notification-service` (reserved, not implemented)
-- `services/event-bus` (reserved, not implemented)
-- `services/analytics-pipeline` (reserved, not implemented)
 
-`apps/app-marketplace`, `apps/developer-portal`, `apps/theme-marketplace`, and `apps/platform-operations-portal` are frozen or pending consolidation, not production deploy targets. Reserved service and mobile roots are manifest-only placeholders. Their current active capability owners are implemented web/service runtimes until a human-approved scope adds real source, tests, and deployment config.
+**SUPPORTING (ride the canonical topology; non-extractable; authorize no further backend service):**
+
+- `apps/mobile/merchant-app`
+- `apps/platform-console`
+
+**RESERVED (manifest-only placeholders — MUST stay empty; no source, tests, or deployment config):**
+
+- `services/checkout-runtime`
+- `services/event-bus`
+- `services/notification-service`
+- `services/analytics-pipeline`
+- `services/media-service`
+- `services/search-service`
+- `apps/mobile/shopper-app`
+- `apps/mobile/operator-app`
+
+**FROZEN (not production deploy targets; do not treat as active topology):**
+
+- `apps/app-marketplace`
+- `apps/developer-portal`
+- `apps/theme-marketplace`
+- `apps/platform-operations-portal` (pending consolidation into `apps/platform-console`)
+
+Capability owners for reserved concerns are the implemented active runtimes until a **named trigger plus human approval** authorizes activation. Adding a runtime, or filling a reserved root, requires ARB approval and any necessary constitutional amendment **before** source is created.
 
 ## Deprecated Runtime Policy
 
@@ -63,8 +133,8 @@ A multi-tenant India-first commerce platform. Core entities: **site** (the tenan
 - **Idempotency + locks** — every money RPC requires `idempotency_key`, uses `ON CONFLICT` + `FOR UPDATE`. Balances ≥ 0 (CHECK). Gift-card balance is a **ledger projection** (no mutable decrement).
 
 ## Auth, OAuth, webhooks, RLS, multi-tenancy
-- **Two issuers, never crossed:** customer **HS256** (`CUSTOMER_SESSION_SECRET`, `issueCustomerSession`); merchant **ES256** (identity-platform, `LETBUYY_IDENTITY_PUBLIC_JWKS`). Step-up (HMAC) gates refunds/payouts. Turnstile + rate-limit gate registration/login.
-- **RLS forced** on tenant tables; no public `USING (true)`; service-role gateway access only **behind** `verifySiteOwnership`. Webhooks + queue jobs are HMAC-signed (`signQueueTenantEnvelope`).
+- **Sole issuer is the target state (ART-05 / R-14):** `identity-platform` must be the sole **asymmetric** token issuer for all three realms (merchant/staff, buyer/customer, platform-operator); every other runtime is **verify-only** (`LETBUYY_IDENTITY_PUBLIC_JWKS`). Realm privileges stay strictly separated — buyer auth never grants merchant/admin rights. A shared symmetric signing secret across trust domains is forbidden (`SEC-R7`). **Known deviation, not canonical design:** the customer realm is still minted **HS256** (`CUSTOMER_SESSION_SECRET`, `issueCustomerSession`), so the verification key is the forgery key. That is a state to be **collapsed onto the sole issuer**, never a pattern to extend or replicate. Step-up on refunds/payouts must be real cryptography (HMAC/stored challenge). Turnstile + rate-limit gate registration/login.
+- **Tenancy backstop is the database, not the application.** Required: RLS `ENABLE` + `FORCE` + a **transaction-local tenant GUC/role** on every tenant table, with the GUC set only from a validated claim; unset or wrong context ⇒ **zero rows and no mutation** (`R-1`…`R-4`, `SEC-R9`). No policy may be `USING (true)` to PUBLIC/anon/authenticated. `verifySiteOwnership` and the app-layer query guard are **defence-in-depth layers, never a substitute** for the database backstop, and a blanket `service_role`/`BYPASSRLS` connection for tenant data is forbidden. Webhooks + queue jobs are HMAC-signed (`signQueueTenantEnvelope`).
 
 ## Marketplace / themes / developer portal
 - `app-marketplace`, `theme-marketplace`, `developer-portal` are **frozen** (not deploy targets). `theme-engine` = Liquid + JSON renderer; sanitizer is locked (`FORBID` lists, `outputEscape:'escape'`); Liquid default OFF (canary). ART-17 forbids new React-per-section after freeze.
