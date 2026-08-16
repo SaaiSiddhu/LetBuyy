@@ -1,4 +1,3 @@
-export { SettingsIndex } from './SettingsIndex'
 export { SettingsPane } from './SettingsPane'
 export { SettingsShell } from './SettingsShell'
 export {
