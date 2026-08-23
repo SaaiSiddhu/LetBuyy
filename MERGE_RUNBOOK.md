@@ -9,6 +9,7 @@ This runbook is current for the foundation stepup convergence. It replaces the o
 - Required local invariant: `git rev-list --count main..stepup/main` returns `0`.
 - Remote promotion remains human-controlled and is recorded in `SKIPPED_HUMAN_DECISIONS.md` as `SKIP-PROD-DEPLOY-PROMOTION` and `SKIP-D1-MERGE-RUNBOOK-DIRTY-TREE`.
 - Launch readiness remains blocked by `CAPABILITY_BACKLOG.md`; convergence completion is not a production launch claim.
+- 2026-08-23: integration work accumulated on `feature/claude-md-durable-architecture-memory` was promoted locally, fast-forward only, to `stepup/main` and then to `main` (both now `1edaea7158a293fd38af25a8430e110a3dc9d2ce`). `stepup/main` remains the canonical integration branch named by CI, staging deploy, the branch-lag monitor, and this validator's default — the feature branch was a temporary work surface, not a replacement for it.
 
 ## Non-negotiable guardrails
 
@@ -37,7 +38,7 @@ Expected:
 - `git rev-list --count main..stepup/main` is `0`.
 - The governance gate passes without survivability, multi-region, failover, or prompt-perimeter drift.
 
-Note: the gate's `branch-lag-guard-validator` only asserts the lag invariant when it runs on `main`, or when `LETBUYY_ENFORCE_BRANCH_LAG=1`, or when `LETBUYY_PRODUCTION_BRANCH` is set. On any other local branch it falls through to a commit-count check that always passes. **A green gate is therefore not evidence that the lag invariant holds.** Measure it explicitly with the commands above.
+Note: `branch-lag-guard-validator` previously only asserted the lag invariant when it ran on `main`, or when `LETBUYY_ENFORCE_BRANCH_LAG=1`, or when `LETBUYY_PRODUCTION_BRANCH` was set — on any other local branch it fell through to a commit-count check that always passed. That fallthrough was fixed in Phase V0 (commit `2df03029`): on any other checked-out branch the validator now computes `productionBranch..HEAD` (`scripts/validators/branch-lag-guard-validator.mjs:117`), the same real fast-forward check the other code paths already performed. A green run of this validator is now genuine local-branch-lag evidence regardless of which branch is checked out. It still only measures local refs — it proves nothing about `origin` or about what is actually deployed; measure the commands above directly when that distinction matters.
 
 ## Divergence — classify before aligning
 
