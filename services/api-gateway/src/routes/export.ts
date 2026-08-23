@@ -171,7 +171,7 @@ function assertExportStorage(c: ExportContext): R2Bucket {
 }
 
 function exportSigningSecret(c: ExportContext): string {
-    const secret = c.env.INTERNAL_API_SECRET || c.env.CUSTOMER_SESSION_SECRET || c.env.AUTH_SECRET;
+    const secret = c.env.INTERNAL_API_SECRET || c.env.CUSTOMER_SESSION_SECRET;
     if (!secret) throw new Error('CSV export jobs require a signing secret.');
     return secret;
 }

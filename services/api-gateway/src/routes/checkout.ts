@@ -85,7 +85,7 @@ function getRequestId(c: AppContext): string {
 }
 
 function checkoutSigningSecret(c: AppContext): string | null {
-    const configured = c.env.CHECKOUT_SIGNING_SECRET || c.env.AUTH_SECRET || c.env.STORE_ACCESS_SIGNING_KEY;
+    const configured = c.env.CHECKOUT_SIGNING_SECRET || c.env.STORE_ACCESS_SIGNING_KEY;
     if (configured && !configured.startsWith('SKIP_NEEDS_HUMAN_')) return configured;
     if (c.env.ENVIRONMENT === 'production' || c.env.APP_ENV === 'production') return null;
     return 'letbuyy-local-sandbox-checkout-handoff-secret';

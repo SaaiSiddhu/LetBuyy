@@ -43,7 +43,6 @@ interface Env {
     STRIPE_SECRET_KEY?: string;
     INTERNAL_API_SECRET?: string;
     API_GATEWAY_SERVICE?: GatewayServiceBinding;
-    AUTH_SECRET?: string;
     ENVIRONMENT: string;
     APP_ENV?: string;
     NODE_ENV?: string;
@@ -514,7 +513,7 @@ app.get("/health", (c) => {
 });
 
 function internalDispatchSecret(env: Env): string | undefined {
-    return env.INTERNAL_API_SECRET || env.AUTH_SECRET || undefined;
+    return env.INTERNAL_API_SECRET || undefined;
 }
 
 function dispatchAuthHeader(headers: Headers): string | null {
