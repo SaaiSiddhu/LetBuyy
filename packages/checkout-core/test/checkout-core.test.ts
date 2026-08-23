@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  CheckoutPaymentIntentSchema,
+  CreateDraftOrderSchema,
+  CreateOrderSchema,
   StorefrontCreateOrderSchema,
   assessOrderRisk,
   assertBrandingIsDataOnly,
@@ -39,6 +42,49 @@ test('storefront order creation requires idempotency and bounded cart lines', ()
     false,
   );
   assert.equal(StorefrontCreateOrderSchema.safeParse({ ...validOrder, paymentMethod: 'wire' }).success, false);
+
+  // Phase M1 (DOC 03 row 11 "Payments"): Razorpay + COD are the only live
+  // money-in rails. Every retired provider must now fail the same way an
+  // arbitrary made-up value ('wire', above) already did.
+  for (const retired of ['stripe', 'paypal', 'cashfree']) {
+    assert.equal(
+      StorefrontCreateOrderSchema.safeParse({ ...validOrder, paymentMethod: retired }).success,
+      false,
+      `paymentMethod: '${retired}' must be rejected`,
+    );
+  }
+  assert.equal(StorefrontCreateOrderSchema.safeParse({ ...validOrder, paymentMethod: 'razorpay' }).success, true);
+});
+
+test('Phase M1: the admin/draft order and hosted-checkout payment-intent schemas admit only canonical rails', () => {
+  const orderBase = {
+    store_id: STORE_ID,
+    idempotency_key: 'checkout-order-002',
+    customer_email: 'asha@example.test',
+    customer_name: 'Asha Merchant',
+    items: [{ product_id: PRODUCT_ID, quantity: 1 }],
+  };
+
+  for (const schema of [CreateOrderSchema, CreateDraftOrderSchema]) {
+    assert.equal(schema.safeParse({ ...orderBase, payment_method: 'razorpay' }).success, true);
+    assert.equal(schema.safeParse({ ...orderBase, payment_method: 'cod' }).success, true);
+    for (const retired of ['stripe', 'cashfree']) {
+      assert.equal(
+        schema.safeParse({ ...orderBase, payment_method: retired }).success,
+        false,
+        `payment_method: '${retired}' must be rejected`,
+      );
+    }
+  }
+
+  // CheckoutPaymentIntentSchema.provider keeps 'upi' deliberately: it is a
+  // Razorpay payment instrument, not a second payment aggregator.
+  const intentBase = { idempotency_key: 'checkout-intent-001' };
+  assert.equal(CheckoutPaymentIntentSchema.safeParse({ ...intentBase, provider: 'razorpay' }).success, true);
+  assert.equal(CheckoutPaymentIntentSchema.safeParse({ ...intentBase, provider: 'upi' }).success, true);
+  assert.equal(CheckoutPaymentIntentSchema.safeParse({ ...intentBase, provider: 'cod' }).success, true);
+  assert.equal(CheckoutPaymentIntentSchema.safeParse({ ...intentBase, provider: 'cashfree' }).success, false);
+  assert.equal(CheckoutPaymentIntentSchema.safeParse({ ...intentBase, provider: 'stripe' }).success, false);
 });
 
 test('GST invoice generation separates intra-state CGST/SGST from inter-state IGST', () => {

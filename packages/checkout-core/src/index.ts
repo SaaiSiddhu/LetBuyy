@@ -35,7 +35,9 @@ export const CreateOrderSchema = z.object({
   customer_gstin: GstinSchema.optional(),
   shipping_address: AddressSchema.optional(),
   items: z.array(OrderItemInput).min(1).max(50),
-  payment_method: z.enum(['razorpay', 'stripe', 'cashfree', 'cod']).default('cod'),
+  // Phase M1 (DOC 03 row 11 "Payments": single capture adapter, MoR-on-own-Razorpay).
+  // 'stripe' and 'cashfree' are retired non-canonical rails, not live options.
+  payment_method: z.enum(['razorpay', 'cod']).default('cod'),
   shipping_method: z.enum(['standard', 'express']).default('standard'),
   notes: z.string().max(1000).optional(),
   coupon_code: z.string().max(50).optional(),
@@ -61,7 +63,9 @@ export const StorefrontCreateOrderSchema = z.object({
     variantId: UuidSchema.optional().nullable(),
     quantity: z.number().int().min(1).max(999),
   })).min(1).max(50),
-  paymentMethod: z.enum(['razorpay', 'stripe', 'paypal', 'cashfree', 'cod']).default('cod'),
+  // Phase M1 (DOC 03 row 11 "Payments": single capture adapter, MoR-on-own-Razorpay).
+  // 'stripe', 'paypal', and 'cashfree' are retired non-canonical rails, not live options.
+  paymentMethod: z.enum(['razorpay', 'cod']).default('cod'),
   deliveryOption: z.enum(['standard', 'express']).default('standard'),
   notes: z.string().max(1000).optional(),
   couponCode: z.string().max(50).optional(),
@@ -104,7 +108,11 @@ export const CheckoutDeliverySchema = z.object({
 
 export const CheckoutPaymentIntentSchema = z.object({
   idempotency_key: z.string().min(8).max(200),
-  provider: z.enum(['razorpay', 'cashfree', 'upi', 'cod']).default('cod'),
+  // Phase M1 (DOC 03 row 11 "Payments"). 'cashfree' is a retired non-canonical
+  // rail. 'upi' is kept: it is a Razorpay payment instrument (UPI intent/collect
+  // through Razorpay), not a separate payment aggregator -- unlike 'stripe'/
+  // 'paypal'/'cashfree' it never named a second PA.
+  provider: z.enum(['razorpay', 'upi', 'cod']).default('cod'),
   mode: z.enum(['sandbox', 'live']).default('sandbox'),
   tokenize: z.boolean().default(false),
   metadata: z.record(z.string(), z.unknown()).default({}),
@@ -375,7 +383,9 @@ export const CreateDraftOrderSchema = z.object({
   customer_gstin: GstinSchema.optional(),
   shipping_address: AddressSchema.optional(),
   items: z.array(OrderItemInput).min(1).max(50),
-  payment_method: z.enum(['razorpay', 'stripe', 'cashfree', 'cod']).default('cod'),
+  // Phase M1 (DOC 03 row 11 "Payments": single capture adapter, MoR-on-own-Razorpay).
+  // 'stripe' and 'cashfree' are retired non-canonical rails, not live options.
+  payment_method: z.enum(['razorpay', 'cod']).default('cod'),
   shipping_method: z.enum(['standard', 'express']).default('standard'),
   notes: z.string().max(1000).optional(),
   coupon_code: z.string().max(50).optional(),

@@ -45,7 +45,7 @@ type StorefrontCreateOrderBody = {
         variantId?: string | null;
         quantity: number;
     }>;
-    paymentMethod: 'razorpay' | 'stripe' | 'paypal' | 'cashfree' | 'cod';
+    paymentMethod: 'razorpay' | 'cod';
     deliveryOption: 'standard' | 'express';
     notes?: string;
     couponCode?: string;
