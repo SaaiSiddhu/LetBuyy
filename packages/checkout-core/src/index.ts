@@ -251,7 +251,10 @@ export const UpdateOrderStatusSchema = z.object({
 export const OrderRiskAssessmentSchema = z.object({
   store_id: UuidSchema,
   order_id: UuidSchema.optional(),
-  payment_method: z.enum(['razorpay', 'stripe', 'paypal', 'cashfree', 'upi', 'cod']).default('cod'),
+  // Phase M1 (DOC 03 row 11 "Payments"). 'upi' is kept (a Razorpay instrument,
+  // not a separate PA); 'stripe'/'paypal'/'cashfree' are retired non-canonical
+  // rails and can no longer be a real order's payment_method.
+  payment_method: z.enum(['razorpay', 'upi', 'cod']).default('cod'),
   order_total_minor: z.number().int().min(0).default(0),
   pincode: z.string().max(20).optional().nullable(),
   phone: z.string().max(20).optional().nullable(),
