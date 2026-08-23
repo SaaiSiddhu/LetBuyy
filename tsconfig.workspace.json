@@ -63,6 +63,63 @@
     },
     {
       "path": "./packages/typescript/ui"
+    },
+    {
+      "path": "./packages/lcis-adapters"
+    },
+    {
+      "path": "./packages/lcis-business"
+    },
+    {
+      "path": "./packages/lcis-cli"
+    },
+    {
+      "path": "./packages/lcis-core"
+    },
+    {
+      "path": "./packages/lcis-decision"
+    },
+    {
+      "path": "./packages/lcis-engineering"
+    },
+    {
+      "path": "./packages/lcis-execution"
+    },
+    {
+      "path": "./packages/lcis-governance"
+    },
+    {
+      "path": "./packages/lcis-live"
+    },
+    {
+      "path": "./packages/lcis-mcp"
+    },
+    {
+      "path": "./packages/lcis-operations"
+    },
+    {
+      "path": "./packages/lcis-orchestration"
+    },
+    {
+      "path": "./packages/lcis-performance"
+    },
+    {
+      "path": "./packages/lcis-pr-check"
+    },
+    {
+      "path": "./packages/lcis-quality"
+    },
+    {
+      "path": "./packages/lcis-rootcause"
+    },
+    {
+      "path": "./packages/lcis-security"
+    },
+    {
+      "path": "./packages/lcis-tracking"
+    },
+    {
+      "path": "./packages/lcis-twin"
     }
   ]
 }
