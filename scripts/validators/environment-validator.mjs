@@ -129,12 +129,58 @@ reporter.assert(
 );
 
 const secretPatterns = [
-  /\b(?:sk|pk|rk)_(?:live|test)_[A-Za-z0-9_=-]{20,}/,
-  /\bwhsec_[A-Za-z0-9_=-]{20,}/,
-  /\brzp_(?:live|test)_[A-Za-z0-9_=-]{8,}/,
-  /\bAIza[A-Za-z0-9_-]{20,}/,
-  /-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----/,
+  { pattern: /\b(?:sk|pk|rk)_(?:live|test)_[A-Za-z0-9_=-]{20,}/, kind: "key" },
+  { pattern: /\bwhsec_[A-Za-z0-9_=-]{20,}/, kind: "key" },
+  { pattern: /\brzp_(?:live|test)_[A-Za-z0-9_=-]{8,}/, kind: "key" },
+  { pattern: /\bAIza[A-Za-z0-9_-]{20,}/, kind: "key" },
+  { pattern: /-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----/, kind: "pem" },
 ];
+
+// Unambiguous "this value is a fixture, not a credential" markers. Deliberately
+// narrow (whole English phrases, never a bare word like "test") so a genuine
+// leaked secret — an opaque random string — cannot coincidentally match: a
+// real key does not spell out "do not expose" or "should never reach" inside
+// itself. Extends (never replaces) the R-21 secret scan; a match without one
+// of these markers on its own line still fails the validator.
+const fixtureMarkerPattern = /do[-_ ]?not[-_ ]?expose|should[-_ ]?never[-_ ]?reach|placeholder|redacted|\bdummy\b|\bexample\b/i;
+
+function lineContainingIndex(content, index) {
+  const lineStart = content.lastIndexOf("\n", index - 1) + 1;
+  const nextNewline = content.indexOf("\n", index);
+  return content.slice(lineStart, nextNewline === -1 ? content.length : nextNewline);
+}
+
+function matchesGlobally(pattern, content) {
+  const flags = pattern.flags.includes("g") ? pattern.flags : `${pattern.flags}g`;
+  return [...content.matchAll(new RegExp(pattern.source, flags))];
+}
+
+// A real committed PEM private key ships a full BEGIN...body...END block; a
+// bare BEGIN-header string used as a redaction-test fixture value has no
+// matching footer anywhere in the file. Require the footer before treating a
+// PEM header as a real key, so a fixture like `private_key: '-----BEGIN
+// PRIVATE KEY-----'` (asserting the value never reaches rendered output) does
+// not false-positive, while an actual leaked key (which always has both
+// markers plus body content) still does.
+function hasRealPemBlock(content) {
+  return /-----END (?:RSA |OPENSSH |EC )?PRIVATE KEY-----/.test(content);
+}
+
+function hasUnexplainedSecretPattern(content) {
+  for (const { pattern, kind } of secretPatterns) {
+    const matches = matchesGlobally(pattern, content);
+    if (matches.length === 0) continue;
+    if (kind === "pem") {
+      if (hasRealPemBlock(content)) return true;
+      continue;
+    }
+    for (const match of matches) {
+      const line = lineContainingIndex(content, match.index);
+      if (!fixtureMarkerPattern.test(line)) return true;
+    }
+  }
+  return false;
+}
 
 const allowedSecretScanPrefixes = [
   "config/env/templates/",
@@ -156,6 +202,10 @@ function hasHardcodedSecretAssignment(content) {
     if (lowerValue.includes("process.env") || lowerValue.includes("env.")) continue;
     if (lowerValue.includes("replace") || lowerValue.includes("example") || lowerValue.includes("placeholder")) continue;
     if (lowerValue.includes("redacted") || lowerValue.includes("dummy") || lowerValue.includes("test_")) continue;
+    // Same unambiguous fixture-marker set used for the regex-pattern scan below
+    // (R-18: precision, not weakening — a real credential cannot coincidentally
+    // spell out "do not expose" or "should never reach" inside itself).
+    if (fixtureMarkerPattern.test(value)) continue;
     if (value.startsWith("$") || value.startsWith("{")) continue;
     if (/\s/.test(value)) continue;
     if (/^[a-z0-9_./-]+$/.test(value)) continue;
@@ -180,7 +230,7 @@ for (const file of trackedFiles) {
   const content = readFile(file);
   if (!content) continue;
 
-  if (secretPatterns.some((pattern) => pattern.test(content)) || hasHardcodedSecretAssignment(content)) {
+  if (hasUnexplainedSecretPattern(content) || hasHardcodedSecretAssignment(content)) {
     secretOffenders.push(file);
   }
 }
