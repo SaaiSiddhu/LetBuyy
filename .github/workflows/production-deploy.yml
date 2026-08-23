@@ -65,6 +65,7 @@ jobs:
           HAS_PRODUCTION_AUTH_SECRET: ${{ secrets.PRODUCTION_AUTH_SECRET != '' }}
           HAS_PRODUCTION_CSRF_SECRET: ${{ secrets.PRODUCTION_CSRF_SECRET != '' }}
           HAS_PRODUCTION_CUSTOMER_SESSION_SECRET: ${{ secrets.PRODUCTION_CUSTOMER_SESSION_SECRET != '' }}
+          HAS_PRODUCTION_ACCOUNTS_COOKIE_SECRET: ${{ secrets.PRODUCTION_ACCOUNTS_COOKIE_SECRET != '' }}
           HAS_PRODUCTION_STEP_UP_SIGNING_SECRET: ${{ secrets.PRODUCTION_STEP_UP_SIGNING_SECRET != '' }}
           HAS_PRODUCTION_IDENTITY_PRIVATE_JWK: ${{ secrets.PRODUCTION_IDENTITY_PRIVATE_JWK != '' }}
           HAS_PRODUCTION_IDENTITY_PUBLIC_JWKS: ${{ secrets.PRODUCTION_IDENTITY_PUBLIC_JWKS != '' }}
@@ -100,6 +101,7 @@ jobs:
           [[ "${HAS_PRODUCTION_AUTH_SECRET}" == "true" ]] || missing+=("PRODUCTION_AUTH_SECRET")
           [[ "${HAS_PRODUCTION_CSRF_SECRET}" == "true" ]] || missing+=("PRODUCTION_CSRF_SECRET")
           [[ "${HAS_PRODUCTION_CUSTOMER_SESSION_SECRET}" == "true" ]] || missing+=("PRODUCTION_CUSTOMER_SESSION_SECRET")
+          [[ "${HAS_PRODUCTION_ACCOUNTS_COOKIE_SECRET}" == "true" ]] || missing+=("PRODUCTION_ACCOUNTS_COOKIE_SECRET")
           [[ "${HAS_PRODUCTION_STEP_UP_SIGNING_SECRET}" == "true" ]] || missing+=("PRODUCTION_STEP_UP_SIGNING_SECRET")
           [[ "${HAS_PRODUCTION_IDENTITY_PRIVATE_JWK}" == "true" ]] || missing+=("PRODUCTION_IDENTITY_PRIVATE_JWK")
           [[ "${HAS_PRODUCTION_IDENTITY_PUBLIC_JWKS}" == "true" ]] || missing+=("PRODUCTION_IDENTITY_PUBLIC_JWKS")
@@ -442,6 +444,7 @@ jobs:
           WORKER_API_BASE_URL: https://api.letbuyy.com/v1
           AUTH_SECRET: ${{ secrets.PRODUCTION_AUTH_SECRET }}
           CUSTOMER_SESSION_SECRET: ${{ secrets.PRODUCTION_CUSTOMER_SESSION_SECRET }}
+          ACCOUNTS_COOKIE_SECRET: ${{ matrix.app == 'identity-platform' && secrets.PRODUCTION_ACCOUNTS_COOKIE_SECRET || '' }}
           LETBUYY_IDENTITY_ISSUER: https://accounts.letbuyy.com
           LETBUYY_IDENTITY_PRIVATE_JWK: ${{ matrix.app == 'identity-platform' && secrets.PRODUCTION_IDENTITY_PRIVATE_JWK || '' }}
           CSRF_SECRET: ${{ secrets.PRODUCTION_CSRF_SECRET }}

@@ -6,21 +6,37 @@ import { isProductionIdentityRuntime } from '@/lib/dev-auth-bypass'
 /**
  * Resolve the JWT signing key for the encrypted accounts cookie. SECURITY: never fall
  * back to an empty/weak key — an empty key makes signed cookies forgeable while still
- * "verifying". In production a missing/short AUTH_SECRET is a hard failure; in
- * development a clearly-marked insecure key is used so local work needs no secrets.
+ * "verifying". In production a missing/short ACCOUNTS_COOKIE_SECRET is a hard failure;
+ * in development a clearly-marked insecure key is used so local work needs no secrets.
  */
 function getSigningKey(): Uint8Array {
-    const value = process.env.AUTH_SECRET?.trim() || ''
+    const value = process.env.ACCOUNTS_COOKIE_SECRET?.trim() || ''
     if (value.length < 16) {
         // SEC-H3 (Wave 0): refuse the weak dev key in ANY production-like runtime
         // (NODE_ENV/APP_ENV/VERCEL_ENV/NEXT_PUBLIC_ENV) — not just NODE_ENV=production.
         // The previous NODE_ENV-only gate let a non-prod NODE_ENV deploy sign the
         // PII-bearing lb_accounts cookie with a public literal.
         if (isProductionIdentityRuntime(process.env)) {
-            throw new Error('AUTH_SECRET is missing or too short (min 16 chars); refusing to sign/verify with a weak key')
+            throw new Error('ACCOUNTS_COOKIE_SECRET is missing or too short (min 16 chars); refusing to sign/verify with a weak key')
         }
-        return new TextEncoder().encode('dev-only-insecure-auth-secret-set-AUTH_SECRET-in-prod')
+        return new TextEncoder().encode('dev-only-insecure-accounts-cookie-secret-set-ACCOUNTS_COOKIE_SECRET-in-prod')
     }
+    return new TextEncoder().encode(value)
+}
+
+/**
+ * S1 W2 (SEC-R7 de-sharing / IDN-R2 dual-read drain): the accounts cookie used
+ * to sign directly with the cross-domain AUTH_SECRET. A cookie already issued
+ * under that key must keep verifying until it is re-issued under the
+ * dedicated ACCOUNTS_COOKIE_SECRET or its 90-day TTL expires -- this resolver
+ * is VERIFY-ONLY (see decryptAccounts) and must never be used to sign. Unlike
+ * getSigningKey, a missing/short AUTH_SECRET does not throw: this is an
+ * optional drain path, not the primary key, so its absence just means the
+ * legacy branch is skipped, never that the whole cookie fails closed.
+ */
+function getLegacySigningKey(): Uint8Array | null {
+    const value = process.env.AUTH_SECRET?.trim() || ''
+    if (value.length < 16) return null
     return new TextEncoder().encode(value)
 }
 const PASSWORD_SET_INTENT_COOKIE = 'lb_password_set_intent'
@@ -170,35 +186,76 @@ export async function getDeviceCookie(): Promise<string | undefined> {
 // --- Accounts Cookie (encrypted multi-account list) ---
 
 /**
- * Encrypt the accounts list into a JWT for safe cookie storage.
+ * Encrypt the accounts list into a JWT for safe cookie storage. Always signs
+ * with the dedicated ACCOUNTS_COOKIE_SECRET -- never AUTH_SECRET (SEC-R7).
  */
-async function encryptAccounts(accounts: AccountEntry[]): Promise<string> {
+export async function encryptAccounts(accounts: AccountEntry[]): Promise<string> {
     return new SignJWT({ accounts })
         .setProtectedHeader({ alg: 'HS256' })
         .setExpirationTime(`${ACCOUNTS_COOKIE_TTL_SECONDS}s`)
         .sign(getSigningKey())
 }
 
+type DecryptAccountsResult = {
+    accounts: AccountEntry[]
+    verifiedWithLegacyKey: boolean
+}
+
 /**
- * Decrypt the accounts cookie JWT back into the accounts list.
+ * Decrypt the accounts cookie JWT back into the accounts list. Tries the
+ * dedicated key first; on failure, tries the legacy AUTH_SECRET-signed form
+ * so already-issued cookies keep working through the IDN-R2 drain window.
+ * verifiedWithLegacyKey tells the caller to re-issue the cookie under the
+ * dedicated key and record the drain telemetry.
  */
-async function decryptAccounts(token: string): Promise<AccountEntry[]> {
+export async function decryptAccounts(token: string): Promise<DecryptAccountsResult> {
     try {
         const { payload } = await jwtVerify(token, getSigningKey())
-        return (payload.accounts as AccountEntry[]) || []
+        return { accounts: (payload.accounts as AccountEntry[]) || [], verifiedWithLegacyKey: false }
     } catch {
-        return []
+        const legacyKey = getLegacySigningKey()
+        if (!legacyKey) return { accounts: [], verifiedWithLegacyKey: false }
+
+        try {
+            const { payload } = await jwtVerify(token, legacyKey)
+            return { accounts: (payload.accounts as AccountEntry[]) || [], verifiedWithLegacyKey: true }
+        } catch {
+            return { accounts: [], verifiedWithLegacyKey: false }
+        }
     }
 }
 
 /**
- * Get the list of saved accounts from the encrypted cookie.
+ * Get the list of saved accounts from the encrypted cookie. A cookie that
+ * only verifies under the legacy AUTH_SECRET key is re-issued under the
+ * dedicated key on read (IDN-R2 dual-read drain) and the legacy verification
+ * is logged -- SKIP-IDN-R2-DRAIN-TELEMETRY's measurement. Both real callers
+ * (app/api/auth/accounts, app/api/auth/switch) are Route Handlers, so setting
+ * a cookie here is a valid Next.js write context.
  */
 export async function getAccounts(): Promise<AccountEntry[]> {
     const cookieStore = await cookies()
     const token = cookieStore.get(COOKIE_NAMES.accounts)?.value
     if (!token) return []
-    return decryptAccounts(token)
+
+    const { accounts, verifiedWithLegacyKey } = await decryptAccounts(token)
+    if (!verifiedWithLegacyKey) return accounts
+
+    console.log(JSON.stringify({
+        level: 'info',
+        service: 'letbuyy-identity',
+        route: 'auth.accounts.cookie',
+        reason: 'legacy_auth_secret_verification',
+    }))
+
+    const reissued = await encryptAccounts(accounts)
+    cookieStore.set(COOKIE_NAMES.accounts, reissued, {
+        ...BASE_OPTIONS,
+        sameSite: 'lax',
+        maxAge: ACCOUNTS_COOKIE_TTL_SECONDS,
+    })
+
+    return accounts
 }
 
 /**

@@ -36,6 +36,7 @@
     "CHECKOUT_SIGNING_SECRET": { "type": "string" },
     "AUTH_SECRET": { "type": "string" },
     "CUSTOMER_SESSION_SECRET": { "type": "string" },
+    "ACCOUNTS_COOKIE_SECRET": { "type": "string" },
     "LETBUYY_IDENTITY_ISSUER": { "type": "string", "format": "uri" },
     "LETBUYY_IDENTITY_PRIVATE_JWK": { "type": "string" },
     "CSRF_SECRET": { "type": "string" },
