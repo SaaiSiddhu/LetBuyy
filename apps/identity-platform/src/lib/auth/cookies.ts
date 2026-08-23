@@ -229,7 +229,9 @@ export async function decryptAccounts(token: string): Promise<DecryptAccountsRes
  * Get the list of saved accounts from the encrypted cookie. A cookie that
  * only verifies under the legacy AUTH_SECRET key is re-issued under the
  * dedicated key on read (IDN-R2 dual-read drain) and the legacy verification
- * is logged -- SKIP-IDN-R2-DRAIN-TELEMETRY's measurement. Both real callers
+ * is logged -- SKIP-IDN-R2-ACCOUNTS-COOKIE-DRAIN's measurement (a distinct
+ * drain from SKIP-IDN-R2-DRAIN-TELEMETRY, which tracks the gateway session-
+ * mint HS256 fallback, not this cookie). Both real callers
  * (app/api/auth/accounts, app/api/auth/switch) are Route Handlers, so setting
  * a cookie here is a valid Next.js write context.
  */

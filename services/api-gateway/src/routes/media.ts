@@ -56,6 +56,11 @@ function requestId(c: MediaContext): string | null {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null;
 }
 
+// [HUMAN-REQUIRED] SKIP-CAP-MEDIA-UPLOAD-SIGNING-SECRET: MEDIA_UPLOAD_SIGNING_SECRET
+// is declared in the Worker env schema but has never been provisioned as a real
+// staging/production secret, so this fallback is the LIVE signing key today, not
+// dead code -- do NOT remove it until SKIPPED_HUMAN_DECISIONS.md confirms the
+// dedicated secret is provisioned and resolving correctly (S1 W3, SEC-R7).
 function mediaUploadSigningSecret(env: Pick<Env, 'MEDIA_UPLOAD_SIGNING_SECRET' | 'AUTH_SECRET' | 'ENVIRONMENT' | 'APP_ENV'>): string | null {
     const configured = env.MEDIA_UPLOAD_SIGNING_SECRET || env.AUTH_SECRET;
     if (configured && !configured.startsWith('SKIP_NEEDS_HUMAN_')) return configured;

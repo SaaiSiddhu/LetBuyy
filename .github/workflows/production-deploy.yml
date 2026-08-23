@@ -70,6 +70,7 @@ jobs:
           HAS_PRODUCTION_IDENTITY_PRIVATE_JWK: ${{ secrets.PRODUCTION_IDENTITY_PRIVATE_JWK != '' }}
           HAS_PRODUCTION_IDENTITY_PUBLIC_JWKS: ${{ secrets.PRODUCTION_IDENTITY_PUBLIC_JWKS != '' }}
           HAS_PRODUCTION_CHECKOUT_SIGNING_SECRET: ${{ secrets.PRODUCTION_CHECKOUT_SIGNING_SECRET != '' }}
+          HAS_PRODUCTION_MEDIA_UPLOAD_SIGNING_SECRET: ${{ secrets.PRODUCTION_MEDIA_UPLOAD_SIGNING_SECRET != '' }}
           HAS_PRODUCTION_TURNSTILE_SECRET_KEY: ${{ secrets.PRODUCTION_TURNSTILE_SECRET_KEY != '' }}
           HAS_PRODUCTION_INTERNAL_API_SECRET: ${{ secrets.PRODUCTION_INTERNAL_API_SECRET != '' }}
           HAS_PRODUCTION_QUEUE_TENANT_ENVELOPE_SECRET: ${{ secrets.PRODUCTION_QUEUE_TENANT_ENVELOPE_SECRET != '' }}
@@ -106,6 +107,7 @@ jobs:
           [[ "${HAS_PRODUCTION_IDENTITY_PRIVATE_JWK}" == "true" ]] || missing+=("PRODUCTION_IDENTITY_PRIVATE_JWK")
           [[ "${HAS_PRODUCTION_IDENTITY_PUBLIC_JWKS}" == "true" ]] || missing+=("PRODUCTION_IDENTITY_PUBLIC_JWKS")
           [[ "${HAS_PRODUCTION_CHECKOUT_SIGNING_SECRET}" == "true" ]] || missing+=("PRODUCTION_CHECKOUT_SIGNING_SECRET")
+          [[ "${HAS_PRODUCTION_MEDIA_UPLOAD_SIGNING_SECRET}" == "true" ]] || missing+=("PRODUCTION_MEDIA_UPLOAD_SIGNING_SECRET")
           [[ "${HAS_PRODUCTION_TURNSTILE_SECRET_KEY}" == "true" ]] || missing+=("PRODUCTION_TURNSTILE_SECRET_KEY")
           [[ "${HAS_PRODUCTION_INTERNAL_API_SECRET}" == "true" ]] || missing+=("PRODUCTION_INTERNAL_API_SECRET")
           [[ "${HAS_PRODUCTION_QUEUE_TENANT_ENVELOPE_SECRET}" == "true" ]] || missing+=("PRODUCTION_QUEUE_TENANT_ENVELOPE_SECRET")
@@ -320,6 +322,7 @@ jobs:
           echo "${{ secrets.PRODUCTION_STEP_UP_SIGNING_SECRET }}" | pnpm exec wrangler secret put STEP_UP_SIGNING_SECRET --env production
           echo "${{ secrets.PRODUCTION_IDENTITY_PUBLIC_JWKS }}" | pnpm exec wrangler secret put LETBUYY_IDENTITY_PUBLIC_JWKS --env production
           echo "${{ secrets.PRODUCTION_CHECKOUT_SIGNING_SECRET }}" | pnpm exec wrangler secret put CHECKOUT_SIGNING_SECRET --env production
+          echo "${{ secrets.PRODUCTION_MEDIA_UPLOAD_SIGNING_SECRET }}" | pnpm exec wrangler secret put MEDIA_UPLOAD_SIGNING_SECRET --env production
           echo "${{ secrets.PRODUCTION_TURNSTILE_SECRET_KEY }}" | pnpm exec wrangler secret put TURNSTILE_SECRET_KEY --env production
           echo "${{ secrets.PRODUCTION_API_GATEWAY_INTERNAL_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env production
           echo "${{ secrets.PRODUCTION_API_GATEWAY_INTERNAL_SECRET }}" | pnpm exec wrangler secret put LETBUYY_INTERNAL_API_SECRET --env production
