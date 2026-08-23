@@ -157,6 +157,7 @@ const validators = [
   "pricing-catalog-validator.mjs",
   "canonical-ledger-only-validator.mjs",
   "no-self-custody-rail-validator.mjs",
+  "payment-rail-allowlist-validator.mjs",
   "stepup-crypto-validator.mjs",
   "identity-sole-issuer-validator.mjs",
   "no-blanket-service-role-validator.mjs",
