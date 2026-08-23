@@ -57,6 +57,7 @@ const guardTokens = [
   'verifyStoreOwnership',
   'assertStoreOwnership',
   'verifyStoreOwner',
+  'requireOwnedSite',
   'resolveTenantContextForOwnedSite',
   'resolveTenantContextForOrder',
   'resolveOwnedLocalizationStore',
