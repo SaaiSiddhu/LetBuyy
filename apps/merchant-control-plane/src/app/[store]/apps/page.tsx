@@ -4,7 +4,7 @@ import type { InstalledApp } from '@letbuyy/shared-types'
 import { createMerchantApiClient } from '@/lib/api/client'
 import { isAppPlatformEnabled } from '@/lib/app-platform-flag'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
-import { Badge, Card, EmptyState, MaterialIcon, Page, PageHeader, Section } from '@letbuyy/ui'
+import { Badge, Button, Card, EmptyState, MaterialIcon, Page, PageHeader, Section } from '@letbuyy/ui'
 
 interface AppsPageProps {
     params: Promise<{ store: string }>
@@ -84,13 +84,10 @@ export default async function AppsPage({ params }: AppsPageProps) {
                             title="No apps installed"
                             body="Install apps from the marketplace to add embedded workflows to this admin."
                             primaryAction={
-                                <a
-                                    href="https://apps.letbuyy.com"
-                                    className="inline-flex h-[var(--lb-size-control-md)] items-center justify-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-primary)] bg-[var(--lb-color-primary)] px-[var(--lb-space-4)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-inverse)] transition-colors duration-[var(--lb-motion-fast)] hover:bg-[var(--lb-color-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                >
+                                <Button as="a" variant="primary" href="https://apps.letbuyy.com">
                                     <MaterialIcon name="extension" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
                                     Browse apps
-                                </a>
+                                </Button>
                             }
                         />
                     )}

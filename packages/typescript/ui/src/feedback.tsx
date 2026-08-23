@@ -118,6 +118,121 @@ export function StatusBadge({ status, label, variant, ...props }: StatusBadgePro
     return <Badge label={label ?? status} variant={variant ?? statusToBadgeVariant(status)} {...props} />;
 }
 
+/**
+ * The domain layer's semantic tone vocabulary, mirrored STRUCTURALLY.
+ *
+ * Deliberately not imported from `@letbuyy/shared-types`: the design system must
+ * not depend on the domain layer. TypeScript's structural typing means a
+ * `StatusPresentation` produced there is assignable here without either package
+ * knowing about the other — the coupling stays in the app, which imports both.
+ */
+export type StatusToneName = 'neutral' | 'info' | 'success' | 'warning' | 'critical';
+
+/** The only difference between the two vocabularies: the domain says `neutral`. */
+export function toneToVariant(tone: StatusToneName): StatusVariant {
+    return tone === 'neutral' ? 'default' : tone;
+}
+
+/** Structural mirror of the domain layer's `StatusPresentation`. */
+export interface StatusPresentationLike {
+    label: string;
+    tone: StatusToneName;
+    iconKey?: string;
+    a11yLabel?: string;
+}
+
+export interface StatusPresentationBadgeProps extends Omit<BadgeProps, 'label' | 'variant'> {
+    /** A presentation record from the domain layer's canonical status map. */
+    presentation: StatusPresentationLike;
+}
+
+/**
+ * Render a domain status that has already been resolved to a presentation.
+ *
+ * This is the ONLY sanctioned way to show a domain status: the domain owns the
+ * label and the tone, the design system owns how a tone looks. Apps do not
+ * re-derive either.
+ */
+export function StatusPresentationBadge({ presentation, ...props }: StatusPresentationBadgeProps) {
+    return (
+        <Badge
+            label={presentation.label}
+            variant={toneToVariant(presentation.tone)}
+            {...(presentation.a11yLabel ? { 'aria-label': presentation.a11yLabel } : {})}
+            {...props}
+        />
+    );
+}
+
+/**
+ * How a money or fulfilment surface is wired to its payment/shipping provider.
+ *
+ * Vocabulary is fixed by LETBUYY_CONSTITUTION.md (:73 Principle 3, :276 ART-20)
+ * and root AGENTS.md UI-R6 / PAY-R10: `mock | sandbox | live`. DOC 06 UX-R4's
+ * `scaffold` is a subordinate-document deviation and is not used.
+ *
+ * `mock` is deliberately NOT a stored column value — the DB CHECK on the money
+ * tables permits only `sandbox | live`. `mock` is what an ABSENT or unresolvable
+ * provider_mode resolves to: the Constitution defines mock as the default adapter
+ * when nothing real is wired, which is exactly the null case.
+ */
+export type ProviderMode = 'live' | 'sandbox' | 'mock';
+
+/**
+ * Resolve a backend `provider_mode` into a mode that can always be rendered.
+ *
+ * Never returns null. An unknown or missing value resolves to `mock`, because a
+ * money surface that renders NOTHING is indistinguishable from a live one — the
+ * precise failure ANTI-R9 / UX-R33 exist to prevent ("a stub MUST NOT read as
+ * success"). Silence is not honesty.
+ */
+export function normalizeProviderMode(value: unknown): ProviderMode {
+    // 'test' is the legacy alias migrated away by
+    // 167_app_billing_provider_mode_sandbox.sql; still accepted on read.
+    if (value === 'test') return 'sandbox';
+    if (value === 'live' || value === 'sandbox' || value === 'mock') return value;
+    return 'mock';
+}
+
+const providerModePresentation: Record<ProviderMode, { label: string; variant: StatusVariant; description: string }> = {
+    // A real provider, real money.
+    live: { label: 'Live', variant: 'success', description: 'Live provider — real transactions' },
+    // A real provider on test credentials.
+    sandbox: { label: 'Sandbox', variant: 'warning', description: 'Sandbox provider — test transactions only' },
+    // No real adapter wired. Louder than sandbox on purpose: it is the more
+    // dangerous state to mistake for live.
+    mock: { label: 'Mock', variant: 'critical', description: 'Mock provider — not connected to a real payment provider' },
+};
+
+export interface ProviderModeBadgeProps extends Omit<BadgeProps, 'label' | 'variant'> {
+    /** The backend `provider_mode`. Missing/unknown resolves to `mock`. */
+    mode: ProviderMode | string | null | undefined;
+}
+
+/**
+ * The provider-mode honesty badge (UX-R4 / PAY-R10 / ART-20).
+ *
+ * Required on every money and fulfilment surface. Renders label + icon + an
+ * accessible description — never colour alone, and never nothing. Tone comes
+ * from Badge's accessible 700/800 text ramp, so it does not repeat the raw-500
+ * foreground contrast failure the app-local badge shipped (1.93:1 / 2.07:1).
+ */
+export function ProviderModeBadge({ mode, ...props }: ProviderModeBadgeProps) {
+    const resolved = normalizeProviderMode(mode);
+    const presentation = providerModePresentation[resolved];
+
+    return (
+        <Badge
+            label={presentation.label}
+            variant={presentation.variant}
+            title={presentation.description}
+            aria-label={presentation.description}
+            data-provider-mode={resolved}
+            {...props}
+        />
+    );
+}
+
 export interface BannerProps extends React.HTMLAttributes<HTMLDivElement> {
     title?: string;
     children: React.ReactNode;
@@ -182,10 +297,16 @@ export interface ToastProviderProps {
     placement?: ToastPlacement;
 }
 
+// Top placements are viewport-pinned, so on a surface with a fixed app header
+// the default 48px offset lands INSIDE the header. `--lb-toast-offset-block-start`
+// is the consumer hook for that: a shell sets it to clear its own chrome, and
+// every other surface keeps the historical offset via the fallback.
+const TOAST_TOP = 'top-[var(--lb-toast-offset-block-start,calc(var(--lb-space-7)+var(--lb-space-4)))]';
+
 const toastPlacementStyles: Record<ToastPlacement, string> = {
-    'top-right': 'right-[var(--lb-space-5)] top-[calc(var(--lb-space-7)+var(--lb-space-4))]',
-    'top-left': 'left-[var(--lb-space-5)] top-[calc(var(--lb-space-7)+var(--lb-space-4))]',
-    'top-center': 'left-1/2 top-[calc(var(--lb-space-7)+var(--lb-space-4))] -translate-x-1/2',
+    'top-right': `right-[var(--lb-space-5)] ${TOAST_TOP}`,
+    'top-left': `left-[var(--lb-space-5)] ${TOAST_TOP}`,
+    'top-center': `left-1/2 ${TOAST_TOP} -translate-x-1/2`,
     'bottom-right': 'bottom-[var(--lb-space-5)] right-[var(--lb-space-5)]',
     'bottom-left': 'bottom-[var(--lb-space-5)] left-[var(--lb-space-5)]',
     'bottom-center': 'bottom-[var(--lb-space-5)] left-1/2 -translate-x-1/2',

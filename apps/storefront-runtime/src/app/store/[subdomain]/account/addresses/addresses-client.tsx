@@ -6,7 +6,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import type { CustomerAddress } from '@letbuyy/shared-types';
-import { Button, Input,
+import { Banner, Button, Input,
     MapPin, Plus, Trash2, Edit3, Star, Loader2, X, Home, Briefcase, Check,
 } from '@letbuyy/ui';
 import { StorefrontEmptyState, StorefrontListLoadingState } from '@/components/storefront/storefront-states';
@@ -44,15 +44,42 @@ export default function AddressesPageClient() {
     const [form, setForm] = useState(EMPTY_FORM);
     const [saving, setSaving] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [defaultingId, setDefaultingId] = useState<string | null>(null);
+    /** A failed LOAD. Kept separate from `addresses.length === 0` so an outage can
+        never be rendered as "you have no addresses" — the two mean opposite things
+        to a shopper mid-checkout. */
+    const [loadError, setLoadError] = useState<string | null>(null);
+    /** A failed WRITE (save/delete/set-default). Shown next to the action that failed. */
+    const [actionError, setActionError] = useState<string | null>(null);
     const pinCodeComplete = form.postal_code.length === 6;
 
-    const fetchAddresses = useCallback(async () => {
+    /** Pull the server's safe message, falling back to something a shopper can act on. */
+    const messageFrom = async (res: Response, fallback: string): Promise<string> => {
+        try {
+            const body = await res.json();
+            const message = typeof body?.error === 'string' ? body.error : null;
+            return message || fallback;
+        } catch {
+            return fallback;
+        }
+    };
+
+    const fetchAddresses = useCallback(async (): Promise<void> => {
+        setLoadError(null);
         try {
             const res = await fetch('/api/customer/addresses');
+            if (!res.ok) {
+                // A non-2xx must NOT fall through to `addresses: []`. An expired
+                // session (401) previously rendered as an empty address book.
+                setLoadError(res.status === 401
+                    ? 'Your session has expired. Sign in again to see your saved addresses.'
+                    : 'We could not load your addresses.');
+                return;
+            }
             const data = await res.json();
             setAddresses(data.addresses || []);
         } catch {
-            // silent
+            setLoadError('We could not reach the server. Check your connection and try again.');
         } finally {
             setLoading(false);
         }
@@ -86,7 +113,9 @@ export default function AddressesPageClient() {
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (saving) return;
         setSaving(true);
+        setActionError(null);
         try {
             const method = editingId ? 'PUT' : 'POST';
             const body = editingId ? { id: editingId, ...form } : form;
@@ -97,37 +126,71 @@ export default function AddressesPageClient() {
                 body: JSON.stringify(body),
             });
 
-            if (res.ok) {
-                setShowForm(false);
-                setEditingId(null);
-                fetchAddresses();
+            if (!res.ok) {
+                // Previously an `if (res.ok)` with no else: a rejected save closed
+                // nothing, said nothing, and looked identical to a slow one.
+                setActionError(await messageFrom(res, 'We could not save this address.'));
+                return;
             }
+
+            setShowForm(false);
+            setEditingId(null);
+            await fetchAddresses();
+        } catch {
+            setActionError('We could not reach the server. Your address was not saved.');
         } finally {
             setSaving(false);
         }
     };
 
     const handleDelete = async (id: string) => {
+        if (deletingId) return;
         setDeletingId(id);
+        setActionError(null);
         try {
-            await fetch('/api/customer/addresses', {
+            const res = await fetch('/api/customer/addresses', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id }),
             });
+
+            if (!res.ok) {
+                // The row used to be removed from the list unconditionally, so a
+                // rejected delete looked like a successful one until the next reload.
+                setActionError(await messageFrom(res, 'We could not delete this address.'));
+                return;
+            }
+
             setAddresses(prev => prev.filter(a => a.id !== id));
+        } catch {
+            setActionError('We could not reach the server. This address was not deleted.');
         } finally {
             setDeletingId(null);
         }
     };
 
     const setDefault = async (id: string) => {
-        await fetch('/api/customer/addresses', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, is_default: true }),
-        });
-        fetchAddresses();
+        if (defaultingId) return;
+        setDefaultingId(id);
+        setActionError(null);
+        try {
+            const res = await fetch('/api/customer/addresses', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, is_default: true }),
+            });
+
+            if (!res.ok) {
+                setActionError(await messageFrom(res, 'We could not set this address as default.'));
+                return;
+            }
+
+            await fetchAddresses();
+        } catch {
+            setActionError('We could not reach the server. The default address is unchanged.');
+        } finally {
+            setDefaultingId(null);
+        }
     };
 
     if (loading) {
@@ -148,8 +211,35 @@ export default function AddressesPageClient() {
                 </Button>
             </div>
 
-            {/* ── Address Cards ────────────────────────── */}
-            {addresses.length === 0 && !showForm ? (
+            {/* A failed write. role="alert" comes from Banner's critical variant. */}
+            {actionError && (
+                <div className="mb-4">
+                    <Banner variant="critical" title="Something went wrong">
+                        {actionError}
+                    </Banner>
+                </div>
+            )}
+
+            {/* ── Address Cards ──────────────────────────
+                Load failure and "genuinely empty" are rendered as DIFFERENT states.
+                Collapsing them told a shopper their address book was empty when the
+                request had actually failed. */}
+            {loadError ? (
+                <Banner
+                    variant="critical"
+                    title="We could not load your addresses"
+                    action={(
+                        <Button
+                            variant="secondary"
+                            onClick={() => { setLoading(true); void fetchAddresses(); }}
+                        >
+                            Try again
+                        </Button>
+                    )}
+                >
+                    {loadError}
+                </Banner>
+            ) : addresses.length === 0 && !showForm ? (
                 <StorefrontEmptyState
                     icon={<MapPin size={28} aria-hidden="true" />}
                     title="No saved addresses"
@@ -218,10 +308,16 @@ export default function AddressesPageClient() {
                                 {!addr.is_default && (
                                     <Button unstyled
                                         onClick={() => setDefault(addr.id)}
+                                        disabled={defaultingId === addr.id}
                                         className="flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors hover:opacity-80"
                                         style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}
                                     >
-                                        <Star size={12} /> Set Default
+                                        {/* Matches the Delete button beside it, which already
+                                            guarded its in-flight state. */}
+                                        {defaultingId === addr.id
+                                            ? <Loader2 size={12} className="animate-spin" />
+                                            : <Star size={12} />}
+                                        Set Default
                                     </Button>
                                 )}
                                 <Button unstyled

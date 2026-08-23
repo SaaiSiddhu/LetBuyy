@@ -2,26 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { Button,
-    AlertTriangle,
-    Avatar,
-    Badge,
-    Banner,
-    Card,
-    Check,
-    ConfirmDialog,
-    EmptyState,
-    Mail,
-    MessageSquare,
-    Page,
-    PageHeader,
-    RefreshCw,
-    Section,
-    Skeleton,
-    Tabs,
-    Trash2,
-    useToast,
-} from '@letbuyy/ui'
+import { COMMENT_MODERATION_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
+import { AlertTriangle, Avatar, Badge, Banner, Button, Card, Check, ConfirmDialog, EmptyState, Mail, MessageSquare, Page, PageHeader, RefreshCw, Section, Skeleton, StatusPresentationBadge, Tabs, Trash2, useToast } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 
 type CommentStatus = 'pending' | 'approved' | 'spam'
@@ -61,12 +43,6 @@ function getErrorMessage(payload: unknown, fallback: string) {
 
 function statusLabel(status: CommentStatus) {
     return status.charAt(0).toUpperCase() + status.slice(1)
-}
-
-function statusVariant(status: CommentStatus) {
-    if (status === 'approved') return 'success' as const
-    if (status === 'spam') return 'warning' as const
-    return 'default' as const
 }
 
 export default function CommentsPage() {
@@ -203,7 +179,7 @@ export default function CommentsPage() {
                                 <div className="min-w-0">
                                     <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
                                         <p className="m-0 font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">{comment.author_name}</p>
-                                        <Badge label={statusLabel(comment.status)} variant={statusVariant(comment.status)} />
+                                        <StatusPresentationBadge presentation={presentStatus(COMMENT_MODERATION_STATUS_PRESENTATION, comment.status)} />
                                     </div>
                                     <p className="m-0 flex items-center gap-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
                                         <Mail className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />

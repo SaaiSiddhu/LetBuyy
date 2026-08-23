@@ -7,7 +7,7 @@ import Image from 'next/image'
 import type { SessionUser } from '@/lib/auth/session'
 import type { StoreData, UserStore } from './AdminShell'
 import NotificationsPanel from './NotificationsPanel'
-import { Button, MaterialIcon } from '@letbuyy/ui'
+import { Button, MaterialIcon, acquireScrollLock } from '@letbuyy/ui'
 import { resolveKeyboardShortcut } from './merchantNavigation'
 import { getAccountsUrl } from '@/lib/public-urls'
 
@@ -20,6 +20,10 @@ interface HeaderBarProps {
     onSearchOpen: () => void
     onAISidebarToggle: () => void
     isSettingsPage?: boolean
+    /** Whether the shared nav drawer is open — drives the menu/close icon swap. */
+    isMenuOpen?: boolean
+    /** id of the drawer this button controls, for aria-controls. */
+    menuDrawerId?: string
 }
 
 /** Get 2-char initials from a store name. */
@@ -52,6 +56,8 @@ export default function MerchantHeaderBar({
     onSearchOpen,
     onAISidebarToggle,
     isSettingsPage = false,
+    isMenuOpen = false,
+    menuDrawerId,
 }: HeaderBarProps) {
     const router = useRouter()
     const [switcherOpen, setSwitcherOpen] = useState(false)
@@ -70,12 +76,13 @@ export default function MerchantHeaderBar({
         return () => window.removeEventListener('resize', check)
     }, [])
 
-    // Lock body scroll when bottom sheet is open on mobile
+    // Freeze the page behind the mobile bottom sheets. The shared lock, not a
+    // local body.style.overflow write: the page scroller is not the document,
+    // and the old cleanup wrote '' rather than the previous value, which
+    // released the nav drawer's lock if both were open.
     useEffect(() => {
-        if (isMobile && (switcherOpen || notificationsOpen)) {
-            document.body.style.overflow = 'hidden'
-            return () => { document.body.style.overflow = '' }
-        }
+        if (!isMobile || !(switcherOpen || notificationsOpen)) return
+        return acquireScrollLock()
     }, [isMobile, switcherOpen, notificationsOpen])
 
     // Close switcher on outside click (desktop only)
@@ -260,9 +267,13 @@ export default function MerchantHeaderBar({
                         type="button"
                         className="admin-header-hamburger"
                         onClick={onMenuToggle}
-                        aria-label="Open menu"
+                        // MaterialIcon is always aria-hidden, so this label is the
+                        // button's only accessible name — it has to track the state.
+                        aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+                        aria-expanded={isMenuOpen}
+                        aria-controls={menuDrawerId}
                     >
-                        <MaterialIcon name="menu" size={20} />
+                        <MaterialIcon name={isMenuOpen ? 'close' : 'menu'} size={20} />
                     </Button>
 
                     <Link href={`/${store}/dashboard`} className="admin-header-logo" aria-label="LetBuyy dashboard">

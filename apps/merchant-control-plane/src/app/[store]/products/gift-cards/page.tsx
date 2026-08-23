@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { GIFT_CARD_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
 import { formatInrCurrency } from '@letbuyy/ui/formatting'
-import { Button, Input, Table, Badge, Banner, Card, Copy, CreditCard, Drawer, EmptyState, Eye, IndianRupee, Lock, Mail, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, ShieldCheck, Skeleton, useToast } from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, Copy, CreditCard, Drawer, EmptyState, Eye, IndianRupee, Input, Lock, Mail, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, ShieldCheck, Skeleton, StatusPresentationBadge, Table, useToast } from '@letbuyy/ui'
 
 interface GiftCard {
     id: string
@@ -93,13 +94,6 @@ function maskCode(last4: string) {
 
 function statusLabel(status: string) {
     return status ? `${status.charAt(0).toUpperCase()}${status.slice(1)}` : 'Active'
-}
-
-function statusVariant(status: string): 'success' | 'warning' | 'critical' | 'default' {
-    if (status === 'active') return 'success'
-    if (status === 'expired' || status === 'held') return 'warning'
-    if (status === 'disabled') return 'critical'
-    return 'default'
 }
 
 function ledgerLabel(entryType: string) {
@@ -328,7 +322,7 @@ export default function GiftCardsPage() {
             key: 'status',
             header: 'Status',
             render: (row: GiftCard) => (
-                <Badge label={statusLabel(row.status)} variant={statusVariant(row.status)} />
+                <StatusPresentationBadge presentation={presentStatus(GIFT_CARD_STATUS_PRESENTATION, row.status)} />
             ),
         },
         {
@@ -547,7 +541,7 @@ export default function GiftCardsPage() {
                     <div className="flex flex-col gap-[var(--lb-space-5)]">
                         <div className="flex flex-wrap items-center gap-[var(--lb-space-3)]">
                             <Badge label={`Balance ${formatInrCurrency(txData.balance || 0, { maximumFractionDigits: 0 }) || '₹0'}`} variant="info" />
-                            <Badge label={statusLabel(txData.status || 'active')} variant={statusVariant(txData.status || 'active')} />
+                            <StatusPresentationBadge presentation={presentStatus(GIFT_CARD_STATUS_PRESENTATION, txData.status || 'active')} />
                         </div>
 
                         <div>

@@ -144,19 +144,60 @@ export function useFocusTrap(
     }, [active, containerRef, initialFocusRef]);
 }
 
-export function useScrollLock(active: boolean) {
-    useEffect(() => {
-        if (!active || typeof document === 'undefined') return undefined;
+/** Nesting depth of active scroll locks; the page unfreezes only at zero. */
+let scrollLockDepth = 0;
+let scrollLockRestore: { overflow: string; paddingRight: string } | null = null;
+
+/**
+ * Freeze background scrolling while an overlay is open, and return the release.
+ *
+ * Two different things scroll in a LetBuyy surface: the DOCUMENT (auth,
+ * marketing, and any shell that grows with its content) and, in a shell that
+ * fills the viewport, an inner scroll container. Locking `body` alone is a
+ * no-op in the second case, so this also marks the document element with
+ * `data-lb-scroll-locked`; a shell that owns its own scroller keys off that
+ * attribute to freeze it. Surfaces that do not are unaffected — nothing styles
+ * the attribute for them.
+ *
+ * Reference-counted, because overlays nest (a confirm dialog opened from a
+ * drawer). Each caller takes a lock and the original body styles are restored
+ * exactly once, when the last one is released — call sites that saved and
+ * restored `body.style.overflow` independently used to clobber each other.
+ */
+export function acquireScrollLock(): () => void {
+    if (typeof document === 'undefined') return () => {};
+
+    if (scrollLockDepth === 0) {
         const { body } = document;
-        const previousOverflow = body.style.overflow;
-        const previousPaddingRight = body.style.paddingRight;
+        scrollLockRestore = { overflow: body.style.overflow, paddingRight: body.style.paddingRight };
+        // Only meaningful while the DOCUMENT is the scroller. A viewport-filling
+        // shell has no document scrollbar to compensate for; it keeps its own
+        // gutter reserved with `scrollbar-gutter: stable` instead.
         const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
         body.style.overflow = 'hidden';
         if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
-        return () => {
-            body.style.overflow = previousOverflow;
-            body.style.paddingRight = previousPaddingRight;
-        };
+        document.documentElement.setAttribute('data-lb-scroll-locked', 'true');
+    }
+    scrollLockDepth += 1;
+
+    let released = false;
+    return () => {
+        if (released) return;
+        released = true;
+        scrollLockDepth -= 1;
+        if (scrollLockDepth > 0) return;
+        const { body } = document;
+        body.style.overflow = scrollLockRestore?.overflow ?? '';
+        body.style.paddingRight = scrollLockRestore?.paddingRight ?? '';
+        scrollLockRestore = null;
+        document.documentElement.removeAttribute('data-lb-scroll-locked');
+    };
+}
+
+export function useScrollLock(active: boolean) {
+    useEffect(() => {
+        if (!active) return undefined;
+        return acquireScrollLock();
     }, [active]);
 }
 

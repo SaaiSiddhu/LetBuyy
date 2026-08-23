@@ -9,6 +9,28 @@ import {
 const PRODUCT_LIST_REVALIDATE_SECONDS = 60;
 const PRODUCT_DETAIL_REVALIDATE_SECONDS = 30;
 
+/**
+ * A catalogue read that failed.
+ *
+ * These methods used to `return []` on any error, which is indistinguishable
+ * downstream from "this store genuinely has no products" — so a gateway outage
+ * rendered a live merchant's shop as an empty catalogue, with HTTP 200, and Next
+ * ISR-cached that lie for the revalidate window. No alarm fires on a 200.
+ *
+ * Failing loudly instead lets the storefront error boundary (app/error.tsx) show
+ * a real error with a working `reset()` retry, and a thrown render is not cached.
+ * Callers that legitimately want degradation (the sitemap, header search) opt in
+ * with their own `catch` — and both already do.
+ */
+export class StorefrontCatalogueError extends Error {
+    readonly cause?: unknown;
+    constructor(operation: string, cause: unknown) {
+        super(`Storefront catalogue read failed: ${operation}`);
+        this.name = 'StorefrontCatalogueError';
+        this.cause = cause;
+    }
+}
+
 export const ProductService = {
     async getUrbanKicksDemoProducts(productIds?: string[]): Promise<ProductModel[]> {
         return getUrbanKicksDemoProductsFixture(productIds);
@@ -34,7 +56,7 @@ export const ProductService = {
             return products.map(mapWorkerProduct);
         } catch (error) {
             console.error('[ProductService] Worker by-ids fetch failed:', error);
-            return [];
+            throw new StorefrontCatalogueError('getProductsByIds', error);
         }
     },
 
@@ -46,7 +68,7 @@ export const ProductService = {
             return products.data.map(mapWorkerProduct);
         } catch (error) {
             console.error('[ProductService] Worker store fetch failed:', error);
-            return [];
+            throw new StorefrontCatalogueError('getProductsByStoreSubdomain', error);
         }
     },
 
@@ -59,7 +81,7 @@ export const ProductService = {
             return products.data.map(mapWorkerProduct);
         } catch (error) {
             console.error('[ProductService] Worker store-id fetch failed:', error);
-            return [];
+            throw new StorefrontCatalogueError('getProductsByStoreId', error);
         }
     },
 
@@ -76,8 +98,12 @@ export const ProductService = {
             ).storefront.getProduct(subdomain, productId);
             return mapWorkerProduct(product);
         } catch (error) {
+            // `null` from this method means "no such product" and the caller renders
+            // a 404. A FETCH FAILURE is a different fact, so it must not reuse that
+            // channel — a transient gateway error told shoppers the product did not
+            // exist. Not-found still returns null via the happy path above.
             console.error('[ProductService] Worker product fetch failed:', error);
-            return null;
+            throw new StorefrontCatalogueError('getProductById', error);
         }
     },
 

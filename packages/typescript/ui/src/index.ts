@@ -53,6 +53,10 @@ export type {
 export {
     Badge,
     Banner,
+    ProviderModeBadge,
+    normalizeProviderMode,
+    StatusPresentationBadge,
+    toneToVariant,
     EmptyState,
     EmptyStateIllustration,
     SaveBar,
@@ -64,6 +68,11 @@ export {
 } from './feedback';
 export type {
     BadgeProps,
+    ProviderMode,
+    ProviderModeBadgeProps,
+    StatusPresentationBadgeProps,
+    StatusPresentationLike,
+    StatusToneName,
     StatusBadgeProps,
     BannerProps,
     EmptyStateKind,
@@ -81,6 +90,10 @@ export type {
 export { ConfirmDialog, Drawer, Dropdown, DropdownMenu, Modal, Popover, Tooltip } from './overlays';
 export type { ConfirmDialogProps, DrawerProps, DropdownItem, DropdownProps, ModalProps, OverlayTrigger, OverlayTriggerProps, PopoverProps, TooltipProps } from './overlays';
 
+// The same reference-counted lock the overlays use, for app chrome (nav drawers,
+// bottom sheets) that opens outside an <Overlay> and must not fight them.
+export { acquireScrollLock } from './overlay-hooks';
+
 export { Checkbox, ChoiceList, Combobox, Radio, Select, Switch, Tabs } from './controls';
 export type {
     CheckboxProps,
@@ -95,8 +108,8 @@ export type {
     TabsProps,
 } from './controls';
 
-export { AppFrame, Navigation, Sidebar, AppNavigation, isNavItemActive } from './navigation';
-export type { AppFrameProps, NavigationItem, NavigationProps, SidebarProps, AppNavigationProps, AppNavigationSection } from './navigation';
+export { AppFrame, Navigation, Sidebar, ScrollThumb, AppNavigation, isNavItemActive } from './navigation';
+export type { AppFrameProps, NavigationItem, NavigationProps, SidebarProps, ScrollThumbProps, AppNavigationProps, AppNavigationSection } from './navigation';
 
 export {
     InternalEmptyDataState,

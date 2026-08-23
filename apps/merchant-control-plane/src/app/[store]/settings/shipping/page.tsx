@@ -2,21 +2,8 @@
 
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { Button, Input,
-    Badge,
-    Banner,
-    Card,
-    ConfirmDialog,
-    EmptyState,
-    Globe,
-    Plus,
-    Section,
-    Skeleton,
-    Truck,
-    useToast,
-} from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, Globe, Input, normalizeProviderMode, Plus, ProviderModeBadge, Section, Skeleton, Truck, useToast, type ProviderMode } from '@letbuyy/ui'
 import { SettingsPane } from '@/components/settings/SettingsPane'
-import { ProviderModeBadge, normalizeProviderMode } from '@/components/ProviderModeBadge'
 
 interface ShippingZone {
     id: string
@@ -45,7 +32,6 @@ type ShippingPayload = {
     error?: string | { message?: string }
 }
 
-type ProviderMode = 'sandbox' | 'live'
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
 type FormMode = 'add' | 'edit' | null
@@ -139,7 +125,8 @@ export default function ShippingSettingsPage() {
     const [loadError, setLoadError] = useState<string | null>(null)
     const [zones, setZones] = useState<ShippingZone[]>([])
     const [rates, setRates] = useState<ShippingRate[]>([])
-    const [providerMode, setProviderMode] = useState<ProviderMode | null>(null)
+    // See orders/page.tsx: unresolved resolves to 'mock', never null/sandbox.
+    const [providerMode, setProviderMode] = useState<ProviderMode>('mock')
     const [formMode, setFormMode] = useState<FormMode>(null)
     const [editingId, setEditingId] = useState<string | null>(null)
     const [formName, setFormName] = useState('')

@@ -2,27 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { Button, Input, Table,
-    Badge,
-    Banner,
-    Card,
-    ConfirmDialog,
-    EmptyState,
-    Eye,
-    EyeOff,
-    FileText,
-    Page,
-    PageHeader,
-    Plus,
-    RefreshCw,
-    SaveBar,
-    Section,
-    Select,
-    Skeleton,
-    Textarea,
-    Trash2,
-    useToast,
-} from '@letbuyy/ui'
+import { PAGE_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
+import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, Eye, EyeOff, FileText, Input, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Select, Skeleton, StatusPresentationBadge, Table, Textarea, Trash2, useToast } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 
@@ -62,12 +43,6 @@ function getErrorMessage(payload: unknown, fallback: string) {
     }
 
     return fallback
-}
-
-function statusVariant(status: string) {
-    if (status === 'published') return 'success' as const
-    if (status === 'archived') return 'critical' as const
-    return 'default' as const
 }
 
 function statusLabel(status: string) {
@@ -461,7 +436,7 @@ export default function PagesPage() {
                                                 </div>
                                             </td>
                                             <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">
-                                                <Badge label={statusLabel(page.status)} variant={statusVariant(page.status)} />
+                                                <StatusPresentationBadge presentation={presentStatus(PAGE_STATUS_PRESENTATION, page.status)} />
                                             </td>
                                             <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text-subdued)]">
                                                 {formatDate(page.updated_at)}

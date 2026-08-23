@@ -114,7 +114,12 @@ function formatStatus(status: string) {
 
 function statusVariant(status: string): 'success' | 'critical' | 'warning' {
     if (status === 'active' || status === 'trialing') return 'success'
-    if (status === 'expired' || status === 'canceled') return 'critical'
+    // 'cancelled' with two Ls is the only spelling subscriptions.status can hold
+    // (CHECK: active | cancelled | past_due | trialing). The one-L 'canceled' here
+    // could never match. LATENT rather than live today only because the gateway
+    // filters cancelled rows out before the UI sees them (payments.ts:697) —
+    // fixed so it stays correct when that filter changes.
+    if (status === 'expired' || status === 'cancelled') return 'critical'
     return 'warning'
 }
 

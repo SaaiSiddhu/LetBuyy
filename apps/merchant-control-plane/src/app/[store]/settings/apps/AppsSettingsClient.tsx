@@ -188,15 +188,16 @@ export function AppsSettingsClient({ store, installedApps, onUninstall }: AppsSe
                             title="No apps installed"
                             body="Install apps from the marketplace when you are ready to add channels, automations, or embedded merchant tools."
                             primaryAction={(
-                                <a
+                                <Button
+                                    as="a"
+                                    variant="primary"
                                     href={APP_MARKETPLACE_URL}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="inline-flex h-[var(--lb-size-control-md)] items-center justify-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-primary)] bg-[var(--lb-color-primary)] px-[var(--lb-space-4)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-inverse)] hover:bg-[var(--lb-color-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
                                 >
                                     <ExternalLink className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                     Browse app marketplace
-                                </a>
+                                </Button>
                             )}
                         />
                     ) : (

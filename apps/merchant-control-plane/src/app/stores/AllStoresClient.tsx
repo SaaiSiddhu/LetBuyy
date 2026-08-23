@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button, EmptyState, MaterialIcon, Plus, Store } from '@letbuyy/ui'
+import { Button, EmptyState, MaterialIcon, Plus, StatusPresentationBadge, Store } from '@letbuyy/ui'
+import { SITE_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
 import { getAccountsUrl } from '@/lib/public-urls'
 
 interface UserStore {
@@ -162,9 +163,10 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
                                         {store.subdomain}.letbuyy.com
                                     </div>
                                 </div>
-                                <span className={`all-stores-card-status ${store.status === 'active' ? 'active' : 'inactive'}`}>
-                                    {store.status}
-                                </span>
+                                <StatusPresentationBadge
+                                    className="all-stores-card-status"
+                                    presentation={presentStatus(SITE_STATUS_PRESENTATION, store.status)}
+                                />
                             </Button>
                         ))
                     )}

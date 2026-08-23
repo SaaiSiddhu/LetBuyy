@@ -1,15 +1,18 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams } from 'next/navigation'
-import { Badge, Banner, Button, Card, EmptyState, MaterialIcon, Page, PageHeader, Section, Skeleton, useToast } from '@letbuyy/ui'
+import { PAYOUT_STATUS_PRESENTATION, presentStatus, type PayoutStatus } from '@letbuyy/shared-types'
+import { Banner, Button, Card, EmptyState, MaterialIcon, Page, PageHeader, Section, Skeleton, StatusPresentationBadge, useToast } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import { StepUpDialog, type StepUpResult } from '@/components/security/StepUpDialog'
 
 interface PayoutRow {
     id: string
     statement_number: string
-    status: 'pending' | 'processing' | 'released' | 'failed'
+    // Canonical vocabulary from the DB CHECK, not MerchantPayoutStatusSchema
+    // (which declares pending|released — neither of which the column can hold).
+    status: PayoutStatus
     currency: string
     gross_amount_minor: number
     net_amount_minor: number
@@ -40,17 +43,6 @@ function getErrorMsg(payload: unknown, fallback: string): string {
     return fallback
 }
 
-function statusVariant(status: string): 'success' | 'critical' | 'info' | 'warning' {
-    if (status === 'released') return 'success'
-    if (status === 'failed') return 'critical'
-    if (status === 'processing') return 'info'
-    return 'warning'
-}
-
-function titleize(s: string) {
-    return s.charAt(0).toUpperCase() + s.slice(1)
-}
-
 export default function PayoutsPage() {
     const { store } = useParams<{ store: string }>()
     const { notify } = useToast()
@@ -58,6 +50,17 @@ export default function PayoutsPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [releasingId, setReleasingId] = useState<string | null>(null)
+    /**
+     * The payout currently in flight.
+     *
+     * Distinct from `releasingId`, which only records WHICH payout the step-up
+     * dialog is for. Between the step-up closing and the toast arriving, this
+     * screen previously showed no indication at all that money was moving, and
+     * the Release button stayed enabled the whole time.
+     */
+    const [settlingId, setSettlingId] = useState<string | null>(null)
+    /** Stable across retries of one release attempt — see orders/page.tsx. */
+    const settleKeys = useRef(new Map<string, string>())
     const [stepUpOpen, setStepUpOpen] = useState(false)
     const [actionError, setActionError] = useState<string | null>(null)
 
@@ -89,8 +92,14 @@ export default function PayoutsPage() {
 
     const handleReleaseStepUpSuccess = useCallback(async (result: StepUpResult) => {
         if (!releasingId) return
+        if (settlingId) return
         setStepUpOpen(false)
         setActionError(null)
+        setSettlingId(releasingId)
+        const identity = `payout-settle-${releasingId}`
+        const idempotencyKey = settleKeys.current.get(identity)
+            ?? `${identity}-${crypto.randomUUID()}`
+        settleKeys.current.set(identity, idempotencyKey)
         try {
             const response = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/payouts/${encodeURIComponent(releasingId)}/settle`,
@@ -98,7 +107,7 @@ export default function PayoutsPage() {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        idempotency_key: `payout-settle-${releasingId}-${crypto.randomUUID()}`,
+                        idempotency_key: idempotencyKey,
                         step_up_token: result.token,
                         step_up_verified_at: result.verifiedAt,
                     }),
@@ -111,6 +120,7 @@ export default function PayoutsPage() {
                 notify({ title: 'Release failed', description: message, variant: 'critical' })
                 return
             }
+            settleKeys.current.delete(identity)
             notify({ title: 'Payout released', description: 'The payout has been submitted for settlement.', variant: 'success' })
             setReleasingId(null)
             await loadPayouts()
@@ -118,8 +128,10 @@ export default function PayoutsPage() {
             const message = 'Unable to release payout'
             setActionError(message)
             notify({ title: 'Release failed', description: message, variant: 'critical' })
+        } finally {
+            setSettlingId(null)
         }
-    }, [store, releasingId, loadPayouts, notify])
+    }, [store, releasingId, settlingId, loadPayouts, notify])
 
     const emptyState = (
         <EmptyState
@@ -198,12 +210,22 @@ export default function PayoutsPage() {
                                         Net {currency(payout.net_amount_minor)}
                                     </div>
 
-                                    <Badge label={titleize(payout.status)} variant={statusVariant(payout.status)} />
+                                    <StatusPresentationBadge presentation={presentStatus(PAYOUT_STATUS_PRESENTATION, payout.status)} />
 
                                     <div>
-                                        {(payout.status === 'pending' || payout.status === 'processing') && (
+                                        {/* `scheduled`, not `pending`: the CHECK is
+                                            scheduled|processing|paid|failed|cancelled, so the
+                                            previous `=== 'pending'` test could never be true and
+                                            a scheduled payout — the initial state — showed no
+                                            Release action at all. Surfaced by adopting the
+                                            canonical PayoutStatus union. */}
+                                        {(payout.status === 'scheduled' || payout.status === 'processing') && (
                                             <Button
                                                 size="sm"
+                                                // Money is moving: show it, and stop a second
+                                                // release being started while the first is open.
+                                                loading={settlingId === payout.id}
+                                                disabled={settlingId !== null}
                                                 onClick={() => {
                                                     setReleasingId(payout.id)
                                                     setStepUpOpen(true)

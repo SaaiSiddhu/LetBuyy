@@ -50,6 +50,25 @@ type WorkerNavigationPayload = {
 
 const STOREFRONT_REVALIDATE_SECONDS = 60;
 
+/**
+ * A store read that failed.
+ *
+ * `null` from these methods means "no such store", and the storefront layout
+ * renders that as notFound() — an HTTP 404. Catching a FETCH FAILURE into the
+ * same `null` therefore told shoppers and search engines that a live merchant's
+ * shop did not exist, and a 404 is cacheable. Throwing routes the outage to the
+ * storefront error boundary (app/error.tsx) with its working `reset()` retry
+ * instead, and leaves "genuinely absent" as the only thing `null` can mean.
+ */
+export class StorefrontStoreError extends Error {
+    readonly cause?: unknown;
+    constructor(operation: string, cause: unknown) {
+        super(`Storefront store read failed: ${operation}`);
+        this.name = 'StorefrontStoreError';
+        this.cause = cause;
+    }
+}
+
 export const StoreService = {
     getUrbanKicksDemoStore(): StoreModel {
         return buildUrbanKicksDemoStore();
@@ -65,7 +84,7 @@ export const StoreService = {
 
         } catch (error) {
             console.error('[StoreService] Error fetching store through worker:', error);
-            return null;
+            throw new StorefrontStoreError('getStoreBySubdomain', error);
         }
     },
 
@@ -80,7 +99,7 @@ export const StoreService = {
             return data ? mapSupabaseToStore(data, data.current_theme_release || null, navigation) : null;
         } catch (error) {
             console.error('[StoreService] Error fetching preview store through worker:', error);
-            return null;
+            throw new StorefrontStoreError('getPreviewStoreBySubdomain', error);
         }
     },
 
@@ -100,7 +119,7 @@ export const StoreService = {
             return mapSupabaseToStore(storeData, storeData.current_theme_release || null, navigation);
         } catch (error) {
             console.error('[StoreService] Error fetching store status through worker:', error);
-            return null;
+            throw new StorefrontStoreError('getStoreBySubdomainAnyStatus', error);
         }
     },
 
@@ -112,7 +131,7 @@ export const StoreService = {
             return data ? mapSupabaseToStore(data, data.current_theme_release || null) : null;
         } catch (error) {
             console.error('[StoreService] Error fetching store by ID through worker:', error);
-            return null;
+            throw new StorefrontStoreError('getStoreById', error);
         }
     }
 };

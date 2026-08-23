@@ -46,7 +46,51 @@
   --info: rgb(59 130 246);
 
   /* — Header — dark on light theme — */
-  --admin-header-height: 64px;
+  /* ——————————————————————————————————————————————————————————
+     The page-top contract. Two numbers describe the whole thing, every
+     positional rule in this file derives from them, and no surface is allowed
+     to restate them:
+
+       ┌────────────────────────────────┐ ─┐
+       │  logo    search      actions   │  │ --admin-header-height (the bar)
+       ╭┴───────────────────────────────┴╮ ─┘ ← the page plane starts flush here
+      ╱│                                 │╲   --admin-page-curve
+       │  page                           │
+       └─────────────────────────────────┘
+
+     The header's dark does not stop at the bar. The page plane is painted in
+     --header-bg too and extends the full height below it, so the bar reads as
+     continuing downward — but the sheet covers all of it EXCEPT the two corner
+     notches. That is the whole effect: the page overlaps the header's lower
+     part, and the only place the header shows through is the curved space.
+
+     Why the extension belongs to the plane and not to <header>: the header is
+     position:fixed with a z-index, so it is a stacking context — anything
+     painted over its lower strip would also bury the store switcher and
+     notifications popovers that hang below the bar. Painting the strip as the
+     plane's own backing puts the page above it, exactly as intended, while the
+     interactive bar stays on top where its popovers need it.
+     —————————————————————————————————————————————————————————— */
+  /* The bar. 48 + 16 = 64px, from the space scale rather than a magic number,
+     so the chrome rescales with the token system. Everything that must clear
+     the header — the page plane, the drawer, the scrim, the assistant panel,
+     the bottom sheets, toasts — derives from this one value. */
+  --admin-header-height: calc(var(--lb-space-9) + var(--lb-space-4));
+  /* The canonical page-top curve, and therefore exactly how deep and how wide
+     the header shows through at each corner. A touch larger than the 16px panel
+     radius it replaces — the arc is permanent now, so it reads as the shell's
+     silhouette — but no larger: past ~20px the notch starts to look like a
+     bite taken out of the page rather than a softened corner. */
+  --admin-page-curve: calc(var(--lb-radius-xl) + var(--lb-space-1));
+  /* The rail's own corner, one step tighter than the page's. Derived from it,
+     never set independently, so retuning the page top retunes the rail with it.
+     Tighter on purpose: the rail is a narrow dark column, and an arc sized for
+     a full-width sheet eats a visibly larger bite out of it at the same radius. */
+  --admin-rail-curve: calc(var(--admin-page-curve) - var(--lb-space-1));
+  /* Toasts are viewport-pinned; @letbuyy/ui's default top offset predates the
+     app header and lands inside it. Clear the whole header instead. */
+  --lb-toast-offset-block-start: calc(var(--admin-header-height) + var(--lb-space-3));
+
   --header-bg: rgb(10 9 18);
   --header-border: color-mix(in srgb, var(--lb-color-primary) 14%, transparent);
   --header-fg: rgb(255 255 255);
@@ -59,17 +103,15 @@
   --header-search-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 6px 20px color-mix(in srgb, var(--lb-color-primary) 10%, transparent);
 
   /* — Sidebar — dark ink, matched to the header — */
-  /* The nav rail reads as one dark mass with the header (10 9 18), lifted a
-     couple of steps so the two surfaces are still distinguishable, with the
-     light content sheet floating against it. Text inside the rail is inverted
-     in the .admin-panel-sidebar scope below. */
-  --sidebar-bg: rgb(44 38 66);
-  --sidebar-border: rgb(39 34 52);
-  /* Top highlight on the content sheet, so it lifts off the dark header. */
-  --panel-sheet-highlight: rgba(255, 255, 255, 0.75);
-  --sidebar-active-bg: color-mix(in srgb, var(--lb-color-primary) 10%, transparent);
-  --sidebar-active-text: rgb(10 8 22);
-  --sidebar-hover-bg: rgba(55, 46, 88, 0.05);
+  /* Legacy flat aliases, retained because ~850 declarations in this file still
+     read them. They are now DERIVED from the canonical sidebar contract rather
+     than carrying their own literals, so the rail has exactly one source of
+     truth (tokens.ts, admin surface identity). Do not add new consumers. */
+  --sidebar-bg: var(--lb-component-sidebar-bg);
+  --sidebar-border: var(--lb-component-sidebar-border);
+  --sidebar-active-bg: var(--lb-component-sidebar-active-bg);
+  --sidebar-active-text: var(--lb-component-sidebar-active-text);
+  --sidebar-hover-bg: var(--lb-component-sidebar-hover-bg);
 
   /* — Sidebar Layout Tokens (fixed; change these to restyle the whole nav) — */
   --sidebar-width: 226px;
@@ -81,14 +123,13 @@
   --sidebar-child-indent: 26px;
   --sidebar-child-height: 30px;
   --sidebar-section-gap: 14px;
-  --sidebar-panel-radius: 16px;
+  --sidebar-panel-radius: var(--lb-radius-xl);
 
-  /* — @letbuyy/ui AppNavigation tokens (app-shell.tsx uses these) — */
-  --lb-component-sidebar-bg: var(--sidebar-bg);
-  --lb-component-sidebar-border: var(--sidebar-border);
-  --lb-component-sidebar-active-bg: var(--sidebar-active-bg);
-  --lb-component-sidebar-active-text: var(--sidebar-active-text);
-  --lb-component-sidebar-hover-bg: var(--sidebar-hover-bg);
+  /* — @letbuyy/ui AppNavigation: LAYOUT ONLY — */
+  /* The colour half of this block used to re-declare --lb-component-sidebar-*
+     from the legacy aliases above, which inverted the dependency (app CSS
+     feeding the design system instead of consuming it). Colour now flows
+     one way: tokens.ts → --lb-component-sidebar-* → the legacy aliases. */
   --lb-component-sidebar-item-radius: var(--sidebar-item-radius);
   --lb-density-sidebar-row-height: var(--sidebar-item-height);
   --lb-density-sidebar-icon-size: var(--sidebar-icon-size);
@@ -102,16 +143,13 @@
   --foreground: rgb(10 8 22);
 
   /* — Legacy admin page aliases used by online-store surfaces — */
+  /* One direction only: canonical --lb-* → legacy alias. The reverse mappings
+     (--lb-color-primary: var(--primary) et al) that used to sit here formed a
+     literal reference cycle with the --primary block above, and only resolved
+     because a higher-specificity override happened to redeclare one side. */
   --bg-primary: var(--bg);
   --border-primary: var(--border);
-  --accent-color: var(--primary);
-  --lb-color-brand-purple: var(--primary);
-  --lb-color-primary: var(--primary);
-  --lb-color-primary-hover: var(--primary-hover);
-  --lb-color-primary-active: var(--primary-active);
-  --lb-color-primary-subtle: var(--primary-subtle);
-  --lb-color-primary-soft: var(--primary-subtle);
-  --lb-color-focus-ring: var(--primary);
+  --accent-color: var(--lb-color-primary);
 }
 
 /* — Dark Mode — synced with LCIS/Graphify design system — */
@@ -150,21 +188,12 @@
   --header-logo-glow: color-mix(in srgb, var(--lb-color-primary) 22%, transparent);
   --header-search-shadow: 0 1px 0 rgba(55, 46, 88, 0.05) inset, 0 2px 6px rgba(10, 8, 22, 0.05);
 
-  /* — Sidebar — LCIS: #0d0b15 sidebar, solid dark border — */
-  --sidebar-bg: rgb(13 11 21);
-  --sidebar-border: rgb(39 34 52);
-  --sidebar-active-bg: color-mix(in srgb, var(--lb-color-primary) 16%, transparent);
-  --sidebar-active-text: rgb(236 234 245);
-  --sidebar-hover-bg: rgba(255, 255, 255, 0.04);
-  /* Far weaker on dark — a white hairline at 0.75 would read as a seam. */
-  --panel-sheet-highlight: rgba(255, 255, 255, 0.05);
-
-  /* — @letbuyy/ui AppNavigation tokens (dark overrides) — */
-  --lb-component-sidebar-bg: var(--sidebar-bg);
-  --lb-component-sidebar-border: var(--sidebar-border);
-  --lb-component-sidebar-active-bg: var(--sidebar-active-bg);
-  --lb-component-sidebar-active-text: var(--sidebar-active-text);
-  --lb-component-sidebar-hover-bg: var(--sidebar-hover-bg);
+  /* — Sidebar — legacy aliases derived from the canonical dark rail — */
+  --sidebar-bg: var(--lb-component-sidebar-bg);
+  --sidebar-border: var(--lb-component-sidebar-border);
+  --sidebar-active-bg: var(--lb-component-sidebar-active-bg);
+  --sidebar-active-text: var(--lb-component-sidebar-active-text);
+  --sidebar-hover-bg: var(--lb-component-sidebar-hover-bg);
 
   --input-bg: rgb(10 9 18);
   --input-border: rgb(39 34 52);
@@ -174,14 +203,7 @@
 
   --bg-primary: var(--bg);
   --border-primary: var(--border);
-  --accent-color: var(--primary);
-  --lb-color-brand-purple: var(--primary);
-  --lb-color-primary: var(--primary);
-  --lb-color-primary-hover: var(--primary-hover);
-  --lb-color-primary-active: var(--primary-active);
-  --lb-color-primary-subtle: var(--primary-subtle);
-  --lb-color-primary-soft: var(--primary-subtle);
-  --lb-color-focus-ring: var(--primary);
+  --accent-color: var(--lb-color-primary);
 }
 
 @theme inline {
@@ -193,35 +215,70 @@
 }
 
 /* ——————————————————————————————————————————————
-   PREMIUM PALETTE OVERRIDE
-   High-specificity selectors beat letbuyyTokenCss
-   (injected as <style> in <body> — same :root
-   specificity but later document order).
-   html + descendant attr = (0,1,1) beats (0,1,0)
-   —————————————————————————————————————————————— */
+   LEGACY ALIAS BINDING — must live in the design-system scope
 
-/* Light mode — ink lavender */
-html [data-letbuyy-theme="light"],
-html [data-letbuyy-theme="auto"]:not(.dark *) {
-  /* ——— Accent ———
-     Deepened from the stock purple-500 (#8B5CF6), which read as "lite" next to
-     the dark ink rail. purple-700 keeps a clear CTA at 6.5:1 on white while
-     sitting in the same family as the nav. Every accent surface in this app
-     (buttons, badges, icon tints, focus rings, glows) resolves from these four
-     — the ~56 previously hardcoded violet literals now route through them. */
-  /* The accent IS the rail colour — referenced, not copied, so the two can
-     never drift apart. Reads as a near-black ink CTA (13:1 with white text),
-     the same move Shopify makes with its black primary buttons. */
-  --lb-color-primary: var(--sidebar-bg);
-  --lb-color-primary-hover: color-mix(in srgb, var(--sidebar-bg) 88%, white);
-  --lb-color-primary-active: color-mix(in srgb, var(--sidebar-bg) 82%, black);
-  --lb-color-primary-subtle: color-mix(in srgb, var(--sidebar-bg) 10%, white);
-  /* Accent-tinted elevation, derived so it follows the accent automatically. */
-  --lb-shadow-accent-sm: 0 4px 14px color-mix(in srgb, var(--lb-color-primary) 34%, transparent);
+   The brand family is emitted by tokens.ts under
+   `[data-letbuyy-surface="admin"][data-letbuyy-theme="…"]`, which resolves on
+   the <DesignSystemRoot> element — NOT on <html>. A custom property inherits
+   the value it *computed to* where it was declared, so binding these aliases in
+   `:root` would freeze them to whatever <html> resolves (the shared default
+   accent, and — because the canonical sheet also has a
+   `@media (prefers-color-scheme: dark) { :root { … } }` block — potentially the
+   DARK rail on a light page).
+
+   Declaring them here, inside the surface scope, is what makes
+   `var(--primary)` and `var(--sidebar-bg)` agree with `--lb-color-primary`.
+   These are one-way aliases for existing consumers; do not add new ones.
+
+   The `html` prefix is deliberate and is NOT the old colour specificity hack:
+   at (0,1,1) this block outranks the injected `[data-letbuyy-theme="…"]` block
+   (0,1,0) — which is required for the LAYOUT token below, since the injected
+   sheet targets this same element and would otherwise win on document order —
+   while still sitting *below* the canonical surface identity (0,2,0), so every
+   brand colour continues to come from tokens.ts.
+   —————————————————————————————————————————————— */
+html [data-letbuyy-design-system="true"] {
+  /* Layout, app-owned: the merchant nav rail uses an 8px row radius, not the
+     design-system default of 12px. */
+  --lb-component-sidebar-item-radius: var(--sidebar-item-radius);
+
   --primary: var(--lb-color-primary);
   --primary-hover: var(--lb-color-primary-hover);
   --primary-active: var(--lb-color-primary-active);
+  --primary-dark: var(--lb-color-primary-active);
   --primary-subtle: var(--lb-color-primary-subtle);
+  --primary-light: color-mix(in srgb, var(--lb-color-primary) 72%, white);
+  --accent-color: var(--lb-color-primary);
+
+  --sidebar-bg: var(--lb-component-sidebar-bg);
+  --sidebar-border: var(--lb-component-sidebar-border);
+  --sidebar-active-bg: var(--lb-component-sidebar-active-bg);
+  --sidebar-active-text: var(--lb-component-sidebar-active-text);
+  --sidebar-hover-bg: var(--lb-component-sidebar-hover-bg);
+}
+
+/* ——————————————————————————————————————————————
+   MERCHANT SURFACE PALETTE
+
+   The brand family (primary, CTA, secondary, sidebar, focus ring) is NOT
+   declared here. It is owned by the canonical token source
+   `packages/typescript/ui/src/tokens.ts`, which emits it under
+   `[data-letbuyy-surface="admin"][data-letbuyy-theme="…"]` — one selector step
+   above its own `:root` block, inside the same generated stylesheet. There is
+   no cascade race left to win, so the former `html [data-letbuyy-theme]`
+   specificity hack is gone (DOC 03 §35: one token source).
+
+   What remains below is only the neutral page canvas: background, surface,
+   card, border and text ramps. Those are deliberately app-level (the merchant
+   console runs a slightly warmer canvas than the shared default) and they do
+   not participate in the brand hierarchy.
+   —————————————————————————————————————————————— */
+
+/* Light mode — ink lavender canvas */
+html [data-letbuyy-theme="light"],
+html [data-letbuyy-theme="auto"]:not(.dark *) {
+  /* Accent-tinted elevation, derived so it follows the canonical accent. */
+  --lb-shadow-accent-sm: 0 4px 14px color-mix(in srgb, var(--lb-color-primary) 34%, transparent);
 
   --lb-color-bg: rgb(250 249 255);
   --lb-content-bg: rgb(250 249 255);
@@ -230,37 +287,21 @@ html [data-letbuyy-theme="auto"]:not(.dark *) {
   --lb-color-surface-subdued: rgb(244 242 254);
   --lb-color-card: rgb(255 255 255);
   --lb-card-bg: rgb(255 255 255);
-  --lb-sidebar-bg: rgb(44 38 66);
-  --lb-color-sidebar: rgb(44 38 66);
   --lb-color-border: rgb(232 227 250);
   --lb-color-text: rgb(10 8 22);
   --lb-color-text-subdued: rgb(55 46 88);
   --lb-color-text-muted: rgb(103 91 135);
   --lb-color-text-inverse: rgb(255 255 255);
-  /* sidebar component tokens — beat letbuyyTokenCss injection */
-  /* Dark rail: active/hover wash and text all flip to the inverted set. */
-  --lb-component-sidebar-bg: rgb(44 38 66);
-  --lb-component-sidebar-border: rgb(39 34 52);
-  --lb-component-sidebar-active-bg: color-mix(in srgb, var(--lb-color-primary) 20%, transparent);
-  --lb-component-sidebar-active-text: rgb(255 255 255);
-  --lb-component-sidebar-hover-bg: rgba(255, 255, 255, 0.06);
-  --lb-component-sidebar-item-radius: 8px;
 }
 
 /* Dark mode — LCIS/Graphify design system (#0a0912 base) */
 html [data-letbuyy-theme="dark"],
 html.dark [data-letbuyy-theme] {
-  /* One step brighter than light mode — purple-700 goes muddy on a near-black
-     page, so dark takes 600 as the base and steps UP on hover, not down. */
-  --lb-color-primary: #7C3AED;
-  --lb-color-primary-hover: #8B5CF6;
-  --lb-color-primary-active: #6D28D9;
-  --lb-color-primary-subtle: rgba(124, 58, 237, 0.16);
+  /* The brand family (primary / CTA / secondary / sidebar / focus ring) is owned
+     by the canonical admin surface identity in tokens.ts — dark steps UP the same
+     ink hue rather than across to an unrelated violet. Nothing brand-related is
+     redeclared here. */
   --lb-shadow-accent-sm: 0 4px 14px color-mix(in srgb, var(--lb-color-primary) 40%, transparent);
-  --primary: var(--lb-color-primary);
-  --primary-hover: var(--lb-color-primary-hover);
-  --primary-active: var(--lb-color-primary-active);
-  --primary-subtle: var(--lb-color-primary-subtle);
 
   /* Backgrounds — LCIS: #0a0912 bg / #15131f surface / #1b1827 raised */
   --lb-color-bg: rgb(10 9 18);
@@ -271,8 +312,6 @@ html.dark [data-letbuyy-theme] {
   --lb-color-surface-raised: rgb(27 24 39);
   --lb-color-card: rgb(21 19 31);
   --lb-card-bg: rgb(21 19 31);
-  --lb-sidebar-bg: rgb(13 11 21);
-  --lb-color-sidebar: rgb(13 11 21);
   /* Borders — LCIS: solid #272234 / #1d1929 */
   --lb-color-border: rgb(39 34 52);
   --lb-color-border-strong: rgb(55 49 72);
@@ -281,13 +320,6 @@ html.dark [data-letbuyy-theme] {
   --lb-color-text-subdued: rgb(155 148 174);
   --lb-color-text-muted: rgb(110 104 131);
   --lb-color-text-inverse: rgb(10 8 22);
-  /* sidebar component tokens */
-  --lb-component-sidebar-bg: rgb(13 11 21);
-  --lb-component-sidebar-border: rgb(39 34 52);
-  --lb-component-sidebar-active-bg: color-mix(in srgb, var(--lb-color-primary) 16%, transparent);
-  --lb-component-sidebar-active-text: rgb(236 234 245);
-  --lb-component-sidebar-hover-bg: rgba(255, 255, 255, 0.04);
-  --lb-component-sidebar-item-radius: 8px;
   /* table tokens */
   --lb-component-table-bg: rgb(21 19 31);
   --lb-component-table-header-bg: rgb(13 11 21);
@@ -300,32 +332,16 @@ html.dark [data-letbuyy-theme] {
   --lb-component-card-text: rgb(236 234 245);
   --lb-component-card-border: rgb(39 34 52);
   --lb-component-card-shadow: 0 2px 10px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.03) inset;
-  /* button tokens — gradient applied via admin CSS override below */
-  --lb-component-button-primary-bg: var(--lb-color-primary);
-  /* hover must differ from bg or the button has no hover state */
-  --lb-component-button-primary-hover: var(--lb-color-primary-hover);
-  --lb-component-button-primary-active: var(--lb-color-primary-active);
-  --lb-component-button-primary-text: #FFF;
-  --lb-component-button-primary-border: var(--lb-color-primary);
-  --lb-component-button-secondary-bg: rgb(21 19 31);
-  --lb-component-button-secondary-hover: rgb(27 24 39);
-  --lb-component-button-secondary-text: rgb(236 234 245);
-  --lb-component-button-secondary-border: rgb(39 34 52);
-  /* input tokens — LCIS: bg same as page bg, solid dark border */
+  /* Button + badge + input-focus tokens are brand-family and come from the
+     canonical admin surface identity. Only the neutral input chrome stays local. */
   --lb-component-input-bg: rgb(10 9 18);
   --lb-component-input-text: rgb(236 234 245);
   --lb-component-input-border: rgb(39 34 52);
-  --lb-component-input-focus-border: var(--lb-color-primary);
-  --lb-component-input-focus-ring: color-mix(in srgb, var(--lb-color-primary) 15%, transparent);
   /* empty state tokens */
   --lb-component-empty-state-bg: rgb(21 19 31);
   --lb-component-empty-state-border: rgb(39 34 52);
   --lb-component-empty-state-title: rgb(236 234 245);
   --lb-component-empty-state-body: rgb(155 148 174);
-  /* badge accent tokens */
-  --lb-component-badge-accent-bg: color-mix(in srgb, var(--lb-color-primary) 13%, transparent);
-  --lb-component-badge-accent-text: #C4B5FD;
-  --lb-component-badge-accent-border: color-mix(in srgb, var(--lb-color-primary) 30%, transparent);
   /* banner tokens */
   --lb-component-banner-success-bg: #052E16;
   --lb-component-banner-success-text: #22C55E;
@@ -464,26 +480,15 @@ body {
    ADMIN SHELL LAYOUT
    ====================================== */
 
+/* The shell fills the viewport exactly and never scrolls. Everything that can
+   scroll does so inside it (the page plane, the nav rail, the settings pane),
+   which is what keeps the header, the rail and the page's curved top pinned. */
 .admin-shell {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
 }
-
-/* ——————————————————————————————————————————————————————————
-   Inset panel shell
-   The dark header spans full width; the sidebar and content tuck under it as
-   a single rounded sheet. Rounding only the two OUTER top corners (sidebar
-   top-left, content top-right) is what sells the "sheet under a bar" read —
-   rounding all four would make them look like two detached cards.
-   Radii live here rather than as Tailwind arbitrary values in TSX so the
-   design-system arbitrary-radius ratchet does not climb.
-   —————————————————————————————————————————————————————————— */
-/* The layer BEHIND the sheet. Without this the rounded corners reveal
-   --lb-color-bg, which is ~12/255 from the sidebar — a notch with nothing to
-   show. Painting the frame in the header colour is what makes the corners
-   read: the sheet covers everything below the header except those two curves,
-   so the dark only ever shows in the curves themselves. */
 /* ——————————————————————————————————————————————————————————
    Activation board
    Card chrome + hover choreography live here rather than as Tailwind
@@ -567,42 +572,241 @@ body {
   .activation-card:focus-within .activation-art__image { transform: none; }
 }
 
+/* ——————————————————————————————————————————————————————————
+   The page plane
+   One box, exactly one viewport tall, starting flush under the header bar. It
+   is the layer BEHIND the sheet and it is painted in the HEADER's colour, not
+   the page's — that is what makes the header look like it continues downward.
+   The sheet then covers every pixel of it except the two corner notches, so the
+   only place the header shows through is the curved space.
+
+   Radii live here rather than as Tailwind arbitrary values in TSX so the
+   design-system arbitrary-radius ratchet does not climb.
+   —————————————————————————————————————————————————————————— */
 .admin-panel-frame {
   background: var(--header-bg);
+  /* Not margin/top: the frame is a plain flex child of the 100dvh shell, so a
+     padding-top is what reserves the bar while keeping the frame's own box
+     exactly one viewport tall. The reserved strip is painted in --header-bg
+     above, which is what continues the header downward behind the sheet. */
+  padding-top: var(--admin-header-height);
 }
 
 .admin-panel-sidebar {
-  border-top-left-radius: var(--sidebar-panel-radius);
+  /* The rail owns the leading corner of the sheet at >=1024px, and carries the
+     same corner as an overlay drawer below it — one radius for both states. */
+  border-start-start-radius: var(--admin-rail-curve);
   overflow: hidden;
 
-  /* The rail is dark in BOTH themes, but the light theme's text tokens are near
-     black. Re-point them inside this subtree only, so @letbuyy/ui's sidebar
-     (which composes from --lb-color-text / -subdued) inverts without the shared
-     component needing to know it is sitting on dark. */
-  /* Softened off pure white — near-white on a dark rail glares, and the rest
-     labels render at 82% of this. Still comfortably AA on rgb(44 38 66):
-     ~8.5:1 for labels, ~4.8:1 for subdued at sidebar text size. */
-  --lb-color-text: rgb(212 208 228);
-  --lb-color-text-subdued: rgb(160 153 182);
-  --lb-color-text-muted: rgb(140 133 162);
-  --lb-component-sidebar-section-text: rgb(146 139 168);
-  /* The rail is dark, so it keeps the brighter accent: the deepened page
-     accent (#6D28D9) is only ~1.4:1 against rgb(44 38 66) and the active row
-     and rail indicator would disappear. */
-  --lb-color-primary: #8B5CF6;
-  color: var(--lb-color-text);
+  /* Layout only. The rail's colours — including its inverted text ramp and the
+     lighter accent the active row/rail indicator needs against a dark surface —
+     come from the canonical `--lb-component-sidebar-*` contract for the admin
+     surface. This subtree no longer redefines --lb-color-text or
+     --lb-color-primary; doing so leaked a sidebar-local brand colour into every
+     descendant that happened to read the global token. */
+  color: var(--lb-component-sidebar-text);
 }
 
-.admin-panel-content {
-  border-top-right-radius: var(--sidebar-panel-radius);
-  /* Hairline along the top edge lifts the sheet off the header. */
-  box-shadow: inset 0 1px 0 var(--panel-sheet-highlight);
+/* ——————————————————————————————————————————————————————————
+   The scrollport IS the sheet.
+   The curve has to live on the element that stays still, not on the content
+   that moves — that is the whole reason it used to slide out of view. This is
+   AppFrame's <main>, given a definite height by `fixedViewport`, so `overflow`
+   clips the scrolling page to the rounded top for free and the arc is fixed by
+   construction rather than by a mask painted over the top of the page.
+   —————————————————————————————————————————————————————————— */
+.admin-page-scroll {
+  background: var(--lb-color-bg);
+  border-start-end-radius: var(--admin-page-curve);
+  /* Reserve the gutter permanently: without it, freezing this scroller for a
+     modal (see [data-lb-scroll-locked] below) would shift the page sideways. */
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+
+  /* The scrollbar is a UA widget painted in the border box, and browsers do NOT
+     reliably clip it to border-radius — so a default bar lands square on top of
+     the trailing curve and fills the notch with its grey track the moment a page
+     becomes scrollable. That is why the curve looked correct on short pages and
+     turned grey on long ones. A thin bar with a transparent track keeps the
+     notch showing the header colour at every scroll position, and matches the
+     treatment the settings pane and the nav rails already use. */
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--lb-color-text) 22%, transparent) transparent;
+}
+
+.admin-page-scroll::-webkit-scrollbar {
+  width: var(--lb-space-1);
+  height: var(--lb-space-1);
+}
+
+.admin-page-scroll::-webkit-scrollbar-track,
+.admin-page-scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.admin-page-scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--lb-color-text) 22%, transparent);
+  border-radius: var(--lb-radius-full);
+}
+
+/* Freeze the page behind an overlay. The shared lock in @letbuyy/ui sets
+   `overflow:hidden` on <body>, which does nothing here because <body> is not
+   the scroller — so it also marks the document element, and this is the rule
+   that makes the mark mean something. */
+/* Both, because which one is live depends on the route: on settings at >=1024px
+   the panel's content column is the scroller and .admin-page-scroll is inert,
+   and below 1024px it is the other way round. Freezing only one meant every
+   modal and confirm dialog on desktop settings let the page scroll behind it. */
+[data-lb-scroll-locked] .admin-page-scroll,
+[data-lb-scroll-locked] .settings-content {
+  overflow: hidden;
+}
+
+/* Settings render into the SAME scrollport as every other route. This wrapper
+   carries no scrolling and no chrome of its own — it exists only to give the
+   desktop panel, a fixed-height grid, a definite height to resolve its
+   percentages against. It used to carry an inline
+   `paddingTop: var(--admin-header-height); minHeight: 100vh`, which
+   double-counted the header now that the frame reserves it. */
+.admin-settings-wrapper {
+  /* A flex column for two reasons, both bugs rather than aesthetics:
+     - the draft banner is an in-flow sibling ABOVE the panel, and with the panel
+       sized `100% - 2*margin` the two summed to more than the wrapper, pushing
+       the card's bottom edge past the fold and giving a supposedly frozen page
+       real scroll. As a flex item the panel takes what is LEFT after the banner.
+     - a flex container does not collapse its children's margins, so the panel's
+       20px top margin can no longer escape through the wrapper. */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--lb-color-bg);
 }
 
 @media (max-width: 1023px) {
-  /* Sidebar is an overlay below lg, so the content sheet owns both corners. */
-  .admin-panel-content {
-    border-top-left-radius: var(--sidebar-panel-radius);
+  /* Below lg the panel goes flat and hands scrolling up (.settings-content is
+     height:auto/overflow:visible there). It hands it all the way up to
+     .admin-page-scroll — NOT to this wrapper. A scroller here would be a second,
+     inner scrollport whose top is square, and the page's curve would then clip a
+     surface that never moves: the arc would be real but nothing would scroll
+     under it. Growing instead of filling is what pushes the overflow outward to
+     the one scrollport that owns the curve. */
+  .admin-settings-wrapper {
+    height: auto;
+    min-height: 100%;
+  }
+}
+
+/* The sheet's LEADING corner belongs to whatever is flush against the viewport
+   edge there. With a docked rail that is the rail; without one it is the sheet.
+   Two independent reasons the rail can be absent, hence two rules for one
+   declaration:
+     --flush  : a route whose rail is hidden at every width (settings brings its
+                own panel rail), set by AdminShell.
+     <1024px  : the rail is an overlay drawer on every route.
+   Both take --admin-page-curve exactly — no allowance, no asymmetry. This used
+   to be `+ 1px` below lg, to stop a sub-pixel crescent of the near-white sheet
+   showing through the drawer's coincident arc while the drawer is open ("white
+   particles"). A 1px difference between the page's two top corners is the more
+   visible defect of the two, and it is on screen all the time rather than only
+   while the drawer is open. */
+.admin-page-scroll--flush {
+  border-start-start-radius: var(--admin-page-curve);
+}
+
+@media (max-width: 1023px) {
+  .admin-page-scroll {
+    border-start-start-radius: var(--admin-page-curve);
+  }
+}
+
+/* Back affordance in the settings drawer's header slot. The shared Sidebar
+   header supplies the bottom hairline and padding; this is the row inside it.
+   Colours come from the canonical --lb-component-sidebar-* contract so it
+   matches the nav rows below it exactly. */
+.admin-drawer-back {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-2);
+  /* Same row height as the nav items below it, so the header reads as one more
+     compact row rather than a chunky banner eating drawer real estate. */
+  min-height: var(--lb-density-sidebar-row-height);
+  padding: 0 var(--lb-space-2);
+  border-radius: var(--lb-component-sidebar-item-radius);
+  color: color-mix(in srgb, var(--lb-component-sidebar-text) 76%, transparent);
+  font-size: var(--lb-font-size-secondary);
+  font-weight: var(--lb-font-weight-medium);
+  line-height: var(--lb-line-height-secondary);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  transition: background var(--lb-motion-fast) var(--lb-ease-standard),
+              color var(--lb-motion-fast) var(--lb-ease-standard);
+}
+
+/* Tighten the shared Sidebar header slot that wraps the back row, and give its
+   BOTTOM divider — the hairline "Back to home" sits above — the same curved
+   treatment the rest of the shell uses: a border with radius on only the
+   corners it owns still draws a visible arc at each end, so the line reads as
+   a soft-cornered tab rather than a hard rule. Both the colour and the
+   radius are pulled up here from the shared --lb-component-sidebar-border /
+   plain corners, which is why they need restating at all.
+   Scoped by :has() so only the drawer's back-row header is touched — the main
+   nav rail has no header slot, and no other Sidebar consumer is affected. */
+.admin-panel-sidebar > div:has(> .admin-drawer-back) {
+  padding: var(--lb-space-1) var(--lb-space-2);
+  /* Secondary, not the near-invisible sidebar-border token: on the forced-light
+     admin surface --lb-color-secondary-action is brandInk 700 against a
+     brandInk 800 rail — one step lighter than the surface it sits on, so the
+     divider actually reads instead of nearly matching the background. */
+  border-color: var(--lb-color-secondary-action);
+  border-bottom-left-radius: var(--lb-component-sidebar-item-radius);
+  border-bottom-right-radius: var(--lb-component-sidebar-item-radius);
+}
+
+/* The footer nav slot's TOP divider — the hairline above the sticky bottom
+   "Settings" row — takes the same secondary colour and the same curve,
+   mirrored to the corners IT owns. Scoped to the one footer this app renders
+   (the settings-shortcut nav; settings routes pass no footer at all). */
+.admin-panel-sidebar > div:has(> nav[aria-label="Settings navigation"]) {
+  border-color: var(--lb-color-secondary-action);
+  border-top-left-radius: var(--lb-component-sidebar-item-radius);
+  border-top-right-radius: var(--lb-component-sidebar-item-radius);
+}
+
+.admin-drawer-back:hover {
+  background: var(--lb-component-sidebar-hover-bg);
+  color: var(--lb-component-sidebar-text);
+}
+
+.admin-drawer-back:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--lb-color-focus-ring);
+}
+
+.admin-drawer-back .letbuyy-icon {
+  width: var(--lb-space-4);
+  height: var(--lb-space-4);
+  flex-shrink: 0;
+}
+
+/* Only the OPEN overlay state carries .admin-panel-drawer, so the in-flow
+   desktop rail is never animated. Reuses @keyframes slideInLeft — the same one
+   the deleted settings drawer used — so unifying is not a motion regression. */
+@media (max-width: 1023px) {
+  .admin-panel-drawer {
+    animation: slideInLeft var(--lb-motion-slow) var(--lb-ease-out);
+    /* The trailing edge stays SQUARE on purpose. Rounding it cuts a notch out of
+       the rail that can only show what is behind — the white page — so a bright
+       wedge appears between the dark header above and the dark rail below, and
+       the curve reads as damage rather than as a corner. The rail is only ever
+       curved against dark: its leading corner, over the frame.
+       A soft shadow is what separates it from the page now that no scrim does. */
+    box-shadow: var(--lb-space-1) 0 var(--lb-space-6) color-mix(in srgb, var(--lb-color-text) 22%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-panel-drawer {
+    animation: none;
   }
 }
 
@@ -614,30 +818,11 @@ body {
     var(--bg);
 }
 
-/* Dark mode — LCIS-style gradient CTA buttons */
-.dark .bg-\[var\(--lb-component-button-primary-bg\)\] {
-  background: linear-gradient(180deg, var(--lb-color-primary), #6D28D9);
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--lb-color-primary) 42%, transparent);
-}
-.dark .bg-\[var\(--lb-component-button-primary-bg\)\]:hover {
-  background: linear-gradient(180deg, #9D6EF8, var(--lb-color-primary));
-  box-shadow: 0 4px 18px color-mix(in srgb, var(--lb-color-primary) 52%, transparent);
-}
-.dark .bg-\[var\(--lb-component-button-primary-bg\)\]:active {
-  background: #4C1D95;
-  box-shadow: none;
-}
-
-.admin-body {
-  display: flex;
-  flex: 1;
-  margin-top: var(--admin-header-height);
-  /* below fixed header */
-  background: var(--sidebar-bg);
-  padding: 0 0 0 0;
-  gap: 0;
-  overflow: hidden;
-}
+/* The dark-mode CTA gradient that used to live here targeted the escaped Tailwind
+   utility class emitted by the shared <Button> (`.bg-\[var\(--lb-component-button-primary-bg\)\]`)
+   and painted over the component token with a hardcoded #6D28D9/#9D6EF8/#4C1D95
+   ramp. That coupled app CSS to a generated class name and made the token
+   inert. Primary-button appearance now comes from the component tokens alone. */
 
 /* — Sidebar — */
 /* ======================================
@@ -888,37 +1073,32 @@ body {
 }
 
 /* — Mobile Sidebar — */
+/* The drawer's click-outside-to-close catcher — deliberately INVISIBLE.
+   It used to paint rgba(0,0,0,.5) over the page, which dimmed the whole app
+   the moment the nav opened. The drawer is a distinct dark rail with a rounded
+   edge over a light page; it does not need a scrim to read as being on top, and
+   the scrim made the curve it now carries impossible to see. The element stays
+   because it is what makes a tap outside dismiss the drawer, and it keeps the
+   "Close navigation" accessible name. */
 .admin-sidebar-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: transparent;
   z-index: 39;
-  animation: fadeIn 0.2s ease;
 }
 
 .admin-sidebar-overlay.active {
   display: block;
 }
 
-/* — Main Content — */
-.admin-main {
-  margin-left: var(--sidebar-width);
-  flex: 1;
-  min-height: calc(100vh - var(--admin-header-height));
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  position: relative;
-  transition: margin-right var(--lb-motion-slow) var(--lb-ease-out);
-  overflow-x: hidden;
-  border-radius: 0;
-}
-
 /* ======================================
    HEADER BAR
    ====================================== */
 
+/* The interactive bar only. Its dark is continued below by the page plane's
+   backing, which the sheet then covers except at the corners — see the
+   page-top contract in :root. */
 .admin-header {
   display: flex;
   align-items: center;
@@ -1005,6 +1185,28 @@ body {
   background: var(--header-control-bg);
   border-color: var(--header-control-border);
   color: var(--header-fg);
+}
+
+.admin-header-hamburger:focus-visible {
+  outline: 2px solid var(--primary-light);
+  outline-offset: 2px;
+}
+
+/* The drawer is the ONLY path to sidebar navigation below lg (1024px): the main
+   rail is `hidden lg:flex` and the settings rail is display:none from 1023px
+   down. Revealing its trigger only at 768px left a 769-1023px band with no
+   reachable sidebar nav at all. Match the lg breakpoint instead. */
+@media (max-width: 1023.98px) {
+  .admin-header-hamburger {
+    display: flex;
+  }
+
+  /* Start the scrim at the page plane's top — the SAME edge the drawer uses —
+     at every width the drawer exists, not only <=768px. If the two disagree a
+     band of scrim shows above the drawer's curve. */
+  .admin-sidebar-overlay.active {
+    top: var(--admin-header-height);
+  }
 }
 
 /* Center search bar */
@@ -1732,23 +1934,12 @@ body {
   font-size: var(--lb-font-size-small);
 }
 
+/* Badge supplies its own tone, padding, radius and typography. Only the flex
+   behaviour in this card layout is still this stylesheet's business — the
+   red/green .active/.inactive pair was deleted with the impossible
+   `status === 'active'` test that selected it. */
 .all-stores-card-status {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 20px;
   flex-shrink: 0;
-  text-transform: capitalize;
-}
-
-.all-stores-card-status.active {
-  background: rgba(16, 185, 129, 0.12);
-  color: rgb(16 185 129);
-}
-
-.all-stores-card-status.inactive {
-  background: rgba(239, 68, 68, 0.12);
-  color: var(--error);
 }
 
 .all-stores-empty-state {
@@ -2153,13 +2344,6 @@ body {
    SETTINGS SCREEN
    ====================================== */
 
-/* Main container on settings pages — no left margin */
-.admin-main.settings-active {
-  margin-left: 0;
-  overflow: hidden;
-  background: color-mix(in srgb, var(--bg-secondary) 84%, var(--bg) 16%);
-}
-
 /* ══════════════════════════════════════════════════════════════════
    Settings layout system
    All measurements live here — reference --lb-* tokens throughout
@@ -2170,7 +2354,6 @@ body {
   /* ── Component-scoped layout tokens ──────────────────────────── */
   /* Sidebar */
   --settings-sidebar-w: 300px;
-  --settings-sidebar-radius: var(--lb-radius-lg);
   --settings-sidebar-store-h: calc(var(--lb-space-7) + var(--lb-space-4));   /* 48px */
   --settings-sidebar-user-h: calc(var(--lb-space-7) + var(--lb-space-4));
   --settings-sidebar-avatar-sz: calc(var(--lb-space-7) + var(--lb-space-1)); /* 36px */
@@ -2186,20 +2369,27 @@ body {
   --settings-search-radius: var(--lb-radius-md);
   --settings-search-icon-sz: var(--lb-space-4);
   --settings-search-font: var(--lb-font-size-secondary);
-  /* Nav items */
-  --settings-nav-item-h: var(--lb-space-7);                                  /* 32px */
-  --settings-nav-item-radius: var(--lb-radius-md);
-  --settings-nav-item-font: var(--lb-font-size-secondary);                   /* 13px */
+  /* Nav items — sourced directly from the main sidebar's row tokens
+     (--sidebar-item-height / --sidebar-item-radius / --sidebar-icon-size
+     above, which feed --lb-density-sidebar-* and --lb-component-sidebar-*)
+     so this panel's rows can never drift out of sync with the primary nav
+     again; retuning the main sidebar retunes this one with it. */
+  --settings-nav-item-h: var(--lb-density-sidebar-row-height);               /* 32px, tracks main sidebar */
+  --settings-nav-item-radius: var(--lb-component-sidebar-item-radius);       /* 8px, tracks main sidebar */
+  --settings-nav-item-font: var(--lb-font-size-sidebar);                     /* 14px, tracks main sidebar */
   --settings-nav-item-pad-x: var(--lb-space-3);                              /* 12px */
-  --settings-nav-item-gap: var(--lb-space-2);
+  --settings-nav-item-gap: var(--lb-space-3);                                /* 12px, tracks main sidebar's icon/label gap */
   --settings-nav-pad: var(--lb-space-2);
   --settings-nav-group-font: var(--lb-font-size-caption);
-  --settings-nav-icon-sz: var(--lb-space-4);
+  --settings-nav-icon-sz: var(--lb-density-sidebar-icon-size);               /* 18px, tracks main sidebar */
   /* Shell panel */
   --settings-shell-max-w: 1120px;
   --settings-shell-pad-x: var(--lb-space-7);                                 /* 32px */
   --settings-shell-pad-y: var(--lb-space-5);                                 /* 20px */
-  --settings-shell-radius: var(--lb-radius-xl);                              /* 16px */
+  /* Derived, never set independently. The card is a surface nested INSIDE the
+     page top, so it takes the same step-down the nav rails take rather than
+     restating the page's own radius — retuning --admin-page-curve retunes both. */
+  --settings-shell-radius: var(--admin-rail-curve);
   /* Content area */
   --settings-content-max-w: 860px;
   --settings-content-pad-x: var(--lb-space-8);                               /* 40px */
@@ -2207,24 +2397,34 @@ body {
   --settings-content-pad-bottom: var(--lb-space-9);                          /* 48px */
   --settings-content-header-h1: var(--lb-font-size-h2);                      /* 24px */
   --settings-content-meta-size: var(--lb-font-size-secondary);               /* 13px */
-  /* Mobile */
-  --settings-drawer-w: min(320px, calc(100vw - var(--lb-space-8)));
-  --settings-mob-topbar-pad: var(--lb-space-3);
 
   /* ── Unified panel layout (Shopify-style: sidebar + content = one connected panel) */
   display: grid;
   grid-template-columns: var(--settings-sidebar-w) 1fr;
   align-items: stretch;
   gap: 0;                                                   /* no gap — sidebar border separates them */
-  height: calc(100vh - var(--admin-header-height) - 2 * var(--settings-shell-pad-y));
+  /* Fill what the wrapper has left, rather than assuming the panel is its only
+     child — see the draft-banner note on .admin-settings-wrapper. min-height:0
+     is what lets a flex item actually shrink to its container so the inner
+     content column, not the page, is what scrolls. */
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: hidden;
   /* Center the panel on the page with side breathing room */
   width: min(var(--settings-shell-max-w), calc(100% - 2 * var(--settings-shell-pad-x)));
   margin: var(--settings-shell-pad-y) auto;
   border-radius: var(--settings-shell-radius);
-  border: 1px solid var(--lb-color-border);
   background: var(--lb-color-surface);
-  box-shadow: var(--lb-shadow-card);
+  /* The card's edge is an INSET RING, not a border. With a border, `overflow`
+     clips to the PADDING box — the radius minus the border width — so the dark
+     rail underneath had to be given its own `calc(radius - 1px)` arc to hide the
+     light crescent the mismatched antialiasing exposed. With no border the clip
+     radius IS the card radius, the rail takes the same token, and this surface
+     is left with exactly two rendered radii: the page's and this one. The ring
+     paints inside the clip, so it follows the same arc. */
+  box-shadow:
+    inset 0 0 0 1px var(--lb-color-border),
+    var(--lb-shadow-card);
 }
 
 /* ── Settings sidebar — left column of the unified panel ── */
@@ -2237,22 +2437,39 @@ body {
      rather than two competing panels. Reuses the rail token so the two stay
      in sync if it is retuned. */
   background: var(--lb-component-sidebar-bg);
-  border-radius: 0;
+  /* The rail paints its own arc coincident with the card's clip, at the SAME
+     radius. That is only possible because the card's edge is an inset ring
+     rather than a border (see .settings-shell): with a border, `overflow` clips
+     to the padding box and the rail had to be cut 1px tighter to stop a
+     discontinuous run of the card's light surface showing along the arc — the
+     white speckle. Removing the border removed the cause, so the third radius
+     value went with it. Logical properties so a future RTL mirror stays correct. */
+  border-start-start-radius: var(--settings-shell-radius);
+  border-end-start-radius: var(--settings-shell-radius);
   box-shadow: none;
 
   /* Every child in this panel derives from --text-primary / --bg /
      --bg-secondary / --border (14 declarations, mostly color-mix ramps off
      --text-primary). Re-pointing those four here inverts the whole panel —
      store name, search, group labels, nav items, user footer — without
-     touching a single child rule. */
-  --text-primary: rgb(212 208 228);
-  --bg: rgb(44 38 66);
-  --bg-secondary: rgb(56 49 84);
-  --border: rgb(66 58 96);
-  --lb-color-border: rgb(66 58 96);
-  /* Brighter accent on the dark rail — same reason as .admin-panel-sidebar. */
-  --lb-color-primary: #8B5CF6;
-  --primary: var(--lb-color-primary);
+     touching a single child rule.
+
+     These are panel-local presentation aliases mapped onto the canonical
+     sidebar contract, NOT independent colour sources: retuning the rail in
+     tokens.ts retunes this panel with it. --lb-color-primary is deliberately
+     NOT redefined here — the rail-appropriate accent is already carried by
+     --lb-component-sidebar-rail-color. */
+  --text-primary: var(--lb-component-sidebar-text);
+  --bg: var(--lb-component-sidebar-bg);
+  --bg-secondary: color-mix(in srgb, var(--lb-component-sidebar-text) 10%, var(--lb-component-sidebar-bg));
+  --border: color-mix(in srgb, var(--lb-component-sidebar-text) 18%, var(--lb-component-sidebar-bg));
+  --lb-color-border: var(--border);
+  /* Accent chips inside this panel (store icon, user avatar, nav badge dot) are
+     filled with var(--primary). The page-level primary IS the rail colour, so on
+     this panel it would be invisible against its own background. Re-point the
+     panel-local alias at the rail accent, which is chosen to read against the
+     rail (4.95:1 light / 6.18:1 dark) — still canonical, still one source. */
+  --primary: var(--lb-component-sidebar-rail-color);
   color: var(--text-primary);
   border-right: 1px solid var(--lb-color-border);
   display: flex;
@@ -2268,7 +2485,17 @@ body {
   gap: var(--settings-sidebar-store-gap);
   min-height: var(--settings-sidebar-store-h);
   padding: var(--lb-space-3) var(--settings-sidebar-pad-x);
-  border-bottom: 1px solid var(--border);
+  /* Secondary, not the panel-local --border alias: that resolves to an
+     18%-mix wash of the rail text over the rail bg — close enough to the
+     surface it sits on to nearly disappear, same problem the main drawer's
+     header/footer dividers had. --lb-color-secondary-action is one step
+     lighter than the rail and reads as an actual line. Radius on only the
+     corners this divider owns (bottom, since it sits at the bottom of this
+     block) still draws a visible arc at each end — same technique, same
+     item-radius token the nav rows below already track. */
+  border-bottom: 1px solid var(--lb-color-secondary-action);
+  border-bottom-left-radius: var(--lb-component-sidebar-item-radius);
+  border-bottom-right-radius: var(--lb-component-sidebar-item-radius);
   margin-bottom: 0;
 }
 
@@ -2277,7 +2504,8 @@ body {
   height: var(--settings-sidebar-avatar-sz);
   border-radius: var(--settings-sidebar-avatar-radius);
   background: var(--primary);
-  color: white;
+  /* Ink on the light rail accent (5.83:1) — white would only reach 2.9:1. */
+  color: var(--lb-component-sidebar-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2354,35 +2582,38 @@ body {
   color: color-mix(in srgb, var(--text-primary) 48%, transparent);
 }
 
-/* Navigation */
+/* Navigation — wrapping track holds the always-on custom scroll thumb
+   (NavScrollThumb in SettingsShell.tsx). Native scrollbars, even styled
+   ones, fade to invisible on idle in macOS Safari/Chrome — an OS-level
+   overlay behaviour no CSS property can opt out of — which is why the thumb
+   is a plain positioned DOM node instead. */
+.settings-sidebar-nav-track {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
 .settings-sidebar-nav {
   flex: 1;
   padding: 0 var(--settings-nav-pad) var(--lb-space-2);
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.14) transparent;
+  /* Native scrollbar hidden — the shared @letbuyy/ui ScrollThumb draws the
+     always-visible one (native bars fade out on idle on macOS). */
+  scrollbar-width: none;
 }
 .settings-sidebar-nav::-webkit-scrollbar {
-  width: 4px;
-}
-.settings-sidebar-nav::-webkit-scrollbar-track {
-  background: transparent;
-}
-.settings-sidebar-nav::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.14);
-  border-radius: 4px;
-}
-.dark .settings-sidebar-nav {
-  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
-}
-.dark .settings-sidebar-nav::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.18);
+  display: none;
 }
 
 .settings-nav-group-label {
-  padding: var(--lb-space-3) var(--settings-nav-item-pad-x) var(--lb-space-1);
+  /* --lb-space-5 (20px) top — same breathing room the main sidebar gives
+     each section (mt-[--lb-space-5] in app-shell.tsx), so groups read as
+     distinct blocks instead of running into each other. */
+  padding: var(--lb-space-5) var(--settings-nav-item-pad-x) var(--lb-space-1);
   font-size: var(--settings-nav-group-font);
   font-weight: 700;
   text-transform: uppercase;
@@ -2398,12 +2629,13 @@ body {
   padding: 0 var(--settings-nav-item-pad-x);
   border-radius: var(--settings-nav-item-radius);
   font-size: var(--settings-nav-item-font);
-  font-weight: 600;
+  line-height: var(--lb-line-height-sidebar);
+  font-weight: var(--lb-font-weight-medium);
   color: color-mix(in srgb, var(--text-primary) 76%, transparent);
   text-decoration: none;
   transition: background var(--lb-motion-fast), color var(--lb-motion-fast);
   cursor: pointer;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
   min-width: 0;
 }
 
@@ -2415,7 +2647,7 @@ body {
 .settings-nav-item.active {
   background: color-mix(in srgb, var(--text-primary) 8%, var(--bg) 92%);
   color: var(--text-primary);
-  font-weight: 750;
+  font-weight: var(--lb-font-weight-semibold);
 }
 
 .settings-nav-item > .letbuyy-icon:first-child {
@@ -2479,7 +2711,11 @@ body {
   gap: var(--settings-sidebar-store-gap);
   min-height: var(--settings-sidebar-user-h);
   padding: var(--lb-space-3) var(--settings-sidebar-pad-x);
-  border-top: 1px solid var(--border);
+  /* Mirrors .settings-sidebar-store: secondary colour, and curved on the TOP
+     corners — this divider sits at the top of the footer block. */
+  border-top: 1px solid var(--lb-color-secondary-action);
+  border-top-left-radius: var(--lb-component-sidebar-item-radius);
+  border-top-right-radius: var(--lb-component-sidebar-item-radius);
   margin-top: auto;
 }
 
@@ -2487,14 +2723,22 @@ body {
   width: var(--settings-sidebar-avatar-sz);
   height: var(--settings-sidebar-avatar-sz);
   border-radius: var(--settings-sidebar-avatar-radius);
-  background: var(--primary);
-  color: white;
+  /* Same diagonal-gradient + inset-sheen + glow treatment as the header's
+     store-switcher-pill-icon, built off the panel-local --primary (the
+     rail-appropriate accent, see .settings-sidebar above) rather than the
+     header's raw --primary so it stays legible against this dark rail. Both
+     gradient stops stay in the same light-tint family as --primary alone,
+     so the dark-ink contrast verified below is preserved. */
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 82%, white), var(--primary));
+  /* Ink on the light rail accent (5.83:1) — white would only reach 2.9:1. */
+  color: var(--lb-component-sidebar-bg);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: var(--lb-font-size-caption);
   font-weight: 700;
   flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 30%), 0 0 0 1px color-mix(in srgb, var(--primary) 38%, transparent), 0 6px 16px color-mix(in srgb, var(--primary) 20%, transparent);
 }
 
 .settings-sidebar-user-info {
@@ -2550,30 +2794,40 @@ body {
   stroke-width: 2.4;
 }
 
-/* ── Settings content area ─────────────────── */
+/* ── Settings content area ───────────────────
+   The panel's own scrollport at >=1024px. It scrolls inside .settings-shell,
+   whose overflow:hidden + radius is what rounds this column's top corner — same
+   contract as the page: the curve is on a box that does not move, and the
+   content travels under it.
+   Scrollbar theming matches .admin-page-scroll exactly, and for the same
+   reason: a default bar is not clipped by border-radius, so its grey track
+   would paint square over the card's arc the moment a settings page is long
+   enough to scroll. Colours come from the text ramp via color-mix rather than
+   naked rgba(), so light and dark are one declaration. */
 .settings-content {
   min-width: 0;
   height: 100%;
   overflow-y: auto;
   background: transparent;
+  /* Same as .admin-page-scroll: a wheel that reaches the end of this column must
+     not chain out into whatever is behind the panel, and the gutter stays
+     reserved so freezing this scroller for a modal cannot shift the pane. */
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+  scrollbar-color: color-mix(in srgb, var(--lb-color-text) 22%, transparent) transparent;
 }
 .settings-content::-webkit-scrollbar {
   width: var(--lb-space-1);
+  height: var(--lb-space-1);
 }
-.settings-content::-webkit-scrollbar-track {
+.settings-content::-webkit-scrollbar-track,
+.settings-content::-webkit-scrollbar-corner {
   background: transparent;
 }
 .settings-content::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.18);
-  border-radius: var(--lb-radius-sm);
-}
-.dark .settings-content {
-  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
-}
-.dark .settings-content::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.22);
+  background: color-mix(in srgb, var(--lb-color-text) 22%, transparent);
+  border-radius: var(--lb-radius-full);
 }
 
 .settings-content > main {
@@ -2582,6 +2836,16 @@ body {
   margin: 0 auto;
   padding: var(--settings-content-pad-y) var(--settings-content-pad-x) var(--settings-content-pad-bottom);
   gap: var(--lb-space-4);
+  /* SaveBar sizes itself `min(--lb-size-save-bar-width, 100vw - space-6)` and
+     that token is 920px — a VIEWPORT-scaled width. This column's content box is
+     ~740px at a 1440px viewport, so the bar overflowed it by ~180px: the card's
+     overflow:hidden clipped the Save button off, and because `overflow-x`
+     computes to `auto` whenever `overflow-y` is, the overflow also forced a
+     horizontal scrollbar across the bottom of the pane. Seven settings pages
+     render one. Re-pointing the token at this column is the sanctioned override
+     — the bar then lines up with the fields above it, and @letbuyy/ui is
+     untouched for every other surface. */
+  --lb-size-save-bar-width: 100%;
 }
 
 /* ── Settings page header — compact Shopify-style ──────────────────
@@ -2630,173 +2894,6 @@ body {
   letter-spacing: 0;
 }
 
-/* ── Mobile topbar (hidden on desktop ≥1024px) ─────── */
-.settings-mobile-topbar {
-  display: none;
-  border-bottom: 1px solid var(--border);
-  background: var(--lb-color-surface);
-  padding: var(--lb-space-3) var(--lb-space-4);
-  position: sticky;
-  top: 0;
-  z-index: 20;
-}
-
-.settings-mobile-topbar-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--lb-space-3);
-  min-height: var(--lb-space-8);                                              /* 40px */
-}
-
-.settings-mobile-topbar-info {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  flex: 1;
-}
-
-.settings-mobile-topbar-label {
-  font-size: var(--lb-font-size-caption);
-  font-weight: 500;
-  color: var(--lb-color-text-subdued);
-  line-height: 1.3;
-  letter-spacing: 0.01em;
-}
-
-.settings-mobile-topbar-page {
-  font-size: var(--lb-font-size-card-title);
-  font-weight: 750;
-  color: var(--lb-color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.25;
-  margin-top: 1px;
-}
-
-.settings-mobile-menu-btn {
-  display: flex;
-  align-items: center;
-  gap: var(--lb-space-2);
-  padding: var(--lb-space-2) var(--lb-space-3);
-  border-radius: var(--lb-radius-md);
-  border: 1px solid var(--lb-color-border);
-  background: var(--lb-color-surface-subdued);
-  color: var(--lb-color-text);
-  font-size: var(--lb-font-size-secondary);
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-  flex-shrink: 0;
-  transition: background var(--lb-motion-fast), box-shadow var(--lb-motion-fast);
-}
-
-.settings-mobile-menu-btn:hover {
-  background: var(--lb-color-surface-hovered);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-}
-
-.settings-mobile-menu-btn .letbuyy-icon {
-  width: var(--settings-nav-icon-sz);
-  height: var(--settings-nav-icon-sz);
-  stroke-width: 2.3;
-}
-
-/* ── Mobile / tablet drawer ────────────────── */
-.settings-mobile-drawer-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  display: flex;
-}
-
-.settings-mobile-drawer-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.44);
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-}
-
-.settings-mobile-drawer {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: var(--settings-drawer-w);
-  background: var(--lb-color-surface);
-  border-right: 1px solid var(--lb-color-border);
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.14), 1px 0 6px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
-  animation: slideInLeft 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  flex-shrink: 0;
-}
-
-.settings-mobile-drawer-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--lb-space-3) var(--lb-space-4);
-  border-bottom: 1px solid var(--lb-color-border);
-  min-height: calc(var(--lb-space-9) + var(--lb-space-2));                   /* 52px */
-}
-
-.settings-mobile-drawer-title {
-  margin: 0;
-  font-size: var(--lb-font-size-card-title);
-  font-weight: 750;
-  color: var(--lb-color-text);
-  letter-spacing: -0.01em;
-}
-
-.settings-mobile-drawer-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--lb-space-7);
-  height: var(--lb-space-7);
-  border-radius: var(--lb-radius-md);
-  border: none;
-  background: color-mix(in srgb, var(--lb-color-text) 7%, transparent);
-  color: var(--lb-color-text);
-  cursor: pointer;
-  transition: background var(--lb-motion-fast), color var(--lb-motion-fast);
-  flex-shrink: 0;
-}
-
-.settings-mobile-drawer-close:hover {
-  background: color-mix(in srgb, var(--lb-color-text) 14%, transparent);
-}
-
-.settings-mobile-drawer-close .letbuyy-icon {
-  width: var(--lb-space-4);
-  height: var(--lb-space-4);
-  stroke-width: 2.5;
-}
-
-.settings-mobile-nav {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--lb-space-2) var(--settings-nav-pad);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.12) transparent;
-}
-
-.settings-mobile-nav::-webkit-scrollbar {
-  width: 3px;
-}
-.settings-mobile-nav::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.12);
-  border-radius: 3px;
-}
-
 /* ══ Responsive breakpoints ═════════════════════════════════════════
    Desktop  ≥1024px : sidebar + content grid (default above)
    Tablet   640-1023: sidebar hidden → drawer nav, full-width content
@@ -2805,45 +2902,20 @@ body {
 
 /* ── Tablet + Mobile: strip panel, show topbar/drawer nav ── */
 @media (max-width: 1023px) {
-  /* Confine scroll to below the fixed admin header — body never scrolls */
-  .admin-settings-wrapper {
-    position: fixed !important;
-    top: var(--admin-header-height) !important;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding-top: 0 !important;
-    min-height: 0 !important;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
-  }
+  /* NOTE: the `position: fixed` inset-below-the-header block that used to live
+     here — with its own overflow, its own scrollbar theming and its own curved
+     top corners — is gone. It was a second, settings-only implementation of the
+     shell this file now provides for every route: .admin-page-scroll is the one
+     scrollport and it owns the curve at every breakpoint. */
 
-  .admin-settings-wrapper::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  .admin-settings-wrapper::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .admin-settings-wrapper::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.18);
-    border-radius: 4px;
-  }
-
-  .dark .admin-settings-wrapper {
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-  }
-
-  .dark .admin-settings-wrapper::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-  }
-
+  /* Flat below lg: no card, no radius, no inner scroller — the panel just grows
+     and the page scrollport (which owns the curve) does the scrolling.
+     `flex: 1 0 auto` undoes the desktop base: grow to fill a short page, never
+     shrink, and size from content — so a long panel still exceeds the wrapper
+     and the overflow reaches the scrollport above it. (A `min-height: 100%`
+     here would be inert: the wrapper is height:auto below lg, so the percentage
+     has no definite height to resolve against.) */
   .settings-shell {
-    /* Remove unified-panel styling — flat on mobile/tablet */
     grid-template-columns: 1fr;
     gap: 0;
     margin: 0;
@@ -2851,18 +2923,14 @@ body {
     border-radius: 0;
     box-shadow: none;
     background: transparent;
+    flex: 1 0 auto;
     height: auto;
-    min-height: 100%;
     overflow: visible;
     width: 100%;
   }
 
   .settings-sidebar {
     display: none;
-  }
-
-  .settings-mobile-topbar {
-    display: block;
   }
 
   .settings-content {
@@ -2884,13 +2952,6 @@ body {
     max-width: 720px;
     margin: 0 auto;
     padding: var(--lb-space-6) var(--lb-space-7) var(--lb-space-8);
-  }
-}
-
-/* Mobile: compact topbar */
-@media (max-width: 639px) {
-  .settings-mobile-topbar {
-    padding: var(--lb-space-2) var(--lb-space-4);
   }
 }
 
@@ -3514,191 +3575,14 @@ body {
 }
 /* ─────────────────────────────────────────────────────────────────────────── */
 
-.settings-detail-page {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.settings-detail-heading {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-primary);
-  min-height: 32px;
-}
-
-.settings-detail-heading .letbuyy-icon {
-  width: 18px;
-  height: 18px;
-  color: color-mix(in srgb, var(--text-primary) 78%, transparent);
-  fill: color-mix(in srgb, currentColor 12%, transparent);
-  stroke-width: 2.45;
-}
-
-.settings-detail-heading h1 {
-  margin: 0;
-  font-size: 23px;
-  line-height: 1.15;
-  font-weight: 750;
-  letter-spacing: 0;
-}
-
-.settings-panel {
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--bg);
-  color: var(--text-primary);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 28px rgba(15, 23, 42, 0.05);
-}
-
-.settings-panel-header {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 14px;
-}
-
-.settings-panel-header h2 {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 750;
-  line-height: 1.25;
-  letter-spacing: 0;
-}
-
-.settings-panel-header p {
-  margin: 0;
-  color: color-mix(in srgb, var(--text-primary) 68%, transparent);
-  font-size: 13px;
-  line-height: 1.45;
-}
-
-.settings-row-card,
-.settings-list-card {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--bg) 94%, var(--bg-secondary) 6%);
-}
-
-.settings-row-card {
-  min-height: 54px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-}
-
-.settings-row-card-inline {
-  align-items: center;
-}
-
-.settings-list-card {
-  overflow: hidden;
-}
-
-.settings-list-row {
-  min-height: 62px;
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  padding: 12px 14px;
-  color: var(--text-primary);
-  text-decoration: none;
-}
-
-.settings-list-row + .settings-list-row {
-  border-top: 1px solid var(--border);
-}
-
-.settings-list-row > .letbuyy-icon:first-child {
-  width: 18px;
-  height: 18px;
-  color: color-mix(in srgb, var(--text-primary) 72%, transparent);
-  fill: color-mix(in srgb, currentColor 11%, transparent);
-  stroke-width: 2.45;
-  flex-shrink: 0;
-}
-
-.settings-row-copy {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  flex: 1;
-  gap: 2px;
-}
-
-.settings-row-copy strong {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 650;
-  line-height: 1.3;
-}
-
-.settings-row-copy span {
-  color: color-mix(in srgb, var(--text-primary) 64%, transparent);
-  font-size: 13px;
-  line-height: 1.3;
-}
-
-.settings-row-chevron {
-  width: 18px;
-  height: 18px;
-  color: color-mix(in srgb, var(--text-primary) 62%, transparent);
-  stroke-width: 2.6;
-  flex-shrink: 0;
-}
-
-.settings-more-button {
-  width: 30px;
-  height: 30px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  color: color-mix(in srgb, var(--text-primary) 64%, transparent);
-  cursor: pointer;
-}
-
-.settings-more-button:hover {
-  background: color-mix(in srgb, var(--text-primary) 8%, transparent);
-  color: var(--text-primary);
-}
-
-.settings-more-button .letbuyy-icon {
-  width: 18px;
-  height: 18px;
-}
-
-.settings-india-flag {
-  width: 36px;
-  height: 24px;
-  border-radius: 4px;
-  border: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
-  background:
-    linear-gradient(to bottom, rgb(255 153 51) 0 33.33%, rgb(255 255 255) 33.33% 66.66%, rgb(18 136 7) 66.66% 100%);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.36);
-  flex-shrink: 0;
-}
-
-.settings-soft-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 24px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--text-primary) 8%, transparent);
-  color: color-mix(in srgb, var(--text-primary) 70%, transparent);
-  font-size: 12px;
-  font-weight: 650;
-  white-space: nowrap;
-}
-
-/* ── Settings form cards (detail pages: store details, billing, etc.) ─ */
+/* ~230 lines of a legacy settings-pane stylesheet used to live here and just
+   below (.settings-detail-*, .settings-panel*, .settings-row-*, .settings-list-*,
+   .settings-more-button*, .settings-india-flag, .settings-soft-pill,
+   .settings-defaults-panel, .settings-field*, .settings-select-shell*).
+   Zero TSX consumers repo-wide. It was also the ONLY source of raw-px
+   border-radius on this surface (12/10/8/4/999/9px) and of two rgba() box
+   shadows, and it read --bg/--border/--text-primary, which only resolve inside
+   .settings-sidebar — so it could never have rendered correctly anyway. */
 .settings-form-body {
   display: flex;
   flex-direction: column;
@@ -4350,57 +4234,6 @@ body {
   }
 }
 
-.settings-defaults-panel {
-  gap: 12px;
-}
-
-.settings-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 14px;
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.settings-field small {
-  color: color-mix(in srgb, var(--text-primary) 62%, transparent);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.35;
-}
-
-.settings-field-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.settings-select-shell {
-  min-height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 0 11px;
-  border: 1px solid color-mix(in srgb, var(--border) 86%, var(--text-primary) 14%);
-  border-radius: 9px;
-  background: var(--bg);
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 450;
-  line-height: 1.3;
-}
-
-.settings-select-shell .letbuyy-icon {
-  width: 16px;
-  height: 16px;
-  color: color-mix(in srgb, var(--text-primary) 58%, transparent);
-  stroke-width: 2.4;
-}
-
-/* ── Plan settings page ─────────────────────────────────────────────────────── */
 .settings-plan-row {
   display: flex;
   align-items: center;
@@ -5616,6 +5449,9 @@ body {
    SETUP ASSISTANT PANEL
    ====================================== */
 
+/* Overlays the right edge of the page plane, so it takes over the sheet's
+   trailing corner: same top, same curve, tucked under the header identically.
+   Below the header in the stack (45 < 50) so the overlap stays hidden. */
 .admin-ai-panel {
   position: fixed;
   right: 0;
@@ -5629,12 +5465,7 @@ body {
   flex-direction: column;
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
   animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 0 14px 14px 0;
-}
-
-/* Push main content when setup assistant opens */
-.ai-open .admin-main {
-  margin-right: 380px;
+  border-start-end-radius: var(--admin-page-curve);
 }
 
 .dark .admin-ai-panel {
@@ -5842,7 +5673,13 @@ body {
 
 @media (max-width: 768px) {
   :root {
-    --admin-header-height: 64px;
+    /* Taller than desktop (48 + 24 = 72px): the mobile bar carries the drawer
+       toggle, search and three actions in a narrower column, so it needs the
+       extra vertical room to stop reading as cramped. Only the bar is retuned —
+       the curve is shared, so the page top looks identical at every width, and
+       everything positional (plane, drawer, scrim, sheets, toasts) recomputes
+       from here. */
+    --admin-header-height: calc(var(--lb-space-9) + var(--lb-space-6));
   }
 
   .admin-header {
@@ -5991,12 +5828,6 @@ body {
     top: var(--admin-header-height);
   }
 
-  .admin-main {
-    margin-left: 0;
-    border-radius: 22px 22px 0 0;
-    overflow: hidden;
-  }
-
   /* Trial toast: full-width on mobile */
   .admin-trial-toast {
     left: 12px;
@@ -6005,203 +5836,29 @@ body {
     width: auto;
   }
 
-  /* Setup assistant: full screen on mobile */
+  /* Setup assistant: full screen on mobile — it replaces the sheet entirely, so
+     it takes BOTH of the sheet's top corners rather than just the trailing one. */
   .admin-ai-panel {
     width: 100%;
-    border-top-left-radius: 0;
+    border-start-start-radius: var(--admin-page-curve);
   }
 
-  .ai-open .admin-main {
-    margin-right: 0;
-    display: none;
-  }
+  /* The settings panel is NOT re-flattened here. Everything this block used to
+     restate — display/height/overflow, hiding the rail, and an
+     `.admin-draft-banner + .settings-shell` patch for the banner pushing the
+     card past the fold — is already handled once at <=1023px, which contains
+     this range. The banner case in particular is now structural: the wrapper is
+     a flex column, so the panel takes what is left instead of overflowing. */
 
-  /* Settings mobile */
-  .admin-main.settings-active {
-    overflow-y: auto;
-  }
+  /* No .settings-content > main rule here. The identical declaration already
+     lives in the <=1023px block, which contains this range; repeating it ~3100
+     lines later at equal specificity meant it also beat the 640-1023px TABLET
+     rule, so 640-768px silently lost its 720px max-width and wider padding. */
 
-  .settings-shell {
-    display: block;
-    height: auto;
-    min-height: 100%;
-    padding: 0;
-    overflow: visible;
-  }
-
-  .admin-draft-banner + .settings-shell {
-    height: auto;
-    min-height: 100%;
-  }
-
-  .settings-shell > .settings-sidebar {
-    display: none;
-  }
-
-  .settings-content {
-    min-height: 0;
-  }
-
-  .settings-content > main {
-    max-width: 100%;
-    padding: var(--lb-space-5) var(--lb-space-4) var(--lb-space-8);
-  }
-
-  .settings-general-preview {
-    display: none;
-  }
-
-  .settings-mobile-nav-view {
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100vh - var(--admin-header-height) - 41px);
-    background: var(--bg);
-    border-radius: 20px 20px 0 0;
-    overflow: hidden;
-  }
-
-  .settings-mobile-nav-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    padding: 18px 24px 12px;
-    background: var(--bg-secondary);
-  }
-
-  .settings-mobile-nav-heading {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-  }
-
-  .settings-mobile-nav-heading .letbuyy-icon {
-    width: 21px;
-    height: 21px;
-    color: var(--text-primary);
-    fill: color-mix(in srgb, currentColor 14%, transparent);
-    stroke-width: 2.5;
-  }
-
-  .settings-mobile-nav-heading h1 {
-    margin: 0;
-    color: var(--text-primary);
-    font-size: 28px;
-    font-weight: 750;
-    line-height: 1.15;
-    letter-spacing: 0;
-  }
-
-  .settings-mobile-close {
-    width: 42px;
-    height: 42px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    background: color-mix(in srgb, var(--text-primary) 7%, transparent);
-    color: var(--text-primary);
-  }
-
-  .settings-mobile-close .letbuyy-icon {
-    width: 22px;
-    height: 22px;
-    stroke-width: 2.4;
-  }
-
-  .settings-mobile-nav-view .settings-sidebar {
-    display: flex;
-    width: 100%;
-    min-width: 0;
-    height: auto;
-    max-height: none;
-    position: static;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-    background: var(--bg);
-    overflow: visible;
-  }
-
-  .settings-mobile-nav-view .settings-sidebar-store {
-    min-height: 78px;
-    padding: 16px 24px;
-    background: var(--bg-secondary);
-  }
-
-  .settings-mobile-nav-view .settings-sidebar-store-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 11px;
-    font-size: 13px;
-  }
-
-  .settings-mobile-nav-view .settings-sidebar-store-name {
-    font-size: 17px;
-  }
-
-  .settings-mobile-nav-view .settings-sidebar-store-domain {
-    font-size: 15px;
-  }
-
-  .settings-mobile-nav-view .settings-sidebar-search {
-    height: 40px;
-    margin: 14px 24px 12px;
-    border-radius: 10px;
-  }
-
-  .settings-mobile-nav-view .settings-sidebar-search input {
-    font-size: 15px;
-  }
-
-  .settings-mobile-nav-view .settings-sidebar-nav {
-    padding: 4px 24px 14px;
-    overflow: visible;
-  }
-
-  .settings-mobile-nav-view .settings-nav-item {
-    min-height: 41px;
-    padding: 0 12px;
-    border-radius: 10px;
-    font-size: 15px;
-    margin-bottom: 2px;
-  }
-
-  .settings-mobile-nav-view .settings-nav-item > .letbuyy-icon:first-child {
-    width: 20px;
-    height: 20px;
-  }
-
-  .settings-mobile-nav-view .settings-nav-badge {
-    max-width: 132px;
-    height: 24px;
-    font-size: 12px;
-  }
-
-  .settings-mobile-nav-view .settings-nav-chevron {
-    display: block;
-  }
-
-  .settings-mobile-nav-view .settings-sidebar-user {
-    margin-top: auto;
-    padding: 16px 24px;
-  }
-
-  .settings-mobile-nav-view .settings-sidebar-user-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    font-size: 13px;
-  }
-
-  .settings-mobile-nav-view .settings-sidebar-user-name {
-    font-size: 16px;
-  }
-
-  .settings-mobile-nav-view .settings-sidebar-user-email {
-    font-size: 14px;
-  }
+  /* The mobile settings nav view that lived here (150 lines, its own
+     hard-coded `20px 20px 0 0` shell curve and a magic -41px header
+     assumption) is gone: mobile settings navigation is the shared
+     AdminShell drawer, and the page top is the shared curve. */
 
   .bottom-sheet-overlay {
     top: var(--admin-header-height);
@@ -6218,7 +5875,7 @@ body {
 
   .bottom-sheet {
     width: min(92vw, 440px);
-    max-height: calc(100vh - var(--admin-header-height) - 16px);
+    max-height: calc(100dvh - var(--admin-header-height) - 16px);
     padding: 0;
     border: 1px solid var(--border);
     border-radius: 18px;
@@ -6228,7 +5885,7 @@ body {
 
   .store-switcher-bottom-sheet {
     width: clamp(286px, 76vw, 320px);
-    max-height: calc(100vh - var(--admin-header-height) - 18px);
+    max-height: calc(100dvh - var(--admin-header-height) - 18px);
     margin: 0;
     border-radius: 15px;
     overflow: hidden;
@@ -6303,9 +5960,17 @@ body {
     --sidebar-width: 210px;
   }
 
-  .admin-header-left,
   .admin-header-right {
     width: 210px;
+  }
+
+  /* The hamburger is now revealed from 1023.98px down, so this band carries
+     hamburger + gap + logo and can no longer be pinned to the right column's
+     210px. `.admin-header-logo { display: none }` is scoped to <=768px, so the
+     logo IS still present here. */
+  .admin-header-left {
+    width: auto;
+    flex: 0 0 auto;
   }
 
   .admin-sidebar {
@@ -12446,7 +12111,9 @@ body {
   position: relative;
   display: grid;
   gap: 16px;
-  min-height: calc(100vh - 88px);
+  /* The scrollport is already exactly this tall; the old `100vh - 88px` used a
+     stale, hardcoded header height and forced a scrollbar on every embed. */
+  min-height: calc(100dvh - var(--admin-header-height));
   padding: 20px;
 }
 

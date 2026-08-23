@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Button, Input, LayoutDashboard, Menu, Search, X } from '@letbuyy/ui'
+import { Input, LayoutDashboard, ScrollThumb, Search, X } from '@letbuyy/ui'
 import {
     SETTINGS_NAV_GROUPS,
     getSettingsItemByPath,
@@ -35,12 +35,9 @@ function itemMatches(query: string, groupTitle: string, itemText: string[]) {
     return haystack.includes(query)
 }
 
-const FOCUSABLE_SELECTOR = [
-    'a[href]',
-    'button:not([disabled])',
-    'input:not([disabled])',
-    '[tabindex]:not([tabindex="-1"])',
-].join(', ')
+// The always-visible scroll thumb is the shared @letbuyy/ui ScrollThumb — the
+// same one the main nav rail and the mobile drawer use — so all four rails
+// behave identically. See packages/typescript/ui/src/app-shell.tsx.
 
 export function SettingsShell({
     store,
@@ -52,41 +49,9 @@ export function SettingsShell({
 }: SettingsShellProps) {
     const pathname = usePathname()
     const [query, setQuery] = useState('')
-    const [drawerOpen, setDrawerOpen] = useState(false)
     const normalizedQuery = normalizeSearch(query)
     const activeItem = getSettingsItemByPath(pathname, store)
-
-    useEffect(() => {
-        if (!drawerOpen) return
-        const previousEl = document.activeElement instanceof HTMLElement ? document.activeElement : null
-        const prevOverflow = document.body.style.overflow
-        document.body.style.overflow = 'hidden'
-        document.getElementById('settings-mobile-drawer')?.focus()
-
-        function onKeyDown(e: KeyboardEvent) {
-            if (e.key === 'Escape') { setDrawerOpen(false); return }
-            if (e.key !== 'Tab') return
-            const drawer = document.getElementById('settings-mobile-drawer')
-            if (!drawer) return
-            const focusable = Array.from(drawer.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
-                .filter(el => !el.closest('[hidden]'))
-            if (!focusable.length) { e.preventDefault(); drawer.focus(); return }
-            const first = focusable[0]
-            const last = focusable[focusable.length - 1]
-            const active = document.activeElement
-            if (active === drawer) { e.preventDefault(); e.shiftKey ? last.focus() : first.focus(); return }
-            if (!drawer.contains(active)) { e.preventDefault(); first.focus(); return }
-            if (e.shiftKey && active === first) { e.preventDefault(); last.focus(); return }
-            if (!e.shiftKey && active === last) { e.preventDefault(); first.focus() }
-        }
-
-        document.addEventListener('keydown', onKeyDown)
-        return () => {
-            document.removeEventListener('keydown', onKeyDown)
-            document.body.style.overflow = prevOverflow
-            if (previousEl?.isConnected) previousEl.focus()
-        }
-    }, [drawerOpen])
+    const desktopNavRef = useRef<HTMLElement>(null)
 
     const filteredGroups = useMemo(() => SETTINGS_NAV_GROUPS.map(group => ({
         ...group,
@@ -102,13 +67,11 @@ export function SettingsShell({
     const settingsHomeHref = `/${store}/settings`
     const homeActive = pathname === settingsHomeHref
 
-    function renderNav(instance: 'desktop' | 'mobile') {
-        const onNavigate = instance === 'mobile' ? () => setDrawerOpen(false) : undefined
+    function renderNav() {
         return (
             <>
                 <Link
                     href={settingsHomeHref}
-                    onClick={onNavigate}
                     aria-current={homeActive ? 'page' : undefined}
                     className={`settings-nav-item${homeActive ? ' active' : ''}`}
                 >
@@ -127,7 +90,6 @@ export function SettingsShell({
                                 <Link
                                     key={item.href}
                                     href={href}
-                                    onClick={onNavigate}
                                     aria-current={active ? 'page' : undefined}
                                     className={`settings-nav-item${active ? ' active' : ''}`}
                                 >
@@ -150,28 +112,10 @@ export function SettingsShell({
 
     return (
         <>
-            {/* Mobile topbar — hidden on desktop */}
-            <div className="settings-mobile-topbar">
-                <div className="settings-mobile-topbar-content">
-                    <span className="settings-mobile-topbar-info">
-                        <span className="settings-mobile-topbar-label">Settings</span>
-                        <span className="settings-mobile-topbar-page">{activeItem?.label || 'Dashboard'}</span>
-                    </span>
-                    <Button
-                        unstyled
-                        type="button"
-                        className="settings-mobile-menu-btn"
-                        onClick={() => setDrawerOpen(true)}
-                        aria-expanded={drawerOpen}
-                        aria-controls="settings-mobile-drawer"
-                    >
-                        <Menu className="letbuyy-icon" aria-hidden="true" />
-                        Index
-                    </Button>
-                </div>
-            </div>
-
-            {/* Desktop shell — sidebar + content grid */}
+            {/* Desktop shell — sidebar + content grid.
+                Below 1024px this rail is display:none and settings navigation is
+                served by the shared header-hamburger drawer in AdminShell, so
+                there is no mobile topbar or "Index" button here any more. */}
             <div className="settings-shell">
                 <aside className="settings-sidebar">
                     {/* Store header */}
@@ -207,9 +151,12 @@ export function SettingsShell({
                     </div>
 
                     {/* Nav */}
-                    <nav className="settings-sidebar-nav" aria-label="Settings">
-                        {renderNav('desktop')}
-                    </nav>
+                    <div className="settings-sidebar-nav-track">
+                        <nav ref={desktopNavRef} className="settings-sidebar-nav" aria-label="Settings">
+                            {renderNav()}
+                        </nav>
+                        <ScrollThumb scrollRef={desktopNavRef} />
+                    </div>
 
                     {/* User footer */}
                     <div className="settings-sidebar-user">
@@ -229,78 +176,6 @@ export function SettingsShell({
                 </section>
             </div>
 
-            {/* Mobile drawer */}
-            {drawerOpen && (
-                <div className="settings-mobile-drawer-overlay" role="presentation">
-                    <Button
-                        unstyled
-                        type="button"
-                        className="settings-mobile-drawer-backdrop"
-                        onClick={() => setDrawerOpen(false)}
-                        aria-label="Close settings index"
-                    />
-                    <aside
-                        id="settings-mobile-drawer"
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="settings-mobile-drawer-title"
-                        tabIndex={-1}
-                        className="settings-mobile-drawer"
-                    >
-                        <div className="settings-mobile-drawer-header">
-                            <h2 id="settings-mobile-drawer-title" className="settings-mobile-drawer-title">
-                                Settings
-                            </h2>
-                            <Button
-                                unstyled
-                                type="button"
-                                className="settings-mobile-drawer-close"
-                                onClick={() => setDrawerOpen(false)}
-                                aria-label="Close settings index"
-                            >
-                                <X className="letbuyy-icon" aria-hidden="true" />
-                            </Button>
-                        </div>
-
-                        <div className="settings-sidebar-store" style={{ borderRadius: 0 }}>
-                            <span className="settings-sidebar-store-icon" aria-hidden="true">
-                                {storeInitials}
-                            </span>
-                            <span className="settings-sidebar-store-info">
-                                <span className="settings-sidebar-store-name">{storeName}</span>
-                                <span className="settings-sidebar-store-domain">{subdomain}.letbuyy.com</span>
-                            </span>
-                        </div>
-
-                        <div className="settings-sidebar-search" style={{ margin: '8px' }}>
-                            <Search className="letbuyy-icon" aria-hidden="true" />
-                            <Input
-                                unstyled
-                                id="settings-search-mobile"
-                                type="search"
-                                placeholder="Search settings..."
-                                value={query}
-                                onChange={e => setQuery(e.target.value)}
-                                aria-label="Search settings"
-                            />
-                        </div>
-
-                        <nav className="settings-sidebar-nav settings-mobile-nav" aria-label="Settings">
-                            {renderNav('mobile')}
-                        </nav>
-
-                        <div className="settings-sidebar-user">
-                            <span className="settings-sidebar-user-avatar" aria-hidden="true">
-                                {userInitials}
-                            </span>
-                            <span className="settings-sidebar-user-info">
-                                <span className="settings-sidebar-user-name">{userName || 'User'}</span>
-                                <span className="settings-sidebar-user-email">{userEmail}</span>
-                            </span>
-                        </div>
-                    </aside>
-                </div>
-            )}
         </>
     )
 }

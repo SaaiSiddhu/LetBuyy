@@ -20,10 +20,13 @@ export default function LoginPage() {
     }, [store])
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-zinc-50">
+        // min-h-full, not min-h-screen: this renders inside the shell's scrollport,
+        // which is already the viewport minus the header — a full viewport height
+        // here would force a permanent scrollbar on a page that is one spinner.
+        <div className="flex min-h-full items-center justify-center bg-[var(--lb-color-bg)]">
             <div className="text-center">
-                <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-zinc-300 border-t-[var(--lb-color-primary,var(--primary,var(--lb-color-brand-purple)))] mx-auto" />
-                <p className="text-sm text-zinc-600">Redirecting to login...</p>
+                <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-[var(--lb-color-border)] border-t-[var(--lb-color-primary)] mx-auto" />
+                <p className="text-sm text-[color:var(--lb-color-text-subdued)]">Redirecting to login...</p>
             </div>
         </div>
     )

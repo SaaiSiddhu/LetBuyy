@@ -1,22 +1,8 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import {
-    Badge,
-    Button,
-    CheckCircle2,
-    CreditCard,
-    Info,
-    Input,
-    Modal,
-    Plus,
-    Select,
-    ShieldCheck,
-    Smartphone,
-    useToast,
-} from '@letbuyy/ui'
+import { Badge, Button, CheckCircle2, CreditCard, Info, Input, Modal, normalizeProviderMode, Plus, ProviderModeBadge, Select, ShieldCheck, Smartphone, useToast } from '@letbuyy/ui'
 import { formatInrCurrency } from '@letbuyy/ui/formatting'
-import { ProviderModeBadge, normalizeProviderMode } from '@/components/ProviderModeBadge'
 
 export interface BillingMandateView {
     id: string

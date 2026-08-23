@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState, useCallback, useMemo, type SyntheticEvent } from 'react'
+import { useEffect, useState, useCallback, useMemo, useRef, type SyntheticEvent } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import type { LineItem as SharedLineItem, Order as SharedOrder } from '@letbuyy/shared-types'
-import { Button, Input, Table, Badge, Banner, Card, ConfirmDialog, EmptyState, MaterialIcon, Page, PageHeader, Search, Section, Select, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
+import { ORDER_STATUS_PRESENTATION, ORDER_PAYMENT_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
+import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, Input, MaterialIcon, normalizeProviderMode, Page, PageHeader, ProviderModeBadge, Search, Section, Select, Skeleton, StatusPresentationBadge, Table, useToast, type ProviderMode, type TableBulkAction, type TableColumn } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
-import { ProviderModeBadge, normalizeProviderMode } from '@/components/ProviderModeBadge'
 import { StepUpDialog, type StepUpResult } from '@/components/security/StepUpDialog'
 
 type OrderItemRow = Pick<
@@ -57,7 +57,6 @@ interface OrdersPayload {
 type OrderStatus = 'all' | 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
 type OrderSortKey = 'order' | 'customer' | 'item_count' | 'payment_status' | 'status' | 'total' | 'created_at'
 type SortDirection = 'asc' | 'desc'
-type ProviderMode = 'sandbox' | 'live'
 
 const statuses: Array<{ label: string; value: OrderStatus }> = [
     { label: 'All', value: 'all' },
@@ -152,21 +151,18 @@ function addressLine(address?: Record<string, unknown>) {
     return parts.length ? parts.join(', ') : '-'
 }
 
-function statusVariant(status: string) {
-    const normalized = status.toLowerCase()
-    if (['delivered', 'paid'].includes(normalized)) return 'success'
-    if (['cancelled', 'refunded', 'failed'].includes(normalized)) return 'critical'
-    if (['shipped', 'processing', 'confirmed'].includes(normalized)) return 'info'
-    return 'warning'
-}
-
+// Presentation comes from the domain layer (@letbuyy/shared-types), which owns
+// the vocabulary and its labels/tones; this file only renders it. The inline maps
+// that used to live here were the Phase 1 stop-gap.
 function OrderStatusBadge({ status }: { status: string }) {
-    return <Badge label={titleize(status)} variant={statusVariant(status)} />
+    return <StatusPresentationBadge presentation={presentStatus(ORDER_STATUS_PRESENTATION, status)} />
 }
 
 function PaymentStatusBadge({ status, method }: { status: string; method: string }) {
-    const label = method ? `${method.toUpperCase()} / ${titleize(status)}` : titleize(status)
-    return <Badge label={label} variant={statusVariant(status)} />
+    const presentation = presentStatus(ORDER_PAYMENT_STATUS_PRESENTATION, status)
+    return method
+        ? <StatusPresentationBadge presentation={{ ...presentation, label: `${method.toUpperCase()} / ${presentation.label}` }} />
+        : <StatusPresentationBadge presentation={presentation} />
 }
 
 export default function OrdersPage() {
@@ -180,6 +176,33 @@ export default function OrdersPage() {
     const [paymentFilter, setPaymentFilter] = useState<string>('all')
     const [searchQuery, setSearchQuery] = useState('')
     const [updatingId, setUpdatingId] = useState<string | null>(null)
+
+    /**
+     * Idempotency keys, held stable for the lifetime of ONE user-initiated attempt.
+     *
+     * These were previously minted as `...-${crypto.randomUUID()}` inline on every
+     * request, so two clicks produced two different keys and the gateway's replay
+     * guard (IdempotencyExecutionAdapter.begin -> claim.kind === 'replay') could
+     * never fire — the server-side protection was unreachable by construction.
+     *
+     * Keyed by the logical identity of the action, so a retry of the SAME attempt
+     * reuses the key (and is de-duplicated server-side), while a genuinely
+     * different action — a second refund for a different amount — gets its own.
+     * Released on success so a later, legitimate repeat is not replayed.
+     */
+    const idempotencyKeys = useRef(new Map<string, string>())
+
+    const stableIdempotencyKey = useCallback((identity: string) => {
+        const existing = idempotencyKeys.current.get(identity)
+        if (existing) return existing
+        const minted = `${identity}-${crypto.randomUUID()}`
+        idempotencyKeys.current.set(identity, minted)
+        return minted
+    }, [])
+
+    const releaseIdempotencyKey = useCallback((identity: string) => {
+        idempotencyKeys.current.delete(identity)
+    }, [])
     const [fulfillingId, setFulfillingId] = useState<string | null>(null)
     const [trackingNumber, setTrackingNumber] = useState('')
     const [cancellingId, setCancellingId] = useState<string | null>(null)
@@ -187,7 +210,9 @@ export default function OrdersPage() {
     const [actionError, setActionError] = useState<string | null>(null)
     const [sortKey, setSortKey] = useState<OrderSortKey>('created_at')
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
-    const [fulfillmentProviderMode, setFulfillmentProviderMode] = useState<ProviderMode | null>(null)
+    // 'mock' until the fulfilment provider reports otherwise — an unresolved
+    // provider must never start out looking like a working sandbox.
+    const [fulfillmentProviderMode, setFulfillmentProviderMode] = useState<ProviderMode>('mock')
 
     // Refund state
     const [refundingOrderId, setRefundingOrderId] = useState<string | null>(null)
@@ -243,7 +268,9 @@ export default function OrdersPage() {
                     setFulfillmentProviderMode(normalizeProviderMode(payload?.data?.provider_mode))
                 }
             } catch {
-                if (active) setFulfillmentProviderMode(null)
+                // A failed read leaves the mode UNRESOLVED, which is 'mock' — not a
+                // silent absence and not an implied sandbox.
+                if (active) setFulfillmentProviderMode('mock')
             }
         }
 
@@ -256,6 +283,14 @@ export default function OrdersPage() {
         status: string,
         metadata: Record<string, string | null> = {}
     ) => {
+        // Re-entry guard. ConfirmDialog cannot disable its own confirm button
+        // (no loading/confirmDisabled prop), and handleCancel only closes the
+        // dialog AFTER the awaited PATCH — so the destructive button stayed live
+        // for the whole round-trip and was click-spammable. Mirrors the guard
+        // already used at products/gift-cards (`if (creating) return`).
+        if (updatingId) return false
+
+        const identity = `admin-order-${orderId}-${status}`
         setUpdatingId(orderId)
         setActionError(null)
 
@@ -264,7 +299,7 @@ export default function OrdersPage() {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    idempotency_key: `admin-order-${orderId}-${status}-${crypto.randomUUID()}`,
+                    idempotency_key: stableIdempotencyKey(identity),
                     status,
                     ...metadata,
                 }),
@@ -281,6 +316,10 @@ export default function OrdersPage() {
                 })
                 return false
             }
+
+            // Attempt finished. Drop the key so a later, legitimate repeat of this
+            // same transition is a NEW request rather than a replayed response.
+            releaseIdempotencyKey(identity)
 
             await loadOrders()
             const order = orders.find(item => item.id === orderId)
@@ -347,7 +386,7 @@ export default function OrdersPage() {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        idempotency_key: `admin-order-bulk-${order.id}-${nextStatus}-${crypto.randomUUID()}`,
+                        idempotency_key: stableIdempotencyKey(`admin-order-bulk-${order.id}-${nextStatus}`),
                         status: nextStatus,
                     }),
                 })
@@ -391,7 +430,10 @@ export default function OrdersPage() {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        idempotency_key: `refund-${refundingOrderId}-${crypto.randomUUID()}`,
+                        // Amount is part of the identity: two refunds of different amounts are
+                        // different financial events and must NOT share a key, while a
+                        // double-click on one refund must.
+                        idempotency_key: stableIdempotencyKey(`refund-${refundingOrderId}-${amountMinor ?? 'full'}`),
                         ...(amountMinor != null ? { amount_minor: amountMinor } : {}),
                         ...(refundReason.trim() ? { reason: refundReason.trim() } : {}),
                         // provider_refund_id intentionally omitted: the gateway creates
@@ -735,7 +777,7 @@ function OrderActions({
     onStartRefund: () => void
     onCancelRefund: () => void
     onConfirmRefund: () => void
-    providerMode: ProviderMode | null
+    providerMode: ProviderMode
 }) {
     const stop = (event: SyntheticEvent) => event.stopPropagation()
     const canRefund = order.payment_status === 'paid'

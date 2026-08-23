@@ -94,6 +94,32 @@ export const letbuyyPrimitiveTokens = {
             800: '#15131f',
             700: '#1b1827',
         },
+        /**
+         * Brand ink — the merchant control plane's operator identity.
+         *
+         * Anchored on the admin navigation rail (`800` = #2C2642 = hsl(253 27% 20%));
+         * every other step is that exact hue held constant, so the rail, the primary
+         * CTA, the focus ring and the active-nav accent are provably one family
+         * rather than two purples that merely look similar.
+         *
+         * This is deliberately NOT `purple` (hue 258, saturation 91%): the stock
+         * ramp is a loud product violet, while an operator console is read for
+         * hours and needs a calm, desaturated ink. Both scales coexist — `purple`
+         * remains the marketplace/storefront accent, `brandInk` is the admin one.
+         */
+        brandInk: {
+            100: '#E7E3F7',
+            200: '#C9BFED',
+            300: '#9D8DD8',
+            400: '#6C54C4',
+            500: '#523F97',
+            600: '#443870',
+            700: '#362C58',
+            800: '#2C2642',
+            850: '#1E1A2D',
+            900: '#181524',
+            950: '#0F0D17',
+        },
         white: '#FFFFFF',
         black: '#000000',
         green: {
@@ -1099,7 +1125,133 @@ function colorVariables(theme: LetbuyyTheme): CssVariableMap {
     return variables;
 }
 
-function surfaceVariables(theme: LetbuyyTheme): CssVariableMap {
+/**
+ * Per-surface colour identity.
+ *
+ * `letbuyySurfaceTokens` is emitted under `[data-letbuyy-surface="…"][data-letbuyy-theme="…"]`
+ * (specificity 0,2,0), i.e. one selector step above the `:root` block (0,1,0) inside the
+ * SAME generated stylesheet. That is the sanctioned place for a surface to differ — an app
+ * must never re-declare `--lb-color-primary` from its own stylesheet to win a cascade race
+ * against the injected tokens (DOC 03 §35: one token source).
+ *
+ * Only `admin` currently carries an identity. Every other surface resolves to the shared
+ * defaults, so this is additive.
+ */
+const adminSurfaceIdentity: Record<LetbuyyTheme, CssVariableMap> = {
+    light: {
+        // The rail IS the brand. Primary, CTA and navigation all resolve to brandInk[800].
+        '--lb-color-primary': primitive.color.brandInk[800],
+        '--lb-color-primary-hover': primitive.color.brandInk[700],
+        '--lb-color-primary-active': primitive.color.brandInk[850],
+        // Primary used AS TEXT on a light surface (links, badge labels) — not text ON primary.
+        '--lb-color-primary-text': primitive.color.brandInk[700],
+        '--lb-color-primary-subtle': `color-mix(in srgb, ${primitive.color.brandInk[800]} 10%, transparent)`,
+        '--lb-color-primary-soft': `color-mix(in srgb, ${primitive.color.brandInk[800]} 6%, transparent)`,
+        '--lb-color-secondary-action': primitive.color.brandInk[700],
+        '--lb-color-secondary-action-hover': primitive.color.brandInk[800],
+        '--lb-color-secondary-action-subtle': `color-mix(in srgb, ${primitive.color.brandInk[800]} 10%, transparent)`,
+        // Distinct from primary so the ring stays legible where primary is the background.
+        '--lb-color-focus-ring': primitive.color.brandInk[600],
+
+        '--lb-color-primary-cta': primitive.color.brandInk[800],
+        '--lb-color-primary-cta-hover': primitive.color.brandInk[700],
+        '--lb-color-primary-cta-active': primitive.color.brandInk[850],
+        '--lb-color-primary-cta-text': primitive.color.white,
+
+        '--lb-component-button-primary-bg': primitive.color.brandInk[800],
+        '--lb-component-button-primary-hover': primitive.color.brandInk[700],
+        '--lb-component-button-primary-active': primitive.color.brandInk[850],
+        '--lb-component-button-primary-text': primitive.color.white,
+        '--lb-component-button-primary-border': primitive.color.brandInk[800],
+        // Quiet member of the same family: a 5% ink wash, never a second filled button.
+        '--lb-component-button-secondary-bg': `color-mix(in srgb, ${primitive.color.brandInk[800]} 5%, ${primitive.color.white})`,
+        '--lb-component-button-secondary-hover': `color-mix(in srgb, ${primitive.color.brandInk[800]} 10%, ${primitive.color.white})`,
+        '--lb-component-button-secondary-text': primitive.color.gray[900],
+        '--lb-component-button-secondary-border': `color-mix(in srgb, ${primitive.color.brandInk[800]} 22%, ${primitive.color.white})`,
+
+        '--lb-component-input-focus-border': primitive.color.brandInk[600],
+        '--lb-component-input-focus-ring': `color-mix(in srgb, ${primitive.color.brandInk[600]} 18%, transparent)`,
+
+        // Accent-tinted chrome must follow the accent. Left on the shared ramp these
+        // render stock violet directly beside an ink CTA — the exact "two primaries"
+        // clash this identity exists to remove.
+        '--lb-component-badge-accent-bg': `color-mix(in srgb, ${primitive.color.brandInk[800]} 10%, transparent)`,
+        '--lb-component-badge-accent-text': primitive.color.brandInk[700],
+        '--lb-component-badge-accent-border': `color-mix(in srgb, ${primitive.color.brandInk[800]} 30%, transparent)`,
+        '--lb-component-empty-state-illustration-bg': `color-mix(in srgb, ${primitive.color.brandInk[800]} 10%, transparent)`,
+        '--lb-component-empty-state-illustration-ink': primitive.color.brandInk[700],
+
+        // A dark rail beneath a light page: text tokens come from the sidebar contract,
+        // so no subtree needs to re-point --lb-color-text.
+        '--lb-component-sidebar-bg': primitive.color.brandInk[800],
+        '--lb-component-sidebar-border': primitive.color.brandInk[850],
+        '--lb-component-sidebar-text': primitive.color.white,
+        '--lb-component-sidebar-text-subdued': primitive.color.brandInk[200],
+        '--lb-component-sidebar-section-text': primitive.color.brandInk[300],
+        '--lb-component-sidebar-active-text': primitive.color.white,
+        '--lb-component-sidebar-active-bg': 'rgb(255 255 255 / 12%)',
+        '--lb-component-sidebar-hover-bg': 'rgb(255 255 255 / 6%)',
+        '--lb-component-sidebar-active-ring': 'inset 0 0 0 1px rgb(255 255 255 / 14%)',
+        '--lb-component-sidebar-rail-color': primitive.color.brandInk[300],
+        '--lb-component-sidebar-child-rail': 'rgb(255 255 255 / 16%)',
+    },
+    dark: {
+        // On a near-black canvas the anchor itself would read as an unlit slab, so dark
+        // steps UP the same hue instead of across to a different one.
+        '--lb-color-primary': primitive.color.brandInk[400],
+        '--lb-color-primary-hover': `color-mix(in srgb, ${primitive.color.white} 10%, ${primitive.color.brandInk[400]})`,
+        '--lb-color-primary-active': primitive.color.brandInk[500],
+        '--lb-color-primary-text': primitive.color.brandInk[200],
+        '--lb-color-primary-subtle': `color-mix(in srgb, ${primitive.color.brandInk[400]} 20%, transparent)`,
+        '--lb-color-primary-soft': `color-mix(in srgb, ${primitive.color.brandInk[400]} 12%, transparent)`,
+        '--lb-color-secondary-action': primitive.color.brandInk[300],
+        '--lb-color-secondary-action-hover': primitive.color.brandInk[200],
+        '--lb-color-secondary-action-subtle': `color-mix(in srgb, ${primitive.color.brandInk[400]} 20%, transparent)`,
+        '--lb-color-focus-ring': primitive.color.brandInk[300],
+
+        '--lb-color-primary-cta': primitive.color.brandInk[400],
+        '--lb-color-primary-cta-hover': `color-mix(in srgb, ${primitive.color.white} 10%, ${primitive.color.brandInk[400]})`,
+        '--lb-color-primary-cta-active': primitive.color.brandInk[500],
+        '--lb-color-primary-cta-text': primitive.color.white,
+
+        '--lb-component-button-primary-bg': primitive.color.brandInk[400],
+        '--lb-component-button-primary-hover': `color-mix(in srgb, ${primitive.color.white} 10%, ${primitive.color.brandInk[400]})`,
+        '--lb-component-button-primary-active': primitive.color.brandInk[500],
+        '--lb-component-button-primary-text': primitive.color.white,
+        '--lb-component-button-primary-border': primitive.color.brandInk[400],
+        '--lb-component-button-secondary-bg': `color-mix(in srgb, ${primitive.color.brandInk[400]} 14%, ${primitive.color.ink[800]})`,
+        '--lb-component-button-secondary-hover': `color-mix(in srgb, ${primitive.color.brandInk[400]} 22%, ${primitive.color.ink[800]})`,
+        '--lb-component-button-secondary-text': primitive.color.white,
+        '--lb-component-button-secondary-border': `color-mix(in srgb, ${primitive.color.brandInk[400]} 34%, ${primitive.color.ink[800]})`,
+
+        '--lb-component-input-focus-border': primitive.color.brandInk[300],
+        '--lb-component-input-focus-ring': `color-mix(in srgb, ${primitive.color.brandInk[300]} 22%, transparent)`,
+
+        '--lb-component-badge-accent-bg': `color-mix(in srgb, ${primitive.color.brandInk[400]} 20%, transparent)`,
+        '--lb-component-badge-accent-text': primitive.color.brandInk[200],
+        '--lb-component-badge-accent-border': `color-mix(in srgb, ${primitive.color.brandInk[400]} 40%, transparent)`,
+        '--lb-component-empty-state-illustration-bg': `color-mix(in srgb, ${primitive.color.brandInk[400]} 20%, transparent)`,
+        '--lb-component-empty-state-illustration-ink': primitive.color.brandInk[300],
+
+        '--lb-component-sidebar-bg': primitive.color.brandInk[900],
+        '--lb-component-sidebar-border': primitive.color.brandInk[850],
+        '--lb-component-sidebar-text': primitive.color.white,
+        '--lb-component-sidebar-text-subdued': primitive.color.brandInk[200],
+        '--lb-component-sidebar-section-text': primitive.color.brandInk[300],
+        '--lb-component-sidebar-active-text': primitive.color.white,
+        '--lb-component-sidebar-active-bg': `color-mix(in srgb, ${primitive.color.brandInk[400]} 22%, transparent)`,
+        '--lb-component-sidebar-hover-bg': 'rgb(255 255 255 / 5%)',
+        '--lb-component-sidebar-active-ring': `inset 0 0 0 1px color-mix(in srgb, ${primitive.color.brandInk[300]} 28%, transparent)`,
+        '--lb-component-sidebar-rail-color': primitive.color.brandInk[300],
+        '--lb-component-sidebar-child-rail': 'rgb(255 255 255 / 14%)',
+    },
+};
+
+const letbuyySurfaceIdentities: Partial<Record<LetbuyySurface, Record<LetbuyyTheme, CssVariableMap>>> = {
+    admin: adminSurfaceIdentity,
+};
+
+function surfaceVariables(surface: LetbuyySurface, theme: LetbuyyTheme): CssVariableMap {
     const colors = letbuyyTokens.color[theme];
     const component = letbuyyTokens.component[theme];
 
@@ -1170,6 +1322,25 @@ function surfaceVariables(theme: LetbuyyTheme): CssVariableMap {
         '--lb-component-input-border': component.input.border,
         '--lb-component-input-focus-border': component.input.focusBorder,
         '--lb-component-input-focus-ring': component.input.focusRing,
+        // Emitted per surface so a surface identity can run its own navigation rail.
+        // `--lb-component-sidebar-text{,-subdued}` are deliberately NOT emitted here:
+        // they exist only where a surface actually needs them (a dark rail under a
+        // light page). Consumers read them with a `var(…, var(--lb-color-text))`
+        // fallback, so surfaces without them are byte-identical to before — and the
+        // shared token contract gains no new duplicate-value aliases.
+        '--lb-component-sidebar-bg': component.sidebar.bg,
+        '--lb-component-sidebar-border': component.sidebar.border,
+        '--lb-component-sidebar-section-text': component.sidebar.sectionText,
+        '--lb-component-sidebar-active-text': component.sidebar.activeText,
+        '--lb-component-sidebar-active-bg': component.sidebar.activeBg,
+        '--lb-component-sidebar-hover-bg': component.sidebar.hoverBg,
+        '--lb-component-sidebar-active-ring': component.sidebar.activeRing,
+        '--lb-component-sidebar-rail-color': component.sidebar.railColor,
+        '--lb-component-sidebar-child-rail': component.sidebar.childRail,
+        // NOTE: --lb-component-sidebar-item-radius is deliberately NOT emitted here.
+        // It is layout, not colour, and apps legitimately tune it from their own
+        // stylesheet; emitting it at surface specificity (0,2,0) would silently
+        // outrank those app-level values.
         '--lb-component-page-header-height': component.pageHeader.height,
         '--lb-component-page-header-title-size': component.pageHeader.titleSize,
         '--lb-component-page-header-title-line-height': component.pageHeader.titleLineHeight,
@@ -1179,6 +1350,9 @@ function surfaceVariables(theme: LetbuyyTheme): CssVariableMap {
         '--lb-component-page-header-icon-fill': component.pageHeader.iconFill,
         '--lb-component-page-header-icon-stroke-width': component.pageHeader.iconStrokeWidth,
         '--lb-component-page-header-icon-border': component.pageHeader.iconBorder,
+        // A surface identity wins over the shared defaults it overlays, and only over
+        // the keys it names.
+        ...(letbuyySurfaceIdentities[surface]?.[theme] ?? {}),
     };
 }
 
@@ -1188,8 +1362,8 @@ export const letbuyySurfaceTokens = Object.fromEntries(
     letbuyySurfaceNames.map((surface) => [
         surface,
         {
-            light: surfaceVariables('light'),
-            dark: surfaceVariables('dark'),
+            light: surfaceVariables(surface, 'light'),
+            dark: surfaceVariables(surface, 'dark'),
         },
     ]),
 ) as Record<LetbuyySurface, Record<LetbuyyTheme, CssVariableMap>>;

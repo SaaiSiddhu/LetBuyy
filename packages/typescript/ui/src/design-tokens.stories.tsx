@@ -291,6 +291,102 @@ export function BrandColors() {
     );
 }
 
+/**
+ * The admin surface identity: the navigation rail, the primary CTA and the focus ring
+ * all resolve from one ink family, with the content canvas staying neutral. Rendered
+ * inside `data-letbuyy-surface="admin"` so the surface-scoped tokens actually apply.
+ */
+function AdminSurfaceContent({ theme }: { theme: LetbuyyTheme }) {
+    const navRows = [
+        { label: 'Home', active: true },
+        { label: 'Orders', active: false },
+        { label: 'Products', active: false },
+    ];
+
+    return (
+        <div className="flex min-h-[320px] overflow-hidden rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
+            {/* Navigation rail — the strongest persistent brand surface */}
+            <nav
+                aria-label="Admin navigation preview"
+                className="flex w-[226px] shrink-0 flex-col gap-[var(--lb-space-1)] bg-[var(--lb-component-sidebar-bg)] p-[var(--lb-space-3)]"
+            >
+                <p className="px-[var(--lb-space-2)] pb-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] uppercase tracking-wide text-[color:var(--lb-component-sidebar-section-text)]">
+                    Sales channels
+                </p>
+                {navRows.map((row) => (
+                    <span
+                        key={row.label}
+                        className={
+                            row.active
+                                ? 'relative rounded-[var(--lb-component-sidebar-item-radius)] bg-[var(--lb-component-sidebar-active-bg)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-sidebar)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-component-sidebar-active-text)] shadow-[var(--lb-component-sidebar-active-ring)] before:absolute before:left-0 before:top-1/2 before:h-[var(--lb-space-4)] before:w-0.5 before:-translate-y-1/2 before:rounded-[var(--lb-radius-full)] before:bg-[var(--lb-component-sidebar-rail-color)] before:content-[""]'
+                                : 'rounded-[var(--lb-component-sidebar-item-radius)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-sidebar)] text-[color:color-mix(in_srgb,var(--lb-component-sidebar-text,var(--lb-color-text))_82%,transparent)]'
+                        }
+                    >
+                        {row.label}
+                    </span>
+                ))}
+                <span className="mt-[var(--lb-space-2)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-component-sidebar-text-subdued,var(--lb-color-text-subdued))]">
+                    Nested / subdued row
+                </span>
+            </nav>
+
+            {/* Content canvas — stays neutral, never a purple slab */}
+            <div className="flex flex-1 flex-col gap-[var(--lb-space-4)] bg-[var(--lb-color-bg)] p-[var(--lb-space-4)]">
+                <div className="flex flex-wrap items-center gap-[var(--lb-space-3)]">
+                    <Button variant="primary">Add product</Button>
+                    <Button variant="secondary">Secondary</Button>
+                    <Button variant="outline">Outline</Button>
+                    <Button variant="destructive">Delete</Button>
+                    <Button variant="primary" disabled>Disabled</Button>
+                </div>
+                <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                    <Badge label="Success" variant="success" />
+                    <Badge label="Warning" variant="warning" />
+                    <Badge label="Critical" variant="critical" />
+                </div>
+                <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                    <TokenSwatch spec={{ label: 'Rail / Primary', variable: '--lb-component-sidebar-bg', role: 'Brand anchor' }} />
+                    <TokenSwatch spec={{ label: 'Primary CTA', variable: '--lb-component-button-primary-bg', role: 'Same family as the rail' }} />
+                    <TokenSwatch spec={{ label: 'Focus Ring', variable: '--lb-color-focus-ring', role: 'Contrast-safe on both' }} />
+                </div>
+                <p className="text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">
+                    Tab to a control to check the focus-visible ring against this canvas ({theme} theme).
+                </p>
+            </div>
+        </div>
+    );
+}
+
+export function AdminSurfaceLight() {
+    return (
+        <TokenFrame theme="light">
+            <div data-letbuyy-surface="admin" data-letbuyy-theme="light">
+                <PageHeader
+                    eyebrow="Admin surface"
+                    title="Rail and CTA share one family (light)"
+                    description="The navigation rail is the brand anchor; the primary CTA resolves from the same ink ramp. Status colours stay semantic."
+                />
+                <AdminSurfaceContent theme="light" />
+            </div>
+        </TokenFrame>
+    );
+}
+
+export function AdminSurfaceDark() {
+    return (
+        <TokenFrame theme="dark">
+            <div data-letbuyy-surface="admin" data-letbuyy-theme="dark">
+                <PageHeader
+                    eyebrow="Admin surface"
+                    title="Rail and CTA share one family (dark)"
+                    description="Dark steps up the same hue rather than across to an unrelated violet, so the rail, canvas and CTA stay distinguishable."
+                />
+                <AdminSurfaceContent theme="dark" />
+            </div>
+        </TokenFrame>
+    );
+}
+
 export function SemanticColors() {
     return (
         <TokenFrame theme="light">

@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useParams } from 'next/navigation'
-import { Button, Input, Table, Badge, Banner, Card, ConfirmDialog, EmptyState, FileText, ListChecks, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Select, Skeleton, Tabs, Textarea, Trash2, useToast } from '@letbuyy/ui'
+import { PAGE_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
+import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, FileText, Input, ListChecks, Page, PageHeader, Plus, RefreshCw, SaveBar, Section, Select, Skeleton, StatusPresentationBadge, Table, Tabs, Textarea, Trash2, useToast } from '@letbuyy/ui'
 import { formatUsShortDate } from '@letbuyy/ui/formatting'
 import { slugifyCmsTitle as slugify } from '@letbuyy/cms-core'
 
@@ -95,12 +96,6 @@ async function parsePayload<T>(response: Response): Promise<JsonPayload<T>> {
         throw new Error(message)
     }
     return payload
-}
-
-function statusVariant(status: PageStatus) {
-    if (status === 'published') return 'success' as const
-    if (status === 'draft') return 'warning' as const
-    return 'default' as const
 }
 
 function createSignature(value: unknown) {
@@ -458,10 +453,7 @@ export default function PagesPage() {
             key: 'status',
             header: 'Status',
             render: (item: PageItem) => (
-                <Badge
-                    label={item.status.charAt(0).toUpperCase() + item.status.slice(1)}
-                    variant={statusVariant(item.status)}
-                />
+                <StatusPresentationBadge presentation={presentStatus(PAGE_STATUS_PRESENTATION, item.status)} />
             ),
         },
         {
@@ -516,10 +508,7 @@ export default function PagesPage() {
             key: 'status',
             header: 'Status',
             render: (item: PolicyItem) => (
-                <Badge
-                    label={item.status.charAt(0).toUpperCase() + item.status.slice(1)}
-                    variant={statusVariant(item.status)}
-                />
+                <StatusPresentationBadge presentation={presentStatus(PAGE_STATUS_PRESENTATION, item.status)} />
             ),
         },
         {

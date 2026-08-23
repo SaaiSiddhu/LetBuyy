@@ -3,30 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
-import {
-    Avatar,
-    Badge,
-    BadgeCheck,
-    Banner,
-    Button,
-    Card,
-    CheckCircle2,
-    ConfirmDialog,
-    EmptyState,
-    MessageSquare,
-    Page,
-    PageHeader,
-    RefreshCw,
-    Section,
-    ShieldCheck,
-    Skeleton,
-    Star,
-    Table,
-    Trash2,
-    XCircle,
-    useToast,
-    type TableColumn,
-} from '@letbuyy/ui'
+import { REVIEW_MODERATION_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
+import { Avatar, Badge, BadgeCheck, Banner, Button, Card, CheckCircle2, ConfirmDialog, EmptyState, MessageSquare, Page, PageHeader, RefreshCw, Section, ShieldCheck, Skeleton, Star, StatusPresentationBadge, Table, Trash2, useToast, XCircle, type TableColumn } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 
 interface Review {
@@ -65,16 +43,6 @@ function getErrorMessage(payload: unknown, fallback: string) {
     }
 
     return fallback
-}
-
-function reviewStatusVariant(status: Review['status']) {
-    if (status === 'approved') return 'success' as const
-    if (status === 'pending') return 'warning' as const
-    return 'critical' as const
-}
-
-function reviewStatusLabel(status: Review['status']) {
-    return status.charAt(0).toUpperCase() + status.slice(1)
 }
 
 function ReviewStars({ rating }: { rating: number }) {
@@ -297,7 +265,7 @@ export default function ReviewsPage() {
             shrink: true,
             render: (review) => (
                 <div className="flex items-center gap-[var(--lb-space-2)]">
-                    <Badge label={reviewStatusLabel(review.status)} variant={reviewStatusVariant(review.status)} />
+                    <StatusPresentationBadge presentation={presentStatus(REVIEW_MODERATION_STATUS_PRESENTATION, review.status)} />
                     {review.is_verified && (
                         <BadgeCheck
                             className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-success)]"

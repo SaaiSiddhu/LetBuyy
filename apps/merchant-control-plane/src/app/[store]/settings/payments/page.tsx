@@ -2,22 +2,8 @@
 
 import { type FormEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { Button, Input,
-    Badge,
-    Banner,
-    Card,
-    CreditCard,
-    IndianRupee,
-    Key,
-    Section,
-    ShieldCheck,
-    Skeleton,
-    Switch,
-    Truck,
-    useToast,
-} from '@letbuyy/ui'
+import { Badge, Banner, Button, Card, CreditCard, IndianRupee, Input, Key, normalizeProviderMode, ProviderModeBadge, Section, ShieldCheck, Skeleton, Switch, Truck, useToast, type ProviderMode } from '@letbuyy/ui'
 import { SettingsPane } from '@/components/settings/SettingsPane'
-import { ProviderModeBadge, normalizeProviderMode } from '@/components/ProviderModeBadge'
 
 type SanitizedPaymentSettings = {
     mode: 'shared' | 'ownAccount'
@@ -36,7 +22,9 @@ type PaymentConfig = {
     store_id: string
     online_payment_enabled: boolean
     cod_enabled: boolean
-    provider_mode: 'sandbox' | 'live'
+    // Widened from 'sandbox' | 'live' to the canonical 3-value ProviderMode so an
+    // absent backend value can be carried as 'mock' instead of being coerced.
+    provider_mode: ProviderMode
     payment_settings: SanitizedPaymentSettings
 }
 
@@ -69,7 +57,11 @@ function normalizePaymentConfig(value: unknown): PaymentConfig {
         store_id: readString(data.store_id),
         online_payment_enabled: data.online_payment_enabled === true,
         cod_enabled: data.cod_enabled === true,
-        provider_mode: normalizeProviderMode(data.provider_mode) || 'sandbox',
+        // No `|| 'sandbox'`: that was the fallback for the old normalizer's null
+        // return, and it silently presented an unconfigured provider as a working
+        // sandbox. normalizeProviderMode now resolves absent/unknown to 'mock',
+        // which the Constitution (:73, :276) requires over sandbox-as-success.
+        provider_mode: normalizeProviderMode(data.provider_mode),
         payment_settings: {
             mode: settings.mode === 'ownAccount' ? 'ownAccount' : 'shared',
             gateways: Array.isArray(settings.gateways) ? settings.gateways.filter((gateway): gateway is string => typeof gateway === 'string') : [],

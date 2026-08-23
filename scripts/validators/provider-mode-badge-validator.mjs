@@ -28,10 +28,31 @@ for (const required of [
 }
 
 for (const required of [
-  "apps/merchant-control-plane/src/components/ProviderModeBadge.tsx",
+  // Phase U1: ProviderModeBadge moved from apps/merchant-control-plane's own
+  // component tree into the canonical @letbuyy/ui package (UX-R9 forbids a
+  // forked/local copy of an exported primitive) -- assert the CANONICAL
+  // location, not the deleted local file.
+  "packages/typescript/ui/src/feedback.tsx",
   "apps/mobile/merchant-app/lib/widgets/shared/provider_mode_badge.dart",
 ]) {
   reporter.assert(readFile(required).includes("ProviderModeBadge"), `${required} must implement a visible provider mode badge`);
+}
+reporter.assert(
+  readFile("packages/typescript/ui/src/index.ts").includes("ProviderModeBadge"),
+  "packages/typescript/ui/src/index.ts must export ProviderModeBadge from the canonical package",
+);
+for (const consumer of [
+  "apps/merchant-control-plane/src/app/[store]/settings/payments/page.tsx",
+  "apps/merchant-control-plane/src/app/[store]/settings/shipping/page.tsx",
+  "apps/merchant-control-plane/src/app/[store]/orders/page.tsx",
+  "apps/merchant-control-plane/src/components/billing/BillingPaymentMethods.tsx",
+]) {
+  const source = readFile(consumer);
+  reporter.assert(
+    /import\s*\{[^}]*\bProviderModeBadge\b[^}]*\}\s*from\s*['"]@letbuyy\/ui['"]/s.test(source),
+    `${consumer} must import ProviderModeBadge from @letbuyy/ui, not a local/forked copy`,
+  );
+  reporter.assert(source.includes("<ProviderModeBadge"), `${consumer} must actually render ProviderModeBadge on its money surface, not just import it`);
 }
 
 const bff = readFile("services/mobile-bff/src/index.ts");
@@ -57,7 +78,9 @@ const aiCreditAdapter = readFile("packages/infrastructure/ai-credit-purchase-ada
 const analyticsRoute = readFile("services/api-gateway/src/routes/analytics.ts");
 const billingCore = readFile("packages/billing-core/src/index.ts");
 const billingRoute = readFile("services/api-gateway/src/routes/billing.ts");
-const providerModeBadge = readFile("apps/merchant-control-plane/src/components/ProviderModeBadge.tsx");
+// Phase U1: canonical location is packages/typescript/ui/src/feedback.tsx
+// (the deleted local apps/merchant-control-plane copy is gone by design).
+const providerModeBadge = readFile("packages/typescript/ui/src/feedback.tsx");
 const mobileProviderModeBadge = readFile("apps/mobile/merchant-app/lib/widgets/shared/provider_mode_badge.dart");
 const mobileRazorpayConnectScreen = readFile("apps/mobile/merchant-app/lib/screens/subscription/connect_razorpay_screen.dart");
 const paymentsPackage = readFile("packages/payments/src/index.ts");
@@ -198,7 +221,18 @@ for (const fragment of [
 reporter.assert(billingCore.includes("BillingProviderModeSchema = z.enum(['sandbox', 'live'])"), "billing provider mode schema must be sandbox/live only");
 reporter.assert(billingCore.includes("planSandboxUpiAutopayMandate"), "billing-core must expose the sandbox AutoPay planner");
 reporter.assert(billingRoute.includes("sandbox_autopay"), "billing route must persist sandbox AutoPay identifiers");
-reporter.assert(!providerModeBadge.includes("'mock'"), "web ProviderModeBadge must not expose mock as a valid provider mode");
+// Phase U1 (Constitution :73/:276, ANTI-R9, PHASE_0_CANONICALIZATION_PLAN.md
+// §3.4): 'mock' is now a DELIBERATE, approved rendered state -- the honest
+// fallback for an absent/unresolvable provider_mode -- not something to
+// forbid. The invariant that survives is narrower and stronger: mock must
+// never be a value the BACKEND stores/configures (covered by the paymentsPackage/
+// paymentsRoute/paymentSchema/sharedTypes assertions elsewhere in this file,
+// all still sandbox/live-only), the badge must never silently render nothing
+// for a missing mode (the exact defect this migration fixes), and mock must
+// never be presented with a success/live-equivalent tone.
+reporter.assert(!/if\s*\(\s*!mode\s*\)\s*return\s+null/.test(providerModeBadge), "web ProviderModeBadge must not silently render nothing for a missing/absent provider_mode (ANTI-R9)");
+reporter.assert(/return\s*['"]mock['"]/.test(providerModeBadge), "web ProviderModeBadge must resolve an unknown/missing provider_mode to the honest 'mock' fallback, not silence");
+reporter.assert(!/mock:\s*\{[^}]*variant:\s*['"]success['"]/s.test(providerModeBadge), "web ProviderModeBadge must never present the mock/absent state with a success tone");
 reporter.assert(!mobileProviderModeBadge.includes("ProviderMode.mock"), "Flutter ProviderModeBadge must not expose mock as a valid provider mode");
 reporter.assert(!mobileProviderModeBadge.includes("'test' => ProviderMode.sandbox"), "Flutter ProviderModeBadge must not accept test as a provider mode alias");
 reporter.assert(!mobileRazorpayConnectScreen.includes("'Test Mode'"), "mobile Razorpay connect screen must use sandbox mode copy");

@@ -315,6 +315,20 @@ export default function CheckoutClient({
                     ...(appliedCoupon ? { coupon_code: appliedCoupon.code } : {}),
                 },
                 theme: { color: checkoutThemeColor() },
+                modal: {
+                    // Closing the Razorpay modal (X or Esc) fires neither `handler`
+                    // nor `payment.failed`, and the outer catch has already been
+                    // passed by the time `open()` runs — so without this the
+                    // `isProcessing` set before the request was never cleared. The
+                    // CTA is `loading={isProcessing}`, and loading hard-disables the
+                    // button, so a merchant who backed out of payment could not
+                    // retry without reloading the page.
+                    // Dismissal is a deliberate choice, not a failure: restore the
+                    // form rather than showing an error.
+                    ondismiss: () => {
+                        setIsProcessing(false)
+                    },
+                },
                 handler: async function (response: Record<string, string>) {
                     try {
                         const verifyRes = await fetch('/api/subscribe/verify', {

@@ -88,7 +88,7 @@ const storeNavigation: MerchantNavItem[] = [
         // Stock control. The parent is the inventory page itself.
         path: 'products/inventory',
         label: 'Inventory',
-        icon: 'inventory',
+        icon: 'warehouse',
         shortcut: 'g i',
         children: [
             { path: 'products/inventory-history', label: 'Inventory history', keywords: ['movements', 'ledger', 'adjustments', 'audit'] },
@@ -122,7 +122,7 @@ const storeNavigation: MerchantNavItem[] = [
     {
         path: 'settings/billing',
         label: 'Money',
-        icon: 'payments',
+        icon: 'wallet',
         shortcut: 'g y',
         // No 'Billing' child: the group's own path IS billing, so listing it
         // again would render the same href twice and stop the parent linking.
@@ -148,7 +148,7 @@ const storeNavigation: MerchantNavItem[] = [
         // Parent lands on Pages, so it is not repeated as a child.
         path: 'pages',
         label: 'Content',
-        icon: 'pages',
+        icon: 'content',
         exact: true,
         children: [
             { path: 'posts', label: 'Blog posts' },
@@ -356,7 +356,7 @@ function getQuickActionCommands(siteType: string | null | undefined, store: stri
             'lookup customer',
             'customer email',
         ]),
-        quickAction('Update inventory', 'inventory', 'products/inventory', store, 'g i', [
+        quickAction('Update inventory', 'warehouse', 'products/inventory', store, 'g i', [
             'update inventory',
             'edit inventory',
             'stock',
