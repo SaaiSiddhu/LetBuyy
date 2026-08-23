@@ -15,10 +15,17 @@ const extractedSource = existsSync(extractedPath) ? readFileSync(extractedPath, 
 const routeBandSource = extractedSource || storefrontSource;
 const registrationHostSource = publicRoutesSource || storefrontSource;
 
+// Phase M1 (LetBuyy DOC 03 row 11 "Payments": single capture adapter, MoR-on-own-Razorpay;
+// LETBUYY_FOUNDATION_ROADMAP.md P5/W-03 "retire legacy app-local checkout/Stripe/PayPal
+// handlers from the live path") retired the Stripe/PayPal/Cashfree capture routes.
+// Razorpay + COD (order creation) are the only live storefront payment-capture routes.
 const expectedRoutes = [
     { method: 'post', path: '/:subdomain/orders' },
     { method: 'post', path: '/:subdomain/payments/razorpay/order' },
     { method: 'post', path: '/:subdomain/payments/razorpay/verify' },
+] as const;
+
+const retiredRoutes = [
     { method: 'post', path: '/:subdomain/payments/cashfree/order' },
     { method: 'post', path: '/:subdomain/payments/cashfree/verify' },
     { method: 'post', path: '/:subdomain/payments/stripe/checkout' },
@@ -54,6 +61,30 @@ test('storefront checkout payment route order is preserved', () => {
         );
         previousIndex = currentIndex;
     }
+});
+
+test('retired Stripe/PayPal/Cashfree storefront capture routes are gone from source', () => {
+    for (const route of retiredRoutes) {
+        const matches = routeBandSource.match(new RegExp(routePattern(route).source, 'g')) || [];
+        assert.equal(matches.length, 0, `${route.method.toUpperCase()} ${route.path} must not be registered`);
+    }
+});
+
+test('checkout-payment-routes.ts does not import the retired non-canonical provider adapters', () => {
+    for (const specifier of [
+        '@letbuyy/infrastructure/stripe-adapter',
+        '@letbuyy/infrastructure/paypal-adapter',
+        '@letbuyy/infrastructure/cashfree-adapter',
+    ]) {
+        assert.ok(
+            !routeBandSource.includes(specifier),
+            `checkout-payment-routes.ts must not import ${specifier}`,
+        );
+    }
+    assert.ok(
+        routeBandSource.includes('@letbuyy/infrastructure/razorpay-adapter'),
+        'checkout-payment-routes.ts must still import the canonical Razorpay adapter',
+    );
 });
 
 test('storefront checkout payment band stays after status and before catalog routes', () => {
