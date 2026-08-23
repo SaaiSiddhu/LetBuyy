@@ -108,10 +108,16 @@ if (enforceLag) {
         `${productionBranch} is ${localLagCount} commit(s) behind ${integrationBranch}; ${productionBranch} must be fast-forwarded (execute MERGE_RUNBOOK.md) before production deploy`,
       );
     } else {
-      const commitCount = Number(git(["rev-list", "--count", "HEAD"]));
+      // Whatever is currently checked out (a feature branch, the integration
+      // branch, or a detached HEAD) must still be reachable from the deploy
+      // trigger, or the guard is measuring a pair the deploy pipeline never
+      // sees. This used to only confirm HEAD had *some* commit history — a
+      // check that always passes and reports green regardless of how far
+      // HEAD has drifted from productionBranch.
+      const localLagCount = Number(git(["rev-list", "--count", `${productionBranch}..HEAD`]));
       reporter.assert(
-        Number.isFinite(commitCount) && commitCount > 0,
-        "Local working branch has no valid commit history",
+        Number.isFinite(localLagCount) && localLagCount === 0,
+        `Local working branch is ${localLagCount} commit(s) ahead of ${productionBranch}; ${productionBranch} must be fast-forwarded (execute MERGE_RUNBOOK.md) before this branch can be treated as release-integrated`,
       );
     }
   } catch (error) {
