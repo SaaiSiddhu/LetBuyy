@@ -387,17 +387,123 @@ export function trackedTargetForResolvedImport(allTrackedFiles, resolved) {
   return candidates.find((candidate) => allTrackedFiles.includes(candidate)) ?? resolved;
 }
 
+const regexPrecedingKeywords = new Set([
+  "return", "typeof", "instanceof", "in", "of", "new", "delete", "void",
+  "throw", "case", "do", "else", "yield", "await",
+]);
+
+// A "/" starts a regex literal (not division) when the last significant
+// character before it cannot end an expression — punctuation/operators/open
+// brackets, start-of-text, or one of the keywords above. This is the
+// standard lexer heuristic; it is deliberately conservative (division is the
+// default) so it never mis-swallows real code as a fake "regex".
+function regexLiteralLikelyStartsHere(out) {
+  const trimmed = out.replace(/\s+$/, "");
+  if (trimmed === "") return true;
+  const lastChar = trimmed[trimmed.length - 1];
+  if (/[A-Za-z0-9_$]/.test(lastChar)) {
+    const word = (trimmed.match(/([A-Za-z_$][A-Za-z0-9_$]*)$/) || [])[1] || "";
+    return regexPrecedingKeywords.has(word);
+  }
+  if (lastChar === ")" || lastChar === "]") return false;
+  return true;
+}
+
+// Strips // line comments and /* */ block comments while leaving string,
+// template-literal, and regex-literal contents untouched (a "//" or "/*"
+// inside a quoted value, e.g. "https://example.com", or inside a regex like
+// /['"]child_process['"]/, must survive intact and must not desync the
+// scanner). Template-literal ${...} interpolations are treated as opaque
+// (not comment-scanned) rather than parsed — under-stripping inside an
+// interpolation is safe; the risk this function exists to remove is
+// over-matching import-shaped text that only appears in a comment
+// (R-18: precision, not weakening).
+export function stripComments(text) {
+  let out = "";
+  let i = 0;
+  const len = text.length;
+
+  while (i < len) {
+    const ch = text[i];
+    const next = text[i + 1];
+
+    if (ch === '"' || ch === "'" || ch === "`") {
+      const quote = ch;
+      out += ch;
+      i += 1;
+      while (i < len) {
+        const c = text[i];
+        if (c === "\\" && i + 1 < len) {
+          out += c + text[i + 1];
+          i += 2;
+          continue;
+        }
+        out += c;
+        i += 1;
+        if (c === quote) break;
+      }
+      continue;
+    }
+
+    if (ch === "/" && next === "/") {
+      i += 2;
+      while (i < len && text[i] !== "\n") i += 1;
+      continue;
+    }
+
+    if (ch === "/" && next === "*") {
+      i += 2;
+      while (i < len && !(text[i] === "*" && text[i + 1] === "/")) {
+        if (text[i] === "\n") out += "\n";
+        i += 1;
+      }
+      i += 2;
+      continue;
+    }
+
+    if (ch === "/" && next !== undefined && regexLiteralLikelyStartsHere(out)) {
+      let j = i + 1;
+      let inCharClass = false;
+      let closed = false;
+      while (j < len) {
+        const c = text[j];
+        if (c === "\n") break;
+        if (c === "\\") { j += 2; continue; }
+        if (c === "[") { inCharClass = true; j += 1; continue; }
+        if (c === "]") { inCharClass = false; j += 1; continue; }
+        if (c === "/" && !inCharClass) { closed = true; j += 1; break; }
+        j += 1;
+      }
+      if (closed) {
+        while (j < len && /[a-z]/i.test(text[j])) j += 1;
+        out += text.slice(i, j);
+        i = j;
+        continue;
+      }
+      // No closing "/" before end-of-line: not actually a regex literal
+      // (or a malformed one) — fall through and treat "/" as a plain char,
+      // same as the pre-existing behavior.
+    }
+
+    out += ch;
+    i += 1;
+  }
+
+  return out;
+}
+
 export function extractSpecifiers(text) {
   const specifiers = [];
+  const stripped = stripComments(text);
   const patterns = [
-    /^\s*import\s+(?:type\s+)?(?:[^'"]+\s+from\s+)?['"]([^'"]+)['"]/gm,
-    /^\s*export\s+(?:type\s+)?[^'"]+\s+from\s+['"]([^'"]+)['"]/gm,
+    /^\s*import\s+(?:type\s+)?(?:[^'"`]+\s+from\s+)?['"]([^'"]+)['"]/gm,
+    /^\s*export\s+(?:type\s+)?[^'"`]+\s+from\s+['"]([^'"]+)['"]/gm,
     /\bimport\(\s*['"]([^'"]+)['"]\s*\)/gm,
     /\brequire\(\s*['"]([^'"]+)['"]\s*\)/gm,
   ];
 
   for (const pattern of patterns) {
-    for (const match of text.matchAll(pattern)) specifiers.push(match[1]);
+    for (const match of stripped.matchAll(pattern)) specifiers.push(match[1]);
   }
 
   return [...new Set(specifiers)];
