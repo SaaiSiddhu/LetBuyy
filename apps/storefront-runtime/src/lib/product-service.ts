@@ -72,6 +72,19 @@ export const ProductService = {
         }
     },
 
+    // Search products for the storefront /search route. Callers should catch: a failed search
+    // degrades to an empty result set with a distinct error state, not a thrown storefront error
+    // boundary — a shopper mistyping a query is not the same fact as a catalogue outage.
+    async searchProducts(subdomain: string, term: string): Promise<ProductModel[]> {
+        const query = term.trim();
+        if (!query) return [];
+
+        const products = await createStorefrontApiClient(
+            storefrontReadInit(30, [`storefront:${subdomain}:search`]),
+        ).storefront.listProducts(subdomain, { search: query, limit: 50 });
+        return products.data.map(mapWorkerProduct);
+    },
+
     // Get all products for a store
     async getProductsByStoreId(storeId: string): Promise<ProductModel[]> {
         try {

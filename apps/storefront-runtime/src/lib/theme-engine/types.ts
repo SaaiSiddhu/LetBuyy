@@ -12,6 +12,8 @@ export type StorefrontRouteType =
     | 'article'
     | 'cart'
     | 'search'
+    | 'list_collections'
+    | 'contact'
     | 'customer_account'
     | 'customer_orders'
     | 'customer_wishlist'
@@ -50,6 +52,11 @@ export interface StorefrontRenderPlan {
     rendererEngine?: ThemeRendererEngine;
     liquidBundle?: LiquidThemePackageBundle;
     liquidTemplateKey?: string;
+    // True only when this store runs Liquid, the route needed a specific template, the bundle has
+    // no match, and there was no fallback content to show instead — a genuine miss with nothing
+    // honest to render. Fixed-shape routes with no fallbackSections should notFound() on this
+    // instead of silently falling through to the legacy homepage-sections catch-all.
+    liquidTemplateMiss: boolean;
     sectionGroups: StorefrontSectionGroups;
     template: StorefrontTemplate;
     themeSettings: ThemeSettings;

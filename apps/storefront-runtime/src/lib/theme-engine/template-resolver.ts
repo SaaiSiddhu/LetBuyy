@@ -124,16 +124,18 @@ function resolveLiquidBundle(store: StoreModel): LiquidThemePackageBundle | unde
     return undefined;
 }
 
+// D3a fix: an unmatched template key must never silently resolve to `index` (or any other
+// arbitrary bundle key) — that renders the home page's sections under the requested route's
+// URL, which is a wrong-page bug with SEO impact, not a graceful fallback. A miss is reported
+// as null so the caller (resolveStorefrontTemplate) can fall through to real fallback content
+// or signal a genuine miss, instead of this function guessing.
 function resolveLiquidTemplateKey(
     bundle: LiquidThemePackageBundle,
     route: StorefrontRouteContext,
     routeType: StorefrontRouteType,
-): string {
+): string | null {
     const routeTemplateKey = route.templateKey || resolveTemplateKey(routeType);
-    if (bundle.templates[routeTemplateKey]) return routeTemplateKey;
-    if (bundle.templates.index) return 'index';
-
-    return Object.keys(bundle.templates)[0] || routeTemplateKey;
+    return bundle.templates[routeTemplateKey] ? routeTemplateKey : null;
 }
 
 function coerceLiquidTemplate(
@@ -244,16 +246,23 @@ export function resolveStorefrontTemplate(
             defaultEnabled: THEME_LIQUID_RENDERING_DEFAULT_ENABLED,
         });
     const liquidBundle = liquidEnabled ? resolveLiquidBundle(store) : undefined;
+    // Set only when this store runs Liquid, the route asked for a specific template, the bundle
+    // has no matching template, and there is no fallback content to show instead — i.e. a genuine
+    // miss with nothing honest to render. Callers that need a specific template (no
+    // fallbackSections, e.g. the fixed-shape account/utility routes) can check this and 404
+    // instead of falling through to the legacy chain's homepage-sections catch-all.
+    let liquidTemplateMiss = false;
     if (liquidBundle) {
         const liquidTemplateKey = resolveLiquidTemplateKey(liquidBundle, route, route.type);
-        const liquidTemplate = coerceLiquidTemplate(liquidBundle, liquidTemplateKey, route.type);
-        if (liquidTemplate) {
+        const liquidTemplate = liquidTemplateKey ? coerceLiquidTemplate(liquidBundle, liquidTemplateKey, route.type) : null;
+        if (liquidTemplate && liquidTemplateKey) {
             return {
                 route,
                 layoutKey: liquidTemplate.layoutKey,
                 rendererEngine: 'liquid',
                 liquidBundle,
                 liquidTemplateKey,
+                liquidTemplateMiss: false,
                 sectionGroups: resolveLiquidSectionGroups(liquidBundle, store),
                 template: liquidTemplate,
                 themeSettings: store.templateConfig.themeSettings,
@@ -268,6 +277,7 @@ export function resolveStorefrontTemplate(
                 ],
             };
         }
+        liquidTemplateMiss = !route.fallbackSections?.length;
     }
 
     const assignedTemplate = route.templateKey
@@ -298,6 +308,7 @@ export function resolveStorefrontTemplate(
     return {
         route,
         layoutKey: template.layoutKey,
+        liquidTemplateMiss,
         sectionGroups: resolveSectionGroups(store),
         template,
         themeSettings: store.templateConfig.themeSettings,

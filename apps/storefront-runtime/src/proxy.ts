@@ -255,6 +255,59 @@ async function validGateCookie(req: NextRequest, site: StorefrontAccessContext, 
   return site.access_mode === 'password';
 }
 
+// The Liquid contact-form.liquid section is a plain HTML form posting to this exact pathname (see
+// contact/page.tsx for why the POST can't be a Next route.ts at the same segment). Proxies to the
+// EXISTING public gateway endpoint (POST /v1/contacts, contacts.ts — already tenant-scoped by
+// store_id, no DB write happens in this app) and redirects back to the page with a status flag.
+// Placed AFTER the access-mode gates in proxy(), so it is only reachable on a store a visitor has
+// already legitimately reached — an offline/preview-only/password-locked store never exposes it.
+async function handleContactSubmit(req: NextRequest, site: StorefrontAccessContext): Promise<NextResponse> {
+    let name = '';
+    let email = '';
+    let phone = '';
+    try {
+        const contentType = req.headers.get('content-type') || '';
+        if (contentType.startsWith('application/x-www-form-urlencoded') || contentType.startsWith('multipart/form-data')) {
+            const fd = await req.formData();
+            name = typeof fd.get('name') === 'string' ? String(fd.get('name')) : '';
+            email = typeof fd.get('email') === 'string' ? String(fd.get('email')) : '';
+            phone = typeof fd.get('phone') === 'string' ? String(fd.get('phone')) : '';
+        } else {
+            const body = await req.json().catch(() => null) as { name?: unknown; email?: unknown; phone?: unknown } | null;
+            name = typeof body?.name === 'string' ? body.name : '';
+            email = typeof body?.email === 'string' ? body.email : '';
+            phone = typeof body?.phone === 'string' ? body.phone : '';
+        }
+    } catch {
+        // Both parse paths threw — fields stay '' → validation below redirects with an error flag.
+    }
+
+    const redirectWithStatus = (status: 'sent' | 'error') => {
+        const destination = req.nextUrl.clone();
+        destination.pathname = '/contact';
+        destination.search = '';
+        destination.searchParams.set('contact', status);
+        return NextResponse.redirect(destination, 303);
+    };
+
+    if (!name || (!email && !phone)) return redirectWithStatus('error');
+
+    const base = gatewayBaseUrl();
+    if (!base) return redirectWithStatus('error');
+
+    try {
+        const response = await fetch(`${base}/v1/contacts`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ store_id: site.site_id, name, email: email || undefined, phone: phone || undefined }),
+            signal: AbortSignal.timeout(STORE_ACCESS_TIMEOUT_MS),
+        });
+        return redirectWithStatus(response.ok ? 'sent' : 'error');
+    } catch {
+        return redirectWithStatus('error');
+    }
+}
+
 async function handlePasswordSubmit(req: NextRequest, site: StorefrontAccessContext, host: string): Promise<NextResponse> {
   // F6 — Dual content-type parsing following the D10 pattern.
   // The E5 Liquid password-gate form posts application/x-www-form-urlencoded; the existing
@@ -399,6 +452,10 @@ export async function proxy(req: NextRequest) {
 
   if (site.access_mode === 'password' && !preview.valid && !(await validGateCookie(req, site, accessHost))) {
     return holdingPage(req, 401, 'password-required', site);
+  }
+
+  if (req.nextUrl.pathname === '/contact' && req.method === 'POST') {
+    return handleContactSubmit(req, site);
   }
 
   const response = rewriteToStore(req, site.subdomain, preview.valid);
