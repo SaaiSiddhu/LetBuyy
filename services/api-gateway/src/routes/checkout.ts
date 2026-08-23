@@ -74,7 +74,9 @@ export type VerifiedHandoff = {
 };
 
 type StepTarget = 'contact' | 'delivery' | 'payment_intent' | 'completed' | 'failed';
-type HostedCheckoutPaymentProvider = 'razorpay' | 'stripe' | 'paypal' | 'cashfree' | 'cod';
+// Phase M1 (DOC 03 row 11 "Payments"): Razorpay + COD are the only live
+// hosted-checkout money-in rails.
+type HostedCheckoutPaymentProvider = 'razorpay' | 'cod';
 
 const checkoutRouter = new Hono<{ Bindings: Env }>();
 export const publicStoreBrandingRouter = new Hono<{ Bindings: Env }>();
@@ -141,7 +143,7 @@ function stringValue(value: unknown): string | undefined {
 
 function normalizeHostedCheckoutPaymentProvider(value: unknown): HostedCheckoutPaymentProvider | null {
     const provider = stringValue(value)?.toLowerCase();
-    if (provider === 'razorpay' || provider === 'stripe' || provider === 'paypal' || provider === 'cashfree' || provider === 'cod') {
+    if (provider === 'razorpay' || provider === 'cod') {
         return provider;
     }
     return null;

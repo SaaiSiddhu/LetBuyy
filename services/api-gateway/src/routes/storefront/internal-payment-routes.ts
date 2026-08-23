@@ -19,17 +19,22 @@ type StorefrontPaidOrderSnapshot = {
     currency?: string | null;
 };
 
+// Phase M1 (DOC 03 row 11 "Payments"): Razorpay is the only live money-in
+// gateway; these routes attach/confirm/fail/record an externally-confirmed
+// provider event, which COD (no external gateway) never reaches.
+type CapturedPaymentProvider = 'razorpay';
+
 type InternalPaymentReferenceBody = {
     orderId?: string;
     storeId?: string;
-    provider?: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
+    provider?: CapturedPaymentProvider;
     paymentReference?: string;
     idempotencyKey?: string | null;
 };
 
 type InternalPaymentConfirmBody = {
     orderId?: string;
-    provider?: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
+    provider?: CapturedPaymentProvider;
     paymentId?: string;
     providerOrderId?: string | null;
     providerEventId?: string | null;
@@ -38,7 +43,7 @@ type InternalPaymentConfirmBody = {
 
 type InternalPaymentFailureBody = {
     orderId?: string;
-    provider?: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
+    provider?: CapturedPaymentProvider;
     providerEventId?: string;
     paymentStatus?: 'failed' | 'refunded';
     orderStatus?: 'cancelled' | 'refunded';
@@ -49,7 +54,7 @@ type InternalPaymentFailureBody = {
 
 type InternalPaymentEventBody = {
     orderId?: string;
-    provider?: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
+    provider?: CapturedPaymentProvider;
     providerEventId?: string;
     eventType?: string;
     idempotencyKey?: string | null;
@@ -74,8 +79,8 @@ function isInternalRequest(c: AppContext): boolean {
     return isInternalApiSecretRequest(c.env, c.req);
 }
 
-function assertProvider(value: unknown): value is 'razorpay' | 'stripe' | 'paypal' | 'cashfree' {
-    return value === 'razorpay' || value === 'stripe' || value === 'paypal' || value === 'cashfree';
+function assertProvider(value: unknown): value is CapturedPaymentProvider {
+    return value === 'razorpay';
 }
 
 async function loadInternalPayableOrder(c: AppContext, orderId: string, storeId?: string) {

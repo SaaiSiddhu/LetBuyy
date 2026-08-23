@@ -12,6 +12,12 @@ type PayableOrder = {
     status?: string | null;
 };
 
+// Phase M1 (DOC 03 row 11 "Payments"): Razorpay is the only live money-in
+// gateway; every method below posts an externally-confirmed provider
+// reference/payment/failure/event to the canonical ledger, which COD (no
+// external gateway) never reaches.
+type CapturedPaymentProvider = 'razorpay';
+
 export class PaymentExecutionAdapter {
     static readonly applicationWorkflows = CHECKOUT_APPLICATION_WORKFLOWS;
     static readonly executionPipelines = CHECKOUT_EXECUTION_PIPELINES;
@@ -62,7 +68,7 @@ export class PaymentExecutionAdapter {
 
     async attachPaymentReference(params: {
         orderId: string;
-        provider: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
+        provider: CapturedPaymentProvider;
         providerOrderId: string;
         requestId?: string | null;
         idempotencyKey?: string | null;
@@ -84,7 +90,7 @@ export class PaymentExecutionAdapter {
 
     async confirmPayment(params: {
         orderId: string;
-        provider: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
+        provider: CapturedPaymentProvider;
         providerPaymentId: string;
         providerOrderId?: string | null;
         providerEventId?: string | null;
@@ -110,7 +116,7 @@ export class PaymentExecutionAdapter {
 
     async recordPaymentFailure(params: {
         orderId: string;
-        provider: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
+        provider: CapturedPaymentProvider;
         providerEventId: string;
         paymentStatus: 'failed' | 'refunded';
         orderStatus: 'cancelled' | 'refunded';
@@ -140,7 +146,7 @@ export class PaymentExecutionAdapter {
 
     async recordPaymentEvent(params: {
         orderId: string;
-        provider: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
+        provider: CapturedPaymentProvider;
         providerEventId: string;
         eventType: string;
         requestId?: string | null;

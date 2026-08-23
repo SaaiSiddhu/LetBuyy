@@ -225,8 +225,10 @@ export async function loadOwnedPaymentSession(
 
 export async function assertProviderPaymentNotReplayed(
     db: ReturnType<typeof getSupabaseAdmin>,
+    // Phase M1 (DOC 03 row 11 "Payments"): Razorpay is the only live money-in
+    // gateway with a provider-confirmed payment to replay-guard against.
     params: {
-        provider: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
+        provider: 'razorpay';
         providerPaymentId: string;
         providerOrderId?: string | null;
         orderId: string;
