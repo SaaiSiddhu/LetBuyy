@@ -216,3 +216,24 @@ test('storefront runtime no longer owns payment route handlers', () => {
     assert.match(checkoutClient, /storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/razorpay\/order'/);
     assert.match(checkoutClient, /storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/razorpay\/verify'/);
 });
+
+test('gateway no longer owns an authenticated Stripe checkout route (Phase M1, DOC 03 row 11)', () => {
+    const paymentsSource = source('routes/payments.ts');
+
+    assert.doesNotMatch(paymentsSource, /router\.post\(\s*'\/stripe\/checkout'/);
+    assert.doesNotMatch(paymentsSource, /StripeCheckoutSchema/);
+    assert.doesNotMatch(paymentsSource, /createStripeCheckoutSessionWithFetch/);
+    assert.doesNotMatch(paymentsSource, /@letbuyy\/infrastructure\/stripe-adapter/);
+
+    // The authenticated-mount Next.js proxy for this endpoint is already gone (asserted
+    // above); this closes the corresponding gateway-side handler the prior test's
+    // ENOENT list did not cover, per PROMPTS.md CANONICAL-* handoff W2.
+    assert.throws(
+        () => repositorySource('apps/storefront-runtime/src/app/api/payments/stripe/checkout/route.ts'),
+        /ENOENT/,
+    );
+
+    // Razorpay routes on the same authenticated router are untouched.
+    assert.match(paymentsSource, /router\.post\(\s*'\/razorpay\/order'/);
+    assert.match(paymentsSource, /router\.post\(\s*'\/razorpay\/verify'/);
+});

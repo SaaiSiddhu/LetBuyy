@@ -10,11 +10,9 @@ import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.
 import { stepUpErrorBody, verifySensitiveActionStepUp } from '../lib/security-controls';
 import { SubscriptionExecutionAdapter } from '../execution/subscription-execution.adapter';
 import { createRazorpayOrder, createRazorpayPaymentProvider, fetchRazorpayPayment } from '@letbuyy/infrastructure/razorpay-adapter';
-import { createStripeCheckoutSessionWithFetch } from '@letbuyy/infrastructure/stripe-adapter';
 import {
     RazorpayOrderSchema,
     RazorpayVerifySchema,
-    StripeCheckoutSchema,
 } from '../schemas/order.schema';
 import {
     CancelSubscriptionSchema,
@@ -71,7 +69,6 @@ import {
     postPaymentLedger,
     requestedAmountMinorUnits,
     requireLivePaymentCredential,
-    resolvePlatformOrigin,
     stringOrNull,
     type PaymentJsonValue,
     type PaymentSessionRow,
@@ -1244,80 +1241,6 @@ router.post('/razorpay/verify', validate('json', RazorpayVerifySchema), async (c
     });
 
     return c.json({ data: { verified: true, order: updated } });
-});
-
-// POST /payments/stripe/checkout — Create a Stripe checkout session
-router.post('/stripe/checkout', validate('json', StripeCheckoutSchema), async (c) => {
-    const auth = c.get('auth');
-    const body = c.get('validatedBody') as {
-        order_id: string;
-        success_url?: string;
-        cancel_url?: string;
-        idempotency_key: string;
-    };
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        throw new ForbiddenError('User profile not found');
-    }
-
-    if (!c.env.STRIPE_SECRET_KEY) {
-        return c.json(
-            { error: { code: 'PAYMENT_UNAVAILABLE', message: 'Stripe is not configured' } },
-            503
-        );
-    }
-
-    try {
-        const order = await loadPayableOrder(c, body.order_id, customUser.id, auth.user.storeId);
-        const unitAmount = Math.round(order.total * 100);
-
-        const session = await createStripeCheckoutSessionWithFetch({
-            secretKey: c.env.STRIPE_SECRET_KEY,
-            orderId: body.order_id,
-            amountMinorUnits: unitAmount,
-            currency: order.currency || 'INR',
-            successUrl: body.success_url || `${resolvePlatformOrigin(c)}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancelUrl: body.cancel_url || `${resolvePlatformOrigin(c)}/checkout/cancel`,
-            idempotencyKey: body.idempotency_key,
-            name: `LetBuyy order ${body.order_id}`,
-        });
-
-        if (!session.id) {
-            return c.json(
-                {
-                    error: {
-                        code: 'PAYMENT_ERROR',
-                        message: 'Failed to create Stripe checkout session',
-                    },
-                },
-                500
-            );
-        }
-
-        // Update order with Stripe session ID
-        const paymentService = new PaymentExecutionAdapter(db);
-        await paymentService.attachPaymentReference({
-            orderId: body.order_id,
-            provider: 'stripe',
-            providerOrderId: String(session.id),
-            requestId: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
-            idempotencyKey: body.idempotency_key,
-        });
-
-        return c.json({
-            data: {
-                session_id: session.id,
-                session_url: session.url,
-            },
-        });
-    } catch (err) {
-        return c.json(
-            { error: { code: 'PAYMENT_ERROR', message: 'Stripe service unavailable' } },
-            503
-        );
-    }
 });
 
 export default router;
