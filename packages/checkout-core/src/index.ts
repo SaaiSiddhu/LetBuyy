@@ -195,47 +195,6 @@ export const StorefrontRazorpayVerifySchema = z.object({
   idempotencyKey: z.string().min(8).max(200),
 });
 
-export const StorefrontStripeCheckoutSchema = z.object({
-  orderId: UuidSchema,
-  successUrl: z.string().url(),
-  cancelUrl: z.string().url(),
-  customerEmail: EmailSchema.optional(),
-  idempotencyKey: z.string().min(8).max(200),
-});
-
-export const StorefrontPayPalOrderSchema = z.object({
-  orderId: UuidSchema,
-  returnUrl: z.string().url(),
-  cancelUrl: z.string().url(),
-  idempotencyKey: z.string().min(8).max(200),
-});
-
-export const StorefrontPayPalCaptureSchema = z.object({
-  orderId: UuidSchema,
-  paypalOrderId: z.string().min(1).max(200),
-  idempotencyKey: z.string().min(8).max(200),
-});
-
-export const StorefrontCashfreeOrderSchema = z.object({
-  orderId: UuidSchema,
-  returnUrl: z.string().url(),
-  notifyUrl: z.string().url().optional(),
-  customerEmail: EmailSchema.optional(),
-  customerPhone: z.string().max(20).optional(),
-  customerName: z.string().max(200).optional(),
-  paymentMethods: z.string().max(200).optional(),
-  idempotencyKey: z.string().min(8).max(200),
-  amount: MoneySchema.optional(),
-  amountMinorUnits: z.number().int().positive().optional(),
-});
-
-export const StorefrontCashfreeVerifySchema = z.object({
-  orderId: UuidSchema,
-  cashfree_order_id: z.string().min(1).max(200),
-  cf_payment_id: z.string().min(1).max(200).optional(),
-  idempotencyKey: z.string().min(8).max(200),
-});
-
 export const UpdateOrderStatusSchema = z.object({
   idempotency_key: z.string().min(8).max(200),
   status: z.enum([
@@ -919,13 +878,6 @@ export const RazorpayOrderSchema = z.object({
   idempotency_key: z.string().min(8).max(200),
   amount: MoneySchema.optional(),
   amount_minor_units: z.number().int().positive().optional(),
-});
-
-export const StripeCheckoutSchema = z.object({
-  order_id: UuidSchema,
-  success_url: z.string().url().optional(),
-  cancel_url: z.string().url().optional(),
-  idempotency_key: z.string().min(8).max(200),
 });
 
 export const CreateShippingZoneSchema = z.object({
@@ -1716,14 +1668,18 @@ export interface OrderPricing {
 }
 
 export interface OrderPayment {
+  // PAYMENT-RAIL-VALIDATOR: HISTORICAL-READ-PATH-EXEMPT -- 'stripe'/'paypal'/
+  // 'cashfree' are retired write-path rails (DOC 03 row 11, Phase M1), but
+  // this reads historical DB rows: create_checkout_order accepted
+  // 'stripe'/'paypal' through migration 170 and 'cashfree' between migrations
+  // 075 and 170 (database/supabase/migrations/075_cashfree_payment_provider.sql,
+  // 170_v1_shipping_rates_gst.sql), and mobile draft orders' CHECK constraint
+  // (116_mobile_draft_orders.sql) still allows 'cashfree'. Narrowing this
+  // union would misrepresent real historical order data, not fix anything.
   method: 'razorpay' | 'stripe' | 'paypal' | 'cashfree' | 'cod';
   status: PaymentStatus;
   razorpayOrderId?: string;
   razorpayPaymentId?: string;
-  stripeSessionId?: string;
-  paypalOrderId?: string;
-  cashfreeOrderId?: string;
-  cashfreePaymentId?: string;
 }
 
 export interface OrderTracking {
@@ -1737,11 +1693,6 @@ export type CreateOrderInput = z.infer<typeof CreateOrderSchema>;
 export type StorefrontCreateOrderInput = z.infer<typeof StorefrontCreateOrderSchema>;
 export type StorefrontRazorpayOrderInput = z.infer<typeof StorefrontRazorpayOrderSchema>;
 export type StorefrontRazorpayVerifyInput = z.infer<typeof StorefrontRazorpayVerifySchema>;
-export type StorefrontStripeCheckoutInput = z.infer<typeof StorefrontStripeCheckoutSchema>;
-export type StorefrontPayPalOrderInput = z.infer<typeof StorefrontPayPalOrderSchema>;
-export type StorefrontPayPalCaptureInput = z.infer<typeof StorefrontPayPalCaptureSchema>;
-export type StorefrontCashfreeOrderInput = z.infer<typeof StorefrontCashfreeOrderSchema>;
-export type StorefrontCashfreeVerifyInput = z.infer<typeof StorefrontCashfreeVerifySchema>;
 export type UpdateOrderStatusInput = z.infer<typeof UpdateOrderStatusSchema>;
 export type LogisticsProviderName = z.infer<typeof LogisticsProviderNameSchema>;
 export type FulfillOrderInput = z.infer<typeof FulfillOrderSchema>;
@@ -1759,7 +1710,6 @@ export type CompleteRefundInput = z.infer<typeof CompleteRefundSchema>;
 export type ListOrdersInput = z.infer<typeof ListOrdersQuery>;
 export type RazorpayVerifyInput = z.infer<typeof RazorpayVerifySchema>;
 export type RazorpayOrderInput = z.infer<typeof RazorpayOrderSchema>;
-export type StripeCheckoutInput = z.infer<typeof StripeCheckoutSchema>;
 export type CreateShippingZoneInput = z.infer<typeof CreateShippingZoneSchema>;
 export type CreateShippingRateInput = z.infer<typeof CreateShippingRateSchema>;
 export type ShippingServiceabilityQueryInput = z.infer<typeof ShippingServiceabilityQuerySchema>;

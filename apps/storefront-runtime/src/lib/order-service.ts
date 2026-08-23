@@ -124,11 +124,15 @@ function mapOrderRow(
     };
 
     const payment: OrderPayment = {
+        // PAYMENT-RAIL-VALIDATOR: HISTORICAL-READ-PATH-EXEMPT -- 'stripe'/'paypal'
+        // are retired write-path rails (DOC 03 row 11), but this reads historical
+        // DB rows -- create_checkout_order accepted them through migration 170
+        // (see OrderPayment's doc comment in @letbuyy/checkout-core). This whole
+        // file only maps DB rows for display; it is excluded wholesale in
+        // scripts/validators/payment-rail-allowlist-validator.mjs.
         method: (data.payment_method as 'razorpay' | 'stripe' | 'paypal' | 'cod') || 'cod',
         status: (data.payment_status as 'pending' | 'paid' | 'failed' | 'refunded') || 'pending',
         razorpayPaymentId: data.payment_method === 'razorpay' ? (data.payment_id as string) : undefined,
-        stripeSessionId: data.payment_method === 'stripe' ? (data.payment_id as string) : undefined,
-        paypalOrderId: data.payment_method === 'paypal' ? (data.payment_id as string) : undefined,
     };
 
     const items = Array.isArray(data.items) ? data.items.map(mapOrderItem) : [];
