@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
-import { getAdminDashboardUrl } from '@/lib/config/urls'
+import { getAdminDashboardUrl, getStorefrontRootDomain } from '@/lib/config/urls'
 import { Button } from '@letbuyy/ui'
 import { useAuthTheme } from '@/lib/useAuthTheme'
 
@@ -194,7 +194,7 @@ export default function SelectPage() {
                                     </div>
                                     <div className="select-store-info">
                                         <span className="select-store-name">{store.store_name || store.name}</span>
-                                        <span className="select-store-url">{store.subdomain}.letbuyy.store</span>
+                                        <span className="select-store-url">{store.subdomain}.{getStorefrontRootDomain()}</span>
                                         <span className="select-store-meta">
                                             <span className="select-meta-type">
                                                 <AuthIcon name={getSiteTypeIcon(store.site_type)} size={11} />

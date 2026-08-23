@@ -1,3 +1,5 @@
+import { normalizeStoreRootDomain } from '@letbuyy/tenant-core'
+
 const PRODUCTION_ADMIN_URL = 'https://admin.letbuyy.com'
 const PRODUCTION_ACCOUNTS_URL = 'https://accounts.letbuyy.com'
 
@@ -31,4 +33,17 @@ export function getAdminSelectPlanUrl(subdomain: string) {
 export function getAccountsUrl(path = '') {
     const baseUrl = trimTrailingSlash(process.env.NEXT_PUBLIC_ACCOUNTS_URL || PRODUCTION_ACCOUNTS_URL)
     return appendPath(baseUrl, path)
+}
+
+// DEPLOY-R3: letbuyy.com is the one canonical platform domain — no other
+// apex is a valid functional literal here. Shares the same env-overridable
+// resolver (NEXT_PUBLIC_STORE_ROOT_DOMAIN, defaulting to letbuyy.com)
+// already used by api-gateway and storefront-runtime for the storefront
+// root domain.
+export function getStorefrontRootDomain() {
+    return normalizeStoreRootDomain(process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN)
+}
+
+export function getStorefrontUrl(subdomain: string) {
+    return `https://${subdomain}.${getStorefrontRootDomain()}`
 }

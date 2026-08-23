@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
-import { getAdminSelectPlanUrl } from '@/lib/config/urls'
+import { getAdminSelectPlanUrl, getStorefrontRootDomain } from '@/lib/config/urls'
 import { Button, Input } from '@letbuyy/ui'
 import { useAuthTheme } from '@/lib/useAuthTheme'
 
@@ -375,7 +375,7 @@ export default function OnboardingPage() {
                             </div>
                             <div className="onboard-review-row">
                                 <span>{t.subdomainLabel}</span>
-                                <strong className="text-[color:var(--primary)]">{subdomain}.letbuyy.store</strong>
+                                <strong className="text-[color:var(--primary)]">{subdomain}.{getStorefrontRootDomain()}</strong>
                             </div>
                         </div>
                         <div className="onboard-redirect-hint">
@@ -486,7 +486,7 @@ export default function OnboardingPage() {
                                         maxLength={63}
                                         autoFocus
                                     />
-                                    <span className="onboard-subdomain-suffix">.letbuyy.store</span>
+                                    <span className="onboard-subdomain-suffix">.{getStorefrontRootDomain()}</span>
                                 </div>
                                 <div className={`onboard-validation${validating ? ' checking' : validation ? (validation.valid ? ' valid' : (validation.reason === 'reserved' ? ' reserved' : ' invalid')) : ''}`}>
                                     {validating ? (
@@ -528,7 +528,7 @@ export default function OnboardingPage() {
                             </div>
                             <div className="onboard-review-row">
                                 <span>{t.subdomainLabel}</span>
-                                <strong style={{ color: 'var(--primary)' }}>{subdomain}.letbuyy.store</strong>
+                                <strong style={{ color: 'var(--primary)' }}>{subdomain}.{getStorefrontRootDomain()}</strong>
                             </div>
                             <div className="onboard-review-row">
                                 <span>Industry</span>

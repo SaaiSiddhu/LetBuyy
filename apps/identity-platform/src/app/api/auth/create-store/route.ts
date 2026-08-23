@@ -3,7 +3,7 @@ import { validateSession } from '@/lib/auth/session'
 import { getSessionCookie } from '@/lib/auth/cookies'
 import { validateCsrf } from '@/lib/auth/csrf'
 import { identityApiRequest } from '@/lib/api/client'
-import { getAdminDashboardUrl } from '@/lib/config/urls'
+import { getAdminDashboardUrl, getStorefrontUrl } from '@/lib/config/urls'
 
 const ACTIVE_SITE_TYPES = ['store'] as const
 const COMING_SOON_SITE_TYPES = ['landing', 'blog'] as const
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
                     email: session.email,
                     storeName: storeName.trim(),
                     storeType: siteType,
-                    storeUrl: `https://${normalizedSubdomain}.letbuyy.store`,
+                    storeUrl: getStorefrontUrl(normalizedSubdomain),
                     adminUrl: getAdminDashboardUrl(normalizedSubdomain),
                 }),
             })
