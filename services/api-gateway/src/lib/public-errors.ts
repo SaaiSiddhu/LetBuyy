@@ -25,6 +25,7 @@ export const FIXED_PUBLIC_ERROR_MESSAGES: Record<string, string> = {
     PAYMENT_ERROR: 'Payment request failed',
     PAYMENT_PROVIDER_ERROR: 'Payment provider request failed',
     RATE_LIMIT_UNAVAILABLE: 'Rate limiting is temporarily unavailable',
+    SEARCH_ERROR: 'Search request failed',
     SERVER_MISCONFIGURED: 'Service is not configured',
 };
 

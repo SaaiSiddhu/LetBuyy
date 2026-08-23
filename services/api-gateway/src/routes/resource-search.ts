@@ -311,8 +311,17 @@ router.get('/', async (c) => {
             results = await searchMenus(db, store_id, q, limit);
         }
     } catch (err) {
+        console.error(JSON.stringify({
+            level: 'error',
+            service: 'letbuyy-api',
+            route: 'themes.resource-search',
+            status_code: 500,
+            reason: 'resource_search_failed',
+            resource_type: type,
+            error: err instanceof Error ? err.message : 'Search failed',
+        }));
         return c.json(
-            { error: { code: 'SEARCH_ERROR', message: err instanceof Error ? err.message : 'Search failed' } },
+            { error: { code: 'SEARCH_ERROR', message: 'Search failed' } },
             500,
         );
     }
