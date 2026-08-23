@@ -9,7 +9,7 @@ import {
     InternalPermissionScopeSchema,
 } from '@letbuyy/shared-types';
 import type { Env } from '../index';
-import { hmacSha256Hex, sha256Hex, timingSafeEqualText } from '../lib/crypto';
+import { sha256Hex, timingSafeEqualText } from '../lib/crypto';
 import { ValidationError } from '../lib/errors';
 import { isInternalApiSecretRequest } from '../lib/internal-secret';
 import { getSupabaseAdmin, paginated, shouldReturnEmptyForMissingLocalSchema, success } from '../lib/supabase';
@@ -432,20 +432,25 @@ async function readMerchantSite(c: AppContext, merchantId: string): Promise<Merc
     if (error) throw new Error(error.message);
     return (data || null) as MerchantSiteRow | null;
 }
-async function signImpersonationToken(c: AppContext, input: {
-    sessionId: string;
-    siteId: string;
-    operatorId: string;
-    expiresAt: string;
-}) {
-    const secret = c.env.AUTH_SECRET;
-    if (!secret || secret.includes('replace-with') || secret.startsWith('dev-only-placeholder')) {
-        return null;
-    }
+// The impersonation token's signature was never verified anywhere in this
+// codebase (grep the whole repository for "lb_imp" -- the only occurrence is
+// the construction site below); the sole authenticity control is token_hash,
+// matched against impersonation_sessions.token_hash. A CSPRNG-generated
+// opaque credential provides the same (actually stronger -- unguessable
+// rather than merely unforgeable-without-the-key) guarantee without signing
+// with a shared symmetric secret (SEC-R7). The session's real claims (site,
+// operator, expiry) are already persisted on the impersonation_sessions row
+// itself, so none of that needs to be embedded in the token.
+function randomOpaqueTokenHex(byteCount = 32): string {
+    const bytes = new Uint8Array(byteCount);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes)
+        .map((byte) => byte.toString(16).padStart(2, '0'))
+        .join('');
+}
 
-    const material = `${input.sessionId}.${input.siteId}.${input.operatorId}.${Date.parse(input.expiresAt)}`;
-    const signature = await hmacSha256Hex(secret, material);
-    const token = `lb_imp_${material}.${signature}`;
+export async function generateImpersonationToken(): Promise<{ token: string; token_hash: string }> {
+    const token = `lb_imp_${randomOpaqueTokenHex()}`;
     return {
         token,
         token_hash: await sha256Hex(token),
@@ -1140,21 +1145,7 @@ router.post('/merchants/:id/impersonation', async (c) => {
     const operatorId = parsed.data.operator_id || parsed.data.actor_id;
     const expiresAt = new Date(Date.now() + parsed.data.ttl_minutes * 60_000).toISOString();
     const sessionId = crypto.randomUUID();
-    const signed = await signImpersonationToken(c, {
-        sessionId,
-        siteId: site.id,
-        operatorId,
-        expiresAt,
-    });
-
-    if (!signed) {
-        return c.json({
-            error: {
-                code: 'IMPERSONATION_SIGNING_NOT_CONFIGURED',
-                message: 'Merchant impersonation signing is not configured.',
-            },
-        }, 503);
-    }
+    const signed = await generateImpersonationToken();
 
     const db = getSupabaseAdmin(c);
     const { data, error } = await db

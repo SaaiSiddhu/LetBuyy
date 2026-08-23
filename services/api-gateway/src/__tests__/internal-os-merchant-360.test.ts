@@ -53,7 +53,14 @@ test('merchant 360 gateway routes aggregate context and audit sensitive reads/ac
     assert.match(routeSource, /validateSensitiveReason/);
     assert.match(routeSource, /checkSegregationOfDuty/);
     assert.match(routeSource, /targetAction:\s*'merchant\.suspend'/);
-    assert.match(routeSource, /hmacSha256Hex/);
+    // S1 (SEC-R7): the impersonation token is a CSPRNG-generated opaque
+    // credential, not an AUTH_SECRET-signed HMAC -- the signature was never
+    // verified anywhere, so a random token gives the same real guarantee
+    // (unguessable) without a shared symmetric signing secret.
+    assert.match(routeSource, /generateImpersonationToken/);
+    assert.match(routeSource, /crypto\.getRandomValues/);
+    assert.doesNotMatch(routeSource, /hmacSha256Hex/);
+    assert.doesNotMatch(routeSource, /AUTH_SECRET/);
     assert.match(routeSource, /sha256Hex/);
     assert.match(routeSource, /support:\s*\{\s*configured:\s*true/);
     assert.doesNotMatch(routeSource, /\.from\('stores'\)/);
