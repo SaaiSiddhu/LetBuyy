@@ -323,16 +323,6 @@ bucket_name = "letbuyy-media-production"
 binding = "HYPERDRIVE"
 id = "9e08563f410040d9a8bd67b7938f0bb5"
 
-[[env.production.d1_databases]]
-binding = "RUNTIME_DB"
-database_name = "letbuyy-production-d1"
-database_id = "76d197a5-d1cf-48a3-a363-4201ed1ca490"
-migrations_dir = "../../database/cloudflare/d1/migrations"
-
-[[env.production.durable_objects.bindings]]
-name = "RUNTIME_COORDINATOR"
-class_name = "LetbuyyRuntimeDurableObject"
-
 [[env.production.services]]
 binding = "WEBHOOK_SERVICE"
 service = "letbuyy-webhook"

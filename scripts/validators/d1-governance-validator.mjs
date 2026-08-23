@@ -7,6 +7,8 @@ import {
 
 const reporter = createReporter("D1 governance validator");
 const topology = readJson("config/runtime/cloudflare-topology.json");
+const bindingOwnership = readJson("config/runtime/cloudflare-binding-ownership.json");
+const apiGatewayOwnership = (bindingOwnership?.workers || []).find((worker) => worker.runtimeRoot === "services/api-gateway");
 const apiWrangler = readFile("services/api-gateway/wrangler.toml");
 const storageTerraform = readFile("infrastructure/cloudflare/storage.tf");
 const materializer = readFile("infrastructure/scripts/cloudflare/materialize-wrangler-config.mjs");
@@ -46,9 +48,24 @@ function isGovernedD1DatabaseId(environment, value) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value) && !value.startsWith("__");
 }
 
+// Whether an environment's Worker binds RUNTIME_DB at all is governed by
+// cloudflare-binding-ownership.json (Phase V0 W2: production de-deployed the
+// binding — the D1 database itself, its Terraform resource, and the shared
+// migration stay untouched; only the Worker's bound access was removed).
 for (const environment of ["staging", "production"]) {
   const env = topology.environments[environment];
+  const envOwnership = apiGatewayOwnership?.environments?.[environment];
+  const expectsBinding = (envOwnership?.d1Databases || []).includes("RUNTIME_DB");
   const section = envSection(apiWrangler, environment);
+
+  if (!expectsBinding) {
+    reporter.assert(
+      !section.includes("[[env." + environment + ".d1_databases]]"),
+      `D1 binding present in ${environment} but not declared in cloudflare-binding-ownership.json`,
+    );
+    continue;
+  }
+
   reporter.assert(section.includes("[[env." + environment + ".d1_databases]]"), `API Gateway missing D1 binding for ${environment}`);
   reporter.assert(section.includes('binding = "RUNTIME_DB"'), `API Gateway missing RUNTIME_DB binding for ${environment}`);
   reporter.assert(section.includes(`database_name = "${env.d1}"`), `API Gateway D1 database name drift for ${environment}`);

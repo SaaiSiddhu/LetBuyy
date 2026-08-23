@@ -8,6 +8,8 @@ import {
 const reporter = createReporter("Cloudflare topology validator");
 
 const topology = readJson("config/runtime/cloudflare-topology.json");
+const bindingOwnership = readJson("config/runtime/cloudflare-binding-ownership.json");
+const apiGatewayBindingOwnership = (bindingOwnership?.workers || []).find((worker) => worker.runtimeRoot === "services/api-gateway");
 const ownership = readJson("config/runtime/resource-ownership-manifest.json");
 const lineage = readJson("config/runtime/environment-lineage.json");
 const runtimeTopology = readJson("config/runtime/runtime-topology.json");
@@ -68,7 +70,13 @@ for (const environment of ["staging", "production"]) {
   reporter.assert(apiWrangler.includes(`name = "${env.workers.apiGateway}"`), `API Gateway wrangler missing Worker ${env.workers.apiGateway}`);
   reporter.assert(webhookWrangler.includes(`name = "${env.workers.webhookService}"`), `Webhook wrangler missing Worker ${env.workers.webhookService}`);
   reporter.assert(queueWrangler.includes(`name = "${env.workers.queueWorkers}"`), `Queue wrangler missing Worker ${env.workers.queueWorkers}`);
-  reporter.assert(apiWrangler.includes(env.d1), `API Gateway wrangler missing D1 ${env.d1}`);
+  const envD1Ownership = apiGatewayBindingOwnership?.environments?.[environment];
+  const expectsD1Binding = (envD1Ownership?.d1Databases || []).includes("RUNTIME_DB");
+  if (expectsD1Binding) {
+    reporter.assert(apiWrangler.includes(env.d1), `API Gateway wrangler missing D1 ${env.d1}`);
+  } else {
+    reporter.assert(!apiWrangler.includes(env.d1), `API Gateway wrangler references de-deployed D1 ${env.d1} in ${environment}`);
+  }
   reporter.assert(isGovernedCacheKvId(environment, extractCacheKvId(envSection(apiWrangler, environment))), `API Gateway wrangler missing governed KV namespace id for ${environment}`);
   reporter.assert(apiWrangler.includes(env.r2), `API Gateway wrangler missing R2 ${env.r2}`);
   reporter.assert(apiWrangler.includes(env.runtimeQueue), `API Gateway wrangler missing runtime queue ${env.runtimeQueue}`);

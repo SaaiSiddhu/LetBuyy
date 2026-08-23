@@ -99,12 +99,8 @@
           "r2Buckets": [
             "R2_BUCKET"
           ],
-          "d1Databases": [
-            "RUNTIME_DB"
-          ],
-          "durableObjects": [
-            "RUNTIME_COORDINATOR"
-          ],
+          "d1Databases": [],
+          "durableObjects": [],
           "serviceBindings": [
             "WEBHOOK_SERVICE"
           ],
